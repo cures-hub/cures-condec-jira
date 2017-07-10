@@ -170,22 +170,6 @@ var addOptionToDecisionComponent = function(type, parentId){
 					title: 'Success',
 					body: type + ' has been created.'
 				});
-				/*
-				document.getElementById("Details").insertAdjacentHTML('beforeend', '<input type="text" id="linkExistingIssueSearchField" placeholder="Link to existing Issue..."/>' + 
-					'<input type="button" name="linkExistingIssueButton" id="linkExistingIssueButton" value="Create Link"/>');
-				var singleSelect = $("#linkExistingIssueSearchField").select2({
-					data: data,
-				});
-				document.getElementById("linkExistingIssueSearchField").style.display = "block";
-				var linkButton = document.getElementById("linkExistingIssueButton");
-				linkButton.addEventListener('click', function(event){ 
-					var arrayOfSelectedIssues = $('#linkExistingIssueSearchField').select2('data');
-					var divider = arrayOfSelectedIssues.text.indexOf(" / ");
-					createIssueLink("contain", nodeKey,arrayOfSelectedIssues.text.substring(0, divider), AJS.contextPath());
-					singleSelect.select2('val', '');
-					window.location.reload();
-				});
-				*/
 				createLink(parentId, data.id, "contain", function(data){
 					var successFlag = AJS.flag({
 						type: 'success',
@@ -200,8 +184,7 @@ var addOptionToDecisionComponent = function(type, parentId){
 	} else if (type == "Argument"){
 		document.getElementById(type).insertAdjacentHTML('beforeend', '<p>Do you want to add an additional ' + type + '? <input type="radio" name="natureOfArgument" value="pro" checked="checked">Pro<input type="radio" name="natureOfArgument" value="contra">Contra<input type="radio" name="natureOfArgument" value="comment">Comment<input type="text" id="inputField' + type + '" placeholder="Name of ' + type + '"><input type="button" name="CreateAndLinkDecisionComponent' + type+ '" id="CreateAndLinkDecisionComponent' + type+ '" value="Add ' + type + '"/></p>');
 		var createDecisionComponentButton = document.getElementById("CreateAndLinkDecisionComponent" + type);
-		var inputField = document.getElementById("inputField" + type);
-		/*
+		var inputField = document.getElementById("inputField" + type);		
 		createDecisionComponentButton.addEventListener('click', function(event){
 			var tempString = inputField.value;
 			inputField.value = "";
@@ -210,29 +193,86 @@ var addOptionToDecisionComponent = function(type, parentId){
 			   if(argumentCheckBoxGroup[i].checked == true) {
 				   var selectedNatureOfArgument = argumentCheckBoxGroup[i].value;
 				   if (selectedNatureOfArgument == "pro"){
-						createDecisionComponent(tempString, type, parentKey,  "support", true);
+						createDecisionComponent(tempString, type, function(data){
+							var successFlag = AJS.flag({
+								type: 'success',
+								close: 'auto',
+								title: 'Success',
+								body: type + ' has been created.'
+							});
+							createLink(parentId, data.id, "support", function(data){
+								var successFlag = AJS.flag({
+									type: 'success',
+									close: 'auto',
+									title: 'Success',
+									body: 'IssueLink has been created.'
+								});
+							});
+						});
 				   } else if (selectedNatureOfArgument == "contra"){
-						createDecisionComponent(tempString, type, parentKey,  "attack", true);
+						createDecisionComponent(tempString, type, function(data){
+							var successFlag = AJS.flag({
+								type: 'success',
+								close: 'auto',
+								title: 'Success',
+								body: type + ' has been created.'
+							});
+							createLink(parentId, data.id, "attack", function(data){
+								var successFlag = AJS.flag({
+									type: 'success',
+									close: 'auto',
+									title: 'Success',
+									body: 'IssueLink has been created.'
+								});
+							});
+						});
 				   } else if (selectedNatureOfArgument == "comment"){
-						createDecisionComponent(tempString, type, parentKey,  "comment", true);
+						createDecisionComponent(tempString, type, function(data){
+							var successFlag = AJS.flag({
+								type: 'success',
+								close: 'auto',
+								title: 'Success',
+								body: type + ' has been created.'
+							});
+							createLink(parentId, data.id, "comment", function(data){
+								var successFlag = AJS.flag({
+									type: 'success',
+									close: 'auto',
+									title: 'Success',
+									body: 'IssueLink has been created.'
+								});
+							});
+						});
 				   } else {
 					   
 				   }
 			   }
 			 }
 		});
-		*/
 	} else {
 		document.getElementById(type).insertAdjacentHTML('beforeend', '<p>Do you want to add an additional ' + type + '?<input type="text" id="inputField' + type + '" placeholder="Name of ' + type + '"><input type="button" name="CreateAndLinkDecisionComponent' + type+ '" id="CreateAndLinkDecisionComponent' + type+ '" value="Add ' + type + '"/></p>');
-		var createDecisionComponentButton = document.getElementById("CreateAndLinkDecisionComponent" + type);
-		var inputField = document.getElementById("inputField" + type);
-		/*
+		var createDecisionComponentButton = document.getElementById("CreateAndLinkDecisionComponent" + type);	
 		createDecisionComponentButton.addEventListener('click', function(event){
+			var inputField = document.getElementById("inputField" + type);
 			var tempString = inputField.value;
 			inputField.value = "";
-			createDecisionComponent(tempString,type,parentKey, ContextPath, "contain", true);
+			createDecisionComponent(tempString, type, function(data){
+				var successFlag = AJS.flag({
+					type: 'success',
+					close: 'auto',
+					title: 'Success',
+					body: type + ' has been created.'
+				});
+				createLink(parentId, data.id, "contain", function(data){
+					var successFlag = AJS.flag({
+						type: 'success',
+						close: 'auto',
+						title: 'Success',
+						body: 'IssueLink has been created.'
+					});
+				});
+			});
 		});
-		*/
 	}
 };
 
@@ -342,6 +382,7 @@ var initializeSite = function(){
 				title: 'Success',
 				body: 'Decision has been created'
 			});
+			location.reload();
 		});
 	});
 	/*ClickHandler for the Editor Button*/
