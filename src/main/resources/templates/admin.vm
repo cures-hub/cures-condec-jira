@@ -1,0 +1,73 @@
+<html>
+	<head>
+		<title>$i18n.getText("admin-servlet.name")</title>
+		<meta name="decorator" content="atl.general">
+		<meta name="decorator" content="atl.admin" />
+		<meta name="admin.active.section" content="admin_plugins_menu/new_plugin_section"/>
+		<meta name="admin.active.tab" content="jira-menu-item1" >
+		$webResourceManager.requireResource("com.atlassian.auiplugin:ajs")
+		$webResourceManager.requireResource("com.atlassian.auiplugin:aui-select")
+		$webResourceManager.requireResource("com.atlassian.auiplugin:aui-form-notification")
+		$webResourceManager.requireResource("com.atlassian.auiplugin:aui-inline-dialog2")
+		$webResourceManager.requireResource("com.atlassian.auiplugin:aui-toggle")
+		<style>
+			tr:hover{background: rgba(230,230,230,1);}
+		</style>
+	</head>
+	<body>
+		<h2>DecDoc Administration</h2>
+		<hr>
+		<table>
+			<tr>
+				<th>
+					<h2>Project</h2>
+				</th>
+				<th>
+					<h2>Activated</h2>
+				</th>
+				<th>
+					<h2>Usage of JIRA Issues</h2>
+				</th>
+			</tr
+			#foreach ($proj in $projectsMap)
+			<tr>
+				<td>
+					<aui-label for="$proj.getProjectKey()-toggle">$proj.getProjectName()</aui-label>
+				</td>
+				<td>
+					<aui-toggle id="$proj.getProjectKey()-isActivated-toggle" label="$proj.getProjectName()-Activated" data-projectKey="$proj.getProjectKey()"></aui-toggle>
+					<script>
+						var toggle = document.getElementById('$proj.getProjectKey()-isActivated-toggle');
+						#if ($proj.getIsActivated() == "true")
+							toggle.checked = true;
+						#else
+							toggle.checked = false;
+						#end
+						toggle.addEventListener('change', function(e) {
+							var thisToggle = this;
+							thisToggle.busy = true;
+							#include("js/postAdmin.js")
+						});
+					</script>
+				</td>
+				<td>
+					<aui-toggle id="$proj.getProjectKey()-isIssueStrategy-toggle" label="$proj.getProjectName()-IssueStrategy" data-projectKey="$proj.getProjectKey()"></aui-toggle>
+					<script>
+						var toggle = document.getElementById('$proj.getProjectKey()-isIssueStrategy-toggle');
+						#if ($proj.getIsIssueStrategy() == "true")
+							toggle.checked = true;
+						#else
+							toggle.checked = false;
+						#end
+						toggle.addEventListener('change', function(e) {
+							var thisToggle = this;
+							thisToggle.busy = true;
+							#include("js/putAdmin.js")
+						});
+					</script>
+				</td>
+			</tr>
+			#end
+		</table>
+	</body>
+</html>

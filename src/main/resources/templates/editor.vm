@@ -1,0 +1,74 @@
+<html>
+	<head>
+		<!--<meta name="decorator" content="atl.general" />-->
+		<meta name="decorator" content="DecisionDocumentation" />
+		<!-- laedt alle Resourcen die in der atlassian-plugin.xml vermerkt sind nach -->
+		$webResourceManager.requireResource("com.atlassian.auiplugin:ajs")
+		$webResourceManager.requireResource("com.atlassian.DecisionDocumentation.DecisionDocumentation:DecisionDocumentation-resources")
+		$webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
+		$webResourceManager.requireResource("com.atlassian.auiplugin:aui-flag")
+	</head>
+	<body>
+		<div>
+			<input type="text" id="DecisionInputField" class="equalMarginRegulator" placeholder="Name of Decision">
+			<input type="button" name="CreateDecision" id="CreateDecision" class="equalMarginRegulator" value="Create Decision"/>
+			<label for="depthOfTreeInput">Depth of Tree</label>
+			<input type="number" id="depthOfTreeInput" value="4" min="1" class="equalMarginRegulator" placeholder="Enter depth of tree...">
+			<label for="depthOfTreeInput" id="DepthOfTreeWarning">Depth must be positive</label>
+			<div>
+				<!-- Suchfeld -->
+				<div>
+					<input class="search-input form-control equalMarginRegulator" id="jstree-search-input" placeholder="Enter search here..."></input>
+				</div>
+				<!-- Switch zwischen Editor und Tree -->
+				<div id="switch-wrapper" class="equalMarginRegulator">
+					<div class="switch-on-click" id="view-editor">Editor</div>
+					<div class="switch-on-click" id="view-tree">Tree</div>
+				</div>
+			</div>
+			<div>
+				<div>
+					<!-- Behaelter fuer den TreeViewer -->
+					<div id="evts" class="demo equalMarginRegulator"></div>
+				</div>
+				<!-- Accordion-Behaelter -->
+				<div>
+					<div id="container" class="equalMarginRegulator">
+						<dl>
+							<dt class="ueberschrift">Details<a href="#" id="button" class="closed">Details</a></dt>
+							<dd class="ausklappbar" id="Details">No Element was selected</dd>
+							<dt class="ueberschrift">Problems<a href="#" id="button" class="closed">Details</a></dt>
+							<dd class="ausklappbar"  id="Problem">No Element was selected</dd>
+							<dt class="ueberschrift">Issues<a href="#" id="button" class="closed">Details</a></dt>
+							<dd class="ausklappbar"  id="Issue">No Element was selected</dd>
+							<dt class="ueberschrift">Goals<a href="#" id="button" class="closed">Details</a></dt>
+							<dd class="ausklappbar"  id="Goal">No Element was selected</dd>
+							<dt class="ueberschrift">Solutions<a href="#" id="button" class="closed">Details</a></dt>
+							<dd class="ausklappbar"  id="Solution">No Element was selected</dd>
+							<dt class="ueberschrift">Alternatives<a href="#" id="button" class="closed">Details</a></dt>
+							<dd class="ausklappbar"  id="Alternative">No Element was selected</dd>
+							<dt class="ueberschrift">Claims<a href="#" id="button" class="closed">Details</a></dt>
+							<dd class="ausklappbar"  id="Claim">No Element was selected</dd>
+							<dt class="ueberschrift">Contexts<a href="#" id="button" class="closed">Details</a></dt>
+							<dd class="ausklappbar"  id="Context">No Element was selected</dd>
+							<dt class="ueberschrift">Assumptions<a href="#" id="button" class="closed">Details</a></dt>
+							<dd class="ausklappbar"  id="Assumption">No Element was selected</dd>
+							<dt class="ueberschrift">Constraints<a href="#" id="button" class="closed">Details</a></dt>
+							<dd class="ausklappbar"  id="Constraint">No Element was selected</dd>
+							<dt class="ueberschrift">Implications<a href="#" id="button" class="closed">Details</a></dt>
+							<dd class="ausklappbar"  id="Implication">No Element was selected</dd>
+							<dt class="ueberschrift">Assessments<a href="#" id="button" class="closed">Details</a></dt>
+							<dd class="ausklappbar"  id="Assessment">No Element was selected</dd>
+							<dt class="ueberschrift">Arguments<a href="#" id="button" class="closed">Details</a></dt>
+							<dd class="ausklappbar"  id="Argument">No Element was selected</dd>
+						</dl>
+					</div>
+					<div class="chart equalMarginRegulator" id="treant-container"><p>No Element was selected</p></div>
+				</div>
+			</div>
+		</div>
+		<script>
+			initializeSite();
+		</script>
+	</body>
+</html>
