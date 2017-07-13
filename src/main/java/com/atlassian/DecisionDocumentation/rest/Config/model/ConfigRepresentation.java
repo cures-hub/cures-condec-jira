@@ -1,4 +1,4 @@
-package com.atlassian.DecisionDocumentation.rest.model;
+package com.atlassian.DecisionDocumentation.rest.Config.model;
 
 /**
  * 

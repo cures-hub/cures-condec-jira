@@ -3,9 +3,10 @@ package com.atlassian.DecisionDocumentation.db.strategy.impl;
 import java.util.List;
 
 import com.atlassian.DecisionDocumentation.db.strategy.Strategy;
-import com.atlassian.DecisionDocumentation.rest.model.DecisionRepresentation;
-import com.atlassian.DecisionDocumentation.rest.model.LinkRepresentation;
-import com.atlassian.DecisionDocumentation.rest.model.SimpleDecisionRepresentation;
+import com.atlassian.DecisionDocumentation.rest.Decisions.model.DecisionRepresentation;
+import com.atlassian.DecisionDocumentation.rest.Decisions.model.LinkRepresentation;
+import com.atlassian.DecisionDocumentation.rest.Decisions.model.SimpleDecisionRepresentation;
+import com.atlassian.DecisionDocumentation.rest.treants.model.Treant;
 import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Core;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
@@ -67,6 +68,12 @@ public class AoStrategy implements Strategy {
 
 	@Override
 	public Core createCore(Project project) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Treant createTreant(Long id, int depth) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -4,11 +4,21 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.atlassian.DecisionDocumentation.db.strategy.Strategy;
+import com.atlassian.DecisionDocumentation.db.strategy.impl.AoStrategy;
+import com.atlassian.DecisionDocumentation.db.strategy.impl.IssueStrategy;
+import com.atlassian.DecisionDocumentation.rest.treants.model.Treant;
+import com.atlassian.DecisionDocumentation.util.ComponentGetter;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
+import com.atlassian.sal.api.pluginsettings.PluginSettings;
+import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import com.atlassian.sal.api.transaction.TransactionCallback;
+import com.atlassian.sal.api.transaction.TransactionTemplate;
+import com.google.common.collect.ImmutableMap;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -27,7 +37,7 @@ public class TreantRest {
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response getMessage(@QueryParam("projectKey") String projectKey, @QueryParam("issueKey") String issueKey,  @QueryParam("depthOfTree") String depthOfTree) throws GenericEntityException
+    public Response getMessage(@QueryParam("projectKey")final String projectKey, @QueryParam("issueKey") String issueKey,  @QueryParam("depthOfTree") String depthOfTree) throws GenericEntityException
     {
     	if(projectKey!=null){
     		ProjectManager projectManager = ComponentAccessor.getProjectManager();
@@ -46,6 +56,7 @@ public class TreantRest {
             		issueCollection.add(issueManager.getIssueObject(id));
             	}
             	/*Wenn es ein Issue im Projekt mit dem angegebenen issueKey gibt, so wird dieses zum Root-Issue*/
+            	//TODO rework
             	for (Issue issue : issueCollection){
             		if (issue.getKey().equals(issueKey)){
             			rootIssue = issue;
@@ -67,9 +78,32 @@ public class TreantRest {
             		} else {
             			depth = 4;
             		}
-            		/*Starte die Konstruktion der Baumes, ausgehend von dem Root-Issue*/
-            		TreantRestModel treantRestModel = new TreantRestModel(rootIssue, depth);
-            		return Response.ok(treantRestModel).build();
+            		
+            		TransactionTemplate transactionTemplate = ComponentGetter.getTransactionTemplate();
+    				final PluginSettingsFactory pluginSettingsFactory = ComponentGetter.getPluginSettingsFactory();
+    				final String pluginStorageKey = ComponentGetter.getPluginStorageKey();
+    				Object ob = transactionTemplate.execute(new TransactionCallback<Object>() {
+    	                public Object doInTransaction() {
+    	                    PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+    	                    Object o = settings.get(pluginStorageKey + ".isIssueStrategy");
+    	                    return o;
+    	                }
+    	            });
+    				if(ob instanceof String) {
+    					String strategyType = (String) ob;
+    					Strategy strategy = null;
+    					if (strategyType.equalsIgnoreCase("true")) {
+    						strategy = new IssueStrategy();
+    					} else if(strategyType.equalsIgnoreCase("false")) {
+    						strategy = new AoStrategy();
+    					} else {
+    						return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "PluginSettings are corrupted")).build();
+    					}
+    					Treant treantRestModel = strategy.createTreant(rootIssue.getId(), depth);
+                		return Response.ok(treantRestModel).build();
+    				} else {
+    					return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "PluginSettings are corrupted")).build();
+    				}
             	}
     		}
     	} else {

@@ -1,18 +1,19 @@
-package com.atlassian.DecisionDocumentation.rest.treants;
+package com.atlassian.DecisionDocumentation.rest.treants.model;
+
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
+
+import com.google.common.collect.ImmutableMap;
 /**
- * 
  * @author Ewald Rode
  * @description
  */
 public class Chart {
-	/*id des div-Elements, indem der Baum dargestellt werden soll*/
 	@XmlElement
 	private String container;
-	/*Die Art der Verbindung zwischen zwei Knoten*/
 	@XmlElement
-	private Connectors connectors;
+	private Map<String, String> connectors;
 	@XmlElement
 	private String rootOrientation;
 	@XmlElement
@@ -21,9 +22,10 @@ public class Chart {
 	private int siblingSeparation;
 	@XmlElement
 	private int subTreeSeparation;
+	
 	public Chart(){
 		this.container="#treant-container";
-		this.connectors = new Connectors();
+		this.connectors = ImmutableMap.of("type", "straight");
 		this.rootOrientation = "NORTH";
 		this.levelSeparation = 30;
 		this.siblingSeparation = 30;

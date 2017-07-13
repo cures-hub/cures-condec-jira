@@ -1,4 +1,4 @@
-package com.atlassian.DecisionDocumentation.rest.model;
+package com.atlassian.DecisionDocumentation.rest.Decisions.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;

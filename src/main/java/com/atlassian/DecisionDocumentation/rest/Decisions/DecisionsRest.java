@@ -16,9 +16,9 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.DecisionDocumentation.db.strategy.Strategy;
 import com.atlassian.DecisionDocumentation.db.strategy.impl.AoStrategy;
 import com.atlassian.DecisionDocumentation.db.strategy.impl.IssueStrategy;
-import com.atlassian.DecisionDocumentation.rest.model.DecisionRepresentation;
-import com.atlassian.DecisionDocumentation.rest.model.LinkRepresentation;
-import com.atlassian.DecisionDocumentation.rest.model.SimpleDecisionRepresentation;
+import com.atlassian.DecisionDocumentation.rest.Decisions.model.DecisionRepresentation;
+import com.atlassian.DecisionDocumentation.rest.Decisions.model.LinkRepresentation;
+import com.atlassian.DecisionDocumentation.rest.Decisions.model.SimpleDecisionRepresentation;
 import com.atlassian.DecisionDocumentation.util.ComponentGetter;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
@@ -29,7 +29,6 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 
 /**
- * 
  * @author Ewald Rode
  * @description
  */

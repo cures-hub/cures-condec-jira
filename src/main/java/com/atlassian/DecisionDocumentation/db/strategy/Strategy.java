@@ -2,9 +2,10 @@ package com.atlassian.DecisionDocumentation.db.strategy;
 
 import java.util.List;
 
-import com.atlassian.DecisionDocumentation.rest.model.DecisionRepresentation;
-import com.atlassian.DecisionDocumentation.rest.model.LinkRepresentation;
-import com.atlassian.DecisionDocumentation.rest.model.SimpleDecisionRepresentation;
+import com.atlassian.DecisionDocumentation.rest.Decisions.model.DecisionRepresentation;
+import com.atlassian.DecisionDocumentation.rest.Decisions.model.LinkRepresentation;
+import com.atlassian.DecisionDocumentation.rest.Decisions.model.SimpleDecisionRepresentation;
+import com.atlassian.DecisionDocumentation.rest.treants.model.Treant;
 import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Core;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
@@ -25,4 +26,5 @@ public interface Strategy {
 	public List<SimpleDecisionRepresentation> searchUnlinkedDecisionComponents(long id, String projectKey);
 	
 	public Core createCore(Project project);
+	public Treant createTreant(Long id, int depth);
 }

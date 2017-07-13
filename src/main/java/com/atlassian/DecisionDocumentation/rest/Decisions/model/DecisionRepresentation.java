@@ -1,4 +1,4 @@
-package com.atlassian.DecisionDocumentation.rest.model;
+package com.atlassian.DecisionDocumentation.rest.Decisions.model;
 
 import com.atlassian.jira.issue.Issue;
 
