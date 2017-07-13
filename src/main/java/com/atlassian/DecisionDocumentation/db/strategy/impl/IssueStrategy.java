@@ -273,13 +273,8 @@ public class IssueStrategy implements Strategy {
 		core.setCheck_callback(true);
 		core.setThemes(ImmutableMap.of("icons", false));
 		HashSet<Data> dataSet = new HashSet<Data>();
-		/*
-		 * kvpList speichert die KeyValuePairs aller Parent-Child Beziehungen um nachvollziehen zu koennen, welche Knoten bereits in den Baum aufgenommen wurden,
-		 * dies ist insbesondere noetig um Endlos-SChleifen vorzubeugen
-		 */
 		for (int index = 0; index < issueList.size(); ++index){
     		if(issueList.get(index).getIssueType().getName().equals("Decision")){
-    			LOGGER.error("creationCore: Issue {}", issueList.get(index).getKey());
     			TreeViewerKVPairList.kvpList = new ArrayList<Pair<String, String>>();
     			Pair<String,String> kvp = new Pair<String,String>("root", issueList.get(index).getKey());
     			TreeViewerKVPairList.kvpList.add(kvp);
@@ -291,7 +286,6 @@ public class IssueStrategy implements Strategy {
 	}
 
 	public Data createData(Issue issue) {
-		LOGGER.error("creationData: Issue {}", issue.getKey());
 		Data data = new Data();
 		
 		data.setText(issue.getKey() + " / " + issue.getSummary());
@@ -319,7 +313,6 @@ public class IssueStrategy implements Strategy {
 			inwardIssuesList.add(issueLink.getSourceObject());
 		}
 		List<Issue> toBeAddedToChildren = new ArrayList<Issue>();
-		LOGGER.error("inward {}", inwardIssuesList.size());
 		for (int i = 0; i < inwardIssuesList.size(); ++i){
 			if(inwardIssuesList.get(i).getIssueType().getName().equals("Argument")){
 				Pair<String, String> newKVP = new Pair<String, String>(issue.getKey(), inwardIssuesList.get(i).getKey());
@@ -338,7 +331,6 @@ public class IssueStrategy implements Strategy {
 				}
 			}
 		}
-		LOGGER.error("outward {}", outwardIssuesList.size());
 		for (int i=0; i<outwardIssuesList.size(); ++i) {
 			/*
 			 * Erstelle Parent-Child Beziehung und pruefe ob diese bereits in der KeyValuePair-Liste vorhanden ist.
@@ -359,7 +351,6 @@ public class IssueStrategy implements Strategy {
 				toBeAddedToChildren.add(outwardIssuesList.get(i));
 			}
 		}
-		LOGGER.error("to be added to children {}", toBeAddedToChildren.size());
 		for (Issue issueToBeAdded: toBeAddedToChildren){
 			children.add(createData(issueToBeAdded));
 		}

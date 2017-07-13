@@ -55,15 +55,8 @@ public class DecisionsRest {
 				Strategy strategy = null;
 				if (strategyType.equalsIgnoreCase("true")) {
 					strategy = new IssueStrategy();
-				} else if(strategyType.equalsIgnoreCase("false")) {
-					strategy = new AoStrategy();
 				} else {
-					// TODO corrupt settings logger;
-					return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new HashMap<String, String>() {
-						{
-							put("error", "Corrupt pluginsettings. Contact Admin for problemresolution.");
-						}
-					}).build();
+					strategy = new AoStrategy();
 				}
 				List<SimpleDecisionRepresentation> decList = null;
 				if(strategy instanceof IssueStrategy ||strategy instanceof AoStrategy) {
@@ -105,72 +98,73 @@ public class DecisionsRest {
 				Strategy strategy = null;
 				if (strategyType.equalsIgnoreCase("true")) {
 					strategy = new IssueStrategy();
-				} else if(strategyType.equalsIgnoreCase("false")) {
-					strategy = new AoStrategy();
 				} else {
-					// TODO corrupt settings logger;
-					return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new HashMap<String, String>() {
+					strategy = new AoStrategy();
+				}
+	    		ApplicationUser user = getCurrentUser(req);
+	    		if(actionType.equalsIgnoreCase("create")) {
+	    			LOGGER.error("before createDecisionComponent");
+	    			final long issueId = strategy.createDecisionComponent(dec, user);
+	    			if(issueId!=0) {
+	    				return Response.status(Status.OK).entity(new HashMap<String, Long>() {
+	    					{
+	    						put("id", issueId);
+	    					}
+	    				}).build();
+	    			}
+	    			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new HashMap<String, String>() {
 						{
-							put("error", "Corrupt pluginsettings. Contact Admin for problemresolution.");
+							put("error", "Creation of Issue failed.");
 						}
 					}).build();
-				}
-		    	if(strategy instanceof IssueStrategy) {
-		    		ApplicationUser user = getCurrentUser(req);
-		    		if(actionType.equalsIgnoreCase("create")) {
-		    			final long issueId = strategy.createDecisionComponent(dec, user);
-		    			if(issueId!=0) {
-		    				return Response.status(Status.OK).entity(new HashMap<String, Long>() {
-		    					{
-		    						put("id", issueId);
-		    					}
-		    				}).build();
-		    			}
-		    			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new HashMap<String, String>() {
-							{
-								put("error", "Creation of Issue failed.");
-							}
-						}).build();
-		    		} else if(actionType.equalsIgnoreCase("edit")) {
-		    			//TODO: IssueStrategy edit
-		    			strategy.editDecisionComponent(dec, user);
-		    			return Response.ok("edit success").build();
-		    		} else if(actionType.equalsIgnoreCase("delete")) {
-		    			//TODO: IssueStrategy delete
-		    			strategy.deleteDecisionComponent(dec, user);
-		    			return Response.ok("delete success").build();
-		    		} else {
-		    			//error TODO logger
-		    			return Response.ok("Unknown actionType. Pick either 'create', 'edit' or 'delete'").build();
-		    		}
-		    	} else if(strategy instanceof AoStrategy) {
-		    		//TODO: AoStrategy 
-		    		ApplicationUser user = getCurrentUser(req);
-		    		if(actionType.equalsIgnoreCase("create")) {
-		    			strategy.createDecisionComponent(dec, user);
-		    			return Response.ok().build();
-		    		} else if(actionType.equalsIgnoreCase("edit")) {
-		    			strategy.editDecisionComponent(dec, user);
-		    			return Response.ok().build();
-		    		} else if(actionType.equalsIgnoreCase("delete")) {
-		    			strategy.deleteDecisionComponent(dec, user);
-		    			return Response.ok().build();
-		    		} else {
-		    			//error TODO logger
-		    			return Response.serverError().build();
-		    		}
-		    	} else {
-		    		//error TODO logger
-		    		return Response.ok("Neither IssueStrategy nor AoStrategy").build();
-		    	}
+	    		} else if(actionType.equalsIgnoreCase("edit")) {
+	    			//TODO: IssueStrategy edit
+	    			strategy.editDecisionComponent(dec, user);
+	    			return Response.ok("edit success").build();
+	    		} else if(actionType.equalsIgnoreCase("delete")) {
+	    			//TODO: IssueStrategy delete
+	    			strategy.deleteDecisionComponent(dec, user);
+	    			return Response.ok("delete success").build();
+	    		} else {
+	    			//error TODO logger
+	    			return Response.ok("Unknown actionType. Pick either 'create', 'edit' or 'delete'").build();
+	    		}
 			} else {
-				//error corrupt pluginsettings TODO
+				Strategy strategy = new AoStrategy();
+				ApplicationUser user = getCurrentUser(req);
+	    		if(actionType.equalsIgnoreCase("create")) {
+	    			LOGGER.error("before createDecisionComponent");
+	    			final long issueId = strategy.createDecisionComponent(dec, user);
+	    			if(issueId!=0) {
+	    				return Response.status(Status.OK).entity(new HashMap<String, Long>() {
+	    					{
+	    						put("id", issueId);
+	    					}
+	    				}).build();
+	    			}
+	    			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new HashMap<String, String>() {
+						{
+							put("error", "Creation of Issue failed.");
+						}
+					}).build();
+	    		} else if(actionType.equalsIgnoreCase("edit")) {
+	    			//TODO: IssueStrategy edit
+	    			strategy.editDecisionComponent(dec, user);
+	    			return Response.ok("edit success").build();
+	    		} else if(actionType.equalsIgnoreCase("delete")) {
+	    			//TODO: IssueStrategy delete
+	    			strategy.deleteDecisionComponent(dec, user);
+	    			return Response.ok("delete success").build();
+	    		} else {
+	    			//error TODO logger
+	    			return Response.ok("Unknown actionType. Pick either 'create', 'edit' or 'delete'").build();
+	    		}
 			}
 		} else {
 			//error TODO logger
 			return Response.ok("dec or actionType = null").build();
 		}
-		return Response.ok("POST Generic").build();
+		//return Response.ok("POST Generic").build();
     }
 	
 	@PUT
@@ -195,15 +189,8 @@ public class DecisionsRest {
 				Strategy strategy = null;
 				if (strategyType.equalsIgnoreCase("true")) {
 					strategy = new IssueStrategy();
-				} else if(strategyType.equalsIgnoreCase("false")) {
-					strategy = new AoStrategy();
 				} else {
-					// TODO corrupt settings logger;
-					return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new HashMap<String, String>() {
-						{
-							put("error", "Corrupt pluginsettings. Contact Admin for problemresolution.");
-						}
-					}).build();
+					strategy = new AoStrategy();
 				}
 				if(strategy instanceof IssueStrategy) {
 		    		ApplicationUser user = getCurrentUser(req);

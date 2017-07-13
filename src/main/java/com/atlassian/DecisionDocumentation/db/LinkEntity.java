@@ -11,7 +11,7 @@ import net.java.ao.schema.Table;
  * @author Ewald Rode
  * @description
  */
-@Table("Link")
+@Table("LINK")
 public interface LinkEntity extends RawEntity<Integer> {
 	@AutoIncrement
 	@NotNull

@@ -3,6 +3,7 @@ package com.atlassian.DecisionDocumentation.util;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.ProjectService;
@@ -12,6 +13,7 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
+import static com.google.common.base.Preconditions.*;
 /**
  * 
  * @author Ewald Rode
@@ -36,12 +38,14 @@ public class ComponentGetter {
     private static UserManager userManager;
     @ComponentImport
     private static TemplateRenderer templateRenderer;
-    
-    @Inject
+    @ComponentImport
+    private static ActiveObjects ao;
+
+	@Inject
     public ComponentGetter(PluginSettingsFactory pluginSettingsFactory, TransactionTemplate transactionTemplate, 
     		IssueService issueService, ProjectService projectService, 
             SearchService searchService, UserManager userManager,
-            TemplateRenderer templateRenderer) {
+            TemplateRenderer templateRenderer, ActiveObjects ao) {
         ComponentGetter.pluginSettingsFactory = pluginSettingsFactory;
         ComponentGetter.transactionTemplate = transactionTemplate;
         ComponentGetter.issueService = issueService;
@@ -49,6 +53,7 @@ public class ComponentGetter {
         ComponentGetter.searchService = searchService;
         ComponentGetter.userManager = userManager;
         ComponentGetter.templateRenderer = templateRenderer;
+        ComponentGetter.ao = checkNotNull(ao);
     }
 
     public static PluginSettingsFactory getPluginSettingsFactory() {
@@ -78,6 +83,14 @@ public class ComponentGetter {
     public static TemplateRenderer getTemplateRenderer() {
     	return templateRenderer;
     }
+    
+    public static ActiveObjects getAo() {
+		return ao;
+	}
+
+	public static void setAo(ActiveObjects ao) {
+		ComponentGetter.ao = ao;
+	}
     
     public static String getPluginStorageKey() {
         return PLUGIN_STORAGE_KEY;

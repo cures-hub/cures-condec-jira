@@ -11,25 +11,24 @@ import net.java.ao.schema.Table;
  * @author Ewald Rode
  * @description
  */
-@Table("Decision")
+@Table("DECISION")
 public interface DecisionComponentEntity extends RawEntity<Integer>{
 	@AutoIncrement
-	@NotNull
 	@PrimaryKey("ID")
 	public long getID();
 	
-	@NotNull
+	public String getKey();
+	public void setKey(String key);
+	
 	public String getName();
 	public void setName(String name);
 	
 	public String getDescription();
 	public void setDescription(String description);
 	
-	@NotNull
 	public String getType();
 	public void setType(String type);
 	
-	@NotNull
 	public String getProjectKey();
 	public void setProjectKey(String projectKey);
 }

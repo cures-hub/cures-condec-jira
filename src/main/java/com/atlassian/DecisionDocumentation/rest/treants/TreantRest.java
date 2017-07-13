@@ -28,7 +28,6 @@ import javax.ws.rs.core.Response.Status;
 import org.ofbiz.core.entity.GenericEntityException;
 
 /**
- * 
  * @author Ewald Rode
  * @description Treants Rest API Listener
  */
@@ -94,15 +93,15 @@ public class TreantRest {
     					Strategy strategy = null;
     					if (strategyType.equalsIgnoreCase("true")) {
     						strategy = new IssueStrategy();
-    					} else if(strategyType.equalsIgnoreCase("false")) {
-    						strategy = new AoStrategy();
     					} else {
-    						return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "PluginSettings are corrupted")).build();
+    						strategy = new AoStrategy();
     					}
     					Treant treantRestModel = strategy.createTreant(rootIssue.getId(), depth);
                 		return Response.ok(treantRestModel).build();
     				} else {
-    					return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "PluginSettings are corrupted")).build();
+    					Strategy strategy = new AoStrategy();
+    					Treant treantRestModel = strategy.createTreant(rootIssue.getId(), depth);
+                		return Response.ok(treantRestModel).build();
     				}
             	}
     		}

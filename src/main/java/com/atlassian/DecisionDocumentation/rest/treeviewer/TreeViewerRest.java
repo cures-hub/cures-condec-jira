@@ -52,11 +52,13 @@ public class TreeViewerRest {
 					Strategy strategy = null;
 					if (strategyType.equalsIgnoreCase("true")) {
 						strategy = new IssueStrategy();
-					} else if(strategyType.equalsIgnoreCase("false")) {
-						strategy = new AoStrategy();
 					} else {
-						return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "PluginSettings are corrupted")).build();
+						strategy = new AoStrategy();
 					}
+					TreeViewerRepresentation treeViewerRep = new TreeViewerRepresentation(strategy, project);
+					return Response.ok(treeViewerRep).build();
+				} else if (ob == null){
+					Strategy strategy = new AoStrategy();
 					TreeViewerRepresentation treeViewerRep = new TreeViewerRepresentation(strategy, project);
 					return Response.ok(treeViewerRep).build();
 				} else {
