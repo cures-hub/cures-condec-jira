@@ -5,6 +5,8 @@ import java.util.List;
 import com.atlassian.DecisionDocumentation.rest.model.DecisionRepresentation;
 import com.atlassian.DecisionDocumentation.rest.model.LinkRepresentation;
 import com.atlassian.DecisionDocumentation.rest.model.SimpleDecisionRepresentation;
+import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Core;
+import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
 /**
@@ -21,4 +23,6 @@ public interface Strategy {
 	public void deleteLink(LinkRepresentation link, ApplicationUser user);
 	
 	public List<SimpleDecisionRepresentation> searchUnlinkedDecisionComponents(long id, String projectKey);
+	
+	public Core createCore(Project project);
 }

@@ -35,7 +35,7 @@ public class IsActivated implements Condition {
             Object ob = transactionTemplate.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction() {
                     PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-                    Object o = settings.get(pluginStorageKey + ".projectKey");
+                    Object o = settings.get(pluginStorageKey + ".isActivated");
                     if (o instanceof String){
                         return o;
                     } else {

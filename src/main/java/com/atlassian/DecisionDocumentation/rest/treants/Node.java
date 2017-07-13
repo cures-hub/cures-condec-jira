@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import com.atlassian.DecisionDocumentation.rest.treeviewer.Data;
-import com.atlassian.DecisionDocumentation.rest.treeviewer.TreeViewerKVPList;
+import com.atlassian.DecisionDocumentation.rest.treeviewer.TreeViewerKVPairList;
+import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Data;
 import com.atlassian.DecisionDocumentation.util.Pair;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;

@@ -1,15 +1,18 @@
 package com.atlassian.DecisionDocumentation.rest.treeviewer;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-
+import com.atlassian.DecisionDocumentation.db.strategy.Strategy;
+import com.atlassian.DecisionDocumentation.db.strategy.impl.AoStrategy;
+import com.atlassian.DecisionDocumentation.db.strategy.impl.IssueStrategy;
+import com.atlassian.DecisionDocumentation.rest.treeviewer.model.TreeViewerRepresentation;
+import com.atlassian.DecisionDocumentation.util.ComponentGetter;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
+import com.atlassian.sal.api.pluginsettings.PluginSettings;
+import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import com.atlassian.sal.api.transaction.TransactionCallback;
+import com.atlassian.sal.api.transaction.TransactionTemplate;
+import com.google.common.collect.ImmutableMap;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -19,7 +22,6 @@ import javax.ws.rs.core.Response.Status;
 import org.ofbiz.core.entity.GenericEntityException;
 
 /**
- * 
  * @author Ewald Rode
  * @description TreeViewer Rest API Listener
  */
@@ -28,39 +30,42 @@ public class TreeViewerRest {
 
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public Response getMessage(@QueryParam("projectKey") String projectKey) throws GenericEntityException {
+	public Response getMessage(@QueryParam("projectKey")final String projectKey) throws GenericEntityException {
 		if (projectKey != null) {
 			ProjectManager projectManager = ComponentAccessor.getProjectManager();
-			IssueManager issueManager = ComponentAccessor.getIssueManager();
 			Project project = projectManager.getProjectObjByKey(projectKey);
 			if (project == null) {
-				/* projekt mit diesem projectKey existiert nicht */
-				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new HashMap<String, String>() {
-					{
-						put("error", "Can not find Project corresponding to given Query Parameter 'projectKey'");
-					}
-				}).build();
+				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Can not find Project corresponding to given Query Parameter 'projectKey'")).build();
 			} else {
-				Collection<Long> issueIds = issueManager.getIssueIdsForProject(project.getId());
-				List<Long> issueIdList = new ArrayList<Long>();
-				for (Long id : issueIds) {
-					issueIdList.add(id);
+				TransactionTemplate transactionTemplate = ComponentGetter.getTransactionTemplate();
+				final PluginSettingsFactory pluginSettingsFactory = ComponentGetter.getPluginSettingsFactory();
+				final String pluginStorageKey = ComponentGetter.getPluginStorageKey();
+				Object ob = transactionTemplate.execute(new TransactionCallback<Object>() {
+	                public Object doInTransaction() {
+	                    PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+	                    Object o = settings.get(pluginStorageKey + ".isIssueStrategy");
+	                    return o;
+	                }
+	            });
+				if(ob instanceof String) {
+					String strategyType = (String) ob;
+					Strategy strategy = null;
+					if (strategyType.equalsIgnoreCase("true")) {
+						strategy = new IssueStrategy();
+					} else if(strategyType.equalsIgnoreCase("false")) {
+						strategy = new AoStrategy();
+					} else {
+						return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "PluginSettings are corrupted")).build();
+					}
+					TreeViewerRepresentation treeViewerRep = new TreeViewerRepresentation(strategy, project);
+					return Response.ok(treeViewerRep).build();
+				} else {
+					return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "PluginSettings are corrupted")).build();
 				}
-				List<Issue> issueList = new ArrayList<Issue>();
-				for (int index = 0; index < issueIdList.size(); ++index) {
-					Issue issue = issueManager.getIssueObject(issueIdList.get(index));
-					issueList.add(issue);
-				}
-				TreeViewerRestModel treeViewerModel = new TreeViewerRestModel(issueList);
-				return Response.ok(treeViewerModel).build();
 			}
 		} else {
 			/* projectKey wurde nicht als Query-Parameter angegeben */
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new HashMap<String, String>() {
-				{
-					put("error", "Query Parameter 'projectKey' has been omitted, please add a valid projectKey");
-				}
-			}).build();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Query Parameter 'projectKey' has been omitted, please add a valid projectKey")).build();
 		}
 	}
 }

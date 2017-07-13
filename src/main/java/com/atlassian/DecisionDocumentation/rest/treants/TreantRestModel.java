@@ -2,6 +2,7 @@ package com.atlassian.DecisionDocumentation.rest.treants;
 
 import javax.xml.bind.annotation.*;
 
+import com.atlassian.DecisionDocumentation.db.strategy.Strategy;
 import com.atlassian.jira.issue.Issue;
 
 /**
@@ -23,7 +24,10 @@ public class TreantRestModel {
     
 
     public TreantRestModel() {
-    	this.chart = null;
+    }
+    
+    public TreantRestModel(Strategy strategy) {
+    	this.chart = new Chart();
     	this.nodeStructure = null;
     }
 

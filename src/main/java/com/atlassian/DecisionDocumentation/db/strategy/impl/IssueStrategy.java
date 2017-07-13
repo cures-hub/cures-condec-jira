@@ -2,6 +2,7 @@ package com.atlassian.DecisionDocumentation.db.strategy.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -14,11 +15,17 @@ import com.atlassian.DecisionDocumentation.db.strategy.Strategy;
 import com.atlassian.DecisionDocumentation.rest.model.DecisionRepresentation;
 import com.atlassian.DecisionDocumentation.rest.model.LinkRepresentation;
 import com.atlassian.DecisionDocumentation.rest.model.SimpleDecisionRepresentation;
+import com.atlassian.DecisionDocumentation.rest.treeviewer.TreeViewerKVPairList;
+import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Core;
+import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Data;
+import com.atlassian.DecisionDocumentation.rest.treeviewer.model.NodeInfo;
 import com.atlassian.DecisionDocumentation.util.ComponentGetter;
+import com.atlassian.DecisionDocumentation.util.Pair;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.IssueService.IssueResult;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
+import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueInputParameters;
@@ -32,9 +39,9 @@ import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
+import com.google.common.collect.ImmutableMap;
 
 /**
- * 
  * @author Ewald Rode
  * @description
  */
@@ -245,5 +252,121 @@ public class IssueStrategy implements Strategy {
 			}
 		}
 		return "";
+	}
+
+	//TODO Test
+	@Override
+	public Core createCore(Project project) {
+		IssueManager issueManager = ComponentAccessor.getIssueManager();
+		Collection<Long> issueIds;
+		try {
+			issueIds = issueManager.getIssueIdsForProject(project.getId());
+		} catch (GenericEntityException e) {
+			issueIds = new ArrayList<Long>();
+		}
+		List<Issue> issueList = new ArrayList<Issue>();
+		for(Long issueId : issueIds) {
+			Issue issue = issueManager.getIssueObject(issueId);
+			issueList.add(issue);
+		}
+		Core core = new Core();
+		core.setMultiple(false);
+		core.setCheck_callback(true);
+		core.setThemes(ImmutableMap.of("icons", false));
+		HashSet<Data> dataSet = new HashSet<Data>();
+		/*
+		 * kvpList speichert die KeyValuePairs aller Parent-Child Beziehungen um nachvollziehen zu koennen, welche Knoten bereits in den Baum aufgenommen wurden,
+		 * dies ist insbesondere noetig um Endlos-SChleifen vorzubeugen
+		 */
+		for (int index = 0; index < issueList.size(); ++index){
+    		if(issueList.get(index).getIssueType().getName().equals("Decision")){
+    			LOGGER.error("creationCore: Issue {}", issueList.get(index).getKey());
+    			TreeViewerKVPairList.kvpList = new ArrayList<Pair<String, String>>();
+    			Pair<String,String> kvp = new Pair<String,String>("root", issueList.get(index).getKey());
+    			TreeViewerKVPairList.kvpList.add(kvp);
+    			dataSet.add(createData(issueList.get(index)));
+    		}
+    	}
+		core.setData(dataSet);
+		return core;
+	}
+
+	//TODO Test
+	public Data createData(Issue issue) {
+		LOGGER.error("creationData: Issue {}", issue.getKey());
+		Data data = new Data();
+		
+		data.setText(issue.getKey() + " / " + issue.getSummary());
+		
+		NodeInfo nodeInfo = new NodeInfo();
+		nodeInfo.setId(Long.toString(issue.getId()));
+		nodeInfo.setKey(issue.getKey());
+		nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + issue.getId());
+		nodeInfo.setIssueType(issue.getIssueType().getName());
+		nodeInfo.setDescription(issue.getDescription());
+		nodeInfo.setSummary(issue.getSummary());
+		data.setNodeInfo(nodeInfo);
+		
+		List<Data> children = new ArrayList<Data>();
+		List<IssueLink> allOutwardIssueLink = ComponentAccessor.getIssueLinkManager().getOutwardLinks(issue.getId());
+		List<Issue> outwardIssuesList = new ArrayList<Issue>();
+		for (int i = 0; i < allOutwardIssueLink.size(); ++i){
+			IssueLink issueLink = allOutwardIssueLink.get(i);
+			outwardIssuesList.add(issueLink.getDestinationObject());
+		}
+		List<IssueLink> allInwardIssueLink = ComponentAccessor.getIssueLinkManager().getInwardLinks(issue.getId());
+		List<Issue> inwardIssuesList = new ArrayList<Issue>();
+		for (int i = 0; i < allInwardIssueLink.size(); ++i){
+			IssueLink issueLink = allInwardIssueLink.get(i);
+			inwardIssuesList.add(issueLink.getSourceObject());
+		}
+		List<Issue> toBeAddedToChildren = new ArrayList<Issue>();
+		LOGGER.error("inward {}", inwardIssuesList.size());
+		for (int i = 0; i < inwardIssuesList.size(); ++i){
+			if(inwardIssuesList.get(i).getIssueType().getName().equals("Argument")){
+				Pair<String, String> newKVP = new Pair<String, String>(issue.getKey(), inwardIssuesList.get(i).getKey());
+				Pair<String, String> newKVPReverse = new Pair<String, String>(inwardIssuesList.get(i).getKey(), issue.getKey());
+				boolean boolvar = false;
+				for(int counter = 0; counter<TreeViewerKVPairList.kvpList.size(); ++counter){
+					Pair<String, String> globalInst = TreeViewerKVPairList.kvpList.get(counter);
+					if (newKVP.equals(globalInst)){
+						boolvar = true;
+					}
+				}
+				if(!boolvar){
+					TreeViewerKVPairList.kvpList.add(newKVP);
+					TreeViewerKVPairList.kvpList.add(newKVPReverse);
+					toBeAddedToChildren.add(inwardIssuesList.get(i));
+				}
+			}
+		}
+		LOGGER.error("outward {}", outwardIssuesList.size());
+		for (int i=0; i<outwardIssuesList.size(); ++i) {
+			/*
+			 * Erstelle Parent-Child Beziehung und pruefe ob diese bereits in der KeyValuePair-Liste vorhanden ist.
+			 * Wenn nein, fuege diesem Knoten Kinder hinzu
+			 */
+			Pair<String, String> newKVP = new Pair<String, String>(issue.getKey(), outwardIssuesList.get(i).getKey());
+			Pair<String, String> newKVPReverse = new Pair<String, String>(outwardIssuesList.get(i).getKey(), issue.getKey());
+			boolean boolvar = false;
+			for(int counter = 0; counter<TreeViewerKVPairList.kvpList.size(); ++counter){
+				Pair<String, String> globalInst = TreeViewerKVPairList.kvpList.get(counter);
+				if (newKVP.equals(globalInst)){
+					boolvar = true;
+				}
+			}
+			if(!boolvar){
+				TreeViewerKVPairList.kvpList.add(newKVP);
+				TreeViewerKVPairList.kvpList.add(newKVPReverse);
+				toBeAddedToChildren.add(outwardIssuesList.get(i));
+			}
+		}
+		LOGGER.error("to be added to children {}", toBeAddedToChildren.size());
+		for (Issue issueToBeAdded: toBeAddedToChildren){
+			children.add(createData(issueToBeAdded));
+		}
+		data.setChildren(children);
+		
+		return data;
 	}
 }

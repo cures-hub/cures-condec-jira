@@ -12,9 +12,6 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /**
  * 
  * @author Ewald Rode
@@ -23,8 +20,6 @@ import org.slf4j.LoggerFactory;
 @Named("ComponentUtil")
 @Scanned
 public class ComponentGetter {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger("com.atlassian.snikjira.snikjira");
     private static final String PLUGIN_STORAGE_KEY = "JIRADecDoc.ProjectKey.";
     
     @ComponentImport

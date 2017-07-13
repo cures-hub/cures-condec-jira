@@ -6,6 +6,8 @@ import com.atlassian.DecisionDocumentation.db.strategy.Strategy;
 import com.atlassian.DecisionDocumentation.rest.model.DecisionRepresentation;
 import com.atlassian.DecisionDocumentation.rest.model.LinkRepresentation;
 import com.atlassian.DecisionDocumentation.rest.model.SimpleDecisionRepresentation;
+import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Core;
+import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
 /**
@@ -59,6 +61,12 @@ public class AoStrategy implements Strategy {
 
 	@Override
 	public List<SimpleDecisionRepresentation> searchUnlinkedDecisionComponents(long id, String projectKey) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Core createCore(Project project) {
 		// TODO Auto-generated method stub
 		return null;
 	}
