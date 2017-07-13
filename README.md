@@ -1,23 +1,27 @@
 # cures-decdoc-jira
-JIRA plugin to capture and explore decision knowledge
 
 [![Build Status](https://travis-ci.org/cures-hub/cures-decdoc-jira.svg?branch=master)](https://travis-ci.org/cures-hub/cures-decdoc-jira)
 
-## prerequisites:
+The CURES DecDoc JIRA plugin enables the user to capture and explore decision knowledge in [JIRA](https://de.atlassian.com/software/jira).
+Decision knowledge is composed of decisions and their decision components (e.g., arguments, alternatives, problem, context, ...).
+Decisions and decision components can be linked to JIRA issues such as requirements, work items, bugs, and features.
 
--Java 8 JDK
+## Prerequisites
+The following prerequisites are necessary to compile the plugin from source code:
+- Java 8 JDK
+- [Atlassian SDK](https://developer.atlassian.com/docs/getting-started/set-up-the-atlassian-plugin-sdk-and-build-a-project)
 
--[Atlassian SDK](https://developer.atlassian.com/docs/getting-started/set-up-the-atlassian-plugin-sdk-and-build-a-project)
-
-## compilation in the commandline to create .jar:
-
-navigate into the cures-decdoc-jira-folder and run the following command
+## Compilation via terminal
+The source code is compiled via terminal. 
+Navigate into the cures-decdoc-jira folder and run the following command:
 ```
 atlas-mvn package
 ```
+The .jar file is created.
 
-## installation in JIRA:
-
-Open up "Administration" and proceed to the tab "Add-ons". On the sidebar, select on "Manage add-ons". 
-Click on "Upload add-on" and select the jar the previously compiled jar. 
-Click "Upload" for upload, installation and activation.
+## Installation in JIRA
+The .jar file is installed by uploading it to your JIRA application:
+- As a system administrator, navigate to JIRA's administration console and click the "Add-ons" tab
+- Select "Manage add-ons" on the sidebar
+- Click on "Upload add-on" and select the previously compiled .jar file 
+- Click "Upload" for upload, installation and activation
