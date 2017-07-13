@@ -21,7 +21,7 @@ The .jar file is created.
 
 ## Installation in JIRA
 The .jar file is installed by uploading it to your JIRA application:
-- As a system administrator, navigate to JIRA's administration console and click the "Add-ons" tab
-- Select "Manage add-ons" on the sidebar
-- Click on "Upload add-on" and select the previously compiled .jar file 
-- Click "Upload" for upload, installation and activation
+- As a system administrator, navigate to JIRA's administration console and click the "Add-ons" tab.
+- Select "Manage add-ons" on the sidebar.
+- Click on "Upload add-on" and select the previously compiled .jar file.
+- Click "Upload" for upload, installation and activation.
