@@ -35,7 +35,7 @@
 					<aui-label for="$proj.getProjectKey()-toggle">$proj.getProjectName()</aui-label>
 				</td>
 				<td>
-					<aui-toggle id="$proj.getProjectKey()-isActivated-toggle" label="$proj.getProjectName()-Activated" data-projectKey="$proj.getProjectKey()"></aui-toggle>
+					<input type="checkbox" id="$proj.getProjectKey()-isActivated-toggle" name="$proj.getProjectName()-Activated" value="$proj.getProjectName()-Activated" data-projectKey="$proj.getProjectKey()">
 					<script>
 						var toggle = document.getElementById('$proj.getProjectKey()-isActivated-toggle');
 						#if ($proj.getIsActivated() == "true")
@@ -49,9 +49,25 @@
 							#include("js/postAdmin.js")
 						});
 					</script>
+					#**
+					    <aui-toggle id="$proj.getProjectKey()-isActivated-toggle" label="$proj.getProjectName()-Activated" data-projectKey="$proj.getProjectKey()"></aui-toggle>
+						<script>
+							var toggle = document.getElementById('$proj.getProjectKey()-isActivated-toggle');
+							#if ($proj.getIsActivated() == "true")
+								toggle.checked = true;
+							#else
+								toggle.checked = false;
+							#end
+							toggle.addEventListener('change', function(e) {
+								var thisToggle = this;
+								thisToggle.busy = true;
+								#include("js/postAdmin.js")
+							});
+						</script>
+					*#
 				</td>
 				<td>
-					<aui-toggle id="$proj.getProjectKey()-isIssueStrategy-toggle" label="$proj.getProjectName()-IssueStrategy" data-projectKey="$proj.getProjectKey()"></aui-toggle>
+					<input type="checkbox" id="$proj.getProjectKey()-isIssueStrategy-toggle" name="$proj.getProjectName()-IssueStrategy" value="$proj.getProjectName()-IssueStrategy" data-projectKey="$proj.getProjectKey()">
 					<script>
 						var toggle = document.getElementById('$proj.getProjectKey()-isIssueStrategy-toggle');
 						#if ($proj.getIsIssueStrategy() == "true")
@@ -64,7 +80,24 @@
 							thisToggle.busy = true;
 							#include("js/putAdmin.js")
 						});
-					</script>
+				  	</script>
+					#**
+						<aui-toggle id="$proj.getProjectKey()-isIssueStrategy-toggle" label="$proj.getProjectName()-IssueStrategy" data-projectKey="$proj.getProjectKey()"></aui-toggle>
+						<script>
+							var toggle = document.getElementById('$proj.getProjectKey()-isIssueStrategy-toggle');
+							#if ($proj.getIsIssueStrategy() == "true")
+								toggle.checked = true;
+							#else
+								toggle.checked = false;
+							#end
+							toggle.addEventListener('change', function(e) {
+								var thisToggle = this;
+								thisToggle.busy = true;
+								#include("js/putAdmin.js")
+							});
+					  	</script>
+					*#
+					
 				</td>
 			</tr>
 			#end
