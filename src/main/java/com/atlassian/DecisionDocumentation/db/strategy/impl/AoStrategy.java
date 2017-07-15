@@ -85,7 +85,7 @@ public class AoStrategy implements Strategy {
 	}
 
 	@Override
-	public void createLink(LinkRepresentation link, ApplicationUser user) {
+	public void createLink(final LinkRepresentation link, ApplicationUser user) {
 		final ActiveObjects ao = ComponentGetter.getAo();
 		ao.executeInTransaction(new TransactionCallback<Void>()
         {
