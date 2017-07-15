@@ -168,18 +168,6 @@
                         <Import-Package>org.springframework.osgi.*;resolution:="optional", org.eclipse.gemini.blueprint.*;resolution:="optional", *</Import-Package>
                         <Spring-Context>*</Spring-Context>
                     </instructions>
-                    <pluginArtifacts>
-                        <pluginArtifact>
-                            <groupId>com.atlassian.activeobjects</groupId>
-                            <artifactId>activeobjects-plugin</artifactId>
-                            <version>${ao.version}</version>
-                        </pluginArtifact>
-                        <pluginArtifact>
-                            <groupId>com.atlassian.activeobjects</groupId>
-                            <artifactId>activeobjects-refapp-spi</artifactId>
-                            <version>${ao.version}</version>
-                        </pluginArtifact>
-                    </pluginArtifacts>
                 </configuration>
             </plugin>
             <plugin>
