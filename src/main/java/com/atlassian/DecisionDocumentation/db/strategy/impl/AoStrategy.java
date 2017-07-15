@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.DecisionDocumentation.db.DecisionComponentEntity;
+import com.atlassian.DecisionDocumentation.db.LinkEntity;
 import com.atlassian.DecisionDocumentation.db.strategy.Strategy;
 import com.atlassian.DecisionDocumentation.rest.Decisions.model.DecisionRepresentation;
 import com.atlassian.DecisionDocumentation.rest.Decisions.model.LinkRepresentation;
@@ -26,6 +27,8 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.google.common.collect.ImmutableMap;
+
+import net.java.ao.Query;
 
 /**
  * @author Ewald Rode
@@ -74,17 +77,68 @@ public class AoStrategy implements Strategy {
                 return null;
             }
         });
-		//return decComponent.getID(); TODO still needed? Delete, maybe
 	}
 	//TODO implement
 	@Override
 	public void deleteDecisionComponent(DecisionRepresentation dec, ApplicationUser user) {
 		
 	}
-	//TODO implement
+
 	@Override
 	public void createLink(LinkRepresentation link, ApplicationUser user) {
-		
+		final ActiveObjects ao = ComponentGetter.getAo();
+		ao.executeInTransaction(new TransactionCallback<Void>()
+        {
+            @Override
+            public Void doInTransaction()
+            {
+            	boolean linkAlreadyExists = false;
+                for (LinkEntity linkEntity : ao.find(LinkEntity.class))
+                {
+                	if(linkEntity.getIngoingId() == link.getIngoingId() && linkEntity.getOutgoingId() == link.getOutgoingId()) {
+                		linkAlreadyExists = true;
+                	}
+                }
+                if(!linkAlreadyExists) {
+                	link.getOutgoingId();
+                	DecisionComponentEntity decCompIngoing;
+                	DecisionComponentEntity[] decCompIngoingArray = ao.find(DecisionComponentEntity.class, Query.select().where("ID = ?", link.getIngoingId()));
+                	/*
+                	 * ID is the primarykey for decisioncomponents, therefore find can only return 0 to 1 entities
+                	 */
+                	if(decCompIngoingArray.length == 1) {
+                		decCompIngoing = decCompIngoingArray[0];
+                	} else {
+                		//entity with ingoingId does not exist
+                		decCompIngoing = null;
+                	}
+                	
+                	DecisionComponentEntity decCompOutgoing;
+                	DecisionComponentEntity[] decCompOutgoingArray = ao.find(DecisionComponentEntity.class, Query.select().where("ID = ?", link.getOutgoingId()));
+                	if(decCompIngoingArray.length == 1) {
+                		decCompOutgoing = decCompOutgoingArray[0];
+                	} else {
+                		//entity with ingoingId does not exist
+                		decCompOutgoing = null;
+                	}
+                	if(decCompIngoing != null && decCompOutgoing != null) {
+                		if(decCompIngoing.getProjectKey().equals(decCompOutgoing.getProjectKey())) {
+                			// entities exist and are in the same project
+                        	final LinkEntity linkEntity = ao.create(LinkEntity.class);
+                        	linkEntity.setIngoingId(link.getIngoingId());
+                        	linkEntity.setOutgoingId(link.getOutgoingId());
+                        	linkEntity.setType(link.getLinkType());
+                        	linkEntity.save();
+                		} else {
+                			// entities to be linked are not in the same project, TODO ignore request
+                		}
+                	} else {
+                		// one of the entities to be linked does not exist, TODO ignore request
+                	}
+                }
+                return null;
+            }
+        });
 	}
 	//TODO implement
 	@Override
@@ -105,15 +159,13 @@ public class AoStrategy implements Strategy {
 		core.setThemes(ImmutableMap.of("icons", false));
 		final ActiveObjects ao = ComponentGetter.getAo();
 		final HashSet<Data> dataSet =  new HashSet<Data>();
-		ao.executeInTransaction(new TransactionCallback<Void>() // (1)
+		ao.executeInTransaction(new TransactionCallback<Void>()
         {
             @Override
             public Void doInTransaction()
             {
-                for (DecisionComponentEntity decComponent : ao.find(DecisionComponentEntity.class)) // (2)
+                for (DecisionComponentEntity decComponent : ao.find(DecisionComponentEntity.class))
                 {
-                	LOGGER.error(decComponent.getProjectKey());
-                	LOGGER.error(decComponent.getType());
                     if(decComponent.getType().equalsIgnoreCase("Decision")) {
                     	TreeViewerKVPairList.kvpList = new ArrayList<Pair<String, String>>();
             			Pair<String,String> kvp = new Pair<String,String>("root", Long.toString(decComponent.getID()));
@@ -128,8 +180,7 @@ public class AoStrategy implements Strategy {
 		return core;
 	}
 	
-	private Data createData(DecisionComponentEntity decComponent) {
-		LOGGER.error("createData in AoStrategy");
+	private Data createData(final DecisionComponentEntity decComponent) {
 		Data data = new Data();
 		
 		data.setText(decComponent.getKey() + " / " + decComponent.getName());
@@ -143,42 +194,26 @@ public class AoStrategy implements Strategy {
 		nodeInfo.setSummary(decComponent.getName());
 		data.setNodeInfo(nodeInfo);
 		
-		//List<Data> children = new ArrayList<Data>();
-		/*
-		List<IssueLink> allOutwardIssueLink = ComponentAccessor.getIssueLinkManager().getOutwardLinks(issue.getId());
-		List<Issue> outwardIssuesList = new ArrayList<Issue>();
-		for (int i = 0; i < allOutwardIssueLink.size(); ++i){
-			IssueLink issueLink = allOutwardIssueLink.get(i);
-			outwardIssuesList.add(issueLink.getDestinationObject());
-		}
-		List<IssueLink> allInwardIssueLink = ComponentAccessor.getIssueLinkManager().getInwardLinks(issue.getId());
-		List<Issue> inwardIssuesList = new ArrayList<Issue>();
-		for (int i = 0; i < allInwardIssueLink.size(); ++i){
-			IssueLink issueLink = allInwardIssueLink.get(i);
-			inwardIssuesList.add(issueLink.getSourceObject());
-		}
-		List<Issue> toBeAddedToChildren = new ArrayList<Issue>();
-		for (int i = 0; i < inwardIssuesList.size(); ++i){
-			if(inwardIssuesList.get(i).getIssueType().getName().equals("Argument")){
-				Pair<String, String> newKVP = new Pair<String, String>(issue.getKey(), inwardIssuesList.get(i).getKey());
-				Pair<String, String> newKVPReverse = new Pair<String, String>(inwardIssuesList.get(i).getKey(), issue.getKey());
-				boolean boolvar = false;
-				for(int counter = 0; counter<TreeViewerKVPairList.kvpList.size(); ++counter){
-					Pair<String, String> globalInst = TreeViewerKVPairList.kvpList.get(counter);
-					if (newKVP.equals(globalInst)){
-						boolvar = true;
-					}
-				}
-				if(!boolvar){
-					TreeViewerKVPairList.kvpList.add(newKVP);
-					TreeViewerKVPairList.kvpList.add(newKVPReverse);
-					toBeAddedToChildren.add(inwardIssuesList.get(i));
-				}
-			}
-		}
-		for (int i=0; i<outwardIssuesList.size(); ++i) {
-			Pair<String, String> newKVP = new Pair<String, String>(issue.getKey(), outwardIssuesList.get(i).getKey());
-			Pair<String, String> newKVPReverse = new Pair<String, String>(outwardIssuesList.get(i).getKey(), issue.getKey());
+		
+		List<Data> children = new ArrayList<Data>();
+		final ActiveObjects ao = ComponentGetter.getAo();
+		List<DecisionComponentEntity> targetList = ao.executeInTransaction(new TransactionCallback<List<DecisionComponentEntity>>()
+        {
+            @Override
+            public List<DecisionComponentEntity> doInTransaction()
+            {
+                final List<DecisionComponentEntity> decisionList = new ArrayList<DecisionComponentEntity>();
+                for (LinkEntity link : ao.find(LinkEntity.class, Query.select().where("INGOING_ID = ?", decComponent.getID()))) {
+            		for (DecisionComponentEntity dec : ao.find(DecisionComponentEntity.class, Query.select().where("ID = ?", link.getOutgoingId()))) {
+                		decisionList.add(dec);
+                    }
+                }
+                return decisionList;
+            }
+        });
+		for (DecisionComponentEntity target : targetList) {
+			Pair<String, String> newKVP = new Pair<String, String>(decComponent.getKey(), target.getKey());
+			Pair<String, String> newKVPReverse = new Pair<String, String>(target.getKey(), decComponent.getKey());
 			boolean boolvar = false;
 			for(int counter = 0; counter<TreeViewerKVPairList.kvpList.size(); ++counter){
 				Pair<String, String> globalInst = TreeViewerKVPairList.kvpList.get(counter);
@@ -189,14 +224,43 @@ public class AoStrategy implements Strategy {
 			if(!boolvar){
 				TreeViewerKVPairList.kvpList.add(newKVP);
 				TreeViewerKVPairList.kvpList.add(newKVPReverse);
-				toBeAddedToChildren.add(outwardIssuesList.get(i));
+				children.add(createData(target));
 			}
 		}
-		for (Issue issueToBeAdded: toBeAddedToChildren){
-			children.add(createData(issueToBeAdded));
+		
+		List<DecisionComponentEntity> sourceList = ao.executeInTransaction(new TransactionCallback<List<DecisionComponentEntity>>()
+        {
+            @Override
+            public List<DecisionComponentEntity> doInTransaction()
+            {
+            	final List<DecisionComponentEntity> decisionList = new ArrayList<DecisionComponentEntity>();
+                for (LinkEntity link : ao.find(LinkEntity.class, Query.select().where("OUTGOING_ID = ?", decComponent.getID()))) {
+                	for (DecisionComponentEntity dec : ao.find(DecisionComponentEntity.class, Query.select().where("ID = ?", link.getIngoingId()))) {
+                		decisionList.add(dec);
+                    }
+                }
+                return decisionList;
+            }
+        });
+		for (DecisionComponentEntity source : sourceList) {
+			Pair<String, String> newKVP = new Pair<String, String>(decComponent.getKey(), source.getKey());
+			Pair<String, String> newKVPReverse = new Pair<String, String>(source.getKey(), decComponent.getKey());
+			boolean boolvar = false;
+			for(int counter = 0; counter<TreeViewerKVPairList.kvpList.size(); ++counter){
+				Pair<String, String> globalInst = TreeViewerKVPairList.kvpList.get(counter);
+				if (newKVP.equals(globalInst)){
+					boolvar = true;
+				}
+			}
+			if(!boolvar){
+				TreeViewerKVPairList.kvpList.add(newKVP);
+				TreeViewerKVPairList.kvpList.add(newKVPReverse);
+				children.add(createData(source));
+			}
 		}
+		
 		data.setChildren(children);
-		*/
+		
 		return data;
 	}
 

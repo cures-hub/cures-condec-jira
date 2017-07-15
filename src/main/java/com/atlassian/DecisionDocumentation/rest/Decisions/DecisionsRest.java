@@ -192,40 +192,32 @@ public class DecisionsRest {
 				} else {
 					strategy = new AoStrategy();
 				}
-				if(strategy instanceof IssueStrategy) {
-		    		ApplicationUser user = getCurrentUser(req);
-		    		if(actionType.equalsIgnoreCase("create")) {
-		    			strategy.createLink(link, user);
-		    			return Response.ok().build();
-		    		} else if(actionType.equalsIgnoreCase("delete")) {
-		    			//TODO: IssueStrategy edit
-		    			strategy.deleteLink(link, user);
-		    			return Response.ok().build();
-		    		} else {
-		    			//error TODO logger
-		    			return Response.ok("Unknown actionType. Pick either 'create' or 'delete'").build();
-		    		}
-		    	} else if(strategy instanceof AoStrategy) {
-		    		ApplicationUser user = getCurrentUser(req);
-		    		if(actionType.equalsIgnoreCase("create")) {
-		    			strategy.createLink(link, user);
-		    			return Response.ok().build();
-		    		} else if(actionType.equalsIgnoreCase("delete")) {
-		    			//TODO: IssueStrategy edit
-		    			strategy.deleteLink(link, user);
-		    			return Response.ok().build();
-		    		} else {
-		    			//error TODO logger
-		    			return Response.ok("Unknown actionType. Pick either 'create' or 'delete'").build();
-		    		}
-		    	} else {
-		    		//error TODO logger
-		    		return Response.ok("Neither IssueStrategy nor AoStrategy").build();
-		    	}
-				
+	    		ApplicationUser user = getCurrentUser(req);
+	    		if(actionType.equalsIgnoreCase("create")) {
+	    			strategy.createLink(link, user);
+	    			return Response.ok().build();
+	    		} else if(actionType.equalsIgnoreCase("delete")) {
+	    			//TODO: IssueStrategy edit
+	    			strategy.deleteLink(link, user);
+	    			return Response.ok().build();
+	    		} else {
+	    			//error TODO logger
+	    			return Response.ok("Unknown actionType. Pick either 'create' or 'delete'").build();
+	    		}
 			} else {
-				//TODO corrupt pluginsettings logger und return
-				return Response.ok("corrupt pluginsettings").build();
+				Strategy strategy = new AoStrategy(); 
+				ApplicationUser user = getCurrentUser(req);
+	    		if(actionType.equalsIgnoreCase("create")) {
+	    			strategy.createLink(link, user);
+	    			return Response.ok().build();
+	    		} else if(actionType.equalsIgnoreCase("delete")) {
+	    			//TODO: IssueStrategy edit
+	    			strategy.deleteLink(link, user);
+	    			return Response.ok().build();
+	    		} else {
+	    			//error TODO logger
+	    			return Response.ok("Unknown actionType. Pick either 'create' or 'delete'").build();
+	    		}
 			}
 		} else {
 			//error TODO logger
