@@ -37,7 +37,7 @@ public class AoStrategy implements Strategy {
 	
 	@Override
 	public long createDecisionComponent(final DecisionRepresentation dec, ApplicationUser user) {
-		ActiveObjects ao = ComponentGetter.getAo();
+		final ActiveObjects ao = ComponentGetter.getAo();
 		DecisionComponentEntity decComponent = ao.executeInTransaction(new TransactionCallback<DecisionComponentEntity>()
         {
             @Override
@@ -57,8 +57,8 @@ public class AoStrategy implements Strategy {
 	}
 
 	@Override
-	public void editDecisionComponent(DecisionRepresentation dec, ApplicationUser user) {
-		ActiveObjects ao = ComponentGetter.getAo();
+	public void editDecisionComponent(final DecisionRepresentation dec, ApplicationUser user) {
+		final ActiveObjects ao = ComponentGetter.getAo();
 		ao.executeInTransaction(new TransactionCallback<Void>()
         {
 			@Override
@@ -79,22 +79,21 @@ public class AoStrategy implements Strategy {
 	//TODO implement
 	@Override
 	public void deleteDecisionComponent(DecisionRepresentation dec, ApplicationUser user) {
-		// TODO Auto-generated method stub
+		
 	}
 	//TODO implement
 	@Override
 	public void createLink(LinkRepresentation link, ApplicationUser user) {
-		// TODO Auto-generated method stub
+		
 	}
 	//TODO implement
 	@Override
 	public void deleteLink(LinkRepresentation link, ApplicationUser user) {
-		// TODO Auto-generated method stub	
+		
 	}
 	//TODO implement
 	@Override
 	public List<SimpleDecisionRepresentation> searchUnlinkedDecisionComponents(long id, String projectKey) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -104,8 +103,8 @@ public class AoStrategy implements Strategy {
 		core.setMultiple(false);
 		core.setCheck_callback(true);
 		core.setThemes(ImmutableMap.of("icons", false));
-		ActiveObjects ao = ComponentGetter.getAo();
-		HashSet<Data> dataSet =  new HashSet<Data>();
+		final ActiveObjects ao = ComponentGetter.getAo();
+		final HashSet<Data> dataSet =  new HashSet<Data>();
 		ao.executeInTransaction(new TransactionCallback<Void>() // (1)
         {
             @Override
