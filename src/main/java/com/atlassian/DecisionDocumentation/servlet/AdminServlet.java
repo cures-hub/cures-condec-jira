@@ -34,8 +34,7 @@ import java.util.Map;
  */
 @Scanned
 public class AdminServlet extends HttpServlet{
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AdminServlet.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AdminServlet.class);
 
     @ComponentImport
     private final UserManager userManager;

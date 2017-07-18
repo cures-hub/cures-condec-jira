@@ -18,6 +18,9 @@ public class Node {
 
 	@XmlElement(name="HTMLclass")
 	private String htmlClass;
+	
+	@XmlElement(name="innerHTML")
+	private String innerHTML;
 
 	@XmlElement
 	private List<Node> children;
@@ -46,6 +49,14 @@ public class Node {
 
 	public void setHtmlClass(String htmlClass) {
 		this.htmlClass = htmlClass;
+	}
+
+	public String getInnerHTML() {
+		return innerHTML;
+	}
+
+	public void setInnerHTML(String innerHTML) {
+		this.innerHTML = innerHTML;
 	}
 	
 	public List<Node> getChildren() {

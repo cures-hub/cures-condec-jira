@@ -67,13 +67,20 @@ public class DecisionsRest {
 		    	}
 		    	return Response.ok(decList).build();
 			} else {
-				//TODO return error corrupt settings
+				Strategy strategy = new AoStrategy();
+				List<SimpleDecisionRepresentation> decList = null;
+				if(strategy instanceof IssueStrategy ||strategy instanceof AoStrategy) {
+		    		decList = strategy.searchUnlinkedDecisionComponents(issueId, projectKey);
+		    	} else {
+		    		//error TODO logger
+		    		return Response.ok("Neither IssueStrategy nor AoStrategy").build();
+		    	}
+		    	return Response.ok(decList).build();
 			}
 		} else {
 			//error TODO logger
 			return Response.ok("projectKey or issueId = null").build();
 		}
-		return Response.ok("Generic").build();
 	}
 	
 	@POST

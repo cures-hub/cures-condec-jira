@@ -24,6 +24,7 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.project.Project;
+import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.google.common.collect.ImmutableMap;
@@ -35,7 +36,6 @@ import net.java.ao.Query;
  * @description
  */
 public class AoStrategy implements Strategy {
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(AoStrategy.class);
 	
 	@Override
@@ -67,7 +67,7 @@ public class AoStrategy implements Strategy {
 			@Override
             public Void doInTransaction()
             {
-				for (DecisionComponentEntity decComponent : ao.find(DecisionComponentEntity.class)) // (2)
+				for (DecisionComponentEntity decComponent : ao.find(DecisionComponentEntity.class))
                 {
                     if(decComponent.getID() == dec.getId()) {
                     	decComponent.setDescription(dec.getDescription());
@@ -118,7 +118,7 @@ public class AoStrategy implements Strategy {
                 	if(decCompIngoingArray.length == 1) {
                 		decCompOutgoing = decCompOutgoingArray[0];
                 	} else {
-                		//entity with ingoingId does not exist
+                		//entity with outgoingId does not exist
                 		decCompOutgoing = null;
                 	}
                 	if(decCompIngoing != null && decCompOutgoing != null) {
@@ -145,10 +145,58 @@ public class AoStrategy implements Strategy {
 	public void deleteLink(LinkRepresentation link, ApplicationUser user) {
 		
 	}
-	//TODO implement
+	//TODO TEST
 	@Override
-	public List<SimpleDecisionRepresentation> searchUnlinkedDecisionComponents(long id, String projectKey) {
-		return null;
+	public List<SimpleDecisionRepresentation> searchUnlinkedDecisionComponents(final long id, String projectKey) {
+		List<SimpleDecisionRepresentation> decList = null;
+		ProjectManager projectManager = ComponentAccessor.getProjectManager();
+		Project project = projectManager.getProjectObjByKey(projectKey);
+		if (project != null) {
+			final ActiveObjects ao = ComponentGetter.getAo();
+			decList = ao.executeInTransaction(new TransactionCallback<List<SimpleDecisionRepresentation>>(){
+				@Override
+	            public List<SimpleDecisionRepresentation> doInTransaction(){
+					final List<SimpleDecisionRepresentation> decList = new ArrayList<SimpleDecisionRepresentation>();
+					DecisionComponentEntity[] decisionsArray = ao.find(DecisionComponentEntity.class, Query.select().where("ID = ?", id));
+					//id is primaryKey for DecisionComponents therefore there can be 0-1 decisioncomponent returned by this query
+					DecisionComponentEntity decComponent = null;
+					if (decisionsArray.length == 1){
+						decComponent = decisionsArray[0];
+	                }
+					if(decComponent != null) {
+						final List<DecisionComponentEntity> linkedDecList = new ArrayList<DecisionComponentEntity>();
+						//get all linked
+						for(LinkEntity link : ao.find(LinkEntity.class, Query.select().where("INGOING_ID != ? AND OUTGOING_ID = ?", id, id))) {
+							for(DecisionComponentEntity decisionComponent : ao.find(DecisionComponentEntity.class, 
+									Query.select().where("ID = ? AND PROJECT_KEY = ?", link.getIngoingId(), decComponent.getProjectKey()))){
+								linkedDecList.add(decisionComponent);
+							}
+						}
+						for(LinkEntity link : ao.find(LinkEntity.class, Query.select().where("INGOING_ID = ? AND OUTGOING_ID != ?", id, id))) {
+							for(DecisionComponentEntity decisionComponent : ao.find(DecisionComponentEntity.class, 
+									Query.select().where("ID = ? AND PROJECT_KEY = ?", link.getOutgoingId(), decComponent.getProjectKey()))){
+								linkedDecList.add(decisionComponent);
+							}
+						}
+						//get all
+						DecisionComponentEntity[] decisionArray = ao.find(DecisionComponentEntity.class, 
+								Query.select().where("ID != ? AND PROJECT_KEY = ?", id, decComponent.getProjectKey()));
+						for(DecisionComponentEntity decisionComponent: decisionArray) {
+							if(!linkedDecList.contains(decisionComponent)) {
+								SimpleDecisionRepresentation simpleDec = new SimpleDecisionRepresentation();
+								simpleDec.setId(decisionComponent.getID());
+								simpleDec.setText(decisionComponent.getKey() + " / " + decisionComponent.getName() + " / " + decisionComponent.getType());
+								decList.add(simpleDec);
+							}
+						}
+						
+						//vergleiche all mit allLinked um unlinked zu kriegen//TODO schon erledigt??
+					}
+	                return decList;
+	            }
+	        });
+		}
+		return decList;
 	}
 
 	@Override

@@ -18,7 +18,6 @@ import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
-import com.google.common.collect.ImmutableMap;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;

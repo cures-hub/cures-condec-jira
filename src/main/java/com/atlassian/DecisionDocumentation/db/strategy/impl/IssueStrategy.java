@@ -175,9 +175,7 @@ public class IssueStrategy implements Strategy {
 		ProjectManager projectManager = ComponentAccessor.getProjectManager();
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Project project = projectManager.getProjectObjByKey(projectKey);
-		if (project == null) {
-			/* projekt mit diesem projectKey existiert nicht */
-		} else {
+		if (project == null){
 			Collection<Long> issueIds;
 			try {
 				issueIds = issueManager.getIssueIdsForProject(project.getId());
@@ -202,9 +200,7 @@ public class IssueStrategy implements Strategy {
 				}
 			}
 			Issue parentIssue = issueManager.getIssueObject(id);
-			if (parentIssue == null) {
-
-			} else {
+			if (parentIssue != null){
 				/*
 				 * Fuelle das Result-Array mit Issues welche noch nicht mit dem parentIssue
 				 * verlinkt sind
