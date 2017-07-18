@@ -401,6 +401,7 @@ public class IssueStrategy implements Strategy {
 					Pair<String,String> kvp2 = new Pair<String,String>(issueLinkDestination.getKey(), issue.getKey());
 					TreantKeyValuePairList.kvpList.add(kvp);
 					TreantKeyValuePairList.kvpList.add(kvp2);
+					children.add(createNode(issueLinkDestination, depth, 0));
 				}
 			}
 		}
@@ -414,23 +415,6 @@ public class IssueStrategy implements Strategy {
 					Pair<String,String> kvp2 = new Pair<String,String>(issueLinkDestination.getKey(), issue.getKey());
 					TreantKeyValuePairList.kvpList.add(kvp);
 					TreantKeyValuePairList.kvpList.add(kvp2);
-				}
-			}
-		}
-		if (allOutwardIssueLink != null){
-			if(allOutwardIssueLink.size()>0){
-				for (int i=0; i<allOutwardIssueLink.size(); i++) {
-					IssueLink issueLink = allOutwardIssueLink.get(i);
-					Issue issueLinkDestination = issueLink.getDestinationObject();
-					children.add(createNode(issueLinkDestination, depth, 0));
-				}
-			}
-		}
-		if (allInwardIssueLink != null){
-			if(allInwardIssueLink.size()>0){
-				for (int i=0; i<allInwardIssueLink.size(); i++) {
-					IssueLink issueLink = allInwardIssueLink.get(i);
-					Issue issueLinkDestination = issueLink.getSourceObject();
 					children.add(createNode(issueLinkDestination, depth, 0));
 				}
 			}
