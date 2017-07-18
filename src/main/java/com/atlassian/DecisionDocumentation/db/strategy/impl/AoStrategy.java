@@ -3,6 +3,7 @@ package com.atlassian.DecisionDocumentation.db.strategy.impl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,9 @@ import com.atlassian.DecisionDocumentation.db.strategy.Strategy;
 import com.atlassian.DecisionDocumentation.rest.Decisions.model.DecisionRepresentation;
 import com.atlassian.DecisionDocumentation.rest.Decisions.model.LinkRepresentation;
 import com.atlassian.DecisionDocumentation.rest.Decisions.model.SimpleDecisionRepresentation;
+import com.atlassian.DecisionDocumentation.rest.treants.TreantKeyValuePairList;
+import com.atlassian.DecisionDocumentation.rest.treants.model.Chart;
+import com.atlassian.DecisionDocumentation.rest.treants.model.Node;
 import com.atlassian.DecisionDocumentation.rest.treants.model.Treant;
 import com.atlassian.DecisionDocumentation.rest.treeviewer.TreeViewerKVPairList;
 import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Core;
@@ -165,7 +169,6 @@ public class AoStrategy implements Strategy {
 	                }
 					if(decComponent != null) {
 						final List<DecisionComponentEntity> linkedDecList = new ArrayList<DecisionComponentEntity>();
-						//get all linked
 						for(LinkEntity link : ao.find(LinkEntity.class, Query.select().where("INGOING_ID != ? AND OUTGOING_ID = ?", id, id))) {
 							for(DecisionComponentEntity decisionComponent : ao.find(DecisionComponentEntity.class, 
 									Query.select().where("ID = ? AND PROJECT_KEY = ?", link.getIngoingId(), decComponent.getProjectKey()))){
@@ -178,7 +181,6 @@ public class AoStrategy implements Strategy {
 								linkedDecList.add(decisionComponent);
 							}
 						}
-						//get all
 						DecisionComponentEntity[] decisionArray = ao.find(DecisionComponentEntity.class, 
 								Query.select().where("ID != ? AND PROJECT_KEY = ?", id, decComponent.getProjectKey()));
 						for(DecisionComponentEntity decisionComponent: decisionArray) {
@@ -189,8 +191,6 @@ public class AoStrategy implements Strategy {
 								decList.add(simpleDec);
 							}
 						}
-						
-						//vergleiche all mit allLinked um unlinked zu kriegen//TODO schon erledigt??
 					}
 	                return decList;
 	            }
@@ -313,8 +313,176 @@ public class AoStrategy implements Strategy {
 	}
 
 	@Override
-	public Treant createTreant(Long id, int depth) {
-		// TODO Auto-generated method stub
-		return null;
+	public Treant createTreant(String issueKey, int depth) {
+		Treant treant = new Treant();
+		treant.setChart(new Chart());
+		treant.setNodeStructure(createNodeStructure(issueKey, depth));
+		return treant;
+	}
+	
+	private Node createNodeStructure(String issueKey, final int depth) {
+		Node node = new Node();
+		final ActiveObjects ao = ComponentGetter.getAo();
+		DecisionComponentEntity dec = ao.executeInTransaction(new TransactionCallback<DecisionComponentEntity>(){
+			@Override
+            public DecisionComponentEntity doInTransaction(){
+				final List<SimpleDecisionRepresentation> decList = new ArrayList<SimpleDecisionRepresentation>();
+				DecisionComponentEntity[] decisionsArray = ao.find(DecisionComponentEntity.class, Query.select().where("KEY = ?", issueKey));
+				//id is primaryKey for DecisionComponents therefore there can be 0-1 decisioncomponent returned by this query
+				DecisionComponentEntity decComponent = null;
+				if (decisionsArray.length == 1){
+					decComponent = decisionsArray[0];
+                }
+                return decComponent;
+            }
+        });
+		if (dec != null) {
+			Map<String, String> nodeContent = ImmutableMap.of("name", dec.getKey() + " / " + dec.getName(),
+					"title", dec.getType());
+			node.setNodeContent(nodeContent);
+			
+			Map<String, String> link = ImmutableMap.of("href", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + 
+					"/browse/" + dec.getKey()); //TODO change
+			node.setLink(link);
+			
+			String htmlClass;
+			String issueType = dec.getType().toLowerCase();
+			if (issueType.equals("constraint")||issueType.equals("assumption")||issueType.equals("implication")||issueType.equals("context")){
+				htmlClass="context";
+			} else if (issueType.equals("problem")||issueType.equals("issue")||issueType.equals("goal")){
+				htmlClass="problem";
+			} else if (issueType.equals("solution")||issueType.equals("claim")||issueType.equals("alternative")){
+				htmlClass="solution";
+			} else {
+				htmlClass="rationale";
+			}
+			node.setHtmlClass(htmlClass);
+			
+			List<Node> children = new ArrayList<Node>();
+			TreantKeyValuePairList.kvpList = new ArrayList<Pair<String, String>>();
+			final List<DecisionComponentEntity> inwardLinkedDecList = new ArrayList<DecisionComponentEntity>();
+			for(LinkEntity linkEntity : ao.find(LinkEntity.class, Query.select().where("INGOING_ID != ? AND OUTGOING_ID = ?", dec.getID(), dec.getID()))) {
+				for(DecisionComponentEntity decisionComponent : ao.find(DecisionComponentEntity.class, 
+						Query.select().where("ID = ? AND PROJECT_KEY = ?", linkEntity.getIngoingId(), dec.getProjectKey()))){
+					inwardLinkedDecList.add(decisionComponent);
+				}
+			}
+			final List<DecisionComponentEntity> outwardLinkedDecList = new ArrayList<DecisionComponentEntity>();
+			for(LinkEntity linkEntity : ao.find(LinkEntity.class, Query.select().where("INGOING_ID = ? AND OUTGOING_ID != ?", dec.getID(), dec.getID()))) {
+				for(DecisionComponentEntity decisionComponent : ao.find(DecisionComponentEntity.class, 
+						Query.select().where("ID = ? AND PROJECT_KEY = ?", linkEntity.getOutgoingId(), dec.getProjectKey()))){
+					outwardLinkedDecList.add(decisionComponent);
+				}
+			}
+			
+			if(inwardLinkedDecList.size()>0){
+				for (int i=0; i<inwardLinkedDecList.size(); i++) {
+					DecisionComponentEntity decisionComponent = inwardLinkedDecList.get(i);
+					Pair<String,String> kvp = new Pair<String,String>(dec.getKey(), decisionComponent.getKey());
+					Pair<String,String> kvp2 = new Pair<String,String>(decisionComponent.getKey(), dec.getKey());
+					TreantKeyValuePairList.kvpList.add(kvp);
+					TreantKeyValuePairList.kvpList.add(kvp2);
+					children.add(createNode(decisionComponent, depth, 0));
+				}
+			}
+			
+			if(outwardLinkedDecList.size()>0){
+				for (int i=0; i<outwardLinkedDecList.size(); i++) {
+					DecisionComponentEntity decisionComponent = outwardLinkedDecList.get(i);
+					Pair<String,String> kvp = new Pair<String,String>(dec.getKey(), decisionComponent.getKey());
+					Pair<String,String> kvp2 = new Pair<String,String>(decisionComponent.getKey(), dec.getKey());
+					TreantKeyValuePairList.kvpList.add(kvp);
+					TreantKeyValuePairList.kvpList.add(kvp2);
+					children.add(createNode(decisionComponent, depth, 0));
+				}
+			}	
+			node.setChildren(children);
+		}		
+		return node;
+	}
+	
+	private Node createNode(DecisionComponentEntity dec, int depth, int currentDepth) {
+		Node node = new Node();
+		final ActiveObjects ao = ComponentGetter.getAo();
+		if (dec != null) {
+			Map<String, String> nodeContent = ImmutableMap.of("name", dec.getKey() + " / " + dec.getName(),
+					"title", dec.getType());
+			node.setNodeContent(nodeContent);
+			
+			Map<String, String> link = ImmutableMap.of("href", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + 
+					"/browse/" + dec.getKey()); //TODO change
+			node.setLink(link);
+			
+			String htmlClass;
+			String issueType = dec.getType().toLowerCase();
+			if (issueType.equals("constraint")||issueType.equals("assumption")||issueType.equals("implication")||issueType.equals("context")){
+				htmlClass="context";
+			} else if (issueType.equals("problem")||issueType.equals("issue")||issueType.equals("goal")){
+				htmlClass="problem";
+			} else if (issueType.equals("solution")||issueType.equals("claim")||issueType.equals("alternative")){
+				htmlClass="solution";
+			} else {
+				htmlClass="rationale";
+			}
+			node.setHtmlClass(htmlClass);
+			
+			if(currentDepth<depth){
+				List<Node> children = new ArrayList<Node>();
+				final List<DecisionComponentEntity> inwardLinkedDecList = new ArrayList<DecisionComponentEntity>();
+				for(LinkEntity linkEntity : ao.find(LinkEntity.class, Query.select().where("INGOING_ID != ? AND OUTGOING_ID = ?", dec.getID(), dec.getID()))) {
+					for(DecisionComponentEntity decisionComponent : ao.find(DecisionComponentEntity.class, 
+							Query.select().where("ID = ? AND PROJECT_KEY = ?", linkEntity.getIngoingId(), dec.getProjectKey()))){
+						inwardLinkedDecList.add(decisionComponent);
+					}
+				}
+				final List<DecisionComponentEntity> outwardLinkedDecList = new ArrayList<DecisionComponentEntity>();
+				for(LinkEntity linkEntity : ao.find(LinkEntity.class, Query.select().where("INGOING_ID = ? AND OUTGOING_ID != ?", dec.getID(), dec.getID()))) {
+					for(DecisionComponentEntity decisionComponent : ao.find(DecisionComponentEntity.class, 
+							Query.select().where("ID = ? AND PROJECT_KEY = ?", linkEntity.getOutgoingId(), dec.getProjectKey()))){
+						outwardLinkedDecList.add(decisionComponent);
+					}
+				}
+				List<DecisionComponentEntity> toBeAddedToChildren = new ArrayList<DecisionComponentEntity>();
+				for (int i=0; i<outwardLinkedDecList.size(); ++i) {
+					DecisionComponentEntity decisionComponent = outwardLinkedDecList.get(i);
+					Pair<String, String> newKVP = new Pair<String, String>(dec.getKey(), decisionComponent.getKey());
+					Pair<String, String> newKVPReverse = new Pair<String, String>(decisionComponent.getKey(), dec.getKey());
+					boolean boolvar = false;
+					for(int counter = 0; counter<TreantKeyValuePairList.kvpList.size(); ++counter){
+						Pair<String, String> globalInst = TreantKeyValuePairList.kvpList.get(counter);
+						if (newKVP.equals(globalInst) || newKVPReverse.equals(globalInst)){
+							boolvar = true;
+						}
+					}
+					if(!boolvar){
+						TreantKeyValuePairList.kvpList.add(newKVP);
+						TreantKeyValuePairList.kvpList.add(newKVPReverse);
+						toBeAddedToChildren.add(decisionComponent);
+					}
+				}
+				for (int i=0; i<inwardLinkedDecList.size(); ++i) {
+					DecisionComponentEntity decisionComponent = inwardLinkedDecList.get(i);
+					Pair<String, String> newKVP = new Pair<String, String>(dec.getKey(), decisionComponent.getKey());
+					Pair<String, String> newKVPReverse = new Pair<String, String>(decisionComponent.getKey(), dec.getKey());
+					boolean boolvar = false;
+					for(int counter = 0; counter<TreantKeyValuePairList.kvpList.size(); ++counter){
+						Pair<String, String> globalInst = TreantKeyValuePairList.kvpList.get(counter);
+						if (newKVP.equals(globalInst) || newKVPReverse.equals(globalInst)){
+							boolvar = true;
+						}
+					}
+					if(!boolvar){
+						TreantKeyValuePairList.kvpList.add(newKVP);
+						TreantKeyValuePairList.kvpList.add(newKVPReverse);
+						toBeAddedToChildren.add(decisionComponent);
+					}
+				}
+				for (int index = 0; index < toBeAddedToChildren.size(); ++index){
+					children.add(createNode(toBeAddedToChildren.get(index), depth, currentDepth+1));
+				}
+				node.setChildren(children);
+			}
+		}
+		return node;
 	}
 }

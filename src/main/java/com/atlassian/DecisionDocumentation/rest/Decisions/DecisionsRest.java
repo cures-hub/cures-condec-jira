@@ -1,5 +1,6 @@
 package com.atlassian.DecisionDocumentation.rest.Decisions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class DecisionsRest {
 				} else {
 					strategy = new AoStrategy();
 				}
-				List<SimpleDecisionRepresentation> decList = null;
+				List<SimpleDecisionRepresentation> decList = new ArrayList<SimpleDecisionRepresentation>();
 				if(strategy instanceof IssueStrategy ||strategy instanceof AoStrategy) {
 		    		decList = strategy.searchUnlinkedDecisionComponents(issueId, projectKey);
 		    	} else {
@@ -68,7 +69,7 @@ public class DecisionsRest {
 		    	return Response.ok(decList).build();
 			} else {
 				Strategy strategy = new AoStrategy();
-				List<SimpleDecisionRepresentation> decList = null;
+				List<SimpleDecisionRepresentation> decList = new ArrayList<SimpleDecisionRepresentation>();
 				if(strategy instanceof IssueStrategy ||strategy instanceof AoStrategy) {
 		    		decList = strategy.searchUnlinkedDecisionComponents(issueId, projectKey);
 		    	} else {

@@ -26,5 +26,5 @@ public interface Strategy {
 	public List<SimpleDecisionRepresentation> searchUnlinkedDecisionComponents(long id, String projectKey);
 	
 	public Core createCore(Project project);
-	public Treant createTreant(Long id, int depth);
+	public Treant createTreant(String issueKey, int depth);
 }

@@ -175,7 +175,7 @@ public class IssueStrategy implements Strategy {
 		ProjectManager projectManager = ComponentAccessor.getProjectManager();
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Project project = projectManager.getProjectObjByKey(projectKey);
-		if (project == null){
+		if (project != null){
 			Collection<Long> issueIds;
 			try {
 				issueIds = issueManager.getIssueIdsForProject(project.getId());
@@ -357,16 +357,16 @@ public class IssueStrategy implements Strategy {
 
 	/*TreantsRest*/
 	@Override
-	public Treant createTreant(Long id, int depth) {
+	public Treant createTreant(String issueKey, int depth) {
 		Treant treant = new Treant();
 		treant.setChart(new Chart());
-		treant.setNodeStructure(createNodeStructure(id, depth));
+		treant.setNodeStructure(createNodeStructure(issueKey, depth));
 		return treant;
 	}
 
-	private Node createNodeStructure(Long id, int depth) {
+	private Node createNodeStructure(String issueKey, int depth) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
-		Issue issue = issueManager.getIssueObject(id);
+		Issue issue = issueManager.getIssueByCurrentKey(issueKey);
 		
 		Node node = new Node();
 		Map<String, String> nodeContent = ImmutableMap.of("name", issue.getKey() + " / " + issue.getSummary(),

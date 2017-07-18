@@ -57,12 +57,10 @@ public class TreeViewerRest {
 					}
 					TreeViewerRepresentation treeViewerRep = new TreeViewerRepresentation(strategy, project);
 					return Response.ok(treeViewerRep).build();
-				} else if (ob == null){
+				} else {
 					Strategy strategy = new AoStrategy();
 					TreeViewerRepresentation treeViewerRep = new TreeViewerRepresentation(strategy, project);
 					return Response.ok(treeViewerRep).build();
-				} else {
-					return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "PluginSettings are corrupted")).build();
 				}
 			}
 		} else {
