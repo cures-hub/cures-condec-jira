@@ -313,20 +313,19 @@ public class AoStrategy implements Strategy {
 	}
 
 	@Override
-	public Treant createTreant(String issueKey, int depth) {
+	public Treant createTreant(final String issueKey, int depth) {
 		Treant treant = new Treant();
 		treant.setChart(new Chart());
 		treant.setNodeStructure(createNodeStructure(issueKey, depth));
 		return treant;
 	}
 	
-	private Node createNodeStructure(String issueKey, final int depth) {
+	private Node createNodeStructure(final String issueKey, final int depth) {
 		Node node = new Node();
 		final ActiveObjects ao = ComponentGetter.getAo();
 		DecisionComponentEntity dec = ao.executeInTransaction(new TransactionCallback<DecisionComponentEntity>(){
 			@Override
             public DecisionComponentEntity doInTransaction(){
-				final List<SimpleDecisionRepresentation> decList = new ArrayList<SimpleDecisionRepresentation>();
 				DecisionComponentEntity[] decisionsArray = ao.find(DecisionComponentEntity.class, Query.select().where("KEY = ?", issueKey));
 				//id is primaryKey for DecisionComponents therefore there can be 0-1 decisioncomponent returned by this query
 				DecisionComponentEntity decComponent = null;
