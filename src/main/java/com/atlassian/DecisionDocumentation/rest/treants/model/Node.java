@@ -19,6 +19,9 @@ public class Node {
 	@XmlElement(name="HTMLclass")
 	private String htmlClass;
 	
+	@XmlElement(name="HTMLid")
+	private long htmlId;
+	
 	@XmlElement(name="innerHTML")
 	private String innerHTML;
 
@@ -49,6 +52,14 @@ public class Node {
 
 	public void setHtmlClass(String htmlClass) {
 		this.htmlClass = htmlClass;
+	}
+	
+	public long getHtmlId() {
+		return htmlId;
+	}
+
+	public void setHtmlId(long htmlId) {
+		this.htmlId = htmlId;
 	}
 
 	public String getInnerHTML() {

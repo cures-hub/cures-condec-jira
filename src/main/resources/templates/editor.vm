@@ -1,9 +1,9 @@
 <html>
 	<head>
-		<!--<meta name="decorator" content="atl.general" />-->
 		<meta name="decorator" content="DecisionDocumentation" />
-		<!-- laedt alle Resourcen die in der atlassian-plugin.xml vermerkt sind nach -->
+		<!-- load all dependencies -->
 		$webResourceManager.requireResource("com.atlassian.auiplugin:ajs")
+		$webResourceManager.requireResource("com.atlassian.DecisionDocumentation.DecisionDocumentation:stylesheet-and-icon-resources")
 		$webResourceManager.requireResource("com.atlassian.DecisionDocumentation.DecisionDocumentation:DecisionDocumentation-resources")
 		$webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 		$webResourceManager.requireResource("com.atlassian.auiplugin:aui-flag")
@@ -16,11 +16,9 @@
 			<input type="number" id="depthOfTreeInput" value="4" min="1" class="equalMarginRegulator" placeholder="Enter depth of tree...">
 			<label for="depthOfTreeInput" id="DepthOfTreeWarning">Depth must be positive</label>
 			<div>
-				<!-- Suchfeld -->
 				<div>
 					<input class="search-input form-control equalMarginRegulator" id="jstree-search-input" placeholder="Enter search here..."></input>
 				</div>
-				<!-- Switch zwischen Editor und Tree -->
 				<div id="switch-wrapper" class="equalMarginRegulator">
 					<div class="switch-on-click" id="view-editor">Editor</div>
 					<div class="switch-on-click" id="view-tree">Tree</div>
@@ -28,10 +26,8 @@
 			</div>
 			<div>
 				<div>
-					<!-- Behaelter fuer den TreeViewer -->
 					<div id="evts" class="demo equalMarginRegulator"></div>
 				</div>
-				<!-- Accordion-Behaelter -->
 				<div>
 					<div id="container" class="equalMarginRegulator">
 						<dl>
@@ -65,6 +61,16 @@
 					</div>
 					<div class="chart equalMarginRegulator" id="treant-container"><p>No Element was selected</p></div>
 				</div>
+			</div>
+		</div>
+		<!-- The Modal -->
+		<div id="ContextMenuModal" class="modal">
+			<div class="modal-wrapper">
+				<div class="modal-header">
+					<h2 id="modal-header"><span id="modal-close-x" class="modal-close" style="float:right;">&times;</span></h2>
+				    <hr>
+				</div>
+			  	<div id="modal-content"></div>
 			</div>
 		</div>
 		<script>

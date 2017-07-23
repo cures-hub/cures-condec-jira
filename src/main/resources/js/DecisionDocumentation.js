@@ -147,41 +147,40 @@ var deleteLink = function(parentId, childId, linkType, callback){
 	});
 }
 
-
-var addOptionsToAllDecisionComponents = function(parentKey){
+var addOptionsToAllDecisionComponents = function(parentId){
 	var issueTypes = ["Problem", "Issue", "Goal", "Solution", "Alternative", "Claim", "Context", "Assumption", "Constraint", "Implication", "Assessment", "Argument"];
 	for (counter = 0; counter < issueTypes.length; ++ counter){
-		addOptionToDecisionComponent(issueTypes[counter],parentKey);
+		addOptionToDecisionComponent(issueTypes[counter],parentId);
 	}
 };
 var addOptionToDecisionComponent = function(type, parentId){
-	if (type == "Solution"){
+	if (type === "Solution"){
 		if(document.getElementById(type).innerHTML == ""){
 			document.getElementById(type).insertAdjacentHTML('beforeend', '<p>Do you want to add an additional ' + type + '?<input type="text" id="inputField' + type + '" placeholder="Name of ' + type + '"><input type="button" name="CreateAndLinkDecisionComponent' + type+ '" id="CreateAndLinkDecisionComponent' + type+ '" value="Add ' + type + '"/></p>');
-		var createDecisionComponentButton = document.getElementById("CreateAndLinkDecisionComponent" + type);
-		var inputField = document.getElementById("inputField" + type);
-		createDecisionComponentButton.addEventListener('click', function(event){
-			var tempString = inputField.value;
-			inputField.value = "";
-			createDecisionComponent(tempString, type, function(data){
-				var successFlag = AJS.flag({
-					type: 'success',
-					close: 'auto',
-					title: 'Success',
-					body: type + ' has been created.'
-				});
-				createLink(parentId, data.id, "contain", function(data){
+			var createDecisionComponentButton = document.getElementById("CreateAndLinkDecisionComponent" + type);
+			var inputField = document.getElementById("inputField" + type);
+			createDecisionComponentButton.addEventListener('click', function(event){
+				var tempString = inputField.value;
+				inputField.value = "";
+				createDecisionComponent(tempString, type, function(data){
 					var successFlag = AJS.flag({
 						type: 'success',
 						close: 'auto',
 						title: 'Success',
-						body: 'IssueLink has been created.'
+						body: type + ' has been created.'
+					});
+					createLink(parentId, data.id, "contain", function(data){
+						var successFlag = AJS.flag({
+							type: 'success',
+							close: 'auto',
+							title: 'Success',
+							body: 'IssueLink has been created.'
+						});
 					});
 				});
 			});
-		});
 		}
-	} else if (type == "Argument"){
+	} else if (type === "Argument"){
 		document.getElementById(type).insertAdjacentHTML('beforeend', '<p>Do you want to add an additional ' + type + '? <input type="radio" name="natureOfArgument" value="pro" checked="checked">Pro<input type="radio" name="natureOfArgument" value="contra">Contra<input type="radio" name="natureOfArgument" value="comment">Comment<input type="text" id="inputField' + type + '" placeholder="Name of ' + type + '"><input type="button" name="CreateAndLinkDecisionComponent' + type+ '" id="CreateAndLinkDecisionComponent' + type+ '" value="Add ' + type + '"/></p>');
 		var createDecisionComponentButton = document.getElementById("CreateAndLinkDecisionComponent" + type);
 		var inputField = document.getElementById("inputField" + type);		
@@ -243,8 +242,6 @@ var addOptionToDecisionComponent = function(type, parentId){
 								});
 							});
 						});
-				   } else {
-					   
 				   }
 			   }
 			 }
@@ -276,6 +273,207 @@ var addOptionToDecisionComponent = function(type, parentId){
 	}
 };
 
+var createContextMenuForTreeNodes = function(projectKey){
+	//###############################################################################
+	//###############################################################################
+	$(function() {
+		$.contextMenu({
+			selector: '.rationale, .context, .problem, .solution',
+			callback: function(key, options) {
+				var m = "clicked: " + key;
+				console.log(m);
+			},
+			//TODO icons
+			items: {
+				"add": {name: "Add Decision Component", 
+					callback: function(key, options){
+						console.log(options);
+						console.log(options.$trigger);
+						console.log(options.$trigger.context);
+						//set header
+						var closeX = document.getElementById('modal-close-x');
+						closeX.insertAdjacentHTML('beforeBegin', 'Add Decision Component');
+						
+						//set content
+						var content = document.getElementById('modal-content');
+						content.insertAdjacentHTML('afterBegin',
+							'<p><label for="form-input-name" style="display:block;width:45%;float:left;">Name</label><input id="form-input-name" type="text" name="name" placeholder="Name of decisioncomponent" style="width:50%;"/></p>' +
+							'<p><label for="form-input-type" style="display:block;width:45%;float:left;">Componenttype</label><input id="form-input-type" type="text" name="type" placeholder="Select componenttype..." style="width:50%;"/></p>' +
+							'<p><input id="form-input-submit" type="submit" value="Add Decision Component" style="float:right;"/></p>'
+						);
+						
+						$("#form-input-type").on('change', function () {
+							var typeInput = document.getElementById('form-input-type');
+							var type = typeInput.value;
+							if(type === 'Argument'){
+								typeInput.insertAdjacentHTML('afterEnd', '<p id="type-of-argument-para"><label for="type-of-argument" style="display:block;width:45%;float:left;">Type of Argument</label><input type="radio" name="type-of-argument" value="pro" checked="checked">Pro<input type="radio" name="type-of-argument" value="contra">Contra<input type="radio" name="type-of-argument" value="comment">Comment</p>');
+							} else {
+								var para = document.getElementById("type-of-argument-para");
+								if(para){
+									clearInner(para);
+									para.parentNode.removeChild(para);
+								}
+							}
+						});
+						
+						var data = [
+							{
+								id: "Alternative",
+								text: "Alternative"
+							},
+							{
+								id: "Argument",
+								text: "Argument"
+							},
+							{
+								id: "Assessment",
+								text: "Assessment"
+							},
+							{
+								id: "Assumption",
+								text: "Assumption"
+							},
+							{
+								id: "Claim",
+								text: "Claim"
+							},
+							{
+								id: "Constraint",
+								text: "Constraint"
+							},
+							{
+								id: "Context",
+								text: "Context"
+							},
+							{
+								id: "Goal",
+								text: "Goal"
+							},
+							{
+								id: "Implication",
+								text: "Implication"
+							},
+							{
+								id: "Issue",
+								text: "Issue"
+							},
+							{
+								id: "Problem",
+								text: "Problem"
+							},
+							{
+								id: "Solution",
+								text: "Solution"
+							}
+						];
+						var singleSelect = $("#form-input-type").select2({
+							data: data
+						});
+						
+						var submitButton = document.getElementById('form-input-submit');
+						//add ClickHandler
+						submitButton.onclick = function (){
+							var name = document.getElementById('form-input-name').value;
+							var type = document.getElementById('form-input-type').value;
+							if(type === "Argument"){
+								var argumentCheckBoxGroup = document.getElementsByName("type-of-argument");
+								for(var i = 0; i < argumentCheckBoxGroup.length; i++) {
+								    if(argumentCheckBoxGroup[i].checked == true) {
+									    var selectedNatureOfArgument = argumentCheckBoxGroup[i].value;
+									    if (selectedNatureOfArgument == "pro"){
+											createDecisionComponent(name, type, function(data){
+												var successFlag = AJS.flag({
+													type: 'success',
+													close: 'auto',
+													title: 'Success',
+													body: type + ' has been created.'
+												});
+												createLink(options.$trigger.context.id, data.id, "support", function(data){
+													var successFlag = AJS.flag({
+														type: 'success',
+														close: 'auto',
+														title: 'Success',
+														body: 'IssueLink has been created.'
+													});
+												});
+											});
+									    } else if (selectedNatureOfArgument == "contra"){
+											createDecisionComponent(name, type, function(data){
+												var successFlag = AJS.flag({
+													type: 'success',
+													close: 'auto',
+													title: 'Success',
+													body: type + ' has been created.'
+												});
+												createLink(options.$trigger.context.id, data.id, "attack", function(data){
+													var successFlag = AJS.flag({
+														type: 'success',
+														close: 'auto',
+														title: 'Success',
+														body: 'IssueLink has been created.'
+													});
+												});
+											});
+									    } else if (selectedNatureOfArgument == "comment"){
+											createDecisionComponent(name, type, function(data){
+												var successFlag = AJS.flag({
+													type: 'success',
+													close: 'auto',
+													title: 'Success',
+													body: type + ' has been created.'
+												});
+												createLink(options.$trigger.context.id, data.id, "comment", function(data){
+													var successFlag = AJS.flag({
+														type: 'success',
+														close: 'auto',
+														title: 'Success',
+														body: 'IssueLink has been created.'
+													});
+												});
+											});
+									    }
+									}
+								}
+							} else {
+								createDecisionComponent(name, type, function(data){
+									var successFlag = AJS.flag({
+										type: 'success',
+										close: 'auto',
+										title: 'Success',
+										body: type + ' has been created.'
+									});
+									createLink(options.$trigger.context.id, data.id, "contain", function(data){
+										var successFlag = AJS.flag({
+											type: 'success',
+											close: 'auto',
+											title: 'Success',
+											body: 'IssueLink has been created.'
+										});
+									});
+								});
+							}
+						};
+						
+						// Get the modal window
+						var modal = document.getElementById('ContextMenuModal');
+						modal.style.display = "block";
+						
+						//TODO reload both trees
+					}
+				}/*,
+				"edit": {name: "Edit Decision Component"},
+				"delete": {name: "Delete Decision Component"}
+				*/
+			}
+		});
+
+		$('.context-menu-one').on('click', function(e){
+			console.log('clicked', this);
+		})
+	});
+	//###############################################################################
+	//###############################################################################
+};
 
 var initializeSite = function(){
 	var pathname = window.location.pathname;
@@ -323,11 +521,15 @@ var initializeSite = function(){
 							});
 						}
 					});
+					
+					console.log(data.node.children);
 					if(data.node.children.length > 0){
 						for(counter = 0; counter < data.node.children.length; ++counter){
 							var child = $('#evts').jstree(true).get_node(data.node.children[counter]);
 							var issueType = child.data.issueType;
+							console.log(child.data);
 							var array= ["Problem", "Issue", "Goal", "Solution", "Alternative", "Claim", "Context", "Assumption", "Constraint", "Implication", "Assessment", "Argument"];
+							console.log(issueType);
 							if(array.indexOf(issueType)!=-1){
 								document.getElementById(issueType).insertAdjacentHTML('beforeend', '<div class="issuelinkbox"><p><a href="' +
 									AJS.contextPath() + '/browse/' + child.data.key + '">' + child.data.key +
@@ -345,11 +547,39 @@ var initializeSite = function(){
 					var treantUrl = AJS.contextPath() + "/rest/treantsrest/latest/treant.json?projectKey=" + projectKey + "&issueKey=" + data.node.data.key + "&depthOfTree=" + depthOfTree;
 					getJSON(treantUrl, function(err, data) {
 						if (err!=null){
-							document.getElementById("treant-container").innerHTML = "Fehler beim Abfragen der Daten";
+							document.getElementById("treant-container").innerHTML = "Fehler beim Abfragen der Daten. Error-Code: " + err;
 						} else {
-							var chart_config = data;
 							document.getElementById("treant-container").innerHTML="";
-							var myTreant = new Treant(chart_config);
+							var myTreant = new Treant(data);
+							
+							//##########################################
+							// Get the modal window
+							var modal = document.getElementById('ContextMenuModal');
+							
+							//add click-handler for elements in modal to close modal window
+							var elementsWithCloseFunction = document.getElementsByClassName("modal-close");
+							for (var x = 0; x < elementsWithCloseFunction.length; x++){
+								elementsWithCloseFunction[x].onclick = function() {
+									modal.style.display = "none";
+									var modalContent = document.getElementById('modal-content');
+									if(modalContent){
+										clearInner(modalContent);
+									}
+								}
+							}
+							
+							//close modal window if user clicks anywhere outside of the modal
+							window.onclick = function(event) {
+								if (event.target == modal) {
+									modal.style.display = "none";
+									var modalContent = document.getElementById('modal-content');
+									if(modalContent){
+										clearInner(modalContent);
+									}
+								}
+							}
+							//##########################################
+							createContextMenuForTreeNodes(projectKey);
 						}
 					});
 				})
@@ -410,6 +640,24 @@ var initializeSite = function(){
 			DepthOfTreeWarningLabel.style.visibility = "visible";
 		}
 	});
+}
+
+/*
+Source: https://stackoverflow.com/users/2234742/maximillian-laumeister
+Maximillian Laumeister
+Software Developer at Tanzle
+*/
+function clearInner(node) {
+  while (node.hasChildNodes()) {
+    clear(node.firstChild);
+  }
+}
+
+function clear(node) {
+  while (node.hasChildNodes()) {
+    clear(node.firstChild);
+  }
+  node.parentNode.removeChild(node);
 }
 
 /* Displays Error Message in Accoridon */

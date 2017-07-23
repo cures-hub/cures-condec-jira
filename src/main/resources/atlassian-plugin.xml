@@ -10,33 +10,43 @@
   </plugin-info>
   <!-- i18n resource -->
   <resource type="i18n" name="i18n" location="DecisionDocumentation"/>
+  
   <!-- web resources -->
-  <web-resource key="DecisionDocumentation-resources" name="DecisionDocumentation Web Resources">
-    <dependency>com.atlassian.auiplugin:ajs</dependency>
-    <resource type="download" name="images/" location="/images"/>
-    <resource type="download" name="32px.png" location="/js/vakata-jstree-bb0473a/dist/themes/default/32px.png"/>
-    <resource type="download" name="throbber.gif" location="/js/vakata-jstree-bb0473a/dist/themes/default/throbber.gif"/>
-    <!-- Stylesheets -->
-    <resource type="download" name="Treant.css" location="/js/treant_js/Treant.css"/>
+  <web-resource key="stylesheet-and-icon-resources" name="Stylesheets and Icons">
+  	<!-- icons -->
+	<resource type="download" name="Add.png" location="/images/Add.png"/>
+  	<resource type="download" name="Delete.png" location="/images/Delete.png"/>
+  	<resource type="download" name="Open.png" location="/images/Open.png"/>
+  	<resource type="download" name="Edit.png" location="/images/Edit.png"/>
+	<resource type="download" name="32px.png" location="/js/jstree/32px.png"/>
+	<resource type="download" name="40px.png" location="/js/jstree/40px.png"/>
+    <resource type="download" name="throbber.gif" location="/js/jstree/throbber.gif"/>
+	<!-- stylesheets -->
+    <resource type="download" name="treant.css" location="/css/treant.css"/>
     <resource type="download" name="chart.css" location="/css/chart.css"/>
     <resource type="download" name="editor.css" location="/css/editor.css"/>
+    <resource type="download" name="jquery.contextMenu.css" location="/css/jquery.contextMenu.css"/>
+	<resource type="download" name="jstree.css" location="/css/jstree.css"/>
+    <context>DecisionDocumentation</context>
+  </web-resource>
+  <web-resource key="DecisionDocumentation-resources" name="DecisionDocumentation Web Resources">
     <!-- my own JS-->
     <resource type="download" name="DecisionDocumentation.js" location="/js/DecisionDocumentation.js"/>
-    <!-- template -->
-    <resource type="download" name="editor.vm" location="/templates/editor.vm"/>
-    <!-- Die Reihenfolge, in der die Skripte geladen werden sollte nicht geaendert werden. Unter Umstaenden funktionieren dann Teile der Website nicht mehr-->
     <!-- treants -->
-    <resource type="download" name="Treant.js" location="/js/treant_js/Treant.js"/>
-    <resource type="download" name="raphael.js" location="/js/treant_js/vendor/raphael.js"/>
-    <resource type="download" name="jquery.easing.js" location="/js/treant_js/vendor/jquery.easing.js"/>
+    <resource type="download" name="treant.js" location="/js/treant_js/treant.js"/>
+    <resource type="download" name="raphael.js" location="/js/treant_js/raphael.js"/>
+    <resource type="download" name="jquery.easing.js" location="/js/treant_js/jquery.easing.js"/>
     <!-- jQuery -->
     <resource type="download" name="jquery.js" location="/js/jquery.js"/>
     <!-- jstree-->
-    <resource type="download" name="jstree.min.js" location="/js/vakata-jstree-bb0473a/dist/jstree.min.js"/>
-    <resource type="download" name="style.min.css" location="/js/vakata-jstree-bb0473a/dist/themes/default/style.min.css"/>
+    <resource type="download" name="jstree.min.js" location="/js/jstree/jstree.min.js"/>
+    <!-- jquery.contextMenu -->
+	<resource type="download" name="jquery.ui.position.js" location="/js/contextMenu/jquery.ui.position.js"/>
+	<resource type="download" name="jquery.contextMenu.js" location="/js/contextMenu/jquery.contextMenu.js"/>
     <context>DecisionDocumentation</context>
   </web-resource>
-  <!-- Decisions UI + Decisions Resources -->
+  
+  <!-- DecisionEditor -->
   <web-item name="Decisions" i18n-name-key="decisions.name" key="decisions" section="jira.project.sidebar.plugins.navigation" weight="1000">
     <description key="decisions.description">Link in der Projects Navigation Sidebar zur DecisionsPage</description>
     <label key="decisions.label"/>
@@ -59,25 +69,8 @@
   <rest name="TreeViewerRest" i18n-name-key="TreeViewerRest.name" key="TreeViewerRest" path="/treeviewerrest" version="1.0">
     <description key="TreeViewerRest.description">Das Tree Viewer Rest Plugin stellt die Daten fuer den TreeViewer auf der DecisionsPage bereit</description>
   </rest>
-  <!--ADMINUI-->
-  <rest name="Config" i18n-name-key="config.name" key="config" path="/config" version="1.0">
-    <description key="config.description">The Config Plugin</description>
-  </rest>
-  <servlet name="Admin Servlet" i18n-name-key="admin-servlet.name" key="admin-servlet" class="com.atlassian.DecisionDocumentation.servlet.AdminServlet">
-    <description key="admin-servlet.description">The Admin Servlet Plugin</description>
-    <url-pattern>/adminservlet</url-pattern>
-  </servlet>
-  <web-resource key="snikjira-administration-ui-plugin-resources" name="SNIKJIRA-Administration-UI Web Resources">
-    <description>Adds relevant javascript to Admin Servlet</description>
-    <dependency>com.atlassian.auiplugin:ajs</dependency>
-    <resource type="download" name="adminui.js" location="/js/adminui.js"/>
-    <resource type="download" name="admin.css" location="/css/admin.css"/>
-    <context>snikjira</context>
-  </web-resource>
-  <rest name="Adminstration Rest Resource" key="admin-rest" path="/admin" version="1.0">
-    <description>Provides REST resources for the Adminstration Form.</description>
-  </rest>
-  <!--PluginConfigurationScreen-->
+  
+  <!--Administration-->
   <web-section name="DecDoc-Web-Section" key="DecDoc_section" location="admin_plugins_menu">
     <label key="DecDoc Section"/>
     <description>Adds Web-Section to the Addons Menu</description>
@@ -91,6 +84,17 @@
     <label key="admin-servlet.label"/>
     <link linkId="admin-servlet-link">/plugins/servlet/adminservlet</link>
   </web-item>
+  <servlet name="Admin Servlet" i18n-name-key="admin-servlet.name" key="admin-servlet" class="com.atlassian.DecisionDocumentation.servlet.AdminServlet">
+    <description key="admin-servlet.description">The Admin Servlet Plugin</description>
+    <url-pattern>/adminservlet</url-pattern>
+  </servlet>
+  <rest name="Adminstration Rest Resource" key="admin-rest" path="/admin" version="1.0">
+    <description>Provides REST resources for the Adminstration Form.</description>
+  </rest>
+  <rest name="Config" i18n-name-key="config.name" key="config" path="/config" version="1.0">
+    <description key="config.description">The Config Plugin</description>
+  </rest>
+  
   <!-- Active Objects -->
   <ao key="ao-module">
 	  <description>The module configuring the Active Objects service used by this plugin</description>

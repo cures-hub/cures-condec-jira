@@ -13,7 +13,6 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 
 /**
- * 
  * @author Ewald Rode
  * @description
  */
@@ -57,7 +56,7 @@ public class ConfigRestLogic {
     
     public void setIsAvtivated(final String projectKey, final String isActivated){
         try{
-            Object ob = transactionTemplate.execute(new TransactionCallback<Object>() {
+            transactionTemplate.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction() {
                     PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
                     settings.put(pluginStorageKey + ".isActivated", isActivated);
@@ -73,7 +72,7 @@ public class ConfigRestLogic {
 
     public void setIsIssueStrategy(final String projectKey, final String isIssueStrategy){
         try{
-            Object ob = transactionTemplate.execute(new TransactionCallback<Object>() {
+            transactionTemplate.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction() {
                     PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
                     settings.put(pluginStorageKey + ".isIssueStrategy", isIssueStrategy);

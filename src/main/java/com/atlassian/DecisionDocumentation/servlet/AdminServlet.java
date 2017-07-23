@@ -28,12 +28,12 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 /**
- * 
  * @author Ewald Rode
  * @description
  */
 @Scanned
 public class AdminServlet extends HttpServlet{
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdminServlet.class);
 
     @ComponentImport
@@ -74,7 +74,7 @@ public class AdminServlet extends HttpServlet{
                     PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
                     Object isActivatedObject = settings.get(pluginStorageKey + ".isActivated");
                     Object isIssueStrategyObject = settings.get(pluginStorageKey + ".isIssueStrategy");
-                    Pair pair = null;
+                    Pair<String,String> pair = null;
                     if (isActivatedObject != null && isIssueStrategyObject != null) {
                     	if (isActivatedObject instanceof String && isIssueStrategyObject instanceof String) {
                     		String isActivatedString = (String) isActivatedObject;

@@ -41,7 +41,7 @@ import net.java.ao.Query;
  */
 public class AoStrategy implements Strategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AoStrategy.class);
-	
+	//TODO use LOGGER
 	@Override
 	public long createDecisionComponent(final DecisionRepresentation dec, ApplicationUser user) {
 		final ActiveObjects ao = ComponentGetter.getAo();
@@ -104,12 +104,8 @@ public class AoStrategy implements Strategy {
                 	}
                 }
                 if(!linkAlreadyExists) {
-                	link.getOutgoingId();
                 	DecisionComponentEntity decCompIngoing;
                 	DecisionComponentEntity[] decCompIngoingArray = ao.find(DecisionComponentEntity.class, Query.select().where("ID = ?", link.getIngoingId()));
-                	/*
-                	 * ID is the primarykey for decisioncomponents, therefore find can only return 0 to 1 entities
-                	 */
                 	if(decCompIngoingArray.length == 1) {
                 		decCompIngoing = decCompIngoingArray[0];
                 	} else {
@@ -119,7 +115,7 @@ public class AoStrategy implements Strategy {
                 	
                 	DecisionComponentEntity decCompOutgoing;
                 	DecisionComponentEntity[] decCompOutgoingArray = ao.find(DecisionComponentEntity.class, Query.select().where("ID = ?", link.getOutgoingId()));
-                	if(decCompIngoingArray.length == 1) {
+                	if(decCompOutgoingArray.length == 1) {
                 		decCompOutgoing = decCompOutgoingArray[0];
                 	} else {
                 		//entity with outgoingId does not exist
@@ -335,14 +331,15 @@ public class AoStrategy implements Strategy {
                 return decComponent;
             }
         });
+		
 		if (dec != null) {
 			Map<String, String> nodeContent = ImmutableMap.of("name", dec.getKey() + " / " + dec.getName(),
 					"title", dec.getType());
 			node.setNodeContent(nodeContent);
 			
-			Map<String, String> link = ImmutableMap.of("href", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + 
-					"/browse/" + dec.getKey()); //TODO change
-			node.setLink(link);
+			//Map<String, String> link = ImmutableMap.of("href", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + 
+			//		"/browse/" + dec.getKey()); //TODO change
+					//node.setLink(link);
 			
 			String htmlClass;
 			String issueType = dec.getType().toLowerCase();
@@ -357,6 +354,9 @@ public class AoStrategy implements Strategy {
 			}
 			node.setHtmlClass(htmlClass);
 			
+			long htmlId = dec.getID();
+			node.setHtmlId(htmlId);
+			
 			List<Node> children = new ArrayList<Node>();
 			TreantKeyValuePairList.kvpList = new ArrayList<Pair<String, String>>();
 			final List<DecisionComponentEntity> inwardLinkedDecList = new ArrayList<DecisionComponentEntity>();
@@ -366,6 +366,7 @@ public class AoStrategy implements Strategy {
 					inwardLinkedDecList.add(decisionComponent);
 				}
 			}
+			
 			final List<DecisionComponentEntity> outwardLinkedDecList = new ArrayList<DecisionComponentEntity>();
 			for(LinkEntity linkEntity : ao.find(LinkEntity.class, Query.select().where("INGOING_ID = ? AND OUTGOING_ID != ?", dec.getID(), dec.getID()))) {
 				for(DecisionComponentEntity decisionComponent : ao.find(DecisionComponentEntity.class, 
@@ -394,7 +395,8 @@ public class AoStrategy implements Strategy {
 					TreantKeyValuePairList.kvpList.add(kvp2);
 					children.add(createNode(decisionComponent, depth, 0));
 				}
-			}	
+			}
+			
 			node.setChildren(children);
 		}		
 		return node;
@@ -408,9 +410,9 @@ public class AoStrategy implements Strategy {
 					"title", dec.getType());
 			node.setNodeContent(nodeContent);
 			
-			Map<String, String> link = ImmutableMap.of("href", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + 
-					"/browse/" + dec.getKey()); //TODO change
-			node.setLink(link);
+			//Map<String, String> link = ImmutableMap.of("href", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + 
+			//		"/browse/" + dec.getKey()); //TODO change
+			//node.setLink(link);
 			
 			String htmlClass;
 			String issueType = dec.getType().toLowerCase();

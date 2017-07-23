@@ -1,7 +1,6 @@
 package com.atlassian.DecisionDocumentation.rest.Decisions;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +27,7 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
+import com.google.common.collect.ImmutableMap;
 
 /**
  * @author Ewald Rode
@@ -114,17 +114,9 @@ public class DecisionsRest {
 	    			LOGGER.error("before createDecisionComponent");
 	    			final long issueId = strategy.createDecisionComponent(dec, user);
 	    			if(issueId!=0) {
-	    				return Response.status(Status.OK).entity(new HashMap<String, Long>() {
-	    					{
-	    						put("id", issueId);
-	    					}
-	    				}).build();
+	    				return Response.status(Status.OK).entity(ImmutableMap.of("id", issueId)).build();
 	    			}
-	    			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new HashMap<String, String>() {
-						{
-							put("error", "Creation of Issue failed.");
-						}
-					}).build();
+	    			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Creation of Issue failed.")).build();
 	    		} else if(actionType.equalsIgnoreCase("edit")) {
 	    			//TODO: IssueStrategy edit
 	    			strategy.editDecisionComponent(dec, user);
@@ -144,17 +136,9 @@ public class DecisionsRest {
 	    			LOGGER.error("before createDecisionComponent");
 	    			final long issueId = strategy.createDecisionComponent(dec, user);
 	    			if(issueId!=0) {
-	    				return Response.status(Status.OK).entity(new HashMap<String, Long>() {
-	    					{
-	    						put("id", issueId);
-	    					}
-	    				}).build();
+	    				return Response.status(Status.OK).entity(ImmutableMap.of("id", issueId)).build();
 	    			}
-	    			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new HashMap<String, String>() {
-						{
-							put("error", "Creation of Issue failed.");
-						}
-					}).build();
+	    			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Creation of Issue failed.")).build();
 	    		} else if(actionType.equalsIgnoreCase("edit")) {
 	    			//TODO: IssueStrategy edit
 	    			strategy.editDecisionComponent(dec, user);

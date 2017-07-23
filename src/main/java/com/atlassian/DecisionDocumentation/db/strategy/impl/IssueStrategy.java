@@ -373,8 +373,8 @@ public class IssueStrategy implements Strategy {
 				"title", issue.getIssueType().getName());
 		node.setNodeContent(nodeContent);
 		
-		Map<String, String> link = ImmutableMap.of("href", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/browse/" + issue.getKey());
-		node.setLink(link);
+		//Map<String, String> link = ImmutableMap.of("href", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/browse/" + issue.getKey());
+		//node.setLink(link);
 		
 		String htmlClass;
 		String issueType = issue.getIssueType().getName().toLowerCase();
@@ -430,8 +430,8 @@ public class IssueStrategy implements Strategy {
 		
 		node.setNodeContent(nodeContent);
 
-		Map<String, String> link = ImmutableMap.of("href", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/browse/" + issue.getKey());
-		node.setLink(link);
+		//Map<String, String> link = ImmutableMap.of("href", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/browse/" + issue.getKey());
+		//node.setLink(link);
 		
 		String htmlClass;
 		String issueType = issue.getIssueType().getName().toLowerCase();

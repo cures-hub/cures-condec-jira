@@ -14,7 +14,6 @@ import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 
 /**
- * 
  * @author Ewald Rode
  * @description
  */
@@ -72,31 +71,31 @@ public class PluginListener implements InitializingBean {
 			
 		}
 		if(!decisionBool){
-			IssueType it = itm.createIssueType("Decision", "Entscheidung", (long)10300 );
+			itm.createIssueType("Decision", "Entscheidung", (long)10300 );
 		}if(!alternativeBool){
-			IssueType it = itm.createIssueType("Alternative", "Alternative", (long)10300 );
+			itm.createIssueType("Alternative", "Alternative", (long)10300 );
 		}if(!argumentBool){
-			IssueType it = itm.createIssueType("Argument", "Argument", (long)10300 );
+			itm.createIssueType("Argument", "Argument", (long)10300 );
 		}if(!assessmentBool){
-			IssueType it = itm.createIssueType("Assessment", "Einschaetzung", (long)10300 );
+			itm.createIssueType("Assessment", "Einschaetzung", (long)10300 );
 		}if(!assumptionBool){
-			IssueType it = itm.createIssueType("Assumption", "Annahme", (long)10300 );
+			itm.createIssueType("Assumption", "Annahme", (long)10300 );
 		}if(!claimBool){
-			IssueType it = itm.createIssueType("Claim", "Behauptung", (long)10300 );
+			itm.createIssueType("Claim", "Behauptung", (long)10300 );
 		}if(!constraintBool){
-			IssueType it = itm.createIssueType("Constraint", "Einschraenkung", (long)10300 );
+			itm.createIssueType("Constraint", "Einschraenkung", (long)10300 );
 		}if(!contextBool){
-			IssueType it = itm.createIssueType("Context", "Kontext", (long)10300 );
+			itm.createIssueType("Context", "Kontext", (long)10300 );
 		}if(!goalBool){
-			IssueType it = itm.createIssueType("Goal", "Ziel", (long)10300 );
+			itm.createIssueType("Goal", "Ziel", (long)10300 );
 		}if(!implicationBool){
-			IssueType it = itm.createIssueType("Implication", "Implikation", (long)10300 );
+			itm.createIssueType("Implication", "Implikation", (long)10300 );
 		}if(!issueBool){
-			IssueType it = itm.createIssueType("Issue", "Problem", (long)10300 );
+			itm.createIssueType("Issue", "Problem", (long)10300 );
 		}if(!problemBool){
-			IssueType it = itm.createIssueType("Problem", "Problem", (long)10300 );
+			itm.createIssueType("Problem", "Problem", (long)10300 );
 		}if(!solutionBool){
-			IssueType it = itm.createIssueType("Solution", "Loesung", (long)10300 );
+			itm.createIssueType("Solution", "Loesung", (long)10300 );
 		}
 		IssueLinkTypeManager iltM = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		Collection<IssueLinkType> iltC = iltM.getIssueLinkTypes(true);

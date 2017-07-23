@@ -32,7 +32,7 @@ public class TreeViewerRepresentation {
 
 	public TreeViewerRepresentation(Strategy strategy, Project project) {
 		this.core = strategy.createCore(project);
-		this.plugins = new HashSet<String>(Arrays.asList("wholerow", "sort", "search"));
+		this.plugins = new HashSet<String>(Arrays.asList("wholerow", "sort", "search", ""));
 		this.search = ImmutableMap.of("show_only_matches", true);
 	}
 	

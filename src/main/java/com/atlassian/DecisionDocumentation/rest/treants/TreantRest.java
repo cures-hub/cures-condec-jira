@@ -1,7 +1,6 @@
 package com.atlassian.DecisionDocumentation.rest.treants;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 
 import com.atlassian.DecisionDocumentation.db.strategy.Strategy;
@@ -18,6 +17,7 @@ import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
+import com.google.common.collect.ImmutableMap;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -43,9 +43,7 @@ public class TreantRest {
         	Project project = projectManager.getProjectObjByKey(projectKey);
         	if(project == null){
     			/*projekt mit diesem projectKey existiert nicht*/
-    			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new HashMap<String, String>() {{
-    	  			  put("error", "Can not find Project corresponding to given Query Parameter 'projectKey'");
-    	  			}}).build();
+    			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Can not find Project corresponding to given Query Parameter 'projectKey'")).build();
     		}else if(issueKey != null){
         		int depth;
         		if (depthOfTree != null){
@@ -88,9 +86,7 @@ public class TreantRest {
 		            		}
 		            	}	
 		            	if(rootIssue == null){
-		            		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new HashMap<String, String>() {{
-		      	  			  put("error", "Can not find Issue corresponding to given Query Parameter 'issueKey'");
-		      	  			}}).build();
+		            		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Can not find Issue corresponding to given Query Parameter 'issueKey'")).build();
 		            	}
 		            	Treant treantRestModel = strategy.createTreant(rootIssue.getKey(), depth);
 	            		return Response.ok(treantRestModel).build();
@@ -107,12 +103,8 @@ public class TreantRest {
     		}
     	} else {
     		/*projectKey wurde nicht als Query-Parameter angegeben*/
-    		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new HashMap<String, String>() {{
-  			  put("error", "Query Parameter 'projectKey' has been omitted, please add a valid projectKey");
-  			}}).build();
+    		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Query Parameter 'projectKey' has been omitted, please add a valid projectKey")).build();
     	}
-    	return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new HashMap<String, String>() {{
-			  put("error", "Query Parameters 'projectKey' and 'issueKey' do not lead to a valid result");
-			}}).build();
+    	return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Query Parameters 'projectKey' and 'issueKey' do not lead to a valid result")).build();
     }
 }
