@@ -89,18 +89,20 @@ public class AoStrategy implements Strategy {
 	}
 
 	@Override
-	public void createLink(final LinkRepresentation link, ApplicationUser user) {
+	public Long createLink(final LinkRepresentation link, ApplicationUser user) {
 		final ActiveObjects ao = ComponentGetter.getAo();
-		ao.executeInTransaction(new TransactionCallback<Void>()
+		return ao.executeInTransaction(new TransactionCallback<Long>()
         {
             @Override
-            public Void doInTransaction()
+            public Long doInTransaction()
             {
             	boolean linkAlreadyExists = false;
+            	long linkId = 0;
                 for (LinkEntity linkEntity : ao.find(LinkEntity.class))
                 {
                 	if(linkEntity.getIngoingId() == link.getIngoingId() && linkEntity.getOutgoingId() == link.getOutgoingId()) {
                 		linkAlreadyExists = true;
+                		linkId = linkEntity.getID();
                 	}
                 }
                 if(!linkAlreadyExists) {
@@ -129,14 +131,19 @@ public class AoStrategy implements Strategy {
                         	linkEntity.setOutgoingId(link.getOutgoingId());
                         	linkEntity.setType(link.getLinkType());
                         	linkEntity.save();
+                        	linkId = linkEntity.getID();
                 		} else {
                 			// entities to be linked are not in the same project, TODO ignore request
+                			return (long) 0;
                 		}
                 	} else {
                 		// one of the entities to be linked does not exist, TODO ignore request
+                		return (long) 0;
                 	}
+                } else {
+                	return linkId;
                 }
-                return null;
+                return linkId;
             }
         });
 	}

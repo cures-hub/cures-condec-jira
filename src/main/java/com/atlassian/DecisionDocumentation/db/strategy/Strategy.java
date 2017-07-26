@@ -20,7 +20,7 @@ public interface Strategy {
 	public void editDecisionComponent(DecisionRepresentation dec, ApplicationUser user);
 	public void deleteDecisionComponent(DecisionRepresentation dec, ApplicationUser user);
 	
-	public void createLink(LinkRepresentation link, ApplicationUser user);
+	public Long createLink(LinkRepresentation link, ApplicationUser user);
 	public void deleteLink(LinkRepresentation link, ApplicationUser user);
 	
 	public List<SimpleDecisionRepresentation> searchUnlinkedDecisionComponents(long id, String projectKey);

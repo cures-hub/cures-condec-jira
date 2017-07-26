@@ -72,7 +72,7 @@ var createDecisionComponent = function(summary, issueType, callback){
 		//summary is empty
 	}
 }
-var editDecisionComponent = function(issueId, summary, description){
+var editDecisionComponent = function(issueId, summary, description, callback){
 	var pathname = window.location.pathname;
 	var stringArray = pathname.split("/");
 	var projectKey = stringArray[stringArray.length-1];
@@ -84,7 +84,14 @@ var editDecisionComponent = function(issueId, summary, description){
 	};
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?actionType=edit", jsondata, function(err, data) {
 		if (err!=null){
+			var errorFlag = AJS.flag({
+				type: 'error',
+				close: 'auto',
+				title: 'Error',
+				body: issueType + ' has not been updated. Error Code: ' + err
+			});
 		} else {
+			callback(data);
 		}
 	});
 }
@@ -287,9 +294,6 @@ var createContextMenuForTreeNodes = function(projectKey){
 			items: {
 				"add": {name: "Add Decision Component", 
 					callback: function(key, options){
-						console.log(options);
-						console.log(options.$trigger);
-						console.log(options.$trigger.context);
 						//set header
 						var closeX = document.getElementById('modal-close-x');
 						closeX.insertAdjacentHTML('beforeBegin', 'Add Decision Component');
@@ -442,6 +446,10 @@ var createContextMenuForTreeNodes = function(projectKey){
 										title: 'Success',
 										body: type + ' has been created.'
 									});
+									//TODO entfernen
+									console.log(options.$trigger.context.id);
+									console.log(data.id);
+
 									createLink(options.$trigger.context.id, data.id, "contain", function(data){
 										var successFlag = AJS.flag({
 											type: 'success',
@@ -452,6 +460,43 @@ var createContextMenuForTreeNodes = function(projectKey){
 									});
 								});
 							}
+							closeModal();
+						};
+						
+						// Get the modal window
+						var modal = document.getElementById('ContextMenuModal');
+						modal.style.display = "block";
+						
+						//TODO reload both trees
+					}
+				},
+				"edit": {name: "Edit Decision Component", 
+					callback: function(key, options){
+						//set header
+						var closeX = document.getElementById('modal-close-x');
+						closeX.insertAdjacentHTML('beforeBegin', 'Edit Decision Component');
+						//set content
+						var content = document.getElementById('modal-content');
+						content.insertAdjacentHTML('afterBegin',
+							'<p><label for="form-input-name" style="display:block;width:45%;float:left;">Name</label><input id="form-input-name" type="text" name="name" placeholder="Name of decisioncomponent" style="width:50%;"/></p>' +
+							'<p><label for="form-input-description" style="display:block;width:45%;float:left;">Description</label><input id="form-input-description" type="text" name="type" placeholder="Type in description" style="width:50%;"/></p>' +
+							'<p><input id="form-input-submit" type="submit" value="Edit Decision Component" style="float:right;"/></p>'
+						);
+						
+						var submitButton = document.getElementById('form-input-submit');
+						submitButton.onclick = function (){
+							var name = document.getElementById('form-input-name').value;
+							var description = document.getElementById('form-input-description').value;
+							editDecisionComponent(options.$trigger.context.id, name, description, function(data){
+								var successFlag = AJS.flag({
+									type: 'success',
+									close: 'auto',
+									title: 'Success',
+									body: 'Decisioncomponent has been updated'
+								});
+								//TODO update description in treeviewer
+							});
+							closeModal();
 						};
 						
 						// Get the modal window
@@ -461,7 +506,6 @@ var createContextMenuForTreeNodes = function(projectKey){
 						//TODO reload both trees
 					}
 				}/*,
-				"edit": {name: "Edit Decision Component"},
 				"delete": {name: "Delete Decision Component"}
 				*/
 			}
@@ -498,7 +542,15 @@ var initializeSite = function(){
 					detailsElement.style.display = "block";
 					var updateButton = document.getElementById("updateIssue");
 					updateButton.addEventListener('click', function(event){
-						editDecisionComponent(data.node.data.id, data.node.data.summary, document.getElementById("IssueDescription").value);
+						editDecisionComponent(data.node.data.id, data.node.data.summary, document.getElementById("IssueDescription").value, function(data){
+							var successFlag = AJS.flag({
+								type: 'success',
+								close: 'auto',
+								title: 'Success',
+								body: 'Decisioncomponent has been updated'
+							});
+							//TODO update description in treeviewer
+						});
 					});
 					
 					getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?projectKey=" + projectKey + '&issueId=' + data.node.data.id, function(err, data) {
@@ -522,14 +574,11 @@ var initializeSite = function(){
 						}
 					});
 					
-					console.log(data.node.children);
 					if(data.node.children.length > 0){
 						for(counter = 0; counter < data.node.children.length; ++counter){
 							var child = $('#evts').jstree(true).get_node(data.node.children[counter]);
 							var issueType = child.data.issueType;
-							console.log(child.data);
 							var array= ["Problem", "Issue", "Goal", "Solution", "Alternative", "Claim", "Context", "Assumption", "Constraint", "Implication", "Assessment", "Argument"];
-							console.log(issueType);
 							if(array.indexOf(issueType)!=-1){
 								document.getElementById(issueType).insertAdjacentHTML('beforeend', '<div class="issuelinkbox"><p><a href="' +
 									AJS.contextPath() + '/browse/' + child.data.key + '">' + child.data.key +
@@ -558,24 +607,16 @@ var initializeSite = function(){
 							
 							//add click-handler for elements in modal to close modal window
 							var elementsWithCloseFunction = document.getElementsByClassName("modal-close");
-							for (var x = 0; x < elementsWithCloseFunction.length; x++){
-								elementsWithCloseFunction[x].onclick = function() {
-									modal.style.display = "none";
-									var modalContent = document.getElementById('modal-content');
-									if(modalContent){
-										clearInner(modalContent);
-									}
+							for (var counter = 0; counter < elementsWithCloseFunction.length; counter++){
+								elementsWithCloseFunction[counter].onclick = function() {
+									closeModal();
 								}
 							}
 							
 							//close modal window if user clicks anywhere outside of the modal
 							window.onclick = function(event) {
 								if (event.target == modal) {
-									modal.style.display = "none";
-									var modalContent = document.getElementById('modal-content');
-									if(modalContent){
-										clearInner(modalContent);
-									}
+									closeModal();
 								}
 							}
 							//##########################################
@@ -642,24 +683,6 @@ var initializeSite = function(){
 	});
 }
 
-/*
-Source: https://stackoverflow.com/users/2234742/maximillian-laumeister
-Maximillian Laumeister
-Software Developer at Tanzle
-*/
-function clearInner(node) {
-  while (node.hasChildNodes()) {
-    clear(node.firstChild);
-  }
-}
-
-function clear(node) {
-  while (node.hasChildNodes()) {
-    clear(node.firstChild);
-  }
-  node.parentNode.removeChild(node);
-}
-
 /* Displays Error Message in Accoridon */
 var displayGetJsonError = function(errorCode){
 	document.getElementById("Details").innerHTML = "Error occured while retrieving data. Error-Code: " + errorCode;
@@ -703,4 +726,44 @@ var setBack = function(){
 	document.getElementById("Assessment").style.display = "none";
 	document.getElementById("Argument").innerHTML = "";
 	document.getElementById("Argument").style.display = "none";
+}
+
+function closeModal(){
+	// Get the modal window
+	var modal = document.getElementById('ContextMenuModal');
+	modal.style.display = "none";
+
+	var modalHeader = document.getElementById('modal-header');
+	if(modalHeader.hasChildNodes()){
+		var childNodes = modalHeader.childNodes;
+		for (var index = 0; index < childNodes.length; ++index){	
+			var child = childNodes[index];
+			if(child.nodeType === 3){
+				child.parentNode.removeChild(child);
+			}
+		}
+	}
+
+	var modalContent = document.getElementById('modal-content');
+	if(modalContent){
+		clearInner(modalContent);
+	}
+}
+
+/*
+Source: https://stackoverflow.com/users/2234742/maximillian-laumeister
+Maximillian Laumeister
+Software Developer at Tanzle
+*/
+function clearInner(node) {
+  while (node.hasChildNodes()) {
+    clear(node.firstChild);
+  }
+}
+
+function clear(node) {
+  while (node.hasChildNodes()) {
+    clear(node.firstChild);
+  }
+  node.parentNode.removeChild(node);
 }

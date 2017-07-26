@@ -117,7 +117,7 @@ public class IssueStrategy implements Strategy {
 	}
 
 	@Override
-	public void createLink(LinkRepresentation link, ApplicationUser user) {
+	public Long createLink(LinkRepresentation link, ApplicationUser user) {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		Collection<IssueLinkType> issueLinkTypeCollection = issueLinkTypeManager.getIssueLinkTypesByName(link.getLinkType());
@@ -144,13 +144,22 @@ public class IssueStrategy implements Strategy {
 			issueLinkManager.createIssueLink(link.getOutgoingId(), link.getIngoingId(), typeId, sequence, user);
 		} catch (CreateException e) {
 			// TODO Logger issuelink was not created
-			e.printStackTrace();
-		} finally {
+			return (long) 0;
+		} catch (NullPointerException e) {
+		    // some variable is null
+			// TODO Logger issuelink was not created
+			return (long) 0;
+		}finally {
 			outwardIssueLinkList = issueLinkManager.getOutwardLinks(link.getIngoingId());
 			issueLinkManager.resetSequences(outwardIssueLinkList);
 			inwardIssueLinkList = issueLinkManager.getInwardLinks(link.getIngoingId());
 			issueLinkManager.resetSequences(inwardIssueLinkList);
 		}
+		IssueLink issueLink = issueLinkManager.getIssueLink(link.getOutgoingId(), link.getIngoingId(), typeId);
+		if(issueLink == null) {
+			return (long) 0;
+		}
+		return issueLink.getId();
 	}
 
 	//TODO TEST
@@ -388,6 +397,9 @@ public class IssueStrategy implements Strategy {
 			htmlClass="rationale";
 		}
 		node.setHtmlClass(htmlClass);
+		
+		long htmlId = issue.getId();
+		node.setHtmlId(htmlId);
 		
 		List<Node> children = new ArrayList<Node>();
 		List<IssueLink> allOutwardIssueLink = ComponentAccessor.getIssueLinkManager().getOutwardLinks(issue.getId());

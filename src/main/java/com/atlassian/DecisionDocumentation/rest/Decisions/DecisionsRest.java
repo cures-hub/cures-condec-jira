@@ -186,14 +186,21 @@ public class DecisionsRest {
 				}
 	    		ApplicationUser user = getCurrentUser(req);
 	    		if(actionType.equalsIgnoreCase("create")) {
-	    			strategy.createLink(link, user);
-	    			return Response.ok().build();
+	    			long issueLinkId = strategy.createLink(link, user);
+	    			if(issueLinkId == 0) {
+	    				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Creation of Link failed.")).build();
+	    			} else {
+	    				//TODO change response
+	    				return Response.ok().build();
+	    			}
 	    		} else if(actionType.equalsIgnoreCase("delete")) {
 	    			//TODO: IssueStrategy edit
 	    			strategy.deleteLink(link, user);
+	    			//TODO change response
 	    			return Response.ok().build();
 	    		} else {
 	    			//error TODO logger
+	    			//TODO change response
 	    			return Response.ok("Unknown actionType. Pick either 'create' or 'delete'").build();
 	    		}
 			} else {
@@ -201,18 +208,22 @@ public class DecisionsRest {
 				ApplicationUser user = getCurrentUser(req);
 	    		if(actionType.equalsIgnoreCase("create")) {
 	    			strategy.createLink(link, user);
+	    			//TODO change response
 	    			return Response.ok().build();
 	    		} else if(actionType.equalsIgnoreCase("delete")) {
 	    			//TODO: IssueStrategy edit
 	    			strategy.deleteLink(link, user);
+	    			//TODO change response
 	    			return Response.ok().build();
 	    		} else {
 	    			//error TODO logger
+	    			//TODO change response
 	    			return Response.ok("Unknown actionType. Pick either 'create' or 'delete'").build();
 	    		}
 			}
 		} else {
 			//error TODO logger
+			//TODO change response
 			return Response.ok("dec or actionType = null").build();
 		}
     }
