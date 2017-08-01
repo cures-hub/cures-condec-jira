@@ -53,7 +53,7 @@ public class IssueStrategy implements Strategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IssueStrategy.class);
 
 	@Override
-	public long createDecisionComponent(DecisionRepresentation dec, ApplicationUser user) {
+	public Data createDecisionComponent(DecisionRepresentation dec, ApplicationUser user) {
 		IssueInputParameters issueInputParameters = ComponentGetter.getIssueService().newIssueInputParameters();
 
 		issueInputParameters.setSummary(dec.getName());
@@ -71,10 +71,25 @@ public class IssueStrategy implements Strategy {
 			for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
 				LOGGER.error(entry.getKey() + ": " + entry.getValue());
 			}
-			return 0;
+			return null;
 		} else {
 			IssueResult issueResult = issueService.create(user, result);
-			return issueResult.getIssue().getId();
+
+			Data data = new Data();
+			Issue issue = issueResult.getIssue();
+			data.setText(issue.getKey() + " / " + issue.getSummary());
+			data.setId(String.valueOf(issue.getId()));
+			
+			NodeInfo nodeInfo = new NodeInfo();
+			nodeInfo.setId(Long.toString(issue.getId()));
+			nodeInfo.setKey(issue.getKey());
+			nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + issue.getId());
+			nodeInfo.setIssueType(issue.getIssueType().getName());
+			nodeInfo.setDescription(issue.getDescription());
+			nodeInfo.setSummary(issue.getSummary());
+			data.setNodeInfo(nodeInfo);
+			
+			return data;
 		}
 	}
 
@@ -294,6 +309,7 @@ public class IssueStrategy implements Strategy {
 		Data data = new Data();
 		
 		data.setText(issue.getKey() + " / " + issue.getSummary());
+		data.setId(String.valueOf(issue.getId()));
 		
 		NodeInfo nodeInfo = new NodeInfo();
 		nodeInfo.setId(Long.toString(issue.getId()));
@@ -378,8 +394,9 @@ public class IssueStrategy implements Strategy {
 		Issue issue = issueManager.getIssueByCurrentKey(issueKey);
 		
 		Node node = new Node();
-		Map<String, String> nodeContent = ImmutableMap.of("name", issue.getKey() + " / " + issue.getSummary(),
-				"title", issue.getIssueType().getName());
+		Map<String, String> nodeContent = ImmutableMap.of("name", issue.getSummary(),
+				"title", issue.getIssueType().getName(),
+				"desc", issue.getKey());
 		node.setNodeContent(nodeContent);
 		
 		//Map<String, String> link = ImmutableMap.of("href", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/browse/" + issue.getKey());

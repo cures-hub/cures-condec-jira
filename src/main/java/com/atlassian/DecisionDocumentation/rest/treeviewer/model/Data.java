@@ -10,6 +10,9 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class Data {
 	@XmlElement
+	private String id;
+
+	@XmlElement
 	private String text;
 	
 	@XmlElement
@@ -20,6 +23,14 @@ public class Data {
 
 	public Data(){}
 
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+	
 	public String getText() {
 		return text;
 	}

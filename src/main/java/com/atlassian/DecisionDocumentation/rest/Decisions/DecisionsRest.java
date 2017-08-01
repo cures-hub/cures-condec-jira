@@ -19,6 +19,7 @@ import com.atlassian.DecisionDocumentation.db.strategy.impl.IssueStrategy;
 import com.atlassian.DecisionDocumentation.rest.Decisions.model.DecisionRepresentation;
 import com.atlassian.DecisionDocumentation.rest.Decisions.model.LinkRepresentation;
 import com.atlassian.DecisionDocumentation.rest.Decisions.model.SimpleDecisionRepresentation;
+import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Data;
 import com.atlassian.DecisionDocumentation.util.ComponentGetter;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
@@ -111,10 +112,9 @@ public class DecisionsRest {
 				}
 	    		ApplicationUser user = getCurrentUser(req);
 	    		if(actionType.equalsIgnoreCase("create")) {
-	    			LOGGER.error("before createDecisionComponent");
-	    			final long issueId = strategy.createDecisionComponent(dec, user);
-	    			if(issueId!=0) {
-	    				return Response.status(Status.OK).entity(ImmutableMap.of("id", issueId)).build();
+	    			final Data data = strategy.createDecisionComponent(dec, user);
+	    			if(data != null) {
+	    				return Response.status(Status.OK).entity(data).build();
 	    			}
 	    			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Creation of Issue failed.")).build();
 	    		} else if(actionType.equalsIgnoreCase("edit")) {
@@ -133,10 +133,9 @@ public class DecisionsRest {
 				Strategy strategy = new AoStrategy();
 				ApplicationUser user = getCurrentUser(req);
 	    		if(actionType.equalsIgnoreCase("create")) {
-	    			LOGGER.error("before createDecisionComponent");
-	    			final long issueId = strategy.createDecisionComponent(dec, user);
-	    			if(issueId!=0) {
-	    				return Response.status(Status.OK).entity(ImmutableMap.of("id", issueId)).build();
+	    			final Data data = strategy.createDecisionComponent(dec, user);
+	    			if(data != null) {
+	    				return Response.status(Status.OK).entity(data).build();
 	    			}
 	    			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Creation of Issue failed.")).build();
 	    		} else if(actionType.equalsIgnoreCase("edit")) {
@@ -149,7 +148,7 @@ public class DecisionsRest {
 	    			return Response.ok("delete success").build();
 	    		} else {
 	    			//error TODO logger
-	    			return Response.ok("Unknown actionType. Pick either 'create', 'edit' or 'delete'").build();
+	    			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Unknown actionType. Pick either 'create', 'edit' or 'delete'")).build();
 	    		}
 			}
 		} else {
@@ -190,8 +189,7 @@ public class DecisionsRest {
 	    			if(issueLinkId == 0) {
 	    				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Creation of Link failed.")).build();
 	    			} else {
-	    				//TODO change response
-	    				return Response.ok().build();
+	    				return Response.status(Status.OK).entity(ImmutableMap.of("id",issueLinkId)).build();
 	    			}
 	    		} else if(actionType.equalsIgnoreCase("delete")) {
 	    			//TODO: IssueStrategy edit
@@ -207,9 +205,12 @@ public class DecisionsRest {
 				Strategy strategy = new AoStrategy(); 
 				ApplicationUser user = getCurrentUser(req);
 	    		if(actionType.equalsIgnoreCase("create")) {
-	    			strategy.createLink(link, user);
-	    			//TODO change response
-	    			return Response.ok().build();
+	    			long issueLinkId = strategy.createLink(link, user);
+	    			if(issueLinkId == 0) {
+	    				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Creation of Link failed.")).build();
+	    			} else {
+	    				return Response.status(Status.OK).entity(ImmutableMap.of("id",issueLinkId)).build();
+	    			}
 	    		} else if(actionType.equalsIgnoreCase("delete")) {
 	    			//TODO: IssueStrategy edit
 	    			strategy.deleteLink(link, user);

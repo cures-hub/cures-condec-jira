@@ -7,6 +7,7 @@ import com.atlassian.DecisionDocumentation.rest.Decisions.model.LinkRepresentati
 import com.atlassian.DecisionDocumentation.rest.Decisions.model.SimpleDecisionRepresentation;
 import com.atlassian.DecisionDocumentation.rest.treants.model.Treant;
 import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Core;
+import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Data;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
@@ -16,7 +17,7 @@ import com.atlassian.jira.user.ApplicationUser;
  * @description
  */
 public interface Strategy {
-	public long createDecisionComponent(DecisionRepresentation dec, ApplicationUser user);
+	public Data createDecisionComponent(DecisionRepresentation dec, ApplicationUser user);
 	public void editDecisionComponent(DecisionRepresentation dec, ApplicationUser user);
 	public void deleteDecisionComponent(DecisionRepresentation dec, ApplicationUser user);
 	

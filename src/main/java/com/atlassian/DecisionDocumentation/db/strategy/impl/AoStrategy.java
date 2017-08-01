@@ -43,7 +43,7 @@ public class AoStrategy implements Strategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AoStrategy.class);
 	//TODO use LOGGER
 	@Override
-	public long createDecisionComponent(final DecisionRepresentation dec, ApplicationUser user) {
+	public Data createDecisionComponent(final DecisionRepresentation dec, ApplicationUser user) {
 		final ActiveObjects ao = ComponentGetter.getAo();
 		DecisionComponentEntity decComponent = ao.executeInTransaction(new TransactionCallback<DecisionComponentEntity>()
         {
@@ -60,7 +60,25 @@ public class AoStrategy implements Strategy {
                 return decComponent;
             }
         });
-		return decComponent.getID();
+		if(decComponent != null) {
+			Data data = new Data();
+			
+			data.setText(decComponent.getKey() + " / " + decComponent.getName());
+			data.setId(String.valueOf(decComponent.getID()));
+			
+			NodeInfo nodeInfo = new NodeInfo();
+			nodeInfo.setId(Long.toString(decComponent.getID()));
+			nodeInfo.setKey(decComponent.getKey());
+			nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + decComponent.getID());//TODO change
+			nodeInfo.setIssueType(decComponent.getType());
+			nodeInfo.setDescription(decComponent.getDescription());
+			nodeInfo.setSummary(decComponent.getName());
+			data.setNodeInfo(nodeInfo);
+			
+			return data;
+		} else {
+			return null;
+		}	
 	}
 
 	@Override
@@ -235,6 +253,7 @@ public class AoStrategy implements Strategy {
 		Data data = new Data();
 		
 		data.setText(decComponent.getKey() + " / " + decComponent.getName());
+		data.setId(String.valueOf(decComponent.getID()));
 		
 		NodeInfo nodeInfo = new NodeInfo();
 		nodeInfo.setId(Long.toString(decComponent.getID()));
@@ -413,8 +432,9 @@ public class AoStrategy implements Strategy {
 		Node node = new Node();
 		final ActiveObjects ao = ComponentGetter.getAo();
 		if (dec != null) {
-			Map<String, String> nodeContent = ImmutableMap.of("name", dec.getKey() + " / " + dec.getName(),
-					"title", dec.getType());
+			Map<String, String> nodeContent = ImmutableMap.of("name", dec.getName(),
+					"title", dec.getType(),
+					"desc", dec.getKey());
 			node.setNodeContent(nodeContent);
 			
 			//Map<String, String> link = ImmutableMap.of("href", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + 
