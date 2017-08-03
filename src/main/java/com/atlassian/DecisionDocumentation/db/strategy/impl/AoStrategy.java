@@ -171,14 +171,17 @@ public class AoStrategy implements Strategy {
                         	linkEntity.save();
                         	linkId = linkEntity.getID();
                 		} else {
-                			// entities to be linked are not in the same project, TODO ignore request
+                			LOGGER.error("entities to be linked are not in the same project");
+                			//TODO ignore request
                 			return (long) 0;
                 		}
                 	} else {
-                		// one of the entities to be linked does not exist, TODO ignore request
+                		LOGGER.error("one of the entities to be linked does not exist");
+                		//TODO ignore request
                 		return (long) 0;
                 	}
                 } else {
+                	LOGGER.error("Link already exists");
                 	return linkId;
                 }
                 return linkId;
