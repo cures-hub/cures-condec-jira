@@ -120,12 +120,14 @@ public class DecisionsRest {
 	    			}
 	    			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Update of Issue failed.")).build();
 	    		} else if(actionType.equalsIgnoreCase("delete")) {
-	    			//TODO: IssueStrategy delete
-	    			strategy.deleteDecisionComponent(dec, user);
-	    			return Response.ok("delete success").build();
+	    			boolean successful = strategy.deleteDecisionComponent(dec, user);
+	    			if(successful) {
+	    				return Response.status(Status.OK).entity(successful).build();
+	    			} else {
+	    				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Deletion of Issue failed.")).build();
+	    			}
 	    		} else {
-	    			//error TODO logger
-	    			return Response.ok("Unknown actionType. Pick either 'create', 'edit' or 'delete'").build();
+	    			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Unknown actionType. Pick either 'create', 'edit' or 'delete'")).build();
 	    		}
 			} else {
 				Strategy strategy = new AoStrategy();
@@ -143,9 +145,12 @@ public class DecisionsRest {
 	    			}
 	    			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Update of Issue failed.")).build();
 	    		} else if(actionType.equalsIgnoreCase("delete")) {
-	    			//TODO: IssueStrategy delete
-	    			strategy.deleteDecisionComponent(dec, user);
-	    			return Response.ok("delete success").build();
+	    			boolean successful = strategy.deleteDecisionComponent(dec, user);
+	    			if(successful) {
+	    				return Response.status(Status.OK).entity(successful).build();
+	    			} else {
+	    				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Deletion of Issue failed.")).build();
+	    			}
 	    		} else {
 	    			//error TODO logger
 	    			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Unknown actionType. Pick either 'create', 'edit' or 'delete'")).build();
@@ -155,7 +160,6 @@ public class DecisionsRest {
 			//error TODO logger
 			return Response.ok("dec or actionType = null").build();
 		}
-		//return Response.ok("POST Generic").build();
     }
 	
 	@PUT

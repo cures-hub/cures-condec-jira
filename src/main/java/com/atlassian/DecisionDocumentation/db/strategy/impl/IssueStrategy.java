@@ -43,6 +43,7 @@ import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.util.ErrorCollection;
 import com.google.common.collect.ImmutableMap;
 
 /**
@@ -129,9 +130,8 @@ public class IssueStrategy implements Strategy {
 		}
 	}
 
-	//TODO TEST
 	@Override 
-	public void deleteDecisionComponent(DecisionRepresentation dec, ApplicationUser user) {
+	public boolean deleteDecisionComponent(DecisionRepresentation dec, ApplicationUser user) {
 		IssueService issueService = ComponentGetter.getIssueService();
 		IssueService.IssueResult issue = issueService.getIssue(user, dec.getId());
 		if (issue.isValid()) {
@@ -140,11 +140,18 @@ public class IssueStrategy implements Strategy {
 				for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
 					LOGGER.error(entry.getKey() + ": " + entry.getValue());
 				}
+				return false;
 			} else {
-				issueService.delete(user, result);
+				ErrorCollection errorCollection = issueService.delete(user, result);
+				if(errorCollection != null) {
+					return false;
+				} else {
+					return true;
+				}
 			}
 		} else {
 			LOGGER.error("Issue could not be found.");
+			return false;
 		}
 	}
 

@@ -1,5 +1,6 @@
 package com.atlassian.DecisionDocumentation.db.strategy.impl;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -120,10 +121,40 @@ public class AoStrategy implements Strategy {
 			return null;
 		}	
 	}
-	//TODO implement
+	
 	@Override
-	public void deleteDecisionComponent(DecisionRepresentation dec, ApplicationUser user) {
-		
+	public boolean deleteDecisionComponent(final DecisionRepresentation dec, final ApplicationUser user) {
+		final ActiveObjects ao = ComponentGetter.getAo();
+		return ao.executeInTransaction(new TransactionCallback<Boolean>()
+        {
+			@Override
+            public Boolean doInTransaction()
+            {
+				for (DecisionComponentEntity decComponent : ao.find(DecisionComponentEntity.class))
+                {
+                    if(decComponent.getID() == dec.getId()) {
+                    	try {
+							decComponent.getEntityManager().delete(decComponent);
+						} catch (SQLException e) {
+							return false;
+						} finally {
+	                    	for (LinkEntity linkEntity : ao.find(LinkEntity.class))
+	                        {
+	                        	if(linkEntity.getIngoingId() == dec.getId() || linkEntity.getOutgoingId() == dec.getId()) {
+	                        		try {
+										linkEntity.getEntityManager().delete(linkEntity);
+									} catch (SQLException e) {
+										return false;
+									}
+	                        	}
+	                        }
+						}
+                    	return true;
+                    }
+                }
+                return false;
+            }
+        });
 	}
 
 	@Override

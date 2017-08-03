@@ -18,7 +18,7 @@ import com.atlassian.jira.user.ApplicationUser;
 public interface Strategy {
 	public Data createDecisionComponent(DecisionRepresentation dec, ApplicationUser user);
 	public Data editDecisionComponent(DecisionRepresentation dec, ApplicationUser user);
-	public void deleteDecisionComponent(DecisionRepresentation dec, ApplicationUser user);
+	public boolean deleteDecisionComponent(DecisionRepresentation dec, ApplicationUser user);
 	
 	public Long createLink(LinkRepresentation link, ApplicationUser user);
 	public void deleteLink(LinkRepresentation link, ApplicationUser user);

@@ -95,7 +95,7 @@ var editDecisionComponent = function(issueId, summary, description, callback){
 		}
 	});
 }
-var deleteDecisionComponent = function(issueId){
+var deleteDecisionComponent = function(issueId, callback){
 	var pathname = window.location.pathname;
 	var stringArray = pathname.split("/");
 	var projectKey = stringArray[stringArray.length-1];
@@ -105,7 +105,14 @@ var deleteDecisionComponent = function(issueId){
 	};
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?actionType=delete", jsondata, function(err, data) {
 		if (err!=null){
+			var errorFlag = AJS.flag({
+				type: 'error',
+				close: 'auto',
+				title: 'Error',
+				body: 'Decision Component has not been deleted. Error Code: ' + err
+			});
 		} else {
+			callback(data);
 		}
 	});
 }
@@ -392,9 +399,43 @@ var createContextMenuForTreeNodes = function(projectKey){
 						var modal = document.getElementById('ContextMenuModal');
 						modal.style.display = "block";
 					}
-				}/*,
-				"delete": {name: "Delete Decision Component"}
-				*/
+				},
+				"delete": {name: "Delete Decision Component", 
+					callback: function(key, options){
+						//set header
+						var closeX = document.getElementById('modal-close-x');
+						closeX.insertAdjacentHTML('beforeBegin', 'Delete Decision Component');
+						
+						var context = options.$trigger.context;
+						var content = document.getElementById('modal-content');
+						content.insertAdjacentHTML('afterBegin',
+							'<p><input id="abort-submit" type="submit" value="Abort Action" style="float:right;"/><input id="form-input-submit" type="submit" value="Delete Decision Component" style="float:right;"/></p>'
+						);
+						
+						var abortButton = document.getElementById('abort-submit');
+						abortButton.onclick = function(){
+							closeModal();
+						};
+						var submitButton = document.getElementById('form-input-submit');
+						submitButton.onclick = function (){
+							deleteDecisionComponent(context.id, function(data){
+								var successFlag = AJS.flag({
+									type: 'success',
+									close: 'auto',
+									title: 'Success',
+									body: 'Decisioncomponent has been deleted'
+								});
+								var nodeId = $.jstree.reference('#evts').get_selected()[0];
+								buildTreeViewer(projectKey, nodeId);
+							});
+							closeModal();
+						};
+						
+						// Get the modal window
+						var modal = document.getElementById('ContextMenuModal');
+						modal.style.display = "block";
+					}
+				}
 			}
 		});
 
