@@ -175,9 +175,11 @@ public class IssueStrategy implements Strategy {
 		try {
 			issueLinkManager.createIssueLink(link.getOutgoingId(), link.getIngoingId(), typeId, sequence, user);
 		} catch (CreateException e) {
+			LOGGER.error("CreateException");
 			// TODO Logger issuelink was not created
 			return (long) 0;
 		} catch (NullPointerException e) {
+			LOGGER.error("NullPointerException");
 		    // some variable is null
 			// TODO Logger issuelink was not created
 			return (long) 0;
@@ -189,6 +191,7 @@ public class IssueStrategy implements Strategy {
 		}
 		IssueLink issueLink = issueLinkManager.getIssueLink(link.getOutgoingId(), link.getIngoingId(), typeId);
 		if(issueLink == null) {
+			LOGGER.error("issueLink == null");
 			return (long) 0;
 		}
 		return issueLink.getId();
@@ -491,6 +494,9 @@ public class IssueStrategy implements Strategy {
 			htmlClass="rationale";
 		}
 		node.setHtmlClass(htmlClass);
+		
+		long htmlId = issue.getId();
+		node.setHtmlId(htmlId);
 		
 		if(currentDepth<depth){
 			List<Node> children = new ArrayList<Node>();

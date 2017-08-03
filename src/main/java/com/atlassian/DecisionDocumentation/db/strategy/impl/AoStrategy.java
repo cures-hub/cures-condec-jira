@@ -477,6 +477,9 @@ public class AoStrategy implements Strategy {
 			}
 			node.setHtmlClass(htmlClass);
 			
+			long htmlId = dec.getID();
+			node.setHtmlId(htmlId);
+			
 			if(currentDepth<depth){
 				List<Node> children = new ArrayList<Node>();
 				final List<DecisionComponentEntity> inwardLinkedDecList = new ArrayList<DecisionComponentEntity>();

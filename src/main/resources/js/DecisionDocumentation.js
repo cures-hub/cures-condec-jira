@@ -263,14 +263,15 @@ var createContextMenuForTreeNodes = function(projectKey){
 													title: 'Success',
 													body: type + ' has been created.'
 												});
-												createLink(options.$trigger.context.id, data.id, "support", function(data){
+												var idOfNewObject = data.id;
+												createLink(options.$trigger.context.id, idOfNewObject, "support", function(data){
 													var successFlag = AJS.flag({
 														type: 'success',
 														close: 'auto',
 														title: 'Success',
 														body: 'IssueLink has been created.'
 													});
-													buildTreeViewer(projectKey, data.id);
+													buildTreeViewer(projectKey, idOfNewObject);
 												});
 											});
 									    } else if (selectedNatureOfArgument == "contra"){
@@ -281,14 +282,15 @@ var createContextMenuForTreeNodes = function(projectKey){
 													title: 'Success',
 													body: type + ' has been created.'
 												});
-												createLink(options.$trigger.context.id, data.id, "attack", function(data){
+												var idOfNewObject = data.id;
+												createLink(options.$trigger.context.id, idOfNewObject, "attack", function(data){
 													var successFlag = AJS.flag({
 														type: 'success',
 														close: 'auto',
 														title: 'Success',
 														body: 'IssueLink has been created.'
 													});
-													buildTreeViewer(projectKey, data.id);
+													buildTreeViewer(projectKey, idOfNewObject);
 												});
 											});
 									    } else if (selectedNatureOfArgument == "comment"){
@@ -299,14 +301,15 @@ var createContextMenuForTreeNodes = function(projectKey){
 													title: 'Success',
 													body: type + ' has been created.'
 												});
-												createLink(options.$trigger.context.id, data.id, "comment", function(data){
+												var idOfNewObject = data.id;
+												createLink(options.$trigger.context.id, idOfNewObject, "comment", function(data){
 													var successFlag = AJS.flag({
 														type: 'success',
 														close: 'auto',
 														title: 'Success',
 														body: 'IssueLink has been created.'
 													});
-													buildTreeViewer(projectKey, data.id);
+													buildTreeViewer(projectKey, idOfNewObject);
 												});
 											});
 									    }
