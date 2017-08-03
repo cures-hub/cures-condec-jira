@@ -82,23 +82,43 @@ public class AoStrategy implements Strategy {
 	}
 
 	@Override
-	public void editDecisionComponent(final DecisionRepresentation dec, ApplicationUser user) {
+	public Data editDecisionComponent(final DecisionRepresentation dec, ApplicationUser user) {
 		final ActiveObjects ao = ComponentGetter.getAo();
-		ao.executeInTransaction(new TransactionCallback<Void>()
+		DecisionComponentEntity decComponent = ao.executeInTransaction(new TransactionCallback<DecisionComponentEntity>()
         {
 			@Override
-            public Void doInTransaction()
+            public DecisionComponentEntity doInTransaction()
             {
 				for (DecisionComponentEntity decComponent : ao.find(DecisionComponentEntity.class))
                 {
                     if(decComponent.getID() == dec.getId()) {
                     	decComponent.setDescription(dec.getDescription());
                     	decComponent.save();
+                    	return decComponent;
                     }
                 }
                 return null;
             }
         });
+		if(decComponent != null) {
+			Data data = new Data();
+			
+			data.setText(decComponent.getKey() + " / " + decComponent.getName());
+			data.setId(String.valueOf(decComponent.getID()));
+			
+			NodeInfo nodeInfo = new NodeInfo();
+			nodeInfo.setId(Long.toString(decComponent.getID()));
+			nodeInfo.setKey(decComponent.getKey());
+			nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + decComponent.getID());//TODO change
+			nodeInfo.setIssueType(decComponent.getType());
+			nodeInfo.setDescription(decComponent.getDescription());
+			nodeInfo.setSummary(decComponent.getName());
+			data.setNodeInfo(nodeInfo);
+			
+			return data;
+		} else {
+			return null;
+		}	
 	}
 	//TODO implement
 	@Override
@@ -220,6 +240,7 @@ public class AoStrategy implements Strategy {
 		return decList;
 	}
 
+	//treeviewer
 	@Override
 	public Core createCore(Project project) {
 		Core core = new Core();
@@ -334,6 +355,7 @@ public class AoStrategy implements Strategy {
 		return data;
 	}
 
+	//Treant
 	@Override
 	public Treant createTreant(final String issueKey, int depth) {
 		Treant treant = new Treant();
@@ -359,13 +381,14 @@ public class AoStrategy implements Strategy {
         });
 		
 		if (dec != null) {
-			Map<String, String> nodeContent = ImmutableMap.of("name", dec.getKey() + " / " + dec.getName(),
-					"title", dec.getType());
+			Map<String, String> nodeContent = ImmutableMap.of("name", dec.getName(),
+					"title", dec.getType(),
+					"desc", dec.getKey());
 			node.setNodeContent(nodeContent);
 			
 			//Map<String, String> link = ImmutableMap.of("href", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + 
 			//		"/browse/" + dec.getKey()); //TODO change
-					//node.setLink(link);
+			//node.setLink(link);
 			
 			String htmlClass;
 			String issueType = dec.getType().toLowerCase();

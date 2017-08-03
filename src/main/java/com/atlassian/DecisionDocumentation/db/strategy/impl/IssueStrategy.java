@@ -94,21 +94,38 @@ public class IssueStrategy implements Strategy {
 	}
 
 	@Override
-	public void editDecisionComponent(DecisionRepresentation dec, ApplicationUser user) {
+	public Data editDecisionComponent(DecisionRepresentation dec, ApplicationUser user) {
 		IssueService issueService = ComponentGetter.getIssueService();
-		IssueService.IssueResult issueResult = issueService.getIssue(user, dec.getId());
-		MutableIssue issue = issueResult.getIssue();
+		IssueService.IssueResult issueRes = issueService.getIssue(user, dec.getId());
+		MutableIssue issueToBeUpdated = issueRes.getIssue();
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
 		issueInputParameters.setSummary(dec.getName());
 		issueInputParameters.setDescription(dec.getDescription());
-		IssueService.UpdateValidationResult result = issueService.validateUpdate(user, issue.getId(),
+		IssueService.UpdateValidationResult result = issueService.validateUpdate(user, issueToBeUpdated.getId(),
 				issueInputParameters);
 		if (result.getErrorCollection().hasAnyErrors()) {
 			for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
 				LOGGER.error(entry.getKey() + ": " + entry.getValue());
 			}
+			return null;
 		} else {
-			issueService.update(user, result);
+			IssueResult issueResult = issueService.update(user, result);
+			
+			Data data = new Data();
+			Issue issue = issueResult.getIssue();
+			data.setText(issue.getKey() + " / " + issue.getSummary());
+			data.setId(String.valueOf(issue.getId()));
+			
+			NodeInfo nodeInfo = new NodeInfo();
+			nodeInfo.setId(Long.toString(issue.getId()));
+			nodeInfo.setKey(issue.getKey());
+			nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + issue.getId());
+			nodeInfo.setIssueType(issue.getIssueType().getName());
+			nodeInfo.setDescription(issue.getDescription());
+			nodeInfo.setSummary(issue.getSummary());
+			data.setNodeInfo(nodeInfo);
+			
+			return data;
 		}
 	}
 
@@ -454,9 +471,9 @@ public class IssueStrategy implements Strategy {
 
 	private Node createNode(Issue issue, int depth, int currentDepth) {
 		Node node = new Node();
-		Map<String, String> nodeContent = ImmutableMap.of("name", issue.getKey() + " / " + issue.getSummary(),
-				"title", issue.getIssueType().getName());
-		
+		Map<String, String> nodeContent = ImmutableMap.of("name", issue.getSummary(),
+				"title", issue.getIssueType().getName(),
+				"desc", issue.getKey());
 		node.setNodeContent(nodeContent);
 
 		//Map<String, String> link = ImmutableMap.of("href", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/browse/" + issue.getKey());

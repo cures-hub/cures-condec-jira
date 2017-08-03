@@ -12,13 +12,12 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
 /**
- * 
  * @author Ewald Rode
  * @description
  */
 public interface Strategy {
 	public Data createDecisionComponent(DecisionRepresentation dec, ApplicationUser user);
-	public void editDecisionComponent(DecisionRepresentation dec, ApplicationUser user);
+	public Data editDecisionComponent(DecisionRepresentation dec, ApplicationUser user);
 	public void deleteDecisionComponent(DecisionRepresentation dec, ApplicationUser user);
 	
 	public Long createLink(LinkRepresentation link, ApplicationUser user);

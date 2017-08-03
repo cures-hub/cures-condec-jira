@@ -10,9 +10,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.DecisionDocumentation.db.strategy.Strategy;
 import com.atlassian.DecisionDocumentation.db.strategy.impl.AoStrategy;
 import com.atlassian.DecisionDocumentation.db.strategy.impl.IssueStrategy;
@@ -36,7 +33,6 @@ import com.google.common.collect.ImmutableMap;
  */
 @Path("/decisions")
 public class DecisionsRest {
-	private static final Logger LOGGER = LoggerFactory.getLogger(DecisionsRest.class);
 
 	@GET
     @Produces({MediaType.APPLICATION_JSON})
@@ -118,9 +114,11 @@ public class DecisionsRest {
 	    			}
 	    			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Creation of Issue failed.")).build();
 	    		} else if(actionType.equalsIgnoreCase("edit")) {
-	    			//TODO: IssueStrategy edit
-	    			strategy.editDecisionComponent(dec, user);
-	    			return Response.ok("edit success").build();
+	    			final Data data = strategy.editDecisionComponent(dec, user);
+	    			if(data != null) {
+	    				return Response.status(Status.OK).entity(data).build();
+	    			}
+	    			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Update of Issue failed.")).build();
 	    		} else if(actionType.equalsIgnoreCase("delete")) {
 	    			//TODO: IssueStrategy delete
 	    			strategy.deleteDecisionComponent(dec, user);
@@ -139,9 +137,11 @@ public class DecisionsRest {
 	    			}
 	    			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Creation of Issue failed.")).build();
 	    		} else if(actionType.equalsIgnoreCase("edit")) {
-	    			//TODO: IssueStrategy edit
-	    			strategy.editDecisionComponent(dec, user);
-	    			return Response.ok("edit success").build();
+	    			final Data data = strategy.editDecisionComponent(dec, user);
+	    			if(data != null) {
+	    				return Response.status(Status.OK).entity(data).build();
+	    			}
+	    			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Update of Issue failed.")).build();
 	    		} else if(actionType.equalsIgnoreCase("delete")) {
 	    			//TODO: IssueStrategy delete
 	    			strategy.deleteDecisionComponent(dec, user);

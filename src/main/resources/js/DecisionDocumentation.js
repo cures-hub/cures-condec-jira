@@ -155,7 +155,6 @@ var deleteLink = function(parentId, childId, linkType, callback){
 }
 
 var createContextMenuForTreeNodes = function(projectKey){
-	//#####
 	$(function() {
 		$.contextMenu({
 			selector: '.rationale, .context, .problem, .solution',
@@ -248,7 +247,6 @@ var createContextMenuForTreeNodes = function(projectKey){
 						});
 						
 						var submitButton = document.getElementById('form-input-submit');
-						//add ClickHandler
 						submitButton.onclick = function (){
 							var name = document.getElementById('form-input-name').value;
 							var type = document.getElementById('form-input-type').value;
@@ -272,9 +270,9 @@ var createContextMenuForTreeNodes = function(projectKey){
 														title: 'Success',
 														body: 'IssueLink has been created.'
 													});
+													buildTreeViewer(projectKey, data.id);
 												});
 											});
-											//TODO add node in treeviewer
 									    } else if (selectedNatureOfArgument == "contra"){
 											createDecisionComponent(name, type, function(data){
 												var successFlag = AJS.flag({
@@ -290,9 +288,9 @@ var createContextMenuForTreeNodes = function(projectKey){
 														title: 'Success',
 														body: 'IssueLink has been created.'
 													});
+													buildTreeViewer(projectKey, data.id);
 												});
 											});
-											//TODO add node in treeviewer
 									    } else if (selectedNatureOfArgument == "comment"){
 											createDecisionComponent(name, type, function(data){
 												var successFlag = AJS.flag({
@@ -308,9 +306,9 @@ var createContextMenuForTreeNodes = function(projectKey){
 														title: 'Success',
 														body: 'IssueLink has been created.'
 													});
+													buildTreeViewer(projectKey, data.id);
 												});
 											});
-											//TODO add node in treeviewer
 									    }
 									}
 								}
@@ -322,25 +320,23 @@ var createContextMenuForTreeNodes = function(projectKey){
 										title: 'Success',
 										body: type + ' has been created.'
 									});
-									createLink(options.$trigger.context.id, data.id, "contain", function(data){
+									var idOfNewObject = data.id;
+									createLink(options.$trigger.context.id, idOfNewObject, "contain", function(data){
 										var successFlag = AJS.flag({
 											type: 'success',
 											close: 'auto',
 											title: 'Success',
 											body: 'IssueLink has been created.'
 										});
+										buildTreeViewer(projectKey, idOfNewObject);
 									});
 								});
-								//TODO add node in treeviewer
 							}
 							closeModal();
 						};
 						
-						// Get the modal window
 						var modal = document.getElementById('ContextMenuModal');
 						modal.style.display = "block";
-						
-						//TODO reload both trees
 					}
 				},
 				"edit": {name: "Edit Decision Component", 
@@ -348,15 +344,29 @@ var createContextMenuForTreeNodes = function(projectKey){
 						//set header
 						var closeX = document.getElementById('modal-close-x');
 						closeX.insertAdjacentHTML('beforeBegin', 'Edit Decision Component');
-						//set content
-						var content = document.getElementById('modal-content');
-						//TODO get title of triggerelement
+						
 						var context = options.$trigger.context;
+						var content = document.getElementById('modal-content');
 						content.insertAdjacentHTML('afterBegin',
 							'<p><label for="form-input-name" style="display:block;width:45%;float:left;">Name</label><input id="form-input-name" type="text" name="name" value="' + context.textContent + '" style="width:50%;" readonly/></p>' +
 							'<p><label for="form-input-description" style="display:block;width:45%;float:left;">Description</label><input id="form-input-description" type="text" name="type" placeholder="Type in description" style="width:50%;"/></p>' +
 							'<p><input id="form-input-submit" type="submit" value="Edit Decision Component" style="float:right;"/></p>'
 						);
+						
+						var children = context.childNodes;
+						for(var index = 0; index < children.length; index++){
+							if (children.hasOwnProperty(index)) { 
+								if(index === 0){
+									document.getElementById('form-input-name').value = children[index].innerText;
+								} else if(index === 1){
+									//title, not needed right now
+								} else if(index === 2){
+									//description, not needed right now
+								} else {
+									//not implemented, not needed right now
+								}
+							}
+						}
 						
 						var submitButton = document.getElementById('form-input-submit');
 						submitButton.onclick = function (){
@@ -369,7 +379,8 @@ var createContextMenuForTreeNodes = function(projectKey){
 									title: 'Success',
 									body: 'Decisioncomponent has been updated'
 								});
-								//TODO update description in treeviewer
+								var nodeId = $.jstree.reference('#evts').get_selected()[0];
+								buildTreeViewer(projectKey, nodeId);
 							});
 							closeModal();
 						};
@@ -377,15 +388,6 @@ var createContextMenuForTreeNodes = function(projectKey){
 						// Get the modal window
 						var modal = document.getElementById('ContextMenuModal');
 						modal.style.display = "block";
-						
-						//TODO reload both trees
-						$('#evts').jstree(true).refresh();
-						/*
-							var tree = jQuery.jstree._reference("#files");
-							var currentNode = tree._get_node(null, false);
-							var parentNode = tree._get_parent(currentNode);
-							tree.refresh(parentNode);
-						*/
 					}
 				}/*,
 				"delete": {name: "Delete Decision Component"}
@@ -397,7 +399,6 @@ var createContextMenuForTreeNodes = function(projectKey){
 			console.log('clicked', this);
 		})
 	});
-	//#####
 };
 var buildTreant = function(projectKey, node){
 	var depthOfTree = document.getElementById("depthOfTreeInput").value;
@@ -459,10 +460,10 @@ var addOptionToDecisionComponent = function(type, parentNode){
 						});
 					});
 					var tree = $('#evts').jstree(true);
-					var nodeId = tree.create_node(parentNode.key, data, 'last', tree.redraw(true), true);
-					//TODO treant refresh()
+					var nodeId = tree.create_node('' + parentNode.id, data, 'last', tree.redraw(true), true);
+					tree.deselect_all();
+					tree.select_node(nodeId);
 				});
-				//TODO add node in treeviewer
 			});
 		}
 	} else if (type === "Argument"){
@@ -493,10 +494,10 @@ var addOptionToDecisionComponent = function(type, parentNode){
 								});
 							});
 							var tree = $('#evts').jstree(true);
-							var nodeId = tree.create_node(parentNode.key, data, 'last', tree.redraw(true), true);
-							//TODO treant refresh()
+							var nodeId = tree.create_node('' + parentNode.id, data, 'last', tree.redraw(true), true);
+							tree.deselect_all();
+							tree.select_node(nodeId);
 						});
-						//TODO add node in treeviewer
 				   } else if (selectedNatureOfArgument == "contra"){
 						createDecisionComponent(tempString, type, function(data){
 							var successFlag = AJS.flag({
@@ -514,10 +515,10 @@ var addOptionToDecisionComponent = function(type, parentNode){
 								});
 							});
 							var tree = $('#evts').jstree(true);
-							var nodeId = tree.create_node(parentNode.key, data, 'last', tree.redraw(true), true);
-							//TODO treant refresh()
+							var nodeId = tree.create_node('' + parentNode.id, data, 'last', tree.redraw(true), true);
+							tree.deselect_all();
+							tree.select_node(nodeId);
 						});
-						//TODO add node in treeviewer
 				   } else if (selectedNatureOfArgument == "comment"){
 						createDecisionComponent(tempString, type, function(data){
 							var successFlag = AJS.flag({
@@ -535,13 +536,13 @@ var addOptionToDecisionComponent = function(type, parentNode){
 								});
 							});
 							var tree = $('#evts').jstree(true);
-							var nodeId = tree.create_node(parentNode.key, data, 'last', tree.redraw(true), true);
-							//TODO treant refresh()
+							var nodeId = tree.create_node('' + parentNode.id, data, 'last', tree.redraw(true), true);
+							tree.deselect_all();
+							tree.select_node(nodeId);
 						});
-						//TODO add node in treeviewer
-				   }
-			   }
-			 }
+				    }
+			    }
+			}
 		});
 	} else {
 		document.getElementById(type).insertAdjacentHTML('beforeend', '<p>Do you want to add an additional ' + type + '?<input type="text" id="inputField' + type + '" placeholder="Name of ' + type + '"><input type="button" name="CreateAndLinkDecisionComponent' + type+ '" id="CreateAndLinkDecisionComponent' + type+ '" value="Add ' + type + '"/></p>');
@@ -568,20 +569,27 @@ var addOptionToDecisionComponent = function(type, parentNode){
 					});
 				});
 				var tree = $('#evts').jstree(true);
-				var nodeId = tree.create_node(parentNode.key, data, 'last', tree.redraw(true), true);
-				//TODO treant refresh()
+				var nodeId = tree.create_node('' + parentNode.id, data, 'last', tree.redraw(true), true);
+				tree.deselect_all();
+				tree.select_node(nodeId);
 			});
 		});
 	}
 };
 var fillAccordion = function(data, projectKey, node){
 	var detailsElement = document.getElementById("Details");
+	detailsElement.insertAdjacentHTML('beforeend', '<p>' + node.key + ' / ' + node.summary + '<input type="button" name="updataIssue" id="updateIssue" value="Update Issue"/></p>' + 
+		'<p><textarea id="IssueDescription" style="width:99%; height:auto;border: 1px solid rgba(204,204,204,1); ">' + 
+		node.description + '</textarea></p>'
+	);
+	/*
 	detailsElement.insertAdjacentHTML('beforeend', '<p><a href="' +
 		AJS.contextPath() + '/browse/' + node.key + '">' + node.key + 
 		' / ' + node.summary + '</a><input type="button" name="updataIssue" id="updateIssue" value="Update Issue"/></p>' + 
 		'<p><textarea id="IssueDescription" style="width:99%; height:auto;border: 1px solid rgba(204,204,204,1); ">' + 
 		node.description + '</textarea></p>'
 	);
+	*/
 	detailsElement.style.display = "block";
 	var updateButton = document.getElementById("updateIssue");
 	updateButton.addEventListener('click', function(event){
@@ -592,7 +600,7 @@ var fillAccordion = function(data, projectKey, node){
 				title: 'Success',
 				body: 'Decisioncomponent has been updated'
 			});
-			//TODO update description in treeviewer
+			buildTreeViewer(projectKey, node.id);
 		});
 	});
 	
@@ -623,10 +631,15 @@ var fillAccordion = function(data, projectKey, node){
 			var issueType = child.data.issueType;
 			var array= ["Problem", "Issue", "Goal", "Solution", "Alternative", "Claim", "Context", "Assumption", "Constraint", "Implication", "Assessment", "Argument"];
 			if(array.indexOf(issueType)!=-1){
+				document.getElementById(issueType).insertAdjacentHTML('beforeend', '<div class="issuelinkbox"><p>' + child.data.key +
+					' / ' + child.data.summary + '</p>' + '<p>Description: ' + child.data.description + '</p></div>'
+				);
+				/*
 				document.getElementById(issueType).insertAdjacentHTML('beforeend', '<div class="issuelinkbox"><p><a href="' +
 					AJS.contextPath() + '/browse/' + child.data.key + '">' + child.data.key +
 					' / ' + child.data.summary + '</a></p>' + '<p>Description: ' + child.data.description + '</p></div>'
 				);
+				*/
 				document.getElementById(child.data.issueType).style.display = "block";
 			}
 		}
@@ -635,12 +648,16 @@ var fillAccordion = function(data, projectKey, node){
 		addOptionsToAllDecisionComponents(data.node.data);
 	}
 }
-var buildTreeViewer = function(projectKey){
+var buildTreeViewer = function(projectKey, nodeId){
 	var treeJSONUrl = AJS.contextPath() + "/rest/treeviewerrest/latest/treeviewer.json?projectKey=" + projectKey;
 	getJSON(treeJSONUrl, function(err, data) {
 		if (err!=null){
 			displayGetJsonError(err);
 		} else {
+			if($('#evts').jstree(true)){
+				var tree = $('#evts').jstree(true);
+				tree.destroy();
+			}
 			$('#evts')
 				.on("select_node.jstree", function (e,data) {
 					setBack();
@@ -648,13 +665,17 @@ var buildTreeViewer = function(projectKey){
 					fillAccordion(data, projectKey, node);
 					buildTreant(projectKey, node);
 				})
+				.on('ready.jstree', function(e, data){
+					if(nodeId){
+						console.log($('#evts').jstree(true).select_node("" + nodeId));
+					}
+				})
 				.jstree(data);
 			document.getElementById("Details").style.display = "block";
-				/*Suchfeld Binding*/
 			$(".search-input").keyup(function() {
-					var searchString = $(this).val();
-					$('#evts').jstree(true).search(searchString);
-				});
+				var searchString = $(this).val();
+				$('#evts').jstree(true).search(searchString);
+			});
 		}
 	});
 }
@@ -711,10 +732,10 @@ var initializeSite = function(){
 	
 	/*ClickHandler for accordionelements*/
 	$(document).ready(function(){
-			$("dt").click(function(){
-				$(this).next("dd").slideToggle("fast");
-			});
+		$("dt").click(function(){
+			$(this).next("dd").slideToggle("fast");
 		});
+	});
 	/*ClickHandler for the creation of decisions*/
 	var createDecisionButton = document.getElementById("CreateDecision");
 	var DecisionInputField = document.getElementById("DecisionInputField");
@@ -731,7 +752,6 @@ var initializeSite = function(){
 			});
 			var tree = $('#evts').jstree(true);
 			var nodeId = tree.create_node('#', data, 'last', tree.redraw(true), true);
-			tree.redraw();
 			tree.deselect_all();
 			tree.select_node(nodeId);
 		});
