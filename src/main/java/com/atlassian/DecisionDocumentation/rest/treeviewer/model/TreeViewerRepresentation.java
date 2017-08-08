@@ -27,12 +27,14 @@ public class TreeViewerRepresentation {
 
 	@XmlElement
 	private Map<String, Boolean> search;
+	
 
 	public TreeViewerRepresentation() {}
 
 	public TreeViewerRepresentation(Strategy strategy, Project project) {
 		this.core = strategy.createCore(project);
-		this.plugins = new HashSet<String>(Arrays.asList("wholerow", "sort", "search", ""));
+		//TODO: Drag and Drop ... https://www.jstree.com/plugins/
+		this.plugins = new HashSet<String>(Arrays.asList("wholerow", "sort", "search", "contextmenu", ""));
 		this.search = ImmutableMap.of("show_only_matches", true);
 	}
 	

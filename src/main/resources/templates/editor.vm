@@ -32,34 +32,34 @@
 					<div id="container" class="equalMarginRegulator">
 						<dl>
 							<dt class="ueberschrift">Details<a href="#" id="button" class="closed">Details</a></dt>
-							<dd class="ausklappbar" id="Details">No Element was selected</dd>
+							<dd class="ausklappbar" id="Details">No Element has been selected</dd>
 							<dt class="ueberschrift">Problems<a href="#" id="button" class="closed">Details</a></dt>
-							<dd class="ausklappbar"  id="Problem">No Element was selected</dd>
+							<dd class="ausklappbar"  id="Problem">No Element has been selected</dd>
 							<dt class="ueberschrift">Issues<a href="#" id="button" class="closed">Details</a></dt>
-							<dd class="ausklappbar"  id="Issue">No Element was selected</dd>
+							<dd class="ausklappbar"  id="Issue">No Element has been selected</dd>
 							<dt class="ueberschrift">Goals<a href="#" id="button" class="closed">Details</a></dt>
-							<dd class="ausklappbar"  id="Goal">No Element was selected</dd>
+							<dd class="ausklappbar"  id="Goal">No Element has been selected</dd>
 							<dt class="ueberschrift">Solutions<a href="#" id="button" class="closed">Details</a></dt>
-							<dd class="ausklappbar"  id="Solution">No Element was selected</dd>
+							<dd class="ausklappbar"  id="Solution">No Element has been selected</dd>
 							<dt class="ueberschrift">Alternatives<a href="#" id="button" class="closed">Details</a></dt>
-							<dd class="ausklappbar"  id="Alternative">No Element was selected</dd>
+							<dd class="ausklappbar"  id="Alternative">No Element has been selected</dd>
 							<dt class="ueberschrift">Claims<a href="#" id="button" class="closed">Details</a></dt>
-							<dd class="ausklappbar"  id="Claim">No Element was selected</dd>
+							<dd class="ausklappbar"  id="Claim">No Element has been selected</dd>
 							<dt class="ueberschrift">Contexts<a href="#" id="button" class="closed">Details</a></dt>
-							<dd class="ausklappbar"  id="Context">No Element was selected</dd>
+							<dd class="ausklappbar"  id="Context">No Element has been selected</dd>
 							<dt class="ueberschrift">Assumptions<a href="#" id="button" class="closed">Details</a></dt>
-							<dd class="ausklappbar"  id="Assumption">No Element was selected</dd>
+							<dd class="ausklappbar"  id="Assumption">No Element has been selected</dd>
 							<dt class="ueberschrift">Constraints<a href="#" id="button" class="closed">Details</a></dt>
-							<dd class="ausklappbar"  id="Constraint">No Element was selected</dd>
+							<dd class="ausklappbar"  id="Constraint">No Element has been selected</dd>
 							<dt class="ueberschrift">Implications<a href="#" id="button" class="closed">Details</a></dt>
-							<dd class="ausklappbar"  id="Implication">No Element was selected</dd>
+							<dd class="ausklappbar"  id="Implication">No Element has been selected</dd>
 							<dt class="ueberschrift">Assessments<a href="#" id="button" class="closed">Details</a></dt>
-							<dd class="ausklappbar"  id="Assessment">No Element was selected</dd>
+							<dd class="ausklappbar"  id="Assessment">No Element has been selected</dd>
 							<dt class="ueberschrift">Arguments<a href="#" id="button" class="closed">Details</a></dt>
-							<dd class="ausklappbar"  id="Argument">No Element was selected</dd>
+							<dd class="ausklappbar"  id="Argument">No Element has been selected</dd>
 						</dl>
 					</div>
-					<div class="chart equalMarginRegulator" id="treant-container"><p>No Element was selected</p></div>
+					<div class="chart equalMarginRegulator" id="treant-container"><p>No Element has been selected</p></div>
 				</div>
 			</div>
 		</div>

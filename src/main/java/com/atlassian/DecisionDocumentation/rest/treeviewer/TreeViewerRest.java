@@ -3,6 +3,7 @@ package com.atlassian.DecisionDocumentation.rest.treeviewer;
 import com.atlassian.DecisionDocumentation.db.strategy.Strategy;
 import com.atlassian.DecisionDocumentation.db.strategy.impl.AoStrategy;
 import com.atlassian.DecisionDocumentation.db.strategy.impl.IssueStrategy;
+import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Core;
 import com.atlassian.DecisionDocumentation.rest.treeviewer.model.TreeViewerRepresentation;
 import com.atlassian.DecisionDocumentation.util.ComponentGetter;
 import com.atlassian.jira.component.ComponentAccessor;
@@ -55,12 +56,16 @@ public class TreeViewerRest {
 					} else {
 						strategy = new AoStrategy();
 					}
-					TreeViewerRepresentation treeViewerRep = new TreeViewerRepresentation(strategy, project);
-					return Response.ok(treeViewerRep).build();
+					//TreeViewerRepresentation treeViewerRep = new TreeViewerRepresentation(strategy, project);
+					//return Response.ok(treeViewerRep).build();
+					Core core = strategy.createCore(project);
+					return Response.ok(core).build();
 				} else {
 					Strategy strategy = new AoStrategy();
-					TreeViewerRepresentation treeViewerRep = new TreeViewerRepresentation(strategy, project);
-					return Response.ok(treeViewerRep).build();
+					//TreeViewerRepresentation treeViewerRep = new TreeViewerRepresentation(strategy, project);
+					//return Response.ok(treeViewerRep).build();
+					Core core = strategy.createCore(project);
+					return Response.ok(core).build();
 				}
 			}
 		} else {

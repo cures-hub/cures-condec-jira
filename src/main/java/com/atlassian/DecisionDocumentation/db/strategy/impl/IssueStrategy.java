@@ -142,15 +142,18 @@ public class IssueStrategy implements Strategy {
 				}
 				return false;
 			} else {
+				//TODO delete
+				LOGGER.error("before delete issue");
 				ErrorCollection errorCollection = issueService.delete(user, result);
-				if(errorCollection != null) {
+				if (errorCollection.hasAnyErrors()){
 					return false;
 				} else {
 					return true;
 				}
 			}
 		} else {
-			LOGGER.error("Issue could not be found.");
+			//TODO correct
+			LOGGER.error("Issue could not be found. blabla");
 			return false;
 		}
 	}
