@@ -970,7 +970,7 @@ function buildTreeViewer(projectKey, nodeId) {
                                     //set header
                                     var closeX = document.getElementById('modal-close-x');
                                     closeX.insertAdjacentHTML('beforeBegin', 'Delete Decision Component');
-                                    
+
                                     var content = document.getElementById('modal-content');
                                     content.insertAdjacentHTML('afterBegin',
                                         '<p><input id="abort-submit" type="submit" value="Abort Action" style="float:right;"/><input id="form-input-submit" type="submit" value="Delete Decision Component" style="float:right;"/></p>'

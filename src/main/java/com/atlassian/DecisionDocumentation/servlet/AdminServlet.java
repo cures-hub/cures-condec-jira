@@ -3,7 +3,7 @@ package com.atlassian.DecisionDocumentation.servlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.DecisionDocumentation.rest.Config.model.ConfigRepresentation;
+import com.atlassian.DecisionDocumentation.servlet.model.ConfigRepresentation;
 import com.atlassian.DecisionDocumentation.util.ComponentGetter;
 import com.atlassian.DecisionDocumentation.util.Pair;
 import com.atlassian.jira.component.ComponentAccessor;
