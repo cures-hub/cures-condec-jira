@@ -15,7 +15,7 @@ import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 
 /**
  * @author Ewald Rode
- * @description
+ * @description handles plugin initialization
  */
 @Named("PluginListener")
 public class PluginListener implements InitializingBean {

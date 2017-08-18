@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.*;
 
 /**
  * @author Ewald Rode
- * @description
+ * @description model class for treant
  */
 @XmlRootElement(name = "treant")
 @XmlAccessorType(XmlAccessType.FIELD)

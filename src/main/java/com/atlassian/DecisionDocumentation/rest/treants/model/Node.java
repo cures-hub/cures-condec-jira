@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 /**
  * @author Ewald Rode
- * @description
+ * @description model class for treant node
  */
 public class Node {
 	@XmlElement(name = "text")

@@ -28,7 +28,7 @@ import org.ofbiz.core.entity.GenericEntityException;
 
 /**
  * @author Ewald Rode
- * @description Treants Rest API Listener
+ * @description Rest resource for Treants
  */
 @Path("/treant")
 public class TreantRest {

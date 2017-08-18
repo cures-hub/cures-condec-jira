@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 /**
  * @author Ewald Rode
- * @description
+ * @description renders the administration servlet, used to change plugin configurations
  */
 @Scanned
 public class AdminServlet extends HttpServlet{

@@ -6,9 +6,8 @@ import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
 
 /**
- * 
  * @author Ewald Rode
- * @description
+ * @description model class for decisioncomponents
  */
 @Table("DECISION")
 public interface DecisionComponentEntity extends RawEntity<Integer>{

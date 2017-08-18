@@ -3,9 +3,8 @@ package com.atlassian.DecisionDocumentation.rest.Decisions.model;
 import com.atlassian.jira.issue.Issue;
 
 /**
- * 
  * @author Ewald Rode
- * @description
+ * @description model class for decisioncomponents
  */
 public class DecisionRepresentation {
 	private Long id;

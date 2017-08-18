@@ -29,7 +29,7 @@ import com.google.common.collect.ImmutableMap;
 
 /**
  * @author Ewald Rode
- * @description
+ * @description Rest resource: Enables creation, editing and deletion of decision components and their links
  */
 @Path("/decisions")
 public class DecisionsRest {

@@ -6,9 +6,8 @@ import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
 
 /**
- * 
  * @author Ewald Rode
- * @description
+ * @description model class for links between decisioncomponents
  */
 @Table("LINK")
 public interface LinkEntity extends RawEntity<Integer> {

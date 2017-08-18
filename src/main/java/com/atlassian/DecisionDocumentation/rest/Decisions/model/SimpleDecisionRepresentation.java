@@ -7,7 +7,7 @@ import com.atlassian.jira.issue.Issue;
 /**
  * 
  * @author Ewald Rode
- * @description
+ * @description model class for decision components
  */
 @XmlType (propOrder={"id","text"})
 public class SimpleDecisionRepresentation {

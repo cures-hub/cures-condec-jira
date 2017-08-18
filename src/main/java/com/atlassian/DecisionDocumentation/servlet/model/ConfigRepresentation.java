@@ -3,7 +3,7 @@ package com.atlassian.DecisionDocumentation.servlet.model;
 /**
  * 
  * @author Ewald Rode
- * @description
+ * @description model class for plugin configuration
  */
 public class ConfigRepresentation {
 	private String projectKey;

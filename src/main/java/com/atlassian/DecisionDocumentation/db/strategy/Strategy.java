@@ -13,7 +13,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 /**
  * @author Ewald Rode
- * @description
+ * @description Interface for different Solutions approaches to creating, editing, deleting and rendering decisioncomponents and their links
  */
 public interface Strategy {
 	public Data createDecisionComponent(DecisionRepresentation dec, ApplicationUser user);

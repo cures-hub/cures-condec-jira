@@ -48,7 +48,7 @@ import com.google.common.collect.ImmutableMap;
 
 /**
  * @author Ewald Rode
- * @description
+ * @description Implements Strategy Interafce with regular JIRA Issues
  */
 public class IssueStrategy implements Strategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IssueStrategy.class);

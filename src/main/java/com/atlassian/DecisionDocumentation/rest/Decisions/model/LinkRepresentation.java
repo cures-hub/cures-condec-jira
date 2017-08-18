@@ -2,7 +2,7 @@ package com.atlassian.DecisionDocumentation.rest.Decisions.model;
 /**
  * 
  * @author Ewald Rode
- * @description
+ * @description model class for links between decision components
  */
 public class LinkRepresentation {
 	private String linkType;

@@ -3,6 +3,7 @@ package com.atlassian.DecisionDocumentation.util;
 /**
  * http://stackoverflow.com/questions/521171/a-java-collection-of-value-pairs-tuples
  * @author Paul Brinkley , Senior Software Developer, HIGHFLEET, Inc.
+ * @description basic implementation of a pair datastructure
  */
 public class Pair<L,R> {
 	

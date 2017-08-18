@@ -11,7 +11,6 @@
     </organization>
     <name>DecisionDocumentation</name>
     <description>This is the com.atlassian.DecisionDocumentation:DecisionDocumentation plugin for Atlassian JIRA.</description>
-    <!-- <packaging>bundle</packaging> -->
     <packaging>atlassian-plugin</packaging>
     <dependencies>
     	<!-- JIRA -->
@@ -151,6 +150,7 @@
         </dependency>
     </dependencies>
     <build>
+    	<finalName>cures-decdoc-jira</finalName>
         <plugins>
             <plugin>
                 <groupId>com.atlassian.maven.plugins</groupId>

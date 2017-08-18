@@ -14,7 +14,7 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 
 /**
  * @author Ewald Rode
- * @description
+ * @description Getter and Setter for ConfigRestResource
  */
 public class ConfigRestLogic {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigRestLogic.class);

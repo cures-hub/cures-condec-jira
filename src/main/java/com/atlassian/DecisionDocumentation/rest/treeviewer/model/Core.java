@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlElement;
 /**
  * 
  * @author Ewald Rode
- * @description
+ * @description model class for treeviewer configuration
  */
 public class Core {
 	

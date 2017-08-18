@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 /**
  * @author Ewald Rode
- * @description
+ * @description model class for treeviewer nodes
  */
 public class NodeInfo {
 	@XmlElement

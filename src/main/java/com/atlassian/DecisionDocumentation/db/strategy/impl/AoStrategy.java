@@ -38,7 +38,7 @@ import net.java.ao.Query;
 
 /**
  * @author Ewald Rode
- * @description
+ * @description Implements Strategy Interafce with Active Objects
  */
 public class AoStrategy implements Strategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AoStrategy.class);

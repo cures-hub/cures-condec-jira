@@ -23,7 +23,7 @@ import org.ofbiz.core.entity.GenericEntityException;
 
 /**
  * @author Ewald Rode
- * @description TreeViewer Rest API Listener
+ * @description Rest resource for treeviewer navigation
  */
 @Path("/treeviewer")
 public class TreeViewerRest {

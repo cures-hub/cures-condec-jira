@@ -17,7 +17,7 @@ import static com.google.common.base.Preconditions.*;
 /**
  * 
  * @author Ewald Rode
- * @description
+ * @description Autowired during initialization. Provides access to JIRA components
  */
 @Named("ComponentUtil")
 @Scanned
