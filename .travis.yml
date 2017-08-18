@@ -1,19 +1,28 @@
 sudo: false
 language: java
 jdk:
-  - oraclejdk8
+- oraclejdk8
 before_install:
-  - wget https://marketplace.atlassian.com/download/plugins/atlassian-plugin-sdk-tgz
-  - mkdir opt
-  - tar -xvzf *plugin-sdk* -C opt
-  - mv opt/*plugin-sdk* opt/atlassian-plugin-sdk
-  - chmod a+x opt/atlassian-plugin-sdk/bin/*
-  - chmod a+x opt/atlassian-plugin-sdk/apache-maven-*/bin/*
-  - export PATH=opt/atlassian-plugin-sdk/bin:opt/atlassian-plugin-sdk/apache-maven-*/bin:$PATH
-  - atlas-version
+- wget https://marketplace.atlassian.com/download/plugins/atlassian-plugin-sdk-tgz
+- mkdir opt
+- tar -xvzf *plugin-sdk* -C opt
+- mv opt/*plugin-sdk* opt/atlassian-plugin-sdk
+- chmod a+x opt/atlassian-plugin-sdk/bin/*
+- chmod a+x opt/atlassian-plugin-sdk/apache-maven-*/bin/*
+- export PATH=opt/atlassian-plugin-sdk/bin:opt/atlassian-plugin-sdk/apache-maven-*/bin:$PATH
+- atlas-version
 install:
-  - atlas-mvn install
+- atlas-mvn install
 script:
-  - atlas-package
-notifications:
+- atlas-package
+notifications: 
 email: false
+deploy:
+  provider: releases
+  api_key:
+    secure: B6srH3vvYCWX4zEbDGfR2T/6SW8/PGtRH6MHYNwkl1KD3a0xEO58LrSHC0mjiZC18rPYOoj8ZaAtGoghxw8zj0SVVevmanXNo9YC9DTapIzeKVO+6Wx/eKulreEgjDkBctBagIU6WfHLQ+JjxgEhGikEln3BJ7hA/JjKaFJBnBI9N5YovSYl6lGAGBWeI2XqSGE/NXb1Qgd/uIxeZPLxBWIxZxK/kpHTCRTfTTIGGuuOPqoq1nLUzA83hKXlzmM6HxVdi2yJuQyCUfmX7DzwKcnKI0Wa/Vv5FpRjxSxqHyZYhMzxdGVf50WdUmJIQ9JoWMLrb2GugcG1ki1WqBrqx5DgyN/GwyrGLoaX7fWSYwDlUMFGkjbuLA9HMJ622FdwiR4UX4529tmAzJFuYVT7VON/4ZBv/oobtrKFVB2U8y1BzhV2lSai5zmQfFlJliUo89LUaRrLcXbxzd2Y8RCd0XuplEVsvQRhdlA+5kVDfee041oONGF72dU/18LJE+8vY8ldk/3vNkTnvuEakDbqkieKu2SdONZ4w7xhUbb/GCWXyJofJS2iR+jj1KsvsW0Py9U/cC0twr2fZNecss7pDWx+5Etw/tKI0jnPhg6KicgDvi3RbBkevLhpqMT9OvUU433V3Xz89qMJHy9llffSHThwONCMT73vYaAF2b4usUU=
+  file: target/DecisionDocumentation-*
+  skip_cleanup: true
+  on:
+    tags: true
+    repo: cures-hub/cures-decdoc-jira
