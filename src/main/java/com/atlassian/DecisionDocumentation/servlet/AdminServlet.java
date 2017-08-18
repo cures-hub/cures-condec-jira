@@ -34,6 +34,8 @@ import java.util.Map;
 @Scanned
 public class AdminServlet extends HttpServlet{
 
+	private static final long serialVersionUID = 4640871992639394730L;
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdminServlet.class);
 
     @ComponentImport
@@ -75,24 +77,10 @@ public class AdminServlet extends HttpServlet{
                     Object isActivatedObject = settings.get(pluginStorageKey + ".isActivated");
                     Object isIssueStrategyObject = settings.get(pluginStorageKey + ".isIssueStrategy");
                     Pair<String,String> pair = null;
-                    if (isActivatedObject != null && isIssueStrategyObject != null) {
-                    	if (isActivatedObject instanceof String && isIssueStrategyObject instanceof String) {
-                    		String isActivatedString = (String) isActivatedObject;
-                    		String isIssueStrategyString = (String) isIssueStrategyObject;
-                        	pair = new Pair<String,String>(isActivatedString,isIssueStrategyString);
-                        }
-                    } else if (isIssueStrategyObject != null && isIssueStrategyObject == null) {
-                    	if (isActivatedObject instanceof String) {
-                    		String isActivatedString = (String) isActivatedObject;
-                        	pair = new Pair<String,String>(isActivatedString,"false");
-                        }
-                    } else if (isIssueStrategyObject == null && isIssueStrategyObject != null) {
-                    	if (isIssueStrategyObject instanceof String) {
-                    		String isIssueStrategyString = (String) isIssueStrategyObject;
-                        	pair = new Pair<String,String>("false",isIssueStrategyString);
-                        }
-                    } else if (isIssueStrategyObject == null && isIssueStrategyObject == null) {
-                    	pair = new Pair<String,String>("false","false");
+                	if (isActivatedObject instanceof String && isIssueStrategyObject instanceof String) {
+                		String isActivatedString = (String) isActivatedObject;
+                		String isIssueStrategyString = (String) isIssueStrategyObject;
+                    	pair = new Pair<String,String>(isActivatedString,isIssueStrategyString);
                     }
                     return pair;
                 }
