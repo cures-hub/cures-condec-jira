@@ -46,7 +46,7 @@
 						toggle.addEventListener('change', function(e) {
 							var thisToggle = this;
 							thisToggle.busy = true;
-							#include("js/postAdmin.js")
+							#include("js/admin/postAdmin.js")
 						});
 					</script>
 					#**
@@ -61,7 +61,7 @@
 							toggle.addEventListener('change', function(e) {
 								var thisToggle = this;
 								thisToggle.busy = true;
-								#include("js/postAdmin.js")
+								#include("js/admin/postAdmin.js")
 							});
 						</script>
 					*#
@@ -78,7 +78,7 @@
 						toggle.addEventListener('change', function(e) {
 							var thisToggle = this;
 							thisToggle.busy = true;
-							#include("js/putAdmin.js")
+							#include("js/admin/putAdmin.js")
 						});
 				  	</script>
 					#**
@@ -93,7 +93,7 @@
 							toggle.addEventListener('change', function(e) {
 								var thisToggle = this;
 								thisToggle.busy = true;
-								#include("js/putAdmin.js")
+								#include("js/admin/putAdmin.js")
 							});
 					  	</script>
 					*#
