@@ -27,7 +27,6 @@ import com.atlassian.DecisionDocumentation.util.ComponentGetter;
 import com.atlassian.DecisionDocumentation.util.Pair;
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
@@ -42,7 +41,7 @@ import net.java.ao.Query;
  */
 public class AoStrategy implements Strategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AoStrategy.class);
-	//TODO use LOGGER
+	
 	@Override
 	public Data createDecisionComponent(final DecisionRepresentation dec, ApplicationUser user) {
 		final ActiveObjects ao = ComponentGetter.getAo();
@@ -70,7 +69,6 @@ public class AoStrategy implements Strategy {
 			NodeInfo nodeInfo = new NodeInfo();
 			nodeInfo.setId(Long.toString(decComponent.getID()));
 			nodeInfo.setKey(decComponent.getKey());
-			nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + decComponent.getID());//TODO change
 			nodeInfo.setIssueType(decComponent.getType());
 			nodeInfo.setDescription(decComponent.getDescription());
 			nodeInfo.setSummary(decComponent.getName());
@@ -110,7 +108,6 @@ public class AoStrategy implements Strategy {
 			NodeInfo nodeInfo = new NodeInfo();
 			nodeInfo.setId(Long.toString(decComponent.getID()));
 			nodeInfo.setKey(decComponent.getKey());
-			nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + decComponent.getID());//TODO change
 			nodeInfo.setIssueType(decComponent.getType());
 			nodeInfo.setDescription(decComponent.getDescription());
 			nodeInfo.setSummary(decComponent.getName());
@@ -203,12 +200,10 @@ public class AoStrategy implements Strategy {
                         	linkId = linkEntity.getID();
                 		} else {
                 			LOGGER.error("entities to be linked are not in the same project");
-                			//TODO ignore request
                 			return (long) 0;
                 		}
                 	} else {
                 		LOGGER.error("one of the entities to be linked does not exist");
-                		//TODO ignore request
                 		return (long) 0;
                 	}
                 } else {
@@ -219,12 +214,7 @@ public class AoStrategy implements Strategy {
             }
         });
 	}
-	//TODO implement
-	@Override
-	public void deleteLink(LinkRepresentation link, ApplicationUser user) {
-		
-	}
-	//TODO TEST
+
 	@Override
 	public List<SimpleDecisionRepresentation> searchUnlinkedDecisionComponents(final long id, String projectKey) {
 		List<SimpleDecisionRepresentation> decList = null;
@@ -274,7 +264,7 @@ public class AoStrategy implements Strategy {
 		return decList;
 	}
 
-	//treeviewer
+	/*TreeViewerRest*/
 	@Override
 	public Core createCore(Project project) {
 		Core core = new Core();
@@ -313,7 +303,6 @@ public class AoStrategy implements Strategy {
 		NodeInfo nodeInfo = new NodeInfo();
 		nodeInfo.setId(Long.toString(decComponent.getID()));
 		nodeInfo.setKey(decComponent.getKey());
-		nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + decComponent.getID());//TODO change
 		nodeInfo.setIssueType(decComponent.getType());
 		nodeInfo.setDescription(decComponent.getDescription());
 		nodeInfo.setSummary(decComponent.getName());
@@ -389,7 +378,7 @@ public class AoStrategy implements Strategy {
 		return data;
 	}
 
-	//Treant
+	/*TreantsRest*/
 	@Override
 	public Treant createTreant(final String issueKey, int depth) {
 		Treant treant = new Treant();
@@ -419,10 +408,6 @@ public class AoStrategy implements Strategy {
 					"title", dec.getType(),
 					"desc", dec.getKey());
 			node.setNodeContent(nodeContent);
-			
-			//Map<String, String> link = ImmutableMap.of("href", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + 
-			//		"/browse/" + dec.getKey()); //TODO change
-			//node.setLink(link);
 			
 			String htmlClass;
 			String issueType = dec.getType().toLowerCase();
@@ -493,10 +478,6 @@ public class AoStrategy implements Strategy {
 					"title", dec.getType(),
 					"desc", dec.getKey());
 			node.setNodeContent(nodeContent);
-			
-			//Map<String, String> link = ImmutableMap.of("href", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + 
-			//		"/browse/" + dec.getKey()); //TODO change
-			//node.setLink(link);
 			
 			String htmlClass;
 			String issueType = dec.getType().toLowerCase();

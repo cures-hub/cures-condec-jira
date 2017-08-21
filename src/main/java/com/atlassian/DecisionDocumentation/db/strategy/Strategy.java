@@ -21,7 +21,6 @@ public interface Strategy {
 	public boolean deleteDecisionComponent(DecisionRepresentation dec, ApplicationUser user);
 	
 	public Long createLink(LinkRepresentation link, ApplicationUser user);
-	public void deleteLink(LinkRepresentation link, ApplicationUser user);
 	
 	public List<SimpleDecisionRepresentation> searchUnlinkedDecisionComponents(long id, String projectKey);
 	

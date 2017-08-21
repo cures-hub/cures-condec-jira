@@ -142,18 +142,15 @@ public class IssueStrategy implements Strategy {
 				}
 				return false;
 			} else {
-				//TODO delete
-				LOGGER.error("before delete issue");
 				ErrorCollection errorCollection = issueService.delete(user, result);
 				if (errorCollection.hasAnyErrors()){
 					return false;
 				} else {
+					issueService.delete(user, result);
 					return true;
 				}
 			}
 		} else {
-			//TODO correct
-			LOGGER.error("Issue could not be found. blabla");
 			return false;
 		}
 	}
@@ -186,12 +183,9 @@ public class IssueStrategy implements Strategy {
 			issueLinkManager.createIssueLink(link.getOutgoingId(), link.getIngoingId(), typeId, sequence, user);
 		} catch (CreateException e) {
 			LOGGER.error("CreateException");
-			// TODO Logger issuelink was not created
 			return (long) 0;
 		} catch (NullPointerException e) {
 			LOGGER.error("NullPointerException");
-		    // some variable is null
-			// TODO Logger issuelink was not created
 			return (long) 0;
 		}finally {
 			outwardIssueLinkList = issueLinkManager.getOutwardLinks(link.getIngoingId());
@@ -205,22 +199,6 @@ public class IssueStrategy implements Strategy {
 			return (long) 0;
 		}
 		return issueLink.getId();
-	}
-
-	//TODO TEST
-	@Override
-	public void deleteLink(LinkRepresentation link, ApplicationUser user) {
-		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
-		Collection<IssueLinkType> issueLinkTypeCollection = issueLinkTypeManager.getIssueLinkTypesByName(link.getLinkType());
-		Iterator<IssueLinkType> issueLinkTypeIterator = issueLinkTypeCollection.iterator();
-		long typeId = 0;
-		while (issueLinkTypeIterator.hasNext()) {
-			IssueLinkType issueLinkType = issueLinkTypeIterator.next();
-			typeId = issueLinkType.getId();
-		}
-		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
-		IssueLink issueLink = issueLinkManager.getIssueLink(link.getIngoingId(), link.getOutgoingId(), typeId);
-		issueLinkManager.removeIssueLink(issueLink , user);
 	}
 
 	@Override

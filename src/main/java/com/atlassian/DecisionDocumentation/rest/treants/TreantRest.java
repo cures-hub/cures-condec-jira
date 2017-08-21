@@ -78,8 +78,6 @@ public class TreantRest {
 		            	for (Long id : issueIds){
 		            		issueCollection.add(issueManager.getIssueObject(id));
 		            	}
-		            	/*Wenn es ein Issue im Projekt mit dem angegebenen issueKey gibt, so wird dieses zum Root-Issue*/
-		            	//TODO rework
 		            	for (Issue issue : issueCollection){
 		            		if (issue.getKey().equals(issueKey)){
 		            			rootIssue = issue;

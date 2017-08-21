@@ -60,8 +60,7 @@ public class DecisionsRest {
 				if(strategy instanceof IssueStrategy ||strategy instanceof AoStrategy) {
 		    		decList = strategy.searchUnlinkedDecisionComponents(issueId, projectKey);
 		    	} else {
-		    		//error TODO logger
-		    		return Response.ok("Neither IssueStrategy nor AoStrategy").build();
+		    		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Neither IssueStrategy nor AoStrategy")).build();
 		    	}
 		    	return Response.ok(decList).build();
 			} else {
@@ -70,14 +69,12 @@ public class DecisionsRest {
 				if(strategy instanceof IssueStrategy ||strategy instanceof AoStrategy) {
 		    		decList = strategy.searchUnlinkedDecisionComponents(issueId, projectKey);
 		    	} else {
-		    		//error TODO logger
-		    		return Response.ok("Neither IssueStrategy nor AoStrategy").build();
+		    		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Neither IssueStrategy nor AoStrategy")).build();
 		    	}
 		    	return Response.ok(decList).build();
 			}
 		} else {
-			//error TODO logger
-			return Response.ok("projectKey or issueId = null").build();
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey or issueId = null")).build();
 		}
 	}
 	
@@ -152,13 +149,11 @@ public class DecisionsRest {
 	    				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Deletion of Issue failed.")).build();
 	    			}
 	    		} else {
-	    			//error TODO logger
 	    			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Unknown actionType. Pick either 'create', 'edit' or 'delete'")).build();
 	    		}
 			}
 		} else {
-			//error TODO logger
-			return Response.ok("dec or actionType = null").build();
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build();
 		}
     }
 	
@@ -195,15 +190,8 @@ public class DecisionsRest {
 	    			} else {
 	    				return Response.status(Status.OK).entity(ImmutableMap.of("id",issueLinkId)).build();
 	    			}
-	    		} else if(actionType.equalsIgnoreCase("delete")) {
-	    			//TODO: IssueStrategy edit
-	    			strategy.deleteLink(link, user);
-	    			//TODO change response
-	    			return Response.ok().build();
 	    		} else {
-	    			//error TODO logger
-	    			//TODO change response
-	    			return Response.ok("Unknown actionType. Pick either 'create' or 'delete'").build();
+	    			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Unknown actionType. Pick either 'create' or 'delete'")).build();
 	    		}
 			} else {
 				Strategy strategy = new AoStrategy(); 
@@ -215,21 +203,12 @@ public class DecisionsRest {
 	    			} else {
 	    				return Response.status(Status.OK).entity(ImmutableMap.of("id",issueLinkId)).build();
 	    			}
-	    		} else if(actionType.equalsIgnoreCase("delete")) {
-	    			//TODO: IssueStrategy edit
-	    			strategy.deleteLink(link, user);
-	    			//TODO change response
-	    			return Response.ok().build();
 	    		} else {
-	    			//error TODO logger
-	    			//TODO change response
-	    			return Response.ok("Unknown actionType. Pick either 'create' or 'delete'").build();
+	    			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Unknown actionType. Pick either 'create' or 'delete'")).build();
 	    		}
 			}
 		} else {
-			//error TODO logger
-			//TODO change response
-			return Response.ok("dec or actionType = null").build();
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build();
 		}
     }
 	

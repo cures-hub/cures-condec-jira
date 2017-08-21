@@ -35,7 +35,6 @@ public class ConfigRestLogic {
     }
     
     public void setResponseForGet(final String projectKey){
-    	//TODO set status.... ist HTTP GET ueberhaupt noetig?
         try{
             Object ob = transactionTemplate.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction() {
@@ -92,8 +91,6 @@ public class ConfigRestLogic {
             if(status == Status.ACCEPTED){
                 return Response.ok(Status.ACCEPTED).build();
             } else {
-                //kommt nur bei einer GET-Request vor
-                //TODO logger +  Refactoring
                 return Response.ok(isActivated).build();
             }
         }else {

@@ -4,6 +4,7 @@ import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.plugins.rest.common.security.AnonymousAllowed;
 import com.atlassian.sal.api.user.UserManager;
+import com.google.common.collect.ImmutableMap;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -42,10 +43,13 @@ public class ConfigRest {
             LOGGER.warn("Unauthorized user by name:{} tried to change Configuration", username);
             return Response.status(Status.UNAUTHORIZED).build();
         }
-        //TODO sicherheitsabfrage fuer boolean isactivated und projectkey
-        ConfigRestLogic cRL = new ConfigRestLogic();
-        cRL.setResponseForGet(projectKey);
-        return cRL.getResponse();
+        if(projectKey != null) {
+        	ConfigRestLogic cRL = new ConfigRestLogic();
+        	cRL.setResponseForGet(projectKey);
+            return cRL.getResponse();
+        } else {
+        	return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build();
+        }
     }
     
     @POST
@@ -55,10 +59,13 @@ public class ConfigRest {
             LOGGER.warn("Unauthorized user by name:{} tried to change Configuration", username);
             return Response.status(Status.UNAUTHORIZED).build();
         }
-        //TODO sicherheitsabfrage for boolean isactivated und projectkey
-        ConfigRestLogic cRL = new ConfigRestLogic();
-        cRL.setIsAvtivated(projectKey, isActivated);
-        return cRL.getResponse();
+        if(projectKey != null) {
+	        ConfigRestLogic cRL = new ConfigRestLogic();
+	        cRL.setIsAvtivated(projectKey, isActivated);
+	        return cRL.getResponse();
+        } else {
+        	return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build();
+        }
     }
     
     @PUT
@@ -68,9 +75,12 @@ public class ConfigRest {
             LOGGER.warn("Unauthorized user by name:{} tried to change Configuration", username);
             return Response.status(Status.UNAUTHORIZED).build();
         }
-        //TODO sicherheitsabfrage for boolean isIssueStrategy und projectkey
-        ConfigRestLogic cRL = new ConfigRestLogic();
-        cRL.setIsIssueStrategy(projectKey, isIssueStrategy);
-        return cRL.getResponse();
+        if(projectKey != null) {
+	        ConfigRestLogic cRL = new ConfigRestLogic();
+	        cRL.setIsIssueStrategy(projectKey, isIssueStrategy);
+	        return cRL.getResponse();
+	    } else {
+	    	return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build();
+	    }
     }
 }

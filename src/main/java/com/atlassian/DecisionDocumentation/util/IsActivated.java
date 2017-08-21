@@ -2,6 +2,9 @@ package com.atlassian.DecisionDocumentation.util;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.plugin.PluginParseException;
 import com.atlassian.plugin.web.Condition;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
@@ -14,7 +17,7 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
  * @description Constraint for web-item. Calculates whether web-item should be displayed depending on the project specific context
  */
 public class IsActivated implements Condition {
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(IsActivated.class);
     private PluginSettingsFactory pluginSettingsFactory;
     private TransactionTemplate transactionTemplate;
     private String pluginStorageKey;
@@ -39,7 +42,7 @@ public class IsActivated implements Condition {
                     if (o instanceof String){
                         return o;
                     } else {
-                        //TODO Logger.error erroneous settings 
+                    	LOGGER.error("PluginSettings are corrupt");
                         return false;
                     }
                 }
@@ -50,16 +53,15 @@ public class IsActivated implements Condition {
                 try {
                      bool = Boolean.valueOf(shouldDisplay);
                 } catch (Exception e) {
-                    //TODO Logger
+                    LOGGER.error(e.getMessage());
                 }
                 return bool;
             } else {
-                //error TODO logger
+                LOGGER.error("PluginSettings are corrupt");
                 return false;
             }
         } else {
-            //error object either null or other type, check atlassian-plugin.xml definition of constraint for web-item
-            //TODO Logger
+        	LOGGER.error("Context has no projectKey");
             return false;
         }
     }
