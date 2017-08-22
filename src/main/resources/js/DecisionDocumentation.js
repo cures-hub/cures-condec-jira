@@ -178,16 +178,15 @@ function createContextMenuForTreeNodes(projectKey) {
                         var content = document.getElementById('modal-content');
                         content.insertAdjacentHTML('afterBegin',
                             '<p><label for="form-input-name" style="display:block;width:45%;float:left;">Name</label><input id="form-input-name" type="text" name="name" placeholder="Name of decisioncomponent" style="width:50%;"/></p>' +
-                            '<p><label for="form-input-type" style="display:block;width:45%;float:left;">Componenttype</label><input id="form-input-type" type="text" name="type" placeholder="Select componenttype..." style="width:50%;"/></p>' +
+                            '<p><label for="form-select-type" style="display:block;width:45%;float:left;">Componenttype</label><select name="form-select-type" style="width:50%;"/></p>' +
                             '<p><input id="form-input-submit" type="submit" value="Add Decision Component" style="float:right;"/></p>'
                         );
 
-                        var typeInput = $("#form-input-type");
-                        typeInput.on('change', function () {
-                            var typeInput = document.getElementById('form-input-type');
-                            var type = typeInput.value;
+                        var type_select = $('select[name="form-select-type"]');
+                        type_select.on('change', function () {
+                            var type = type_select.val();
                             if (type === 'Argument') {
-                                typeInput.insertAdjacentHTML('afterEnd', '<p id="type-of-argument-para"><label for="type-of-argument" style="display:block;width:45%;float:left;">Type of Argument</label><input type="radio" name="type-of-argument" value="pro" checked="checked">Pro<input type="radio" name="type-of-argument" value="contra">Contra<input type="radio" name="type-of-argument" value="comment">Comment</p>');
+                                type_select.insertAdjacentHTML('afterEnd', '<p id="type-of-argument-para"><label for="type-of-argument" style="display:block;width:45%;float:left;">Type of Argument</label><input type="radio" name="type-of-argument" value="pro" checked="checked">Pro<input type="radio" name="type-of-argument" value="contra">Contra<input type="radio" name="type-of-argument" value="comment">Comment</p>');
                             } else {
                                 var para = document.getElementById("type-of-argument-para");
                                 if (para) {
@@ -247,14 +246,14 @@ function createContextMenuForTreeNodes(projectKey) {
                                 text: "Solution"
                             }
                         ];
-                        typeInput.select2()({
-                            data: data
-                        });
+                        for (var index = 0; index < data.length; index++){
+                            type_select[0].insertAdjacentHTML('beforeend','<option value="' + data[index].id + '">' + data[index].text + '</option>');
+                        }
 
                         var submitButton = document.getElementById('form-input-submit');
                         submitButton.onclick = function () {
                             var name = document.getElementById('form-input-name').value;
-                            var type = document.getElementById('form-input-type').value;
+                            var type = type_select.val();
                             if (type === "Argument") {
                                 var argumentCheckBoxGroup = document.getElementsByName("type-of-argument");
                                 for (var i = 0; i < argumentCheckBoxGroup.length; i++) {
@@ -621,14 +620,6 @@ function fillAccordion(data, projectKey, node) {
         '<p><textarea id="IssueDescription" style="width:99%; height:auto;border: 1px solid rgba(204,204,204,1); ">' +
         node.description + '</textarea></p>'
     );
-    /*
-    detailsElement.insertAdjacentHTML('beforeend', '<p><a href="' +
-        AJS.contextPath() + '/browse/' + node.key + '">' + node.key +
-        ' / ' + node.summary + '</a><input type="button" name="updataIssue" id="updateIssue" value="Update Issue"/></p>' +
-        '<p><textarea id="IssueDescription" style="width:99%; height:auto;border: 1px solid rgba(204,204,204,1); ">' +
-        node.description + '</textarea></p>'
-    );
-    */
     detailsElement.style.display = "block";
     var updateButton = document.getElementById("updateIssue");
     updateButton.addEventListener('click', function () {
@@ -753,16 +744,15 @@ function buildTreeViewer(projectKey, nodeId) {
                                     var content = document.getElementById('modal-content');
                                     content.insertAdjacentHTML('afterBegin',
                                         '<p><label for="form-input-name" style="display:block;width:45%;float:left;">Name</label><input id="form-input-name" type="text" name="name" placeholder="Name of decisioncomponent" style="width:50%;"/></p>' +
-                                        '<p><label for="form-input-type" style="display:block;width:45%;float:left;">Componenttype</label><input id="form-input-type" type="text" name="type" placeholder="Select componenttype..." style="width:50%;"/></p>' +
+                                        '<p><label for="form-select-type" style="display:block;width:45%;float:left;">Componenttype</label><select name="form-select-type" style="width:50%;"/></p>' +
                                         '<p><input id="form-input-submit" type="submit" value="Add Decision Component" style="float:right;"/></p>'
                                     );
 
-                                    var typeInput = $("#form-input-type");
-                                    typeInput.on('change', function () {
-                                        var typeInput = document.getElementById('form-input-type');
-                                        var type = typeInput.value;
+                                    var type_select = $('select[name="form-select-type"]');
+                                    type_select.on('change', function () {
+                                        var type = type_select.val();
                                         if (type === 'Argument') {
-                                            typeInput.insertAdjacentHTML('afterEnd', '<p id="type-of-argument-para"><label for="type-of-argument" style="display:block;width:45%;float:left;">Type of Argument</label><input type="radio" name="type-of-argument" value="pro" checked="checked">Pro<input type="radio" name="type-of-argument" value="contra">Contra<input type="radio" name="type-of-argument" value="comment">Comment</p>');
+                                            type_select.insertAdjacentHTML('afterEnd', '<p id="type-of-argument-para"><label for="type-of-argument" style="display:block;width:45%;float:left;">Type of Argument</label><input type="radio" name="type-of-argument" value="pro" checked="checked">Pro<input type="radio" name="type-of-argument" value="contra">Contra<input type="radio" name="type-of-argument" value="comment">Comment</p>');
                                         } else {
                                             var para = document.getElementById("type-of-argument-para");
                                             if (para) {
@@ -822,14 +812,14 @@ function buildTreeViewer(projectKey, nodeId) {
                                             text: "Solution"
                                         }
                                     ];
-                                    typeInput.select2()({
-                                        data: data
-                                    });
+                                    for (var index = 0; index < data.length; index++){
+                                        type_select[0].insertAdjacentHTML('beforeend','<option value="' + data[index].id + '">' + data[index].text + '</option>');
+                                    }
 
                                     var submitButton = document.getElementById('form-input-submit');
                                     submitButton.onclick = function () {
                                         var name = document.getElementById('form-input-name').value;
-                                        var type = document.getElementById('form-input-type').value;
+                                        var type = type_select.val();
                                         if (type === "Argument") {
                                             var argumentCheckBoxGroup = document.getElementsByName("type-of-argument");
                                             for (var i = 0; i < argumentCheckBoxGroup.length; i++) {
