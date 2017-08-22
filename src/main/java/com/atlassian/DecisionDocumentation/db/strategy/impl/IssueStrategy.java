@@ -146,7 +146,6 @@ public class IssueStrategy implements Strategy {
 				if (errorCollection.hasAnyErrors()){
 					return false;
 				} else {
-					issueService.delete(user, result);
 					return true;
 				}
 			}
@@ -255,8 +254,10 @@ public class IssueStrategy implements Strategy {
 						boolean linked = false;
 						for (int counter = 0; counter < outwardIssuesList.size(); ++counter) {
 							Issue linkIssue = outwardIssuesList.get(counter);
-							if (linkIssue.equals(issue)) {
-								linked = true;
+							if (linkIssue != null) {
+								if (linkIssue.equals(issue)) {
+									linked = true;
+								}
 							}
 						}
 						if (!linked) {
@@ -344,8 +345,32 @@ public class IssueStrategy implements Strategy {
 		List<Issue> toBeAddedToChildren = new ArrayList<Issue>();
 		for (int i = 0; i < inwardIssuesList.size(); ++i){
 			if(inwardIssuesList.get(i).getIssueType().getName().equals("Argument")){
-				Pair<String, String> newKVP = new Pair<String, String>(issue.getKey(), inwardIssuesList.get(i).getKey());
-				Pair<String, String> newKVPReverse = new Pair<String, String>(inwardIssuesList.get(i).getKey(), issue.getKey());
+				if(issue != null & outwardIssuesList.get(i) != null) {
+					Pair<String, String> newKVP = new Pair<String, String>(issue.getKey(), inwardIssuesList.get(i).getKey());
+					Pair<String, String> newKVPReverse = new Pair<String, String>(inwardIssuesList.get(i).getKey(), issue.getKey());
+					boolean boolvar = false;
+					for(int counter = 0; counter<TreeViewerKVPairList.kvpList.size(); ++counter){
+						Pair<String, String> globalInst = TreeViewerKVPairList.kvpList.get(counter);
+						if (newKVP.equals(globalInst)){
+							boolvar = true;
+						}
+					}
+					if(!boolvar){
+						TreeViewerKVPairList.kvpList.add(newKVP);
+						TreeViewerKVPairList.kvpList.add(newKVPReverse);
+						toBeAddedToChildren.add(inwardIssuesList.get(i));
+					}
+				}
+			}
+		}
+		for (int i=0; i<outwardIssuesList.size(); ++i) {
+			/*
+			 * Erstelle Parent-Child Beziehung und pruefe ob diese bereits in der KeyValuePair-Liste vorhanden ist.
+			 * Wenn nein, fuege diesem Knoten Kinder hinzu
+			 */
+			if(issue != null & outwardIssuesList.get(i) != null) {
+				Pair<String, String> newKVP = new Pair<String, String>(issue.getKey(), outwardIssuesList.get(i).getKey());
+				Pair<String, String> newKVPReverse = new Pair<String, String>(outwardIssuesList.get(i).getKey(), issue.getKey());
 				boolean boolvar = false;
 				for(int counter = 0; counter<TreeViewerKVPairList.kvpList.size(); ++counter){
 					Pair<String, String> globalInst = TreeViewerKVPairList.kvpList.get(counter);
@@ -356,28 +381,8 @@ public class IssueStrategy implements Strategy {
 				if(!boolvar){
 					TreeViewerKVPairList.kvpList.add(newKVP);
 					TreeViewerKVPairList.kvpList.add(newKVPReverse);
-					toBeAddedToChildren.add(inwardIssuesList.get(i));
+					toBeAddedToChildren.add(outwardIssuesList.get(i));
 				}
-			}
-		}
-		for (int i=0; i<outwardIssuesList.size(); ++i) {
-			/*
-			 * Erstelle Parent-Child Beziehung und pruefe ob diese bereits in der KeyValuePair-Liste vorhanden ist.
-			 * Wenn nein, fuege diesem Knoten Kinder hinzu
-			 */
-			Pair<String, String> newKVP = new Pair<String, String>(issue.getKey(), outwardIssuesList.get(i).getKey());
-			Pair<String, String> newKVPReverse = new Pair<String, String>(outwardIssuesList.get(i).getKey(), issue.getKey());
-			boolean boolvar = false;
-			for(int counter = 0; counter<TreeViewerKVPairList.kvpList.size(); ++counter){
-				Pair<String, String> globalInst = TreeViewerKVPairList.kvpList.get(counter);
-				if (newKVP.equals(globalInst)){
-					boolvar = true;
-				}
-			}
-			if(!boolvar){
-				TreeViewerKVPairList.kvpList.add(newKVP);
-				TreeViewerKVPairList.kvpList.add(newKVPReverse);
-				toBeAddedToChildren.add(outwardIssuesList.get(i));
 			}
 		}
 		for (Issue issueToBeAdded: toBeAddedToChildren){
@@ -434,11 +439,13 @@ public class IssueStrategy implements Strategy {
 				for (int i=0; i<allOutwardIssueLink.size(); i++) {
 					IssueLink issueLink = allOutwardIssueLink.get(i);
 					Issue issueLinkDestination = issueLink.getDestinationObject();
-					Pair<String,String> kvp = new Pair<String,String>(issue.getKey(), issueLinkDestination.getKey());
-					Pair<String,String> kvp2 = new Pair<String,String>(issueLinkDestination.getKey(), issue.getKey());
-					TreantKeyValuePairList.kvpList.add(kvp);
-					TreantKeyValuePairList.kvpList.add(kvp2);
-					children.add(createNode(issueLinkDestination, depth, 0));
+					if(issue != null & issueLinkDestination != null) {
+						Pair<String,String> kvp = new Pair<String,String>(issue.getKey(), issueLinkDestination.getKey());
+						Pair<String,String> kvp2 = new Pair<String,String>(issueLinkDestination.getKey(), issue.getKey());
+						TreantKeyValuePairList.kvpList.add(kvp);
+						TreantKeyValuePairList.kvpList.add(kvp2);
+						children.add(createNode(issueLinkDestination, depth, 0));
+					}
 				}
 			}
 		}
@@ -448,11 +455,13 @@ public class IssueStrategy implements Strategy {
 				for (int i=0; i<allInwardIssueLink.size(); i++) {
 					IssueLink issueLink = allInwardIssueLink.get(i);
 					Issue issueLinkDestination = issueLink.getSourceObject();
-					Pair<String,String> kvp = new Pair<String,String>(issue.getKey(), issueLinkDestination.getKey());
-					Pair<String,String> kvp2 = new Pair<String,String>(issueLinkDestination.getKey(), issue.getKey());
-					TreantKeyValuePairList.kvpList.add(kvp);
-					TreantKeyValuePairList.kvpList.add(kvp2);
-					children.add(createNode(issueLinkDestination, depth, 0));
+					if(issue != null & issueLinkDestination != null) {
+						Pair<String,String> kvp = new Pair<String,String>(issue.getKey(), issueLinkDestination.getKey());
+						Pair<String,String> kvp2 = new Pair<String,String>(issueLinkDestination.getKey(), issue.getKey());
+						TreantKeyValuePairList.kvpList.add(kvp);
+						TreantKeyValuePairList.kvpList.add(kvp2);
+						children.add(createNode(issueLinkDestination, depth, 0));
+					}
 				}
 			}
 		}
@@ -466,9 +475,6 @@ public class IssueStrategy implements Strategy {
 				"title", issue.getIssueType().getName(),
 				"desc", issue.getKey());
 		node.setNodeContent(nodeContent);
-
-		//Map<String, String> link = ImmutableMap.of("href", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/browse/" + issue.getKey());
-		//node.setLink(link);
 		
 		String htmlClass;
 		String issueType = issue.getIssueType().getName().toLowerCase();
@@ -499,20 +505,21 @@ public class IssueStrategy implements Strategy {
 					 * Erstelle Parent-Child Beziehung und pruefe ob diese bereits in der KeyValuePair-Liste vorhanden ist.
 					 * Wenn nein, fuege diesem Knoten Kinder hinzu
 					 */
-					
-					Pair<String, String> newKVP = new Pair<String, String>(issue.getKey(), issueLinkDestination.getKey());
-					Pair<String, String> newKVPReverse = new Pair<String, String>(issueLinkDestination.getKey(), issue.getKey());
-					boolean boolvar = false;
-					for(int counter = 0; counter<TreantKeyValuePairList.kvpList.size(); ++counter){
-						Pair<String, String> globalInst = TreantKeyValuePairList.kvpList.get(counter);
-						if (newKVP.equals(globalInst) || newKVPReverse.equals(globalInst)){
-							boolvar = true;
+					if(issue != null & issueLinkDestination != null) {
+						Pair<String, String> newKVP = new Pair<String, String>(issue.getKey(), issueLinkDestination.getKey());
+						Pair<String, String> newKVPReverse = new Pair<String, String>(issueLinkDestination.getKey(), issue.getKey());
+						boolean boolvar = false;
+						for(int counter = 0; counter<TreantKeyValuePairList.kvpList.size(); ++counter){
+							Pair<String, String> globalInst = TreantKeyValuePairList.kvpList.get(counter);
+							if (newKVP.equals(globalInst) || newKVPReverse.equals(globalInst)){
+								boolvar = true;
+							}
 						}
-					}
-					if(!boolvar){
-						TreantKeyValuePairList.kvpList.add(newKVP);
-						TreantKeyValuePairList.kvpList.add(newKVPReverse);
-						toBeAddedToChildren.add(issueLinkDestination);
+						if(!boolvar){
+							TreantKeyValuePairList.kvpList.add(newKVP);
+							TreantKeyValuePairList.kvpList.add(newKVPReverse);
+							toBeAddedToChildren.add(issueLinkDestination);
+						}
 					}
 				}
 			}
@@ -526,19 +533,21 @@ public class IssueStrategy implements Strategy {
 					 * Erstelle Parent-Child Beziehung und pruefe ob diese bereits in der KeyValuePair-Liste vorhanden ist.
 					 * Wenn nein, fuege diesem Knoten Kinder hinzu
 					 */
-					Pair<String, String> newKVP = new Pair<String, String>(issue.getKey(), issueLinkDestination.getKey());
-					Pair<String, String> newKVPReverse = new Pair<String, String>(issueLinkDestination.getKey(), issue.getKey());
-					boolean boolvar = false;
-					for(int counter = 0; counter<TreantKeyValuePairList.kvpList.size(); ++counter){
-						Pair<String, String> globalInst = TreantKeyValuePairList.kvpList.get(counter);
-						if (newKVP.equals(globalInst) || newKVPReverse.equals(globalInst)){
-							boolvar = true;
+					if(issue != null & issueLinkDestination != null) {
+						Pair<String, String> newKVP = new Pair<String, String>(issue.getKey(), issueLinkDestination.getKey());
+						Pair<String, String> newKVPReverse = new Pair<String, String>(issueLinkDestination.getKey(), issue.getKey());
+						boolean boolvar = false;
+						for(int counter = 0; counter<TreantKeyValuePairList.kvpList.size(); ++counter){
+							Pair<String, String> globalInst = TreantKeyValuePairList.kvpList.get(counter);
+							if (newKVP.equals(globalInst) || newKVPReverse.equals(globalInst)){
+								boolvar = true;
+							}
 						}
-					}
-					if(!boolvar){
-						TreantKeyValuePairList.kvpList.add(newKVP);
-						TreantKeyValuePairList.kvpList.add(newKVPReverse);
-						toBeAddedToChildren.add(issueLinkDestination);
+						if(!boolvar){
+							TreantKeyValuePairList.kvpList.add(newKVP);
+							TreantKeyValuePairList.kvpList.add(newKVPReverse);
+							toBeAddedToChildren.add(issueLinkDestination);
+						}
 					}
 				}
 			}

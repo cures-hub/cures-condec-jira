@@ -5,7 +5,7 @@
 		$webResourceManager.requireResource("com.atlassian.auiplugin:ajs")
 		$webResourceManager.requireResource("com.atlassian.DecisionDocumentation.DecisionDocumentation:stylesheet-and-icon-resources")
 		$webResourceManager.requireResource("com.atlassian.DecisionDocumentation.DecisionDocumentation:DecisionDocumentation-resources")
-		$webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
+		<!--$webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")-->
 		$webResourceManager.requireResource("com.atlassian.auiplugin:aui-flag")
 	</head>
 	<body>

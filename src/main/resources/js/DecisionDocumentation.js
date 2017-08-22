@@ -247,7 +247,7 @@ function createContextMenuForTreeNodes(projectKey) {
                                 text: "Solution"
                             }
                         ];
-                        typeInput.select2({
+                        typeInput.select2()({
                             data: data
                         });
 
@@ -647,17 +647,16 @@ function fillAccordion(data, projectKey, node) {
         if (err !== null) {
             displayGetJsonError(err);
         } else {
-            document.getElementById("Details").insertAdjacentHTML('beforeend', '<input id="linkExistingIssueSearchField" placeholder="Link to existing Issue..."/>' +
-                '<input type="button" name="linkExistingIssueButton" id="linkExistingIssueButton" value="Create Link"/>');
-            var singleSelect = $("#linkExistingIssueSearchField").select2({
-                data: data
-            });
-            document.getElementById("linkExistingIssueSearchField").style.display = "block";
+            var insertString = '<select name="linkExistingIssueSearchField">';
+            for (var index = 0; index < data.length; index++){
+                insertString+= '<option value="' + data[index].id + '">' + data[index].text + '</option>';
+            }
+            insertString+= '</select><input type="button" name="linkExistingIssueButton" id="linkExistingIssueButton" value="Create Link"/>';
+            document.getElementById("Details").insertAdjacentHTML('beforeend', insertString);
             var linkButton = document.getElementById("linkExistingIssueButton");
             linkButton.addEventListener('click', function () {
-                var arrayOfSelectedIssues = $('#linkExistingIssueSearchField').select2('data');
-                var divider = arrayOfSelectedIssues.text.indexOf(" / ");
-                createLink(node.id, arrayOfSelectedIssues.id, "contain", function () {
+
+                createLink(node.id, $('select[name="linkExistingIssueSearchField"] option:selected').val() /*$("#linkExistingIssueSearchField")[0].value*/, "contain", function () {
                     AJS.flag({
                         type: 'success',
                         close: 'auto',
@@ -666,7 +665,7 @@ function fillAccordion(data, projectKey, node) {
                     });
                     buildTreeViewer(projectKey, node.key);
                 });
-                singleSelect.select2('val', '');
+                singleSelect.value = '';
                 window.location.reload();
             });
         }
@@ -823,7 +822,7 @@ function buildTreeViewer(projectKey, nodeId) {
                                             text: "Solution"
                                         }
                                     ];
-                                    typeInput.select2({
+                                    typeInput.select2()({
                                         data: data
                                     });
 

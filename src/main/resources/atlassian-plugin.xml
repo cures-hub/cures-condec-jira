@@ -38,6 +38,7 @@
     <resource type="download" name="jquery.easing.js" location="/js/treant_js/jquery.easing.js"/>
     <!-- jQuery -->
     <resource type="download" name="jquery.js" location="/js/jquery.js"/>
+    <resource type="download" name="select2.min.js" location="/js/select2.min.js"/>
     <!-- jstree-->
     <resource type="download" name="jstree.min.js" location="/js/jstree/jstree.min.js"/>
     <!-- jquery.contextMenu -->
