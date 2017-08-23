@@ -1107,6 +1107,14 @@ function initializeSite() {
             DepthOfTreeWarningLabel.style.visibility = "visible";
         }
     });
+    window.onkeydown = function( event ) {
+        if ( event.keyCode == 27 ) {
+            var modal = document.getElementById('ContextMenuModal');
+            if (modal.style.display === "block"){
+                closeModal();
+            }
+        }
+    };
 }
 
 function closeModal() {
