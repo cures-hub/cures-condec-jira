@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * 
  * @author Ewald Rode
  * @description model class for treeviewer configuration
  */
@@ -15,8 +14,8 @@ public class Core {
 	@XmlElement
 	private boolean multiple;
 	
-	@XmlElement
-	private boolean check_callback;
+	@XmlElement(name = "check_callback")
+	private boolean checkCallback;
 	
 	@XmlElement
 	private Map<String, Boolean> themes;
@@ -34,12 +33,12 @@ public class Core {
 		this.multiple = multiple;
 	}
 
-	public boolean isCheck_callback() {
-		return check_callback;
+	public boolean isCheckCallback() {
+		return checkCallback;
 	}
 
-	public void setCheck_callback(boolean check_callback) {
-		this.check_callback = check_callback;
+	public void setCheckCallback(boolean checkCallback) {
+		this.checkCallback = checkCallback;
 	}
 
 	public Map<String, Boolean> getThemes() {

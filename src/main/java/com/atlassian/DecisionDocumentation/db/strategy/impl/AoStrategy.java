@@ -269,7 +269,7 @@ public class AoStrategy implements Strategy {
 	public Core createCore(Project project) {
 		Core core = new Core();
 		core.setMultiple(false);
-		core.setCheck_callback(true);
+		core.setCheckCallback(true);
 		core.setThemes(ImmutableMap.of("icons", false));
 		final ActiveObjects ao = ComponentGetter.getAo();
 		final HashSet<Data> dataSet =  new HashSet<Data>();

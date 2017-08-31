@@ -5,7 +5,6 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.atlassian.jira.issue.Issue;
 /**
- * 
  * @author Ewald Rode
  * @description model class for decision components
  */

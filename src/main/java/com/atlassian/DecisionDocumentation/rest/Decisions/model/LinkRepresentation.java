@@ -1,6 +1,5 @@
 package com.atlassian.DecisionDocumentation.rest.Decisions.model;
 /**
- * 
  * @author Ewald Rode
  * @description model class for links between decision components
  */

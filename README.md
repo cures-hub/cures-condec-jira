@@ -19,6 +19,9 @@ atlas-mvn package
 ```
 The .jar file is created.
 
+##Download of precompiled .jar-File
+The precompiled .jar-File for the latest release can be found here: (https://github.com/cures-hub/cures-decdoc-jira/releases/latest)
+
 ## Installation in JIRA
 The .jar file is installed by uploading it to your JIRA application:
 - As a system administrator, navigate to JIRA's administration console and click the "Add-ons" tab.

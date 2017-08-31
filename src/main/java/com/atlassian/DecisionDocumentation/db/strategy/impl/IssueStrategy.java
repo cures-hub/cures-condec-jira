@@ -299,7 +299,7 @@ public class IssueStrategy implements Strategy {
 		}
 		Core core = new Core();
 		core.setMultiple(false);
-		core.setCheck_callback(true);
+		core.setCheckCallback(true);
 		core.setThemes(ImmutableMap.of("icons", false));
 		HashSet<Data> dataSet = new HashSet<Data>();
 		for (int index = 0; index < issueList.size(); ++index){
