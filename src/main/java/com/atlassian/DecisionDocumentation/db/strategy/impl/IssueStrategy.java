@@ -345,7 +345,7 @@ public class IssueStrategy implements Strategy {
 		List<Issue> toBeAddedToChildren = new ArrayList<Issue>();
 		for (int i = 0; i < inwardIssuesList.size(); ++i){
 			if(inwardIssuesList.get(i).getIssueType().getName().equals("Argument")){
-				if(issue != null & outwardIssuesList.get(i) != null) {
+				if(issue != null & inwardIssuesList.get(i) != null) {
 					Pair<String, String> newKVP = new Pair<String, String>(issue.getKey(), inwardIssuesList.get(i).getKey());
 					Pair<String, String> newKVPReverse = new Pair<String, String>(inwardIssuesList.get(i).getKey(), issue.getKey());
 					boolean boolvar = false;
