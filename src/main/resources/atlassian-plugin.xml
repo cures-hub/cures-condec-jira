@@ -31,7 +31,7 @@
   </web-resource>
   <web-resource key="DecisionDocumentation-resources" name="DecisionDocumentation Web Resources">
     <!-- treants -->
-    <resource type="download" name="treant.js" location="/js/treant_js/treant.js"/>
+    <resource type="download" name="Treant.js" location="/js/treant_js/Treant.js"/>
     <resource type="download" name="raphael.js" location="/js/treant_js/raphael.js"/>
     <resource type="download" name="jquery.easing.js" location="/js/treant_js/jquery.easing.js"/>
     <!-- jQuery -->
