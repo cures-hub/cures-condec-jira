@@ -1,104 +1,136 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2">
-  <plugin-info>
-    <description>${project.description}</description>
-    <version>${project.version}</version>
-    <vendor name="${project.organization.name}" url="${project.organization.url}"/>
-    <param name="plugin-icon">images/pluginIcon.png</param>
-    <param name="plugin-logo">images/pluginLogo.png</param>
-  </plugin-info>
-  <!-- i18n resource -->
-  <resource type="i18n" name="i18n" location="DecisionDocumentation"/>
-  
-  <!-- web resources -->
-  <web-resource key="stylesheet-and-icon-resources" name="Stylesheets and Icons">
-  	<!-- icons -->
-	<resource type="download" name="Add.png" location="/images/Add.png"/>
-  	<resource type="download" name="Delete.png" location="/images/Delete.png"/>
-  	<resource type="download" name="Open.png" location="/images/Open.png"/>
-  	<resource type="download" name="Edit.png" location="/images/Edit.png"/>
-	<resource type="download" name="32px.png" location="/js/jstree/32px.png"/>
-	<resource type="download" name="40px.png" location="/js/jstree/40px.png"/>
-    <resource type="download" name="throbber.gif" location="/js/jstree/throbber.gif"/>
-	<!-- stylesheets -->
-    <resource type="download" name="treant.css" location="/css/treant.css"/>
-    <resource type="download" name="chart.css" location="/css/chart.css"/>
-    <resource type="download" name="editor.css" location="/css/editor.css"/>
-    <resource type="download" name="jquery.contextMenu.css" location="/css/jquery.contextMenu.css"/>
-	<resource type="download" name="jstree.css" location="/css/jstree.css"/>
-    <context>DecisionDocumentation</context>
-  </web-resource>
-  <web-resource key="DecisionDocumentation-resources" name="DecisionDocumentation Web Resources">
-    <!-- treants -->
-    <resource type="download" name="Treant.js" location="/js/treant_js/Treant.js"/>
-    <resource type="download" name="raphael.js" location="/js/treant_js/raphael.js"/>
-    <resource type="download" name="jquery.easing.js" location="/js/treant_js/jquery.easing.js"/>
-    <!-- jQuery -->
-    <resource type="download" name="jquery.js" location="/js/jquery.js"/>
-    <!-- jstree-->
-    <resource type="download" name="jstree.min.js" location="/js/jstree/jstree.min.js"/>
-    <!-- jquery.contextMenu -->
-	<resource type="download" name="jquery.ui.position.js" location="/js/contextMenu/jquery.ui.position.js"/>
-	<resource type="download" name="jquery.contextMenu.js" location="/js/contextMenu/jquery.contextMenu.js"/>
-	<!-- my own JS-->
-    <resource type="download" name="DecisionDocumentation.js" location="/js/DecisionDocumentation.js"/>
-    <context>DecisionDocumentation</context>
-  </web-resource>
-  
-  <!-- DecisionEditor -->
-  <web-item name="Decisions" i18n-name-key="decisions.name" key="decisions" section="jira.project.sidebar.plugins.navigation" weight="1000">
-    <description key="decisions.description">Link in der Projects Navigation Sidebar zur DecisionsPage</description>
-    <label key="decisions.label"/>
-    <param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-bp-decisions"/>
-    <link linkId="decisions-link">/projects/$pathEncodedProjectKey?selectedItem=decisions-page</link>
-    <condition class="com.atlassian.DecisionDocumentation.util.IsActivated">
-      <param name="projectKey" value="$pathEncodedProjectKey"/>
-    </condition>
-  </web-item>
-  <web-panel name="decisionspage" i18n-name-key="decisionspage.name" key="decisionspage" location="decisions-page" weight="1000">
-    <description key="decisionspage.description">Decisionspage: vereinigt den Decisions-Editor und -Tree</description>
-    <resource name="view" type="velocity" location="templates/editor.vm"/>
-  </web-panel>
-  <rest name="Decisions" i18n-name-key="decisionsrest.name" key="decisionsrest" path="/decisions" version="1.0">
-    <description key="decisionsrest.description">The Decisions Plugin</description>
-  </rest>
-  <rest name="TreantRest" i18n-name-key="TreantRest.name" key="TreantRest" path="/treantsrest" version="1.0">
-    <description key="TreantRest.description">Das Rest Plugin stellt die Daten fuer den Treant auf der Decisionspage bereit</description>
-  </rest>
-  <rest name="TreeViewerRest" i18n-name-key="TreeViewerRest.name" key="TreeViewerRest" path="/treeviewerrest" version="1.0">
-    <description key="TreeViewerRest.description">Das Tree Viewer Rest Plugin stellt die Daten fuer den TreeViewer auf der DecisionsPage bereit</description>
-  </rest>
-  
-  <!--Administration-->
-  <web-section name="DecDoc-Web-Section" key="DecDoc_section" location="admin_plugins_menu">
-    <label key="DecDoc Section"/>
-    <description>Adds Web-Section to the Addons Menu</description>
-  </web-section>
-  <web-section name="DecDoc-Menu-Item" key="DecDoc_menu_item" location="DecDoc_section">
-    <label key="DecDoc"/>
-    <description>Adds a Menu-Item with a Label to the DecDoc-Web-Section</description>
-  </web-section>
-  <web-item key="DecDoc-administration-menu-item" name="DecDoc Administration Menu Item" section="DecDoc_section/DecDoc_menu_item" weight="10" application="jira">
-    <description>Adds a Menu Item that links to the Admin Servlet.</description>
-    <label key="admin-servlet.label"/>
-    <link linkId="admin-servlet-link">/plugins/servlet/adminservlet</link>
-  </web-item>
-  <servlet name="Admin Servlet" i18n-name-key="admin-servlet.name" key="admin-servlet" class="com.atlassian.DecisionDocumentation.servlet.AdminServlet">
-    <description key="admin-servlet.description">The Admin Servlet Plugin</description>
-    <url-pattern>/adminservlet</url-pattern>
-  </servlet>
-  <rest name="Adminstration Rest Resource" key="admin-rest" path="/admin" version="1.0">
-    <description>Provides REST resources for the Adminstration Form.</description>
-  </rest>
-  <rest name="Config" i18n-name-key="config.name" key="config" path="/config" version="1.0">
-    <description key="config.description">The Config Plugin</description>
-  </rest>
-  
-  <!-- Active Objects -->
-  <ao key="ao-module">
-	  <description>The module configuring the Active Objects service used by this plugin</description>
-	  <entity>com.atlassian.DecisionDocumentation.db.DecisionComponentEntity</entity>
-	  <entity>com.atlassian.DecisionDocumentation.db.LinkEntity</entity>
+<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}"
+	plugins-version="2">
+	<plugin-info>
+		<description>${project.description}</description>
+		<version>${project.version}</version>
+		<vendor name="${project.organization.name}" url="${project.organization.url}" />
+		<param name="plugin-icon">images/pluginIcon.png</param>
+		<param name="plugin-logo">images/pluginLogo.png</param>
+	</plugin-info>
+	<!-- i18n resource -->
+	<resource type="i18n" name="i18n" location="DecisionDocumentation" />
+
+	<!-- web resources -->
+	<web-resource key="stylesheet-and-icon-resources" name="Stylesheets and Icons">
+		<!-- icons -->
+		<resource type="download" name="Add.png" location="/images/Add.png" />
+		<resource type="download" name="Delete.png" location="/images/Delete.png" />
+		<resource type="download" name="Open.png" location="/images/Open.png" />
+		<resource type="download" name="Edit.png" location="/images/Edit.png" />
+		<resource type="download" name="32px.png" location="/js/jstree/32px.png" />
+		<resource type="download" name="40px.png" location="/js/jstree/40px.png" />
+		<resource type="download" name="throbber.gif" location="/js/jstree/throbber.gif" />
+		<!-- stylesheets -->
+		<resource type="download" name="treant.css" location="/css/treant.css" />
+		<resource type="download" name="chart.css" location="/css/chart.css" />
+		<resource type="download" name="editor.css" location="/css/editor.css" />
+		<resource type="download" name="jquery.contextMenu.css"
+			location="/css/jquery.contextMenu.css" />
+		<resource type="download" name="jstree.css" location="/css/jstree.css" />
+		<context>DecisionDocumentation</context>
+	</web-resource>
+	<web-resource key="DecisionDocumentation-resources" name="DecisionDocumentation Web Resources">
+		<!-- treants -->
+		<resource type="download" name="Treant.js" location="/js/treant_js/Treant.js" />
+		<resource type="download" name="raphael.js" location="/js/treant_js/raphael.js" />
+		<resource type="download" name="jquery.easing.js"
+			location="/js/treant_js/jquery.easing.js" />
+		<!-- jQuery -->
+		<resource type="download" name="jquery.js" location="/js/jquery.js" />
+		<!-- jstree -->
+		<resource type="download" name="jstree.min.js" location="/js/jstree/jstree.min.js" />
+		<!-- jquery.contextMenu -->
+		<resource type="download" name="jquery.ui.position.js"
+			location="/js/contextMenu/jquery.ui.position.js" />
+		<resource type="download" name="jquery.contextMenu.js"
+			location="/js/contextMenu/jquery.contextMenu.js" />
+		<!-- my own JS -->
+		<resource type="download" name="DecisionDocumentation.js"
+			location="/js/DecisionDocumentation.js" />
+		<context>DecisionDocumentation</context>
+	</web-resource>
+
+	<!-- DecisionEditor -->
+	<web-item name="Decisions" i18n-name-key="decisions.name" key="decisions"
+		section="jira.project.sidebar.plugins.navigation" weight="1000">
+		<description key="decisions.description">Link to Decisions-page in Projects
+			Navigation Sidebar
+		</description>
+		<label key="decisions.label" />
+		<param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-bp-decisions" />
+		<link linkId="decisions-link">/projects/$pathEncodedProjectKey?selectedItem=decisions-page
+		</link>
+		<condition class="com.atlassian.DecisionDocumentation.util.IsActivated">
+			<param name="projectKey" value="$pathEncodedProjectKey" />
+		</condition>
+	</web-item>
+	<web-panel name="decisionspage" i18n-name-key="decisionspage.name"
+		key="decisionspage" location="decisions-page" weight="1000">
+		<description key="decisionspage.description">Decisions-page: contains both the
+			decisions-editor and the decision-tree
+		</description>
+		<resource name="view" type="velocity" location="templates/editor.vm" />
+	</web-panel>
+	<rest name="Decisions" i18n-name-key="decisionsrest.name" key="decisionsrest"
+		path="/decisions" version="1.0">
+		<description key="decisionsrest.description">The Decisions Plugin</description>
+	</rest>
+	<rest name="TreantRest" i18n-name-key="TreantRest.name" key="TreantRest"
+		path="/treantsrest" version="1.0">
+		<description key="TreantRest.description">Das Rest Plugin stellt die Daten fuer den
+			Treant auf der Decisionspage bereit
+		</description>
+	</rest>
+	<rest name="TreeViewerRest" i18n-name-key="TreeViewerRest.name"
+		key="TreeViewerRest" path="/treeviewerrest" version="1.0">
+		<description key="TreeViewerRest.description">Das Tree Viewer Rest Plugin stellt die
+			Daten fuer den TreeViewer auf der DecisionsPage bereit
+		</description>
+	</rest>
+
+	<!--Administration -->
+	<web-section name="DecDoc-Web-Section" key="DecDoc_section"
+		location="admin_plugins_menu">
+		<label key="DecDoc Section" />
+		<description>Adds Web-Section to the Addons Menu</description>
+	</web-section>
+	<web-section name="DecDoc-Menu-Item" key="DecDoc_menu_item"
+		location="DecDoc_section">
+		<label key="DecDoc" />
+		<description>Adds a Menu-Item with a Label to the DecDoc-Web-Section
+		</description>
+	</web-section>
+	<web-item key="DecDoc-administration-menu-item" name="DecDoc Administration Menu Item"
+		section="DecDoc_section/DecDoc_menu_item" weight="10" application="jira">
+		<description>Adds a Menu Item that links to the Admin Servlet.
+		</description>
+		<label key="admin-servlet.label" />
+		<link linkId="admin-servlet-link">/plugins/servlet/adminservlet</link>
+	</web-item>
+	<servlet name="Admin Servlet" i18n-name-key="admin-servlet.name"
+		key="admin-servlet" class="com.atlassian.DecisionDocumentation.servlet.AdminServlet">
+		<description key="admin-servlet.description">The Admin Servlet Plugin</description>
+		<url-pattern>/adminservlet</url-pattern>
+	</servlet>
+	<rest name="Adminstration Rest Resource" key="admin-rest" path="/admin"
+		version="1.0">
+		<description>Provides REST resources for the Adminstration Form.
+		</description>
+	</rest>
+	<rest name="Config" i18n-name-key="config.name" key="config" path="/config"
+		version="1.0">
+		<description key="config.description">The Config Plugin</description>
+	</rest>
+
+	<!-- Active Objects -->
+	<ao key="ao-module">
+		<description>The module configuring the Active Objects service used by
+			this plugin
+		</description>
+		<entity>com.atlassian.DecisionDocumentation.db.DecisionComponentEntity
+		</entity>
+		<entity>com.atlassian.DecisionDocumentation.db.LinkEntity</entity>
 	</ao>
 </atlassian-plugin>

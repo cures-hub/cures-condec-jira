@@ -385,7 +385,7 @@ function createContextMenuForTreeNodes(projectKey) {
                                     type: 'success',
                                     close: 'auto',
                                     title: 'Success',
-                                    body: 'Decisioncomponent has been updated'
+                                    body: 'Decision component has been updated.'
                                 });
                                 var nodeId = $.jstree.reference('#evts').get_selected()[0];
                                 buildTreeViewer(projectKey, nodeId);
@@ -476,7 +476,7 @@ function addOptionsToAllDecisionComponents(parentNode) {
 function addOptionToDecisionComponent(type, parentNode) {
     if (type === "Solution") {
         if (document.getElementById(type).innerHTML === "") {
-            document.getElementById(type).insertAdjacentHTML('beforeend', '<p>Do you want to add an additional ' + type + '?<input type="text" id="inputField' + type + '" placeholder="Name of ' + type + '"><input type="button" name="CreateAndLinkDecisionComponent' + type + '" id="CreateAndLinkDecisionComponent' + type + '" value="Add ' + type + '"/></p>');
+            document.getElementById(type).insertAdjacentHTML('beforeend', '<p>Do you want to add an additional ' + type + '? <input type="text" id="inputField' + type + '" placeholder="Name of ' + type + '"><input type="button" name="CreateAndLinkDecisionComponent' + type + '" id="CreateAndLinkDecisionComponent' + type + '" value="Add ' + type + '"/></p>');
             var createDecisionComponentButton = document.getElementById("CreateAndLinkDecisionComponent" + type);
             var inputField = document.getElementById("inputField" + type);
             createDecisionComponentButton.addEventListener('click', function () {
@@ -616,7 +616,7 @@ function addOptionToDecisionComponent(type, parentNode) {
 }
 function fillAccordion(data, projectKey, node) {
     var detailsElement = document.getElementById("Details");
-    detailsElement.insertAdjacentHTML('beforeend', '<p>' + node.key + ' / ' + node.summary + '<input type="button" name="updataIssue" id="updateIssue" value="Update Issue"/></p>' +
+    detailsElement.insertAdjacentHTML('beforeend', '<p>' + node.key + ' / ' + node.summary + ' <input type="button" name="updateIssue" id="updateIssue" value="Update"/></p>' +
         '<p><textarea id="IssueDescription" style="width:99%; height:auto;border: 1px solid rgba(204,204,204,1); ">' +
         node.description + '</textarea></p>'
     );
@@ -628,7 +628,7 @@ function fillAccordion(data, projectKey, node) {
                 type: 'success',
                 close: 'auto',
                 title: 'Success',
-                body: 'Decisioncomponent has been updated'
+                body: 'Decision component has been updated.'
             });
             buildTreeViewer(projectKey, node.id);
         });
@@ -652,7 +652,7 @@ function fillAccordion(data, projectKey, node) {
                         type: 'success',
                         close: 'auto',
                         title: 'Success',
-                        body: 'IssueLink has been created.'
+                        body: 'Link has been created.'
                     });
                     buildTreeViewer(projectKey, node.key);
                 });
@@ -731,7 +731,7 @@ function buildTreeViewer(projectKey, nodeId) {
                     'contextmenu' : {
                         'items' : {
                             'create' : {
-                                'label' : 'Create DecisionComponent',
+                                'label' : 'Create Decision Component',
                                 'action' : function(node){
                                     var selector  = node.reference.prevObject.selector;
                                     var tree_node = $('#evts').jstree(true).get_node(selector).data;
@@ -938,7 +938,7 @@ function buildTreeViewer(projectKey, nodeId) {
                                                 type: 'success',
                                                 close: 'auto',
                                                 title: 'Success',
-                                                body: 'Decisioncomponent has been updated'
+                                                body: 'Decision component has been updated.'
                                             });
                                             buildTreeViewer(projectKey, tree_node.id);
                                         });

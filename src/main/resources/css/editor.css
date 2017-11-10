@@ -1,128 +1,147 @@
-li > a.jstree-search{
+li>a.jstree-search {
 	color: #3b73af;
 }
-a:focus a:hover{
-	text-decoration:none;
+
+a:focus a:hover {
+	text-decoration: none;
 }
-#DepthOfTreeWarning{
+
+#DepthOfTreeWarning {
 	visibility: hidden;
-	color: rgba(255,85,85,1)
+	color: rgba(255, 85, 85, 1)
 }
-#view-editor{
+
+#view-editor {
 	margin-right: 0.1%;
 }
-#linkExistingIssueSearchField{
-	display:none;
+
+#linkExistingIssueSearchField {
+	display: none;
 }
+
 #container {
-	width:64.5%;
+	width: 64.5%;
 	float: left;
-	border:1px solid rgba(204,204,204,1);
+	border: 1px solid rgba(204, 204, 204, 1);
 }
+
 #button {
-	float:right;
-	display:block;
-	height:18px;
-	width:17px;
-	text-indent:-9999px;
+	float: right;
+	display: block;
+	height: 18px;
+	width: 17px;
+	text-indent: -9999px;
 }
-#jstree-search-input{
+
+#jstree-search-input {
 	width: 34%;
 	height: 20px;
-	border: 1px solid rgba(204,204,204,1);
+	border: 1px solid rgba(204, 204, 204, 1);
 	float: left;
 	padding: 0px;
 }
-#switch-wrapper{
+
+#switch-wrapper {
 	width: 64.8%;
 	float: left;
 }
-#DecisionInputField{
-	border:1px solid rgba(204,204,204,1); 
+
+#DecisionInputField {
+	border: 1px solid rgba(204, 204, 204, 1);
 	width: 22.4%;
 	height: 19px;
 }
-#CreateDecision{
+
+#CreateDecision {
 	width: 11%;
 }
-.equalMarginRegulator{
+
+.equalMarginRegulator {
 	margin: 0.1%;
 }
-.select2-container{
-	width:49%;
+
+.select2-container {
+	width: 49%;
 }
-.switch-on-click{
-	background-color: rgba(245,245,245,1);
-	width:49.6%;
-	float:left;
-	text-align:center;
-	border: 1px solid rgba(204,204,204,1);
-	cursor:pointer;
+
+.switch-on-click {
+	background-color: rgba(245, 245, 245, 1);
+	width: 49.6%;
+	float: left;
+	text-align: center;
+	border: 1px solid rgba(204, 204, 204, 1);
+	cursor: pointer;
 }
+
 .switch-on-click:hover {
-	color:black;
-	background-color: rgba(230,230,230,1);
+	color: black;
+	background-color: rgba(230, 230, 230, 1);
 }
-.ueberschrift{
-	font-weight:bold;
-	background: rgba(245,245,245,1);
-	float:left;
-	width:99.4%;
-	padding:2px;
-	cursor:pointer;
+
+.ueberschrift {
+	font-weight: bold;
+	background: rgba(245, 245, 245, 1);
+	float: left;
+	width: 99.4%;
+	padding: 2px;
+	cursor: pointer;
 	text-align: center;
 }
+
 .ueberschrift:hover {
-	color:black;
-	background: rgba(230,230,230,1);
+	color: black;
+	background: rgba(230, 230, 230, 1);
 }
-.ausklappbar{
-	display:none;
-	float:left;
-	width:93%;
-	padding:2px;
+
+.ausklappbar {
+	display: none;
+	float: left;
+	width: 93%;
+	padding: 2px;
 }
-.issuelinkbox{
-	border: 1px solid rgba(204,204,204,1);
+
+.issuelinkbox {
+	border: 1px solid rgba(204, 204, 204, 1);
 }
-.demo { 
-	overflow:auto; 
-	border:1px solid rgba(204,204,204,1); 
+
+.demo {
+	overflow: auto;
+	border: 1px solid rgba(204, 204, 204, 1);
 	width: 34%;
 	float: left !important;
 }
 
 /* The Modal (background) */
 .modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+	display: none; /* Hidden by default */
+	position: fixed; /* Stay in place */
+	z-index: 1; /* Sit on top */
+	left: 0;
+	top: 0;
+	width: 100%; /* Full width */
+	height: 100%; /* Full height */
+	overflow: auto; /* Enable scroll if needed */
+	background-color: rgb(0, 0, 0); /* Fallback color */
+	background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
 /* Modal Content/Box */
 .modal-wrapper {
-    background-color: #fefefe;
-    margin: 15% auto; /* 15% from the top and centered */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%; /* Could be more or less, depending on screen size */
+	background-color: #fefefe;
+	margin: 15% auto; /* 15% from the top and centered */
+	padding: 20px;
+	border: 1px solid #888;
+	width: 80%; /* Could be more or less, depending on screen size */
 }
 /* The Close Button */
 .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
+	color: #aaa;
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
 }
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
+
+.close:hover, .close:focus {
+	color: black;
+	text-decoration: none;
+	cursor: pointer;
 }

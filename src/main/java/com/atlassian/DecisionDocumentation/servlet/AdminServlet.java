@@ -100,13 +100,13 @@ public class AdminServlet extends HttpServlet{
         response.setContentType("text/html;charset=utf-8");
         velocityParams.put("requestUrl", request.getRequestURL());
         velocityParams.put("projectsMap", configMap);
-        LOGGER.info("AdminServlet is now being rendered.");
+        LOGGER.info("DecDoc AdminServlet is now being rendered.");
         renderer.render("templates/admin.vm", velocityParams, response.getWriter());
     }
 
     private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.sendRedirect(loginUriProvider.getLoginUri(getUri(request)).toASCIIString());
-        LOGGER.info("User with Name('{}') tried to access AdminServlet and has been redirected to Login",
+        LOGGER.info("User with Name('{}') tried to access AdminServlet and has been redirected to Login.",
                 userManager.getRemoteUsername(request));
     }
 

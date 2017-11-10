@@ -1,42 +1,53 @@
 <html>
-	<head>
-		<title>$i18n.getText("admin-servlet.name")</title>
-		<meta name="decorator" content="atl.general">
-		<meta name="decorator" content="atl.admin" />
-		<meta name="admin.active.section" content="admin_plugins_menu/new_plugin_section"/>
-		<meta name="admin.active.tab" content="jira-menu-item1" >
-		$webResourceManager.requireResource("com.atlassian.auiplugin:ajs")
-		$webResourceManager.requireResource("com.atlassian.auiplugin:aui-select")
-		$webResourceManager.requireResource("com.atlassian.auiplugin:aui-form-notification")
-		$webResourceManager.requireResource("com.atlassian.auiplugin:aui-inline-dialog2")
-		$webResourceManager.requireResource("com.atlassian.auiplugin:aui-toggle")
-		<style>
-			tr:hover{background: rgba(230,230,230,1);}
-		</style>
-	</head>
-	<body>
-		<h2>DecDoc Administration</h2>
-		<hr>
-		<table>
-			<tr>
-				<th>
-					<h2>Project</h2>
-				</th>
-				<th>
-					<h2>Activated</h2>
-				</th>
-				<th>
-					<h2>Usage of JIRA Issues</h2>
-				</th>
-			</tr
-			#foreach ($proj in $projectsMap)
-			<tr>
-				<td>
-					<aui-label for="$proj.getProjectKey()-toggle">$proj.getProjectName()</aui-label>
-				</td>
-				<td>
-					<input type="checkbox" id="$proj.getProjectKey()-isActivated-toggle" name="$proj.getProjectName()-Activated" value="$proj.getProjectName()-Activated" data-projectKey="$proj.getProjectKey()">
-					<script>
+<head>
+<title>$i18n.getText("admin-servlet.name")</title>
+<meta name="decorator" content="atl.general">
+<meta name="decorator" content="atl.admin" />
+<meta name="admin.active.section"
+	content="admin_plugins_menu/new_plugin_section" />
+<meta name="admin.active.tab" content="jira-menu-item1">
+$webResourceManager.requireResource("com.atlassian.auiplugin:ajs")
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-select")
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-form-notification")
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-inline-dialog2")
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-toggle")
+<style>
+table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+th, td {
+	padding: 8px;
+	text-align: left;
+	border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+	background-color: #f5f5f5
+}
+
+h2 {
+	margin-top: 0.83em;
+	margin-bottom: 0.83em;
+}
+</style>
+</head>
+<body>
+	<h2>DecDoc Settings</h2>
+	<table>
+		<tr>
+			<th>Project Name</th>
+			<th>DecDoc Activated?</th>
+			<th>Use JIRA Issues to Store Decision Knowledge?</th>
+		</tr>
+		#foreach ($proj in $projectsMap)
+		<tr>
+			<td><aui-label for="$proj.getProjectKey()-toggle">$proj.getProjectName()</aui-label>
+			</td>
+			<td><aui-toggle id="$proj.getProjectKey()-isActivated-toggle"
+					label="$proj.getProjectName()-Activated"
+					data-projectKey="$proj.getProjectKey()"></aui-toggle> <script>
 						var toggle = document.getElementById('$proj.getProjectKey()-isActivated-toggle');
 						#if ($proj.getIsActivated() == "true")
 							toggle.checked = true;
@@ -48,27 +59,11 @@
 							thisToggle.busy = true;
 							#include("js/admin/postAdmin.js")
 						});
-					</script>
-					#**
-					    <aui-toggle id="$proj.getProjectKey()-isActivated-toggle" label="$proj.getProjectName()-Activated" data-projectKey="$proj.getProjectKey()"></aui-toggle>
-						<script>
-							var toggle = document.getElementById('$proj.getProjectKey()-isActivated-toggle');
-							#if ($proj.getIsActivated() == "true")
-								toggle.checked = true;
-							#else
-								toggle.checked = false;
-							#end
-							toggle.addEventListener('change', function(e) {
-								var thisToggle = this;
-								thisToggle.busy = true;
-								#include("js/admin/postAdmin.js")
-							});
-						</script>
-					*#
-				</td>
-				<td>
-					<input type="checkbox" id="$proj.getProjectKey()-isIssueStrategy-toggle" name="$proj.getProjectName()-IssueStrategy" value="$proj.getProjectName()-IssueStrategy" data-projectKey="$proj.getProjectKey()">
-					<script>
+					</script></td>
+			<td><aui-toggle
+					id="$proj.getProjectKey()-isIssueStrategy-toggle"
+					label="$proj.getProjectName()-IssueStrategy"
+					data-projectKey="$proj.getProjectKey()"></aui-toggle> <script>
 						var toggle = document.getElementById('$proj.getProjectKey()-isIssueStrategy-toggle');
 						#if ($proj.getIsIssueStrategy() == "true")
 							toggle.checked = true;
@@ -80,27 +75,9 @@
 							thisToggle.busy = true;
 							#include("js/admin/putAdmin.js")
 						});
-				  	</script>
-					#**
-						<aui-toggle id="$proj.getProjectKey()-isIssueStrategy-toggle" label="$proj.getProjectName()-IssueStrategy" data-projectKey="$proj.getProjectKey()"></aui-toggle>
-						<script>
-							var toggle = document.getElementById('$proj.getProjectKey()-isIssueStrategy-toggle');
-							#if ($proj.getIsIssueStrategy() == "true")
-								toggle.checked = true;
-							#else
-								toggle.checked = false;
-							#end
-							toggle.addEventListener('change', function(e) {
-								var thisToggle = this;
-								thisToggle.busy = true;
-								#include("js/admin/putAdmin.js")
-							});
-					  	</script>
-					*#
-					
-				</td>
-			</tr>
-			#end
-		</table>
-	</body>
+					</script></td>
+		</tr>
+		#end
+	</table>
+</body>
 </html>
