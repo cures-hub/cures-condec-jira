@@ -1,22 +1,11 @@
 package com.atlassian.DecisionDocumentation.rest.treants;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import com.atlassian.DecisionDocumentation.db.strategy.Strategy;
-import com.atlassian.DecisionDocumentation.db.strategy.impl.AoStrategy;
-import com.atlassian.DecisionDocumentation.db.strategy.impl.IssueStrategy;
+import com.atlassian.DecisionDocumentation.db.strategy.StrategyProvider;
 import com.atlassian.DecisionDocumentation.rest.treants.model.Treant;
-import com.atlassian.DecisionDocumentation.util.ComponentGetter;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
-import com.atlassian.sal.api.pluginsettings.PluginSettings;
-import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
-import com.atlassian.sal.api.transaction.TransactionCallback;
-import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.google.common.collect.ImmutableMap;
 
 import javax.ws.rs.*;
@@ -39,7 +28,6 @@ public class TreantRest {
     {
     	if(projectKey!=null){
     		ProjectManager projectManager = ComponentAccessor.getProjectManager();
-    		IssueManager issueManager = ComponentAccessor.getIssueManager();
         	Project project = projectManager.getProjectObjByKey(projectKey);
         	if(project == null){
     			/*projekt mit diesem projectKey existiert nicht*/
@@ -56,48 +44,10 @@ public class TreantRest {
         		} else {
         			depth = 4;
         		}
-        		
-        		TransactionTemplate transactionTemplate = ComponentGetter.getTransactionTemplate();
-				final PluginSettingsFactory pluginSettingsFactory = ComponentGetter.getPluginSettingsFactory();
-				final String pluginStorageKey = ComponentGetter.getPluginStorageKey();
-				Object ob = transactionTemplate.execute(new TransactionCallback<Object>() {
-	                public Object doInTransaction() {
-	                    PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-	                    Object o = settings.get(pluginStorageKey + ".isIssueStrategy");
-	                    return o;
-	                }
-	            });
-				if(ob instanceof String) {
-					String strategyType = (String) ob;
-					Strategy strategy = null;
-					if (strategyType.equalsIgnoreCase("true")) {
-						strategy = new IssueStrategy();
-						Collection<Long> issueIds = issueManager.getIssueIdsForProject(project.getId());
-		            	Issue rootIssue = null;
-		            	Collection<Issue> issueCollection = new HashSet<Issue>();
-		            	for (Long id : issueIds){
-		            		issueCollection.add(issueManager.getIssueObject(id));
-		            	}
-		            	for (Issue issue : issueCollection){
-		            		if (issue.getKey().equals(issueKey)){
-		            			rootIssue = issue;
-		            		}
-		            	}	
-		            	if(rootIssue == null){
-		            		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Can not find Issue corresponding to given Query Parameter 'issueKey'")).build();
-		            	}
-		            	Treant treantRestModel = strategy.createTreant(rootIssue.getKey(), depth);
-	            		return Response.ok(treantRestModel).build();
-					} else {
-						strategy = new AoStrategy();
-						Treant treantRestModel = strategy.createTreant(issueKey, depth);
-	            		return Response.ok(treantRestModel).build();
-					}
-				} else {
-					Strategy strategy = new AoStrategy();
-					Treant treantRestModel = strategy.createTreant(issueKey, depth);
-            		return Response.ok(treantRestModel).build();
-				}
+        		StrategyProvider strategyProvider = new StrategyProvider();
+        		Strategy strategy = strategyProvider.getStrategy(projectKey);
+	        	Treant treantRestModel = strategy.createTreant(issueKey, depth);
+	    		return Response.ok(treantRestModel).build();
     		}
     	} else {
     		/*projectKey wurde nicht als Query-Parameter angegeben*/
