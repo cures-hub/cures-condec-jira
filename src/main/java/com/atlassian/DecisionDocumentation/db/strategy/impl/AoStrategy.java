@@ -495,7 +495,7 @@ public class AoStrategy implements Strategy {
 			long htmlId = dec.getID();
 			node.setHtmlId(htmlId);
 			
-			if(currentDepth<depth){
+			if(currentDepth+1<depth){
 				List<Node> children = new ArrayList<Node>();
 				final List<DecisionComponentEntity> inwardLinkedDecList = new ArrayList<DecisionComponentEntity>();
 				for(LinkEntity linkEntity : ao.find(LinkEntity.class, Query.select().where("INGOING_ID != ? AND OUTGOING_ID = ?", dec.getID(), dec.getID()))) {

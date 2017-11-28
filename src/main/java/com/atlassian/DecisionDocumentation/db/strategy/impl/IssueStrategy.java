@@ -492,7 +492,7 @@ public class IssueStrategy implements Strategy {
 		long htmlId = issue.getId();
 		node.setHtmlId(htmlId);
 		
-		if(currentDepth<depth){
+		if(currentDepth+1<depth){
 			List<Node> children = new ArrayList<Node>();
 			List<Issue> toBeAddedToChildren = new ArrayList<Issue>();
 			List<IssueLink> allOutwardIssueLink = ComponentAccessor.getIssueLinkManager().getOutwardLinks(issue.getId());
