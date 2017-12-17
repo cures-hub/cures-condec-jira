@@ -28,3 +28,15 @@ The .jar file is installed by uploading it to your JIRA application:
 - Select "Manage add-ons" on the sidebar.
 - Click on "Upload add-on" and select the previously compiled .jar file.
 - Click "Upload" for upload, installation and activation.
+
+## Implementation Details
+In order to understand which decisions were made during the project, JIRA DecDoc provides a *TreeViewer* that lists all documented decisions. 
+The TreeViewer was implemented using the [jsTree jQuery plugin](https://www.jstree.com).
+The decisions can be selected and their decision components can be viewed and selected as well. 
+
+Currently, the JIRA DecDoc plugin provides two views: an accordion editor and a tree view (different to the TreeViewer).
+
+The accordion editor enables the user to refine decisions incrementally and collaboratively.
+The accordion editor was implemented using the jQuery [accordion widget](https://jqueryui.com/accordion).
+The *Tree* view enables the developer to see the decision components of a single decision. 
+The tree view was implemented using the [Treant.js library](http://fperucic.github.io/treant-js).
