@@ -13,7 +13,7 @@
     <description>This is the com.atlassian.DecisionDocumentation:DecisionDocumentation plugin for Atlassian JIRA.</description>
     <packaging>atlassian-plugin</packaging>
     <dependencies>
-    	<!-- JIRA -->
+        <!-- JIRA -->
         <dependency>
             <groupId>com.atlassian.jira</groupId>
             <artifactId>jira-api</artifactId>
@@ -32,9 +32,8 @@
             <version>2.7.1</version>
             <scope>provided</scope>
         </dependency>
-        
         <!-- Servlets -->
-		<dependency>
+        <dependency>
             <groupId>com.atlassian.templaterenderer</groupId>
             <artifactId>atlassian-template-renderer-api</artifactId>
             <version>3.0.0</version>
@@ -46,7 +45,6 @@
             <version>2.4</version>
             <scope>provided</scope>
         </dependency>
-		
         <!-- Spring -->
         <dependency>
             <groupId>com.atlassian.plugin</groupId>
@@ -72,7 +70,6 @@
             <version>1</version>
             <scope>provided</scope>
         </dependency>
-        
         <!-- REST -->
         <dependency>
             <groupId>javax.ws.rs</groupId>
@@ -91,7 +88,6 @@
             <artifactId>gson</artifactId>
             <version>2.2.2-atlassian-1</version>
         </dependency>
-        
         <!-- LOGGER -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -99,26 +95,22 @@
             <version>1.6.6</version>
             <scope>provided</scope>
         </dependency>
-		
         <!-- ActiveObjects -->
         <dependency>
-		  <groupId>com.atlassian.activeobjects</groupId>
-		  <artifactId>activeobjects-plugin</artifactId>
-		  <version>${ao.version}</version>
-		  <scope>provided</scope>
-		</dependency>
-		
-		<!-- Google Collections, useful utilities for manipulating collections -->
-		<dependency>
-		  <groupId>com.google.collections</groupId>
-		  <artifactId>google-collections</artifactId>
-		  <version>1.0</version>
-		  <scope>provided</scope>
-		</dependency>
-		
-		
-		<!-- TESTS -->
-		<dependency>
+            <groupId>com.atlassian.activeobjects</groupId>
+            <artifactId>activeobjects-plugin</artifactId>
+            <version>${ao.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Google Collections, useful utilities for manipulating collections -->
+        <dependency>
+            <groupId>com.google.collections</groupId>
+            <artifactId>google-collections</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- TESTS -->
+        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.1.1</version>
@@ -149,18 +141,18 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-			<groupId>com.atlassian.jira</groupId>
-			<artifactId>jira-tests</artifactId>
-			<version>${jira.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.atlassian.jira</groupId>
-			<artifactId>jira-func-tests</artifactId>
-			<version>${jira.version}</version>
-			<scope>test</scope>
-		</dependency> 
-		<dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-tests</artifactId>
+            <version>${jira.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-func-tests</artifactId>
+            <version>${jira.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.atlassian.jira</groupId>
             <artifactId>jira-tests</artifactId>
             <version>${jira.version}</version>
@@ -169,7 +161,7 @@
     </dependencies>
     <!-- Builde -->
     <build>
-    	<finalName>cures-decdoc-jira</finalName>
+        <finalName>cures-decdoc-jira</finalName>
         <plugins>
             <plugin>
                 <groupId>com.atlassian.maven.plugins</groupId>
@@ -215,7 +207,7 @@
     </build>
     <properties>
         <jira.version>7.2.2</jira.version>
-        <amps.version>6.3.1</amps.version>
+        <amps.version>6.3.6</amps.version>
         <ao.version>1.2.3</ao.version>
         <plugin.testrunner.version>1.2.3</plugin.testrunner.version>
         <atlassian.spring.scanner.version>1.2.13</atlassian.spring.scanner.version>
