@@ -315,6 +315,10 @@ public class IssueStrategy implements Strategy {
 	}
 
 	public Data createData(Issue issue) {
+		if(issue==null) {
+			LOGGER.error("NullPointerException: createData Issue was NULL");
+			return new Data();
+		}
 		Data data = new Data();
 		
 		data.setText(issue.getKey() + " / " + issue.getSummary());
