@@ -8,7 +8,6 @@ import org.junit.Test;
 import com.atlassian.DecisionDocumentation.db.strategy.impl.IssueStrategy;
 import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Data;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.issuetype.IssueType;
 
 public class TestCreateData {
 
@@ -17,6 +16,7 @@ public class TestCreateData {
 	@Before
 	public void setUp(){
 		this.issueStrat=new IssueStrategy();
+	
 	}
 	
 	@Test
