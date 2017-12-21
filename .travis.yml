@@ -14,7 +14,7 @@ before_install:
 install:
 - atlas-mvn install
 script:
-- atlas-package
+- atlas-package -DskipTests=true
 notifications: 
 email: false
 deploy:
