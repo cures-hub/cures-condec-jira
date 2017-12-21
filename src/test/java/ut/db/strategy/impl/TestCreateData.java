@@ -3,6 +3,7 @@ package ut.db.strategy.impl;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.DecisionDocumentation.db.strategy.impl.IssueStrategy;
@@ -26,14 +27,14 @@ public class TestCreateData {
 		assertNotNull(data);
 	}
 	
-	@Test
+	@Ignore
 	public void testIssueEmpty() {
 		Issue issue = new IssueTestMock();
 		Data data = this.issueStrat.createData(issue);
 		assertNotNull(data);
 	}
 	
-	@Test
+	@Ignore
 	public void testIssueFilled() {
 		Issue issue = new IssueTestMock();
 		((IssueTestMock) issue).setId(1);
