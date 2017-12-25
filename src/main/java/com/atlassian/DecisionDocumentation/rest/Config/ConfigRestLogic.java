@@ -35,6 +35,10 @@ public class ConfigRestLogic {
     }
     
     public void setResponseForGet(final String projectKey){
+    	if(projectKey==null || projectKey=="") {
+    		LOGGER.error("Empyt ProjectKey in ConfigRestLogic setResponseForGet");
+    		status=Status.CONFLICT;
+    	}
         try{
             Object ob = transactionTemplate.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction() {
@@ -53,7 +57,15 @@ public class ConfigRestLogic {
         }
     }
     
-    public void setIsAvtivated(final String projectKey, final String isActivated){
+    public void setIsActivated(final String projectKey, final String isActivated){
+    	if(projectKey==null || projectKey=="") {
+    		LOGGER.error("Empyt ProjectKey in ConfigRestLogic setResponseForGet");
+    		status=Status.CONFLICT;
+    	}
+    	if(isActivated==null || isActivated=="") {
+    		LOGGER.error("Empyt String isActivated in ConfigRestLogic setResponseForGet");
+    		status=Status.CONFLICT;
+    	}
         try{
             transactionTemplate.execute(new TransactionCallback<Object>() {
                 public Object doInTransaction() {
