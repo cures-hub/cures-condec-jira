@@ -22,6 +22,8 @@ public class TestConfigRestLogic {
 		restLogic= new ConfigRestLogic();
 	}
 	
+	//Testing setResponseForGet
+	
 	@Test
 	public void testSetResponseForGetProjectKeyNull() {
 		String projectKey;
@@ -45,4 +47,80 @@ public class TestConfigRestLogic {
 		restLogic.setResponseForGet(projectKey);
 		assertEquals(Status.OK.getStatusCode(),restLogic.getResponse().getStatus());
 	}
+	
+	// Testing isActivated
+	@Test
+	public void testSetIsActivatedProjectKeyNullIsActivatedNull() {
+		String projectKey=null;
+		String isActivated=null;
+		restLogic.setIsActivated(projectKey, isActivated);
+		assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());
+	}
+	
+	@Test
+	public void testSetIsActivatedProjectKeyEmptylIsActivatedNull() {
+		String projectKey="";
+		String isActivated=null;
+		restLogic.setIsActivated(projectKey, isActivated);
+		assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());		
+	}
+	
+	@Test
+	public void testSetIsActivatedProjectKeyFilledIsActivatedNull() {
+		String projectKey="TEST";
+		String isActivated=null;
+		restLogic.setIsActivated(projectKey, isActivated);
+		assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());
+	}
+	
+	@Test
+	public void testSetIsActivatedProjectKeyNullIsActivatedEmpty() {
+		String projectKey=null;
+		String isActivated="";
+		restLogic.setIsActivated(projectKey, isActivated);
+		assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());
+	}
+	
+	@Test
+	public void testSetIsActivatedProjectKeyEmptylIsActivatedEmpty() {
+		String projectKey="";
+		String isActivated="";
+		restLogic.setIsActivated(projectKey, isActivated);
+		assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());
+	}
+	
+	@Test
+	public void testSetIsActivatedProjectKeyFilledIsActivatedEmpty() {
+		String projectKey="TEST";
+		String isActivated="";
+		restLogic.setIsActivated(projectKey, isActivated);
+		assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());
+	}
+	
+	@Test
+	public void testSetIsActivatedProjectKeyNullIsActivatedFilled() {
+		String projectKey=null;
+		String isActivated="true";
+		restLogic.setIsActivated(projectKey, isActivated);
+		assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());
+	}
+	
+	@Test
+	public void testSetIsActivatedProjectKeyEmptylIsActivatedFilled() {
+		String projectKey="";
+		String isActivated="true";
+		restLogic.setIsActivated(projectKey, isActivated);
+		assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());
+	}
+	
+	@Test
+	public void testSetIsActivatedProjectKeyFilledIsActivatedFilled() {
+		String projectKey="TEST";
+		String isActivated="true";
+		restLogic.setIsActivated(projectKey, isActivated);
+		assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());
+	}
+	
+	
+	
 }
