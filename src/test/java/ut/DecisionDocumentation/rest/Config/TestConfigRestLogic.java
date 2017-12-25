@@ -12,6 +12,8 @@ import javax.ws.rs.core.Response.Status;
  * @author Tim Kuchenbuch
  * @description Testing the functionality of the ConfigRestLogic Class 
  *
+ * @Problems the TransactionTemplate is not available in the Test Class at the moment 
+ * TODO Adding a Mock so the Accept Parts of the functions can be usesd 
  */
 public class TestConfigRestLogic {
 	
