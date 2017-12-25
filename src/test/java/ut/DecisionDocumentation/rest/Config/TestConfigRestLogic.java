@@ -121,6 +121,78 @@ public class TestConfigRestLogic {
 		assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());
 	}
 	
+	// Testing setIssueStrategy
+		@Test
+		public void testSetIsActivatedProjectKeyNullisIssueStrategyNull() {
+			String projectKey=null;
+			String isIssueStrategy=null;
+			restLogic.setIsIssueStrategy(projectKey, isIssueStrategy);
+			assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());
+		}
+		
+		@Test
+		public void testSetIsActivatedProjectKeyEmptylisIssueStrategyNull() {
+			String projectKey="";
+			String isIssueStrategy=null;
+			restLogic.setIsIssueStrategy(projectKey, isIssueStrategy);
+			assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());		
+		}
+		
+		@Test
+		public void testSetIsActivatedProjectKeyFilledisIssueStrategyNull() {
+			String projectKey="TEST";
+			String isIssueStrategy=null;
+			restLogic.setIsIssueStrategy(projectKey, isIssueStrategy);
+			assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());
+		}
+		
+		@Test
+		public void testSetIsActivatedProjectKeyNullisIssueStrategyEmpty() {
+			String projectKey=null;
+			String isIssueStrategy="";
+			restLogic.setIsIssueStrategy(projectKey, isIssueStrategy);
+			assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());
+		}
+		
+		@Test
+		public void testSetIsActivatedProjectKeyEmptylisIssueStrategyEmpty() {
+			String projectKey="";
+			String isIssueStrategy="";
+			restLogic.setIsIssueStrategy(projectKey,isIssueStrategy);
+			assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());
+		}
+		
+		@Test
+		public void testSetIsActivatedProjectKeyFilledisIssueStrategyEmpty() {
+			String projectKey="TEST";
+			String isIssueStrategy="";
+			restLogic.setIsIssueStrategy(projectKey,isIssueStrategy);
+			assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());
+		}
+		
+		@Test
+		public void testSetIsActivatedProjectKeyNullisIssueStrategyFilled() {
+			String projectKey=null;
+			String isIssueStrategy="true";
+			restLogic.setIsIssueStrategy(projectKey, isIssueStrategy);
+			assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());
+		}
+		
+		@Test
+		public void testSetIsActivatedProjectKeyEmptylisIssueStrategyFilled() {
+			String projectKey="";
+			String isIssueStrategy="true";
+			restLogic.setIsIssueStrategy(projectKey, isIssueStrategy);
+			assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());
+		}
+		
+		@Test
+		public void testSetIsActivatedProjectKeyFilledisIssueStrategyFilled() {
+			String projectKey="TEST";
+			String isIssueStrategy="true";
+			restLogic.setIsIssueStrategy(projectKey, isIssueStrategy);
+			assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());
+		}
 	
 	
 }
