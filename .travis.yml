@@ -15,7 +15,7 @@ install:
 - atlas-mvn install -DskipTests=true
 script:
 - atlas-package 
-- mvn cobertura:cobertura
+- atlas-mvn cobertura:cobertura
 notifications: 
 email: false
 test:
