@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.atlassian.DecisionDocumentation.db.strategy.impl.IssueStrategy;
 import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Data;
+import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.issue.Issue;
 
 public class TestCreateData {
@@ -26,21 +27,17 @@ public class TestCreateData {
 		Data data = this.issueStrat.createData(issue);
 		assertNotNull(data);
 	}
-	
-	@Ignore
+
+	@Test
 	public void testIssueEmpty() {
-		Issue issue = new IssueTestMock();
+		Issue issue = new MockIssue();
 		Data data = this.issueStrat.createData(issue);
 		assertNotNull(data);
 	}
 	
 	@Ignore
 	public void testIssueFilled() {
-		Issue issue = new IssueTestMock();
-		((IssueTestMock) issue).setId(1);
-		((IssueTestMock) issue).setKey("Test-112");
-		((IssueTestMock) issue).setSummary("Test");
-		((IssueTestMock) issue).setDescription("Test");
+		Issue issue = new MockIssue();
 		Data data = this.issueStrat.createData(issue);
 		assertNotNull(data);
 	}
