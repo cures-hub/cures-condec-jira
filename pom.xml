@@ -15,12 +15,6 @@
     <dependencies>
         <!-- JIRA -->
         <dependency>
-		    <groupId>com.atlassian.jira</groupId>
-		    <artifactId>jira-core</artifactId>
-		    <version>${jira.version}</version>
-		    <scope>provided</scope>
-		</dependency>
-        <dependency>
             <groupId>com.atlassian.jira</groupId>
             <artifactId>jira-api</artifactId>
             <version>${jira.version}</version>
@@ -116,12 +110,6 @@
             <scope>provided</scope>
         </dependency>
         <!-- TESTS -->
-        <dependency>
-            <groupId>com.atlassian.jira</groupId>
-            <artifactId>jira-api</artifactId>
-            <version>${jira.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
