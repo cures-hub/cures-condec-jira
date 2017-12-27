@@ -1,7 +1,7 @@
 # cures-decdoc-jira
 
 [![Build Status](https://travis-ci.org/cures-hub/cures-decdoc-jira.svg?branch=master)](https://travis-ci.org/cures-hub/cures-decdoc-jira)
-[![Codecoverage](https://codecov.io/gh/cures-hub/cures-decdoc-jira/branch/Testing/graph/badge.svg)](https://codecov.io/gh/cures-hub/cures-decdoc-jira/branch/Testing)
+[![Codecoverage](https://codecov.io/gh/cures-hub/cures-decdoc-jira/branch/master/graph/badge.svg)](https://codecov.io/gh/cures-hub/cures-decdoc-jira/branch/master)
 
 The CURES DecDoc JIRA plugin enables the user to capture and explore decision knowledge in [JIRA](https://de.atlassian.com/software/jira).
 Decision knowledge is composed of decisions and their decision components (e.g., arguments, alternatives, problem, context, ...).
