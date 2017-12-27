@@ -15,6 +15,7 @@ install:
 - atlas-mvn install -DskipTests=true
 script:
 - atlas-package 
+- atlas-mvn cobertura:cobertura
 notifications: 
 email: false
 test:
@@ -28,3 +29,5 @@ deploy:
   on:
     tags: true
     repo: cures-hub/cures-decdoc-jira
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
