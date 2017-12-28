@@ -141,17 +141,17 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.atlassian.jira</groupId>
-            <artifactId>jira-tests</artifactId>
-            <version>${jira.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.atlassian.jira</groupId>
-            <artifactId>jira-func-tests</artifactId>
-            <version>${jira.version}</version>
-            <scope>test</scope>
-        </dependency>
+	      	<groupId>com.atlassian.jira</groupId>
+	      	<artifactId>jira-tests</artifactId>
+	     	<version>${jira.version}</version>
+	      	<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.atlassian.jira</groupId>
+      		<artifactId>jira-func-tests</artifactId>
+      		<version>${jira.version}</version>
+      		<scope>test</scope>
+		</dependency> 
     </dependencies>
     <!-- Builde -->
     <build>

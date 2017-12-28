@@ -3,13 +3,15 @@ package ut.db.strategy.impl;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.DecisionDocumentation.db.strategy.impl.IssueStrategy;
 import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Data;
 import com.atlassian.jira.mock.issue.MockIssue;
+import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.issuetype.IssueType;
+import com.atlassian.jira.issue.issuetype.MockIssueType;
 
 public class TestCreateData {
 
@@ -18,7 +20,7 @@ public class TestCreateData {
 	@Before
 	public void setUp(){
 		this.issueStrat=new IssueStrategy();
-	
+		new MockComponentWorker().init();
 	}
 	
 	@Test
@@ -30,15 +32,25 @@ public class TestCreateData {
 
 	@Test
 	public void testIssueEmpty() {
-		Issue issue = new MockIssue();
+		IssueType issueType = new MockIssueType(12, "Solution");
+		Issue issue = new MockIssue(1, "TEST-12");
+		((MockIssue) issue).setIssueType(issueType);
+				
 		Data data = this.issueStrat.createData(issue);
+		
 		assertNotNull(data);
 	}
 	
-	@Ignore
+	@Test
 	public void testIssueFilled() {
-		Issue issue = new MockIssue();
+		IssueType issueType = new MockIssueType(12, "Solution");
+		Issue issue = new MockIssue(1, "TEST-12");
+		((MockIssue) issue).setIssueType(issueType);
+		((MockIssue) issue).setDescription("Test");
+		((MockIssue) issue).setSummary("Test");
+		
 		Data data = this.issueStrat.createData(issue);
+		
 		assertNotNull(data);
 	}
 }
