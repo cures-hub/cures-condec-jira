@@ -8,10 +8,14 @@ import org.junit.Test;
 import com.atlassian.DecisionDocumentation.db.strategy.impl.IssueStrategy;
 import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Data;
 import com.atlassian.jira.mock.issue.MockIssue;
+
+import ut.mocks.MockIssueLinkManager;
+
 import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.issuetype.MockIssueType;
+import com.atlassian.jira.issue.link.IssueLinkManager;
 
 public class TestCreateData {
 
@@ -20,7 +24,7 @@ public class TestCreateData {
 	@Before
 	public void setUp(){
 		this.issueStrat=new IssueStrategy();
-		new MockComponentWorker().init();
+		new MockComponentWorker().init().addMock(IssueLinkManager.class, new MockIssueLinkManager());
 	}
 	
 	@Test
