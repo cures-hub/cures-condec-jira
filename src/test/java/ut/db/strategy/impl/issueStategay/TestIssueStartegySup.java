@@ -25,10 +25,10 @@ public class TestIssueStartegySup {
 		((MockProjectManager) projectManager).addProject(new MockProject(1,"TEST"));
 		
 		ConstantsManager constManager = new  MockConstantsManager();
-		
+		IssueService issueService=new MockIssueService();
 		this.issueStrat=new IssueStrategy();
 		new MockComponentWorker().init().addMock(IssueLinkManager.class, new MockIssueLinkManager())
-		.addMock(IssueService.class, new MockIssueService())
+		.addMock(IssueService.class,issueService)
 		.addMock(ProjectManager.class,projectManager)
 		.addMock(ConstantsManager.class,constManager);
 	}

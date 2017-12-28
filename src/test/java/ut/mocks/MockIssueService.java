@@ -131,8 +131,16 @@ public class MockIssueService implements IssueService {
 		ErrorCollection col = new MockAction();
 		Map<String,Object> fieldValuesHolder = new HashMap<>();
 		Map<String,org.codehaus.jackson.JsonNode> properties = new HashMap<>();
-		IssueService.CreateValidationResult ret = new CreateValidationResult(issue, col, fieldValuesHolder, properties);
-		return ret;
+		if(arg0.getName().equals("NoFails")) {			
+			IssueService.CreateValidationResult ret = new CreateValidationResult(issue, col, fieldValuesHolder, properties);
+			return ret;
+		}
+		if(arg0.getName().equals("WithFails")) {
+			col.addError("Test", "Test");
+			IssueService.CreateValidationResult ret = new CreateValidationResult(issue, col, fieldValuesHolder, properties);
+			return ret;
+		}
+		return null;
 	}
 
 	@Override

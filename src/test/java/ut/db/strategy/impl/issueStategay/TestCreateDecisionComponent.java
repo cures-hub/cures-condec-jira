@@ -23,11 +23,20 @@ public class TestCreateDecisionComponent extends TestIssueStartegySup {
 	}
 	
 	@Test
-	public void testCreateDecisionComponentRepresFilledUserFilled() {
+	public void testCreateDecisionComponentRepresFilledUserFilledNoFails() {
 		DecisionRepresentation dec = new DecisionRepresentation();
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
-		ApplicationUser user = new MockApplicationUser("Test");
+		ApplicationUser user = new MockApplicationUser("NoFails");
+		issueStrat.createDecisionComponent(dec, user);
+		
+	}
+	@Test
+	public void testCreateDecisionComponentRepresFilledUserFilledWithFails() {
+		DecisionRepresentation dec = new DecisionRepresentation();
+		dec.setProjectKey("TEST");
+		dec.setType("Solution");
+		ApplicationUser user = new MockApplicationUser("WithFails");
 		issueStrat.createDecisionComponent(dec, user);
 		
 	}
