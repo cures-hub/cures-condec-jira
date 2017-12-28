@@ -55,18 +55,33 @@ public class IssueStrategy implements Strategy {
 
 	@Override
 	public Data createDecisionComponent(DecisionRepresentation dec, ApplicationUser user) {
-		IssueInputParameters issueInputParameters = ComponentGetter.getIssueService().newIssueInputParameters();
+		/*
+		 * Old Implementation
+		 * IssueInputParameters issueInputParameters = ComponentGetter.getIssueService().newIssueInputParameters();
+		 */
+		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
 
 		issueInputParameters.setSummary(dec.getName());
 		issueInputParameters.setDescription(dec.getDescription());
 		issueInputParameters.setAssigneeId(user.getName());
 		issueInputParameters.setReporterId(user.getName());
-		Project project = ComponentGetter.getProjectService().getProjectByKey(user, dec.getProjectKey()).getProject();
+		
+		/*
+		 * Old Implementation 
+		 * Project project = ComponentGetter.getProjectService().getProjectByKey(user, dec.getProjectKey()).getProject();
+		 */
+		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(dec.getProjectKey());
+		
 		issueInputParameters.setProjectId(project.getId());
 		String issueTypeId = getIssueTypeId(dec.getType());
 		issueInputParameters.setIssueTypeId(issueTypeId);
 
-		IssueService issueService = ComponentGetter.getIssueService();
+		/*
+		 * Old Implementation 
+		 * IssueService issueService = ComponentGetter.getIssueService();
+		 */
+		IssueService issueService = ComponentAccessor.getIssueService();
+		
 		IssueService.CreateValidationResult result = issueService.validateCreate(user, issueInputParameters);
 		if (result.getErrorCollection().hasAnyErrors()) {
 			for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {

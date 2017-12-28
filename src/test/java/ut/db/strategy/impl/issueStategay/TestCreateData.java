@@ -1,31 +1,17 @@
-package ut.db.strategy.impl;
+package ut.db.strategy.impl.issueStategay;
 
 import static org.junit.Assert.assertNotNull;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import com.atlassian.DecisionDocumentation.db.strategy.impl.IssueStrategy;
 import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Data;
 import com.atlassian.jira.mock.issue.MockIssue;
 
-import ut.mocks.MockIssueLinkManager;
-
-import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.issuetype.MockIssueType;
-import com.atlassian.jira.issue.link.IssueLinkManager;
 
-public class TestCreateData {
-
-	private IssueStrategy issueStrat;
-	
-	@Before
-	public void setUp(){
-		this.issueStrat=new IssueStrategy();
-		new MockComponentWorker().init().addMock(IssueLinkManager.class, new MockIssueLinkManager());
-	}
+public class TestCreateData extends TestIssueStartegySup{
 	
 	@Test
 	public void testIssueNull(){
