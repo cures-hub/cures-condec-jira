@@ -14,6 +14,12 @@
     <packaging>atlassian-plugin</packaging>
     <dependencies>
         <!-- JIRA -->
+         <dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-core</artifactId>
+            <version>${jira.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>com.atlassian.jira</groupId>
             <artifactId>jira-api</artifactId>
@@ -141,17 +147,17 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.atlassian.jira</groupId>
-            <artifactId>jira-tests</artifactId>
-            <version>${jira.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.atlassian.jira</groupId>
-            <artifactId>jira-func-tests</artifactId>
-            <version>${jira.version}</version>
-            <scope>test</scope>
-        </dependency>
+	      	<groupId>com.atlassian.jira</groupId>
+	      	<artifactId>jira-tests</artifactId>
+	     	<version>${jira.version}</version>
+	      	<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.atlassian.jira</groupId>
+      		<artifactId>jira-func-tests</artifactId>
+      		<version>${jira.version}</version>
+      		<scope>test</scope>
+		</dependency> 
     </dependencies>
     <!-- Builde -->
     <build>
