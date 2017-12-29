@@ -9,37 +9,38 @@ import com.atlassian.DecisionDocumentation.rest.Decisions.model.DecisionRepresen
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 
-public class TestCreateDecisionComponent extends TestIssueStartegySup {
-	
+public class TestEditDecisionComponent extends TestIssueStartegySup {
+
 	@Test
 	(expected = NullPointerException.class)
-	public void testCreateDecisionComponentRepresNullUserNull() {
-		issueStrat.createDecisionComponent(null, null);
+	public void testDecisionRepresentationNullApplicUserNull() {
+		issueStrat.editDecisionComponent(null, null);
 	}
 	
 	@Test
 	(expected = NullPointerException.class)
-	public void testCreateDecisionComponentRepresFilledUserNull() {
+	public void testDecisionRepresentationFilledApplicUserNull() {
 		DecisionRepresentation dec = new DecisionRepresentation();
-		issueStrat.createDecisionComponent(dec, null);
+		issueStrat.editDecisionComponent(dec, null);
 	}
 	
 	@Test
-	public void testCreateDecisionComponentRepresFilledUserFilledNoFails() {
+	public void testDecisionRepresentationFilledApplicUserFilledRight() {
 		DecisionRepresentation dec = new DecisionRepresentation();
+		dec.setId(1);
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
 		ApplicationUser user = new MockApplicationUser("NoFails");
-		assertNotNull(issueStrat.createDecisionComponent(dec, user));
-		
+		assertNotNull(issueStrat.editDecisionComponent(dec, user));
 	}
+	
 	@Test
-	public void testCreateDecisionComponentRepresFilledUserFilledWithFails() {
+	public void testDecisionRepresentationFilledApplicUserFilledWrong() {
 		DecisionRepresentation dec = new DecisionRepresentation();
+		dec.setId(1);
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
 		ApplicationUser user = new MockApplicationUser("WithFails");
-		assertNull(issueStrat.createDecisionComponent(dec, user));
-		
+		assertNull(issueStrat.editDecisionComponent(dec, user));
 	}
 }

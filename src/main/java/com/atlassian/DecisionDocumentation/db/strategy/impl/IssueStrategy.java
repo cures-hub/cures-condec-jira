@@ -111,7 +111,12 @@ public class IssueStrategy implements Strategy {
 
 	@Override
 	public Data editDecisionComponent(DecisionRepresentation dec, ApplicationUser user) {
-		IssueService issueService = ComponentGetter.getIssueService();
+		/*
+		 * Old Implementation
+		 * IssueService issueService = ComponentGetter.getIssueService();
+		 */
+		IssueService issueService = ComponentAccessor.getIssueService();
+		
 		IssueService.IssueResult issueRes = issueService.getIssue(user, dec.getId());
 		MutableIssue issueToBeUpdated = issueRes.getIssue();
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();

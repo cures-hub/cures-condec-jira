@@ -63,14 +63,16 @@ public class MockIssueService implements IssueService {
 
 	@Override
 	public IssueResult getIssue(ApplicationUser arg0, Long arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		MutableIssue issue = new MockIssue(arg1);
+		IssueResult result = new IssueResult(issue);
+		return result;
 	}
 
 	@Override
 	public IssueResult getIssue(ApplicationUser arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		MutableIssue issue = new MockIssue(1, arg1);
+		IssueResult result = new IssueResult(issue);
+		return result;
 	}
 
 	@Override
@@ -87,8 +89,8 @@ public class MockIssueService implements IssueService {
 
 	@Override
 	public IssueInputParameters newIssueInputParameters(Map<String, String[]> arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		IssueInputParameters issueInputParameters = new MockIssueInputParameters();
+		return issueInputParameters;
 	}
 
 	@Override
@@ -99,8 +101,7 @@ public class MockIssueService implements IssueService {
 
 	@Override
 	public IssueResult update(ApplicationUser arg0, UpdateValidationResult arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return new IssueResult(arg1.getIssue());
 	}
 
 	@Override
@@ -171,7 +172,20 @@ public class MockIssueService implements IssueService {
 
 	@Override
 	public UpdateValidationResult validateUpdate(ApplicationUser arg0, Long arg1, IssueInputParameters arg2) {
-		// TODO Auto-generated method stub
+		MutableIssue issue = new MockIssue(1, "TEST-12");
+		IssueType issueType = new MockIssueType(12, "Solution");
+		((MockIssue) issue).setIssueType(issueType);
+		ErrorCollection col = new MockAction();
+		Map<String,Object> fieldValuesHolder = new HashMap<>();
+		if(arg0.getName().equals("NoFails")) {			
+			IssueService.UpdateValidationResult ret = new UpdateValidationResult(issue, col, fieldValuesHolder);
+			return ret;
+		}
+		if(arg0.getName().equals("WithFails")) {
+			col.addError("Test", "Test");
+			IssueService.UpdateValidationResult ret = new UpdateValidationResult(issue, col, fieldValuesHolder);
+			return ret;
+		}
 		return null;
 	}
 
