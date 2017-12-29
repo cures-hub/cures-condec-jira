@@ -50,8 +50,7 @@ public class MockIssueService implements IssueService {
 
 	@Override
 	public ErrorCollection delete(ApplicationUser arg0, DeleteValidationResult arg1) {
-		// TODO Auto-generated method stub
-		return null;
+		return arg1.getErrorCollection();
 	}
 
 	@Override
@@ -65,6 +64,15 @@ public class MockIssueService implements IssueService {
 	public IssueResult getIssue(ApplicationUser arg0, Long arg1) {
 		MutableIssue issue = new MockIssue(arg1);
 		IssueResult result = new IssueResult(issue);
+		if(arg0.getName().equals("NoFails")) {
+			return result;
+		}
+		if(arg0.getName().equals("WithFails")) {
+			ErrorCollection col = new MockAction();
+			col.addError("Test", "Test");
+			IssueResult newres =  new IssueResult(issue, col);
+			return newres;
+		}
 		return result;
 	}
 
@@ -72,6 +80,15 @@ public class MockIssueService implements IssueService {
 	public IssueResult getIssue(ApplicationUser arg0, String arg1) {
 		MutableIssue issue = new MockIssue(1, arg1);
 		IssueResult result = new IssueResult(issue);
+		if(arg0.getName().equals("NoFails")) {
+			return result;
+		}
+		if(arg0.getName().equals("WithFails")) {
+			ErrorCollection col = new MockAction();
+			col.addError("Test", "Test");
+			IssueResult newres =  new IssueResult(issue, col);
+			return newres;
+		}
 		return result;
 	}
 
@@ -146,7 +163,19 @@ public class MockIssueService implements IssueService {
 
 	@Override
 	public DeleteValidationResult validateDelete(ApplicationUser arg0, Long arg1) {
-		// TODO Auto-generated method stub
+		MutableIssue issue = new MockIssue(1, "TEST-12");
+		IssueType issueType = new MockIssueType(12, "Solution");
+		((MockIssue) issue).setIssueType(issueType);
+		ErrorCollection col = new MockAction();
+		if(arg0.getName().equals("NoFails")) {			
+			IssueService.DeleteValidationResult ret = new DeleteValidationResult(issue, col);
+			return ret;
+		}
+		if(arg0.getName().equals("WithFails")) {
+			col.addError("Test", "Test");
+			IssueService.DeleteValidationResult ret = new DeleteValidationResult(issue, col);
+			return ret;
+		}
 		return null;
 	}
 

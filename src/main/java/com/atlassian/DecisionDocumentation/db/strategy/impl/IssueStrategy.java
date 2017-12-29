@@ -152,7 +152,11 @@ public class IssueStrategy implements Strategy {
 
 	@Override 
 	public boolean deleteDecisionComponent(DecisionRepresentation dec, ApplicationUser user) {
-		IssueService issueService = ComponentGetter.getIssueService();
+		/*
+		 * Old Implementation
+		 * IssueService issueService = ComponentGetter.getIssueService();
+		 */
+		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueService.IssueResult issue = issueService.getIssue(user, dec.getId());
 		if (issue.isValid()) {
 			IssueService.DeleteValidationResult result = issueService.validateDelete(user, issue.getIssue().getId());
