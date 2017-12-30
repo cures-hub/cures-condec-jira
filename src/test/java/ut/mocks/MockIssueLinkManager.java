@@ -30,7 +30,12 @@ public class MockIssueLinkManager implements IssueLinkManager {
 	@Override
 	public void createIssueLink(Long arg0, Long arg1, Long arg2, Long arg3, ApplicationUser arg4)
 			throws CreateException {
-		// TODO Auto-generated method stub
+		if(arg4==null) {
+			throw new NullPointerException();
+		}
+		if(arg0==null||arg1==null||arg3==null) {
+			throw new CreateException();
+		}
 		
 	}
 
@@ -42,13 +47,16 @@ public class MockIssueLinkManager implements IssueLinkManager {
 
 	@Override
 	public IssueLink getIssueLink(Long arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		IssueLink issueLink = new MockIssueLink(arg0);
+		return issueLink;
 	}
 
 	@Override
 	public IssueLink getIssueLink(Long arg0, Long arg1, Long arg2) {
-		// TODO Auto-generated method stub
+		if(arg1 == 1) {
+			IssueLink issueLink = new MockIssueLink(arg0);
+			return issueLink;
+		}
 		return null;
 	}
 

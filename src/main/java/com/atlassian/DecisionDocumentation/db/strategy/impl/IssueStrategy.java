@@ -23,7 +23,6 @@ import com.atlassian.DecisionDocumentation.rest.treeviewer.TreeViewerKVPairList;
 import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Core;
 import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Data;
 import com.atlassian.DecisionDocumentation.rest.treeviewer.model.NodeInfo;
-import com.atlassian.DecisionDocumentation.util.ComponentGetter;
 import com.atlassian.DecisionDocumentation.util.Pair;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.IssueService.IssueResult;
