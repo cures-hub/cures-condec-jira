@@ -6,6 +6,7 @@ import com.atlassian.DecisionDocumentation.db.strategy.impl.IssueStrategy;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.issue.link.IssueLinkManager;
+import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.mock.MockConstantsManager;
 import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.component.MockComponentWorker;
@@ -13,6 +14,7 @@ import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.ProjectManager;
 
 import ut.mocks.MockIssueLinkManager;
+import ut.mocks.MockIssueLinkTypeManager;
 import ut.mocks.MockIssueService;
 
 public class TestIssueStartegySup {
@@ -28,6 +30,7 @@ public class TestIssueStartegySup {
 		IssueService issueService=new MockIssueService();
 		this.issueStrat=new IssueStrategy();
 		new MockComponentWorker().init().addMock(IssueLinkManager.class, new MockIssueLinkManager())
+		.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager())
 		.addMock(IssueService.class,issueService)
 		.addMock(ProjectManager.class,projectManager)
 		.addMock(ConstantsManager.class,constManager);
