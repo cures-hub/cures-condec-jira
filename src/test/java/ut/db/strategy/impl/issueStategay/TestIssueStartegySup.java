@@ -1,5 +1,6 @@
 package ut.db.strategy.impl.issueStategay;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -34,19 +35,18 @@ public class TestIssueStartegySup {
 	protected IssueStrategy issueStrat;
 	private ProjectManager projectManager;
 	private IssueManager issueManager;
+	private ConstantsManager constManager;
 	
 	@Before
-	public void setUp(){
-		
-				
+	public void setUp(){		
+		issueStrat=new IssueStrategy();
 		projectManager = new MockProjectManager();		
 		issueManager= new MockIssueManager();	
-		
-		creatingProjectIssueStructure();
-				
-		ConstantsManager constManager = new  MockConstantsManager();
+		constManager = new  MockConstantsManager();
 		IssueService issueService=new MockIssueService();
-		this.issueStrat=new IssueStrategy();
+		
+		creatingProjectIssueStructure();				
+				
 		new MockComponentWorker().init().addMock(IssueManager.class, issueManager)
 		.addMock(IssueLinkManager.class, new MockIssueLinkManager())
 		.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager())
@@ -61,6 +61,7 @@ public class TestIssueStartegySup {
 		((MockProjectManager) projectManager).addProject(project);
 		
 		ArrayList<String> types= new ArrayList<>();
+		
 		types.add("Bug");
 		types.add("Decision");
 		types.add("Question");
@@ -82,6 +83,7 @@ public class TestIssueStartegySup {
 			((MockIssue)issue).setProjectId(project.getId());
 			((MockIssue)issue).setProjectObject(project);
 			IssueType issueType = new MockIssueType(i, types.get(i-2));
+			((MockConstantsManager)constManager).addIssueType(issueType);
 			((MockIssue)issue).setIssueType(issueType);
 			((MockIssueManager)issueManager).addIssue(issue);
 			if(i>types.size()) {
@@ -92,6 +94,7 @@ public class TestIssueStartegySup {
 		((MockIssue)issue).setProjectId(project.getId());
 		((MockIssue)issue).setProjectObject(project);
 		IssueType issueType = new MockIssueType(50, "Class");
+		((MockConstantsManager)constManager).addIssueType(issueType);
 		((MockIssue)issue).setIssueType(issueType);
 		((MockIssueManager)issueManager).addIssue(issue);
 		((MockIssue)issue).setParentId((long) 3);
