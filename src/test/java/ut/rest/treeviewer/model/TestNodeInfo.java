@@ -2,8 +2,6 @@ package ut.rest.treeviewer.model;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.xml.bind.annotation.XmlElement;
-
 import org.junit.Before;
 import org.junit.Test;
 

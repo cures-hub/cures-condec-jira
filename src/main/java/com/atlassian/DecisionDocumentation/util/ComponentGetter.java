@@ -4,7 +4,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
-import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.ProjectService;
@@ -14,9 +13,7 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
-import com.google.javascript.jscomp.parsing.parser.trees.ThisExpressionTree;
 
-import net.java.ao.EntityManager;
 import ut.mocks.MockTransactionTemplate;
 
 import static com.google.common.base.Preconditions.*;
