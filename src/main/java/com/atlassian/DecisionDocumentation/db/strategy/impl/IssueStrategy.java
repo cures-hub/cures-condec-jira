@@ -288,7 +288,6 @@ public class IssueStrategy implements Strategy {
 						}
 					}
 				}
-				/* Kreiere JSON-String und sende ihn zurueck */
 			}
 		}
 		return decList;
