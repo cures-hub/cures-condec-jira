@@ -1,12 +1,8 @@
 package ut.db.strategy.impl.issueStategay;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 
 import org.junit.Before;
-import org.ofbiz.core.entity.GenericEntityException;
-import org.ofbiz.core.entity.GenericValue;
 
 import com.atlassian.DecisionDocumentation.db.strategy.impl.IssueStrategy;
 import com.atlassian.jira.bc.issue.IssueService;

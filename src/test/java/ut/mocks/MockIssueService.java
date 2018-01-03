@@ -1,11 +1,8 @@
 package ut.mocks;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
-import org.codehaus.jackson.JsonNode;
 
 import com.atlassian.jira.action.MockAction;
 import com.atlassian.jira.bc.issue.IssueService;
@@ -13,7 +10,6 @@ import com.atlassian.jira.event.type.EventDispatchOption;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueInputParameters;
 import com.atlassian.jira.issue.MutableIssue;
-import com.atlassian.jira.issue.changehistory.metadata.HistoryMetadata;
 import com.atlassian.jira.issue.fields.CustomField;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.issuetype.MockIssueType;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.MutableIssue;
 
 /**
  * 
@@ -25,5 +26,15 @@ public class MockIssueManager extends com.atlassian.jira.mock.MockIssueManager {
 			}
 		}
 		return col;		
+	}
+	
+	public MutableIssue getIssueByCurrentKey(String key) {
+		for(int i=2;i<=15;i++) {
+			Issue issue=this.getIssueObject((long)i);
+			if(key.equals(issue.getId().toString())) {
+				return (MutableIssue) issue;
+			}
+		}
+		return null;
 	}
 }
