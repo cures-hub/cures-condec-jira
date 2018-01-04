@@ -288,7 +288,6 @@ public class IssueStrategy implements Strategy {
 						}
 					}
 				}
-				/* Kreiere JSON-String und sende ihn zurueck */
 			}
 		}
 		return decList;
@@ -305,7 +304,10 @@ public class IssueStrategy implements Strategy {
 		return "";
 	}
 
-	/*TreeViewerRest*/
+	/*TreeViewerRest 
+	 * 
+	 * TODO Is this still in Use? discuss!
+	*/
 	@Override
 	public Core createCore(Project project) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
@@ -420,7 +422,10 @@ public class IssueStrategy implements Strategy {
 		return data;
 	}
 
-	/*TreantsRest*/
+	/*TreantsRest
+	 * 
+	 * TODO Is this still in Use? discuss! 
+	 */
 	@Override
 	public Treant createTreant(String issueKey, int depth) {
 		Treant treant = new Treant();

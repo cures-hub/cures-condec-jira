@@ -13,6 +13,9 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
+
+import ut.mocks.MockTransactionTemplate;
+
 import static com.google.common.base.Preconditions.*;
 /**
  * 
@@ -40,6 +43,18 @@ public class ComponentGetter {
     private static TemplateRenderer templateRenderer;
     @ComponentImport
     private static ActiveObjects ao;
+      
+    /*
+     * For test use Only 
+     */
+    public  ComponentGetter() {}
+    
+    /*
+     * For test use Only 
+     */
+    public void init(ActiveObjects testao) {    	   	
+    	new ComponentGetter(null, new MockTransactionTemplate(), null, null, null, null, null,testao);
+    }
 
 	@Inject
     public ComponentGetter(PluginSettingsFactory pluginSettingsFactory, TransactionTemplate transactionTemplate, 
