@@ -1,4 +1,4 @@
-package ut.rest.treants;
+package ut.DecisionDocumentation.rest.treants;
 
 import static org.junit.Assert.assertEquals;
 
@@ -32,9 +32,10 @@ import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import ut.mocks.MockIssueLinkManager;
 import ut.mocks.MockIssueManager;
+import ut.testsetup.TestSetUp;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestTreantRest {
+public class TestTreantRest extends TestSetUp {
 	private EntityManager entityManager;  
 	
 	private TreantRest treantRest;
@@ -42,57 +43,7 @@ public class TestTreantRest {
 	@Before	
 	public void setUp() {
 		treantRest=new TreantRest();
-		MockIssueManager issueManager = new MockIssueManager();
-		ProjectManager projectManager = new MockProjectManager();
-		
-		new MockComponentWorker().init().addMock(ProjectManager.class,projectManager)
-		.addMock(IssueLinkManager.class, new MockIssueLinkManager())
-		.addMock(IssueManager.class, issueManager);
-		
-		
-		Project project = new MockProject(1,"TEST");
-		((MockProject)project).setKey("TEST");			
-		((MockProjectManager) projectManager).addProject(project);
-		
-		ArrayList<String> types= new ArrayList<>();
-		
-		types.add("Bug");
-		types.add("Decision");
-		types.add("Question");
-		types.add("Issue");
-		types.add("Goal");
-		types.add("Solution");
-		types.add("Alternative");
-		types.add("Claim");
-		types.add("Context");
-		types.add("Assumption");
-		types.add("Constraint");
-		types.add("Implication");
-		types.add("Assessment");
-		types.add("Argument");
-		
-		
-		for(int i=2;i<types.size()+2;i++) {
-			MutableIssue issue = new MockIssue(i,"TEST-"+i);
-			((MockIssue)issue).setProjectId(project.getId());
-			((MockIssue)issue).setSummary("Test");
-			((MockIssue)issue).setProjectObject(project);
-			IssueType issueType = new MockIssueType(i, types.get(i-2));
-			((MockIssue)issue).setIssueType(issueType);
-			((MockIssueManager)issueManager).addIssue(issue);
-			if(i>types.size()) {
-				((MockIssue)issue).setParentId((long) 3);
-			}
-		}
-		MutableIssue issue = new MockIssue(50,"TEST-50");
-		((MockIssue)issue).setProjectId(project.getId());
-		((MockIssue)issue).setSummary("Test");
-		((MockIssue)issue).setProjectObject(project);
-		IssueType issueType = new MockIssueType(50, "Class");
-		((MockIssue)issue).setIssueType(issueType);
-		((MockIssueManager)issueManager).addIssue(issue);
-		((MockIssue)issue).setParentId((long) 3);
-		
+		initialisation();		
 		new ComponentGetter().init(new TestActiveObjects(entityManager));
 		
 	}
@@ -160,7 +111,6 @@ public class TestTreantRest {
 	
 	@Test
 	public void testProjectExistsIssueKeyFilledDepthNoInt() throws GenericEntityException {
-		System.out.println(treantRest.getMessage("TEST", "3", "Test").getStatus());
 		assertEquals(200,treantRest.getMessage("TEST", "3", "Test").getStatus());
 	}
 }
