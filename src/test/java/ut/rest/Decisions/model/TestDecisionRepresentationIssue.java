@@ -6,33 +6,40 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.DecisionDocumentation.rest.Decisions.model.DecisionRepresentation;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.issuetype.IssueType;
+import com.atlassian.jira.issue.issuetype.MockIssueType;
+import com.atlassian.jira.mock.issue.MockIssue;
+import com.atlassian.jira.project.MockProject;
+import com.atlassian.jira.project.Project;
 
-/**
- * 
- * @author Tim Kuchenbuch
- * @description Test Class for Simple Geter and Setter Tests
- *
- */
-public class TestDecisionRepresentation {
-
-	private Long id;
+public class TestDecisionRepresentationIssue {
+	private int id;
 	private String name;
 	private String description;
 	private String type;
 	private String projectKey;
 	private DecisionRepresentation repre;
 	
-	//TODO Same Test with issues
-	
 	@Before 
-	public void setUp() {
-		this.id=(long) 100;
+	public void setUp() {		
+		this.id=100;
 		this.name="Test";
 		this.description="Test";
-		this.type="Test";
-		this.projectKey="Test";
+		this.type="TestType";
+		this.projectKey="TEST";
 		
-		this.repre= new DecisionRepresentation(id, name, description, type, projectKey);
+		IssueType issueType = new MockIssueType(2, type);
+		
+		Project project = new MockProject(1,projectKey);
+		
+		Issue issue = new MockIssue(id, "TEST-1");
+		((MockIssue)issue).setProjectObject(project);
+		((MockIssue)issue).setSummary(name);
+		((MockIssue)issue).setDescription(description);
+		((MockIssue)issue).setIssueType(issueType);
+		
+		repre = new DecisionRepresentation(issue);
 	}
 	
 	@Test
@@ -89,4 +96,5 @@ public class TestDecisionRepresentation {
 		this.repre.setProjectKey(this.projectKey+"New");
 		assertEquals(this.projectKey+"New", this.repre.getProjectKey());
 	}
+
 }
