@@ -1,39 +1,39 @@
-package ut.db.strategy.impl.issueStategay;
+package ut.db.strategy.impl.issueStrategy;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class TestingSearchUnlinkedDecisionComponents extends TestIssueStartegySup {
+public class TestingSearchUnlinkedDecisionComponents extends TestIssueStrategySetUp {
 
 	@Test
 	(expected = NullPointerException.class)
 	public void testIdZeroProjektKeyNull() {
-		issueStrat.searchUnlinkedDecisionComponents(0, null);
+		issueStrategy.searchUnlinkedDecisionComponents(0, null);
 	}
 	
 	@Test
 	public void testIdZeroProjektKeyFilled() {
 		String key = "TEST";
-		issueStrat.searchUnlinkedDecisionComponents(0, key);
+		issueStrategy.searchUnlinkedDecisionComponents(0, key);
 	}
 	
 	@Test
 	(expected = NullPointerException.class)
 	public void testIdFilledProjektKeyNull() {
-		issueStrat.searchUnlinkedDecisionComponents(1, null);
+		issueStrategy.searchUnlinkedDecisionComponents(1, null);
 	}
 	
 	@Test
 	public void testIdFilledProjektKeyFilledNotEx() {
 		String key = "TESTNot";
-		assertNotNull(issueStrat.searchUnlinkedDecisionComponents(1, key));
+		assertNotNull(issueStrategy.searchUnlinkedDecisionComponents(1, key));
 	}
 	
 	@Test
 	public void testIdFilledProjektKeyFilledEx() {
 		String key = "TEST";
-		assertTrue(issueStrat.searchUnlinkedDecisionComponents(3, key).size()>0);
+		assertTrue(issueStrategy.searchUnlinkedDecisionComponents(3, key).size()>0);
 	}
 }

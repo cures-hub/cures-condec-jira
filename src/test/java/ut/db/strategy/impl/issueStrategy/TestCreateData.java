@@ -1,4 +1,4 @@
-package ut.db.strategy.impl.issueStategay;
+package ut.db.strategy.impl.issueStrategy;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -11,12 +11,12 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.issuetype.MockIssueType;
 
-public class TestCreateData extends TestIssueStartegySup{
+public class TestCreateData extends TestIssueStrategySetUp{
 	
 	@Test
 	public void testIssueNull(){
 		Issue issue = null;
-		Data data = this.issueStrat.createData(issue);
+		Data data = this.issueStrategy.createData(issue);
 		assertNotNull(data);
 	}
 
@@ -26,7 +26,7 @@ public class TestCreateData extends TestIssueStartegySup{
 		Issue issue = new MockIssue(1, "TEST-12");
 		((MockIssue) issue).setIssueType(issueType);
 				
-		Data data = this.issueStrat.createData(issue);
+		Data data = this.issueStrategy.createData(issue);
 		
 		assertNotNull(data);
 	}
@@ -39,7 +39,7 @@ public class TestCreateData extends TestIssueStartegySup{
 		((MockIssue) issue).setDescription("Test");
 		((MockIssue) issue).setSummary("Test");
 		
-		Data data = this.issueStrat.createData(issue);
+		Data data = this.issueStrategy.createData(issue);
 		
 		assertNotNull(data);
 	}

@@ -1,7 +1,4 @@
-package ut.db.strategy.impl.issueStategay;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+package ut.db.strategy.impl.issueStrategy;
 
 import org.junit.Test;
 
@@ -9,37 +6,39 @@ import com.atlassian.DecisionDocumentation.rest.Decisions.model.DecisionRepresen
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 
-public class TestCreateDecisionComponent extends TestIssueStartegySup {
+public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 	
 	@Test
 	(expected = NullPointerException.class)
-	public void testCreateDecisionComponentRepresNullUserNull() {
-		issueStrat.createDecisionComponent(null, null);
+	public void testDecisionRepresNullUserNull() {
+		issueStrategy.deleteDecisionComponent(null, null);
 	}
 	
 	@Test
 	(expected = NullPointerException.class)
-	public void testCreateDecisionComponentRepresFilledUserNull() {
+	public void testDecisionRepresFilledUserNull() {
 		DecisionRepresentation dec = new DecisionRepresentation();
-		issueStrat.createDecisionComponent(dec, null);
+		issueStrategy.deleteDecisionComponent(dec, null);
 	}
 	
 	@Test
-	public void testCreateDecisionComponentRepresFilledUserFilledNoFails() {
+	public void testDecisionRepresFilledUserFilledRight() {
 		DecisionRepresentation dec = new DecisionRepresentation();
+		dec.setId(1);
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
 		ApplicationUser user = new MockApplicationUser("NoFails");
-		assertNotNull(issueStrat.createDecisionComponent(dec, user));
-		
+		issueStrategy.deleteDecisionComponent(dec, user);
 	}
+	
 	@Test
-	public void testCreateDecisionComponentRepresFilledUserFilledWithFails() {
+	public void testDecisionRepresFilledUserFilledWrong() {
 		DecisionRepresentation dec = new DecisionRepresentation();
+		dec.setId(1);
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
 		ApplicationUser user = new MockApplicationUser("WithFails");
-		assertNull(issueStrat.createDecisionComponent(dec, user));
-		
+		issueStrategy.deleteDecisionComponent(dec, user);
 	}
+
 }

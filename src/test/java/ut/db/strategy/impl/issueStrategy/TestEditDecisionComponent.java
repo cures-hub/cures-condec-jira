@@ -1,4 +1,4 @@
-package ut.db.strategy.impl.issueStategay;
+package ut.db.strategy.impl.issueStrategy;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -9,19 +9,19 @@ import com.atlassian.DecisionDocumentation.rest.Decisions.model.DecisionRepresen
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 
-public class TestEditDecisionComponent extends TestIssueStartegySup {
+public class TestEditDecisionComponent extends TestIssueStrategySetUp {
 
 	@Test
 	(expected = NullPointerException.class)
 	public void testDecisionRepresentationNullApplicUserNull() {
-		issueStrat.editDecisionComponent(null, null);
+		issueStrategy.editDecisionComponent(null, null);
 	}
 	
 	@Test
 	(expected = NullPointerException.class)
 	public void testDecisionRepresentationFilledApplicUserNull() {
 		DecisionRepresentation dec = new DecisionRepresentation();
-		issueStrat.editDecisionComponent(dec, null);
+		issueStrategy.editDecisionComponent(dec, null);
 	}
 	
 	@Test
@@ -31,7 +31,7 @@ public class TestEditDecisionComponent extends TestIssueStartegySup {
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
 		ApplicationUser user = new MockApplicationUser("NoFails");
-		assertNotNull(issueStrat.editDecisionComponent(dec, user));
+		assertNotNull(issueStrategy.editDecisionComponent(dec, user));
 	}
 	
 	@Test
@@ -41,6 +41,6 @@ public class TestEditDecisionComponent extends TestIssueStartegySup {
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
 		ApplicationUser user = new MockApplicationUser("WithFails");
-		assertNull(issueStrat.editDecisionComponent(dec, user));
+		assertNull(issueStrategy.editDecisionComponent(dec, user));
 	}
 }

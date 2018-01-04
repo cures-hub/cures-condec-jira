@@ -120,7 +120,7 @@ public class TestConfigRestLogic {
 		String projectKey="TEST";
 		String isActivated="true";
 		restLogic.setIsActivated(projectKey, isActivated);
-		assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());
+		assertEquals(Status.OK.getStatusCode(),restLogic.getResponse().getStatus());
 	}
 	
 	// Testing setIssueStrategy
@@ -193,7 +193,7 @@ public class TestConfigRestLogic {
 			String projectKey="TEST";
 			String isIssueStrategy="true";
 			restLogic.setIsIssueStrategy(projectKey, isIssueStrategy);
-			assertEquals(Status.CONFLICT.getStatusCode(),restLogic.getResponse().getStatus());
+			assertEquals(Status.OK.getStatusCode(),restLogic.getResponse().getStatus());
 		}
 	
 	

@@ -35,67 +35,76 @@ public class ConfigRestLogic {
     }
     
     public void setResponseForGet(final String projectKey){
-    	if(projectKey==null || projectKey=="") {
+    	if(projectKey==null || projectKey.equals("")) {
     		LOGGER.error("Empyt ProjectKey in ConfigRestLogic setResponseForGet");
     		status=Status.CONFLICT;
+    	} else {
+	        try{
+	            Object ob = transactionTemplate.execute(new TransactionCallback<Object>() {
+	                public Object doInTransaction() {
+	                    PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+	                    Object o = settings.get(pluginStorageKey + ".projectKey");
+	                    return o;
+	                }
+	            });
+	            if (ob instanceof String){
+	                isActivated = (String) ob;
+	            } else {
+	                isActivated = "false";
+	            }
+	        } catch (Exception e){
+	            isActivated = "false";
+	        }
     	}
-        try{
-            Object ob = transactionTemplate.execute(new TransactionCallback<Object>() {
-                public Object doInTransaction() {
-                    PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-                    Object o = settings.get(pluginStorageKey + ".projectKey");
-                    return o;
-                }
-            });
-            if (ob instanceof String){
-                isActivated = (String) ob;
-            } else {
-                isActivated = "false";
-            }
-        } catch (Exception e){
-            isActivated = "false";
-        }
     }
     
     public void setIsActivated(final String projectKey, final String isActivated){
-    	if(projectKey==null || projectKey=="") {
+    	if(projectKey==null || projectKey.equals("")) {
     		LOGGER.error("Empyt ProjectKey in ConfigRestLogic setResponseForGet");
     		status=Status.CONFLICT;
-    	}
-    	if(isActivated==null || isActivated=="") {
+    	} else if(isActivated==null || isActivated.equals("")) {
     		LOGGER.error("Empyt String isActivated in ConfigRestLogic setResponseForGet");
     		status=Status.CONFLICT;
+    	} else {
+	        try{
+	            transactionTemplate.execute(new TransactionCallback<Object>() {
+	                public Object doInTransaction() {
+	                    PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+	                    settings.put(pluginStorageKey + ".isActivated", isActivated);
+	                    return null;
+	                }
+	            });
+	            status = Status.ACCEPTED;
+	        } catch (Exception e){
+	            LOGGER.error(e.getMessage());
+	            status = Status.CONFLICT;
+	        }
     	}
-        try{
-            transactionTemplate.execute(new TransactionCallback<Object>() {
-                public Object doInTransaction() {
-                    PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-                    settings.put(pluginStorageKey + ".isActivated", isActivated);
-                    return null;
-                }
-            });
-            status = Status.ACCEPTED;
-        } catch (Exception e){
-            LOGGER.error(e.getMessage());
-            status = Status.CONFLICT;
-        }
     }
 
     public void setIsIssueStrategy(final String projectKey, final String isIssueStrategy){
-        try{
-            transactionTemplate.execute(new TransactionCallback<Object>() {
-                public Object doInTransaction() {
-                    PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-                    settings.put(pluginStorageKey + ".isIssueStrategy", isIssueStrategy);
-                    return null;
-                }
-            });
-            status = Status.ACCEPTED;
-            //TODO add issueTypes to issuetypescheme of given project
-        } catch (Exception e){
-            LOGGER.error(e.getMessage());
-            status = Status.CONFLICT;
-        }
+    	if(projectKey==null || projectKey.equals("")) {
+    		LOGGER.error("Empyt ProjectKey in ConfigRestLogic setResponseForGet");
+    		status=Status.CONFLICT;
+    	} else if(isIssueStrategy==null || isIssueStrategy.equals("")) {
+    		LOGGER.error("Empyt ProjectKey in ConfigRestLogic setResponseForGet");
+    		status=Status.CONFLICT;
+    	} else {
+	        try{
+	            transactionTemplate.execute(new TransactionCallback<Object>() {
+	                public Object doInTransaction() {
+	                    PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+	                    settings.put(pluginStorageKey + ".isIssueStrategy", isIssueStrategy);
+	                    return null;
+	                }
+	            });
+	            status = Status.ACCEPTED;
+	            //TODO add issueTypes to issuetypescheme of given project
+	        } catch (Exception e){
+	            LOGGER.error(e.getMessage());
+	            status = Status.CONFLICT;
+	        }
+    	}
     }
     
     public Response getResponse() {

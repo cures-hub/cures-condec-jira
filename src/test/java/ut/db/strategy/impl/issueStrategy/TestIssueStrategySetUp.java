@@ -1,4 +1,4 @@
-package ut.db.strategy.impl.issueStategay;
+package ut.db.strategy.impl.issueStrategy;
 
 import org.junit.Before;
 
@@ -6,14 +6,14 @@ import com.atlassian.DecisionDocumentation.db.strategy.impl.IssueStrategy;
 
 import ut.testsetup.TestSetUp;
 
-public class TestIssueStartegySup extends TestSetUp{
+public class TestIssueStrategySetUp extends TestSetUp{
 
-	protected IssueStrategy issueStrat;
+	protected IssueStrategy issueStrategy;
 	
 	@Before
 	public void setUp() {
 		initialisation();
-		issueStrat=new IssueStrategy();
+		issueStrategy=new IssueStrategy();
 	}
 	
 }
