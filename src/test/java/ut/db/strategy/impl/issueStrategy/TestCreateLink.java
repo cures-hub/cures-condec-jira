@@ -1,4 +1,4 @@
-package ut.db.strategy.impl.issueStategay;
+package ut.db.strategy.impl.issueStrategy;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,12 +8,12 @@ import com.atlassian.DecisionDocumentation.rest.Decisions.model.LinkRepresentati
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 
-public class TestCreateLink extends TestIssueStartegySup {
+public class TestCreateLink extends TestIssueStrategySetUp {
 	
 	@Test
 	(expected = NullPointerException.class)
 	public void testLinkRepresNullUserNull() {
-		issueStrat.createLink(null, null);
+		issueStrategy.createLink(null, null);
 	}
 	
 	@Test
@@ -22,14 +22,14 @@ public class TestCreateLink extends TestIssueStartegySup {
 		link.setIngoingId(1);
 		link.setLinkType("Contains");
 		link.setOutgoingId(2);
-		assertEquals(0,issueStrat.createLink(link, null),0.0);
+		assertEquals(0,issueStrategy.createLink(link, null),0.0);
 	}
 	
 	@Test
 	(expected = NullPointerException.class)
 	public void testLinkRepresNullUserFilled() {
 		ApplicationUser user = new MockApplicationUser("Test");
-		issueStrat.createLink(null,user);
+		issueStrategy.createLink(null,user);
 	}
 	
 	@Test
@@ -39,7 +39,7 @@ public class TestCreateLink extends TestIssueStartegySup {
 		link.setLinkType("Contains");
 		link.setOutgoingId(2);
 		ApplicationUser user = new MockApplicationUser("Test");
-		issueStrat.createLink(link,user);
+		issueStrategy.createLink(link,user);
 	}
 	
 	@Test
@@ -49,6 +49,6 @@ public class TestCreateLink extends TestIssueStartegySup {
 		link.setLinkType("Contains");
 		link.setOutgoingId(3);
 		ApplicationUser user = new MockApplicationUser("Test");
-		assertEquals(0,issueStrat.createLink(link,user),0.0);
+		assertEquals(0,issueStrategy.createLink(link,user),0.0);
 	}
 }
