@@ -2,8 +2,6 @@ package ut.DecisionDocumentation.rest.treants;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
-
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -15,23 +13,10 @@ import org.ofbiz.core.entity.GenericEntityException;
 import com.atlassian.DecisionDocumentation.rest.treants.TreantRest;
 import com.atlassian.DecisionDocumentation.util.ComponentGetter;
 import com.atlassian.activeobjects.test.TestActiveObjects;
-import com.atlassian.jira.issue.IssueManager;
-import com.atlassian.jira.issue.MutableIssue;
-import com.atlassian.jira.issue.issuetype.IssueType;
-import com.atlassian.jira.issue.issuetype.MockIssueType;
-import com.atlassian.jira.issue.link.IssueLinkManager;
-import com.atlassian.jira.mock.MockProjectManager;
-import com.atlassian.jira.mock.component.MockComponentWorker;
-import com.atlassian.jira.mock.issue.MockIssue;
-import com.atlassian.jira.project.MockProject;
-import com.atlassian.jira.project.Project;
-import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
 
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-import ut.mocks.MockIssueLinkManager;
-import ut.mocks.MockIssueManager;
 import ut.testsetup.TestSetUp;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
