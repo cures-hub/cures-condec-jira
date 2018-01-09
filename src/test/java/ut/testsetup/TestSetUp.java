@@ -2,10 +2,6 @@ package ut.testsetup;
 
 import java.util.ArrayList;
 
-import org.junit.runner.RunWith;
-
-import com.atlassian.DecisionDocumentation.util.ComponentGetter;
-import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.issue.IssueManager;
@@ -22,8 +18,6 @@ import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 
-import net.java.ao.EntityManager;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import ut.mocks.MockIssueLinkManager;
 import ut.mocks.MockIssueLinkTypeManager;
 import ut.mocks.MockIssueManager;
