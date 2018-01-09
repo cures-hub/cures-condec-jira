@@ -98,7 +98,7 @@ public class IssueStrategy implements Strategy {
 			NodeInfo nodeInfo = new NodeInfo();
 			nodeInfo.setId(Long.toString(issue.getId()));
 			nodeInfo.setKey(issue.getKey());
-			nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + issue.getId());
+			//nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + issue.getId());
 			nodeInfo.setIssueType(issue.getIssueType().getName());
 			nodeInfo.setDescription(issue.getDescription());
 			nodeInfo.setSummary(issue.getSummary());
@@ -139,7 +139,7 @@ public class IssueStrategy implements Strategy {
 			NodeInfo nodeInfo = new NodeInfo();
 			nodeInfo.setId(Long.toString(issue.getId()));
 			nodeInfo.setKey(issue.getKey());
-			nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + issue.getId());
+			//nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + issue.getId());
 			nodeInfo.setIssueType(issue.getIssueType().getName());
 			nodeInfo.setDescription(issue.getDescription());
 			nodeInfo.setSummary(issue.getSummary());
@@ -352,7 +352,7 @@ public class IssueStrategy implements Strategy {
 		NodeInfo nodeInfo = new NodeInfo();
 		nodeInfo.setId(Long.toString(issue.getId()));
 		nodeInfo.setKey(issue.getKey());
-		nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + issue.getId());
+		//nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + issue.getId());
 		nodeInfo.setIssueType(issue.getIssueType().getName());
 		nodeInfo.setDescription(issue.getDescription());
 		nodeInfo.setSummary(issue.getSummary());

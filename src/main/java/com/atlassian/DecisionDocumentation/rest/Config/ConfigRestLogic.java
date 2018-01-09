@@ -60,7 +60,7 @@ public class ConfigRestLogic {
     
     public void setIsActivated(final String projectKey, final String isActivated){
     	if(projectKey==null || projectKey.equals("")) {
-    		LOGGER.error("Empyt ProjectKey in ConfigRestLogic setResponseForGet");
+    		LOGGER.error("ProjectKey in ConfigRestLogic setResponseForGet");
     		status=Status.CONFLICT;
     	} else if(isActivated==null || isActivated.equals("")) {
     		LOGGER.error("Empyt String isActivated in ConfigRestLogic setResponseForGet");

@@ -4,8 +4,17 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.atlassian.DecisionDocumentation.rest.Config.ConfigRestLogic;
+import com.atlassian.DecisionDocumentation.util.ComponentGetter;
+import com.atlassian.activeobjects.test.TestActiveObjects;
+
+import net.java.ao.EntityManager;
+import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+import ut.mocks.MockTransactionTemplate;
+import ut.testsetup.TestSetUp;
+
 import javax.ws.rs.core.Response.Status;
 /**
  * 
@@ -15,13 +24,16 @@ import javax.ws.rs.core.Response.Status;
  * @Problems the TransactionTemplate is not available in the Test Class at the moment 
  * TODO Adding a Mock so the Accept Parts of the functions can be usesd 
  */
-public class TestConfigRestLogic {
-	
+@RunWith(ActiveObjectsJUnitRunner.class) 
+public class TestConfigRestLogic extends TestSetUp {
+	private EntityManager entityManager; 
 	private ConfigRestLogic restLogic; 
 	
 	@Before
 	public void setUp() {
 		restLogic= new ConfigRestLogic();
+		initialisation();
+		new ComponentGetter().init(new TestActiveObjects(entityManager),new MockTransactionTemplate()); 
 	}
 	
 	//Testing setResponseForGet

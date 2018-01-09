@@ -31,7 +31,7 @@ public class TestNodeInfo {
 		node.setId(id);
 		node.setIssueType(issueType);
 		node.setKey(key);
-		node.setSelfUrl(selfUrl);
+		//node.setSelfUrl(selfUrl);
 		node.setSummary(summary);
 	}
 	
@@ -44,11 +44,12 @@ public class TestNodeInfo {
 	public void testGetKey() {
 		assertEquals(key, node.getKey());
 	}
-	
+	/*
 	@Test
 	public void testGetSelfUrl() {
 		assertEquals(selfUrl, node.getSelfUrl());
 	}
+	*/
 	
 	@Test
 	public void testGetIssueType() {
@@ -76,13 +77,13 @@ public class TestNodeInfo {
 		node.setKey(key+"New");
 		assertEquals(key +"New", node.getKey());
 	}
-	
+	/*
 	@Test
 	public void testSetSelfUrl() {
 		node.setSelfUrl(selfUrl+"New");
 		assertEquals(selfUrl+"New", node.getSelfUrl());
 	}
-	
+	*/
 	@Test
 	public void testSetIssueType() {
 		node.setIssueType(issueType+"New");

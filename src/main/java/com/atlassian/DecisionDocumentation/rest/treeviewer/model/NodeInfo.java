@@ -13,8 +13,10 @@ public class NodeInfo {
 	@XmlElement
 	private String key;
 	
+	/*
 	@XmlElement
 	private String selfUrl;
+	*/
 	
 	@XmlElement
 	private String issueType;
@@ -42,7 +44,8 @@ public class NodeInfo {
 	public void setKey(String key) {
 		this.key = key;
 	}
-
+	/*
+	 * Removing selfUrl because of conflicts with Jira Gedgets
 	public String getSelfUrl() {
 		return selfUrl;
 	}
@@ -50,7 +53,7 @@ public class NodeInfo {
 	public void setSelfUrl(String selfUrl) {
 		this.selfUrl = selfUrl;
 	}
-
+	*/
 	public String getIssueType() {
 		return issueType;
 	}
