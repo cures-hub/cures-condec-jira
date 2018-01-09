@@ -23,7 +23,6 @@ import com.atlassian.DecisionDocumentation.rest.treeviewer.TreeViewerKVPairList;
 import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Core;
 import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Data;
 import com.atlassian.DecisionDocumentation.rest.treeviewer.model.NodeInfo;
-import com.atlassian.DecisionDocumentation.util.ComponentGetter;
 import com.atlassian.DecisionDocumentation.util.Pair;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.IssueService.IssueResult;
@@ -55,18 +54,33 @@ public class IssueStrategy implements Strategy {
 
 	@Override
 	public Data createDecisionComponent(DecisionRepresentation dec, ApplicationUser user) {
-		IssueInputParameters issueInputParameters = ComponentGetter.getIssueService().newIssueInputParameters();
+		/*
+		 * Old Implementation
+		 * IssueInputParameters issueInputParameters = ComponentGetter.getIssueService().newIssueInputParameters();
+		 */
+		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
 
 		issueInputParameters.setSummary(dec.getName());
 		issueInputParameters.setDescription(dec.getDescription());
 		issueInputParameters.setAssigneeId(user.getName());
 		issueInputParameters.setReporterId(user.getName());
-		Project project = ComponentGetter.getProjectService().getProjectByKey(user, dec.getProjectKey()).getProject();
+		
+		/*
+		 * Old Implementation 
+		 * Project project = ComponentGetter.getProjectService().getProjectByKey(user, dec.getProjectKey()).getProject();
+		 */
+		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(dec.getProjectKey());
+		
 		issueInputParameters.setProjectId(project.getId());
 		String issueTypeId = getIssueTypeId(dec.getType());
 		issueInputParameters.setIssueTypeId(issueTypeId);
 
-		IssueService issueService = ComponentGetter.getIssueService();
+		/*
+		 * Old Implementation 
+		 * IssueService issueService = ComponentGetter.getIssueService();
+		 */
+		IssueService issueService = ComponentAccessor.getIssueService();
+		
 		IssueService.CreateValidationResult result = issueService.validateCreate(user, issueInputParameters);
 		if (result.getErrorCollection().hasAnyErrors()) {
 			for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
@@ -84,7 +98,7 @@ public class IssueStrategy implements Strategy {
 			NodeInfo nodeInfo = new NodeInfo();
 			nodeInfo.setId(Long.toString(issue.getId()));
 			nodeInfo.setKey(issue.getKey());
-			nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + issue.getId());
+			//nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + issue.getId());
 			nodeInfo.setIssueType(issue.getIssueType().getName());
 			nodeInfo.setDescription(issue.getDescription());
 			nodeInfo.setSummary(issue.getSummary());
@@ -96,7 +110,12 @@ public class IssueStrategy implements Strategy {
 
 	@Override
 	public Data editDecisionComponent(DecisionRepresentation dec, ApplicationUser user) {
-		IssueService issueService = ComponentGetter.getIssueService();
+		/*
+		 * Old Implementation
+		 * IssueService issueService = ComponentGetter.getIssueService();
+		 */
+		IssueService issueService = ComponentAccessor.getIssueService();
+		
 		IssueService.IssueResult issueRes = issueService.getIssue(user, dec.getId());
 		MutableIssue issueToBeUpdated = issueRes.getIssue();
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
@@ -120,7 +139,7 @@ public class IssueStrategy implements Strategy {
 			NodeInfo nodeInfo = new NodeInfo();
 			nodeInfo.setId(Long.toString(issue.getId()));
 			nodeInfo.setKey(issue.getKey());
-			nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + issue.getId());
+			//nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + issue.getId());
 			nodeInfo.setIssueType(issue.getIssueType().getName());
 			nodeInfo.setDescription(issue.getDescription());
 			nodeInfo.setSummary(issue.getSummary());
@@ -132,7 +151,11 @@ public class IssueStrategy implements Strategy {
 
 	@Override 
 	public boolean deleteDecisionComponent(DecisionRepresentation dec, ApplicationUser user) {
-		IssueService issueService = ComponentGetter.getIssueService();
+		/*
+		 * Old Implementation
+		 * IssueService issueService = ComponentGetter.getIssueService();
+		 */
+		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueService.IssueResult issue = issueService.getIssue(user, dec.getId());
 		if (issue.isValid()) {
 			IssueService.DeleteValidationResult result = issueService.validateDelete(user, issue.getIssue().getId());
@@ -265,7 +288,6 @@ public class IssueStrategy implements Strategy {
 						}
 					}
 				}
-				/* Kreiere JSON-String und sende ihn zurueck */
 			}
 		}
 		return decList;
@@ -282,7 +304,10 @@ public class IssueStrategy implements Strategy {
 		return "";
 	}
 
-	/*TreeViewerRest*/
+	/*TreeViewerRest 
+	 * 
+	 * TODO Is this still in Use? discuss!
+	*/
 	@Override
 	public Core createCore(Project project) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
@@ -315,6 +340,10 @@ public class IssueStrategy implements Strategy {
 	}
 
 	public Data createData(Issue issue) {
+		if(issue==null) {
+			LOGGER.error("NullPointerException: createData Issue was NULL");
+			return new Data();
+		}
 		Data data = new Data();
 		
 		data.setText(issue.getKey() + " / " + issue.getSummary());
@@ -323,7 +352,7 @@ public class IssueStrategy implements Strategy {
 		NodeInfo nodeInfo = new NodeInfo();
 		nodeInfo.setId(Long.toString(issue.getId()));
 		nodeInfo.setKey(issue.getKey());
-		nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + issue.getId());
+		//nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + issue.getId());
 		nodeInfo.setIssueType(issue.getIssueType().getName());
 		nodeInfo.setDescription(issue.getDescription());
 		nodeInfo.setSummary(issue.getSummary());
@@ -393,7 +422,10 @@ public class IssueStrategy implements Strategy {
 		return data;
 	}
 
-	/*TreantsRest*/
+	/*TreantsRest
+	 * 
+	 * TODO Is this still in Use? discuss! 
+	 */
 	@Override
 	public Treant createTreant(String issueKey, int depth) {
 		Treant treant = new Treant();

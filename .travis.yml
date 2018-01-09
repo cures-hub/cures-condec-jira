@@ -12,11 +12,14 @@ before_install:
 - export PATH=opt/atlassian-plugin-sdk/bin:opt/atlassian-plugin-sdk/apache-maven-*/bin:$PATH
 - atlas-version
 install:
-- atlas-mvn install
+- atlas-mvn install -q -DskipTests=true
 script:
-- atlas-package
+- atlas-package 
+- atlas-mvn cobertura:cobertura
 notifications: 
 email: false
+test:
+- atlas-mvn test
 deploy:
   provider: releases
   api_key:
@@ -26,3 +29,5 @@ deploy:
   on:
     tags: true
     repo: cures-hub/cures-decdoc-jira
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

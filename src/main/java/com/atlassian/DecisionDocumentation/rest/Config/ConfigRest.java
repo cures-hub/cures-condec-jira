@@ -61,7 +61,7 @@ public class ConfigRest {
         }
         if(projectKey != null) {
 	        ConfigRestLogic cRL = new ConfigRestLogic();
-	        cRL.setIsAvtivated(projectKey, isActivated);
+	        cRL.setIsActivated(projectKey, isActivated);
 	        return cRL.getResponse();
         } else {
         	return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build();
