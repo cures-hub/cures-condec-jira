@@ -2,8 +2,6 @@ package ut.rest.Decisions;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.UnsupportedEncodingException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -33,7 +31,7 @@ public class TestPostDecision extends TestSetUp {
 	private EntityManager entityManager;
 	private DecisionsRest decRest;
 	private DecisionRepresentation dec;
-	HttpServletRequest req;
+	private HttpServletRequest req;
 	
 	@Before
 	public void setUp() {

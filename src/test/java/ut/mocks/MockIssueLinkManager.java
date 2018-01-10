@@ -30,13 +30,15 @@ public class MockIssueLinkManager implements IssueLinkManager {
 	@Override
 	public void createIssueLink(Long arg0, Long arg1, Long arg2, Long arg3, ApplicationUser arg4)
 			throws CreateException {
+		if(arg0==4) {
+			return;
+		}
 		if(arg4==null) {
 			throw new NullPointerException();
 		}
 		if(arg0==null||arg1==null||arg3==null) {
 			throw new CreateException();
 		}
-		
 	}
 
 	@Override

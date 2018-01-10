@@ -83,7 +83,7 @@ public class DecisionsRest {
     public Response putLink(@QueryParam("actionType") String actionType, @QueryParam("projectKey")final String projectKey, 
     		@Context HttpServletRequest req, final LinkRepresentation link)
     {
-		if(actionType != null) {
+		if(actionType != null && projectKey != null && req != null && link != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
     		Strategy strategy = strategyProvider.getStrategy(projectKey);
     		ApplicationUser user = getCurrentUser(req);
