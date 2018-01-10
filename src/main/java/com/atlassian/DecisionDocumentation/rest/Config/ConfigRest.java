@@ -38,6 +38,9 @@ public class ConfigRest {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response get(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey)
     {
+    	if(request==null) {
+    		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build();
+    	}
         String username = userManager.getRemoteUsername(request);
         if (username == null || !userManager.isSystemAdmin(username)) {
             LOGGER.warn("Unauthorized user by name:{} tried to change Configuration", username);
