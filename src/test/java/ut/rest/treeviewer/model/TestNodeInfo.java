@@ -11,7 +11,6 @@ public class TestNodeInfo {
 	
 	private String id;	
 	private String key;
-	private String selfUrl;
 	private String issueType;
 	private String description;
 	private String summary;
@@ -23,7 +22,6 @@ public class TestNodeInfo {
 		node= new NodeInfo();
 		id = "Test";
 		key = "Test";
-		selfUrl = "Test";
 		issueType = "Test";
 		description = "Test";
 		summary = "Test";
@@ -44,13 +42,7 @@ public class TestNodeInfo {
 	public void testGetKey() {
 		assertEquals(key, node.getKey());
 	}
-	/*
-	@Test
-	public void testGetSelfUrl() {
-		assertEquals(selfUrl, node.getSelfUrl());
-	}
-	*/
-	
+		
 	@Test
 	public void testGetIssueType() {
 		assertEquals(issueType, node.getIssueType());
@@ -77,13 +69,7 @@ public class TestNodeInfo {
 		node.setKey(key+"New");
 		assertEquals(key +"New", node.getKey());
 	}
-	/*
-	@Test
-	public void testSetSelfUrl() {
-		node.setSelfUrl(selfUrl+"New");
-		assertEquals(selfUrl+"New", node.getSelfUrl());
-	}
-	*/
+	
 	@Test
 	public void testSetIssueType() {
 		node.setIssueType(issueType+"New");

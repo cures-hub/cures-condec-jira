@@ -54,10 +54,7 @@ public class IssueStrategy implements Strategy {
 
 	@Override
 	public Data createDecisionComponent(DecisionRepresentation dec, ApplicationUser user) {
-		/*
-		 * Old Implementation
-		 * IssueInputParameters issueInputParameters = ComponentGetter.getIssueService().newIssueInputParameters();
-		 */
+		
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
 
 		issueInputParameters.setSummary(dec.getName());
@@ -65,20 +62,14 @@ public class IssueStrategy implements Strategy {
 		issueInputParameters.setAssigneeId(user.getName());
 		issueInputParameters.setReporterId(user.getName());
 		
-		/*
-		 * Old Implementation 
-		 * Project project = ComponentGetter.getProjectService().getProjectByKey(user, dec.getProjectKey()).getProject();
-		 */
+		
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(dec.getProjectKey());
 		
 		issueInputParameters.setProjectId(project.getId());
 		String issueTypeId = getIssueTypeId(dec.getType());
 		issueInputParameters.setIssueTypeId(issueTypeId);
 
-		/*
-		 * Old Implementation 
-		 * IssueService issueService = ComponentGetter.getIssueService();
-		 */
+		
 		IssueService issueService = ComponentAccessor.getIssueService();
 		
 		IssueService.CreateValidationResult result = issueService.validateCreate(user, issueInputParameters);
@@ -98,7 +89,6 @@ public class IssueStrategy implements Strategy {
 			NodeInfo nodeInfo = new NodeInfo();
 			nodeInfo.setId(Long.toString(issue.getId()));
 			nodeInfo.setKey(issue.getKey());
-			//nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + issue.getId());
 			nodeInfo.setIssueType(issue.getIssueType().getName());
 			nodeInfo.setDescription(issue.getDescription());
 			nodeInfo.setSummary(issue.getSummary());
@@ -110,10 +100,7 @@ public class IssueStrategy implements Strategy {
 
 	@Override
 	public Data editDecisionComponent(DecisionRepresentation dec, ApplicationUser user) {
-		/*
-		 * Old Implementation
-		 * IssueService issueService = ComponentGetter.getIssueService();
-		 */
+		
 		IssueService issueService = ComponentAccessor.getIssueService();
 		
 		IssueService.IssueResult issueRes = issueService.getIssue(user, dec.getId());
@@ -139,7 +126,6 @@ public class IssueStrategy implements Strategy {
 			NodeInfo nodeInfo = new NodeInfo();
 			nodeInfo.setId(Long.toString(issue.getId()));
 			nodeInfo.setKey(issue.getKey());
-			//nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + issue.getId());
 			nodeInfo.setIssueType(issue.getIssueType().getName());
 			nodeInfo.setDescription(issue.getDescription());
 			nodeInfo.setSummary(issue.getSummary());
@@ -151,10 +137,7 @@ public class IssueStrategy implements Strategy {
 
 	@Override 
 	public boolean deleteDecisionComponent(DecisionRepresentation dec, ApplicationUser user) {
-		/*
-		 * Old Implementation
-		 * IssueService issueService = ComponentGetter.getIssueService();
-		 */
+		
 		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueService.IssueResult issue = issueService.getIssue(user, dec.getId());
 		if (issue.isValid()) {
@@ -352,7 +335,6 @@ public class IssueStrategy implements Strategy {
 		NodeInfo nodeInfo = new NodeInfo();
 		nodeInfo.setId(Long.toString(issue.getId()));
 		nodeInfo.setKey(issue.getKey());
-		//nodeInfo.setSelfUrl(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/rest/api/latest/issue/" + issue.getId());
 		nodeInfo.setIssueType(issue.getIssueType().getName());
 		nodeInfo.setDescription(issue.getDescription());
 		nodeInfo.setSummary(issue.getSummary());
@@ -443,9 +425,6 @@ public class IssueStrategy implements Strategy {
 				"title", issue.getIssueType().getName(),
 				"desc", issue.getKey());
 		node.setNodeContent(nodeContent);
-		
-		//Map<String, String> link = ImmutableMap.of("href", ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/browse/" + issue.getKey());
-		//node.setLink(link);
 		
 		String htmlClass;
 		String issueType = issue.getIssueType().getName().toLowerCase();
