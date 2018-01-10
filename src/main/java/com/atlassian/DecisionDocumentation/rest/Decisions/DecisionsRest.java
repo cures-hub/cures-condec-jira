@@ -46,7 +46,7 @@ public class DecisionsRest {
     public Response postDecision(@QueryParam("actionType") String actionType, 
     		@Context HttpServletRequest req, final DecisionRepresentation dec)
     {
-		if(actionType != null && dec != null) {
+		if(actionType != null && dec != null && req != null) {
 			final String projectKey = dec.getProjectKey();
 			StrategyProvider strategyProvider = new StrategyProvider();
     		Strategy strategy = strategyProvider.getStrategy(projectKey);

@@ -29,7 +29,6 @@ public class TestNodeInfo {
 		node.setId(id);
 		node.setIssueType(issueType);
 		node.setKey(key);
-		//node.setSelfUrl(selfUrl);
 		node.setSummary(summary);
 	}
 	
