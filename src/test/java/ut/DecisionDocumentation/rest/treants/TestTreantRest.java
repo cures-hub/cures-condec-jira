@@ -17,6 +17,7 @@ import com.google.common.collect.ImmutableMap;
 
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+import ut.mocks.MockDefaultUserManager;
 import ut.mocks.MockTransactionTemplate;
 import ut.testsetup.TestSetUp;
 
@@ -30,7 +31,7 @@ public class TestTreantRest extends TestSetUp {
 	public void setUp() {
 		treantRest=new TreantRest();
 		initialisation();		
-		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate());
+		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
 		
 	}
 	

@@ -12,6 +12,7 @@ import com.atlassian.activeobjects.test.TestActiveObjects;
 
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+import ut.mocks.MockDefaultUserManager;
 import ut.mocks.MockTransactionTemplate;
 import ut.testsetup.TestSetUp;
 
@@ -33,7 +34,7 @@ public class TestConfigRestLogic extends TestSetUp {
 	public void setUp() {
 		restLogic= new ConfigRestLogic();
 		initialisation();
-		new ComponentGetter().init(new TestActiveObjects(entityManager),new MockTransactionTemplate()); 
+		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
 	}
 	
 	//Testing setResponseForGet
