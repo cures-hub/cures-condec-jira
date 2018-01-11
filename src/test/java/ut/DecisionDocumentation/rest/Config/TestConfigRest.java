@@ -168,4 +168,95 @@ public class TestConfigRest extends TestSetUp {
 		req.setAttribute("NoFails", false);
 		assertEquals(Status.UNAUTHORIZED.getStatusCode(),confRest.doPost(req, "NotTEST", "false").getStatus());
 	}
+	
+	//Testing doPut
+	
+	@Test
+	public void testdoPutrequestNullKeyNullIsIssueStategydNull() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(),confRest.doPut(null, null, null).getEntity());
+	}
+	
+	@Test
+	public void testdoPutrequestNullKeyNullIsIssueStategyTrue() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(),confRest.doPut(null, null, "true").getEntity());
+	}
+	
+	@Test
+	public void testdoPutrequestNullKeyNullIsIssueStategyFalse() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(),confRest.doPut(null, null, "false").getEntity());
+	}
+	
+	@Test
+	public void testdoPutrequestNullKeyExistsIsIssueStategyNull() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(),confRest.doPut(null, "TEST", null).getEntity());
+	}
+	
+	@Test
+	public void testdoPutrequestNullKeyExistsIsIssueStategyTrue() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(),confRest.doPut(null, "TEST", "true").getEntity());
+	}
+	
+	@Test
+	public void testdoPutrequestNullKeyExistsIsIssueStategyFalse() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(),confRest.doPut(null, "TEST", "false").getEntity());
+	}
+	
+	@Test
+	public void testdoPutrequestNullKeyDontExistIsIssueStategyNull() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(),confRest.doPut(null, "NotTEST", null).getEntity());
+	}
+	
+	@Test
+	public void testdoPutrequestNullKeyDontExistIsIssueStategyTrue() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(),confRest.doPut(null, "NotTEST", "true").getEntity());
+	}
+	
+	@Test
+	public void testdoPutrequestNullKeyDontExistIsIssueStategyFalse() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(),confRest.doPut(null, "NotTEST", "false").getEntity());
+	}
+	
+	@Test
+	public void testdoPutrequestExKeyNullIsIssueStategyNull() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build().getEntity(),confRest.doPut(req, null, null).getEntity());
+	}
+	
+	@Test
+	public void testdoPutrequestExKeyNullIsIssueStategyTrue() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build().getEntity(),confRest.doPut(req, null, "true").getEntity());
+	}
+	
+	@Test
+	public void testdoPutrequestExKeyNullIsIssueStategyFalse() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build().getEntity(),confRest.doPut(req, null, "false").getEntity());
+	}
+	
+	@Test
+	public void testdoPutrequestExKeyExistsIsIssueStategyNull() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isIssueStrategy = null")).build().getEntity(),confRest.doPut(req, "TEST", null).getEntity());
+	}
+	
+	@Test
+	public void testdoPutrequestExKeyExistsIsIssueStategyTrue() {
+		assertEquals(new ConfigRestLogic().getResponse().getClass(),confRest.doPut(req, "TEST", "true").getClass());
+	}
+	
+	@Test
+	public void testdoPutrequestExKeyExistsIsIssueStategyFalse() {
+		assertEquals(new ConfigRestLogic().getResponse().getClass(),confRest.doPut(req, "TEST", "false").getClass());
+	}
+	
+	@Test
+	public void testdoPutUserUnauthorized() {
+		req.setAttribute("WithFails", true);
+		req.setAttribute("NoFails", false);
+		assertEquals(Status.UNAUTHORIZED.getStatusCode(),confRest.doPut(req, "NotTEST", "false").getStatus());
+	}
+	
+	@Test
+	public void testdoPutUserNull() {
+		req.setAttribute("WithFails", false);
+		req.setAttribute("NoFails", false);
+		assertEquals(Status.UNAUTHORIZED.getStatusCode(),confRest.doPut(req, "NotTEST", "false").getStatus());
+	}
 }

@@ -79,12 +79,18 @@ public class ConfigRest {
     
     @PUT
     public Response doPut(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("isIssueStrategy") String isIssueStrategy){
+    	if(request == null) {
+    		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build();
+    	}
         String username = userManager.getRemoteUsername(request);
         if (username == null || !userManager.isSystemAdmin(username)) {
             LOGGER.warn("Unauthorized user by name:{} tried to change Configuration", username);
             return Response.status(Status.UNAUTHORIZED).build();
         }
         if(projectKey != null) {
+        	if(isIssueStrategy == null) {
+        		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isIssueStrategy = null")).build();
+        	}
 	        ConfigRestLogic cRL = new ConfigRestLogic();
 	        cRL.setIsIssueStrategy(projectKey, isIssueStrategy);
 	        return cRL.getResponse();
