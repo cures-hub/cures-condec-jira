@@ -5,8 +5,11 @@ import java.sql.Timestamp;
 import org.ofbiz.core.entity.GenericValue;
 
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.issuetype.IssueType;
+import com.atlassian.jira.issue.issuetype.MockIssueType;
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.issue.link.IssueLinkType;
+import com.atlassian.jira.mock.issue.MockIssue;
 
 public class MockIssueLink implements IssueLink{
 	private Long id;
@@ -88,8 +91,12 @@ public class MockIssueLink implements IssueLink{
 
 	@Override
 	public Issue getSourceObject() {
-		// TODO Auto-generated method stub
-		return null;
+		IssueType issueType = new MockIssueType(12, "Argument");
+		Issue issue = new MockIssue(300, "TEST-300");
+		((MockIssue) issue).setIssueType(issueType);
+		((MockIssue) issue).setDescription("Test");
+		((MockIssue) issue).setSummary("Test");
+		return issue;
 	}
 
 	@Override
