@@ -45,37 +45,127 @@ public class TestConfigRest extends TestSetUp {
 	
 	// Testing get function
 	@Test
-	public void testRequestNullKeyNull() {
+	public void testDoRequestNullKeyNull() {
 		assertEquals( Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(), confRest.get(null, null).getEntity());
 	}
 	
 	@Test
-	public void testRequestNullKeyFilledOk() {
+	public void testDoRequestNullKeyFilledOk() {
 		assertEquals( Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(), confRest.get(null,"TEST").getEntity());
 	}
 		
 	@Test
-	public void testRequestFilledKeyNull() {
+	public void testDoRequestFilledKeyNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build().getEntity(), confRest.get(req, null).getEntity());
 	}
 	
 	@Test
-	public void testRequestFilledKeyFilledOk() {
+	public void testDoRequestFilledKeyFilledOk() {
 		assertEquals( new ConfigRestLogic().getResponse().getClass(), confRest.get(req,"TEST").getClass());
 	}
 	
 	@Test
-	public void testUserNoAdmin() {
+	public void testDoUserNoAdmin() {
 		req.setAttribute("WithFails", true);
 		req.setAttribute("NoFails", false);
 		assertEquals(Response.status(Status.UNAUTHORIZED).build().getEntity(), confRest.get(req,"TEST").getEntity());
 	}
 	
 	@Test
-	public void testUserNull() {
+	public void testDoUserNull() {
 		HttpServletRequest req2 = new MockHttpServletRequest();
 		req2.setAttribute("WithFails", false);
 		req2.setAttribute("NoFails", false);
 		assertEquals(Response.status(Status.UNAUTHORIZED).build().getEntity(), confRest.get(req2,"TEST").getEntity());
+	}
+	// Testing doPost
+	
+	@Test
+	public void testdoPostrequestNullKeyNullIsActivatedNull() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(),confRest.doPost(null, null, null).getEntity());
+	}
+	
+	@Test
+	public void testdoPostrequestNullKeyNullIsActivatedTrue() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(),confRest.doPost(null, null, "true").getEntity());
+	}
+	
+	@Test
+	public void testdoPostrequestNullKeyNullIsActivatedFalse() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(),confRest.doPost(null, null, "false").getEntity());
+	}
+	
+	@Test
+	public void testdoPostrequestNullKeyExistsIsActivatedNull() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(),confRest.doPost(null, "TEST", null).getEntity());
+	}
+	
+	@Test
+	public void testdoPostrequestNullKeyExistsIsActivatedTrue() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(),confRest.doPost(null, "TEST", "true").getEntity());
+	}
+	
+	@Test
+	public void testdoPostrequestNullKeyExistsIsActivatedFalse() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(),confRest.doPost(null, "TEST", "false").getEntity());
+	}
+	
+	@Test
+	public void testdoPostrequestNullKeyDontExistIsActivatedNull() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(),confRest.doPost(null, "NotTEST", null).getEntity());
+	}
+	
+	@Test
+	public void testdoPostrequestNullKeyDontExistIsActivatedTrue() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(),confRest.doPost(null, "NotTEST", "true").getEntity());
+	}
+	
+	@Test
+	public void testdoPostrequestNullKeyDontExistIsActivatedFalse() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(),confRest.doPost(null, "NotTEST", "false").getEntity());
+	}
+	
+	@Test
+	public void testdoPostrequestExKeyNullIsActivatedNull() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build().getEntity(),confRest.doPost(req, null, null).getEntity());
+	}
+	
+	@Test
+	public void testdoPostrequestExKeyNullIsActivatedTrue() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build().getEntity(),confRest.doPost(req, null, "true").getEntity());
+	}
+	
+	@Test
+	public void testdoPostrequestExKeyNullIsActivatedFalse() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build().getEntity(),confRest.doPost(req, null, "false").getEntity());
+	}
+	
+	@Test
+	public void testdoPostrequestExKeyExistsIsActivatedNull() {
+		assertEquals( Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build().getEntity(),confRest.doPost(req, "TEST", null).getEntity());
+	}
+	
+	@Test
+	public void testdoPostrequestExKeyExistsIsActivatedTrue() {
+		assertEquals(new ConfigRestLogic().getResponse().getClass(),confRest.doPost(req, "TEST", "true").getClass());
+	}
+	
+	@Test
+	public void testdoPostrequestExKeyExistsIsActivatedFalse() {
+		assertEquals(new ConfigRestLogic().getResponse().getClass(),confRest.doPost(req, "TEST", "false").getClass());
+	}
+	
+	@Test
+	public void testdoPostUserUnauthorized() {
+		req.setAttribute("WithFails", true);
+		req.setAttribute("NoFails", false);
+		assertEquals(Status.UNAUTHORIZED.getStatusCode(),confRest.doPost(req, "NotTEST", "false").getStatus());
+	}
+	
+	@Test
+	public void testdoPostUserNull() {
+		req.setAttribute("WithFails", false);
+		req.setAttribute("NoFails", false);
+		assertEquals(Status.UNAUTHORIZED.getStatusCode(),confRest.doPost(req, "NotTEST", "false").getStatus());
 	}
 }
