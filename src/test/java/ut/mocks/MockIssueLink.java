@@ -13,7 +13,7 @@ import com.atlassian.jira.mock.issue.MockIssue;
 
 public class MockIssueLink implements IssueLink{
 	private Long id;
-	
+	private Long sequenz;
 	public MockIssueLink(Long id) {
 		this.id=id;
 	}
@@ -79,8 +79,11 @@ public class MockIssueLink implements IssueLink{
 
 	@Override
 	public Long getSequence() {
-		// TODO Auto-generated method stub
-		return null;
+		return sequenz;
+	}
+	
+	public void setSequence(Long seq) {
+		sequenz=seq;
 	}
 
 	@Override

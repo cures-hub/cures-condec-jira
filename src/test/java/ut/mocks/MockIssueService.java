@@ -159,7 +159,9 @@ public class MockIssueService implements IssueService {
 			IssueService.CreateValidationResult ret = new CreateValidationResult(issue, col, fieldValuesHolder, properties);
 			return ret;
 		}
-		return null;
+		col.addError("Test", "Test");
+		IssueService.CreateValidationResult ret = new CreateValidationResult(issue, col, fieldValuesHolder, properties);
+		return ret;
 	}
 
 	@Override
