@@ -44,6 +44,10 @@ public class MockIssueLinkManager implements IssueLinkManager {
 	@Override
 	public List<IssueLink> getInwardLinks(Long arg0) {
 		List<IssueLink> allInwardIssueLink = new ArrayList<>();
+		if(arg0==20) {
+			IssueLink link = new MockIssueLink((long)3);
+			allInwardIssueLink.add(link);
+		}
 		return allInwardIssueLink;
 	}
 
@@ -95,6 +99,10 @@ public class MockIssueLinkManager implements IssueLinkManager {
 	@Override
 	public List<IssueLink> getOutwardLinks(Long arg0) {
 		List<IssueLink> allOutwardIssueLink = new ArrayList<>();
+		if(arg0==20) {
+			IssueLink link = new MockIssueLink((long)4);
+			allOutwardIssueLink.add(link);
+		}
 		return allOutwardIssueLink;
 	}
 
