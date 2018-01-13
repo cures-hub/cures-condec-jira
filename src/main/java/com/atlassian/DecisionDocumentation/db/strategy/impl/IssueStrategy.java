@@ -295,6 +295,9 @@ public class IssueStrategy implements Strategy {
 	public Core createCore(Project project) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Collection<Long> issueIds;
+		if(project==null) {
+			return null;
+		}
 		try {
 			issueIds = issueManager.getIssueIdsForProject(project.getId());
 		} catch (GenericEntityException e) {

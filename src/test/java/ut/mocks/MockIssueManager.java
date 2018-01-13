@@ -3,6 +3,8 @@ package ut.mocks;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.ofbiz.core.entity.GenericEntityException;
+
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
 
@@ -16,7 +18,10 @@ import com.atlassian.jira.issue.MutableIssue;
  */
 public class MockIssueManager extends com.atlassian.jira.mock.MockIssueManager {
 
-	public Collection<Long> getIssueIdsForProject(Long id){
+	public Collection<Long> getIssueIdsForProject(Long id) throws GenericEntityException{
+		if(id==10) {
+			throw new GenericEntityException();
+		}
 		Collection<Long> col = new ArrayList<>();
 		// Iterate over the IssueTypes that are added in the TestIssueStartegySup
 		for(int i=2;i<=15;i++) {
