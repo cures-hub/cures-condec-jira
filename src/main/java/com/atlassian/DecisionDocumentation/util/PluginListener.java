@@ -40,7 +40,6 @@ public class PluginListener implements InitializingBean {
 		boolean solutionBool = false;
 		for(IssueType iType : listOfIssueTypes){
 			String iTypeName = iType.getName();
-			
 			if(iTypeName.equals("Decision")){
 				decisionBool = true;
 			}else if (iTypeName.equals("Alternative")){
