@@ -56,8 +56,12 @@ public class MockIssueLink implements IssueLink{
 
 	@Override
 	public Issue getDestinationObject() {
-		// TODO Auto-generated method stub
-		return null;
+		IssueType issueType = new MockIssueType(12, "Argument");
+		Issue issue = new MockIssue(200, "TEST-200");
+		((MockIssue) issue).setIssueType(issueType);
+		((MockIssue) issue).setDescription("Test");
+		((MockIssue) issue).setSummary("Test");
+		return issue;
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package ut.testsetup;
 import java.util.ArrayList;
 
 import com.atlassian.jira.bc.issue.IssueService;
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
@@ -79,19 +80,31 @@ public class TestSetUp {
 		types.add("Implication");
 		types.add("Assessment");
 		types.add("Argument");
+		types.add("Problem");
 		
 		
 		for(int i=2;i<types.size()+2;i++) {
-			MutableIssue issue = new MockIssue(i,"TEST-"+i);
-			((MockIssue)issue).setProjectId(project.getId());
-			((MockIssue)issue).setProjectObject(project);
-			IssueType issueType = new MockIssueType(i, types.get(i-2));
-			((MockConstantsManager)constManager).addIssueType(issueType);
-			((MockIssue)issue).setIssueType(issueType);
-			((MockIssue)issue).setSummary("Test");
-			((MockIssueManager)issueManager).addIssue(issue);
-			if(i>types.size()) {
-				((MockIssue)issue).setParentId((long) 3);
+			if(types.get(i-2).equals("Problem")) {
+				MutableIssue issue = new MockIssue(30,"TEST-"+30);
+				((MockIssue)issue).setProjectId(project.getId());
+				((MockIssue)issue).setProjectObject(project);
+				IssueType issueType = new MockIssueType(i, types.get(i-2));
+				((MockConstantsManager)constManager).addIssueType(issueType);
+				((MockIssue)issue).setIssueType(issueType);
+				((MockIssue)issue).setSummary("Test");
+				((MockIssueManager)issueManager).addIssue(issue);
+			} else {
+				MutableIssue issue = new MockIssue(i,"TEST-"+i);
+				((MockIssue)issue).setProjectId(project.getId());
+				((MockIssue)issue).setProjectObject(project);
+				IssueType issueType = new MockIssueType(i, types.get(i-2));
+				((MockConstantsManager)constManager).addIssueType(issueType);
+				((MockIssue)issue).setIssueType(issueType);
+				((MockIssue)issue).setSummary("Test");
+				((MockIssueManager)issueManager).addIssue(issue);
+				if(i>types.size()-4) {
+					((MockIssue)issue).setParentId((long) 3);
+				}
 			}
 		}
 		MutableIssue issue = new MockIssue(50,"TEST-50");

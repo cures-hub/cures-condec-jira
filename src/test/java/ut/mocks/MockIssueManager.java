@@ -23,6 +23,11 @@ public class MockIssueManager extends com.atlassian.jira.mock.MockIssueManager {
 			throw new GenericEntityException();
 		}
 		Collection<Long> col = new ArrayList<>();
+		if(id==30) {
+			Issue issue=this.getIssueObject((long)30);
+			col.add(issue.getId());
+			return col;
+		}
 		// Iterate over the IssueTypes that are added in the TestIssueStartegySup
 		for(int i=2;i<=15;i++) {
 			Issue issue=this.getIssueObject((long)i);
@@ -30,11 +35,19 @@ public class MockIssueManager extends com.atlassian.jira.mock.MockIssueManager {
 				col.add(issue.getId());
 			}
 		}
+		if(id==30) {
+			Issue issue=this.getIssueObject((long)30);
+			col.add(issue.getId());
+		}
 		return col;		
 	}
 	
 	public MutableIssue getIssueByCurrentKey(String key) {
-		for(int i=2;i<=15;i++) {
+		if(key.equals("30")) {
+			Issue issue=this.getIssueObject((long)30);
+			return (MutableIssue) issue;
+		}
+		for(int i=2;i<=16;i++) {
 			Issue issue=this.getIssueObject((long)i);
 			if(key.equals(issue.getId().toString())) {
 				return (MutableIssue) issue;

@@ -422,7 +422,6 @@ public class IssueStrategy implements Strategy {
 	private Node createNodeStructure(String issueKey, int depth) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue issue = issueManager.getIssueByCurrentKey(issueKey);
-		
 		Node node = new Node();
 		Map<String, String> nodeContent = ImmutableMap.of("name", issue.getSummary(),
 				"title", issue.getIssueType().getName(),
