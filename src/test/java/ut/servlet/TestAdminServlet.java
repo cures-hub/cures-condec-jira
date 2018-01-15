@@ -9,11 +9,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.atlassian.DecisionDocumentation.servlet.AdminServlet;
 import com.atlassian.DecisionDocumentation.util.ComponentGetter;
 import com.atlassian.activeobjects.test.TestActiveObjects;
-import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.jira.mock.servlet.MockHttpServletResponse;
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.user.UserManager;
@@ -74,6 +74,14 @@ public class TestAdminServlet extends TestSetUp {
 	
 	@Test
 	public void testNoUserManager() throws IOException, ServletException {
+		((MockHttpServletRequest)req).setQueryString("Test");
+		req.setAttribute("NoSysAdmin", true);
+		servlet.doGet(req, res);
+	}
+	
+	@Test
+	public void testNoUserManagerQueryNull() throws IOException, ServletException {
+		((MockHttpServletRequest)req).setQueryString(null);
 		req.setAttribute("NoSysAdmin", true);
 		servlet.doGet(req, res);
 	}
