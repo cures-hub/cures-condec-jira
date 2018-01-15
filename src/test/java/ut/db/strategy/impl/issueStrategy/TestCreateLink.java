@@ -51,4 +51,34 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 		ApplicationUser user = new MockApplicationUser("Test");
 		assertEquals(0,issueStrategy.createLink(link,user),0.0);
 	}
+	
+	@Test
+	public void testCreateException() {
+		LinkRepresentation link = new LinkRepresentation();
+		link.setIngoingId(2);
+		link.setLinkType("Contains");
+		link.setOutgoingId(3);
+		ApplicationUser user = new MockApplicationUser("CreateExecption");
+		assertEquals(0,issueStrategy.createLink(link,user),0.0);
+	}
+	
+	@Test
+	public void testMoreInwardLinks() {
+		LinkRepresentation link = new LinkRepresentation();
+		link.setIngoingId(30);
+		link.setLinkType("Contains");
+		link.setOutgoingId(3);
+		ApplicationUser user = new MockApplicationUser("Test");
+		assertEquals(0,issueStrategy.createLink(link,user),0.0);
+	}
+	
+	@Test
+	public void testMoreOutwardLinks() {
+		LinkRepresentation link = new LinkRepresentation();
+		link.setIngoingId(10);
+		link.setLinkType("Contains");
+		link.setOutgoingId(30);
+		ApplicationUser user = new MockApplicationUser("Test");
+		assertEquals(0,issueStrategy.createLink(link,user),0.0);
+	}
 }

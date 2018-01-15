@@ -46,6 +46,11 @@ public class MockIssueService implements IssueService {
 
 	@Override
 	public ErrorCollection delete(ApplicationUser arg0, DeleteValidationResult arg1) {
+		if(arg0.getName().equalsIgnoreCase("ValidNoResErrors")) {
+			ErrorCollection col = new MockAction();
+			col.addError("Test", "Test");
+			return col;
+		}
 		return arg1.getErrorCollection();
 	}
 
@@ -149,30 +154,33 @@ public class MockIssueService implements IssueService {
 			IssueService.CreateValidationResult ret = new CreateValidationResult(issue, col, fieldValuesHolder, properties);
 			return ret;
 		}
-		if(arg0.getName().equals("WithFails")) {
+		if(arg0.getName().equals("WithResFails")) {
 			col.addError("Test", "Test");
 			IssueService.CreateValidationResult ret = new CreateValidationResult(issue, col, fieldValuesHolder, properties);
 			return ret;
 		}
-		return null;
+		col.addError("Test", "Test");
+		IssueService.CreateValidationResult ret = new CreateValidationResult(issue, col, fieldValuesHolder, properties);
+		return ret;
 	}
 
 	@Override
 	public DeleteValidationResult validateDelete(ApplicationUser arg0, Long arg1) {
+		System.out.println(arg0.getUsername());
 		MutableIssue issue = new MockIssue(1, "TEST-12");
 		IssueType issueType = new MockIssueType(12, "Solution");
 		((MockIssue) issue).setIssueType(issueType);
 		ErrorCollection col = new MockAction();
-		if(arg0.getName().equals("NoFails")) {			
+		if(arg0.getUsername().equals("NoFails")) {			
 			IssueService.DeleteValidationResult ret = new DeleteValidationResult(issue, col);
 			return ret;
 		}
-		if(arg0.getName().equals("WithFails")) {
+		if(arg0.getName().equals("WithResFails")) {
 			col.addError("Test", "Test");
 			IssueService.DeleteValidationResult ret = new DeleteValidationResult(issue, col);
 			return ret;
 		}
-		return null;
+		return  new DeleteValidationResult(issue, col);
 	}
 
 	@Override

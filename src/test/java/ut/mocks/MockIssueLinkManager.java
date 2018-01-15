@@ -36,7 +36,7 @@ public class MockIssueLinkManager implements IssueLinkManager {
 		if(arg4==null) {
 			throw new NullPointerException();
 		}
-		if(arg0==null||arg1==null||arg3==null) {
+		if(arg4.getUsername().equals("CreateExecption")) {
 			throw new CreateException();
 		}
 	}
@@ -47,6 +47,16 @@ public class MockIssueLinkManager implements IssueLinkManager {
 		if(arg0==20) {
 			IssueLink link = new MockIssueLink((long)3);
 			allInwardIssueLink.add(link);
+		}
+		if(arg0==30) {
+			for(int i=0 ;i<10;i++) {
+				IssueLink link = new MockIssueLink((long)3);
+				((MockIssueLink)link).setSequence((long)i);
+				if(i==9) {
+					((MockIssueLink)link).setSequence((long)1);
+				}
+				allInwardIssueLink.add(link);
+			}
 		}
 		return allInwardIssueLink;
 	}
@@ -102,6 +112,16 @@ public class MockIssueLinkManager implements IssueLinkManager {
 		if(arg0==20) {
 			IssueLink link = new MockIssueLink((long)4);
 			allOutwardIssueLink.add(link);
+		}
+		if(arg0==30) {
+			for(int i=0 ;i<10;i++) {
+				IssueLink link = new MockIssueLink((long)3);
+				((MockIssueLink)link).setSequence((long)i+10);
+				if(i==9) {
+					((MockIssueLink)link).setSequence((long)1);
+				}
+				allOutwardIssueLink.add(link);
+			}
 		}
 		return allOutwardIssueLink;
 	}

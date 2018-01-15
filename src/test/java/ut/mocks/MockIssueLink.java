@@ -13,7 +13,7 @@ import com.atlassian.jira.mock.issue.MockIssue;
 
 public class MockIssueLink implements IssueLink{
 	private Long id;
-	
+	private Long sequenz;
 	public MockIssueLink(Long id) {
 		this.id=id;
 	}
@@ -56,8 +56,12 @@ public class MockIssueLink implements IssueLink{
 
 	@Override
 	public Issue getDestinationObject() {
-		// TODO Auto-generated method stub
-		return null;
+		IssueType issueType = new MockIssueType(12, "Argument");
+		Issue issue = new MockIssue(200, "TEST-200");
+		((MockIssue) issue).setIssueType(issueType);
+		((MockIssue) issue).setDescription("Test");
+		((MockIssue) issue).setSummary("Test");
+		return issue;
 	}
 
 	@Override
@@ -79,8 +83,11 @@ public class MockIssueLink implements IssueLink{
 
 	@Override
 	public Long getSequence() {
-		// TODO Auto-generated method stub
-		return null;
+		return sequenz;
+	}
+	
+	public void setSequence(Long seq) {
+		sequenz=seq;
 	}
 
 	@Override

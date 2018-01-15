@@ -8,7 +8,8 @@ import com.atlassian.jira.issue.link.IssueLinkType;
 
 public class MockIssueLinkType implements IssueLinkType{
 	private Long id;
-
+	private String name;
+	
 	public MockIssueLinkType(Long id) {
 		this.id=id;
 	}
@@ -62,8 +63,11 @@ public class MockIssueLinkType implements IssueLinkType{
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name=name;
 	}
 
 	@Override

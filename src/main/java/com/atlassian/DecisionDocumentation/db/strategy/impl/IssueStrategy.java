@@ -295,6 +295,9 @@ public class IssueStrategy implements Strategy {
 	public Core createCore(Project project) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Collection<Long> issueIds;
+		if(project==null) {
+			return null;
+		}
 		try {
 			issueIds = issueManager.getIssueIdsForProject(project.getId());
 		} catch (GenericEntityException e) {
@@ -419,7 +422,6 @@ public class IssueStrategy implements Strategy {
 	private Node createNodeStructure(String issueKey, int depth) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue issue = issueManager.getIssueByCurrentKey(issueKey);
-		
 		Node node = new Node();
 		Map<String, String> nodeContent = ImmutableMap.of("name", issue.getSummary(),
 				"title", issue.getIssueType().getName(),

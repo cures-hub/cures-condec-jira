@@ -62,6 +62,10 @@ public class AdminServlet extends HttpServlet{
     
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    	if(request==null || response==null) {
+    		LOGGER.error("Request or Response in AdminServlet is null");
+    		return;
+    	}
         String username = userManager.getRemoteUsername(request);
         if (username == null || !userManager.isSystemAdmin(username)) {
             redirectToLogin(request, response);
