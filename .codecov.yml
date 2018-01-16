@@ -4,4 +4,6 @@ codecov:
 coverage:
   precision: 2
   round: down
-  range: "60...100"
+  range: "50...90"
+ignore:
+  -src/main/java/com/atlassian/DecisionDocumentation/db/strategy/impl/AoStrategy.java
