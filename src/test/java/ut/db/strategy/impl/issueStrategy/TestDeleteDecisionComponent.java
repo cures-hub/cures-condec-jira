@@ -1,5 +1,8 @@
 package ut.db.strategy.impl.issueStrategy;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 import com.atlassian.DecisionDocumentation.rest.Decisions.model.DecisionRepresentation;
@@ -28,17 +31,37 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
 		ApplicationUser user = new MockApplicationUser("NoFails");
-		issueStrategy.deleteDecisionComponent(dec, user);
+		assertTrue(issueStrategy.deleteDecisionComponent(dec, user));
 	}
 	
 	@Test
-	public void testDecisionRepresFilledUserFilledWrong() {
+	public void testDecisionRepresIssueUnvalid() {
 		DecisionRepresentation dec = new DecisionRepresentation();
 		dec.setId(1);
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
 		ApplicationUser user = new MockApplicationUser("WithFails");
-		issueStrategy.deleteDecisionComponent(dec, user);
+		assertFalse(issueStrategy.deleteDecisionComponent(dec, user));
+	}
+	
+	@Test
+	public void testDecisionRepresFilledUserFilledResultErrors() {
+		DecisionRepresentation dec = new DecisionRepresentation();
+		dec.setId(1);
+		dec.setProjectKey("TEST");
+		dec.setType("Solution");
+		ApplicationUser user = new MockApplicationUser("WithResFails");
+		assertFalse(issueStrategy.deleteDecisionComponent(dec, user));
+	}
+	
+	@Test
+	public void testDecisionRepresNoResultErrors() {
+		DecisionRepresentation dec = new DecisionRepresentation();
+		dec.setId(1);
+		dec.setProjectKey("TEST");
+		dec.setType("Solution");
+		ApplicationUser user = new MockApplicationUser("ValidNoResErrors");
+		assertFalse(issueStrategy.deleteDecisionComponent(dec, user));
 	}
 
 }

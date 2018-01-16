@@ -30,18 +30,34 @@ public class MockIssueLinkManager implements IssueLinkManager {
 	@Override
 	public void createIssueLink(Long arg0, Long arg1, Long arg2, Long arg3, ApplicationUser arg4)
 			throws CreateException {
+		if(arg0==4) {
+			return;
+		}
 		if(arg4==null) {
 			throw new NullPointerException();
 		}
-		if(arg0==null||arg1==null||arg3==null) {
+		if(arg4.getUsername().equals("CreateExecption")) {
 			throw new CreateException();
 		}
-		
 	}
 
 	@Override
 	public List<IssueLink> getInwardLinks(Long arg0) {
 		List<IssueLink> allInwardIssueLink = new ArrayList<>();
+		if(arg0==20) {
+			IssueLink link = new MockIssueLink((long)3);
+			allInwardIssueLink.add(link);
+		}
+		if(arg0==30) {
+			for(int i=0 ;i<10;i++) {
+				IssueLink link = new MockIssueLink((long)3);
+				((MockIssueLink)link).setSequence((long)i);
+				if(i==9) {
+					((MockIssueLink)link).setSequence((long)1);
+				}
+				allInwardIssueLink.add(link);
+			}
+		}
 		return allInwardIssueLink;
 	}
 
@@ -93,6 +109,20 @@ public class MockIssueLinkManager implements IssueLinkManager {
 	@Override
 	public List<IssueLink> getOutwardLinks(Long arg0) {
 		List<IssueLink> allOutwardIssueLink = new ArrayList<>();
+		if(arg0==20) {
+			IssueLink link = new MockIssueLink((long)4);
+			allOutwardIssueLink.add(link);
+		}
+		if(arg0==30) {
+			for(int i=0 ;i<10;i++) {
+				IssueLink link = new MockIssueLink((long)3);
+				((MockIssueLink)link).setSequence((long)i+10);
+				if(i==9) {
+					((MockIssueLink)link).setSequence((long)1);
+				}
+				allOutwardIssueLink.add(link);
+			}
+		}
 		return allOutwardIssueLink;
 	}
 

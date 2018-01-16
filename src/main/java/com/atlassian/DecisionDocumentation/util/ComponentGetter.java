@@ -50,8 +50,9 @@ public class ComponentGetter {
     /*
      * For test use Only 
      */
-    public void init(ActiveObjects testao, TransactionTemplate transactiontemp) {    	   	
-    	new ComponentGetter(null,transactiontemp , null, null, null, null, null,testao);
+    public void init(ActiveObjects testao, TransactionTemplate transactiontemp, UserManager userManager) {  
+    	
+    	new ComponentGetter(null,transactiontemp , null, null, null, userManager, null,testao);
     }
 
 	@Inject

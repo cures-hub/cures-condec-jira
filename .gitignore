@@ -4,3 +4,7 @@ target/
 \.classpath
 
 \.project
+
+\.idea/
+
+DecisionDocumentation\.iml

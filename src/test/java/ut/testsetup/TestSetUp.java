@@ -3,6 +3,7 @@ package ut.testsetup;
 import java.util.ArrayList;
 
 import com.atlassian.jira.bc.issue.IssueService;
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
@@ -17,6 +18,10 @@ import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.user.MockApplicationUser;
+import com.atlassian.jira.user.util.MockUserManager;
+import com.atlassian.jira.user.util.UserManager;
 
 import ut.mocks.MockIssueLinkManager;
 import ut.mocks.MockIssueLinkTypeManager;
@@ -27,6 +32,7 @@ public class TestSetUp {
 	private ProjectManager projectManager;
 	private IssueManager issueManager;
 	private ConstantsManager constManager;
+	private UserManager userManager;
 	
 	
 	public void initialisation(){		
@@ -35,6 +41,12 @@ public class TestSetUp {
 		constManager = new  MockConstantsManager();
 		IssueService issueService=new MockIssueService();
 		
+		userManager = new MockUserManager();
+		ApplicationUser user = new MockApplicationUser("NoFails");
+		ApplicationUser user2 = new MockApplicationUser("WithFails");
+		((MockUserManager)userManager).addUser(user);
+		((MockUserManager)userManager).addUser(user2);
+		
 		creatingProjectIssueStructure();				
 				
 		new MockComponentWorker().init().addMock(IssueManager.class, issueManager)
@@ -42,6 +54,7 @@ public class TestSetUp {
 		.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager())
 		.addMock(IssueService.class,issueService)
 		.addMock(ProjectManager.class,projectManager)
+		.addMock(UserManager.class, userManager)
 		.addMock(ConstantsManager.class,constManager);
 		
 	}
@@ -67,19 +80,31 @@ public class TestSetUp {
 		types.add("Implication");
 		types.add("Assessment");
 		types.add("Argument");
+		types.add("Problem");
 		
 		
 		for(int i=2;i<types.size()+2;i++) {
-			MutableIssue issue = new MockIssue(i,"TEST-"+i);
-			((MockIssue)issue).setProjectId(project.getId());
-			((MockIssue)issue).setProjectObject(project);
-			IssueType issueType = new MockIssueType(i, types.get(i-2));
-			((MockConstantsManager)constManager).addIssueType(issueType);
-			((MockIssue)issue).setIssueType(issueType);
-			((MockIssue)issue).setSummary("Test");
-			((MockIssueManager)issueManager).addIssue(issue);
-			if(i>types.size()) {
-				((MockIssue)issue).setParentId((long) 3);
+			if(types.get(i-2).equals("Problem")) {
+				MutableIssue issue = new MockIssue(30,"TEST-"+30);
+				((MockIssue)issue).setProjectId(project.getId());
+				((MockIssue)issue).setProjectObject(project);
+				IssueType issueType = new MockIssueType(i, types.get(i-2));
+				((MockConstantsManager)constManager).addIssueType(issueType);
+				((MockIssue)issue).setIssueType(issueType);
+				((MockIssue)issue).setSummary("Test");
+				((MockIssueManager)issueManager).addIssue(issue);
+			} else {
+				MutableIssue issue = new MockIssue(i,"TEST-"+i);
+				((MockIssue)issue).setProjectId(project.getId());
+				((MockIssue)issue).setProjectObject(project);
+				IssueType issueType = new MockIssueType(i, types.get(i-2));
+				((MockConstantsManager)constManager).addIssueType(issueType);
+				((MockIssue)issue).setIssueType(issueType);
+				((MockIssue)issue).setSummary("Test");
+				((MockIssueManager)issueManager).addIssue(issue);
+				if(i>types.size()-4) {
+					((MockIssue)issue).setParentId((long) 3);
+				}
 			}
 		}
 		MutableIssue issue = new MockIssue(50,"TEST-50");

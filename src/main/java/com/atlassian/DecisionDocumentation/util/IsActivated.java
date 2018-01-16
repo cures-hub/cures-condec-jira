@@ -31,6 +31,10 @@ public class IsActivated implements Condition {
 
     @Override
     public boolean shouldDisplay(Map<String, Object> context) {
+    	if(context == null) {
+    		LOGGER.error("PluginSettings are corrupt");
+    		return false;
+    	}
         String shouldDisplay = "false";
         Object object = context.get("projectKey");
         if (object instanceof String){
