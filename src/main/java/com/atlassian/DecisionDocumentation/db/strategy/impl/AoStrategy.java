@@ -44,7 +44,16 @@ public class AoStrategy implements Strategy {
 	
 	@Override
 	public Data createDecisionComponent(final DecisionRepresentation dec, ApplicationUser user) {
+		if(dec==null){
+			LOGGER.error("AOStrategy createDecisionComponent the DecisionRepresentation is null");
+			return null;
+		}
+		if(user==null){
+			LOGGER.error("AOStrategy createDecisionComponent the ApplicationUser is null");
+			return null;
+		}
 		final ActiveObjects ao = ComponentGetter.getAo();
+		System.out.println(ao);
 		DecisionComponentEntity decComponent = ao.executeInTransaction(new TransactionCallback<DecisionComponentEntity>()
         {
             @Override
