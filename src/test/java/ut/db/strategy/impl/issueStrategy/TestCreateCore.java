@@ -9,7 +9,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 
-public class TestCreateCore extends TestIssueStrategySetUp{
+public class TestCreateCore extends TestIssueStrategySetUp {
 	
 	@Test
 	public void testProjectNull() {

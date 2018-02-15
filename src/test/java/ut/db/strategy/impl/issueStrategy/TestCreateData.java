@@ -12,7 +12,7 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.issuetype.MockIssueType;
 
-public class TestCreateData extends TestIssueStrategySetUp{
+public class TestCreateData extends TestIssueStrategySetUp {
 	
 	@Test
 	public void testIssueNull(){
