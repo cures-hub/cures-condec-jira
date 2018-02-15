@@ -13,6 +13,9 @@ import com.atlassian.DecisionDocumentation.util.Pair;
 
 import net.sf.hibernate.mapping.Array;
 
+/**
+ * @author Tim Kuchenbuch
+ */
 public class TestPair {
 	private Pair<String, String> pair;
 	

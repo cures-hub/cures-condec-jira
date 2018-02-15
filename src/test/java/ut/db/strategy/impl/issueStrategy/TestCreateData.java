@@ -12,6 +12,9 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.issuetype.MockIssueType;
 
+/**
+ * @author Tim Kuchenbuch
+ */
 public class TestCreateData extends TestIssueStrategySetUp {
 	
 	@Test

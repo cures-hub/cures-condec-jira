@@ -4,6 +4,9 @@ import org.junit.Test;
 
 import com.atlassian.jira.component.ComponentAccessor;
 
+/**
+ * @author Tim Kuchenbuch
+ */
 public class TestCreateTreant extends TestIssueStrategySetUp {
 	
 	@Test

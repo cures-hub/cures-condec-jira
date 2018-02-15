@@ -24,6 +24,9 @@ import ut.mocks.MockDefaultUserManager;
 import ut.mocks.MockTransactionTemplate;
 import ut.testsetup.TestSetUp;
 
+/**
+ * @author Tim Kuchenbuch
+ */
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestConfigRest extends TestSetUp {
 	private EntityManager entityManager;

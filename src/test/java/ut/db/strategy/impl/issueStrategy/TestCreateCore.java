@@ -9,6 +9,9 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 
+/**
+ * @author Tim Kuchenbuch
+ */
 public class TestCreateCore extends TestIssueStrategySetUp {
 	
 	@Test

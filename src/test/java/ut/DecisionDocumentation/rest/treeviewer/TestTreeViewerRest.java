@@ -14,6 +14,9 @@ import com.google.common.collect.ImmutableMap;
 
 import ut.testsetup.TestSetUp;
 
+/**
+ * @author Tim Kuchenbuch
+ */
 public class TestTreeViewerRest extends TestSetUp {
 	private TreeViewerRest treeview;
 	

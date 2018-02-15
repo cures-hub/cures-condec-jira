@@ -18,6 +18,9 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 
 import ut.mocks.MockDefaultUserManager;
 
+/**
+ * @author Tim Kuchenbuch
+ */
 public class TestComponentGetter {
 	
 	private ComponentGetter getter;

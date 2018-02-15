@@ -9,6 +9,9 @@ import com.atlassian.DecisionDocumentation.rest.Decisions.model.DecisionRepresen
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 
+/**
+ * @author Tim Kuchenbuch
+ */
 public class TestEditDecisionComponent extends TestIssueStrategySetUp {
 
 	@Test

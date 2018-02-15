@@ -5,6 +5,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+/**
+ * @author Tim Kuchenbuch
+ */
 public class TestingSearchUnlinkedDecisionComponents extends TestIssueStrategySetUp {
 
 	@Test

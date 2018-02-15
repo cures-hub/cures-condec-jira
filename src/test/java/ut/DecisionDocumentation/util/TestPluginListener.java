@@ -22,6 +22,9 @@ import ut.mocks.MockIssueService;
 import ut.mocks.MockIssueTypeManager;
 import ut.testsetup.TestSetUp;
 
+/**
+ * @author Tim Kuchenbuch
+ */
 public class TestPluginListener extends TestSetUp {
 	
 	private PluginListener listener;

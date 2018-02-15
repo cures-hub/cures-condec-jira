@@ -22,6 +22,9 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 
 import ut.mocks.MockDefaultUserManager;
 
+/**
+ * @author Tim Kuchenbuch
+ */
 public class TestIsActivated {
 	private IsActivated isActivated;
 	

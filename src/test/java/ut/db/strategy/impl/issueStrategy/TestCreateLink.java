@@ -8,6 +8,9 @@ import com.atlassian.DecisionDocumentation.rest.Decisions.model.LinkRepresentati
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 
+/**
+ * @author Tim Kuchenbuch
+ */
 public class TestCreateLink extends TestIssueStrategySetUp {
 	
 	@Test

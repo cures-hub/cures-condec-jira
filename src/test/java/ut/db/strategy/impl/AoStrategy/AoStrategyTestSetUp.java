@@ -5,14 +5,14 @@ import com.atlassian.DecisionDocumentation.util.ComponentGetter;
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import net.java.ao.EntityManager;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import org.junit.Before;
-import org.junit.runner.RunWith;
 import ut.mocks.MockDefaultUserManager;
 import ut.mocks.MockTransactionTemplate;
 import ut.testsetup.TestSetUp;
 
-
+/**
+ * @author Tim Kuchenbuch
+ */
 public class AoStrategyTestSetUp extends TestSetUp{
 
     protected EntityManager entityManager;
@@ -20,9 +20,9 @@ public class AoStrategyTestSetUp extends TestSetUp{
 
     @Before
     public void setUp() {
-        initialisation();
         ActiveObjects ao = new TestActiveObjects(entityManager);
         new ComponentGetter().init(ao, new MockTransactionTemplate(), new MockDefaultUserManager());
+        initialisation();
         aoStrategy = new AoStrategy();
     }
 }

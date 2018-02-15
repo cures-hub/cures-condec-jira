@@ -99,7 +99,6 @@ public class ConfigRestLogic {
 	                }
 	            });
 	            status = Status.ACCEPTED;
-	            //TODO add issueTypes to issuetypescheme of given project
 	        } catch (Exception e){
 	            LOGGER.error(e.getMessage());
 	            status = Status.CONFLICT;

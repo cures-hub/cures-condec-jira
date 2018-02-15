@@ -407,10 +407,7 @@ public class IssueStrategy implements Strategy {
 		return data;
 	}
 
-	/*TreantsRest
-	 * 
-	 * TODO Is this still in Use? discuss! 
-	 */
+	/*TreantsRest*/
 	@Override
 	public Treant createTreant(String issueKey, int depth) {
 		Treant treant = new Treant();

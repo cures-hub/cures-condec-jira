@@ -12,6 +12,9 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+/**
+ * @author Tim Kuchenbuch
+ */
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestCreateDecisionComponentTest extends AoStrategyTestSetUp {
 
@@ -27,7 +30,7 @@ public class TestCreateDecisionComponentTest extends AoStrategyTestSetUp {
     }
 
     //TODO Fixing the Test Problems (Closed Connection)
-    @Ignore
+    @Test
     public void testRepresFilledUserNoFails(){
         DecisionRepresentation dec = new DecisionRepresentation();
         dec.setProjectKey("TEST");
@@ -44,6 +47,5 @@ public class TestCreateDecisionComponentTest extends AoStrategyTestSetUp {
         dec.setType("Solution");
         ApplicationUser user = new MockApplicationUser("WithFails");
         assertNull(aoStrategy.createDecisionComponent(dec, user));
-
     }
 }
