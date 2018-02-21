@@ -3,14 +3,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>ut.de.uhd.ifi.se.decdoc.jira</groupId>
-	<artifactId>cures-decdoc-jira</artifactId>
+	<groupId>de.uhd.ifi.se.decision</groupId>
+	<artifactId>documentation.jira</artifactId>
 	<version>2.0.7</version>
 	<organization>
-		<name>Ewald Rode</name>
+		<name>Software Engineering Research Group, Heidelberg University</name>
+		<url>https://github.com/cures-hub</url>
 	</organization>
-	<name>DecDoc JIRA</name>
-	<description>This is the DecDoc plugin for Atlassian JIRA.</description>
+	<name>Decision Documentation</name>
+	<description>Enables developers to document decision knowledge. Decision knowledge covers knowledge about decisions, the problems they address, solution proposals, their context, and justifications (rationale). The documented decision knowledge can be linked to JIRA issues such as features, tasks to implement a feature, or bug reports.</description>
+	<developers>
+		<developer>
+			<name>Ewald Rode</name>
+		</developer>
+	</developers>
 	<packaging>atlassian-plugin</packaging>
 	<dependencies>
 		<!-- JIRA -->
@@ -186,7 +192,7 @@
 					<enableFastdev>false</enableFastdev>
 					<instructions>
 						<Atlassian-Plugin-Key>${atlassian.plugin.key}</Atlassian-Plugin-Key>
-						<Export-Package>ut.de.uhd.ifi.se.decdoc.jira.api,</Export-Package>
+						<Export-Package>de.uhd.ifi.se.decision.documentation.jira.api,</Export-Package>
 						<Import-Package>org.springframework.osgi.*;resolution:="optional",
 							org.eclipse.gemini.blueprint.*;resolution:="optional", *</Import-Package>
 						<Spring-Context>*</Spring-Context>
@@ -243,4 +249,5 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
+	<url>https://github.com/cures-hub/cures-decdoc-jira</url>
 </project>
