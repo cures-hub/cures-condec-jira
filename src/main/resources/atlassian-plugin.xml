@@ -62,7 +62,7 @@
 		<param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-bp-decisions" />
 		<link linkId="decisions-link">/projects/$pathEncodedProjectKey?selectedItem=decisions-page
 		</link>
-		<condition class="com.atlassian.DecisionDocumentation.util.IsActivated">
+		<condition class="ut.de.uhd.ifi.se.decdoc.jira.util.IsActivated">
 			<param name="projectKey" value="$pathEncodedProjectKey" />
 		</condition>
 	</web-item>
@@ -110,7 +110,7 @@
 		<link linkId="admin-servlet-link">/plugins/servlet/adminservlet</link>
 	</web-item>
 	<servlet name="Admin Servlet" i18n-name-key="admin-servlet.name"
-		key="admin-servlet" class="com.atlassian.DecisionDocumentation.servlet.AdminServlet">
+		key="admin-servlet" class="ut.de.uhd.ifi.se.decdoc.jira.servlet.AdminServlet">
 		<description key="admin-servlet.description">The Admin Servlet Plugin</description>
 		<url-pattern>/adminservlet</url-pattern>
 	</servlet>
@@ -129,8 +129,8 @@
 		<description>The module configuring the Active Objects service used by
 			this plugin
 		</description>
-		<entity>com.atlassian.DecisionDocumentation.db.DecisionComponentEntity
+		<entity>ut.de.uhd.ifi.se.decdoc.jira.db.DecisionComponentEntity
 		</entity>
-		<entity>com.atlassian.DecisionDocumentation.db.LinkEntity</entity>
+		<entity>ut.de.uhd.ifi.se.decdoc.jira.db.LinkEntity</entity>
 	</ao>
 </atlassian-plugin>

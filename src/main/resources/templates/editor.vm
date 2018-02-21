@@ -3,8 +3,8 @@
 <meta name="decorator" content="DecisionDocumentation" />
 <!-- load all dependencies -->
 $webResourceManager.requireResource("com.atlassian.auiplugin:ajs")
-$webResourceManager.requireResource("com.atlassian.DecisionDocumentation.DecisionDocumentation:stylesheet-and-icon-resources")
-$webResourceManager.requireResource("com.atlassian.DecisionDocumentation.DecisionDocumentation:DecisionDocumentation-resources")
+$webResourceManager.requireResource("ut.de.uhd.ifi.se.decdoc.jira.DecisionDocumentation:stylesheet-and-icon-resources")
+$webResourceManager.requireResource("ut.de.uhd.ifi.se.decdoc.jira.DecisionDocumentation:DecisionDocumentation-resources")
 <!--$webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")-->
 $webResourceManager.requireResource("com.atlassian.auiplugin:aui-flag")
 </head>
