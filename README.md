@@ -47,7 +47,6 @@ The tree view was implemented using the [Treant.js library](http://fperucic.gith
 ### Storage Strategies
 The JIRA DecDoc plug-in supports two strategies to implement the DDM: the *issue strategy* and the *active object strategy*. 
 
-![Decision Storage Strategies](https://rawgit.com/cures-hub/cures-decdoc-jira/master/doc/decision_storage_strategies.svg)
 ![decision_storage_strategies.png](https://github.com/cures-hub/cures-decdoc-jira/blob/master/doc/decision_storage_strategies.png)
 
 The issue strategy represents the concepts of the DDM as JIRA issues.
