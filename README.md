@@ -31,6 +31,8 @@ The .jar file is installed by uploading it to your JIRA application:
 - Click "Upload" for upload, installation and activation.
 
 ## Implementation Details
+
+
 In order to understand which decisions were made during the project, JIRA DecDoc provides a *TreeViewer* that lists all documented decisions. 
 The TreeViewer was implemented using the [jsTree jQuery plugin](https://www.jstree.com).
 The decisions can be selected and their decision components can be viewed and selected as well. 
@@ -46,6 +48,7 @@ The tree view was implemented using the [Treant.js library](http://fperucic.gith
 The JIRA DecDoc plug-in supports two strategies to implement the DDM: the *issue strategy* and the *active object strategy*. 
 
 ![Decision Storage Strategies](https://rawgit.com/cures-hub/cures-decdoc-jira/master/doc/decision_storage_strategies.svg)
+![decision_storage_strategies.png](https://github.com/cures-hub/cures-decdoc-jira/blob/master/doc/decision_storage_strategies.png)
 
 The issue strategy represents the concepts of the DDM as JIRA issues.
 JIRA issue links are used to link DDM elements to each other and to JIRA issues of other types such as feature tasks.
