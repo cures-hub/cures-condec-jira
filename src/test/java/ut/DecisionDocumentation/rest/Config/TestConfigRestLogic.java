@@ -10,6 +10,11 @@ import com.atlassian.DecisionDocumentation.rest.Config.ConfigRestLogic;
 import com.atlassian.DecisionDocumentation.util.ComponentGetter;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 
+<<<<<<< Updated upstream:src/test/java/ut/DecisionDocumentation/rest/Config/TestConfigRestLogic.java
+=======
+import de.uhd.ifi.se.decision.documentation.jira.config.ConfigRestLogic;
+import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
+>>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/config/TestConfigRestLogic.java
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import ut.mocks.MockDefaultUserManager;

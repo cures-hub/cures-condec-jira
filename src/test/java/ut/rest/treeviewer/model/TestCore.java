@@ -9,8 +9,13 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+<<<<<<< Updated upstream:src/test/java/ut/rest/treeviewer/model/TestCore.java
 import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Core;
 import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Data;
+=======
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
+>>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/treeviewer/model/TestCore.java
 
 public class TestCore {
 

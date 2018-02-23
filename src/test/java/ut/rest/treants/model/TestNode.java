@@ -10,7 +10,11 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+<<<<<<< Updated upstream:src/test/java/ut/rest/treants/model/TestNode.java
 import com.atlassian.DecisionDocumentation.rest.treants.model.Node;
+=======
+import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
+>>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/treants/model/TestNode.java
 
 public class TestNode {
 	

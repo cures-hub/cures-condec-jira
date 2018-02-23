@@ -8,8 +8,13 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+<<<<<<< Updated upstream:src/test/java/ut/rest/treeviewer/model/TestData.java
 import com.atlassian.DecisionDocumentation.rest.treeviewer.model.Data;
 import com.atlassian.DecisionDocumentation.rest.treeviewer.model.NodeInfo;
+=======
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
+>>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/treeviewer/model/TestData.java
 
 public class TestData {
 	private String id;

@@ -15,20 +15,30 @@ import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.project.ProjectManager;
 
+<<<<<<< Updated upstream:src/test/java/ut/DecisionDocumentation/util/TestPluginListener.java
 import ut.mocks.MockIssueLinkManager;
 import ut.mocks.MockIssueLinkTypeManager;
 import ut.mocks.MockIssueManager;
 import ut.mocks.MockIssueService;
 import ut.mocks.MockIssueTypeManager;
 import ut.testsetup.TestSetUp;
+=======
+import de.uhd.ifi.se.decision.documentation.jira.config.PluginInitializer;
+import ut.de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
+import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkManager;
+import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkTypeManager;
+import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManager;
+import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueService;
+import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueTypeManager;
+>>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/util/TestPluginListener.java
 
 public class TestPluginListener extends TestSetUp {
 	
-	private PluginListener listener;
+	private PluginInitializer listener;
 
 	@Before 
 	public void setUp() {		
-		listener = new PluginListener();
+		listener = new PluginInitializer();
 	}
 	
 	@Test

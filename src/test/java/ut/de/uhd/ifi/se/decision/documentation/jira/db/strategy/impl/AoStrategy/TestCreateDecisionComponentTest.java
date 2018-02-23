@@ -1,0 +1,53 @@
+package ut.de.uhd.ifi.se.decision.documentation.jira.db.strategy.impl.AoStrategy;
+
+
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.user.MockApplicationUser;
+
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
+import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
+/**
+ * @author Tim Kuchenbuch
+ */
+@RunWith(ActiveObjectsJUnitRunner.class)
+public class TestCreateDecisionComponentTest extends AoStrategyTestSetUp {
+
+    @Test
+    public void testRepresNullUserNull(){
+        assertNull(aoStrategy.createDecisionComponent(null,null));
+    }
+
+    @Test
+    public void testRepresFilledUserNull(){
+        DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
+        assertNull(aoStrategy.createDecisionComponent(dec,null));
+    }
+
+    //TODO Fixing the Test Problems (Closed Connection)
+    @Ignore
+    public void testRepresFilledUserNoFails(){
+        DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
+        dec.setProjectKey("TEST");
+        dec.setType("Solution");
+        ApplicationUser user = new MockApplicationUser("NoFails");
+        assertNotNull(aoStrategy.createDecisionComponent(dec,user));
+    }
+
+    //TODO Fixing the Test Problems (Closed Connection)
+    @Ignore
+    public void testRepresFilledUserWithFails(){
+        DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
+        dec.setProjectKey("TEST");
+        dec.setType("Solution");
+        ApplicationUser user = new MockApplicationUser("WithFails");
+        assertNull(aoStrategy.createDecisionComponent(dec, user));
+    }
+}

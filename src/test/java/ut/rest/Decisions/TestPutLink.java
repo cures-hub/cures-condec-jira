@@ -17,6 +17,12 @@ import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.google.common.collect.ImmutableMap;
 
+<<<<<<< Updated upstream:src/test/java/ut/rest/Decisions/TestPutLink.java
+=======
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.LinkRepresentation;
+import de.uhd.ifi.se.decision.documentation.jira.rest.DecisionsRest;
+import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
+>>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/decisions/TestPutLink.java
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import ut.mocks.MockDefaultUserManager;

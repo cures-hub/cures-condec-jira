@@ -20,7 +20,13 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
+<<<<<<< Updated upstream:src/test/java/ut/DecisionDocumentation/util/TestIsActivated.java
 import ut.mocks.MockDefaultUserManager;
+=======
+import de.uhd.ifi.se.decision.documentation.jira.config.IsActivated;
+import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
+import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
+>>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/util/TestIsActivated.java
 
 public class TestIsActivated {
 	private IsActivated isActivated;

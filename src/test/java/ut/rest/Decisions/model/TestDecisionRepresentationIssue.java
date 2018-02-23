@@ -13,13 +13,18 @@ import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 
+<<<<<<< Updated upstream:src/test/java/ut/rest/Decisions/model/TestDecisionRepresentationIssue.java
+=======
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
+
+>>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/decisions/model/TestDecisionRepresentationIssue.java
 public class TestDecisionRepresentationIssue {
 	private int id;
 	private String name;
 	private String description;
 	private String type;
 	private String projectKey;
-	private DecisionRepresentation repre;
+	private DecisionKnowledgeElement repre;
 	
 	@Before 
 	public void setUp() {		
@@ -39,7 +44,7 @@ public class TestDecisionRepresentationIssue {
 		((MockIssue)issue).setDescription(description);
 		((MockIssue)issue).setIssueType(issueType);
 		
-		repre = new DecisionRepresentation(issue);
+		repre = new DecisionKnowledgeElement(issue);
 	}
 	
 	@Test

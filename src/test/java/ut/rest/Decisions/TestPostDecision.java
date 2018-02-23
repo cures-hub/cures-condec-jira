@@ -19,6 +19,12 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.google.common.collect.ImmutableMap;
 
+<<<<<<< Updated upstream:src/test/java/ut/rest/Decisions/TestPostDecision.java
+=======
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.rest.DecisionsRest;
+import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
+>>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/decisions/TestPostDecision.java
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import ut.mocks.MockDefaultUserManager;
@@ -30,7 +36,7 @@ public class TestPostDecision extends TestSetUp {
 	
 	private EntityManager entityManager;
 	private DecisionsRest decRest;
-	private DecisionRepresentation dec;
+	private DecisionKnowledgeElement dec;
 	private HttpServletRequest req;
 	
 	@Before
@@ -40,7 +46,7 @@ public class TestPostDecision extends TestSetUp {
 		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
 		
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
-		dec = new DecisionRepresentation(issue);
+		dec = new DecisionKnowledgeElement(issue);
 		dec.setId(1);
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
