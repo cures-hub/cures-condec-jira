@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.rest.decisions;
+package de.uhd.ifi.se.decision.documentation.jira.rest;
 
 import java.util.List;
 
@@ -14,12 +14,12 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.documentation.jira.db.strategy.Strategy;
-import de.uhd.ifi.se.decision.documentation.jira.db.strategy.StrategyProvider;
-import de.uhd.ifi.se.decision.documentation.jira.rest.decisions.model.DecisionRepresentation;
-import de.uhd.ifi.se.decision.documentation.jira.rest.decisions.model.LinkRepresentation;
-import de.uhd.ifi.se.decision.documentation.jira.rest.decisions.model.SimpleDecisionRepresentation;
-import de.uhd.ifi.se.decision.documentation.jira.rest.treeviewer.model.Data;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.IDecisionStorageStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.LinkRepresentation;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.SimpleDecisionRepresentation;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.StrategyProvider;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 
 /**
@@ -34,7 +34,7 @@ public class DecisionsRest {
 	public Response getUnlinkedIssues(@QueryParam("issueId") long issueId, @QueryParam("projectKey")final String projectKey) {
 		if(projectKey != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
-    		Strategy strategy = strategyProvider.getStrategy(projectKey);
+    		IDecisionStorageStrategy strategy = strategyProvider.getStrategy(projectKey);
 			List<SimpleDecisionRepresentation> decList = strategy.searchUnlinkedDecisionComponents(issueId, projectKey);
 	    	return Response.ok(decList).build();
 		} else {
@@ -45,12 +45,12 @@ public class DecisionsRest {
 	@POST
     @Produces({MediaType.APPLICATION_JSON})
     public Response postDecision(@QueryParam("actionType") String actionType, 
-    		@Context HttpServletRequest req, final DecisionRepresentation dec)
+    		@Context HttpServletRequest req, final DecisionKnowledgeElement dec)
     {
 		if(actionType != null && dec != null && req != null) {
 			final String projectKey = dec.getProjectKey();
 			StrategyProvider strategyProvider = new StrategyProvider();
-    		Strategy strategy = strategyProvider.getStrategy(projectKey);
+			IDecisionStorageStrategy strategy = strategyProvider.getStrategy(projectKey);
     		ApplicationUser user = getCurrentUser(req);
     		if(actionType.equalsIgnoreCase("create")) {
     			final Data data = strategy.createDecisionComponent(dec, user);
@@ -86,7 +86,7 @@ public class DecisionsRest {
     {
 		if(actionType != null && projectKey != null && req != null && link != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
-    		Strategy strategy = strategyProvider.getStrategy(projectKey);
+			IDecisionStorageStrategy strategy = strategyProvider.getStrategy(projectKey);
     		ApplicationUser user = getCurrentUser(req);
     		if(actionType.equalsIgnoreCase("create")) {
     			long issueLinkId = strategy.createLink(link, user);

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.db.strategy.impl;
+package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -11,26 +11,21 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.documentation.jira.db.DecisionComponentEntity;
-import de.uhd.ifi.se.decision.documentation.jira.db.LinkEntity;
-import de.uhd.ifi.se.decision.documentation.jira.db.strategy.Strategy;
-import de.uhd.ifi.se.decision.documentation.jira.rest.decisions.model.DecisionRepresentation;
-import de.uhd.ifi.se.decision.documentation.jira.rest.decisions.model.LinkRepresentation;
-import de.uhd.ifi.se.decision.documentation.jira.rest.decisions.model.SimpleDecisionRepresentation;
-import de.uhd.ifi.se.decision.documentation.jira.rest.treants.TreantKeyValuePairList;
-import de.uhd.ifi.se.decision.documentation.jira.rest.treants.model.Chart;
-import de.uhd.ifi.se.decision.documentation.jira.rest.treants.model.Node;
-import de.uhd.ifi.se.decision.documentation.jira.rest.treants.model.Treant;
-import de.uhd.ifi.se.decision.documentation.jira.rest.treeviewer.TreeViewerKVPairList;
-import de.uhd.ifi.se.decision.documentation.jira.rest.treeviewer.model.Core;
-import de.uhd.ifi.se.decision.documentation.jira.rest.treeviewer.model.Data;
-import de.uhd.ifi.se.decision.documentation.jira.rest.treeviewer.model.NodeInfo;
+import de.uhd.ifi.se.decision.documentation.jira.view.treants.TreantKeyValuePairList;
+import de.uhd.ifi.se.decision.documentation.jira.view.treants.Chart;
+import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
+import de.uhd.ifi.se.decision.documentation.jira.view.treants.Treant;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.TreeViewerKVPairList;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
 import net.java.ao.Query;
@@ -39,11 +34,11 @@ import net.java.ao.Query;
  * @author Ewald Rode
  * @description Implements Strategy Interafce with Active Objects
  */
-public class AoStrategy implements Strategy {
-	private static final Logger LOGGER = LoggerFactory.getLogger(AoStrategy.class);
+public class ActiveObjectStrategy implements IDecisionStorageStrategy {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectStrategy.class);
 	
 	@Override
-	public Data createDecisionComponent(final DecisionRepresentation dec, ApplicationUser user) {
+	public Data createDecisionComponent(final DecisionKnowledgeElement dec, ApplicationUser user) {
 		if(dec==null){
 			LOGGER.error("AOStrategy createDecisionComponent the DecisionRepresentation is null");
 			return null;
@@ -90,7 +85,7 @@ public class AoStrategy implements Strategy {
 	}
 
 	@Override
-	public Data editDecisionComponent(final DecisionRepresentation dec, ApplicationUser user) {
+	public Data editDecisionComponent(final DecisionKnowledgeElement dec, ApplicationUser user) {
 		final ActiveObjects ao = ComponentGetter.getAo();
 		DecisionComponentEntity decComponent = ao.executeInTransaction(new TransactionCallback<DecisionComponentEntity>()
         {
@@ -129,7 +124,7 @@ public class AoStrategy implements Strategy {
 	}
 	
 	@Override
-	public boolean deleteDecisionComponent(final DecisionRepresentation dec, final ApplicationUser user) {
+	public boolean deleteDecisionComponent(final DecisionKnowledgeElement dec, final ApplicationUser user) {
 		final ActiveObjects ao = ComponentGetter.getAo();
 		return ao.executeInTransaction(new TransactionCallback<Boolean>()
         {
@@ -562,5 +557,11 @@ public class AoStrategy implements Strategy {
 			}
 		}
 		return node;
+	}
+	
+	@Override
+	public List<Issue> getDecisionsInProject(Project project) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
