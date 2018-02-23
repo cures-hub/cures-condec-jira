@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
 
-import de.uhd.ifi.se.decision.documentation.jira.rest.config.ConfigRestLogic;
+import de.uhd.ifi.se.decision.documentation.jira.config.ConfigRestLogic;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;

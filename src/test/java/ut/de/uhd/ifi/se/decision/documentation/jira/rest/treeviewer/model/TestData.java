@@ -8,8 +8,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.documentation.jira.rest.treeviewer.model.Data;
-import de.uhd.ifi.se.decision.documentation.jira.rest.treeviewer.model.NodeInfo;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
 
 public class TestData {
 	private String id;

@@ -1,0 +1,26 @@
+% UML class diagram of strategy design pattern for using different knowledge repositories
+\begin{tikzpicture}[font = \sffamily, thick]
+\tikzumlset{font = \sffamily, fill class=white, fill package=white, fill note=white}
+
+% abstract strategy/interface
+\umlclass[type=interface]{Strategy}{}{
+    \textit{+ createDecisionComponent()}\\
+    \textit{+ editDecisionComponent()}\\
+    \textit{+ deleteDecisionComponent()}\\
+    \textit{+ createLink()}\\
+    \textit{+ deleteLink()}\\
+    \textit{+ searchUnlinkedDecisionComponents()}\\
+}
+
+% concrete strategy
+\umlclass[x=6, y=1]{IssueStrategy}{}{}
+\umlclass[x=6, y=-1]{ActiveObjectStrategy}{}{}
+
+% client
+\umlclass[x=-6, y=0]{Client}{}{}
+
+% associations
+\umlimpl{IssueStrategy}{Strategy}
+\umlimpl{ActiveObjectStrategy}{Strategy}
+\umluniassoc[arg1=uses, pos1=0.5]{Client}{Strategy}
+\end{tikzpicture}

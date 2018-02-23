@@ -10,7 +10,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.documentation.jira.rest.treants.model.Node;
+import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
 
 public class TestNode {
 	

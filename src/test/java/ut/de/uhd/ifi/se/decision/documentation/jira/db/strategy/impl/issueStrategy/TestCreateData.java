@@ -6,8 +6,8 @@ import org.junit.Test;
 
 import com.atlassian.jira.mock.issue.MockIssue;
 
-import de.uhd.ifi.se.decision.documentation.jira.rest.treeviewer.TreeViewerKVPairList;
-import de.uhd.ifi.se.decision.documentation.jira.rest.treeviewer.model.Data;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.TreeViewerKVPairList;
 
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.issuetype.IssueType;

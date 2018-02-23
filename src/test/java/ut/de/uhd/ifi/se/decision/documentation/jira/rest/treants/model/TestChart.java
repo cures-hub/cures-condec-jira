@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.documentation.jira.rest.treants.model.Chart;
+import de.uhd.ifi.se.decision.documentation.jira.view.treants.Chart;
 
 public class TestChart {
 	

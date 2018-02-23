@@ -3,7 +3,7 @@ package ut.de.uhd.ifi.se.decision.documentation.jira.db.strategy.impl.AoStrategy
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 
-import de.uhd.ifi.se.decision.documentation.jira.db.strategy.impl.AoStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ActiveObjectStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import net.java.ao.EntityManager;
 import ut.de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
@@ -18,13 +18,13 @@ import org.junit.Before;
 public class AoStrategyTestSetUp extends TestSetUp{
 
     protected EntityManager entityManager;
-    protected AoStrategy aoStrategy;
+    protected ActiveObjectStrategy aoStrategy;
 
     @Before
     public void setUp() {
         ActiveObjects ao = new TestActiveObjects(entityManager);
         new ComponentGetter().init(ao, new MockTransactionTemplate(), new MockDefaultUserManager());
         initialisation();
-        aoStrategy = new AoStrategy();
+        aoStrategy = new ActiveObjectStrategy();
     }
 }

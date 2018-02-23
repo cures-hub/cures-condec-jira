@@ -7,7 +7,7 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 
-import de.uhd.ifi.se.decision.documentation.jira.rest.decisions.model.LinkRepresentation;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.LinkRepresentation;
 
 /**
  * @author Tim Kuchenbuch

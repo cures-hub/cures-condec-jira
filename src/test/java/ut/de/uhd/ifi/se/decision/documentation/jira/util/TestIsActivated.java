@@ -18,8 +18,8 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
+import de.uhd.ifi.se.decision.documentation.jira.config.IsActivated;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
-import de.uhd.ifi.se.decision.documentation.jira.util.IsActivated;
 import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 
 /**

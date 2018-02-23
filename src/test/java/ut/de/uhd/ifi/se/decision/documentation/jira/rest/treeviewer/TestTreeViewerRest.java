@@ -11,7 +11,7 @@ import org.ofbiz.core.entity.GenericEntityException;
 
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.documentation.jira.rest.treeviewer.TreeViewerRest;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.TreeViewerRest;
 import ut.de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 
 /**
@@ -28,12 +28,12 @@ public class TestTreeViewerRest extends TestSetUp {
 	
 	@Test
 	public void testProjectKeyNull() throws GenericEntityException {
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Query Parameter 'projectKey' has been omitted, please add a valid projectKey")).build().getEntity(), treeview.getMessage(null).getEntity());
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Query parameter 'projectKey' is not provided, please add a valid projectKey")).build().getEntity(), treeview.getMessage(null).getEntity());
 	}
 	
 	@Test
 	public void testProjectKeyDontExist() throws GenericEntityException {
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Can not find Project corresponding to given Query Parameter 'projectKey'")).build().getEntity(), treeview.getMessage("NotTEST").getEntity());
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Cannot find project for the given query parameter 'projectKey'")).build().getEntity(), treeview.getMessage("NotTEST").getEntity());
 	}
 	
 	@Test

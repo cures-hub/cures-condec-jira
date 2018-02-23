@@ -9,8 +9,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.documentation.jira.rest.treeviewer.model.Core;
-import de.uhd.ifi.se.decision.documentation.jira.rest.treeviewer.model.Data;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 
 public class TestCore {
 

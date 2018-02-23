@@ -8,7 +8,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 
-import de.uhd.ifi.se.decision.documentation.jira.rest.treeviewer.model.Core;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
 
 /**
  * @author Tim Kuchenbuch

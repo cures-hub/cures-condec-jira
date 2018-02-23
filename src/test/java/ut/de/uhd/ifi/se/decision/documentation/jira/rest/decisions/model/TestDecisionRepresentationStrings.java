@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.documentation.jira.rest.decisions.model.DecisionRepresentation;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
 
 /**
  * 
@@ -20,7 +20,7 @@ public class TestDecisionRepresentationStrings {
 	private String description;
 	private String type;
 	private String projectKey;
-	private DecisionRepresentation repre;
+	private DecisionKnowledgeElement repre;
 	
 	//TODO Same Test with issues
 	
@@ -32,7 +32,7 @@ public class TestDecisionRepresentationStrings {
 		this.type="Test";
 		this.projectKey="Test";
 		
-		this.repre= new DecisionRepresentation(id, name, description, type, projectKey);
+		this.repre= new DecisionKnowledgeElement(id, name, description, type, projectKey);
 	}
 	
 	@Test

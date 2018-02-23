@@ -14,7 +14,7 @@ import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.project.ProjectManager;
 
-import de.uhd.ifi.se.decision.documentation.jira.util.PluginListener;
+import de.uhd.ifi.se.decision.documentation.jira.config.PluginInitializer;
 import ut.de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkManager;
 import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkTypeManager;
@@ -27,11 +27,11 @@ import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueTypeManager;
  */
 public class TestPluginListener extends TestSetUp {
 	
-	private PluginListener listener;
+	private PluginInitializer listener;
 
 	@Before 
 	public void setUp() {		
-		listener = new PluginListener();
+		listener = new PluginInitializer();
 	}
 	
 	@Test

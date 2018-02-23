@@ -15,8 +15,8 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.documentation.jira.rest.config.ConfigRest;
-import de.uhd.ifi.se.decision.documentation.jira.rest.config.ConfigRestLogic;
+import de.uhd.ifi.se.decision.documentation.jira.config.ConfigRest;
+import de.uhd.ifi.se.decision.documentation.jira.config.ConfigRestLogic;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;

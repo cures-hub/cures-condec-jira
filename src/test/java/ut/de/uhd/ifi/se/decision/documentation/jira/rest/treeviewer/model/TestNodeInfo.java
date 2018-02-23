@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.documentation.jira.rest.treeviewer.model.NodeInfo;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
 
 public class TestNodeInfo {
 	

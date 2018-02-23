@@ -8,7 +8,7 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 
-import de.uhd.ifi.se.decision.documentation.jira.rest.decisions.model.DecisionRepresentation;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
 
 /**
  * @author Tim Kuchenbuch
@@ -24,13 +24,13 @@ public class TestEditDecisionComponent extends TestIssueStrategySetUp {
 	@Test
 	(expected = NullPointerException.class)
 	public void testDecisionRepresentationFilledApplicUserNull() {
-		DecisionRepresentation dec = new DecisionRepresentation();
+		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
 		issueStrategy.editDecisionComponent(dec, null);
 	}
 	
 	@Test
 	public void testDecisionRepresentationFilledApplicUserFilledRight() {
-		DecisionRepresentation dec = new DecisionRepresentation();
+		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
 		dec.setId(1);
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
@@ -40,7 +40,7 @@ public class TestEditDecisionComponent extends TestIssueStrategySetUp {
 	
 	@Test
 	public void testDecisionRepresentationFilledApplicUserFilledWrong() {
-		DecisionRepresentation dec = new DecisionRepresentation();
+		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
 		dec.setId(1);
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");

@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.documentation.jira.rest.decisions.DecisionsRest;
+import de.uhd.ifi.se.decision.documentation.jira.rest.DecisionsRest;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;

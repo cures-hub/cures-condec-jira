@@ -8,7 +8,7 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 
-import de.uhd.ifi.se.decision.documentation.jira.rest.decisions.model.DecisionRepresentation;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
 
 /**
  * @author Tim Kuchenbuch
@@ -24,13 +24,13 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 	@Test
 	(expected = NullPointerException.class)
 	public void testDecisionRepresFilledUserNull() {
-		DecisionRepresentation dec = new DecisionRepresentation();
+		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
 		issueStrategy.deleteDecisionComponent(dec, null);
 	}
 	
 	@Test
 	public void testDecisionRepresFilledUserFilledRight() {
-		DecisionRepresentation dec = new DecisionRepresentation();
+		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
 		dec.setId(1);
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
@@ -40,7 +40,7 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 	
 	@Test
 	public void testDecisionRepresIssueUnvalid() {
-		DecisionRepresentation dec = new DecisionRepresentation();
+		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
 		dec.setId(1);
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
@@ -50,7 +50,7 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 	
 	@Test
 	public void testDecisionRepresFilledUserFilledResultErrors() {
-		DecisionRepresentation dec = new DecisionRepresentation();
+		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
 		dec.setId(1);
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
@@ -60,7 +60,7 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 	
 	@Test
 	public void testDecisionRepresNoResultErrors() {
-		DecisionRepresentation dec = new DecisionRepresentation();
+		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
 		dec.setId(1);
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");

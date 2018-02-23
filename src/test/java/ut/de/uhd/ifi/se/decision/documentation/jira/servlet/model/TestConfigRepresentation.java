@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.documentation.jira.servlet.model.ConfigRepresentation;
+import de.uhd.ifi.se.decision.documentation.jira.config.Config;
 
 /**
  * 
@@ -15,7 +15,7 @@ import de.uhd.ifi.se.decision.documentation.jira.servlet.model.ConfigRepresentat
  */
 public class TestConfigRepresentation {
 	
-	private ConfigRepresentation repres;
+	private Config repres;
 	private String projectKey;
 	private String projectName;
 	private String isActivated;
@@ -27,7 +27,7 @@ public class TestConfigRepresentation {
 		this.projectName="TestName";
 		this.isActivated="TestTrue";
 		this.isIssueStrategy="TestFalse";
-		this.repres= new ConfigRepresentation(projectKey, projectName, isActivated, isIssueStrategy);
+		this.repres= new Config(projectKey, projectName, isActivated, isIssueStrategy);
 	}
 	
 	@Test
