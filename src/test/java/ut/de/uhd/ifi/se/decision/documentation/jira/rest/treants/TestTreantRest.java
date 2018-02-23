@@ -13,16 +13,8 @@ import org.ofbiz.core.entity.GenericEntityException;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.google.common.collect.ImmutableMap;
 
-<<<<<<< HEAD:src/test/java/ut/DecisionDocumentation/rest/treants/TestTreantRest.java
-<<<<<<< Updated upstream:src/test/java/ut/DecisionDocumentation/rest/treants/TestTreantRest.java
-=======
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.TreantRest;
->>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/treants/TestTreantRest.java
-=======
-import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.TreantRest;
->>>>>>> master:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/treants/TestTreantRest.java
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import ut.de.uhd.ifi.se.decision.documentation.jira.TestSetUp;

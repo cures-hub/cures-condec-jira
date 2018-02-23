@@ -5,15 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-<<<<<<< HEAD:src/test/java/ut/rest/Decisions/model/TestDecisionRepresentationStrings.java
-<<<<<<< Updated upstream:src/test/java/ut/rest/Decisions/model/TestDecisionRepresentationStrings.java
-import com.atlassian.DecisionDocumentation.rest.Decisions.model.DecisionRepresentation;
-=======
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
->>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/decisions/model/TestDecisionRepresentationStrings.java
-=======
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
->>>>>>> master:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/decisions/model/TestDecisionRepresentationStrings.java
 
 /**
  * 

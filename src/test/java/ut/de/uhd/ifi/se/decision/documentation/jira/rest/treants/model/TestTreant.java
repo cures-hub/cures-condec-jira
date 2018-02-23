@@ -5,21 +5,9 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-<<<<<<< HEAD:src/test/java/ut/rest/treants/model/TestTreant.java
-<<<<<<< Updated upstream:src/test/java/ut/rest/treants/model/TestTreant.java
-import com.atlassian.DecisionDocumentation.rest.treants.model.Chart;
-import com.atlassian.DecisionDocumentation.rest.treants.model.Node;
-import com.atlassian.DecisionDocumentation.rest.treants.model.Treant;
-=======
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Chart;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Treant;
->>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/treants/model/TestTreant.java
-=======
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Chart;
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Treant;
->>>>>>> master:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/treants/model/TestTreant.java
 
 public class TestTreant {
 	

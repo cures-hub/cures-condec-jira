@@ -14,17 +14,6 @@ import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.project.ProjectManager;
 
-<<<<<<< HEAD:src/test/java/ut/DecisionDocumentation/util/TestPluginListener.java
-<<<<<<< Updated upstream:src/test/java/ut/DecisionDocumentation/util/TestPluginListener.java
-import ut.mocks.MockIssueLinkManager;
-import ut.mocks.MockIssueLinkTypeManager;
-import ut.mocks.MockIssueManager;
-import ut.mocks.MockIssueService;
-import ut.mocks.MockIssueTypeManager;
-import ut.testsetup.TestSetUp;
-=======
-=======
->>>>>>> master:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/util/TestPluginListener.java
 import de.uhd.ifi.se.decision.documentation.jira.config.PluginInitializer;
 import ut.de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkManager;
@@ -32,10 +21,6 @@ import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkTypeManag
 import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManager;
 import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueService;
 import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueTypeManager;
-<<<<<<< HEAD:src/test/java/ut/DecisionDocumentation/util/TestPluginListener.java
->>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/util/TestPluginListener.java
-=======
->>>>>>> master:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/util/TestPluginListener.java
 
 /**
  * @author Tim Kuchenbuch

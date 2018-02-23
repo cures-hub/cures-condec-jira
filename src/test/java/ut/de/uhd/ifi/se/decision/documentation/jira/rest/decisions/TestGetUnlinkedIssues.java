@@ -12,16 +12,8 @@ import org.junit.runner.RunWith;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.google.common.collect.ImmutableMap;
 
-<<<<<<< HEAD:src/test/java/ut/rest/Decisions/TestGetUnlinkedIssues.java
-<<<<<<< Updated upstream:src/test/java/ut/rest/Decisions/TestGetUnlinkedIssues.java
-=======
 import de.uhd.ifi.se.decision.documentation.jira.rest.DecisionsRest;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
->>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/decisions/TestGetUnlinkedIssues.java
-=======
-import de.uhd.ifi.se.decision.documentation.jira.rest.DecisionsRest;
-import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
->>>>>>> master:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/decisions/TestGetUnlinkedIssues.java
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import ut.de.uhd.ifi.se.decision.documentation.jira.TestSetUp;

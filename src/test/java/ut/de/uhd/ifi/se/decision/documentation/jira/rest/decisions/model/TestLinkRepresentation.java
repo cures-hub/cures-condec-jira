@@ -5,15 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-<<<<<<< HEAD:src/test/java/ut/rest/Decisions/model/TestLinkRepresentation.java
-<<<<<<< Updated upstream:src/test/java/ut/rest/Decisions/model/TestLinkRepresentation.java
-import com.atlassian.DecisionDocumentation.rest.Decisions.model.SimpleDecisionRepresentation;
-=======
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.SimpleDecisionRepresentation;
->>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/decisions/model/TestLinkRepresentation.java
-=======
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.SimpleDecisionRepresentation;
->>>>>>> master:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/decisions/model/TestLinkRepresentation.java
 
 /**
  * 

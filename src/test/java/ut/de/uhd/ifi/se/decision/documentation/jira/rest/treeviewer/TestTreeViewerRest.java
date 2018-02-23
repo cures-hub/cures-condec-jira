@@ -11,17 +11,8 @@ import org.ofbiz.core.entity.GenericEntityException;
 
 import com.google.common.collect.ImmutableMap;
 
-<<<<<<< HEAD:src/test/java/ut/DecisionDocumentation/rest/treeviewer/TestTreeViewerRest.java
-<<<<<<< Updated upstream:src/test/java/ut/DecisionDocumentation/rest/treeviewer/TestTreeViewerRest.java
-import ut.testsetup.TestSetUp;
-=======
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.TreeViewerRest;
 import ut.de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
->>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/treeviewer/TestTreeViewerRest.java
-=======
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.TreeViewerRest;
-import ut.de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
->>>>>>> master:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/treeviewer/TestTreeViewerRest.java
 
 /**
  * @author Tim Kuchenbuch

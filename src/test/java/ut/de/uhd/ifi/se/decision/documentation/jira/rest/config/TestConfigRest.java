@@ -15,18 +15,9 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
-<<<<<<< HEAD:src/test/java/ut/DecisionDocumentation/rest/Config/TestConfigRest.java
-<<<<<<< Updated upstream:src/test/java/ut/DecisionDocumentation/rest/Config/TestConfigRest.java
-=======
 import de.uhd.ifi.se.decision.documentation.jira.config.ConfigRest;
 import de.uhd.ifi.se.decision.documentation.jira.config.ConfigRestLogic;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
->>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/config/TestConfigRest.java
-=======
-import de.uhd.ifi.se.decision.documentation.jira.config.ConfigRest;
-import de.uhd.ifi.se.decision.documentation.jira.config.ConfigRestLogic;
-import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
->>>>>>> master:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/config/TestConfigRest.java
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import ut.de.uhd.ifi.se.decision.documentation.jira.TestSetUp;

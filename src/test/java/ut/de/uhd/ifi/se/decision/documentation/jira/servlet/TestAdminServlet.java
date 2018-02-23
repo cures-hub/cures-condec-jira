@@ -17,16 +17,8 @@ import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
-<<<<<<< HEAD:src/test/java/ut/servlet/TestAdminServlet.java
-<<<<<<< Updated upstream:src/test/java/ut/servlet/TestAdminServlet.java
-=======
 import de.uhd.ifi.se.decision.documentation.jira.config.AdminServlet;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
->>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/servlet/TestAdminServlet.java
-=======
-import de.uhd.ifi.se.decision.documentation.jira.config.AdminServlet;
-import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
->>>>>>> master:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/servlet/TestAdminServlet.java
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import ut.de.uhd.ifi.se.decision.documentation.jira.TestSetUp;

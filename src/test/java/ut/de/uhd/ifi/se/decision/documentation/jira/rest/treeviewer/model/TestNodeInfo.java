@@ -5,15 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-<<<<<<< HEAD:src/test/java/ut/rest/treeviewer/model/TestNodeInfo.java
-<<<<<<< Updated upstream:src/test/java/ut/rest/treeviewer/model/TestNodeInfo.java
-import com.atlassian.DecisionDocumentation.rest.treeviewer.model.NodeInfo;
-=======
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
->>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/treeviewer/model/TestNodeInfo.java
-=======
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
->>>>>>> master:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/treeviewer/model/TestNodeInfo.java
 
 public class TestNodeInfo {
 	

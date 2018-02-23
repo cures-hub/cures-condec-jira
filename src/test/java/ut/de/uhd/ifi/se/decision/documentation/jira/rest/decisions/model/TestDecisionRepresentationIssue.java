@@ -12,16 +12,8 @@ import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 
-<<<<<<< HEAD:src/test/java/ut/rest/Decisions/model/TestDecisionRepresentationIssue.java
-<<<<<<< Updated upstream:src/test/java/ut/rest/Decisions/model/TestDecisionRepresentationIssue.java
-=======
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
 
->>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/decisions/model/TestDecisionRepresentationIssue.java
-=======
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
-
->>>>>>> master:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/rest/decisions/model/TestDecisionRepresentationIssue.java
 public class TestDecisionRepresentationIssue {
 	private int id;
 	private String name;

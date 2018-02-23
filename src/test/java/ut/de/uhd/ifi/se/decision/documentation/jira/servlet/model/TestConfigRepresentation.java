@@ -5,15 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-<<<<<<< HEAD:src/test/java/ut/servlet/model/TestConfigRepresentation.java
-<<<<<<< Updated upstream:src/test/java/ut/servlet/model/TestConfigRepresentation.java
-import com.atlassian.DecisionDocumentation.servlet.model.ConfigRepresentation;
-=======
 import de.uhd.ifi.se.decision.documentation.jira.config.Config;
->>>>>>> Stashed changes:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/servlet/model/TestConfigRepresentation.java
-=======
-import de.uhd.ifi.se.decision.documentation.jira.config.Config;
->>>>>>> master:src/test/java/ut/de/uhd/ifi/se/decision/documentation/jira/servlet/model/TestConfigRepresentation.java
 
 /**
  * 
