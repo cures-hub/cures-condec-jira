@@ -10,7 +10,7 @@
 		<param name="plugin-logo">images/pluginLogo.png</param>
 	</plugin-info>
 	<!-- i18n resource -->
-	<resource type="i18n" name="i18n" location="DecisionDocumentation" />
+	<resource type="i18n" name="i18n" location="decision-documentation" />
 
 	<!-- web resources -->
 	<web-resource key="stylesheet-and-icon-resources" name="Stylesheets and Icons">
@@ -29,9 +29,9 @@
 		<resource type="download" name="jquery.contextMenu.css"
 			location="/css/jquery.contextMenu.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
-		<context>DecisionDocumentation</context>
+		<context>decision-documentation</context>
 	</web-resource>
-	<web-resource key="DecisionDocumentation-resources" name="DecisionDocumentation Web Resources">
+	<web-resource key="decision-documentation-resources" name="decision-documentation-resources">
 		<!-- treants -->
 		<resource type="download" name="Treant.js" location="/js/treant_js/Treant.js" />
 		<resource type="download" name="raphael.js" location="/js/treant_js/raphael.js" />
@@ -47,9 +47,9 @@
 		<resource type="download" name="jquery.contextMenu.js"
 			location="/js/contextMenu/jquery.contextMenu.js" />
 		<!-- my own JS -->
-		<resource type="download" name="DecisionDocumentation.js"
-			location="/js/DecisionDocumentation.js" />
-		<context>DecisionDocumentation</context>
+		<resource type="download" name="decision.documentation.js"
+			location="/js/decision.documentation.js" />
+		<context>decision-documentation</context>
 	</web-resource>
 
 	<!-- DecisionEditor -->
@@ -62,7 +62,8 @@
 		<param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-bp-decisions" />
 		<link linkId="decisions-link">/projects/$pathEncodedProjectKey?selectedItem=decisions-page
 		</link>
-		<condition class="com.atlassian.DecisionDocumentation.util.IsActivated">
+		<condition
+			class="de.uhd.ifi.se.decision.documentation.jira.config.IsActivated">
 			<param name="projectKey" value="$pathEncodedProjectKey" />
 		</condition>
 	</web-item>
@@ -98,7 +99,7 @@
 	</web-section>
 	<web-section name="DecDoc-Menu-Item" key="DecDoc_menu_item"
 		location="DecDoc_section">
-		<label key="DecDoc" />
+		<label key="Decisions" />
 		<description>Adds a Menu-Item with a Label to the DecDoc-Web-Section
 		</description>
 	</web-section>
@@ -110,7 +111,7 @@
 		<link linkId="admin-servlet-link">/plugins/servlet/adminservlet</link>
 	</web-item>
 	<servlet name="Admin Servlet" i18n-name-key="admin-servlet.name"
-		key="admin-servlet" class="com.atlassian.DecisionDocumentation.servlet.AdminServlet">
+		key="admin-servlet" class="de.uhd.ifi.se.decision.documentation.jira.config.AdminServlet">
 		<description key="admin-servlet.description">The Admin Servlet Plugin</description>
 		<url-pattern>/adminservlet</url-pattern>
 	</servlet>
@@ -129,8 +130,9 @@
 		<description>The module configuring the Active Objects service used by
 			this plugin
 		</description>
-		<entity>com.atlassian.DecisionDocumentation.db.DecisionComponentEntity
+		<entity>de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionComponentEntity
 		</entity>
-		<entity>com.atlassian.DecisionDocumentation.db.LinkEntity</entity>
+		<entity>de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.LinkEntity
+		</entity>
 	</ao>
 </atlassian-plugin>

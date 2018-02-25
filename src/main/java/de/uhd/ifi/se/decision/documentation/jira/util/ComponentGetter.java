@@ -1,4 +1,4 @@
-package com.atlassian.DecisionDocumentation.util;
+package de.uhd.ifi.se.decision.documentation.jira.util;
 
 import javax.inject.Inject;
 import javax.inject.Named;
