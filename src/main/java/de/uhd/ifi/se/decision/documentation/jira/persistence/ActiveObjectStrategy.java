@@ -394,10 +394,10 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 
 	/* TreantsRest */
 	@Override
-	public Treant createTreant(final String issueKey, int depth) {
+	public Treant createTreant(final String key, int depth) {
 		Treant treant = new Treant();
 		treant.setChart(new Chart());
-		treant.setNodeStructure(createNodeStructure(issueKey, depth));
+		treant.setNodeStructure(createNodeStructure(key, depth));
 		return treant;
 	}
 
@@ -584,6 +584,12 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 
 	@Override
 	public List<DecisionKnowledgeElement> getDecisionsInProject(Project project) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
 		// TODO Auto-generated method stub
 		return null;
 	}

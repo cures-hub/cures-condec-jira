@@ -29,7 +29,9 @@ public interface IPersistenceStrategy {
 
 	public List<DecisionKnowledgeElement> getUnlinkedDecisionComponents(long id, String projectKey);
 
+	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement);
+
 	public Core createCore(Project project);
 
-	public Treant createTreant(String issueKey, int depth);
+	public Treant createTreant(String key, int depth);
 }
