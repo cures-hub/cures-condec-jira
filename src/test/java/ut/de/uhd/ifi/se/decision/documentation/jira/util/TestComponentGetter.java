@@ -1,4 +1,4 @@
-package ut.com.atlassian.DecisionDocumentation.util;
+package ut.de.uhd.ifi.se.decision.documentation.jira.util;
 
 import org.junit.Before;
 import org.junit.Test;
