@@ -22,7 +22,7 @@ public class TestDecisionRepresentationStrings {
 	private String projectKey;
 	private DecisionKnowledgeElement repre;
 	
-	//TODO Same Test with issues
+
 	
 	@Before 
 	public void setUp() {

@@ -11,7 +11,6 @@ import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.SimpleDecisio
  * 
  * @author Tim Kuchenbuch
  * @description Test Class for Simple Getter and Setter Tests
- * TODO Adding Test for Issue Constructor 
  */
 public class TestLinkRepresentation {
 
