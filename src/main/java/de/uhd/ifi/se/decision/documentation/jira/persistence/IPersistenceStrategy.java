@@ -7,7 +7,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Treant;
+import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 
@@ -33,5 +33,7 @@ public interface IPersistenceStrategy {
 
 	public Core createCore(Project project);
 
-	public Treant createTreant(String key, int depth);
+    public Node createNodeStructure(String key, int depth);
+
+//	public Treant createTreant(String key, int depth);
 }
