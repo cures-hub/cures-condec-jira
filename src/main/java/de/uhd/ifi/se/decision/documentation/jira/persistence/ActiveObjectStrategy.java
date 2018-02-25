@@ -11,18 +11,15 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.TreantKeyValuePairList;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Chart;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Treant;
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.TreeViewerKVPairList;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
@@ -31,6 +28,7 @@ import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowl
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ILinkEntity;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
+import de.uhd.ifi.se.decision.documentation.jira.util.KeyValuePairList;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
 import net.java.ao.Query;
 
@@ -293,10 +291,10 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 			public Void doInTransaction() {
 				for (IDecisionKnowledgeElementEntity decComponent : ao.find(IDecisionKnowledgeElementEntity.class)) {
 					if (decComponent.getType().equalsIgnoreCase("Decision")) {
-						TreeViewerKVPairList.kvpList = new ArrayList<Pair<String, String>>();
+						KeyValuePairList.keyValuePairList = new ArrayList<Pair<String, String>>();
 						Pair<String, String> kvp = new Pair<String, String>("root",
 								Long.toString(decComponent.getID()));
-						TreeViewerKVPairList.kvpList.add(kvp);
+						KeyValuePairList.keyValuePairList.add(kvp);
 						dataSet.add(createData(decComponent));
 					}
 				}
@@ -342,15 +340,15 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 			Pair<String, String> newKVP = new Pair<String, String>(decComponent.getKey(), target.getKey());
 			Pair<String, String> newKVPReverse = new Pair<String, String>(target.getKey(), decComponent.getKey());
 			boolean boolvar = false;
-			for (int counter = 0; counter < TreeViewerKVPairList.kvpList.size(); ++counter) {
-				Pair<String, String> globalInst = TreeViewerKVPairList.kvpList.get(counter);
+			for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
+				Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
 				if (newKVP.equals(globalInst)) {
 					boolvar = true;
 				}
 			}
 			if (!boolvar) {
-				TreeViewerKVPairList.kvpList.add(newKVP);
-				TreeViewerKVPairList.kvpList.add(newKVPReverse);
+				KeyValuePairList.keyValuePairList.add(newKVP);
+				KeyValuePairList.keyValuePairList.add(newKVPReverse);
 				children.add(createData(target));
 			}
 		}
@@ -374,15 +372,15 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 			Pair<String, String> newKVP = new Pair<String, String>(decComponent.getKey(), source.getKey());
 			Pair<String, String> newKVPReverse = new Pair<String, String>(source.getKey(), decComponent.getKey());
 			boolean boolvar = false;
-			for (int counter = 0; counter < TreeViewerKVPairList.kvpList.size(); ++counter) {
-				Pair<String, String> globalInst = TreeViewerKVPairList.kvpList.get(counter);
+			for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
+				Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
 				if (newKVP.equals(globalInst)) {
 					boolvar = true;
 				}
 			}
 			if (!boolvar) {
-				TreeViewerKVPairList.kvpList.add(newKVP);
-				TreeViewerKVPairList.kvpList.add(newKVPReverse);
+				KeyValuePairList.keyValuePairList.add(newKVP);
+				KeyValuePairList.keyValuePairList.add(newKVPReverse);
 				children.add(createData(source));
 			}
 		}
@@ -443,7 +441,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 			node.setHtmlId(htmlId);
 
 			List<Node> children = new ArrayList<Node>();
-			TreantKeyValuePairList.kvpList = new ArrayList<Pair<String, String>>();
+			KeyValuePairList.keyValuePairList = new ArrayList<Pair<String, String>>();
 			final List<IDecisionKnowledgeElementEntity> inwardLinkedDecList = new ArrayList<IDecisionKnowledgeElementEntity>();
 			for (ILinkEntity linkEntity : ao.find(ILinkEntity.class,
 					Query.select().where("INGOING_ID != ? AND OUTGOING_ID = ?", dec.getID(), dec.getID()))) {
@@ -469,8 +467,8 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 					IDecisionKnowledgeElementEntity decisionComponent = inwardLinkedDecList.get(i);
 					Pair<String, String> kvp = new Pair<String, String>(dec.getKey(), decisionComponent.getKey());
 					Pair<String, String> kvp2 = new Pair<String, String>(decisionComponent.getKey(), dec.getKey());
-					TreantKeyValuePairList.kvpList.add(kvp);
-					TreantKeyValuePairList.kvpList.add(kvp2);
+					KeyValuePairList.keyValuePairList.add(kvp);
+					KeyValuePairList.keyValuePairList.add(kvp2);
 					children.add(createNode(decisionComponent, depth, 0));
 				}
 			}
@@ -480,8 +478,8 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 					IDecisionKnowledgeElementEntity decisionComponent = outwardLinkedDecList.get(i);
 					Pair<String, String> kvp = new Pair<String, String>(dec.getKey(), decisionComponent.getKey());
 					Pair<String, String> kvp2 = new Pair<String, String>(decisionComponent.getKey(), dec.getKey());
-					TreantKeyValuePairList.kvpList.add(kvp);
-					TreantKeyValuePairList.kvpList.add(kvp2);
+					KeyValuePairList.keyValuePairList.add(kvp);
+					KeyValuePairList.keyValuePairList.add(kvp2);
 					children.add(createNode(decisionComponent, depth, 0));
 				}
 			}
@@ -543,15 +541,15 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 					Pair<String, String> newKVPReverse = new Pair<String, String>(decisionComponent.getKey(),
 							dec.getKey());
 					boolean boolvar = false;
-					for (int counter = 0; counter < TreantKeyValuePairList.kvpList.size(); ++counter) {
-						Pair<String, String> globalInst = TreantKeyValuePairList.kvpList.get(counter);
+					for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
+						Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
 						if (newKVP.equals(globalInst) || newKVPReverse.equals(globalInst)) {
 							boolvar = true;
 						}
 					}
 					if (!boolvar) {
-						TreantKeyValuePairList.kvpList.add(newKVP);
-						TreantKeyValuePairList.kvpList.add(newKVPReverse);
+						KeyValuePairList.keyValuePairList.add(newKVP);
+						KeyValuePairList.keyValuePairList.add(newKVPReverse);
 						toBeAddedToChildren.add(decisionComponent);
 					}
 				}
@@ -561,15 +559,15 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 					Pair<String, String> newKVPReverse = new Pair<String, String>(decisionComponent.getKey(),
 							dec.getKey());
 					boolean boolvar = false;
-					for (int counter = 0; counter < TreantKeyValuePairList.kvpList.size(); ++counter) {
-						Pair<String, String> globalInst = TreantKeyValuePairList.kvpList.get(counter);
+					for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
+						Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
 						if (newKVP.equals(globalInst) || newKVPReverse.equals(globalInst)) {
 							boolvar = true;
 						}
 					}
 					if (!boolvar) {
-						TreantKeyValuePairList.kvpList.add(newKVP);
-						TreantKeyValuePairList.kvpList.add(newKVPReverse);
+						KeyValuePairList.keyValuePairList.add(newKVP);
+						KeyValuePairList.keyValuePairList.add(newKVPReverse);
 						toBeAddedToChildren.add(decisionComponent);
 					}
 				}

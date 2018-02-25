@@ -33,15 +33,14 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
+import de.uhd.ifi.se.decision.documentation.jira.util.KeyValuePairList;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Chart;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Treant;
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.TreantKeyValuePairList;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.TreeViewerKVPairList;
 
 /**
  * @author Ewald Rode
@@ -325,9 +324,9 @@ public class IssueStrategy implements IPersistenceStrategy {
 			return null;
 		}
 		for (int index = 0; index < decisions.size(); ++index) {
-			TreeViewerKVPairList.kvpList = new ArrayList<Pair<String, String>>();
+			KeyValuePairList.keyValuePairList = new ArrayList<Pair<String, String>>();
 			Pair<String, String> kvp = new Pair<String, String>("root", decisions.get(index).getKey());
-			TreeViewerKVPairList.kvpList.add(kvp);
+			KeyValuePairList.keyValuePairList.add(kvp);
 			dataSet.add(createData(decisions.get(index)));
 
 		}
@@ -372,15 +371,15 @@ public class IssueStrategy implements IPersistenceStrategy {
 					Pair<String, String> newKVPReverse = new Pair<String, String>(inwardIssues.get(i).getKey(),
 							decisionKnowledgeElement.getKey());
 					boolean boolvar = false;
-					for (int counter = 0; counter < TreeViewerKVPairList.kvpList.size(); ++counter) {
-						Pair<String, String> globalInst = TreeViewerKVPairList.kvpList.get(counter);
+					for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
+						Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
 						if (newKVP.equals(globalInst)) {
 							boolvar = true;
 						}
 					}
 					if (!boolvar) {
-						TreeViewerKVPairList.kvpList.add(newKVP);
-						TreeViewerKVPairList.kvpList.add(newKVPReverse);
+						KeyValuePairList.keyValuePairList.add(newKVP);
+						KeyValuePairList.keyValuePairList.add(newKVPReverse);
 						children.add(new DecisionKnowledgeElement(inwardIssues.get(i)));
 					}
 				}
@@ -393,15 +392,15 @@ public class IssueStrategy implements IPersistenceStrategy {
 				Pair<String, String> newKVPReverse = new Pair<String, String>(outwardIssues.get(i).getKey(),
 						decisionKnowledgeElement.getKey());
 				boolean boolvar = false;
-				for (int counter = 0; counter < TreeViewerKVPairList.kvpList.size(); ++counter) {
-					Pair<String, String> globalInst = TreeViewerKVPairList.kvpList.get(counter);
+				for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
+					Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
 					if (newKVP.equals(globalInst)) {
 						boolvar = true;
 					}
 				}
 				if (!boolvar) {
-					TreeViewerKVPairList.kvpList.add(newKVP);
-					TreeViewerKVPairList.kvpList.add(newKVPReverse);
+					KeyValuePairList.keyValuePairList.add(newKVP);
+					KeyValuePairList.keyValuePairList.add(newKVPReverse);
 					children.add(new DecisionKnowledgeElement(outwardIssues.get(i)));
 				}
 			}
@@ -474,19 +473,17 @@ public class IssueStrategy implements IPersistenceStrategy {
 
 		List<Node> children = new ArrayList<Node>();
 		List<IssueLink> allOutwardIssueLink = ComponentAccessor.getIssueLinkManager().getOutwardLinks(issue.getId());
-		TreantKeyValuePairList.kvpList = new ArrayList<Pair<String, String>>();
+		KeyValuePairList.keyValuePairList = new ArrayList<Pair<String, String>>();
 		if (allOutwardIssueLink != null) {
 			if (allOutwardIssueLink.size() > 0) {
 				for (int i = 0; i < allOutwardIssueLink.size(); i++) {
 					IssueLink issueLink = allOutwardIssueLink.get(i);
 					Issue issueLinkDestination = issueLink.getDestinationObject();
 					if (issue != null & issueLinkDestination != null) {
-						Pair<String, String> kvp = new Pair<String, String>(issue.getKey(),
-								issueLinkDestination.getKey());
-						Pair<String, String> kvp2 = new Pair<String, String>(issueLinkDestination.getKey(),
-								issue.getKey());
-						TreantKeyValuePairList.kvpList.add(kvp);
-						TreantKeyValuePairList.kvpList.add(kvp2);
+						KeyValuePairList.keyValuePairList.add( new Pair<String, String>(issue.getKey(),
+								issueLinkDestination.getKey()));
+						KeyValuePairList.keyValuePairList.add(new Pair<String, String>(issueLinkDestination.getKey(),
+								issue.getKey()));
 						children.add(createNode(issueLinkDestination, depth, 0));
 					}
 				}
@@ -503,8 +500,8 @@ public class IssueStrategy implements IPersistenceStrategy {
 								issueLinkDestination.getKey());
 						Pair<String, String> kvp2 = new Pair<String, String>(issueLinkDestination.getKey(),
 								issue.getKey());
-						TreantKeyValuePairList.kvpList.add(kvp);
-						TreantKeyValuePairList.kvpList.add(kvp2);
+						KeyValuePairList.keyValuePairList.add(kvp);
+						KeyValuePairList.keyValuePairList.add(kvp2);
 						children.add(createNode(issueLinkDestination, depth, 0));
 					}
 				}
@@ -557,15 +554,15 @@ public class IssueStrategy implements IPersistenceStrategy {
 						Pair<String, String> newKVPReverse = new Pair<String, String>(issueLinkDestination.getKey(),
 								issue.getKey());
 						boolean boolvar = false;
-						for (int counter = 0; counter < TreantKeyValuePairList.kvpList.size(); ++counter) {
-							Pair<String, String> globalInst = TreantKeyValuePairList.kvpList.get(counter);
+						for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
+							Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
 							if (newKVP.equals(globalInst) || newKVPReverse.equals(globalInst)) {
 								boolvar = true;
 							}
 						}
 						if (!boolvar) {
-							TreantKeyValuePairList.kvpList.add(newKVP);
-							TreantKeyValuePairList.kvpList.add(newKVPReverse);
+							KeyValuePairList.keyValuePairList.add(newKVP);
+							KeyValuePairList.keyValuePairList.add(newKVPReverse);
 							toBeAddedToChildren.add(issueLinkDestination);
 						}
 					}
@@ -587,15 +584,15 @@ public class IssueStrategy implements IPersistenceStrategy {
 						Pair<String, String> newKVPReverse = new Pair<String, String>(issueLinkDestination.getKey(),
 								issue.getKey());
 						boolean boolvar = false;
-						for (int counter = 0; counter < TreantKeyValuePairList.kvpList.size(); ++counter) {
-							Pair<String, String> globalInst = TreantKeyValuePairList.kvpList.get(counter);
+						for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
+							Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
 							if (newKVP.equals(globalInst) || newKVPReverse.equals(globalInst)) {
 								boolvar = true;
 							}
 						}
 						if (!boolvar) {
-							TreantKeyValuePairList.kvpList.add(newKVP);
-							TreantKeyValuePairList.kvpList.add(newKVPReverse);
+							KeyValuePairList.keyValuePairList.add(newKVP);
+							KeyValuePairList.keyValuePairList.add(newKVPReverse);
 							toBeAddedToChildren.add(issueLinkDestination);
 						}
 					}
