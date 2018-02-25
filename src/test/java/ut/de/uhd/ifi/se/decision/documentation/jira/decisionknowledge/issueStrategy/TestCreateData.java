@@ -8,7 +8,6 @@ import com.atlassian.jira.mock.issue.MockIssue;
 
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.TreeViewerKVPairList;
 
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -52,7 +51,7 @@ public class TestCreateData extends TestIssueStrategySetUp {
 //	
 //	@Test
 //	public void testIssueFilledLinks() {
-//		new TreeViewerKVPairList().init();
+//		new TreeViewerKeyValuePairList().init();
 //		IssueType issueType = new MockIssueType(12, "Solution");
 //		Issue issue = new MockIssue(20, "TEST-12");
 //		((MockIssue) issue).setIssueType(issueType);
