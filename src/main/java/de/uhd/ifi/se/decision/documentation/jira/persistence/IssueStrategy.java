@@ -45,14 +45,15 @@ import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.TreeViewerKVPai
 
 /**
  * @author Ewald Rode
- * @description Implements the IPersistenceStrategy interface. Uses JIRA
- *              issues to store decision knowledge
+ * @description Implements the IPersistenceStrategy interface. Uses JIRA issues
+ *              to store decision knowledge
  */
 public class IssueStrategy implements IPersistenceStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IssueStrategy.class);
 
 	@Override
-	// TODO Separate view and model (this method should not return Data object for Treant)
+	// TODO Separate view and model (this method should not return Data object for
+	// Treant)
 	public Data createDecisionComponent(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
 
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
@@ -205,7 +206,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> searchUnlinkedDecisionComponents(long id, String projectKey) {
+	public List<DecisionKnowledgeElement> getUnlinkedDecisionComponents(long id, String projectKey) {
 		List<DecisionKnowledgeElement> decisions = new ArrayList<DecisionKnowledgeElement>();
 		ProjectManager projectManager = ComponentAccessor.getProjectManager();
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
@@ -287,7 +288,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public List<Issue> getDecisionsInProject(Project project) {
+	public List<DecisionKnowledgeElement> getDecisionsInProject(Project project) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Collection<Long> issueIds;
 		if (project == null) {
@@ -298,14 +299,16 @@ public class IssueStrategy implements IPersistenceStrategy {
 		} catch (GenericEntityException e) {
 			issueIds = new ArrayList<Long>();
 		}
-		List<Issue> issueList = new ArrayList<Issue>();
+		// List<Issue> issueList = new ArrayList<Issue>();
+		List<DecisionKnowledgeElement> decisions = new ArrayList<DecisionKnowledgeElement>();
 		for (Long issueId : issueIds) {
 			Issue issue = issueManager.getIssueObject(issueId);
 			if (issue != null && issue.getIssueType().getName().equals("Decision")) {
-				issueList.add(issue);
+				// issueList.add(issue);
+				decisions.add(new DecisionKnowledgeElement(issue));
 			}
 		}
-		return issueList;
+		return decisions;
 	}
 
 	/*
@@ -318,17 +321,17 @@ public class IssueStrategy implements IPersistenceStrategy {
 		core.setCheckCallback(true);
 		core.setThemes(ImmutableMap.of("icons", false));
 		HashSet<Data> dataSet = new HashSet<Data>();
-		List<Issue> issueList = this.getDecisionsInProject(project);
-		if (issueList == null) {
+		// List<Issue> issueList = this.getDecisionsInProject(project);
+		List<DecisionKnowledgeElement> decisions = this.getDecisionsInProject(project);
+		if (decisions == null) {
 			return null;
 		}
-		for (int index = 0; index < issueList.size(); ++index) {
-			if (issueList.get(index).getIssueType().getName().equals("Decision")) {
-				TreeViewerKVPairList.kvpList = new ArrayList<Pair<String, String>>();
-				Pair<String, String> kvp = new Pair<String, String>("root", issueList.get(index).getKey());
-				TreeViewerKVPairList.kvpList.add(kvp);
-				dataSet.add(createData(issueList.get(index)));
-			}
+		for (int index = 0; index < decisions.size(); ++index) {
+			TreeViewerKVPairList.kvpList = new ArrayList<Pair<String, String>>();
+			Pair<String, String> kvp = new Pair<String, String>("root", decisions.get(index).getKey());
+			TreeViewerKVPairList.kvpList.add(kvp);
+			dataSet.add(createData(decisions.get(index)));
+
 		}
 		core.setData(dataSet);
 		return core;
@@ -398,6 +401,92 @@ public class IssueStrategy implements IPersistenceStrategy {
 						outwardIssuesList.get(i).getKey());
 				Pair<String, String> newKVPReverse = new Pair<String, String>(outwardIssuesList.get(i).getKey(),
 						issue.getKey());
+				boolean boolvar = false;
+				for (int counter = 0; counter < TreeViewerKVPairList.kvpList.size(); ++counter) {
+					Pair<String, String> globalInst = TreeViewerKVPairList.kvpList.get(counter);
+					if (newKVP.equals(globalInst)) {
+						boolvar = true;
+					}
+				}
+				if (!boolvar) {
+					TreeViewerKVPairList.kvpList.add(newKVP);
+					TreeViewerKVPairList.kvpList.add(newKVPReverse);
+					toBeAddedToChildren.add(outwardIssuesList.get(i));
+				}
+			}
+		}
+		for (Issue issueToBeAdded : toBeAddedToChildren) {
+			children.add(createData(issueToBeAdded));
+		}
+		data.setChildren(children);
+
+		return data;
+	}
+
+	public Data createData(DecisionKnowledgeElement decision) {
+		if (decision == null) {
+			LOGGER.error("NullPointerException: createData Issue was NULL");
+			return new Data();
+		}
+		Data data = new Data();
+
+		data.setText(decision.getKey() + " / " + decision.getName());
+		data.setId(String.valueOf(decision.getId()));
+
+		NodeInfo nodeInfo = new NodeInfo();
+		nodeInfo.setId(Long.toString(decision.getId()));
+		nodeInfo.setKey(decision.getKey());
+		nodeInfo.setIssueType(decision.getType());
+		nodeInfo.setDescription(decision.getDescription());
+		nodeInfo.setSummary(decision.getName());
+		data.setNodeInfo(nodeInfo);
+
+		List<Data> children = new ArrayList<Data>();
+		List<IssueLink> allOutwardIssueLink = ComponentAccessor.getIssueLinkManager().getOutwardLinks(decision.getId());
+		List<Issue> outwardIssuesList = new ArrayList<Issue>();
+		for (int i = 0; i < allOutwardIssueLink.size(); ++i) {
+			IssueLink issueLink = allOutwardIssueLink.get(i);
+			outwardIssuesList.add(issueLink.getDestinationObject());
+		}
+		List<IssueLink> allInwardIssueLink = ComponentAccessor.getIssueLinkManager().getInwardLinks(decision.getId());
+		List<Issue> inwardIssuesList = new ArrayList<Issue>();
+		for (int i = 0; i < allInwardIssueLink.size(); ++i) {
+			IssueLink issueLink = allInwardIssueLink.get(i);
+			inwardIssuesList.add(issueLink.getSourceObject());
+		}
+		List<Issue> toBeAddedToChildren = new ArrayList<Issue>();
+		for (int i = 0; i < inwardIssuesList.size(); ++i) {
+			if (inwardIssuesList.get(i).getIssueType().getName().equals("Argument")) {
+				if (decision != null & inwardIssuesList.get(i) != null) {
+					Pair<String, String> newKVP = new Pair<String, String>(decision.getKey(),
+							inwardIssuesList.get(i).getKey());
+					Pair<String, String> newKVPReverse = new Pair<String, String>(inwardIssuesList.get(i).getKey(),
+							decision.getKey());
+					boolean boolvar = false;
+					for (int counter = 0; counter < TreeViewerKVPairList.kvpList.size(); ++counter) {
+						Pair<String, String> globalInst = TreeViewerKVPairList.kvpList.get(counter);
+						if (newKVP.equals(globalInst)) {
+							boolvar = true;
+						}
+					}
+					if (!boolvar) {
+						TreeViewerKVPairList.kvpList.add(newKVP);
+						TreeViewerKVPairList.kvpList.add(newKVPReverse);
+						toBeAddedToChildren.add(inwardIssuesList.get(i));
+					}
+				}
+			}
+		}
+		for (int i = 0; i < outwardIssuesList.size(); ++i) {
+			/*
+			 * Erstelle Parent-Child Beziehung und pruefe ob diese bereits in der
+			 * KeyValuePair-Liste vorhanden ist. Wenn nein, fuege diesem Knoten Kinder hinzu
+			 */
+			if (decision != null & outwardIssuesList.get(i) != null) {
+				Pair<String, String> newKVP = new Pair<String, String>(decision.getKey(),
+						outwardIssuesList.get(i).getKey());
+				Pair<String, String> newKVPReverse = new Pair<String, String>(outwardIssuesList.get(i).getKey(),
+						decision.getKey());
 				boolean boolvar = false;
 				for (int counter = 0; counter < TreeViewerKVPairList.kvpList.size(); ++counter) {
 					Pair<String, String> globalInst = TreeViewerKVPairList.kvpList.get(counter);

@@ -34,7 +34,7 @@ public class DecisionsRest {
 		if (projectKey != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
 			IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
-			List<DecisionKnowledgeElement> decisions = strategy.searchUnlinkedDecisionComponents(issueId, projectKey);
+			List<DecisionKnowledgeElement> decisions = strategy.getUnlinkedDecisionComponents(issueId, projectKey);
 			return Response.ok(decisions).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey or issueId = null"))
