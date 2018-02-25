@@ -33,7 +33,6 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.SimpleDecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Chart;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
@@ -206,8 +205,8 @@ public class IssueStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public List<SimpleDecisionKnowledgeElement> searchUnlinkedDecisionComponents(long id, String projectKey) {
-		List<SimpleDecisionKnowledgeElement> decisions = new ArrayList<SimpleDecisionKnowledgeElement>();
+	public List<DecisionKnowledgeElement> searchUnlinkedDecisionComponents(long id, String projectKey) {
+		List<DecisionKnowledgeElement> decisions = new ArrayList<DecisionKnowledgeElement>();
 		ProjectManager projectManager = ComponentAccessor.getProjectManager();
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Project project = projectManager.getProjectObjByKey(projectKey);
@@ -267,7 +266,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 							}
 						}
 						if (!linked) {
-							decisions.add(new SimpleDecisionKnowledgeElement(issueList.get(index)));
+							decisions.add(new DecisionKnowledgeElement(issueList.get(index)));
 						}
 					}
 				}

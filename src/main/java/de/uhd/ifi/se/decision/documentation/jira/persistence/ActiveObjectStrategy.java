@@ -30,7 +30,6 @@ import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.IDecisionKnow
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ILinkEntity;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.SimpleDecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
 import net.java.ao.Query;
@@ -223,16 +222,16 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public List<SimpleDecisionKnowledgeElement> searchUnlinkedDecisionComponents(final long id, String projectKey) {
-		List<SimpleDecisionKnowledgeElement> decList = null;
+	public List<DecisionKnowledgeElement> searchUnlinkedDecisionComponents(final long id, String projectKey) {
+		List<DecisionKnowledgeElement> decList = null;
 		ProjectManager projectManager = ComponentAccessor.getProjectManager();
 		Project project = projectManager.getProjectObjByKey(projectKey);
 		if (project != null) {
 			final ActiveObjects ao = ComponentGetter.getAo();
-			decList = ao.executeInTransaction(new TransactionCallback<List<SimpleDecisionKnowledgeElement>>() {
+			decList = ao.executeInTransaction(new TransactionCallback<List<DecisionKnowledgeElement>>() {
 				@Override
-				public List<SimpleDecisionKnowledgeElement> doInTransaction() {
-					final List<SimpleDecisionKnowledgeElement> decList = new ArrayList<SimpleDecisionKnowledgeElement>();
+				public List<DecisionKnowledgeElement> doInTransaction() {
+					final List<DecisionKnowledgeElement> decList = new ArrayList<DecisionKnowledgeElement>();
 					IDecisionKnowledgeElementEntity[] decisionsArray = ao.find(IDecisionKnowledgeElementEntity.class,
 							Query.select().where("ID = ?", id));
 					// id is primaryKey for DecisionComponents therefore there can be 0-1
@@ -265,7 +264,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 								Query.select().where("ID != ? AND PROJECT_KEY = ?", id, decComponent.getProjectKey()));
 						for (IDecisionKnowledgeElementEntity decisionComponent : decisionArray) {
 							if (!linkedDecList.contains(decisionComponent)) {
-								SimpleDecisionKnowledgeElement simpleDec = new SimpleDecisionKnowledgeElement();
+								DecisionKnowledgeElement simpleDec = new DecisionKnowledgeElement();
 								simpleDec.setId(decisionComponent.getID());
 								simpleDec.setText(decisionComponent.getKey() + " / " + decisionComponent.getName()
 										+ " / " + decisionComponent.getType());

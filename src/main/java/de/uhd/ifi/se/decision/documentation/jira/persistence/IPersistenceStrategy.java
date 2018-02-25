@@ -28,7 +28,7 @@ public interface IPersistenceStrategy {
 
 	public Long createLink(Link link, ApplicationUser user);
 
-	public List<SimpleDecisionKnowledgeElement> searchUnlinkedDecisionComponents(long id, String projectKey);
+	public List<DecisionKnowledgeElement> searchUnlinkedDecisionComponents(long id, String projectKey);
 	
 	public List<Issue> getDecisionsInProject(Project project);
 

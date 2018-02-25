@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.SimpleDecisio
  */
 public class TestLinkRepresentation {
 
-	private Long id;
+	private long id;
 	private String text;
 	private SimpleDecisionKnowledgeElement repres;
 
