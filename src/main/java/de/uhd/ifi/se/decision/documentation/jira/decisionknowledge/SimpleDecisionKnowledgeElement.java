@@ -10,17 +10,17 @@ import com.atlassian.jira.issue.Issue;
  * @description Model class for decision components
  */
 @XmlType(propOrder = { "id", "text" })
-public class SimpleDecisionRepresentation {
+public class SimpleDecisionKnowledgeElement {
 	@XmlElement
 	private Long id;
 
 	@XmlElement
 	private String text;
 
-	public SimpleDecisionRepresentation() {
+	public SimpleDecisionKnowledgeElement() {
 	}
 
-	public SimpleDecisionRepresentation(Issue issue) {
+	public SimpleDecisionKnowledgeElement(Issue issue) {
 		this.id = issue.getId();
 		this.text = issue.getKey() + " / " + issue.getSummary() + " / " + issue.getIssueType().getName();
 	}
