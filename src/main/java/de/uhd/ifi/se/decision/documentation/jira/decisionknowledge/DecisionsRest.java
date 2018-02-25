@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.rest;
+package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
 
 import java.util.List;
 
@@ -15,11 +15,6 @@ import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.IDecisionStorageStrategy;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.LinkRepresentation;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.SimpleDecisionRepresentation;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.StrategyProvider;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 
 /**
