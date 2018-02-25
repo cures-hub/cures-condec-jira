@@ -25,7 +25,7 @@ import static com.google.common.base.Preconditions.*;
 @Named("ComponentUtil")
 @Scanned
 public class ComponentGetter {
-	private static final String PLUGIN_STORAGE_KEY = "JIRADecDoc.ProjectKey.";
+	private static final String PLUGIN_STORAGE_KEY = "de.uhd.ifi.se.decision.documentation.jira";
 
 	@ComponentImport
 	private static PluginSettingsFactory pluginSettingsFactory;
