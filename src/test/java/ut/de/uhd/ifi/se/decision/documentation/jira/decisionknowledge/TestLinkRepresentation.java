@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.SimpleDecisionRepresentation;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.SimpleDecisionKnowledgeElement;
 
 /**
  * 
@@ -16,13 +16,13 @@ public class TestLinkRepresentation {
 
 	private Long id;
 	private String text;
-	private SimpleDecisionRepresentation repres;
+	private SimpleDecisionKnowledgeElement repres;
 
 	@Before
 	public void setUp() {
 		this.id=(long) 100;
 		this.text="Test";
-		this.repres=new SimpleDecisionRepresentation();
+		this.repres=new SimpleDecisionKnowledgeElement();
 		this.repres.setId(id);
 		this.repres.setText(text);
 	}
