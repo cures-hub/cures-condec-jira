@@ -14,8 +14,4 @@ public interface IDecisionKnowledgeElementEntity extends IDecisionKnowledgeEleme
 	@AutoIncrement
 	@PrimaryKey("ID")
 	public long getID();
-
-	public String getKey();
-
-	public void setKey(String key);
 }
