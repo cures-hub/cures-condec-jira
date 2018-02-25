@@ -222,7 +222,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> searchUnlinkedDecisionComponents(final long id, String projectKey) {
+	public List<DecisionKnowledgeElement> getUnlinkedDecisionComponents(final long id, String projectKey) {
 		List<DecisionKnowledgeElement> decList = null;
 		ProjectManager projectManager = ComponentAccessor.getProjectManager();
 		Project project = projectManager.getProjectObjByKey(projectKey);
@@ -583,7 +583,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public List<Issue> getDecisionsInProject(Project project) {
+	public List<DecisionKnowledgeElement> getDecisionsInProject(Project project) {
 		// TODO Auto-generated method stub
 		return null;
 	}
