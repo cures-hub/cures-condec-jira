@@ -1,4 +1,4 @@
-package ut.de.uhd.ifi.se.decision.documentation.jira.db.strategy.impl.AoStrategy;
+package ut.de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ActiveObjectStrategy;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.activeobjects.test.TestActiveObjects;
@@ -6,7 +6,7 @@ import com.atlassian.activeobjects.test.TestActiveObjects;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ActiveObjectStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import net.java.ao.EntityManager;
-import ut.de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
+import ut.TestSetUp;
 import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
 

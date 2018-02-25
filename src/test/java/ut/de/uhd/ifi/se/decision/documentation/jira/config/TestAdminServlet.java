@@ -1,4 +1,4 @@
-package ut.de.uhd.ifi.se.decision.documentation.jira.servlet;
+package ut.de.uhd.ifi.se.decision.documentation.jira.config;
 
 import java.io.IOException;
 
@@ -21,7 +21,7 @@ import de.uhd.ifi.se.decision.documentation.jira.config.AdminServlet;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-import ut.de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
+import ut.TestSetUp;
 import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockAdminUserManager;
 import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockLoginUriProvider;

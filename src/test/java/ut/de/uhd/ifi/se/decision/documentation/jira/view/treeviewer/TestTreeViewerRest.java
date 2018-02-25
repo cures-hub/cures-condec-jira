@@ -1,4 +1,4 @@
-package ut.de.uhd.ifi.se.decision.documentation.jira.rest.treeviewer;
+package ut.de.uhd.ifi.se.decision.documentation.jira.view.treeviewer;
 
 import static org.junit.Assert.assertEquals;
 
@@ -12,7 +12,7 @@ import org.ofbiz.core.entity.GenericEntityException;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.TreeViewerRest;
-import ut.de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
+import ut.TestSetUp;
 
 /**
  * @author Tim Kuchenbuch

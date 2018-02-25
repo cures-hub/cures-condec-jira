@@ -1,4 +1,4 @@
-package ut.de.uhd.ifi.se.decision.documentation.jira.rest.decisions.model;
+package ut.de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
 
 import static org.junit.Assert.assertEquals;
 

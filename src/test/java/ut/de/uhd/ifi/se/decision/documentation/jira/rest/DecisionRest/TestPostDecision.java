@@ -1,4 +1,4 @@
-package ut.de.uhd.ifi.se.decision.documentation.jira.rest.decisions;
+package ut.de.uhd.ifi.se.decision.documentation.jira.rest.DecisionRest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -21,7 +21,7 @@ import de.uhd.ifi.se.decision.documentation.jira.rest.DecisionsRest;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-import ut.de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
+import ut.TestSetUp;
 import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
 

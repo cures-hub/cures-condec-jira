@@ -1,4 +1,4 @@
-package ut.de.uhd.ifi.se.decision.documentation.jira.db.strategy.impl.issueStrategy;
+package ut.de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.issueStrategy;
 
 import static org.junit.Assert.assertNotNull;
 

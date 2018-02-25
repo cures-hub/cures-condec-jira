@@ -1,4 +1,4 @@
-package ut.de.uhd.ifi.se.decision.documentation.jira.rest.treants.model;
+package ut.de.uhd.ifi.se.decision.documentation.jira.view.treants;
 
 import static org.junit.Assert.assertNotNull;
 

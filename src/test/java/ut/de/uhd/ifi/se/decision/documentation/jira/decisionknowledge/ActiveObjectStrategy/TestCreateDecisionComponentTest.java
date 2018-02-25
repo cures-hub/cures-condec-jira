@@ -1,4 +1,4 @@
-package ut.de.uhd.ifi.se.decision.documentation.jira.db.strategy.impl.AoStrategy;
+package ut.de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ActiveObjectStrategy;
 
 
 import com.atlassian.jira.user.ApplicationUser;

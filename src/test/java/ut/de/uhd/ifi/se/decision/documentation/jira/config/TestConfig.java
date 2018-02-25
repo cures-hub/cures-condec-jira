@@ -1,4 +1,4 @@
-package ut.de.uhd.ifi.se.decision.documentation.jira.servlet.model;
+package ut.de.uhd.ifi.se.decision.documentation.jira.config;
 
 import static org.junit.Assert.assertEquals;
 
@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.documentation.jira.config.Config;
  * @description Test Class for Simple Geter and Setter Tests
  *
  */
-public class TestConfigRepresentation {
+public class TestConfig {
 	
 	private Config repres;
 	private String projectKey;

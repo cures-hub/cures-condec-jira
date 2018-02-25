@@ -1,4 +1,4 @@
-package ut.de.uhd.ifi.se.decision.documentation.jira.util;
+package ut.de.uhd.ifi.se.decision.documentation.jira.config;
 
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
@@ -62,13 +62,13 @@ public class TestIsActivated {
 	}
 	
 	@Test
-	public void testSouldDisplayEmpty() {
+	public void testShouldDisplayEmpty() {
 		Map<String , Object> context = new HashMap<>();	
 		assertFalse(isActivated.shouldDisplay(context));
 	}
 	
 	@Test
-	public void testSouldDisplayFilled() {
+	public void testShsouldDisplayFilled() {
 		Map<String , Object> context = new HashMap<>();	
 		context.put("projectKey", "TEST");
 		assertFalse(isActivated.shouldDisplay(context));

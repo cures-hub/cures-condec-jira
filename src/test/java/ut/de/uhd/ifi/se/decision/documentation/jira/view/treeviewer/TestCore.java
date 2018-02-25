@@ -1,4 +1,4 @@
-package ut.de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.model;
+package ut.de.uhd.ifi.se.decision.documentation.jira.view.treeviewer;
 
 import static org.junit.Assert.assertEquals;
 

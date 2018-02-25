@@ -1,9 +1,9 @@
-package ut.de.uhd.ifi.se.decision.documentation.jira.db.strategy.impl.issueStrategy;
+package ut.de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.issueStrategy;
 
 import org.junit.Before;
 
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.IssueStrategy;
-import ut.de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
+import ut.TestSetUp;
 
 /**
  * @author Tim Kuchenbuch
