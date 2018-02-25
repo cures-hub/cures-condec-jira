@@ -390,16 +390,20 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 		return data;
 	}
 
-	/* TreantsRest */
 	@Override
-	public Treant createTreant(final String key, int depth) {
-		Treant treant = new Treant();
-		treant.setChart(new Chart());
-		treant.setNodeStructure(createNodeStructure(key, depth));
-		return treant;
+	public List<DecisionKnowledgeElement> getDecisionsInProject(Project project) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	private Node createNodeStructure(final String issueKey, final int depth) {
+	@Override
+	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Node createNodeStructure(String key, int depth) {
 		Node node = new Node();
 		final ActiveObjects ao = ComponentGetter.getAo();
 		IDecisionKnowledgeElementEntity dec = ao
@@ -407,7 +411,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 					@Override
 					public IDecisionKnowledgeElementEntity doInTransaction() {
 						IDecisionKnowledgeElementEntity[] decisionsArray = ao
-								.find(IDecisionKnowledgeElementEntity.class, Query.select().where("KEY = ?", issueKey));
+								.find(IDecisionKnowledgeElementEntity.class, Query.select().where("KEY = ?", key));
 						// id is primaryKey for DecisionComponents therefore there can be 0-1
 						// decisioncomponent returned by this query
 						IDecisionKnowledgeElementEntity decComponent = null;
@@ -580,15 +584,4 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 		return node;
 	}
 
-	@Override
-	public List<DecisionKnowledgeElement> getDecisionsInProject(Project project) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
