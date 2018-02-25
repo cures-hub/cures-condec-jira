@@ -26,7 +26,7 @@ import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
  * @author Ewald Rode
  * @description Rest resource: Enables creation, editing and deletion of decision components and their links
  */
-@Path("/decisions")
+@Path("/DecisionRest")
 public class DecisionsRest {
 
 	@GET

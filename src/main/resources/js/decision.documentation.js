@@ -56,7 +56,7 @@ function createDecisionComponent(summary, issueType, callback) {
             "name": summary,
             "type": issueType
         };
-        postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?actionType=create", jsondata, function (err, data) {
+        postJSON(AJS.contextPath() + "/rest/DecisionRest/latest/DecisionRest.json?actionType=create", jsondata, function (err, data) {
             if (err !== null) {
                 AJS.flag({
                     type: 'error',
@@ -82,7 +82,7 @@ function editDecisionComponent(issueId, summary, description, callback) {
         "projectKey": projectKey,
         "description": description
     };
-    postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?actionType=edit", jsondata, function (err, data) {
+    postJSON(AJS.contextPath() + "/rest/DecisionRest/latest/DecisionRest.json?actionType=edit", jsondata, function (err, data) {
         if (err !== null) {
             AJS.flag({
                 type: 'error',
@@ -103,7 +103,7 @@ function deleteDecisionComponent(issueId, callback) {
         "id": issueId,
         "projectKey": projectKey
     };
-    postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?actionType=delete", jsondata, function (err, data) {
+    postJSON(AJS.contextPath() + "/rest/DecisionRest/latest/DecisionRest.json?actionType=delete", jsondata, function (err, data) {
         if (err !== null) {
             AJS.flag({
                 type: 'error',
@@ -125,7 +125,7 @@ function createLink(parentId, childId, linkType, callback) {
         "ingoingId": childId,
         "outgoingId": parentId
     };
-    putJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?projectKey=" + projectKey + "&actionType=create", jsondata, function (err, data) {
+    putJSON(AJS.contextPath() + "/rest/DecisionRest/latest/DecisionRest.json?projectKey=" + projectKey + "&actionType=create", jsondata, function (err, data) {
         if (err !== null) {
             AJS.flag({
                 type: 'error',
@@ -147,7 +147,7 @@ function deleteLink(parentId, childId, linkType, callback) {
         "ingoingId": childId,
         "outgoingId": parentId
     };
-    putJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?projectKey=" + projectKey + "&actionType=delete", jsondata, function (err, data) {
+    putJSON(AJS.contextPath() + "/rest/DecisionRest/latest/DecisionRest.json?projectKey=" + projectKey + "&actionType=delete", jsondata, function (err, data) {
         if (err !== null) {
             AJS.flag({
                 type: 'error',
@@ -634,7 +634,7 @@ function fillAccordion(data, projectKey, node) {
         });
     });
 
-    getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?projectKey=" + projectKey + '&issueId=' + node.id, function (err, data) {
+    getJSON(AJS.contextPath() + "/rest/DecisionRest/latest/DecisionRest.json?projectKey=" + projectKey + '&issueId=' + node.id, function (err, data) {
         if (err !== null) {
             displayGetJsonError(err);
         } else {
@@ -1063,7 +1063,7 @@ function initializeSite() {
             $(this).next("dd").slideToggle("fast");
         });
     });
-    /*ClickHandler for the creation of decisions*/
+    /*ClickHandler for the creation of DecisionRest*/
     var createDecisionButton = document.getElementById("CreateDecision");
     var DecisionInputField = document.getElementById("DecisionInputField");
     createDecisionButton.addEventListener('click', function () {

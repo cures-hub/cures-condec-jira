@@ -1,4 +1,4 @@
-package ut.de.uhd.ifi.se.decision.documentation.jira;
+package ut;
 
 import java.util.ArrayList;
 

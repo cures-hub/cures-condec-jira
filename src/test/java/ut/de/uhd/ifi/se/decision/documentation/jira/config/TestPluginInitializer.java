@@ -1,4 +1,4 @@
-package ut.de.uhd.ifi.se.decision.documentation.jira.util;
+package ut.de.uhd.ifi.se.decision.documentation.jira.config;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +15,7 @@ import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.project.ProjectManager;
 
 import de.uhd.ifi.se.decision.documentation.jira.config.PluginInitializer;
-import ut.de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
+import ut.TestSetUp;
 import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkManager;
 import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkTypeManager;
 import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManager;
@@ -25,7 +25,7 @@ import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueTypeManager;
 /**
  * @author Tim Kuchenbuch
  */
-public class TestPluginListener extends TestSetUp {
+public class TestPluginInitializer extends TestSetUp {
 	
 	private PluginInitializer listener;
 
@@ -35,13 +35,13 @@ public class TestPluginListener extends TestSetUp {
 	}
 	
 	@Test
-	public void testExecutionAferProp() throws Exception {
+	public void testExecutionAfterProp() throws Exception {
 		initialisation();
 		listener.afterPropertiesSet();
 	}
 	
 	@Test
-	public void testExecutionAferPropNoInit() throws Exception {
+	public void testExecutionAfterPropNoInit() throws Exception {
 		ProjectManager projectManager = new MockProjectManager();		
 		IssueManager issueManager= new MockIssueManager();	
 		ConstantsManager constManager = new  MockConstantsManager();
