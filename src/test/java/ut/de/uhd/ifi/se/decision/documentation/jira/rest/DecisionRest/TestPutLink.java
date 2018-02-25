@@ -14,8 +14,8 @@ import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionsRest;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.LinkRepresentation;
-import de.uhd.ifi.se.decision.documentation.jira.rest.DecisionsRest;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
