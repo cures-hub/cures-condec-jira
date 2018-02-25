@@ -23,13 +23,15 @@ public interface IPersistenceStrategy {
 
 	public boolean deleteDecisionComponent(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
 
-	public Long createLink(Link link, ApplicationUser user);	
+	public Long createLink(Link link, ApplicationUser user);
 
 	public List<DecisionKnowledgeElement> getDecisionsInProject(Project project);
 
 	public List<DecisionKnowledgeElement> getUnlinkedDecisionComponents(long id, String projectKey);
 
+	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement);
+
 	public Core createCore(Project project);
 
-	public Treant createTreant(String issueKey, int depth);
+	public Treant createTreant(String key, int depth);
 }
