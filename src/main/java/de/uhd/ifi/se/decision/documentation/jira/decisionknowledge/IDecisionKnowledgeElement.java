@@ -24,4 +24,8 @@ public interface IDecisionKnowledgeElement {
 	public String getProjectKey();
 
 	public void setProjectKey(String projectKey);
+	
+	public String getKey();
+
+	public void setKey(String key);
 }

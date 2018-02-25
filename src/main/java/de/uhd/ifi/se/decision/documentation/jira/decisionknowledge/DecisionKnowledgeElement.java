@@ -12,12 +12,13 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	private String description;
 	private String type;
 	private String projectKey;
+	private String key;
 
 	public DecisionKnowledgeElement() {
 
 	}
 
-	public DecisionKnowledgeElement(long id, String name, String description, String type, String projectKey) {
+	public DecisionKnowledgeElement(long id, String name, String description, String type, String projectKey, String key) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
@@ -26,11 +27,12 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	}
 
 	public DecisionKnowledgeElement(Issue issue) {
-		id = issue.getId();
-		name = issue.getSummary();
-		description = issue.getDescription();
-		type = issue.getIssueType().getName();
-		projectKey = issue.getProjectObject().getKey();
+		this.id = issue.getId();
+		this.name = issue.getSummary();
+		this.description = issue.getDescription();
+		this.type = issue.getIssueType().getName();
+		this.projectKey = issue.getProjectObject().getKey();
+		this.key = issue.getKey();
 	}
 
 	public long getId() {
@@ -71,5 +73,13 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 
 	public void setProjectKey(String projectKey) {
 		this.projectKey = projectKey;
+	}
+
+	public String getKey() {
+		return this.key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;		
 	}
 }
