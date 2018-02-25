@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.LinkRepresentation;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 
 /**
  * 
@@ -17,14 +17,14 @@ public class TestSimpleDecisionRepresentation {
 	private String linkType;
 	private long ingoingId;
 	private long outgoingId;
-	private LinkRepresentation repres;
+	private Link repres;
 	
 	@Before
 	public void setUp() {
 		this.linkType="Test";
 		this.ingoingId=(long)100;
 		this.outgoingId=(long)100;
-		this.repres=new LinkRepresentation();
+		this.repres=new Link();
 		this.repres.setLinkType(linkType);
 		this.repres.setIngoingId(ingoingId);
 		this.repres.setOutgoingId(outgoingId);

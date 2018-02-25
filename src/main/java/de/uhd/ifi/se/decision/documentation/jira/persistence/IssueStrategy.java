@@ -32,7 +32,7 @@ import com.atlassian.jira.util.ErrorCollection;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.LinkRepresentation;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.SimpleDecisionRepresentation;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Chart;
@@ -159,7 +159,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public Long createLink(LinkRepresentation link, ApplicationUser user) {
+	public Long createLink(Link link, ApplicationUser user) {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		Collection<IssueLinkType> issueLinkTypeCollection = issueLinkTypeManager

@@ -88,7 +88,7 @@ public class DecisionsRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response putLink(@QueryParam("actionType") String actionType,
 			@QueryParam("projectKey") final String projectKey, @Context HttpServletRequest req,
-			final LinkRepresentation link) {
+			final Link link) {
 		if (actionType != null && projectKey != null && req != null && link != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
 			IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);

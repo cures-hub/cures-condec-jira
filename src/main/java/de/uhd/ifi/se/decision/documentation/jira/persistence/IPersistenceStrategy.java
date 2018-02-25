@@ -7,7 +7,7 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.LinkRepresentation;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.SimpleDecisionRepresentation;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Treant;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
@@ -26,7 +26,7 @@ public interface IPersistenceStrategy {
 
 	public boolean deleteDecisionComponent(DecisionKnowledgeElement dec, ApplicationUser user);
 
-	public Long createLink(LinkRepresentation link, ApplicationUser user);
+	public Long createLink(Link link, ApplicationUser user);
 
 	public List<SimpleDecisionRepresentation> searchUnlinkedDecisionComponents(long id, String projectKey);
 	

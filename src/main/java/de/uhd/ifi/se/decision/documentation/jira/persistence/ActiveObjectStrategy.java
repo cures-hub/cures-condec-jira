@@ -28,8 +28,8 @@ import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionComponentEntity;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.LinkEntity;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.LinkRepresentation;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ILinkEntity;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.SimpleDecisionRepresentation;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
@@ -144,7 +144,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 						} catch (SQLException e) {
 							return false;
 						} finally {
-	                    	for (LinkEntity linkEntity : ao.find(LinkEntity.class))
+	                    	for (ILinkEntity linkEntity : ao.find(ILinkEntity.class))
 	                        {
 	                        	if(linkEntity.getIngoingId() == dec.getId() || linkEntity.getOutgoingId() == dec.getId()) {
 	                        		try {
@@ -164,7 +164,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public Long createLink(final LinkRepresentation link, ApplicationUser user) {
+	public Long createLink(final Link link, ApplicationUser user) {
 		final ActiveObjects ao = ComponentGetter.getAo();
 		return ao.executeInTransaction(new TransactionCallback<Long>()
         {
@@ -173,7 +173,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
             {
             	boolean linkAlreadyExists = false;
             	long linkId = 0;
-                for (LinkEntity linkEntity : ao.find(LinkEntity.class))
+                for (ILinkEntity linkEntity : ao.find(ILinkEntity.class))
                 {
                 	if(linkEntity.getIngoingId() == link.getIngoingId() && linkEntity.getOutgoingId() == link.getOutgoingId()) {
                 		linkAlreadyExists = true;
@@ -201,10 +201,10 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
                 	if(decCompIngoing != null && decCompOutgoing != null) {
                 		if(decCompIngoing.getProjectKey().equals(decCompOutgoing.getProjectKey())) {
                 			// entities exist and are in the same project
-                        	final LinkEntity linkEntity = ao.create(LinkEntity.class);
+                        	final ILinkEntity linkEntity = ao.create(ILinkEntity.class);
                         	linkEntity.setIngoingId(link.getIngoingId());
                         	linkEntity.setOutgoingId(link.getOutgoingId());
-                        	linkEntity.setType(link.getLinkType());
+                        	linkEntity.setLinkType(link.getLinkType());
                         	linkEntity.save();
                         	linkId = linkEntity.getID();
                 		} else {
@@ -243,13 +243,13 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 	                }
 					if(decComponent != null) {
 						final List<DecisionComponentEntity> linkedDecList = new ArrayList<DecisionComponentEntity>();
-						for(LinkEntity link : ao.find(LinkEntity.class, Query.select().where("INGOING_ID != ? AND OUTGOING_ID = ?", id, id))) {
+						for(ILinkEntity link : ao.find(ILinkEntity.class, Query.select().where("INGOING_ID != ? AND OUTGOING_ID = ?", id, id))) {
 							for(DecisionComponentEntity decisionComponent : ao.find(DecisionComponentEntity.class, 
 									Query.select().where("ID = ? AND PROJECT_KEY = ?", link.getIngoingId(), decComponent.getProjectKey()))){
 								linkedDecList.add(decisionComponent);
 							}
 						}
-						for(LinkEntity link : ao.find(LinkEntity.class, Query.select().where("INGOING_ID = ? AND OUTGOING_ID != ?", id, id))) {
+						for(ILinkEntity link : ao.find(ILinkEntity.class, Query.select().where("INGOING_ID = ? AND OUTGOING_ID != ?", id, id))) {
 							for(DecisionComponentEntity decisionComponent : ao.find(DecisionComponentEntity.class, 
 									Query.select().where("ID = ? AND PROJECT_KEY = ?", link.getOutgoingId(), decComponent.getProjectKey()))){
 								linkedDecList.add(decisionComponent);
@@ -326,7 +326,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
             public List<DecisionComponentEntity> doInTransaction()
             {
                 final List<DecisionComponentEntity> decisionList = new ArrayList<DecisionComponentEntity>();
-                for (LinkEntity link : ao.find(LinkEntity.class, Query.select().where("INGOING_ID = ?", decComponent.getID()))) {
+                for (ILinkEntity link : ao.find(ILinkEntity.class, Query.select().where("INGOING_ID = ?", decComponent.getID()))) {
             		for (DecisionComponentEntity dec : ao.find(DecisionComponentEntity.class, Query.select().where("ID = ?", link.getOutgoingId()))) {
                 		decisionList.add(dec);
                     }
@@ -357,7 +357,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
             public List<DecisionComponentEntity> doInTransaction()
             {
             	final List<DecisionComponentEntity> decisionList = new ArrayList<DecisionComponentEntity>();
-                for (LinkEntity link : ao.find(LinkEntity.class, Query.select().where("OUTGOING_ID = ?", decComponent.getID()))) {
+                for (ILinkEntity link : ao.find(ILinkEntity.class, Query.select().where("OUTGOING_ID = ?", decComponent.getID()))) {
                 	for (DecisionComponentEntity dec : ao.find(DecisionComponentEntity.class, Query.select().where("ID = ?", link.getIngoingId()))) {
                 		decisionList.add(dec);
                     }
@@ -437,7 +437,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 			List<Node> children = new ArrayList<Node>();
 			TreantKeyValuePairList.kvpList = new ArrayList<Pair<String, String>>();
 			final List<DecisionComponentEntity> inwardLinkedDecList = new ArrayList<DecisionComponentEntity>();
-			for(LinkEntity linkEntity : ao.find(LinkEntity.class, Query.select().where("INGOING_ID != ? AND OUTGOING_ID = ?", dec.getID(), dec.getID()))) {
+			for(ILinkEntity linkEntity : ao.find(ILinkEntity.class, Query.select().where("INGOING_ID != ? AND OUTGOING_ID = ?", dec.getID(), dec.getID()))) {
 				for(DecisionComponentEntity decisionComponent : ao.find(DecisionComponentEntity.class, 
 						Query.select().where("ID = ? AND PROJECT_KEY = ?", linkEntity.getIngoingId(), dec.getProjectKey()))){
 					inwardLinkedDecList.add(decisionComponent);
@@ -445,7 +445,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 			}
 			
 			final List<DecisionComponentEntity> outwardLinkedDecList = new ArrayList<DecisionComponentEntity>();
-			for(LinkEntity linkEntity : ao.find(LinkEntity.class, Query.select().where("INGOING_ID = ? AND OUTGOING_ID != ?", dec.getID(), dec.getID()))) {
+			for(ILinkEntity linkEntity : ao.find(ILinkEntity.class, Query.select().where("INGOING_ID = ? AND OUTGOING_ID != ?", dec.getID(), dec.getID()))) {
 				for(DecisionComponentEntity decisionComponent : ao.find(DecisionComponentEntity.class, 
 						Query.select().where("ID = ? AND PROJECT_KEY = ?", linkEntity.getOutgoingId(), dec.getProjectKey()))){
 					outwardLinkedDecList.add(decisionComponent);
@@ -507,14 +507,14 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 			if(currentDepth+1<depth){
 				List<Node> children = new ArrayList<Node>();
 				final List<DecisionComponentEntity> inwardLinkedDecList = new ArrayList<DecisionComponentEntity>();
-				for(LinkEntity linkEntity : ao.find(LinkEntity.class, Query.select().where("INGOING_ID != ? AND OUTGOING_ID = ?", dec.getID(), dec.getID()))) {
+				for(ILinkEntity linkEntity : ao.find(ILinkEntity.class, Query.select().where("INGOING_ID != ? AND OUTGOING_ID = ?", dec.getID(), dec.getID()))) {
 					for(DecisionComponentEntity decisionComponent : ao.find(DecisionComponentEntity.class, 
 							Query.select().where("ID = ? AND PROJECT_KEY = ?", linkEntity.getIngoingId(), dec.getProjectKey()))){
 						inwardLinkedDecList.add(decisionComponent);
 					}
 				}
 				final List<DecisionComponentEntity> outwardLinkedDecList = new ArrayList<DecisionComponentEntity>();
-				for(LinkEntity linkEntity : ao.find(LinkEntity.class, Query.select().where("INGOING_ID = ? AND OUTGOING_ID != ?", dec.getID(), dec.getID()))) {
+				for(ILinkEntity linkEntity : ao.find(ILinkEntity.class, Query.select().where("INGOING_ID = ? AND OUTGOING_ID != ?", dec.getID(), dec.getID()))) {
 					for(DecisionComponentEntity decisionComponent : ao.find(DecisionComponentEntity.class, 
 							Query.select().where("ID = ? AND PROJECT_KEY = ?", linkEntity.getOutgoingId(), dec.getProjectKey()))){
 						outwardLinkedDecList.add(decisionComponent);

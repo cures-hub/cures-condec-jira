@@ -132,7 +132,7 @@
 		</description>
 		<entity>de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionComponentEntity
 		</entity>
-		<entity>de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.LinkEntity
+		<entity>de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ILinkEntity
 		</entity>
 	</ao>
 </atlassian-plugin>
