@@ -10,7 +10,7 @@ import net.java.ao.schema.Table;
  * @description Model class for decision components
  */
 @Table("DECISION")
-public interface DecisionComponentEntity extends RawEntity<Integer> {
+public interface IDecisionKnowledgeElementEntity extends IDecisionKnowledgeElement, RawEntity<Integer> {
 	@AutoIncrement
 	@PrimaryKey("ID")
 	public long getID();
@@ -18,20 +18,4 @@ public interface DecisionComponentEntity extends RawEntity<Integer> {
 	public String getKey();
 
 	public void setKey(String key);
-
-	public String getName();
-
-	public void setName(String name);
-
-	public String getDescription();
-
-	public void setDescription(String description);
-
-	public String getType();
-
-	public void setType(String type);
-
-	public String getProjectKey();
-
-	public void setProjectKey(String projectKey);
 }

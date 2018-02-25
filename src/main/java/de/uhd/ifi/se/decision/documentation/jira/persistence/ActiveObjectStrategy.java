@@ -26,7 +26,7 @@ import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.TreeViewerKVPai
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionComponentEntity;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.IDecisionKnowledgeElementEntity;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ILinkEntity;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
@@ -54,12 +54,12 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 		}
 		final ActiveObjects ao = ComponentGetter.getAo();
 		System.out.println(ao);
-		DecisionComponentEntity decComponent = ao.executeInTransaction(new TransactionCallback<DecisionComponentEntity>()
+		IDecisionKnowledgeElementEntity decComponent = ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>()
         {
             @Override
-            public DecisionComponentEntity doInTransaction()
+            public IDecisionKnowledgeElementEntity doInTransaction()
             {
-                final DecisionComponentEntity decComponent = ao.create(DecisionComponentEntity.class);
+                final IDecisionKnowledgeElementEntity decComponent = ao.create(IDecisionKnowledgeElementEntity.class);
                 decComponent.setKey(dec.getProjectKey().toUpperCase() + "-" + decComponent.getID());
                 decComponent.setName(dec.getName());
                 decComponent.setDescription(dec.getDescription());
@@ -92,12 +92,12 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 	@Override
 	public Data editDecisionComponent(final DecisionKnowledgeElement dec, ApplicationUser user) {
 		final ActiveObjects ao = ComponentGetter.getAo();
-		DecisionComponentEntity decComponent = ao.executeInTransaction(new TransactionCallback<DecisionComponentEntity>()
+		IDecisionKnowledgeElementEntity decComponent = ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>()
         {
 			@Override
-            public DecisionComponentEntity doInTransaction()
+            public IDecisionKnowledgeElementEntity doInTransaction()
             {
-				for (DecisionComponentEntity decComponent : ao.find(DecisionComponentEntity.class))
+				for (IDecisionKnowledgeElementEntity decComponent : ao.find(IDecisionKnowledgeElementEntity.class))
                 {
                     if(decComponent.getID() == dec.getId()) {
                     	decComponent.setDescription(dec.getDescription());
@@ -136,7 +136,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 			@Override
             public Boolean doInTransaction()
             {
-				for (DecisionComponentEntity decComponent : ao.find(DecisionComponentEntity.class))
+				for (IDecisionKnowledgeElementEntity decComponent : ao.find(IDecisionKnowledgeElementEntity.class))
                 {
                     if(decComponent.getID() == dec.getId()) {
                     	try {
@@ -181,8 +181,8 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
                 	}
                 }
                 if(!linkAlreadyExists) {
-                	DecisionComponentEntity decCompIngoing;
-                	DecisionComponentEntity[] decCompIngoingArray = ao.find(DecisionComponentEntity.class, Query.select().where("ID = ?", link.getIngoingId()));
+			IDecisionKnowledgeElementEntity decCompIngoing;
+			IDecisionKnowledgeElementEntity[] decCompIngoingArray = ao.find(IDecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", link.getIngoingId()));
                 	if(decCompIngoingArray.length == 1) {
                 		decCompIngoing = decCompIngoingArray[0];
                 	} else {
@@ -190,8 +190,8 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
                 		decCompIngoing = null;
                 	}
                 	
-                	DecisionComponentEntity decCompOutgoing;
-                	DecisionComponentEntity[] decCompOutgoingArray = ao.find(DecisionComponentEntity.class, Query.select().where("ID = ?", link.getOutgoingId()));
+			IDecisionKnowledgeElementEntity decCompOutgoing;
+			IDecisionKnowledgeElementEntity[] decCompOutgoingArray = ao.find(IDecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", link.getOutgoingId()));
                 	if(decCompOutgoingArray.length == 1) {
                 		decCompOutgoing = decCompOutgoingArray[0];
                 	} else {
@@ -235,29 +235,29 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 				@Override
 	            public List<SimpleDecisionRepresentation> doInTransaction(){
 					final List<SimpleDecisionRepresentation> decList = new ArrayList<SimpleDecisionRepresentation>();
-					DecisionComponentEntity[] decisionsArray = ao.find(DecisionComponentEntity.class, Query.select().where("ID = ?", id));
+					IDecisionKnowledgeElementEntity[] decisionsArray = ao.find(IDecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", id));
 					//id is primaryKey for DecisionComponents therefore there can be 0-1 decisioncomponent returned by this query
-					DecisionComponentEntity decComponent = null;
+					IDecisionKnowledgeElementEntity decComponent = null;
 					if (decisionsArray.length == 1){
 						decComponent = decisionsArray[0];
 	                }
 					if(decComponent != null) {
-						final List<DecisionComponentEntity> linkedDecList = new ArrayList<DecisionComponentEntity>();
+						final List<IDecisionKnowledgeElementEntity> linkedDecList = new ArrayList<IDecisionKnowledgeElementEntity>();
 						for(ILinkEntity link : ao.find(ILinkEntity.class, Query.select().where("INGOING_ID != ? AND OUTGOING_ID = ?", id, id))) {
-							for(DecisionComponentEntity decisionComponent : ao.find(DecisionComponentEntity.class, 
+							for(IDecisionKnowledgeElementEntity decisionComponent : ao.find(IDecisionKnowledgeElementEntity.class,
 									Query.select().where("ID = ? AND PROJECT_KEY = ?", link.getIngoingId(), decComponent.getProjectKey()))){
 								linkedDecList.add(decisionComponent);
 							}
 						}
 						for(ILinkEntity link : ao.find(ILinkEntity.class, Query.select().where("INGOING_ID = ? AND OUTGOING_ID != ?", id, id))) {
-							for(DecisionComponentEntity decisionComponent : ao.find(DecisionComponentEntity.class, 
+							for(IDecisionKnowledgeElementEntity decisionComponent : ao.find(IDecisionKnowledgeElementEntity.class,
 									Query.select().where("ID = ? AND PROJECT_KEY = ?", link.getOutgoingId(), decComponent.getProjectKey()))){
 								linkedDecList.add(decisionComponent);
 							}
 						}
-						DecisionComponentEntity[] decisionArray = ao.find(DecisionComponentEntity.class, 
+						IDecisionKnowledgeElementEntity[] decisionArray = ao.find(IDecisionKnowledgeElementEntity.class,
 								Query.select().where("ID != ? AND PROJECT_KEY = ?", id, decComponent.getProjectKey()));
-						for(DecisionComponentEntity decisionComponent: decisionArray) {
+						for(IDecisionKnowledgeElementEntity decisionComponent: decisionArray) {
 							if(!linkedDecList.contains(decisionComponent)) {
 								SimpleDecisionRepresentation simpleDec = new SimpleDecisionRepresentation();
 								simpleDec.setId(decisionComponent.getID());
@@ -287,7 +287,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
             @Override
             public Void doInTransaction()
             {
-                for (DecisionComponentEntity decComponent : ao.find(DecisionComponentEntity.class))
+                for (IDecisionKnowledgeElementEntity decComponent : ao.find(IDecisionKnowledgeElementEntity.class))
                 {
                     if(decComponent.getType().equalsIgnoreCase("Decision")) {
                     	TreeViewerKVPairList.kvpList = new ArrayList<Pair<String, String>>();
@@ -303,7 +303,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 		return core;
 	}
 	
-	private Data createData(final DecisionComponentEntity decComponent) {
+	private Data createData(final IDecisionKnowledgeElementEntity decComponent) {
 		Data data = new Data();
 		
 		data.setText(decComponent.getKey() + " / " + decComponent.getName());
@@ -320,21 +320,21 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 		
 		List<Data> children = new ArrayList<Data>();
 		final ActiveObjects ao = ComponentGetter.getAo();
-		List<DecisionComponentEntity> targetList = ao.executeInTransaction(new TransactionCallback<List<DecisionComponentEntity>>()
+		List<IDecisionKnowledgeElementEntity> targetList = ao.executeInTransaction(new TransactionCallback<List<IDecisionKnowledgeElementEntity>>()
         {
             @Override
-            public List<DecisionComponentEntity> doInTransaction()
+            public List<IDecisionKnowledgeElementEntity> doInTransaction()
             {
-                final List<DecisionComponentEntity> decisionList = new ArrayList<DecisionComponentEntity>();
+                final List<IDecisionKnowledgeElementEntity> decisionList = new ArrayList<IDecisionKnowledgeElementEntity>();
                 for (ILinkEntity link : ao.find(ILinkEntity.class, Query.select().where("INGOING_ID = ?", decComponent.getID()))) {
-            		for (DecisionComponentEntity dec : ao.find(DecisionComponentEntity.class, Query.select().where("ID = ?", link.getOutgoingId()))) {
+			for (IDecisionKnowledgeElementEntity dec : ao.find(IDecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", link.getOutgoingId()))) {
                 		decisionList.add(dec);
                     }
                 }
                 return decisionList;
             }
         });
-		for (DecisionComponentEntity target : targetList) {
+		for (IDecisionKnowledgeElementEntity target : targetList) {
 			Pair<String, String> newKVP = new Pair<String, String>(decComponent.getKey(), target.getKey());
 			Pair<String, String> newKVPReverse = new Pair<String, String>(target.getKey(), decComponent.getKey());
 			boolean boolvar = false;
@@ -351,21 +351,21 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 			}
 		}
 		
-		List<DecisionComponentEntity> sourceList = ao.executeInTransaction(new TransactionCallback<List<DecisionComponentEntity>>()
+		List<IDecisionKnowledgeElementEntity> sourceList = ao.executeInTransaction(new TransactionCallback<List<IDecisionKnowledgeElementEntity>>()
         {
             @Override
-            public List<DecisionComponentEntity> doInTransaction()
+            public List<IDecisionKnowledgeElementEntity> doInTransaction()
             {
-            	final List<DecisionComponentEntity> decisionList = new ArrayList<DecisionComponentEntity>();
+		final List<IDecisionKnowledgeElementEntity> decisionList = new ArrayList<IDecisionKnowledgeElementEntity>();
                 for (ILinkEntity link : ao.find(ILinkEntity.class, Query.select().where("OUTGOING_ID = ?", decComponent.getID()))) {
-                	for (DecisionComponentEntity dec : ao.find(DecisionComponentEntity.class, Query.select().where("ID = ?", link.getIngoingId()))) {
+			for (IDecisionKnowledgeElementEntity dec : ao.find(IDecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", link.getIngoingId()))) {
                 		decisionList.add(dec);
                     }
                 }
                 return decisionList;
             }
         });
-		for (DecisionComponentEntity source : sourceList) {
+		for (IDecisionKnowledgeElementEntity source : sourceList) {
 			Pair<String, String> newKVP = new Pair<String, String>(decComponent.getKey(), source.getKey());
 			Pair<String, String> newKVPReverse = new Pair<String, String>(source.getKey(), decComponent.getKey());
 			boolean boolvar = false;
@@ -399,12 +399,12 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 	private Node createNodeStructure(final String issueKey, final int depth) {
 		Node node = new Node();
 		final ActiveObjects ao = ComponentGetter.getAo();
-		DecisionComponentEntity dec = ao.executeInTransaction(new TransactionCallback<DecisionComponentEntity>(){
+		IDecisionKnowledgeElementEntity dec = ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>(){
 			@Override
-            public DecisionComponentEntity doInTransaction(){
-				DecisionComponentEntity[] decisionsArray = ao.find(DecisionComponentEntity.class, Query.select().where("KEY = ?", issueKey));
+            public IDecisionKnowledgeElementEntity doInTransaction(){
+				IDecisionKnowledgeElementEntity[] decisionsArray = ao.find(IDecisionKnowledgeElementEntity.class, Query.select().where("KEY = ?", issueKey));
 				//id is primaryKey for DecisionComponents therefore there can be 0-1 decisioncomponent returned by this query
-				DecisionComponentEntity decComponent = null;
+				IDecisionKnowledgeElementEntity decComponent = null;
 				if (decisionsArray.length == 1){
 					decComponent = decisionsArray[0];
                 }
@@ -436,17 +436,17 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 			
 			List<Node> children = new ArrayList<Node>();
 			TreantKeyValuePairList.kvpList = new ArrayList<Pair<String, String>>();
-			final List<DecisionComponentEntity> inwardLinkedDecList = new ArrayList<DecisionComponentEntity>();
+			final List<IDecisionKnowledgeElementEntity> inwardLinkedDecList = new ArrayList<IDecisionKnowledgeElementEntity>();
 			for(ILinkEntity linkEntity : ao.find(ILinkEntity.class, Query.select().where("INGOING_ID != ? AND OUTGOING_ID = ?", dec.getID(), dec.getID()))) {
-				for(DecisionComponentEntity decisionComponent : ao.find(DecisionComponentEntity.class, 
+				for(IDecisionKnowledgeElementEntity decisionComponent : ao.find(IDecisionKnowledgeElementEntity.class,
 						Query.select().where("ID = ? AND PROJECT_KEY = ?", linkEntity.getIngoingId(), dec.getProjectKey()))){
 					inwardLinkedDecList.add(decisionComponent);
 				}
 			}
 			
-			final List<DecisionComponentEntity> outwardLinkedDecList = new ArrayList<DecisionComponentEntity>();
+			final List<IDecisionKnowledgeElementEntity> outwardLinkedDecList = new ArrayList<IDecisionKnowledgeElementEntity>();
 			for(ILinkEntity linkEntity : ao.find(ILinkEntity.class, Query.select().where("INGOING_ID = ? AND OUTGOING_ID != ?", dec.getID(), dec.getID()))) {
-				for(DecisionComponentEntity decisionComponent : ao.find(DecisionComponentEntity.class, 
+				for(IDecisionKnowledgeElementEntity decisionComponent : ao.find(IDecisionKnowledgeElementEntity.class,
 						Query.select().where("ID = ? AND PROJECT_KEY = ?", linkEntity.getOutgoingId(), dec.getProjectKey()))){
 					outwardLinkedDecList.add(decisionComponent);
 				}
@@ -454,7 +454,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 			
 			if(inwardLinkedDecList.size()>0){
 				for (int i=0; i<inwardLinkedDecList.size(); i++) {
-					DecisionComponentEntity decisionComponent = inwardLinkedDecList.get(i);
+					IDecisionKnowledgeElementEntity decisionComponent = inwardLinkedDecList.get(i);
 					Pair<String,String> kvp = new Pair<String,String>(dec.getKey(), decisionComponent.getKey());
 					Pair<String,String> kvp2 = new Pair<String,String>(decisionComponent.getKey(), dec.getKey());
 					TreantKeyValuePairList.kvpList.add(kvp);
@@ -465,7 +465,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 			
 			if(outwardLinkedDecList.size()>0){
 				for (int i=0; i<outwardLinkedDecList.size(); i++) {
-					DecisionComponentEntity decisionComponent = outwardLinkedDecList.get(i);
+					IDecisionKnowledgeElementEntity decisionComponent = outwardLinkedDecList.get(i);
 					Pair<String,String> kvp = new Pair<String,String>(dec.getKey(), decisionComponent.getKey());
 					Pair<String,String> kvp2 = new Pair<String,String>(decisionComponent.getKey(), dec.getKey());
 					TreantKeyValuePairList.kvpList.add(kvp);
@@ -479,7 +479,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 		return node;
 	}
 	
-	private Node createNode(DecisionComponentEntity dec, int depth, int currentDepth) {
+	private Node createNode(IDecisionKnowledgeElementEntity dec, int depth, int currentDepth) {
 		Node node = new Node();
 		final ActiveObjects ao = ComponentGetter.getAo();
 		if (dec != null) {
@@ -506,23 +506,23 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 			
 			if(currentDepth+1<depth){
 				List<Node> children = new ArrayList<Node>();
-				final List<DecisionComponentEntity> inwardLinkedDecList = new ArrayList<DecisionComponentEntity>();
+				final List<IDecisionKnowledgeElementEntity> inwardLinkedDecList = new ArrayList<IDecisionKnowledgeElementEntity>();
 				for(ILinkEntity linkEntity : ao.find(ILinkEntity.class, Query.select().where("INGOING_ID != ? AND OUTGOING_ID = ?", dec.getID(), dec.getID()))) {
-					for(DecisionComponentEntity decisionComponent : ao.find(DecisionComponentEntity.class, 
+					for(IDecisionKnowledgeElementEntity decisionComponent : ao.find(IDecisionKnowledgeElementEntity.class,
 							Query.select().where("ID = ? AND PROJECT_KEY = ?", linkEntity.getIngoingId(), dec.getProjectKey()))){
 						inwardLinkedDecList.add(decisionComponent);
 					}
 				}
-				final List<DecisionComponentEntity> outwardLinkedDecList = new ArrayList<DecisionComponentEntity>();
+				final List<IDecisionKnowledgeElementEntity> outwardLinkedDecList = new ArrayList<IDecisionKnowledgeElementEntity>();
 				for(ILinkEntity linkEntity : ao.find(ILinkEntity.class, Query.select().where("INGOING_ID = ? AND OUTGOING_ID != ?", dec.getID(), dec.getID()))) {
-					for(DecisionComponentEntity decisionComponent : ao.find(DecisionComponentEntity.class, 
+					for(IDecisionKnowledgeElementEntity decisionComponent : ao.find(IDecisionKnowledgeElementEntity.class,
 							Query.select().where("ID = ? AND PROJECT_KEY = ?", linkEntity.getOutgoingId(), dec.getProjectKey()))){
 						outwardLinkedDecList.add(decisionComponent);
 					}
 				}
-				List<DecisionComponentEntity> toBeAddedToChildren = new ArrayList<DecisionComponentEntity>();
+				List<IDecisionKnowledgeElementEntity> toBeAddedToChildren = new ArrayList<IDecisionKnowledgeElementEntity>();
 				for (int i=0; i<outwardLinkedDecList.size(); ++i) {
-					DecisionComponentEntity decisionComponent = outwardLinkedDecList.get(i);
+					IDecisionKnowledgeElementEntity decisionComponent = outwardLinkedDecList.get(i);
 					Pair<String, String> newKVP = new Pair<String, String>(dec.getKey(), decisionComponent.getKey());
 					Pair<String, String> newKVPReverse = new Pair<String, String>(decisionComponent.getKey(), dec.getKey());
 					boolean boolvar = false;
@@ -539,7 +539,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 					}
 				}
 				for (int i=0; i<inwardLinkedDecList.size(); ++i) {
-					DecisionComponentEntity decisionComponent = inwardLinkedDecList.get(i);
+					IDecisionKnowledgeElementEntity decisionComponent = inwardLinkedDecList.get(i);
 					Pair<String, String> newKVP = new Pair<String, String>(dec.getKey(), decisionComponent.getKey());
 					Pair<String, String> newKVPReverse = new Pair<String, String>(decisionComponent.getKey(), dec.getKey());
 					boolean boolvar = false;

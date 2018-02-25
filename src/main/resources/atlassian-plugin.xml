@@ -130,7 +130,7 @@
 		<description>The module configuring the Active Objects service used by
 			this plugin
 		</description>
-		<entity>de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionComponentEntity
+		<entity>de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.IDecisionKnowledgeElementEntity
 		</entity>
 		<entity>de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ILinkEntity
 		</entity>

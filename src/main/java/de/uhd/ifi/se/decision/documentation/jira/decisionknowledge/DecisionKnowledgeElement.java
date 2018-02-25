@@ -4,9 +4,9 @@ import com.atlassian.jira.issue.Issue;
 
 /**
  * @author Ewald Rode
- * @description Model class for decision components
+ * @description Model class for decision knowledge elements
  */
-public class DecisionKnowledgeElement {
+public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	private Long id;
 	private String name;
 	private String description;
