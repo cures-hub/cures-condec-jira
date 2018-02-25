@@ -35,9 +35,7 @@ import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowl
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.util.KeyValuePairList;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Chart;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Treant;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
