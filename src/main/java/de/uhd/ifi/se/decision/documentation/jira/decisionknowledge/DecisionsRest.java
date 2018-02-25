@@ -15,6 +15,8 @@ import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.IPersistenceStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 
 /**
@@ -29,7 +31,7 @@ public class DecisionsRest {
 	public Response getUnlinkedIssues(@QueryParam("issueId") long issueId, @QueryParam("projectKey")final String projectKey) {
 		if(projectKey != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
-    		IDecisionStorageStrategy strategy = strategyProvider.getStrategy(projectKey);
+    		IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			List<SimpleDecisionRepresentation> decList = strategy.searchUnlinkedDecisionComponents(issueId, projectKey);
 	    	return Response.ok(decList).build();
 		} else {
@@ -45,7 +47,7 @@ public class DecisionsRest {
 		if(actionType != null && dec != null && req != null) {
 			final String projectKey = dec.getProjectKey();
 			StrategyProvider strategyProvider = new StrategyProvider();
-			IDecisionStorageStrategy strategy = strategyProvider.getStrategy(projectKey);
+			IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
     		ApplicationUser user = getCurrentUser(req);
     		if(actionType.equalsIgnoreCase("create")) {
     			final Data data = strategy.createDecisionComponent(dec, user);
@@ -81,7 +83,7 @@ public class DecisionsRest {
     {
 		if(actionType != null && projectKey != null && req != null && link != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
-			IDecisionStorageStrategy strategy = strategyProvider.getStrategy(projectKey);
+			IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
     		ApplicationUser user = getCurrentUser(req);
     		if(actionType.equalsIgnoreCase("create")) {
     			long issueLinkId = strategy.createLink(link, user);

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
+package de.uhd.ifi.se.decision.documentation.jira.persistence;
 
 import java.util.List;
 
@@ -6,6 +6,9 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.LinkRepresentation;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.SimpleDecisionRepresentation;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Treant;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
@@ -16,7 +19,7 @@ import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
  *              editing, deleting and rendering decisioncomponents and their
  *              links
  */
-public interface IDecisionStorageStrategy {
+public interface IPersistenceStrategy {
 	public Data createDecisionComponent(DecisionKnowledgeElement dec, ApplicationUser user);
 
 	public Data editDecisionComponent(DecisionKnowledgeElement dec, ApplicationUser user);

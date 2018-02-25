@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
+package de.uhd.ifi.se.decision.documentation.jira.persistence;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -26,6 +26,11 @@ import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.TreeViewerKVPai
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionComponentEntity;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.LinkEntity;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.LinkRepresentation;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.SimpleDecisionRepresentation;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
 import net.java.ao.Query;
@@ -34,7 +39,7 @@ import net.java.ao.Query;
  * @author Ewald Rode
  * @description Implements Strategy Interafce with Active Objects
  */
-public class ActiveObjectStrategy implements IDecisionStorageStrategy {
+public class ActiveObjectStrategy implements IPersistenceStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectStrategy.class);
 	
 	@Override

@@ -2,7 +2,7 @@ package ut.de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.issueStra
 
 import org.junit.Before;
 
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.IssueStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.IssueStrategy;
 import ut.TestSetUp;
 
 /**

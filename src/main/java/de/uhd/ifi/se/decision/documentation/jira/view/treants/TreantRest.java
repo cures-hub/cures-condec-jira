@@ -5,8 +5,8 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.IDecisionStorageStrategy;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.StrategyProvider;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.IPersistenceStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -47,7 +47,7 @@ public class TreantRest {
 					depth = 4;
 				}
 				StrategyProvider strategyProvider = new StrategyProvider();
-				IDecisionStorageStrategy strategy = strategyProvider.getStrategy(projectKey);
+				IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 				Treant treantRestModel = strategy.createTreant(issueKey, depth);
 				return Response.ok(treantRestModel).build();
 			}

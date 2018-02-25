@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
+package de.uhd.ifi.se.decision.documentation.jira.persistence;
 
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
@@ -9,7 +9,7 @@ import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 
 public class StrategyProvider {
 
-	public IDecisionStorageStrategy getStrategy(final String projectKey) {
+	public IPersistenceStrategy getStrategy(final String projectKey) {
 		TransactionTemplate transactionTemplate = ComponentGetter.getTransactionTemplate();
 		final PluginSettingsFactory pluginSettingsFactory = ComponentGetter.getPluginSettingsFactory();
 		final String pluginStorageKey = ComponentGetter.getPluginStorageKey();

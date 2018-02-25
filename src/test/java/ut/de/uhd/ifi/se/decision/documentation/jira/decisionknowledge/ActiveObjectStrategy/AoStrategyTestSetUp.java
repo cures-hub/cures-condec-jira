@@ -3,7 +3,7 @@ package ut.de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ActiveObj
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ActiveObjectStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.ActiveObjectStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import net.java.ao.EntityManager;
 import ut.TestSetUp;

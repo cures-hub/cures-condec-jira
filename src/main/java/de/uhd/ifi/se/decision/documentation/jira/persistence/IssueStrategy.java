@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
+package de.uhd.ifi.se.decision.documentation.jira.persistence;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,6 +31,9 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ErrorCollection;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.LinkRepresentation;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.SimpleDecisionRepresentation;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Chart;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
@@ -43,10 +46,10 @@ import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.TreeViewerKVPai
 
 /**
  * @author Ewald Rode
- * @description Implements the IDecisionStorageStrategy interface. Uses JIRA
+ * @description Implements the IPersistenceStrategy interface. Uses JIRA
  *              issues to store decision knowledge
  */
-public class IssueStrategy implements IDecisionStorageStrategy {
+public class IssueStrategy implements IPersistenceStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IssueStrategy.class);
 
 	@Override
