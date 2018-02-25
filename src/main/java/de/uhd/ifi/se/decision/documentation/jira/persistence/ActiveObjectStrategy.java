@@ -17,9 +17,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Chart;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Treant;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
