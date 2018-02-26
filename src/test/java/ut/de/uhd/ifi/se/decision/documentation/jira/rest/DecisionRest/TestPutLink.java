@@ -15,7 +15,7 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionsRest;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.LinkRepresentation;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
@@ -28,7 +28,7 @@ public class TestPutLink extends TestSetUp {
 	private EntityManager entityManager;
 	private DecisionsRest decRest;
 	private HttpServletRequest req;
-	private LinkRepresentation link;
+	private Link link;
 	
 	@Before
 	public void setUp() {
@@ -40,7 +40,7 @@ public class TestPutLink extends TestSetUp {
 		req.setAttribute("WithFails", false);
 		req.setAttribute("NoFails", true);
 		
-		link = new LinkRepresentation();
+		link = new Link();
 		link.setIngoingId(1);
 		link.setOutgoingId(4);
 	}

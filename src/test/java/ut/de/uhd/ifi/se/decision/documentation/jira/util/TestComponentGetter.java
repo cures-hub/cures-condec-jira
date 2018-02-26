@@ -91,7 +91,7 @@ public class TestComponentGetter {
 	
 	@Test
 	public void testGetPluginStorageKey() {
-		assertEquals("JIRADecDoc.ProjectKey.",ComponentGetter.getPluginStorageKey());
+		assertEquals("de.uhd.ifi.se.decision.documentation.jira",ComponentGetter.getPluginStorageKey());
 	}
 	
 	@Test

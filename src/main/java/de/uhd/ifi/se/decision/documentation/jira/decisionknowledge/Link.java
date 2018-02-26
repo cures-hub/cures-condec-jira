@@ -4,7 +4,7 @@ package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
  * @author Ewald Rode
  * @description Model class for links between decision components
  */
-public class LinkRepresentation {
+public class Link implements ILink {
 	private String linkType;
 	private long ingoingId;
 	private long outgoingId;

@@ -95,17 +95,16 @@
 	<web-section name="DecDoc-Web-Section" key="DecDoc_section"
 		location="admin_plugins_menu">
 		<label key="DecDoc Section" />
-		<description>Adds Web-Section to the Addons Menu</description>
+		<description>Adds a section to the add-ons menu.</description>
 	</web-section>
 	<web-section name="DecDoc-Menu-Item" key="DecDoc_menu_item"
 		location="DecDoc_section">
 		<label key="Decisions" />
-		<description>Adds a Menu-Item with a Label to the DecDoc-Web-Section
-		</description>
+		<description>Adds a menu-item to the DecDoc section.</description>
 	</web-section>
 	<web-item key="DecDoc-administration-menu-item" name="DecDoc Administration Menu Item"
 		section="DecDoc_section/DecDoc_menu_item" weight="10" application="jira">
-		<description>Adds a Menu Item that links to the Admin Servlet.
+		<description>Adds a menu item that links to the admin servlet.
 		</description>
 		<label key="admin-servlet.label" />
 		<link linkId="admin-servlet-link">/plugins/servlet/adminservlet</link>
@@ -117,7 +116,7 @@
 	</servlet>
 	<rest name="Adminstration Rest Resource" key="admin-rest" path="/admin"
 		version="1.0">
-		<description>Provides REST resources for the Adminstration Form.
+		<description>Provides REST resources for the administration form.
 		</description>
 	</rest>
 	<rest name="Config" i18n-name-key="config.name" key="config" path="/config"
@@ -128,11 +127,11 @@
 	<!-- Active Objects -->
 	<ao key="ao-module">
 		<description>The module configuring the Active Objects service used by
-			this plugin
+			this plug-in.
 		</description>
-		<entity>de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionComponentEntity
+		<entity>de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.IDecisionKnowledgeElementEntity
 		</entity>
-		<entity>de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.LinkEntity
+		<entity>de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ILinkEntity
 		</entity>
 	</ao>
 </atlassian-plugin>

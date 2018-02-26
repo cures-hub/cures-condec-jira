@@ -7,7 +7,7 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.LinkRepresentation;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 
 /**
  * @author Tim Kuchenbuch
@@ -22,7 +22,7 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 	
 	@Test
 	public void testLinkRepresFilledUserNull() {
-		LinkRepresentation link = new LinkRepresentation();
+		Link link = new Link();
 		link.setIngoingId(1);
 		link.setLinkType("Contains");
 		link.setOutgoingId(2);
@@ -38,7 +38,7 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 	
 	@Test
 	public void testLinkRepresFilledUserFilled() {
-		LinkRepresentation link = new LinkRepresentation();
+		Link link = new Link();
 		link.setIngoingId(1);
 		link.setLinkType("Contains");
 		link.setOutgoingId(2);
@@ -48,7 +48,7 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 	
 	@Test
 	public void testLinkRepresFilledUserFilledIssueLinkNull() {
-		LinkRepresentation link = new LinkRepresentation();
+		Link link = new Link();
 		link.setIngoingId(2);
 		link.setLinkType("Contains");
 		link.setOutgoingId(3);
@@ -58,7 +58,7 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 	
 	@Test
 	public void testCreateException() {
-		LinkRepresentation link = new LinkRepresentation();
+		Link link = new Link();
 		link.setIngoingId(2);
 		link.setLinkType("Contains");
 		link.setOutgoingId(3);
@@ -68,7 +68,7 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 	
 	@Test
 	public void testMoreInwardLinks() {
-		LinkRepresentation link = new LinkRepresentation();
+		Link link = new Link();
 		link.setIngoingId(30);
 		link.setLinkType("Contains");
 		link.setOutgoingId(3);
@@ -78,7 +78,7 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 	
 	@Test
 	public void testMoreOutwardLinks() {
-		LinkRepresentation link = new LinkRepresentation();
+		Link link = new Link();
 		link.setIngoingId(10);
 		link.setLinkType("Contains");
 		link.setOutgoingId(30);

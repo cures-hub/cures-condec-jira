@@ -10,20 +10,8 @@ import net.java.ao.schema.Table;
  * @description Model class for links between decision components
  */
 @Table("LINK")
-public interface LinkEntity extends RawEntity<Integer> {
+public interface ILinkEntity extends ILink, RawEntity<Integer> {
 	@AutoIncrement
 	@PrimaryKey("ID")
 	public long getID();
-
-	public String getType();
-
-	public void setType(String type);
-
-	public long getIngoingId();
-
-	public void setIngoingId(long ingoingId);
-
-	public long getOutgoingId();
-
-	public void setOutgoingId(long outgoingId);
 }

@@ -5,8 +5,8 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.IDecisionStorageStrategy;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.StrategyProvider;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.IPersistenceStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -34,7 +34,7 @@ public class TreeViewerRest {
 						.build();
 			} else {
 				StrategyProvider strategyProvider = new StrategyProvider();
-				IDecisionStorageStrategy strategy = strategyProvider.getStrategy(projectKey);
+				IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 				Core core = strategy.createCore(project);
 				return Response.ok(core).build();
 			}

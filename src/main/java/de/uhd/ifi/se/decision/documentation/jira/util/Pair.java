@@ -1,32 +1,37 @@
 package de.uhd.ifi.se.decision.documentation.jira.util;
 
 /**
- * http://stackoverflow.com/questions/521171/a-java-collection-of-value-pairs-tuples
- * @author Paul Brinkley , Senior Software Developer, HIGHFLEET, Inc.
- * @description basic implementation of a pair datastructure
+ * @description Implementation of a pair data structure
  */
-public class Pair<L,R> {
-	
-	private final L left;
+public class Pair<Left, Right> {
 
-	private final R right;
+	private final Left left;
 
-	  public Pair(L left, R right) {
-	    this.left = left;
-	    this.right = right;
-	  }
+	private final Right right;
 
-	  public L getLeft() { return left; }
-	  public R getRight() { return right; }
+	public Pair(Left left, Right right) {
+		this.left = left;
+		this.right = right;
+	}
 
-	  @Override
-	  public int hashCode() { return left.hashCode() ^ right.hashCode(); }
+	public Left getLeft() {
+		return left;
+	}
 
-	  @Override
-	  public boolean equals(Object o) {
-	    if (!(o instanceof Pair)) return false;
-	    Pair<?, ?> pairo = (Pair<?, ?>) o;
-	    return this.left.equals(pairo.getLeft()) &&
-	           this.right.equals(pairo.getRight());
-	  }
+	public Right getRight() {
+		return right;
+	}
+
+	@Override
+	public int hashCode() {
+		return left.hashCode() ^ right.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (!(object instanceof Pair))
+			return false;
+		Pair<?, ?> pairObject = (Pair<?, ?>) object;
+		return this.left.equals(pairObject.getLeft()) && this.right.equals(pairObject.getRight());
+	}
 }
