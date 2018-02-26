@@ -3,24 +3,31 @@
 \tikzumlset{font = \sffamily, fill class=white, fill package=white, fill note=white}
 
 % abstract strategy/interface
-\umlclass[type=interface]{Strategy}{}{
-    \textit{+ createDecisionComponent()}\\
-    \textit{+ editDecisionComponent()}\\
-    \textit{+ deleteDecisionComponent()}\\
-    \textit{+ createLink()}\\
-    \textit{+ deleteLink()}\\
-    \textit{+ searchUnlinkedDecisionComponents()}\\
+\umlclass[type=interface]{IPersistenceStrategy}{}{
+    \textit{+ insertDecisionKnowledgeElement(element : DecisionKnowledgeElement)}\\
+    \textit{+ updateDecisionKnowledgeElement(element : DecisionKnowledgeElement)}\\
+    \textit{+ deleteDecisionKnowledgeElement(element : DecisionKnowledgeElement)}\\
+    \textit{+ getDecisionKnowledgeElements(projectKey : String) : List<DecisionKnowledgeElement>}\\
+    \textit{+ getDecisions(projectKey : String) : List<DecisionKnowledgeElement>}\\
+    \textit{+ getChildren(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>}\\
+    \textit{+ getParents(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>}\\
+    \textit{+ getUnlinkedDecisionComponents(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>}\\
+    
+    \textit{+ insertLink(link : Link)}\\
+    \textit{+ deleteLink(link : Link)}\\
+    \textit{+ getInwardLinks(element : decisionKnowledgeElement) : List<Link>}\\
+    \textit{+ getOutwardLinks(element : decisionKnowledgeElement) : List<Link>}\\
 }
 
 % concrete strategy
-\umlclass[x=6, y=1]{IssueStrategy}{}{}
-\umlclass[x=6, y=-1]{ActiveObjectStrategy}{}{}
+\umlclass[x=12, y=1]{IssueStrategy}{}{}
+\umlclass[x=12, y=-1]{ActiveObjectStrategy}{}{}
 
 % client
-\umlclass[x=-6, y=0]{Client}{}{}
+\umlclass[x=-10.5, y=0]{Client}{}{}
 
 % associations
-\umlimpl{IssueStrategy}{Strategy}
-\umlimpl{ActiveObjectStrategy}{Strategy}
-\umluniassoc[arg1=uses, pos1=0.5]{Client}{Strategy}
+\umlimpl{IssueStrategy}{IPersistenceStrategy}
+\umlimpl{ActiveObjectStrategy}{IPersistenceStrategy}
+\umluniassoc[arg1=uses, pos1=0.5]{Client}{IPersistenceStrategy}
 \end{tikzpicture}
