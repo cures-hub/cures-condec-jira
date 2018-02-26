@@ -45,8 +45,7 @@ function putJSON(url, data, callback) {
     };
     xhr.send(JSON.stringify(data));
 }
-//TODO Build Delete Mathod in DecisionRest.java
-// New Mathod
+//TODO Build Delete Method in DecisionRest.java
 function deleteJSON(url, data, callback){
     var xhr = new XMLHttpRequest();
     xhr.open("DELETE",url, true);
@@ -121,7 +120,7 @@ function deleteDecisionComponent(issueId, callback) {
         "id": issueId,
         "projectKey": projectKey
     };
-    postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?actionType=delete", jsondata, function (err, data) {
+    deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?actionType=delete", jsondata, function (err, data) {
         if (err !== null) {
             AJS.flag({
                 type: 'error',
