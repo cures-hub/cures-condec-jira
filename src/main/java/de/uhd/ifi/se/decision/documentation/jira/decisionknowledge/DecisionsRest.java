@@ -65,17 +65,9 @@ public class DecisionsRest {
 				}
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build();
-			} else if (actionType.equalsIgnoreCase("delete")) {
-				boolean successful = strategy.deleteDecisionComponent(decisionKnowledgeElement, user);
-				if (successful) {
-					return Response.status(Status.OK).entity(successful).build();
-				} else {
-					return Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
-				}
 			} else {
 				return Response.status(Status.BAD_REQUEST).entity(
-						ImmutableMap.of("error", "Unknown actionType. Pick either 'create', 'edit' or 'delete'"))
+						ImmutableMap.of("error", "Unknown actionType. Pick either 'create', 'edit'"))
 						.build();
 			}
 		} else {
@@ -105,6 +97,32 @@ public class DecisionsRest {
 				return Response.status(Status.BAD_REQUEST)
 						.entity(ImmutableMap.of("error", "Unknown actionType. Pick either 'create' or 'delete'"))
 						.build();
+			}
+		} else {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null"))
+					.build();
+		}
+	}
+
+	@DELETE
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response deleteDecision(@QueryParam("actionType")String actionType, @Context HttpServletRequest request,
+			final DecisionKnowledgeElement decisionKnowledgeElement) {
+		if(actionType != null && decisionKnowledgeElement != null && request !=null){
+			final  String projektKey =  decisionKnowledgeElement.getProjectKey();
+			StrategyProvider strategyProvider = new StrategyProvider();
+			IPersistenceStrategy strategy = strategyProvider.getStrategy(projektKey);
+			ApplicationUser user = getCurrentUser(request);
+			if(actionType.equalsIgnoreCase("delete")){
+				boolean successful = strategy.deleteDecisionComponent(decisionKnowledgeElement,user);
+				if(successful){
+					return  Response.status(Status.OK).entity(successful).build();
+				} else {
+					return  Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity(ImmutableMap.of("error","Deletion of decision knowledge element failed.")).build();
+				}
+			} else {
+				return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error","Unknown actionType.")).build();
 			}
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null"))
