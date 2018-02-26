@@ -45,6 +45,24 @@ function putJSON(url, data, callback) {
     };
     xhr.send(JSON.stringify(data));
 }
+//TODO Build Delete Mathod in DecisionRest.java
+// New Mathod
+function deleteJSON(url, data, callback){
+    var xhr = new XMLHttpRequest();
+    xhr.open("DELETE",url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+    xhr.set("Accept","application/json");
+    xhr.responseType="json";
+    xhr.onload=function () {
+        var status = xhr.status;
+        if(status==200){
+            callback(null, xhr.response);
+        } else {
+            callback(status);
+        }
+    };
+    xhr.send(JSON.stringify(data));
+}
 
 function createDecisionComponent(summary, issueType, callback) {
     var pathname = window.location.pathname;
