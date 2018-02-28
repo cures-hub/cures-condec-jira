@@ -79,9 +79,101 @@ public class TreantRest {
 				ImmutableMap.of("error", "Query parameters 'projectKey' and 'issueKey' do not lead to a valid result"))
 				.build();
 	}
-	//TODO Implementing the Function
-	private Node createNode(DecisionKnowledgeElement linkeDecisionKnowledgeElement, int depth, int currentDepth) {
 
+	//TODO Implementing the Function
+	private Node createNode(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
+		Node node = new Node();
+		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getSummary(), "title",
+				decisionKnowledgeElement.getType(), "desc", decisionKnowledgeElement.getKey());
+		node.setNodeContent(nodeContent);
+
+		String htmlClass;
+		String issueType = decisionKnowledgeElement.getType().toLowerCase();
+		if (issueType.equals("constraint") || issueType.equals("assumption") || issueType.equals("implication")
+				|| issueType.equals("context")) {
+			htmlClass = "context";
+		} else if (issueType.equals("problem") || issueType.equals("issue") || issueType.equals("goal")) {
+			htmlClass = "problem";
+		} else if (issueType.equals("solution") || issueType.equals("claim") || issueType.equals("alternative")) {
+			htmlClass = "solution";
+		} else {
+			htmlClass = "rationale";
+		}
+		node.setHtmlClass(htmlClass);
+
+		long htmlId = decisionKnowledgeElement.getId();
+		node.setHtmlId(htmlId);
+
+		if (currentDepth + 1 < depth) {
+			List<Node> children = new ArrayList<Node>();
+			List<DecisionKnowledgeElement> toBeAddedToChildren = new ArrayList<DecisionKnowledgeElement>();
+			//TODO Change from ComponentAccessor to IssueStrategy getDecisionKowledgeElement
+			List<IssueLink> allOutwardIssueLink = ComponentAccessor.getIssueLinkManager()
+					.getOutwardLinks(decisionKnowledgeElement.getId());
+			if (allOutwardIssueLink != null) {
+				// this.children = new ArrayList<Node>();
+				for (int i = 0; i < allOutwardIssueLink.size(); ++i) {
+					DecisionKnowledgeElement linkeDecisionKnowledgeElement = strategy.getDecisionKnowledgeElement(allOutwardIssueLink.get(i).getDestinationObject().getKey());
+					/*
+					 * Erstelle Parent-Child Beziehung und pruefe ob diese bereits in der
+					 * KeyValuePair-Liste vorhanden ist. Wenn nein, fuege diesem Knoten Kinder hinzu
+					 */
+					if (decisionKnowledgeElement != null & linkeDecisionKnowledgeElement != null) {
+						Pair<String, String> newKVP = new Pair<String, String>(decisionKnowledgeElement.getKey(),
+								linkeDecisionKnowledgeElement.getKey());
+						Pair<String, String> newKVPReverse = new Pair<String, String>(linkeDecisionKnowledgeElement.getKey(),
+								decisionKnowledgeElement.getKey());
+						boolean boolvar = false;
+						for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
+							Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
+							if (newKVP.equals(globalInst) || newKVPReverse.equals(globalInst)) {
+								boolvar = true;
+							}
+						}
+						if (!boolvar) {
+							KeyValuePairList.keyValuePairList.add(newKVP);
+							KeyValuePairList.keyValuePairList.add(newKVPReverse);
+							toBeAddedToChildren.add(linkeDecisionKnowledgeElement);
+						}
+					}
+				}
+			}
+
+			//TODO Change from ComponentAccessor to IssueStrategy getDecisionKowledgeElement
+			List<IssueLink> allInwardIssueLink = ComponentAccessor.getIssueLinkManager().getInwardLinks(decisionKnowledgeElement.getId());
+			if (allInwardIssueLink != null) {
+				for (int i = 0; i < allInwardIssueLink.size(); ++i) {
+					DecisionKnowledgeElement linkeDecisionKnowledgeElement = strategy.getDecisionKnowledgeElement(allOutwardIssueLink.get(i).getDestinationObject().getKey());
+					/*
+					 * Erstelle Parent-Child Beziehung und pruefe ob diese bereits in der
+					 * KeyValuePair-Liste vorhanden ist. Wenn nein, fuege diesem Knoten Kinder hinzu
+					 */
+					if (decisionKnowledgeElement != null & linkeDecisionKnowledgeElement != null) {
+						Pair<String, String> newKVP = new Pair<String, String>(decisionKnowledgeElement.getKey(),
+								linkeDecisionKnowledgeElement.getKey());
+						Pair<String, String> newKVPReverse = new Pair<String, String>(linkeDecisionKnowledgeElement.getKey(),
+								decisionKnowledgeElement.getKey());
+						boolean boolvar = false;
+						for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
+							Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
+							if (newKVP.equals(globalInst) || newKVPReverse.equals(globalInst)) {
+								boolvar = true;
+							}
+						}
+						if (!boolvar) {
+							KeyValuePairList.keyValuePairList.add(newKVP);
+							KeyValuePairList.keyValuePairList.add(newKVPReverse);
+							toBeAddedToChildren.add(linkeDecisionKnowledgeElement);
+						}
+					}
+				}
+			}
+			for (int index = 0; index < toBeAddedToChildren.size(); ++index) {
+				children.add(createNode(toBeAddedToChildren.get(index), depth, currentDepth + 1));
+			}
+			node.setChildren(children);
+		}
+		return node;
 	}
 
 	private Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, int depth){
