@@ -33,7 +33,10 @@ public interface IPersistenceStrategy {
 
 	public Core createCore(Project project);
 
-    public Node createNodeStructure(String key, int depth);
+//   public Node createNodeStructure(String key, int depth);
 
 //	public Treant createTreant(String key, int depth);
+
+	// new Interface
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key);
 }

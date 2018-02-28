@@ -1,10 +1,13 @@
 package de.uhd.ifi.se.decision.documentation.jira.view.treants;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.IPersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
@@ -13,7 +16,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.documentation.jira.util.KeyValuePairList;
+import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
 import org.ofbiz.core.entity.GenericEntityException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Ewald Rode
@@ -21,15 +30,17 @@ import org.ofbiz.core.entity.GenericEntityException;
  */
 @Path("/treant")
 public class TreantRest {
+	private IPersistenceStrategy strategy;
 
 	public Treant createTreant(String key, int depth, String projectKey) {
 		StrategyProvider strategyProvider = new StrategyProvider();
-		IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+		strategy = strategyProvider.getStrategy(projectKey);
+		DecisionKnowledgeElement decisionKnowledgeElement = strategy.getDecisionKnowledgeElement(key);
 
 		Treant treant = new Treant();
 		treant.setChart(new Chart());
 
-		treant.setNodeStructure(strategy.createNodeStructure(key, depth));
+		treant.setNodeStructure(createNodeStructure(decisionKnowledgeElement, depth));
 		return treant;
 	}
 
@@ -68,4 +79,69 @@ public class TreantRest {
 				ImmutableMap.of("error", "Query parameters 'projectKey' and 'issueKey' do not lead to a valid result"))
 				.build();
 	}
+	//TODO Implementing the Function
+	private Node createNode(DecisionKnowledgeElement linkeDecisionKnowledgeElement, int depth, int currentDepth) {
+
+	}
+
+	private Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, int depth){
+		Node node = new Node();
+		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getSummary(), "title",
+				decisionKnowledgeElement.getText(), "desc", decisionKnowledgeElement.getKey());
+		node.setNodeContent(nodeContent);
+
+		String htmlClass;
+		String issueType = decisionKnowledgeElement.getType().toLowerCase();
+		if (issueType.equals("constraint") || issueType.equals("assumption") || issueType.equals("implication")
+				|| issueType.equals("context")) {
+			htmlClass = "context";
+		} else if (issueType.equals("problem") || issueType.equals("issue") || issueType.equals("goal")) {
+			htmlClass = "problem";
+		} else if (issueType.equals("solution") || issueType.equals("claim") || issueType.equals("alternative")) {
+			htmlClass = "solution";
+		} else {
+			htmlClass = "rationale";
+		}
+		node.setHtmlClass(htmlClass);
+		long htmlId = decisionKnowledgeElement.getId();
+		node.setHtmlId(htmlId);
+
+		List<Node> children = new ArrayList<Node>();
+		List<IssueLink> allOutwardIssueLink = ComponentAccessor.getIssueLinkManager().getOutwardLinks(decisionKnowledgeElement.getId());
+		KeyValuePairList.keyValuePairList = new ArrayList<Pair<String, String>>();
+		if (allOutwardIssueLink != null) {
+			if (allOutwardIssueLink.size() > 0) {
+				for (int i = 0; i < allOutwardIssueLink.size(); i++) {
+					DecisionKnowledgeElement linkeDecisionKnowledgeElement = strategy.getDecisionKnowledgeElement(allOutwardIssueLink.get(i).getDestinationObject().getKey());
+					if (decisionKnowledgeElement!= null & linkeDecisionKnowledgeElement != null) {
+						KeyValuePairList.keyValuePairList
+								.add(new Pair<String, String>(decisionKnowledgeElement.getKey(), linkeDecisionKnowledgeElement.getKey()));
+						KeyValuePairList.keyValuePairList
+								.add(new Pair<String, String>(linkeDecisionKnowledgeElement.getKey(), decisionKnowledgeElement.getKey()));
+						children.add(createNode(linkeDecisionKnowledgeElement, depth, 0));
+					}
+				}
+			}
+		}
+		List<IssueLink> allInwardIssueLink = ComponentAccessor.getIssueLinkManager().getInwardLinks(decisionKnowledgeElement.getId());
+		if (allInwardIssueLink != null) {
+			if (allInwardIssueLink.size() > 0) {
+				for (int i = 0; i < allInwardIssueLink.size(); i++) {
+					DecisionKnowledgeElement linkeDecisionKnowledgeElement = strategy.getDecisionKnowledgeElement(allOutwardIssueLink.get(i).getDestinationObject().getKey());
+					if (decisionKnowledgeElement != null & linkeDecisionKnowledgeElement != null) {
+						Pair<String, String> kvp = new Pair<String, String>(decisionKnowledgeElement.getKey(),
+								linkeDecisionKnowledgeElement.getKey());
+						Pair<String, String> kvp2 = new Pair<String, String>(linkeDecisionKnowledgeElement.getKey(),
+								decisionKnowledgeElement.getKey());
+						KeyValuePairList.keyValuePairList.add(kvp);
+						KeyValuePairList.keyValuePairList.add(kvp2);
+						children.add(createNode(linkeDecisionKnowledgeElement, depth, 0));
+					}
+				}
+			}
+		}
+		node.setChildren(children);
+		return node;
+	}
+
 }
