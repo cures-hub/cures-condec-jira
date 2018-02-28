@@ -45,14 +45,13 @@ function putJSON(url, data, callback) {
     };
     xhr.send(JSON.stringify(data));
 }
-//TODO Build Delete Method in DecisionRest.java
 function deleteJSON(url, data, callback){
     var xhr = new XMLHttpRequest();
-    xhr.open("DELETE",url, true);
+    xhr.open("POST",url, true);
     xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-    xhr.set("Accept","application/json");
+    xhr.setRequestHeader("Accept","application/json");
     xhr.responseType="json";
-    xhr.onload=function () {
+    xhr.onload = function () {
         var status = xhr.status;
         if(status==200){
             callback(null, xhr.response);
@@ -155,6 +154,7 @@ function createLink(parentId, childId, linkType, callback) {
         }
     });
 }
+//TODO check if still needed (Not used at the moment)
 function deleteLink(parentId, childId, linkType, callback) {
     var pathname = window.location.pathname;
     var stringArray = pathname.split("/");
