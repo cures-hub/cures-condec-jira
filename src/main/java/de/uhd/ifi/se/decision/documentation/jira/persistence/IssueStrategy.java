@@ -310,7 +310,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 	 * TreeViewerRest
 	 */
 	@Override
-	public Core createCore(Project project) {
+ 	public Core createCore(Project project) {
 		Core core = new Core();
 		core.setMultiple(false);
 		core.setCheckCallback(true);
@@ -434,6 +434,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 		return data;
 	}
 
+	// Old implementation
 	private Node createNode(Issue issue, int depth, int currentDepth) {
 		Node node = new Node();
 		Map<String, String> nodeContent = ImmutableMap.of("name", issue.getSummary(), "title",
@@ -529,7 +530,19 @@ public class IssueStrategy implements IPersistenceStrategy {
 		return node;
 	}
 
+	// New Implementations
+	@Override
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key){
+		 IssueManager issueManager = ComponentAccessor.getIssueManager();
+		 Issue issue = issueManager.getIssueByCurrentKey(key);
+		 return new DecisionKnowledgeElement(issue);
+	}
+}
+
 	/* TreantsRest */
+/*
+Old Implementation
+Just a backup at the moment
 	@Override
 	public Node createNodeStructure(String key, int depth) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
@@ -596,3 +609,4 @@ public class IssueStrategy implements IPersistenceStrategy {
 		return node;
 	}
 }
+*/
