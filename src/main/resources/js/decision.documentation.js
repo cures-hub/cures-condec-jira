@@ -47,7 +47,7 @@ function putJSON(url, data, callback) {
 }
 function deleteJSON(url, data, callback){
     var xhr = new XMLHttpRequest();
-    xhr.open("POST",url, true);
+    xhr.open("DELETE",url, true);
     xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
     xhr.setRequestHeader("Accept","application/json");
     xhr.responseType="json";
