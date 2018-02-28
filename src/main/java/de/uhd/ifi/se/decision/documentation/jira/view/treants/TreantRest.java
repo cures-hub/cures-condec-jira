@@ -93,6 +93,54 @@ public class TreantRest {
 		}
 	}
 
+	private List<DecisionKnowledgeElement> searchforChildren(DecisionKnowledgeElement decisionKnowledgeElement){
+		List<DecisionKnowledgeElement> foundChildren = new ArrayList<DecisionKnowledgeElement>();
+
+		//TODO Change from ComponentAccessor to IssueStrategy getDecisionKowledgeElement
+		List<IssueLink> allOutwardIssueLink = ComponentAccessor.getIssueLinkManager()
+				.getOutwardLinks(decisionKnowledgeElement.getId());
+		List<IssueLink> allInwardIssueLink = ComponentAccessor.getIssueLinkManager()
+				.getInwardLinks(decisionKnowledgeElement.getId());
+
+		List<DecisionKnowledgeElement> linkeDecisionKnowledgeElements = new ArrayList<>();
+
+		if (allInwardIssueLink != null) {
+			for (int i = 0; i < allInwardIssueLink.size(); ++i) {
+				linkeDecisionKnowledgeElements.add(strategy.getDecisionKnowledgeElement(allOutwardIssueLink.get(i).getDestinationObject().getKey()));
+			}
+		}
+		if (allOutwardIssueLink != null) {
+			for (int i = 0; i < allOutwardIssueLink.size(); ++i) {
+				linkeDecisionKnowledgeElements.add(strategy.getDecisionKnowledgeElement(allOutwardIssueLink.get(i).getDestinationObject().getKey()));
+			}
+		}
+		/*
+		 * Erstelle Parent-Child Beziehung und pruefe ob diese bereits in der
+		 * KeyValuePair-Liste vorhanden ist. Wenn nein, fuege diesem Knoten Kinder hinzu
+		 */
+		for(DecisionKnowledgeElement linkeDecisionKnowledgeElement: linkeDecisionKnowledgeElements) {
+			if (decisionKnowledgeElement != null & linkeDecisionKnowledgeElement != null) {
+				Pair<String, String> newKVP = new Pair<String, String>(decisionKnowledgeElement.getKey(),
+						linkeDecisionKnowledgeElement.getKey());
+				Pair<String, String> newKVPReverse = new Pair<String, String>(linkeDecisionKnowledgeElement.getKey(),
+						decisionKnowledgeElement.getKey());
+				boolean boolvar = false;
+				for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
+					Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
+					if (newKVP.equals(globalInst) || newKVPReverse.equals(globalInst)) {
+						boolvar = true;
+					}
+				}
+				if (!boolvar) {
+					KeyValuePairList.keyValuePairList.add(newKVP);
+					KeyValuePairList.keyValuePairList.add(newKVPReverse);
+					foundChildren.add(linkeDecisionKnowledgeElement);
+				}
+			}
+		}
+		return  foundChildren;
+	}
+
 	//TODO Implementing the Function
 	private Node createNode(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
 		Node node = new Node();
@@ -108,68 +156,8 @@ public class TreantRest {
 
 		if (currentDepth + 1 < depth) {
 			List<Node> children = new ArrayList<Node>();
-			List<DecisionKnowledgeElement> toBeAddedToChildren = new ArrayList<DecisionKnowledgeElement>();
-			//TODO Change from ComponentAccessor to IssueStrategy getDecisionKowledgeElement
-			List<IssueLink> allOutwardIssueLink = ComponentAccessor.getIssueLinkManager()
-					.getOutwardLinks(decisionKnowledgeElement.getId());
-			if (allOutwardIssueLink != null) {
-				// this.children = new ArrayList<Node>();
-				for (int i = 0; i < allOutwardIssueLink.size(); ++i) {
-					DecisionKnowledgeElement linkeDecisionKnowledgeElement = strategy.getDecisionKnowledgeElement(allOutwardIssueLink.get(i).getDestinationObject().getKey());
-					/*
-					 * Erstelle Parent-Child Beziehung und pruefe ob diese bereits in der
-					 * KeyValuePair-Liste vorhanden ist. Wenn nein, fuege diesem Knoten Kinder hinzu
-					 */
-					if (decisionKnowledgeElement != null & linkeDecisionKnowledgeElement != null) {
-						Pair<String, String> newKVP = new Pair<String, String>(decisionKnowledgeElement.getKey(),
-								linkeDecisionKnowledgeElement.getKey());
-						Pair<String, String> newKVPReverse = new Pair<String, String>(linkeDecisionKnowledgeElement.getKey(),
-								decisionKnowledgeElement.getKey());
-						boolean boolvar = false;
-						for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
-							Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
-							if (newKVP.equals(globalInst) || newKVPReverse.equals(globalInst)) {
-								boolvar = true;
-							}
-						}
-						if (!boolvar) {
-							KeyValuePairList.keyValuePairList.add(newKVP);
-							KeyValuePairList.keyValuePairList.add(newKVPReverse);
-							toBeAddedToChildren.add(linkeDecisionKnowledgeElement);
-						}
-					}
-				}
-			}
+			List<DecisionKnowledgeElement> toBeAddedToChildren = searchforChildren(decisionKnowledgeElement);
 
-			//TODO Change from ComponentAccessor to IssueStrategy getDecisionKowledgeElement
-			List<IssueLink> allInwardIssueLink = ComponentAccessor.getIssueLinkManager().getInwardLinks(decisionKnowledgeElement.getId());
-			if (allInwardIssueLink != null) {
-				for (int i = 0; i < allInwardIssueLink.size(); ++i) {
-					DecisionKnowledgeElement linkeDecisionKnowledgeElement = strategy.getDecisionKnowledgeElement(allOutwardIssueLink.get(i).getDestinationObject().getKey());
-					/*
-					 * Erstelle Parent-Child Beziehung und pruefe ob diese bereits in der
-					 * KeyValuePair-Liste vorhanden ist. Wenn nein, fuege diesem Knoten Kinder hinzu
-					 */
-					if (decisionKnowledgeElement != null & linkeDecisionKnowledgeElement != null) {
-						Pair<String, String> newKVP = new Pair<String, String>(decisionKnowledgeElement.getKey(),
-								linkeDecisionKnowledgeElement.getKey());
-						Pair<String, String> newKVPReverse = new Pair<String, String>(linkeDecisionKnowledgeElement.getKey(),
-								decisionKnowledgeElement.getKey());
-						boolean boolvar = false;
-						for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
-							Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
-							if (newKVP.equals(globalInst) || newKVPReverse.equals(globalInst)) {
-								boolvar = true;
-							}
-						}
-						if (!boolvar) {
-							KeyValuePairList.keyValuePairList.add(newKVP);
-							KeyValuePairList.keyValuePairList.add(newKVPReverse);
-							toBeAddedToChildren.add(linkeDecisionKnowledgeElement);
-						}
-					}
-				}
-			}
 			for (int index = 0; index < toBeAddedToChildren.size(); ++index) {
 				children.add(createNode(toBeAddedToChildren.get(index), depth, currentDepth + 1));
 			}
