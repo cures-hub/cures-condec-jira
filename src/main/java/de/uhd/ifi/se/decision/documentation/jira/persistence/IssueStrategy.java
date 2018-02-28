@@ -434,7 +434,16 @@ public class IssueStrategy implements IPersistenceStrategy {
 		return data;
 	}
 
+	// New Implementations
+	@Override
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key){
+		IssueManager issueManager = ComponentAccessor.getIssueManager();
+		Issue issue = issueManager.getIssueByCurrentKey(key);
+		return new DecisionKnowledgeElement(issue);
+	}
+}
 	// Old implementation
+	/*
 	private Node createNode(Issue issue, int depth, int currentDepth) {
 		Node node = new Node();
 		Map<String, String> nodeContent = ImmutableMap.of("name", issue.getSummary(), "title",
@@ -472,6 +481,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 					 * Erstelle Parent-Child Beziehung und pruefe ob diese bereits in der
 					 * KeyValuePair-Liste vorhanden ist. Wenn nein, fuege diesem Knoten Kinder hinzu
 					 */
+	/*
 					if (issue != null & issueLinkDestination != null) {
 						Pair<String, String> newKVP = new Pair<String, String>(issue.getKey(),
 								issueLinkDestination.getKey());
@@ -502,6 +512,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 					 * Erstelle Parent-Child Beziehung und pruefe ob diese bereits in der
 					 * KeyValuePair-Liste vorhanden ist. Wenn nein, fuege diesem Knoten Kinder hinzu
 					 */
+	/*
 					if (issue != null & issueLinkDestination != null) {
 						Pair<String, String> newKVP = new Pair<String, String>(issue.getKey(),
 								issueLinkDestination.getKey());
@@ -530,15 +541,9 @@ public class IssueStrategy implements IPersistenceStrategy {
 		return node;
 	}
 
-	// New Implementations
-	@Override
-	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key){
-		 IssueManager issueManager = ComponentAccessor.getIssueManager();
-		 Issue issue = issueManager.getIssueByCurrentKey(key);
-		 return new DecisionKnowledgeElement(issue);
-	}
-}
 
+
+*/
 	/* TreantsRest */
 /*
 Old Implementation
