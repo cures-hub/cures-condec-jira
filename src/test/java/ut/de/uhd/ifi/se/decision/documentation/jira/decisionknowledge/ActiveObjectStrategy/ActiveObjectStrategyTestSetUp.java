@@ -15,7 +15,7 @@ import org.junit.Before;
 /**
  * @author Tim Kuchenbuch
  */
-public class AoStrategyTestSetUp extends TestSetUp{
+public class ActiveObjectStrategyTestSetUp extends TestSetUp{
 
     protected EntityManager entityManager;
     protected ActiveObjectStrategy aoStrategy;

@@ -1,4 +1,4 @@
-package ut.de.uhd.ifi.se.decision.documentation.jira.rest.DecisionRest;
+package ut.de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionRest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -7,6 +7,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -26,26 +27,7 @@ import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager
 import ut.de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestPostDecision extends TestSetUp {
-	
-	private EntityManager entityManager;
-	private DecisionsRest decRest;
-	private DecisionKnowledgeElement dec;
-	private HttpServletRequest req;
-	
-	@Before
-	public void setUp() {
-		decRest= new DecisionsRest();
-		initialisation();
-		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
-		
-		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
-		dec = new DecisionKnowledgeElement(issue);
-		dec.setId(1);
-		dec.setProjectKey("TEST");
-		dec.setType("Solution");
-		req = new MockHttpServletRequest();
-	}
+public class TestPostDecision extends TestDecisionSetUp {
 	
 	@Test
 	public void testActionTypeNullReqNullDecNull() {
@@ -150,20 +132,6 @@ public class TestPostDecision extends TestSetUp {
 	}
 	
 	@Test
-	public void testActionTypeDeleteReqFilledDecFilled() {
-		req.setAttribute("WithFails", false);
-		req.setAttribute("NoFails", true);
-		assertEquals(Status.OK.getStatusCode(),decRest.postDecision("delete", req, dec).getStatus());
-	}
-	
-	@Test
-	public void testActionTypeDeleteErrorReqFilledDecFilled() {
-		req.setAttribute("WithFails", true);
-		req.setAttribute("NoFails", false);
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build().getEntity(),decRest.postDecision("delete", req, dec).getEntity());
-	}
-	
-	@Test
 	public void testActionTypeOtherReqNullDecNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Decision knowledge element or actionType = null")).build().getEntity(),decRest.postDecision("test", null, null).getEntity());
 	}
@@ -178,13 +146,6 @@ public class TestPostDecision extends TestSetUp {
 		req.setAttribute("WithFails", false);
 		req.setAttribute("NoFails", true);
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Decision knowledge element or actionType = null")).build().getEntity(),decRest.postDecision("test", req, null).getEntity());
-	}
-	
-	@Test
-	public void testActionTypeOtherReqFilledDecFilled() {
-		req.setAttribute("WithFails", false);
-		req.setAttribute("NoFails", true);
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Unknown actionType. Pick either 'create', 'edit' or 'delete'")).build().getEntity(),decRest.postDecision("test", req, dec).getEntity());
 	}
 	
 }

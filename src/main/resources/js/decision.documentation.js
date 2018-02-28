@@ -45,6 +45,22 @@ function putJSON(url, data, callback) {
     };
     xhr.send(JSON.stringify(data));
 }
+function deleteJSON(url, data, callback){
+    var xhr = new XMLHttpRequest();
+    xhr.open("DELETE",url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+    xhr.setRequestHeader("Accept","application/json");
+    xhr.responseType="json";
+    xhr.onload = function () {
+        var status = xhr.status;
+        if(status==200){
+            callback(null, xhr.response);
+        } else {
+            callback(status);
+        }
+    };
+    xhr.send(JSON.stringify(data));
+}
 
 function createDecisionComponent(summary, issueType, callback) {
     var pathname = window.location.pathname;
@@ -103,7 +119,7 @@ function deleteDecisionComponent(issueId, callback) {
         "id": issueId,
         "projectKey": projectKey
     };
-    postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?actionType=delete", jsondata, function (err, data) {
+    deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?actionType=delete", jsondata, function (err, data) {
         if (err !== null) {
             AJS.flag({
                 type: 'error',
@@ -138,6 +154,7 @@ function createLink(parentId, childId, linkType, callback) {
         }
     });
 }
+//TODO check if still needed (Not used at the moment)
 function deleteLink(parentId, childId, linkType, callback) {
     var pathname = window.location.pathname;
     var stringArray = pathname.split("/");

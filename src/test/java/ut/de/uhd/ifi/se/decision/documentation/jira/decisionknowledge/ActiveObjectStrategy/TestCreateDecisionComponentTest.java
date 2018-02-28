@@ -18,7 +18,7 @@ import static org.junit.Assert.assertNull;
  * @author Tim Kuchenbuch
  */
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestCreateDecisionComponentTest extends AoStrategyTestSetUp {
+public class TestCreateDecisionComponentTest extends ActiveObjectStrategyTestSetUp {
 
     @Test
     public void testRepresNullUserNull(){
