@@ -80,6 +80,19 @@ public class TreantRest {
 				.build();
 	}
 
+	private String checkDecisionType(String type){
+		if (type.equals("constraint") || type.equals("assumption") || type.equals("implication")
+				|| type.equals("context")) {
+			return "context";
+		} else if (type.equals("problem") || type.equals("issue") || type.equals("goal")) {
+			return  "problem";
+		} else if (type.equals("solution") || type.equals("claim") || type.equals("alternative")) {
+			return "solution";
+		} else {
+			return  "rationale";
+		}
+	}
+	
 	//TODO Implementing the Function
 	private Node createNode(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
 		Node node = new Node();
@@ -87,18 +100,7 @@ public class TreantRest {
 				decisionKnowledgeElement.getType(), "desc", decisionKnowledgeElement.getKey());
 		node.setNodeContent(nodeContent);
 
-		String htmlClass;
-		String issueType = decisionKnowledgeElement.getType().toLowerCase();
-		if (issueType.equals("constraint") || issueType.equals("assumption") || issueType.equals("implication")
-				|| issueType.equals("context")) {
-			htmlClass = "context";
-		} else if (issueType.equals("problem") || issueType.equals("issue") || issueType.equals("goal")) {
-			htmlClass = "problem";
-		} else if (issueType.equals("solution") || issueType.equals("claim") || issueType.equals("alternative")) {
-			htmlClass = "solution";
-		} else {
-			htmlClass = "rationale";
-		}
+		String htmlClass=checkDecisionType(decisionKnowledgeElement.getType().toLowerCase());
 		node.setHtmlClass(htmlClass);
 
 		long htmlId = decisionKnowledgeElement.getId();
@@ -182,18 +184,7 @@ public class TreantRest {
 				decisionKnowledgeElement.getText(), "desc", decisionKnowledgeElement.getKey());
 		node.setNodeContent(nodeContent);
 
-		String htmlClass;
-		String issueType = decisionKnowledgeElement.getType().toLowerCase();
-		if (issueType.equals("constraint") || issueType.equals("assumption") || issueType.equals("implication")
-				|| issueType.equals("context")) {
-			htmlClass = "context";
-		} else if (issueType.equals("problem") || issueType.equals("issue") || issueType.equals("goal")) {
-			htmlClass = "problem";
-		} else if (issueType.equals("solution") || issueType.equals("claim") || issueType.equals("alternative")) {
-			htmlClass = "solution";
-		} else {
-			htmlClass = "rationale";
-		}
+		String htmlClass=checkDecisionType(decisionKnowledgeElement.getType().toLowerCase());
 		node.setHtmlClass(htmlClass);
 		long htmlId = decisionKnowledgeElement.getId();
 		node.setHtmlId(htmlId);
