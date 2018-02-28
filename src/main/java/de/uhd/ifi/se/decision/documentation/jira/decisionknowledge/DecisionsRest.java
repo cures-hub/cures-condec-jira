@@ -109,9 +109,9 @@ public class DecisionsRest {
 	public Response deleteDecision(@QueryParam("actionType")String actionType, @Context HttpServletRequest request,
 			final DecisionKnowledgeElement decisionKnowledgeElement) {
 		if(actionType != null && decisionKnowledgeElement != null && request !=null){
-			final  String projektKey =  decisionKnowledgeElement.getProjectKey();
+			final  String projectKey =  decisionKnowledgeElement.getProjectKey();
 			StrategyProvider strategyProvider = new StrategyProvider();
-			IPersistenceStrategy strategy = strategyProvider.getStrategy(projektKey);
+			IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			if(actionType.equalsIgnoreCase("delete")){
 				boolean successful = strategy.deleteDecisionComponent(decisionKnowledgeElement,user);
