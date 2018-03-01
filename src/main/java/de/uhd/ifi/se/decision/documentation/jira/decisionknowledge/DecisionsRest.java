@@ -86,7 +86,7 @@ public class DecisionsRest {
 			IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(req);
 			if (actionType.equalsIgnoreCase("create")) {
-				long issueLinkId = strategy.createLink(link, user);
+				long issueLinkId = strategy.insertLink(link, user);
 				if (issueLinkId == 0) {
 					return Response.status(Status.INTERNAL_SERVER_ERROR)
 							.entity(ImmutableMap.of("error", "Creation of Link failed.")).build();

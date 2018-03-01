@@ -35,7 +35,7 @@ public interface IPersistenceStrategy {
 
 	public List<DecisionKnowledgeElement> getUnlinkedDecisionComponents(long id, String projectKey);
 
-	public void insertLink(Link link, ApplicationUser user);
+	public long insertLink(Link link, ApplicationUser user);
 
 	public void deleteLink(Link link, ApplicationUser user);
 
