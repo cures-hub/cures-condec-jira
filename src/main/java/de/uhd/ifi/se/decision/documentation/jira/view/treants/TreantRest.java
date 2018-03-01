@@ -1,14 +1,11 @@
 package de.uhd.ifi.se.decision.documentation.jira.view.treants;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.IPersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
@@ -94,7 +91,6 @@ public class TreantRest {
 		}
 	}
 
-
 	private Node createNode(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
 		Node node = new Node();
 		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getSummary(), "title",
@@ -118,7 +114,6 @@ public class TreantRest {
 		}
 		return node;
 	}
-
 
 	private Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, int depth){
 		Node node = new Node();
@@ -151,5 +146,4 @@ public class TreantRest {
 		node.setChildren(children);
 		return node;
 	}
-
 }
