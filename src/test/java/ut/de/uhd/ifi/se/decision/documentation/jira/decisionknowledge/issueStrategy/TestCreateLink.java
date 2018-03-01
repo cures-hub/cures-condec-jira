@@ -17,7 +17,7 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 	@Test
 	(expected = NullPointerException.class)
 	public void testLinkRepresNullUserNull() {
-		issueStrategy.createLink(null, null);
+		issueStrategy.insertLink(null, null);
 	}
 	
 	@Test
@@ -26,14 +26,14 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 		link.setIngoingId(1);
 		link.setLinkType("Contains");
 		link.setOutgoingId(2);
-		assertEquals(0,issueStrategy.createLink(link, null),0.0);
+		assertEquals(0,issueStrategy.insertLink(link, null),0.0);
 	}
 	
 	@Test
 	(expected = NullPointerException.class)
 	public void testLinkRepresNullUserFilled() {
 		ApplicationUser user = new MockApplicationUser("Test");
-		issueStrategy.createLink(null,user);
+		issueStrategy.insertLink(null,user);
 	}
 	
 	@Test
@@ -43,7 +43,7 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 		link.setLinkType("Contains");
 		link.setOutgoingId(2);
 		ApplicationUser user = new MockApplicationUser("Test");
-		issueStrategy.createLink(link,user);
+		issueStrategy.insertLink(link,user);
 	}
 	
 	@Test
@@ -53,7 +53,7 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 		link.setLinkType("Contains");
 		link.setOutgoingId(3);
 		ApplicationUser user = new MockApplicationUser("Test");
-		assertEquals(0,issueStrategy.createLink(link,user),0.0);
+		assertEquals(0,issueStrategy.insertLink(link,user),0.0);
 	}
 	
 	@Test
@@ -63,7 +63,7 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 		link.setLinkType("Contains");
 		link.setOutgoingId(3);
 		ApplicationUser user = new MockApplicationUser("CreateExecption");
-		assertEquals(0,issueStrategy.createLink(link,user),0.0);
+		assertEquals(0,issueStrategy.insertLink(link,user),0.0);
 	}
 	
 	@Test
@@ -73,7 +73,7 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 		link.setLinkType("Contains");
 		link.setOutgoingId(3);
 		ApplicationUser user = new MockApplicationUser("Test");
-		assertEquals(0,issueStrategy.createLink(link,user),0.0);
+		assertEquals(0,issueStrategy.insertLink(link,user),0.0);
 	}
 	
 	@Test
@@ -83,6 +83,6 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 		link.setLinkType("Contains");
 		link.setOutgoingId(30);
 		ApplicationUser user = new MockApplicationUser("Test");
-		assertEquals(0,issueStrategy.createLink(link,user),0.0);
+		assertEquals(0,issueStrategy.insertLink(link,user),0.0);
 	}
 }
