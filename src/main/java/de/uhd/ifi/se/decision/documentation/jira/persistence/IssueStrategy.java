@@ -300,14 +300,15 @@ public class IssueStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getDecisions(Long projectId) {
+	public List<DecisionKnowledgeElement> getDecisions(String projectKey) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
+		Project project =ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
 		Collection<Long> issueIds;
-		if (projectId == null) {
+		if (projectKey == null) {
 			return null;
 		}
 		try {
-			issueIds = issueManager.getIssueIdsForProject(projectId);
+			issueIds = issueManager.getIssueIdsForProject(project.getId());
 		} catch (GenericEntityException e) {
 			issueIds = new ArrayList<Long>();
 		}
@@ -321,31 +322,6 @@ public class IssueStrategy implements IPersistenceStrategy {
 		return decisions;
 	}
 
-	/*
-	 * TreeViewerRest
-	 * TODO Refactor and Remove from Strategy
-	 */
-	public Core createCore(Long projectId) {
-		Core core = new Core();
-		core.setMultiple(false);
-		core.setCheckCallback(true);
-		core.setThemes(ImmutableMap.of("icons", false));
-		HashSet<Data> dataSet = new HashSet<Data>();
-		// List<Issue> issueList = this.getDecisionsInProject(project);
-		List<DecisionKnowledgeElement> decisions = this.getDecisions(projectId);
-		if (decisions == null) {
-			return null;
-		}
-		for (int index = 0; index < decisions.size(); ++index) {
-			KeyValuePairList.keyValuePairList = new ArrayList<Pair<String, String>>();
-			Pair<String, String> kvp = new Pair<String, String>("root", decisions.get(index).getKey());
-			KeyValuePairList.keyValuePairList.add(kvp);
-			dataSet.add(createData(decisions.get(index)));
-
-		}
-		core.setData(dataSet);
-		return core;
-	}
 
 	public List<Issue> getOutwardKnowledgeElements(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<IssueLink> allOutwardIssueLink = ComponentAccessor.getIssueLinkManager()
