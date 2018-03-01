@@ -6,6 +6,7 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.IDecisionKnowledgeElementEntity;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
@@ -26,7 +27,7 @@ public interface IPersistenceStrategy {
 
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key);
 
-	public List<DecisionKnowledgeElement> getDecisions(Long projectId);
+	public List<DecisionKnowledgeElement> getDecisions(String projectKey);
 
 	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement);
 
@@ -41,4 +42,8 @@ public interface IPersistenceStrategy {
 	public List<Link> getInwardLinks(DecisionKnowledgeElement element);
 
 	public List<Link> getOutwardLinks(DecisionKnowledgeElement element);
+
+	//New
+	//TODO need to be checked
+	public Data createData(final DecisionKnowledgeElement element);
 }

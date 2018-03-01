@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,10 +22,6 @@ import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.IDecisionKnowledgeElementEntity;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ILinkEntity;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.util.KeyValuePairList;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
@@ -156,9 +153,9 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public Long createLink(final Link link, ApplicationUser user) {
+	public void insertLink(final Link link, ApplicationUser user) {
 		final ActiveObjects ao = ComponentGetter.getAo();
-		return ao.executeInTransaction(new TransactionCallback<Long>() {
+		ao.executeInTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction() {
 				boolean linkAlreadyExists = false;
@@ -215,6 +212,21 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 				return linkId;
 			}
 		});
+	}
+
+	@Override
+	public void deleteLink(Link link, ApplicationUser user) {
+
+	}
+
+	@Override
+	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
+		return null;
+	}
+
+	@Override
+	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
+		return null;
 	}
 
 	@Override
@@ -275,34 +287,6 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 		return decList;
 	}
 
-	/* TreeViewerRest */
-	@Override
-	public Core createCore(Project project) {
-		Core core = new Core();
-		core.setMultiple(false);
-		core.setCheckCallback(true);
-		core.setThemes(ImmutableMap.of("icons", false));
-		final ActiveObjects ao = ComponentGetter.getAo();
-		final HashSet<Data> dataSet = new HashSet<Data>();
-		ao.executeInTransaction(new TransactionCallback<Void>() {
-			@Override
-			public Void doInTransaction() {
-				for (IDecisionKnowledgeElementEntity decComponent : ao.find(IDecisionKnowledgeElementEntity.class)) {
-					if (decComponent.getType().equalsIgnoreCase("Decision")) {
-						KeyValuePairList.keyValuePairList = new ArrayList<Pair<String, String>>();
-						Pair<String, String> kvp = new Pair<String, String>("root",
-								Long.toString(decComponent.getID()));
-						KeyValuePairList.keyValuePairList.add(kvp);
-						dataSet.add(createData(decComponent));
-					}
-				}
-				return null;
-			}
-		});
-		core.setData(dataSet);
-		return core;
-	}
-
 	// New Implementation
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
@@ -330,18 +314,19 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 		return null;
 	}
 
-	private Data createData(final IDecisionKnowledgeElementEntity decComponent) {
+	@Override
+	public Data createData(final DecisionKnowledgeElement element) {
 		Data data = new Data();
 
-		data.setText(decComponent.getKey() + " / " + decComponent.getName());
-		data.setId(String.valueOf(decComponent.getID()));
+		data.setText(element.getKey() + " / " + element.getName());
+		data.setId(String.valueOf(element.getId()));
 
 		NodeInfo nodeInfo = new NodeInfo();
-		nodeInfo.setId(Long.toString(decComponent.getID()));
-		nodeInfo.setKey(decComponent.getKey());
-		nodeInfo.setIssueType(decComponent.getType());
-		nodeInfo.setDescription(decComponent.getDescription());
-		nodeInfo.setSummary(decComponent.getName());
+		nodeInfo.setId(Long.toString(element.getId()));
+		nodeInfo.setKey(element.getKey());
+		nodeInfo.setIssueType(element.getType());
+		nodeInfo.setDescription(element.getDescription());
+		nodeInfo.setSummary(element.getName());
 		data.setNodeInfo(nodeInfo);
 
 		List<Data> children = new ArrayList<Data>();
@@ -352,7 +337,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 					public List<IDecisionKnowledgeElementEntity> doInTransaction() {
 						final List<IDecisionKnowledgeElementEntity> decisionList = new ArrayList<IDecisionKnowledgeElementEntity>();
 						for (ILinkEntity link : ao.find(ILinkEntity.class,
-								Query.select().where("INGOING_ID = ?", decComponent.getID()))) {
+								Query.select().where("INGOING_ID = ?", element.getId()))) {
 							for (IDecisionKnowledgeElementEntity dec : ao.find(IDecisionKnowledgeElementEntity.class,
 									Query.select().where("ID = ?", link.getOutgoingId()))) {
 								decisionList.add(dec);
@@ -362,8 +347,8 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 					}
 				});
 		for (IDecisionKnowledgeElementEntity target : targetList) {
-			Pair<String, String> newKVP = new Pair<String, String>(decComponent.getKey(), target.getKey());
-			Pair<String, String> newKVPReverse = new Pair<String, String>(target.getKey(), decComponent.getKey());
+			Pair<String, String> newKVP = new Pair<String, String>(element.getKey(), target.getKey());
+			Pair<String, String> newKVPReverse = new Pair<String, String>(target.getKey(), element.getKey());
 			boolean boolvar = false;
 			for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
 				Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
@@ -374,7 +359,8 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 			if (!boolvar) {
 				KeyValuePairList.keyValuePairList.add(newKVP);
 				KeyValuePairList.keyValuePairList.add(newKVPReverse);
-				children.add(createData(target));
+				DecisionKnowledgeElement targetElement = castToDecisionKowledgeElement(target);
+				children.add(createData(targetElement));
 			}
 		}
 
@@ -384,7 +370,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 					public List<IDecisionKnowledgeElementEntity> doInTransaction() {
 						final List<IDecisionKnowledgeElementEntity> decisionList = new ArrayList<IDecisionKnowledgeElementEntity>();
 						for (ILinkEntity link : ao.find(ILinkEntity.class,
-								Query.select().where("OUTGOING_ID = ?", decComponent.getID()))) {
+								Query.select().where("OUTGOING_ID = ?", element.getId()))) {
 							for (IDecisionKnowledgeElementEntity dec : ao.find(IDecisionKnowledgeElementEntity.class,
 									Query.select().where("ID = ?", link.getIngoingId()))) {
 								decisionList.add(dec);
@@ -394,8 +380,8 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 					}
 				});
 		for (IDecisionKnowledgeElementEntity source : sourceList) {
-			Pair<String, String> newKVP = new Pair<String, String>(decComponent.getKey(), source.getKey());
-			Pair<String, String> newKVPReverse = new Pair<String, String>(source.getKey(), decComponent.getKey());
+			Pair<String, String> newKVP = new Pair<String, String>(element.getKey(), source.getKey());
+			Pair<String, String> newKVPReverse = new Pair<String, String>(source.getKey(), element.getKey());
 			boolean boolvar = false;
 			for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
 				Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
@@ -406,7 +392,8 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 			if (!boolvar) {
 				KeyValuePairList.keyValuePairList.add(newKVP);
 				KeyValuePairList.keyValuePairList.add(newKVPReverse);
-				children.add(createData(source));
+				DecisionKnowledgeElement sourceElement = castToDecisionKowledgeElement(source);
+				children.add(createData(sourceElement));
 			}
 		}
 
@@ -415,8 +402,8 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 		return data;
 	}
 
-	@Override
-	public List<DecisionKnowledgeElement> getDecisionsInProject(Project project) {
+	//TODO Refactor
+	public List<DecisionKnowledgeElement> getDecisions(String projectKey) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -425,5 +412,16 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public List<DecisionKnowledgeElement> getParents(DecisionKnowledgeElement decisionKnowledgeElement) {
+		return null;
+	}
+
+	private DecisionKnowledgeElement castToDecisionKowledgeElement (IDecisionKnowledgeElementEntity entity){
+		DecisionKnowledgeElement element = new DecisionKnowledgeElement(entity.getID(),entity.getName(),entity.getDescription()
+				,entity.getType(),entity.getProjectKey(),entity.getKey(),entity.getSummary());
+		return  element;
 	}
 }
