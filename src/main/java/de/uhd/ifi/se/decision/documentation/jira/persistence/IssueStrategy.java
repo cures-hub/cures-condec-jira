@@ -185,6 +185,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 			LOGGER.error("NullPointerException");
 			return (long) 0;
 		} finally {
+
 			outwardIssueLinkList = issueLinkManager.getOutwardLinks(link.getIngoingId());
 			issueLinkManager.resetSequences(outwardIssueLinkList);
 			inwardIssueLinkList = issueLinkManager.getInwardLinks(link.getIngoingId());
