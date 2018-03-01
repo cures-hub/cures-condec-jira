@@ -22,13 +22,13 @@ public class TestCreateDecisionComponentTest extends ActiveObjectStrategyTestSet
 
     @Test
     public void testRepresNullUserNull(){
-        assertNull(aoStrategy.createDecisionComponent(null,null));
+        assertNull(aoStrategy.insertDecisionKnowledgeElement(null,null));
     }
 
     @Test
     public void testRepresFilledUserNull(){
         DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
-        assertNull(aoStrategy.createDecisionComponent(dec,null));
+        assertNull(aoStrategy.insertDecisionKnowledgeElement(dec,null));
     }
 
     //TODO Fixing the Test Problems (Closed Connection)
@@ -38,7 +38,7 @@ public class TestCreateDecisionComponentTest extends ActiveObjectStrategyTestSet
         dec.setProjectKey("TEST");
         dec.setType("Solution");
         ApplicationUser user = new MockApplicationUser("NoFails");
-        assertNotNull(aoStrategy.createDecisionComponent(dec,user));
+        assertNotNull(aoStrategy.insertDecisionKnowledgeElement(dec,user));
     }
 
     //TODO Fixing the Test Problems (Closed Connection)
@@ -48,6 +48,6 @@ public class TestCreateDecisionComponentTest extends ActiveObjectStrategyTestSet
         dec.setProjectKey("TEST");
         dec.setType("Solution");
         ApplicationUser user = new MockApplicationUser("WithFails");
-        assertNull(aoStrategy.createDecisionComponent(dec, user));
+        assertNull(aoStrategy.insertDecisionKnowledgeElement(dec, user));
     }
 }

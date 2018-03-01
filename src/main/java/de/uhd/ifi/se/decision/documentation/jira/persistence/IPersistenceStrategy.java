@@ -17,26 +17,28 @@ import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
  *              knowledge elements and their links
  */
 public interface IPersistenceStrategy {
-	public Data createDecisionComponent(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
 
-	public Data editDecisionComponent(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
+	public Data insertDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
 
-	public boolean deleteDecisionComponent(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
+	public Data updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
 
-	public Long createLink(Link link, ApplicationUser user);
+	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
 
-	public List<DecisionKnowledgeElement> getDecisionsInProject(Project project);
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key);
 
-	public List<DecisionKnowledgeElement> getUnlinkedDecisionComponents(long id, String projectKey);
+	public List<DecisionKnowledgeElement> getDecisions(Long projectId);
 
 	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement);
 
-	public Core createCore(Project project);
+	public List<DecisionKnowledgeElement> getParents(DecisionKnowledgeElement decisionKnowledgeElement);
 
-//   public Node createNodeStructure(String key, int depth);
+	public List<DecisionKnowledgeElement> getUnlinkedDecisionComponents(long id, String projectKey);
 
-//	public Treant createTreant(String key, int depth);
+	public void insertLink(Link link, ApplicationUser user);
 
-	// new Interface
-	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key);
+	public void deleteLink(Link link, ApplicationUser user);
+
+	public List<Link> getInwardLinks(DecisionKnowledgeElement element);
+
+	public List<Link> getOutwardLinks(DecisionKnowledgeElement element);
 }
