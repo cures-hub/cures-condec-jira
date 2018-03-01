@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.documentation.jira.persistence;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -29,13 +28,11 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ErrorCollection;
-import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.util.KeyValuePairList;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
 
@@ -155,7 +152,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public void insertLink(Link link, ApplicationUser user) {
+	public long insertLink(Link link, ApplicationUser user) {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		Collection<IssueLinkType> issueLinkTypeCollection = issueLinkTypeManager
@@ -183,10 +180,10 @@ public class IssueStrategy implements IPersistenceStrategy {
 			issueLinkManager.createIssueLink(link.getOutgoingId(), link.getIngoingId(), typeId, sequence, user);
 		} catch (CreateException e) {
 			LOGGER.error("CreateException");
-			return ;
+			return (long) 0;
 		} catch (NullPointerException e) {
 			LOGGER.error("NullPointerException");
-			return ;
+			return (long) 0;
 		} finally {
 			outwardIssueLinkList = issueLinkManager.getOutwardLinks(link.getIngoingId());
 			issueLinkManager.resetSequences(outwardIssueLinkList);
@@ -196,9 +193,9 @@ public class IssueStrategy implements IPersistenceStrategy {
 		IssueLink issueLink = issueLinkManager.getIssueLink(link.getOutgoingId(), link.getIngoingId(), typeId);
 		if (issueLink == null) {
 			LOGGER.error("issueLink == null");
-			return ;
+			return (long) 0;
 		}
-		return ;
+		return issueLink.getId();
 	}
 
 	@Override

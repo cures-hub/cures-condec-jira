@@ -153,9 +153,9 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public void insertLink(final Link link, ApplicationUser user) {
+	public long insertLink(final Link link, ApplicationUser user) {
 		final ActiveObjects ao = ComponentGetter.getAo();
-		ao.executeInTransaction(new TransactionCallback<Long>() {
+		return ao.executeInTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction() {
 				boolean linkAlreadyExists = false;
