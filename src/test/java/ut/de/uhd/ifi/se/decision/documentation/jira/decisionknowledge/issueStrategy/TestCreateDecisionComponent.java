@@ -18,14 +18,14 @@ public class TestCreateDecisionComponent extends TestIssueStrategySetUp {
 	@Test
 	(expected = NullPointerException.class)
 	public void testCreateDecisionComponentRepresNullUserNull() {
-		issueStrategy.createDecisionComponent(null, null);
+		issueStrategy.insertDecisionKnowledgeElement(null, null);
 	}
 	
 	@Test
 	(expected = NullPointerException.class)
 	public void testCreateDecisionComponentRepresFilledUserNull() {
 		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
-		issueStrategy.createDecisionComponent(dec, null);
+		issueStrategy.insertDecisionKnowledgeElement(dec, null);
 	}
 	
 	@Test
@@ -34,7 +34,7 @@ public class TestCreateDecisionComponent extends TestIssueStrategySetUp {
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
 		ApplicationUser user = new MockApplicationUser("NoFails");
-		assertNotNull(issueStrategy.createDecisionComponent(dec, user));
+		assertNotNull(issueStrategy.insertDecisionKnowledgeElement(dec, user));
 		
 	}
 	@Test
@@ -43,7 +43,7 @@ public class TestCreateDecisionComponent extends TestIssueStrategySetUp {
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
 		ApplicationUser user = new MockApplicationUser("WithFails");
-		assertNull(issueStrategy.createDecisionComponent(dec, user));
+		assertNull(issueStrategy.insertDecisionKnowledgeElement(dec, user));
 		
 	}
 }

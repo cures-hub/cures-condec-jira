@@ -18,14 +18,14 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 	@Test
 	(expected = NullPointerException.class)
 	public void testDecisionRepresNullUserNull() {
-		issueStrategy.deleteDecisionComponent(null, null);
+		issueStrategy.deleteDecisionKnowledgeElement(null, null);
 	}
 	
 	@Test
 	(expected = NullPointerException.class)
 	public void testDecisionRepresFilledUserNull() {
 		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
-		issueStrategy.deleteDecisionComponent(dec, null);
+		issueStrategy.deleteDecisionKnowledgeElement(dec, null);
 	}
 	
 	@Test
@@ -35,7 +35,7 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
 		ApplicationUser user = new MockApplicationUser("NoFails");
-		assertTrue(issueStrategy.deleteDecisionComponent(dec, user));
+		assertTrue(issueStrategy.deleteDecisionKnowledgeElement(dec, user));
 	}
 	
 	@Test
@@ -45,7 +45,7 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
 		ApplicationUser user = new MockApplicationUser("WithFails");
-		assertFalse(issueStrategy.deleteDecisionComponent(dec, user));
+		assertFalse(issueStrategy.deleteDecisionKnowledgeElement(dec, user));
 	}
 	
 	@Test
@@ -55,7 +55,7 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
 		ApplicationUser user = new MockApplicationUser("WithResFails");
-		assertFalse(issueStrategy.deleteDecisionComponent(dec, user));
+		assertFalse(issueStrategy.deleteDecisionKnowledgeElement(dec, user));
 	}
 	
 	@Test
@@ -65,7 +65,7 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
 		ApplicationUser user = new MockApplicationUser("ValidNoResErrors");
-		assertFalse(issueStrategy.deleteDecisionComponent(dec, user));
+		assertFalse(issueStrategy.deleteDecisionKnowledgeElement(dec, user));
 	}
 
 }

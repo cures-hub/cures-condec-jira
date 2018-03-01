@@ -35,7 +35,6 @@ import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowl
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.util.KeyValuePairList;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
@@ -51,7 +50,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 	@Override
 	// TODO Separate view and model (this method should not return Data object for
 	// Treant)
-	public Data createDecisionComponent(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
+	public Data insertDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
 
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
 
@@ -95,7 +94,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public Data editDecisionComponent(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
+	public Data updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
 
 		IssueService issueService = ComponentAccessor.getIssueService();
 
@@ -132,7 +131,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public boolean deleteDecisionComponent(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
+	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
 		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueService.IssueResult issue = issueService.getIssue(user, decisionElement.getId());
 		if (issue.isValid()) {
@@ -156,7 +155,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public Long createLink(Link link, ApplicationUser user) {
+	public void insertLink(Link link, ApplicationUser user) {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		Collection<IssueLinkType> issueLinkTypeCollection = issueLinkTypeManager
@@ -184,10 +183,10 @@ public class IssueStrategy implements IPersistenceStrategy {
 			issueLinkManager.createIssueLink(link.getOutgoingId(), link.getIngoingId(), typeId, sequence, user);
 		} catch (CreateException e) {
 			LOGGER.error("CreateException");
-			return (long) 0;
+			return ;
 		} catch (NullPointerException e) {
 			LOGGER.error("NullPointerException");
-			return (long) 0;
+			return ;
 		} finally {
 			outwardIssueLinkList = issueLinkManager.getOutwardLinks(link.getIngoingId());
 			issueLinkManager.resetSequences(outwardIssueLinkList);
@@ -197,10 +196,26 @@ public class IssueStrategy implements IPersistenceStrategy {
 		IssueLink issueLink = issueLinkManager.getIssueLink(link.getOutgoingId(), link.getIngoingId(), typeId);
 		if (issueLink == null) {
 			LOGGER.error("issueLink == null");
-			return (long) 0;
+			return ;
 		}
-		return issueLink.getId();
+		return ;
 	}
+
+	@Override
+	public void deleteLink(Link link, ApplicationUser user) {
+
+	}
+
+	@Override
+	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
+		return null;
+	}
+
+	@Override
+	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
+		return null;
+	}
+
 
 	@Override
 	public List<DecisionKnowledgeElement> getUnlinkedDecisionComponents(long id, String projectKey) {
@@ -285,14 +300,14 @@ public class IssueStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getDecisionsInProject(Project project) {
+	public List<DecisionKnowledgeElement> getDecisions(Long projectId) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Collection<Long> issueIds;
-		if (project == null) {
+		if (projectId == null) {
 			return null;
 		}
 		try {
-			issueIds = issueManager.getIssueIdsForProject(project.getId());
+			issueIds = issueManager.getIssueIdsForProject(projectId);
 		} catch (GenericEntityException e) {
 			issueIds = new ArrayList<Long>();
 		}
@@ -308,16 +323,16 @@ public class IssueStrategy implements IPersistenceStrategy {
 
 	/*
 	 * TreeViewerRest
+	 * TODO Refactor and Remove from Strategy
 	 */
-	@Override
-	public Core createCore(Project project) {
+	public Core createCore(Long projectId) {
 		Core core = new Core();
 		core.setMultiple(false);
 		core.setCheckCallback(true);
 		core.setThemes(ImmutableMap.of("icons", false));
 		HashSet<Data> dataSet = new HashSet<Data>();
 		// List<Issue> issueList = this.getDecisionsInProject(project);
-		List<DecisionKnowledgeElement> decisions = this.getDecisionsInProject(project);
+		List<DecisionKnowledgeElement> decisions = this.getDecisions(projectId);
 		if (decisions == null) {
 			return null;
 		}
@@ -405,6 +420,11 @@ public class IssueStrategy implements IPersistenceStrategy {
 		return children;
 	}
 
+	@Override
+	public List<DecisionKnowledgeElement> getParents(DecisionKnowledgeElement decisionKnowledgeElement) {
+		return null;
+	}
+
 	public Data createData(DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement == null) {
 			LOGGER.error("NullPointerException: createData Issue was NULL");
@@ -434,7 +454,6 @@ public class IssueStrategy implements IPersistenceStrategy {
 		return data;
 	}
 
-	// New Implementations
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key){
 		IssueManager issueManager = ComponentAccessor.getIssueManager();

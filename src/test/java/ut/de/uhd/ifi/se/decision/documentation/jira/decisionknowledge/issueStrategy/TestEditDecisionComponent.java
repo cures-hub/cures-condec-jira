@@ -18,14 +18,14 @@ public class TestEditDecisionComponent extends TestIssueStrategySetUp {
 	@Test
 	(expected = NullPointerException.class)
 	public void testDecisionRepresentationNullApplicUserNull() {
-		issueStrategy.editDecisionComponent(null, null);
+		issueStrategy.updateDecisionKnowledgeElement(null, null);
 	}
 	
 	@Test
 	(expected = NullPointerException.class)
 	public void testDecisionRepresentationFilledApplicUserNull() {
 		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
-		issueStrategy.editDecisionComponent(dec, null);
+		issueStrategy.updateDecisionKnowledgeElement(dec, null);
 	}
 	
 	@Test
@@ -35,7 +35,7 @@ public class TestEditDecisionComponent extends TestIssueStrategySetUp {
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
 		ApplicationUser user = new MockApplicationUser("NoFails");
-		assertNotNull(issueStrategy.editDecisionComponent(dec, user));
+		assertNotNull(issueStrategy.updateDecisionKnowledgeElement(dec, user));
 	}
 	
 	@Test
@@ -45,6 +45,6 @@ public class TestEditDecisionComponent extends TestIssueStrategySetUp {
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
 		ApplicationUser user = new MockApplicationUser("WithFails");
-		assertNull(issueStrategy.editDecisionComponent(dec, user));
+		assertNull(issueStrategy.updateDecisionKnowledgeElement(dec, user));
 	}
 }

@@ -39,13 +39,13 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectStrategy.class);
 
 	@Override
-	public Data createDecisionComponent(final DecisionKnowledgeElement dec, ApplicationUser user) {
+	public Data insertDecisionKnowledgeElement(final DecisionKnowledgeElement dec, ApplicationUser user) {
 		if (dec == null) {
-			LOGGER.error("AOStrategy createDecisionComponent the DecisionRepresentation is null");
+			LOGGER.error("AOStrategy insertDecisionKnowledgeElement the DecisionRepresentation is null");
 			return null;
 		}
 		if (user == null) {
-			LOGGER.error("AOStrategy createDecisionComponent the ApplicationUser is null");
+			LOGGER.error("AOStrategy insertDecisionKnowledgeElement the ApplicationUser is null");
 			return null;
 		}
 		final ActiveObjects ao = ComponentGetter.getAo();
@@ -86,7 +86,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public Data editDecisionComponent(final DecisionKnowledgeElement dec, ApplicationUser user) {
+	public Data updateDecisionKnowledgeElement(final DecisionKnowledgeElement dec, ApplicationUser user) {
 		final ActiveObjects ao = ComponentGetter.getAo();
 		IDecisionKnowledgeElementEntity decComponent = ao
 				.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
@@ -124,7 +124,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public boolean deleteDecisionComponent(final DecisionKnowledgeElement dec, final ApplicationUser user) {
+	public boolean deleteDecisionKnowledgeElement(final DecisionKnowledgeElement dec, final ApplicationUser user) {
 		final ActiveObjects ao = ComponentGetter.getAo();
 		return ao.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override

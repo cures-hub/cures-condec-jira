@@ -52,14 +52,14 @@ public class DecisionsRest {
 			IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			if (actionType.equalsIgnoreCase("create")) {
-				final Data data = strategy.createDecisionComponent(decisionKnowledgeElement, user);
+				final Data data = strategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
 				if (data != null) {
 					return Response.status(Status.OK).entity(data).build();
 				}
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
 			} else if (actionType.equalsIgnoreCase("edit")) {
-				final Data data = strategy.editDecisionComponent(decisionKnowledgeElement, user);
+				final Data data = strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user);
 				if (data != null) {
 					return Response.status(Status.OK).entity(data).build();
 				}
@@ -114,7 +114,7 @@ public class DecisionsRest {
 			IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			if(actionType.equalsIgnoreCase("delete")){
-				boolean successful = strategy.deleteDecisionComponent(decisionKnowledgeElement,user);
+				boolean successful = strategy.deleteDecisionKnowledgeElement(decisionKnowledgeElement,user);
 				if(successful){
 					return  Response.status(Status.OK).entity(successful).build();
 				} else {
