@@ -21,6 +21,7 @@ public class TestDecisionRepresentationStrings {
 	private String type;
 	private String projectKey;
 	private String key;
+	private String summery;
 	private DecisionKnowledgeElement repre;
 
 	@Before
@@ -31,8 +32,9 @@ public class TestDecisionRepresentationStrings {
 		this.type = "Test";
 		this.projectKey = "Test";
 		this.key = "Test";
+		this.summery = "Test";
 
-		this.repre = new DecisionKnowledgeElement(id, name, description, type, projectKey, key);
+		this.repre = new DecisionKnowledgeElement(id, name, description, type, projectKey, key, summery);
 	}
 
 	@Test
