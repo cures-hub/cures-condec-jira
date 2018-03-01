@@ -31,5 +31,5 @@ public interface IDecisionKnowledgeElement {
 
 	public String getSummary();
 
-	public void setSummry();
+	public void setSummary(String summary);
 }
