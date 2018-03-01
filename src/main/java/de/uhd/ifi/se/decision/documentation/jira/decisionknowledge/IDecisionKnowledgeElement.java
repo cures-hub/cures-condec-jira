@@ -28,4 +28,8 @@ public interface IDecisionKnowledgeElement {
 	public String getKey();
 
 	public void setKey(String key);
+
+	public String getSummary();
+
+	public void setSummry();
 }

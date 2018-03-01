@@ -303,6 +303,33 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 		return core;
 	}
 
+	// New Implementation
+	@Override
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
+		final ActiveObjects ao = ComponentGetter.getAo();
+		IDecisionKnowledgeElementEntity dec = ao
+				.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
+					@Override
+					public IDecisionKnowledgeElementEntity doInTransaction() {
+						IDecisionKnowledgeElementEntity[] decisionsArray = ao
+								.find(IDecisionKnowledgeElementEntity.class, Query.select().where("KEY = ?", key));
+						// id is primaryKey for DecisionComponents therefore there can be 0-1
+						// decisioncomponent returned by this query
+						IDecisionKnowledgeElementEntity decComponent = null;
+						if (decisionsArray.length == 1) {
+							decComponent = decisionsArray[0];
+						}
+						return decComponent;
+					}
+				});
+		if (dec != null) {
+			DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElement(dec.getID(),dec.getName(),
+					dec.getDescription(),dec.getType(),dec.getProjectKey(),dec.getKey(),dec.getSummary());
+			return decisionKnowledgeElement;
+		}
+		return null;
+	}
+
 	private Data createData(final IDecisionKnowledgeElementEntity decComponent) {
 		Data data = new Data();
 
@@ -399,187 +426,4 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public Node createNodeStructure(String key, int depth) {
-		Node node = new Node();
-		final ActiveObjects ao = ComponentGetter.getAo();
-		IDecisionKnowledgeElementEntity dec = ao
-				.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
-					@Override
-					public IDecisionKnowledgeElementEntity doInTransaction() {
-						IDecisionKnowledgeElementEntity[] decisionsArray = ao
-								.find(IDecisionKnowledgeElementEntity.class, Query.select().where("KEY = ?", key));
-						// id is primaryKey for DecisionComponents therefore there can be 0-1
-						// decisioncomponent returned by this query
-						IDecisionKnowledgeElementEntity decComponent = null;
-						if (decisionsArray.length == 1) {
-							decComponent = decisionsArray[0];
-						}
-						return decComponent;
-					}
-				});
-
-		if (dec != null) {
-			Map<String, String> nodeContent = ImmutableMap.of("name", dec.getName(), "title", dec.getType(), "desc",
-					dec.getKey());
-			node.setNodeContent(nodeContent);
-
-			String htmlClass;
-			String issueType = dec.getType().toLowerCase();
-			if (issueType.equals("constraint") || issueType.equals("assumption") || issueType.equals("implication")
-					|| issueType.equals("context")) {
-				htmlClass = "context";
-			} else if (issueType.equals("problem") || issueType.equals("issue") || issueType.equals("goal")) {
-				htmlClass = "problem";
-			} else if (issueType.equals("solution") || issueType.equals("claim") || issueType.equals("alternative")) {
-				htmlClass = "solution";
-			} else {
-				htmlClass = "rationale";
-			}
-			node.setHtmlClass(htmlClass);
-
-			long htmlId = dec.getID();
-			node.setHtmlId(htmlId);
-
-			List<Node> children = new ArrayList<Node>();
-			KeyValuePairList.keyValuePairList = new ArrayList<Pair<String, String>>();
-			final List<IDecisionKnowledgeElementEntity> inwardLinkedDecList = new ArrayList<IDecisionKnowledgeElementEntity>();
-			for (ILinkEntity linkEntity : ao.find(ILinkEntity.class,
-					Query.select().where("INGOING_ID != ? AND OUTGOING_ID = ?", dec.getID(), dec.getID()))) {
-				for (IDecisionKnowledgeElementEntity decisionComponent : ao.find(IDecisionKnowledgeElementEntity.class,
-						Query.select().where("ID = ? AND PROJECT_KEY = ?", linkEntity.getIngoingId(),
-								dec.getProjectKey()))) {
-					inwardLinkedDecList.add(decisionComponent);
-				}
-			}
-
-			final List<IDecisionKnowledgeElementEntity> outwardLinkedDecList = new ArrayList<IDecisionKnowledgeElementEntity>();
-			for (ILinkEntity linkEntity : ao.find(ILinkEntity.class,
-					Query.select().where("INGOING_ID = ? AND OUTGOING_ID != ?", dec.getID(), dec.getID()))) {
-				for (IDecisionKnowledgeElementEntity decisionComponent : ao.find(IDecisionKnowledgeElementEntity.class,
-						Query.select().where("ID = ? AND PROJECT_KEY = ?", linkEntity.getOutgoingId(),
-								dec.getProjectKey()))) {
-					outwardLinkedDecList.add(decisionComponent);
-				}
-			}
-
-			if (inwardLinkedDecList.size() > 0) {
-				for (int i = 0; i < inwardLinkedDecList.size(); i++) {
-					IDecisionKnowledgeElementEntity decisionComponent = inwardLinkedDecList.get(i);
-					Pair<String, String> kvp = new Pair<String, String>(dec.getKey(), decisionComponent.getKey());
-					Pair<String, String> kvp2 = new Pair<String, String>(decisionComponent.getKey(), dec.getKey());
-					KeyValuePairList.keyValuePairList.add(kvp);
-					KeyValuePairList.keyValuePairList.add(kvp2);
-					children.add(createNode(decisionComponent, depth, 0));
-				}
-			}
-
-			if (outwardLinkedDecList.size() > 0) {
-				for (int i = 0; i < outwardLinkedDecList.size(); i++) {
-					IDecisionKnowledgeElementEntity decisionComponent = outwardLinkedDecList.get(i);
-					Pair<String, String> kvp = new Pair<String, String>(dec.getKey(), decisionComponent.getKey());
-					Pair<String, String> kvp2 = new Pair<String, String>(decisionComponent.getKey(), dec.getKey());
-					KeyValuePairList.keyValuePairList.add(kvp);
-					KeyValuePairList.keyValuePairList.add(kvp2);
-					children.add(createNode(decisionComponent, depth, 0));
-				}
-			}
-
-			node.setChildren(children);
-		}
-		return node;
-	}
-
-	private Node createNode(IDecisionKnowledgeElementEntity dec, int depth, int currentDepth) {
-		Node node = new Node();
-		final ActiveObjects ao = ComponentGetter.getAo();
-		if (dec != null) {
-			Map<String, String> nodeContent = ImmutableMap.of("name", dec.getName(), "title", dec.getType(), "desc",
-					dec.getKey());
-			node.setNodeContent(nodeContent);
-
-			String htmlClass;
-			String issueType = dec.getType().toLowerCase();
-			if (issueType.equals("constraint") || issueType.equals("assumption") || issueType.equals("implication")
-					|| issueType.equals("context")) {
-				htmlClass = "context";
-			} else if (issueType.equals("problem") || issueType.equals("issue") || issueType.equals("goal")) {
-				htmlClass = "problem";
-			} else if (issueType.equals("solution") || issueType.equals("claim") || issueType.equals("alternative")) {
-				htmlClass = "solution";
-			} else {
-				htmlClass = "rationale";
-			}
-			node.setHtmlClass(htmlClass);
-
-			long htmlId = dec.getID();
-			node.setHtmlId(htmlId);
-
-			if (currentDepth + 1 < depth) {
-				List<Node> children = new ArrayList<Node>();
-				final List<IDecisionKnowledgeElementEntity> inwardLinkedDecList = new ArrayList<IDecisionKnowledgeElementEntity>();
-				for (ILinkEntity linkEntity : ao.find(ILinkEntity.class,
-						Query.select().where("INGOING_ID != ? AND OUTGOING_ID = ?", dec.getID(), dec.getID()))) {
-					for (IDecisionKnowledgeElementEntity decisionComponent : ao.find(
-							IDecisionKnowledgeElementEntity.class, Query.select().where("ID = ? AND PROJECT_KEY = ?",
-									linkEntity.getIngoingId(), dec.getProjectKey()))) {
-						inwardLinkedDecList.add(decisionComponent);
-					}
-				}
-				final List<IDecisionKnowledgeElementEntity> outwardLinkedDecList = new ArrayList<IDecisionKnowledgeElementEntity>();
-				for (ILinkEntity linkEntity : ao.find(ILinkEntity.class,
-						Query.select().where("INGOING_ID = ? AND OUTGOING_ID != ?", dec.getID(), dec.getID()))) {
-					for (IDecisionKnowledgeElementEntity decisionComponent : ao.find(
-							IDecisionKnowledgeElementEntity.class, Query.select().where("ID = ? AND PROJECT_KEY = ?",
-									linkEntity.getOutgoingId(), dec.getProjectKey()))) {
-						outwardLinkedDecList.add(decisionComponent);
-					}
-				}
-				List<IDecisionKnowledgeElementEntity> toBeAddedToChildren = new ArrayList<IDecisionKnowledgeElementEntity>();
-				for (int i = 0; i < outwardLinkedDecList.size(); ++i) {
-					IDecisionKnowledgeElementEntity decisionComponent = outwardLinkedDecList.get(i);
-					Pair<String, String> newKVP = new Pair<String, String>(dec.getKey(), decisionComponent.getKey());
-					Pair<String, String> newKVPReverse = new Pair<String, String>(decisionComponent.getKey(),
-							dec.getKey());
-					boolean boolvar = false;
-					for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
-						Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
-						if (newKVP.equals(globalInst) || newKVPReverse.equals(globalInst)) {
-							boolvar = true;
-						}
-					}
-					if (!boolvar) {
-						KeyValuePairList.keyValuePairList.add(newKVP);
-						KeyValuePairList.keyValuePairList.add(newKVPReverse);
-						toBeAddedToChildren.add(decisionComponent);
-					}
-				}
-				for (int i = 0; i < inwardLinkedDecList.size(); ++i) {
-					IDecisionKnowledgeElementEntity decisionComponent = inwardLinkedDecList.get(i);
-					Pair<String, String> newKVP = new Pair<String, String>(dec.getKey(), decisionComponent.getKey());
-					Pair<String, String> newKVPReverse = new Pair<String, String>(decisionComponent.getKey(),
-							dec.getKey());
-					boolean boolvar = false;
-					for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
-						Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
-						if (newKVP.equals(globalInst) || newKVPReverse.equals(globalInst)) {
-							boolvar = true;
-						}
-					}
-					if (!boolvar) {
-						KeyValuePairList.keyValuePairList.add(newKVP);
-						KeyValuePairList.keyValuePairList.add(newKVPReverse);
-						toBeAddedToChildren.add(decisionComponent);
-					}
-				}
-				for (int index = 0; index < toBeAddedToChildren.size(); ++index) {
-					children.add(createNode(toBeAddedToChildren.get(index), depth, currentDepth + 1));
-				}
-				node.setChildren(children);
-			}
-		}
-		return node;
-	}
-
 }

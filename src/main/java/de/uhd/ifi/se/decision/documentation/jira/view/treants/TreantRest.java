@@ -93,6 +93,7 @@ public class TreantRest {
 		}
 	}
 
+	//TODO Implementing the Function without specific Strategy (AO,Issue)
 	private List<DecisionKnowledgeElement> searchforChildren(DecisionKnowledgeElement decisionKnowledgeElement){
 		List<DecisionKnowledgeElement> foundChildren = new ArrayList<DecisionKnowledgeElement>();
 
@@ -141,7 +142,7 @@ public class TreantRest {
 		return  foundChildren;
 	}
 
-	//TODO Implementing the Function
+	//TODO Implementing the Function without specific Strategy (AO,Issue)
 	private Node createNode(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
 		Node node = new Node();
 		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getSummary(), "title",
@@ -166,6 +167,7 @@ public class TreantRest {
 		return node;
 	}
 
+	//TODO Implementing the Function without specific Strategy (AO,Issue)
 	private Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, int depth){
 		Node node = new Node();
 		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getSummary(), "title",
