@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.issueStrategy;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -45,6 +46,6 @@ public class TestEditDecisionComponent extends TestIssueStrategySetUp {
 		dec.setProjectKey("TEST");
 		dec.setType("Solution");
 		ApplicationUser user = new MockApplicationUser("WithFails");
-		assertNull(issueStrategy.updateDecisionKnowledgeElement(dec, user));
+		assertFalse(issueStrategy.updateDecisionKnowledgeElement(dec, user));
 	}
 }

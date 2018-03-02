@@ -60,7 +60,7 @@ public class DecisionsRest {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
 			} else if (actionType.equalsIgnoreCase("edit")) {
-				decisionKnowledgeElement = strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user);
+				strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user);
 				Data data = strategy.createData(decisionKnowledgeElement);
 				if (data != null) {
 					return Response.status(Status.OK).entity(data).build();
