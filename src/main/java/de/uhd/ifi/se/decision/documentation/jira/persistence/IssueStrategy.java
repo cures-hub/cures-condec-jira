@@ -47,7 +47,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 	@Override
 	// TODO Separate view and model (this method should not return Data object for
 	// Treant)
-	public Data insertDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
+	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
 
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
 
@@ -74,13 +74,12 @@ public class IssueStrategy implements IPersistenceStrategy {
 			IssueResult issueResult = issueService.create(user, result);
 			Issue issue = issueResult.getIssue();
 			decisionElement.setId(issue.getId());
-			Data data = this.createData(decisionElement);
-			return data;
+			return decisionElement;
 		}
 	}
 
 	@Override
-	public Data updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
+	public DecisionKnowledgeElement updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
 
 		IssueService issueService = ComponentAccessor.getIssueService();
 
@@ -100,8 +99,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 			issueResult = issueService.update(user, result);
 			Issue issue = issueResult.getIssue();
 			decisionElement.setId(issue.getId());
-			Data data = this.createData(decisionElement);
-			return data;
+			return decisionElement;
 		}
 	}
 
