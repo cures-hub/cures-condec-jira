@@ -26,6 +26,8 @@ public interface IPersistenceStrategy {
 	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
 
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key);
+	
+	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey);
 
 	public List<DecisionKnowledgeElement> getDecisions(String projectKey);
 

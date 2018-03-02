@@ -74,7 +74,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 			IssueResult issueResult = issueService.create(user, result);
 			Issue issue = issueResult.getIssue();
 			decisionElement.setId(issue.getId());
-			Data data = this.createData(decisionElement);			
+			Data data = this.createData(decisionElement);
 			return data;
 		}
 	}
@@ -99,7 +99,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 		} else {
 			issueResult = issueService.update(user, result);
 			Issue issue = issueResult.getIssue();
-			decisionElement.setId(issue.getId());			
+			decisionElement.setId(issue.getId());
 			Data data = this.createData(decisionElement);
 			return data;
 		}
@@ -192,7 +192,6 @@ public class IssueStrategy implements IPersistenceStrategy {
 		return null;
 	}
 
-
 	@Override
 	public List<DecisionKnowledgeElement> getUnlinkedDecisionComponents(long id, String projectKey) {
 		List<DecisionKnowledgeElement> unlinkedDecisionComponents = new ArrayList<DecisionKnowledgeElement>();
@@ -275,30 +274,6 @@ public class IssueStrategy implements IPersistenceStrategy {
 		return "";
 	}
 
-	@Override
-	public List<DecisionKnowledgeElement> getDecisions(String projectKey) {
-		IssueManager issueManager = ComponentAccessor.getIssueManager();
-		Project project =ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
-		Collection<Long> issueIds;
-		if (projectKey == null) {
-			return null;
-		}
-		try {
-			issueIds = issueManager.getIssueIdsForProject(project.getId());
-		} catch (GenericEntityException e) {
-			issueIds = new ArrayList<Long>();
-		}
-		List<DecisionKnowledgeElement> decisions = new ArrayList<DecisionKnowledgeElement>();
-		for (Long issueId : issueIds) {
-			Issue issue = issueManager.getIssueObject(issueId);
-			if (issue != null && issue.getIssueType().getName().equals("Decision")) {
-				decisions.add(new DecisionKnowledgeElement(issue));
-			}
-		}
-		return decisions;
-	}
-
-
 	public List<Issue> getOutwardKnowledgeElements(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<IssueLink> allOutwardIssueLink = ComponentAccessor.getIssueLinkManager()
 				.getOutwardLinks(decisionKnowledgeElement.getId());
@@ -376,27 +351,6 @@ public class IssueStrategy implements IPersistenceStrategy {
 	public List<DecisionKnowledgeElement> getParents(DecisionKnowledgeElement decisionKnowledgeElement) {
 		return null;
 	}
-	
-	public Data createSingleData(DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (decisionKnowledgeElement == null) {
-			LOGGER.error("NullPointerException: createData Issue was NULL");
-			return new Data();
-		}
-		Data data = new Data();
-
-		data.setText(decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getName());
-		data.setId(String.valueOf(decisionKnowledgeElement.getId()));
-
-		NodeInfo nodeInfo = new NodeInfo();
-		nodeInfo.setId(Long.toString(decisionKnowledgeElement.getId()));
-		nodeInfo.setKey(decisionKnowledgeElement.getKey());
-		nodeInfo.setIssueType(decisionKnowledgeElement.getType());
-		nodeInfo.setDescription(decisionKnowledgeElement.getDescription());
-		nodeInfo.setSummary(decisionKnowledgeElement.getName());
-		data.setNodeInfo(nodeInfo);
-
-		return data;
-	}
 
 	public Data createData(DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement == null) {
@@ -428,9 +382,42 @@ public class IssueStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key){
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue issue = issueManager.getIssueByCurrentKey(key);
 		return new DecisionKnowledgeElement(issue);
+	}
+
+	@Override
+	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey) {
+		IssueManager issueManager = ComponentAccessor.getIssueManager();
+		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
+		Collection<Long> issueIds;
+		if (projectKey == null) {
+			return null;
+		}
+		try {
+			issueIds = issueManager.getIssueIdsForProject(project.getId());
+		} catch (GenericEntityException e) {
+			issueIds = new ArrayList<Long>();
+		}
+		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
+		for (Long issueId : issueIds) {
+			Issue issue = issueManager.getIssueObject(issueId);
+			decisionKnowledgeElements.add(new DecisionKnowledgeElement(issue));
+		}
+		return decisionKnowledgeElements;
+	}
+
+	@Override
+	public List<DecisionKnowledgeElement> getDecisions(String projectKey) {
+		List<DecisionKnowledgeElement> decisionKnowledgeElements = this.getDecisionKnowledgeElements(projectKey);
+		List<DecisionKnowledgeElement> decisions = new ArrayList<DecisionKnowledgeElement>();
+		for (DecisionKnowledgeElement decisionKnowledgeElement : decisionKnowledgeElements) {
+			if (decisionKnowledgeElement.getType().equals("Decision")) {
+				decisions.add(decisionKnowledgeElement);
+			}
+		}
+		return decisions;
 	}
 }
