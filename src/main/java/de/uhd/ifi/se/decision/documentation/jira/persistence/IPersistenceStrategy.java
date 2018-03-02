@@ -27,6 +27,8 @@ public interface IPersistenceStrategy {
 
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key);
 
+	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey);
+
 	public List<DecisionKnowledgeElement> getDecisions(String projectKey);
 
 	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement);

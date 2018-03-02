@@ -424,4 +424,10 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 				,entity.getType(),entity.getProjectKey(),entity.getKey(),entity.getSummary());
 		return  element;
 	}
+
+	@Override
+	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
