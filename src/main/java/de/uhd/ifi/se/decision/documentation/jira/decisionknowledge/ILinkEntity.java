@@ -13,5 +13,5 @@ import net.java.ao.schema.Table;
 public interface ILinkEntity extends ILink, RawEntity<Integer> {
 	@AutoIncrement
 	@PrimaryKey("ID")
-	public long getID();
+	public long getId();
 }
