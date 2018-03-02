@@ -50,7 +50,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 					@Override
 					public IDecisionKnowledgeElementEntity doInTransaction() {
 						IDecisionKnowledgeElementEntity decComponent = ao.create(IDecisionKnowledgeElementEntity.class);
-						decComponent.setKey(dec.getProjectKey().toUpperCase() + "-" + decComponent.getId());
+						//decComponent.setKey(dec.getProjectKey().toUpperCase() + "-" + decComponent.getId());
 						decComponent.setName(dec.getName());
 						decComponent.setDescription(dec.getDescription());
 						decComponent.setType(dec.getType());
@@ -62,7 +62,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 		if (decComponent == null) {
 			return null;
 		}
-		dec.setKey(dec.getProjectKey().toUpperCase() + "-" + decComponent.getId());
+		//dec.setKey(dec.getProjectKey().toUpperCase() + "-" + decComponent.getId());
 		dec.setId(decComponent.getId());
 		return dec;
 	}
