@@ -2,14 +2,10 @@ package de.uhd.ifi.se.decision.documentation.jira.persistence;
 
 import java.util.List;
 
-import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.IDecisionKnowledgeElementEntity;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 
 /**
@@ -21,7 +17,7 @@ public interface IPersistenceStrategy {
 
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
 
-	public DecisionKnowledgeElement updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
+	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
 
 	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
 
@@ -47,5 +43,5 @@ public interface IPersistenceStrategy {
 
 	//TODO need to be checked
 	//TODO Move this method to TreeViewerRest class
-	public Data createData(final DecisionKnowledgeElement element);
+	public Data createData(DecisionKnowledgeElement element);
 }

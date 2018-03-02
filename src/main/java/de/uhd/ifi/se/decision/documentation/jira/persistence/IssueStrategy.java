@@ -45,10 +45,8 @@ public class IssueStrategy implements IPersistenceStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IssueStrategy.class);
 
 	@Override
-	// TODO Separate view and model (this method should not return Data object for
-	// Treant)
-	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
-
+	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement,
+			ApplicationUser user) {
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
 
 		issueInputParameters.setSummary(decisionElement.getName());
@@ -57,11 +55,9 @@ public class IssueStrategy implements IPersistenceStrategy {
 		issueInputParameters.setReporterId(user.getName());
 
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(decisionElement.getProjectKey());
-
 		issueInputParameters.setProjectId(project.getId());
 		String issueTypeId = getIssueTypeId(decisionElement.getType());
 		issueInputParameters.setIssueTypeId(issueTypeId);
-
 		IssueService issueService = ComponentAccessor.getIssueService();
 
 		IssueService.CreateValidationResult result = issueService.validateCreate(user, issueInputParameters);
@@ -79,8 +75,8 @@ public class IssueStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public DecisionKnowledgeElement updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
-
+	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement,
+			ApplicationUser user) {
 		IssueService issueService = ComponentAccessor.getIssueService();
 
 		IssueResult issueResult = issueService.getIssue(user, decisionElement.getId());
@@ -94,12 +90,10 @@ public class IssueStrategy implements IPersistenceStrategy {
 			for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
 				LOGGER.error(entry.getKey() + ": " + entry.getValue());
 			}
-			return null;
+			return false;
 		} else {
 			issueResult = issueService.update(user, result);
-			Issue issue = issueResult.getIssue();
-			decisionElement.setId(issue.getId());
-			return decisionElement;
+			return true;
 		}
 	}
 
@@ -116,15 +110,12 @@ public class IssueStrategy implements IPersistenceStrategy {
 				return false;
 			} else {
 				ErrorCollection errorCollection = issueService.delete(user, result);
-				if (errorCollection.hasAnyErrors()) {
-					return false;
-				} else {
+				if (!errorCollection.hasAnyErrors()) {
 					return true;
 				}
 			}
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	@Override
@@ -161,7 +152,6 @@ public class IssueStrategy implements IPersistenceStrategy {
 			LOGGER.error("NullPointerException");
 			return (long) 0;
 		} finally {
-
 			outwardIssueLinkList = issueLinkManager.getOutwardLinks(link.getIngoingId());
 			issueLinkManager.resetSequences(outwardIssueLinkList);
 			inwardIssueLinkList = issueLinkManager.getInwardLinks(link.getIngoingId());
@@ -264,9 +254,9 @@ public class IssueStrategy implements IPersistenceStrategy {
 	private String getIssueTypeId(String type) {
 		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
 		Collection<IssueType> listOfIssueTypes = constantsManager.getAllIssueTypeObjects();
-		for (IssueType iType : listOfIssueTypes) {
-			if (iType.getName().equalsIgnoreCase(type)) {
-				return iType.getId();
+		for (IssueType issueType : listOfIssueTypes) {
+			if (issueType.getName().equalsIgnoreCase(type)) {
+				return issueType.getId();
 			}
 		}
 		return "";
