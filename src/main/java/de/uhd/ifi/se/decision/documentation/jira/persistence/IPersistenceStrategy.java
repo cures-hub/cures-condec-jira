@@ -19,9 +19,9 @@ import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
  */
 public interface IPersistenceStrategy {
 
-	public Data insertDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
+	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
 
-	public Data updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
+	public DecisionKnowledgeElement updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
 
 	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
 
@@ -45,7 +45,7 @@ public interface IPersistenceStrategy {
 
 	public List<Link> getOutwardLinks(DecisionKnowledgeElement element);
 
-	//New
 	//TODO need to be checked
+	//TODO Move this method to TreeViewerRest class
 	public Data createData(final DecisionKnowledgeElement element);
 }
