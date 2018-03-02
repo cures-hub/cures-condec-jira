@@ -72,20 +72,9 @@ public class IssueStrategy implements IPersistenceStrategy {
 			return null;
 		} else {
 			IssueResult issueResult = issueService.create(user, result);
-
-			Data data = new Data();
 			Issue issue = issueResult.getIssue();
-			data.setText(issue.getKey() + " / " + issue.getSummary());
-			data.setId(String.valueOf(issue.getId()));
-
-			NodeInfo nodeInfo = new NodeInfo();
-			nodeInfo.setId(Long.toString(issue.getId()));
-			nodeInfo.setKey(issue.getKey());
-			nodeInfo.setIssueType(issue.getIssueType().getName());
-			nodeInfo.setDescription(issue.getDescription());
-			nodeInfo.setSummary(issue.getSummary());
-			data.setNodeInfo(nodeInfo);
-
+			decisionElement.setId(issue.getId());
+			Data data = this.createData(decisionElement);			
 			return data;
 		}
 	}
@@ -109,20 +98,9 @@ public class IssueStrategy implements IPersistenceStrategy {
 			return null;
 		} else {
 			issueResult = issueService.update(user, result);
-
-			Data data = new Data();
 			Issue issue = issueResult.getIssue();
-			data.setText(issue.getKey() + " / " + issue.getSummary());
-			data.setId(String.valueOf(issue.getId()));
-
-			NodeInfo nodeInfo = new NodeInfo();
-			nodeInfo.setId(Long.toString(issue.getId()));
-			nodeInfo.setKey(issue.getKey());
-			nodeInfo.setIssueType(issue.getIssueType().getName());
-			nodeInfo.setDescription(issue.getDescription());
-			nodeInfo.setSummary(issue.getSummary());
-			data.setNodeInfo(nodeInfo);
-
+			decisionElement.setId(issue.getId());			
+			Data data = this.createData(decisionElement);
 			return data;
 		}
 	}
@@ -398,6 +376,27 @@ public class IssueStrategy implements IPersistenceStrategy {
 	public List<DecisionKnowledgeElement> getParents(DecisionKnowledgeElement decisionKnowledgeElement) {
 		return null;
 	}
+	
+	public Data createSingleData(DecisionKnowledgeElement decisionKnowledgeElement) {
+		if (decisionKnowledgeElement == null) {
+			LOGGER.error("NullPointerException: createData Issue was NULL");
+			return new Data();
+		}
+		Data data = new Data();
+
+		data.setText(decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getName());
+		data.setId(String.valueOf(decisionKnowledgeElement.getId()));
+
+		NodeInfo nodeInfo = new NodeInfo();
+		nodeInfo.setId(Long.toString(decisionKnowledgeElement.getId()));
+		nodeInfo.setKey(decisionKnowledgeElement.getKey());
+		nodeInfo.setIssueType(decisionKnowledgeElement.getType());
+		nodeInfo.setDescription(decisionKnowledgeElement.getDescription());
+		nodeInfo.setSummary(decisionKnowledgeElement.getName());
+		data.setNodeInfo(nodeInfo);
+
+		return data;
+	}
 
 	public Data createData(DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement == null) {
@@ -406,7 +405,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 		}
 		Data data = new Data();
 
-		data.setText(decisionKnowledgeElement.getKey() + " / " + decisionKnowledgeElement.getName());
+		data.setText(decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getName());
 		data.setId(String.valueOf(decisionKnowledgeElement.getId()));
 
 		NodeInfo nodeInfo = new NodeInfo();

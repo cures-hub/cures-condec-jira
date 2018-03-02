@@ -53,7 +53,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 					public IDecisionKnowledgeElementEntity doInTransaction() {
 						final IDecisionKnowledgeElementEntity decComponent = ao
 								.create(IDecisionKnowledgeElementEntity.class);
-						decComponent.setKey(dec.getProjectKey().toUpperCase() + "-" + decComponent.getID());
+						decComponent.setKey(dec.getProjectKey().toUpperCase() + "-" + decComponent.getId());
 						decComponent.setName(dec.getName());
 						decComponent.setDescription(dec.getDescription());
 						decComponent.setType(dec.getType());
@@ -66,10 +66,10 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 			Data data = new Data();
 
 			data.setText(decComponent.getKey() + " / " + decComponent.getName());
-			data.setId(String.valueOf(decComponent.getID()));
+			data.setId(String.valueOf(decComponent.getId()));
 
 			NodeInfo nodeInfo = new NodeInfo();
-			nodeInfo.setId(Long.toString(decComponent.getID()));
+			nodeInfo.setId(Long.toString(decComponent.getId()));
 			nodeInfo.setKey(decComponent.getKey());
 			nodeInfo.setIssueType(decComponent.getType());
 			nodeInfo.setDescription(decComponent.getDescription());
@@ -91,7 +91,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 					public IDecisionKnowledgeElementEntity doInTransaction() {
 						for (IDecisionKnowledgeElementEntity decComponent : ao
 								.find(IDecisionKnowledgeElementEntity.class)) {
-							if (decComponent.getID() == dec.getId()) {
+							if (decComponent.getId() == dec.getId()) {
 								decComponent.setDescription(dec.getDescription());
 								decComponent.save();
 								return decComponent;
@@ -104,10 +104,10 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 			Data data = new Data();
 
 			data.setText(decComponent.getKey() + " / " + decComponent.getName());
-			data.setId(String.valueOf(decComponent.getID()));
+			data.setId(String.valueOf(decComponent.getId()));
 
 			NodeInfo nodeInfo = new NodeInfo();
-			nodeInfo.setId(Long.toString(decComponent.getID()));
+			nodeInfo.setId(Long.toString(decComponent.getId()));
 			nodeInfo.setKey(decComponent.getKey());
 			nodeInfo.setIssueType(decComponent.getType());
 			nodeInfo.setDescription(decComponent.getDescription());
@@ -127,7 +127,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 			@Override
 			public Boolean doInTransaction() {
 				for (IDecisionKnowledgeElementEntity decComponent : ao.find(IDecisionKnowledgeElementEntity.class)) {
-					if (decComponent.getID() == dec.getId()) {
+					if (decComponent.getId() == dec.getId()) {
 						try {
 							decComponent.getEntityManager().delete(decComponent);
 						} catch (SQLException e) {
@@ -164,7 +164,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 					if (linkEntity.getIngoingId() == link.getIngoingId()
 							&& linkEntity.getOutgoingId() == link.getOutgoingId()) {
 						linkAlreadyExists = true;
-						linkId = linkEntity.getID();
+						linkId = linkEntity.getId();
 					}
 				}
 				if (!linkAlreadyExists) {
@@ -196,7 +196,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 							linkEntity.setOutgoingId(link.getOutgoingId());
 							linkEntity.setLinkType(link.getLinkType());
 							linkEntity.save();
-							linkId = linkEntity.getID();
+							linkId = linkEntity.getId();
 						} else {
 							LOGGER.error("entities to be linked are not in the same project");
 							return (long) 0;
@@ -273,7 +273,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 						for (IDecisionKnowledgeElementEntity decisionComponent : decisionArray) {
 							if (!linkedDecList.contains(decisionComponent)) {
 								DecisionKnowledgeElement simpleDec = new DecisionKnowledgeElement();
-								simpleDec.setId(decisionComponent.getID());
+								simpleDec.setId(decisionComponent.getId());
 								simpleDec.setText(decisionComponent.getKey() + " / " + decisionComponent.getName()
 										+ " / " + decisionComponent.getType());
 								decList.add(simpleDec);
@@ -307,7 +307,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 					}
 				});
 		if (dec != null) {
-			DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElement(dec.getID(),dec.getName(),
+			DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElement(dec.getId(),dec.getName(),
 					dec.getDescription(),dec.getType(),dec.getProjectKey(),dec.getKey(),dec.getSummary());
 			return decisionKnowledgeElement;
 		}
@@ -420,7 +420,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 	}
 
 	private DecisionKnowledgeElement castToDecisionKowledgeElement (IDecisionKnowledgeElementEntity entity){
-		DecisionKnowledgeElement element = new DecisionKnowledgeElement(entity.getID(),entity.getName(),entity.getDescription()
+		DecisionKnowledgeElement element = new DecisionKnowledgeElement(entity.getId(),entity.getName(),entity.getDescription()
 				,entity.getType(),entity.getProjectKey(),entity.getKey(),entity.getSummary());
 		return  element;
 	}
