@@ -33,8 +33,8 @@ import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowl
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.util.KeyValuePairList;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
+import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
 
 /**
  * @author Ewald Rode
@@ -350,13 +350,13 @@ public class IssueStrategy implements IPersistenceStrategy {
 		data.setText(decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getName());
 		data.setId(String.valueOf(decisionKnowledgeElement.getId()));
 
-		NodeInfo nodeInfo = new NodeInfo();
-		nodeInfo.setId(Long.toString(decisionKnowledgeElement.getId()));
-		nodeInfo.setKey(decisionKnowledgeElement.getKey());
-		nodeInfo.setIssueType(decisionKnowledgeElement.getType());
-		nodeInfo.setDescription(decisionKnowledgeElement.getDescription());
-		nodeInfo.setSummary(decisionKnowledgeElement.getName());
-		data.setNodeInfo(nodeInfo);
+		Node node = new Node();
+		node.setId(Long.toString(decisionKnowledgeElement.getId()));
+		node.setKey(decisionKnowledgeElement.getKey());
+		node.setIssueType(decisionKnowledgeElement.getType());
+		node.setDescription(decisionKnowledgeElement.getDescription());
+		node.setSummary(decisionKnowledgeElement.getName());
+		data.setNodeInfo(node);
 
 		List<DecisionKnowledgeElement> children = this.getChildren(decisionKnowledgeElement);
 

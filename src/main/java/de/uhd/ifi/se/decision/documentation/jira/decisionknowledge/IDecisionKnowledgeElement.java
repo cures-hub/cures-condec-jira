@@ -25,9 +25,10 @@ public interface IDecisionKnowledgeElement {
 
 	public void setProjectKey(String projectKey);
 	
+	/**
+	 * @return projectKey - id
+	 */
 	public String getKey();
-
-//	public void setKey(String key);
 
 	public String getSummary();
 

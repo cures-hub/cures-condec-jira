@@ -34,8 +34,8 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.description = description;
 		this.type = type;
 		this.projectKey = projectKey;
-		this.text = key + " / " + name + " / " + type;
 		this.summary = summary;
+		this.text = this.getText();
 	}
 
 	public DecisionKnowledgeElement(Issue issue) {
@@ -44,8 +44,8 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.description = issue.getDescription();
 		this.type = issue.getIssueType().getName();
 		this.projectKey = issue.getProjectObject().getKey();
-		this.text = this.getKey() + " / " + this.name + " / " + this.type;
 		this.summary = issue.getSummary();
+		this.text = this.getText();
 	}
 
 	public long getId() {
@@ -93,14 +93,14 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	}
 
 	public String getText() {
-		return text;
+		return this.type + " / " + this.name;
 	}
 
-	public void setText(String text) {
-		this.text = text;
+	public String getSummary() {
+		return summary;
 	}
 
-	public String getSummary() { return summary; }
-
-	public void setSummary(String summary){this.summary = summary; };
+	public void setSummary(String summary) {
+		this.summary = summary;
+	};
 }
