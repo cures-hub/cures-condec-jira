@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
+
 /**
  * @author Ewald Rode
  * @description Model class for Tree Viewer nodes
@@ -19,7 +21,7 @@ public class Data {
     private List<Data> children;
 	
 	@XmlElement(name="data")
-	private NodeInfo nodeInfo;
+	private Node nodeInfo;
 
 	public Data(){}
 
@@ -47,11 +49,11 @@ public class Data {
 		this.children = children;
 	}
 
-	public NodeInfo getNodeInfo() {
+	public Node getNode() {
 		return nodeInfo;
 	}
 
-	public void setNodeInfo(NodeInfo nodeInfo) {
+	public void setNodeInfo(Node nodeInfo) {
 		this.nodeInfo = nodeInfo;
 	}
 }

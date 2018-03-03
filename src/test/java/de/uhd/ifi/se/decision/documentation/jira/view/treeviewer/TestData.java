@@ -8,14 +8,14 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
 
 public class TestData {
 	private String id;
 	private String text;
 	private List<Data> children;
-	private NodeInfo nodeInfo;
+	private Node nodeInfo;
 
 	private Data data;
 
@@ -25,7 +25,7 @@ public class TestData {
 		id = "Test";
 		text= "Test";
 		children= new ArrayList<>();
-		nodeInfo = new NodeInfo();
+		nodeInfo = new Node();
 		data = new Data();
 		data.setChildren(children);
 		data.setId(id);
@@ -50,7 +50,7 @@ public class TestData {
 
 	@Test
 	public void testGetNodeInfo() {
-		assertEquals(data.getNodeInfo(), nodeInfo);
+		assertEquals(data.getNode(), nodeInfo);
 	}
 
 	@Test
@@ -74,9 +74,9 @@ public class TestData {
 
 	@Test
 	public void testSetNodeInfo() {
-		NodeInfo newInfo = new NodeInfo();
+		Node newInfo = new Node();
 		data.setNodeInfo(newInfo);
-		assertEquals(newInfo, data.getNodeInfo());
+		assertEquals(newInfo, data.getNode());
 	}
 
 }

@@ -1018,7 +1018,7 @@ function buildTreeViewer(projectKey, nodeId) {
     });
 }
 
-/* Displays Error Message in Accoridon */
+/* Displays Error Message in Accordion */
 function displayGetJsonError(errorCode) {
     document.getElementById("Details").innerHTML = "Error occured while retrieving data. Error-Code: " + errorCode;
     document.getElementById("Problem").innerHTML = "Error occured while retrieving data. Error-Code: " + errorCode;

@@ -21,8 +21,8 @@ import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.util.KeyValuePairList;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
+import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
 import net.java.ao.Query;
 
 /**
@@ -246,8 +246,8 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 							if (!linkedDecList.contains(decisionComponent)) {
 								DecisionKnowledgeElement simpleDec = new DecisionKnowledgeElement();
 								simpleDec.setId(decisionComponent.getId());
-								simpleDec.setText(decisionComponent.getKey() + " / " + decisionComponent.getName()
-										+ " / " + decisionComponent.getType());
+//								simpleDec.setText(decisionComponent.getKey() + " / " + decisionComponent.getName()
+//										+ " / " + decisionComponent.getType());
 								decList.add(simpleDec);
 							}
 						}
@@ -293,7 +293,7 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 		data.setText(element.getKey() + " / " + element.getName());
 		data.setId(String.valueOf(element.getId()));
 
-		NodeInfo nodeInfo = new NodeInfo();
+		Node nodeInfo = new Node();
 		nodeInfo.setId(Long.toString(element.getId()));
 		nodeInfo.setKey(element.getKey());
 		nodeInfo.setIssueType(element.getType());
