@@ -17,7 +17,8 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	private String description;
 	private String type;
 	private String projectKey;
-	private String key;
+
+	private String summary;
 
 	@XmlElement
 	private String text;
@@ -27,14 +28,14 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	}
 
 	public DecisionKnowledgeElement(long id, String name, String description, String type, String projectKey,
-			String key) {
+			String key, String summary) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.type = type;
 		this.projectKey = projectKey;
-		this.key = key;
 		this.text = key + " / " + name + " / " + type;
+		this.summary = summary;
 	}
 
 	public DecisionKnowledgeElement(Issue issue) {
@@ -43,8 +44,8 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.description = issue.getDescription();
 		this.type = issue.getIssueType().getName();
 		this.projectKey = issue.getProjectObject().getKey();
-		this.key = issue.getKey();
-		this.text = this.key + " / " + this.name + " / " + this.type;
+		this.text = this.getKey() + " / " + this.name + " / " + this.type;
+		this.summary = issue.getSummary();
 	}
 
 	public long getId() {
@@ -88,11 +89,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	}
 
 	public String getKey() {
-		return this.key;
-	}
-
-	public void setKey(String key) {
-		this.key = key;
+		return this.projectKey + "-" + this.id;
 	}
 
 	public String getText() {
@@ -102,4 +99,8 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	public void setText(String text) {
 		this.text = text;
 	}
+
+	public String getSummary() { return summary; }
+
+	public void setSummary(String summary){this.summary = summary; };
 }

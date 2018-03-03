@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.documentation.jira.persistence;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -29,14 +28,11 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ErrorCollection;
-import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.util.KeyValuePairList;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
 
@@ -49,10 +45,8 @@ public class IssueStrategy implements IPersistenceStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IssueStrategy.class);
 
 	@Override
-	// TODO Separate view and model (this method should not return Data object for
-	// Treant)
-	public Data createDecisionComponent(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
-
+	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement,
+			ApplicationUser user) {
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
 
 		issueInputParameters.setSummary(decisionElement.getName());
@@ -61,11 +55,9 @@ public class IssueStrategy implements IPersistenceStrategy {
 		issueInputParameters.setReporterId(user.getName());
 
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(decisionElement.getProjectKey());
-
 		issueInputParameters.setProjectId(project.getId());
 		String issueTypeId = getIssueTypeId(decisionElement.getType());
 		issueInputParameters.setIssueTypeId(issueTypeId);
-
 		IssueService issueService = ComponentAccessor.getIssueService();
 
 		IssueService.CreateValidationResult result = issueService.validateCreate(user, issueInputParameters);
@@ -76,27 +68,15 @@ public class IssueStrategy implements IPersistenceStrategy {
 			return null;
 		} else {
 			IssueResult issueResult = issueService.create(user, result);
-
-			Data data = new Data();
 			Issue issue = issueResult.getIssue();
-			data.setText(issue.getKey() + " / " + issue.getSummary());
-			data.setId(String.valueOf(issue.getId()));
-
-			NodeInfo nodeInfo = new NodeInfo();
-			nodeInfo.setId(Long.toString(issue.getId()));
-			nodeInfo.setKey(issue.getKey());
-			nodeInfo.setIssueType(issue.getIssueType().getName());
-			nodeInfo.setDescription(issue.getDescription());
-			nodeInfo.setSummary(issue.getSummary());
-			data.setNodeInfo(nodeInfo);
-
-			return data;
+			decisionElement.setId(issue.getId());
+			return decisionElement;
 		}
 	}
 
 	@Override
-	public Data editDecisionComponent(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
-
+	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement,
+			ApplicationUser user) {
 		IssueService issueService = ComponentAccessor.getIssueService();
 
 		IssueResult issueResult = issueService.getIssue(user, decisionElement.getId());
@@ -110,29 +90,15 @@ public class IssueStrategy implements IPersistenceStrategy {
 			for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
 				LOGGER.error(entry.getKey() + ": " + entry.getValue());
 			}
-			return null;
+			return false;
 		} else {
 			issueResult = issueService.update(user, result);
-
-			Data data = new Data();
-			Issue issue = issueResult.getIssue();
-			data.setText(issue.getKey() + " / " + issue.getSummary());
-			data.setId(String.valueOf(issue.getId()));
-
-			NodeInfo nodeInfo = new NodeInfo();
-			nodeInfo.setId(Long.toString(issue.getId()));
-			nodeInfo.setKey(issue.getKey());
-			nodeInfo.setIssueType(issue.getIssueType().getName());
-			nodeInfo.setDescription(issue.getDescription());
-			nodeInfo.setSummary(issue.getSummary());
-			data.setNodeInfo(nodeInfo);
-
-			return data;
+			return true;
 		}
 	}
 
 	@Override
-	public boolean deleteDecisionComponent(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
+	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
 		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueService.IssueResult issue = issueService.getIssue(user, decisionElement.getId());
 		if (issue.isValid()) {
@@ -144,19 +110,16 @@ public class IssueStrategy implements IPersistenceStrategy {
 				return false;
 			} else {
 				ErrorCollection errorCollection = issueService.delete(user, result);
-				if (errorCollection.hasAnyErrors()) {
-					return false;
-				} else {
+				if (!errorCollection.hasAnyErrors()) {
 					return true;
 				}
 			}
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	@Override
-	public Long createLink(Link link, ApplicationUser user) {
+	public long insertLink(Link link, ApplicationUser user) {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		Collection<IssueLinkType> issueLinkTypeCollection = issueLinkTypeManager
@@ -200,6 +163,21 @@ public class IssueStrategy implements IPersistenceStrategy {
 			return (long) 0;
 		}
 		return issueLink.getId();
+	}
+
+	@Override
+	public void deleteLink(Link link, ApplicationUser user) {
+
+	}
+
+	@Override
+	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
+		return null;
+	}
+
+	@Override
+	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
+		return null;
 	}
 
 	@Override
@@ -276,60 +254,12 @@ public class IssueStrategy implements IPersistenceStrategy {
 	private String getIssueTypeId(String type) {
 		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
 		Collection<IssueType> listOfIssueTypes = constantsManager.getAllIssueTypeObjects();
-		for (IssueType iType : listOfIssueTypes) {
-			if (iType.getName().equalsIgnoreCase(type)) {
-				return iType.getId();
+		for (IssueType issueType : listOfIssueTypes) {
+			if (issueType.getName().equalsIgnoreCase(type)) {
+				return issueType.getId();
 			}
 		}
 		return "";
-	}
-
-	@Override
-	public List<DecisionKnowledgeElement> getDecisionsInProject(Project project) {
-		IssueManager issueManager = ComponentAccessor.getIssueManager();
-		Collection<Long> issueIds;
-		if (project == null) {
-			return null;
-		}
-		try {
-			issueIds = issueManager.getIssueIdsForProject(project.getId());
-		} catch (GenericEntityException e) {
-			issueIds = new ArrayList<Long>();
-		}
-		List<DecisionKnowledgeElement> decisions = new ArrayList<DecisionKnowledgeElement>();
-		for (Long issueId : issueIds) {
-			Issue issue = issueManager.getIssueObject(issueId);
-			if (issue != null && issue.getIssueType().getName().equals("Decision")) {
-				decisions.add(new DecisionKnowledgeElement(issue));
-			}
-		}
-		return decisions;
-	}
-
-	/*
-	 * TreeViewerRest
-	 */
-	@Override
-	public Core createCore(Project project) {
-		Core core = new Core();
-		core.setMultiple(false);
-		core.setCheckCallback(true);
-		core.setThemes(ImmutableMap.of("icons", false));
-		HashSet<Data> dataSet = new HashSet<Data>();
-		// List<Issue> issueList = this.getDecisionsInProject(project);
-		List<DecisionKnowledgeElement> decisions = this.getDecisionsInProject(project);
-		if (decisions == null) {
-			return null;
-		}
-		for (int index = 0; index < decisions.size(); ++index) {
-			KeyValuePairList.keyValuePairList = new ArrayList<Pair<String, String>>();
-			Pair<String, String> kvp = new Pair<String, String>("root", decisions.get(index).getKey());
-			KeyValuePairList.keyValuePairList.add(kvp);
-			dataSet.add(createData(decisions.get(index)));
-
-		}
-		core.setData(dataSet);
-		return core;
 	}
 
 	public List<Issue> getOutwardKnowledgeElements(DecisionKnowledgeElement decisionKnowledgeElement) {
@@ -405,6 +335,11 @@ public class IssueStrategy implements IPersistenceStrategy {
 		return children;
 	}
 
+	@Override
+	public List<DecisionKnowledgeElement> getParents(DecisionKnowledgeElement decisionKnowledgeElement) {
+		return null;
+	}
+
 	public Data createData(DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement == null) {
 			LOGGER.error("NullPointerException: createData Issue was NULL");
@@ -412,7 +347,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 		}
 		Data data = new Data();
 
-		data.setText(decisionKnowledgeElement.getKey() + " / " + decisionKnowledgeElement.getName());
+		data.setText(decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getName());
 		data.setId(String.valueOf(decisionKnowledgeElement.getId()));
 
 		NodeInfo nodeInfo = new NodeInfo();
@@ -434,165 +369,43 @@ public class IssueStrategy implements IPersistenceStrategy {
 		return data;
 	}
 
-	private Node createNode(Issue issue, int depth, int currentDepth) {
-		Node node = new Node();
-		Map<String, String> nodeContent = ImmutableMap.of("name", issue.getSummary(), "title",
-				issue.getIssueType().getName(), "desc", issue.getKey());
-		node.setNodeContent(nodeContent);
-
-		String htmlClass;
-		String issueType = issue.getIssueType().getName().toLowerCase();
-		if (issueType.equals("constraint") || issueType.equals("assumption") || issueType.equals("implication")
-				|| issueType.equals("context")) {
-			htmlClass = "context";
-		} else if (issueType.equals("problem") || issueType.equals("issue") || issueType.equals("goal")) {
-			htmlClass = "problem";
-		} else if (issueType.equals("solution") || issueType.equals("claim") || issueType.equals("alternative")) {
-			htmlClass = "solution";
-		} else {
-			htmlClass = "rationale";
-		}
-		node.setHtmlClass(htmlClass);
-
-		long htmlId = issue.getId();
-		node.setHtmlId(htmlId);
-
-		if (currentDepth + 1 < depth) {
-			List<Node> children = new ArrayList<Node>();
-			List<Issue> toBeAddedToChildren = new ArrayList<Issue>();
-			List<IssueLink> allOutwardIssueLink = ComponentAccessor.getIssueLinkManager()
-					.getOutwardLinks(issue.getId());
-			if (allOutwardIssueLink != null) {
-				// this.children = new ArrayList<Node>();
-				for (int i = 0; i < allOutwardIssueLink.size(); ++i) {
-					IssueLink issueLink = allOutwardIssueLink.get(i);
-					Issue issueLinkDestination = issueLink.getDestinationObject();
-					/*
-					 * Erstelle Parent-Child Beziehung und pruefe ob diese bereits in der
-					 * KeyValuePair-Liste vorhanden ist. Wenn nein, fuege diesem Knoten Kinder hinzu
-					 */
-					if (issue != null & issueLinkDestination != null) {
-						Pair<String, String> newKVP = new Pair<String, String>(issue.getKey(),
-								issueLinkDestination.getKey());
-						Pair<String, String> newKVPReverse = new Pair<String, String>(issueLinkDestination.getKey(),
-								issue.getKey());
-						boolean boolvar = false;
-						for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
-							Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
-							if (newKVP.equals(globalInst) || newKVPReverse.equals(globalInst)) {
-								boolvar = true;
-							}
-						}
-						if (!boolvar) {
-							KeyValuePairList.keyValuePairList.add(newKVP);
-							KeyValuePairList.keyValuePairList.add(newKVPReverse);
-							toBeAddedToChildren.add(issueLinkDestination);
-						}
-					}
-				}
-			}
-
-			List<IssueLink> allInwardIssueLink = ComponentAccessor.getIssueLinkManager().getInwardLinks(issue.getId());
-			if (allInwardIssueLink != null) {
-				for (int i = 0; i < allInwardIssueLink.size(); ++i) {
-					IssueLink issueLink = allInwardIssueLink.get(i);
-					Issue issueLinkDestination = issueLink.getSourceObject();
-					/*
-					 * Erstelle Parent-Child Beziehung und pruefe ob diese bereits in der
-					 * KeyValuePair-Liste vorhanden ist. Wenn nein, fuege diesem Knoten Kinder hinzu
-					 */
-					if (issue != null & issueLinkDestination != null) {
-						Pair<String, String> newKVP = new Pair<String, String>(issue.getKey(),
-								issueLinkDestination.getKey());
-						Pair<String, String> newKVPReverse = new Pair<String, String>(issueLinkDestination.getKey(),
-								issue.getKey());
-						boolean boolvar = false;
-						for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
-							Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
-							if (newKVP.equals(globalInst) || newKVPReverse.equals(globalInst)) {
-								boolvar = true;
-							}
-						}
-						if (!boolvar) {
-							KeyValuePairList.keyValuePairList.add(newKVP);
-							KeyValuePairList.keyValuePairList.add(newKVPReverse);
-							toBeAddedToChildren.add(issueLinkDestination);
-						}
-					}
-				}
-			}
-			for (int index = 0; index < toBeAddedToChildren.size(); ++index) {
-				children.add(createNode(toBeAddedToChildren.get(index), depth, currentDepth + 1));
-			}
-			node.setChildren(children);
-		}
-		return node;
-	}
-
-	/* TreantsRest */
 	@Override
-	public Node createNodeStructure(String key, int depth) {
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue issue = issueManager.getIssueByCurrentKey(key);
-		Node node = new Node();
-		Map<String, String> nodeContent = ImmutableMap.of("name", issue.getSummary(), "title",
-				issue.getIssueType().getName(), "desc", issue.getKey());
-		node.setNodeContent(nodeContent);
+		return new DecisionKnowledgeElement(issue);
+	}
 
-		String htmlClass;
-		String issueType = issue.getIssueType().getName().toLowerCase();
-		if (issueType.equals("constraint") || issueType.equals("assumption") || issueType.equals("implication")
-				|| issueType.equals("context")) {
-			htmlClass = "context";
-		} else if (issueType.equals("problem") || issueType.equals("issue") || issueType.equals("goal")) {
-			htmlClass = "problem";
-		} else if (issueType.equals("solution") || issueType.equals("claim") || issueType.equals("alternative")) {
-			htmlClass = "solution";
-		} else {
-			htmlClass = "rationale";
+	@Override
+	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey) {
+		IssueManager issueManager = ComponentAccessor.getIssueManager();
+		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
+		Collection<Long> issueIds;
+		if (projectKey == null) {
+			return null;
 		}
-		node.setHtmlClass(htmlClass);
+		try {
+			issueIds = issueManager.getIssueIdsForProject(project.getId());
+		} catch (GenericEntityException e) {
+			issueIds = new ArrayList<Long>();
+		}
+		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
+		for (Long issueId : issueIds) {
+			Issue issue = issueManager.getIssueObject(issueId);
+			decisionKnowledgeElements.add(new DecisionKnowledgeElement(issue));
+		}
+		return decisionKnowledgeElements;
+	}
 
-		long htmlId = issue.getId();
-		node.setHtmlId(htmlId);
-
-		List<Node> children = new ArrayList<Node>();
-		List<IssueLink> allOutwardIssueLink = ComponentAccessor.getIssueLinkManager().getOutwardLinks(issue.getId());
-		KeyValuePairList.keyValuePairList = new ArrayList<Pair<String, String>>();
-		if (allOutwardIssueLink != null) {
-			if (allOutwardIssueLink.size() > 0) {
-				for (int i = 0; i < allOutwardIssueLink.size(); i++) {
-					IssueLink issueLink = allOutwardIssueLink.get(i);
-					Issue issueLinkDestination = issueLink.getDestinationObject();
-					if (issue != null & issueLinkDestination != null) {
-						KeyValuePairList.keyValuePairList
-								.add(new Pair<String, String>(issue.getKey(), issueLinkDestination.getKey()));
-						KeyValuePairList.keyValuePairList
-								.add(new Pair<String, String>(issueLinkDestination.getKey(), issue.getKey()));
-						children.add(createNode(issueLinkDestination, depth, 0));
-					}
-				}
+	@Override
+	public List<DecisionKnowledgeElement> getDecisions(String projectKey) {
+		List<DecisionKnowledgeElement> decisionKnowledgeElements = this.getDecisionKnowledgeElements(projectKey);
+		List<DecisionKnowledgeElement> decisions = new ArrayList<DecisionKnowledgeElement>();
+		for (DecisionKnowledgeElement decisionKnowledgeElement : decisionKnowledgeElements) {
+			if (decisionKnowledgeElement.getType().equals("Decision")) {
+				decisions.add(decisionKnowledgeElement);
 			}
 		}
-		List<IssueLink> allInwardIssueLink = ComponentAccessor.getIssueLinkManager().getInwardLinks(issue.getId());
-		if (allInwardIssueLink != null) {
-			if (allInwardIssueLink.size() > 0) {
-				for (int i = 0; i < allInwardIssueLink.size(); i++) {
-					IssueLink issueLink = allInwardIssueLink.get(i);
-					Issue issueLinkDestination = issueLink.getSourceObject();
-					if (issue != null & issueLinkDestination != null) {
-						Pair<String, String> kvp = new Pair<String, String>(issue.getKey(),
-								issueLinkDestination.getKey());
-						Pair<String, String> kvp2 = new Pair<String, String>(issueLinkDestination.getKey(),
-								issue.getKey());
-						KeyValuePairList.keyValuePairList.add(kvp);
-						KeyValuePairList.keyValuePairList.add(kvp2);
-						children.add(createNode(issueLinkDestination, depth, 0));
-					}
-				}
-			}
-		}
-		node.setChildren(children);
-		return node;
+		return decisions;
 	}
 }
