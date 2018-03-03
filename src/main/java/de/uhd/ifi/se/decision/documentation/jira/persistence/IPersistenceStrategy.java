@@ -40,8 +40,4 @@ public interface IPersistenceStrategy {
 	public List<Link> getInwardLinks(DecisionKnowledgeElement element);
 
 	public List<Link> getOutwardLinks(DecisionKnowledgeElement element);
-
-	//TODO need to be checked
-	//TODO Move this method to TreeViewerRest class
-	//public Data createData(DecisionKnowledgeElement element);
 }

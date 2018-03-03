@@ -52,19 +52,32 @@ public class DecisionsRest {
 			IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			if (actionType.equalsIgnoreCase("create")) {
+				//New Implementation
+				decisionKnowledgeElement=strategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
+				if(decisionKnowledgeElement!=null){
+					return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
+				}
+				//TODO could be refactored to only insertDecisionKnowledgeElement
+				/*
 				decisionKnowledgeElement = strategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
 				Data data = strategy.createData(decisionKnowledgeElement);
 				if (data != null) {
 					return Response.status(Status.OK).entity(data).build();
 				}
+				*/
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
 			} else if (actionType.equalsIgnoreCase("edit")) {
-				strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user);
+				if(strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user)){
+					return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
+				}
+				//TODO could be refaactored to only updateDecisionKnowledgeElement
+				/*
 				Data data = strategy.createData(decisionKnowledgeElement);
 				if (data != null) {
 					return Response.status(Status.OK).entity(data).build();
 				}
+				*/
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build();
 			} else {

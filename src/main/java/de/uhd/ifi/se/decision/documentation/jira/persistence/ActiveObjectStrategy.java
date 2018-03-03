@@ -19,10 +19,6 @@ import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.IDecisionKnow
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ILinkEntity;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
-import de.uhd.ifi.se.decision.documentation.jira.util.KeyValuePairList;
-import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 import net.java.ao.Query;
 
 /**
@@ -246,8 +242,8 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 							if (!linkedDecList.contains(decisionComponent)) {
 								DecisionKnowledgeElement simpleDec = new DecisionKnowledgeElement();
 								simpleDec.setId(decisionComponent.getId());
-//								simpleDec.setText(decisionComponent.getKey() + " / " + decisionComponent.getName()
-//										+ " / " + decisionComponent.getType());
+								simpleDec.setSummary(decisionComponent.getKey() + " / " + decisionComponent.getName()
+										+ " / " + decisionComponent.getType());
 								decList.add(simpleDec);
 							}
 						}
@@ -284,94 +280,6 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 			return decisionKnowledgeElement;
 		}
 		return null;
-	}
-
-	@Override
-	public Data createData(final DecisionKnowledgeElement element) {
-		Data data = new Data();
-
-		data.setText(element.getKey() + " / " + element.getName());
-		data.setId(String.valueOf(element.getId()));
-
-		Node nodeInfo = new Node();
-		nodeInfo.setId(Long.toString(element.getId()));
-		nodeInfo.setKey(element.getKey());
-		nodeInfo.setIssueType(element.getType());
-		nodeInfo.setDescription(element.getDescription());
-		nodeInfo.setSummary(element.getName());
-		data.setNodeInfo(nodeInfo);
-
-		List<Data> children = new ArrayList<Data>();
-		final ActiveObjects ao = ComponentGetter.getAo();
-		List<IDecisionKnowledgeElementEntity> targetList = ao
-				.executeInTransaction(new TransactionCallback<List<IDecisionKnowledgeElementEntity>>() {
-					@Override
-					public List<IDecisionKnowledgeElementEntity> doInTransaction() {
-						final List<IDecisionKnowledgeElementEntity> decisionList = new ArrayList<IDecisionKnowledgeElementEntity>();
-						for (ILinkEntity link : ao.find(ILinkEntity.class,
-								Query.select().where("INGOING_ID = ?", element.getId()))) {
-							for (IDecisionKnowledgeElementEntity dec : ao.find(IDecisionKnowledgeElementEntity.class,
-									Query.select().where("ID = ?", link.getOutgoingId()))) {
-								decisionList.add(dec);
-							}
-						}
-						return decisionList;
-					}
-				});
-		for (IDecisionKnowledgeElementEntity target : targetList) {
-			Pair<String, String> newKVP = new Pair<String, String>(element.getKey(), target.getKey());
-			Pair<String, String> newKVPReverse = new Pair<String, String>(target.getKey(), element.getKey());
-			boolean boolvar = false;
-			for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
-				Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
-				if (newKVP.equals(globalInst)) {
-					boolvar = true;
-				}
-			}
-			if (!boolvar) {
-				KeyValuePairList.keyValuePairList.add(newKVP);
-				KeyValuePairList.keyValuePairList.add(newKVPReverse);
-				DecisionKnowledgeElement targetElement = castToDecisionKowledgeElement(target);
-				children.add(createData(targetElement));
-			}
-		}
-
-		List<IDecisionKnowledgeElementEntity> sourceList = ao
-				.executeInTransaction(new TransactionCallback<List<IDecisionKnowledgeElementEntity>>() {
-					@Override
-					public List<IDecisionKnowledgeElementEntity> doInTransaction() {
-						final List<IDecisionKnowledgeElementEntity> decisionList = new ArrayList<IDecisionKnowledgeElementEntity>();
-						for (ILinkEntity link : ao.find(ILinkEntity.class,
-								Query.select().where("OUTGOING_ID = ?", element.getId()))) {
-							for (IDecisionKnowledgeElementEntity dec : ao.find(IDecisionKnowledgeElementEntity.class,
-									Query.select().where("ID = ?", link.getIngoingId()))) {
-								decisionList.add(dec);
-							}
-						}
-						return decisionList;
-					}
-				});
-		for (IDecisionKnowledgeElementEntity source : sourceList) {
-			Pair<String, String> newKVP = new Pair<String, String>(element.getKey(), source.getKey());
-			Pair<String, String> newKVPReverse = new Pair<String, String>(source.getKey(), element.getKey());
-			boolean boolvar = false;
-			for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
-				Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
-				if (newKVP.equals(globalInst)) {
-					boolvar = true;
-				}
-			}
-			if (!boolvar) {
-				KeyValuePairList.keyValuePairList.add(newKVP);
-				KeyValuePairList.keyValuePairList.add(newKVPReverse);
-				DecisionKnowledgeElement sourceElement = castToDecisionKowledgeElement(source);
-				children.add(createData(sourceElement));
-			}
-		}
-
-		data.setChildren(children);
-
-		return data;
 	}
 
 	// TODO Refactor

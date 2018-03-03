@@ -17,6 +17,8 @@ import javax.ws.rs.core.Response.Status;
 
 import de.uhd.ifi.se.decision.documentation.jira.util.KeyValuePairList;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
+import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
+
 import org.ofbiz.core.entity.GenericEntityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +92,7 @@ public class TreeViewerRest {
 		data.setText(decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getName());
 		data.setId(String.valueOf(decisionKnowledgeElement.getId()));
 
-		NodeInfo nodeInfo = new NodeInfo();
+		Node nodeInfo = new Node();
 		nodeInfo.setId(Long.toString(decisionKnowledgeElement.getId()));
 		nodeInfo.setKey(decisionKnowledgeElement.getKey());
 		nodeInfo.setIssueType(decisionKnowledgeElement.getType());
