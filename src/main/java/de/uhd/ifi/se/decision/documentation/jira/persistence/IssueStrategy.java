@@ -359,6 +359,7 @@ public class IssueStrategy implements IPersistenceStrategy {
 		return  children;
 	}
 
+
 	private String getIssueTypeId(String type) {
 		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
 		Collection<IssueType> listOfIssueTypes = constantsManager.getAllIssueTypeObjects();
@@ -369,4 +370,5 @@ public class IssueStrategy implements IPersistenceStrategy {
 		}
 		return "";
 	}
+
 }
