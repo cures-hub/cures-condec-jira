@@ -255,7 +255,6 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 		return decList;
 	}
 
-	// New Implementation
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
 		final ActiveObjects ao = ComponentGetter.getAo();
@@ -282,10 +281,16 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 		return null;
 	}
 
-	// TODO Refactor
+	@Override
 	public List<DecisionKnowledgeElement> getDecisions(String projectKey) {
-		// TODO Auto-generated method stub
-		return null;
+		List<DecisionKnowledgeElement> decisionKnowledgeElements = this.getDecisionKnowledgeElements(projectKey);
+		List<DecisionKnowledgeElement> decisions = new ArrayList<>();
+		for(DecisionKnowledgeElement decisionKnowledgeElement: decisionKnowledgeElements){
+			if(decisionKnowledgeElement.getType().equals("Decision")){
+				decisions.add(decisionKnowledgeElement);
+			}
+		}
+		return  decisions;
 	}
 
 	@Override
