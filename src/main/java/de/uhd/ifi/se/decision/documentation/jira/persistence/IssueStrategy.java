@@ -291,43 +291,13 @@ public class IssueStrategy implements IPersistenceStrategy {
 		for (int i = 0; i < inwardIssues.size(); ++i) {
 			if (inwardIssues.get(i).getIssueType().getName().equals("Argument")) {
 				if (decisionKnowledgeElement != null & inwardIssues.get(i) != null) {
-					Pair<String, String> newKVP = new Pair<String, String>(decisionKnowledgeElement.getKey(),
-							inwardIssues.get(i).getKey());
-					Pair<String, String> newKVPReverse = new Pair<String, String>(inwardIssues.get(i).getKey(),
-							decisionKnowledgeElement.getKey());
-					boolean boolvar = false;
-					for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
-						Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
-						if (newKVP.equals(globalInst)) {
-							boolvar = true;
-						}
-					}
-					if (!boolvar) {
-						KeyValuePairList.keyValuePairList.add(newKVP);
-						KeyValuePairList.keyValuePairList.add(newKVPReverse);
-						children.add(new DecisionKnowledgeElement(inwardIssues.get(i)));
-					}
+					children=computeChildren(decisionKnowledgeElement,inwardIssues.get(i),children);
 				}
 			}
 		}
 		for (int i = 0; i < outwardIssues.size(); ++i) {
 			if (decisionKnowledgeElement != null & outwardIssues.get(i) != null) {
-				Pair<String, String> newKVP = new Pair<String, String>(decisionKnowledgeElement.getKey(),
-						outwardIssues.get(i).getKey());
-				Pair<String, String> newKVPReverse = new Pair<String, String>(outwardIssues.get(i).getKey(),
-						decisionKnowledgeElement.getKey());
-				boolean boolvar = false;
-				for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
-					Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
-					if (newKVP.equals(globalInst)) {
-						boolvar = true;
-					}
-				}
-				if (!boolvar) {
-					KeyValuePairList.keyValuePairList.add(newKVP);
-					KeyValuePairList.keyValuePairList.add(newKVPReverse);
-					children.add(new DecisionKnowledgeElement(outwardIssues.get(i)));
-				}
+				children=computeChildren(decisionKnowledgeElement,outwardIssues.get(i),children);
 			}
 		}
 		return children;
@@ -376,5 +346,26 @@ public class IssueStrategy implements IPersistenceStrategy {
 			}
 		}
 		return decisions;
+	}
+
+	private List<DecisionKnowledgeElement> computeChildren(DecisionKnowledgeElement decisionKnowledgeElement, Issue issue,List<DecisionKnowledgeElement> children){
+		Pair<String, String> newKVP = new Pair<String, String>(decisionKnowledgeElement.getKey(),
+				issue.getKey());
+		Pair<String, String> newKVPReverse = new Pair<String, String>(issue.getKey(),
+				decisionKnowledgeElement.getKey());
+		boolean boolvar = false;
+		for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
+			Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
+			if (newKVP.equals(globalInst)) {
+				boolvar = true;
+			}
+		}
+		if (!boolvar) {
+			KeyValuePairList.keyValuePairList.add(newKVP);
+			KeyValuePairList.keyValuePairList.add(newKVPReverse);
+			children.add(new DecisionKnowledgeElement(issue));
+			return children;
+		}
+		return  children;
 	}
 }
