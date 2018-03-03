@@ -340,35 +340,6 @@ public class IssueStrategy implements IPersistenceStrategy {
 		return null;
 	}
 
-	public Data createData(DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (decisionKnowledgeElement == null) {
-			LOGGER.error("NullPointerException: createData Issue was NULL");
-			return new Data();
-		}
-		Data data = new Data();
-
-		data.setText(decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getName());
-		data.setId(String.valueOf(decisionKnowledgeElement.getId()));
-
-		NodeInfo nodeInfo = new NodeInfo();
-		nodeInfo.setId(Long.toString(decisionKnowledgeElement.getId()));
-		nodeInfo.setKey(decisionKnowledgeElement.getKey());
-		nodeInfo.setIssueType(decisionKnowledgeElement.getType());
-		nodeInfo.setDescription(decisionKnowledgeElement.getDescription());
-		nodeInfo.setSummary(decisionKnowledgeElement.getName());
-		data.setNodeInfo(nodeInfo);
-
-		List<DecisionKnowledgeElement> children = this.getChildren(decisionKnowledgeElement);
-
-		List<Data> childrenToData = new ArrayList<Data>();
-		for (DecisionKnowledgeElement child : children) {
-			childrenToData.add(createData(child));
-		}
-		data.setChildren(childrenToData);
-
-		return data;
-	}
-
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();

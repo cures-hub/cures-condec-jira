@@ -43,5 +43,5 @@ public interface IPersistenceStrategy {
 
 	//TODO need to be checked
 	//TODO Move this method to TreeViewerRest class
-	public Data createData(DecisionKnowledgeElement element);
+	//public Data createData(DecisionKnowledgeElement element);
 }
