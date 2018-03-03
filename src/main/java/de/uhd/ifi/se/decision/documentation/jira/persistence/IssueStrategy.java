@@ -251,16 +251,6 @@ public class IssueStrategy implements IPersistenceStrategy {
 		return unlinkedDecisionComponents;
 	}
 
-	private String getIssueTypeId(String type) {
-		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
-		Collection<IssueType> listOfIssueTypes = constantsManager.getAllIssueTypeObjects();
-		for (IssueType issueType : listOfIssueTypes) {
-			if (issueType.getName().equalsIgnoreCase(type)) {
-				return issueType.getId();
-			}
-		}
-		return "";
-	}
 
 	public List<Issue> getOutwardKnowledgeElements(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<IssueLink> allOutwardIssueLink = ComponentAccessor.getIssueLinkManager()
@@ -369,5 +359,16 @@ public class IssueStrategy implements IPersistenceStrategy {
 			return children;
 		}
 		return  children;
+	}
+
+	private String getIssueTypeId(String type) {
+		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
+		Collection<IssueType> listOfIssueTypes = constantsManager.getAllIssueTypeObjects();
+		for (IssueType issueType : listOfIssueTypes) {
+			if (issueType.getName().equalsIgnoreCase(type)) {
+				return issueType.getId();
+			}
+		}
+		return "";
 	}
 }
