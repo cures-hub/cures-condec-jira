@@ -67,7 +67,8 @@ public class IssueStrategy implements IPersistenceStrategy {
 		} else {
 			IssueResult issueResult = issueService.create(user, result);
 			Issue issue = issueResult.getIssue();
-			decisionElement.setId(issue.getId());
+			decisionElement.setId(issue.getId());		
+			decisionElement.setKey(issue.getKey());		
 			return decisionElement;
 		}
 	}
@@ -303,6 +304,11 @@ public class IssueStrategy implements IPersistenceStrategy {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue issue = issueManager.getIssueByCurrentKey(key);
 		return new DecisionKnowledgeElement(issue);
+	}
+	
+	// TODO Implement this method and add it to the IPersistenceStrategy interface	
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id) {
+		return null;
 	}
 
 	@Override
