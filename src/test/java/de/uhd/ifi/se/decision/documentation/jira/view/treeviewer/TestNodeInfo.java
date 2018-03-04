@@ -5,8 +5,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
-
 public class TestNodeInfo {
 
 	private String id;
@@ -15,11 +13,11 @@ public class TestNodeInfo {
 	private String description;
 	private String summary;
 
-	private Node node;
+	private NodeInfo node;
 
 	@Before
 	public void setUp() {
-		node = new Node();
+		node = new NodeInfo();
 		id = "Test";
 		key = "Test";
 		issueType = "Test";

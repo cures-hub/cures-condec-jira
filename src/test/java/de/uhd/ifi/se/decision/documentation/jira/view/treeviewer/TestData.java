@@ -15,7 +15,7 @@ public class TestData {
 	private String id;
 	private String text;
 	private List<Data> children;
-	private Node nodeInfo;
+	private NodeInfo nodeInfo;
 
 	private Data data;
 
@@ -25,7 +25,7 @@ public class TestData {
 		id = "Test";
 		text= "Test";
 		children= new ArrayList<>();
-		nodeInfo = new Node();
+		nodeInfo = new NodeInfo();
 		data = new Data();
 		data.setChildren(children);
 		data.setId(id);
@@ -74,7 +74,7 @@ public class TestData {
 
 	@Test
 	public void testSetNodeInfo() {
-		Node newInfo = new Node();
+		NodeInfo newInfo = new NodeInfo();
 		data.setNodeInfo(newInfo);
 		assertEquals(newInfo, data.getNode());
 	}

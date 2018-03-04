@@ -17,7 +17,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	private String description;
 	private String type;
 	private String projectKey;
-
+	private String key;
 	private String summary;
 
 	@XmlElement
@@ -35,6 +35,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.type = type;
 		this.projectKey = projectKey;
 		this.summary = summary;
+		this.key = projectKey + "-" + id;
 		this.text = this.getText();
 	}
 
@@ -45,6 +46,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.type = issue.getIssueType().getName();
 		this.projectKey = issue.getProjectObject().getKey();
 		this.summary = issue.getSummary();
+		this.key = issue.getKey();
 		this.text = this.getText();
 	}
 
@@ -89,7 +91,11 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	}
 
 	public String getKey() {
-		return this.projectKey + "-" + this.id;
+		return this.key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
 	}
 
 	public String getText() {
