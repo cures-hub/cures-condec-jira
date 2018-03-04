@@ -29,15 +29,15 @@ import java.util.Map;
 @Path("/treant")
 public class TreantRest {
 	private IPersistenceStrategy strategy;
-	
+
 	public Treant createTreant(String key, int depth, String projectKey) {
 		StrategyProvider strategyProvider = new StrategyProvider();
 		strategy = strategyProvider.getStrategy(projectKey);
 		DecisionKnowledgeElement decisionKnowledgeElement = strategy.getDecisionKnowledgeElement(key);
-		
+
 		Treant treant = new Treant();
 		treant.setChart(new Chart());
-		
+
 		treant.setNodeStructure(createNodeStructure(decisionKnowledgeElement, depth));
 		return treant;
 	}
@@ -78,26 +78,26 @@ public class TreantRest {
 				.build();
 	}
 
-	private String checkDecisionType(String type){
+	private String checkDecisionType(String type) {
 		if (type.equals("constraint") || type.equals("assumption") || type.equals("implication")
 				|| type.equals("context")) {
 			return "context";
 		} else if (type.equals("problem") || type.equals("issue") || type.equals("goal")) {
-			return  "problem";
+			return "problem";
 		} else if (type.equals("solution") || type.equals("claim") || type.equals("alternative")) {
 			return "solution";
 		} else {
-			return  "rationale";
+			return "rationale";
 		}
 	}
 
 	private Node createNode(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
 		Node node = new Node();
-		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getSummary(), "title",
-				decisionKnowledgeElement.getType(), "desc", decisionKnowledgeElement.getKey());
+		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getType(), "title",
+				decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 		node.setNodeContent(nodeContent);
 
-		String htmlClass=checkDecisionType(decisionKnowledgeElement.getType().toLowerCase());
+		String htmlClass = checkDecisionType(decisionKnowledgeElement.getType().toLowerCase());
 		node.setHtmlClass(htmlClass);
 
 		long htmlId = decisionKnowledgeElement.getId();
@@ -115,34 +115,34 @@ public class TreantRest {
 		return node;
 	}
 
-	private Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, int depth){
+	private Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, int depth) {
 		Node node = new Node();
-		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getSummary(), "title",
-				decisionKnowledgeElement.getText(), "desc", decisionKnowledgeElement.getKey());
+		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getType(), "title",
+				decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 		node.setNodeContent(nodeContent);
 
-		String htmlClass=checkDecisionType(decisionKnowledgeElement.getType().toLowerCase());
+		String htmlClass = checkDecisionType(decisionKnowledgeElement.getType().toLowerCase());
 		node.setHtmlClass(htmlClass);
 		long htmlId = decisionKnowledgeElement.getId();
 		node.setHtmlId(htmlId);
 
 		List<Node> children = new ArrayList<Node>();
 
-        List<DecisionKnowledgeElement> elementChildren = strategy.getChildren(decisionKnowledgeElement);
-        KeyValuePairList.keyValuePairList = new ArrayList<Pair<String, String>>();
-        if(elementChildren!=null){
-            if(elementChildren.size()>0){
-                for(DecisionKnowledgeElement linkeDecisionKnowledgeElement : elementChildren){
-                    if(decisionKnowledgeElement!=null & linkeDecisionKnowledgeElement!=null){
-                        KeyValuePairList.keyValuePairList
-                                .add(new Pair<String, String>(decisionKnowledgeElement.getKey(), linkeDecisionKnowledgeElement.getKey()));
-                        KeyValuePairList.keyValuePairList
-                                .add(new Pair<String, String>(linkeDecisionKnowledgeElement.getKey(), decisionKnowledgeElement.getKey()));
-                        children.add(createNode(linkeDecisionKnowledgeElement, depth, 0));
-                    }
-                }
-            }
-        }
+		List<DecisionKnowledgeElement> elementChildren = strategy.getChildren(decisionKnowledgeElement);
+		KeyValuePairList.keyValuePairList = new ArrayList<Pair<String, String>>();
+		if (elementChildren != null) {
+			if (elementChildren.size() > 0) {
+				for (DecisionKnowledgeElement linkeDecisionKnowledgeElement : elementChildren) {
+					if (decisionKnowledgeElement != null & linkeDecisionKnowledgeElement != null) {
+						KeyValuePairList.keyValuePairList.add(new Pair<String, String>(
+								decisionKnowledgeElement.getKey(), linkeDecisionKnowledgeElement.getKey()));
+						KeyValuePairList.keyValuePairList.add(new Pair<String, String>(
+								linkeDecisionKnowledgeElement.getKey(), decisionKnowledgeElement.getKey()));
+						children.add(createNode(linkeDecisionKnowledgeElement, depth, 0));
+					}
+				}
+			}
+		}
 		node.setChildren(children);
 		return node;
 	}

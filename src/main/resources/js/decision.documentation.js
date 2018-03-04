@@ -62,7 +62,7 @@ function deleteJSON(url, data, callback){
     xhr.send(JSON.stringify(data));
 }
 
-function createDecisionComponent(summary, issueType, callback) {
+function createDecisionComponent(summary, type, callback) {
     var pathname = window.location.pathname;
     var stringArray = pathname.split("/");
     var projectKey = stringArray[stringArray.length - 1];
@@ -70,7 +70,7 @@ function createDecisionComponent(summary, issueType, callback) {
         var jsondata = {
             "projectKey": projectKey,
             "name": summary,
-            "type": issueType
+            "type": type
         };
         postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?actionType=create", jsondata, function (err, data) {
             if (err !== null) {
@@ -78,7 +78,7 @@ function createDecisionComponent(summary, issueType, callback) {
                     type: 'error',
                     close: 'auto',
                     title: 'Error',
-                    body: issueType + ' has not been created. Error Code: ' + err
+                    body: type + ' has not been created. Error Code: ' + err
                 });
             } else {
                 callback(data);
@@ -485,9 +485,9 @@ function buildTreant(projectKey, node) {
 }
 
 function addOptionsToAllDecisionComponents(parentNode) {
-    var issueTypes = ["Problem", "Issue", "Goal", "Solution", "Alternative", "Claim", "Context", "Assumption", "Constraint", "Implication", "Assessment", "Argument"];
-    for (var counter = 0; counter < issueTypes.length; ++counter) {
-        addOptionToDecisionComponent(issueTypes[counter], parentNode);
+    var types = ["Problem", "Issue", "Goal", "Solution", "Alternative", "Claim", "Context", "Assumption", "Constraint", "Implication", "Assessment", "Argument"];
+    for (var counter = 0; counter < types.length; ++counter) {
+        addOptionToDecisionComponent(types[counter], parentNode);
     }
 }
 function addOptionToDecisionComponent(type, parentNode) {
@@ -633,7 +633,7 @@ function addOptionToDecisionComponent(type, parentNode) {
 }
 function fillAccordion(data, projectKey, node) {
     var detailsElement = document.getElementById("Details");
-    detailsElement.insertAdjacentHTML('beforeend', '<p>' + node.key + ' / ' + node.summary + ' <input type="button" name="updateIssue" id="updateIssue" value="Update"/></p>' +
+    detailsElement.insertAdjacentHTML('beforeend', '<p>' + node.type + ' / ' + node.summary + ' <input type="button" name="updateIssue" id="updateIssue" value="Update"/></p>' +
         '<p><textarea id="IssueDescription" style="width:99%; height:auto;border: 1px solid rgba(204,204,204,1); ">' +
         node.description + '</textarea></p>'
     );
@@ -682,19 +682,19 @@ function fillAccordion(data, projectKey, node) {
     if (data.node.children.length > 0) {
         for (var counter = 0; counter < data.node.children.length; ++counter) {
             var child = $('#evts').jstree(true).get_node(data.node.children[counter]);
-            var issueType = child.data.issueType;
+            var type = child.data.type;
             var array = ["Problem", "Issue", "Goal", "Solution", "Alternative", "Claim", "Context", "Assumption", "Constraint", "Implication", "Assessment", "Argument"];
-            if (array.indexOf(issueType) !== -1) {
-                document.getElementById(issueType).insertAdjacentHTML('beforeend', '<div class="issuelinkbox"><p>' + child.data.key +
+            if (array.indexOf(type) !== -1) {
+                document.getElementById(type).insertAdjacentHTML('beforeend', '<div class="issuelinkbox"><p>' + child.data.type +
                     ' / ' + child.data.summary + '</p>' + '<p>Description: ' + child.data.description + '</p></div>'
                 );
                 /*
-                document.getElementById(issueType).insertAdjacentHTML('beforeend', '<div class="issuelinkbox"><p><a href="' +
+                document.getElementById(isstypensertAdjacentHTML('beforeend', '<div class="issuelinkbox"><p><a href="' +
                     AJS.contextPath() + '/browse/' + child.data.key + '">' + child.data.key +
                     ' / ' + child.data.summary + '</a></p>' + '<p>Description: ' + child.data.description + '</p></div>'
                 );
                 */
-                document.getElementById(child.data.issueType).style.display = "block";
+                document.getElementById(child.data.type).style.display = "block";
             }
         }
         addOptionsToAllDecisionComponents(data.node.data);

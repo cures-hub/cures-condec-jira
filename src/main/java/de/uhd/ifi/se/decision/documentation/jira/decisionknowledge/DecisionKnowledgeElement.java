@@ -93,7 +93,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	public String getKey() {
 		return this.key;
 	}
-	
+
 	public void setKey(String key) {
 		this.key = key;
 	}
@@ -108,5 +108,5 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 
 	public void setSummary(String summary) {
 		this.summary = summary;
-	};
+	}
 }
