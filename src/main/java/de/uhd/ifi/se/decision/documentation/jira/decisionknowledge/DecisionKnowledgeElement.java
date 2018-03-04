@@ -108,5 +108,5 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 
 	public void setSummary(String summary) {
 		this.summary = summary;
-	};
+	}
 }

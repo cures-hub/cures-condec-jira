@@ -87,14 +87,13 @@ public class TreeViewerRest {
 		}
 		Data data = new Data();
 
-		data.setText(decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getName() + " / "
-				+ decisionKnowledgeElement.getKey());
+		data.setText(decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getName());
 		data.setId(String.valueOf(decisionKnowledgeElement.getId()));
 
 		NodeInfo nodeInfo = new NodeInfo();
 		nodeInfo.setId(Long.toString(decisionKnowledgeElement.getId()));
 		nodeInfo.setKey(decisionKnowledgeElement.getKey());
-		nodeInfo.setIssueType(decisionKnowledgeElement.getType());
+		nodeInfo.setType(decisionKnowledgeElement.getType());
 		nodeInfo.setDescription(decisionKnowledgeElement.getDescription());
 		nodeInfo.setSummary(decisionKnowledgeElement.getName());
 		data.setNodeInfo(nodeInfo);

@@ -25,7 +25,7 @@ public class TestNodeInfo {
 		summary = "Test";
 		node.setDescription(description);
 		node.setId(id);
-		node.setIssueType(issueType);
+		node.setType(issueType);
 		node.setKey(key);
 		node.setSummary(summary);
 	}
@@ -42,7 +42,7 @@ public class TestNodeInfo {
 
 	@Test
 	public void testGetIssueType() {
-		assertEquals(issueType, node.getIssueType());
+		assertEquals(issueType, node.getType());
 	}
 
 	@Test
@@ -69,8 +69,8 @@ public class TestNodeInfo {
 
 	@Test
 	public void testSetIssueType() {
-		node.setIssueType(issueType + "New");
-		assertEquals(issueType + "New", node.getIssueType());
+		node.setType(issueType + "New");
+		assertEquals(issueType + "New", node.getType());
 	}
 
 	@Test
