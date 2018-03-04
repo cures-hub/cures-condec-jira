@@ -33,8 +33,6 @@ import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowl
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.util.KeyValuePairList;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 
 /**
  * @author Ewald Rode
@@ -298,35 +296,6 @@ public class IssueStrategy implements IPersistenceStrategy {
 	@Override
 	public List<DecisionKnowledgeElement> getParents(DecisionKnowledgeElement decisionKnowledgeElement) {
 		return null;
-	}
-
-	public Data createData(DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (decisionKnowledgeElement == null) {
-			LOGGER.error("NullPointerException: createData Issue was NULL");
-			return new Data();
-		}
-		Data data = new Data();
-
-		data.setText(decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getName());
-		data.setId(String.valueOf(decisionKnowledgeElement.getId()));
-
-		Node node = new Node();
-		node.setId(Long.toString(decisionKnowledgeElement.getId()));
-		node.setKey(decisionKnowledgeElement.getKey());
-		node.setIssueType(decisionKnowledgeElement.getType());
-		node.setDescription(decisionKnowledgeElement.getDescription());
-		node.setSummary(decisionKnowledgeElement.getName());
-		data.setNodeInfo(node);
-
-		List<DecisionKnowledgeElement> children = this.getChildren(decisionKnowledgeElement);
-
-		List<Data> childrenToData = new ArrayList<Data>();
-		for (DecisionKnowledgeElement child : children) {
-			childrenToData.add(createData(child));
-		}
-		data.setChildren(childrenToData);
-
-		return data;
 	}
 
 	@Override

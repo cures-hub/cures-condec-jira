@@ -19,10 +19,6 @@ import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.IDecisionKnow
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ILinkEntity;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
-import de.uhd.ifi.se.decision.documentation.jira.util.KeyValuePairList;
-import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 import net.java.ao.Query;
 
 /**

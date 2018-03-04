@@ -16,7 +16,6 @@ import javax.ws.rs.core.Response.Status;
 
 import de.uhd.ifi.se.decision.documentation.jira.util.KeyValuePairList;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
 
 import org.ofbiz.core.entity.GenericEntityException;
 import org.slf4j.Logger;
@@ -60,7 +59,7 @@ public class TreeViewerRest {
 		}
 	}
 
-	private Core createCore(String projectKey, IPersistenceStrategy strategy){
+	private Core createCore(String projectKey, IPersistenceStrategy strategy) {
 		Core core = new Core();
 		core.setMultiple(false);
 		core.setCheckCallback(true);
@@ -75,7 +74,6 @@ public class TreeViewerRest {
 			Pair<String, String> kvp = new Pair<String, String>("root", decisions.get(index).getKey());
 			KeyValuePairList.keyValuePairList.add(kvp);
 			dataSet.add(createData(decisions.get(index)));
-
 		}
 		core.setData(dataSet);
 		return core;
@@ -88,10 +86,11 @@ public class TreeViewerRest {
 		}
 		Data data = new Data();
 
-		data.setText(decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getName());
+		data.setText(decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getName() + " / "
+				+ decisionKnowledgeElement.getKey());
 		data.setId(String.valueOf(decisionKnowledgeElement.getId()));
 
-		Node nodeInfo = new Node();
+		NodeInfo nodeInfo = new NodeInfo();
 		nodeInfo.setId(Long.toString(decisionKnowledgeElement.getId()));
 		nodeInfo.setKey(decisionKnowledgeElement.getKey());
 		nodeInfo.setIssueType(decisionKnowledgeElement.getType());
