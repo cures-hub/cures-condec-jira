@@ -6,7 +6,6 @@ import javax.xml.bind.annotation.XmlType;
 import com.atlassian.jira.issue.Issue;
 
 /**
- * @author Ewald Rode
  * @description Model class for decision knowledge elements
  */
 @XmlType(propOrder = { "id", "text" })
@@ -15,7 +14,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	private long id;
 	private String name;
 	private String description;
-	private String type;
+	private Type type;
 	private String projectKey;
 	private String key;
 	private String summary;
@@ -27,7 +26,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 
 	}
 
-	public DecisionKnowledgeElement(long id, String name, String description, String type, String projectKey,
+	public DecisionKnowledgeElement(long id, String name, String description, Type type, String projectKey,
 			String key, String summary) {
 		this.id = id;
 		this.name = name;
@@ -43,7 +42,8 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.id = issue.getId();
 		this.name = issue.getSummary();
 		this.description = issue.getDescription();
-		this.type = issue.getIssueType().getName();
+
+		this.type = compareTypes(issue.getIssueType().getName());
 		this.projectKey = issue.getProjectObject().getKey();
 		this.summary = issue.getSummary();
 		this.key = issue.getKey();
@@ -74,11 +74,11 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.description = description;
 	}
 
-	public String getType() {
+	public Type getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(Type type) {
 		this.type = type;
 	}
 
@@ -108,5 +108,26 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 
 	public void setSummary(String summary) {
 		this.summary = summary;
+	}
+
+	private Type compareTypes(String typeString){
+		switch (typeString){
+			case "decision": return Type.DECISION;
+			case "constraint": return Type.CONSTRAIN;
+			case "assumption": return  Type.ASSUMPTION;
+			case "implication": return  Type.IMPLICATION;
+			case "context": return  Type.CONTEXT;
+			case "problem":return  Type.PROBLEM;
+			case "issue": return Type.ISSUE;
+			case "goal": return  Type.GOAL;
+			case "solution": return  Type.SOLUTION;
+			case "claim": return Type.CLAIM;
+			case "alternative": return Type.ALTERNATIVE;
+			case "rationale": return  Type.RATIONALE;
+			case "quetion": return  Type.QUESTION;
+			case "argument": return Type.ARGUMENT;
+			case "assessment": return Type.ASSESSMENT;
+		}
+		return Type.OTHER;
 	}
 }

@@ -22,6 +22,7 @@ import com.atlassian.jira.user.MockApplicationUser;
 import com.atlassian.jira.user.util.MockUserManager;
 import com.atlassian.jira.user.util.UserManager;
 
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Type;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkTypeManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManager;
@@ -63,23 +64,23 @@ public class TestSetUp {
 		((MockProject)project).setKey("TEST");			
 		((MockProjectManager) projectManager).addProject(project);
 		
-		ArrayList<String> types= new ArrayList<>();
+		ArrayList<Type> types= new ArrayList<>();
 		
-		types.add("Bug");
-		types.add("Decision");
-		types.add("Question");
-		types.add("Issue");
-		types.add("Goal");
-		types.add("Solution");
-		types.add("Alternative");
-		types.add("Claim");
-		types.add("Context");
-		types.add("Assumption");
-		types.add("Constraint");
-		types.add("Implication");
-		types.add("Assessment");
-		types.add("Argument");
-		types.add("Problem");
+		types.add(Type.OTHER);
+		types.add(Type.DECISION);
+		types.add(Type.QUESTION);
+		types.add(Type.ISSUE);
+		types.add(Type.GOAL);
+		types.add(Type.SOLUTION);
+		types.add(Type.ALTERNATIVE);
+		types.add(Type.CLAIM);
+		types.add(Type.CONTEXT);
+		types.add(Type.ALTERNATIVE);
+		types.add(Type.CONSTRAIN);
+		types.add(Type.IMPLICATION);
+		types.add(Type.ASSESSMENT);
+		types.add(Type.ARGUMENT);
+		types.add(Type.PROBLEM);
 		
 		
 		for(int i=2;i<types.size()+2;i++) {
@@ -87,7 +88,7 @@ public class TestSetUp {
 				MutableIssue issue = new MockIssue(30,"TEST-"+30);
 				((MockIssue)issue).setProjectId(project.getId());
 				((MockIssue)issue).setProjectObject(project);
-				IssueType issueType = new MockIssueType(i, types.get(i-2));
+				IssueType issueType = new MockIssueType(i, types.get(i-2).toString().toLowerCase());
 				((MockConstantsManager)constManager).addIssueType(issueType);
 				((MockIssue)issue).setIssueType(issueType);
 				((MockIssue)issue).setSummary("Test");
@@ -96,7 +97,7 @@ public class TestSetUp {
 				MutableIssue issue = new MockIssue(i,"TEST-"+i);
 				((MockIssue)issue).setProjectId(project.getId());
 				((MockIssue)issue).setProjectObject(project);
-				IssueType issueType = new MockIssueType(i, types.get(i-2));
+				IssueType issueType = new MockIssueType(i, types.get(i-2).toString().toLowerCase());
 				((MockConstantsManager)constManager).addIssueType(issueType);
 				((MockIssue)issue).setIssueType(issueType);
 				((MockIssue)issue).setSummary("Test");

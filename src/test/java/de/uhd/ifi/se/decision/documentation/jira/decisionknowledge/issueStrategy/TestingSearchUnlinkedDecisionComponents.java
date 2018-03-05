@@ -12,30 +12,30 @@ public class TestingSearchUnlinkedDecisionComponents extends TestIssueStrategySe
 
 	@Test
 	(expected = NullPointerException.class)
-	public void testIdZeroProjektKeyNull() {
+	public void testIdZeroProjectKeyNull() {
 		issueStrategy.getUnlinkedDecisionComponents(0, null);
 	}
 	
 	@Test
-	public void testIdZeroProjektKeyFilled() {
+	public void testIdZeroProjectKeyFilled() {
 		String key = "TEST";
 		issueStrategy.getUnlinkedDecisionComponents(0, key);
 	}
 	
 	@Test
 	(expected = NullPointerException.class)
-	public void testIdFilledProjektKeyNull() {
+	public void testIdFilledProjectKeyNull() {
 		issueStrategy.getUnlinkedDecisionComponents(1, null);
 	}
 	
 	@Test
-	public void testIdFilledProjektKeyFilledNotEx() {
+	public void testIdFilledProjectKeyFilledNotEx() {
 		String key = "TESTNot";
 		assertNotNull(issueStrategy.getUnlinkedDecisionComponents(1, key));
 	}
 	
 	@Test
-	public void testIdFilledProjektKeyFilledEx() {
+	public void testIdFilledProjectKeyFilledEx() {
 		String key = "TEST";
 		assertTrue(issueStrategy.getUnlinkedDecisionComponents(3, key).size()>0);
 	}

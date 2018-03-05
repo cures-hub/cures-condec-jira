@@ -18,7 +18,7 @@ public class TestDecisionRepresentationIssue {
 	private int id;
 	private String name;
 	private String description;
-	private String type;
+	private Type type;
 	private String projectKey;
 	private DecisionKnowledgeElement repre;
 	
@@ -27,10 +27,10 @@ public class TestDecisionRepresentationIssue {
 		this.id=100;
 		this.name="Test";
 		this.description="Test";
-		this.type="TestType";
+		this.type=Type.SOLUTION;
 		this.projectKey="TEST";
 		
-		IssueType issueType = new MockIssueType(2, type);
+		IssueType issueType = new MockIssueType(2, type.toString().toLowerCase());
 		
 		Project project = new MockProject(1,projectKey);
 		
@@ -88,8 +88,8 @@ public class TestDecisionRepresentationIssue {
 	
 	@Test
 	public void testSetType() {
-		this.repre.setType(this.type+"New");
-		assertEquals(this.type+"New", this.repre.getType());
+		this.repre.setType(Type.ALTERNATIVE);
+		assertEquals(Type.ALTERNATIVE, this.repre.getType());
 	}
 	
 	@Test
