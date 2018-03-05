@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Type;
 import org.ofbiz.core.entity.GenericEntityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -201,11 +202,11 @@ public class IssueStrategy extends PersistenceStrategy {
 				Issue issue = issueManager.getIssueObject(issueIdList.get(index));
 				String issueType = issue.getIssueType().getName();
 				// TODO Enable to configure decision knowledge types
-				if (issueType.equals("Decision") || issueType.equals("Question") || issueType.equals("Issue")
-						|| issueType.equals("Goal") || issueType.equals("Solution") || issueType.equals("Alternative")
-						|| issueType.equals("Claim") || issueType.equals("Context") || issueType.equals("Assumption")
-						|| issueType.equals("Constraint") || issueType.equals("Implication")
-						|| issueType.equals("Assessment") || issueType.equals("Argument")) {
+				if (issueType.equalsIgnoreCase("Decision") || issueType.equalsIgnoreCase("Question") || issueType.equalsIgnoreCase("Issue")
+						|| issueType.equalsIgnoreCase("Goal") || issueType.equalsIgnoreCase("Solution") || issueType.equalsIgnoreCase("Alternative")
+						|| issueType.equalsIgnoreCase("Claim") || issueType.equalsIgnoreCase("Context") || issueType.equalsIgnoreCase("Assumption")
+						|| issueType.equalsIgnoreCase("Constraint") || issueType.equalsIgnoreCase("Implication")
+						|| issueType.equalsIgnoreCase("Assessment") || issueType.equalsIgnoreCase("Argument")) {
 					issueList.add(issue);
 				}
 			}
@@ -352,11 +353,11 @@ public class IssueStrategy extends PersistenceStrategy {
 		return  children;
 	}
 
-	private String getIssueTypeId(String type) {
+	private String getIssueTypeId(Type type) {
 		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
 		Collection<IssueType> listOfIssueTypes = constantsManager.getAllIssueTypeObjects();
 		for (IssueType issueType : listOfIssueTypes) {
-			if (issueType.getName().equalsIgnoreCase(type)) {
+			if (issueType.getName().equalsIgnoreCase(type.toString())) {
 				return issueType.getId();
 			}
 		}

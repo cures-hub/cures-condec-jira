@@ -93,11 +93,11 @@ public class TreantRest {
 
 	private Node createNode(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
 		Node node = new Node();
-		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getType(), "title",
+		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getType().toString().toLowerCase(), "title",
 				decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 		node.setNodeContent(nodeContent);
 
-		String htmlClass = checkDecisionType(decisionKnowledgeElement.getType().toLowerCase());
+		String htmlClass = checkDecisionType(decisionKnowledgeElement.getType().toString().toLowerCase());
 		node.setHtmlClass(htmlClass);
 
 		long htmlId = decisionKnowledgeElement.getId();
@@ -117,11 +117,11 @@ public class TreantRest {
 
 	private Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, int depth) {
 		Node node = new Node();
-		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getType(), "title",
+		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getType().toString().toLowerCase(), "title",
 				decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 		node.setNodeContent(nodeContent);
 
-		String htmlClass = checkDecisionType(decisionKnowledgeElement.getType().toLowerCase());
+		String htmlClass = checkDecisionType(decisionKnowledgeElement.getType().toString().toLowerCase());
 		node.setHtmlClass(htmlClass);
 		long htmlId = decisionKnowledgeElement.getId();
 		node.setHtmlId(htmlId);

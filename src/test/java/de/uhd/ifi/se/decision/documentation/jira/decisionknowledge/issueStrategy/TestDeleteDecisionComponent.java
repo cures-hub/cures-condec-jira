@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.issueStrateg
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Type;
 import org.junit.Test;
 
 import com.atlassian.jira.user.ApplicationUser;
@@ -33,7 +34,7 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
 		dec.setId(1);
 		dec.setProjectKey("TEST");
-		dec.setType("Solution");
+		dec.setType(Type.SOLUTION);
 		ApplicationUser user = new MockApplicationUser("NoFails");
 		assertTrue(issueStrategy.deleteDecisionKnowledgeElement(dec, user));
 	}
@@ -43,7 +44,7 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
 		dec.setId(1);
 		dec.setProjectKey("TEST");
-		dec.setType("Solution");
+		dec.setType(Type.SOLUTION);
 		ApplicationUser user = new MockApplicationUser("WithFails");
 		assertFalse(issueStrategy.deleteDecisionKnowledgeElement(dec, user));
 	}
@@ -53,7 +54,7 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
 		dec.setId(1);
 		dec.setProjectKey("TEST");
-		dec.setType("Solution");
+		dec.setType(Type.SOLUTION);
 		ApplicationUser user = new MockApplicationUser("WithResFails");
 		assertFalse(issueStrategy.deleteDecisionKnowledgeElement(dec, user));
 	}
@@ -63,7 +64,7 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
 		dec.setId(1);
 		dec.setProjectKey("TEST");
-		dec.setType("Solution");
+		dec.setType(Type.SOLUTION);
 		ApplicationUser user = new MockApplicationUser("ValidNoResErrors");
 		assertFalse(issueStrategy.deleteDecisionKnowledgeElement(dec, user));
 	}

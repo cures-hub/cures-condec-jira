@@ -14,9 +14,6 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.TreeViewerRest;
 
-/**
- * @author Tim Kuchenbuch
- */
 public class TestTreeViewerRest extends TestSetUp {
 	private TreeViewerRest treeview;
 
