@@ -6,7 +6,7 @@ import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.IPersistenceStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
 import javax.ws.rs.*;
@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @Path("/treant")
 public class TreantRest {
-	private IPersistenceStrategy strategy;
+	private PersistenceStrategy strategy;
 
 	public Treant createTreant(String key, int depth, String projectKey) {
 		StrategyProvider strategyProvider = new StrategyProvider();

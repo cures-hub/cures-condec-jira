@@ -35,11 +35,10 @@ import de.uhd.ifi.se.decision.documentation.jira.util.KeyValuePairList;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
 
 /**
- * @author Ewald Rode
- * @description Implements the IPersistenceStrategy interface. Uses JIRA issues
+ * @description Implements the PersistenceStrategy abstract class. Uses JIRA issues
  *              to store decision knowledge
  */
-public class IssueStrategy implements IPersistenceStrategy {
+public class IssueStrategy extends PersistenceStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IssueStrategy.class);
 
 	@Override
@@ -305,8 +304,8 @@ public class IssueStrategy implements IPersistenceStrategy {
 		Issue issue = issueManager.getIssueByCurrentKey(key);
 		return new DecisionKnowledgeElement(issue);
 	}
-	
-	// TODO Implement this method and add it to the IPersistenceStrategy interface	
+
+	// TODO Implement this method and add it to the PersistenceStrategy interface
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id) {
 		return null;
 	}
@@ -330,18 +329,6 @@ public class IssueStrategy implements IPersistenceStrategy {
 			decisionKnowledgeElements.add(new DecisionKnowledgeElement(issue));
 		}
 		return decisionKnowledgeElements;
-	}
-
-	@Override
-	public List<DecisionKnowledgeElement> getDecisions(String projectKey) {
-		List<DecisionKnowledgeElement> decisionKnowledgeElements = this.getDecisionKnowledgeElements(projectKey);
-		List<DecisionKnowledgeElement> decisions = new ArrayList<DecisionKnowledgeElement>();
-		for (DecisionKnowledgeElement decisionKnowledgeElement : decisionKnowledgeElements) {
-			if (decisionKnowledgeElement.getType().equals("Decision")) {
-				decisions.add(decisionKnowledgeElement);
-			}
-		}
-		return decisions;
 	}
 
 	private List<DecisionKnowledgeElement> computeChildren(DecisionKnowledgeElement decisionKnowledgeElement, Issue issue,List<DecisionKnowledgeElement> children){

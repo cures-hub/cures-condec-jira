@@ -32,7 +32,7 @@ public class DecisionsRest {
 			@QueryParam("projectKey") final String projectKey) {
 		if (projectKey != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
-			IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			List<DecisionKnowledgeElement> decisions = strategy.getUnlinkedDecisionComponents(issueId, projectKey);
 			return Response.ok(decisions).build();
 		} else {
@@ -48,7 +48,7 @@ public class DecisionsRest {
 		if (actionType != null && decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProjectKey();
 			StrategyProvider strategyProvider = new StrategyProvider();
-			IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			if (actionType.equalsIgnoreCase("create")) {
 				//New Implementation
@@ -95,7 +95,7 @@ public class DecisionsRest {
 			@QueryParam("projectKey") final String projectKey, @Context HttpServletRequest req, final Link link) {
 		if (actionType != null && projectKey != null && req != null && link != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
-			IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(req);
 			if (actionType.equalsIgnoreCase("create")) {
 				long issueLinkId = strategy.insertLink(link, user);
@@ -123,7 +123,7 @@ public class DecisionsRest {
 		if (actionType != null && decisionKnowledgeElement != null && request != null) {
 			final String projectKey = decisionKnowledgeElement.getProjectKey();
 			StrategyProvider strategyProvider = new StrategyProvider();
-			IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			if (actionType.equalsIgnoreCase("delete")) {
 				boolean successful = strategy.deleteDecisionKnowledgeElement(decisionKnowledgeElement, user);

@@ -22,11 +22,10 @@ import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import net.java.ao.Query;
 
 /**
- * @author Ewald Rode
- * @description Implements the IPersistenceStrategy interface. Uses the active
+ * @description Implements the PersistenceStrategy abstract class. Uses the active
  *              object framework to store decision knowledge.
  */
-public class ActiveObjectStrategy implements IPersistenceStrategy {
+public class ActiveObjectStrategy extends PersistenceStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectStrategy.class);
 
 	@Override
@@ -58,7 +57,6 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 		if (decComponent == null) {
 			return null;
 		}
-		//dec.setKey(dec.getProjectKey().toUpperCase() + "-" + decComponent.getId());
 		dec.setId(decComponent.getId());
 		return dec;
 	}
@@ -282,21 +280,19 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getDecisions(String projectKey) {
-		List<DecisionKnowledgeElement> decisionKnowledgeElements = this.getDecisionKnowledgeElements(projectKey);
-		List<DecisionKnowledgeElement> decisions = new ArrayList<>();
-		for(DecisionKnowledgeElement decisionKnowledgeElement: decisionKnowledgeElements){
-			if(decisionKnowledgeElement.getType().equals("Decision")){
-				decisions.add(decisionKnowledgeElement);
-			}
-		}
-		return  decisions;
-	}
-
-	@Override
 	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
-		// TODO Auto-generated method stub
-		return null;
+			List<Link> inwardLinks = this.getInwardLinks(decisionKnowledgeElement);
+			List<Link> outwardLinks= this.getOutwardLinks(decisionKnowledgeElement);
+			List<DecisionKnowledgeElement> children = new ArrayList<>();
+
+			for(Link inwardLink:inwardLinks){
+				//TODO resurch how to work with the Link class
+			}
+
+			for(Link outwardLink:outwardLinks){
+				//TODO implementation
+			}
+			return children;
 	}
 
 	@Override

@@ -6,7 +6,7 @@ import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.IPersistenceStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
 import javax.ws.rs.*;
@@ -32,7 +32,7 @@ import java.util.List;
 @Path("/treeviewer")
 public class TreeViewerRest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TreeViewerRest.class);
-	private IPersistenceStrategy strategy;
+	private PersistenceStrategy strategy;
 
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -59,7 +59,7 @@ public class TreeViewerRest {
 		}
 	}
 
-	private Core createCore(String projectKey, IPersistenceStrategy strategy) {
+	private Core createCore(String projectKey, PersistenceStrategy strategy) {
 		Core core = new Core();
 		core.setMultiple(false);
 		core.setCheckCallback(true);
