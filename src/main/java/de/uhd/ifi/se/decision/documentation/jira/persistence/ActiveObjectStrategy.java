@@ -27,6 +27,7 @@ import net.java.ao.Query;
  */
 public class ActiveObjectStrategy extends PersistenceStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectStrategy.class);
+	private static final ActiveObjects ao = ComponentGetter.getAo();
 
 	@Override
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement dec, ApplicationUser user) {
@@ -38,8 +39,6 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 			LOGGER.error("AOStrategy insertDecisionKnowledgeElement the ApplicationUser is null");
 			return null;
 		}
-		final ActiveObjects ao = ComponentGetter.getAo();
-		System.out.println(ao);
 		IDecisionKnowledgeElementEntity decComponent = ao
 				.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
 					@Override
@@ -63,7 +62,6 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 
 	@Override
 	public boolean updateDecisionKnowledgeElement(final DecisionKnowledgeElement dec, ApplicationUser user) {
-		final ActiveObjects ao = ComponentGetter.getAo();
 		IDecisionKnowledgeElementEntity decComponent = ao
 				.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
 					@Override
@@ -88,7 +86,6 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 
 	@Override
 	public boolean deleteDecisionKnowledgeElement(final DecisionKnowledgeElement dec, final ApplicationUser user) {
-		final ActiveObjects ao = ComponentGetter.getAo();
 		return ao.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction() {
@@ -120,7 +117,6 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 
 	@Override
 	public long insertLink(final Link link, ApplicationUser user) {
-		final ActiveObjects ao = ComponentGetter.getAo();
 		return ao.executeInTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction() {
@@ -201,7 +197,6 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 		ProjectManager projectManager = ComponentAccessor.getProjectManager();
 		Project project = projectManager.getProjectObjByKey(projectKey);
 		if (project != null) {
-			final ActiveObjects ao = ComponentGetter.getAo();
 			decList = ao.executeInTransaction(new TransactionCallback<List<DecisionKnowledgeElement>>() {
 				@Override
 				public List<DecisionKnowledgeElement> doInTransaction() {
@@ -255,7 +250,6 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
-		final ActiveObjects ao = ComponentGetter.getAo();
 		IDecisionKnowledgeElementEntity dec = ao
 				.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
 					@Override
@@ -285,12 +279,24 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 			List<Link> outwardLinks= this.getOutwardLinks(decisionKnowledgeElement);
 			List<DecisionKnowledgeElement> children = new ArrayList<>();
 
+			//Getting all Inward Element from the Parent Object
 			for(Link inwardLink:inwardLinks){
-				//TODO resurch how to work with the Link class
-			}
+				children.add(castToDecisionKowledgeElement(ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
+					@Override
+					public IDecisionKnowledgeElementEntity doInTransaction(){
+						return  ao.get(IDecisionKnowledgeElementEntity.class,(int)inwardLink.getOutgoingId());
+					}
+				})));
 
+			}
+			//Getting all Inward Element from the Parent Object
 			for(Link outwardLink:outwardLinks){
-				//TODO implementation
+				children.add(castToDecisionKowledgeElement(ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
+					@Override
+					public IDecisionKnowledgeElementEntity doInTransaction(){
+						return  ao.get(IDecisionKnowledgeElementEntity.class,(int)outwardLink.getOutgoingId());
+					}
+				})));
 			}
 			return children;
 	}
@@ -300,16 +306,17 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 		return null;
 	}
 
+	@Override
+	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	//Converting the Entity to a DecisionKnowledgeElement for future use
 	private DecisionKnowledgeElement castToDecisionKowledgeElement(IDecisionKnowledgeElementEntity entity) {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElement(entity.getId(), entity.getName(),
 				entity.getDescription(), entity.getType(), entity.getProjectKey(), entity.getKey(),
 				entity.getSummary());
 		return element;
-	}
-
-	@Override
-	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }
