@@ -277,10 +277,9 @@ public class IssueStrategy extends PersistenceStrategy {
 	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Issue> outwardIssues = this.getOutwardKnowledgeElements(decisionKnowledgeElement);
 		List<Issue> inwardIssues = this.getInwardKnowledgeElements(decisionKnowledgeElement);
-
 		List<DecisionKnowledgeElement> children = new ArrayList<DecisionKnowledgeElement>();
 		for (int i = 0; i < inwardIssues.size(); ++i) {
-			if (inwardIssues.get(i).getIssueType().getName().equals("Argument")) {
+			if (inwardIssues.get(i).getIssueType().getName().equalsIgnoreCase("Argument")) {
 				if (decisionKnowledgeElement != null & inwardIssues.get(i) != null) {
 					children=computeChildren(decisionKnowledgeElement,inwardIssues.get(i),children);
 				}

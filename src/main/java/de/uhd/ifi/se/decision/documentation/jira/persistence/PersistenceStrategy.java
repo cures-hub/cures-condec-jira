@@ -28,7 +28,7 @@ public abstract class PersistenceStrategy {
 		List<DecisionKnowledgeElement> decisionKnowledgeElements = this.getDecisionKnowledgeElements(projectKey);
 		List<DecisionKnowledgeElement> decisions = new ArrayList<DecisionKnowledgeElement>();
 		for (DecisionKnowledgeElement decisionKnowledgeElement : decisionKnowledgeElements) {
-			if (decisionKnowledgeElement.getType().equals("Decision")) {
+			if (decisionKnowledgeElement.getType().toString().equalsIgnoreCase("Decision")) {
 				decisions.add(decisionKnowledgeElement);
 			}
 		}

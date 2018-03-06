@@ -17,5 +17,4 @@ public enum Type{
     SOLUTION,
     OTHER,
     QUESTION;
-
 }

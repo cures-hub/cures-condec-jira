@@ -92,7 +92,6 @@ public class TreeViewerRest {
 		NodeInfo nodeInfo = new NodeInfo();
 		nodeInfo.setId(Long.toString(decisionKnowledgeElement.getId()));
 		nodeInfo.setKey(decisionKnowledgeElement.getKey());
-		//TODO Check if the Type can be returned and used in the JS File
 		nodeInfo.setType(decisionKnowledgeElement.getType().toString().toLowerCase());
 		nodeInfo.setDescription(decisionKnowledgeElement.getDescription());
 		nodeInfo.setSummary(decisionKnowledgeElement.getName());

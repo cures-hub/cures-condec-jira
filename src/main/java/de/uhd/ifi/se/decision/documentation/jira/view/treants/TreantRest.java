@@ -78,6 +78,7 @@ public class TreantRest {
 				.build();
 	}
 
+	//TODO Change to ENUM Types
 	private String checkDecisionType(String type) {
 		if (type.equals("constraint") || type.equals("assumption") || type.equals("implication")
 				|| type.equals("context")) {
