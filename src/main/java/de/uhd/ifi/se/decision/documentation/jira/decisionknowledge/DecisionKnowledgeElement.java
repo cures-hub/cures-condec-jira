@@ -43,7 +43,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.name = issue.getSummary();
 		this.description = issue.getDescription();
 
-		this.type = compareTypes(issue.getIssueType().getName());
+		this.type = compareTypes(issue.getIssueType().getName().toLowerCase());
 		this.projectKey = issue.getProjectObject().getKey();
 		this.summary = issue.getSummary();
 		this.key = issue.getKey();
@@ -111,7 +111,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	}
 
 	private Type compareTypes(String typeString){
-		switch (typeString){
+		switch (typeString.toLowerCase()){
 			case "decision": return Type.DECISION;
 			case "constraint": return Type.CONSTRAIN;
 			case "assumption": return  Type.ASSUMPTION;
@@ -124,7 +124,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 			case "claim": return Type.CLAIM;
 			case "alternative": return Type.ALTERNATIVE;
 			case "rationale": return  Type.RATIONALE;
-			case "quetion": return  Type.QUESTION;
+			case "question": return  Type.QUESTION;
 			case "argument": return Type.ARGUMENT;
 			case "assessment": return Type.ASSESSMENT;
 		}
