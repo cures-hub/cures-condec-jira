@@ -16,7 +16,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	private long id;
 	private String name;
 	private String description;
-	private Type type;
+	private KnowledgeType type;
 	private String projectKey;
 	private String key;
 	private String summary;
@@ -29,8 +29,8 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 
 	}
 
-	public DecisionKnowledgeElement(long id, String name, String description, Type type, String projectKey,
-			String key, String summary) {
+	public DecisionKnowledgeElement(long id, String name, String description, KnowledgeType type, String projectKey, String key,
+			String summary) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
@@ -77,11 +77,11 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.description = description;
 	}
 
-	public Type getType() {
+	public KnowledgeType getType() {
 		return type;
 	}
 
-	public void setType(Type type) {
+	public void setType(KnowledgeType type) {
 		this.type = type;
 	}
 
@@ -113,28 +113,47 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.summary = summary;
 	}
 
-	public List<DecisionKnowledgeElement> getChildren() { return children; }
+	public List<DecisionKnowledgeElement> getChildren() {
+		return children;
+	}
 
-	public void setChildren(List<DecisionKnowledgeElement> children) { this.children = children; }
+	public void setChildren(List<DecisionKnowledgeElement> children) {
+		this.children = children;
+	}
 
-	private Type compareTypes(String typeString){
-		switch (typeString.toLowerCase()){
-			case "decision": return Type.DECISION;
-			case "constraint": return Type.CONSTRAIN;
-			case "assumption": return  Type.ASSUMPTION;
-			case "implication": return  Type.IMPLICATION;
-			case "context": return  Type.CONTEXT;
-			case "problem":return  Type.PROBLEM;
-			case "issue": return Type.ISSUE;
-			case "goal": return  Type.GOAL;
-			case "solution": return  Type.SOLUTION;
-			case "claim": return Type.CLAIM;
-			case "alternative": return Type.ALTERNATIVE;
-			case "rationale": return  Type.RATIONALE;
-			case "question": return  Type.QUESTION;
-			case "argument": return Type.ARGUMENT;
-			case "assessment": return Type.ASSESSMENT;
+	private KnowledgeType compareTypes(String typeString) {
+		switch (typeString.toLowerCase()) {
+		case "decision":
+			return KnowledgeType.DECISION;
+		case "constraint":
+			return KnowledgeType.CONSTRAINT;
+		case "assumption":
+			return KnowledgeType.ASSUMPTION;
+		case "implication":
+			return KnowledgeType.IMPLICATION;
+		case "context":
+			return KnowledgeType.CONTEXT;
+		case "problem":
+			return KnowledgeType.PROBLEM;
+		case "issue":
+			return KnowledgeType.ISSUE;
+		case "goal":
+			return KnowledgeType.GOAL;
+		case "solution":
+			return KnowledgeType.SOLUTION;
+		case "claim":
+			return KnowledgeType.CLAIM;
+		case "alternative":
+			return KnowledgeType.ALTERNATIVE;
+		case "rationale":
+			return KnowledgeType.RATIONALE;
+		case "question":
+			return KnowledgeType.QUESTION;
+		case "argument":
+			return KnowledgeType.ARGUMENT;
+		case "assessment":
+			return KnowledgeType.ASSESSMENT;
 		}
-		return Type.OTHER;
+		return KnowledgeType.OTHER;
 	}
 }

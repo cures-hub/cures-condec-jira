@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Type;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
 import org.ofbiz.core.entity.GenericEntityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -354,7 +354,7 @@ public class IssueStrategy extends PersistenceStrategy {
 		return inwardIssues;
 	}
 
-	private String getIssueTypeId(Type type) {
+	private String getIssueTypeId(KnowledgeType type) {
 		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
 		Collection<IssueType> listOfIssueTypes = constantsManager.getAllIssueTypeObjects();
 		for (IssueType issueType : listOfIssueTypes) {

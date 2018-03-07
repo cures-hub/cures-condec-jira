@@ -7,7 +7,7 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Type;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.DecisionsRest;
@@ -33,7 +33,7 @@ public class TestDecisionSetUp extends TestSetUp{
         dec = new DecisionKnowledgeElement(issue);
         dec.setId(1);
         dec.setProjectKey("TEST");
-        dec.setType(Type.SOLUTION);
+        dec.setType(KnowledgeType.SOLUTION);
         req = new MockHttpServletRequest();
     }
 }

@@ -18,7 +18,7 @@ public class TestDecisionRepresentationIssue {
 	private int id;
 	private String name;
 	private String description;
-	private Type type;
+	private KnowledgeType type;
 	private String projectKey;
 	private DecisionKnowledgeElement repre;
 
@@ -27,7 +27,7 @@ public class TestDecisionRepresentationIssue {
 		this.id=100;
 		this.name="Test";
 		this.description="Test";
-		this.type=Type.SOLUTION;
+		this.type=KnowledgeType.SOLUTION;
 		this.projectKey="TEST";
 
 		IssueType issueType = new MockIssueType(2, type.toString().toLowerCase());
@@ -88,8 +88,8 @@ public class TestDecisionRepresentationIssue {
 
 	@Test
 	public void testSetType() {
-		this.repre.setType(Type.ALTERNATIVE);
-		assertEquals(Type.ALTERNATIVE, this.repre.getType());
+		this.repre.setType(KnowledgeType.ALTERNATIVE);
+		assertEquals(KnowledgeType.ALTERNATIVE, this.repre.getType());
 	}
 
 	@Test

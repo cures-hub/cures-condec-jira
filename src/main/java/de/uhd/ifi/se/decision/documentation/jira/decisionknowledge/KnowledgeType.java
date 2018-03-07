@@ -1,13 +1,13 @@
 package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
 
-public enum Type{
+public enum KnowledgeType{
     ALTERNATIVE,
     ASSUMPTION,
     ASSESSMENT,
     ARGUMENT,
     CLAIM,
     CONTEXT,
-    CONSTRAIN,
+    CONSTRAINT,
     DECISION,
     GOAL,
     ISSUE,
