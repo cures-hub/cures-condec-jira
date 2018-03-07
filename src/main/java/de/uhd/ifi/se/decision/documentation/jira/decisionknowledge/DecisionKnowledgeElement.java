@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import com.atlassian.jira.issue.Issue;
 
 import java.util.List;
@@ -84,6 +86,11 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	public void setType(KnowledgeType type) {
 		this.type = type;
 	}
+	
+	@JsonProperty("type")
+	public void setType(String type) {
+		this.type = compareTypes(type);
+	}
 
 	public String getProjectKey() {
 		return projectKey;
@@ -102,7 +109,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	}
 
 	public String getText() {
-		return this.type + " / " + this.name;
+		return this.type.toString().substring(0,1).toUpperCase() + this.type.toString().substring(1) + " / " + this.name;
 	}
 
 	public String getSummary() {
