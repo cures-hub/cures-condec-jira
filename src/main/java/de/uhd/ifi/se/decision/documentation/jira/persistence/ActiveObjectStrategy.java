@@ -178,7 +178,23 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 
 	@Override
 	public void deleteLink(Link link, ApplicationUser user) {
-
+		ao.executeInTransaction(new TransactionCallback<Void>() {
+			@Override
+			public Void doInTransaction() {
+				for (ILinkEntity linkEntity : ao.find(ILinkEntity.class)) {
+					if(link.getLinkType()==linkEntity.getLinkType() && link.getIngoingId()==linkEntity.getIngoingId() &&
+							link.getOutgoingId()==linkEntity.getOutgoingId()) {
+						try {
+							linkEntity.getEntityManager().delete(linkEntity);
+						} catch (SQLException e) {
+							LOGGER.error("ILinkEntity could not be deleted");
+							e.printStackTrace();
+						}
+					}
+				}
+				return null;
+			}
+		});
 	}
 
 	@Override
