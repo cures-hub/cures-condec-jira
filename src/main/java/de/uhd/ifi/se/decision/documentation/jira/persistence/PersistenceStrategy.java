@@ -20,9 +20,11 @@ public abstract class PersistenceStrategy {
 
 	public abstract boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
 
+    public abstract List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey);
+
 	public abstract DecisionKnowledgeElement getDecisionKnowledgeElement(String key);
-	
-	public abstract List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey);
+
+    public abstract DecisionKnowledgeElement getDecisionKnowledgeElement(long id);
 
 	public List<DecisionKnowledgeElement> getDecisions(String projectKey) {
 		List<DecisionKnowledgeElement> decisionKnowledgeElements = this.getDecisionKnowledgeElements(projectKey);
