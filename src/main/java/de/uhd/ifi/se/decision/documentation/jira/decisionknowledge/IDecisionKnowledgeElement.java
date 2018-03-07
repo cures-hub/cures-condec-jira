@@ -17,9 +17,9 @@ public interface IDecisionKnowledgeElement {
 
 	public void setDescription(String description);
 
-	public Type getType();
+	public KnowledgeType getType();
 
-	public void setType(Type type);
+	public void setType(KnowledgeType type);
 
 	public String getProjectKey();
 

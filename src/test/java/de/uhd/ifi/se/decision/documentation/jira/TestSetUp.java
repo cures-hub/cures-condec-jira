@@ -22,7 +22,7 @@ import com.atlassian.jira.user.MockApplicationUser;
 import com.atlassian.jira.user.util.MockUserManager;
 import com.atlassian.jira.user.util.UserManager;
 
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Type;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkTypeManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManager;
@@ -64,23 +64,23 @@ public class TestSetUp {
 		((MockProject)project).setKey("TEST");			
 		((MockProjectManager) projectManager).addProject(project);
 		
-		ArrayList<Type> types= new ArrayList<>();
+		ArrayList<KnowledgeType> types= new ArrayList<>();
 		
-		types.add(Type.OTHER);
-		types.add(Type.DECISION);
-		types.add(Type.QUESTION);
-		types.add(Type.ISSUE);
-		types.add(Type.GOAL);
-		types.add(Type.SOLUTION);
-		types.add(Type.ALTERNATIVE);
-		types.add(Type.CLAIM);
-		types.add(Type.CONTEXT);
-		types.add(Type.ALTERNATIVE);
-		types.add(Type.CONSTRAIN);
-		types.add(Type.IMPLICATION);
-		types.add(Type.ASSESSMENT);
-		types.add(Type.ARGUMENT);
-		types.add(Type.PROBLEM);
+		types.add(KnowledgeType.OTHER);
+		types.add(KnowledgeType.DECISION);
+		types.add(KnowledgeType.QUESTION);
+		types.add(KnowledgeType.ISSUE);
+		types.add(KnowledgeType.GOAL);
+		types.add(KnowledgeType.SOLUTION);
+		types.add(KnowledgeType.ALTERNATIVE);
+		types.add(KnowledgeType.CLAIM);
+		types.add(KnowledgeType.CONTEXT);
+		types.add(KnowledgeType.ALTERNATIVE);
+		types.add(KnowledgeType.CONSTRAINT);
+		types.add(KnowledgeType.IMPLICATION);
+		types.add(KnowledgeType.ASSESSMENT);
+		types.add(KnowledgeType.ARGUMENT);
+		types.add(KnowledgeType.PROBLEM);
 		
 		
 		for(int i=2;i<types.size()+2;i++) {

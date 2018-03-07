@@ -18,7 +18,7 @@ public class TestDecisionRepresentationStrings {
 	private Long id;
 	private String name;
 	private String description;
-	private Type type;
+	private KnowledgeType type;
 	private String projectKey;
 	private String key;
 	private String summery;
@@ -29,7 +29,7 @@ public class TestDecisionRepresentationStrings {
 		this.id = (long) 100;
 		this.name = "Test";
 		this.description = "Test";
-		this.type = Type.SOLUTION;
+		this.type = KnowledgeType.SOLUTION;
 		this.projectKey = "Test";
 		this.key = "Test";
 		this.summery = "Test";
@@ -82,8 +82,8 @@ public class TestDecisionRepresentationStrings {
 
 	@Test
 	public void testSetType() {
-		this.repre.setType(Type.ALTERNATIVE);
-		assertEquals(Type.ALTERNATIVE, this.repre.getType());
+		this.repre.setType(KnowledgeType.ALTERNATIVE);
+		assertEquals(KnowledgeType.ALTERNATIVE, this.repre.getType());
 	}
 
 	@Test

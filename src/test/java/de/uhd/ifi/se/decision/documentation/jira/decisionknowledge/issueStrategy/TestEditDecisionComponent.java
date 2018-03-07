@@ -4,7 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Type;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
 import org.junit.Test;
 
 import com.atlassian.jira.user.ApplicationUser;
@@ -35,7 +35,7 @@ public class TestEditDecisionComponent extends TestIssueStrategySetUp {
 		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
 		dec.setId(1);
 		dec.setProjectKey("TEST");
-		dec.setType(Type.SOLUTION);
+		dec.setType(KnowledgeType.SOLUTION);
 		ApplicationUser user = new MockApplicationUser("NoFails");
 		assertNotNull(issueStrategy.updateDecisionKnowledgeElement(dec, user));
 	}
@@ -45,7 +45,7 @@ public class TestEditDecisionComponent extends TestIssueStrategySetUp {
 		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
 		dec.setId(1);
 		dec.setProjectKey("TEST");
-		dec.setType(Type.SOLUTION);
+		dec.setType(KnowledgeType.SOLUTION);
 		ApplicationUser user = new MockApplicationUser("WithFails");
 		assertFalse(issueStrategy.updateDecisionKnowledgeElement(dec, user));
 	}
