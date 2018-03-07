@@ -281,7 +281,7 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 
 			//Getting all Inward Element from the Parent Object
 			for(Link inwardLink:inwardLinks){
-				children.add(castToDecisionKowledgeElement(ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
+				children.add(castToDecisionKnowledgeElement(ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
 					@Override
 					public IDecisionKnowledgeElementEntity doInTransaction(){
 						return  ao.get(IDecisionKnowledgeElementEntity.class,(int)inwardLink.getOutgoingId());
@@ -291,7 +291,7 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 			}
 			//Getting all Inward Element from the Parent Object
 			for(Link outwardLink:outwardLinks){
-				children.add(castToDecisionKowledgeElement(ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
+				children.add(castToDecisionKnowledgeElement(ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
 					@Override
 					public IDecisionKnowledgeElementEntity doInTransaction(){
 						return  ao.get(IDecisionKnowledgeElementEntity.class,(int)outwardLink.getOutgoingId());
@@ -308,12 +308,27 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 
 	@Override
 	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey) {
-		// TODO Auto-generated method stub
-		return null;
+		List<DecisionKnowledgeElement> decisionKnowledgeElements = null;
+		if (projectKey != null){
+			decisionKnowledgeElements = ao.executeInTransaction(new TransactionCallback<List<DecisionKnowledgeElement>>() {
+				@Override
+				public List<DecisionKnowledgeElement> doInTransaction() {
+					final List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<>();
+					//Returns all IDecisionKnowledgeElementEntitys with the ProjectKey
+					IDecisionKnowledgeElementEntity[] decisionArray = ao.find(IDecisionKnowledgeElementEntity.class,
+							Query.select().where("PROJECT_KEY = ?", projectKey));
+					for (IDecisionKnowledgeElementEntity entity: decisionArray){
+						decisionKnowledgeElements.add(castToDecisionKnowledgeElement(entity));
+					}
+					return decisionKnowledgeElements;
+				}
+			});
+		}
+		return decisionKnowledgeElements;
 	}
 
 	//Converting the Entity to a DecisionKnowledgeElement for future use
-	private DecisionKnowledgeElement castToDecisionKowledgeElement(IDecisionKnowledgeElementEntity entity) {
+	private DecisionKnowledgeElement castToDecisionKnowledgeElement(IDecisionKnowledgeElementEntity entity) {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElement(entity.getId(), entity.getName(),
 				entity.getDescription(), entity.getType(), entity.getProjectKey(), entity.getKey(),
 				entity.getSummary());

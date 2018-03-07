@@ -5,6 +5,8 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.atlassian.jira.issue.Issue;
 
+import java.util.List;
+
 /**
  * @description Model class for decision knowledge elements
  */
@@ -18,6 +20,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	private String projectKey;
 	private String key;
 	private String summary;
+	private List<DecisionKnowledgeElement> children;
 
 	@XmlElement
 	private String text;
@@ -109,6 +112,10 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	public void setSummary(String summary) {
 		this.summary = summary;
 	}
+
+	public List<DecisionKnowledgeElement> getChildren() { return children; }
+
+	public void setChildren(List<DecisionKnowledgeElement> children) { this.children = children; }
 
 	private Type compareTypes(String typeString){
 		switch (typeString.toLowerCase()){
