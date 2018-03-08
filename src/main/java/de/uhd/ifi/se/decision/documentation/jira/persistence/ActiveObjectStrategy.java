@@ -263,8 +263,6 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 							if (!linkedDecList.contains(decisionComponent)) {
 								DecisionKnowledgeElement simpleDec = new DecisionKnowledgeElement();
 								simpleDec.setId(decisionComponent.getId());
-//								simpleDec.setText(decisionComponent.getKey() + " / " + decisionComponent.getName()
-//										+ " / " + decisionComponent.getType());
 								decList.add(simpleDec);
 							}
 						}
@@ -358,11 +356,13 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 		});
 	}
 
+	//TODO Implement
 	@Override
 	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
 		return null;
 	}
 
+	//TODO Implement
 	@Override
 	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
 		return null;
