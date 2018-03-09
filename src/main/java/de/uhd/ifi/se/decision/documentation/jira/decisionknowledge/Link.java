@@ -9,10 +9,13 @@ public class Link implements ILink {
 	private long ingoingId;
 	private long outgoingId;
 
-	public Link(ILinkEntity link){
-		this.linkType=link.getLinkType();
-		this.ingoingId= link.getIngoingId();
-		this.outgoingId= link.getOutgoingId();
+	public Link() {
+	}
+
+	public Link(ILinkEntity link) {
+		this.linkType = link.getLinkType();
+		this.ingoingId = link.getIngoingId();
+		this.outgoingId = link.getOutgoingId();
 	}
 
 	public String getLinkType() {
