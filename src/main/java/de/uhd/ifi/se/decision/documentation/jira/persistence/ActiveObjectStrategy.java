@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.documentation.jira.persistence;
 
 import java.sql.SQLException;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -358,16 +359,26 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 		});
 	}
 
-	//TODO Implement
 	@Override
 	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
-		return null;
+		List<Link> inwardLinks= new ArrayList<>();
+		ILinkEntity[] links=ao.find(ILinkEntity.class,Query.select().where("PROJECT_KEY = ? AND OUTGOING_ID = ?",element.getProjectKey(), element.getId()));
+		for(ILinkEntity link: links){
+			Link inwardLink = new Link(link);
+			inwardLinks.add(inwardLink);
+		}
+		return  inwardLinks;
 	}
 
-	//TODO Implement
 	@Override
 	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
-		return null;
+		List<Link> outwardLinks = new ArrayList<>();
+		ILinkEntity[] links = ao.find(ILinkEntity.class,Query.select().where("PROJECT_KEY = ? AND INGOING_ID = ?", element.getProjectKey(), element.getId()));
+		for(ILinkEntity link: links){
+			Link outwardLink = new Link(link);
+			outwardLinks.add(outwardLink);
+		}
+		return  outwardLinks;
 	}
 
 	//Converting the Entity to a DecisionKnowledgeElement for future use
