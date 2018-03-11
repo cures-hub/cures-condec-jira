@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
 
 /**
- * @author Ewald Rode
  * @description Model class for links between decision components
  */
 public class Link implements ILink {
