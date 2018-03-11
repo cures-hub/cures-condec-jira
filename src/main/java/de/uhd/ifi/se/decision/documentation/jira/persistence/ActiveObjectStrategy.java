@@ -194,21 +194,29 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 		List<DecisionKnowledgeElement> children = new ArrayList<>();
 
 		//Getting all Inward Element from the Parent Object
-		for(Link inwardLink:inwardLinks){
+		for(Link inwardLink:inwardLinks)
 			children.add(castToDecisionKnowledgeElement(ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
 				@Override
-				public IDecisionKnowledgeElementEntity doInTransaction(){
-					return  ao.get(IDecisionKnowledgeElementEntity.class,(int)inwardLink.getOutgoingId());
+				public IDecisionKnowledgeElementEntity doInTransaction() {
+					IDecisionKnowledgeElementEntity[] entityList=ao.find(IDecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", inwardLink.getIngoingId()));
+					if(entityList.length==1){
+						return entityList[0];
+					}
+					LOGGER.error("Inward Link has no Element to return");
+					return null;
 				}
 			})));
-
-		}
 		//Getting all Inward Element from the Parent Object
 		for(Link outwardLink:outwardLinks){
 			children.add(castToDecisionKnowledgeElement(ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
 				@Override
 				public IDecisionKnowledgeElementEntity doInTransaction(){
-					return  ao.get(IDecisionKnowledgeElementEntity.class,(int)outwardLink.getOutgoingId());
+					IDecisionKnowledgeElementEntity[] entityList=ao.find(IDecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", outwardLink.getOutgoingId()));
+					if(entityList.length==1){
+						return  entityList[0];
+					}
+					LOGGER.error("Outward Link has no Element to return");
+					return  null;
 				}
 			})));
 		}
@@ -362,7 +370,7 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 	@Override
 	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
 		List<Link> inwardLinks= new ArrayList<>();
-		ILinkEntity[] links=ao.find(ILinkEntity.class,Query.select().where("PROJECT_KEY = ? AND OUTGOING_ID = ?",element.getProjectKey(), element.getId()));
+		ILinkEntity[] links=ao.find(ILinkEntity.class,Query.select().where("OUTGOING_ID = ?",element.getId()));
 		for(ILinkEntity link: links){
 			Link inwardLink = new Link(link);
 			inwardLinks.add(inwardLink);
@@ -373,7 +381,7 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 	@Override
 	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
 		List<Link> outwardLinks = new ArrayList<>();
-		ILinkEntity[] links = ao.find(ILinkEntity.class,Query.select().where("PROJECT_KEY = ? AND INGOING_ID = ?", element.getProjectKey(), element.getId()));
+		ILinkEntity[] links = ao.find(ILinkEntity.class,Query.select().where("INGOING_ID = ?", element.getId()));
 		for(ILinkEntity link: links){
 			Link outwardLink = new Link(link);
 			outwardLinks.add(outwardLink);
