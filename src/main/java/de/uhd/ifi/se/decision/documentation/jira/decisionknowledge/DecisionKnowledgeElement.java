@@ -31,8 +31,8 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 
 	}
 
-	public DecisionKnowledgeElement(long id, String name, String description, KnowledgeType type, String projectKey, String key,
-			String summary) {
+	public DecisionKnowledgeElement(long id, String name, String description, KnowledgeType type, String projectKey,
+			String key, String summary) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
@@ -47,8 +47,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.id = issue.getId();
 		this.name = issue.getSummary();
 		this.description = issue.getDescription();
-
-		this.type = compareTypes(issue.getIssueType().getName().toLowerCase());
+		this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
 		this.projectKey = issue.getProjectObject().getKey();
 		this.summary = issue.getSummary();
 		this.key = issue.getKey();
@@ -89,7 +88,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 
 	@JsonProperty("type")
 	public void setType(String type) {
-		this.type = compareTypes(type);
+		this.type = KnowledgeType.getKnowledgeType(type);
 	}
 
 	public String getProjectKey() {
@@ -109,7 +108,8 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	}
 
 	public String getText() {
-		return this.type.toString().substring(0,1).toUpperCase() + this.type.toString().substring(1) + " / " + this.name;
+		return this.type.toString().substring(0, 1).toUpperCase() + this.type.toString().substring(1) + " / "
+				+ this.name;
 	}
 
 	public String getSummary() {
@@ -126,41 +126,5 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 
 	public void setChildren(List<DecisionKnowledgeElement> children) {
 		this.children = children;
-	}
-
-	private KnowledgeType compareTypes(String typeString) {
-		switch (typeString.toLowerCase()) {
-		case "decision":
-			return KnowledgeType.DECISION;
-		case "constraint":
-			return KnowledgeType.CONSTRAINT;
-		case "assumption":
-			return KnowledgeType.ASSUMPTION;
-		case "implication":
-			return KnowledgeType.IMPLICATION;
-		case "context":
-			return KnowledgeType.CONTEXT;
-		case "problem":
-			return KnowledgeType.PROBLEM;
-		case "issue":
-			return KnowledgeType.ISSUE;
-		case "goal":
-			return KnowledgeType.GOAL;
-		case "solution":
-			return KnowledgeType.SOLUTION;
-		case "claim":
-			return KnowledgeType.CLAIM;
-		case "alternative":
-			return KnowledgeType.ALTERNATIVE;
-		case "rationale":
-			return KnowledgeType.RATIONALE;
-		case "question":
-			return KnowledgeType.QUESTION;
-		case "argument":
-			return KnowledgeType.ARGUMENT;
-		case "assessment":
-			return KnowledgeType.ASSESSMENT;
-		}
-		return KnowledgeType.OTHER;
 	}
 }

@@ -148,6 +148,7 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 					public IDecisionKnowledgeElementEntity doInTransaction() {
 						IDecisionKnowledgeElementEntity[] decisionKnowledgeElement = ao
 								.find(IDecisionKnowledgeElementEntity.class, Query.select().where("KEY = ?", key));
+						// 0 or 1 decision knowledge elements might be returned by this query
 						if (decisionKnowledgeElement.length == 1) {
 							return decisionKnowledgeElement[0];
 						}
@@ -171,8 +172,7 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 					public IDecisionKnowledgeElementEntity doInTransaction() {
 						IDecisionKnowledgeElementEntity[] decisionKnowledgeElement = ao
 								.find(IDecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", id));
-						// id is the primary key for decision knowledge elements
-						// it might be 0 or 1 decision knowledge elements returned by this query
+						// 0 or 1 decision knowledge elements might be returned by this query
 						if (decisionKnowledgeElement.length == 1) {
 							return decisionKnowledgeElement[0];
 						}
