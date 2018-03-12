@@ -31,8 +31,6 @@ import com.atlassian.jira.util.ErrorCollection;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
-import de.uhd.ifi.se.decision.documentation.jira.util.KeyValuePairList;
-import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
 
 /**
  * @description Implements the PersistenceStrategy abstract class. Uses JIRA
@@ -155,21 +153,13 @@ public class IssueStrategy extends PersistenceStrategy {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {		
-//		List<DecisionKnowledgeElement> children = this.getOutwardKnowledgeElements(decisionKnowledgeElement);
-//		List<DecisionKnowledgeElement> children = new ArrayList<DecisionKnowledgeElement>();
-//		for (DecisionKnowledgeElement outwardElement : outwardElements) {
-//			boolean boolvar = updateKeyValuePairList(decisionKnowledgeElement, outwardElement);
-//			if (!boolvar) {
-//				children.add(outwardElement);
-//			}
-//		}
+	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
 		return this.getOutwardKnowledgeElements(decisionKnowledgeElement);
 	}
 
 	@Override
 	public List<DecisionKnowledgeElement> getParents(DecisionKnowledgeElement decisionKnowledgeElement) {
-		return null;
+		return this.getInwardKnowledgeElements(decisionKnowledgeElement);
 	}
 
 	@Override
@@ -252,38 +242,48 @@ public class IssueStrategy extends PersistenceStrategy {
 	public void deleteLink(Link link, ApplicationUser user) {
 
 	}
-
-	// TODO Implement
+	
 	@Override
-	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
-		return null;
+	public List<Link> getInwardLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
+		List<IssueLink> inwardIssueLinks = ComponentAccessor.getIssueLinkManager()
+				.getInwardLinks(decisionKnowledgeElement.getId());
+		List<Link> inwardLinks = new ArrayList<Link>();
+		for(IssueLink inwardIssueLink : inwardIssueLinks) {
+			inwardLinks.add(new Link(inwardIssueLink));
+		}
+		return inwardLinks;
 	}
 
-	// TODO Implement
 	@Override
-	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
-		return null;
+	public List<Link> getOutwardLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
+		List<IssueLink> outwardIssueLinks = ComponentAccessor.getIssueLinkManager()
+				.getInwardLinks(decisionKnowledgeElement.getId());
+		List<Link> outwardLinks = new ArrayList<Link>();
+		for(IssueLink inwardIssueLink : outwardIssueLinks) {
+			outwardLinks.add(new Link(inwardIssueLink));
+		}
+		return outwardLinks;
 	}
 
-	private boolean updateKeyValuePairList(DecisionKnowledgeElement decisionKnowledgeElementOne,
-			DecisionKnowledgeElement decisionKnowledgeElementTwo) {
-		Pair<String, String> newKVP = new Pair<String, String>(decisionKnowledgeElementOne.getKey(),
-				decisionKnowledgeElementTwo.getKey());
-		Pair<String, String> newKVPReverse = new Pair<String, String>(decisionKnowledgeElementTwo.getKey(),
-				decisionKnowledgeElementOne.getKey());
-		boolean boolvar = false;
-		for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
-			Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
-			if (newKVP.equals(globalInst)) {
-				boolvar = true;
-			}
-		}
-		if (!boolvar) {
-			KeyValuePairList.keyValuePairList.add(newKVP);
-			KeyValuePairList.keyValuePairList.add(newKVPReverse);
-		}
-		return boolvar;
-	}
+//	private boolean updateKeyValuePairList(DecisionKnowledgeElement decisionKnowledgeElementOne,
+//			DecisionKnowledgeElement decisionKnowledgeElementTwo) {
+//		Pair<String, String> newKVP = new Pair<String, String>(decisionKnowledgeElementOne.getKey(),
+//				decisionKnowledgeElementTwo.getKey());
+//		Pair<String, String> newKVPReverse = new Pair<String, String>(decisionKnowledgeElementTwo.getKey(),
+//				decisionKnowledgeElementOne.getKey());
+//		boolean boolvar = false;
+//		for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
+//			Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
+//			if (newKVP.equals(globalInst)) {
+//				boolvar = true;
+//			}
+//		}
+//		if (!boolvar) {
+//			KeyValuePairList.keyValuePairList.add(newKVP);
+//			KeyValuePairList.keyValuePairList.add(newKVPReverse);
+//		}
+//		return boolvar;
+//	}
 
 	public List<DecisionKnowledgeElement> getOutwardKnowledgeElements(
 			DecisionKnowledgeElement decisionKnowledgeElement) {
