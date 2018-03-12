@@ -34,32 +34,32 @@ public class TestGetUnlinkedIssues extends TestSetUp {
 		
 	@Test
 	public void testIssueIdZeroProjectKeyNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey or issueId = null")).build().getEntity(),decRest.getUnlinkedIssues(0, null).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey or issueId = null")).build().getEntity(),decRest.getUnlinkedDecisionComponents(0, null).getEntity());
 	}
 	
 	@Test
 	public void testIssueIdFilledProjectKeyNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey or issueId = null")).build().getEntity(),decRest.getUnlinkedIssues(7, null).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey or issueId = null")).build().getEntity(),decRest.getUnlinkedDecisionComponents(7, null).getEntity());
 	}
 	
-	@Test
-	public void testIssueIdZeroProjectKeyDontExist() {
-		assertEquals(200, decRest.getUnlinkedIssues(0, "NotTEST").getStatus());
-	}
+//	@Test
+//	public void testIssueIdZeroProjectKeyDontExist() {
+//		assertEquals(200, decRest.getUnlinkedDecisionComponents(0, "NotTEST").getStatus());
+//	}
 	
-	@Test
-	public void testIssueIdFilledProjectKeyDontExist() {
-		assertEquals(200,decRest.getUnlinkedIssues(7, "NotTEST").getStatus());
-	}
+//	@Test
+//	public void testIssueIdFilledProjectKeyDontExist() {
+//		assertEquals(200,decRest.getUnlinkedDecisionComponents(7, "NotTEST").getStatus());
+//	}
 	
-	@Test
-	public void testIssueIdZeroProjectKeyExist() {
-		assertEquals(200,decRest.getUnlinkedIssues(0, "TEST").getStatus());
-	}
+//	@Test
+//	public void testIssueIdZeroProjectKeyExist() {
+//		assertEquals(200,decRest.getUnlinkedDecisionComponents(0, "TEST").getStatus());
+//	}
 	
-	@Test
-	public void testIssueIdFilledProjectKeyExist() {
-		assertEquals(200,decRest.getUnlinkedIssues(7, "TEST").getStatus());
-	}
+//	@Test
+//	public void testIssueIdFilledProjectKeyExist() {
+//		assertEquals(200,decRest.getUnlinkedDecisionComponents(7, "TEST").getStatus());
+//	}
 
 }

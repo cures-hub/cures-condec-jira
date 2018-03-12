@@ -28,7 +28,7 @@ public class DecisionsRest {
 
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getUnlinkedIssues(@QueryParam("issueId") long issueId,
+	public Response getUnlinkedDecisionComponents(@QueryParam("issueId") long issueId,
 			@QueryParam("projectKey") final String projectKey) {
 		if (projectKey != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
