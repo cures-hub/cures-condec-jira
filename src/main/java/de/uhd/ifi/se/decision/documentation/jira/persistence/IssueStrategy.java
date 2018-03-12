@@ -155,19 +155,16 @@ public class IssueStrategy extends PersistenceStrategy {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
-		List<DecisionKnowledgeElement> outwardElements = this.getOutwardKnowledgeElements(decisionKnowledgeElement);
-//		List<DecisionKnowledgeElement> inwardElements = this.getInwardKnowledgeElements(decisionKnowledgeElement);
-		List<DecisionKnowledgeElement> children = new ArrayList<DecisionKnowledgeElement>();
-//		for (DecisionKnowledgeElement inwardElement : inwardElements) {
-//			if (inwardElement.getType() == KnowledgeType.ARGUMENT) {
-//				children = computeChildren(decisionKnowledgeElement, inwardElement, children);
+	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {		
+//		List<DecisionKnowledgeElement> children = this.getOutwardKnowledgeElements(decisionKnowledgeElement);
+//		List<DecisionKnowledgeElement> children = new ArrayList<DecisionKnowledgeElement>();
+//		for (DecisionKnowledgeElement outwardElement : outwardElements) {
+//			boolean boolvar = updateKeyValuePairList(decisionKnowledgeElement, outwardElement);
+//			if (!boolvar) {
+//				children.add(outwardElement);
 //			}
 //		}
-		for (DecisionKnowledgeElement outwardElement : outwardElements) {
-			children = computeChildren(decisionKnowledgeElement, outwardElement, children);
-		}
-		return children;
+		return this.getOutwardKnowledgeElements(decisionKnowledgeElement);
 	}
 
 	@Override
@@ -268,11 +265,12 @@ public class IssueStrategy extends PersistenceStrategy {
 		return null;
 	}
 
-	private List<DecisionKnowledgeElement> computeChildren(DecisionKnowledgeElement decisionKnowledgeElement,
-			DecisionKnowledgeElement elementTwo, List<DecisionKnowledgeElement> children) {
-		Pair<String, String> newKVP = new Pair<String, String>(decisionKnowledgeElement.getKey(), elementTwo.getKey());
-		Pair<String, String> newKVPReverse = new Pair<String, String>(elementTwo.getKey(),
-				decisionKnowledgeElement.getKey());
+	private boolean updateKeyValuePairList(DecisionKnowledgeElement decisionKnowledgeElementOne,
+			DecisionKnowledgeElement decisionKnowledgeElementTwo) {
+		Pair<String, String> newKVP = new Pair<String, String>(decisionKnowledgeElementOne.getKey(),
+				decisionKnowledgeElementTwo.getKey());
+		Pair<String, String> newKVPReverse = new Pair<String, String>(decisionKnowledgeElementTwo.getKey(),
+				decisionKnowledgeElementOne.getKey());
 		boolean boolvar = false;
 		for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
 			Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
@@ -283,10 +281,8 @@ public class IssueStrategy extends PersistenceStrategy {
 		if (!boolvar) {
 			KeyValuePairList.keyValuePairList.add(newKVP);
 			KeyValuePairList.keyValuePairList.add(newKVPReverse);
-			children.add(elementTwo);
-			return children;
 		}
-		return children;
+		return boolvar;
 	}
 
 	public List<DecisionKnowledgeElement> getOutwardKnowledgeElements(
