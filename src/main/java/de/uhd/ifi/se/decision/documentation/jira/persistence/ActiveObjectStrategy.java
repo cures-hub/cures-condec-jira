@@ -46,10 +46,12 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 						IDecisionKnowledgeElementEntity decComponent = ao.create(IDecisionKnowledgeElementEntity.class);
 						// decComponent.setKey(dec.getProjectKey().toUpperCase() + "-" +
 						// decComponent.getId());
+						decComponent.setKey(dec.getKey());
 						decComponent.setName(dec.getName());
 						decComponent.setDescription(dec.getDescription());
 						decComponent.setType(dec.getType());
 						decComponent.setProjectKey(dec.getProjectKey());
+						decComponent.setSummary(dec.getSummary());
 						decComponent.save();
 						return decComponent;
 					}
@@ -161,6 +163,7 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 					decisionKnowledgeElement.getProjectKey(), decisionKnowledgeElement.getKey(),
 					decisionKnowledgeElement.getSummary());
 		}
+		LOGGER.error("No DecisionKnowledgeElement with "+ key+ " found");
 		return null;
 	}
 
