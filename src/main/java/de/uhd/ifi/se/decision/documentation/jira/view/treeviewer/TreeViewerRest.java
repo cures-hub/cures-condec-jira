@@ -38,7 +38,6 @@ public class TreeViewerRest {
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Response getMessage(@QueryParam("projectKey") final String projectKey) throws GenericEntityException {
 		if (projectKey != null) {
-			LOGGER.error("getMessage ProjectKey is NULL");
 			ProjectManager projectManager = ComponentAccessor.getProjectManager();
 			Project project = projectManager.getProjectObjByKey(projectKey);
 			if (project == null) {
@@ -54,6 +53,7 @@ public class TreeViewerRest {
 			}
 		} else {
 			// projectKey is not provided as a query parameter
+			LOGGER.error("getMessage ProjectKey is NULL");
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error",
 					"Query parameter 'projectKey' is not provided, please add a valid projectKey")).build();
 		}
