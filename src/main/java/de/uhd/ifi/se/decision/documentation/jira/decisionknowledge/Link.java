@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
 import com.atlassian.jira.issue.link.IssueLink;
 
 /**
- * @description Model class for links between decision components
+ * @description Model class for links between decision knowledge elements
  */
 public class Link implements ILink {
 	private String linkType;
