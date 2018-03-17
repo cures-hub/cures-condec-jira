@@ -70,7 +70,8 @@ function createDecisionComponent(summary, type, callback) {
         var jsondata = {
             "projectKey": projectKey,
             "name": summary,
-            "type": type
+            "type": type,
+            "description": summary
         };
         postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?actionType=create", jsondata, function (err, data) {
             if (err !== null) {

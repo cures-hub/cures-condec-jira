@@ -100,6 +100,9 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	}
 
 	public String getKey() {
+		if (this.key == null) {
+			return this.projectKey + "-" + this.id;
+		}
 		return this.key;
 	}
 

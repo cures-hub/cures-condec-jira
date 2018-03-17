@@ -30,8 +30,9 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 	private static final ActiveObjects ao = ComponentGetter.getAo();
 
 	@Override
-	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement dec, ApplicationUser user) {
-		if (dec == null) {
+	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement,
+			ApplicationUser user) {
+		if (decisionKnowledgeElement == null) {
 			LOGGER.error("AOStrategy insertDecisionKnowledgeElement the DecisionRepresentation is null");
 			return null;
 		}
@@ -39,28 +40,29 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 			LOGGER.error("AOStrategy insertDecisionKnowledgeElement the ApplicationUser is null");
 			return null;
 		}
-		IDecisionKnowledgeElementEntity decComponent = ao
+		IDecisionKnowledgeElementEntity databaseEntry = ao
 				.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
 					@Override
 					public IDecisionKnowledgeElementEntity doInTransaction() {
-						IDecisionKnowledgeElementEntity decComponent = ao.create(IDecisionKnowledgeElementEntity.class);
-						// decComponent.setKey(dec.getProjectKey().toUpperCase() + "-" +
-						// decComponent.getId());
-						decComponent.setKey(dec.getKey());
-						decComponent.setName(dec.getName());
-						decComponent.setDescription(dec.getDescription());
-						decComponent.setType(dec.getType());
-						decComponent.setProjectKey(dec.getProjectKey());
-						decComponent.setSummary(dec.getSummary());
-						decComponent.save();
-						return decComponent;
+						IDecisionKnowledgeElementEntity databaseEntry = ao
+								.create(IDecisionKnowledgeElementEntity.class);
+						databaseEntry.setKey(
+								decisionKnowledgeElement.getProjectKey().toUpperCase() + "-" + databaseEntry.getId());
+						databaseEntry.setName(decisionKnowledgeElement.getName());
+						databaseEntry.setDescription(decisionKnowledgeElement.getDescription());
+						databaseEntry.setType(decisionKnowledgeElement.getType());
+						databaseEntry.setProjectKey(decisionKnowledgeElement.getProjectKey());
+						databaseEntry.setSummary(decisionKnowledgeElement.getSummary());
+						databaseEntry.save();
+						return databaseEntry;
 					}
 				});
-		if (decComponent == null) {
+		if (databaseEntry == null) {
 			return null;
 		}
-		dec.setId(decComponent.getId());
-		return dec;
+		decisionKnowledgeElement.setId(databaseEntry.getId());
+		decisionKnowledgeElement.setKey(databaseEntry.getKey());
+		return decisionKnowledgeElement;
 	}
 
 	@Override
@@ -163,7 +165,7 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 					decisionKnowledgeElement.getProjectKey(), decisionKnowledgeElement.getKey(),
 					decisionKnowledgeElement.getSummary());
 		}
-		LOGGER.error("No DecisionKnowledgeElement with "+ key+ " found");
+		LOGGER.error("No DecisionKnowledgeElement with " + key + " found");
 		return null;
 	}
 
