@@ -110,7 +110,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.children = children;
 	}
 
-	@XmlElement
+	@XmlElement(name = "text")
 	public String getText() {
 		return this.type.toString().substring(0, 1).toUpperCase() + this.type.toString().substring(1) + " / "
 				+ this.summary;
