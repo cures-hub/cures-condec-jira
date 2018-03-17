@@ -6,8 +6,8 @@ import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
 
 /**
- * @author Ewald Rode
- * @description Model class for decision components
+ * @description Interface for decision knowledge elements used in the
+ *              active object persistence strategy
  */
 @Table("DECISION")
 public interface IDecisionKnowledgeElementEntity extends IDecisionKnowledgeElement, RawEntity<Integer> {

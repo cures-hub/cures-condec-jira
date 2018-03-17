@@ -23,9 +23,6 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	private String key;
 	private List<DecisionKnowledgeElement> children;
 
-	@XmlElement
-	private String text;
-
 	public DecisionKnowledgeElement() {
 
 	}
@@ -38,7 +35,6 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.type = type;
 		this.projectKey = projectKey;
 		this.key = key;
-		this.text = this.getText();
 	}
 
 	public DecisionKnowledgeElement(Issue issue) {
@@ -48,7 +44,6 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
 		this.projectKey = issue.getProjectObject().getKey();
 		this.key = issue.getKey();
-		this.text = this.getText();
 	}
 
 	public long getId() {
@@ -57,6 +52,14 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+	
+	public String getSummary() {
+		return summary;
+	}
+
+	public void setSummary(String summary) {
+		this.summary = summary;
 	}
 
 	public String getDescription() {
@@ -98,25 +101,18 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	public void setKey(String key) {
 		this.key = key;
 	}
-
-	public String getText() {
-		return this.type.toString().substring(0, 1).toUpperCase() + this.type.toString().substring(1) + " / "
-				+ this.summary;
-	}
-
-	public String getSummary() {
-		return summary;
-	}
-
-	public void setSummary(String summary) {
-		this.summary = summary;
-	}
-
+	
 	public List<DecisionKnowledgeElement> getChildren() {
 		return children;
 	}
 
 	public void setChildren(List<DecisionKnowledgeElement> children) {
 		this.children = children;
+	}
+
+	@XmlElement
+	public String getText() {
+		return this.type.toString().substring(0, 1).toUpperCase() + this.type.toString().substring(1) + " / "
+				+ this.summary;
 	}
 }
