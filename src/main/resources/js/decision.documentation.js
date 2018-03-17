@@ -69,7 +69,7 @@ function createDecisionComponent(summary, type, callback) {
     if (summary !== "") {
         var jsondata = {
             "projectKey": projectKey,
-            "name": summary,
+            "summary": summary,
             "type": type,
             "description": summary
         };
@@ -95,7 +95,7 @@ function editDecisionComponent(issueId, summary, description, callback) {
     var projectKey = stringArray[stringArray.length - 1];
     var jsondata = {
         "id": issueId,
-        "name": summary,
+        "summary": summary,
         "projectKey": projectKey,
         "description": description
     };
@@ -195,7 +195,7 @@ function createContextMenuForTreeNodes(projectKey) {
                         //set content
                         var content = document.getElementById('modal-content');
                         content.insertAdjacentHTML('afterBegin',
-                            '<p><label for="form-input-name" style="display:block;width:45%;float:left;">Name</label><input id="form-input-name" type="text" name="name" placeholder="Name of decisioncomponent" style="width:50%;"/></p>' +
+                            '<p><label for="form-input-name" style="display:block;width:45%;float:left;">Name</label><input id="form-input-name" type="text" name="summary" placeholder="Name of decision component" style="width:50%;"/></p>' +
                             '<p><label for="form-select-type" style="display:block;width:45%;float:left;">Componenttype</label><select name="form-select-type" style="width:50%;"/></p>' +
                             '<p><input id="form-input-submit" type="submit" value="Add Decision Component" style="float:right;"/></p>'
                         );
@@ -270,7 +270,7 @@ function createContextMenuForTreeNodes(projectKey) {
 
                         var submitButton = document.getElementById('form-input-submit');
                         submitButton.onclick = function () {
-                            var name = document.getElementById('form-input-name').value;
+                            var summary = document.getElementById('form-input-name').value;
                             var type = type_select.val();
                             if (type === "Argument") {
                                 var argumentCheckBoxGroup = document.getElementsByName("type-of-argument");
@@ -278,7 +278,7 @@ function createContextMenuForTreeNodes(projectKey) {
                                     if (argumentCheckBoxGroup[i].checked === true) {
                                         var selectedNatureOfArgument = argumentCheckBoxGroup[i].value;
                                         if (selectedNatureOfArgument === "pro") {
-                                            createDecisionComponent(name, type, function (data) {
+                                            createDecisionComponent(summary, type, function (data) {
                                                 AJS.flag({
                                                     type: 'success',
                                                     close: 'auto',
@@ -297,7 +297,7 @@ function createContextMenuForTreeNodes(projectKey) {
                                                 });
                                             });
                                         } else if (selectedNatureOfArgument === "contra") {
-                                            createDecisionComponent(name, type, function (data) {
+                                            createDecisionComponent(summary, type, function (data) {
                                                 AJS.flag({
                                                     type: 'success',
                                                     close: 'auto',
@@ -316,7 +316,7 @@ function createContextMenuForTreeNodes(projectKey) {
                                                 });
                                             });
                                         } else if (selectedNatureOfArgument === "comment") {
-                                            createDecisionComponent(name, type, function (data) {
+                                            createDecisionComponent(summary, type, function (data) {
                                                 AJS.flag({
                                                     type: 'success',
                                                     close: 'auto',
@@ -338,7 +338,7 @@ function createContextMenuForTreeNodes(projectKey) {
                                     }
                                 }
                             } else {
-                                createDecisionComponent(name, type, function (data) {
+                                createDecisionComponent(summary, type, function (data) {
                                     AJS.flag({
                                         type: 'success',
                                         close: 'auto',
@@ -374,7 +374,7 @@ function createContextMenuForTreeNodes(projectKey) {
                         var context = options.$trigger.context;
                         var content = document.getElementById('modal-content');
                         content.insertAdjacentHTML('afterBegin',
-                            '<p><label for="form-input-name" style="display:block;width:45%;float:left;">Name</label><input id="form-input-name" type="text" name="name" value="" style="width:50%;" readonly/></p>' +
+                            '<p><label for="form-input-name" style="display:block;width:45%;float:left;">Name</label><input id="form-input-name" type="text" name="summary" value="" style="width:50%;" readonly/></p>' +
                             '<p><label for="form-input-description" style="display:block;width:45%;float:left;">Description</label><input id="form-input-description" type="text" name="type" placeholder="Type in description" style="width:50%;"/></p>' +
                             '<p><input id="form-input-submit" type="submit" value="Edit Decision Component" style="float:right;"/></p>'
                         );
@@ -396,9 +396,9 @@ function createContextMenuForTreeNodes(projectKey) {
 
                         var submitButton = document.getElementById('form-input-submit');
                         submitButton.onclick = function () {
-                            var name = document.getElementById('form-input-name').value;
+                            var summary = document.getElementById('form-input-name').value;
                             var description = document.getElementById('form-input-description').value;
-                            editDecisionComponent(context.id, name, description, function () {
+                            editDecisionComponent(context.id, summary, description, function () {
                                 AJS.flag({
                                     type: 'success',
                                     close: 'auto',
@@ -749,7 +749,7 @@ function buildTreeViewer(projectKey, nodeId) {
                     'contextmenu' : {
                         'items' : {
                             'create' : {
-                                'label' : 'Create Decision Component',
+                                'label' : 'Add Decision Component',
                                 'action' : function(node){
                                     var selector  = node.reference.prevObject.selector;
                                     var tree_node = $('#evts').jstree(true).get_node(selector).data;
@@ -761,7 +761,7 @@ function buildTreeViewer(projectKey, nodeId) {
                                     //set content
                                     var content = document.getElementById('modal-content');
                                     content.insertAdjacentHTML('afterBegin',
-                                        '<p><label for="form-input-name" style="display:block;width:45%;float:left;">Name</label><input id="form-input-name" type="text" name="name" placeholder="Name of decisioncomponent" style="width:50%;"/></p>' +
+                                        '<p><label for="form-input-name" style="display:block;width:45%;float:left;">Name</label><input id="form-input-name" type="text" name="summary" placeholder="Summary of decision component" style="width:50%;"/></p>' +
                                         '<p><label for="form-select-type" style="display:block;width:45%;float:left;">Componenttype</label><select name="form-select-type" style="width:50%;"/></p>' +
                                         '<p><input id="form-input-submit" type="submit" value="Add Decision Component" style="float:right;"/></p>'
                                     );
@@ -844,7 +844,7 @@ function buildTreeViewer(projectKey, nodeId) {
                                                 if (argumentCheckBoxGroup[i].checked === true) {
                                                     var selectedNatureOfArgument = argumentCheckBoxGroup[i].value;
                                                     if (selectedNatureOfArgument === "pro") {
-                                                        createDecisionComponent(name, type, function (data) {
+                                                        createDecisionComponent(summary, type, function (data) {
                                                             AJS.flag({
                                                                 type: 'success',
                                                                 close: 'auto',
@@ -863,7 +863,7 @@ function buildTreeViewer(projectKey, nodeId) {
                                                             });
                                                         });
                                                     } else if (selectedNatureOfArgument === "contra") {
-                                                        createDecisionComponent(name, type, function (data) {
+                                                        createDecisionComponent(summary, type, function (data) {
                                                             AJS.flag({
                                                                 type: 'success',
                                                                 close: 'auto',
@@ -882,7 +882,7 @@ function buildTreeViewer(projectKey, nodeId) {
                                                             });
                                                         });
                                                     } else if (selectedNatureOfArgument === "comment") {
-                                                        createDecisionComponent(name, type, function (data) {
+                                                        createDecisionComponent(summary, type, function (data) {
                                                             AJS.flag({
                                                                 type: 'success',
                                                                 close: 'auto',
@@ -904,7 +904,7 @@ function buildTreeViewer(projectKey, nodeId) {
                                                 }
                                             }
                                         } else {
-                                            createDecisionComponent(name, type, function (data) {
+                                            createDecisionComponent(summary, type, function (data) {
                                                 AJS.flag({
                                                     type: 'success',
                                                     close: 'auto',
@@ -942,16 +942,16 @@ function buildTreeViewer(projectKey, nodeId) {
 
                                     var content = document.getElementById('modal-content');
                                     content.insertAdjacentHTML('afterBegin',
-                                        '<p><label for="form-input-name" style="display:block;width:45%;float:left;">Name</label><input id="form-input-name" type="text" name="name" value="' + tree_node.summary + '" style="width:50%;" readonly/></p>' +
+                                        '<p><label for="form-input-name" style="display:block;width:45%;float:left;">Name</label><input id="form-input-name" type="text" name="summary" value="' + tree_node.summary + '" style="width:50%;" readonly/></p>' +
                                         '<p><label for="form-input-description" style="display:block;width:45%;float:left;">Description</label><input id="form-input-description" type="text" name="type" placeholder="Type in description" style="width:50%;"/></p>' +
                                         '<p><input id="form-input-submit" type="submit" value="Edit Decision Component" style="float:right;"/></p>'
                                     );
 
                                     var submitButton = document.getElementById('form-input-submit');
                                     submitButton.onclick = function () {
-                                        var name = document.getElementById('form-input-name').value;
+                                        var summary = document.getElementById('form-input-name').value;
                                         var description = document.getElementById('form-input-description').value;
-                                        editDecisionComponent(tree_node.id, name, description, function () {
+                                        editDecisionComponent(tree_node.id, summary, description, function () {
                                             AJS.flag({
                                                 type: 'success',
                                                 close: 'auto',
@@ -1075,7 +1075,7 @@ function initializeSite() {
     var projectKey = stringArray[stringArray.length - 1];
     buildTreeViewer(projectKey);
 
-    /*ClickHandler for accordionelements*/
+    /*ClickHandler for accordion elements*/
     $(document).ready(function () {
         $("dt").click(function () {
             $(this).next("dd").slideToggle("fast");

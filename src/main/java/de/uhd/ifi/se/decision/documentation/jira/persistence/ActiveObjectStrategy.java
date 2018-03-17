@@ -48,11 +48,10 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 								.create(IDecisionKnowledgeElementEntity.class);
 						databaseEntry.setKey(
 								decisionKnowledgeElement.getProjectKey().toUpperCase() + "-" + databaseEntry.getId());
-						databaseEntry.setName(decisionKnowledgeElement.getName());
+						databaseEntry.setSummary(decisionKnowledgeElement.getSummary());
 						databaseEntry.setDescription(decisionKnowledgeElement.getDescription());
 						databaseEntry.setType(decisionKnowledgeElement.getType());
 						databaseEntry.setProjectKey(decisionKnowledgeElement.getProjectKey());
-						databaseEntry.setSummary(decisionKnowledgeElement.getSummary());
 						databaseEntry.save();
 						return databaseEntry;
 					}
@@ -160,10 +159,9 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 					}
 				});
 		if (decisionKnowledgeElement != null) {
-			return new DecisionKnowledgeElement(decisionKnowledgeElement.getId(), decisionKnowledgeElement.getName(),
+			return new DecisionKnowledgeElement(decisionKnowledgeElement.getId(), decisionKnowledgeElement.getSummary(),
 					decisionKnowledgeElement.getDescription(), decisionKnowledgeElement.getType(),
-					decisionKnowledgeElement.getProjectKey(), decisionKnowledgeElement.getKey(),
-					decisionKnowledgeElement.getSummary());
+					decisionKnowledgeElement.getProjectKey(), decisionKnowledgeElement.getKey());
 		}
 		LOGGER.error("No DecisionKnowledgeElement with " + key + " found");
 		return null;
@@ -185,10 +183,9 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 					}
 				});
 		if (decisionKnowledgeElement != null) {
-			return new DecisionKnowledgeElement(decisionKnowledgeElement.getId(), decisionKnowledgeElement.getName(),
+			return new DecisionKnowledgeElement(decisionKnowledgeElement.getId(), decisionKnowledgeElement.getSummary(),
 					decisionKnowledgeElement.getDescription(), decisionKnowledgeElement.getType(),
-					decisionKnowledgeElement.getProjectKey(), decisionKnowledgeElement.getKey(),
-					decisionKnowledgeElement.getSummary());
+					decisionKnowledgeElement.getProjectKey(), decisionKnowledgeElement.getKey());
 		}
 		return null;
 	}
@@ -402,9 +399,8 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 
 	// Converting the Entity to a DecisionKnowledgeElement for future use
 	private DecisionKnowledgeElement castToDecisionKnowledgeElement(IDecisionKnowledgeElementEntity entity) {
-		DecisionKnowledgeElement element = new DecisionKnowledgeElement(entity.getId(), entity.getName(),
-				entity.getDescription(), entity.getType(), entity.getProjectKey(), entity.getKey(),
-				entity.getSummary());
+		DecisionKnowledgeElement element = new DecisionKnowledgeElement(entity.getId(), entity.getSummary(),
+				entity.getDescription(), entity.getType(), entity.getProjectKey(), entity.getKey());
 		return element;
 	}
 }

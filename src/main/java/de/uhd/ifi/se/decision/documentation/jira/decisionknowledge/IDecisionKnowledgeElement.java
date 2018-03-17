@@ -8,10 +8,10 @@ public interface IDecisionKnowledgeElement {
 	public long getId();
 
 	public void setId(long id);
+	
+	public String getSummary();
 
-	public String getName();
-
-	public void setName(String name);
+	public void setSummary(String summary);
 
 	public String getDescription();
 
@@ -31,8 +31,4 @@ public interface IDecisionKnowledgeElement {
 	public String getKey();
 	
 	public void setKey(String key);
-
-	public String getSummary();
-
-	public void setSummary(String summary);
 }
