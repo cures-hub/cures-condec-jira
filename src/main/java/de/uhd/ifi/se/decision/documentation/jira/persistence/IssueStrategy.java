@@ -44,7 +44,7 @@ public class IssueStrategy extends PersistenceStrategy {
 			ApplicationUser user) {
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
 
-		issueInputParameters.setSummary(decisionElement.getName());
+		issueInputParameters.setSummary(decisionElement.getSummary());
 		issueInputParameters.setDescription(decisionElement.getDescription());
 		issueInputParameters.setAssigneeId(user.getName());
 		issueInputParameters.setReporterId(user.getName());
@@ -77,7 +77,7 @@ public class IssueStrategy extends PersistenceStrategy {
 		IssueResult issueResult = issueService.getIssue(user, decisionElement.getId());
 		MutableIssue issueToBeUpdated = issueResult.getIssue();
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
-		issueInputParameters.setSummary(decisionElement.getName());
+		issueInputParameters.setSummary(decisionElement.getSummary());
 		issueInputParameters.setDescription(decisionElement.getDescription());
 		IssueService.UpdateValidationResult result = issueService.validateUpdate(user, issueToBeUpdated.getId(),
 				issueInputParameters);

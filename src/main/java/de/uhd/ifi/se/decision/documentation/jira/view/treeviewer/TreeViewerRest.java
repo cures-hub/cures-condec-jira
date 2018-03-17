@@ -86,7 +86,7 @@ public class TreeViewerRest {
 		}
 		Data data = new Data();
 
-		data.setText(decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getName());
+		data.setText(decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getSummary());
 		data.setId(String.valueOf(decisionKnowledgeElement.getId()));
 
 		NodeInfo nodeInfo = new NodeInfo();
@@ -94,7 +94,7 @@ public class TreeViewerRest {
 		nodeInfo.setKey(decisionKnowledgeElement.getKey());
 		nodeInfo.setType(decisionKnowledgeElement.getType().toString().toLowerCase());
 		nodeInfo.setDescription(decisionKnowledgeElement.getDescription());
-		nodeInfo.setSummary(decisionKnowledgeElement.getName());
+		nodeInfo.setSummary(decisionKnowledgeElement.getSummary());
 		data.setNodeInfo(nodeInfo);
 
 		List<DecisionKnowledgeElement> children = strategy.getChildren(decisionKnowledgeElement);

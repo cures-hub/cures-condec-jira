@@ -16,12 +16,11 @@ import java.util.List;
 public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	@XmlElement
 	private long id;
-	private String name;
+	private String summary; // name of element
 	private String description;
 	private KnowledgeType type;
 	private String projectKey;
 	private String key;
-	private String summary;
 	private List<DecisionKnowledgeElement> children;
 
 	@XmlElement
@@ -31,25 +30,23 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 
 	}
 
-	public DecisionKnowledgeElement(long id, String name, String description, KnowledgeType type, String projectKey,
-			String key, String summary) {
+	public DecisionKnowledgeElement(long id, String summary, String description, KnowledgeType type, String projectKey,
+			String key) {
 		this.id = id;
-		this.name = name;
+		this.summary = summary;
 		this.description = description;
 		this.type = type;
 		this.projectKey = projectKey;
-		this.summary = summary;
-		this.key = projectKey + "-" + id;
+		this.key = key;
 		this.text = this.getText();
 	}
 
 	public DecisionKnowledgeElement(Issue issue) {
 		this.id = issue.getId();
-		this.name = issue.getSummary();
+		this.summary = issue.getSummary();
 		this.description = issue.getDescription();
 		this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
 		this.projectKey = issue.getProjectObject().getKey();
-		this.summary = issue.getSummary();
 		this.key = issue.getKey();
 		this.text = this.getText();
 	}
@@ -60,14 +57,6 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 
 	public void setId(long id) {
 		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getDescription() {
@@ -112,7 +101,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 
 	public String getText() {
 		return this.type.toString().substring(0, 1).toUpperCase() + this.type.toString().substring(1) + " / "
-				+ this.name;
+				+ this.summary;
 	}
 
 	public String getSummary() {
