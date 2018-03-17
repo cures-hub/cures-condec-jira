@@ -22,7 +22,7 @@ import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import net.java.ao.Query;
 
 /**
- * @description Implements the PersistenceStrategy abstract class. Uses the
+ * @description Extends the abstract class PersistenceStrategy. Uses the
  *              active object framework to store decision knowledge.
  */
 public class ActiveObjectStrategy extends PersistenceStrategy {
@@ -65,23 +65,24 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 	}
 
 	@Override
-	public boolean updateDecisionKnowledgeElement(final DecisionKnowledgeElement dec, ApplicationUser user) {
-		IDecisionKnowledgeElementEntity decComponent = ao
+	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user) {
+		IDecisionKnowledgeElementEntity databaseEntry = ao
 				.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
 					@Override
 					public IDecisionKnowledgeElementEntity doInTransaction() {
-						for (IDecisionKnowledgeElementEntity decComponent : ao
+						for (IDecisionKnowledgeElementEntity databaseEntry : ao
 								.find(IDecisionKnowledgeElementEntity.class)) {
-							if (decComponent.getId() == dec.getId()) {
-								decComponent.setDescription(dec.getDescription());
-								decComponent.save();
-								return decComponent;
+							if (databaseEntry.getId() == decisionKnowledgeElement.getId()) {
+								databaseEntry.setSummary(decisionKnowledgeElement.getSummary());
+								databaseEntry.setDescription(decisionKnowledgeElement.getDescription());
+								databaseEntry.save();
+								return databaseEntry;
 							}
 						}
 						return null;
 					}
 				});
-		if (decComponent != null) {
+		if (databaseEntry != null) {
 			return true;
 		} else {
 			return false;
@@ -89,20 +90,20 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 	}
 
 	@Override
-	public boolean deleteDecisionKnowledgeElement(final DecisionKnowledgeElement dec, final ApplicationUser user) {
+	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user) {
 		return ao.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction() {
-				for (IDecisionKnowledgeElementEntity decComponent : ao.find(IDecisionKnowledgeElementEntity.class)) {
-					if (decComponent.getId() == dec.getId()) {
+				for (IDecisionKnowledgeElementEntity databaseEntry : ao.find(IDecisionKnowledgeElementEntity.class)) {
+					if (databaseEntry.getId() == decisionKnowledgeElement.getId()) {
 						try {
-							decComponent.getEntityManager().delete(decComponent);
+							databaseEntry.getEntityManager().delete(databaseEntry);
 						} catch (SQLException e) {
 							return false;
 						} finally {
 							for (ILinkEntity linkEntity : ao.find(ILinkEntity.class)) {
-								if (linkEntity.getIngoingId() == dec.getId()
-										|| linkEntity.getOutgoingId() == dec.getId()) {
+								if (linkEntity.getIngoingId() == decisionKnowledgeElement.getId()
+										|| linkEntity.getOutgoingId() == decisionKnowledgeElement.getId()) {
 									try {
 										linkEntity.getEntityManager().delete(linkEntity);
 									} catch (SQLException e) {

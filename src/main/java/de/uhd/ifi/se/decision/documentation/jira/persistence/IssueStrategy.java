@@ -33,8 +33,8 @@ import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 
 /**
- * @description Implements the PersistenceStrategy abstract class. Uses JIRA
- *              issues to store decision knowledge
+ * @description Extends the abstract class PersistenceStrategy. Uses JIRA
+ *              issues to store decision knowledge.
  */
 public class IssueStrategy extends PersistenceStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IssueStrategy.class);

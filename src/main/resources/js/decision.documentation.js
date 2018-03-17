@@ -1,67 +1,3 @@
-function getJSON(url, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url, true);
-    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-    xhr.responseType = "json";
-    xhr.onload = function () {
-        var status = xhr.status;
-        if (status === 200) {
-            callback(null, xhr.response);
-        } else {
-            callback(status);
-        }
-    };
-    xhr.send();
-}
-function postJSON(url, data, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-    xhr.setRequestHeader("Accept", "application/json");
-    xhr.responseType = "json";
-    xhr.onload = function () {
-        var status = xhr.status;
-        if (status === 200) {
-            callback(null, xhr.response);
-        } else {
-            callback(status);
-        }
-    };
-    xhr.send(JSON.stringify(data));
-}
-function putJSON(url, data, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("PUT", url, true);
-    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-    xhr.setRequestHeader("Accept", "application/json");
-    xhr.responseType = "json";
-    xhr.onload = function () {
-        var status = xhr.status;
-        if (status === 200) {
-            callback(null, xhr.response);
-        } else {
-            callback(status);
-        }
-    };
-    xhr.send(JSON.stringify(data));
-}
-function deleteJSON(url, data, callback){
-    var xhr = new XMLHttpRequest();
-    xhr.open("DELETE",url, true);
-    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-    xhr.setRequestHeader("Accept","application/json");
-    xhr.responseType="json";
-    xhr.onload = function () {
-        var status = xhr.status;
-        if(status==200){
-            callback(null, xhr.response);
-        } else {
-            callback(status);
-        }
-    };
-    xhr.send(JSON.stringify(data));
-}
-
 function createDecisionComponent(summary, type, callback) {
     var pathname = window.location.pathname;
     var stringArray = pathname.split("/");
@@ -155,7 +91,7 @@ function createLink(parentId, childId, linkType, callback) {
         }
     });
 }
-//TODO check if still needed (Not used at the moment)
+
 function deleteLink(parentId, childId, linkType, callback) {
     var pathname = window.location.pathname;
     var stringArray = pathname.split("/");
@@ -756,13 +692,13 @@ function buildTreeViewer(projectKey, nodeId) {
 
                                     //set header
                                     var closeX = document.getElementById('modal-close-x');
-                                    closeX.insertAdjacentHTML('beforeBegin', 'Add Decision Component');
+                                    //closeX.insertAdjacentHTML('beforeBegin', 'Add Decision Component');
 
                                     //set content
                                     var content = document.getElementById('modal-content');
                                     content.insertAdjacentHTML('afterBegin',
-                                        '<p><label for="form-input-name" style="display:block;width:45%;float:left;">Name</label><input id="form-input-name" type="text" name="summary" placeholder="Summary of decision component" style="width:50%;"/></p>' +
-                                        '<p><label for="form-select-type" style="display:block;width:45%;float:left;">Componenttype</label><select name="form-select-type" style="width:50%;"/></p>' +
+                                        '<p><label for="form-input-name" style="display:block;width:45%;float:left;">Summary:</label><input id="form-input-name" type="text" name="summary" placeholder="Summary of decision component" style="width:50%;"/></p>' +
+                                        '<p><label for="form-select-type" style="display:block;width:45%;float:left;">Type:</label><select name="form-select-type" style="width:50%;"/></p>' +
                                         '<p><input id="form-input-submit" type="submit" value="Add Decision Component" style="float:right;"/></p>'
                                     );
 
@@ -836,7 +772,7 @@ function buildTreeViewer(projectKey, nodeId) {
 
                                     var submitButton = document.getElementById('form-input-submit');
                                     submitButton.onclick = function () {
-                                        var name = document.getElementById('form-input-name').value;
+                                        var summary = document.getElementById('form-input-name').value;
                                         var type = type_select.val();
                                         if (type === "Argument") {
                                             var argumentCheckBoxGroup = document.getElementsByName("type-of-argument");
@@ -938,12 +874,12 @@ function buildTreeViewer(projectKey, nodeId) {
 
                                     //set header
                                     var closeX = document.getElementById('modal-close-x');
-                                    closeX.insertAdjacentHTML('beforeBegin', 'Edit Decision Component');
+                                    //closeX.insertAdjacentHTML('beforeBegin', 'Edit Decision Component');
 
                                     var content = document.getElementById('modal-content');
                                     content.insertAdjacentHTML('afterBegin',
-                                        '<p><label for="form-input-name" style="display:block;width:45%;float:left;">Name</label><input id="form-input-name" type="text" name="summary" value="' + tree_node.summary + '" style="width:50%;" readonly/></p>' +
-                                        '<p><label for="form-input-description" style="display:block;width:45%;float:left;">Description</label><input id="form-input-description" type="text" name="type" placeholder="Type in description" style="width:50%;"/></p>' +
+                                        '<p><label for="form-input-name" style="display:block;width:45%;float:left;">Summary:</label><input id="form-input-name" type="text" name="summary" value="' + tree_node.summary + '" style="width:50%;" readonly/></p>' +
+                                        '<p><label for="form-input-description" style="display:block;width:45%;float:left;">Description:</label><input id="form-input-description" type="text" name="type" placeholder="Type in description" style="width:50%;"/></p>' +
                                         '<p><input id="form-input-submit" type="submit" value="Edit Decision Component" style="float:right;"/></p>'
                                     );
 
@@ -969,7 +905,7 @@ function buildTreeViewer(projectKey, nodeId) {
                                 }
                             },
                             'delete' : {
-                                'label' : 'Delete DecisionComponent',
+                                'label' : 'Delete Decision Component',
                                 'action' : function(node){
                                     var selector  = node.reference.prevObject.selector;
                                     var tree_node = $('#evts').jstree(true).get_node(selector).data;
@@ -980,7 +916,7 @@ function buildTreeViewer(projectKey, nodeId) {
 
                                     var content = document.getElementById('modal-content');
                                     content.insertAdjacentHTML('afterBegin',
-                                        '<p><input id="abort-submit" type="submit" value="Abort Action" style="float:right;"/><input id="form-input-submit" type="submit" value="Delete Decision Component" style="float:right;"/></p>'
+                                        '<p><input id="abort-submit" type="submit" value="Abort Action" style="float:right;"/><input id="form-input-submit" type="submit" value="Delete this element" style="float:right;"/></p>'
                                     );
 
                                     var abortButton = document.getElementById('abort-submit');
@@ -1171,4 +1107,68 @@ function clear(node) {
         clear(node.firstChild);
     }
     node.parentNode.removeChild(node);
+}
+
+function getJSON(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+    xhr.responseType = "json";
+    xhr.onload = function () {
+        var status = xhr.status;
+        if (status === 200) {
+            callback(null, xhr.response);
+        } else {
+            callback(status);
+        }
+    };
+    xhr.send();
+}
+function postJSON(url, data, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.responseType = "json";
+    xhr.onload = function () {
+        var status = xhr.status;
+        if (status === 200) {
+            callback(null, xhr.response);
+        } else {
+            callback(status);
+        }
+    };
+    xhr.send(JSON.stringify(data));
+}
+function putJSON(url, data, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("PUT", url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.responseType = "json";
+    xhr.onload = function () {
+        var status = xhr.status;
+        if (status === 200) {
+            callback(null, xhr.response);
+        } else {
+            callback(status);
+        }
+    };
+    xhr.send(JSON.stringify(data));
+}
+function deleteJSON(url, data, callback){
+    var xhr = new XMLHttpRequest();
+    xhr.open("DELETE",url, true);
+    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+    xhr.setRequestHeader("Accept","application/json");
+    xhr.responseType="json";
+    xhr.onload = function () {
+        var status = xhr.status;
+        if(status==200){
+            callback(null, xhr.response);
+        } else {
+            callback(status);
+        }
+    };
+    xhr.send(JSON.stringify(data));
 }
