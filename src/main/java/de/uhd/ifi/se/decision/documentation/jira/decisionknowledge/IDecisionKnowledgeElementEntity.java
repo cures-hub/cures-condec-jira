@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
 
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
+import net.java.ao.schema.Ignore;
 import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
 
@@ -14,4 +15,7 @@ public interface IDecisionKnowledgeElementEntity extends IDecisionKnowledgeEleme
 	@AutoIncrement
 	@PrimaryKey("ID")
 	public long getId();
+	
+	@Ignore
+	public void setType(String type);
 }
