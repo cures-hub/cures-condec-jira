@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,10 +15,6 @@ import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.IDecisionKnowledgeElementEntity;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ILinkEntity;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import net.java.ao.Query;
 
@@ -195,42 +192,44 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 	@Override
 	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Link> inwardLinks = this.getInwardLinks(decisionKnowledgeElement);
-		List<Link> outwardLinks = this.getOutwardLinks(decisionKnowledgeElement);
+		List<Link> outwardLinks = this.getInwardLinks(decisionKnowledgeElement);
 		List<DecisionKnowledgeElement> children = new ArrayList<>();
 
-		// //Getting all Inward Element from the Parent Object
-		// for(Link inwardLink:inwardLinks)
-		// children.add(castToDecisionKnowledgeElement(ao.executeInTransaction(new
-		// TransactionCallback<IDecisionKnowledgeElementEntity>() {
-		// @Override
-		// public IDecisionKnowledgeElementEntity doInTransaction() {
-		// IDecisionKnowledgeElementEntity[]
-		// entityList=ao.find(IDecisionKnowledgeElementEntity.class,
-		// Query.select().where("ID = ?", inwardLink.getIngoingId()));
-		// if(entityList.length==1){
-		// return entityList[0];
-		// }
-		// LOGGER.error("Inward Link has no Element to return");
-		// return null;
-		// }
-		// })));
-		// Gets all outward elements from the Parent Object
-		for (Link outwardLink : outwardLinks) {
-			children.add(castToDecisionKnowledgeElement(
-					ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
-						@Override
-						public IDecisionKnowledgeElementEntity doInTransaction() {
-							IDecisionKnowledgeElementEntity[] entityList = ao.find(
-									IDecisionKnowledgeElementEntity.class,
-									Query.select().where("ID = ?", outwardLink.getOutgoingId()));
-							if (entityList.length == 1) {
-								return entityList[0];
-							}
-							LOGGER.error("Outward Link has no Element to return");
-							return null;
-						}
-					})));
-		}
+		//Getting all Inward Element from the Parent Object
+		//for (Link inwardLink : inwardLinks){
+		//DecisionKnowledgeElement child = castToDecisionKnowledgeElement(ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
+		//	@Override
+		//	public IDecisionKnowledgeElementEntity doInTransaction() {
+		//		IDecisionKnowledgeElementEntity[]
+		//				entityList = ao.find(IDecisionKnowledgeElementEntity.class,
+		//				Query.select().where("ID = ?", inwardLink.getIngoingId()));
+		//		if (entityList.length == 1) {
+		//			return entityList[0];
+		//		}
+		//		LOGGER.error("Inward Link has no Element to return");
+		//		return null;
+		//	}
+		//}));
+		//if(child.getType().equals(KnowledgeType.ALTERNATIVE)){
+		//	children.add(child);
+		//}
+		//}
+        // Gets all outward elements from the Parent Object
+        for (Link outwardLink : outwardLinks) {
+			children.add(castToDecisionKnowledgeElement(ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
+                @Override
+                public IDecisionKnowledgeElementEntity doInTransaction() {
+                    IDecisionKnowledgeElementEntity[] entityList = ao.find(
+                            IDecisionKnowledgeElementEntity.class,
+                            Query.select().where("ID = ?", outwardLink.getOutgoingId()));
+                    if (entityList.length == 1) {
+                        return entityList[0];
+                    }
+                    LOGGER.error("Outward Link has no Element to return");
+                    return null;
+                }
+            })));
+        }
 		return children;
 	}
 
