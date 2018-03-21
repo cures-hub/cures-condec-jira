@@ -146,23 +146,24 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
-		IDecisionKnowledgeElementEntity decisionKnowledgeElement = ao
-				.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
-					@Override
-					public IDecisionKnowledgeElementEntity doInTransaction() {
-						IDecisionKnowledgeElementEntity[] decisionKnowledgeElement = ao
-								.find(IDecisionKnowledgeElementEntity.class, Query.select().where("KEY = ?", key));
-						// 0 or 1 decision knowledge elements might be returned by this query
-						if (decisionKnowledgeElement.length == 1) {
-							return decisionKnowledgeElement[0];
-						}
-						return null;
-					}
-				});
+	    //Split key in ProjectKey and ID
+        String knowledgeElementIDString=null;
+        DecisionKnowledgeElement decisionKnowledgeElement=null;
+	    for(int i=0; i< key.length();i++){
+	        if(key.charAt(i)=='-'){
+                knowledgeElementIDString = key.substring(i+1,key.length());
+                break;
+            }
+        }
+        if(knowledgeElementIDString==null){
+	        LOGGER.error("Key can't be Split into ProjectKey and ID");
+        } else {
+	        long knowledgeElementIDLong = Long.parseLong(knowledgeElementIDString);
+	        decisionKnowledgeElement = getDecisionKnowledgeElement(knowledgeElementIDLong);
+        }
+
 		if (decisionKnowledgeElement != null) {
-			return new DecisionKnowledgeElement(decisionKnowledgeElement.getId(), decisionKnowledgeElement.getSummary(),
-					decisionKnowledgeElement.getDescription(), decisionKnowledgeElement.getType(),
-					decisionKnowledgeElement.getProjectKey(), decisionKnowledgeElement.getKey());
+			return decisionKnowledgeElement;
 		}
 		LOGGER.error("No DecisionKnowledgeElement with " + key + " found");
 		return null;
