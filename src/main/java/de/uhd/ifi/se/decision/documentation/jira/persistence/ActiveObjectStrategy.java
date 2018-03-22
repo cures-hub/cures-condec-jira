@@ -192,36 +192,14 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 	@Override
 	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Link> inwardLinks = this.getInwardLinks(decisionKnowledgeElement);
-		List<Link> outwardLinks = this.getInwardLinks(decisionKnowledgeElement);
 		List<DecisionKnowledgeElement> children = new ArrayList<>();
-
-		//Getting all Inward Element from the Parent Object
-		//for (Link inwardLink : inwardLinks){
-		//DecisionKnowledgeElement child = castToDecisionKnowledgeElement(ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
-		//	@Override
-		//	public IDecisionKnowledgeElementEntity doInTransaction() {
-		//		IDecisionKnowledgeElementEntity[]
-		//				entityList = ao.find(IDecisionKnowledgeElementEntity.class,
-		//				Query.select().where("ID = ?", inwardLink.getIngoingId()));
-		//		if (entityList.length == 1) {
-		//			return entityList[0];
-		//		}
-		//		LOGGER.error("Inward Link has no Element to return");
-		//		return null;
-		//	}
-		//}));
-		//if(child.getType().equals(KnowledgeType.ALTERNATIVE)){
-		//	children.add(child);
-		//}
-		//}
-        // Gets all outward elements from the Parent Object
-        for (Link outwardLink : outwardLinks) {
+        for (Link inwardLink : inwardLinks ) {
 			children.add(castToDecisionKnowledgeElement(ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
                 @Override
                 public IDecisionKnowledgeElementEntity doInTransaction() {
                     IDecisionKnowledgeElementEntity[] entityList = ao.find(
                             IDecisionKnowledgeElementEntity.class,
-                            Query.select().where("ID = ?", outwardLink.getOutgoingId()));
+                            Query.select().where("ID = ?", inwardLink.getIngoingId()));
                     if (entityList.length == 1) {
                         return entityList[0];
                     }
