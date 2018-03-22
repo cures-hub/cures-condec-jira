@@ -19,8 +19,8 @@ import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import net.java.ao.Query;
 
 /**
- * @description Extends the abstract class PersistenceStrategy. Uses the
- *              active object framework to store decision knowledge.
+ * @description Extends the abstract class PersistenceStrategy. Uses the active
+ *              object framework to store decision knowledge.
  */
 public class ActiveObjectStrategy extends PersistenceStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectStrategy.class);
@@ -62,7 +62,8 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 	}
 
 	@Override
-	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user) {
+	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement,
+			ApplicationUser user) {
 		IDecisionKnowledgeElementEntity databaseEntry = ao
 				.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
 					@Override
@@ -87,7 +88,8 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 	}
 
 	@Override
-	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user) {
+	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement,
+			ApplicationUser user) {
 		return ao.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction() {
@@ -143,27 +145,23 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
-	    //Split key in ProjectKey and ID
-        String knowledgeElementIDString=null;
-        DecisionKnowledgeElement decisionKnowledgeElement=null;
-	    for(int i=0; i< key.length();i++){
-	        if(key.charAt(i)=='-'){
-                knowledgeElementIDString = key.substring(i+1,key.length());
-                break;
-            }
-        }
-        if(knowledgeElementIDString==null){
-	        LOGGER.error("Key can't be Split into ProjectKey and ID");
-        } else {
-	        long knowledgeElementIDLong = Long.parseLong(knowledgeElementIDString);
-	        decisionKnowledgeElement = getDecisionKnowledgeElement(knowledgeElementIDLong);
-        }
-
-		if (decisionKnowledgeElement != null) {
-			return decisionKnowledgeElement;
+		// Split key into project key and id
+		DecisionKnowledgeElement decisionKnowledgeElement = null;
+		String idAsString = null;
+		try {
+			idAsString = key.split("-")[1];
+		} catch (ArrayIndexOutOfBoundsException e) {
+			LOGGER.error("Key cannot be split into the project key and id.");
+			e.printStackTrace();
 		}
-		LOGGER.error("No DecisionKnowledgeElement with " + key + " found");
-		return null;
+		if (idAsString != null) {
+			long knowledgeElementId = Long.parseLong(idAsString);
+			decisionKnowledgeElement = getDecisionKnowledgeElement(knowledgeElementId);
+		}
+		if (decisionKnowledgeElement == null) {
+			LOGGER.error("No decision knowledge element with " + key + " could be found.");
+		}
+		return decisionKnowledgeElement;
 	}
 
 	@Override
@@ -193,21 +191,22 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Link> inwardLinks = this.getInwardLinks(decisionKnowledgeElement);
 		List<DecisionKnowledgeElement> children = new ArrayList<>();
-        for (Link inwardLink : inwardLinks ) {
-			children.add(castToDecisionKnowledgeElement(ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
-                @Override
-                public IDecisionKnowledgeElementEntity doInTransaction() {
-                    IDecisionKnowledgeElementEntity[] entityList = ao.find(
-                            IDecisionKnowledgeElementEntity.class,
-                            Query.select().where("ID = ?", inwardLink.getIngoingId()));
-                    if (entityList.length == 1) {
-                        return entityList[0];
-                    }
-                    LOGGER.error("Inward Link has no Element to return");
-                    return null;
-                }
-            })));
-        }
+		for (Link inwardLink : inwardLinks) {
+			children.add(castToDecisionKnowledgeElement(
+					ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
+						@Override
+						public IDecisionKnowledgeElementEntity doInTransaction() {
+							IDecisionKnowledgeElementEntity[] entityList = ao.find(
+									IDecisionKnowledgeElementEntity.class,
+									Query.select().where("ID = ?", inwardLink.getIngoingId()));
+							if (entityList.length == 1) {
+								return entityList[0];
+							}
+							LOGGER.error("Inward Link has no Element to return");
+							return null;
+						}
+					})));
+		}
 		return children;
 	}
 
@@ -215,20 +214,21 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 	public List<DecisionKnowledgeElement> getParents(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Link> outwardLinks = this.getOutwardLinks(decisionKnowledgeElement);
 		List<DecisionKnowledgeElement> parents = new ArrayList<>();
-		for (Link outwardLink : outwardLinks ) {
-			parents.add(castToDecisionKnowledgeElement(ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
-				@Override
-				public IDecisionKnowledgeElementEntity doInTransaction() {
-					IDecisionKnowledgeElementEntity[] entityList = ao.find(
-							IDecisionKnowledgeElementEntity.class,
-							Query.select().where("ID = ?", outwardLink.getOutgoingId()));
-					if (entityList.length == 1) {
-						return entityList[0];
-					}
-					LOGGER.error("Outward Link has no Element to return");
-					return null;
-				}
-			})));
+		for (Link outwardLink : outwardLinks) {
+			parents.add(castToDecisionKnowledgeElement(
+					ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
+						@Override
+						public IDecisionKnowledgeElementEntity doInTransaction() {
+							IDecisionKnowledgeElementEntity[] entityList = ao.find(
+									IDecisionKnowledgeElementEntity.class,
+									Query.select().where("ID = ?", outwardLink.getOutgoingId()));
+							if (entityList.length == 1) {
+								return entityList[0];
+							}
+							LOGGER.error("Outward Link has no Element to return");
+							return null;
+						}
+					})));
 		}
 		return parents;
 	}
