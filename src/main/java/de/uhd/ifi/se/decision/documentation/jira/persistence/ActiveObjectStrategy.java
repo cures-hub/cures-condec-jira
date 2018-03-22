@@ -203,7 +203,7 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
                     if (entityList.length == 1) {
                         return entityList[0];
                     }
-                    LOGGER.error("Outward Link has no Element to return");
+                    LOGGER.error("Inward Link has no Element to return");
                     return null;
                 }
             })));
@@ -213,7 +213,24 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 
 	@Override
 	public List<DecisionKnowledgeElement> getParents(DecisionKnowledgeElement decisionKnowledgeElement) {
-		return null;
+		List<Link> outwardLinks = this.getOutwardLinks(decisionKnowledgeElement);
+		List<DecisionKnowledgeElement> parents = new ArrayList<>();
+		for (Link outwardLink : outwardLinks ) {
+			parents.add(castToDecisionKnowledgeElement(ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
+				@Override
+				public IDecisionKnowledgeElementEntity doInTransaction() {
+					IDecisionKnowledgeElementEntity[] entityList = ao.find(
+							IDecisionKnowledgeElementEntity.class,
+							Query.select().where("ID = ?", outwardLink.getOutgoingId()));
+					if (entityList.length == 1) {
+						return entityList[0];
+					}
+					LOGGER.error("Outward Link has no Element to return");
+					return null;
+				}
+			})));
+		}
+		return parents;
 	}
 
 	@Override
