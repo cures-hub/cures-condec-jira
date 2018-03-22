@@ -181,34 +181,6 @@ public class IssueStrategy extends PersistenceStrategy {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getUnlinkedDecisionComponents(long id, String projectKey) {
-		DecisionKnowledgeElement rootElement = this.getDecisionKnowledgeElement(id);
-		if (rootElement == null) {
-			return new ArrayList<DecisionKnowledgeElement>();
-		}
-		List<DecisionKnowledgeElement> decisionKnowledgeElements = this.getDecisionKnowledgeElements(projectKey);
-		List<DecisionKnowledgeElement> unlinkedDecisionComponents = new ArrayList<DecisionKnowledgeElement>();
-		List<DecisionKnowledgeElement> outwardElements = this.getChildren(rootElement);
-		for (DecisionKnowledgeElement decisionKnowledgeElement : decisionKnowledgeElements) {
-			if (decisionKnowledgeElement.getId() == id
-					|| decisionKnowledgeElement.getType() == KnowledgeType.DECISION) {
-				continue;
-			}
-			boolean linked = false;
-			for (DecisionKnowledgeElement element : outwardElements) {
-				if (element.getId() == decisionKnowledgeElement.getId()) {
-					linked = true;
-					break;
-				}
-			}
-			if (!linked) {
-				unlinkedDecisionComponents.add(decisionKnowledgeElement);
-			}
-		}
-		return unlinkedDecisionComponents;
-	}
-
-	@Override
 	public long insertLink(Link link, ApplicationUser user) {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);

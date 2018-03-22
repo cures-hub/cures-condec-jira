@@ -6,6 +6,7 @@ import java.util.List;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 
 /**
@@ -44,7 +45,32 @@ public abstract class PersistenceStrategy {
 
 	public abstract List<DecisionKnowledgeElement> getParents(DecisionKnowledgeElement decisionKnowledgeElement);
 
-	public abstract List<DecisionKnowledgeElement> getUnlinkedDecisionComponents(long id, String projectKey);
+	public List<DecisionKnowledgeElement> getUnlinkedDecisionComponents(long id, String projectKey){
+		DecisionKnowledgeElement rootElement = this.getDecisionKnowledgeElement(id);
+		if (rootElement == null) {
+			return new ArrayList<DecisionKnowledgeElement>();
+		}
+		List<DecisionKnowledgeElement> decisionKnowledgeElements = this.getDecisionKnowledgeElements(projectKey);
+		List<DecisionKnowledgeElement> unlinkedDecisionComponents = new ArrayList<DecisionKnowledgeElement>();
+		List<DecisionKnowledgeElement> outwardElements = this.getChildren(rootElement);
+		for (DecisionKnowledgeElement decisionKnowledgeElement : decisionKnowledgeElements) {
+			if (decisionKnowledgeElement.getId() == id
+					|| decisionKnowledgeElement.getType() == KnowledgeType.DECISION) {
+				continue;
+			}
+			boolean linked = false;
+			for (DecisionKnowledgeElement element : outwardElements) {
+				if (element.getId() == decisionKnowledgeElement.getId()) {
+					linked = true;
+					break;
+				}
+			}
+			if (!linked) {
+				unlinkedDecisionComponents.add(decisionKnowledgeElement);
+			}
+		}
+		return unlinkedDecisionComponents;
+	}
 
 	public abstract long insertLink(Link link, ApplicationUser user);
 
