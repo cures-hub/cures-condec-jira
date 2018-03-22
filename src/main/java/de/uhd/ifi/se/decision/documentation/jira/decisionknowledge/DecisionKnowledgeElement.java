@@ -110,7 +110,6 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.children = children;
 	}
 
-	//TODO Fixing null Pointer Problem
 	@XmlElement(name = "text")
 	public String getText() {
 		if(this.type==null || this.summary==null){
