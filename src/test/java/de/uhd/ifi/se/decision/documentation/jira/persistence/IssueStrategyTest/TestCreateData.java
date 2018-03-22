@@ -1,17 +1,6 @@
-package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.issueStrategy;
+package de.uhd.ifi.se.decision.documentation.jira.persistence.IssueStrategyTest;
 
 import static org.junit.Assert.assertNotNull;
-
-import org.junit.Test;
-
-import com.atlassian.jira.mock.issue.MockIssue;
-
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
-
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.issuetype.IssueType;
-import com.atlassian.jira.issue.issuetype.MockIssueType;
 
 /**
  * @author Tim Kuchenbuch
@@ -21,7 +10,7 @@ public class TestCreateData extends TestIssueStrategySetUp {
 //	@Test
 //	public void testIssueNull(){
 //		Issue issue = null;
-//		Data data = this.issueStrategy.createData(new DecisionKnowledgeElement(issue));
+//		Data data = this.IssueStrategyTest.createData(new DecisionKnowledgeElement(issue));
 //		assertNotNull(data);
 //	}
 //
@@ -31,7 +20,7 @@ public class TestCreateData extends TestIssueStrategySetUp {
 //		Issue issue = new MockIssue(1, "TEST-12");
 //		((MockIssue) issue).setIssueType(issueType);
 //				
-//		Data data = this.issueStrategy.createData(new DecisionKnowledgeElement(issue));
+//		Data data = this.IssueStrategyTest.createData(new DecisionKnowledgeElement(issue));
 //		
 //		assertNotNull(data);
 //	}
@@ -44,7 +33,7 @@ public class TestCreateData extends TestIssueStrategySetUp {
 //		((MockIssue) issue).setDescription("Test");
 //		((MockIssue) issue).setSummary("Test");
 //		
-//		Data data = this.issueStrategy.createData(new DecisionKnowledgeElement(issue));
+//		Data data = this.IssueStrategyTest.createData(new DecisionKnowledgeElement(issue));
 //		
 //		assertNotNull(data);
 //	}
@@ -58,7 +47,7 @@ public class TestCreateData extends TestIssueStrategySetUp {
 //		((MockIssue) issue).setDescription("Test");
 //		((MockIssue) issue).setSummary("Test");
 //		
-//		Data data = this.issueStrategy.createData(new DecisionKnowledgeElement(issue));
+//		Data data = this.IssueStrategyTest.createData(new DecisionKnowledgeElement(issue));
 //		
 //		assertNotNull(data);
 //	}

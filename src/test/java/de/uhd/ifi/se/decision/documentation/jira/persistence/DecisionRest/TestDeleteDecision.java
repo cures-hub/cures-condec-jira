@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionRest;
+package de.uhd.ifi.se.decision.documentation.jira.persistence.DecisionRest;
 
 import com.google.common.collect.ImmutableMap;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;

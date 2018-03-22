@@ -75,6 +75,30 @@ public class DecisionsRest {
 		}
 	}
 
+	//@Produces({ MediaType.APPLICATION_JSON })
+	public Response updateDecisionKnowledgeElement(String actionType, HttpServletRequest request,
+										  DecisionKnowledgeElement decisionKnowledgeElement){
+		if (actionType != null && decisionKnowledgeElement != null && request != null) {
+			String projectKey = decisionKnowledgeElement.getProjectKey();
+			StrategyProvider strategyProvider = new StrategyProvider();
+			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+			ApplicationUser user = getCurrentUser(request);
+			if (actionType.equalsIgnoreCase("edit")) {
+				if (strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user)) {
+					return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
+				}
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build();
+			} else {
+				return Response.status(Status.BAD_REQUEST)
+						.entity(ImmutableMap.of("error", "Unknown actionType. Pick 'edit'")).build();
+			}
+		} else {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Decision knowledge element or actionType = null")).build();
+		}
+	}
+
 	@PUT
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response putLink(@QueryParam("actionType") String actionType,

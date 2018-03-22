@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.issueStrategy;
+package de.uhd.ifi.se.decision.documentation.jira.persistence.IssueStrategyTest;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -19,7 +19,7 @@ public class TestingSearchUnlinkedDecisionComponents extends TestIssueStrategySe
 //	@Test
 //	public void testIdZeroProjectKeyFilled() {
 //		String key = "TEST";
-//		issueStrategy.getUnlinkedDecisionComponents(0, key);
+//		IssueStrategyTest.getUnlinkedDecisionComponents(0, key);
 //	}
 	
 	@Test
@@ -31,7 +31,7 @@ public class TestingSearchUnlinkedDecisionComponents extends TestIssueStrategySe
 //	@Test
 //	public void testIdFilledProjectKeyFilledNotEx() {
 //		String key = "TESTNot";
-//		assertNotNull(issueStrategy.getUnlinkedDecisionComponents(1, key));
+//		assertNotNull(IssueStrategyTest.getUnlinkedDecisionComponents(1, key));
 //	}
 	
 	@Test
