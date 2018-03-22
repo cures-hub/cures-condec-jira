@@ -21,7 +21,6 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	private KnowledgeType type;
 	private String projectKey;
 	private String key;
-	private List<DecisionKnowledgeElement> children;
 
 	public DecisionKnowledgeElement() {
 
@@ -102,14 +101,6 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.key = key;
 	}
 	
-	public List<DecisionKnowledgeElement> getChildren() {
-		return children;
-	}
-
-	public void setChildren(List<DecisionKnowledgeElement> children) {
-		this.children = children;
-	}
-
 	@XmlElement(name = "text")
 	public String getText() {
 		if(this.type==null || this.summary==null){
