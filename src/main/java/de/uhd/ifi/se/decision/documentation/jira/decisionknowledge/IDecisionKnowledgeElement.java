@@ -8,28 +8,29 @@ public interface IDecisionKnowledgeElement {
 	public long getId();
 
 	public void setId(long id);
+	
+	public String getSummary();
 
-	public String getName();
-
-	public void setName(String name);
+	public void setSummary(String summary);
 
 	public String getDescription();
 
 	public void setDescription(String description);
 
-	public String getType();
+	public KnowledgeType getType();
 
+	public void setType(KnowledgeType type);
+	
 	public void setType(String type);
 
 	public String getProjectKey();
 
 	public void setProjectKey(String projectKey);
 	
+	/**
+	 * The key resembles "<<projectKey>>-<<project internal id>>"
+	 */
 	public String getKey();
-
-//	public void setKey(String key);
-
-	public String getSummary();
-
-	public void setSummary(String summary);
+	
+	public void setKey(String key);
 }

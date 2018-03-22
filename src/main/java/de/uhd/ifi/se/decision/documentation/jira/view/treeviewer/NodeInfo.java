@@ -14,7 +14,7 @@ public class NodeInfo {
 	private String key;
 		
 	@XmlElement
-	private String issueType;
+	private String type;
 	
 	@XmlElement
 	private String description;
@@ -40,12 +40,12 @@ public class NodeInfo {
 		this.key = key;
 	}
 	
-	public String getIssueType() {
-		return issueType;
+	public String getType() {
+		return type;
 	}
 
-	public void setIssueType(String issueType) {
-		this.issueType = issueType;
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getDescription() {

@@ -3,49 +3,46 @@ package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import com.atlassian.jira.issue.Issue;
 
+import java.util.List;
+
 /**
- * @author Ewald Rode
  * @description Model class for decision knowledge elements
  */
 @XmlType(propOrder = { "id", "text" })
 public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	@XmlElement
 	private long id;
-	private String name;
+	private String summary; // name of element
 	private String description;
-	private String type;
+	private KnowledgeType type;
 	private String projectKey;
-
-	private String summary;
-
-	@XmlElement
-	private String text;
+	private String key;
 
 	public DecisionKnowledgeElement() {
 
 	}
 
-	public DecisionKnowledgeElement(long id, String name, String description, String type, String projectKey,
-			String key, String summary) {
+	public DecisionKnowledgeElement(long id, String summary, String description, KnowledgeType type, String projectKey,
+			String key) {
 		this.id = id;
-		this.name = name;
+		this.summary = summary;
 		this.description = description;
 		this.type = type;
 		this.projectKey = projectKey;
-		this.text = key + " / " + name + " / " + type;
-		this.summary = summary;
+		this.key = key;
 	}
 
 	public DecisionKnowledgeElement(Issue issue) {
 		this.id = issue.getId();
-		this.name = issue.getSummary();
-		this.description = issue.getDescription();
-		this.type = issue.getIssueType().getName();
-		this.projectKey = issue.getProjectObject().getKey();
-		this.text = this.getKey() + " / " + this.name + " / " + this.type;
 		this.summary = issue.getSummary();
+		this.description = issue.getDescription();
+		this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
+		this.projectKey = issue.getProjectObject().getKey();
+		this.key = issue.getKey();
 	}
 
 	public long getId() {
@@ -55,13 +52,13 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	public void setId(long id) {
 		this.id = id;
 	}
-
-	public String getName() {
-		return name;
+	
+	public String getSummary() {
+		return summary;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setSummary(String summary) {
+		this.summary = summary;
 	}
 
 	public String getDescription() {
@@ -72,12 +69,17 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.description = description;
 	}
 
-	public String getType() {
+	public KnowledgeType getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(KnowledgeType type) {
 		this.type = type;
+	}
+
+	@JsonProperty("type")
+	public void setType(String type) {
+		this.type = KnowledgeType.getKnowledgeType(type);
 	}
 
 	public String getProjectKey() {
@@ -89,18 +91,22 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	}
 
 	public String getKey() {
-		return this.projectKey + "-" + this.id;
+		if (this.key == null) {
+			return this.projectKey + "-" + this.id;
+		}
+		return this.key;
 	}
 
+	public void setKey(String key) {
+		this.key = key;
+	}
+	
+	@XmlElement(name = "text")
 	public String getText() {
-		return text;
+		if(this.type==null || this.summary==null){
+			return "";
+		}
+		return this.type.toString().substring(0, 1).toUpperCase() + this.type.toString().substring(1) + " / "
+				+ this.summary;
 	}
-
-	public void setText(String text) {
-		this.text = text;
-	}
-
-	public String getSummary() { return summary; }
-
-	public void setSummary(String summary){this.summary = summary; };
 }

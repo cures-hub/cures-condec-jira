@@ -16,25 +16,23 @@ import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowl
 public class TestDecisionRepresentationStrings {
 
 	private Long id;
-	private String name;
+	private String summary;
 	private String description;
-	private String type;
+	private KnowledgeType type;
 	private String projectKey;
 	private String key;
-	private String summery;
 	private DecisionKnowledgeElement repre;
 
 	@Before
 	public void setUp() {
 		this.id = (long) 100;
-		this.name = "Test";
+		this.summary = "Test";
 		this.description = "Test";
-		this.type = "Test";
+		this.type = KnowledgeType.SOLUTION;
 		this.projectKey = "Test";
 		this.key = "Test";
-		this.summery = "Test";
 
-		this.repre = new DecisionKnowledgeElement(id, name, description, type, projectKey, key, summery);
+		this.repre = new DecisionKnowledgeElement(id, summary, description, type, projectKey, key);
 	}
 
 	@Test
@@ -44,7 +42,7 @@ public class TestDecisionRepresentationStrings {
 
 	@Test
 	public void testGetName() {
-		assertEquals(this.name, this.repre.getName());
+		assertEquals(this.summary, this.repre.getSummary());
 	}
 
 	@Test
@@ -70,8 +68,8 @@ public class TestDecisionRepresentationStrings {
 
 	@Test
 	public void testSetName() {
-		this.repre.setName(this.name + "New");
-		assertEquals(this.name + "New", this.repre.getName());
+		this.repre.setSummary(this.summary + "New");
+		assertEquals(this.summary + "New", this.repre.getSummary());
 	}
 
 	@Test
@@ -82,8 +80,8 @@ public class TestDecisionRepresentationStrings {
 
 	@Test
 	public void testSetType() {
-		this.repre.setType(this.type + "New");
-		assertEquals(this.type + "New", this.repre.getType());
+		this.repre.setType(KnowledgeType.ALTERNATIVE);
+		assertEquals(KnowledgeType.ALTERNATIVE, this.repre.getType());
 	}
 
 	@Test

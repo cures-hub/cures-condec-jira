@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
+package de.uhd.ifi.se.decision.documentation.jira.persistence;
 
 import java.util.List;
 
@@ -14,9 +14,8 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.IPersistenceStrategy;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 
 /**
@@ -29,11 +28,11 @@ public class DecisionsRest {
 
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getUnlinkedIssues(@QueryParam("issueId") long issueId,
+	public Response getUnlinkedDecisionComponents(@QueryParam("issueId") long issueId,
 			@QueryParam("projectKey") final String projectKey) {
 		if (projectKey != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
-			IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			List<DecisionKnowledgeElement> decisions = strategy.getUnlinkedDecisionComponents(issueId, projectKey);
 			return Response.ok(decisions).build();
 		} else {
@@ -49,22 +48,21 @@ public class DecisionsRest {
 		if (actionType != null && decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProjectKey();
 			StrategyProvider strategyProvider = new StrategyProvider();
-			IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			if (actionType.equalsIgnoreCase("create")) {
 				decisionKnowledgeElement = strategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
-				Data data = strategy.createData(decisionKnowledgeElement);
-				if (data != null) {
-					return Response.status(Status.OK).entity(data).build();
+				if (decisionKnowledgeElement != null) {
+					return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
 				}
+				// TODO refactor to new method insertDecisionKnowledgeElement
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
 			} else if (actionType.equalsIgnoreCase("edit")) {
-				strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user);
-				Data data = strategy.createData(decisionKnowledgeElement);
-				if (data != null) {
-					return Response.status(Status.OK).entity(data).build();
+				if (strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user)) {
+					return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
 				}
+				// TODO refactor to new method updateDecisionKnowledgeElement
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build();
 			} else {
@@ -83,7 +81,7 @@ public class DecisionsRest {
 			@QueryParam("projectKey") final String projectKey, @Context HttpServletRequest req, final Link link) {
 		if (actionType != null && projectKey != null && req != null && link != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
-			IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(req);
 			if (actionType.equalsIgnoreCase("create")) {
 				long issueLinkId = strategy.insertLink(link, user);
@@ -111,7 +109,7 @@ public class DecisionsRest {
 		if (actionType != null && decisionKnowledgeElement != null && request != null) {
 			final String projectKey = decisionKnowledgeElement.getProjectKey();
 			StrategyProvider strategyProvider = new StrategyProvider();
-			IPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			if (actionType.equalsIgnoreCase("delete")) {
 				boolean successful = strategy.deleteDecisionKnowledgeElement(decisionKnowledgeElement, user);

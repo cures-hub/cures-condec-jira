@@ -8,8 +8,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
 
 public class TestData {
 	private String id;
@@ -50,7 +50,7 @@ public class TestData {
 	
 	@Test
 	public void testGetNodeInfo() {
-		assertEquals(data.getNodeInfo(), nodeInfo);
+		assertEquals(data.getNode(), nodeInfo);
 	}
 	
 	@Test
@@ -76,7 +76,7 @@ public class TestData {
 	public void testSetNodeInfo() {
 		NodeInfo newInfo = new NodeInfo();
 		data.setNodeInfo(newInfo);
-		assertEquals(newInfo, data.getNodeInfo());
+		assertEquals(newInfo, data.getNode());
 	}
 
 }

@@ -47,7 +47,7 @@ public class Data {
 		this.children = children;
 	}
 
-	public NodeInfo getNodeInfo() {
+	public NodeInfo getNode() {
 		return nodeInfo;
 	}
 

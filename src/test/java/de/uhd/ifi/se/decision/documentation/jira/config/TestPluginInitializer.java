@@ -34,7 +34,7 @@ public class TestPluginInitializer extends TestSetUp {
 		listener = new PluginInitializer();
 	}
 	
-	@Test
+	@Test(expected = java.lang.NullPointerException.class)
 	public void testExecutionAfterProp() throws Exception {
 		initialisation();
 		listener.afterPropertiesSet();

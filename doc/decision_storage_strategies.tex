@@ -4,17 +4,19 @@
 
 % abstract strategy/interface
 \umlclass[type=interface]{IPersistenceStrategy}{}{
-    \textit{+ insertDecisionKnowledgeElement(element : DecisionKnowledgeElement)}\\
-    \textit{+ updateDecisionKnowledgeElement(element : DecisionKnowledgeElement)}\\
-    \textit{+ deleteDecisionKnowledgeElement(element : DecisionKnowledgeElement)}\\
+    \textit{+ insertDecisionKnowledgeElement(element : DecisionKnowledgeElement) : DecisionKnowledgeElement}\\
+    \textit{+ updateDecisionKnowledgeElement(element : DecisionKnowledgeElement) : boolean}\\
+    \textit{+ deleteDecisionKnowledgeElement(element : DecisionKnowledgeElement) : boolean}\\
     \textit{+ getDecisionKnowledgeElements(projectKey : String) : List<DecisionKnowledgeElement>}\\
+    \textit{+ getDecisionKnowledgeElement(key : String) : DecisionKnowledgeElement}\\
+    \textit{+ getDecisionKnowledgeElement(id : long) : DecisionKnowledgeElement}\\
     \textit{+ getDecisions(projectKey : String) : List<DecisionKnowledgeElement>}\\
     \textit{+ getChildren(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>}\\
     \textit{+ getParents(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>}\\
     \textit{+ getUnlinkedDecisionComponents(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>}\\
     
-    \textit{+ insertLink(link : Link)}\\
-    \textit{+ deleteLink(link : Link)}\\
+    \textit{+ insertLink(link : Link) : long}\\
+    \textit{+ deleteLink(link : Link) : boolean}\\
     \textit{+ getInwardLinks(element : decisionKnowledgeElement) : List<Link>}\\
     \textit{+ getOutwardLinks(element : decisionKnowledgeElement) : List<Link>}\\
 }

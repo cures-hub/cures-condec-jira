@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,28 +15,21 @@ import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.IDecisionKnowledgeElementEntity;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ILinkEntity;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
-import de.uhd.ifi.se.decision.documentation.jira.util.KeyValuePairList;
-import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.NodeInfo;
 import net.java.ao.Query;
 
 /**
- * @author Ewald Rode
- * @description Implements the IPersistenceStrategy interface. Uses the active
+ * @description Extends the abstract class PersistenceStrategy. Uses the active
  *              object framework to store decision knowledge.
  */
-public class ActiveObjectStrategy implements IPersistenceStrategy {
+public class ActiveObjectStrategy extends PersistenceStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectStrategy.class);
+	private static final ActiveObjects ao = ComponentGetter.getAo();
 
 	@Override
-	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement dec, ApplicationUser user) {
-		if (dec == null) {
+	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement,
+			ApplicationUser user) {
+		if (decisionKnowledgeElement == null) {
 			LOGGER.error("AOStrategy insertDecisionKnowledgeElement the DecisionRepresentation is null");
 			return null;
 		}
@@ -43,49 +37,50 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 			LOGGER.error("AOStrategy insertDecisionKnowledgeElement the ApplicationUser is null");
 			return null;
 		}
-		final ActiveObjects ao = ComponentGetter.getAo();
-		System.out.println(ao);
-		IDecisionKnowledgeElementEntity decComponent = ao
+		IDecisionKnowledgeElementEntity databaseEntry = ao
 				.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
 					@Override
 					public IDecisionKnowledgeElementEntity doInTransaction() {
-						IDecisionKnowledgeElementEntity decComponent = ao.create(IDecisionKnowledgeElementEntity.class);
-						//decComponent.setKey(dec.getProjectKey().toUpperCase() + "-" + decComponent.getId());
-						decComponent.setName(dec.getName());
-						decComponent.setDescription(dec.getDescription());
-						decComponent.setType(dec.getType());
-						decComponent.setProjectKey(dec.getProjectKey());
-						decComponent.save();
-						return decComponent;
+						IDecisionKnowledgeElementEntity databaseEntry = ao
+								.create(IDecisionKnowledgeElementEntity.class);
+						databaseEntry.setKey(
+								decisionKnowledgeElement.getProjectKey().toUpperCase() + "-" + databaseEntry.getId());
+						databaseEntry.setSummary(decisionKnowledgeElement.getSummary());
+						databaseEntry.setDescription(decisionKnowledgeElement.getDescription());
+						databaseEntry.setType(decisionKnowledgeElement.getType());
+						databaseEntry.setProjectKey(decisionKnowledgeElement.getProjectKey());
+						databaseEntry.save();
+						return databaseEntry;
 					}
 				});
-		if (decComponent == null) {
+		if (databaseEntry == null) {
 			return null;
 		}
-		//dec.setKey(dec.getProjectKey().toUpperCase() + "-" + decComponent.getId());
-		dec.setId(decComponent.getId());
-		return dec;
+		decisionKnowledgeElement.setId(databaseEntry.getId());
+		decisionKnowledgeElement.setKey(databaseEntry.getKey());
+		return decisionKnowledgeElement;
 	}
 
 	@Override
-	public boolean updateDecisionKnowledgeElement(final DecisionKnowledgeElement dec, ApplicationUser user) {
-		final ActiveObjects ao = ComponentGetter.getAo();
-		IDecisionKnowledgeElementEntity decComponent = ao
+	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement,
+			ApplicationUser user) {
+		IDecisionKnowledgeElementEntity databaseEntry = ao
 				.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
 					@Override
 					public IDecisionKnowledgeElementEntity doInTransaction() {
-						for (IDecisionKnowledgeElementEntity decComponent : ao
+						for (IDecisionKnowledgeElementEntity databaseEntry : ao
 								.find(IDecisionKnowledgeElementEntity.class)) {
-							if (decComponent.getId() == dec.getId()) {
-								decComponent.setDescription(dec.getDescription());
-								decComponent.save();
-								return decComponent;
+							if (databaseEntry.getId() == decisionKnowledgeElement.getId()) {
+								databaseEntry.setSummary(decisionKnowledgeElement.getSummary());
+								databaseEntry.setDescription(decisionKnowledgeElement.getDescription());
+								databaseEntry.save();
+								return databaseEntry;
 							}
 						}
 						return null;
 					}
 				});
-		if (decComponent != null) {
+		if (databaseEntry != null) {
 			return true;
 		} else {
 			return false;
@@ -93,21 +88,21 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
-	public boolean deleteDecisionKnowledgeElement(final DecisionKnowledgeElement dec, final ApplicationUser user) {
-		final ActiveObjects ao = ComponentGetter.getAo();
+	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement,
+			ApplicationUser user) {
 		return ao.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction() {
-				for (IDecisionKnowledgeElementEntity decComponent : ao.find(IDecisionKnowledgeElementEntity.class)) {
-					if (decComponent.getId() == dec.getId()) {
+				for (IDecisionKnowledgeElementEntity databaseEntry : ao.find(IDecisionKnowledgeElementEntity.class)) {
+					if (databaseEntry.getId() == decisionKnowledgeElement.getId()) {
 						try {
-							decComponent.getEntityManager().delete(decComponent);
+							databaseEntry.getEntityManager().delete(databaseEntry);
 						} catch (SQLException e) {
 							return false;
 						} finally {
 							for (ILinkEntity linkEntity : ao.find(ILinkEntity.class)) {
-								if (linkEntity.getIngoingId() == dec.getId()
-										|| linkEntity.getOutgoingId() == dec.getId()) {
+								if (linkEntity.getIngoingId() == decisionKnowledgeElement.getId()
+										|| linkEntity.getOutgoingId() == decisionKnowledgeElement.getId()) {
 									try {
 										linkEntity.getEntityManager().delete(linkEntity);
 									} catch (SQLException e) {
@@ -125,8 +120,121 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 	}
 
 	@Override
+	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey) {
+		List<DecisionKnowledgeElement> decisionKnowledgeElements = null;
+		if (projectKey != null) {
+			decisionKnowledgeElements = ao
+					.executeInTransaction(new TransactionCallback<List<DecisionKnowledgeElement>>() {
+						@Override
+						public List<DecisionKnowledgeElement> doInTransaction() {
+							final List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<>();
+							// Returns all instances of interface IDecisionKnowledgeElementEntity for the
+							// given project key
+							IDecisionKnowledgeElementEntity[] decisionArray = ao.find(
+									IDecisionKnowledgeElementEntity.class,
+									Query.select().where("PROJECT_KEY = ?", projectKey));
+							for (IDecisionKnowledgeElementEntity entity : decisionArray) {
+								decisionKnowledgeElements.add(castToDecisionKnowledgeElement(entity));
+							}
+							return decisionKnowledgeElements;
+						}
+					});
+		}
+		return decisionKnowledgeElements;
+	}
+
+	@Override
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
+		// Split key into project key and id
+		DecisionKnowledgeElement decisionKnowledgeElement = null;
+		String idAsString = null;
+		try {
+			idAsString = key.split("-")[1];
+		} catch (ArrayIndexOutOfBoundsException e) {
+			LOGGER.error("Key cannot be split into the project key and id.");
+			e.printStackTrace();
+		}
+		if (idAsString != null) {
+			long knowledgeElementId = Long.parseLong(idAsString);
+			decisionKnowledgeElement = getDecisionKnowledgeElement(knowledgeElementId);
+		}
+		if (decisionKnowledgeElement == null) {
+			LOGGER.error("No decision knowledge element with " + key + " could be found.");
+		}
+		return decisionKnowledgeElement;
+	}
+
+	@Override
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id) {
+		IDecisionKnowledgeElementEntity decisionKnowledgeElement = ao
+				.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
+					@Override
+					public IDecisionKnowledgeElementEntity doInTransaction() {
+						IDecisionKnowledgeElementEntity[] decisionKnowledgeElement = ao
+								.find(IDecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", id));
+						// 0 or 1 decision knowledge elements might be returned by this query
+						if (decisionKnowledgeElement.length == 1) {
+							return decisionKnowledgeElement[0];
+						}
+						return null;
+					}
+				});
+		if (decisionKnowledgeElement != null) {
+			return new DecisionKnowledgeElement(decisionKnowledgeElement.getId(), decisionKnowledgeElement.getSummary(),
+					decisionKnowledgeElement.getDescription(), decisionKnowledgeElement.getType(),
+					decisionKnowledgeElement.getProjectKey(), decisionKnowledgeElement.getKey());
+		}
+		return null;
+	}
+
+	@Override
+	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
+		List<Link> inwardLinks = this.getInwardLinks(decisionKnowledgeElement);
+		List<DecisionKnowledgeElement> children = new ArrayList<>();
+		for (Link inwardLink : inwardLinks) {
+			children.add(castToDecisionKnowledgeElement(
+					ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
+						@Override
+						public IDecisionKnowledgeElementEntity doInTransaction() {
+							IDecisionKnowledgeElementEntity[] entityList = ao.find(
+									IDecisionKnowledgeElementEntity.class,
+									Query.select().where("ID = ?", inwardLink.getIngoingId()));
+							if (entityList.length == 1) {
+								return entityList[0];
+							}
+							LOGGER.error("Inward Link has no Element to return");
+							return null;
+						}
+					})));
+		}
+		return children;
+	}
+
+	@Override
+	public List<DecisionKnowledgeElement> getParents(DecisionKnowledgeElement decisionKnowledgeElement) {
+		List<Link> outwardLinks = this.getOutwardLinks(decisionKnowledgeElement);
+		List<DecisionKnowledgeElement> parents = new ArrayList<>();
+		for (Link outwardLink : outwardLinks) {
+			parents.add(castToDecisionKnowledgeElement(
+					ao.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
+						@Override
+						public IDecisionKnowledgeElementEntity doInTransaction() {
+							IDecisionKnowledgeElementEntity[] entityList = ao.find(
+									IDecisionKnowledgeElementEntity.class,
+									Query.select().where("ID = ?", outwardLink.getOutgoingId()));
+							if (entityList.length == 1) {
+								return entityList[0];
+							}
+							LOGGER.error("Outward Link has no Element to return");
+							return null;
+						}
+					})));
+		}
+		return parents;
+	}
+
+	@Override
 	public long insertLink(final Link link, ApplicationUser user) {
-		final ActiveObjects ao = ComponentGetter.getAo();
 		return ao.executeInTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction() {
@@ -188,219 +296,52 @@ public class ActiveObjectStrategy implements IPersistenceStrategy {
 
 	@Override
 	public void deleteLink(Link link, ApplicationUser user) {
-
+		ao.executeInTransaction(new TransactionCallback<Void>() {
+			@Override
+			public Void doInTransaction() {
+				for (ILinkEntity linkEntity : ao.find(ILinkEntity.class)) {
+					if (link.getLinkType() == linkEntity.getLinkType()
+							&& link.getIngoingId() == linkEntity.getIngoingId()
+							&& link.getOutgoingId() == linkEntity.getOutgoingId()) {
+						try {
+							linkEntity.getEntityManager().delete(linkEntity);
+						} catch (SQLException e) {
+							LOGGER.error("ILinkEntity could not be deleted");
+							e.printStackTrace();
+						}
+					}
+				}
+				return null;
+			}
+		});
 	}
 
 	@Override
 	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
-		return null;
+		List<Link> inwardLinks = new ArrayList<>();
+		ILinkEntity[] links = ao.find(ILinkEntity.class, Query.select().where("OUTGOING_ID = ?", element.getId()));
+		for (ILinkEntity link : links) {
+			Link inwardLink = new Link(link);
+			inwardLinks.add(inwardLink);
+		}
+		return inwardLinks;
 	}
 
 	@Override
 	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
-		return null;
-	}
-
-	@Override
-	public List<DecisionKnowledgeElement> getUnlinkedDecisionComponents(final long id, String projectKey) {
-		List<DecisionKnowledgeElement> decList = null;
-		ProjectManager projectManager = ComponentAccessor.getProjectManager();
-		Project project = projectManager.getProjectObjByKey(projectKey);
-		if (project != null) {
-			final ActiveObjects ao = ComponentGetter.getAo();
-			decList = ao.executeInTransaction(new TransactionCallback<List<DecisionKnowledgeElement>>() {
-				@Override
-				public List<DecisionKnowledgeElement> doInTransaction() {
-					final List<DecisionKnowledgeElement> decList = new ArrayList<DecisionKnowledgeElement>();
-					IDecisionKnowledgeElementEntity[] decisionsArray = ao.find(IDecisionKnowledgeElementEntity.class,
-							Query.select().where("ID = ?", id));
-					// id is primaryKey for DecisionComponents therefore there can be 0-1
-					// decisioncomponent returned by this query
-					IDecisionKnowledgeElementEntity decComponent = null;
-					if (decisionsArray.length == 1) {
-						decComponent = decisionsArray[0];
-					}
-					if (decComponent != null) {
-						final List<IDecisionKnowledgeElementEntity> linkedDecList = new ArrayList<IDecisionKnowledgeElementEntity>();
-						for (ILinkEntity link : ao.find(ILinkEntity.class,
-								Query.select().where("INGOING_ID != ? AND OUTGOING_ID = ?", id, id))) {
-							for (IDecisionKnowledgeElementEntity decisionComponent : ao.find(
-									IDecisionKnowledgeElementEntity.class,
-									Query.select().where("ID = ? AND PROJECT_KEY = ?", link.getIngoingId(),
-											decComponent.getProjectKey()))) {
-								linkedDecList.add(decisionComponent);
-							}
-						}
-						for (ILinkEntity link : ao.find(ILinkEntity.class,
-								Query.select().where("INGOING_ID = ? AND OUTGOING_ID != ?", id, id))) {
-							for (IDecisionKnowledgeElementEntity decisionComponent : ao.find(
-									IDecisionKnowledgeElementEntity.class,
-									Query.select().where("ID = ? AND PROJECT_KEY = ?", link.getOutgoingId(),
-											decComponent.getProjectKey()))) {
-								linkedDecList.add(decisionComponent);
-							}
-						}
-						IDecisionKnowledgeElementEntity[] decisionArray = ao.find(IDecisionKnowledgeElementEntity.class,
-								Query.select().where("ID != ? AND PROJECT_KEY = ?", id, decComponent.getProjectKey()));
-						for (IDecisionKnowledgeElementEntity decisionComponent : decisionArray) {
-							if (!linkedDecList.contains(decisionComponent)) {
-								DecisionKnowledgeElement simpleDec = new DecisionKnowledgeElement();
-								simpleDec.setId(decisionComponent.getId());
-								simpleDec.setText(decisionComponent.getKey() + " / " + decisionComponent.getName()
-										+ " / " + decisionComponent.getType());
-								decList.add(simpleDec);
-							}
-						}
-					}
-					return decList;
-				}
-			});
+		List<Link> outwardLinks = new ArrayList<>();
+		ILinkEntity[] links = ao.find(ILinkEntity.class, Query.select().where("INGOING_ID = ?", element.getId()));
+		for (ILinkEntity link : links) {
+			Link outwardLink = new Link(link);
+			outwardLinks.add(outwardLink);
 		}
-		return decList;
+		return outwardLinks;
 	}
 
-	// New Implementation
-	@Override
-	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
-		final ActiveObjects ao = ComponentGetter.getAo();
-		IDecisionKnowledgeElementEntity dec = ao
-				.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
-					@Override
-					public IDecisionKnowledgeElementEntity doInTransaction() {
-						IDecisionKnowledgeElementEntity[] decisionsArray = ao
-								.find(IDecisionKnowledgeElementEntity.class, Query.select().where("KEY = ?", key));
-						// id is primaryKey for DecisionComponents therefore there can be 0-1
-						// decisioncomponent returned by this query
-						IDecisionKnowledgeElementEntity decComponent = null;
-						if (decisionsArray.length == 1) {
-							decComponent = decisionsArray[0];
-						}
-						return decComponent;
-					}
-				});
-		if (dec != null) {
-			DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElement(dec.getId(), dec.getName(),
-					dec.getDescription(), dec.getType(), dec.getProjectKey(), dec.getKey(), dec.getSummary());
-			return decisionKnowledgeElement;
-		}
-		return null;
-	}
-
-	@Override
-	public Data createData(final DecisionKnowledgeElement element) {
-		Data data = new Data();
-
-		data.setText(element.getKey() + " / " + element.getName());
-		data.setId(String.valueOf(element.getId()));
-
-		NodeInfo nodeInfo = new NodeInfo();
-		nodeInfo.setId(Long.toString(element.getId()));
-		nodeInfo.setKey(element.getKey());
-		nodeInfo.setIssueType(element.getType());
-		nodeInfo.setDescription(element.getDescription());
-		nodeInfo.setSummary(element.getName());
-		data.setNodeInfo(nodeInfo);
-
-		List<Data> children = new ArrayList<Data>();
-		final ActiveObjects ao = ComponentGetter.getAo();
-		List<IDecisionKnowledgeElementEntity> targetList = ao
-				.executeInTransaction(new TransactionCallback<List<IDecisionKnowledgeElementEntity>>() {
-					@Override
-					public List<IDecisionKnowledgeElementEntity> doInTransaction() {
-						final List<IDecisionKnowledgeElementEntity> decisionList = new ArrayList<IDecisionKnowledgeElementEntity>();
-						for (ILinkEntity link : ao.find(ILinkEntity.class,
-								Query.select().where("INGOING_ID = ?", element.getId()))) {
-							for (IDecisionKnowledgeElementEntity dec : ao.find(IDecisionKnowledgeElementEntity.class,
-									Query.select().where("ID = ?", link.getOutgoingId()))) {
-								decisionList.add(dec);
-							}
-						}
-						return decisionList;
-					}
-				});
-		for (IDecisionKnowledgeElementEntity target : targetList) {
-			Pair<String, String> newKVP = new Pair<String, String>(element.getKey(), target.getKey());
-			Pair<String, String> newKVPReverse = new Pair<String, String>(target.getKey(), element.getKey());
-			boolean boolvar = false;
-			for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
-				Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
-				if (newKVP.equals(globalInst)) {
-					boolvar = true;
-				}
-			}
-			if (!boolvar) {
-				KeyValuePairList.keyValuePairList.add(newKVP);
-				KeyValuePairList.keyValuePairList.add(newKVPReverse);
-				DecisionKnowledgeElement targetElement = castToDecisionKowledgeElement(target);
-				children.add(createData(targetElement));
-			}
-		}
-
-		List<IDecisionKnowledgeElementEntity> sourceList = ao
-				.executeInTransaction(new TransactionCallback<List<IDecisionKnowledgeElementEntity>>() {
-					@Override
-					public List<IDecisionKnowledgeElementEntity> doInTransaction() {
-						final List<IDecisionKnowledgeElementEntity> decisionList = new ArrayList<IDecisionKnowledgeElementEntity>();
-						for (ILinkEntity link : ao.find(ILinkEntity.class,
-								Query.select().where("OUTGOING_ID = ?", element.getId()))) {
-							for (IDecisionKnowledgeElementEntity dec : ao.find(IDecisionKnowledgeElementEntity.class,
-									Query.select().where("ID = ?", link.getIngoingId()))) {
-								decisionList.add(dec);
-							}
-						}
-						return decisionList;
-					}
-				});
-		for (IDecisionKnowledgeElementEntity source : sourceList) {
-			Pair<String, String> newKVP = new Pair<String, String>(element.getKey(), source.getKey());
-			Pair<String, String> newKVPReverse = new Pair<String, String>(source.getKey(), element.getKey());
-			boolean boolvar = false;
-			for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
-				Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
-				if (newKVP.equals(globalInst)) {
-					boolvar = true;
-				}
-			}
-			if (!boolvar) {
-				KeyValuePairList.keyValuePairList.add(newKVP);
-				KeyValuePairList.keyValuePairList.add(newKVPReverse);
-				DecisionKnowledgeElement sourceElement = castToDecisionKowledgeElement(source);
-				children.add(createData(sourceElement));
-			}
-		}
-
-		data.setChildren(children);
-
-		return data;
-	}
-
-	// TODO Refactor
-	public List<DecisionKnowledgeElement> getDecisions(String projectKey) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<DecisionKnowledgeElement> getParents(DecisionKnowledgeElement decisionKnowledgeElement) {
-		return null;
-	}
-
-	private DecisionKnowledgeElement castToDecisionKowledgeElement(IDecisionKnowledgeElementEntity entity) {
-		DecisionKnowledgeElement element = new DecisionKnowledgeElement(entity.getId(), entity.getName(),
-				entity.getDescription(), entity.getType(), entity.getProjectKey(), entity.getKey(),
-				entity.getSummary());
+	// Converting the Entity to a DecisionKnowledgeElement for future use
+	private DecisionKnowledgeElement castToDecisionKnowledgeElement(IDecisionKnowledgeElementEntity entity) {
+		DecisionKnowledgeElement element = new DecisionKnowledgeElement(entity.getId(), entity.getSummary(),
+				entity.getDescription(), entity.getType(), entity.getProjectKey(), entity.getKey());
 		return element;
-	}
-
-	@Override
-	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }
