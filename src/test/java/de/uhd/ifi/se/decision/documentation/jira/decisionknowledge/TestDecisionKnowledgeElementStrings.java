@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowl
  * @description Test Class for Simple Geter and Setter Tests
  *
  */
-public class TestDecisionRepresentationStrings {
+public class TestDecisionKnowledgeElementStrings {
 
 	private Long id;
 	private String summary;

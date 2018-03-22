@@ -28,6 +28,7 @@ import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkTypeManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueService;
 
+
 public class TestSetUp {
 	private ProjectManager projectManager;
 	private IssueManager issueManager;

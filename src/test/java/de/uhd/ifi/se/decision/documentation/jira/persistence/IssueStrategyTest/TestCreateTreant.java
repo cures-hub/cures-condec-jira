@@ -1,8 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.issueStrategy;
-
-import org.junit.Test;
-
-import com.atlassian.jira.component.ComponentAccessor;
+package de.uhd.ifi.se.decision.documentation.jira.persistence.IssueStrategyTest;
 
 /**
  * @author Tim Kuchenbuch
@@ -12,22 +8,22 @@ public class TestCreateTreant extends TestIssueStrategySetUp {
 //	@Test
 //	(expected = NullPointerException.class)
 //	public void testIssueKeyNullDepthZero() {
-//		issueStrategy.createTreant(null, 0);
+//		IssueStrategyTest.createTreant(null, 0);
 //	}
 //
 //	@Test
 //	public void testIssueKeyExistsAllTypesDepthOne() {
 //		for(int i=2;i<ComponentAccessor.getConstantsManager().getAllIssueTypeObjects().size();i++) {
-//			issueStrategy.createTreant(i+"", 1);
+//			IssueStrategyTest.createTreant(i+"", 1);
 //		}
-//		issueStrategy.createTreant("30", 1);
+//		IssueStrategyTest.createTreant("30", 1);
 //	}
 //
 //	@Test
 //	public void testIssueKeyExistsAllTypesDepthBigger() {
 //		for(int i=2;i<ComponentAccessor.getConstantsManager().getAllIssueTypeObjects().size();i++) {
-//			issueStrategy.createTreant(i+"", 5);
+//			IssueStrategyTest.createTreant(i+"", 5);
 //		}
-//		issueStrategy.createTreant("30", 5);
+//		IssueStrategyTest.createTreant("30", 5);
 //	}
 }
