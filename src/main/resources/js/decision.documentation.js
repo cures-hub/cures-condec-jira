@@ -568,7 +568,7 @@ function addOptionToDecisionComponent(type, parentNode) {
         });
     }
 }
-//TODO Bug:CH-39 
+//TODO Bug:CH-39
 function fillAccordion(data, projectKey, node) {
     var detailsElement = document.getElementById("Details");
     detailsElement.insertAdjacentHTML('beforeend', '<p>' + node.type + ' / ' + node.summary + ' <input type="button" name="updateIssue" id="updateIssue" value="Update"/></p>' +
