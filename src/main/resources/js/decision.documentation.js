@@ -568,6 +568,7 @@ function addOptionToDecisionComponent(type, parentNode) {
         });
     }
 }
+//TODO Bug:CH-39 
 function fillAccordion(data, projectKey, node) {
     var detailsElement = document.getElementById("Details");
     detailsElement.insertAdjacentHTML('beforeend', '<p>' + node.type + ' / ' + node.summary + ' <input type="button" name="updateIssue" id="updateIssue" value="Update"/></p>' +
@@ -615,7 +616,6 @@ function fillAccordion(data, projectKey, node) {
             });
         }
     });
-
     if (data.node.children.length > 0) {
         for (var counter = 0; counter < data.node.children.length; ++counter) {
             var child = $('#evts').jstree(true).get_node(data.node.children[counter]);
