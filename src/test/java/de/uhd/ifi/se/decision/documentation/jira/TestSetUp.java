@@ -117,6 +117,8 @@ public class TestSetUp {
 		((MockIssue)issue).setSummary("Test");
 		((MockIssueManager)issueManager).addIssue(issue);
 		((MockIssue)issue).setParentId((long) 3);
+
+
 	}
 
 }

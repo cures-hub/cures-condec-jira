@@ -9,7 +9,6 @@ import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowl
 
 /**
  *
- * @author Tim Kuchenbuch
  * @description Test Class for Simple Geter and Setter Tests
  *
  */
