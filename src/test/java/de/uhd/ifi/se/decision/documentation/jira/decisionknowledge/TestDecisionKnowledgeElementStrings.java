@@ -8,8 +8,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
 
 /**
- * 
- * @author Tim Kuchenbuch
+ *
  * @description Test Class for Simple Geter and Setter Tests
  *
  */
