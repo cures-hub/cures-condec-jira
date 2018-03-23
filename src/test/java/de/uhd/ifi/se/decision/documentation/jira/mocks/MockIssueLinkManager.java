@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
 import org.ofbiz.core.entity.GenericValue;
 
 import com.atlassian.jira.exception.CreateException;
@@ -109,6 +110,14 @@ public class MockIssueLinkManager implements IssueLinkManager {
 	@Override
 	public List<IssueLink> getOutwardLinks(Long arg0) {
 		List<IssueLink> allOutwardIssueLink = new ArrayList<>();
+		if(arg0.intValue()==5000){
+			long i = 2;
+			for(KnowledgeType type : KnowledgeType.values()){
+				MockIssueLink link = new MockIssueLink(i);
+				allOutwardIssueLink.add(link);
+				i++;
+			}
+		}
 		if(arg0==20) {
 			IssueLink link = new MockIssueLink((long)4);
 			allOutwardIssueLink.add(link);

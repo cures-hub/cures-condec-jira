@@ -40,7 +40,8 @@ public class TestGetChildren  extends TestIssueStrategySetUp{
 
         long i = 2;
         DecisionKnowledgeElement decision = null;
-         decision = new DecisionKnowledgeElement( 5000, "TESTSummary", "TestDescription", KnowledgeType.DECISION, project.getKey(), "TEST-"+ 5000 );
+        decision = new DecisionKnowledgeElement( (long) 5000, "TESTSummary", "TestDescription", KnowledgeType.DECISION, project.getKey(), "TEST-"+ 5000 );
+        decision.setId((long) 5000);
 
         issueStrategy.insertDecisionKnowledgeElement(decision, user);
         for(KnowledgeType type : KnowledgeType.values()) {
@@ -49,7 +50,6 @@ public class TestGetChildren  extends TestIssueStrategySetUp{
             if(type!= KnowledgeType.DECISION){
                 DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElement( i, "TESTSummary", "TestDescription", type, project.getKey(), "TEST-"+ i );
                 issueStrategy.insertDecisionKnowledgeElement(decisionKnowledgeElement,user);
-
                 link.setOutgoingId(decision.getId());
                 link.setIngoingId(decisionKnowledgeElement.getId());
                 issueStrategy.insertLink(link, user);
