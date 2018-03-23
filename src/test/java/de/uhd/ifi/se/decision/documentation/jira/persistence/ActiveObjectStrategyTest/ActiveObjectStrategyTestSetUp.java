@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ActiveObjectStrategy;
+package de.uhd.ifi.se.decision.documentation.jira.persistence.ActiveObjectStrategyTest;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.activeobjects.test.TestActiveObjects;

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.issueStrategy;
+package de.uhd.ifi.se.decision.documentation.jira.persistence.IssueStrategyTest;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -11,9 +11,6 @@ import com.atlassian.jira.user.MockApplicationUser;
 
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
 
-/**
- * @author Tim Kuchenbuch
- */
 public class TestCreateDecisionComponent extends TestIssueStrategySetUp {
 	
 	@Test

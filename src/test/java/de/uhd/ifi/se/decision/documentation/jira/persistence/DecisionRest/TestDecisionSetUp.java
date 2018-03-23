@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionRest;
+package de.uhd.ifi.se.decision.documentation.jira.persistence.DecisionRest;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;

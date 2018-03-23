@@ -100,7 +100,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	public void setKey(String key) {
 		this.key = key;
 	}
-	
+
 	@XmlElement(name = "text")
 	public String getText() {
 		if(this.type==null || this.summary==null){

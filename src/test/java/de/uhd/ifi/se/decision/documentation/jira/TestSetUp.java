@@ -28,6 +28,7 @@ import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkTypeManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueService;
 
+
 public class TestSetUp {
 	private ProjectManager projectManager;
 	private IssueManager issueManager;
@@ -37,7 +38,7 @@ public class TestSetUp {
 	
 	public void initialisation(){		
 		projectManager = new MockProjectManager();		
-		issueManager= new MockIssueManager();	
+		issueManager= new MockIssueManager();
 		constManager = new  MockConstantsManager();
 		IssueService issueService=new MockIssueService();
 		
@@ -116,6 +117,8 @@ public class TestSetUp {
 		((MockIssue)issue).setSummary("Test");
 		((MockIssueManager)issueManager).addIssue(issue);
 		((MockIssue)issue).setParentId((long) 3);
+
+
 	}
 
 }
