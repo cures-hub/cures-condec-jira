@@ -22,9 +22,7 @@ import de.uhd.ifi.se.decision.documentation.jira.config.IsActivated;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 
-/**
- * @author Tim Kuchenbuch
- */
+
 public class TestIsActivated {
 	private IsActivated isActivated;
 
