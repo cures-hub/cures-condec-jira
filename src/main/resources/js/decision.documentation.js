@@ -9,7 +9,7 @@ function createDecisionComponent(summary, type, callback) {
             "type": type,
             "description": summary
         };
-        postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?actionType=create", jsondata, function (err, data) {
+        postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/insertDecisionKnowledgeElement.json", jsondata, function (err, data) {
             if (err !== null) {
                 AJS.flag({
                     type: 'error',
@@ -35,7 +35,7 @@ function editDecisionComponent(issueId, summary, description, callback) {
         "projectKey": projectKey,
         "description": description
     };
-    postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?actionType=edit", jsondata, function (err, data) {
+    postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/updateDecisionKnowledgeElement.json", jsondata, function (err, data) {
         if (err !== null) {
             AJS.flag({
                 type: 'error',
@@ -568,7 +568,7 @@ function addOptionToDecisionComponent(type, parentNode) {
         });
     }
 }
-//TODO Bug:CH-39
+
 function fillAccordion(data, projectKey, node) {
     var detailsElement = document.getElementById("Details");
     detailsElement.insertAdjacentHTML('beforeend', '<p>' + node.type + ' / ' + node.summary + ' <input type="button" name="updateIssue" id="updateIssue" value="Update"/></p>' +
@@ -616,10 +616,12 @@ function fillAccordion(data, projectKey, node) {
             });
         }
     });
+    //TODO Bug:CH-39
     if (data.node.children.length > 0) {
         for (var counter = 0; counter < data.node.children.length; ++counter) {
             var child = $('#evts').jstree(true).get_node(data.node.children[counter]);
             var type = child.data.type;
+            //Lower case Problem: The Type is lower case so the if will always be -1
             var array = ["Problem", "Issue", "Goal", "Solution", "Alternative", "Claim", "Context", "Assumption", "Constraint", "Implication", "Assessment", "Argument"];
             if (array.indexOf(type) !== -1) {
                 document.getElementById(type).insertAdjacentHTML('beforeend', '<div class="issuelinkbox"><p>' + child.data.type +

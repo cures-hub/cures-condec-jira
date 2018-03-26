@@ -62,7 +62,7 @@ public class DecisionsRest {
 					.entity(ImmutableMap.of("error", "Decision knowledge element or actionType = null")).build();
 		}
 	}
-	@Path("updateDecisionKnowledgeElement")
+	@Path("/updateDecisionKnowledgeElement")
     @POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response updateDecisionKnowledgeElement(@Context HttpServletRequest request,
