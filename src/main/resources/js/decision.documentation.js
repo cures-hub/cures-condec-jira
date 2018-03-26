@@ -616,24 +616,18 @@ function fillAccordion(data, projectKey, node) {
             });
         }
     });
-    //TODO Bug:CH-39
     if (data.node.children.length > 0) {
         for (var counter = 0; counter < data.node.children.length; ++counter) {
             var child = $('#evts').jstree(true).get_node(data.node.children[counter]);
             var type = child.data.type;
-            //Lower case Problem: The Type is lower case so the if will always be -1
             var array = ["Problem", "Issue", "Goal", "Solution", "Alternative", "Claim", "Context", "Assumption", "Constraint", "Implication", "Assessment", "Argument"];
-            if (array.indexOf(type) !== -1) {
-                document.getElementById(type).insertAdjacentHTML('beforeend', '<div class="issuelinkbox"><p>' + child.data.type +
-                    ' / ' + child.data.summary + '</p>' + '<p>Description: ' + child.data.description + '</p></div>'
-                );
-                /*
-                document.getElementById(isstypensertAdjacentHTML('beforeend', '<div class="issuelinkbox"><p><a href="' +
-                    AJS.contextPath() + '/browse/' + child.data.key + '">' + child.data.key +
-                    ' / ' + child.data.summary + '</a></p>' + '<p>Description: ' + child.data.description + '</p></div>'
-                );
-                */
-                document.getElementById(child.data.type).style.display = "block";
+            for(var i = 0; i< array.length; i++){
+                if(array[i].toLocaleLowerCase()===type.toLocaleLowerCase()) {
+                    document.getElementById(array[i]).insertAdjacentHTML('beforeend', '<div class="issuelinkbox"><p>' + child.data.type +
+                        ' / ' + child.data.summary + '</p>' + '<p>Description: ' + child.data.description + '</p></div>'
+                    );
+                    document.getElementById(child.data.type).style.display = "block";
+                }
             }
         }
         addOptionsToAllDecisionComponents(data.node.data);
