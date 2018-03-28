@@ -626,7 +626,7 @@ function fillAccordion(data, projectKey, node) {
                     document.getElementById(array[i]).insertAdjacentHTML('beforeend', '<div class="issuelinkbox"><p>' + child.data.type +
                         ' / ' + child.data.summary + '</p>' + '<p>Description: ' + child.data.description + '</p></div>'
                     );
-                    document.getElementById(child.data.type).style.display = "block";
+                    document.getElementById(array[i]).style.display = "block";
                 }
             }
         }
