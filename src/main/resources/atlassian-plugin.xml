@@ -47,6 +47,14 @@
 		<resource type="download" name="jquery.contextMenu.js"
 			location="/js/contextMenu/jquery.contextMenu.js" />
 		<!-- my own JS -->
+		<resource type="download" name="accordionview.decision.documentation.js"
+				  location="/js/accordionview.decision.documentation.js"/>
+		<resource type="download" name="treantview.decision.documentation.js"
+				  location="/js/treantview.decision.documentation.js"/>
+		<resource type="download" name="treeview.decision.documentation.js"
+				  location="/js/treeview.decision.documentation.js" />
+		<resource type="download" name="java.communicator.js"
+				  location="/js/java.communicator.js" />
 		<resource type="download" name="decision.documentation.js"
 			location="/js/decision.documentation.js" />
 		<context>decision-documentation</context>
