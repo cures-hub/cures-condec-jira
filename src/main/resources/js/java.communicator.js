@@ -24,6 +24,7 @@ function createDecisionComponent(summary, type, callback) {
     } else {
         //summary is empty
     }
+    window.location.reload(true);
 }
 function editDecisionComponent(issueId, summary, description, callback) {
     var pathname = window.location.pathname;
@@ -47,6 +48,7 @@ function editDecisionComponent(issueId, summary, description, callback) {
             callback(data);
         }
     });
+    window.location.reload(true);
 }
 function deleteDecisionComponent(issueId, callback) {
     var pathname = window.location.pathname;
@@ -68,6 +70,7 @@ function deleteDecisionComponent(issueId, callback) {
             callback(data);
         }
     });
+    window.location.reload(true);
 }
 function createLink(parentId, childId, linkType, callback) {
     var pathname = window.location.pathname;
@@ -90,6 +93,7 @@ function createLink(parentId, childId, linkType, callback) {
             callback(data);
         }
     });
+    window.location.reload(true);
 }
 
 function deleteLink(parentId, childId, linkType, callback) {
@@ -113,4 +117,5 @@ function deleteLink(parentId, childId, linkType, callback) {
             callback(data);
         }
     });
+    window.location.reload(true);
 }
