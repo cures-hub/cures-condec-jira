@@ -6,6 +6,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.mock.MockProjectManager;
+import com.atlassian.jira.project.MockProject;
+import com.atlassian.jira.project.Project;
+import com.atlassian.jira.project.ProjectManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
@@ -19,6 +24,7 @@ import org.ofbiz.core.entity.GenericEntityException;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
+import sun.awt.AWTAccessor;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestTreeViewerRest extends TestSetUp {
@@ -42,10 +48,18 @@ public class TestTreeViewerRest extends TestSetUp {
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Cannot find project for the given query parameter 'projectKey'")).build().getEntity(), treeview.getMessage("NotTEST").getEntity());
 	}
 
-	//TODO Fixing
+
 	@Test
 	public void testProjectKeyExists() throws GenericEntityException {
 		assertEquals(200, treeview.getMessage("TEST").getStatus());
 	}
 
+	@Test
+	public void testProjectKeyExistsNoObjects() throws GenericEntityException {
+		ProjectManager projectManager = ComponentAccessor.getProjectManager();
+		Project project = new MockProject(2,"TESTNO");
+		((MockProject)project).setKey("TESTNO");
+		((MockProjectManager) projectManager).addProject(project);
+		assertEquals(200, treeview.getMessage("TESTNO").getStatus());
+	}
 }
