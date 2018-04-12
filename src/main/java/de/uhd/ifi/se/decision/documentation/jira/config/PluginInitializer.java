@@ -15,7 +15,6 @@ import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 
 /**
- * @author Ewald Rode
  * @description handles plugin initialization
  */
 @Named("PluginInitializer")

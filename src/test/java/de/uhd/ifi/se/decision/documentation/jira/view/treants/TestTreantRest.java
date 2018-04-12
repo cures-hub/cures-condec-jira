@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +22,8 @@ import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.TreantRest;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+
+import java.util.Collection;
 
 
 @RunWith(ActiveObjectsJUnitRunner.class)
@@ -98,5 +102,12 @@ public class TestTreantRest extends TestSetUp {
 	@Test
 	public void testProjectExistsIssueKeyFilledDepthNoInt() throws GenericEntityException {
 		assertEquals(200,treantRest.getMessage("TEST", "3", "Test").getStatus());
+	}
+
+	@Test
+	public void testProjectExistsIssueKeyFilledAllTypes() throws GenericEntityException {
+		for(long i=2; i<= 16;i++){
+			treantRest.getMessage("TEST", Long.toString(i), "3").getStatus();
+		}
 	}
 }

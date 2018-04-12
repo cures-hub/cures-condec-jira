@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Ewald Rode
  * @description Rest resource for Treants
  */
 @Path("/treant")
@@ -78,7 +77,7 @@ public class TreantRest {
 				.build();
 	}
 
-	//TODO
+	//TODO Changing the Comparison
 	private String checkDecisionType(String type) {
 		if (type.equals("constraint") || type.equals("assumption") || type.equals("implication")
 				|| type.equals("context")) {

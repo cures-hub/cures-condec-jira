@@ -22,9 +22,6 @@ import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueService;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueTypeManager;
 
-/**
- * @author Tim Kuchenbuch
- */
 public class TestPluginInitializer extends TestSetUp {
 	
 	private PluginInitializer listener;
