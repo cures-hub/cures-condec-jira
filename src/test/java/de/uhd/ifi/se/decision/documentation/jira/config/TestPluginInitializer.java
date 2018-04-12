@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.documentation.jira.config;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.link.IssueLinkType;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,6 +55,41 @@ public class TestPluginInitializer extends TestSetUp {
 		.addMock(IssueService.class,issueService)
 		.addMock(ProjectManager.class,projectManager)
 		.addMock(ConstantsManager.class,constManager);
+
+		listener.afterPropertiesSet();
+	}
+
+	@Test
+	public void testExecutionAfterPropInit() throws Exception {
+		ProjectManager projectManager = new MockProjectManager();
+		IssueManager issueManager= new MockIssueManager();
+		ConstantsManager constManager = new  MockConstantsManager();
+		IssueService issueService=new MockIssueService();
+
+
+		new MockComponentWorker().init().addMock(IssueManager.class, issueManager)
+				.addMock(IssueTypeManager.class, new MockIssueTypeManager())
+				.addMock(IssueLinkManager.class, new MockIssueLinkManager())
+				.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager(false))
+				.addMock(IssueService.class,issueService)
+				.addMock(ProjectManager.class,projectManager)
+				.addMock(ConstantsManager.class,constManager);
+
+		//Adding all Issue Types
+		constManager.insertIssueType("Decision", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Alternative", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Argument", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Assessment", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Assumption", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Claim", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Constraint", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Context", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Goal", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Implication", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Issue", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Problem", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Solution", (long) 20, "Test", "Test", (long) 12290);
+
 
 		listener.afterPropertiesSet();
 	}

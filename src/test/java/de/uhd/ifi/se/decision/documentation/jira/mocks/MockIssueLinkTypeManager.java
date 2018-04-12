@@ -62,7 +62,6 @@ public class MockIssueLinkTypeManager implements IssueLinkTypeManager{
 			isseLTypes.add(lt);
 		}
 		return isseLTypes;
-
 	}
 
 	@Override
