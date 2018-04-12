@@ -5,6 +5,9 @@ import java.util.Collection;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 import org.ofbiz.core.entity.GenericValue;
 
 import com.atlassian.jira.exception.CreateException;
@@ -110,7 +113,7 @@ public class MockIssueLinkManager implements IssueLinkManager {
 	@Override
 	public List<IssueLink> getOutwardLinks(Long arg0) {
 		List<IssueLink> allOutwardIssueLink = new ArrayList<>();
-		if(arg0.intValue()==5000){
+		if(arg0.intValue() == 5000){
 			long i = 2;
 			for(KnowledgeType type : KnowledgeType.values()){
 				MockIssueLink link = new MockIssueLink(i);
@@ -118,11 +121,11 @@ public class MockIssueLinkManager implements IssueLinkManager {
 				i++;
 			}
 		}
-		if(arg0==20) {
+		if(arg0 == 20) {
 			IssueLink link = new MockIssueLink((long)4);
 			allOutwardIssueLink.add(link);
 		}
-		if(arg0==30) {
+		if(arg0 == 30) {
 			for(int i=0 ;i<10;i++) {
 				IssueLink link = new MockIssueLink((long)3);
 				((MockIssueLink)link).setSequence((long)i+10);
@@ -131,6 +134,10 @@ public class MockIssueLinkManager implements IssueLinkManager {
 				}
 				allOutwardIssueLink.add(link);
 			}
+		}
+		if(arg0 == 12) {
+			MockIssueLink link = new MockIssueLink((long)1);
+			allOutwardIssueLink.add(link);
 		}
 		return allOutwardIssueLink;
 	}
