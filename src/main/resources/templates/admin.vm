@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>$i18n.getText("admin-servlet.name")</title>
+<title>DecDoc Settings</title>
 <meta name="decorator" content="atl.general">
 <meta name="decorator" content="atl.admin" />
 <meta name="admin.active.section"
