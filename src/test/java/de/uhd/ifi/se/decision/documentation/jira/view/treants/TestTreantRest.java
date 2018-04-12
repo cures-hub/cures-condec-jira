@@ -6,7 +6,14 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.mock.issue.MockIssue;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
+import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLink;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -109,5 +116,21 @@ public class TestTreantRest extends TestSetUp {
 		for(long i=2; i<= 16;i++){
 			treantRest.getMessage("TEST", Long.toString(i), "3").getStatus();
 		}
+	}
+
+	@Test
+	public  void testProjectExistsIssueKeyFilledChildElements() throws GenericEntityException {
+		StrategyProvider strategyProvider = new StrategyProvider();
+		PersistenceStrategy strategy = strategyProvider.getStrategy("TEST");
+		Issue issue1 = ComponentAccessor.getIssueManager().getIssueObject((long) 12);
+		Issue issue2 = ComponentAccessor.getIssueManager().getIssueObject((long) 13);
+		strategy.insertDecisionKnowledgeElement(new DecisionKnowledgeElement(issue1), ComponentAccessor.getUserManager().getUserByName("NoFails"));
+		strategy.insertDecisionKnowledgeElement(new DecisionKnowledgeElement(issue2), ComponentAccessor.getUserManager().getUserByName("NoFails"));
+
+		MockIssueLink issuelink = new MockIssueLink((long)100);
+		Link link = new Link(issuelink);
+		strategy.insertLink(link,ComponentAccessor.getUserManager().getUserByName("NoFails"));
+
+		treantRest.getMessage("TEST","12", "3").getStatus();
 	}
 }

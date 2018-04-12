@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.documentation.jira;
 import java.util.ArrayList;
 
 import com.atlassian.jira.bc.issue.IssueService;
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
@@ -22,11 +23,16 @@ import com.atlassian.jira.user.MockApplicationUser;
 import com.atlassian.jira.user.util.MockUserManager;
 import com.atlassian.jira.user.util.UserManager;
 
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkTypeManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueService;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.IssueStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
+import sun.awt.AWTAccessor;
 
 
 public class TestSetUp {
@@ -117,8 +123,6 @@ public class TestSetUp {
 		((MockIssue)issue).setSummary("Test");
 		((MockIssueManager)issueManager).addIssue(issue);
 		((MockIssue)issue).setParentId((long) 3);
-
-
 	}
 
 }
