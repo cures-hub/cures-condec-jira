@@ -2,12 +2,8 @@ package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-
 import org.codehaus.jackson.annotate.JsonProperty;
-
 import com.atlassian.jira.issue.Issue;
-
-import java.util.List;
 
 /**
  * @description Model class for decision knowledge elements
@@ -52,7 +48,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	public void setId(long id) {
 		this.id = id;
 	}
-	
+
 	public String getSummary() {
 		return summary;
 	}
@@ -103,7 +99,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 
 	@XmlElement(name = "text")
 	public String getText() {
-		if(this.type==null || this.summary==null){
+		if (this.type == null || this.summary == null) {
 			return "";
 		}
 		return this.type.toString().substring(0, 1).toUpperCase() + this.type.toString().substring(1) + " / "
