@@ -13,7 +13,6 @@
 	</plugin-info>
 
 	<!-- Web Resources -->
-	<resource />
 	<web-resource key="stylesheet-and-icon-resources" name="Style Sheets and Icons">
 		<description>Provides the style sheets and icons used in this plug-in.
 		</description>
