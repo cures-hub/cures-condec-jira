@@ -60,21 +60,21 @@ public class TestTreantRest extends TestSetUp {
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Query parameters 'projectKey' and 'issueKey' do not lead to a valid result")).build().getEntity(),treantRest.getMessage("TEST", null, null).getEntity());
 	}
 	
-//	@Test
-//	public void testProjectExistsIssueKeyFilledDepthNull() throws GenericEntityException {
-//		assertEquals(200,treantRest.getMessage("TEST", "3", null).getStatus());
-//	}
+	@Test
+	public void testProjectExistsIssueKeyFilledDepthNull() throws GenericEntityException {
+		assertEquals(200,treantRest.getMessage("TEST", "3", null).getStatus());
+	}
 		
 	@Test
 	public void testProjectExistsIssueKeyNullDepthFilled() throws GenericEntityException {
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Query parameters 'projectKey' and 'issueKey' do not lead to a valid result")).build().getEntity(),treantRest.getMessage("TEST", null, "1").getEntity());
 	}
-	
-//	@Test
-//	public void testProjectExistsIssueKeyFilledDepthFilled() throws GenericEntityException {
-//		assertEquals(200,treantRest.getMessage("TEST", "3", "1").getStatus());
-//	}
-		
+
+	@Test
+	public void testProjectExistsIssueKeyFilledDepthFilled() throws GenericEntityException {
+		assertEquals(200,treantRest.getMessage("TEST", "3", "1").getStatus());
+	}
+
 	@Test
 	public void testProjectNotExistsIssueKeyNullDepthNull() throws GenericEntityException {
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Cannot find project for the given query parameter 'projectKey'")).build().getEntity(),treantRest.getMessage("NotTEST", null, null).getEntity());
@@ -95,8 +95,8 @@ public class TestTreantRest extends TestSetUp {
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Cannot find project for the given query parameter 'projectKey'")).build().getEntity(),treantRest.getMessage("NotTEST", "3", "1").getEntity());
 	}
 	
-//	@Test
-//	public void testProjectExistsIssueKeyFilledDepthNoInt() throws GenericEntityException {
-//		assertEquals(200,treantRest.getMessage("TEST", "3", "Test").getStatus());
-//	}
+	@Test
+	public void testProjectExistsIssueKeyFilledDepthNoInt() throws GenericEntityException {
+		assertEquals(200,treantRest.getMessage("TEST", "3", "Test").getStatus());
+	}
 }
