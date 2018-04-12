@@ -8,6 +8,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.xml.ws.Action;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
@@ -19,7 +20,6 @@ import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 
 /**
- * @author Ewald Rode
  * @description Rest resource: Enables creation, editing and deletion of
  *              decision knowledge elements and their links
  */
@@ -41,58 +41,42 @@ public class DecisionsRest {
 		}
 	}
 
+	@Path("/insertDecisionKnowledgeElement")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response postDecision(@QueryParam("actionType") String actionType, @Context HttpServletRequest request,
-			DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (actionType != null && decisionKnowledgeElement != null && request != null) {
+	public Response insertDecisionKnowledgeElement(@Context HttpServletRequest request,
+                                                   DecisionKnowledgeElement decisionKnowledgeElement) {
+		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProjectKey();
 			StrategyProvider strategyProvider = new StrategyProvider();
 			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
-			if (actionType.equalsIgnoreCase("create")) {
-				decisionKnowledgeElement = strategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
-				if (decisionKnowledgeElement != null) {
-					return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
-				}
-				// TODO refactor to new method insertDecisionKnowledgeElement
-				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
-			} else if (actionType.equalsIgnoreCase("edit")) {
-				if (strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user)) {
-					return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
-				}
-				// TODO refactor to new method updateDecisionKnowledgeElement
-				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build();
-			} else {
-				return Response.status(Status.BAD_REQUEST)
-						.entity(ImmutableMap.of("error", "Unknown actionType. Pick either 'create', 'edit'")).build();
-			}
+            decisionKnowledgeElement = strategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
+            if (decisionKnowledgeElement != null) {
+                return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
+            }
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Decision knowledge element or actionType = null")).build();
 		}
 	}
-
-	//@Produces({ MediaType.APPLICATION_JSON })
-	public Response updateDecisionKnowledgeElement(String actionType, HttpServletRequest request,
+	@Path("/updateDecisionKnowledgeElement")
+    @POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response updateDecisionKnowledgeElement(@Context HttpServletRequest request,
 										  DecisionKnowledgeElement decisionKnowledgeElement){
-		if (actionType != null && decisionKnowledgeElement != null && request != null) {
+		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProjectKey();
 			StrategyProvider strategyProvider = new StrategyProvider();
 			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
-			if (actionType.equalsIgnoreCase("edit")) {
-				if (strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user)) {
-					return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
-				}
-				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build();
-			} else {
-				return Response.status(Status.BAD_REQUEST)
-						.entity(ImmutableMap.of("error", "Unknown actionType. Pick 'edit'")).build();
-			}
+            if (strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user)) {
+                return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
+            }
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Decision knowledge element or actionType = null")).build();
