@@ -10,6 +10,9 @@ import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 public class StrategyProvider {
 
 	public PersistenceStrategy getStrategy(final String projectKey) {
+		if(projectKey == null){
+			return  null;
+		}
 		TransactionTemplate transactionTemplate = ComponentGetter.getTransactionTemplate();
 		final PluginSettingsFactory pluginSettingsFactory = ComponentGetter.getPluginSettingsFactory();
 		final String pluginStorageKey = ComponentGetter.getPluginStorageKey();
