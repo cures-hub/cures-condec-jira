@@ -12,9 +12,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
 import net.sf.hibernate.mapping.Array;
 
-/**
- * @author Tim Kuchenbuch
- */
+
 public class TestPair {
 	private Pair<String, String> pair;
 	

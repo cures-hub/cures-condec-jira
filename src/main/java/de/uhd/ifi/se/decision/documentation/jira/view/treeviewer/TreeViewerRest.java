@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * @author Ewald Rode
  * @description Rest resource for TreeViewer list
  */
 @Path("/treeviewer")

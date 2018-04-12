@@ -18,9 +18,7 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 
-/**
- * @author Tim Kuchenbuch
- */
+
 public class TestComponentGetter {
 	
 	private ComponentGetter getter;

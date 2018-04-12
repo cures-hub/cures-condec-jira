@@ -5,23 +5,31 @@ import static org.junit.Assert.assertEquals;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.atlassian.activeobjects.test.TestActiveObjects;
+import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
+import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
+import net.java.ao.EntityManager;
+import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.ofbiz.core.entity.GenericEntityException;
 
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.TreeViewerRest;
 
+@RunWith(ActiveObjectsJUnitRunner.class)
 public class TestTreeViewerRest extends TestSetUp {
+	private EntityManager entityManager;
 	private TreeViewerRest treeview;
 	
 	@Before
 	public void setUp() {
 		treeview= new TreeViewerRest();
 		initialisation();
+		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
 	}
 	
 	@Test
@@ -35,7 +43,7 @@ public class TestTreeViewerRest extends TestSetUp {
 	}
 
 	//TODO Fixing
-	@Ignore
+	@Test
 	public void testProjectKeyExists() throws GenericEntityException {
 		assertEquals(200, treeview.getMessage("TEST").getStatus());
 	}
