@@ -13,9 +13,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import de.uhd.ifi.se.decision.documentation.jira.util.KeyValuePairList;
-import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
 import org.ofbiz.core.entity.GenericEntityException;
 
 import java.util.ArrayList;
@@ -23,8 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Ewald Rode
- * @description Rest resource for Treants
+ * @description REST resource for Treants
  */
 @Path("/treant")
 public class TreantRest {
@@ -78,7 +74,7 @@ public class TreantRest {
 				.build();
 	}
 
-	//TODO
+	// TODO
 	private String checkDecisionType(String type) {
 		if (type.equals("constraint") || type.equals("assumption") || type.equals("implication")
 				|| type.equals("context")) {
@@ -92,59 +88,51 @@ public class TreantRest {
 		}
 	}
 
-	private Node createNode(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
-		Node node = new Node();
-		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getType().toString().toLowerCase(), "title",
-				decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
-		node.setNodeContent(nodeContent);
-
-		String htmlClass = checkDecisionType(decisionKnowledgeElement.getType().toString().toLowerCase());
-		node.setHtmlClass(htmlClass);
-
-		long htmlId = decisionKnowledgeElement.getId();
-		node.setHtmlId(htmlId);
-
-		if (currentDepth + 1 < depth) {
-			List<Node> children = new ArrayList<Node>();
-			List<DecisionKnowledgeElement> toBeAddedToChildren = strategy.getChildren(decisionKnowledgeElement);
-
-			for (int index = 0; index < toBeAddedToChildren.size(); ++index) {
-				children.add(createNode(toBeAddedToChildren.get(index), depth, currentDepth + 1));
-			}
-			node.setChildren(children);
-		}
-		return node;
-	}
-
 	private Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, int depth) {
 		Node node = new Node();
-		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getType().toString().toLowerCase(), "title",
+		Map<String, String> nodeContent = ImmutableMap.of("name",
+				decisionKnowledgeElement.getType().toString().toLowerCase(), "title",
 				decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 		node.setNodeContent(nodeContent);
 
 		String htmlClass = checkDecisionType(decisionKnowledgeElement.getType().toString().toLowerCase());
 		node.setHtmlClass(htmlClass);
-		long htmlId = decisionKnowledgeElement.getId();
-		node.setHtmlId(htmlId);
+		node.setHtmlId(decisionKnowledgeElement.getId());
 
-		List<Node> children = new ArrayList<Node>();
+		List<Node> nodes = new ArrayList<Node>();
 
-		List<DecisionKnowledgeElement> elementChildren = strategy.getChildren(decisionKnowledgeElement);
-		KeyValuePairList.keyValuePairList = new ArrayList<Pair<String, String>>();
-		if (elementChildren != null) {
-			if (elementChildren.size() > 0) {
-				for (DecisionKnowledgeElement linkeDecisionKnowledgeElement : elementChildren) {
-					if (decisionKnowledgeElement != null & linkeDecisionKnowledgeElement != null) {
-						KeyValuePairList.keyValuePairList.add(new Pair<String, String>(
-								decisionKnowledgeElement.getKey(), linkeDecisionKnowledgeElement.getKey()));
-						KeyValuePairList.keyValuePairList.add(new Pair<String, String>(
-								linkeDecisionKnowledgeElement.getKey(), decisionKnowledgeElement.getKey()));
-						children.add(createNode(linkeDecisionKnowledgeElement, depth, 0));
-					}
+		List<DecisionKnowledgeElement> children = strategy.getChildren(decisionKnowledgeElement);
+		if (children != null && children.size() > 0) {
+			for (DecisionKnowledgeElement child : children) {
+				if (child != null) {
+					nodes.add(createNode(child, depth, 0));
 				}
 			}
 		}
-		node.setChildren(children);
+		node.setChildren(nodes);
+		return node;
+	}	
+
+	private Node createNode(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
+		Node node = new Node();
+		Map<String, String> nodeContent = ImmutableMap.of("name",
+				decisionKnowledgeElement.getType().toString().toLowerCase(), "title",
+				decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
+		node.setNodeContent(nodeContent);
+
+		String htmlClass = checkDecisionType(decisionKnowledgeElement.getType().toString().toLowerCase());
+		node.setHtmlClass(htmlClass);
+		node.setHtmlId(decisionKnowledgeElement.getId());
+
+		if (currentDepth + 1 < depth) {
+			List<Node> nodes = new ArrayList<Node>();
+			List<DecisionKnowledgeElement> children = strategy.getChildren(decisionKnowledgeElement);
+
+			for (int index = 0; index < children.size(); ++index) {
+				nodes.add(createNode(children.get(index), depth, currentDepth + 1));
+			}
+			node.setChildren(nodes);
+		}
 		return node;
 	}
 }
