@@ -21,9 +21,7 @@ import de.uhd.ifi.se.decision.documentation.jira.view.treants.TreantRest;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-/**
- * @author Tim Kuchenbuch
- */
+
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestTreantRest extends TestSetUp {
 	private EntityManager entityManager;
