@@ -4,30 +4,22 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
-
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import de.uhd.ifi.se.decision.documentation.jira.util.KeyValuePairList;
-import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
-
 import org.ofbiz.core.entity.GenericEntityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 /**
- * @author Ewald Rode
- * @description Rest resource for TreeViewer list
+ * @description REST resource for TreeViewer list
  */
 @Path("/treeviewer")
 public class TreeViewerRest {
@@ -70,9 +62,6 @@ public class TreeViewerRest {
 			return null;
 		}
 		for (int index = 0; index < decisions.size(); ++index) {
-			KeyValuePairList.keyValuePairList = new ArrayList<Pair<String, String>>();
-			Pair<String, String> kvp = new Pair<String, String>("root", decisions.get(index).getKey());
-			KeyValuePairList.keyValuePairList.add(kvp);
 			dataSet.add(createData(decisions.get(index)));
 		}
 		core.setData(dataSet);

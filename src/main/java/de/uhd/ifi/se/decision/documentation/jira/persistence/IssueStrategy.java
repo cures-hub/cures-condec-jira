@@ -255,26 +255,6 @@ public class IssueStrategy extends PersistenceStrategy {
 		return outwardLinks;
 	}
 
-//	private boolean updateKeyValuePairList(DecisionKnowledgeElement decisionKnowledgeElementOne,
-//			DecisionKnowledgeElement decisionKnowledgeElementTwo) {
-//		Pair<String, String> newKVP = new Pair<String, String>(decisionKnowledgeElementOne.getKey(),
-//				decisionKnowledgeElementTwo.getKey());
-//		Pair<String, String> newKVPReverse = new Pair<String, String>(decisionKnowledgeElementTwo.getKey(),
-//				decisionKnowledgeElementOne.getKey());
-//		boolean boolvar = false;
-//		for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
-//			Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
-//			if (newKVP.equals(globalInst)) {
-//				boolvar = true;
-//			}
-//		}
-//		if (!boolvar) {
-//			KeyValuePairList.keyValuePairList.add(newKVP);
-//			KeyValuePairList.keyValuePairList.add(newKVPReverse);
-//		}
-//		return boolvar;
-//	}
-
 	private String getIssueTypeId(KnowledgeType type) {
 		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
 		Collection<IssueType> listOfIssueTypes = constantsManager.getAllIssueTypeObjects();

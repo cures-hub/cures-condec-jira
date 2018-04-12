@@ -128,9 +128,9 @@
 		<description>Provides the administration page.</description>
 		<url-pattern>/adminservlet</url-pattern>
 	</servlet>
-	<rest key="admin-rest" name="Adminstration Form REST" path="/admin"
+	<rest key="admin-rest" name="Adminstration REST" path="/admin"
 		version="1.0">
-		<description>Provides REST resources for the administration form.
+		<description>Provides REST resources for the administration.
 		</description>
 	</rest>
 	<rest key="config" name="Configuration REST" path="/config"
