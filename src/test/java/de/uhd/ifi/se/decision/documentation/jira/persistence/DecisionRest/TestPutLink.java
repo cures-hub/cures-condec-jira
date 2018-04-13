@@ -47,170 +47,168 @@ public class TestPutLink extends TestSetUp {
 
 	@Test
 	public void testactionTypeNullKeyNullReqNullLinkNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink(null, null, null).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink(null, null, null).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeNullKeyNullReqNullLinkIdZero() {		
 		link.setLinkType("Zero");
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink(null, null, link).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink(null, null, link).getEntity());
 	}
-	
-	@Test
 	public void testactionTypeNullKeyNullReqNullLinkIdFilled() {
 		link.setLinkType("Ok");
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink(null, null, link).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink(null, null, link).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeNullKeyNullReqFilledLinkNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink(null, req, null).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink(null, req, null).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeNullKeyNullReqFilledLinkIdZero() {
 		link.setLinkType("Zero");
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink(null, req, link).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink(null, req, link).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeNullKeyNullReqFilledLinkIdFilled() {
 		link.setLinkType("Ok");
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink(null, req, link).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink(null, req, link).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeNullKeyFilledReqNullLinkNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink(null, null, null).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink(null, null, null).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeNullKeyFilledReqNullLinkIdZero() {
 		link.setLinkType("Zero");
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink(null, null, link).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink(null, null, link).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeNullKeyFilledReqNullLinkIdFilled() {
 		link.setLinkType("Ok");
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink(null, null, link).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink(null, null, link).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeNullKeyFilledReqFilledLinkNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink(null, req, null).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink(null, req, null).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeNullKeyFilledReqFilledLinkIdZero() {
 		link.setLinkType("Zero");
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink(null, req, link).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink(null, req, link).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeNullKeyFilledReqFilledLinkIdFilled() {
 		link.setLinkType("Ok");
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink(null, req, link).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink(null, req, link).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeCreateKeyNullReqNullLinkNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink("create",null, null).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink("create",null, null).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeCreateKeyNullReqNullLinkIdZero() {
 		link.setLinkType("Zero");
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink("create", null, link).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink("create", null, link).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeCreateKeyNullReqNullLinkIdFilled() {
 		link.setLinkType("Ok");
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink("create", null, link).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink("create", null, link).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeCreateKeyNullReqFilledLinkNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink("create", req, null).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink("create", req, null).getEntity());
 	}
 
 	@Test
 	public void testactionTypeCreateKeyFilledReqNullLinkNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink("create",null, null).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink("create",null, null).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeCreateKeyFilledReqNullLinkIdZero() {
 		link.setLinkType("Zero");
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink("create", null, link).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink("create", null, link).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeCreateKeyFilledReqNullLinkIdFilled() {
 		link.setLinkType("Ok");
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink("create", null, link).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink("create", null, link).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeCreateKeyFilledReqFilledLinkNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink("create", req, null).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink("create", req, null).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeCreateKeyFilledReqFilledLinkIdZero() {
 		link.setLinkType("Zero");
 		link.setIngoingId(3);
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Creation of Link failed.")).build().getEntity(),decRest.putLink("create", req, link).getEntity());
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Creation of Link failed.")).build().getEntity(),decRest.createLink("create", req, link).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeCreateKeyFilledReqFilledLinkIdFilled() {
 		link.setLinkType("Ok");
-		assertEquals(Status.OK.getStatusCode(),decRest.putLink("create",  req, link).getStatus());
+		assertEquals(Status.OK.getStatusCode(),decRest.createLink("create",  req, link).getStatus());
 	}
 	
 	@Test
 	public void testactionTypeNotCreateKeyNullReqNullLinkNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink("notCreate",  null, null).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink("notCreate",  null, null).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeNotCreateKeyNullReqNullLinkIdZero() {
 		link.setLinkType("Zero");
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink("notCreate", null, link).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink("notCreate", null, link).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeNotCreateKeyNullReqNullLinkIdFilled() {
 		link.setLinkType("Ok");
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink("notCreate", null, link).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink("notCreate", null, link).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeNotCreateKeyNullReqFilledLinkNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink("notCreate", req, null).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink("notCreate", req, null).getEntity());
 	}
 
 	@Test
 	public void testactionTypeNotCreateKeyFilledReqNullLinkNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink("notCreate",  null, null).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink("notCreate",  null, null).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeNotCreateKeyFilledReqNullLinkIdZero() {
 		link.setLinkType("Zero");
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink("notCreate",  null, link).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink("notCreate",  null, link).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeNotCreateKeyFilledReqNullLinkIdFilled() {
 		link.setLinkType("Ok");
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink("notCreate",  null, link).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink("notCreate",  null, link).getEntity());
 	}
 	
 	@Test
 	public void testactionTypeNotCreateKeyFilledReqFilledLinkNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink("notCreate",  req, null).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec")).build().getEntity(),decRest.createLink("notCreate",  req, null).getEntity());
 	}
 }

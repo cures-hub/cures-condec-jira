@@ -229,8 +229,8 @@ public class IssueStrategy extends PersistenceStrategy {
 
 	// TODO Implement
 	@Override
-	public void deleteLink(Link link, ApplicationUser user) {
-
+	public boolean deleteLink(Link link, ApplicationUser user) {
+		return true;
 	}
 	
 	@Override

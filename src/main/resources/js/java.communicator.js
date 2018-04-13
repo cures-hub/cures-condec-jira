@@ -79,7 +79,7 @@ function createLink(parentId, childId, linkType, callback) {
         "ingoingId": childId,
         "outgoingId": parentId
     };
-    putJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?projectKey=" + projectKey, jsondata, function (err, data) {
+    putJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLink.json?projectKey=" + projectKey, jsondata, function (err, data) {
         if (err !== null) {
             AJS.flag({
                 type: 'error',
@@ -102,7 +102,7 @@ function deleteLink(parentId, childId, linkType, callback) {
         "ingoingId": childId,
         "outgoingId": parentId
     };
-    putJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?projectKey=" + projectKey + "&actionType=delete", jsondata, function (err, data) {
+    putJSON(AJS.contextPath() + "/rest/decisions/latest/deleteLink.json?projectKey=" + projectKey, jsondata, function (err, data) {
         if (err !== null) {
             AJS.flag({
                 type: 'error',
