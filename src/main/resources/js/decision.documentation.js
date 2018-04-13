@@ -16,7 +16,7 @@ function initializeSite() {
     createDecisionButton.addEventListener('click', function () {
         var tempDecString = DecisionInputField.value;
         DecisionInputField.value = "";
-        createDecisionComponent(tempDecString, "Decision", function (data) {
+        createDecisionKnowledgeElement(tempDecString, "Decision", function (data) {
             AJS.flag({
                 type: 'success',
                 close: 'auto',
@@ -100,70 +100,6 @@ function clear(node) {
         clear(node.firstChild);
     }
     node.parentNode.removeChild(node);
-}
-
-function getJSON(url, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url, true);
-    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-    xhr.responseType = "json";
-    xhr.onload = function () {
-        var status = xhr.status;
-        if (status === 200) {
-            callback(null, xhr.response);
-        } else {
-            callback(status);
-        }
-    };
-    xhr.send();
-}
-function postJSON(url, data, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-    xhr.setRequestHeader("Accept", "application/json");
-    xhr.responseType = "json";
-    xhr.onload = function () {
-        var status = xhr.status;
-        if (status === 200) {
-            callback(null, xhr.response);
-        } else {
-            callback(status);
-        }
-    };
-    xhr.send(JSON.stringify(data));
-}
-function putJSON(url, data, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("PUT", url, true);
-    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-    xhr.setRequestHeader("Accept", "application/json");
-    xhr.responseType = "json";
-    xhr.onload = function () {
-        var status = xhr.status;
-        if (status === 200) {
-            callback(null, xhr.response);
-        } else {
-            callback(status);
-        }
-    };
-    xhr.send(JSON.stringify(data));
-}
-function deleteJSON(url, data, callback){
-    var xhr = new XMLHttpRequest();
-    xhr.open("DELETE",url, true);
-    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-    xhr.setRequestHeader("Accept","application/json");
-    xhr.responseType="json";
-    xhr.onload = function () {
-        var status = xhr.status;
-        if(status==200){
-            callback(null, xhr.response);
-        } else {
-            callback(status);
-        }
-    };
-    xhr.send(JSON.stringify(data));
 }
 
 function setContent() {
@@ -255,7 +191,7 @@ function setSubmitFunction(submitButton, type_select, projectKey, id) {
                 if (argumentCheckBoxGroup[i].checked === true) {
                     var selectedNatureOfArgument = argumentCheckBoxGroup[i].value;
                     if (selectedNatureOfArgument === "pro") {
-                        createDecisionComponent(summary, type, function (data) {
+                        createDecisionKnowledgeElement(summary, type, function (data) {
                             AJS.flag({
                                 type: 'success',
                                 close: 'auto',
@@ -268,13 +204,13 @@ function setSubmitFunction(submitButton, type_select, projectKey, id) {
                                     type: 'success',
                                     close: 'auto',
                                     title: 'Success',
-                                    body: 'IssueLink has been created.'
+                                    body: 'Link has been created.'
                                 });
                                 buildTreeViewer(projectKey, idOfNewObject);
                             });
                         });
                     } else if (selectedNatureOfArgument === "contra") {
-                        createDecisionComponent(summary, type, function (data) {
+                        createDecisionKnowledgeElement(summary, type, function (data) {
                             AJS.flag({
                                 type: 'success',
                                 close: 'auto',
@@ -287,13 +223,13 @@ function setSubmitFunction(submitButton, type_select, projectKey, id) {
                                     type: 'success',
                                     close: 'auto',
                                     title: 'Success',
-                                    body: 'IssueLink has been created.'
+                                    body: 'Link has been created.'
                                 });
                                 buildTreeViewer(projectKey, idOfNewObject);
                             });
                         });
                     } else if (selectedNatureOfArgument === "comment") {
-                        createDecisionComponent(summary, type, function (data) {
+                        createDecisionKnowledgeElement(summary, type, function (data) {
                             AJS.flag({
                                 type: 'success',
                                 close: 'auto',
@@ -306,7 +242,7 @@ function setSubmitFunction(submitButton, type_select, projectKey, id) {
                                     type: 'success',
                                     close: 'auto',
                                     title: 'Success',
-                                    body: 'IssueLink has been created.'
+                                    body: 'Link has been created.'
                                 });
                                 buildTreeViewer(projectKey, idOfNewObject);
                             });
@@ -315,7 +251,7 @@ function setSubmitFunction(submitButton, type_select, projectKey, id) {
                 }
             }
         } else {
-            createDecisionComponent(summary, type, function (data) {
+            createDecisionKnowledgeElement(summary, type, function (data) {
                 AJS.flag({
                     type: 'success',
                     close: 'auto',
@@ -328,7 +264,7 @@ function setSubmitFunction(submitButton, type_select, projectKey, id) {
                         type: 'success',
                         close: 'auto',
                         title: 'Success',
-                        body: 'IssueLink has been created.'
+                        body: 'Link has been created.'
                     });
                     buildTreeViewer(projectKey, idOfNewObject);
                 });
