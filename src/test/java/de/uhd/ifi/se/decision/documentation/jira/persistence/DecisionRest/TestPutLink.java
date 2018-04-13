@@ -134,7 +134,7 @@ public class TestPutLink extends TestSetUp {
 	public void testactionTypeCreateKeyNullReqFilledLinkNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink("create", req, null).getEntity());
 	}
-		
+
 	@Test
 	public void testactionTypeCreateKeyFilledReqNullLinkNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null")).build().getEntity(),decRest.putLink("create",null, null).getEntity());
