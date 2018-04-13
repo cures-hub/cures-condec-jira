@@ -104,19 +104,20 @@
 	</rest>
 
 	<!-- Administration -->
-	<web-section key="decdoc-admin-section" name="Web Section for DecDoc Plug-in Administration"
-		location="admin_plugins_menu">
+	<web-section key="decdoc-admin-section"
+		name="Web Section for DecDoc Plug-in Administration" location="admin_plugins_menu">
 		<description>Adds a section to the add-ons menu.</description>
 	</web-section>
-	<web-section key="decdoc-admin-section-label" name="Web Section Label for DecDoc Plug-in Administration"
-		location="decdoc-admin-section">
+	<web-section key="decdoc-admin-section-label"
+		name="Web Section Label for DecDoc Plug-in Administration" location="decdoc-admin-section">
 		<label>Decisions</label>
 		<description>Adds the "Decisions" label to the DecDoc section in the
 			add-ons menu.
 		</description>
 	</web-section>
 	<web-item key="decdoc-admin-menu-item" name="Menu Item for DecDoc Plug-in Administration"
-		section="decdoc-admin-section/decdoc-admin-section-label" weight="10" application="jira">
+		section="decdoc-admin-section/decdoc-admin-section-label" weight="10"
+		application="jira">
 		<description>Adds the "DecDoc" menu item that links to the
 			administration page.
 		</description>

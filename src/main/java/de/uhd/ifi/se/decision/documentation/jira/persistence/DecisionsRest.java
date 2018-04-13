@@ -17,7 +17,7 @@ import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 
 /**
- * @description Rest resource: Enables creation, editing and deletion of
+ * @description REST resource: Enables creation, editing and deletion of
  *              decision knowledge elements and their links
  */
 @Path("/decisions")
@@ -26,7 +26,7 @@ public class DecisionsRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getUnlinkedDecisionComponents(@QueryParam("issueId") long issueId,
-			@QueryParam("projectKey") final String projectKey) {
+			@QueryParam("projectKey") String projectKey) {
 		if (projectKey != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
 			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
@@ -38,10 +38,10 @@ public class DecisionsRest {
 		}
 	}
 
-	@Path("/insertDecisionKnowledgeElement")
+	@Path("/createDecisionKnowledgeElement")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response insertDecisionKnowledgeElement(@Context HttpServletRequest request,
+	public Response createDecisionKnowledgeElement(@Context HttpServletRequest request,
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProjectKey();
@@ -56,7 +56,7 @@ public class DecisionsRest {
 					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Decision knowledge element or actionType = null")).build();
+					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
 		}
 	}
 
@@ -77,78 +77,78 @@ public class DecisionsRest {
 					.entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Decision knowledge element or actionType = null")).build();
+					.entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build();
 		}
 	}
-	
+
 	@DELETE
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response deleteDecisionKnowledgeElement(@Context HttpServletRequest request,	final DecisionKnowledgeElement decisionKnowledgeElement) {
+	public Response deleteDecisionKnowledgeElement(@Context HttpServletRequest request,
+			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement != null && request != null) {
-			final String projectKey = decisionKnowledgeElement.getProjectKey();
+			String projectKey = decisionKnowledgeElement.getProjectKey();
 			StrategyProvider strategyProvider = new StrategyProvider();
 			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
-			boolean successful = strategy.deleteDecisionKnowledgeElement(decisionKnowledgeElement, user);
-			if (successful) {
-				return Response.status(Status.OK).entity(successful).build();
-			} else {
-				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
+			boolean isDeleted = strategy.deleteDecisionKnowledgeElement(decisionKnowledgeElement, user);
+			if (isDeleted) {
+				return Response.status(Status.OK).entity(isDeleted).build();
 			}
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
+
 		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null"))
-					.build();
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
 		}
 	}
 
-    @Path("/createLink")
+	@Path("/createLink")
 	@PUT
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createLink(@QueryParam("projectKey") final String projectKey, @Context HttpServletRequest req, final Link link) {
-		if (projectKey != null && req != null && link != null) {
+	public Response createLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
+			Link link) {
+		if (projectKey != null && request != null && link != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
 			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
-			ApplicationUser user = getCurrentUser(req);
+			ApplicationUser user = getCurrentUser(request);
 			long issueLinkId = strategy.insertLink(link, user);
 			if (issueLinkId == 0) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", "Creation of Link failed.")).build();
-			} else {
-				return Response.status(Status.OK).entity(ImmutableMap.of("id", issueLinkId)).build();
+						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
 			}
+			return Response.status(Status.OK).entity(ImmutableMap.of("id", issueLinkId)).build();
 		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec"))
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Creation of link failed."))
 					.build();
 		}
 	}
 
-
-    @Path("/deleteLink")
+	@Path("/deleteLink")
 	@PUT
-    @Produces({ MediaType.APPLICATION_JSON })
-    public Response deleteLinks(@QueryParam("projectKey") final String projectKey, @Context HttpServletRequest req, final Link link) {
-        if (projectKey != null && req != null && link != null) {
-            StrategyProvider strategyProvider = new StrategyProvider();
-            PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
-            ApplicationUser user = getCurrentUser(req);
-            boolean issueLinkId = strategy.deleteLink(link,user);
-            if (!issueLinkId) {
-                return Response.status(Status.INTERNAL_SERVER_ERROR)
-                        .entity(ImmutableMap.of("error", "deletion of Link failed.")).build();
-            } else {
-                return Response.status(Status.OK).entity(ImmutableMap.of("id", issueLinkId)).build();
-            }
-        } else {
-            return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec"))
-                    .build();
-        }
-    }
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response deleteLinks(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
+			Link link) {
+		if (projectKey != null && request != null && link != null) {
+			StrategyProvider strategyProvider = new StrategyProvider();
+			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+			ApplicationUser user = getCurrentUser(request);
+			boolean isDeleted = strategy.deleteLink(link, user);
+			if (isDeleted) {
+				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
+			}
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
+		} else {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
+					.build();
+		}
+	}
 
-    private ApplicationUser getCurrentUser(HttpServletRequest req) {
-        com.atlassian.jira.user.util.UserManager jiraUserManager = ComponentAccessor.getUserManager();
-        UserManager userManager = ComponentGetter.getUserManager();
-        String userName = userManager.getRemoteUsername(req);
-        return jiraUserManager.getUserByName(userName);
+	private ApplicationUser getCurrentUser(HttpServletRequest request) {
+		com.atlassian.jira.user.util.UserManager jiraUserManager = ComponentAccessor.getUserManager();
+		UserManager userManager = ComponentGetter.getUserManager();
+		String userName = userManager.getRemoteUsername(request);
+		return jiraUserManager.getUserByName(userName);
 	}
 }

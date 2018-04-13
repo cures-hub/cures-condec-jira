@@ -9,7 +9,7 @@ function createDecisionComponent(summary, type, callback) {
             "type": type,
             "description": summary
         };
-        postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/insertDecisionKnowledgeElement.json", jsondata, function (err, data) {
+        postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createDecisionKnowledgeElement.json", jsondata, function (err, data) {
             if (err !== null) {
                 AJS.flag({
                     type: 'error',
