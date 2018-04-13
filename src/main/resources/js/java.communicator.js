@@ -58,7 +58,7 @@ function deleteDecisionComponent(issueId, callback) {
         "id": issueId,
         "projectKey": projectKey
     };
-    deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?actionType=delete", jsondata, function (err, data) {
+    deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json", jsondata, function (err, data) {
         if (err !== null) {
             AJS.flag({
                 type: 'error',
@@ -81,7 +81,7 @@ function createLink(parentId, childId, linkType, callback) {
         "ingoingId": childId,
         "outgoingId": parentId
     };
-    putJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?projectKey=" + projectKey + "&actionType=create", jsondata, function (err, data) {
+    putJSON(AJS.contextPath() + "/rest/decisions/latest/decisions.json?projectKey=" + projectKey, jsondata, function (err, data) {
         if (err !== null) {
             AJS.flag({
                 type: 'error',
