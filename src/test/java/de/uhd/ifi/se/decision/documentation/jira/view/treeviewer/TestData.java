@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,7 +16,7 @@ public class TestData {
 	private String id;
 	private String text;
 	private List<Data> children;
-	private NodeInfo nodeInfo;
+	private DecisionKnowledgeElement nodeInfo;
 	
 	private Data data;
 	
@@ -25,7 +26,7 @@ public class TestData {
 		id = "Test";
 		text= "Test";
 		children= new ArrayList<>();
-		nodeInfo = new NodeInfo();
+		nodeInfo = new DecisionKnowledgeElement();
 		data = new Data();
 		data.setChildren(children);
 		data.setId(id);
@@ -74,7 +75,7 @@ public class TestData {
 	
 	@Test
 	public void testSetNodeInfo() {
-		NodeInfo newInfo = new NodeInfo();
+		DecisionKnowledgeElement newInfo = new DecisionKnowledgeElement();
 		data.setNodeInfo(newInfo);
 		assertEquals(newInfo, data.getNode());
 	}
