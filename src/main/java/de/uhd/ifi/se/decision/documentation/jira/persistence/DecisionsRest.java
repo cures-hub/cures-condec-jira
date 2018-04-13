@@ -81,6 +81,7 @@ public class DecisionsRest {
 		}
 	}
 
+	@Path("/deleteDecisionKnowledgeElement")
 	@DELETE
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response deleteDecisionKnowledgeElement(@Context HttpServletRequest request,
@@ -112,12 +113,12 @@ public class DecisionsRest {
 			StrategyProvider strategyProvider = new StrategyProvider();
 			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
-			long issueLinkId = strategy.insertLink(link, user);
-			if (issueLinkId == 0) {
+			long linkId = strategy.insertLink(link, user);
+			if (linkId == 0) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
 			}
-			return Response.status(Status.OK).entity(ImmutableMap.of("id", issueLinkId)).build();
+			return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Creation of link failed."))
 					.build();
@@ -125,7 +126,7 @@ public class DecisionsRest {
 	}
 
 	@Path("/deleteLink")
-	@PUT
+	@DELETE
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response deleteLinks(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {

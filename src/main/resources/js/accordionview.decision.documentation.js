@@ -8,12 +8,12 @@ function addOptionToDecisionComponent(type, parentNode) {
     if (type === "Solution") {
         if (document.getElementById(type).innerHTML === "") {
             document.getElementById(type).insertAdjacentHTML('beforeend', '<p>Do you want to add an additional ' + type + '? <input type="text" id="inputField' + type + '" placeholder="Name of ' + type + '"><input type="button" name="CreateAndLinkDecisionComponent' + type + '" id="CreateAndLinkDecisionComponent' + type + '" value="Add ' + type + '"/></p>');
-            var createDecisionComponentButton = document.getElementById("CreateAndLinkDecisionComponent" + type);
+            var createDecisionKnowledgeElementButton = document.getElementById("CreateAndLinkDecisionComponent" + type);
             var inputField = document.getElementById("inputField" + type);
-            createDecisionComponentButton.addEventListener('click', function () {
+            createDecisionKnowledgeElementButton.addEventListener('click', function () {
                 var tempString = inputField.value;
                 inputField.value = "";
-                createDecisionComponent(tempString, type, function (data) {
+                createDecisionKnowledgeElement(tempString, type, function (data) {
                     AJS.flag({
                         type: 'success',
                         close: 'auto',
@@ -37,9 +37,9 @@ function addOptionToDecisionComponent(type, parentNode) {
         }
     } else if (type === "Argument") {
         document.getElementById(type).insertAdjacentHTML('beforeend', '<p>Do you want to add an additional ' + type + '? <input type="radio" name="natureOfArgument" value="pro" checked="checked">Pro<input type="radio" name="natureOfArgument" value="contra">Contra<input type="radio" name="natureOfArgument" value="comment">Comment<input type="text" id="inputField' + type + '" placeholder="Name of ' + type + '"><input type="button" name="CreateAndLinkDecisionComponent' + type + '" id="CreateAndLinkDecisionComponent' + type + '" value="Add ' + type + '"/></p>');
-        var createDecisionComponentButton = document.getElementById("CreateAndLinkDecisionComponent" + type);
+        var createDecisionKnowledgeElementButton = document.getElementById("CreateAndLinkDecisionComponent" + type);
         var inputField = document.getElementById("inputField" + type);
-        createDecisionComponentButton.addEventListener('click', function () {
+        createDecisionKnowledgeElementButton.addEventListener('click', function () {
             var tempString = inputField.value;
             inputField.value = "";
             var argumentCheckBoxGroup = document.getElementsByName("natureOfArgument");
@@ -47,7 +47,7 @@ function addOptionToDecisionComponent(type, parentNode) {
                 if (argumentCheckBoxGroup[i].checked === true) {
                     var selectedNatureOfArgument = argumentCheckBoxGroup[i].value;
                     if (selectedNatureOfArgument === "pro") {
-                        createDecisionComponent(tempString, type, function (data) {
+                        createDecisionKnowledgeElement(tempString, type, function (data) {
                             AJS.flag({
                                 type: 'success',
                                 close: 'auto',
@@ -68,7 +68,7 @@ function addOptionToDecisionComponent(type, parentNode) {
                             tree.select_node(nodeId);
                         });
                     } else if (selectedNatureOfArgument === "contra") {
-                        createDecisionComponent(tempString, type, function (data) {
+                        createDecisionKnowledgeElement(tempString, type, function (data) {
                             AJS.flag({
                                 type: 'success',
                                 close: 'auto',
@@ -89,7 +89,7 @@ function addOptionToDecisionComponent(type, parentNode) {
                             tree.select_node(nodeId);
                         });
                     } else if (selectedNatureOfArgument === "comment") {
-                        createDecisionComponent(tempString, type, function (data) {
+                        createDecisionKnowledgeElement(tempString, type, function (data) {
                             AJS.flag({
                                 type: 'success',
                                 close: 'auto',
@@ -115,12 +115,12 @@ function addOptionToDecisionComponent(type, parentNode) {
         });
     } else {
         document.getElementById(type).insertAdjacentHTML('beforeend', '<p>Do you want to add an additional ' + type + '?<input type="text" id="inputField' + type + '" placeholder="Name of ' + type + '"><input type="button" name="CreateAndLinkDecisionComponent' + type + '" id="CreateAndLinkDecisionComponent' + type + '" value="Add ' + type + '"/></p>');
-        var createDecisionComponentButton = document.getElementById("CreateAndLinkDecisionComponent" + type);
-        createDecisionComponentButton.addEventListener('click', function () {
+        var createDecisionKnowledgeElementButton = document.getElementById("CreateAndLinkDecisionComponent" + type);
+        createDecisionKnowledgeElementButton.addEventListener('click', function () {
             var inputField = document.getElementById("inputField" + type);
             var tempString = inputField.value;
             inputField.value = "";
-            createDecisionComponent(tempString, type, function (data) {
+            createDecisionKnowledgeElement(tempString, type, function (data) {
                 AJS.flag({
                     type: 'success',
                     close: 'auto',
