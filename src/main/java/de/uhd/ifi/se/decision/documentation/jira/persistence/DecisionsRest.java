@@ -83,24 +83,18 @@ public class DecisionsRest {
 
 	@DELETE
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response deleteDecisionKnowledgeElement(@QueryParam("actionType") String actionType, @Context HttpServletRequest request,
-			final DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (actionType != null && decisionKnowledgeElement != null && request != null) {
+	public Response deleteDecisionKnowledgeElement(@Context HttpServletRequest request,	final DecisionKnowledgeElement decisionKnowledgeElement) {
+		if (decisionKnowledgeElement != null && request != null) {
 			final String projectKey = decisionKnowledgeElement.getProjectKey();
 			StrategyProvider strategyProvider = new StrategyProvider();
 			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
-			if (actionType.equalsIgnoreCase("delete")) {
-				boolean successful = strategy.deleteDecisionKnowledgeElement(decisionKnowledgeElement, user);
-				if (successful) {
-					return Response.status(Status.OK).entity(successful).build();
-				} else {
-					return Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
-				}
+			boolean successful = strategy.deleteDecisionKnowledgeElement(decisionKnowledgeElement, user);
+			if (successful) {
+				return Response.status(Status.OK).entity(successful).build();
 			} else {
-				return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Unknown actionType."))
-						.build();
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
 			}
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null"))
@@ -110,24 +104,17 @@ public class DecisionsRest {
 
 	@PUT
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response putLink(@QueryParam("actionType") String actionType,
-			@QueryParam("projectKey") final String projectKey, @Context HttpServletRequest req, final Link link) {
-		if (actionType != null && projectKey != null && req != null && link != null) {
+	public Response putLink(@QueryParam("projectKey") final String projectKey, @Context HttpServletRequest req, final Link link) {
+		if (projectKey != null && req != null && link != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
 			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(req);
-			if (actionType.equalsIgnoreCase("create")) {
-				long issueLinkId = strategy.insertLink(link, user);
-				if (issueLinkId == 0) {
-					return Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity(ImmutableMap.of("error", "Creation of Link failed.")).build();
-				} else {
-					return Response.status(Status.OK).entity(ImmutableMap.of("id", issueLinkId)).build();
-				}
+			long issueLinkId = strategy.insertLink(link, user);
+			if (issueLinkId == 0) {
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(ImmutableMap.of("error", "Creation of Link failed.")).build();
 			} else {
-				return Response.status(Status.BAD_REQUEST)
-						.entity(ImmutableMap.of("error", "Unknown actionType. Pick either 'create' or 'delete'"))
-						.build();
+				return Response.status(Status.OK).entity(ImmutableMap.of("id", issueLinkId)).build();
 			}
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null"))
