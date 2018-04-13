@@ -7,6 +7,9 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 
+/**
+ * @description Provides the right Strategy for every Project
+ */
 public class StrategyProvider {
 
 	public PersistenceStrategy getStrategy(final String projectKey) {

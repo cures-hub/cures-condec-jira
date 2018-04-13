@@ -8,8 +8,6 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.documentation.jira.config.Config;
 
 /**
- * 
- * @author Tim Kuchenbuch
  * @description Test Class for Simple Geter and Setter Tests
  *
  */

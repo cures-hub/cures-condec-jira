@@ -15,9 +15,6 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-/**
- * @author Tim Kuchenbuch
- */
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestCreateDecisionComponentTest extends ActiveObjectStrategyTestSetUp {
 

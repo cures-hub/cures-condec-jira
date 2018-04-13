@@ -24,9 +24,6 @@ import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-/**
- * @author Tim Kuchenbuch
- */
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestConfigRest extends TestSetUp {
 	private EntityManager entityManager;

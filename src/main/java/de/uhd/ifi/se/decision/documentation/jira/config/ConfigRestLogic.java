@@ -14,7 +14,6 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 
 /**
- * @author Ewald Rode
  * @description Getter and Setter for ConfigRestResource
  */
 public class ConfigRestLogic {

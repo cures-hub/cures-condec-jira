@@ -7,7 +7,6 @@ import javax.xml.bind.annotation.XmlElement;
 import com.google.common.collect.ImmutableMap;
 
 /**
- * @author Ewald Rode
  * @description Model class for Treant configuration
  */
 public class Chart {

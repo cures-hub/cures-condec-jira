@@ -1,8 +1,6 @@
 package de.uhd.ifi.se.decision.documentation.jira.config;
 
 /**
- * 
- * @author Ewald Rode
  * @description model class for plugin configuration
  */
 public class Config {

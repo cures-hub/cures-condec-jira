@@ -7,7 +7,6 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * @author Ewald Rode
  * @description Model class for Tree Viewer nodes
  */
 public class Data {
