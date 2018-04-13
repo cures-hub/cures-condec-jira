@@ -102,9 +102,10 @@ public class DecisionsRest {
 		}
 	}
 
+    @Path("/createLink")
 	@PUT
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response putLink(@QueryParam("projectKey") final String projectKey, @Context HttpServletRequest req, final Link link) {
+	public Response createLink(@QueryParam("projectKey") final String projectKey, @Context HttpServletRequest req, final Link link) {
 		if (projectKey != null && req != null && link != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
 			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
@@ -117,15 +118,37 @@ public class DecisionsRest {
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", issueLinkId)).build();
 			}
 		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec or actionType = null"))
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec"))
 					.build();
 		}
 	}
 
-	private ApplicationUser getCurrentUser(HttpServletRequest req) {
-		com.atlassian.jira.user.util.UserManager jiraUserManager = ComponentAccessor.getUserManager();
-		UserManager userManager = ComponentGetter.getUserManager();
-		String userName = userManager.getRemoteUsername(req);
-		return jiraUserManager.getUserByName(userName);
+
+    @Path("/deleteLink")
+	@PUT
+    @Produces({ MediaType.APPLICATION_JSON })
+    public Response deleteLinks(@QueryParam("projectKey") final String projectKey, @Context HttpServletRequest req, final Link link) {
+        if (projectKey != null && req != null && link != null) {
+            StrategyProvider strategyProvider = new StrategyProvider();
+            PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+            ApplicationUser user = getCurrentUser(req);
+            boolean issueLinkId = strategy.deleteLink(link,user);
+            if (!issueLinkId) {
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity(ImmutableMap.of("error", "deletion of Link failed.")).build();
+            } else {
+                return Response.status(Status.OK).entity(ImmutableMap.of("id", issueLinkId)).build();
+            }
+        } else {
+            return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "dec"))
+                    .build();
+        }
+    }
+
+    private ApplicationUser getCurrentUser(HttpServletRequest req) {
+        com.atlassian.jira.user.util.UserManager jiraUserManager = ComponentAccessor.getUserManager();
+        UserManager userManager = ComponentGetter.getUserManager();
+        String userName = userManager.getRemoteUsername(req);
+        return jiraUserManager.getUserByName(userName);
 	}
 }

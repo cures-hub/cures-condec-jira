@@ -74,7 +74,7 @@ public abstract class PersistenceStrategy {
 
 	public abstract long insertLink(Link link, ApplicationUser user);
 
-	public abstract void deleteLink(Link link, ApplicationUser user);
+	public abstract boolean deleteLink(Link link, ApplicationUser user);
 
 	public abstract List<Link> getInwardLinks(DecisionKnowledgeElement element);
 
