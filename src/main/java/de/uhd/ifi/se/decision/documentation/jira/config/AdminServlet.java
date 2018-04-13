@@ -28,7 +28,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 /**
- * @author Ewald Rode
  * @description renders the administration servlet, used to change plugin configurations
  */
 @Scanned

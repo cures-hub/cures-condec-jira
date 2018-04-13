@@ -12,9 +12,7 @@ import net.java.ao.EntityManager;
 
 import org.junit.Before;
 
-/**
- * @author Tim Kuchenbuch
- */
+
 public class ActiveObjectStrategyTestSetUp extends TestSetUp{
 
     protected EntityManager entityManager;

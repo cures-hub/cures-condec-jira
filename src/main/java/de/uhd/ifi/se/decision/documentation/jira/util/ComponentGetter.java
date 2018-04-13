@@ -17,8 +17,6 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import static com.google.common.base.Preconditions.*;
 
 /**
- * 
- * @author Ewald Rode
  * @description Provides access to JIRA
  *              components. Automatically initialized. 
  */

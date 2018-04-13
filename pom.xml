@@ -16,6 +16,9 @@
 		<developer>
 			<name>Ewald Rode</name>
 		</developer>
+		<developer>
+			<name>Tim Kuchenbuch</name>
+		</developer>
 	</developers>
 	<packaging>atlassian-plugin</packaging>
 	<dependencies>

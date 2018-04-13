@@ -19,8 +19,6 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import javax.ws.rs.core.Response.Status;
 
 /**
- *
- * @author Tim Kuchenbuch
  * @description Testing the functionality of the ConfigRestLogic Class
  */
 @RunWith(ActiveObjectsJUnitRunner.class)

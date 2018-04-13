@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.documentation.jira.view.treants;
 import javax.xml.bind.annotation.*;
 
 /**
- * @author Ewald Rode
  * @description Model class for Treant
  */
 @XmlRootElement(name = "treant")

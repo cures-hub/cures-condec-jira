@@ -15,7 +15,6 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 
 /**
- * @author Ewald Rode
  * @description Constraint for web-item. Calculates whether web-item should be displayed depending on the project specific context
  */
 public class IsActivated implements Condition {

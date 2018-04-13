@@ -1,8 +1,5 @@
 package de.uhd.ifi.se.decision.documentation.jira.config;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.link.IssueLinkType;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,7 +15,6 @@ import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.project.ProjectManager;
 
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
-import de.uhd.ifi.se.decision.documentation.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkTypeManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManager;
