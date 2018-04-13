@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.documentation.jira.mocks;
 
 import java.sql.Timestamp;
 
+import com.atlassian.jira.component.ComponentAccessor;
 import org.ofbiz.core.entity.GenericValue;
 
 import com.atlassian.jira.issue.Issue;
@@ -56,6 +57,9 @@ public class MockIssueLink implements IssueLink{
 
 	@Override
 	public Issue getDestinationObject() {
+		if(id==1){
+			return ComponentAccessor.getIssueManager().getIssueObject(((long)13));
+		}
 		IssueType issueType = new MockIssueType(12, "Argument");
 		Issue issue = new MockIssue(200, "TEST-200");
 		((MockIssue) issue).setIssueType(issueType);
@@ -71,8 +75,8 @@ public class MockIssueLink implements IssueLink{
 
 	@Override
 	public IssueLinkType getIssueLinkType() {
-		// TODO Auto-generated method stub
-		return null;
+		IssueLinkType issueLinkType = new MockIssueLinkType((long)123);
+		return issueLinkType;
 	}
 
 	@Override
@@ -98,6 +102,9 @@ public class MockIssueLink implements IssueLink{
 
 	@Override
 	public Issue getSourceObject() {
+		if(id==1){
+			return ComponentAccessor.getIssueManager().getIssueObject(((long)12));
+		}
 		IssueType issueType = new MockIssueType(12, "Argument");
 		Issue issue = new MockIssue(300, "TEST-300");
 		((MockIssue) issue).setIssueType(issueType);

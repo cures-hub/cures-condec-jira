@@ -51,7 +51,7 @@ public class MockIssueLinkTypeManager implements IssueLinkTypeManager{
 		}
 		Collection<IssueLinkType> isseLTypes = new HashSet<>();
 		ArrayList<String> types= new ArrayList<>();
-		
+
 		types.add("contain");
 		types.add("attack");
 		types.add("support");
@@ -62,7 +62,6 @@ public class MockIssueLinkTypeManager implements IssueLinkTypeManager{
 			isseLTypes.add(lt);
 		}
 		return isseLTypes;
-		
 	}
 
 	@Override

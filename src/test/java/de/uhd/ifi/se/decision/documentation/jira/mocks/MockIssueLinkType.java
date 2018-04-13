@@ -63,6 +63,7 @@ public class MockIssueLinkType implements IssueLinkType{
 
 	@Override
 	public String getName() {
+		name = "Test";
 		return name;
 	}
 	

@@ -74,7 +74,7 @@ public class TreantRest {
 				.build();
 	}
 
-	// TODO
+	//TODO Changing the Comparison
 	private String checkDecisionType(String type) {
 		if (type.equals("constraint") || type.equals("assumption") || type.equals("implication")
 				|| type.equals("context")) {
