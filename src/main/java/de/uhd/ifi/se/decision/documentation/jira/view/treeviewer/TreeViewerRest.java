@@ -77,13 +77,7 @@ public class TreeViewerRest {
 
 		data.setText(decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getSummary());
 		data.setId(String.valueOf(decisionKnowledgeElement.getId()));
-		//Old Implementation
-		// NodeInfo nodeInfo = new NodeInfo();
-		// nodeInfo.setId(Long.toString(decisionKnowledgeElement.getId()));
-		// nodeInfo.setKey(decisionKnowledgeElement.getKey());
-		// nodeInfo.setType(decisionKnowledgeElement.getType().toString().toLowerCase());
-		// nodeInfo.setDescription(decisionKnowledgeElement.getDescription());
-		// nodeInfo.setSummary(decisionKnowledgeElement.getSummary());
+
 
 		data.setNodeInfo(decisionKnowledgeElement);
 
