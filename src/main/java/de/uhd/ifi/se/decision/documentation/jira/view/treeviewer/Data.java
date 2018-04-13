@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.documentation.jira.view.treeviewer;
 
+import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
+
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -19,7 +21,7 @@ public class Data {
     private List<Data> children;
 	
 	@XmlElement(name="data")
-	private NodeInfo nodeInfo;
+	private DecisionKnowledgeElement nodeInfo;
 
 	public Data(){}
 
@@ -47,11 +49,11 @@ public class Data {
 		this.children = children;
 	}
 
-	public NodeInfo getNode() {
+	public DecisionKnowledgeElement getNode() {
 		return nodeInfo;
 	}
 
-	public void setNodeInfo(NodeInfo nodeInfo) {
+	public void setNodeInfo(DecisionKnowledgeElement nodeInfo) {
 		this.nodeInfo = nodeInfo;
 	}
 }

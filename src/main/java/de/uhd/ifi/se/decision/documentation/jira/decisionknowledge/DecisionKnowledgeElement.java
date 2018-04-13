@@ -12,11 +12,21 @@ import com.atlassian.jira.issue.Issue;
 public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	@XmlElement
 	private long id;
-	private String summary; // name of element
-	private String description;
-	private KnowledgeType type;
-	private String projectKey;
+
+	@XmlElement
 	private String key;
+
+	@XmlElement
+	private KnowledgeType type;
+
+	@XmlElement
+	private String description;
+
+	@XmlElement
+	private String summary;
+
+	private String projectKey;
+
 
 	public DecisionKnowledgeElement() {
 
