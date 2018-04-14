@@ -115,18 +115,8 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		return this.type.toString().substring(0, 1).toUpperCase() + this.type.toString().substring(1) + " / "
 				+ this.summary;
 	}
-
-	//TODO Testing
-	// Returns a String of the Master Class of the Knowledge Type
-	public String checkDecisionType() {
-		if(type.equals(KnowledgeType.CONSTRAINT)|| type.equals(KnowledgeType.ASSUMPTION)|| type.equals(KnowledgeType.IMPLICATION)){
-			return "context";
-		} else if (type.equals(KnowledgeType.PROBLEM) || type.equals(KnowledgeType.ISSUE) || type.equals(KnowledgeType.GOAL)) {
-			return "problem";
-		} else if (type.equals(KnowledgeType.SOLUTION) || type.equals(KnowledgeType.CLAIM) || type.equals(KnowledgeType.ALTERNATIVE)) {
-			return "solution";
-		} else {
-			return "rationale";
-		}
+	
+	public KnowledgeType getSuperType() {
+		return KnowledgeType.getSuperType(this.type);
 	}
 }

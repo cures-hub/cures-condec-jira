@@ -62,9 +62,8 @@ public class TreantRest {
 				if (depthOfTree != null) {
 					try {
 						depth = Integer.parseInt(depthOfTree);
-					} catch (NumberFormatException e) {
-						// default value
-						depth = 4;
+					} catch (NumberFormatException e) {						
+						depth = 4; // default value
 					}
 				} else {
 					depth = 4;
@@ -81,7 +80,6 @@ public class TreantRest {
 				.build();
 	}
 
-
 	private Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, int depth) {
 		Node node = setUpNode(decisionKnowledgeElement);
 		List<Node> nodes = new ArrayList<Node>();
@@ -96,7 +94,7 @@ public class TreantRest {
 		}
 		node.setChildren(nodes);
 		return node;
-	}	
+	}
 
 	private Node createNode(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
 		Node node = setUpNode(decisionKnowledgeElement);
@@ -113,16 +111,16 @@ public class TreantRest {
 		return node;
 	}
 
-	private Node  setUpNode(DecisionKnowledgeElement decisionKnowledgeElement){
+	private Node setUpNode(DecisionKnowledgeElement decisionKnowledgeElement) {
 		Node node = new Node();
 		Map<String, String> nodeContent = ImmutableMap.of("name",
 				decisionKnowledgeElement.getType().toString().toLowerCase(), "title",
 				decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 		node.setNodeContent(nodeContent);
 
-		String htmlClass =decisionKnowledgeElement.checkDecisionType();
+		String htmlClass = decisionKnowledgeElement.getSuperType().toString().toLowerCase();
 		node.setHtmlClass(htmlClass);
 		node.setHtmlId(decisionKnowledgeElement.getId());
-		return  node;
+		return node;
 	}
 }
