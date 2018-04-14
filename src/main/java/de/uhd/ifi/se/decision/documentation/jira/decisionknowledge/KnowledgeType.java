@@ -41,4 +41,29 @@ public enum KnowledgeType {
 		}
 		return KnowledgeType.OTHER;
 	}
+
+	public static KnowledgeType getSuperType(KnowledgeType type) {
+		switch (type) {
+		case ISSUE:
+			return KnowledgeType.PROBLEM;
+		case GOAL:
+			return KnowledgeType.PROBLEM;
+		case ALTERNATIVE:
+			return KnowledgeType.SOLUTION;
+		case CLAIM:
+			return KnowledgeType.SOLUTION;
+		case CONSTRAINT:
+			return KnowledgeType.CONTEXT;
+		case ASSUMPTION:
+			return KnowledgeType.CONTEXT;
+		case IMPLICATION:
+			return KnowledgeType.CONTEXT;
+		case ARGUMENT:
+			return KnowledgeType.RATIONALE;
+		case ASSESSMENT:
+			return KnowledgeType.RATIONALE;
+		default:
+			return type;
+		}
+	}
 }
