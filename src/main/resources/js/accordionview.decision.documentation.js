@@ -13,20 +13,8 @@ function addOptionToDecisionComponent(type, parentNode) {
             createDecisionKnowledgeElementButton.addEventListener('click', function () {
                 var tempString = inputField.value;
                 inputField.value = "";
-                createDecisionKnowledgeElement(tempString, type, function (data) {
-                    AJS.flag({
-                        type: 'success',
-                        close: 'auto',
-                        title: 'Success',
-                        body: type + ' has been created.'
-                    });
-                    createLink(parentNode.id, data.id, "contain", function () {
-                        AJS.flag({
-                            type: 'success',
-                            close: 'auto',
-                            title: 'Success',
-                            body: 'IssueLink has been created.'
-                        });
+                createDecisionKnowledgeElement(tempString, type, function (newId) {
+                    createLink(parentNode.id, newId, "contain", function () {
                     });
                     var tree = $('#evts').jstree(true);
                     var nodeId = tree.create_node('' + parentNode.id, data, 'last', tree.redraw(true), true);
@@ -47,20 +35,8 @@ function addOptionToDecisionComponent(type, parentNode) {
                 if (argumentCheckBoxGroup[i].checked === true) {
                     var selectedNatureOfArgument = argumentCheckBoxGroup[i].value;
                     if (selectedNatureOfArgument === "pro") {
-                        createDecisionKnowledgeElement(tempString, type, function (data) {
-                            AJS.flag({
-                                type: 'success',
-                                close: 'auto',
-                                title: 'Success',
-                                body: type + ' has been created.'
-                            });
-                            createLink(parentNode.id, data.id, "support", function () {
-                                AJS.flag({
-                                    type: 'success',
-                                    close: 'auto',
-                                    title: 'Success',
-                                    body: 'IssueLink has been created.'
-                                });
+                        createDecisionKnowledgeElement(tempString, type, function (newId) {
+                            createLink(parentNode.id, newId, "support", function () {
                             });
                             var tree = $('#evts').jstree(true);
                             var nodeId = tree.create_node('' + parentNode.id, data, 'last', tree.redraw(true), true);
@@ -68,20 +44,8 @@ function addOptionToDecisionComponent(type, parentNode) {
                             tree.select_node(nodeId);
                         });
                     } else if (selectedNatureOfArgument === "contra") {
-                        createDecisionKnowledgeElement(tempString, type, function (data) {
-                            AJS.flag({
-                                type: 'success',
-                                close: 'auto',
-                                title: 'Success',
-                                body: type + ' has been created.'
-                            });
-                            createLink(parentNode.id, data.id, "attack", function () {
-                                AJS.flag({
-                                    type: 'success',
-                                    close: 'auto',
-                                    title: 'Success',
-                                    body: 'IssueLink has been created.'
-                                });
+                        createDecisionKnowledgeElement(tempString, type, function (newId) {
+                            createLink(parentNode.id, newId, "attack", function () {
                             });
                             var tree = $('#evts').jstree(true);
                             var nodeId = tree.create_node('' + parentNode.id, data, 'last', tree.redraw(true), true);
@@ -89,20 +53,8 @@ function addOptionToDecisionComponent(type, parentNode) {
                             tree.select_node(nodeId);
                         });
                     } else if (selectedNatureOfArgument === "comment") {
-                        createDecisionKnowledgeElement(tempString, type, function (data) {
-                            AJS.flag({
-                                type: 'success',
-                                close: 'auto',
-                                title: 'Success',
-                                body: type + ' has been created.'
-                            });
-                            createLink(parentNode.id, data.id, "comment", function () {
-                                AJS.flag({
-                                    type: 'success',
-                                    close: 'auto',
-                                    title: 'Success',
-                                    body: 'IssueLink has been created.'
-                                });
+                        createDecisionKnowledgeElement(tempString, type, function (newId) {
+                            createLink(parentNode.id, newId, "comment", function () {
                             });
                             var tree = $('#evts').jstree(true);
                             var nodeId = tree.create_node('' + parentNode.id, data, 'last', tree.redraw(true), true);
@@ -120,22 +72,10 @@ function addOptionToDecisionComponent(type, parentNode) {
             var inputField = document.getElementById("inputField" + type);
             var tempString = inputField.value;
             inputField.value = "";
-            createDecisionKnowledgeElement(tempString, type, function (data) {
-                AJS.flag({
-                    type: 'success',
-                    close: 'auto',
-                    title: 'Success',
-                    body: type + ' has been created.'
-                });
+            createDecisionKnowledgeElement(tempString, type, function (newId) {
                 console.log(parentNode);
-                console.log(data);
-                createLink(parentNode.id, data.id, "contain", function () {
-                    AJS.flag({
-                        type: 'success',
-                        close: 'auto',
-                        title: 'Success',
-                        body: 'IssueLink has been created.'
-                    });
+                console.log(newId);
+                createLink(parentNode.id, newId, "contain", function () {
                 });
                 var tree = $('#evts').jstree(true);
                 var nodeId = tree.create_node('' + parentNode.id, data, 'last', tree.redraw(true), true);
