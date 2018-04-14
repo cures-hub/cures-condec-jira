@@ -59,13 +59,7 @@ function createContextMenuForTreeNodes(projectKey) {
                         submitButton.onclick = function () {
                             var summary = document.getElementById('form-input-name').value;
                             var description = document.getElementById('form-input-description').value;
-                            editDecisionComponent(context.id, summary, description, function () {
-                                AJS.flag({
-                                    type: 'success',
-                                    close: 'auto',
-                                    title: 'Success',
-                                    body: 'Decision component has been updated.'
-                                });
+                            editDecisionKnowledgeElement(context.id, summary, description, function () {
                                 var nodeId = $.jstree.reference('#evts').get_selected()[0];
                                 buildTreeViewer(projectKey, nodeId);
                             });
@@ -96,13 +90,7 @@ function createContextMenuForTreeNodes(projectKey) {
                         };
                         var submitButton = document.getElementById('form-input-submit');
                         submitButton.onclick = function () {
-                            deleteDecisionComponent(context.id, function () {
-                                AJS.flag({
-                                    type: 'success',
-                                    close: 'auto',
-                                    title: 'Success',
-                                    body: 'Decisioncomponent has been deleted'
-                                });
+                            deleteDecisionKnowledgeElement(context.id, function () {
                                 var nodeId = $.jstree.reference('#evts').get_selected()[0];
                                 buildTreeViewer(projectKey, nodeId);
                             });

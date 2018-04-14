@@ -25,17 +25,18 @@ function buildTreeViewer(projectKey, nodeId) {
 									if (tree) {
 										tree.select_node("" + nodeId)
 										console.log("select_node");
-										//no need in any scenario
+										// no need in any scenario
 									} else {
 										console.log("set_back");
-										//setBack("No Element has been selected");
+										// setBack("No Element has been
+										// selected");
 									}
 								}
 							})
 							.jstree(
 									{
 										'core' : data,
-										//TODO: add drag n drop
+										// TODO: add drag n drop
 										'plugins' : [ 'contextmenu',
 												'wholerow', 'sort', 'search',
 												'' ],
@@ -54,10 +55,12 @@ function buildTreeViewer(projectKey, nodeId) {
 																.get_node(
 																		selector).data;
 
-														//set header
+														// set header
 														var closeX = document
 																.getElementById('modal-close-x');
-														//closeX.insertAdjacentHTML('beforeBegin', 'Add Decision Component');
+														// closeX.insertAdjacentHTML('beforeBegin',
+														// 'Add Decision
+														// Component');
 
 														var type_select = setContent();
 
@@ -96,10 +99,12 @@ function buildTreeViewer(projectKey, nodeId) {
 																.get_node(
 																		selector).data;
 
-														//set header
+														// set header
 														var closeX = document
 																.getElementById('modal-close-x');
-														//closeX.insertAdjacentHTML('beforeBegin', 'Edit Decision Component');
+														// closeX.insertAdjacentHTML('beforeBegin',
+														// 'Edit Decision
+														// Component');
 
 														var content = document
 																.getElementById('modal-content');
@@ -119,18 +124,11 @@ function buildTreeViewer(projectKey, nodeId) {
 																	.getElementById('form-input-name').value;
 															var description = document
 																	.getElementById('form-input-description').value;
-															editDecisionComponent(
+															editDecisionKnowledgeElement(
 																	tree_node.id,
 																	summary,
 																	description,
 																	function() {
-																		AJS
-																				.flag({
-																					type : 'success',
-																					close : 'auto',
-																					title : 'Success',
-																					body : 'Decision component has been updated.'
-																				});
 																		buildTreeViewer(
 																				projectKey,
 																				tree_node.id);
@@ -154,7 +152,7 @@ function buildTreeViewer(projectKey, nodeId) {
 																.get_node(
 																		selector).data;
 
-														//set header
+														// set header
 														var closeX = document
 																.getElementById('modal-close-x');
 														closeX
@@ -178,16 +176,9 @@ function buildTreeViewer(projectKey, nodeId) {
 														var submitButton = document
 																.getElementById('form-input-submit');
 														submitButton.onclick = function() {
-															deleteDecisionComponent(
+															deleteDecisionKnowledgeElement(
 																	tree_node.id,
 																	function() {
-																		AJS
-																				.flag({
-																					type : 'success',
-																					close : 'auto',
-																					title : 'Success',
-																					body : 'Decisioncomponent has been deleted'
-																				});
 																		buildTreeViewer(
 																				projectKey,
 																				tree_node.id);
