@@ -116,6 +116,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 				+ this.summary;
 	}
 
+	//TODO Testing
 	// Returns a String of the Master Class of the Knowledge Type
 	public String checkDecisionType() {
 		if(type.equals(KnowledgeType.CONSTRAINT)|| type.equals(KnowledgeType.ASSUMPTION)|| type.equals(KnowledgeType.IMPLICATION)){
