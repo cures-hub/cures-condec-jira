@@ -198,7 +198,7 @@ function deleteLink(parentId, childId, linkType, callback) {
 	};
 	deleteJSON(AJS.contextPath()
 			+ "/rest/decisions/latest/deleteLink.json?projectKey="
-			+ getProjectKey(), jsondata, function(error, data) {
+			+ getProjectKey(), jsondata, function(error, link) {
 		if (error == null) {
 			AJS.flag({
 				type : 'success',
