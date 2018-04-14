@@ -83,16 +83,7 @@ public class TreantRest {
 
 
 	private Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, int depth) {
-		Node node = new Node();
-		Map<String, String> nodeContent = ImmutableMap.of("name",
-				decisionKnowledgeElement.getType().toString().toLowerCase(), "title",
-				decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
-		node.setNodeContent(nodeContent);
-
-		String htmlClass =decisionKnowledgeElement.checkDecisionType();
-		node.setHtmlClass(htmlClass);
-		node.setHtmlId(decisionKnowledgeElement.getId());
-
+		Node node = setUpNode(decisionKnowledgeElement);
 		List<Node> nodes = new ArrayList<Node>();
 
 		List<DecisionKnowledgeElement> children = strategy.getChildren(decisionKnowledgeElement);
@@ -108,15 +99,7 @@ public class TreantRest {
 	}
 
 	private Node createNode(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
-		Node node = new Node();
-		Map<String, String> nodeContent = ImmutableMap.of("name",
-				decisionKnowledgeElement.getType().toString().toLowerCase(), "title",
-				decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
-		node.setNodeContent(nodeContent);
-
-		String htmlClass = decisionKnowledgeElement.checkDecisionType();
-		node.setHtmlClass(htmlClass);
-		node.setHtmlId(decisionKnowledgeElement.getId());
+		Node node = setUpNode(decisionKnowledgeElement);
 
 		if (currentDepth + 1 < depth) {
 			List<Node> nodes = new ArrayList<Node>();
@@ -128,5 +111,18 @@ public class TreantRest {
 			node.setChildren(nodes);
 		}
 		return node;
+	}
+
+	private Node  setUpNode(DecisionKnowledgeElement decisionKnowledgeElement){
+		Node node = new Node();
+		Map<String, String> nodeContent = ImmutableMap.of("name",
+				decisionKnowledgeElement.getType().toString().toLowerCase(), "title",
+				decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
+		node.setNodeContent(nodeContent);
+
+		String htmlClass =decisionKnowledgeElement.checkDecisionType();
+		node.setHtmlClass(htmlClass);
+		node.setHtmlId(decisionKnowledgeElement.getId());
+		return  node;
 	}
 }
