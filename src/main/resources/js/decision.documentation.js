@@ -191,82 +191,30 @@ function setSubmitFunction(submitButton, type_select, projectKey, id) {
                 if (argumentCheckBoxGroup[i].checked === true) {
                     var selectedNatureOfArgument = argumentCheckBoxGroup[i].value;
                     if (selectedNatureOfArgument === "pro") {
-                        createDecisionKnowledgeElement(summary, type, function (data) {
-                            AJS.flag({
-                                type: 'success',
-                                close: 'auto',
-                                title: 'Success',
-                                body: type + ' has been created.'
-                            });
-                            var idOfNewObject = data.id;
-                            createLink(id, idOfNewObject, "support", function () {
-                                AJS.flag({
-                                    type: 'success',
-                                    close: 'auto',
-                                    title: 'Success',
-                                    body: 'Link has been created.'
-                                });
-                                buildTreeViewer(projectKey, idOfNewObject);
+                        createDecisionKnowledgeElement(summary, type, function (newId) {
+                            createLink(id, newId, "support", function () {
+                                buildTreeViewer(projectKey, newId);
                             });
                         });
                     } else if (selectedNatureOfArgument === "contra") {
-                        createDecisionKnowledgeElement(summary, type, function (data) {
-                            AJS.flag({
-                                type: 'success',
-                                close: 'auto',
-                                title: 'Success',
-                                body: type + ' has been created.'
-                            });
-                            var idOfNewObject = data.id;
-                            createLink(id, idOfNewObject, "attack", function () {
-                                AJS.flag({
-                                    type: 'success',
-                                    close: 'auto',
-                                    title: 'Success',
-                                    body: 'Link has been created.'
-                                });
-                                buildTreeViewer(projectKey, idOfNewObject);
+                        createDecisionKnowledgeElement(summary, type, function (newId) {
+                            createLink(id, newId, "attack", function () {
+                                buildTreeViewer(projectKey, newId);
                             });
                         });
                     } else if (selectedNatureOfArgument === "comment") {
-                        createDecisionKnowledgeElement(summary, type, function (data) {
-                            AJS.flag({
-                                type: 'success',
-                                close: 'auto',
-                                title: 'Success',
-                                body: type + ' has been created.'
-                            });
-                            var idOfNewObject = data.id;
+                        createDecisionKnowledgeElement(summary, type, function (newId) {
                             createLink(id, idOfNewObject, "comment", function () {
-                                AJS.flag({
-                                    type: 'success',
-                                    close: 'auto',
-                                    title: 'Success',
-                                    body: 'Link has been created.'
-                                });
-                                buildTreeViewer(projectKey, idOfNewObject);
+                                buildTreeViewer(projectKey, newId);
                             });
                         });
                     }
                 }
             }
         } else {
-            createDecisionKnowledgeElement(summary, type, function (data) {
-                AJS.flag({
-                    type: 'success',
-                    close: 'auto',
-                    title: 'Success',
-                    body: type + ' has been created.'
-                });
-                var idOfNewObject = data.id;
-                createLink(id, idOfNewObject, "contain", function () {
-                    AJS.flag({
-                        type: 'success',
-                        close: 'auto',
-                        title: 'Success',
-                        body: 'Link has been created.'
-                    });
-                    buildTreeViewer(projectKey, idOfNewObject);
+            createDecisionKnowledgeElement(summary, type, function (newId) {
+                createLink(id, newId, "contain", function () {
+                    buildTreeViewer(projectKey, newId);
                 });
             });
         }

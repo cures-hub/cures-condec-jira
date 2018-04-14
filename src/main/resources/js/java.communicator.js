@@ -1,68 +1,68 @@
 function getJSON(url, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url, true);
-    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-    xhr.responseType = "json";
-    xhr.onload = function () {
-        var status = xhr.status;
-        if (status === 200) {
-            callback(null, xhr.response);
-        } else {
-            callback(status);
-        }
-    };
-    xhr.send();
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", url, true);
+	xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+	xhr.responseType = "json";
+	xhr.onload = function() {
+		var status = xhr.status;
+		if (status === 200) {
+			callback(null, xhr.response);
+		} else {
+			callback(status);
+		}
+	};
+	xhr.send();
 }
 
 function postJSON(url, data, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-    xhr.setRequestHeader("Accept", "application/json");
-    xhr.responseType = "json";
-    xhr.onload = function () {
-        var status = xhr.status;
-        if (status === 200) {
-            callback(null, xhr.response);
-        } else {
-            callback(status);
-        }
-    };
-    xhr.send(JSON.stringify(data));
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", url, true);
+	xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+	xhr.setRequestHeader("Accept", "application/json");
+	xhr.responseType = "json";
+	xhr.onload = function() {
+		var status = xhr.status;
+		if (status === 200) {
+			callback(null, xhr.response);
+		} else {
+			callback(status);
+		}
+	};
+	xhr.send(JSON.stringify(data));
 }
 
 function putJSON(url, data, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("PUT", url, true);
-    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-    xhr.setRequestHeader("Accept", "application/json");
-    xhr.responseType = "json";
-    xhr.onload = function () {
-        var status = xhr.status;
-        if (status === 200) {
-            callback(null, xhr.response);
-        } else {
-            callback(status);
-        }
-    };
-    xhr.send(JSON.stringify(data));
+	var xhr = new XMLHttpRequest();
+	xhr.open("PUT", url, true);
+	xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+	xhr.setRequestHeader("Accept", "application/json");
+	xhr.responseType = "json";
+	xhr.onload = function() {
+		var status = xhr.status;
+		if (status === 200) {
+			callback(null, xhr.response);
+		} else {
+			callback(status);
+		}
+	};
+	xhr.send(JSON.stringify(data));
 }
 
-function deleteJSON(url, data, callback){
-    var xhr = new XMLHttpRequest();
-    xhr.open("DELETE",url, true);
-    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-    xhr.setRequestHeader("Accept","application/json");
-    xhr.responseType="json";
-    xhr.onload = function () {
-        var status = xhr.status;
-        if(status==200){
-            callback(null, xhr.response);
-        } else {
-            callback(status);
-        }
-    };
-    xhr.send(JSON.stringify(data));
+function deleteJSON(url, data, callback) {
+	var xhr = new XMLHttpRequest();
+	xhr.open("DELETE", url, true);
+	xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+	xhr.setRequestHeader("Accept", "application/json");
+	xhr.responseType = "json";
+	xhr.onload = function() {
+		var status = xhr.status;
+		if (status == 200) {
+			callback(null, xhr.response);
+		} else {
+			callback(status);
+		}
+	};
+	xhr.send(JSON.stringify(data));
 }
 
 function createDecisionKnowledgeElement(summary, type, callback) {
@@ -79,21 +79,25 @@ function createDecisionKnowledgeElement(summary, type, callback) {
 		postJSON(
 				AJS.contextPath()
 						+ "/rest/decisions/latest/decisions/createDecisionKnowledgeElement.json",
-				jsondata, function(err, data) {
-					if (err !== null) {
+				jsondata, function(error, decisionKnowledgeElement) {
+					if (error !== null) {
 						AJS.flag({
 							type : 'error',
 							close : 'auto',
 							title : 'Error',
 							body : type + ' has not been created. Error Code: '
-									+ err
+									+ error
 						});
 					} else {
-						callback(data);
+						AJS.flag({
+							type : 'success',
+							close : 'auto',
+							title : 'Success',
+							body : type + ' has been created.'
+						});
+						callback(decisionKnowledgeElement.id)
 					}
 				});
-	} else {
-		//summary is empty
 	}
 }
 
@@ -125,7 +129,6 @@ function editDecisionComponent(issueId, summary, description, callback) {
 					callback(data);
 				}
 			});
-	//window.location.reload(true);
 }
 
 function deleteDecisionComponent(issueId, callback) {
@@ -147,7 +150,7 @@ function deleteDecisionComponent(issueId, callback) {
 								type : 'error',
 								close : 'auto',
 								title : 'Error',
-								body : 'Decision Component has not been deleted. Error Code: '
+								body : 'Decision knowledge element has not been deleted. Error Code: '
 										+ err
 							});
 				} else {
@@ -167,16 +170,22 @@ function createLink(parentId, childId, linkType, callback) {
 	};
 	putJSON(AJS.contextPath()
 			+ "/rest/decisions/latest/decisions/createLink.json?projectKey="
-			+ projectKey, jsondata, function(err, data) {
-		if (err !== null) {
+			+ projectKey, jsondata, function(error, link) {
+		if (error === null) {
+			AJS.flag({
+				type : 'success',
+				close : 'auto',
+				title : 'Success',
+				body : 'Link has been created.'
+			});
+			callback(link);
+		} else {
 			AJS.flag({
 				type : 'error',
 				close : 'auto',
 				title : 'Error',
-				body : 'IssueLink could not be created'
+				body : 'Link could not be created.'
 			});
-		} else {
-			callback(data);
 		}
 	});
 }
@@ -199,10 +208,15 @@ function deleteLink(parentId, childId, linkType, callback) {
 						type : 'error',
 						close : 'auto',
 						title : 'Error',
-						body : 'IssueLink could not be deleted'
+						body : 'Link could not be deleted.'
 					});
 				} else {
-					callback(data);
+					AJS.flag({
+						type : 'success',
+						close : 'auto',
+						title : 'Success',
+						body : 'Link has been deleted.'
+					});
 				}
 			});
 }

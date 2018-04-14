@@ -3,16 +3,16 @@
 \tikzumlset{font = \sffamily, fill class=white, fill package=white, fill note=white}
 
 % abstract strategy/interface
-\umlclass[type=interface]{IPersistenceStrategy}{}{
+\umlclass[type=abstract]{AbstractPersistenceStrategy}{}{
     \textit{+ insertDecisionKnowledgeElement(element : DecisionKnowledgeElement) : DecisionKnowledgeElement}\\
     \textit{+ updateDecisionKnowledgeElement(element : DecisionKnowledgeElement) : boolean}\\
     \textit{+ deleteDecisionKnowledgeElement(element : DecisionKnowledgeElement) : boolean}\\
     \textit{+ getDecisionKnowledgeElements(projectKey : String) : List<DecisionKnowledgeElement>}\\
     \textit{+ getDecisionKnowledgeElement(key : String) : DecisionKnowledgeElement}\\
     \textit{+ getDecisionKnowledgeElement(id : long) : DecisionKnowledgeElement}\\
-    \textit{+ getDecisions(projectKey : String) : List<DecisionKnowledgeElement>}\\
-    \textit{+ getChildren(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>}\\
-    \textit{+ getParents(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>}\\
+    + getDecisions(projectKey : String) : List<DecisionKnowledgeElement>\\
+    + getChildren(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>\\
+    + getParents(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>\\
     \textit{+ getUnlinkedDecisionComponents(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>}\\
 
     \textit{+ insertLink(link : Link) : long}\\
@@ -29,7 +29,7 @@
 \umlclass[x=-10.5, y=0]{Client}{}{}
 
 % associations
-\umlimpl{IssueStrategy}{IPersistenceStrategy}
-\umlimpl{ActiveObjectStrategy}{IPersistenceStrategy}
+\umlinherit{IssueStrategy}{AbstractPersistenceStrategy}
+\umlinherit{ActiveObjectStrategy}{AbstractPersistenceStrategy}
 \umluniassoc[arg1=uses, pos1=0.5]{Client}{IPersistenceStrategy}
 \end{tikzpicture}
