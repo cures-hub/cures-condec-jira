@@ -13,9 +13,8 @@ function createContextMenuForTreeNodes(projectKey) {
 
                         var type_select = setContent();
 
-                        var data = setData();
-                        for (var index = 0; index < data.length; index++){
-                            type_select[0].insertAdjacentHTML('beforeend','<option value="' + data[index].id + '">' + data[index].text + '</option>');
+                        for (var index = 0; index < knowledgeTypes.length; index++){
+                            type_select[0].insertAdjacentHTML('beforeend','<option value="' + knowledgeTypes[index] + '">' + knowledgeTypes[index] + '</option>');
                         }
 
                         var submitButton = document.getElementById('form-input-submit');

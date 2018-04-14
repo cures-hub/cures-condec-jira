@@ -64,15 +64,14 @@ function buildTreeViewer(projectKey, nodeId) {
 
 														var type_select = setContent();
 
-														var data = setData();
-														for (var index = 0; index < data.length; index++) {
+														for (var index = 0; index < knowledgeTypes.length; index++) {
 															type_select[0]
 																	.insertAdjacentHTML(
 																			'beforeend',
 																			'<option value="'
-																					+ data[index].id
+																					+ knowledgeTypes[index]
 																					+ '">'
-																					+ data[index].text
+																					+ knowledgeTypes[index]
 																					+ '</option>');
 														}
 
