@@ -34,7 +34,7 @@ function createContextMenuForTreeNodes(projectKey) {
 	$(function() {
 		$.contextMenu({
 			selector : '.decision, .rationale, .context, .problem, .solution',
-			items : contextMenuItemsTreant
+			items : contextMenuActions
 		});
 	});
 }
