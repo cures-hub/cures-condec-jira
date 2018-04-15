@@ -14,7 +14,8 @@
 
 	<!-- Web Resources -->
 	<web-resource key="stylesheet-and-icon-resources" name="Style Sheets and Icons">
-		<description>Provides the style sheets and icons used in this plug-in.
+		<description>
+			Provides the style sheets and icons used in this plug-in.
 		</description>
 		<!-- icons -->
 		<resource type="download" name="Add.png" location="/images/Add.png" />
@@ -33,13 +34,13 @@
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
 	</web-resource>
 	<web-resource key="decision-documentation-resources" name="Java Script Resources">
-		<description>Provides the Java Script files used in this plug-in.
+		<description>
+			Provides the Java Script files used in this plug-in.
 		</description>
 		<!-- treant -->
 		<resource type="download" name="Treant.js" location="/js/treant/treant.js" />
 		<resource type="download" name="raphael.js" location="/js/treant/raphael.js" />
-		<resource type="download" name="jquery.easing.js"
-			location="/js/treant/jquery.easing.js" />
+		<resource type="download" name="jquery.easing.js" location="/js/treant/jquery.easing.js" />
 		<!-- jQuery -->
 		<resource type="download" name="jquery.js" location="/js/jquery/jquery.js" />
 		<!-- jstree -->
@@ -52,16 +53,14 @@
 		<!-- DecDoc java script files -->
 		<resource type="download" name="decdoc.accordion.editor.js"
 			location="/js/decdoc.accordion.editor.js" />
-		<resource type="download" name="decdoc.treant.js"
-			location="/js/decdoc.treant.js" />
+		<resource type="download" name="decdoc.treant.js" location="/js/decdoc.treant.js" />
 		<resource type="download" name="decdoc.tree.viewer.js"
 			location="/js/decdoc.tree.viewer.js" />
 		<resource type="download" name="decdoc.rest.client.js"
 			location="/js/decdoc.rest.client.js" />
 		<resource type="download" name="decdoc.context.menu.js"
 			location="/js/decdoc.context.menu.js" />
-		<resource type="download" name="decdoc.init.js"
-			location="/js/decdoc.init.js" />
+		<resource type="download" name="decdoc.init.js" location="/js/decdoc.init.js" />
 	</web-resource>
 
 	<!-- Decision Knowledge Page -->
@@ -72,7 +71,8 @@
 		</description>
 		<label>Decisions</label>
 		<param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-bp-decisions" />
-		<link>/projects/$pathEncodedProjectKey?selectedItem=decisions-page
+		<link>
+			/projects/$pathEncodedProjectKey?selectedItem=decisions-page
 		</link>
 		<condition
 			class="de.uhd.ifi.se.decision.documentation.jira.config.IsActivated">
@@ -81,20 +81,22 @@
 	</web-item>
 	<web-panel name="DecDoc Plug-in Page" key="decisions-page"
 		location="decisions-page" weight="1000">
-		<description>Provides the plug-in page that developers use to manage
+		<description>
+			Provides the plug-in page that developers use to manage
 			decision knowledge.
 		</description>
 		<resource name="view" type="velocity" location="templates/editor.vm" />
 	</web-panel>
 	<rest name="Decision Knowledge REST" key="decision-knowledge-rest"
 		path="/decisions" version="1.0">
-		<description>Provides REST resources to manage
-			decision knowledge.
+		<description>
+			Provides REST resources to manage decision knowledge.
 		</description>
 	</rest>
 	<rest key="treant-rest" name="Treant REST" path="/treantsrest"
 		version="1.0">
-		<description>Provides REST resources to build the Treant graph when
+		<description>
+			Provides REST resources to build the Treant graph when
 			selecting a single decision knowledge element.
 		</description>
 	</rest>
@@ -108,19 +110,23 @@
 	<!-- Administration -->
 	<web-section key="decdoc-admin-section"
 		name="Web Section for DecDoc Plug-in Administration" location="admin_plugins_menu">
-		<description>Adds a section to the add-ons menu.</description>
+		<description>
+			Adds a section to the add-ons menu.
+		</description>
 	</web-section>
 	<web-section key="decdoc-admin-section-label"
 		name="Web Section Label for DecDoc Plug-in Administration" location="decdoc-admin-section">
 		<label>Decisions</label>
-		<description>Adds the "Decisions" label to the DecDoc section in the
+		<description>
+			Adds the "Decisions" label to the DecDoc section in the
 			add-ons menu.
 		</description>
 	</web-section>
 	<web-item key="decdoc-admin-menu-item" name="Menu Item for DecDoc Plug-in Administration"
 		section="decdoc-admin-section/decdoc-admin-section-label" weight="10"
 		application="jira">
-		<description>Adds the "DecDoc" menu item that links to the
+		<description>
+			Adds the "DecDoc" menu item that links to the
 			administration page.
 		</description>
 		<label>DecDoc Settings</label>
@@ -133,24 +139,28 @@
 	</servlet>
 	<rest key="admin-rest" name="Adminstration REST" path="/admin"
 		version="1.0">
-		<description>Provides REST resources for the administration.
+		<description>
+			Provides REST resources for the administration.
 		</description>
 	</rest>
 	<rest key="config" name="Configuration REST" path="/config"
 		version="1.0">
-		<description>Provides REST resources to configure the
-			DecDoc plug-in.
+		<description>
+			Provides REST resources to configure the DecDoc plug-in.
 		</description>
 	</rest>
 
 	<!-- Active Objects -->
 	<ao key="ao-module" name="Active Objects Service">
-		<description>Configures the Active Objects service that is used to
+		<description>
+			Configures the Active Objects service that is used to
 			persist decision knowledge with object relational mapping.
 		</description>
-		<entity>de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.IDecisionKnowledgeElementEntity
+		<entity>
+			de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.IDecisionKnowledgeElementEntity
 		</entity>
-		<entity>de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ILinkEntity
+		<entity>
+			de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ILinkEntity
 		</entity>
 	</ao>
 </atlassian-plugin>
