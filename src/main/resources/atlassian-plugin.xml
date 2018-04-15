@@ -21,9 +21,9 @@
 		<resource type="download" name="Delete.png" location="/images/Delete.png" />
 		<resource type="download" name="Open.png" location="/images/Open.png" />
 		<resource type="download" name="Edit.png" location="/images/Edit.png" />
-		<resource type="download" name="32px.png" location="/js/jstree/32px.png" />
-		<resource type="download" name="40px.png" location="/js/jstree/40px.png" />
-		<resource type="download" name="throbber.gif" location="/js/jstree/throbber.gif" />
+		<resource type="download" name="32px.png" location="/images/32px.png" />
+		<resource type="download" name="40px.png" location="/images/40px.png" />
+		<resource type="download" name="throbber.gif" location="/images/throbber.gif" />
 		<!-- style sheets -->
 		<resource type="download" name="treant.css" location="/css/treant.css" />
 		<resource type="download" name="chart.css" location="/css/chart.css" />
@@ -36,32 +36,32 @@
 		<description>Provides the Java Script files used in this plug-in.
 		</description>
 		<!-- treant -->
-		<resource type="download" name="Treant.js" location="/js/treant_js/Treant.js" />
-		<resource type="download" name="raphael.js" location="/js/treant_js/raphael.js" />
+		<resource type="download" name="Treant.js" location="/js/treant/treant.js" />
+		<resource type="download" name="raphael.js" location="/js/treant/raphael.js" />
 		<resource type="download" name="jquery.easing.js"
-			location="/js/treant_js/jquery.easing.js" />
+			location="/js/treant/jquery.easing.js" />
 		<!-- jQuery -->
-		<resource type="download" name="jquery.js" location="/js/jquery.js" />
+		<resource type="download" name="jquery.js" location="/js/jquery/jquery.js" />
 		<!-- jstree -->
-		<resource type="download" name="jstree.min.js" location="/js/jstree/jstree.min.js" />
+		<resource type="download" name="jstree.js" location="/js/jstree/jstree.js" />
 		<!-- jquery.contextMenu -->
 		<resource type="download" name="jquery.ui.position.js"
 			location="/js/contextMenu/jquery.ui.position.js" />
 		<resource type="download" name="jquery.contextMenu.js"
 			location="/js/contextMenu/jquery.contextMenu.js" />
 		<!-- DecDoc java script files -->
-		<resource type="download" name="accordionview.decision.documentation.js"
-			location="/js/accordionview.decision.documentation.js" />
-		<resource type="download" name="treantview.decision.documentation.js"
-			location="/js/treantview.decision.documentation.js" />
-		<resource type="download" name="treeview.decision.documentation.js"
-			location="/js/treeview.decision.documentation.js" />
-		<resource type="download" name="java.communicator.js"
-			location="/js/java.communicator.js" />
-		<resource type="download" name="context.menu.decision.documentation.js"
-			location="/js/context.menu.decision.documentation.js" />
-		<resource type="download" name="decision.documentation.js"
-			location="/js/decision.documentation.js" />
+		<resource type="download" name="decdoc.accordion.editor.js"
+			location="/js/decdoc.accordion.editor.js" />
+		<resource type="download" name="decdoc.treant.js"
+			location="/js/decdoc.treant.js" />
+		<resource type="download" name="decdoc.tree.viewer.js"
+			location="/js/decdoc.tree.viewer.js" />
+		<resource type="download" name="decdoc.rest.client.js"
+			location="/js/decdoc.rest.client.js" />
+		<resource type="download" name="decdoc.context.menu.js"
+			location="/js/decdoc.context.menu.js" />
+		<resource type="download" name="decdoc.init.js"
+			location="/js/decdoc.init.js" />
 	</web-resource>
 
 	<!-- Decision Knowledge Page -->

@@ -26,7 +26,7 @@
 		/**
 		 * Directly updates, recursively/deeply, the first object with all
 		 * properties in the second object
-		 * 
+		 *
 		 * @param {object}
 		 *            applyTo
 		 * @param {object}
@@ -49,7 +49,7 @@
 
 		/**
 		 * Returns a new object by merging the two supplied objects
-		 * 
+		 *
 		 * @param {object}
 		 *            obj1
 		 * @param {object}
@@ -69,7 +69,7 @@
 
 		/**
 		 * Takes any number of arguments
-		 * 
+		 *
 		 * @returns {*}
 		 */
 		extend: function() {
@@ -414,7 +414,7 @@
 
 	/**
 	 * Tree constructor.
-	 * 
+	 *
 	 * @param {object}
 	 *            jsonConfig
 	 * @param {number}
@@ -574,7 +574,7 @@
 		 * preliminary x-coordinate (held in field node->prelim). In addition,
 		 * internal nodes are given modifiers, which will be used to move their
 		 * children to the right (held in field node->modifier).
-		 * 
+		 *
 		 * @param {TreeNode}
 		 *            node
 		 * @param {number}
@@ -786,7 +786,7 @@
 		/**
 		 * position all the nodes, center the tree in center of its container
 		 * 0,0 coordinate is in the upper left corner
-		 * 
+		 *
 		 * @returns {Tree}
 		 */
 		positionNodes: function() {
@@ -874,7 +874,7 @@
 
 		/**
 		 * Create Raphael instance, (optionally set scroll bars if necessary)
-		 * 
+		 *
 		 * @param {number}
 		 *            treeWidth
 		 * @param {number}
@@ -982,7 +982,7 @@
 		 * connection A path with a leading "_" indicates the path will be
 		 * hidden See:
 		 * http://dmitrybaranovskiy.github.io/raphael/reference.html#Paper.path
-		 * 
+		 *
 		 * @param {object}
 		 *            hidePoint
 		 * @returns {string}
@@ -995,7 +995,7 @@
 		 * This method relied on receiving a valid Raphael Paper.path. See:
 		 * http://dmitrybaranovskiy.github.io/raphael/reference.html#Paper.path
 		 * A pathString is typically in the format of "M10,20L30,40"
-		 * 
+		 *
 		 * @param path
 		 * @param {string}
 		 *            pathString
@@ -1033,7 +1033,7 @@
 		},
 
 		/**
-		 * 
+		 *
 		 * @param {TreeNode}
 		 *            from_node
 		 * @param {TreeNode}
@@ -1116,7 +1116,7 @@
 		/**
 		 * Algorithm works from left to right, so previous processed node will
 		 * be left neighbour of the next node
-		 * 
+		 *
 		 * @param {TreeNode}
 		 *            node
 		 * @param {number}
@@ -1135,7 +1135,7 @@
 		/**
 		 * Used for calculation of height and width of a level (level
 		 * dimensions)
-		 * 
+		 *
 		 * @param {TreeNode}
 		 *            node
 		 * @param {number}
@@ -1169,7 +1169,7 @@
 
 	/**
 	 * NodeDB is used for storing the nodes. Each tree has its own NodeDB.
-	 * 
+	 *
 	 * @param {object}
 	 *            nodeStructure
 	 * @param {Tree}
@@ -1290,7 +1290,7 @@
 		},
 
 		/**
-		 * 
+		 *
 		 * @param {object}
 		 *            nodeStructure
 		 * @param {number}
@@ -1397,7 +1397,7 @@
 
 	/**
 	 * TreeNode constructor.
-	 * 
+	 *
 	 * @param {object}
 	 *            nodeStructure
 	 * @param {number}
@@ -1537,7 +1537,7 @@
 
 		/**
 		 * Returns the width of the node
-		 * 
+		 *
 		 * @returns {float}
 		 */
 		size: function() {
@@ -1645,7 +1645,7 @@
 
 		/**
 		 * Find out if one of the node ancestors is collapsed
-		 * 
+		 *
 		 * @returns {*}
 		 */
 		collapsedParent: function() {
@@ -1661,7 +1661,7 @@
 
 		/**
 		 * Returns the leftmost child at specific level, (initial level = 0)
-		 * 
+		 *
 		 * @param level
 		 * @param depth
 		 * @returns {*}
