@@ -65,7 +65,7 @@ function deleteJSON(url, data, callback) {
 	xhr.send(JSON.stringify(data));
 }
 
-function createDecisionKnowledgeElement(summary, type, callback) {
+function createDecisionKnowledgeElement(summary, description, type, callback) {
 	if (summary !== "") {
 		var jsondata = {
 			"projectKey" : getProjectKey(),

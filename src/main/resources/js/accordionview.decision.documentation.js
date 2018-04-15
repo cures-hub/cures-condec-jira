@@ -13,7 +13,8 @@ function addOptionToDecisionComponent(type, parentNode) {
             createDecisionKnowledgeElementButton.addEventListener('click', function () {
                 var tempString = inputField.value;
                 inputField.value = "";
-                createDecisionKnowledgeElement(tempString, type, function (newId) {
+                var description = "TODO";
+                createDecisionKnowledgeElement(tempString, description, type, function (newId) {
                     createLink(parentNode.id, newId, "contain", function () {
                     });
                     var tree = $('#evts').jstree(true);
@@ -29,13 +30,14 @@ function addOptionToDecisionComponent(type, parentNode) {
         var inputField = document.getElementById("inputField" + type);
         createDecisionKnowledgeElementButton.addEventListener('click', function () {
             var tempString = inputField.value;
+            var description = "TODO";
             inputField.value = "";
             var argumentCheckBoxGroup = document.getElementsByName("natureOfArgument");
             for (var i = 0; i < argumentCheckBoxGroup.length; i++) {
                 if (argumentCheckBoxGroup[i].checked === true) {
                     var selectedNatureOfArgument = argumentCheckBoxGroup[i].value;
                     if (selectedNatureOfArgument === "pro") {
-                        createDecisionKnowledgeElement(tempString, type, function (newId) {
+                        createDecisionKnowledgeElement(tempString, description, type, function (newId) {
                             createLink(parentNode.id, newId, "support", function () {
                             });
                             var tree = $('#evts').jstree(true);
@@ -44,7 +46,7 @@ function addOptionToDecisionComponent(type, parentNode) {
                             tree.select_node(nodeId);
                         });
                     } else if (selectedNatureOfArgument === "contra") {
-                        createDecisionKnowledgeElement(tempString, type, function (newId) {
+                        createDecisionKnowledgeElement(tempString, description, type, function (newId) {
                             createLink(parentNode.id, newId, "attack", function () {
                             });
                             var tree = $('#evts').jstree(true);
@@ -53,7 +55,7 @@ function addOptionToDecisionComponent(type, parentNode) {
                             tree.select_node(nodeId);
                         });
                     } else if (selectedNatureOfArgument === "comment") {
-                        createDecisionKnowledgeElement(tempString, type, function (newId) {
+                        createDecisionKnowledgeElement(tempString, description, type, function (newId) {
                             createLink(parentNode.id, newId, "comment", function () {
                             });
                             var tree = $('#evts').jstree(true);
@@ -71,8 +73,9 @@ function addOptionToDecisionComponent(type, parentNode) {
         createDecisionKnowledgeElementButton.addEventListener('click', function () {
             var inputField = document.getElementById("inputField" + type);
             var tempString = inputField.value;
+            var description = "TODO";
             inputField.value = "";
-            createDecisionKnowledgeElement(tempString, type, function (newId) {
+            createDecisionKnowledgeElement(tempString, description, type, function (newId) {
                 console.log(parentNode);
                 console.log(newId);
                 createLink(parentNode.id, newId, "contain", function () {
