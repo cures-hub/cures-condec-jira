@@ -39,23 +39,19 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-flag")
 						<dt class="editorheader">
 							Details<a href="#" id="button" class="closed">Details</a>
 						</dt>
-						<dd class="foldout" id="Details">No Element has been
-							selected</dd>
+						<dd class="foldout" id="Details">No Element has been selected</dd>
 						<dt class="editorheader">
 							Problems<a href="#" id="button" class="closed">Details</a>
 						</dt>
-						<dd class="foldout" id="Problem">No Element has been
-							selected</dd>
+						<dd class="foldout" id="Problem">No Element has been selected</dd>
 						<dt class="editorheader">
 							Issues<a href="#" id="button" class="closed">Details</a>
 						</dt>
-						<dd class="foldout" id="Issue">No Element has been
-							selected</dd>
+						<dd class="foldout" id="Issue">No Element has been selected</dd>
 						<dt class="editorheader">
 							Goals<a href="#" id="button" class="closed">Details</a>
 						</dt>
-						<dd class="foldout" id="Goal">No Element has been
-							selected</dd>
+						<dd class="foldout" id="Goal">No Element has been selected</dd>
 						<dt class="editorheader">
 							Solutions<a href="#" id="button" class="closed">Details</a>
 						</dt>
@@ -69,13 +65,11 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-flag")
 						<dt class="editorheader">
 							Claims<a href="#" id="button" class="closed">Details</a>
 						</dt>
-						<dd class="foldout" id="Claim">No Element has been
-							selected</dd>
+						<dd class="foldout" id="Claim">No Element has been selected</dd>
 						<dt class="editorheader">
 							Contexts<a href="#" id="button" class="closed">Details</a>
 						</dt>
-						<dd class="foldout" id="Context">No Element has been
-							selected</dd>
+						<dd class="foldout" id="Context">No Element has been selected</dd>
 						<dt class="editorheader">
 							Assumptions<a href="#" id="button" class="closed">Details</a>
 						</dt>
@@ -114,7 +108,8 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-flag")
 		<div class="modal-wrapper">
 			<div class="modal-header">
 				<h2 id="modal-header">
-					<span id="modal-close-x" class="modal-close" style="float: right;">&times;</span>
+					<span id="context-menu-header"></span> <span
+						id="modal-close-x" class="modal-close" style="float: right;">&times;</span>
 				</h2>
 				<hr>
 			</div>

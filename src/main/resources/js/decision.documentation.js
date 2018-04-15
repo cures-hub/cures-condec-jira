@@ -1,16 +1,16 @@
-var knowledgeTypes = [ "Alternative", "Argument", "Assessment", "Assumption", "Claim",
-		"Constraint", "Context", "Goal", "Implication", "Issue", "Problem", "Solution" ];
+var knowledgeTypes = [ "Decision", "Alternative", "Argument", "Assessment", "Assumption", "Claim", "Constraint",
+		"Context", "Goal", "Implication", "Issue", "Problem", "Solution" ];
 
 function initializeSite() {
 	buildTreeViewer(getProjectKey());
 
-	/*ClickHandler for accordion elements*/
+	/* ClickHandler for accordion elements */
 	$(document).ready(function() {
 		$("dt").click(function() {
 			$(this).next("dd").slideToggle("fast");
 		});
 	});
-	/*ClickHandler for the creation of decisions*/
+	/* ClickHandler for the creation of decisions */
 	var createDecisionButton = document.getElementById("CreateDecision");
 	var DecisionInputField = document.getElementById("DecisionInputField");
 	createDecisionButton.addEventListener('click', function() {
@@ -23,7 +23,7 @@ function initializeSite() {
 			tree.select_node(nodeId);
 		});
 	});
-	/*ClickHandler for the Editor Button*/
+	/* ClickHandler for the Editor Button */
 	var viewEditorButton = document.getElementById("view-editor");
 	viewEditorButton.addEventListener('click', function() {
 		var editorContainer = document.getElementById("container");
@@ -31,7 +31,7 @@ function initializeSite() {
 		editorContainer.style.display = "block";
 		treantContainer.style.visibility = "hidden";
 	});
-	/*ClickHandler for the Tree Button*/
+	/* ClickHandler for the Tree Button */
 	var viewTreeButton = document.getElementById("view-tree");
 	viewTreeButton.addEventListener('click', function() {
 		var editorContainer = document.getElementById("container");
@@ -56,26 +56,6 @@ function initializeSite() {
 			}
 		}
 	};
-}
-
-function closeModal() {
-	// Get the modal window
-	var modal = document.getElementById('ContextMenuModal');
-	modal.style.display = "none";
-	var modalHeader = document.getElementById('modal-header');
-	if (modalHeader.hasChildNodes()) {
-		var childNodes = modalHeader.childNodes;
-		for (var index = 0; index < childNodes.length; ++index) {
-			var child = childNodes[index];
-			if (child.nodeType === 3) {
-				child.parentNode.removeChild(child);
-			}
-		}
-	}
-	var modalContent = document.getElementById('modal-content');
-	if (modalContent) {
-		clearInner(modalContent);
-	}
 }
 
 function clearInner(node) {

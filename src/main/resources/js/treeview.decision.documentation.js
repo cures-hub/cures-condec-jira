@@ -35,7 +35,7 @@ function buildTreeViewer(projectKey, nodeId) {
 					'show_only_matches' : true
 				},
 				'contextmenu' : {
-					'items' : contextMenuItems
+					'items' : contextMenuActions
 				}
 			});
 			document.getElementById("Details").style.display = "block";
