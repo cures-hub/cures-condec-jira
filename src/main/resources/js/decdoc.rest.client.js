@@ -71,7 +71,7 @@ function createDecisionKnowledgeElement(summary, description, type, callback) {
 			"projectKey" : getProjectKey(),
 			"summary" : summary,
 			"type" : type,
-			"description" : summary
+			"description" : description
 		};
 		postJSON(AJS.contextPath()
 				+ "/rest/decisions/latest/decisions/createDecisionKnowledgeElement.json", jsondata,
