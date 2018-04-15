@@ -7,39 +7,66 @@ function setHeaderText(headerText) {
 	header.textContent = headerText;
 }
 
-function setUpContextMenuContentForCreateAction() {
+function setUpContextMenuContentForCreateAction(id) {
 	setUpModal();
 	setHeaderText(createKnowledgeElementText);
-	var content = document.getElementById('modal-content');
+	var content = document.getElementById("modal-content");
 	content
 			.insertAdjacentHTML(
-					'afterBegin',
-					'<p><label for="form-input-name" style="display:block;width:45%;float:left;">Name</label>'
-							+ '<input id="form-input-name" type="text" name="summary" placeholder="Name of decision component" style="width:50%;"/></p>'
-							+ '<p><label for="form-select-type" style="display:block;width:45%;float:left;">Knowledge type</label>'
-							+ '<select name="form-select-type" style="width:50%;"/></p>'
-							+ '<p><input id="form-input-submit" type="submit" value="Add Decision Component" style="float:right;"/></p>');
+					"afterBegin",
+					"<p><label for='form-input-summary' style='display:block;width:45%;float:left;'>Summary:</label>"
+							+ "<input id='form-input-summary' type='text' placeholder='Summary' style='width:50%;'/></p>"
+							+ "<p><label for='form-input-description' style='display:block;width:45%;float:left;'>Description:</label>"
+							+ "<input id='form-input-description' type='text' placeholder='Description' style='width:50%;'/></p>"
+							+ "<p><label for='form-select-type' style='display:block;width:45%;float:left;'>Knowledge type:</label>"
+							+ "<select name='form-select-type' style='width:50%;'/></p>"
+							+ "<p><input id='form-input-submit' type='submit' value='" + createKnowledgeElementText
+							+ "' style='float:right;'/></p>");
 
-	var type_select = $('select[name="form-select-type"]');
-	type_select
-			.on(
-					'change',
-					function() {
-						var type = type_select.val();
-						if (type === 'Argument') {
-							type_select
-									.insertAdjacentHTML(
-											'afterEnd',
-											'<p id="type-of-argument-para"><label for="type-of-argument" style="display:block;width:45%;float:left;">Type of Argument</label><input type="radio" name="type-of-argument" value="pro" checked="checked">Pro<input type="radio" name="type-of-argument" value="contra">Contra<input type="radio" name="type-of-argument" value="comment">Comment</p>');
-						} else {
-							var para = document.getElementById("type-of-argument-para");
-							if (para) {
-								clearInner(para);
-								para.parentNode.removeChild(para);
-							}
-						}
-					});
-	return type_select;
+	var typeSelectionField = $("select[name='form-select-type']");
+
+	for (var index = 0; index < knowledgeTypes.length; index++) {
+		typeSelectionField[0].insertAdjacentHTML("beforeend", "<option value='" + knowledgeTypes[index] + "'>"
+				+ knowledgeTypes[index] + "</option>");
+	}
+
+	var submitButton = document.getElementById("form-input-submit");
+	submitButton.onclick = function() {
+		var summary = document.getElementById('form-input-summary').value;
+		var description = document.getElementById('form-input-description').value;
+		var type = typeSelectionField.val();
+		// TODO: Enable to show arguments. They are currently not shown due to an inward-outward link problem.
+		switch (type) {
+		case "Pro Argument":
+			createDecisionKnowledgeElement(summary, description, "Argument", function(newId) {
+				createLink(newId, id, "support", function() {
+					buildTreeViewer(getProjectKey(), newId);
+				});
+			});
+			break;
+		case "Contra Argument":
+			createDecisionKnowledgeElement(summary, description, "Argument", function(newId) {
+				createLink(newId, id, "attack", function() {
+					buildTreeViewer(getProjectKey(), newId);
+				});
+			});
+			break;
+		case "Comment":
+			createDecisionKnowledgeElement(summary, description, "Argument", function(newId) {
+				createLink(newId, id, "comment", function() {
+					buildTreeViewer(getProjectKey(), newId);
+				});
+			});
+			break;
+		default:
+			createDecisionKnowledgeElement(summary, description, type, function(newId) {
+				createLink(id, newId, "contain", function() {
+					buildTreeViewer(getProjectKey(), newId);
+				});
+			});
+		}
+		closeModal();
+	};
 }
 
 var contextMenuCreateAction = {
@@ -49,154 +76,17 @@ var contextMenuCreateAction = {
 	"name" : createKnowledgeElementText,
 	// action is used in Tree Viewer context menu
 	"action" : function(node) {
-		 setUpContextMenuContentForCreateAction();
-		 var selector = node.reference.prevObject.selector;
-		 var tree_node = $('#evts').jstree(true).get_node(selector).data;
-
-		 var content = document.getElementById('modal-content');
-		 content
-		 .insertAdjacentHTML(
-		 'afterBegin',
-		 '<p><label for="form-input-name"
-		 style="display:block;width:45%;float:left;">Name</label>'
-		 + '<input id="form-input-name" type="text" name="summary"
-		 placeholder="Name of decision component" style="width:50%;"/></p>'
-		 + '<p><label for="form-select-type"
-		 style="display:block;width:45%;float:left;">Knowledge type</label>'
-		 + '<select name="form-select-type" style="width:50%;"/></p>'
-		 + '<p><input id="form-input-submit" type="submit" value="Add Decision
-		 Component" style="float:right;"/></p>');
-
-		 var type_select = $('select[name="form-select-type"]');
-		 type_select
-		 .on(
-		 'change',
-		 function() {
-		 var type = type_select.val();
-		 if (type === 'Argument') {
-		 type_select
-		 .insertAdjacentHTML(
-		 'afterEnd',
-		 '<p id="type-of-argument-para"><label for="type-of-argument"
-		 style="display:block;width:45%;float:left;">Type of Argument</label>'
-		 + '<input type="radio" name="type-of-argument" value="pro"
-		 checked="checked">Pro<input type="radio" name="type-of-argument"
-		 value="contra">Contra<input type="radio" name="type-of-argument"
-		 value="comment">Comment</p>');
-		 } else {
-		 var para = document.getElementById("type-of-argument-para");
-		 if (para) {
-		 clearInner(para);
-		 para.parentNode.removeChild(para);
-		 }
-		 }
-		 });
-
-		 for (var index = 0; index < knowledgeTypes.length; index++) {
-		 type_select[0].insertAdjacentHTML('beforeend', '<option value="' +
-		 knowledgeTypes[index] + '">'
-		 + knowledgeTypes[index] + '</option>');
-		 }
-
-		 var submitButton = document.getElementById('form-input-submit');
-		 submitButton.onclick = function() {
-		 var summary = document.getElementById('form-input-name').value;
-		 var type = type_select.val();
-		 if (type === "Argument") {
-		 var argumentCheckBoxGroup =
-		 document.getElementsByName("type-of-argument");
-		 for (var i = 0; i < argumentCheckBoxGroup.length; i++) {
-		 if (argumentCheckBoxGroup[i].checked === true) {
-		 var selectedNatureOfArgument = argumentCheckBoxGroup[i].value;
-		 if (selectedNatureOfArgument === "pro") {
-		 createDecisionKnowledgeElement(summary, type, function(newId) {
-		 createLink(id, newId, "support", function() {
-		 buildTreeViewer(projectKey, newId);
-		 });
-		 });
-		 } else if (selectedNatureOfArgument === "contra") {
-		 createDecisionKnowledgeElement(summary, type, function(newId) {
-		 createLink(id, newId, "attack", function() {
-		 buildTreeViewer(projectKey, newId);
-		 });
-		 });
-		 } else if (selectedNatureOfArgument === "comment") {
-		 createDecisionKnowledgeElement(summary, type, function(newId) {
-		 createLink(id, idOfNewObject, "comment", function() {
-		 buildTreeViewer(projectKey, newId);
-		 });
-		 });
-		 }
-		 }
-		 }
-		 } else {
-		 createDecisionKnowledgeElement(summary, type, function(newId) {
-		 createLink(id, newId, "contain", function() {
-		 buildTreeViewer(projectKey, newId);
-		 });
-		 });
-		 }
-		 closeModal();
-		 };
-
-		 var modal = document.getElementById('ContextMenuModal');
-		 modal.style.display = "block";
+		// gets the selected Tree Viewer node
+		var treeNode = getSelectedTreeViewerNode(node);
+		var id = treeNode.id;
+		setUpContextMenuContentForCreateAction(id);
 	},
 	// callback is used in Treant context menu
 	"callback" : function(key, options) {
-		 setUpContextMenuContentForCreateAction();
-
-		 var content = document.getElementById('modal-content');
-		 content
-		 .insertAdjacentHTML(
-		 'afterBegin',
-		 '<p><label for="form-input-name"
-		 style="display:block;width:45%;float:left;">Name</label>'
-		 + '<input id="form-input-name" type="text" name="summary"
-		 placeholder="Name of decision component" style="width:50%;"/></p>'
-		 + '<p><label for="form-select-type"
-		 style="display:block;width:45%;float:left;">Knowledge type</label>'
-		 + '<select name="form-select-type" style="width:50%;"/></p>'
-		 + '<p><input id="form-input-submit" type="submit" value="Add Decision
-		 Component" style="float:right;"/></p>');
-
-		 var type_select = $('select[name="form-select-type"]');
-		 type_select
-		 .on(
-		 'change',
-		 function() {
-		 var type = type_select.val();
-		 if (type === 'Argument') {
-		 type_select
-		 .insertAdjacentHTML(
-		 'afterEnd',
-		 '<p id="type-of-argument-para"><label for="type-of-argument"
-		 style="display:block;width:45%;float:left;">Type of Argument</label>'
-		 + '<input type="radio" name="type-of-argument" value="pro"
-		 checked="checked">Pro<input type="radio" name="type-of-argument"
-		 value="contra">Contra<input type="radio" name="type-of-argument"
-		 value="comment">Comment</p>');
-		 } else {
-		 var para = document.getElementById("type-of-argument-para");
-		 if (para) {
-		 clearInner(para);
-		 para.parentNode.removeChild(para);
-		 }
-		 }
-		 });
-
-		 for (var index = 0; index < knowledgeTypes.length; index++) {
-		 type_select[0].insertAdjacentHTML('beforeend', '<option value="' +
-		 knowledgeTypes[index] + '">'
-		 + knowledgeTypes[index] + '</option>');
-		 }
-
-		 var submitButton = document.getElementById('form-input-submit');
-		 setSubmitFunction(submitButton, type_select, projectKey,
-		 options.$trigger.context.id);
-
-		 var modal = document.getElementById('ContextMenuModal');
-		 modal.style.display = "block";
+		// gets the selected Treant node
+		var context = options.$trigger.context;
+		var id = context.id;
+		setUpContextMenuContentForCreateAction(id);
 	}
 }
 
@@ -204,14 +94,14 @@ function setUpContextMenuContentForEditAction(id, summary) {
 	setUpModal();
 	setHeaderText(editKnowledgeElementText);
 
-	// TODO Get description for id
+	// TODO Get description for id using DecisionsRest API
 	var description = "";
 
 	var content = document.getElementById("modal-content");
 	content
 			.insertAdjacentHTML(
 					"afterBegin",
-					"<p><label for='form-input-name' style='display:block;width:45%;float:left;'>Summary:</label>"
+					"<p><label for='form-input-summary' style='display:block;width:45%;float:left;'>Summary:</label>"
 							+ "<input id='form-input-summary' type='text' placeholder='Summary' style='width:50%;' value='"
 							+ summary
 							+ "'/></p>"
@@ -238,8 +128,7 @@ var contextMenuEditAction = {
 	"name" : editKnowledgeElementText,
 	// action is used in Tree Viewer context menu
 	"action" : function(node) {
-		var selector = node.reference.prevObject.selector;
-		var treeNode = $('#evts').jstree(true).get_node(selector).data;
+		var treeNode = getSelectedTreeViewerNode(node);
 		var id = treeNode.id;
 		var summary = treeNode.summary;
 		setUpContextMenuContentForEditAction(id, summary);
@@ -286,9 +175,8 @@ var contextMenuDeleteAction = {
 	// action is used in Tree Viewer context menu
 	"action" : function(node) {
 		// gets the selected Tree Viewer node
-		var selector = node.reference.prevObject.selector;
-		var tree_node = $("#evts").jstree(true).get_node(selector).data;
-		var id = tree_node.id;
+		var treeNode = getSelectedTreeViewerNode(node);
+		var id = treeNode.id;
 		setUpContextMenuContentForDeleteAction(id);
 	},
 	// callback is used in Treant context menu
@@ -306,13 +194,17 @@ var contextMenuActions = {
 	"delete" : contextMenuDeleteAction,
 }
 
+function getSelectedTreeViewerNode(node) {
+	var selector = node.reference.prevObject.selector;
+	return $("#evts").jstree(true).get_node(selector).data;
+}
+
 function setUpModal() {
 	var modal = document.getElementById("ContextMenuModal");
 	modal.style.display = "block";
 }
 
 function closeModal() {
-	// Get the modal window
 	var modal = document.getElementById("ContextMenuModal");
 	modal.style.display = "none";
 	var modalHeader = document.getElementById("modal-header");
