@@ -91,37 +91,6 @@ function clear(node) {
 	node.parentNode.removeChild(node);
 }
 
-function setContent() {
-	var content = document.getElementById('modal-content');
-	content
-			.insertAdjacentHTML(
-					'afterBegin',
-					'<p><label for="form-input-name" style="display:block;width:45%;float:left;">Name</label><input id="form-input-name" type="text" name="summary" placeholder="Name of decision component" style="width:50%;"/></p>'
-							+ '<p><label for="form-select-type" style="display:block;width:45%;float:left;">Componenttype</label><select name="form-select-type" style="width:50%;"/></p>'
-							+ '<p><input id="form-input-submit" type="submit" value="Add Decision Component" style="float:right;"/></p>');
-
-	var type_select = $('select[name="form-select-type"]');
-	type_select
-			.on(
-					'change',
-					function() {
-						var type = type_select.val();
-						if (type === 'Argument') {
-							type_select
-									.insertAdjacentHTML(
-											'afterEnd',
-											'<p id="type-of-argument-para"><label for="type-of-argument" style="display:block;width:45%;float:left;">Type of Argument</label><input type="radio" name="type-of-argument" value="pro" checked="checked">Pro<input type="radio" name="type-of-argument" value="contra">Contra<input type="radio" name="type-of-argument" value="comment">Comment</p>');
-						} else {
-							var para = document.getElementById("type-of-argument-para");
-							if (para) {
-								clearInner(para);
-								para.parentNode.removeChild(para);
-							}
-						}
-					});
-	return type_select;
-}
-
 function setSubmitFunction(submitButton, type_select, projectKey, id) {
 	submitButton.onclick = function() {
 		var summary = document.getElementById('form-input-name').value;

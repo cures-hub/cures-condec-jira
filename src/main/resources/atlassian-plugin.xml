@@ -58,6 +58,8 @@
 			location="/js/treeview.decision.documentation.js" />
 		<resource type="download" name="java.communicator.js"
 			location="/js/java.communicator.js" />
+		<resource type="download" name="context.menu.decision.documentation.js"
+			location="/js/context.menu.decision.documentation.js" />
 		<resource type="download" name="decision.documentation.js"
 			location="/js/decision.documentation.js" />
 	</web-resource>
