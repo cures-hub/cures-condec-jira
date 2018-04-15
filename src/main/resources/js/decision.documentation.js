@@ -1,6 +1,5 @@
-var knowledgeTypes = [ "Alternative", "Argument", "Assessment", "Assumption",
-		"Claim", "Constraint", "Context", "Goal", "Implication", "Issue",
-		"Problem", "Solution" ];
+var knowledgeTypes = [ "Alternative", "Argument", "Assessment", "Assumption", "Claim",
+		"Constraint", "Context", "Goal", "Implication", "Issue", "Problem", "Solution" ];
 
 function initializeSite() {
 	buildTreeViewer(getProjectKey());
@@ -17,20 +16,12 @@ function initializeSite() {
 	createDecisionButton.addEventListener('click', function() {
 		var tempDecString = DecisionInputField.value;
 		DecisionInputField.value = "";
-		createDecisionKnowledgeElement(tempDecString, "Decision",
-				function(data) {
-					AJS.flag({
-						type : 'success',
-						close : 'auto',
-						title : 'Success',
-						body : 'Decision has been created'
-					});
-					var tree = $('#evts').jstree(true);
-					var nodeId = tree.create_node('#', data, 'last', tree
-							.redraw(true), true);
-					tree.deselect_all();
-					tree.select_node(nodeId);
-				});
+		createDecisionKnowledgeElement(tempDecString, "Decision", function(newId) {
+			var tree = $('#evts').jstree(true);
+			var nodeId = tree.create_node('#', newId, 'last', tree.redraw(true), true);
+			tree.deselect_all();
+			tree.select_node(nodeId);
+		});
 	});
 	/*ClickHandler for the Editor Button*/
 	var viewEditorButton = document.getElementById("view-editor");
@@ -50,8 +41,7 @@ function initializeSite() {
 	});
 	var DepthOfTreeInput = document.getElementById("depthOfTreeInput");
 	DepthOfTreeInput.addEventListener('input', function() {
-		var DepthOfTreeWarningLabel = document
-				.getElementById("DepthOfTreeWarning");
+		var DepthOfTreeWarningLabel = document.getElementById("DepthOfTreeWarning");
 		if (this.value > 0) {
 			DepthOfTreeWarningLabel.style.visibility = "hidden";
 		} else {
@@ -88,11 +78,6 @@ function closeModal() {
 	}
 }
 
-/*
- Source: https://stackoverflow.com/users/2234742/maximillian-laumeister
- Maximillian Laumeister
- Software Developer at Tanzle
- */
 function clearInner(node) {
 	while (node.hasChildNodes()) {
 		clear(node.firstChild);
@@ -107,7 +92,6 @@ function clear(node) {
 }
 
 function setContent() {
-
 	var content = document.getElementById('modal-content');
 	content
 			.insertAdjacentHTML(
@@ -128,8 +112,7 @@ function setContent() {
 											'afterEnd',
 											'<p id="type-of-argument-para"><label for="type-of-argument" style="display:block;width:45%;float:left;">Type of Argument</label><input type="radio" name="type-of-argument" value="pro" checked="checked">Pro<input type="radio" name="type-of-argument" value="contra">Contra<input type="radio" name="type-of-argument" value="comment">Comment</p>');
 						} else {
-							var para = document
-									.getElementById("type-of-argument-para");
+							var para = document.getElementById("type-of-argument-para");
 							if (para) {
 								clearInner(para);
 								para.parentNode.removeChild(para);
@@ -144,32 +127,27 @@ function setSubmitFunction(submitButton, type_select, projectKey, id) {
 		var summary = document.getElementById('form-input-name').value;
 		var type = type_select.val();
 		if (type === "Argument") {
-			var argumentCheckBoxGroup = document
-					.getElementsByName("type-of-argument");
+			var argumentCheckBoxGroup = document.getElementsByName("type-of-argument");
 			for (var i = 0; i < argumentCheckBoxGroup.length; i++) {
 				if (argumentCheckBoxGroup[i].checked === true) {
 					var selectedNatureOfArgument = argumentCheckBoxGroup[i].value;
 					if (selectedNatureOfArgument === "pro") {
-						createDecisionKnowledgeElement(summary, type, function(
-								newId) {
+						createDecisionKnowledgeElement(summary, type, function(newId) {
 							createLink(id, newId, "support", function() {
 								buildTreeViewer(projectKey, newId);
 							});
 						});
 					} else if (selectedNatureOfArgument === "contra") {
-						createDecisionKnowledgeElement(summary, type, function(
-								newId) {
+						createDecisionKnowledgeElement(summary, type, function(newId) {
 							createLink(id, newId, "attack", function() {
 								buildTreeViewer(projectKey, newId);
 							});
 						});
 					} else if (selectedNatureOfArgument === "comment") {
-						createDecisionKnowledgeElement(summary, type, function(
-								newId) {
-							createLink(id, idOfNewObject, "comment",
-									function() {
-										buildTreeViewer(projectKey, newId);
-									});
+						createDecisionKnowledgeElement(summary, type, function(newId) {
+							createLink(id, idOfNewObject, "comment", function() {
+								buildTreeViewer(projectKey, newId);
+							});
 						});
 					}
 				}
