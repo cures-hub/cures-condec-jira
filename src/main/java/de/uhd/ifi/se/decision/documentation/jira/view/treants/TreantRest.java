@@ -6,7 +6,6 @@ import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
@@ -47,7 +46,7 @@ public class TreantRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Response getMessage(@QueryParam("projectKey") final String projectKey,
-			@QueryParam("issueKey") String issueKey, @QueryParam("depthOfTree") String depthOfTree)
+			@QueryParam("elementKey") String decisionKnowledgeElementKey, @QueryParam("depthOfTree") String depthOfTree)
 			throws GenericEntityException {
 		if (projectKey != null) {
 			ProjectManager projectManager = ComponentAccessor.getProjectManager();
@@ -57,7 +56,7 @@ public class TreantRest {
 				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(
 						ImmutableMap.of("error", "Cannot find project for the given query parameter 'projectKey'"))
 						.build();
-			} else if (issueKey != null) {
+			} else if (decisionKnowledgeElementKey != null) {
 				int depth;
 				if (depthOfTree != null) {
 					try {
@@ -68,8 +67,8 @@ public class TreantRest {
 				} else {
 					depth = 4;
 				}
-				Treant treantRestModel = this.createTreant(issueKey, depth, projectKey);
-				return Response.ok(treantRestModel).build();
+				Treant treant = this.createTreant(decisionKnowledgeElementKey, depth, projectKey);
+				return Response.ok(treant).build();
 			}
 		} else {
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error",

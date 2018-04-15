@@ -78,7 +78,7 @@ a:focus a:hover {
 	background-color: rgba(230, 230, 230, 1);
 }
 
-.ueberschrift {
+.editorheader {
 	font-weight: bold;
 	background: rgba(245, 245, 245, 1);
 	float: left;
@@ -88,12 +88,12 @@ a:focus a:hover {
 	text-align: center;
 }
 
-.ueberschrift:hover {
+.editorheader:hover {
 	color: black;
 	background: rgba(230, 230, 230, 1);
 }
 
-.ausklappbar {
+.foldout {
 	display: none;
 	float: left;
 	width: 93%;

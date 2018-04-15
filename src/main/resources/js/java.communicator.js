@@ -73,10 +73,9 @@ function createDecisionKnowledgeElement(summary, type, callback) {
 			"type" : type,
 			"description" : summary
 		};
-		postJSON(
-				AJS.contextPath()
-						+ "/rest/decisions/latest/decisions/createDecisionKnowledgeElement.json",
-				jsondata, function(error, decisionKnowledgeElement) {
+		postJSON(AJS.contextPath()
+				+ "/rest/decisions/latest/decisions/createDecisionKnowledgeElement.json", jsondata,
+				function(error, decisionKnowledgeElement) {
 					if (error == null) {
 						AJS.flag({
 							type : 'success',
@@ -90,8 +89,7 @@ function createDecisionKnowledgeElement(summary, type, callback) {
 							type : 'error',
 							close : 'auto',
 							title : 'Error',
-							body : type + ' has not been created. Error Code: '
-									+ error
+							body : type + ' has not been created. Error Code: ' + error
 						});
 					}
 				});
@@ -105,10 +103,8 @@ function editDecisionKnowledgeElement(id, summary, description, callback) {
 		"projectKey" : getProjectKey(),
 		"description" : description
 	};
-	postJSON(
-			AJS.contextPath()
-					+ "/rest/decisions/latest/decisions/updateDecisionKnowledgeElement.json",
-			jsondata,
+	postJSON(AJS.contextPath()
+			+ "/rest/decisions/latest/decisions/updateDecisionKnowledgeElement.json", jsondata,
 			function(error, decisionKnowledgeElement) {
 				if (error == null) {
 					AJS.flag({
@@ -119,14 +115,12 @@ function editDecisionKnowledgeElement(id, summary, description, callback) {
 					});
 					callback(decisionKnowledgeElement)
 				} else {
-					AJS
-							.flag({
-								type : 'error',
-								close : 'auto',
-								title : 'Error',
-								body : 'Decision knowledge element was not updated. Error Code: '
-										+ error
-							});
+					AJS.flag({
+						type : 'error',
+						close : 'auto',
+						title : 'Error',
+						body : 'Decision knowledge element was not updated. Error Code: ' + error
+					});
 				}
 			});
 }
@@ -136,10 +130,8 @@ function deleteDecisionKnowledgeElement(id, callback) {
 		"id" : id,
 		"projectKey" : getProjectKey()
 	};
-	deleteJSON(
-			AJS.contextPath()
-					+ "/rest/decisions/latest/decisions/deleteDecisionKnowledgeElement.json",
-			jsondata,
+	deleteJSON(AJS.contextPath()
+			+ "/rest/decisions/latest/decisions/deleteDecisionKnowledgeElement.json", jsondata,
 			function(error, decisionKnowledgeElement) {
 				if (error == null) {
 					AJS.flag({
@@ -150,14 +142,12 @@ function deleteDecisionKnowledgeElement(id, callback) {
 					});
 					callback()
 				} else {
-					AJS
-							.flag({
-								type : 'error',
-								close : 'auto',
-								title : 'Error',
-								body : 'Decision knowledge element was not deleted. Error Code: '
-										+ error
-							});
+					AJS.flag({
+						type : 'error',
+						close : 'auto',
+						title : 'Error',
+						body : 'Decision knowledge element was not deleted. Error Code: ' + error
+					});
 				}
 			});
 }
@@ -168,8 +158,7 @@ function createLink(parentId, childId, linkType, callback) {
 		"ingoingId" : childId,
 		"outgoingId" : parentId
 	};
-	putJSON(AJS.contextPath()
-			+ "/rest/decisions/latest/decisions/createLink.json?projectKey="
+	putJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLink.json?projectKey="
 			+ getProjectKey(), jsondata, function(error, link) {
 		if (error == null) {
 			AJS.flag({
@@ -196,8 +185,7 @@ function deleteLink(parentId, childId, linkType, callback) {
 		"ingoingId" : childId,
 		"outgoingId" : parentId
 	};
-	deleteJSON(AJS.contextPath()
-			+ "/rest/decisions/latest/deleteLink.json?projectKey="
+	deleteJSON(AJS.contextPath() + "/rest/decisions/latest/deleteLink.json?projectKey="
 			+ getProjectKey(), jsondata, function(error, link) {
 		if (error == null) {
 			AJS.flag({
