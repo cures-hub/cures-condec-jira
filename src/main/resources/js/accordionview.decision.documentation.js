@@ -96,12 +96,6 @@ function fillAccordion(data, projectKey, node) {
     var updateButton = document.getElementById("updateIssue");
     updateButton.addEventListener('click', function () {
         editDecisionComponent(node.id, node.summary, document.getElementById("IssueDescription").value, function () {
-            AJS.flag({
-                type: 'success',
-                close: 'auto',
-                title: 'Success',
-                body: 'Decision component has been updated.'
-            });
             buildTreeViewer(projectKey, node.id);
         });
     });
@@ -120,12 +114,6 @@ function fillAccordion(data, projectKey, node) {
             linkButton.addEventListener('click', function () {
 
                 createLink(node.id, $('select[name="linkExistingIssueSearchField"] option:selected').val() /*$("#linkExistingIssueSearchField")[0].value*/, "contain", function () {
-                    AJS.flag({
-                        type: 'success',
-                        close: 'auto',
-                        title: 'Success',
-                        body: 'Link has been created.'
-                    });
                     buildTreeViewer(projectKey, node.key);
                 });
                 singleSelect.value = '';
