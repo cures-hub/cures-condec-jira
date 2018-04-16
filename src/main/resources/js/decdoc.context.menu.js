@@ -35,7 +35,8 @@ function setUpContextMenuContentForCreateAction(id) {
 		var summary = document.getElementById('form-input-summary').value;
 		var description = document.getElementById('form-input-description').value;
 		var type = typeSelectionField.val();
-		// TODO: Enable to show arguments. They are currently not shown due to an inward-outward link problem.
+		// TODO: Enable to show arguments. They are currently not shown due to
+		// an inward-outward link problem.
 		switch (type) {
 		case "Pro Argument":
 			createDecisionKnowledgeElement(summary, description, "Argument", function(newId) {
@@ -90,35 +91,39 @@ var contextMenuCreateAction = {
 	}
 }
 
-function setUpContextMenuContentForEditAction(id, summary) {
+function setUpContextMenuContentForEditAction(id) {
 	setUpModal();
 	setHeaderText(editKnowledgeElementText);
+	getDecisionKnowledgeElement(
+			id,
+			getProjectKey(),
+			function(decisionKnowledgeElement) {
+				var summary = decisionKnowledgeElement.summary;
+				var description = decisionKnowledgeElement.description;
 
-	// TODO Get description for id using DecisionsRest API
-	var description = "";
+				var content = document.getElementById("modal-content");
+				content
+						.insertAdjacentHTML(
+								"afterBegin",
+								"<p><label for='form-input-summary' style='display:block;width:45%;float:left;'>Summary:</label>"
+										+ "<input id='form-input-summary' type='text' placeholder='Summary' style='width:50%;' value='"
+										+ summary
+										+ "'/></p>"
+										+ "<p><label for='form-input-description' style='display:block;width:45%;float:left;'>Description:</label>"
+										+ "<input id='form-input-description' type='text' placeholder='Description' style='width:50%;' value='"
+										+ description + "'/></p><p><input id='form-input-submit' type='submit' value="
+										+ editKnowledgeElementText + " style='float:right;'/></p>");
 
-	var content = document.getElementById("modal-content");
-	content
-			.insertAdjacentHTML(
-					"afterBegin",
-					"<p><label for='form-input-summary' style='display:block;width:45%;float:left;'>Summary:</label>"
-							+ "<input id='form-input-summary' type='text' placeholder='Summary' style='width:50%;' value='"
-							+ summary
-							+ "'/></p>"
-							+ "<p><label for='form-input-description' style='display:block;width:45%;float:left;'>Description:</label>"
-							+ "<input id='form-input-description' type='text' placeholder='Description' style='width:50%;' value='"
-							+ description + "'/></p><p><input id='form-input-submit' type='submit' value="
-							+ editKnowledgeElementText + " style='float:right;'/></p>");
-
-	var submitButton = document.getElementById("form-input-submit");
-	submitButton.onclick = function() {
-		var summary = document.getElementById("form-input-summary").value;
-		var description = document.getElementById("form-input-description").value;
-		editDecisionKnowledgeElement(id, summary, description, function() {
-			buildTreeViewer(getProjectKey(), id);
-		});
-		closeModal();
-	};
+				var submitButton = document.getElementById("form-input-submit");
+				submitButton.onclick = function() {
+					var summary = document.getElementById("form-input-summary").value;
+					var description = document.getElementById("form-input-description").value;
+					editDecisionKnowledgeElement(id, summary, description, function() {
+						buildTreeViewer(getProjectKey(), id);
+					});
+					closeModal();
+				};
+			});
 }
 
 var contextMenuEditAction = {
@@ -130,16 +135,14 @@ var contextMenuEditAction = {
 	"action" : function(node) {
 		var treeNode = getSelectedTreeViewerNode(node);
 		var id = treeNode.id;
-		var summary = treeNode.summary;
-		setUpContextMenuContentForEditAction(id, summary);
+		// var summary = treeNode.summary;
+		setUpContextMenuContentForEditAction(id);
 	},
 	// callback is used in Treant context menu
 	"callback" : function(key, options) {
 		var context = options.$trigger.context;
 		var id = context.id;
-		// TODO Get summary from DecisionsRest
-		var summary = "";
-		setUpContextMenuContentForEditAction(id, summary);
+		setUpContextMenuContentForEditAction(id);
 	}
 }
 
