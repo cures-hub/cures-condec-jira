@@ -104,10 +104,9 @@ public class TreeViewerRest {
 			Data parent = children.get(index);
 			if(!containdIdList.contains(parent.getId())){
 				containdIdList.add(parent.getId());
-				parent.setId_prefix("First");
 				children.addAll(parent.getChildren());
 			} else {
-				parent.setId_prefix("Second");
+				parent.setId("Second-"+parent.getId());
 				children.addAll(parent.getChildren());
 			}
 			index++;
