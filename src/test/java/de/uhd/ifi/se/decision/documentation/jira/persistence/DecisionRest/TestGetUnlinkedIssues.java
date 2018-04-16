@@ -27,39 +27,49 @@ public class TestGetUnlinkedIssues extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		decRest= new DecisionsRest();
+		decRest = new DecisionsRest();
 		initialisation();
 		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
 	}
 
 	@Test
 	public void testIssueIdZeroProjectKeyNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey or issueId = null")).build().getEntity(),decRest.getUnlinkedDecisionComponents(0, null).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error",
+						"Unlinked decision components could not be received due to a bad request (element id or project key was missing)."))
+				.build().getEntity(), decRest.getUnlinkedDecisionComponents(0, null).getEntity());
 	}
 
 	@Test
 	public void testIssueIdFilledProjectKeyNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey or issueId = null")).build().getEntity(),decRest.getUnlinkedDecisionComponents(7, null).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error",
+						"Unlinked decision components could not be received due to a bad request (element id or project key was missing)."))
+				.build().getEntity(), decRest.getUnlinkedDecisionComponents(7, null).getEntity());
 	}
 
-//	@Test
-//	public void testIssueIdZeroProjectKeyDontExist() {
-//		assertEquals(200, decRest.getUnlinkedDecisionComponents(0, "NotTEST").getStatus());
-//	}
+	// @Test
+	// public void testIssueIdZeroProjectKeyDontExist() {
+	// assertEquals(200, decRest.getUnlinkedDecisionComponents(0,
+	// "NotTEST").getStatus());
+	// }
 
-//	@Test
-//	public void testIssueIdFilledProjectKeyDontExist() {
-//		assertEquals(200,decRest.getUnlinkedDecisionComponents(7, "NotTEST").getStatus());
-//	}
+	// @Test
+	// public void testIssueIdFilledProjectKeyDontExist() {
+	// assertEquals(200,decRest.getUnlinkedDecisionComponents(7,
+	// "NotTEST").getStatus());
+	// }
 
-//	@Test
-//	public void testIssueIdZeroProjectKeyExist() {
-//		assertEquals(200,decRest.getUnlinkedDecisionComponents(0, "TEST").getStatus());
-//	}
+	// @Test
+	// public void testIssueIdZeroProjectKeyExist() {
+	// assertEquals(200,decRest.getUnlinkedDecisionComponents(0,
+	// "TEST").getStatus());
+	// }
 
-//	@Test
-//	public void testIssueIdFilledProjectKeyExist() {
-//		assertEquals(200,decRest.getUnlinkedDecisionComponents(7, "TEST").getStatus());
-//	}
+	// @Test
+	// public void testIssueIdFilledProjectKeyExist() {
+	// assertEquals(200,decRest.getUnlinkedDecisionComponents(7,
+	// "TEST").getStatus());
+	// }
 
 }
