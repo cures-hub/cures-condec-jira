@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -64,7 +65,9 @@ public class TreeViewerRest {
 		for (int index = 0; index < decisions.size(); ++index) {
 			dataSet.add(createData(decisions.get(index)));
 		}
+		addIdPrefix(dataSet);
 		core.setData(dataSet);
+
 		return core;
 	}
 
@@ -90,5 +93,24 @@ public class TreeViewerRest {
 		data.setChildren(childrenToData);
 
 		return data;
+	}
+
+	private void addIdPrefix(HashSet<Data> datas){
+		List<String> containdIdList = new ArrayList<>();
+		ArrayList<Data> children = new ArrayList<>();
+		children.addAll(datas);
+		int index = 0;
+		while (index < children.size()) {
+			Data parent = children.get(index);
+			if(!containdIdList.contains(parent.getId())){
+				containdIdList.add(parent.getId());
+				parent.setId_prefix("First");
+				children.addAll(parent.getChildren());
+			} else {
+				parent.setId_prefix("Second");
+				children.addAll(parent.getChildren());
+			}
+			index++;
+		}
 	}
 }

@@ -11,6 +11,9 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class Data {
 	@XmlElement
+	private  String id_prefix;
+
+	@XmlElement
 	private String id;
 
 	@XmlElement
@@ -23,6 +26,10 @@ public class Data {
 	private DecisionKnowledgeElement nodeInfo;
 
 	public Data(){}
+
+	public String getId_prefix() { return id_prefix;	}
+
+	public  void setId_prefix(String prefix) { this.id_prefix = prefix; }
 
 	public String getId() {
 		return id;
