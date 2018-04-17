@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -35,9 +34,8 @@ public class TreeViewerRest {
 			Project project = projectManager.getProjectObjByKey(projectKey);
 			if (project == null) {
 				LOGGER.error("getMessage no project with this ProjectKey found");
-				return Response.status(Status.INTERNAL_SERVER_ERROR).entity(
-						ImmutableMap.of("error", "Cannot find project for the given query parameter 'projectKey'"))
-						.build();
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(ImmutableMap.of("error", "Cannot find project for the given query parameter 'projectKey'")).build();
 			} else {
 				StrategyProvider strategyProvider = new StrategyProvider();
 				strategy = strategyProvider.getStrategy(projectKey);
@@ -47,8 +45,9 @@ public class TreeViewerRest {
 		} else {
 			// projectKey is not provided as a query parameter
 			LOGGER.error("getMessage ProjectKey is NULL");
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error",
-					"Query parameter 'projectKey' is not provided, please add a valid projectKey")).build();
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Query parameter 'projectKey' is not provided, please add a valid projectKey"))
+					.build();
 		}
 	}
 
@@ -81,7 +80,6 @@ public class TreeViewerRest {
 		data.setText(decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getSummary());
 		data.setId(String.valueOf(decisionKnowledgeElement.getId()));
 
-
 		data.setNodeInfo(decisionKnowledgeElement);
 
 		List<DecisionKnowledgeElement> children = strategy.getChildren(decisionKnowledgeElement);
@@ -95,18 +93,18 @@ public class TreeViewerRest {
 		return data;
 	}
 
-	private void addIdPrefix(HashSet<Data> datas){
+	private void addIdPrefix(HashSet<Data> datas) {
 		List<String> containdIdList = new ArrayList<>();
 		ArrayList<Data> children = new ArrayList<>();
 		children.addAll(datas);
 		int index = 0;
 		while (index < children.size()) {
 			Data parent = children.get(index);
-			if(!containdIdList.contains(parent.getId())){
+			if (!containdIdList.contains(parent.getId())) {
 				containdIdList.add(parent.getId());
 				children.addAll(parent.getChildren());
 			} else {
-				parent.setId("Second-"+parent.getId());
+				parent.setId(index + parent.getId());
 				children.addAll(parent.getChildren());
 			}
 			index++;

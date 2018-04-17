@@ -17,16 +17,13 @@ function addOptionToDecisionComponent(type, parentNode) {
 			var createDecisionKnowledgeElementButton = document.getElementById("CreateAndLinkDecisionComponent" + type);
 			var inputField = document.getElementById("inputField" + type);
 			createDecisionKnowledgeElementButton.addEventListener('click', function() {
-				var tempString = inputField.value;
+				var summary = inputField.value;
 				inputField.value = "";
 				var description = "TODO";
-				createDecisionKnowledgeElement(tempString, description, type, function(newId) {
+				createDecisionKnowledgeElement(summary, description, type, function(newId) {
 					createLink(parentNode.id, newId, "contain", function() {
+						buildTreeViewer(getProjectKey(), newId);
 					});
-					var tree = $('#evts').jstree(true);
-					var nodeId = tree.create_node('' + parentNode.id, data, 'last', tree.redraw(true), true);
-					tree.deselect_all();
-					tree.select_node(nodeId);
 				});
 			});
 		}
@@ -44,7 +41,7 @@ function addOptionToDecisionComponent(type, parentNode) {
 		var createDecisionKnowledgeElementButton = document.getElementById("CreateAndLinkDecisionComponent" + type);
 		var inputField = document.getElementById("inputField" + type);
 		createDecisionKnowledgeElementButton.addEventListener('click', function() {
-			var tempString = inputField.value;
+			var summary = inputField.value;
 			var description = "TODO";
 			inputField.value = "";
 			var argumentCheckBoxGroup = document.getElementsByName("natureOfArgument");
@@ -52,31 +49,22 @@ function addOptionToDecisionComponent(type, parentNode) {
 				if (argumentCheckBoxGroup[i].checked === true) {
 					var selectedNatureOfArgument = argumentCheckBoxGroup[i].value;
 					if (selectedNatureOfArgument === "pro") {
-						createDecisionKnowledgeElement(tempString, description, type, function(newId) {
+						createDecisionKnowledgeElement(summary, description, type, function(newId) {
 							createLink(parentNode.id, newId, "support", function() {
+								buildTreeViewer(getProjectKey(), newId);
 							});
-							var tree = $('#evts').jstree(true);
-							var nodeId = tree.create_node('' + parentNode.id, data, 'last', tree.redraw(true), true);
-							tree.deselect_all();
-							tree.select_node(nodeId);
 						});
 					} else if (selectedNatureOfArgument === "contra") {
-						createDecisionKnowledgeElement(tempString, description, type, function(newId) {
+						createDecisionKnowledgeElement(summary, description, type, function(newId) {
 							createLink(parentNode.id, newId, "attack", function() {
+								buildTreeViewer(getProjectKey(), newId);
 							});
-							var tree = $('#evts').jstree(true);
-							var nodeId = tree.create_node('' + parentNode.id, data, 'last', tree.redraw(true), true);
-							tree.deselect_all();
-							tree.select_node(nodeId);
 						});
 					} else if (selectedNatureOfArgument === "comment") {
-						createDecisionKnowledgeElement(tempString, description, type, function(newId) {
+						createDecisionKnowledgeElement(summary, description, type, function(newId) {
 							createLink(parentNode.id, newId, "comment", function() {
+								buildTreeViewer(getProjectKey(), newId);
 							});
-							var tree = $('#evts').jstree(true);
-							var nodeId = tree.create_node('' + parentNode.id, data, 'last', tree.redraw(true), true);
-							tree.deselect_all();
-							tree.select_node(nodeId);
 						});
 					}
 				}
@@ -92,18 +80,15 @@ function addOptionToDecisionComponent(type, parentNode) {
 		var createDecisionKnowledgeElementButton = document.getElementById("CreateAndLinkDecisionComponent" + type);
 		createDecisionKnowledgeElementButton.addEventListener('click', function() {
 			var inputField = document.getElementById("inputField" + type);
-			var tempString = inputField.value;
+			var summary = inputField.value;
 			var description = "TODO";
 			inputField.value = "";
-			createDecisionKnowledgeElement(tempString, description, type, function(newId) {
+			createDecisionKnowledgeElement(summary, description, type, function(newId) {
 				console.log(parentNode);
 				console.log(newId);
 				createLink(parentNode.id, newId, "contain", function() {
+					buildTreeViewer(getProjectKey(), newId);
 				});
-				var tree = $('#evts').jstree(true);
-				var nodeId = tree.create_node('' + parentNode.id, data, 'last', tree.redraw(true), true);
-				tree.deselect_all();
-				tree.select_node(nodeId);
 			});
 		});
 	}
