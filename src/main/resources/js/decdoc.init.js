@@ -14,13 +14,10 @@ function initializeSite() {
 	var createDecisionButton = document.getElementById("CreateDecision");
 	var DecisionInputField = document.getElementById("DecisionInputField");
 	createDecisionButton.addEventListener('click', function() {
-		var tempDecString = DecisionInputField.value;
+		var summary = DecisionInputField.value;
 		DecisionInputField.value = "";
-		createDecisionKnowledgeElement(tempDecString, "TODO", "Decision", function(newId) {
-			var tree = $('#evts').jstree(true);
-			var nodeId = tree.create_node('#', newId, 'last', tree.redraw(true), true);
-			tree.deselect_all();
-			tree.select_node(nodeId);
+		createDecisionKnowledgeElement(summary, "", "Decision", function(newId) {
+			buildTreeViewer(getProjectKey(), newId);
 		});
 	});
 	/* ClickHandler for the Editor Button */
