@@ -185,6 +185,16 @@ function getProjectKey() {
 	return stringArray[stringArray.length - 1];
 }
 
+function getTreantUrl(projectKey, key, depthOfTree){
+    return AJS.contextPath() + "/rest/treantsrest/latest/treant.json?projectKey="
+    + projectKey + "&elementKey=" + key + "&depthOfTree=" + depthOfTree;
+}
+
+function getTreeView(projectKey){
+    return AJS.contextPath() + "/rest/treeviewerrest/latest/treeviewer.json?projectKey="
+    + projectKey;
+}
+
 function showFlag(type, message) {
 	AJS.flag({
 		type : type,
