@@ -111,10 +111,11 @@ function createDecisionKnowledgeElement(summary, description, type, callback) {
 	}
 }
 
-function editDecisionKnowledgeElement(id, summary, description, callback) {
+function editDecisionKnowledgeElement(id, summary, description, type, callback) {
 	var jsondata = {
 		"id" : id,
 		"summary" : summary,
+        "type": type,
 		"projectKey" : getProjectKey(),
 		"description" : description
 	};

@@ -89,9 +89,29 @@ function setUpContextMenuContentForEditAction(id) {
 				submitButton.onclick = function() {
 					var summary = document.getElementById("form-input-summary").value;
 					var description = document.getElementById("form-input-description").value;
-					editDecisionKnowledgeElement(id, summary, description, function() {
-						buildTreeViewer(getProjectKey(), id);
-					});
+					var type = typeSelectionField.val();
+
+                    switch (type) {
+                        case "Pro Argument":
+                            editDecisionKnowledgeElement(id, summary, description,"Argument", function() {
+                                buildTreeViewer(getProjectKey(), id);
+                            });
+                            break;
+                        case "Contra Argument":
+                            editDecisionKnowledgeElement(id, summary, description,"Argument", function() {
+                                buildTreeViewer(getProjectKey(), id);
+                            });
+                            break;
+                        case "Comment":
+                            editDecisionKnowledgeElement(id, summary, description,"Argument", function() {
+                                buildTreeViewer(getProjectKey(), id);
+                            });
+                            break;
+                        default:
+                            editDecisionKnowledgeElement(id, summary, description, type, function() {
+                                buildTreeViewer(getProjectKey(), id);
+                            });
+                    }
 					closeModal();
 				};
 			});
@@ -202,9 +222,9 @@ function setUpContent(summary, description) {
     content.insertAdjacentHTML(
             "afterBegin",
             "<p><label for='form-input-summary' style='display:block;width:45%;float:left;'>Summary:</label>"
-            + "<input id='form-input-summary' type='text' placeholder='" + summary +"' style='width:50%;'/></p>"
+            + "<input id='form-input-summary' type='text' value='" + summary +"' style='width:50%;'/></p>"
             + "<p><label for='form-input-description' style='display:block;width:45%;float:left;'>Description:</label>"
-            + "<input id='form-input-description' type='text' placeholder='"+ description + "' style='width:50%;'/></p>"
+            + "<input id='form-input-description' type='text' value='"+ description + "' style='width:50%;'/></p>"
             + "<p><label for='form-select-type' style='display:block;width:45%;float:left;'>Knowledge type:</label>"
             + "<select name='form-select-type' style='width:50%;'/></p>"
             + "<p><input id='form-input-submit' type='submit' value='" + createKnowledgeElementText
