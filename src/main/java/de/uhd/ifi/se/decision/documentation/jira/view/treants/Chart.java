@@ -23,6 +23,9 @@ public class Chart {
 	@XmlElement
 	private int subTreeSeparation;
 
+	@XmlElement
+	private Map<String, Boolean> node;
+
 	public Chart() {
 		this.container = "#treant-container";
 		this.connectors = ImmutableMap.of("type", "straight");
@@ -30,5 +33,6 @@ public class Chart {
 		this.levelSeparation = 30;
 		this.siblingSeparation = 30;
 		this.subTreeSeparation = 30;
+		this.node = ImmutableMap.of("collapsable", true);
 	}
 }
