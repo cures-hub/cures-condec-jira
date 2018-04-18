@@ -1,6 +1,5 @@
 function buildTreeViewer(projectKey, nodeId) {
-	var treeJSONUrl = AJS.contextPath() + "/rest/treeviewerrest/latest/treeviewer.json?projectKey="
-			+ projectKey;
+	var treeJSONUrl = getTreeView(projectKey);
 	getJSON(treeJSONUrl, function(err, data) {
 		if (err !== null) {
 			displayGetJsonError(err);

@@ -1,7 +1,6 @@
 function buildTreant(projectKey, node) {
 	var depthOfTree = document.getElementById("depthOfTreeInput").value;
-	var treantUrl = AJS.contextPath() + "/rest/treantsrest/latest/treant.json?projectKey="
-			+ projectKey + "&elementKey=" + node.key + "&depthOfTree=" + depthOfTree;
+	var treantUrl = getTreantUrl(projectKey, node.key, depthOfTree);
 	getJSON(
 			treantUrl,
 			function(error, treant) {
