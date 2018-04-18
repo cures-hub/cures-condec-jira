@@ -70,6 +70,7 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 							if (databaseEntry.getId() == decisionKnowledgeElement.getId()) {
 								databaseEntry.setSummary(decisionKnowledgeElement.getSummary());
 								databaseEntry.setDescription(decisionKnowledgeElement.getDescription());
+                                databaseEntry.setType(decisionKnowledgeElement.getType());
 								databaseEntry.save();
 								return databaseEntry;
 							}

@@ -79,6 +79,8 @@ public class IssueStrategy extends PersistenceStrategy {
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
 		issueInputParameters.setSummary(decisionElement.getSummary());
 		issueInputParameters.setDescription(decisionElement.getDescription());
+		String issueTypeId = getIssueTypeId(decisionElement.getType());
+		issueInputParameters.setIssueTypeId(issueTypeId);
 		IssueService.UpdateValidationResult result = issueService.validateUpdate(user, issueToBeUpdated.getId(),
 				issueInputParameters);
 		if (result.getErrorCollection().hasAnyErrors()) {
