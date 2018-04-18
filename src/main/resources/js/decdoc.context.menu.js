@@ -10,7 +10,7 @@ function setHeaderText(headerText) {
 function setUpContextMenuContentForCreateAction(id) {
 	setUpModal();
 	setHeaderText(createKnowledgeElementText);
-	setUpContent("Summary"," Description");
+	var typeSelectionField = setUpContent("Summary"," Description");
 
 	var submitButton = document.getElementById("form-input-submit");
 	submitButton.onclick = function() {
@@ -83,14 +83,7 @@ function setUpContextMenuContentForEditAction(id) {
 				var summary = decisionKnowledgeElement.summary;
 				var description = decisionKnowledgeElement.description;
 
-				setUpContent(summary, description);
-
-                var typeSelectionField = $("select[name='form-select-type']");
-
-				for (var index = 0; index < knowledgeTypes.length; index++) {
-                    typeSelectionField[0].insertAdjacentHTML("beforeend", "<option value='" + knowledgeTypes[index] + "'>"
-                        + knowledgeTypes[index] + "</option>");
-                }
+                var typeSelectionField =  setUpContent(summary, description);
 
 				var submitButton = document.getElementById("form-input-submit");
 				submitButton.onclick = function() {
@@ -223,5 +216,5 @@ function setUpContent(summary, description) {
         typeSelectionField[0].insertAdjacentHTML("beforeend", "<option value='" + knowledgeTypes[index] + "'>"
             + knowledgeTypes[index] + "</option>");
     }
-    return content;
+    return typeSelectionField;
 }
