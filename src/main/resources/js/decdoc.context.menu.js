@@ -10,25 +10,7 @@ function setHeaderText(headerText) {
 function setUpContextMenuContentForCreateAction(id) {
 	setUpModal();
 	setHeaderText(createKnowledgeElementText);
-	var content = document.getElementById("modal-content");
-	content
-			.insertAdjacentHTML(
-					"afterBegin",
-					"<p><label for='form-input-summary' style='display:block;width:45%;float:left;'>Summary:</label>"
-							+ "<input id='form-input-summary' type='text' placeholder='Summary' style='width:50%;'/></p>"
-							+ "<p><label for='form-input-description' style='display:block;width:45%;float:left;'>Description:</label>"
-							+ "<input id='form-input-description' type='text' placeholder='Description' style='width:50%;'/></p>"
-							+ "<p><label for='form-select-type' style='display:block;width:45%;float:left;'>Knowledge type:</label>"
-							+ "<select name='form-select-type' style='width:50%;'/></p>"
-							+ "<p><input id='form-input-submit' type='submit' value='" + createKnowledgeElementText
-							+ "' style='float:right;'/></p>");
-
-	var typeSelectionField = $("select[name='form-select-type']");
-
-	for (var index = 0; index < knowledgeTypes.length; index++) {
-		typeSelectionField[0].insertAdjacentHTML("beforeend", "<option value='" + knowledgeTypes[index] + "'>"
-				+ knowledgeTypes[index] + "</option>");
-	}
+	setUpContent("Summary"," Description");
 
 	var submitButton = document.getElementById("form-input-submit");
 	submitButton.onclick = function() {
@@ -101,18 +83,14 @@ function setUpContextMenuContentForEditAction(id) {
 				var summary = decisionKnowledgeElement.summary;
 				var description = decisionKnowledgeElement.description;
 
-				var content = document.getElementById("modal-content");
-				content
-						.insertAdjacentHTML(
-								"afterBegin",
-								"<p><label for='form-input-summary' style='display:block;width:45%;float:left;'>Summary:</label>"
-										+ "<input id='form-input-summary' type='text' placeholder='Summary' style='width:50%;' value='"
-										+ summary
-										+ "'/></p>"
-										+ "<p><label for='form-input-description' style='display:block;width:45%;float:left;'>Description:</label>"
-										+ "<input id='form-input-description' type='text' placeholder='Description' style='width:50%;' value='"
-										+ description + "'/></p><p><input id='form-input-submit' type='submit' value="
-										+ editKnowledgeElementText + " style='float:right;'/></p>");
+				setUpContent(summary, description);
+
+                var typeSelectionField = $("select[name='form-select-type']");
+
+				for (var index = 0; index < knowledgeTypes.length; index++) {
+                    typeSelectionField[0].insertAdjacentHTML("beforeend", "<option value='" + knowledgeTypes[index] + "'>"
+                        + knowledgeTypes[index] + "</option>");
+                }
 
 				var submitButton = document.getElementById("form-input-submit");
 				submitButton.onclick = function() {
@@ -224,4 +202,26 @@ function closeModal() {
 	if (modalContent) {
 		clearInner(modalContent);
 	}
+}
+
+function setUpContent(summary, description) {
+    var content = document.getElementById("modal-content");
+    content.insertAdjacentHTML(
+            "afterBegin",
+            "<p><label for='form-input-summary' style='display:block;width:45%;float:left;'>Summary:</label>"
+            + "<input id='form-input-summary' type='text' placeholder='" + summary +"' style='width:50%;'/></p>"
+            + "<p><label for='form-input-description' style='display:block;width:45%;float:left;'>Description:</label>"
+            + "<input id='form-input-description' type='text' placeholder='"+ description + "' style='width:50%;'/></p>"
+            + "<p><label for='form-select-type' style='display:block;width:45%;float:left;'>Knowledge type:</label>"
+            + "<select name='form-select-type' style='width:50%;'/></p>"
+            + "<p><input id='form-input-submit' type='submit' value='" + createKnowledgeElementText
+            + "' style='float:right;'/></p>");
+
+    var typeSelectionField = $("select[name='form-select-type']");
+
+    for (var index = 0; index < knowledgeTypes.length; index++) {
+        typeSelectionField[0].insertAdjacentHTML("beforeend", "<option value='" + knowledgeTypes[index] + "'>"
+            + knowledgeTypes[index] + "</option>");
+    }
+    return content;
 }
