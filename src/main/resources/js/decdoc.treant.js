@@ -28,7 +28,7 @@ function buildTreant(projectKey, node) {
 				}
 			});
 }
-
+//TODO Bug appear point after selecting a Element in Treeview
 function createContextMenuForTreeNodes(projectKey) {
 	$(function() {
 		$.contextMenu({
