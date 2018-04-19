@@ -42,6 +42,7 @@
 		<resource type="download" name="jquery.easing.js" location="/js/treant/jquery.easing.js" />
 		<!-- jQuery -->
 		<resource type="download" name="jquery.js" location="/js/jquery/jquery.js" />
+		<resource type="download" name="jquery-migrate-3.0.0.min.js" location="/js/jquery/jquery-migrate-3.0.0.min.js"/>
 		<!-- jstree -->
 		<resource type="download" name="jstree.js" location="/js/jstree/jstree.js" />
 		<!-- jquery.contextMenu -->
