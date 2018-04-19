@@ -10,13 +10,13 @@ function setHeaderText(headerText) {
 function setUpContextMenuContentForCreateAction(id) {
 	setUpModal();
 	setHeaderText(createKnowledgeElementText);
-	var typeSelectionField = setUpContent("Summary"," Description");
+	setUpContextMenuContent("", "", createKnowledgeElementText);
 
 	var submitButton = document.getElementById("form-input-submit");
 	submitButton.onclick = function() {
 		var summary = document.getElementById('form-input-summary').value;
 		var description = document.getElementById('form-input-description').value;
-		var type = typeSelectionField.val();
+		var type = $("select[name='form-select-type']").val();
 		// TODO: Enable to show arguments. They are currently not shown due to
 		// an inward-outward link problem.
 		switch (type) {
@@ -76,45 +76,41 @@ var contextMenuCreateAction = {
 function setUpContextMenuContentForEditAction(id) {
 	setUpModal();
 	setHeaderText(editKnowledgeElementText);
-	getDecisionKnowledgeElement(
-			id,
-			getProjectKey(),
-			function(decisionKnowledgeElement) {
-				var summary = decisionKnowledgeElement.summary;
-				var description = decisionKnowledgeElement.description;
+	getDecisionKnowledgeElement(id, getProjectKey(), function(decisionKnowledgeElement) {
+		var summary = decisionKnowledgeElement.summary;
+		var description = decisionKnowledgeElement.description;
+		setUpContextMenuContent(summary, description, editKnowledgeElementText);
 
-                var typeSelectionField =  setUpContent(summary, description);
+		var submitButton = document.getElementById("form-input-submit");
+		submitButton.onclick = function() {
+			var summary = document.getElementById("form-input-summary").value;
+			var description = document.getElementById("form-input-description").value;
+			var type = $("select[name='form-select-type']").val();
 
-				var submitButton = document.getElementById("form-input-submit");
-				submitButton.onclick = function() {
-					var summary = document.getElementById("form-input-summary").value;
-					var description = document.getElementById("form-input-description").value;
-					var type = typeSelectionField.val();
-
-                    switch (type) {
-                        case "Pro Argument":
-                            editDecisionKnowledgeElement(id, summary, description,"Argument", function() {
-                                buildTreeViewer(getProjectKey(), id);
-                            });
-                            break;
-                        case "Contra Argument":
-                            editDecisionKnowledgeElement(id, summary, description,"Argument", function() {
-                                buildTreeViewer(getProjectKey(), id);
-                            });
-                            break;
-                        case "Comment":
-                            editDecisionKnowledgeElement(id, summary, description,"Argument", function() {
-                                buildTreeViewer(getProjectKey(), id);
-                            });
-                            break;
-                        default:
-                            editDecisionKnowledgeElement(id, summary, description, type, function() {
-                                buildTreeViewer(getProjectKey(), id);
-                            });
-                    }
-					closeModal();
-				};
-			});
+			switch (type) {
+			case "Pro Argument":
+				editDecisionKnowledgeElement(id, summary, description, "Argument", function() {
+					buildTreeViewer(getProjectKey(), id);
+				});
+				break;
+			case "Contra Argument":
+				editDecisionKnowledgeElement(id, summary, description, "Argument", function() {
+					buildTreeViewer(getProjectKey(), id);
+				});
+				break;
+			case "Comment":
+				editDecisionKnowledgeElement(id, summary, description, "Argument", function() {
+					buildTreeViewer(getProjectKey(), id);
+				});
+				break;
+			default:
+				editDecisionKnowledgeElement(id, summary, description, type, function() {
+					buildTreeViewer(getProjectKey(), id);
+				});
+			}
+			closeModal();
+		};
+	});
 }
 
 var contextMenuEditAction = {
@@ -218,24 +214,26 @@ function closeModal() {
 	}
 }
 
-function setUpContent(summary, description) {
-    var content = document.getElementById("modal-content");
-    content.insertAdjacentHTML(
-            "afterBegin",
-            "<p><label for='form-input-summary' style='display:block;width:45%;float:left;'>Summary:</label>"
-            + "<input id='form-input-summary' type='text' value='" + summary +"' style='width:50%;'/></p>"
-            + "<p><label for='form-input-description' style='display:block;width:45%;float:left;'>Description:</label>"
-            + "<input id='form-input-description' type='text' value='"+ description + "' style='width:50%;'/></p>"
-            + "<p><label for='form-select-type' style='display:block;width:45%;float:left;'>Knowledge type:</label>"
-            + "<select name='form-select-type' style='width:50%;'/></p>"
-            + "<p><input id='form-input-submit' type='submit' value='" + createKnowledgeElementText
-            + "' style='float:right;'/></p>");
+function setUpContextMenuContent(summary, description, buttonText) {
+	var content = document.getElementById("modal-content");
+	content
+			.insertAdjacentHTML(
+					"afterBegin",
+					"<p><label for='form-input-summary' style='display:block;width:45%;float:left;'>Summary:</label>"
+							+ "<input id='form-input-summary' type='text' placeholder='Summary' value='"
+							+ summary
+							+ "' style='width:50%;'/></p>"
+							+ "<p><label for='form-input-description' style='display:block;width:45%;float:left;'>Description:</label>"
+							+ "<input id='form-input-description' type='text' placeholder='Description' value='"
+							+ description
+							+ "' style='width:50%;'/></p>"
+							+ "<p><label for='form-select-type' style='display:block;width:45%;float:left;'>Knowledge type:</label>"
+							+ "<select name='form-select-type' style='width:50%;'/></p>"
+							+ "<p><input id='form-input-submit' type='submit' value='" + buttonText
+							+ "' style='float:right;'/></p>");
 
-    var typeSelectionField = $("select[name='form-select-type']");
-
-    for (var index = 0; index < knowledgeTypes.length; index++) {
-        typeSelectionField[0].insertAdjacentHTML("beforeend", "<option value='" + knowledgeTypes[index] + "'>"
-            + knowledgeTypes[index] + "</option>");
-    }
-    return typeSelectionField;
+	for (var index = 0; index < knowledgeTypes.length; index++) {
+		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option value='" + knowledgeTypes[index] + "'>"
+				+ knowledgeTypes[index] + "</option>");
+	}
 }
