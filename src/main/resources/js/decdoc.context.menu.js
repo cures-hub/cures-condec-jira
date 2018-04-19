@@ -124,9 +124,10 @@ var contextMenuEditAction = {
 	"name" : editKnowledgeElementText,
 	// action is used in Tree Viewer context menu
 	"action" : function(node) {
+        //TODO action is deprecated after Updating to 3.3.1 Jquery?
+		// treeNode.id Cannot read property 'id' of undefined after ContextMenu Delete and Edit
 		var treeNode = getSelectedTreeViewerNode(node);
 		var id = treeNode.id;
-		// var summary = treeNode.summary;
 		setUpContextMenuContentForEditAction(id);
 	},
 	// callback is used in Treant context menu
