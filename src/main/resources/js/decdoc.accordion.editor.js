@@ -8,32 +8,12 @@ function addOptionsToAllDecisionComponents(parentNode) {
 function addOptionToDecisionComponent(type, parentNode) {
 	if (type === "Solution") {
 		if (document.getElementById(type).innerHTML === "") {
-			document.getElementById(type).insertAdjacentHTML(
-					'beforeend',
-					'<p>Do you want to add an additional ' + type + '? <input type="text" id="inputField' + type
-							+ '" placeholder="Name of ' + type
-							+ '"><input type="button" name="CreateAndLinkDecisionComponent' + type
-							+ '" id="CreateAndLinkDecisionComponent' + type + '" value="Add ' + type + '"/></p>');
-			var createDecisionKnowledgeElementButton = document.getElementById("CreateAndLinkDecisionComponent" + type);
-			var inputField = document.getElementById("inputField" + type);
-			createDecisionKnowledgeElementButton.addEventListener('click', function() {
-				var summary = inputField.value;
-				inputField.value = "";
-				var description = "TODO";
-				createDecisionKnowledgeElement(summary, description, type, function(newId) {
-					createLink(parentNode.id, newId, "contain", function() {
-						buildTreeViewer(getProjectKey(), newId);
-					});					
-				});
-			});
+			addingCreateButton(type);
 		}
 	} else if (type === "Argument") {
-		document
-				.getElementById(type)
-				.insertAdjacentHTML(
+		document.getElementById(type).insertAdjacentHTML(
 						'beforeend',
-						'<p>Do you want to add an additional '
-								+ type
+						'<p>Do you want to add an additional '	+ type
 								+ '? <input type="radio" name="natureOfArgument" value="pro" checked="checked">Pro<input type="radio" name="natureOfArgument" value="contra">Contra<input type="radio" name="natureOfArgument" value="comment">Comment<input type="text" id="inputField'
 								+ type + '" placeholder="Name of ' + type
 								+ '"><input type="button" name="CreateAndLinkDecisionComponent' + type
@@ -71,27 +51,29 @@ function addOptionToDecisionComponent(type, parentNode) {
 			}
 		});
 	} else {
-		document.getElementById(type).insertAdjacentHTML(
-				'beforeend',
-				'<p>Do you want to add an additional ' + type + '?<input type="text" id="inputField' + type
-						+ '" placeholder="Name of ' + type
-						+ '"><input type="button" name="CreateAndLinkDecisionComponent' + type
-						+ '" id="CreateAndLinkDecisionComponent' + type + '" value="Add ' + type + '"/></p>');
-		var createDecisionKnowledgeElementButton = document.getElementById("CreateAndLinkDecisionComponent" + type);
-		createDecisionKnowledgeElementButton.addEventListener('click', function() {
-			var inputField = document.getElementById("inputField" + type);
-			var summary = inputField.value;
-			var description = "TODO";
-			inputField.value = "";
-			createDecisionKnowledgeElement(summary, description, type, function(newId) {
-				console.log(parentNode);
-				console.log(newId);
-				createLink(parentNode.id, newId, "contain", function() {
-					buildTreeViewer(getProjectKey(), newId);
-				});
-			});
-		});
+		addingCreateButton(type);
 	}
+}
+
+function addingCreateButton(type) {
+    document.getElementById(type).insertAdjacentHTML(
+        'beforeend',
+        '<p>Do you want to add an additional ' + type + '?<input type="text" id="inputField' + type
+        + '" placeholder="Name of ' + type
+        + '"><input type="button" name="CreateAndLinkDecisionComponent' + type
+        + '" id="CreateAndLinkDecisionComponent' + type + '" value="Add ' + type + '"/></p>');
+    var createDecisionKnowledgeElementButton = document.getElementById("CreateAndLinkDecisionComponent" + type);
+    var inputField = document.getElementById("inputField" + type);
+    createDecisionKnowledgeElementButton.addEventListener('click', function() {
+        var summary = inputField.value;
+        var description = "TODO";
+        inputField.value = "";
+        createDecisionKnowledgeElement(summary, description, type, function(newId) {
+            createLink(parentNode.id, newId, "contain", function() {
+                buildTreeViewer(getProjectKey(), newId);
+            });
+        });
+    });
 }
 
 function fillAccordion(data, projectKey, node) {

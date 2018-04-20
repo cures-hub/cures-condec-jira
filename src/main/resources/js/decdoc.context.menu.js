@@ -231,7 +231,6 @@ function setUpContextMenuContent(summary, description, decisionType, buttonText)
 				+ "<p><input id='form-input-submit' type='submit' value='" + buttonText
 				+ "' style='float:right;'/></p>");
 
-    
 	for (var index = 0; index < knowledgeTypes.length; index++) {
 		if(decisionType.toLowerCase() == knowledgeTypes[index].toLocaleLowerCase()) {
             $("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option selected value='" + knowledgeTypes[index] + "'>"
