@@ -186,14 +186,28 @@ function getProjectKey() {
 	return stringArray[stringArray.length - 1];
 }
 
-function getTreantUrl(projectKey, key, depthOfTree){
-    return AJS.contextPath() + "/rest/treantsrest/latest/treant.json?projectKey="
-    + projectKey + "&elementKey=" + key + "&depthOfTree=" + depthOfTree;
+function getTreantView(projectKey, key, depthOfTree, callback){
+    getJSON(AJS.contextPath() + "/rest/treantsrest/latest/treant.json?projectKey=" + projectKey + "&elementKey=" + key
+		+ "&depthOfTree=" + depthOfTree,
+    function(error, treant) {
+        if (error == null) {
+            callback(treant);
+        } else {
+			showFlag("error","Treant data could not be received. Error-Code: " + error);
+        }
+    });
 }
 
-function getTreeView(projectKey){
-    return AJS.contextPath() + "/rest/treeviewerrest/latest/treeviewer.json?projectKey="
-    + projectKey;
+function getTreeView(projectKey, callback){
+    getJSON( AJS.contextPath() + "/rest/treeviewerrest/latest/treeviewer.json?projectKey="
+    + projectKey,
+	function (error, data) {
+		if(error == null){
+			callback(data)
+        } else {
+            displayGetJsonError(err);
+		}
+    });
 }
 
 function showFlag(type, message) {
