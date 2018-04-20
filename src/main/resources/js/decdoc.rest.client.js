@@ -180,6 +180,40 @@ function deleteLink(parentId, childId, linkType, callback) {
 			});
 }
 
+function createDecisionKnowledgeElementAsChild(summary, description, type, parentId) {
+	// TODO: Enable to show arguments. They are currently not shown due to
+	// an inward-outward link problem.
+	switch (type) {
+	case "Pro Argument":
+		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
+			createLink(childId, parentId, "support", function() {
+				buildTreeViewer(getProjectKey(), childId);
+			});
+		});
+		break;
+	case "Contra Argument":
+		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
+			createLink(childId, parentId, "attack", function() {
+				buildTreeViewer(getProjectKey(), childId);
+			});
+		});
+		break;
+	case "Comment":
+		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
+			createLink(childId, parentId, "comment", function() {
+				buildTreeViewer(getProjectKey(), childId);
+			});
+		});
+		break;
+	default:
+		createDecisionKnowledgeElement(summary, description, type, function(childId) {
+			createLink(parentId, childId, "contain", function() {
+				buildTreeViewer(getProjectKey(), childId);
+			});
+		});
+	}
+}
+
 function getProjectKey() {
 	var pathname = window.location.pathname;
 	var stringArray = pathname.split("/");
