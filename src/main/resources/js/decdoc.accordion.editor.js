@@ -1,10 +1,9 @@
 function addOptionsToAllDecisionComponents(parentNode) {
-	var types = [ "Problem", "Issue", "Goal", "Solution", "Alternative", "Claim", "Context", "Assumption",
-			"Constraint", "Implication", "Assessment", "Argument" ];
-	for (var counter = 0; counter < types.length; ++counter) {
-		addOptionToDecisionComponent(types[counter], parentNode);
+	for (var counter = 0; counter < simpleKnowledgeTypes.length; ++counter) {
+		addOptionToDecisionComponent(simpleKnowledgeTypes[counter], parentNode);
 	}
 }
+
 function addOptionToDecisionComponent(type, parentNode) {
 	if (type === "Solution") {
 		if (document.getElementById(type).innerHTML === "") {
@@ -26,21 +25,21 @@ function addOptionToDecisionComponent(type, parentNode) {
 			inputField.value = "";
 			var argumentCheckBoxGroup = document.getElementsByName("natureOfArgument");
 			for (var i = 0; i < argumentCheckBoxGroup.length; i++) {
-				if (argumentCheckBoxGroup[i].checked === true) {
+				if (argumentCheckBoxGroup[i].checked == true) {
 					var selectedNatureOfArgument = argumentCheckBoxGroup[i].value;
-					if (selectedNatureOfArgument === "pro") {
+					if (selectedNatureOfArgument == "pro") {
 						createDecisionKnowledgeElement(summary, description, type, function(newId) {
 							createLink(parentNode.id, newId, "support", function() {
 								buildTreeViewer(getProjectKey(), newId);
 							});
 						});
-					} else if (selectedNatureOfArgument === "contra") {
+					} else if (selectedNatureOfArgument == "contra") {
 						createDecisionKnowledgeElement(summary, description, type, function(newId) {
 							createLink(parentNode.id, newId, "attack", function() {
 								buildTreeViewer(getProjectKey(), newId);
 							});
 						});
-					} else if (selectedNatureOfArgument === "comment") {
+					} else if (selectedNatureOfArgument == "comment") {
 						createDecisionKnowledgeElement(summary, description, type, function(newId) {
 							createLink(parentNode.id, newId, "comment", function() {
 								buildTreeViewer(getProjectKey(), newId);
@@ -126,15 +125,13 @@ function fillAccordion(data, projectKey, node) {
 		for (var counter = 0; counter < data.node.children.length; ++counter) {
 			var child = $('#evts').jstree(true).get_node(data.node.children[counter]);
 			var type = child.data.type;
-			var array = [ "Problem", "Issue", "Goal", "Solution", "Alternative", "Claim", "Context", "Assumption",
-					"Constraint", "Implication", "Assessment", "Argument" ];
-			for (var i = 0; i < array.length; i++) {
-				if (array[i].toLocaleLowerCase() === type.toLocaleLowerCase()) {
-					document.getElementById(array[i]).insertAdjacentHTML(
+			for (var i = 0; i < simpleKnowledgeTypes.length; i++) {
+				if (simpleKnowledgeTypes[i].toLocaleLowerCase() === type.toLocaleLowerCase()) {
+					document.getElementById(simpleKnowledgeTypes[i]).insertAdjacentHTML(
 							'beforeend',
 							'<div class="issuelinkbox"><p>' + child.data.type + ' / ' + child.data.summary + '</p>'
 									+ '<p>Description: ' + child.data.description + '</p></div>');
-					document.getElementById(array[i]).style.display = "block";
+					document.getElementById(simpleKnowledgeTypes[i]).style.display = "block";
 				}
 			}
 		}
@@ -144,36 +141,25 @@ function fillAccordion(data, projectKey, node) {
 	}
 }
 
-/* Deletes all content from Accordion */
-function setBack(text) {
+function deleteContentOfAccordionEditor() {
 	var details = document.getElementById("Details");
 	clearInner(details);
-	details.innerHTML = text;
-	var problem = document.getElementById("Problem");
-	clearInner(problem);
-	problem.innerHTML = text;
-	document.getElementById("Problem").style.display = "none";
-	document.getElementById("Issue").innerHTML = text;
-	document.getElementById("Issue").style.display = "none";
-	document.getElementById("Goal").innerHTML = text;
-	document.getElementById("Goal").style.display = "none";
-	document.getElementById("Solution").innerHTML = text;
-	document.getElementById("Solution").style.display = "none";
-	document.getElementById("Alternative").innerHTML = text;
-	document.getElementById("Alternative").style.display = "none";
-	document.getElementById("Claim").innerHTML = text;
-	document.getElementById("Claim").style.display = "none";
-	document.getElementById("Context").innerHTML = text;
-	document.getElementById("Context").style.display = "none";
-	document.getElementById("Assumption").innerHTML = text;
-	document.getElementById("Assumption").style.display = "none";
-	document.getElementById("Constraint").innerHTML = text;
-	document.getElementById("Constraint").style.display = "none";
-	document.getElementById("Implication").innerHTML = text;
-	document.getElementById("Implication").style.display = "none";
-	document.getElementById("Assessment").innerHTML = text;
-	document.getElementById("Assessment").style.display = "none";
-	document.getElementById("Argument").innerHTML = text;
-	document.getElementById("Argument").style.display = "none";
-	document.getElementById("treant-container").innerHTML = text;
+	details.innerHTML = "";	
+	for (var index = 0; index < simpleKnowledgeTypes.length; index++) {
+		document.getElementById(simpleKnowledgeTypes[index]).innerHTML = "";
+		document.getElementById(simpleKnowledgeTypes[index]).style.display = "none";
+	}
+}
+
+function clearInner(node) {
+	while (node.hasChildNodes()) {
+		clear(node.firstChild);
+	}
+}
+
+function clear(node) {
+	while (node.hasChildNodes()) {
+		clear(node.firstChild);
+	}
+	node.parentNode.removeChild(node);
 }
