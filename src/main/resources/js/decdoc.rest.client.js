@@ -240,6 +240,33 @@ function editDecisionKnowledgeElementAsChild(summary, description, type, parentI
 	}
 }
 
+function createLinkToExistingElement(parentId, childId) {
+	getDecisionKnowledgeElement(childId, getProjectKey(), function(decisionKnowledgeElement) {
+		var type = decisionKnowledgeElement.type;
+		switch (type) {
+		case "Pro Argument":
+			createLink(childId, parentId, "support", function() {
+				buildTreeViewer(getProjectKey(), childId);
+			});
+			break;
+		case "Contra Argument":
+			createLink(childId, parentId, "attack", function() {
+				buildTreeViewer(getProjectKey(), childId);
+			});
+			break;
+		case "Comment":
+			createLink(childId, parentId, "comment", function() {
+				buildTreeViewer(getProjectKey(), childId);
+			});
+			break;
+		default:
+			createLink(parentId, childId, "contain", function() {
+				buildTreeViewer(getProjectKey(), childId);
+			});
+		}
+	});
+}
+
 function getTreant(projectKey, key, depthOfTree, callback) {
 	getJSON(AJS.contextPath() + "/rest/treantsrest/latest/treant.json?projectKey=" + projectKey + "&elementKey=" + key
 			+ "&depthOfTree=" + depthOfTree, function(error, treant) {
