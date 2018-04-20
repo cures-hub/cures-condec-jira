@@ -2,52 +2,60 @@ var createKnowledgeElementText = "Add Decision Component";
 var editKnowledgeElementText = "Edit Decision Component";
 var deleteKnowledgeElementText = "Delete Decision Component";
 
+function setUpModal() {
+	var modal = document.getElementById("ContextMenuModal");
+	modal.style.display = "block";
+}
+
 function setHeaderText(headerText) {
 	var header = document.getElementById("context-menu-header");
 	header.textContent = headerText;
 }
 
+function isKnowledgeTypeLocatedAtIndex(knowledgeType, index) {
+	return knowledgeType.toLowerCase() == knowledgeTypes[index].toLocaleLowerCase();
+}
+
+function setUpContextMenuContent(summary, description, knowledgeType, buttonText) {
+	document
+			.getElementById("modal-content")
+			.insertAdjacentHTML(
+					"afterBegin",
+					"<p><label for='form-input-summary' style='display:block;width:45%;float:left;'>Summary:</label>"
+							+ "<input id='form-input-summary' type='text' placeholder='Summary' value='"
+							+ summary
+							+ "' style='width:50%;'/></p>"
+							+ "<p><label for='form-input-description' style='display:block;width:45%;float:left;'>Description:</label>"
+							+ "<input id='form-input-description' type='text' placeholder='Description' value='"
+							+ description
+							+ "' style='width:50%;'/></p>"
+							+ "<p><label for='form-select-type' style='display:block;width:45%;float:left;'>Knowledge type:</label>"
+							+ "<select name='form-select-type' style='width:50%;'/></p>"
+							+ "<p><input id='form-input-submit' type='submit' value='" + buttonText
+							+ "' style='float:right;'/></p>");
+
+	for (var index = 0; index < knowledgeTypes.length; index++) {
+		if (isKnowledgeTypeLocatedAtIndex(knowledgeType, index)) {
+			var isSelected = "selected ";
+		} else {
+			var isSelected = "";
+		}
+		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
+				+ knowledgeTypes[index] + "'>" + knowledgeTypes[index] + "</option>");
+	}
+}
+
 function setUpContextMenuContentForCreateAction(id) {
 	setUpModal();
 	setHeaderText(createKnowledgeElementText);
-	setUpContextMenuContent("", "", null, createKnowledgeElementText);
+	setUpContextMenuContent("", "", "Alternative", createKnowledgeElementText);
 
 	var submitButton = document.getElementById("form-input-submit");
 	submitButton.onclick = function() {
 		var summary = document.getElementById('form-input-summary').value;
 		var description = document.getElementById('form-input-description').value;
 		var type = $("select[name='form-select-type']").val();
-		// TODO: Enable to show arguments. They are currently not shown due to
-		// an inward-outward link problem.
-		switch (type) {
-		case "Pro Argument":
-			createDecisionKnowledgeElement(summary, description, "Argument", function(newId) {
-				createLink(newId, id, "support", function() {
-					buildTreeViewer(getProjectKey(), newId);
-				});
-			});
-			break;
-		case "Contra Argument":
-			createDecisionKnowledgeElement(summary, description, "Argument", function(newId) {
-				createLink(newId, id, "attack", function() {
-					buildTreeViewer(getProjectKey(), newId);
-				});
-			});
-			break;
-		case "Comment":
-			createDecisionKnowledgeElement(summary, description, "Argument", function(newId) {
-				createLink(newId, id, "comment", function() {
-					buildTreeViewer(getProjectKey(), newId);
-				});
-			});
-			break;
-		default:
-			createDecisionKnowledgeElement(summary, description, type, function(newId) {
-				createLink(id, newId, "contain", function() {
-					buildTreeViewer(getProjectKey(), newId);
-				});
-			});
-		}
+		createDecisionKnowledgeElementAsChild(summary, description, type, id)
 		closeModal();
 	};
 }
@@ -120,8 +128,9 @@ var contextMenuEditAction = {
 	"name" : editKnowledgeElementText,
 	// action is used in Tree Viewer context menu
 	"action" : function(node) {
-        //TODO action is deprecated after Updating to 3.3.1 Jquery?
-		// treeNode.id Cannot read property 'id' of undefined after ContextMenu Delete and Edit
+		// TODO action is deprecated after Updating to 3.3.1 Jquery?
+		// treeNode.id Cannot read property 'id' of undefined after ContextMenu
+		// Delete and Edit
 		var treeNode = getSelectedTreeViewerNode(node);
 		var id = treeNode.id;
 		setUpContextMenuContentForEditAction(id);
@@ -180,19 +189,14 @@ var contextMenuDeleteAction = {
 }
 
 var contextMenuActions = {
-	"create" : contextMenuCreateAction,
-	"edit" : contextMenuEditAction,
-	"delete" : contextMenuDeleteAction,
+		"create" : contextMenuCreateAction,
+		"edit" : contextMenuEditAction,
+		"delete" : contextMenuDeleteAction
 }
 
 function getSelectedTreeViewerNode(node) {
 	var selector = node.reference.prevObject.selector;
 	return $("#evts").jstree(true).get_node(selector).data;
-}
-
-function setUpModal() {
-	var modal = document.getElementById("ContextMenuModal");
-	modal.style.display = "block";
 }
 
 function closeModal() {
@@ -211,33 +215,5 @@ function closeModal() {
 	var modalContent = document.getElementById("modal-content");
 	if (modalContent) {
 		clearInner(modalContent);
-	}
-}
-
-function setUpContextMenuContent(summary, description, decisionType, buttonText) {
-	var content = document.getElementById("modal-content");
-	content.insertAdjacentHTML(
-		"afterBegin",
-		"<p><label for='form-input-summary' style='display:block;width:45%;float:left;'>Summary:</label>"
-				+ "<input id='form-input-summary' type='text' placeholder='Summary' value='"
-				+ summary
-				+ "' style='width:50%;'/></p>"
-				+ "<p><label for='form-input-description' style='display:block;width:45%;float:left;'>Description:</label>"
-				+ "<input id='form-input-description' type='text' placeholder='Description' value='"
-				+ description
-				+ "' style='width:50%;'/></p>"
-				+ "<p><label for='form-select-type' style='display:block;width:45%;float:left;'>Knowledge type:</label>"
-				+ "<select name='form-select-type' style='width:50%;'/></p>"
-				+ "<p><input id='form-input-submit' type='submit' value='" + buttonText
-				+ "' style='float:right;'/></p>");
-
-	for (var index = 0; index < knowledgeTypes.length; index++) {
-		if(decisionType.toLowerCase() == knowledgeTypes[index].toLocaleLowerCase()) {
-            $("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option selected value='" + knowledgeTypes[index] + "'>"
-                + knowledgeTypes[index] + "</option>");
-        } else {
-            $("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option value='" + knowledgeTypes[index] + "'>"
-                + knowledgeTypes[index] + "</option>");
-		}
 	}
 }
