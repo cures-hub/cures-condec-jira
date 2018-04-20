@@ -115,7 +115,7 @@ function editDecisionKnowledgeElement(id, summary, description, type, callback) 
 	var jsondata = {
 		"id" : id,
 		"summary" : summary,
-        "type": type,
+		"type" : type,
 		"projectKey" : getProjectKey(),
 		"description" : description
 	};
@@ -214,34 +214,58 @@ function createDecisionKnowledgeElementAsChild(summary, description, type, paren
 	}
 }
 
+function editDecisionKnowledgeElementAsChild(summary, description, type, parentId) {
+	// TODO: Links need to be updated when the type is changed to an argument
+	// (or from an argument to a different type), first we need a getLink method
+	switch (type) {
+	case "Pro Argument":
+		editDecisionKnowledgeElement(parentId, summary, description, "Argument", function() {
+			buildTreeViewer(getProjectKey(), parentId);
+		});
+		break;
+	case "Contra Argument":
+		editDecisionKnowledgeElement(parentId, summary, description, "Argument", function() {
+			buildTreeViewer(getProjectKey(), parentId);
+		});
+		break;
+	case "Comment":
+		editDecisionKnowledgeElement(parentId, summary, description, "Argument", function() {
+			buildTreeViewer(getProjectKey(), parentId);
+		});
+		break;
+	default:
+		editDecisionKnowledgeElement(parentId, summary, description, type, function() {
+			buildTreeViewer(getProjectKey(), parentId);
+		});
+	}
+}
+
+function getTreant(projectKey, key, depthOfTree, callback) {
+	getJSON(AJS.contextPath() + "/rest/treantsrest/latest/treant.json?projectKey=" + projectKey + "&elementKey=" + key
+			+ "&depthOfTree=" + depthOfTree, function(error, treant) {
+		if (error == null) {
+			callback(treant);
+		} else {
+			showFlag("error", "Treant data could not be received. Error-Code: " + error);
+		}
+	});
+}
+
+function getTreeViewer(projectKey, callback) {
+	getJSON(AJS.contextPath() + "/rest/treeviewerrest/latest/treeviewer.json?projectKey=" + projectKey, function(error,
+			core) {
+		if (error == null) {
+			callback(core)
+		} else {
+			showFlag("error", "Tree viewer data could not be received. Error-Code: " + error);
+		}
+	});
+}
+
 function getProjectKey() {
 	var pathname = window.location.pathname;
 	var stringArray = pathname.split("/");
 	return stringArray[stringArray.length - 1];
-}
-
-function getTreantView(projectKey, key, depthOfTree, callback){
-    getJSON(AJS.contextPath() + "/rest/treantsrest/latest/treant.json?projectKey=" + projectKey + "&elementKey=" + key
-		+ "&depthOfTree=" + depthOfTree,
-    function(error, treant) {
-        if (error == null) {
-            callback(treant);
-        } else {
-			showFlag("error","Treant data could not be received. Error-Code: " + error);
-        }
-    });
-}
-
-function getTreeView(projectKey, callback){
-    getJSON( AJS.contextPath() + "/rest/treeviewerrest/latest/treeviewer.json?projectKey="
-    + projectKey,
-	function (error, data) {
-		if(error == null){
-			callback(data)
-        } else {
-            displayGetJsonError(err);
-		}
-    });
 }
 
 function showFlag(type, message) {

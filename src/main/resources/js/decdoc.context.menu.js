@@ -55,7 +55,7 @@ function setUpContextMenuContentForCreateAction(id) {
 		var summary = document.getElementById('form-input-summary').value;
 		var description = document.getElementById('form-input-description').value;
 		var type = $("select[name='form-select-type']").val();
-		createDecisionKnowledgeElementAsChild(summary, description, type, id)
+		createDecisionKnowledgeElementAsChild(summary, description, type, id);
 		closeModal();
 	};
 }
@@ -94,28 +94,7 @@ function setUpContextMenuContentForEditAction(id) {
 			var summary = document.getElementById("form-input-summary").value;
 			var description = document.getElementById("form-input-description").value;
 			var type = $("select[name='form-select-type']").val();
-
-			switch (type) {
-			case "Pro Argument":
-				editDecisionKnowledgeElement(id, summary, description, "Argument", function() {
-					buildTreeViewer(getProjectKey(), id);
-				});
-				break;
-			case "Contra Argument":
-				editDecisionKnowledgeElement(id, summary, description, "Argument", function() {
-					buildTreeViewer(getProjectKey(), id);
-				});
-				break;
-			case "Comment":
-				editDecisionKnowledgeElement(id, summary, description, "Argument", function() {
-					buildTreeViewer(getProjectKey(), id);
-				});
-				break;
-			default:
-				editDecisionKnowledgeElement(id, summary, description, type, function() {
-					buildTreeViewer(getProjectKey(), id);
-				});
-			}
+			editDecisionKnowledgeElementAsChild(summary, description, type, id);
 			closeModal();
 		};
 	});
