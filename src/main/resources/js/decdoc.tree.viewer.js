@@ -4,12 +4,12 @@ function buildTreeViewer(projectKey, nodeId) {
 			var tree = $('#evts').jstree(true);
 			tree.destroy();
 		}
-		$('#evts').on("select_node.jstree", function(e, data) {
-			setBack("");
+		$('#evts').on("select_node.jstree", function(error, data) {
+			deleteContentOfAccordionEditor();
 			var node = data.node.data;
 			fillAccordion(data, projectKey, node);
 			buildTreant(projectKey, node);
-		}).on('ready.jstree', function() {
+		}).on("ready.jstree", function() {
 			if (nodeId) {
 				var tree = $('#evts').jstree(true);
 				if (tree) {
@@ -20,14 +20,14 @@ function buildTreeViewer(projectKey, nodeId) {
 				}
 			}
 		}).jstree({
-			'core' : core,
+			"core" : core,
 			// TODO: add drag n drop
-			'plugins' : [ 'contextmenu', 'wholerow', 'sort', 'search', '' ],
-			'search' : {
-				'show_only_matches' : true
+			"plugins" : [ "contextmenu", "wholerow", "sort", "search" ],
+			"search" : {
+				"show_only_matches" : true
 			},
-			'contextmenu' : {
-				'items' : contextMenuActions
+			"contextmenu" : {
+				"items" : contextMenuActions
 			}
 		});
 		document.getElementById("Details").style.display = "block";

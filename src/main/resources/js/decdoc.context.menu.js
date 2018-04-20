@@ -5,6 +5,21 @@ var deleteKnowledgeElementText = "Delete Decision Component";
 function setUpModal() {
 	var modal = document.getElementById("ContextMenuModal");
 	modal.style.display = "block";
+
+    // add click-handler for elements in modal to close modal window
+    var elementsWithCloseFunction = document.getElementsByClassName("modal-close");
+    for (var counter = 0; counter < elementsWithCloseFunction.length; counter++) {
+        elementsWithCloseFunction[counter].onclick = function() {
+            closeModal();
+        }
+    }
+
+    // close modal window if user clicks anywhere outside of the modal
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            closeModal();
+        }
+    };
 }
 
 function setHeaderText(headerText) {
@@ -67,16 +82,12 @@ var contextMenuCreateAction = {
 	"name" : createKnowledgeElementText,
 	// action is used in Tree Viewer context menu
 	"action" : function(node) {
-		// gets the selected Tree Viewer node
-		var treeNode = getSelectedTreeViewerNode(node);
-		var id = treeNode.id;
+		var id = getSelectedTreeViewerNodeId(node);
 		setUpContextMenuContentForCreateAction(id);
 	},
 	// callback is used in Treant context menu
 	"callback" : function(key, options) {
-		// gets the selected Treant node
-		var context = options.$trigger.context;
-		var id = context.id;
+		var id = getSelectedTreantNodeId(options);
 		setUpContextMenuContentForCreateAction(id);
 	}
 }
@@ -107,17 +118,12 @@ var contextMenuEditAction = {
 	"name" : editKnowledgeElementText,
 	// action is used in Tree Viewer context menu
 	"action" : function(node) {
-		// TODO action is deprecated after Updating to 3.3.1 Jquery?
-		// treeNode.id Cannot read property 'id' of undefined after ContextMenu
-		// Delete and Edit
-		var treeNode = getSelectedTreeViewerNode(node);
-		var id = treeNode.id;
+		var id = getSelectedTreeViewerNodeId(node);
 		setUpContextMenuContentForEditAction(id);
 	},
 	// callback is used in Treant context menu
 	"callback" : function(key, options) {
-		var context = options.$trigger.context;
-		var id = context.id;
+		var id = getSelectedTreantNodeId(options);
 		setUpContextMenuContentForEditAction(id);
 	}
 }
@@ -153,16 +159,13 @@ var contextMenuDeleteAction = {
 	"name" : deleteKnowledgeElementText,
 	// action is used in Tree Viewer context menu
 	"action" : function(node) {
-		// gets the selected Tree Viewer node
-		var treeNode = getSelectedTreeViewerNode(node);
-		var id = treeNode.id;
+		var id = getSelectedTreeViewerNodeId(node);
 		setUpContextMenuContentForDeleteAction(id);
 	},
 	// callback is used in Treant context menu
 	"callback" : function(key, options) {
 		// gets the selected Treant node
-		var context = options.$trigger.context;
-		var id = context.id;
+		var id = getSelectedTreantNodeId(options);
 		setUpContextMenuContentForDeleteAction(id);
 	}
 }
@@ -173,9 +176,18 @@ var contextMenuActions = {
 		"delete" : contextMenuDeleteAction
 }
 
-function getSelectedTreeViewerNode(node) {
+function getSelectedTreeViewerNodeId(node) {
+	// TODO action is deprecated after Updating to 3.3.1 Jquery?
+	// treeNode.id Cannot read property 'id' of undefined after ContextMenu
+	// Delete and Edit
 	var selector = node.reference.prevObject.selector;
-	return $("#evts").jstree(true).get_node(selector).data;
+	nodeData = $("#evts").jstree(true).get_node(selector).data;
+	return nodeData.id;
+}
+
+function getSelectedTreantNodeId(options) {
+	var context = options.$trigger.context;
+	return context.id;
 }
 
 function closeModal() {
