@@ -68,8 +68,8 @@ function setUpContextMenuContentForCreateAction(id) {
 
 	var submitButton = document.getElementById("form-input-submit");
 	submitButton.onclick = function() {
-		var summary = document.getElementById('form-input-summary').value;
-		var description = document.getElementById('form-input-description').value;
+		var summary = document.getElementById("form-input-summary").value;
+		var description = document.getElementById("form-input-description").value;
 		var type = $("select[name='form-select-type']").val();
 		createDecisionKnowledgeElementAsChild(summary, description, type, id);
 		closeModal();

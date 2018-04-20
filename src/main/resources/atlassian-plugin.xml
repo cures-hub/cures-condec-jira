@@ -48,12 +48,13 @@
 		<resource type="download" name="jquery.ui.position.js" location="/js/contextMenu/jquery.ui.position.js" />
 		<resource type="download" name="jquery.contextMenu.js" location="/js/contextMenu/jquery.contextMenu.js" />
 		<!-- DecDoc java script files -->
+		<resource type="download" name="decdoc.init.js" location="/js/decdoc.init.js" />
+		<resource type="download" name="decdoc.js" location="/js/decdoc.js" />
+		<resource type="download" name="decdoc.rest.client.js" location="/js/decdoc.rest.client.js" />
 		<resource type="download" name="decdoc.accordion.editor.js" location="/js/decdoc.accordion.editor.js" />
 		<resource type="download" name="decdoc.treant.js" location="/js/decdoc.treant.js" />
-		<resource type="download" name="decdoc.tree.viewer.js" location="/js/decdoc.tree.viewer.js" />
-		<resource type="download" name="decdoc.rest.client.js" location="/js/decdoc.rest.client.js" />
-		<resource type="download" name="decdoc.context.menu.js" location="/js/decdoc.context.menu.js" />
-		<resource type="download" name="decdoc.init.js" location="/js/decdoc.init.js" />
+		<resource type="download" name="decdoc.tree.viewer.js" location="/js/decdoc.tree.viewer.js" />		
+		<resource type="download" name="decdoc.context.menu.js" location="/js/decdoc.context.menu.js" />		
 	</web-resource>
 
 	<!-- Decision Knowledge Page -->
