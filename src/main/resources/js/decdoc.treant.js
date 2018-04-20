@@ -1,6 +1,6 @@
 function buildTreant(projectKey, node) {
 	var depthOfTree = document.getElementById("depthOfTreeInput").value;
-	getTreantView(projectKey, node.key, depthOfTree, function(treant){
+	getTreant(projectKey, node.key, depthOfTree, function(treant){
         document.getElementById("treant-container").innerHTML = "";
         new Treant(treant);
         var modal = document.getElementById('ContextMenuModal');
