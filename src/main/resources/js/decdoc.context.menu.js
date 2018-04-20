@@ -1,25 +1,26 @@
 var createKnowledgeElementText = "Add Decision Component";
+var linkKnowledgeElementText = "Link Decision Component";
 var editKnowledgeElementText = "Edit Decision Component";
 var deleteKnowledgeElementText = "Delete Decision Component";
 
 function setUpModal() {
 	var modal = document.getElementById("ContextMenuModal");
 	modal.style.display = "block";
-	
-    // add click-handler for elements in modal to close modal window
-    var elementsWithCloseFunction = document.getElementsByClassName("modal-close");
-    for (var counter = 0; counter < elementsWithCloseFunction.length; counter++) {
-        elementsWithCloseFunction[counter].onclick = function() {
-            closeModal();
-        }
-    }
-    
-    // close modal window if user clicks anywhere outside of the modal
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            closeModal();
-        }
-    };
+
+	// add click-handler for elements in modal to close modal window
+	var elementsWithCloseFunction = document.getElementsByClassName("modal-close");
+	for (var counter = 0; counter < elementsWithCloseFunction.length; counter++) {
+		elementsWithCloseFunction[counter].onclick = function() {
+			closeModal();
+		}
+	}
+
+	// close modal window if user clicks anywhere outside of the modal
+	window.onclick = function(event) {
+		if (event.target == modal) {
+			closeModal();
+		}
+	};
 }
 
 function setHeaderText(headerText) {
@@ -164,16 +165,62 @@ var contextMenuDeleteAction = {
 	},
 	// callback is used in Treant context menu
 	"callback" : function(key, options) {
-		// gets the selected Treant node
 		var id = getSelectedTreantNodeId(options);
 		setUpContextMenuContentForDeleteAction(id);
 	}
 }
 
+function setUpContextMenuContentForLinkAction(id) {
+	setUpModal();
+	setHeaderText(linkKnowledgeElementText);
+
+	getUnlinkedDecisionComponents(
+			id,
+			getProjectKey(),
+			function(unlinkedDecisionComponents) {
+				var insertString = "<p><label for='form-select-component' style='display:block;width:45%;float:left;'>Unlinked Element:</label>"
+						+ "<select name='form-select-component' style='width:50%;' />";
+				for (var index = 0; index < unlinkedDecisionComponents.length; index++) {
+					insertString += "<option value='" + unlinkedDecisionComponents[index].id + "'>"
+							+ unlinkedDecisionComponents[index].text + "</option>";
+				}
+				insertString += "</p> <p><input name='form-input-submit' id='form-input-submit' type='submit' value='"
+						+ linkKnowledgeElementText + "' style='float:right;'/></p>";
+
+				var content = document.getElementById("modal-content");
+				content.insertAdjacentHTML("afterBegin", insertString);
+
+				var submitButton = document.getElementById("form-input-submit");
+				submitButton.onclick = function() {
+					var childId = $("select[name='form-select-component']").val();
+					createLinkToExistingElement(id, childId);
+					closeModal();
+				};
+			});
+}
+
+var contextMenuLinkAction = {
+	// label is used in Tree Viewer context menu
+	"label" : linkKnowledgeElementText,
+	// name is used in Treant context menu
+	"name" : linkKnowledgeElementText,
+	// action is used in Tree Viewer context menu
+	"action" : function(node) {
+		var id = getSelectedTreeViewerNodeId(node);
+		setUpContextMenuContentForLinkAction(id);
+	},
+	// callback is used in Treant context menu
+	"callback" : function(key, options) {
+		var id = getSelectedTreantNodeId(options);
+		setUpContextMenuContentForLinkAction(id);
+	}
+}
+
 var contextMenuActions = {
-		"create" : contextMenuCreateAction,
-		"edit" : contextMenuEditAction,
-		"delete" : contextMenuDeleteAction
+	"create" : contextMenuCreateAction,
+	"link" : contextMenuLinkAction,
+	"edit" : contextMenuEditAction,
+	"delete" : contextMenuDeleteAction
 }
 
 function getSelectedTreeViewerNodeId(node) {
