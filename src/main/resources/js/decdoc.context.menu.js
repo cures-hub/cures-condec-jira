@@ -10,7 +10,7 @@ function setHeaderText(headerText) {
 function setUpContextMenuContentForCreateAction(id) {
 	setUpModal();
 	setHeaderText(createKnowledgeElementText);
-	setUpContextMenuContent("", "", createKnowledgeElementText);
+	setUpContextMenuContent("", "", null, createKnowledgeElementText);
 
 	var submitButton = document.getElementById("form-input-submit");
 	submitButton.onclick = function() {
@@ -79,8 +79,8 @@ function setUpContextMenuContentForEditAction(id) {
 	getDecisionKnowledgeElement(id, getProjectKey(), function(decisionKnowledgeElement) {
 		var summary = decisionKnowledgeElement.summary;
 		var description = decisionKnowledgeElement.description;
-		setUpContextMenuContent(summary, description, editKnowledgeElementText);
-
+		var type = decisionKnowledgeElement.type;
+		setUpContextMenuContent(summary, description, type, editKnowledgeElementText);
 		var submitButton = document.getElementById("form-input-submit");
 		submitButton.onclick = function() {
 			var summary = document.getElementById("form-input-summary").value;
@@ -214,26 +214,31 @@ function closeModal() {
 	}
 }
 
-function setUpContextMenuContent(summary, description, buttonText) {
+function setUpContextMenuContent(summary, description, decisionType, buttonText) {
 	var content = document.getElementById("modal-content");
-	content
-			.insertAdjacentHTML(
-					"afterBegin",
-					"<p><label for='form-input-summary' style='display:block;width:45%;float:left;'>Summary:</label>"
-							+ "<input id='form-input-summary' type='text' placeholder='Summary' value='"
-							+ summary
-							+ "' style='width:50%;'/></p>"
-							+ "<p><label for='form-input-description' style='display:block;width:45%;float:left;'>Description:</label>"
-							+ "<input id='form-input-description' type='text' placeholder='Description' value='"
-							+ description
-							+ "' style='width:50%;'/></p>"
-							+ "<p><label for='form-select-type' style='display:block;width:45%;float:left;'>Knowledge type:</label>"
-							+ "<select name='form-select-type' style='width:50%;'/></p>"
-							+ "<p><input id='form-input-submit' type='submit' value='" + buttonText
-							+ "' style='float:right;'/></p>");
+	content.insertAdjacentHTML(
+		"afterBegin",
+		"<p><label for='form-input-summary' style='display:block;width:45%;float:left;'>Summary:</label>"
+				+ "<input id='form-input-summary' type='text' placeholder='Summary' value='"
+				+ summary
+				+ "' style='width:50%;'/></p>"
+				+ "<p><label for='form-input-description' style='display:block;width:45%;float:left;'>Description:</label>"
+				+ "<input id='form-input-description' type='text' placeholder='Description' value='"
+				+ description
+				+ "' style='width:50%;'/></p>"
+				+ "<p><label for='form-select-type' style='display:block;width:45%;float:left;'>Knowledge type:</label>"
+				+ "<select name='form-select-type' style='width:50%;'/></p>"
+				+ "<p><input id='form-input-submit' type='submit' value='" + buttonText
+				+ "' style='float:right;'/></p>");
+
 
 	for (var index = 0; index < knowledgeTypes.length; index++) {
-		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option value='" + knowledgeTypes[index] + "'>"
-				+ knowledgeTypes[index] + "</option>");
+		if(decisionType.toLowerCase() == knowledgeTypes[index].toLocaleLowerCase()) {
+            $("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option selected value='" + knowledgeTypes[index] + "'>"
+                + knowledgeTypes[index] + "</option>");
+        } else {
+            $("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option value='" + knowledgeTypes[index] + "'>"
+                + knowledgeTypes[index] + "</option>");
+		}
 	}
 }
