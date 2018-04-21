@@ -3,11 +3,53 @@ var linkKnowledgeElementText = "Link Decision Component";
 var editKnowledgeElementText = "Edit Decision Component";
 var deleteKnowledgeElementText = "Delete Decision Component";
 
+var contextMenuCreateAction = {
+	// label for Tree Viewer, name for Treant context menu
+	"label" : createKnowledgeElementText,
+	"name" : createKnowledgeElementText,
+	"action" : function(node) {
+		var id = getSelectedTreeViewerNodeId(node);
+		setUpContextMenuContentForCreateAction(id);
+	},
+	"callback" : function(key, options) {
+		var id = getSelectedTreantNodeId(options);
+		setUpContextMenuContentForCreateAction(id);
+	}
+}
+
+function getSelectedTreeViewerNodeId(node) {
+	// TODO deprecated after Updating to 3.3.1 jquery
+	// treeNode.id cannot read property 'id'
+	var selector = node.reference.prevObject.selector;
+	nodeData = $("#evts").jstree(true).get_node(selector).data;
+	return nodeData.id;
+}
+
+function getSelectedTreantNodeId(options) {
+	var context = options.$trigger.context;
+	return context.id;
+}
+
+function setUpContextMenuContentForCreateAction(id) {
+	setUpModal();
+	setHeaderText(createKnowledgeElementText);
+	setUpContextMenuContent("", "", "Alternative", createKnowledgeElementText);
+
+	var submitButton = document.getElementById("form-input-submit");
+	submitButton.onclick = function() {
+		var summary = document.getElementById("form-input-summary").value;
+		var description = document.getElementById("form-input-description").value;
+		var type = $("select[name='form-select-type']").val();
+		createDecisionKnowledgeElementAsChild(summary, description, type, id);
+		closeModal();
+	};
+}
+
 function setUpModal() {
 	var modal = document.getElementById("ContextMenuModal");
 	modal.style.display = "block";
 
-	// add click-handler for elements in modal to close modal window
+	// adds click-handler for elements in modal to close modal window
 	var elementsWithCloseFunction = document.getElementsByClassName("modal-close");
 	for (var counter = 0; counter < elementsWithCloseFunction.length; counter++) {
 		elementsWithCloseFunction[counter].onclick = function() {
@@ -15,7 +57,7 @@ function setUpModal() {
 		}
 	}
 
-	// close modal window if user clicks anywhere outside of the modal
+	// closes modal window if user clicks anywhere outside of the modal
 	window.onclick = function(event) {
 		if (event.target == modal) {
 			closeModal();
@@ -26,10 +68,6 @@ function setUpModal() {
 function setHeaderText(headerText) {
 	var header = document.getElementById("context-menu-header");
 	header.textContent = headerText;
-}
-
-function isKnowledgeTypeLocatedAtIndex(knowledgeType, index) {
-	return knowledgeType.toLowerCase() == knowledgeTypes[index].toLocaleLowerCase();
 }
 
 function setUpContextMenuContent(summary, description, knowledgeType, buttonText) {
@@ -61,112 +99,21 @@ function setUpContextMenuContent(summary, description, knowledgeType, buttonText
 	}
 }
 
-function setUpContextMenuContentForCreateAction(id) {
-	setUpModal();
-	setHeaderText(createKnowledgeElementText);
-	setUpContextMenuContent("", "", "Alternative", createKnowledgeElementText);
-
-	var submitButton = document.getElementById("form-input-submit");
-	submitButton.onclick = function() {
-		var summary = document.getElementById("form-input-summary").value;
-		var description = document.getElementById("form-input-description").value;
-		var type = $("select[name='form-select-type']").val();
-		createDecisionKnowledgeElementAsChild(summary, description, type, id);
-		closeModal();
-	};
+function isKnowledgeTypeLocatedAtIndex(knowledgeType, index) {
+	return knowledgeType.toLowerCase() == knowledgeTypes[index].toLocaleLowerCase();
 }
 
-var contextMenuCreateAction = {
-	// label is used in Tree Viewer context menu
-	"label" : createKnowledgeElementText,
-	// name is used in Treant context menu
-	"name" : createKnowledgeElementText,
-	// action is used in Tree Viewer context menu
+var contextMenuLinkAction = {
+	// label for Tree Viewer, name for Treant context menu
+	"label" : linkKnowledgeElementText,
+	"name" : linkKnowledgeElementText,
 	"action" : function(node) {
 		var id = getSelectedTreeViewerNodeId(node);
-		setUpContextMenuContentForCreateAction(id);
+		setUpContextMenuContentForLinkAction(id);
 	},
-	// callback is used in Treant context menu
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		setUpContextMenuContentForCreateAction(id);
-	}
-}
-
-function setUpContextMenuContentForEditAction(id) {
-	setUpModal();
-	setHeaderText(editKnowledgeElementText);
-	getDecisionKnowledgeElement(id, getProjectKey(), function(decisionKnowledgeElement) {
-		var summary = decisionKnowledgeElement.summary;
-		var description = decisionKnowledgeElement.description;
-		var type = decisionKnowledgeElement.type;
-		setUpContextMenuContent(summary, description, type, editKnowledgeElementText);
-		var submitButton = document.getElementById("form-input-submit");
-		submitButton.onclick = function() {
-			var summary = document.getElementById("form-input-summary").value;
-			var description = document.getElementById("form-input-description").value;
-			var type = $("select[name='form-select-type']").val();
-			editDecisionKnowledgeElementAsChild(summary, description, type, id);
-			closeModal();
-		};
-	});
-}
-
-var contextMenuEditAction = {
-	// label is used in Tree Viewer context menu
-	"label" : editKnowledgeElementText,
-	// name is used in Treant context menu
-	"name" : editKnowledgeElementText,
-	// action is used in Tree Viewer context menu
-	"action" : function(node) {
-		var id = getSelectedTreeViewerNodeId(node);
-		setUpContextMenuContentForEditAction(id);
-	},
-	// callback is used in Treant context menu
-	"callback" : function(key, options) {
-		var id = getSelectedTreantNodeId(options);
-		setUpContextMenuContentForEditAction(id);
-	}
-}
-
-function setUpContextMenuContentForDeleteAction(id) {
-	setUpModal();
-	setHeaderText(deleteKnowledgeElementText);
-
-	var content = document.getElementById("modal-content");
-	content.insertAdjacentHTML("afterBegin",
-			"<p><input id='abort-submit' type='submit' value='Abort Deletion' style='float:right;'/>"
-					+ "<input id='form-input-submit' type='submit' value=" + deleteKnowledgeElementText
-					+ " style='float:right;'/></p>");
-
-	var abortButton = document.getElementById("abort-submit");
-	abortButton.onclick = function() {
-		closeModal();
-	};
-
-	var submitButton = document.getElementById("form-input-submit");
-	submitButton.onclick = function() {
-		deleteDecisionKnowledgeElement(id, function() {
-			buildTreeViewer(getProjectKey(), id);
-		});
-		closeModal();
-	};
-}
-
-var contextMenuDeleteAction = {
-	// label is used in Tree Viewer context menu
-	"label" : deleteKnowledgeElementText,
-	// name is used in Treant context menu
-	"name" : deleteKnowledgeElementText,
-	// action is used in Tree Viewer context menu
-	"action" : function(node) {
-		var id = getSelectedTreeViewerNodeId(node);
-		setUpContextMenuContentForDeleteAction(id);
-	},
-	// callback is used in Treant context menu
-	"callback" : function(key, options) {
-		var id = getSelectedTreantNodeId(options);
-		setUpContextMenuContentForDeleteAction(id);
+		setUpContextMenuContentForLinkAction(id);
 	}
 }
 
@@ -199,21 +146,75 @@ function setUpContextMenuContentForLinkAction(id) {
 			});
 }
 
-var contextMenuLinkAction = {
-	// label is used in Tree Viewer context menu
-	"label" : linkKnowledgeElementText,
-	// name is used in Treant context menu
-	"name" : linkKnowledgeElementText,
-	// action is used in Tree Viewer context menu
+var contextMenuEditAction = {
+	// label for Tree Viewer, name for Treant context menu
+	"label" : editKnowledgeElementText,
+	"name" : editKnowledgeElementText,
 	"action" : function(node) {
 		var id = getSelectedTreeViewerNodeId(node);
-		setUpContextMenuContentForLinkAction(id);
+		setUpContextMenuContentForEditAction(id);
 	},
-	// callback is used in Treant context menu
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		setUpContextMenuContentForLinkAction(id);
+		setUpContextMenuContentForEditAction(id);
 	}
+}
+
+function setUpContextMenuContentForEditAction(id) {
+	setUpModal();
+	setHeaderText(editKnowledgeElementText);
+	getDecisionKnowledgeElement(id, getProjectKey(), function(decisionKnowledgeElement) {
+		var summary = decisionKnowledgeElement.summary;
+		var description = decisionKnowledgeElement.description;
+		var type = decisionKnowledgeElement.type;
+		setUpContextMenuContent(summary, description, type, editKnowledgeElementText);
+		var submitButton = document.getElementById("form-input-submit");
+		submitButton.onclick = function() {
+			var summary = document.getElementById("form-input-summary").value;
+			var description = document.getElementById("form-input-description").value;
+			var type = $("select[name='form-select-type']").val();
+			editDecisionKnowledgeElementAsChild(summary, description, type, id);
+			closeModal();
+		};
+	});
+}
+
+var contextMenuDeleteAction = {
+	// label for Tree Viewer, name for Treant context menu
+	"label" : deleteKnowledgeElementText,
+	"name" : deleteKnowledgeElementText,
+	"action" : function(node) {
+		var id = getSelectedTreeViewerNodeId(node);
+		setUpContextMenuContentForDeleteAction(id);
+	},
+	"callback" : function(key, options) {
+		var id = getSelectedTreantNodeId(options);
+		setUpContextMenuContentForDeleteAction(id);
+	}
+}
+
+function setUpContextMenuContentForDeleteAction(id) {
+	setUpModal();
+	setHeaderText(deleteKnowledgeElementText);
+
+	var content = document.getElementById("modal-content");
+	content.insertAdjacentHTML("afterBegin",
+			"<p><input id='abort-submit' type='submit' value='Abort Deletion' style='float:right;'/>"
+					+ "<input id='form-input-submit' type='submit' value=" + deleteKnowledgeElementText
+					+ " style='float:right;'/></p>");
+
+	var abortButton = document.getElementById("abort-submit");
+	abortButton.onclick = function() {
+		closeModal();
+	};
+
+	var submitButton = document.getElementById("form-input-submit");
+	submitButton.onclick = function() {
+		deleteDecisionKnowledgeElement(id, function() {
+			buildTreeViewer(getProjectKey(), id);
+		});
+		closeModal();
+	};
 }
 
 var contextMenuActions = {
@@ -221,20 +222,6 @@ var contextMenuActions = {
 	"link" : contextMenuLinkAction,
 	"edit" : contextMenuEditAction,
 	"delete" : contextMenuDeleteAction
-}
-
-function getSelectedTreeViewerNodeId(node) {
-	// TODO action is deprecated after Updating to 3.3.1 Jquery?
-	// treeNode.id Cannot read property 'id' of undefined after ContextMenu
-	// Delete and Edit
-	var selector = node.reference.prevObject.selector;
-	nodeData = $("#evts").jstree(true).get_node(selector).data;
-	return nodeData.id;
-}
-
-function getSelectedTreantNodeId(options) {
-	var context = options.$trigger.context;
-	return context.id;
 }
 
 function closeModal() {

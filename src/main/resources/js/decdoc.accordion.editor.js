@@ -1,79 +1,35 @@
 function addOptionsToAllDecisionComponents(parentNode) {
-	for (var counter = 0; counter < simpleKnowledgeTypes.length; ++counter) {
-		addOptionToDecisionComponent(simpleKnowledgeTypes[counter], parentNode);
+	for (var index = 0; index < simpleKnowledgeTypes.length; index++) {
+		addOptionToDecisionComponent(simpleKnowledgeTypes[index], parentNode);
 	}
+}
+
+function setUpEditorContent(type) {
+	var radioButtons = "";
+	if (type == "Argument") {
+		var radioButtons = '<input type="radio" name="form-radio-argument" value="Pro Argument" checked="checked">Pro'
+				+ '<input type="radio" name="form-radio-argument" value="Contra Argument">Contra'
+				+ '<input type="radio" name="form-radio-argument" value="Comment">Comment';
+	}
+	document.getElementById(type).insertAdjacentHTML(
+			'beforeend',
+			'<p>Do you want to add an additional ' + type + '? ' + radioButtons
+					+ '<input type="text" id="form-input-summary' + type + '" placeholder="Summary of ' + type
+					+ '"> <input type="submit" id="form-input-submit' + type + '" value="Add ' + type + '"/></p>');
 }
 
 function addOptionToDecisionComponent(type, parentNode) {
-	if (type === "Solution") {
-		if (document.getElementById(type).innerHTML === "") {
-			addingCreateButton(type);
-		}
-	} else if (type === "Argument") {
-		document
-				.getElementById(type)
-				.insertAdjacentHTML(
-						'beforeend',
-						'<p>Do you want to add an additional '
-								+ type
-								+ '? <input type="radio" name="natureOfArgument" value="pro" checked="checked">Pro<input type="radio" name="natureOfArgument" value="contra">Contra<input type="radio" name="natureOfArgument" value="comment">Comment<input type="text" id="inputField'
-								+ type + '" placeholder="Name of ' + type
-								+ '"><input type="button" name="CreateAndLinkDecisionComponent' + type
-								+ '" id="CreateAndLinkDecisionComponent' + type + '" value="Add ' + type + '"/></p>');
-		var createDecisionKnowledgeElementButton = document.getElementById("CreateAndLinkDecisionComponent" + type);
-		var inputField = document.getElementById("inputField" + type);
-		createDecisionKnowledgeElementButton.addEventListener('click', function() {
-			var summary = inputField.value;
-			var description = "TODO";
-			inputField.value = "";
-			var argumentCheckBoxGroup = document.getElementsByName("natureOfArgument");
-			for (var i = 0; i < argumentCheckBoxGroup.length; i++) {
-				if (argumentCheckBoxGroup[i].checked == true) {
-					var selectedNatureOfArgument = argumentCheckBoxGroup[i].value;
-					if (selectedNatureOfArgument == "pro") {
-						createDecisionKnowledgeElement(summary, description, type, function(newId) {
-							createLink(parentNode.id, newId, "support", function() {
-								buildTreeViewer(getProjectKey(), newId);
-							});
-						});
-					} else if (selectedNatureOfArgument == "contra") {
-						createDecisionKnowledgeElement(summary, description, type, function(newId) {
-							createLink(parentNode.id, newId, "attack", function() {
-								buildTreeViewer(getProjectKey(), newId);
-							});
-						});
-					} else if (selectedNatureOfArgument == "comment") {
-						createDecisionKnowledgeElement(summary, description, type, function(newId) {
-							createLink(parentNode.id, newId, "comment", function() {
-								buildTreeViewer(getProjectKey(), newId);
-							});
-						});
-					}
-				}
-			}
-		});
-	} else {
-		addingCreateButton(type);
-	}
-}
-
-function addingCreateButton(type) {
-	document.getElementById(type).insertAdjacentHTML(
-			'beforeend',
-			'<p>Do you want to add an additional ' + type + '?<input type="text" id="inputField' + type
-					+ '" placeholder="Name of ' + type + '"><input type="button" name="CreateAndLinkDecisionComponent'
-					+ type + '" id="CreateAndLinkDecisionComponent' + type + '" value="Add ' + type + '"/></p>');
-	var createDecisionKnowledgeElementButton = document.getElementById("CreateAndLinkDecisionComponent" + type);
-	var inputField = document.getElementById("inputField" + type);
-	createDecisionKnowledgeElementButton.addEventListener('click', function() {
-		var summary = inputField.value;
+	setUpEditorContent(type);
+	var submitButton = document.getElementById("form-input-submit" + type);
+	submitButton.addEventListener("click", function() {
+		var summary = document.getElementById("form-input-summary" + type).value;
 		var description = "TODO";
-		inputField.value = "";
-		createDecisionKnowledgeElement(summary, description, type, function(newId) {
-			createLink(parentNode.id, newId, "contain", function() {
-				buildTreeViewer(getProjectKey(), newId);
-			});
-		});
+		console.log(submitButton.id);
+		if (submitButton.id === "form-input-submitArgument") {
+			type = $('input[name=form-radio-argument]:checked').val();
+		}
+		createDecisionKnowledgeElementAsChild(summary, description, type, parentNode.id);
+		document.getElementById("form-input-summary" + type).value = "";
 	});
 }
 
@@ -109,13 +65,10 @@ function fillAccordion(data, projectKey, node) {
 				insertString += '</select><input type="button" name="linkExistingIssueButton" id="linkExistingIssueButton" value="Create Link"/>';
 				document.getElementById("Details").insertAdjacentHTML('beforeend', insertString);
 				var linkButton = document.getElementById("linkExistingIssueButton");
-				linkButton
-						.addEventListener(
-								'click',
-								function() {
-									var childId = $('select[name="linkExistingIssueSearchField"] option:selected').val();
-									createLinkToExistingElement(node.id, childId);
-								});
+				linkButton.addEventListener('click', function() {
+					var childId = $('select[name="linkExistingIssueSearchField"] option:selected').val();
+					createLinkToExistingElement(node.id, childId);
+				});
 			});
 	if (data.node.children.length > 0) {
 		for (var counter = 0; counter < data.node.children.length; ++counter) {
