@@ -1,13 +1,13 @@
-function buildTreant(projectKey, node) {
+function buildTreant(decisionKnowledgeElement) {
 	var depthOfTree = document.getElementById("depthOfTreeInput").value;
-	getTreant(projectKey, node.key, depthOfTree, function(treant){
-        document.getElementById("treant-container").innerHTML = "";
-        new Treant(treant);
-        createContextMenuForTreantNodes(projectKey);
+	getTreant(getProjectKey(), decisionKnowledgeElement.key, depthOfTree, function(treant) {
+		document.getElementById("treant-container").innerHTML = "";
+		new Treant(treant);
+		createContextMenuForTreantNodes();
 	});
 }
 
-function createContextMenuForTreantNodes(projectKey) {
+function createContextMenuForTreantNodes() {
 	$(function() {
 		$.contextMenu({
 			selector : ".decision, .rationale, .context, .problem, .solution",
