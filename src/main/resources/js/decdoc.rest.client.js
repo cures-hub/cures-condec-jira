@@ -214,6 +214,28 @@ function getTreeViewer(projectKey, callback) {
 	});
 }
 
+function flipProjectActivation(isActivated, projectKey) {
+	postJSON(AJS.contextPath() + "/rest/admin/1.0/config.json?projectKey=" + projectKey
+					+ "&isActivated=" + isActivated, function(error, response) {
+		if (error == null) {
+			showFlag("success", "Plug-in activation for project has been changed.");
+		} else {
+			showFlag("error", "Plug-in activation for project has not been changed.");
+		}
+	});
+}
+
+function setPersistenceStrategy(isIssueStrategy, projectKey) {
+	putJSON(AJS.contextPath() + "/rest/admin/1.0/config.json?projectKey=" + projectKey
+			+ "&isIssueStrategy=" + isIssueStrategy, function(error, response) {
+		if (error == null) {
+			showFlag("success", "Strategy has been selected.");
+		} else {
+			showFlag("error", "Strategy could not be selected.");
+		}
+	});
+}
+
 function showFlag(type, message) {
 	AJS.flag({
 		type : type,

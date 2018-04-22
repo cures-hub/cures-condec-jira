@@ -11,6 +11,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select")
 $webResourceManager.requireResource("com.atlassian.auiplugin:aui-form-notification")
 $webResourceManager.requireResource("com.atlassian.auiplugin:aui-inline-dialog2")
 $webResourceManager.requireResource("com.atlassian.auiplugin:aui-toggle")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.documentation.jira:decision-documentation-resources")
 <style>
 table {
 	border-collapse: collapse;
@@ -57,7 +58,8 @@ h2 {
 						toggle.addEventListener('change', function(e) {
 							var thisToggle = this;
 							thisToggle.busy = true;
-							#include("js/admin/postAdmin.js")
+							flipProjectActivation(thisToggle.checked, thisToggle.dataset.projectkey);
+							thisToggle.busy = false;
 						});
 					</script></td>
 			<td><aui-toggle
@@ -73,7 +75,8 @@ h2 {
 						toggle.addEventListener('change', function(e) {
 							var thisToggle = this;
 							thisToggle.busy = true;
-							#include("js/admin/putAdmin.js")
+							setPersistenceStrategy(thisToggle.checked, thisToggle.dataset.projectkey);
+							thisToggle.busy = false;
 						});
 					</script></td>
 		</tr>
