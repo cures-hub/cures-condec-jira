@@ -37,9 +37,24 @@ public class DecisionsRest {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Decision knowledge element was not found for the given id.")).build();
 		} else {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error",
-							"Decision knowledge element could not be received due to a bad request (element id or project key was missing)."))
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"Decision knowledge element could not be received due to a bad request (element id or project key was missing)."))
+					.build();
+		}
+	}
+
+	@Path("/getLinkedDecisionComponents")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getLinkedDecisionComponents(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey) {
+		if (projectKey != null) {
+			StrategyProvider strategyProvider = new StrategyProvider();
+			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+			List<DecisionKnowledgeElement> linkedDecisionKnowledgeElements = strategy.getChildren(id);
+			return Response.ok(linkedDecisionKnowledgeElements).build();
+		} else {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"Unlinked decision components could not be received due to a bad request (element id or project key was missing)."))
 					.build();
 		}
 	}
@@ -51,10 +66,12 @@ public class DecisionsRest {
 		if (projectKey != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
 			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
-			List<DecisionKnowledgeElement> decisions = strategy.getUnlinkedDecisionComponents(id, projectKey);
-			return Response.ok(decisions).build();
+			List<DecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = strategy.getUnlinkedDecisionComponents(id, projectKey);
+			return Response.ok(unlinkedDecisionKnowledgeElements).build();
 		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Unlinked decision components could not be received due to a bad request (element id or project key was missing).")).build();
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"Unlinked decision components could not be received due to a bad request (element id or project key was missing)."))
+					.build();
 		}
 	}
 

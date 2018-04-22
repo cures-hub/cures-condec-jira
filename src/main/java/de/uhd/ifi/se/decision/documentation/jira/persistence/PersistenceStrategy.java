@@ -42,6 +42,11 @@ public abstract class PersistenceStrategy {
 	}
 
 	public abstract List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement);
+	
+	public List<DecisionKnowledgeElement> getChildren(long id) {
+		DecisionKnowledgeElement decisionKnowledgeElement = this.getDecisionKnowledgeElement(id);
+		return this.getChildren(decisionKnowledgeElement);		
+	}
 
 	public abstract List<DecisionKnowledgeElement> getParents(DecisionKnowledgeElement decisionKnowledgeElement);
 

@@ -5,10 +5,9 @@ function buildTreeViewer(projectKey, nodeId) {
 			tree.destroy();
 		}
 		$('#evts').on("select_node.jstree", function(error, data) {
-			deleteContentOfAccordionEditor();
 			var node = data.node.data;
-			fillAccordion(data, projectKey, node);
-			buildTreant(projectKey, node);
+			fillAccordion(node);
+			buildTreant(node);
 		}).on("ready.jstree", function() {
 			if (nodeId) {
 				var tree = $('#evts').jstree(true);

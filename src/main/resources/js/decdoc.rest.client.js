@@ -79,6 +79,18 @@ function getDecisionKnowledgeElement(id, projectKey, callback) {
 			});
 }
 
+function getLinkedDecisionComponents(id, callback) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getLinkedDecisionComponents.json?projectKey="
+			+ getProjectKey() + '&id=' + id, function(error, linkedDecisionComponents) {
+		if (error == null) {
+			callback(linkedDecisionComponents);
+		} else {
+			showFlag("error",
+					"An error occured when receiving the linked decision components for the selected element.");
+		}
+	});
+}
+
 function getUnlinkedDecisionComponents(id, projectKey, callback) {
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getUnlinkedDecisionComponents.json?projectKey="
 			+ projectKey + '&id=' + id, function(error, unlinkedDecisionComponents) {
