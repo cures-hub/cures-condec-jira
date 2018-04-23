@@ -193,8 +193,8 @@ function deleteLink(parentId, childId, linkType, callback) {
 }
 
 function getTreant(key, depthOfTree, callback) {
-	getJSON(AJS.contextPath() + "/rest/treantsrest/latest/treant.json?projectKey=" + getProjectKey() + "&elementKey=" + key
-			+ "&depthOfTree=" + depthOfTree, function(error, treant) {
+	getJSON(AJS.contextPath() + "/rest/treantsrest/latest/treant.json?projectKey=" + getProjectKey() + "&elementKey="
+			+ key + "&depthOfTree=" + depthOfTree, function(error, treant) {
 		if (error == null) {
 			callback(treant);
 		} else {
@@ -204,8 +204,8 @@ function getTreant(key, depthOfTree, callback) {
 }
 
 function getTreeViewer(callback) {
-	getJSON(AJS.contextPath() + "/rest/treeviewerrest/latest/treeviewer.json?projectKey=" + getProjectKey(), function(error,
-			core) {
+	getJSON(AJS.contextPath() + "/rest/treeviewerrest/latest/treeviewer.json?projectKey=" + getProjectKey(), function(
+			error, core) {
 		if (error == null) {
 			callback(core)
 		} else {
@@ -214,20 +214,21 @@ function getTreeViewer(callback) {
 	});
 }
 
-function flipProjectActivation(isActivated) {
-	postJSON(AJS.contextPath() + "/rest/admin/1.0/config.json?projectKey=" + getProjectKey()
-					+ "&isActivated=" + isActivated, function(error, response) {
-		if (error == null) {
-			showFlag("success", "Plug-in activation for project has been changed.");
-		} else {
-			showFlag("error", "Plug-in activation for project has not been changed.");
-		}
-	});
+function flipProjectActivation(isActivated, projectKey) {
+	postJSON(
+			AJS.contextPath() + "/rest/admin/1.0/config.json?projectKey=" + projectKey + "&isActivated=" + isActivated,
+			function(error, response) {
+				if (error == null) {
+					showFlag("success", "Plug-in activation for project has been changed.");
+				} else {
+					showFlag("error", "Plug-in activation for project has not been changed.");
+				}
+			});
 }
 
-function setPersistenceStrategy(isIssueStrategy) {
-	putJSON(AJS.contextPath() + "/rest/admin/1.0/config.json?projectKey=" + getProjectKey()
-			+ "&isIssueStrategy=" + isIssueStrategy, function(error, response) {
+function setPersistenceStrategy(isIssueStrategy, projectKey) {
+	putJSON(AJS.contextPath() + "/rest/admin/1.0/config.json?projectKey=" + projectKey + "&isIssueStrategy="
+			+ isIssueStrategy, function(error, response) {
 		if (error == null) {
 			showFlag("success", "Strategy has been selected.");
 		} else {
