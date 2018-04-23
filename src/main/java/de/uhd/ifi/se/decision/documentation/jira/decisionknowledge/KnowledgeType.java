@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @description Type of decision knowledge element
  */
@@ -73,5 +76,13 @@ public enum KnowledgeType {
 
 	public String toString() {
 		return this.name().substring(0, 1).toUpperCase() + this.name().substring(1).toLowerCase();
+	}
+
+	public static List<String> toList() {
+		List<String> knowledgeTypes = new ArrayList<String>();
+		for (KnowledgeType knowledgeType : KnowledgeType.values()) {
+			knowledgeTypes.add(knowledgeType.toString());
+		}
+		return knowledgeTypes;
 	}
 }

@@ -33,7 +33,7 @@ public class TestPutLink extends TestSetUp {
 	@Before
 	public void setUp() {
 		decRest= new DecisionsRest();
-		initialisation();
+		initialization();
 		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
 
 		req = new MockHttpServletRequest();

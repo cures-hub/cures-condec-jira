@@ -38,7 +38,7 @@ public class TestAdminServlet extends TestSetUp {
 
 	@Before
 	public void setUp() {
-		initialisation();
+		initialization();
 		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
 
 		req = new MockHttpServletRequest();

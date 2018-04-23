@@ -22,7 +22,7 @@ public class ActiveObjectStrategyTestSetUp extends TestSetUp{
     public void setUp() {
         ActiveObjects ao = new TestActiveObjects(entityManager);
         new ComponentGetter().init(ao, new MockTransactionTemplate(), new MockDefaultUserManager());
-        initialisation();
+        initialization();
         aoStrategy = new ActiveObjectStrategy();
     }
 }

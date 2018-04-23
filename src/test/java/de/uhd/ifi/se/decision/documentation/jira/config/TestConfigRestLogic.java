@@ -29,7 +29,7 @@ public class TestConfigRestLogic extends TestSetUp {
 	@Before
 	public void setUp() {
 		restLogic = new ConfigRestLogic();
-		initialisation();
+		initialization();
 		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockDefaultUserManager());
 	}

@@ -1,15 +1,15 @@
 package de.uhd.ifi.se.decision.documentation.jira.config;
 
 /**
- * @description model class for plugin configuration
+ * @description Model class for plug-in configuration
  */
 public class Config {
 	private String projectKey;
 	private String projectName;
-	private String isActivated;
-	private String isIssueStrategy;
+	private boolean isActivated;
+	private boolean isIssueStrategy;
 
-	public Config(String projectKey, String projectName, String isActivated, String isIssueStrategy) {
+	public Config(String projectKey, String projectName, boolean isActivated, boolean isIssueStrategy) {
 		this.projectKey = projectKey;
 		this.projectName = projectName;
 		this.isActivated = isActivated;
@@ -32,19 +32,19 @@ public class Config {
 		this.projectName = projectName;
 	}
 
-	public String getIsActivated() {
+	public boolean isActivated() {
 		return isActivated;
 	}
 
-	public void setIsActivated(String isActivated) {
+	public void setActivated(boolean isActivated) {
 		this.isActivated = isActivated;
 	}
 
-	public String getIsIssueStrategy() {
+	public boolean isIssueStrategy() {
 		return isIssueStrategy;
 	}
 
-	public void setIsIssueStrategy(String isIssueStrategy) {
+	public void setIssueStrategy(boolean isIssueStrategy) {
 		this.isIssueStrategy = isIssueStrategy;
 	}
 }

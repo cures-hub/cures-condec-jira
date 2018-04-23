@@ -11,7 +11,7 @@ public class TestStrategyProvider extends TestSetUp {
 
     @Before
     public void setUp(){
-        initialisation();
+        initialization();
         provider = new StrategyProvider();
     }
 

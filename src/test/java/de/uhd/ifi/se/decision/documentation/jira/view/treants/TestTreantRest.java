@@ -42,7 +42,7 @@ public class TestTreantRest extends TestSetUp {
 	@Before
 	public void setUp() {
 		treantRest=new TreantRest();
-		initialisation();
+		initialization();
 		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
 	}
 

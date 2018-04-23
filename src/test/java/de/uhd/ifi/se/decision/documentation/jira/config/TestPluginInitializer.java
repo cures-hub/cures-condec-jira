@@ -23,17 +23,17 @@ import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueTypeManager;
 
 public class TestPluginInitializer extends TestSetUp {
 
-	private PluginInitializer listener;
+	private PluginInitializer pluginInitializer;
 
 	@Before
 	public void setUp() {
-		listener = new PluginInitializer();
+		pluginInitializer = new PluginInitializer();
 	}
 
 	@Test(expected = java.lang.NullPointerException.class)
 	public void testExecutionAfterProp() throws Exception {
-		initialisation();
-		listener.afterPropertiesSet();
+		initialization();
+		pluginInitializer.afterPropertiesSet();
 	}
 
 	@Test
@@ -52,7 +52,7 @@ public class TestPluginInitializer extends TestSetUp {
 		.addMock(ProjectManager.class,projectManager)
 		.addMock(ConstantsManager.class,constManager);
 
-		listener.afterPropertiesSet();
+		pluginInitializer.afterPropertiesSet();
 	}
 
 	@Test
@@ -87,7 +87,7 @@ public class TestPluginInitializer extends TestSetUp {
 		constManager.insertIssueType("Solution", (long) 20, "Test", "Test", (long) 12290);
 
 
-		listener.afterPropertiesSet();
+		pluginInitializer.afterPropertiesSet();
 	}
 
 }
