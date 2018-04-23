@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.documentation.jira.config.Config;
+import de.uhd.ifi.se.decision.documentation.jira.model.JiraProject;
 
 /**
  * @description Test class for configuration settings
@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.documentation.jira.config.Config;
  */
 public class TestConfig {
 
-	private Config config;
+	private JiraProject config;
 	private String projectKey;
 	private String projectName;
 	private boolean isActivated;
@@ -25,7 +25,7 @@ public class TestConfig {
 		this.projectName = "TestName";
 		this.isActivated = true;
 		this.isIssueStrategy = false;
-		this.config = new Config(projectKey, projectName, isActivated, isIssueStrategy);
+		this.config = new JiraProject(projectKey, projectName, isActivated, isIssueStrategy);
 	}
 
 	@Test

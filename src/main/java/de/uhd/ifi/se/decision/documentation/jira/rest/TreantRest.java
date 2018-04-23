@@ -1,11 +1,11 @@
-package de.uhd.ifi.se.decision.documentation.jira.view.treants;
+package de.uhd.ifi.se.decision.documentation.jira.rest;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
@@ -14,7 +14,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.TreeViewerRest;
+import de.uhd.ifi.se.decision.documentation.jira.view.treants.Chart;
+import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
+import de.uhd.ifi.se.decision.documentation.jira.view.treants.Treant;
+
 import org.ofbiz.core.entity.GenericEntityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

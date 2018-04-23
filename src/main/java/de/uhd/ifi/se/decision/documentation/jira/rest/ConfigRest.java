@@ -1,10 +1,12 @@
-package de.uhd.ifi.se.decision.documentation.jira.config;
+package de.uhd.ifi.se.decision.documentation.jira.rest;
 
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.plugins.rest.common.security.AnonymousAllowed;
 import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
+
+import de.uhd.ifi.se.decision.documentation.jira.config.ConfigRestLogic;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;

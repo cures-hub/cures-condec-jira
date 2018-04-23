@@ -15,6 +15,7 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
+import de.uhd.ifi.se.decision.documentation.jira.model.JiraProject;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
 
@@ -72,7 +73,7 @@ public class AdminServlet extends HttpServlet {
 			redirectToLogin(request, response);
 			return;
 		}
-		Map<String, Config> configMap = new HashMap<String, Config>();
+		Map<String, JiraProject> configMap = new HashMap<String, JiraProject>();
 		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 			final String projectKey = project.getKey();
 			final String projectName = project.getName();
@@ -98,7 +99,7 @@ public class AdminServlet extends HttpServlet {
 				isIssueStrategy = pair.getRight();
 			}
 
-			Config configRep = new Config(projectKey, projectName, Boolean.valueOf(isActivated), Boolean.valueOf(isIssueStrategy));
+			JiraProject configRep = new JiraProject(projectKey, projectName, Boolean.valueOf(isActivated), Boolean.valueOf(isIssueStrategy));
 			configMap.put(projectKey, configRep);
 		}
 		Map<String, Object> velocityParams = new HashMap<String, Object>();

@@ -1,15 +1,15 @@
-package de.uhd.ifi.se.decision.documentation.jira.config;
+package de.uhd.ifi.se.decision.documentation.jira.model;
 
 /**
- * @description Model class for plug-in configuration
+ * @description Model class for a JIRA project and its configuration
  */
-public class Config {
+public class JiraProject {
 	private String projectKey;
 	private String projectName;
 	private boolean isActivated;
 	private boolean isIssueStrategy;
 
-	public Config(String projectKey, String projectName, boolean isActivated, boolean isIssueStrategy) {
+	public JiraProject(String projectKey, String projectName, boolean isActivated, boolean isIssueStrategy) {
 		this.projectKey = projectKey;
 		this.projectName = projectName;
 		this.isActivated = isActivated;

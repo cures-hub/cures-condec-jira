@@ -15,7 +15,7 @@ import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
+import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
 
 /**
  * @description Handles plug-in initialization

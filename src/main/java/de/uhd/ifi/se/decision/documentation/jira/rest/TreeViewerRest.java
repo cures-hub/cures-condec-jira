@@ -1,12 +1,16 @@
-package de.uhd.ifi.se.decision.documentation.jira.view.treeviewer;
+package de.uhd.ifi.se.decision.documentation.jira.rest;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
+
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
