@@ -113,7 +113,7 @@ public class TreantRest {
 	private Node setUpNode(DecisionKnowledgeElement decisionKnowledgeElement) {
 		Node node = new Node();
 		Map<String, String> nodeContent = ImmutableMap.of("name",
-				decisionKnowledgeElement.getType().toString().toLowerCase(), "title",
+				decisionKnowledgeElement.getType().toString(), "title",
 				decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 		node.setNodeContent(nodeContent);
 
