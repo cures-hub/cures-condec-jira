@@ -1,10 +1,16 @@
 package de.uhd.ifi.se.decision.documentation.jira.config;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.project.Project;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 
+import de.uhd.ifi.se.decision.documentation.jira.model.JiraProject;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 
 public class Config {
@@ -57,5 +63,16 @@ public class Config {
 				return null;
 			}
 		});
+	}
+	
+	public static Map<String, JiraProject> createConfigMap() {
+		Map<String, JiraProject> configMap = new HashMap<String, JiraProject>();
+		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
+			String projectKey = project.getKey();
+			String projectName = project.getName();
+			JiraProject jiraProject = new JiraProject(projectKey, projectName, Config.isActivated(projectKey), Config.isIssueStrategy(projectKey));
+			configMap.put(projectKey, jiraProject);
+		}
+		return configMap;
 	}
 }

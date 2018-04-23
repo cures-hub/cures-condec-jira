@@ -14,8 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.project.Project;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.auth.LoginUriProvider;
@@ -39,14 +37,14 @@ public class AdminServlet extends HttpServlet {
 	@ComponentImport
 	private LoginUriProvider loginUriProvider;
 	@ComponentImport
-	private TemplateRenderer renderer;
+	private TemplateRenderer templateRenderer;
 
 	@Inject
 	public AdminServlet(@ComponentImport UserManager userManager, @ComponentImport LoginUriProvider loginUriProvider,
 			@ComponentImport TemplateRenderer renderer) {
 		this.userManager = userManager;
 		this.loginUriProvider = loginUriProvider;
-		this.renderer = renderer;
+		this.templateRenderer = renderer;
 	}
 
 	@Override
@@ -60,23 +58,12 @@ public class AdminServlet extends HttpServlet {
 			redirectToLogin(request, response);
 			return;
 		}
-		Map<String, JiraProject> configMap = createConfigMap();
+		Map<String, JiraProject> configMap = Config.createConfigMap();
 		Map<String, Object> velocityParams = new HashMap<String, Object>();
 		response.setContentType("text/html;charset=utf-8");
 		velocityParams.put("requestUrl", request.getRequestURL());
 		velocityParams.put("projectsMap", configMap);
-		renderer.render("templates/admin.vm", velocityParams, response.getWriter());
-	}
-
-	public Map<String, JiraProject> createConfigMap() {
-		Map<String, JiraProject> configMap = new HashMap<String, JiraProject>();
-		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
-			String projectKey = project.getKey();
-			String projectName = project.getName();
-			JiraProject jiraProject = new JiraProject(projectKey, projectName, Config.isActivated(projectKey), Config.isIssueStrategy(projectKey));
-			configMap.put(projectKey, jiraProject);
-		}
-		return configMap;
+		templateRenderer.render("templates/admin.vm", velocityParams, response.getWriter());
 	}
 
 	private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
