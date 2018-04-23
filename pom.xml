@@ -191,7 +191,7 @@
 				<configuration>
 					<productVersion>${jira.version}</productVersion>
 					<productDataVersion>${jira.version}</productDataVersion>
-					<compressResources>true</compressResources>
+					<compressResources>false</compressResources>
 					<enableQuickReload>true</enableQuickReload>
 					<enableFastdev>false</enableFastdev>
 					<instructions>

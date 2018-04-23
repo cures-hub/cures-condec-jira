@@ -65,7 +65,7 @@ function deleteJSON(url, data, callback) {
 	xhr.send(JSON.stringify(data));
 }
 
-function getDecisionKnowledgeElement(id, projectKey, callback) {
+function getDecisionKnowledgeElement(id, projectKey= getProjectKey(), callback) {
 	getJSON(
 			AJS.contextPath() + "/rest/decisions/latest/decisions/getDecisionKnowledgeElement.json?projectKey="
 					+ projectKey + '&id=' + id,
@@ -91,7 +91,7 @@ function getLinkedDecisionComponents(id, callback) {
 	});
 }
 
-function getUnlinkedDecisionComponents(id, projectKey, callback) {
+function getUnlinkedDecisionComponents(id, projectKey= getProjectKey(), callback) {
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getUnlinkedDecisionComponents.json?projectKey="
 			+ projectKey + '&id=' + id, function(error, unlinkedDecisionComponents) {
 		if (error == null) {
@@ -192,7 +192,7 @@ function deleteLink(parentId, childId, linkType, callback) {
 			});
 }
 
-function getTreant(projectKey, key, depthOfTree, callback) {
+function getTreant(projectKey= getProjectKey(), key, depthOfTree, callback) {
 	getJSON(AJS.contextPath() + "/rest/treantsrest/latest/treant.json?projectKey=" + projectKey + "&elementKey=" + key
 			+ "&depthOfTree=" + depthOfTree, function(error, treant) {
 		if (error == null) {
@@ -203,7 +203,7 @@ function getTreant(projectKey, key, depthOfTree, callback) {
 	});
 }
 
-function getTreeViewer(projectKey, callback) {
+function getTreeViewer(projectKey = getProjectKey(), callback) {
 	getJSON(AJS.contextPath() + "/rest/treeviewerrest/latest/treeviewer.json?projectKey=" + projectKey, function(error,
 			core) {
 		if (error == null) {
@@ -214,7 +214,7 @@ function getTreeViewer(projectKey, callback) {
 	});
 }
 
-function flipProjectActivation(isActivated, projectKey) {
+function flipProjectActivation(isActivated, projectKey = getProjectKey()) {
 	postJSON(AJS.contextPath() + "/rest/admin/1.0/config.json?projectKey=" + projectKey
 					+ "&isActivated=" + isActivated, function(error, response) {
 		if (error == null) {
@@ -225,7 +225,7 @@ function flipProjectActivation(isActivated, projectKey) {
 	});
 }
 
-function setPersistenceStrategy(isIssueStrategy, projectKey) {
+function setPersistenceStrategy(isIssueStrategy, projectKey = getProjectKey()) {
 	putJSON(AJS.contextPath() + "/rest/admin/1.0/config.json?projectKey=" + projectKey
 			+ "&isIssueStrategy=" + isIssueStrategy, function(error, response) {
 		if (error == null) {
