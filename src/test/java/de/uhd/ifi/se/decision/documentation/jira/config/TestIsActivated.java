@@ -18,13 +18,13 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
-import de.uhd.ifi.se.decision.documentation.jira.config.IsActivated;
+import de.uhd.ifi.se.decision.documentation.jira.config.ActivationCondition;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 
 
 public class TestIsActivated {
-	private IsActivated isActivated;
+	private ActivationCondition isActivated;
 	
 	private PluginSettingsFactory factory;
 	private TransactionTemplate transactionTemplate;
@@ -50,7 +50,7 @@ public class TestIsActivated {
 				issueService, projectService, searchService, userManager, templateRenderer, ao);
 		
 		Map<String , String> context = new HashMap<>();	
-		isActivated = new IsActivated();
+		isActivated = new ActivationCondition();
 		isActivated.init(context);
 	}
 	
