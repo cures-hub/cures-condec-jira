@@ -1,39 +1,26 @@
 package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonProperty;
 import com.atlassian.jira.issue.Issue;
 
 /**
  * @description Model class for decision knowledge elements
  */
-@XmlType(propOrder = { "id", "text" })
 public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
-	@XmlElement
+
 	private long id;
-
-	@XmlElement
-	private String key;
-
-	@XmlElement
-	private KnowledgeType type;
-
-	@XmlElement
-	private String description;
-
-	@XmlElement
 	private String summary;
-
+	private String description;
+	private KnowledgeType type;
 	private String projectKey;
-
+	private String key;
 
 	public DecisionKnowledgeElement() {
 
 	}
 
-	public DecisionKnowledgeElement(long id, String summary, String description, KnowledgeType type, String projectKey,
-			String key) {
+	public DecisionKnowledgeElement(long id, String summary, String description, KnowledgeType type, String projectKey, String key) {
 		this.id = id;
 		this.summary = summary;
 		this.description = description;
@@ -51,6 +38,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.key = issue.getKey();
 	}
 
+	@XmlElement(name = "id")
 	public long getId() {
 		return id;
 	}
@@ -59,6 +47,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.id = id;
 	}
 
+	@XmlElement(name = "summary")
 	public String getSummary() {
 		return summary;
 	}
@@ -67,6 +56,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.summary = summary;
 	}
 
+	@XmlElement(name = "description")
 	public String getDescription() {
 		return description;
 	}
@@ -77,6 +67,11 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 
 	public KnowledgeType getType() {
 		return type;
+	}
+
+	@XmlElement(name = "type")
+	public String getTypeAsString() {
+		return type.toString();
 	}
 
 	public void setType(KnowledgeType type) {
@@ -96,6 +91,7 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 		this.projectKey = projectKey;
 	}
 
+	@XmlElement(name = "key")
 	public String getKey() {
 		if (this.key == null) {
 			return this.projectKey + "-" + this.id;
@@ -105,15 +101,6 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 
 	public void setKey(String key) {
 		this.key = key;
-	}
-
-	@XmlElement(name = "text")
-	public String getText() {
-		if (this.type == null || this.summary == null) {
-			return "";
-		}
-		return this.type.toString().substring(0, 1).toUpperCase() + this.type.toString().substring(1) + " / "
-				+ this.summary;
 	}
 
 	public KnowledgeType getSuperType() {

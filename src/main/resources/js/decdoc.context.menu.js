@@ -129,7 +129,7 @@ function setUpContextMenuContentForLinkAction(id) {
 						+ "<select name='form-select-component' style='width:50%;' />";
 				for (var index = 0; index < unlinkedDecisionComponents.length; index++) {
 					insertString += "<option value='" + unlinkedDecisionComponents[index].id + "'>"
-							+ unlinkedDecisionComponents[index].text + "</option>";
+							+ unlinkedDecisionComponents[index].type + ' / ' + unlinkedDecisionComponents[index].summary + "</option>";
 				}
 				insertString += "</p> <p><input name='form-input-submit' id='form-input-submit' type='submit' value='"
 						+ linkKnowledgeElementText + "' style='float:right;'/></p>";

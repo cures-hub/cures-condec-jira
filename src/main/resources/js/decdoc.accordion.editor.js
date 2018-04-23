@@ -31,7 +31,7 @@ function enableLinkingUnlinkedDecisionComponents(parentId) {
 				var insertString = '<select name="linkExistingIssueSearchField">';
 				for (var index = 0; index < unlinkedDecisionComponents.length; index++) {
 					insertString += '<option value="' + unlinkedDecisionComponents[index].id + '">'
-							+ unlinkedDecisionComponents[index].text + '</option>';
+							+ unlinkedDecisionComponents[index].type + ' / ' + unlinkedDecisionComponents[index].summary + '</option>';
 				}
 				insertString += '</select><input type="button" name="linkExistingIssueButton" id="linkExistingIssueButton" value="Create Link"/>';
 				document.getElementById("Details").insertAdjacentHTML('beforeend', insertString);
