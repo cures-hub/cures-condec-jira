@@ -11,28 +11,28 @@ function createDecisionKnowledgeElementAsChild(summary, description, type, paren
 	case "Pro Argument":
 		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
 			createLink(childId, parentId, "support", function() {
-				buildTreeViewer(getProjectKey(), childId);
+				buildTreeViewer(childId);
 			});
 		});
 		break;
 	case "Contra Argument":
 		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
 			createLink(childId, parentId, "attack", function() {
-				buildTreeViewer(getProjectKey(), childId);
-			});
+                buildTreeViewer(childId);
+            });
 		});
 		break;
 	case "Comment":
 		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
 			createLink(childId, parentId, "comment", function() {
-				buildTreeViewer(getProjectKey(), childId);
+				buildTreeViewer(childId);
 			});
 		});
 		break;
 	default:
 		createDecisionKnowledgeElement(summary, description, type, function(childId) {
 			createLink(parentId, childId, "contain", function() {
-				buildTreeViewer(getProjectKey(), childId);
+				buildTreeViewer(childId);
 			});
 		});
 	}
@@ -44,51 +44,51 @@ function editDecisionKnowledgeElementAsChild(summary, description, type, parentI
 	switch (type) {
 	case "Pro Argument":
 		editDecisionKnowledgeElement(parentId, summary, description, "Argument", function() {
-			buildTreeViewer(getProjectKey(), parentId);
+			buildTreeViewer(parentId);
 		});
 		break;
 	case "Contra Argument":
 		editDecisionKnowledgeElement(parentId, summary, description, "Argument", function() {
-			buildTreeViewer(getProjectKey(), parentId);
+			buildTreeViewer(parentId);
 		});
 		break;
 	case "Comment":
 		editDecisionKnowledgeElement(parentId, summary, description, "Argument", function() {
-			buildTreeViewer(getProjectKey(), parentId);
+			buildTreeViewer(parentId);
 		});
 		break;
 	default:
 		editDecisionKnowledgeElement(parentId, summary, description, type, function() {
-			buildTreeViewer(getProjectKey(), parentId);
+			buildTreeViewer(parentId);
 		});
 	}
 }
 
 function createLinkToExistingElement(parentId, childId) {
-	getDecisionKnowledgeElement(childId, getProjectKey(), function(decisionKnowledgeElement) {
-		var type = decisionKnowledgeElement.type;
-		switch (type) {
-		case "Pro Argument":
-			createLink(childId, parentId, "support", function() {
-				buildTreeViewer(getProjectKey(), childId);
-			});
-			break;
-		case "Contra Argument":
-			createLink(childId, parentId, "attack", function() {
-				buildTreeViewer(getProjectKey(), childId);
-			});
-			break;
-		case "Comment":
-			createLink(childId, parentId, "comment", function() {
-				buildTreeViewer(getProjectKey(), childId);
-			});
-			break;
-		default:
-			createLink(parentId, childId, "contain", function() {
-				buildTreeViewer(getProjectKey(), childId);
-			});
-		}
-	});
+	getDecisionKnowledgeElement(childId, function (decisionKnowledgeElement) {
+        var type = decisionKnowledgeElement.type;
+        switch (type) {
+            case "Pro Argument":
+                createLink(childId, parentId, "support", function () {
+                    buildTreeViewer(childId);
+                });
+                break;
+            case "Contra Argument":
+                createLink(childId, parentId, "attack", function () {
+                    buildTreeViewer(childId);
+                });
+                break;
+            case "Comment":
+                createLink(childId, parentId, "comment", function () {
+                    buildTreeViewer(childId);
+                });
+                break;
+            default:
+                createLink(parentId, childId, "contain", function () {
+                    buildTreeViewer(childId);
+                });
+        }
+    });
 }
 
 function clearInner(node) {
