@@ -1,5 +1,16 @@
 package de.uhd.ifi.se.decision.documentation.jira.config;
 
+import java.io.IOException;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,21 +28,9 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.documentation.jira.model.JiraProject;
 import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
-import de.uhd.ifi.se.decision.documentation.jira.util.Pair;
-
-import javax.inject.Inject;
-import javax.servlet.*;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * @description renders the administration servlet, used to change plug-in
- *              configuration
+ * @description Renders the administration page to change plug-in configuration
  */
 @Scanned
 public class AdminServlet extends HttpServlet {
@@ -65,7 +64,7 @@ public class AdminServlet extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		if (request == null || response == null) {
-			LOGGER.error("Request or Response in AdminServlet is null");
+			LOGGER.error("Request or response in AdminServlet is null");
 			return;
 		}
 		String username = userManager.getRemoteUsername(request);
@@ -73,41 +72,49 @@ public class AdminServlet extends HttpServlet {
 			redirectToLogin(request, response);
 			return;
 		}
-		Map<String, JiraProject> configMap = new HashMap<String, JiraProject>();
-		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
-			final String projectKey = project.getKey();
-			final String projectName = project.getName();
-			Object ob = transactionTemplate.execute(new TransactionCallback<Object>() {
-				public Object doInTransaction() {
-					PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-					Object isActivatedObject = settings.get(pluginStorageKey + ".isActivated");
-					Object isIssueStrategyObject = settings.get(pluginStorageKey + ".isIssueStrategy");
-					Pair<String, String> pair = null;
-					if (isActivatedObject instanceof String && isIssueStrategyObject instanceof String) {
-						String isActivatedString = (String) isActivatedObject;
-						String isIssueStrategyString = (String) isIssueStrategyObject;
-						pair = new Pair<String, String>(isActivatedString, isIssueStrategyString);
-					}
-					return pair;
-				}
-			});
-			String isActivated = "false";
-			String isIssueStrategy = "false";
-			if (ob instanceof Pair<?, ?>) {
-				Pair<String, String> pair = (Pair<String, String>) ob;
-				isActivated = pair.getLeft();
-				isIssueStrategy = pair.getRight();
-			}
-
-			JiraProject configRep = new JiraProject(projectKey, projectName, Boolean.valueOf(isActivated), Boolean.valueOf(isIssueStrategy));
-			configMap.put(projectKey, configRep);
-		}
+		Map<String, JiraProject> configMap = createConfigMap();
 		Map<String, Object> velocityParams = new HashMap<String, Object>();
 		response.setContentType("text/html;charset=utf-8");
 		velocityParams.put("requestUrl", request.getRequestURL());
 		velocityParams.put("projectsMap", configMap);
-		LOGGER.info("DecDoc AdminServlet is now being rendered.");
 		renderer.render("templates/admin.vm", velocityParams, response.getWriter());
+	}
+
+	public Map<String, JiraProject> createConfigMap() {
+		Map<String, JiraProject> configMap = new HashMap<String, JiraProject>();
+		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
+			String projectKey = project.getKey();
+			String projectName = project.getName();
+			JiraProject jiraProject = new JiraProject(projectKey, projectName, isActivated(projectKey), isIssueStrategy(projectKey));
+			configMap.put(projectKey, jiraProject);
+		}
+		return configMap;
+	}
+
+	public boolean isActivated(String projectKey) {
+		Object isActivated = transactionTemplate.execute(new TransactionCallback<Object>() {
+			public Object doInTransaction() {
+				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+				return settings.get(pluginStorageKey + ".isActivated");
+			}
+		});
+		if (isActivated instanceof String && isActivated.equals("true")) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isIssueStrategy(String projectKey) {
+		Object isIssueStrategy = transactionTemplate.execute(new TransactionCallback<Object>() {
+			public Object doInTransaction() {
+				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+				return settings.get(pluginStorageKey + ".isIssueStrategy");
+			}
+		});
+		if (isIssueStrategy instanceof String && isIssueStrategy.equals("true")) {
+			return true;
+		}
+		return false;
 	}
 
 	private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {

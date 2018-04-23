@@ -71,7 +71,7 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
 		}
 	        ConfigRestLogic cRL = new ConfigRestLogic();
-	        cRL.setIsActivated(projectKey, isActivated);
+	        cRL.setActivated(projectKey, Boolean.valueOf(isActivated));
 	        return cRL.getResponse();
         } else {
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build();
@@ -93,7 +93,7 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isIssueStrategy = null")).build();
 		}
 	        ConfigRestLogic cRL = new ConfigRestLogic();
-	        cRL.setIsIssueStrategy(projectKey, isIssueStrategy);
+	        cRL.setIssueStrategy(projectKey, Boolean.valueOf(isIssueStrategy));
 	        return cRL.getResponse();
 	    } else {
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build();

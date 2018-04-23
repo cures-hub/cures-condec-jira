@@ -22,11 +22,7 @@ public class ConfigRestLogic {
 	private final TransactionTemplate transactionTemplate;
 	private final String pluginStorageKey;
 
-	/**
-	 * isActivated is saved as String, because JIRA pluginsettings dont accept
-	 * booleans, enums or self-defined classes
-	 */
-	private String isActivated;
+	private boolean isActivated;
 	private Status status;
 
 	public ConfigRestLogic() {
@@ -35,7 +31,7 @@ public class ConfigRestLogic {
 		this.pluginStorageKey = ComponentGetter.getPluginStorageKey();
 	}
 
-	public void setResponseForGet(final String projectKey) {
+	public void setResponseForGet(String projectKey) {
 		if (projectKey == null || projectKey.equals("")) {
 			LOGGER.error("Empyt ProjectKey in ConfigRestLogic setResponseForGet");
 			status = Status.CONFLICT;
@@ -48,30 +44,27 @@ public class ConfigRestLogic {
 						return o;
 					}
 				});
-				if (ob instanceof String) {
-					isActivated = (String) ob;
+				if (ob instanceof String && ob.equals("true")) {
+					isActivated = true;
 				} else {
-					isActivated = "false";
+					isActivated = false;
 				}
 			} catch (Exception e) {
-				isActivated = "false";
+				isActivated = false;
 			}
 		}
 	}
 
-	public void setIsActivated(final String projectKey, final String isActivated) {
+	public void setActivated(String projectKey, boolean isActivated) {
 		if (projectKey == null || projectKey.equals("")) {
 			LOGGER.error("ProjectKey in ConfigRestLogic setResponseForGet");
-			status = Status.CONFLICT;
-		} else if (isActivated == null || isActivated.equals("")) {
-			LOGGER.error("Empyt String isActivated in ConfigRestLogic setResponseForGet");
 			status = Status.CONFLICT;
 		} else {
 			try {
 				transactionTemplate.execute(new TransactionCallback<Object>() {
 					public Object doInTransaction() {
 						PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-						settings.put(pluginStorageKey + ".isActivated", isActivated);
+						settings.put(pluginStorageKey + ".isActivated", Boolean.toString(isActivated));
 						return null;
 					}
 				});
@@ -83,19 +76,16 @@ public class ConfigRestLogic {
 		}
 	}
 
-	public void setIsIssueStrategy(final String projectKey, final String isIssueStrategy) {
+	public void setIssueStrategy(final String projectKey, boolean isIssueStrategy) {
 		if (projectKey == null || projectKey.equals("")) {
-			LOGGER.error("Empyt ProjectKey in ConfigRestLogic setResponseForGet");
-			status = Status.CONFLICT;
-		} else if (isIssueStrategy == null || isIssueStrategy.equals("")) {
-			LOGGER.error("Empyt ProjectKey in ConfigRestLogic setResponseForGet");
+			LOGGER.error("Persistence strategy cannot be set since project key is invalid.");
 			status = Status.CONFLICT;
 		} else {
 			try {
 				transactionTemplate.execute(new TransactionCallback<Object>() {
 					public Object doInTransaction() {
 						PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-						settings.put(pluginStorageKey + ".isIssueStrategy", isIssueStrategy);
+						settings.put(pluginStorageKey + ".isIssueStrategy", Boolean.toString(isIssueStrategy));
 						return null;
 					}
 				});
