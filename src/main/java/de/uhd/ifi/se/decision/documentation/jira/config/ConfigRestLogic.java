@@ -61,13 +61,7 @@ public class ConfigRestLogic {
 			status = Status.CONFLICT;
 		} else {
 			try {
-				transactionTemplate.execute(new TransactionCallback<Object>() {
-					public Object doInTransaction() {
-						PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-						settings.put(pluginStorageKey + ".isActivated", Boolean.toString(isActivated));
-						return null;
-					}
-				});
+				Config.setActivated(projectKey, isActivated);
 				status = Status.ACCEPTED;
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage());
@@ -82,13 +76,7 @@ public class ConfigRestLogic {
 			status = Status.CONFLICT;
 		} else {
 			try {
-				transactionTemplate.execute(new TransactionCallback<Object>() {
-					public Object doInTransaction() {
-						PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-						settings.put(pluginStorageKey + ".isIssueStrategy", Boolean.toString(isIssueStrategy));
-						return null;
-					}
-				});
+				Config.setIssueStrategy(projectKey, isIssueStrategy);
 				status = Status.ACCEPTED;
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage());
