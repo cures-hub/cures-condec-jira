@@ -84,7 +84,7 @@ public class TestComponentGetter {
 	
 	@Test
 	public void testGetActivObjects() {
-		assertEquals(ao, ComponentGetter.getAo());
+		assertEquals(ao, ComponentGetter.getActiveObjects());
 	}
 	
 	@Test
@@ -95,7 +95,7 @@ public class TestComponentGetter {
 	@Test
 	public void testSetAO() {
 		ActiveObjects newao = mock(ActiveObjects.class);
-		ComponentGetter.setAo(newao);
-		assertEquals(newao, ComponentGetter.getAo());
+		ComponentGetter.setActiveObjects(newao);
+		assertEquals(newao, ComponentGetter.getActiveObjects());
 	}
 }

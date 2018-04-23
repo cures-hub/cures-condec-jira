@@ -17,8 +17,7 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import static com.google.common.base.Preconditions.*;
 
 /**
- * @description Provides access to JIRA
- *              components. Automatically initialized. 
+ * @description Provides access to JIRA components. Automatically initialized.
  */
 @Named("ComponentUtil")
 @Scanned
@@ -52,14 +51,13 @@ public class ComponentGetter {
 	 * For test use Only
 	 */
 	public void init(ActiveObjects testao, TransactionTemplate transactiontemp, UserManager userManager) {
-
 		new ComponentGetter(null, transactiontemp, null, null, null, userManager, null, testao);
 	}
 
 	@Inject
-	public ComponentGetter(PluginSettingsFactory pluginSettingsFactory, TransactionTemplate transactionTemplate,
-			IssueService issueService, ProjectService projectService, SearchService searchService,
-			UserManager userManager, TemplateRenderer templateRenderer, ActiveObjects ao) {
+	public ComponentGetter(PluginSettingsFactory pluginSettingsFactory, TransactionTemplate transactionTemplate, IssueService issueService,
+			ProjectService projectService, SearchService searchService, UserManager userManager, TemplateRenderer templateRenderer,
+			ActiveObjects activeObjects) {
 		ComponentGetter.pluginSettingsFactory = pluginSettingsFactory;
 		ComponentGetter.transactionTemplate = transactionTemplate;
 		ComponentGetter.issueService = issueService;
@@ -67,7 +65,7 @@ public class ComponentGetter {
 		ComponentGetter.searchService = searchService;
 		ComponentGetter.userManager = userManager;
 		ComponentGetter.templateRenderer = templateRenderer;
-		ComponentGetter.activeObjects = checkNotNull(ao);
+		ComponentGetter.activeObjects = checkNotNull(activeObjects);
 	}
 
 	public static PluginSettingsFactory getPluginSettingsFactory() {
@@ -98,12 +96,12 @@ public class ComponentGetter {
 		return templateRenderer;
 	}
 
-	public static ActiveObjects getAo() {
+	public static ActiveObjects getActiveObjects() {
 		return activeObjects;
 	}
 
-	public static void setAo(ActiveObjects ao) {
-		ComponentGetter.activeObjects = ao;
+	public static void setActiveObjects(ActiveObjects activeObjects) {
+		ComponentGetter.activeObjects = activeObjects;
 	}
 
 	public static String getPluginStorageKey() {

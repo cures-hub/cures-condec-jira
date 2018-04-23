@@ -19,15 +19,10 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.auth.LoginUriProvider;
-import com.atlassian.sal.api.pluginsettings.PluginSettings;
-import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
-import com.atlassian.sal.api.transaction.TransactionCallback;
-import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.documentation.jira.model.JiraProject;
-import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 
 /**
  * @description Renders the administration page to change plug-in configuration
@@ -40,15 +35,11 @@ public class AdminServlet extends HttpServlet {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdminServlet.class);
 
 	@ComponentImport
-	private final UserManager userManager;
+	private UserManager userManager;
 	@ComponentImport
-	private final LoginUriProvider loginUriProvider;
+	private LoginUriProvider loginUriProvider;
 	@ComponentImport
-	private final TemplateRenderer renderer;
-
-	private final PluginSettingsFactory pluginSettingsFactory;
-	private final TransactionTemplate transactionTemplate;
-	private final String pluginStorageKey;
+	private TemplateRenderer renderer;
 
 	@Inject
 	public AdminServlet(@ComponentImport UserManager userManager, @ComponentImport LoginUriProvider loginUriProvider,
@@ -56,9 +47,6 @@ public class AdminServlet extends HttpServlet {
 		this.userManager = userManager;
 		this.loginUriProvider = loginUriProvider;
 		this.renderer = renderer;
-		this.pluginSettingsFactory = ComponentGetter.getPluginSettingsFactory();
-		this.transactionTemplate = ComponentGetter.getTransactionTemplate();
-		this.pluginStorageKey = ComponentGetter.getPluginStorageKey();
 	}
 
 	@Override
@@ -85,36 +73,10 @@ public class AdminServlet extends HttpServlet {
 		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 			String projectKey = project.getKey();
 			String projectName = project.getName();
-			JiraProject jiraProject = new JiraProject(projectKey, projectName, isActivated(projectKey), isIssueStrategy(projectKey));
+			JiraProject jiraProject = new JiraProject(projectKey, projectName, Config.isActivated(projectKey), Config.isIssueStrategy(projectKey));
 			configMap.put(projectKey, jiraProject);
 		}
 		return configMap;
-	}
-
-	public boolean isActivated(String projectKey) {
-		Object isActivated = transactionTemplate.execute(new TransactionCallback<Object>() {
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-				return settings.get(pluginStorageKey + ".isActivated");
-			}
-		});
-		if (isActivated instanceof String && isActivated.equals("true")) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean isIssueStrategy(String projectKey) {
-		Object isIssueStrategy = transactionTemplate.execute(new TransactionCallback<Object>() {
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-				return settings.get(pluginStorageKey + ".isIssueStrategy");
-			}
-		});
-		if (isIssueStrategy instanceof String && isIssueStrategy.equals("true")) {
-			return true;
-		}
-		return false;
 	}
 
 	private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
