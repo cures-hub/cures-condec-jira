@@ -39,14 +39,14 @@
 		<!-- treant -->
 		<resource type="download" name="Treant.js" location="/js/treant/treant.js" />
 		<resource type="download" name="raphael.js" location="/js/treant/raphael.js" />
-		<resource type="download" name="jquery.easing.js" location="/js/treant/jquery.easing.js" />
-		<!-- jQuery -->
+		<!-- jquery -->
 		<resource type="download" name="jquery.js" location="/js/jquery/jquery.js" />
+		<resource type="download" name="jquery.easing.js" location="/js/jquery/jquery.easing.js" />
+		<!-- jquery.contextMenu -->
+		<resource type="download" name="jquery.ui.position.js" location="/js/jquery/jquery.ui.position.js" />
+		<resource type="download" name="jquery.contextMenu.js" location="/js/jquery/jquery.contextMenu.js" />
 		<!-- jstree -->
 		<resource type="download" name="jstree.js" location="/js/jstree/jstree.js" />
-		<!-- jquery.contextMenu -->
-		<resource type="download" name="jquery.ui.position.js" location="/js/contextMenu/jquery.ui.position.js" />
-		<resource type="download" name="jquery.contextMenu.js" location="/js/contextMenu/jquery.contextMenu.js" />
 		<!-- DecDoc java script files -->
 		<resource type="download" name="decdoc.init.js" location="/js/decdoc.init.js" />
 		<resource type="download" name="decdoc.js" location="/js/decdoc.js" />
