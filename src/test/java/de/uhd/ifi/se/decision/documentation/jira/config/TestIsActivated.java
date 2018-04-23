@@ -18,9 +18,9 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
+import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.config.ActivationCondition;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
-import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 
 
 public class TestIsActivated {

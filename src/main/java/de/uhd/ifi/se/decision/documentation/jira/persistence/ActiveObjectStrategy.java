@@ -11,8 +11,8 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 
+import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.model.*;
-import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import net.java.ao.Query;
 
 /**
