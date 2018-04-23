@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
+package de.uhd.ifi.se.decision.documentation.jira.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import org.codehaus.jackson.annotate.JsonProperty;

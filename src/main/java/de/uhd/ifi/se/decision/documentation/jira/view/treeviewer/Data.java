@@ -1,10 +1,10 @@
 package de.uhd.ifi.se.decision.documentation.jira.view.treeviewer;
 
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
-
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
+
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 
 /**
  * @description Model class for Tree Viewer nodes

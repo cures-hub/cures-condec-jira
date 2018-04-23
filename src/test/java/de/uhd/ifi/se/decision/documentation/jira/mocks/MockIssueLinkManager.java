@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
+import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.documentation.jira.model.Link;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 import org.ofbiz.core.entity.GenericValue;

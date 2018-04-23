@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.uhd.ifi.se.decision.documentation.jira.model.Link;
+
 /**
  *
  * @description Test Class for Simple Getter and Setter Tests

@@ -4,8 +4,8 @@ package de.uhd.ifi.se.decision.documentation.jira.persistence.ActiveObjectStrate
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 import org.junit.Ignore;

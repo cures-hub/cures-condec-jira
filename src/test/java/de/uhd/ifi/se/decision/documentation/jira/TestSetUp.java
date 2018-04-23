@@ -22,11 +22,11 @@ import com.atlassian.jira.user.MockApplicationUser;
 import com.atlassian.jira.user.util.MockUserManager;
 import com.atlassian.jira.user.util.UserManager;
 
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkTypeManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueService;
+import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
 
 public class TestSetUp {
 	private ProjectManager projectManager;

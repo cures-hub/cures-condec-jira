@@ -1,6 +1,8 @@
-package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
+package de.uhd.ifi.se.decision.documentation.jira.model;
 
 import com.atlassian.jira.issue.link.IssueLink;
+
+import de.uhd.ifi.se.decision.documentation.jira.persistence.ILinkEntity;
 
 /**
  * @description Model class for links between decision knowledge elements

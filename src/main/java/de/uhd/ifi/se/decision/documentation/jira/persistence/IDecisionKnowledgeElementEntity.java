@@ -1,5 +1,6 @@
-package de.uhd.ifi.se.decision.documentation.jira.decisionknowledge;
+package de.uhd.ifi.se.decision.documentation.jira.persistence;
 
+import de.uhd.ifi.se.decision.documentation.jira.model.IDecisionKnowledgeElement;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
 import net.java.ao.schema.Ignore;
