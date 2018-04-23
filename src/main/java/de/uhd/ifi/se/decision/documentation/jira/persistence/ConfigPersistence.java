@@ -1,20 +1,13 @@
-package de.uhd.ifi.se.decision.documentation.jira.config;
+package de.uhd.ifi.se.decision.documentation.jira.persistence;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.project.Project;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 
 import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.documentation.jira.model.JiraProject;
 
-public class Config {
-
+public class ConfigPersistence {
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentGetter.getPluginSettingsFactory();
 	private static TransactionTemplate transactionTemplate = ComponentGetter.getTransactionTemplate();
 	private static String pluginStorageKey = ComponentGetter.getPluginStorageKey();
@@ -32,7 +25,7 @@ public class Config {
 		return false;
 	}
 
-	public static void setIssueStrategy(final String projectKey, boolean isIssueStrategy) {
+	public static void setIssueStrategy(String projectKey, boolean isIssueStrategy) {
 		transactionTemplate.execute(new TransactionCallback<Object>() {
 			public Object doInTransaction() {
 				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
@@ -63,16 +56,5 @@ public class Config {
 				return null;
 			}
 		});
-	}
-
-	public static Map<String, JiraProject> createConfigMap() {
-		Map<String, JiraProject> configMap = new HashMap<String, JiraProject>();
-		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
-			String projectKey = project.getKey();
-			String projectName = project.getName();
-			JiraProject jiraProject = new JiraProject(projectKey, projectName, Config.isActivated(projectKey), Config.isIssueStrategy(projectKey));
-			configMap.put(projectKey, jiraProject);
-		}
-		return configMap;
 	}
 }

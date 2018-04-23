@@ -20,7 +20,7 @@ import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.JiraProject;
+import de.uhd.ifi.se.decision.documentation.jira.model.IProject;
 
 /**
  * @description Renders the administration page to change plug-in configuration
@@ -58,7 +58,7 @@ public class AdminServlet extends HttpServlet {
 			redirectToLogin(request, response);
 			return;
 		}
-		Map<String, JiraProject> configMap = Config.createConfigMap();
+		Map<String, IProject> configMap = Projects.getProjectsMap();
 		Map<String, Object> velocityParams = new HashMap<String, Object>();
 		response.setContentType("text/html;charset=utf-8");
 		velocityParams.put("requestUrl", request.getRequestURL());
