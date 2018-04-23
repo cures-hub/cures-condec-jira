@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.documentation.jira.persistence;
 
-import de.uhd.ifi.se.decision.documentation.jira.config.Config;
-
 /**
  * @description Provides the persistence strategy for a project
  */
@@ -11,7 +9,8 @@ public class StrategyProvider {
 		if (projectKey == null) {
 			throw new IllegalArgumentException("The project key cannot be null.");
 		}
-		boolean isIssueStrategy = Config.isIssueStrategy(projectKey);
+		
+		boolean isIssueStrategy = ConfigPersistence.isIssueStrategy(projectKey);
 		if (isIssueStrategy) {
 			return new IssueStrategy();
 		}

@@ -12,6 +12,7 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 
 import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.ConfigPersistence;
 
 /**
  * @description Getter and Setter for ConfigRestResource
@@ -61,7 +62,7 @@ public class ConfigRestLogic {
 			status = Status.CONFLICT;
 		} else {
 			try {
-				Config.setActivated(projectKey, isActivated);
+				ConfigPersistence.setActivated(projectKey, isActivated);
 				status = Status.ACCEPTED;
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage());
@@ -76,7 +77,7 @@ public class ConfigRestLogic {
 			status = Status.CONFLICT;
 		} else {
 			try {
-				Config.setIssueStrategy(projectKey, isIssueStrategy);
+				ConfigPersistence.setIssueStrategy(projectKey, isIssueStrategy);
 				status = Status.ACCEPTED;
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage());
