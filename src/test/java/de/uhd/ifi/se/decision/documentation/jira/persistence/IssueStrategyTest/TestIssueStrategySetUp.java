@@ -11,7 +11,7 @@ public class TestIssueStrategySetUp extends TestSetUp{
 	
 	@Before
 	public void setUp() {
-		initialisation();
+		initialization();
 		issueStrategy=new IssueStrategy();
 	}
 	

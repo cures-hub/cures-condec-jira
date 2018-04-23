@@ -33,7 +33,7 @@ public class IsActivated implements Condition {
     @Override
     public boolean shouldDisplay(Map<String, Object> context) {
     	if(context == null) {
-    		LOGGER.error("PluginSettings are corrupt");
+    		LOGGER.error("Plugin settings are corrupt.");
     		return false;
     	}
         String shouldDisplay = "false";

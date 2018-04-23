@@ -35,7 +35,7 @@ public class TestConfigRest extends TestSetUp {
 		UserManager userManager = new MockDefaultUserManager();
 		confRest = new ConfigRest(userManager);
 		
-		initialisation();
+		initialization();
 		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
 		
 		req = new MockHttpServletRequest();

@@ -33,7 +33,7 @@ public class TestTreeViewerRest extends TestSetUp {
 	@Before
 	public void setUp() {
 		treeview= new TreeViewerRest();
-		initialisation();
+		initialization();
 		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
 	}
 	

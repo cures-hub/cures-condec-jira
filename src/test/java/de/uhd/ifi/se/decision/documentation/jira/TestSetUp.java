@@ -28,45 +28,41 @@ import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkTypeManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueService;
 
-
 public class TestSetUp {
 	private ProjectManager projectManager;
 	private IssueManager issueManager;
-	private ConstantsManager constManager;
+	private ConstantsManager constantsManager;
 	private UserManager userManager;
-	
-	
-	public void initialisation(){		
-		projectManager = new MockProjectManager();		
-		issueManager= new MockIssueManager();
-		constManager = new  MockConstantsManager();
-		IssueService issueService=new MockIssueService();
-		
+
+	public void initialization() {
+		projectManager = new MockProjectManager();
+		issueManager = new MockIssueManager();
+		constantsManager = new MockConstantsManager();
+		IssueService issueService = new MockIssueService();
+
 		userManager = new MockUserManager();
 		ApplicationUser user = new MockApplicationUser("NoFails");
 		ApplicationUser user2 = new MockApplicationUser("WithFails");
-		((MockUserManager)userManager).addUser(user);
-		((MockUserManager)userManager).addUser(user2);
-		
-		creatingProjectIssueStructure();				
-				
+		((MockUserManager) userManager).addUser(user);
+		((MockUserManager) userManager).addUser(user2);
+
+		creatingProjectIssueStructure();
+
 		new MockComponentWorker().init().addMock(IssueManager.class, issueManager)
-		.addMock(IssueLinkManager.class, new MockIssueLinkManager())
-		.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager())
-		.addMock(IssueService.class,issueService)
-		.addMock(ProjectManager.class,projectManager)
-		.addMock(UserManager.class, userManager)
-		.addMock(ConstantsManager.class,constManager);
-		
+				.addMock(IssueLinkManager.class, new MockIssueLinkManager())
+				.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager()).addMock(IssueService.class, issueService)
+				.addMock(ProjectManager.class, projectManager).addMock(UserManager.class, userManager)
+				.addMock(ConstantsManager.class, constantsManager);
+
 	}
-	
+
 	private void creatingProjectIssueStructure() {
-		Project project = new MockProject(1,"TEST");
-		((MockProject)project).setKey("TEST");			
+		Project project = new MockProject(1, "TEST");
+		((MockProject) project).setKey("TEST");
 		((MockProjectManager) projectManager).addProject(project);
-		
-		ArrayList<KnowledgeType> types= new ArrayList<>();
-		
+
+		ArrayList<KnowledgeType> types = new ArrayList<>();
+
 		types.add(KnowledgeType.OTHER);
 		types.add(KnowledgeType.DECISION);
 		types.add(KnowledgeType.QUESTION);
@@ -82,41 +78,40 @@ public class TestSetUp {
 		types.add(KnowledgeType.ASSESSMENT);
 		types.add(KnowledgeType.ARGUMENT);
 		types.add(KnowledgeType.PROBLEM);
-		
-		
-		for(int i=2;i<types.size()+2;i++) {
-			if(types.get(i-2).equals("Problem")) {
-				MutableIssue issue = new MockIssue(30,"TEST-"+30);
-				((MockIssue)issue).setProjectId(project.getId());
-				((MockIssue)issue).setProjectObject(project);
-				IssueType issueType = new MockIssueType(i, types.get(i-2).toString().toLowerCase());
-				((MockConstantsManager)constManager).addIssueType(issueType);
-				((MockIssue)issue).setIssueType(issueType);
-				((MockIssue)issue).setSummary("Test");
-				((MockIssueManager)issueManager).addIssue(issue);
+
+		for (int i = 2; i < types.size() + 2; i++) {
+			if (types.get(i - 2).equals("Problem")) {
+				MutableIssue issue = new MockIssue(30, "TEST-" + 30);
+				((MockIssue) issue).setProjectId(project.getId());
+				((MockIssue) issue).setProjectObject(project);
+				IssueType issueType = new MockIssueType(i, types.get(i - 2).toString().toLowerCase());
+				((MockConstantsManager) constantsManager).addIssueType(issueType);
+				((MockIssue) issue).setIssueType(issueType);
+				((MockIssue) issue).setSummary("Test");
+				((MockIssueManager) issueManager).addIssue(issue);
 			} else {
-				MutableIssue issue = new MockIssue(i,"TEST-"+i);
-				((MockIssue)issue).setProjectId(project.getId());
-				((MockIssue)issue).setProjectObject(project);
-				IssueType issueType = new MockIssueType(i, types.get(i-2).toString().toLowerCase());
-				((MockConstantsManager)constManager).addIssueType(issueType);
-				((MockIssue)issue).setIssueType(issueType);
-				((MockIssue)issue).setSummary("Test");
-				((MockIssueManager)issueManager).addIssue(issue);
-				if(i>types.size()-4) {
-					((MockIssue)issue).setParentId((long) 3);
+				MutableIssue issue = new MockIssue(i, "TEST-" + i);
+				((MockIssue) issue).setProjectId(project.getId());
+				((MockIssue) issue).setProjectObject(project);
+				IssueType issueType = new MockIssueType(i, types.get(i - 2).toString().toLowerCase());
+				((MockConstantsManager) constantsManager).addIssueType(issueType);
+				((MockIssue) issue).setIssueType(issueType);
+				((MockIssue) issue).setSummary("Test");
+				((MockIssueManager) issueManager).addIssue(issue);
+				if (i > types.size() - 4) {
+					((MockIssue) issue).setParentId((long) 3);
 				}
 			}
 		}
-		MutableIssue issue = new MockIssue(50,"TEST-50");
-		((MockIssue)issue).setProjectId(project.getId());
-		((MockIssue)issue).setProjectObject(project);
+		MutableIssue issue = new MockIssue(50, "TEST-50");
+		((MockIssue) issue).setProjectId(project.getId());
+		((MockIssue) issue).setProjectObject(project);
 		IssueType issueType = new MockIssueType(50, "Class");
-		((MockConstantsManager)constManager).addIssueType(issueType);
-		((MockIssue)issue).setIssueType(issueType);
-		((MockIssue)issue).setSummary("Test");
-		((MockIssueManager)issueManager).addIssue(issue);
-		((MockIssue)issue).setParentId((long) 3);
+		((MockConstantsManager) constantsManager).addIssueType(issueType);
+		((MockIssue) issue).setIssueType(issueType);
+		((MockIssue) issue).setSummary("Test");
+		((MockIssueManager) issueManager).addIssue(issue);
+		((MockIssue) issue).setParentId((long) 3);
 	}
 
 }
