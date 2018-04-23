@@ -67,6 +67,10 @@ public enum KnowledgeType {
 		}
 	}
 
+	public KnowledgeType getSuperType() {
+		return getSuperType(this);
+	}
+
 	public String toString() {
 		return this.name().substring(0, 1).toUpperCase() + this.name().substring(1).toLowerCase();
 	}

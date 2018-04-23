@@ -104,6 +104,6 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 	}
 
 	public KnowledgeType getSuperType() {
-		return KnowledgeType.getSuperType(this.type);
+		return this.type.getSuperType();
 	}
 }
