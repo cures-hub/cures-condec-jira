@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.util;
+package de.uhd.ifi.se.decision.documentation.jira;
 
 import javax.inject.Inject;
 import javax.inject.Named;

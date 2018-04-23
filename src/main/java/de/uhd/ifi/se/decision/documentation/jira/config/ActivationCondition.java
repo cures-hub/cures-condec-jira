@@ -12,7 +12,7 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 
-import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
+import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 
 /**
  * @description Condition for side bar link to plug-in. Determines whether link

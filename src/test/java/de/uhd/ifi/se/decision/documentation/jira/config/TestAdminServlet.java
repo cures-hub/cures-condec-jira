@@ -17,6 +17,7 @@ import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
+import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 import de.uhd.ifi.se.decision.documentation.jira.config.AdminServlet;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockAdminUserManager;
@@ -24,7 +25,6 @@ import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockLoginUriProvider;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTemplateRenderer;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 

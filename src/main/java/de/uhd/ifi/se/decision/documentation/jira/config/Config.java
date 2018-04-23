@@ -10,8 +10,8 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 
+import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.model.JiraProject;
-import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 
 public class Config {
 

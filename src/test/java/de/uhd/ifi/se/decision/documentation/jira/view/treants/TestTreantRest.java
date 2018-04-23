@@ -22,13 +22,13 @@ import org.ofbiz.core.entity.GenericEntityException;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.documentation.jira.model.Link;
-import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 

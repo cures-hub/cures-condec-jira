@@ -13,11 +13,11 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.Link;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
-import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 
 /**
  * @description REST resource: Enables creation, editing and deletion of
