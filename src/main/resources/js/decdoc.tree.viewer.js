@@ -1,5 +1,5 @@
-function buildTreeViewer(projectKey, nodeId) {
-	getTreeViewer(projectKey, function(core) {
+function buildTreeViewer(nodeId) {
+	getTreeViewer(function(core) {
 		if ($('#evts').jstree(true)) {
 			var tree = $('#evts').jstree(true);
 			tree.destroy();

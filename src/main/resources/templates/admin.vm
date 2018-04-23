@@ -58,7 +58,7 @@ h2 {
 						toggle.addEventListener('change', function(e) {
 							var thisToggle = this;
 							thisToggle.busy = true;
-							flipProjectActivation(thisToggle.checked, thisToggle.dataset.projectkey);
+							flipProjectActivation(thisToggle.checked);
 							thisToggle.busy = false;
 						});
 					</script></td>
@@ -75,7 +75,7 @@ h2 {
 						toggle.addEventListener('change', function(e) {
 							var thisToggle = this;
 							thisToggle.busy = true;
-							setPersistenceStrategy(thisToggle.checked, thisToggle.dataset.projectkey);
+							setPersistenceStrategy(thisToggle.checked);
 							thisToggle.busy = false;
 						});
 					</script></td>
