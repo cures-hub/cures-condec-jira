@@ -123,7 +123,6 @@ function setUpContextMenuContentForLinkAction(id) {
 
 	getUnlinkedDecisionComponents(
 			id,
-			getProjectKey(),
 			function(unlinkedDecisionComponents) {
 				var insertString = "<p><label for='form-select-component' style='display:block;width:45%;float:left;'>Unlinked Element:</label>"
 						+ "<select name='form-select-component' style='width:50%;' />";
@@ -163,20 +162,20 @@ var contextMenuEditAction = {
 function setUpContextMenuContentForEditAction(id) {
 	setUpModal();
 	setHeaderText(editKnowledgeElementText);
-	getDecisionKnowledgeElement(id, getProjectKey(), function(decisionKnowledgeElement) {
-		var summary = decisionKnowledgeElement.summary;
-		var description = decisionKnowledgeElement.description;
-		var type = decisionKnowledgeElement.type;
-		setUpContextMenuContent(summary, description, type, editKnowledgeElementText);
-		var submitButton = document.getElementById("form-input-submit");
-		submitButton.onclick = function() {
-			var summary = document.getElementById("form-input-summary").value;
-			var description = document.getElementById("form-input-description").value;
-			var type = $("select[name='form-select-type']").val();
-			editDecisionKnowledgeElementAsChild(summary, description, type, id);
-			closeModal();
-		};
-	});
+	getDecisionKnowledgeElement(id, function (decisionKnowledgeElement) {
+        var summary = decisionKnowledgeElement.summary;
+        var description = decisionKnowledgeElement.description;
+        var type = decisionKnowledgeElement.type;
+        setUpContextMenuContent(summary, description, type, editKnowledgeElementText);
+        var submitButton = document.getElementById("form-input-submit");
+        submitButton.onclick = function () {
+            var summary = document.getElementById("form-input-summary").value;
+            var description = document.getElementById("form-input-description").value;
+            var type = $("select[name='form-select-type']").val();
+            editDecisionKnowledgeElementAsChild(summary, description, type, id);
+            closeModal();
+        };
+    });
 }
 
 var contextMenuDeleteAction = {
@@ -211,7 +210,7 @@ function setUpContextMenuContentForDeleteAction(id) {
 	var submitButton = document.getElementById("form-input-submit");
 	submitButton.onclick = function() {
 		deleteDecisionKnowledgeElement(id, function() {
-			buildTreeViewer(getProjectKey(), id);
+			buildTreeViewer(id);
 		});
 		closeModal();
 	};

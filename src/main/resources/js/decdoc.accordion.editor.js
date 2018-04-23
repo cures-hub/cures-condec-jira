@@ -18,7 +18,7 @@ function showDetails(id, summary, description, type) {
 	updateButton.addEventListener("click", function() {
 		var description = document.getElementById("form-description").value;
 		editDecisionComponent(id, summary, description, function() {
-			buildTreeViewer(getProjectKey(), id);
+			buildTreeViewer(id);
 		});
 	});
 }
@@ -26,7 +26,6 @@ function showDetails(id, summary, description, type) {
 function enableLinkingUnlinkedDecisionComponents(parentId) {
 	getUnlinkedDecisionComponents(
 			parentId,
-			getProjectKey(),
 			function(unlinkedDecisionComponents) {
 				var insertString = '<select name="linkExistingIssueSearchField">';
 				for (var index = 0; index < unlinkedDecisionComponents.length; index++) {

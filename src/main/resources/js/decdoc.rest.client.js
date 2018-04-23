@@ -65,10 +65,10 @@ function deleteJSON(url, data, callback) {
 	xhr.send(JSON.stringify(data));
 }
 
-function getDecisionKnowledgeElement(id, projectKey= getProjectKey(), callback) {
+function getDecisionKnowledgeElement(id, callback) {
 	getJSON(
 			AJS.contextPath() + "/rest/decisions/latest/decisions/getDecisionKnowledgeElement.json?projectKey="
-					+ projectKey + '&id=' + id,
+					+ getProjectKey() + '&id=' + id,
 			function(error, decisionKnowledgeElement) {
 				if (error == null) {
 					callback(decisionKnowledgeElement);
@@ -91,9 +91,9 @@ function getLinkedDecisionComponents(id, callback) {
 	});
 }
 
-function getUnlinkedDecisionComponents(id, projectKey= getProjectKey(), callback) {
+function getUnlinkedDecisionComponents(id, callback) {
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getUnlinkedDecisionComponents.json?projectKey="
-			+ projectKey + '&id=' + id, function(error, unlinkedDecisionComponents) {
+			+ getProjectKey() + '&id=' + id, function(error, unlinkedDecisionComponents) {
 		if (error == null) {
 			callback(unlinkedDecisionComponents);
 		} else {
@@ -192,8 +192,8 @@ function deleteLink(parentId, childId, linkType, callback) {
 			});
 }
 
-function getTreant(projectKey= getProjectKey(), key, depthOfTree, callback) {
-	getJSON(AJS.contextPath() + "/rest/treantsrest/latest/treant.json?projectKey=" + projectKey + "&elementKey=" + key
+function getTreant(key, depthOfTree, callback) {
+	getJSON(AJS.contextPath() + "/rest/treantsrest/latest/treant.json?projectKey=" + getProjectKey() + "&elementKey=" + key
 			+ "&depthOfTree=" + depthOfTree, function(error, treant) {
 		if (error == null) {
 			callback(treant);
@@ -203,8 +203,8 @@ function getTreant(projectKey= getProjectKey(), key, depthOfTree, callback) {
 	});
 }
 
-function getTreeViewer(projectKey = getProjectKey(), callback) {
-	getJSON(AJS.contextPath() + "/rest/treeviewerrest/latest/treeviewer.json?projectKey=" + projectKey, function(error,
+function getTreeViewer(callback) {
+	getJSON(AJS.contextPath() + "/rest/treeviewerrest/latest/treeviewer.json?projectKey=" + getProjectKey(), function(error,
 			core) {
 		if (error == null) {
 			callback(core)
@@ -214,8 +214,8 @@ function getTreeViewer(projectKey = getProjectKey(), callback) {
 	});
 }
 
-function flipProjectActivation(isActivated, projectKey = getProjectKey()) {
-	postJSON(AJS.contextPath() + "/rest/admin/1.0/config.json?projectKey=" + projectKey
+function flipProjectActivation(isActivated) {
+	postJSON(AJS.contextPath() + "/rest/admin/1.0/config.json?projectKey=" + getProjectKey()
 					+ "&isActivated=" + isActivated, function(error, response) {
 		if (error == null) {
 			showFlag("success", "Plug-in activation for project has been changed.");
@@ -225,8 +225,8 @@ function flipProjectActivation(isActivated, projectKey = getProjectKey()) {
 	});
 }
 
-function setPersistenceStrategy(isIssueStrategy, projectKey = getProjectKey()) {
-	putJSON(AJS.contextPath() + "/rest/admin/1.0/config.json?projectKey=" + projectKey
+function setPersistenceStrategy(isIssueStrategy) {
+	putJSON(AJS.contextPath() + "/rest/admin/1.0/config.json?projectKey=" + getProjectKey()
 			+ "&isIssueStrategy=" + isIssueStrategy, function(error, response) {
 		if (error == null) {
 			showFlag("success", "Strategy has been selected.");
