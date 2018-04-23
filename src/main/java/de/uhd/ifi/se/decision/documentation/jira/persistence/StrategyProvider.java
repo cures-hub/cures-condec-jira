@@ -34,7 +34,7 @@ public class StrategyProvider {
 			}
 		});
 		if (isIssueStrategy instanceof String && isIssueStrategy.equals("true")) {
-			return Boolean.valueOf((String) isIssueStrategy);
+			return true;
 		}
 		return false;
 	}

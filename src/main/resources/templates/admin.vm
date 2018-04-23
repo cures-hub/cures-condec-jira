@@ -50,7 +50,7 @@ h2 {
 					label="$proj.getProjectName()-Activated"
 					data-projectKey="$proj.getProjectKey()"></aui-toggle> <script>
 						var toggle = document.getElementById('$proj.getProjectKey()-isActivated-toggle');
-						#if ($proj.getIsActivated() == "true")
+						#if ($proj.isActivated() == true)
 							toggle.checked = true;
 						#else
 							toggle.checked = false;
@@ -67,7 +67,7 @@ h2 {
 					label="$proj.getProjectName()-IssueStrategy"
 					data-projectKey="$proj.getProjectKey()"></aui-toggle> <script>
 						var toggle = document.getElementById('$proj.getProjectKey()-isIssueStrategy-toggle');
-						#if ($proj.getIsIssueStrategy() == "true")
+						#if ($proj.isIssueStrategy() == true)
 							toggle.checked = true;
 						#else
 							toggle.checked = false;
