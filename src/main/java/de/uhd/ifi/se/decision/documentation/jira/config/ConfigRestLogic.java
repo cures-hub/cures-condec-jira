@@ -23,7 +23,7 @@ public class ConfigRestLogic {
 	private final TransactionTemplate transactionTemplate;
 	private final String pluginStorageKey;
 
-	private boolean isActivated;
+	private boolean isExistingSettings;
 	private Status status;
 
 	public ConfigRestLogic() {
@@ -46,12 +46,12 @@ public class ConfigRestLogic {
 					}
 				});
 				if (ob instanceof String && ob.equals("true")) {
-					isActivated = true;
+					isExistingSettings = true;
 				} else {
-					isActivated = false;
+					isExistingSettings = false;
 				}
 			} catch (Exception e) {
-				isActivated = false;
+				isExistingSettings = false;
 			}
 		}
 	}
@@ -71,7 +71,7 @@ public class ConfigRestLogic {
 		}
 	}
 
-	public void setIssueStrategy(final String projectKey, boolean isIssueStrategy) {
+	public void setIssueStrategy(String projectKey, boolean isIssueStrategy) {
 		if (projectKey == null || projectKey.equals("")) {
 			LOGGER.error("Persistence strategy cannot be set since project key is invalid.");
 			status = Status.CONFLICT;
@@ -91,7 +91,7 @@ public class ConfigRestLogic {
 			if (status == Status.ACCEPTED) {
 				return Response.ok(Status.ACCEPTED).build();
 			} else {
-				return Response.ok(isActivated).build();
+				return Response.ok(isExistingSettings).build();
 			}
 		} else {
 			return Response.status(Status.CONFLICT).build();
