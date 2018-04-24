@@ -5,10 +5,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.plugin.PluginParseException;
 import com.atlassian.plugin.web.Condition;
-
-import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.ConfigPersistence;
 
 /**
@@ -19,8 +16,7 @@ public class ActivationCondition implements Condition {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActivationCondition.class);
 
 	@Override
-	public void init(Map<String, String> params) throws PluginParseException {
-		ComponentGetter.getPluginStorageKey();
+	public void init(Map<String, String> params) {
 	}
 
 	@Override
