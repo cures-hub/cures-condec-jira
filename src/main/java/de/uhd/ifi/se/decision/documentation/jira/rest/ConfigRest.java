@@ -51,19 +51,10 @@ public class ConfigRest {
     @GET
     @AnonymousAllowed
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response get(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey)
-    {
-    	if(request==null) {
-    		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build();
-    	}
-        String username = userManager.getRemoteUsername(request);
-        if (username == null || !userManager.isSystemAdmin(username)) {
-            LOGGER.warn("Unauthorized user by name:{} tried to change Configuration", username);
-            return Response.status(Status.UNAUTHORIZED).build();
-        }
-        if(projectKey == null || projectKey.equals("")) {
-            LOGGER.error("Empyt ProjectKey in ConfigRest setResponseForGet");
-            return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build();
+    public Response get(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey)    {
+        Response datacheck = checkData(request, projectKey);
+        if(datacheck != null){
+            return  datacheck;
         } else {
            return  getResponseForGet(projectKey);
         }
@@ -71,17 +62,9 @@ public class ConfigRest {
     
     @POST
     public Response doPost(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("isActivated") String isActivated){
-    	if(request == null) {
-    		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build();
-    	}
-        String username = userManager.getRemoteUsername(request);
-        if (username == null || !userManager.isSystemAdmin(username)) {
-            LOGGER.warn("Unauthorized user by name:{} tried to change Configuration", username);
-            return Response.status(Status.UNAUTHORIZED).build();
-        }
-        if(projectKey == null || projectKey.equals("")) {
-            LOGGER.error("ProjectKey in ConfigRest setResponseForGet");
-            return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build();
+        Response datacheck = checkData(request, projectKey);
+        if(datacheck != null){
+            return  datacheck;
         } else {
         	if(isActivated == null) {
         		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
@@ -98,21 +81,13 @@ public class ConfigRest {
     
     @PUT
     public Response doPut(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("isIssueStrategy") String isIssueStrategy){
-    	if(request == null) {
-    		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build();
-    	}
-        String username = userManager.getRemoteUsername(request);
-        if (username == null || !userManager.isSystemAdmin(username)) {
-            LOGGER.warn("Unauthorized user by name:{} tried to change Configuration", username);
-            return Response.status(Status.UNAUTHORIZED).build();
-        }
-        if(projectKey == null || projectKey.equals("")) {
-            LOGGER.error("Persistence strategy cannot be set since project key is invalid.");
-            return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build();
+        Response datacheck = checkData(request, projectKey);
+        if(datacheck != null){
+            return  datacheck;
         } else {
-        	if(isIssueStrategy == null) {
-        		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isIssueStrategy = null")).build();
-        	}
+            if (isIssueStrategy == null) {
+                return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isIssueStrategy = null")).build();
+            }
             try {
                 ConfigPersistence.setIssueStrategy(projectKey, Boolean.valueOf(isIssueStrategy));
                 return Response.ok(Status.ACCEPTED).build();
@@ -120,7 +95,7 @@ public class ConfigRest {
                 LOGGER.error(e.getMessage());
                 return Response.status(Status.CONFLICT).build();
             }
-	    }
+        }
     }
 
     private Response getResponseForGet(String projectKey){
@@ -142,5 +117,21 @@ public class ConfigRest {
             isExistingSettings = false;
         }
         return Response.ok(isExistingSettings).build();
+    }
+
+    private Response checkData(HttpServletRequest request,String projectKey ){
+        if(request == null) {
+            return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build();
+        }
+        String username = userManager.getRemoteUsername(request);
+        if (username == null || !userManager.isSystemAdmin(username)) {
+            LOGGER.warn("Unauthorized user by name:{} tried to change Configuration", username);
+            return Response.status(Status.UNAUTHORIZED).build();
+        }
+        if(projectKey == null || projectKey.equals("")) {
+            LOGGER.error("ProjectKey in ConfigRest setResponseForGet");
+            return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build();
+        }
+        return null;
     }
 }
