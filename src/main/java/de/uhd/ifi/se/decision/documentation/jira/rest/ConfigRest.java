@@ -3,10 +3,14 @@ package de.uhd.ifi.se.decision.documentation.jira.rest;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.plugins.rest.common.security.AnonymousAllowed;
+import com.atlassian.sal.api.pluginsettings.PluginSettings;
+import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import com.atlassian.sal.api.transaction.TransactionCallback;
+import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.documentation.jira.config.ConfigRestLogic;
+import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +20,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.documentation.jira.persistence.ConfigPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,14 +31,23 @@ import org.slf4j.LoggerFactory;
 @Scanned
 public class ConfigRest {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigRest.class);
+
+    private final PluginSettingsFactory pluginSettingsFactory;
+    private final TransactionTemplate transactionTemplate;
+    private final String pluginStorageKey;
+
+
     @ComponentImport
     private final UserManager userManager;
-    
+
     @Inject
     public ConfigRest(UserManager userManager){
         this.userManager = userManager;
+        this.pluginSettingsFactory = ComponentGetter.getPluginSettingsFactory();
+        this.transactionTemplate = ComponentGetter.getTransactionTemplate();
+        this.pluginStorageKey = ComponentGetter.getPluginStorageKey();
     }
-    
+
     @GET
     @AnonymousAllowed
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -47,12 +61,11 @@ public class ConfigRest {
             LOGGER.warn("Unauthorized user by name:{} tried to change Configuration", username);
             return Response.status(Status.UNAUTHORIZED).build();
         }
-        if(projectKey != null) {
-        	ConfigRestLogic cRL = new ConfigRestLogic();
-        	cRL.setResponseForGet(projectKey);
-            return cRL.getResponse();
+        if(projectKey == null || projectKey.equals("")) {
+            LOGGER.error("Empyt ProjectKey in ConfigRest setResponseForGet");
+            return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build();
         } else {
-        	return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build();
+           return  getResponseForGet(projectKey);
         }
     }
     
@@ -66,15 +79,20 @@ public class ConfigRest {
             LOGGER.warn("Unauthorized user by name:{} tried to change Configuration", username);
             return Response.status(Status.UNAUTHORIZED).build();
         }
-        if(projectKey != null) {
+        if(projectKey == null || projectKey.equals("")) {
+            LOGGER.error("ProjectKey in ConfigRest setResponseForGet");
+            return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build();
+        } else {
         	if(isActivated == null) {
         		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
         	}
-	        ConfigRestLogic cRL = new ConfigRestLogic();
-	        cRL.setActivated(projectKey, Boolean.valueOf(isActivated));
-	        return cRL.getResponse();
-        } else {
-        	return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build();
+            try {
+                ConfigPersistence.setActivated(projectKey, Boolean.valueOf(isActivated));
+                return Response.ok(Status.ACCEPTED).build();
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage());
+                return Response.status(Status.CONFLICT).build();
+            }
         }
     }
     
@@ -88,15 +106,41 @@ public class ConfigRest {
             LOGGER.warn("Unauthorized user by name:{} tried to change Configuration", username);
             return Response.status(Status.UNAUTHORIZED).build();
         }
-        if(projectKey != null) {
+        if(projectKey == null || projectKey.equals("")) {
+            LOGGER.error("Persistence strategy cannot be set since project key is invalid.");
+            return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build();
+        } else {
         	if(isIssueStrategy == null) {
         		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isIssueStrategy = null")).build();
         	}
-	        ConfigRestLogic cRL = new ConfigRestLogic();
-	        cRL.setIssueStrategy(projectKey, Boolean.valueOf(isIssueStrategy));
-	        return cRL.getResponse();
-	    } else {
-	    	return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build();
+            try {
+                ConfigPersistence.setIssueStrategy(projectKey, Boolean.valueOf(isIssueStrategy));
+                return Response.ok(Status.ACCEPTED).build();
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage());
+                return Response.status(Status.CONFLICT).build();
+            }
 	    }
+    }
+
+    private Response getResponseForGet(String projectKey){
+        boolean isExistingSettings;
+        try {
+            Object ob = transactionTemplate.execute(new TransactionCallback<Object>() {
+                public Object doInTransaction() {
+                    PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+                    Object o = settings.get(pluginStorageKey + ".projectKey");
+                    return o;
+                }
+            });
+            if (ob instanceof String && ob.equals("true")) {
+                isExistingSettings = true;
+            } else {
+                isExistingSettings = false;
+            }
+        } catch (Exception e) {
+            isExistingSettings = false;
+        }
+        return Response.ok(isExistingSettings).build();
     }
 }
