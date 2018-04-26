@@ -17,7 +17,6 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
-import de.uhd.ifi.se.decision.documentation.jira.config.ConfigRestLogic;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.documentation.jira.rest.ConfigRest;
@@ -61,7 +60,7 @@ public class TestConfigRest extends TestSetUp {
 
 	@Test
 	public void testDoRequestFilledKeyFilledOk() {
-		assertEquals( new ConfigRestLogic().getResponse().getClass(), confRest.get(req,"TEST").getClass());
+		assertEquals( Response.ok().build().getClass(), confRest.get(req,"TEST").getClass());
 	}
 
 	@Test
@@ -147,12 +146,12 @@ public class TestConfigRest extends TestSetUp {
 
 	@Test
 	public void testdoPostrequestExKeyExistsIsActivatedTrue() {
-		assertEquals(new ConfigRestLogic().getResponse().getClass(),confRest.doPost(req, "TEST", "true").getClass());
+		assertEquals( Response.ok().build().getClass(),confRest.doPost(req, "TEST", "true").getClass());
 	}
 
 	@Test
 	public void testdoPostrequestExKeyExistsIsActivatedFalse() {
-		assertEquals(new ConfigRestLogic().getResponse().getClass(),confRest.doPost(req, "TEST", "false").getClass());
+		assertEquals( Response.ok().build().getClass(),confRest.doPost(req, "TEST", "false").getClass());
 	}
 
 	@Test
@@ -238,12 +237,12 @@ public class TestConfigRest extends TestSetUp {
 
 	@Test
 	public void testdoPutrequestExKeyExistsIsIssueStategyTrue() {
-		assertEquals(new ConfigRestLogic().getResponse().getClass(),confRest.doPut(req, "TEST", "true").getClass());
+		assertEquals( Response.ok().build().getClass(),confRest.doPut(req, "TEST", "true").getClass());
 	}
 
 	@Test
 	public void testdoPutrequestExKeyExistsIsIssueStategyFalse() {
-		assertEquals(new ConfigRestLogic().getResponse().getClass(),confRest.doPut(req, "TEST", "false").getClass());
+		assertEquals( Response.ok().build().getClass(),confRest.doPut(req, "TEST", "false").getClass());
 	}
 
 	@Test
