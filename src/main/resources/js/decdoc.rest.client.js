@@ -182,14 +182,15 @@ function deleteLink(parentId, childId, linkType, callback) {
 		"outgoingId" : parentId
 	};
 	deleteJSON(AJS.contextPath() + "/rest/decisions/latest/deleteLink.json?projectKey=" + getProjectKey(), jsondata,
-			function(error, link) {
-				if (error == null) {
-					showFlag("success", "Link has been deleted.");
-					callback();
-				} else {
-					showFlag("error", "Link could not be deleted.");
-				}
-			});
+		function(error, link) {
+            if (error == null) {
+                showFlag("success", "Link has been deleted.");
+                callback();
+            } else {
+                showFlag("error", "Link could not be deleted.");
+            }
+
+		});
 }
 
 function getTreant(key, depthOfTree, callback) {
@@ -215,19 +216,18 @@ function getTreeViewer(callback) {
 }
 
 function flipProjectActivation(isActivated, projectKey) {
-	postJSON(
-			AJS.contextPath() + "/rest/admin/1.0/config.json?projectKey=" + projectKey + "&isActivated=" + isActivated,
-			function(error, response) {
-				if (error == null) {
-					showFlag("success", "Plug-in activation for project has been changed.");
-				} else {
-					showFlag("error", "Plug-in activation for project has not been changed.");
-				}
-			});
+	postJSON(AJS.contextPath() + "/rest/admin/1.0/config/setActivated.json?projectKey=" + projectKey + "&isActivated=" + isActivated,
+		function(error, response) {
+			if (error == null) {
+				showFlag("success", "Plug-in activation for project has been changed.");
+			} else {
+				showFlag("error", "Plug-in activation for project has not been changed.");
+			}
+	});
 }
 
 function setPersistenceStrategy(isIssueStrategy, projectKey) {
-	putJSON(AJS.contextPath() + "/rest/admin/1.0/config.json?projectKey=" + projectKey + "&isIssueStrategy="
+	postJSON(AJS.contextPath() + "/rest/admin/1.0/config/setIssueStrategy.json?projectKey=" + projectKey + "&isIssueStrategy="
 			+ isIssueStrategy, function(error, response) {
 		if (error == null) {
 			showFlag("success", "Strategy has been selected.");
