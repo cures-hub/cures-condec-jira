@@ -59,9 +59,10 @@ public class ConfigRest {
            return  getResponseForGet(projectKey);
         }
     }
-    
+
+    @Path("/setActivated")
     @POST
-    public Response doPost(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("isActivated") String isActivated){
+    public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("isActivated") String isActivated){
         Response datacheck = checkData(request, projectKey);
         if(datacheck != null){
             return  datacheck;
@@ -78,9 +79,9 @@ public class ConfigRest {
             }
         }
     }
-    
-    @PUT
-    public Response doPut(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("isIssueStrategy") String isIssueStrategy){
+    @Path("/setIssueStrategy")
+    @POST
+    public Response setIssueStrategy(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("isIssueStrategy") String isIssueStrategy){
         Response datacheck = checkData(request, projectKey);
         if(datacheck != null){
             return  datacheck;
