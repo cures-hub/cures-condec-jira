@@ -48,18 +48,6 @@ public class ConfigRest {
         this.pluginStorageKey = ComponentGetter.getPluginStorageKey();
     }
 
-    @GET
-    @AnonymousAllowed
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response get(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey)    {
-        Response datacheck = checkData(request, projectKey);
-        if(datacheck != null){
-            return  datacheck;
-        } else {
-           return  getResponseForGet(projectKey);
-        }
-    }
-
     @Path("/setActivated")
     @POST
     public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey, @QueryParam("isActivated") String isActivated){

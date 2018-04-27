@@ -41,42 +41,6 @@ public class TestConfigRest extends TestSetUp {
 		req.setAttribute("WithFails", false);
 		req.setAttribute("NoFails", true);
 	}
-
-	// Testing get function
-	@Test
-	public void testDoRequestNullKeyNull() {
-		assertEquals( Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(), confRest.get(null, null).getEntity());
-	}
-
-	@Test
-	public void testDoRequestNullKeyFilledOk() {
-		assertEquals( Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build().getEntity(), confRest.get(null,"TEST").getEntity());
-	}
-
-	@Test
-	public void testDoRequestFilledKeyNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "projectKey = null")).build().getEntity(), confRest.get(req, null).getEntity());
-	}
-
-	@Test
-	public void testDoRequestFilledKeyFilledOk() {
-		assertEquals( Response.ok().build().getClass(), confRest.get(req,"TEST").getClass());
-	}
-
-	@Test
-	public void testDoUserNoAdmin() {
-		req.setAttribute("WithFails", true);
-		req.setAttribute("NoFails", false);
-		assertEquals(Response.status(Status.UNAUTHORIZED).build().getEntity(), confRest.get(req,"TEST").getEntity());
-	}
-
-	@Test
-	public void testDoUserNull() {
-		HttpServletRequest req2 = new MockHttpServletRequest();
-		req2.setAttribute("WithFails", false);
-		req2.setAttribute("NoFails", false);
-		assertEquals(Response.status(Status.UNAUTHORIZED).build().getEntity(), confRest.get(req2,"TEST").getEntity());
-	}
 	// Testing setActivated
 
 	@Test
