@@ -229,10 +229,25 @@ public class IssueStrategy extends PersistenceStrategy {
 		return issueLink.getId();
 	}
 
-	// TODO Implement
 	@Override
 	public boolean deleteLink(Link link, ApplicationUser user) {
-		return true;
+		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
+		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
+		Collection<IssueLinkType> issueLinkTypeCollection = issueLinkTypeManager
+				.getIssueLinkTypesByName(link.getLinkType());
+		Iterator<IssueLinkType> issueLinkTypeIterator = issueLinkTypeCollection.iterator();
+		long typeId = 0;
+		while (issueLinkTypeIterator.hasNext()) {
+			IssueLinkType issueLinkType = issueLinkTypeIterator.next();
+			typeId = issueLinkType.getId();
+		}
+		IssueLink issueLink = issueLinkManager.getIssueLink(link.getOutgoingId(), link.getIngoingId(), typeId);
+		if(issueLink !=null){
+			issueLinkManager.removeIssueLink(issueLink,user);
+			return true;
+		}
+
+		return false;
 	}
 	
 	@Override
