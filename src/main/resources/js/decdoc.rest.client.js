@@ -215,7 +215,7 @@ function getTreeViewer(callback) {
 	});
 }
 
-function flipProjectActivation(isActivated, projectKey) {
+function setActivated(isActivated, projectKey) {
 	postJSON(AJS.contextPath() + "/rest/admin/1.0/config/setActivated.json?projectKey=" + projectKey + "&isActivated=" + isActivated,
 		function(error, response) {
 			if (error == null) {
@@ -226,7 +226,7 @@ function flipProjectActivation(isActivated, projectKey) {
 	});
 }
 
-function setPersistenceStrategy(isIssueStrategy, projectKey) {
+function setIssueStrategy(isIssueStrategy, projectKey) {
 	postJSON(AJS.contextPath() + "/rest/admin/1.0/config/setIssueStrategy.json?projectKey=" + projectKey + "&isIssueStrategy="
 			+ isIssueStrategy, function(error, response) {
 		if (error == null) {
