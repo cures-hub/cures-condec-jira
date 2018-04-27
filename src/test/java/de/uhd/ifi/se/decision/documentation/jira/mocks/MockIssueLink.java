@@ -21,37 +21,31 @@ public class MockIssueLink implements IssueLink{
 
 	@Override
 	public GenericValue getGenericValue() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Long getLong(String arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getString(String arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Timestamp getTimestamp(String arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void store() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public Long getDestinationId() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -81,7 +75,6 @@ public class MockIssueLink implements IssueLink{
 
 	@Override
 	public Long getLinkTypeId() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -96,7 +89,6 @@ public class MockIssueLink implements IssueLink{
 
 	@Override
 	public Long getSourceId() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -115,7 +107,6 @@ public class MockIssueLink implements IssueLink{
 
 	@Override
 	public boolean isSystemLink() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

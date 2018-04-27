@@ -16,37 +16,31 @@ public class MockIssueLinkType implements IssueLinkType{
 
 	@Override
 	public GenericValue getGenericValue() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Long getLong(String arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getString(String arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Timestamp getTimestamp(String arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void store() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public int compareTo(IssueLinkType arg0) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -57,7 +51,6 @@ public class MockIssueLinkType implements IssueLinkType{
 
 	@Override
 	public String getInward() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -73,25 +66,21 @@ public class MockIssueLinkType implements IssueLinkType{
 
 	@Override
 	public String getOutward() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getStyle() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public boolean isSubTaskLinkType() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isSystemLinkType() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

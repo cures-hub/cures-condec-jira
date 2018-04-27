@@ -2374,7 +2374,7 @@
 			if(!obj) { return false; }
 			if(obj.id === $.jstree.root) { return this.redraw(true); }
 			node = this.get_node(node, true);
-			if(!node || !node.length) { return false; } // TODO: quick toggle
+			if(!node || !node.length) { return false; }
 
 			node.children('.jstree-children').remove();
 			node = node[0];

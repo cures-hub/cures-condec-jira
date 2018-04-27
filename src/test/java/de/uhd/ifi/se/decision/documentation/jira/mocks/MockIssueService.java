@@ -22,13 +22,11 @@ public class MockIssueService implements IssueService {
 
 	@Override
 	public IssueResult assign(ApplicationUser arg0, AssignValidationResult arg1) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public AsynchronousTaskResult clone(ApplicationUser arg0, CloneValidationResult arg1) {
-		// TODO Auto-genreated method stub
 		return null;
 	}
 
@@ -40,7 +38,6 @@ public class MockIssueService implements IssueService {
 
 	@Override
 	public IssueResult create(ApplicationUser arg0, CreateValidationResult arg1, String arg2) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -57,7 +54,6 @@ public class MockIssueService implements IssueService {
 	@Override
 	public ErrorCollection delete(ApplicationUser arg0, DeleteValidationResult arg1, EventDispatchOption arg2,
 			boolean arg3) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -95,7 +91,6 @@ public class MockIssueService implements IssueService {
 
 	@Override
 	public boolean isEditable(Issue arg0, ApplicationUser arg1) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -113,7 +108,6 @@ public class MockIssueService implements IssueService {
 
 	@Override
 	public IssueResult transition(ApplicationUser arg0, TransitionValidationResult arg1) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -125,20 +119,19 @@ public class MockIssueService implements IssueService {
 	@Override
 	public IssueResult update(ApplicationUser arg0, UpdateValidationResult arg1, EventDispatchOption arg2,
 			boolean arg3) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public AssignValidationResult validateAssign(ApplicationUser arg0, Long arg1, String arg2) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public CloneValidationResult validateClone(ApplicationUser arg0, Issue arg1, String arg2, boolean arg3,
 			boolean arg4, boolean arg5, Map<CustomField, Optional<Boolean>> arg6) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
@@ -185,21 +178,18 @@ public class MockIssueService implements IssueService {
 
 	@Override
 	public CreateValidationResult validateSubTaskCreate(ApplicationUser arg0, Long arg1, IssueInputParameters arg2) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public TransitionValidationResult validateTransition(ApplicationUser arg0, Long arg1, int arg2,
 			IssueInputParameters arg3) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public TransitionValidationResult validateTransition(ApplicationUser arg0, Long arg1, int arg2,
 			IssueInputParameters arg3, TransitionOptions arg4) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

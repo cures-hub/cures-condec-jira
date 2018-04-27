@@ -10,10 +10,8 @@ import com.atlassian.jira.issue.MutableIssue;
 
 /**
  *
- * @author Tim Kuchenbuch
  *
  * @description This function is not implemented in the Jira Mock Class
- * TODO Check later for Updated. If possible remove this Class
  *
  */
 public class MockIssueManager extends com.atlassian.jira.mock.MockIssueManager {

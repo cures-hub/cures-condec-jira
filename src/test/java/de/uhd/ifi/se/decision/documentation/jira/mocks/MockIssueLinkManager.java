@@ -27,7 +27,6 @@ public class MockIssueLinkManager implements IssueLinkManager {
 
 	@Override
 	public void changeIssueLinkType(IssueLink arg0, IssueLinkType arg1, ApplicationUser arg2) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -82,31 +81,26 @@ public class MockIssueLinkManager implements IssueLinkManager {
 
 	@Override
 	public Collection<IssueLink> getIssueLinks(Long arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public LinkCollection getLinkCollection(GenericValue arg0, ApplicationUser arg1) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public LinkCollection getLinkCollection(Issue arg0, ApplicationUser arg1) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public LinkCollection getLinkCollection(Issue arg0, ApplicationUser arg1, boolean arg2) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public LinkCollection getLinkCollectionOverrideSecurity(Issue arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -144,43 +138,36 @@ public class MockIssueLinkManager implements IssueLinkManager {
 
 	@Override
 	public boolean isLinkingEnabled() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void moveIssueLink(List<IssueLink> arg0, Long arg1, Long arg2) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void removeIssueLink(IssueLink arg0, ApplicationUser arg1) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public int removeIssueLinks(GenericValue arg0, ApplicationUser arg1) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public int removeIssueLinks(Issue arg0, ApplicationUser arg1) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public int removeIssueLinksNoChangeItems(Issue arg0) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public void resetSequences(List<IssueLink> arg0) {
-		// TODO Auto-generated method stub
 
 	}
 
