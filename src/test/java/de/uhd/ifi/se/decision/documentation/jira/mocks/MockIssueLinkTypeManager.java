@@ -21,25 +21,21 @@ public class MockIssueLinkTypeManager implements IssueLinkTypeManager{
 
 	@Override
 	public void createIssueLinkType(String arg0, String arg1, String arg2, String arg3) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public IssueLinkType getIssueLinkType(Long arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public IssueLinkType getIssueLinkType(Long arg0, boolean arg1) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Collection<IssueLinkType> getIssueLinkTypes() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -66,7 +62,6 @@ public class MockIssueLinkTypeManager implements IssueLinkTypeManager{
 
 	@Override
 	public Collection<IssueLinkType> getIssueLinkTypesByInwardDescription(String arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -83,25 +78,21 @@ public class MockIssueLinkTypeManager implements IssueLinkTypeManager{
 
 	@Override
 	public Collection<IssueLinkType> getIssueLinkTypesByOutwardDescription(String arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Collection<IssueLinkType> getIssueLinkTypesByStyle(String arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void removeIssueLinkType(Long arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void updateIssueLinkType(IssueLinkType arg0, String arg1, String arg2, String arg3) {
-		// TODO Auto-generated method stub
 		
 	}
 
