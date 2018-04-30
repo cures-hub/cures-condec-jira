@@ -29,6 +29,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ErrorCollection;
 
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.IDecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.documentation.jira.model.Link;
 
@@ -155,10 +156,10 @@ public class IssueStrategy extends PersistenceStrategy {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
+	public List<IDecisionKnowledgeElement> getChildren(IDecisionKnowledgeElement decisionKnowledgeElement) {
 		List<IssueLink> outwardIssueLinks = ComponentAccessor.getIssueLinkManager()
 				.getOutwardLinks(decisionKnowledgeElement.getId());
-		List<DecisionKnowledgeElement> children = new ArrayList<DecisionKnowledgeElement>();
+		List<IDecisionKnowledgeElement> children = new ArrayList<IDecisionKnowledgeElement>();
 		for (IssueLink issueLink : outwardIssueLinks) {
 			Issue outwardIssue = issueLink.getDestinationObject();
 			if (outwardIssue != null) {
@@ -251,7 +252,7 @@ public class IssueStrategy extends PersistenceStrategy {
 	}
 	
 	@Override
-	public List<Link> getInwardLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
+	public List<Link> getInwardLinks(IDecisionKnowledgeElement decisionKnowledgeElement) {
 		List<IssueLink> inwardIssueLinks = ComponentAccessor.getIssueLinkManager()
 				.getInwardLinks(decisionKnowledgeElement.getId());
 		List<Link> inwardLinks = new ArrayList<Link>();
@@ -262,7 +263,7 @@ public class IssueStrategy extends PersistenceStrategy {
 	}
 
 	@Override
-	public List<Link> getOutwardLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
+	public List<Link> getOutwardLinks(IDecisionKnowledgeElement decisionKnowledgeElement) {
 		List<IssueLink> outwardIssueLinks = ComponentAccessor.getIssueLinkManager()
 				.getInwardLinks(decisionKnowledgeElement.getId());
 		List<Link> outwardLinks = new ArrayList<Link>();

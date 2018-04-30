@@ -6,6 +6,7 @@ import java.util.List;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.IDecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.documentation.jira.model.Link;
 
@@ -30,9 +31,9 @@ public abstract class PersistenceStrategy {
 
 	public abstract DecisionKnowledgeElement getDecisionKnowledgeElement(long id);
 
-	public List<DecisionKnowledgeElement> getDecisions(String projectKey) {
+	public List<IDecisionKnowledgeElement> getDecisions(String projectKey) {
 		List<DecisionKnowledgeElement> decisionKnowledgeElements = this.getDecisionKnowledgeElements(projectKey);
-		List<DecisionKnowledgeElement> decisions = new ArrayList<DecisionKnowledgeElement>();
+		List<IDecisionKnowledgeElement> decisions = new ArrayList<IDecisionKnowledgeElement>();
 		for (DecisionKnowledgeElement decisionKnowledgeElement : decisionKnowledgeElements) {
 			if (decisionKnowledgeElement.getType().toString().equalsIgnoreCase("Decision")) {
 				decisions.add(decisionKnowledgeElement);
@@ -41,9 +42,9 @@ public abstract class PersistenceStrategy {
 		return decisions;
 	}
 
-	public abstract List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement);
+	public abstract List<IDecisionKnowledgeElement> getChildren(IDecisionKnowledgeElement decisionKnowledgeElement);
 	
-	public List<DecisionKnowledgeElement> getChildren(long id) {
+	public List<IDecisionKnowledgeElement> getChildren(long id) {
 		DecisionKnowledgeElement decisionKnowledgeElement = this.getDecisionKnowledgeElement(id);
 		return this.getChildren(decisionKnowledgeElement);		
 	}
@@ -57,14 +58,14 @@ public abstract class PersistenceStrategy {
 		}
 		List<DecisionKnowledgeElement> decisionKnowledgeElements = this.getDecisionKnowledgeElements(projectKey);
 		List<DecisionKnowledgeElement> unlinkedDecisionComponents = new ArrayList<DecisionKnowledgeElement>();
-		List<DecisionKnowledgeElement> outwardElements = this.getChildren(rootElement);
+		List<IDecisionKnowledgeElement> outwardElements = this.getChildren(rootElement);
 		for (DecisionKnowledgeElement decisionKnowledgeElement : decisionKnowledgeElements) {
 			if (decisionKnowledgeElement.getId() == id
 					|| decisionKnowledgeElement.getType() == KnowledgeType.DECISION) {
 				continue;
 			}
 			boolean linked = false;
-			for (DecisionKnowledgeElement element : outwardElements) {
+			for (IDecisionKnowledgeElement element : outwardElements) {
 				if (element.getId() == decisionKnowledgeElement.getId()) {
 					linked = true;
 					break;
@@ -81,7 +82,7 @@ public abstract class PersistenceStrategy {
 
 	public abstract boolean deleteLink(Link link, ApplicationUser user);
 
-	public abstract List<Link> getInwardLinks(DecisionKnowledgeElement element);
+	public abstract List<Link> getInwardLinks(IDecisionKnowledgeElement element);
 
-	public abstract List<Link> getOutwardLinks(DecisionKnowledgeElement element);
+	public abstract List<Link> getOutwardLinks(IDecisionKnowledgeElement element);
 }

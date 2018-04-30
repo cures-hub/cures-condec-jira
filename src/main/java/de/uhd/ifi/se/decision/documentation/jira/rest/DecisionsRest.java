@@ -15,6 +15,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.IDecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.Link;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
@@ -53,7 +54,7 @@ public class DecisionsRest {
 		if (projectKey != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
 			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
-			List<DecisionKnowledgeElement> linkedDecisionKnowledgeElements = strategy.getChildren(id);
+			List<IDecisionKnowledgeElement> linkedDecisionKnowledgeElements = strategy.getChildren(id);
 			return Response.ok(linkedDecisionKnowledgeElements).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",

@@ -40,18 +40,18 @@ public class TestTreeViewerRest extends TestSetUp {
 	
 	@Test
 	public void testProjectKeyNull() throws GenericEntityException {
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Query parameter 'projectKey' is not provided, please add a valid projectKey")).build().getEntity(), treeview.getMessage(null).getEntity());
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Tree Viewer can not be shown since project key is invalid.")).build().getEntity(), treeview.getTreeViewer(null).getEntity());
 	}
 	
 	@Test
 	public void testProjectKeyDontExist() throws GenericEntityException {
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Cannot find project for the given query parameter 'projectKey'")).build().getEntity(), treeview.getMessage("NotTEST").getEntity());
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Tree Viewer can not be shown since project key is invalid.")).build().getEntity(), treeview.getTreeViewer("NotTEST").getEntity());
 	}
 
 
 	@Test
 	public void testProjectKeyExists() throws GenericEntityException {
-		assertEquals(200, treeview.getMessage("TEST").getStatus());
+		assertEquals(200, treeview.getTreeViewer("TEST").getStatus());
 	}
 
 	@Test
@@ -60,6 +60,6 @@ public class TestTreeViewerRest extends TestSetUp {
 		Project project = new MockProject(2,"TESTNO");
 		((MockProject)project).setKey("TESTNO");
 		((MockProjectManager) projectManager).addProject(project);
-		assertEquals(200, treeview.getMessage("TESTNO").getStatus());
+		assertEquals(200, treeview.getTreeViewer("TESTNO").getStatus());
 	}
 }
