@@ -31,33 +31,30 @@ public class TreantRest {
 	public Response getTreant(@QueryParam("projectKey") final String projectKey,
 			@QueryParam("elementKey") String elementKey, @QueryParam("depthOfTree") String depthOfTree) {
 		if (projectKey == null) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error",
-					"Query parameter 'projectKey' is not provided, please add a valid projectKey")).build();
+			return projectKeyIsInvalid();
 		}
 		ProjectManager projectManager = ComponentAccessor.getProjectManager();
 		Project project = projectManager.getProjectObjByKey(projectKey);
 		if (project == null) {
-			LOGGER.error("getMessage no project with this ProjectKey found");
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Cannot find project for the given query parameter 'projectKey'"))
-					.build();
+			return projectKeyIsInvalid();
 		}
-		if (elementKey != null) {
-			int depth;
-			if (depthOfTree != null) {
-				try {
-					depth = Integer.parseInt(depthOfTree);
-				} catch (NumberFormatException e) {
-					depth = 4; // default value
-				}
-			} else {
-				depth = 4;
-			}
-			Treant treant = new Treant(projectKey, elementKey, depth);
-			return Response.ok(treant).build();
+		if (elementKey == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Treant can not be shown since element key is invalid.")).build();
 		}
-		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(
-				ImmutableMap.of("error", "Query parameters 'projectKey' and 'issueKey' do not lead to a valid result"))
-				.build();
+		int depth = 4; // default value
+		try {
+			depth = Integer.parseInt(depthOfTree);
+		} catch (NumberFormatException e) {
+			LOGGER.error("Depth of tree could not be parsed, the default value of 4 is used.");
+		}
+		Treant treant = new Treant(projectKey, elementKey, depth);
+		return Response.ok(treant).build();
+	}
+
+	private Response projectKeyIsInvalid() {
+		LOGGER.error("Treant can not be shown since project key is invalid.");
+		return Response.status(Status.BAD_REQUEST)
+				.entity(ImmutableMap.of("error", "Treant can not be shown since project key is invalid.")).build();
 	}
 }
