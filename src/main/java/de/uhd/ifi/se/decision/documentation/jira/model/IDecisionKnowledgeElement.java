@@ -2,9 +2,12 @@ package de.uhd.ifi.se.decision.documentation.jira.model;
 
 import java.util.List;
 
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+
 /**
  * @description Interface for decision knowledge elements
  */
+@JsonDeserialize(as = DecisionKnowledgeElement.class)
 public interface IDecisionKnowledgeElement {
 
 	public long getId();

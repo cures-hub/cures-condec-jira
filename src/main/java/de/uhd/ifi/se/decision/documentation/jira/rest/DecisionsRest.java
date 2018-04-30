@@ -34,7 +34,7 @@ public class DecisionsRest {
 		if (projectKey != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
 			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
-			DecisionKnowledgeElement decisionKnowledgeElement = strategy.getDecisionKnowledgeElement(id);
+			IDecisionKnowledgeElement decisionKnowledgeElement = strategy.getDecisionKnowledgeElement(id);
 			if (decisionKnowledgeElement != null) {
 				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
 			}
@@ -70,7 +70,7 @@ public class DecisionsRest {
 		if (projectKey != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
 			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
-			List<DecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = strategy.getUnlinkedDecisionComponents(id, projectKey);
+			List<IDecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = strategy.getUnlinkedDecisionComponents(id, projectKey);
 			return Response.ok(unlinkedDecisionKnowledgeElements).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
@@ -82,7 +82,7 @@ public class DecisionsRest {
 	@Path("/createDecisionKnowledgeElement")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createDecisionKnowledgeElement(@Context HttpServletRequest request, DecisionKnowledgeElement decisionKnowledgeElement) {
+	public Response createDecisionKnowledgeElement(@Context HttpServletRequest request, IDecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProjectKey();
 			StrategyProvider strategyProvider = new StrategyProvider();

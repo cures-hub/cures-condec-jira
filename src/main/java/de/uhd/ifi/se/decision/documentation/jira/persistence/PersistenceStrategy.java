@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.IDecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.documentation.jira.model.Link;
@@ -16,25 +15,25 @@ import de.uhd.ifi.se.decision.documentation.jira.model.Link;
  */
 public abstract class PersistenceStrategy {
 
-	public abstract DecisionKnowledgeElement insertDecisionKnowledgeElement(
-			DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
+	public abstract IDecisionKnowledgeElement insertDecisionKnowledgeElement(
+			IDecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
 
-	public abstract boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement,
+	public abstract boolean updateDecisionKnowledgeElement(IDecisionKnowledgeElement decisionKnowledgeElement,
 			ApplicationUser user);
 
-	public abstract boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement,
+	public abstract boolean deleteDecisionKnowledgeElement(IDecisionKnowledgeElement decisionKnowledgeElement,
 			ApplicationUser user);
 
-	public abstract List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey);
+	public abstract List<IDecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey);
 
-	public abstract DecisionKnowledgeElement getDecisionKnowledgeElement(String key);
+	public abstract IDecisionKnowledgeElement getDecisionKnowledgeElement(String key);
 
-	public abstract DecisionKnowledgeElement getDecisionKnowledgeElement(long id);
+	public abstract IDecisionKnowledgeElement getDecisionKnowledgeElement(long id);
 
 	public List<IDecisionKnowledgeElement> getDecisions(String projectKey) {
-		List<DecisionKnowledgeElement> decisionKnowledgeElements = this.getDecisionKnowledgeElements(projectKey);
+		List<IDecisionKnowledgeElement> decisionKnowledgeElements = this.getDecisionKnowledgeElements(projectKey);
 		List<IDecisionKnowledgeElement> decisions = new ArrayList<IDecisionKnowledgeElement>();
-		for (DecisionKnowledgeElement decisionKnowledgeElement : decisionKnowledgeElements) {
+		for (IDecisionKnowledgeElement decisionKnowledgeElement : decisionKnowledgeElements) {
 			if (decisionKnowledgeElement.getType().toString().equalsIgnoreCase("Decision")) {
 				decisions.add(decisionKnowledgeElement);
 			}
@@ -45,21 +44,21 @@ public abstract class PersistenceStrategy {
 	public abstract List<IDecisionKnowledgeElement> getChildren(IDecisionKnowledgeElement decisionKnowledgeElement);
 
 	public List<IDecisionKnowledgeElement> getChildren(long id) {
-		DecisionKnowledgeElement decisionKnowledgeElement = this.getDecisionKnowledgeElement(id);
+		IDecisionKnowledgeElement decisionKnowledgeElement = this.getDecisionKnowledgeElement(id);
 		return this.getChildren(decisionKnowledgeElement);
 	}
 
-	public abstract List<DecisionKnowledgeElement> getParents(DecisionKnowledgeElement decisionKnowledgeElement);
+	public abstract List<IDecisionKnowledgeElement> getParents(IDecisionKnowledgeElement decisionKnowledgeElement);
 
-	public List<DecisionKnowledgeElement> getUnlinkedDecisionComponents(long id, String projectKey){
-		DecisionKnowledgeElement rootElement = this.getDecisionKnowledgeElement(id);
+	public List<IDecisionKnowledgeElement> getUnlinkedDecisionComponents(long id, String projectKey){
+		IDecisionKnowledgeElement rootElement = this.getDecisionKnowledgeElement(id);
 		if (rootElement == null) {
-			return new ArrayList<DecisionKnowledgeElement>();
+			return new ArrayList<IDecisionKnowledgeElement>();
 		}
-		List<DecisionKnowledgeElement> decisionKnowledgeElements = this.getDecisionKnowledgeElements(projectKey);
-		List<DecisionKnowledgeElement> unlinkedDecisionComponents = new ArrayList<DecisionKnowledgeElement>();
+		List<IDecisionKnowledgeElement> decisionKnowledgeElements = this.getDecisionKnowledgeElements(projectKey);
+		List<IDecisionKnowledgeElement> unlinkedDecisionComponents = new ArrayList<IDecisionKnowledgeElement>();
 		List<IDecisionKnowledgeElement> outwardElements = this.getChildren(rootElement);
-		for (DecisionKnowledgeElement decisionKnowledgeElement : decisionKnowledgeElements) {
+		for (IDecisionKnowledgeElement decisionKnowledgeElement : decisionKnowledgeElements) {
 			if (decisionKnowledgeElement.getId() == id
 					|| decisionKnowledgeElement.getType() == KnowledgeType.DECISION) {
 				continue;
