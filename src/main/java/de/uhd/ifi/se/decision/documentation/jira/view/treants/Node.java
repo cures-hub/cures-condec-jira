@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * @author Ewald Rode
  * @description Model class for Treant node
  */
 public class Node {

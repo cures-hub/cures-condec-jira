@@ -5,32 +5,28 @@ import static org.junit.Assert.assertEquals;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.mock.issue.MockIssue;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
-import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLink;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ofbiz.core.entity.GenericEntityException;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
+import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLink;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.TreantRest;
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.Link;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
+import de.uhd.ifi.se.decision.documentation.jira.rest.TreantRest;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-
-import java.util.Collection;
 
 
 @RunWith(ActiveObjectsJUnitRunner.class)
@@ -42,79 +38,79 @@ public class TestTreantRest extends TestSetUp {
 	@Before	
 	public void setUp() {
 		treantRest=new TreantRest();
-		initialisation();		
+		initialization();		
 		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
 	}
 	
 	@Test
 	public void testProjectNullIssueKeyNullDepthNull() throws GenericEntityException {
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Query parameter 'projectKey' is not provided, please add a valid projectKey")).build().getEntity(),treantRest.getMessage(null, null, null).getEntity());
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Query parameter 'projectKey' is not provided, please add a valid projectKey")).build().getEntity(),treantRest.getTreant(null, null, null).getEntity());
 	}
 	
 	@Test
 	public void testProjectNullIssueKeyFilledDepthNull() throws GenericEntityException {
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Query parameter 'projectKey' is not provided, please add a valid projectKey")).build().getEntity(),treantRest.getMessage(null, "3", null).getEntity());
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Query parameter 'projectKey' is not provided, please add a valid projectKey")).build().getEntity(),treantRest.getTreant(null, "3", null).getEntity());
 	}
 	
 	@Test
 	public void testProjectNullIssueKeyNullDepthFilled() throws GenericEntityException {
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Query parameter 'projectKey' is not provided, please add a valid projectKey")).build().getEntity(),treantRest.getMessage(null, null, "3").getEntity());
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Query parameter 'projectKey' is not provided, please add a valid projectKey")).build().getEntity(),treantRest.getTreant(null, null, "3").getEntity());
 	}
 	
 	@Test
 	public void testProjectNullIssueKeyFilledDepthFilled() throws GenericEntityException {
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Query parameter 'projectKey' is not provided, please add a valid projectKey")).build().getEntity(),treantRest.getMessage(null, "3", "1").getEntity());
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Query parameter 'projectKey' is not provided, please add a valid projectKey")).build().getEntity(),treantRest.getTreant(null, "3", "1").getEntity());
 	}
 	
 	@Test
 	public void testProjectExistsIssueKeyNullDepthNull() throws GenericEntityException {
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Query parameters 'projectKey' and 'issueKey' do not lead to a valid result")).build().getEntity(),treantRest.getMessage("TEST", null, null).getEntity());
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Query parameters 'projectKey' and 'issueKey' do not lead to a valid result")).build().getEntity(),treantRest.getTreant("TEST", null, null).getEntity());
 	}
 	
 	@Test
 	public void testProjectExistsIssueKeyFilledDepthNull() throws GenericEntityException {
-		assertEquals(200,treantRest.getMessage("TEST", "3", null).getStatus());
+		assertEquals(200,treantRest.getTreant("TEST", "3", null).getStatus());
 	}
 		
 	@Test
 	public void testProjectExistsIssueKeyNullDepthFilled() throws GenericEntityException {
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Query parameters 'projectKey' and 'issueKey' do not lead to a valid result")).build().getEntity(),treantRest.getMessage("TEST", null, "1").getEntity());
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Query parameters 'projectKey' and 'issueKey' do not lead to a valid result")).build().getEntity(),treantRest.getTreant("TEST", null, "1").getEntity());
 	}
 
 	@Test
 	public void testProjectExistsIssueKeyFilledDepthFilled() throws GenericEntityException {
-		assertEquals(200,treantRest.getMessage("TEST", "3", "1").getStatus());
+		assertEquals(200,treantRest.getTreant("TEST", "3", "1").getStatus());
 	}
 
 	@Test
 	public void testProjectNotExistsIssueKeyNullDepthNull() throws GenericEntityException {
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Cannot find project for the given query parameter 'projectKey'")).build().getEntity(),treantRest.getMessage("NotTEST", null, null).getEntity());
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Cannot find project for the given query parameter 'projectKey'")).build().getEntity(),treantRest.getTreant("NotTEST", null, null).getEntity());
 	}
 	
 	@Test
 	public void testProjectNotExistsIssueKeyFilledDepthNull() throws GenericEntityException {
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Cannot find project for the given query parameter 'projectKey'")).build().getEntity(),treantRest.getMessage("NotTEST", "3", null).getEntity());
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Cannot find project for the given query parameter 'projectKey'")).build().getEntity(),treantRest.getTreant("NotTEST", "3", null).getEntity());
 	}
 	
 	@Test
 	public void testProjectNotExistsIssueKeyNullDepthFilled() throws GenericEntityException {
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Cannot find project for the given query parameter 'projectKey'")).build().getEntity(),treantRest.getMessage("NotTEST", null, "1").getEntity());
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Cannot find project for the given query parameter 'projectKey'")).build().getEntity(),treantRest.getTreant("NotTEST", null, "1").getEntity());
 	}
 	
 	@Test
 	public void testProjectNotExistsIssueKeyFilledDepthFilled() throws GenericEntityException {
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Cannot find project for the given query parameter 'projectKey'")).build().getEntity(),treantRest.getMessage("NotTEST", "3", "1").getEntity());
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Cannot find project for the given query parameter 'projectKey'")).build().getEntity(),treantRest.getTreant("NotTEST", "3", "1").getEntity());
 	}
 	
 	@Test
 	public void testProjectExistsIssueKeyFilledDepthNoInt() throws GenericEntityException {
-		assertEquals(200,treantRest.getMessage("TEST", "3", "Test").getStatus());
+		assertEquals(200,treantRest.getTreant("TEST", "3", "Test").getStatus());
 	}
 
 	@Test
 	public void testProjectExistsIssueKeyFilledAllTypes() throws GenericEntityException {
 		for(long i=2; i<= 16;i++){
-			treantRest.getMessage("TEST", Long.toString(i), "3").getStatus();
+			treantRest.getTreant("TEST", Long.toString(i), "3").getStatus();
 		}
 	}
 
@@ -131,6 +127,6 @@ public class TestTreantRest extends TestSetUp {
 		Link link = new Link(issuelink);
 		strategy.insertLink(link,ComponentAccessor.getUserManager().getUserByName("NoFails"));
 
-		treantRest.getMessage("TEST","12", "3").getStatus();
+		treantRest.getTreant("TEST","12", "3").getStatus();
 	}
 }

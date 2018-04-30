@@ -1,40 +1,48 @@
 /* Chart-Styles */
-.chart { 
-	width:64.5%;
-	border:1px solid rgba(204,204,204,1);
-	min-height:1px;
+.chart {
+	width: 64.5%;
+	border: 1px solid rgba(204, 204, 204, 1);
+	min-height: 1px;
 	visibility: hidden;
 	float: left;
 }
-.Treant > .node {     
+
+.Treant>.node {
 	padding: 2px;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-    border: 1px solid #000;
-    font-family: Tahoma;
-    font-size: 12px;
-	visibility:inherit;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	border: 1px solid #000;
+	font-family: Tahoma;
+	font-size: 12px;
+	visibility: inherit;
 	width: 160px;
 }
-.Treant > p { 
-	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+
+.Treant>p {
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light",
+		"Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 	font-weight: bold;
-	font-size: 12px; 
+	font-size: 12px;
 }
-.node-name { 
+
+.node-name {
 	font-weight: bold;
-	visibility:inherit;
+	visibility: inherit;
 }
-.context{
-	background-color:rgb(255,231,231);
+
+.context {
+	background-color: rgb(255, 231, 231);
 }
-.rationale{
-	background-color:rgb(255,255,221);
+
+.rationale {
+	background-color: rgb(255, 255, 221);
 }
-.solution{
-	background-color:rgb(222,250,222);
+
+.solution {
+	background-color: rgb(222, 250, 222);
 }
-.problem{
-	background-color:rgb(244,240,255);
+
+.problem {
+	background-color: rgb(244, 240, 255);
 }

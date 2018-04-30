@@ -16,20 +16,13 @@ public class TestDeleteDecision extends TestDecisionSetUp {
     public void testActionTypeDeleteReqFilledDecFilled() {
         req.setAttribute("WithFails", false);
         req.setAttribute("NoFails", true);
-        assertEquals(Response.Status.OK.getStatusCode(),decRest.deleteDecision("delete", req, dec).getStatus());
+        assertEquals(Response.Status.OK.getStatusCode(),decRest.deleteDecisionKnowledgeElement( req, dec).getStatus());
     }
 
     @Test
     public void testActionTypeDeleteErrorReqFilledDecFilled() {
         req.setAttribute("WithFails", true);
         req.setAttribute("NoFails", false);
-        assertEquals(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build().getEntity(),decRest.deleteDecision("delete", req, dec).getEntity());
-    }
-
-    @Test
-    public void testActionTypeOtherReqFilledDecFilled() {
-        req.setAttribute("WithFails", false);
-        req.setAttribute("NoFails", true);
-        assertEquals(Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Unknown actionType.")).build().getEntity(),decRest.deleteDecision("test", req, dec).getEntity());
+        assertEquals(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build().getEntity(),decRest.deleteDecisionKnowledgeElement(req, dec).getEntity());
     }
 }

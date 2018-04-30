@@ -15,8 +15,8 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
+import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
-import de.uhd.ifi.se.decision.documentation.jira.util.ComponentGetter;
 
 
 public class TestComponentGetter {
@@ -84,7 +84,7 @@ public class TestComponentGetter {
 	
 	@Test
 	public void testGetActivObjects() {
-		assertEquals(ao, ComponentGetter.getAo());
+		assertEquals(ao, ComponentGetter.getActiveObjects());
 	}
 	
 	@Test
@@ -95,7 +95,7 @@ public class TestComponentGetter {
 	@Test
 	public void testSetAO() {
 		ActiveObjects newao = mock(ActiveObjects.class);
-		ComponentGetter.setAo(newao);
-		assertEquals(newao, ComponentGetter.getAo());
+		ComponentGetter.setActiveObjects(newao);
+		assertEquals(newao, ComponentGetter.getActiveObjects());
 	}
 }

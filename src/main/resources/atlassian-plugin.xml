@@ -2,6 +2,8 @@
 
 <atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}"
 	plugins-version="2">
+
+	<!-- Plug-in Information -->
 	<plugin-info>
 		<description>${project.description}</description>
 		<version>${project.version}</version>
@@ -9,137 +11,138 @@
 		<param name="plugin-icon">images/pluginIcon.png</param>
 		<param name="plugin-logo">images/pluginLogo.png</param>
 	</plugin-info>
-	<!-- i18n resource -->
-	<resource type="i18n" name="i18n" location="decision-documentation" />
 
-	<!-- web resources -->
-	<web-resource key="stylesheet-and-icon-resources" name="Stylesheets and Icons">
+	<!-- Web Resources -->
+	<web-resource key="stylesheet-and-icon-resources" name="Style Sheets and Icons">
+		<description>
+			Provides the style sheets and icons used in this plug-in.
+		</description>
 		<!-- icons -->
 		<resource type="download" name="Add.png" location="/images/Add.png" />
 		<resource type="download" name="Delete.png" location="/images/Delete.png" />
 		<resource type="download" name="Open.png" location="/images/Open.png" />
 		<resource type="download" name="Edit.png" location="/images/Edit.png" />
-		<resource type="download" name="32px.png" location="/js/jstree/32px.png" />
-		<resource type="download" name="40px.png" location="/js/jstree/40px.png" />
-		<resource type="download" name="throbber.gif" location="/js/jstree/throbber.gif" />
-		<!-- stylesheets -->
+		<resource type="download" name="32px.png" location="/images/32px.png" />
+		<resource type="download" name="40px.png" location="/images/40px.png" />
+		<resource type="download" name="throbber.gif" location="/images/throbber.gif" />
+		<!-- style sheets -->
 		<resource type="download" name="treant.css" location="/css/treant.css" />
 		<resource type="download" name="chart.css" location="/css/chart.css" />
 		<resource type="download" name="editor.css" location="/css/editor.css" />
-		<resource type="download" name="jquery.contextMenu.css"
-			location="/css/jquery.contextMenu.css" />
+		<resource type="download" name="jquery.contextMenu.css" location="/css/jquery.contextMenu.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
-		<context>decision-documentation</context>
 	</web-resource>
-	<web-resource key="decision-documentation-resources" name="decision-documentation-resources">
-		<!-- treants -->
-		<resource type="download" name="Treant.js" location="/js/treant_js/Treant.js" />
-		<resource type="download" name="raphael.js" location="/js/treant_js/raphael.js" />
-		<resource type="download" name="jquery.easing.js"
-			location="/js/treant_js/jquery.easing.js" />
-		<!-- jQuery -->
-		<resource type="download" name="jquery.js" location="/js/jquery.js" />
-		<!-- jstree -->
-		<resource type="download" name="jstree.min.js" location="/js/jstree/jstree.min.js" />
+	<web-resource key="decision-documentation-resources" name="Java Script Resources">
+		<description>
+			Provides the Java Script files used in this plug-in.
+		</description>
+		<!-- treant -->
+		<resource type="download" name="Treant.js" location="/js/treant/treant.js" />
+		<resource type="download" name="raphael.js" location="/js/treant/raphael.js" />		
+		<!-- jquery -->
+		<resource type="download" name="jquery.js" location="/js/jquery/jquery.js" />
+		<resource type="download" name="jquery.easing.js" location="/js/jquery/jquery.easing.js" />
 		<!-- jquery.contextMenu -->
-		<resource type="download" name="jquery.ui.position.js"
-			location="/js/contextMenu/jquery.ui.position.js" />
-		<resource type="download" name="jquery.contextMenu.js"
-			location="/js/contextMenu/jquery.contextMenu.js" />
-		<!-- my own JS -->
-		<resource type="download" name="accordionview.decision.documentation.js"
-				  location="/js/accordionview.decision.documentation.js"/>
-		<resource type="download" name="treantview.decision.documentation.js"
-				  location="/js/treantview.decision.documentation.js"/>
-		<resource type="download" name="treeview.decision.documentation.js"
-				  location="/js/treeview.decision.documentation.js" />
-		<resource type="download" name="java.communicator.js"
-				  location="/js/java.communicator.js" />
-		<resource type="download" name="decision.documentation.js"
-			location="/js/decision.documentation.js" />
-		<context>decision-documentation</context>
+		<resource type="download" name="jquery.ui.position.js" location="/js/jquery/jquery.ui.position.js" />
+		<resource type="download" name="jquery.contextMenu.js" location="/js/jquery/jquery.contextMenu.js" />
+		<!-- jstree -->
+		<resource type="download" name="jstree.js" location="/js/jstree/jstree.js" />
+		<!-- DecDoc java script files -->
+		<resource type="download" name="decdoc.init.js" location="/js/decdoc.init.js" />
+		<resource type="download" name="decdoc.js" location="/js/decdoc.js" />
+		<resource type="download" name="decdoc.rest.client.js" location="/js/decdoc.rest.client.js" />
+		<resource type="download" name="decdoc.accordion.editor.js" location="/js/decdoc.accordion.editor.js" />
+		<resource type="download" name="decdoc.treant.js" location="/js/decdoc.treant.js" />
+		<resource type="download" name="decdoc.tree.viewer.js" location="/js/decdoc.tree.viewer.js" />		
+		<resource type="download" name="decdoc.context.menu.js" location="/js/decdoc.context.menu.js" />		
 	</web-resource>
 
-	<!-- DecisionEditor -->
-	<web-item name="Decisions" i18n-name-key="decisions.name" key="decisions"
+	<!-- Decision Knowledge Page -->
+	<web-item name="Link to the DecDoc Plug-in in Side Bar" key="side-bar-link"
 		section="jira.project.sidebar.plugins.navigation" weight="1000">
-		<description key="decisions.description">Link to Decisions-page in Projects
-			Navigation Sidebar
+		<description>Provides the "Decisions" link to the plug-in page in the project's navigation side
+			bar.
 		</description>
-		<label key="decisions.label" />
+		<label>Decisions</label>
 		<param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-bp-decisions" />
-		<link linkId="decisions-link">/projects/$pathEncodedProjectKey?selectedItem=decisions-page
-		</link>
-		<condition
-			class="de.uhd.ifi.se.decision.documentation.jira.config.IsActivated">
+		<link> /projects/$pathEncodedProjectKey?selectedItem=decisions-page	</link>
+		<condition class="de.uhd.ifi.se.decision.documentation.jira.config.ActivationCondition">
 			<param name="projectKey" value="$pathEncodedProjectKey" />
 		</condition>
 	</web-item>
-	<web-panel name="decisionspage" i18n-name-key="decisionspage.name"
-		key="decisionspage" location="decisions-page" weight="1000">
-		<description key="decisionspage.description">Decisions-page: contains both the
-			decisions-editor and the decision-tree
+	<web-panel name="DecDoc Plug-in Page" key="decisions-page" location="decisions-page"
+		weight="1000">
+		<description>
+			Provides the plug-in page that developers use to manage decision knowledge.
 		</description>
 		<resource name="view" type="velocity" location="templates/editor.vm" />
 	</web-panel>
-	<rest name="Decisions" i18n-name-key="decisionsrest.name" key="decisionsrest"
-		path="/decisions" version="1.0">
-		<description key="decisionsrest.description">The Decisions Plugin</description>
-	</rest>
-	<rest name="TreantRest" i18n-name-key="TreantRest.name" key="TreantRest"
-		path="/treantsrest" version="1.0">
-		<description key="TreantRest.description">Das Rest Plugin stellt die Daten fuer den
-			Treant auf der Decisionspage bereit
+	<rest name="Decision Knowledge REST" key="decision-knowledge-rest" path="/decisions" version="1.0">
+		<description>
+			Provides REST resources to manage decision knowledge.
 		</description>
 	</rest>
-	<rest name="TreeViewerRest" i18n-name-key="TreeViewerRest.name"
-		key="TreeViewerRest" path="/treeviewerrest" version="1.0">
-		<description key="TreeViewerRest.description">Das Tree Viewer Rest Plugin stellt die
-			Daten fuer den TreeViewer auf der DecisionsPage bereit
+	<rest key="treant-rest" name="Treant REST" path="/decisions" version="1.0">
+		<description>
+			Provides REST resources to build the Treant graph when selecting a single decision
+			knowledge element.
+		</description>
+	</rest>
+	<rest key="tree-viewer-rest" name="Tree Viewer REST" path="/decisions" version="1.0">
+		<description>Provides REST resources to build the tree viewer (list of decision knowledge
+			elements).
 		</description>
 	</rest>
 
-	<!--Administration -->
-	<web-section name="DecDoc-Web-Section" key="DecDoc_section"
+	<!-- Administration -->
+	<web-section key="decdoc-admin-section" name="Web Section for DecDoc Plug-in Administration"
 		location="admin_plugins_menu">
-		<label key="DecDoc Section" />
-		<description>Adds a section to the add-ons menu.</description>
-	</web-section>
-	<web-section name="DecDoc-Menu-Item" key="DecDoc_menu_item"
-		location="DecDoc_section">
-		<label key="Decisions" />
-		<description>Adds a menu-item to the DecDoc section.</description>
-	</web-section>
-	<web-item key="DecDoc-administration-menu-item" name="DecDoc Administration Menu Item"
-		section="DecDoc_section/DecDoc_menu_item" weight="10" application="jira">
-		<description>Adds a menu item that links to the admin servlet.
+		<description>
+			Adds a section to the add-ons menu.
 		</description>
-		<label key="admin-servlet.label" />
-		<link linkId="admin-servlet-link">/plugins/servlet/adminservlet</link>
+	</web-section>
+	<web-section key="decdoc-admin-section-label" name="Web Section Label for DecDoc Plug-in Administration"
+		location="decdoc-admin-section">
+		<label>Decisions</label>
+		<description>
+			Adds the "Decisions" label to the DecDoc section in the add-ons menu.
+		</description>
+	</web-section>
+	<web-item key="decdoc-admin-menu-item" name="Menu Item for DecDoc Plug-in Administration"
+		section="decdoc-admin-section/decdoc-admin-section-label" weight="10" application="jira">
+		<description>
+			Adds the "DecDoc" menu item that links to the administration page.
+		</description>
+		<label>DecDoc Settings</label>
+		<link>/plugins/servlet/adminservlet</link>
 	</web-item>
-	<servlet name="Admin Servlet" i18n-name-key="admin-servlet.name"
-		key="admin-servlet" class="de.uhd.ifi.se.decision.documentation.jira.config.AdminServlet">
-		<description key="admin-servlet.description">The Admin Servlet Plugin</description>
+	<servlet key="admin-servlet" name="Administration Servlet"
+		class="de.uhd.ifi.se.decision.documentation.jira.config.AdminServlet">
+		<description>Provides the administration page.</description>
 		<url-pattern>/adminservlet</url-pattern>
 	</servlet>
-	<rest name="Adminstration Rest Resource" key="admin-rest" path="/admin"
-		version="1.0">
-		<description>Provides REST resources for the administration form.
+	<rest key="admin-rest" name="Adminstration REST" path="/admin" version="1.0">
+		<description>
+			Provides REST resources for the administration.
 		</description>
 	</rest>
-	<rest name="Config" i18n-name-key="config.name" key="config" path="/config"
-		version="1.0">
-		<description key="config.description">The Config Plugin</description>
+	<rest key="config" name="Configuration REST" path="/config" version="1.0">
+		<description>
+			Provides REST resources to configure the DecDoc plug-in.
+		</description>
 	</rest>
 
 	<!-- Active Objects -->
-	<ao key="ao-module">
-		<description>The module configuring the Active Objects service used by
-			this plug-in.
+	<ao key="ao-module" name="Active Objects Service">
+		<description>
+			Configures the Active Objects service that is used to persist decision knowledge with
+			object relational mapping.
 		</description>
-		<entity>de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.IDecisionKnowledgeElementEntity
+		<entity>
+			de.uhd.ifi.se.decision.documentation.jira.persistence.IDecisionKnowledgeElementEntity
 		</entity>
-		<entity>de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.ILinkEntity
+		<entity>
+			de.uhd.ifi.se.decision.documentation.jira.persistence.ILinkEntity
 		</entity>
 	</ao>
 </atlassian-plugin>

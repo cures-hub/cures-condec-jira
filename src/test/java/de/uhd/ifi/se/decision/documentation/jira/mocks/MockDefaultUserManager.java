@@ -12,13 +12,11 @@ public class MockDefaultUserManager implements UserManager {
 
 	@Override
 	public boolean authenticate(String arg0, String arg1) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public String getRemoteUsername() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -35,13 +33,11 @@ public class MockDefaultUserManager implements UserManager {
 
 	@Override
 	public UserProfile getUserProfile(String arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public boolean isAdmin(String arg0) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -55,13 +51,11 @@ public class MockDefaultUserManager implements UserManager {
 
 	@Override
 	public boolean isUserInGroup(String arg0, String arg1) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public Principal resolve(String arg0) throws UserResolutionException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

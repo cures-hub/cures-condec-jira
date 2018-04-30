@@ -28,9 +28,10 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ErrorCollection;
 
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.IDecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.documentation.jira.model.Link;
 
 /**
  * @description Extends the abstract class PersistenceStrategy. Uses JIRA
@@ -79,6 +80,8 @@ public class IssueStrategy extends PersistenceStrategy {
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
 		issueInputParameters.setSummary(decisionElement.getSummary());
 		issueInputParameters.setDescription(decisionElement.getDescription());
+		String issueTypeId = getIssueTypeId(decisionElement.getType());
+		issueInputParameters.setIssueTypeId(issueTypeId);
 		IssueService.UpdateValidationResult result = issueService.validateUpdate(user, issueToBeUpdated.getId(),
 				issueInputParameters);
 		if (result.getErrorCollection().hasAnyErrors()) {
@@ -153,16 +156,35 @@ public class IssueStrategy extends PersistenceStrategy {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
+	public List<IDecisionKnowledgeElement> getChildren(IDecisionKnowledgeElement decisionKnowledgeElement) {
 		List<IssueLink> outwardIssueLinks = ComponentAccessor.getIssueLinkManager()
 				.getOutwardLinks(decisionKnowledgeElement.getId());
-		List<DecisionKnowledgeElement> children = new ArrayList<DecisionKnowledgeElement>();
-		for (IssueLink issueLink : outwardIssueLinks) {
-			Issue outwardIssue = issueLink.getDestinationObject();
-			if (outwardIssue != null) {
-				children.add(new DecisionKnowledgeElement(outwardIssue));
+		List<IDecisionKnowledgeElement> children = new ArrayList<IDecisionKnowledgeElement>();
+
+		if(decisionKnowledgeElement.getType() != KnowledgeType.ARGUMENT) {
+			for (IssueLink issueLink : outwardIssueLinks) {
+				Issue outwardIssue = issueLink.getDestinationObject();
+				if (outwardIssue != null) {
+					DecisionKnowledgeElement outwardElement = new DecisionKnowledgeElement(outwardIssue);
+					if (outwardElement.getType() != KnowledgeType.ARGUMENT) {
+						children.add(outwardElement);
+					}
+				}
 			}
 		}
+
+        List<IssueLink> inwardIssueLinks = ComponentAccessor.getIssueLinkManager()
+                .getInwardLinks(decisionKnowledgeElement.getId());
+        for (IssueLink issueLink : inwardIssueLinks) {
+            Issue inwardIssue = issueLink.getSourceObject();
+            if (inwardIssue != null) {
+                DecisionKnowledgeElement inwardElement = new DecisionKnowledgeElement(inwardIssue);
+                if(inwardElement.getType() == KnowledgeType.ARGUMENT) {
+                    children.add(new DecisionKnowledgeElement(inwardIssue));
+                }
+            }
+        }
+
 		return children;
 	}
 
@@ -227,14 +249,29 @@ public class IssueStrategy extends PersistenceStrategy {
 		return issueLink.getId();
 	}
 
-	// TODO Implement
 	@Override
-	public void deleteLink(Link link, ApplicationUser user) {
+	public boolean deleteLink(Link link, ApplicationUser user) {
+		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
+		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
+		Collection<IssueLinkType> issueLinkTypeCollection = issueLinkTypeManager
+				.getIssueLinkTypesByName(link.getLinkType());
+		Iterator<IssueLinkType> issueLinkTypeIterator = issueLinkTypeCollection.iterator();
+		long typeId = 0;
+		while (issueLinkTypeIterator.hasNext()) {
+			IssueLinkType issueLinkType = issueLinkTypeIterator.next();
+			typeId = issueLinkType.getId();
+		}
+		IssueLink issueLink = issueLinkManager.getIssueLink(link.getOutgoingId(), link.getIngoingId(), typeId);
+		if(issueLink !=null){
+			issueLinkManager.removeIssueLink(issueLink,user);
+			return true;
+		}
 
+		return false;
 	}
 	
 	@Override
-	public List<Link> getInwardLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
+	public List<Link> getInwardLinks(IDecisionKnowledgeElement decisionKnowledgeElement) {
 		List<IssueLink> inwardIssueLinks = ComponentAccessor.getIssueLinkManager()
 				.getInwardLinks(decisionKnowledgeElement.getId());
 		List<Link> inwardLinks = new ArrayList<Link>();
@@ -245,7 +282,7 @@ public class IssueStrategy extends PersistenceStrategy {
 	}
 
 	@Override
-	public List<Link> getOutwardLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
+	public List<Link> getOutwardLinks(IDecisionKnowledgeElement decisionKnowledgeElement) {
 		List<IssueLink> outwardIssueLinks = ComponentAccessor.getIssueLinkManager()
 				.getInwardLinks(decisionKnowledgeElement.getId());
 		List<Link> outwardLinks = new ArrayList<Link>();
@@ -255,26 +292,6 @@ public class IssueStrategy extends PersistenceStrategy {
 		return outwardLinks;
 	}
 
-//	private boolean updateKeyValuePairList(DecisionKnowledgeElement decisionKnowledgeElementOne,
-//			DecisionKnowledgeElement decisionKnowledgeElementTwo) {
-//		Pair<String, String> newKVP = new Pair<String, String>(decisionKnowledgeElementOne.getKey(),
-//				decisionKnowledgeElementTwo.getKey());
-//		Pair<String, String> newKVPReverse = new Pair<String, String>(decisionKnowledgeElementTwo.getKey(),
-//				decisionKnowledgeElementOne.getKey());
-//		boolean boolvar = false;
-//		for (int counter = 0; counter < KeyValuePairList.keyValuePairList.size(); ++counter) {
-//			Pair<String, String> globalInst = KeyValuePairList.keyValuePairList.get(counter);
-//			if (newKVP.equals(globalInst)) {
-//				boolvar = true;
-//			}
-//		}
-//		if (!boolvar) {
-//			KeyValuePairList.keyValuePairList.add(newKVP);
-//			KeyValuePairList.keyValuePairList.add(newKVPReverse);
-//		}
-//		return boolvar;
-//	}
-	
 	private String getIssueTypeId(KnowledgeType type) {
 		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
 		Collection<IssueType> listOfIssueTypes = constantsManager.getAllIssueTypeObjects();

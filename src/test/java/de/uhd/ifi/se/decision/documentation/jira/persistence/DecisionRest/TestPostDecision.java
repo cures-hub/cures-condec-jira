@@ -18,15 +18,15 @@ public class TestPostDecision extends TestDecisionSetUp {
 	@Test
 	public void testActionTypeNullReqNullDecNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "Decision knowledge element or actionType = null")).build()
-				.getEntity(), decRest.insertDecisionKnowledgeElement(null, null).getEntity());
+				.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build()
+				.getEntity(), decRest.createDecisionKnowledgeElement(null, null).getEntity());
 	}
 
 	@Test
 	public void testActionTypeNullReqNullDecFilled() {
 		assertEquals(Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "Decision knowledge element or actionType = null")).build()
-				.getEntity(), decRest.insertDecisionKnowledgeElement(null, dec).getEntity());
+				.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build()
+				.getEntity(), decRest.createDecisionKnowledgeElement(null, dec).getEntity());
 	}
 
 	@Test
@@ -34,22 +34,22 @@ public class TestPostDecision extends TestDecisionSetUp {
 		req.setAttribute("WithFails", false);
 		req.setAttribute("NoFails", true);
 		assertEquals(Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "Decision knowledge element or actionType = null")).build()
-				.getEntity(), decRest.insertDecisionKnowledgeElement( req, null).getEntity());
+				.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build()
+				.getEntity(), decRest.createDecisionKnowledgeElement( req, null).getEntity());
 	}
 
 	@Test
 	public void testActionTypecreateReqNullDecNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "Decision knowledge element or actionType = null")).build()
-				.getEntity(), decRest.insertDecisionKnowledgeElement(null, null).getEntity());
+				.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build()
+				.getEntity(), decRest.createDecisionKnowledgeElement(null, null).getEntity());
 	}
 
 	@Test
 	public void testActionTypecreateReqNullDecFilled() {
 		assertEquals(Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "Decision knowledge element or actionType = null")).build()
-				.getEntity(), decRest.insertDecisionKnowledgeElement( null, dec).getEntity());
+				.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build()
+				.getEntity(), decRest.createDecisionKnowledgeElement( null, dec).getEntity());
 	}
 
 	@Test
@@ -57,15 +57,15 @@ public class TestPostDecision extends TestDecisionSetUp {
 		req.setAttribute("WithFails", false);
 		req.setAttribute("NoFails", true);
 		assertEquals(Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "Decision knowledge element or actionType = null")).build()
-				.getEntity(), decRest.insertDecisionKnowledgeElement( req, null).getEntity());
+				.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build()
+				.getEntity(), decRest.createDecisionKnowledgeElement( req, null).getEntity());
 	}
 
 	@Test
 	public void testActionTypecreateReqFilledDecFilled() {
 		req.setAttribute("WithFails", false);
 		req.setAttribute("NoFails", true);
-		assertEquals(Status.OK.getStatusCode(), decRest.insertDecisionKnowledgeElement( req, dec).getStatus());
+		assertEquals(Status.OK.getStatusCode(), decRest.createDecisionKnowledgeElement( req, dec).getStatus());
 	}
 
 
@@ -73,14 +73,14 @@ public class TestPostDecision extends TestDecisionSetUp {
 	@Test
 	public void testActionTypeEditReqNullDecNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "Decision knowledge element or actionType = null")).build()
-				.getEntity(), decRest.insertDecisionKnowledgeElement(null, null).getEntity());
+				.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build()
+				.getEntity(), decRest.createDecisionKnowledgeElement(null, null).getEntity());
 	}
 
 	@Test
 	public void testActionTypeEditReqNullDecFilled() {
 		assertEquals(Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "Decision knowledge element or actionType = null")).build()
-				.getEntity(), decRest.insertDecisionKnowledgeElement(null, dec).getEntity());
+				.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build()
+				.getEntity(), decRest.createDecisionKnowledgeElement(null, dec).getEntity());
 	}
 }

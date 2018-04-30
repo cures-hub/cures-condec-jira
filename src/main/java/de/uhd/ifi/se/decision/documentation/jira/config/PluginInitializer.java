@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.documentation.jira.config;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Named;
 
@@ -9,136 +11,81 @@ import org.springframework.beans.factory.InitializingBean;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
-//import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 
+import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
+
 /**
- * @description handles plugin initialization
+ * @description Handles plug-in initialization
  */
 @Named("PluginInitializer")
 public class PluginInitializer implements InitializingBean {
 
 	@Override
-	public void afterPropertiesSet() throws Exception {
-		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
-		Collection<IssueType> listOfIssueTypes = constantsManager.getAllIssueTypeObjects();
-		IssueTypeManager itm = ComponentAccessor.getComponent(IssueTypeManager.class);
-		boolean decisionBool = false;
-		boolean alternativeBool = false;
-		boolean argumentBool = false;
-		boolean assessmentBool = false;
-		boolean assumptionBool = false;
-		boolean claimBool = false;
-		boolean constraintBool = false;
-		boolean contextBool = false;
-		boolean goalBool = false;
-		boolean implicationBool = false;
-		boolean issueBool = false;
-		boolean problemBool = false;
-		boolean solutionBool = false;
-		for (IssueType iType : listOfIssueTypes) {
-			String iTypeName = iType.getName();
-			if (iTypeName.equals("Decision")) {
-				decisionBool = true;
-			} else if (iTypeName.equals("Alternative")) {
-				alternativeBool = true;
-			} else if (iTypeName.equals("Argument")) {
-				argumentBool = true;
-			} else if (iTypeName.equals("Assessment")) {
-				assessmentBool = true;
-			} else if (iTypeName.equals("Assumption")) {
-				assumptionBool = true;
-			} else if (iTypeName.equals("Claim")) {
-				claimBool = true;
-			} else if (iTypeName.equals("Constraint")) {
-				constraintBool = true;
-			} else if (iTypeName.equals("Context")) {
-				contextBool = true;
-			} else if (iTypeName.equals("Goal")) {
-				goalBool = true;
-			} else if (iTypeName.equals("Implication")) {
-				implicationBool = true;
-			} else if (iTypeName.equals("Issue")) {
-				issueBool = true;
-			} else if (iTypeName.equals("Problem")) {
-				problemBool = true;
-			} else if (iTypeName.equals("Solution")) {
-				solutionBool = true;
-			}
+	public void afterPropertiesSet() {
+		createDecisionKnowledgeIssueTypes();
+		createDecisionKnowledgeLinkTypes();
+	}
 
+	public void createDecisionKnowledgeIssueTypes() {
+		List<String> missingDecisionKnowledgeIssueTypeNames = findMissingDecisionKnowledgeIssueTypes();
+		for (String issueTypeName : missingDecisionKnowledgeIssueTypeNames) {
+			createIssueType(issueTypeName);
 		}
-		if (!decisionBool) {
-			itm.createIssueType("Decision", "Entscheidung", (long) 10300);
-		}
-		if (!alternativeBool) {
-			itm.createIssueType("Alternative", "Alternative", (long) 10300);
-		}
-		if (!argumentBool) {
-			itm.createIssueType("Argument", "Argument", (long) 10300);
-		}
-		if (!assessmentBool) {
-			itm.createIssueType("Assessment", "Einschaetzung", (long) 10300);
-		}
-		if (!assumptionBool) {
-			itm.createIssueType("Assumption", "Annahme", (long) 10300);
-		}
-		if (!claimBool) {
-			itm.createIssueType("Claim", "Behauptung", (long) 10300);
-		}
-		if (!constraintBool) {
-			itm.createIssueType("Constraint", "Einschraenkung", (long) 10300);
-		}
-		if (!contextBool) {
-			itm.createIssueType("Context", "Kontext", (long) 10300);
-		}
-		if (!goalBool) {
-			itm.createIssueType("Goal", "Ziel", (long) 10300);
-		}
-		if (!implicationBool) {
-			itm.createIssueType("Implication", "Implikation", (long) 10300);
-		}
-		if (!issueBool) {
-			itm.createIssueType("Issue", "Problem", (long) 10300);
-		}
-		if (!problemBool) {
-			itm.createIssueType("Problem", "Problem", (long) 10300);
-		}
-		if (!solutionBool) {
-			itm.createIssueType("Solution", "Loesung", (long) 10300);
-		}
-		IssueLinkTypeManager iltM = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
-		Collection<IssueLinkType> iltC = iltM.getIssueLinkTypes(true);
-		boolean containExists = false;
-		boolean attackExists = false;
-		boolean supportExists = false;
-		boolean commentExists = false;
-		for (IssueLinkType ilType : iltC) {
-			if (ilType.getName().equals("contain")) {
-				containExists = true;
-			}
-			if (ilType.getName().equals("attack")) {
-				attackExists = true;
-			}
-			if (ilType.getName().equals("support")) {
-				supportExists = true;
-			}
-			if (ilType.getName().equals("comment")) {
-				commentExists = true;
+	}
+
+	public List<String> findMissingDecisionKnowledgeIssueTypes() {
+		List<String> knowledgeTypes = KnowledgeType.toList();
+		for (String issueTypeName : getNamesOfExistingIssueTypes()) {
+			if (knowledgeTypes.contains(issueTypeName)) {
+				knowledgeTypes.remove(issueTypeName);
 			}
 		}
-		if (!containExists) {
-			iltM.createIssueLinkType("contain", "contains", "is contained by", "contain_style");
+		return knowledgeTypes;
+	}
+
+	public List<String> getNamesOfExistingIssueTypes() {
+		List<String> existingIssueTypeNames = new ArrayList<String>();
+		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
+		Collection<IssueType> issueTypes = constantsManager.getAllIssueTypeObjects();
+		for (IssueType issueType : issueTypes) {
+			existingIssueTypeNames.add(issueType.getName());
 		}
-		if (!attackExists) {
-			iltM.createIssueLinkType("attack", "attacks", "is attacked by", "contain_style");
+		return existingIssueTypeNames;
+	}
+
+	public void createIssueType(String issueTypeName) {
+		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
+		issueTypeManager.createIssueType(issueTypeName, issueTypeName, (long) 10300);
+	}
+
+	public void createDecisionKnowledgeLinkTypes() {
+		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
+		List<String> existingIssueLinkTypeNames = getNamesOfExistingIssueLinkTypes();
+
+		if (!existingIssueLinkTypeNames.contains("contain")) {
+			issueLinkTypeManager.createIssueLinkType("contain", "contains", "is contained by", "contain_style");
 		}
-		if (!supportExists) {
-			iltM.createIssueLinkType("support", "supports", "is supported by", "contain_style");
+		if (!existingIssueLinkTypeNames.contains("attack")) {
+			issueLinkTypeManager.createIssueLinkType("attack", "attacks", "is attacked by", "contain_style");
 		}
-		if (!commentExists) {
-			iltM.createIssueLinkType("comment", "comments on", "is commented on by", "contain_style");
+		if (!existingIssueLinkTypeNames.contains("support")) {
+			issueLinkTypeManager.createIssueLinkType("support", "supports", "is supported by", "contain_style");
 		}
+		if (!existingIssueLinkTypeNames.contains("comment")) {
+			issueLinkTypeManager.createIssueLinkType("comment", "comments on", "is commented on by", "contain_style");
+		}
+	}
+	
+	public List<String> getNamesOfExistingIssueLinkTypes() {
+		List<String> existingIssueLinkTypeNames = new ArrayList<String>();
+		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
+		Collection<IssueLinkType> issueLinkTypes = issueLinkTypeManager.getIssueLinkTypes(true);
+		for (IssueLinkType issueLinkType : issueLinkTypes) {
+			existingIssueLinkTypeNames.add(issueLinkType.getName());
+		}
+		return existingIssueLinkTypeNames;
 	}
 }

@@ -7,11 +7,8 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.Link;
+import de.uhd.ifi.se.decision.documentation.jira.model.Link;
 
-/**
- * @author Tim Kuchenbuch
- */
 public class TestCreateLink extends TestIssueStrategySetUp {
 	
 	@Test

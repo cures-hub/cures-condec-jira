@@ -1,8 +1,5 @@
 package de.uhd.ifi.se.decision.documentation.jira.config;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.link.IssueLinkType;
-import de.uhd.ifi.se.decision.documentation.jira.decisionknowledge.KnowledgeType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,7 +15,6 @@ import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.project.ProjectManager;
 
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
-import de.uhd.ifi.se.decision.documentation.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkTypeManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManager;
@@ -27,17 +23,17 @@ import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueTypeManager;
 
 public class TestPluginInitializer extends TestSetUp {
 	
-	private PluginInitializer listener;
+	private PluginInitializer pluginInitializer;
 
 	@Before 
 	public void setUp() {		
-		listener = new PluginInitializer();
+		pluginInitializer = new PluginInitializer();
 	}
 	
 	@Test(expected = java.lang.NullPointerException.class)
 	public void testExecutionAfterProp() throws Exception {
-		initialisation();
-		listener.afterPropertiesSet();
+		initialization();
+		pluginInitializer.afterPropertiesSet();
 	}
 	
 	@Test
@@ -56,7 +52,7 @@ public class TestPluginInitializer extends TestSetUp {
 		.addMock(ProjectManager.class,projectManager)
 		.addMock(ConstantsManager.class,constManager);
 		
-		listener.afterPropertiesSet();
+		pluginInitializer.afterPropertiesSet();
 	}
 
 	@Test
@@ -91,7 +87,7 @@ public class TestPluginInitializer extends TestSetUp {
 		constManager.insertIssueType("Solution", (long) 20, "Test", "Test", (long) 12290);
 
 
-		listener.afterPropertiesSet();
+		pluginInitializer.afterPropertiesSet();
 	}
 	
 }
