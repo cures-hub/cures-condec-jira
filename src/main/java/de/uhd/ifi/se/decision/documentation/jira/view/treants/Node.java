@@ -33,7 +33,7 @@ public class Node {
 
 	public Node() {
 	}
-	
+
 	public Node(IDecisionKnowledgeElement decisionKnowledgeElement) {
 		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getType().toString(),
 				"title", decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
