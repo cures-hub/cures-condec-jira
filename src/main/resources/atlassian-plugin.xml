@@ -139,10 +139,10 @@
 			object relational mapping.
 		</description>
 		<entity>
-			de.uhd.ifi.se.decision.documentation.jira.persistence.IDecisionKnowledgeElementEntity
+			de.uhd.ifi.se.decision.documentation.jira.persistence.DecisionKnowledgeElementEntity
 		</entity>
 		<entity>
-			de.uhd.ifi.se.decision.documentation.jira.persistence.ILinkEntity
+			de.uhd.ifi.se.decision.documentation.jira.persistence.LinkEntity
 		</entity>
 	</ao>
 </atlassian-plugin>

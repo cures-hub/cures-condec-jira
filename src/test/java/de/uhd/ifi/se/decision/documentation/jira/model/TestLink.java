@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.Link;
+import de.uhd.ifi.se.decision.documentation.jira.model.LinkImpl;
 
 /**
  *
@@ -16,14 +16,14 @@ public class TestLink {
 	private String linkType;
 	private long ingoingId;
 	private long outgoingId;
-	private Link link;
+	private LinkImpl link;
 	
 	@Before
 	public void setUp() {
 		this.linkType="Test";
 		this.ingoingId=(long)100;
 		this.outgoingId=(long)100;
-		this.link =new Link();
+		this.link =new LinkImpl();
 		this.link.setLinkType(linkType);
 		this.link.setIngoingId(ingoingId);
 		this.link.setOutgoingId(outgoingId);

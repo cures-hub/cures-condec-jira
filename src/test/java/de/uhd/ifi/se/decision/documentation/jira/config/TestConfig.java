@@ -11,7 +11,7 @@ import org.junit.Test;
  */
 public class TestConfig {
 
-	private JiraProject jiraProject;
+	private DecisionKnowledgeProjectImpl jiraProject;
 	private String projectKey;
 	private String projectName;
 	private boolean isActivated;
@@ -23,7 +23,7 @@ public class TestConfig {
 		this.projectName = "TestName";
 		this.isActivated = true;
 		this.isIssueStrategy = true;
-		this.jiraProject = new JiraProject(projectKey, projectName);
+		this.jiraProject = new DecisionKnowledgeProjectImpl(projectKey, projectName);
 	}
 
 	@Test

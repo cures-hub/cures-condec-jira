@@ -4,7 +4,7 @@ package de.uhd.ifi.se.decision.documentation.jira.persistence.ActiveObjectStrate
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
@@ -25,14 +25,14 @@ public class TestCreateDecisionComponentTest extends ActiveObjectStrategyTestSet
 
     @Test
     public void testRepresFilledUserNull(){
-        DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
+        DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
         assertNull(aoStrategy.insertDecisionKnowledgeElement(dec,null));
     }
 
     //TODO Fixing the Test Problems (Closed Connection)
     @Ignore
     public void testRepresFilledUserNoFails(){
-        DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
+        DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
         dec.setProjectKey("TEST");
         dec.setType(KnowledgeType.SOLUTION);
         ApplicationUser user = new MockApplicationUser("NoFails");
@@ -42,7 +42,7 @@ public class TestCreateDecisionComponentTest extends ActiveObjectStrategyTestSet
     //TODO Fixing the Test Problems (Closed Connection)
     @Ignore
     public void testRepresFilledUserWithFails(){
-        DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
+        DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
         dec.setProjectKey("TEST");
         dec.setType(KnowledgeType.SOLUTION);
         ApplicationUser user = new MockApplicationUser("WithFails");

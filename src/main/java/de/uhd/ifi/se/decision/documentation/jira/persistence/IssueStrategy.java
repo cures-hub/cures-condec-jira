@@ -29,10 +29,11 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ErrorCollection;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.model.IDecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.documentation.jira.model.Link;
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.documentation.jira.model.LinkImpl;
 
 /**
  * @description Extends the abstract class PersistenceStrategy. Uses JIRA
@@ -43,7 +44,7 @@ public class IssueStrategy extends PersistenceStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IssueStrategy.class);
 
 	@Override
-	public IDecisionKnowledgeElement insertDecisionKnowledgeElement(IDecisionKnowledgeElement decisionElement,
+	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement,
 			ApplicationUser user) {
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
 
@@ -74,7 +75,7 @@ public class IssueStrategy extends PersistenceStrategy {
 	}
 
 	@Override
-	public boolean updateDecisionKnowledgeElement(IDecisionKnowledgeElement decisionElement, ApplicationUser user) {
+	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
 		IssueService issueService = ComponentAccessor.getIssueService();
 
 		IssueResult issueResult = issueService.getIssue(user, decisionElement.getId());
@@ -98,7 +99,7 @@ public class IssueStrategy extends PersistenceStrategy {
 	}
 
 	@Override
-	public boolean deleteDecisionKnowledgeElement(IDecisionKnowledgeElement decisionElement, ApplicationUser user) {
+	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
 		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueService.IssueResult issue = issueService.getIssue(user, decisionElement.getId());
 		if (issue.isValid()) {
@@ -119,7 +120,7 @@ public class IssueStrategy extends PersistenceStrategy {
 	}
 
 	@Override
-	public List<IDecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey) {
+	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey) {
 		if (projectKey == null) {
 			return null;
 		}
@@ -131,43 +132,43 @@ public class IssueStrategy extends PersistenceStrategy {
 		} catch (GenericEntityException e) {
 			issueIds = new ArrayList<Long>();
 		}
-		List<IDecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<IDecisionKnowledgeElement>();
+		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
 		for (Long issueId : issueIds) {
 			Issue issue = issueManager.getIssueObject(issueId);
 
 			KnowledgeType type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
 			if (type != KnowledgeType.OTHER) {
-				decisionKnowledgeElements.add(new DecisionKnowledgeElement(issue));
+				decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(issue));
 			}
 		}
 		return decisionKnowledgeElements;
 	}
 
 	@Override
-	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
+	public DecisionKnowledgeElementImpl getDecisionKnowledgeElement(String key) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue issue = issueManager.getIssueByCurrentKey(key);
-		return new DecisionKnowledgeElement(issue);
+		return new DecisionKnowledgeElementImpl(issue);
 	}
 
 	@Override
-	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id) {
+	public DecisionKnowledgeElementImpl getDecisionKnowledgeElement(long id) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue issue = issueManager.getIssueObject(id);
-		return new DecisionKnowledgeElement(issue);
+		return new DecisionKnowledgeElementImpl(issue);
 	}
 
 	@Override
-	public List<IDecisionKnowledgeElement> getChildren(IDecisionKnowledgeElement decisionKnowledgeElement) {
+	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<IssueLink> outwardIssueLinks = ComponentAccessor.getIssueLinkManager()
 				.getOutwardLinks(decisionKnowledgeElement.getId());
-		List<IDecisionKnowledgeElement> children = new ArrayList<IDecisionKnowledgeElement>();
+		List<DecisionKnowledgeElement> children = new ArrayList<DecisionKnowledgeElement>();
 
 		if(decisionKnowledgeElement.getType() != KnowledgeType.ARGUMENT) {
 			for (IssueLink issueLink : outwardIssueLinks) {
 				Issue outwardIssue = issueLink.getDestinationObject();
 				if (outwardIssue != null) {
-					DecisionKnowledgeElement outwardElement = new DecisionKnowledgeElement(outwardIssue);
+					DecisionKnowledgeElementImpl outwardElement = new DecisionKnowledgeElementImpl(outwardIssue);
 					if (outwardElement.getType() != KnowledgeType.ARGUMENT) {
 						children.add(outwardElement);
 					}
@@ -180,9 +181,9 @@ public class IssueStrategy extends PersistenceStrategy {
         for (IssueLink issueLink : inwardIssueLinks) {
             Issue inwardIssue = issueLink.getSourceObject();
             if (inwardIssue != null) {
-                DecisionKnowledgeElement inwardElement = new DecisionKnowledgeElement(inwardIssue);
+                DecisionKnowledgeElementImpl inwardElement = new DecisionKnowledgeElementImpl(inwardIssue);
                 if(inwardElement.getType() == KnowledgeType.ARGUMENT) {
-                    children.add(new DecisionKnowledgeElement(inwardIssue));
+                    children.add(new DecisionKnowledgeElementImpl(inwardIssue));
                 }
             }
         }
@@ -191,14 +192,14 @@ public class IssueStrategy extends PersistenceStrategy {
 	}
 
 	@Override
-	public List<IDecisionKnowledgeElement> getParents(IDecisionKnowledgeElement decisionKnowledgeElement) {
+	public List<DecisionKnowledgeElement> getParents(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<IssueLink> inwardIssueLinks = ComponentAccessor.getIssueLinkManager()
 				.getInwardLinks(decisionKnowledgeElement.getId());
-		List<IDecisionKnowledgeElement> parents = new ArrayList<IDecisionKnowledgeElement>();
+		List<DecisionKnowledgeElement> parents = new ArrayList<DecisionKnowledgeElement>();
 		for (IssueLink issueLink : inwardIssueLinks) {
 			Issue inwardIssue = issueLink.getDestinationObject();
 			if (inwardIssue != null) {
-				parents.add(new DecisionKnowledgeElement(inwardIssue));
+				parents.add(new DecisionKnowledgeElementImpl(inwardIssue));
 			}
 		}
 		return parents;
@@ -273,23 +274,23 @@ public class IssueStrategy extends PersistenceStrategy {
 	}
 	
 	@Override
-	public List<Link> getInwardLinks(IDecisionKnowledgeElement decisionKnowledgeElement) {
+	public List<Link> getInwardLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<IssueLink> inwardIssueLinks = ComponentAccessor.getIssueLinkManager()
 				.getInwardLinks(decisionKnowledgeElement.getId());
 		List<Link> inwardLinks = new ArrayList<Link>();
 		for(IssueLink inwardIssueLink : inwardIssueLinks) {
-			inwardLinks.add(new Link(inwardIssueLink));
+			inwardLinks.add(new LinkImpl(inwardIssueLink));
 		}
 		return inwardLinks;
 	}
 
 	@Override
-	public List<Link> getOutwardLinks(IDecisionKnowledgeElement decisionKnowledgeElement) {
+	public List<Link> getOutwardLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<IssueLink> outwardIssueLinks = ComponentAccessor.getIssueLinkManager()
 				.getInwardLinks(decisionKnowledgeElement.getId());
 		List<Link> outwardLinks = new ArrayList<Link>();
 		for(IssueLink inwardIssueLink : outwardIssueLinks) {
-			outwardLinks.add(new Link(inwardIssueLink));
+			outwardLinks.add(new LinkImpl(inwardIssueLink));
 		}
 		return outwardLinks;
 	}
