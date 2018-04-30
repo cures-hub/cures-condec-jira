@@ -186,9 +186,9 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
+	public List<IDecisionKnowledgeElement> getChildren(IDecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Link> inwardLinks = this.getInwardLinks(decisionKnowledgeElement);
-		List<DecisionKnowledgeElement> children = new ArrayList<>();
+		List<IDecisionKnowledgeElement> children = new ArrayList<>();
 		for (Link inwardLink : inwardLinks) {
 			children.add(castToDecisionKnowledgeElement(
 					activeObjects.executeInTransaction(new TransactionCallback<IDecisionKnowledgeElementEntity>() {
@@ -316,9 +316,9 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 	}
 
 	@Override
-	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
+	public List<Link> getInwardLinks(IDecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Link> inwardLinks = new ArrayList<>();
-		ILinkEntity[] links = activeObjects.find(ILinkEntity.class, Query.select().where("OUTGOING_ID = ?", element.getId()));
+		ILinkEntity[] links = activeObjects.find(ILinkEntity.class, Query.select().where("OUTGOING_ID = ?", decisionKnowledgeElement.getId()));
 		for (ILinkEntity link : links) {
 			Link inwardLink = new Link(link);
 			inwardLinks.add(inwardLink);
@@ -327,9 +327,9 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 	}
 
 	@Override
-	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
+	public List<Link> getOutwardLinks(IDecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Link> outwardLinks = new ArrayList<>();
-		ILinkEntity[] links = activeObjects.find(ILinkEntity.class, Query.select().where("INGOING_ID = ?", element.getId()));
+		ILinkEntity[] links = activeObjects.find(ILinkEntity.class, Query.select().where("INGOING_ID = ?", decisionKnowledgeElement.getId()));
 		for (ILinkEntity link : links) {
 			Link outwardLink = new Link(link);
 			outwardLinks.add(outwardLink);

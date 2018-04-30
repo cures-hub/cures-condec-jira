@@ -9,7 +9,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Core;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.TreeViewer;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 
 public class TestCore {
@@ -18,7 +18,7 @@ public class TestCore {
 	private boolean checkCallback;
 	private Map<String, Boolean> themes;
 	private HashSet<Data> data;
-	private Core  core;
+	private TreeViewer  core;
 
 
 	@Before
@@ -29,7 +29,7 @@ public class TestCore {
 		themes.put("Test", false);
 		data = new HashSet<>();
 		data.add(new Data());
-		core = new Core();
+		core = new TreeViewer();
 		core.setMultiple(multiple);
 		core.setCheckCallback(checkCallback);
 		core.setThemes(themes);

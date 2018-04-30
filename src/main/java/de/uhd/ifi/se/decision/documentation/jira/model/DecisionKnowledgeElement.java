@@ -1,8 +1,13 @@
 package de.uhd.ifi.se.decision.documentation.jira.model;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlElement;
 import org.codehaus.jackson.annotate.JsonProperty;
 import com.atlassian.jira.issue.Issue;
+
+import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
 /**
  * @description Model class for decision knowledge elements
@@ -105,5 +110,11 @@ public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
 
 	public KnowledgeType getSuperType() {
 		return this.type.getSuperType();
+	}
+
+	public List<IDecisionKnowledgeElement> getChildren() {
+		StrategyProvider strategyProvider = new StrategyProvider();
+		PersistenceStrategy strategy = strategyProvider.getStrategy(this.getProjectKey());
+		return strategy.getChildren(this);
 	}
 }

@@ -1,35 +1,35 @@
 package de.uhd.ifi.se.decision.documentation.jira.rest;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.IDecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Chart;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Treant;
 
-import org.ofbiz.core.entity.GenericEntityException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 /**
  * @description REST resource for Treants
  */
-@Path("/treant")
+@Path("")
 public class TreantRest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TreeViewerRest.class);
 	private PersistenceStrategy strategy;
@@ -46,11 +46,11 @@ public class TreantRest {
 		return treant;
 	}
 
+	@Path("/getTreant")
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public Response getMessage(@QueryParam("projectKey") final String projectKey,
-			@QueryParam("elementKey") String decisionKnowledgeElementKey, @QueryParam("depthOfTree") String depthOfTree)
-			throws GenericEntityException {
+	public Response getTreant(@QueryParam("projectKey") final String projectKey,
+			@QueryParam("elementKey") String decisionKnowledgeElementKey,
+			@QueryParam("depthOfTree") String depthOfTree) {
 		if (projectKey != null) {
 			ProjectManager projectManager = ComponentAccessor.getProjectManager();
 			Project project = projectManager.getProjectObjByKey(projectKey);
@@ -86,9 +86,9 @@ public class TreantRest {
 		Node node = setUpNode(decisionKnowledgeElement);
 		List<Node> nodes = new ArrayList<Node>();
 
-		List<DecisionKnowledgeElement> children = strategy.getChildren(decisionKnowledgeElement);
+		List<IDecisionKnowledgeElement> children = strategy.getChildren(decisionKnowledgeElement);
 		if (children != null && children.size() > 0) {
-			for (DecisionKnowledgeElement child : children) {
+			for (IDecisionKnowledgeElement child : children) {
 				if (child != null) {
 					nodes.add(createNode(child, depth, 0));
 				}
@@ -98,12 +98,12 @@ public class TreantRest {
 		return node;
 	}
 
-	private Node createNode(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
+	private Node createNode(IDecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
 		Node node = setUpNode(decisionKnowledgeElement);
 
 		if (currentDepth + 1 < depth) {
 			List<Node> nodes = new ArrayList<Node>();
-			List<DecisionKnowledgeElement> children = strategy.getChildren(decisionKnowledgeElement);
+			List<IDecisionKnowledgeElement> children = strategy.getChildren(decisionKnowledgeElement);
 
 			for (int index = 0; index < children.size(); ++index) {
 				nodes.add(createNode(children.get(index), depth, currentDepth + 1));
@@ -113,11 +113,10 @@ public class TreantRest {
 		return node;
 	}
 
-	private Node setUpNode(DecisionKnowledgeElement decisionKnowledgeElement) {
+	private Node setUpNode(IDecisionKnowledgeElement decisionKnowledgeElement) {
 		Node node = new Node();
-		Map<String, String> nodeContent = ImmutableMap.of("name",
-				decisionKnowledgeElement.getType().toString(), "title",
-				decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
+		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getType().toString(),
+				"title", decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 		node.setNodeContent(nodeContent);
 
 		String htmlClass = decisionKnowledgeElement.getSuperType().toString().toLowerCase();

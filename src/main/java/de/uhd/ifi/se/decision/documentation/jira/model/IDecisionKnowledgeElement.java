@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.documentation.jira.model;
 
+import java.util.List;
+
 /**
  * @description Interface for decision knowledge elements
  */
@@ -23,6 +25,8 @@ public interface IDecisionKnowledgeElement {
 
 	public void setType(String type);
 
+	public KnowledgeType getSuperType();
+
 	public String getProjectKey();
 
 	public void setProjectKey(String projectKey);
@@ -33,4 +37,6 @@ public interface IDecisionKnowledgeElement {
 	public String getKey();
 
 	public void setKey(String key);
+
+	public List<IDecisionKnowledgeElement> getChildren();
 }

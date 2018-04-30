@@ -194,7 +194,7 @@ function deleteLink(parentId, childId, linkType, callback) {
 }
 
 function getTreant(key, depthOfTree, callback) {
-	getJSON(AJS.contextPath() + "/rest/treantsrest/latest/treant.json?projectKey=" + getProjectKey() + "&elementKey="
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/getTreant.json?projectKey=" + getProjectKey() + "&elementKey="
 			+ key + "&depthOfTree=" + depthOfTree, function(error, treant) {
 		if (error == null) {
 			callback(treant);
@@ -205,7 +205,7 @@ function getTreant(key, depthOfTree, callback) {
 }
 
 function getTreeViewer(callback) {
-	getJSON(AJS.contextPath() + "/rest/treeviewerrest/latest/treeviewer.json?projectKey=" + getProjectKey(), function(
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/treeviewer/getTreeViewer.json?projectKey=" + getProjectKey(), function(
 			error, core) {
 		if (error == null) {
 			callback(core)
