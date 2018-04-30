@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
+import de.uhd.ifi.se.decision.documentation.jira.view.treant.Node;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 
 public class TestData {

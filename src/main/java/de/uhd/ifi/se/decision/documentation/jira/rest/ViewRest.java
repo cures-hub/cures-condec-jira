@@ -16,7 +16,7 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Treant;
+import de.uhd.ifi.se.decision.documentation.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.TreeViewer;
 
 /**

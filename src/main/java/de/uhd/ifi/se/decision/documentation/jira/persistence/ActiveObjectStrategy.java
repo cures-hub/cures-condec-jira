@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +20,7 @@ import net.java.ao.Query;
  * @description Extends the abstract class PersistenceStrategy. Uses the active
  *              object framework to store decision knowledge.
  */
+@JsonAutoDetect
 public class ActiveObjectStrategy extends PersistenceStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectStrategy.class);
 	private static final ActiveObjects activeObjects = ComponentGetter.getActiveObjects();
@@ -143,9 +145,9 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 	}
 
 	@Override
-	public DecisionKnowledgeElementImpl getDecisionKnowledgeElement(String key) {
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
 		// Split key into project key and id
-		DecisionKnowledgeElementImpl decisionKnowledgeElement = null;
+		DecisionKnowledgeElement decisionKnowledgeElement = null;
 		String idAsString = null;
 		try {
 			idAsString = key.split("-")[1];
@@ -164,7 +166,7 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 	}
 
 	@Override
-	public DecisionKnowledgeElementImpl getDecisionKnowledgeElement(long id) {
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id) {
 		DecisionKnowledgeElementEntity decisionKnowledgeElement = activeObjects
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementEntity>() {
 					@Override
@@ -201,7 +203,7 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 							if (entityList.length == 1) {
 								return entityList[0];
 							}
-							LOGGER.error("Inward LinkImpl has no Element to return");
+							LOGGER.error("Inward Link has no Element to return");
 							return null;
 						}
 					})));
@@ -224,7 +226,7 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 							if (entityList.length == 1) {
 								return entityList[0];
 							}
-							LOGGER.error("Outward LinkImpl has no Element to return");
+							LOGGER.error("Outward Link has no Element to return");
 							return null;
 						}
 					})));
@@ -285,7 +287,7 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 						return (long) 0;
 					}
 				} else {
-					LOGGER.error("LinkImpl already exists");
+					LOGGER.error("Link already exists");
 					return linkId;
 				}
 				return linkId;
@@ -322,7 +324,7 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 		LinkEntity[] links = activeObjects.find(LinkEntity.class,
 				Query.select().where("OUTGOING_ID = ?", decisionKnowledgeElement.getId()));
 		for (LinkEntity link : links) {
-			LinkImpl inwardLink = new LinkImpl(link);
+			Link inwardLink = new LinkImpl(link);
 			inwardLinks.add(inwardLink);
 		}
 		return inwardLinks;
@@ -334,7 +336,7 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 		LinkEntity[] links = activeObjects.find(LinkEntity.class,
 				Query.select().where("INGOING_ID = ?", decisionKnowledgeElement.getId()));
 		for (LinkEntity link : links) {
-			LinkImpl outwardLink = new LinkImpl(link);
+			Link outwardLink = new LinkImpl(link);
 			outwardLinks.add(outwardLink);
 		}
 		return outwardLinks;

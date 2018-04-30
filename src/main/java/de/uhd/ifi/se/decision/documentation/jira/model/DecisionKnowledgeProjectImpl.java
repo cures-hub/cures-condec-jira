@@ -1,10 +1,9 @@
-package de.uhd.ifi.se.decision.documentation.jira.config;
+package de.uhd.ifi.se.decision.documentation.jira.model;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.ConfigPersistence;
 
 /**
- * @description Class for a JIRA project and its configuration
+ * @description Model class for a project and its configuration
  */
 public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 

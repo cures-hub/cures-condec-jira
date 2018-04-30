@@ -5,9 +5,9 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Chart;
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Node;
-import de.uhd.ifi.se.decision.documentation.jira.view.treants.Treant;
+import de.uhd.ifi.se.decision.documentation.jira.view.treant.Chart;
+import de.uhd.ifi.se.decision.documentation.jira.view.treant.Node;
+import de.uhd.ifi.se.decision.documentation.jira.view.treant.Treant;
 
 public class TestTreant {
 
