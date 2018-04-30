@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.ofbiz.core.entity.GenericEntityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,7 @@ import de.uhd.ifi.se.decision.documentation.jira.model.Link;
  * @description Extends the abstract class PersistenceStrategy. Uses JIRA
  *              issues to store decision knowledge.
  */
+@JsonAutoDetect
 public class IssueStrategy extends PersistenceStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IssueStrategy.class);
 

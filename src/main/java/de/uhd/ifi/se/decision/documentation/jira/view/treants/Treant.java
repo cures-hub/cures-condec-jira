@@ -1,6 +1,21 @@
 package de.uhd.ifi.se.decision.documentation.jira.view.treants;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import javax.xml.bind.annotation.*;
+
+import org.codehaus.jackson.annotate.JsonAutoDetect;
+import org.codehaus.jackson.annotate.JsonProperty;
+
+import com.google.common.collect.ImmutableMap;
+
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.IDecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
 /**
  * @description Model class for Treant
@@ -8,13 +23,39 @@ import javax.xml.bind.annotation.*;
 @XmlRootElement(name = "treant")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Treant {
+
 	@XmlElement
 	private Chart chart;
 
 	@XmlElement(name = "nodeStructure")
 	private Node nodeStructure;
 
+	private PersistenceStrategy strategy;
+
 	public Treant() {
+	}
+
+	public Treant(String projectKey, String elementKey, int depth) {
+		StrategyProvider strategyProvider = new StrategyProvider();
+		strategy = strategyProvider.getStrategy(projectKey);
+		DecisionKnowledgeElement decisionKnowledgeElement = strategy.getDecisionKnowledgeElement(elementKey);
+		this.setChart(new Chart());
+		this.setNodeStructure(createNodeStructure(decisionKnowledgeElement, depth, 0));
+	}
+
+	private Node createNodeStructure(IDecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
+		Node node = new Node(decisionKnowledgeElement);
+
+		if (currentDepth + 1 < depth) {
+			List<Node> nodes = new ArrayList<Node>();
+			List<IDecisionKnowledgeElement> children = strategy.getChildren(decisionKnowledgeElement);
+
+			for (IDecisionKnowledgeElement child : children) {
+				nodes.add(createNodeStructure(child, depth, currentDepth + 1));
+			}
+			node.setChildren(nodes);
+		}
+		return node;
 	}
 
 	public Chart getChart() {
