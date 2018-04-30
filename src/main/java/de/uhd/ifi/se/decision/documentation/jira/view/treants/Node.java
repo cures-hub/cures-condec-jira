@@ -5,6 +5,10 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import com.google.common.collect.ImmutableMap;
+
+import de.uhd.ifi.se.decision.documentation.jira.model.IDecisionKnowledgeElement;
+
 /**
  * @description Model class for Treant node
  */
@@ -28,6 +32,14 @@ public class Node {
 	private List<Node> children;
 
 	public Node() {
+	}
+
+	public Node(IDecisionKnowledgeElement decisionKnowledgeElement) {
+		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getType().toString(),
+				"title", decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
+		this.setNodeContent(nodeContent);
+		this.setHtmlClass(decisionKnowledgeElement.getSuperType().toString().toLowerCase());
+		this.setHtmlId(decisionKnowledgeElement.getId());
 	}
 
 	public Map<String, String> getNodeContent() {
