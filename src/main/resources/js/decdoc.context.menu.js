@@ -18,8 +18,6 @@ var contextMenuCreateAction = {
 }
 
 function getSelectedTreeViewerNodeId(node) {
-	// TODO deprecated after Updating to 3.3.1 jquery
-	// treeNode.id cannot read property 'id'
 	var selector = node.reference.prevObject.selector;
 	nodeData = $("#evts").jstree(true).get_node(selector).data;
 	return nodeData.id;
