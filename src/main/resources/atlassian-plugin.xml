@@ -82,14 +82,8 @@
 			Provides REST resources to manage decision knowledge.
 		</description>
 	</rest>
-	<rest key="treant-rest" name="Treant REST" path="/decisions" version="1.0">
-		<description>
-			Provides REST resources to build the Treant graph when selecting a single decision
-			knowledge element.
-		</description>
-	</rest>
-	<rest key="tree-viewer-rest" name="Tree Viewer REST" path="/decisions" version="1.0">
-		<description>Provides REST resources to build the tree viewer (list of decision knowledge
+	<rest key="view-rest" name="View REST" path="/decisions" version="1.0">
+		<description>Provides REST resources to build the treant and tree viewer (list of decision knowledge
 			elements).
 		</description>
 	</rest>

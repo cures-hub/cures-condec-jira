@@ -17,30 +17,38 @@ import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.view.treants.Treant;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.TreeViewer;
 
 /**
- * @description REST resource for Treant
+ * @description REST resource for view
  */
-@Path("")
-public class TreantRest {
-	private static final Logger LOGGER = LoggerFactory.getLogger(TreeViewerRest.class);
+@Path("/view")
+public class ViewRest {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ViewRest.class);
+
+	@Path("/getTreeViewer")
+	@GET
+	public Response getTreeViewer(@QueryParam("projectKey") String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		TreeViewer treeViewer = new TreeViewer(projectKey);
+		return Response.ok(treeViewer).build();
+	}
 
 	@Path("/getTreant")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getTreant(@QueryParam("projectKey") final String projectKey,
 			@QueryParam("elementKey") String elementKey, @QueryParam("depthOfTree") String depthOfTree) {
-		if (projectKey == null) {
-			return projectKeyIsInvalid();
-		}
-		ProjectManager projectManager = ComponentAccessor.getProjectManager();
-		Project project = projectManager.getProjectObjByKey(projectKey);
-		if (project == null) {
-			return projectKeyIsInvalid();
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
 		}
 		if (elementKey == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Treant can not be shown since element key is invalid.")).build();
+					.entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build();
 		}
 		int depth = 4; // default value
 		try {
@@ -52,9 +60,21 @@ public class TreantRest {
 		return Response.ok(treant).build();
 	}
 
+	private Response checkIfProjectKeyIsValid(String projectKey) {
+		if (projectKey == null) {
+			return projectKeyIsInvalid();
+		}
+		ProjectManager projectManager = ComponentAccessor.getProjectManager();
+		Project project = projectManager.getProjectObjByKey(projectKey);
+		if (project == null) {
+			return projectKeyIsInvalid();
+		}
+		return Response.status(Status.OK).build();
+	}
+
 	private Response projectKeyIsInvalid() {
-		LOGGER.error("Treant can not be shown since project key is invalid.");
+		LOGGER.error("Decision knowledge elements cannot be shown since project key is invalid.");
 		return Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "Treant can not be shown since project key is invalid.")).build();
+				.entity(ImmutableMap.of("error", "Decision knowledge elements cannot be shown since project key is invalid.")).build();
 	}
 }
