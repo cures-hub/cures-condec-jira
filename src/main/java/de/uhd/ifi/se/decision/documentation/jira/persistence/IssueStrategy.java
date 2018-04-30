@@ -160,12 +160,31 @@ public class IssueStrategy extends PersistenceStrategy {
 		List<IssueLink> outwardIssueLinks = ComponentAccessor.getIssueLinkManager()
 				.getOutwardLinks(decisionKnowledgeElement.getId());
 		List<IDecisionKnowledgeElement> children = new ArrayList<IDecisionKnowledgeElement>();
-		for (IssueLink issueLink : outwardIssueLinks) {
-			Issue outwardIssue = issueLink.getDestinationObject();
-			if (outwardIssue != null) {
-				children.add(new DecisionKnowledgeElement(outwardIssue));
+
+		if(decisionKnowledgeElement.getType() != KnowledgeType.ARGUMENT) {
+			for (IssueLink issueLink : outwardIssueLinks) {
+				Issue outwardIssue = issueLink.getDestinationObject();
+				if (outwardIssue != null) {
+					DecisionKnowledgeElement outwardElement = new DecisionKnowledgeElement(outwardIssue);
+					if (outwardElement.getType() != KnowledgeType.ARGUMENT) {
+						children.add(outwardElement);
+					}
+				}
 			}
 		}
+
+        List<IssueLink> inwardIssueLinks = ComponentAccessor.getIssueLinkManager()
+                .getInwardLinks(decisionKnowledgeElement.getId());
+        for (IssueLink issueLink : inwardIssueLinks) {
+            Issue inwardIssue = issueLink.getSourceObject();
+            if (inwardIssue != null) {
+                DecisionKnowledgeElement inwardElement = new DecisionKnowledgeElement(inwardIssue);
+                if(inwardElement.getType() == KnowledgeType.ARGUMENT) {
+                    children.add(new DecisionKnowledgeElement(inwardIssue));
+                }
+            }
+        }
+
 		return children;
 	}
 
