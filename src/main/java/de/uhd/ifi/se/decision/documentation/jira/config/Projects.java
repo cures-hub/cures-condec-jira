@@ -9,6 +9,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeProjectImpl;
 
 public class Projects {
 

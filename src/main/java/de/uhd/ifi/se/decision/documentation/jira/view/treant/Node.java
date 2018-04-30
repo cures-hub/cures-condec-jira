@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.view.treants;
+package de.uhd.ifi.se.decision.documentation.jira.view.treant;
 
 import java.util.List;
 import java.util.Map;
