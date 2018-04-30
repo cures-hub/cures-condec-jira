@@ -22,30 +22,32 @@ import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.documentation.jira.rest.TreeViewerRest;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestTreeViewerRest extends TestSetUp {
 	private EntityManager entityManager;
-	private TreeViewerRest treeview;
+	private ViewRest treeview;
+	
+	private static final String INVALID_PROJECTKEY = "Decision knowledge elements cannot be shown since project key is invalid.";
+
 	
 	@Before
 	public void setUp() {
-		treeview= new TreeViewerRest();
+		treeview= new ViewRest();
 		initialization();
 		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
 	}
 	
 	@Test
 	public void testProjectKeyNull() throws GenericEntityException {
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Tree Viewer can not be shown since project key is invalid.")).build().getEntity(), treeview.getTreeViewer(null).getEntity());
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", INVALID_PROJECTKEY)).build().getEntity(), treeview.getTreeViewer(null).getEntity());
 	}
 	
 	@Test
 	public void testProjectKeyDontExist() throws GenericEntityException {
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Tree Viewer can not be shown since project key is invalid.")).build().getEntity(), treeview.getTreeViewer("NotTEST").getEntity());
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", INVALID_PROJECTKEY)).build().getEntity(), treeview.getTreeViewer("NotTEST").getEntity());
 	}
 
 

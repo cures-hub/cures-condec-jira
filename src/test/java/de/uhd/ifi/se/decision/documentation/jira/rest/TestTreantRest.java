@@ -8,23 +8,14 @@ import javax.ws.rs.core.Response.Status;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.ofbiz.core.entity.GenericEntityException;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
-import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLink;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.documentation.jira.model.LinkImpl;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
-import de.uhd.ifi.se.decision.documentation.jira.rest.TreantRest;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
@@ -32,11 +23,13 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 public class TestTreantRest extends TestSetUp {
 	private EntityManager entityManager;
 
-	private TreantRest treantRest;
+	private ViewRest treantRest;
+	
+	private static final String INVALID_PROJECTKEY = "Decision knowledge elements cannot be shown since project key is invalid.";
 
 	@Before
 	public void setUp() {
-		treantRest = new TreantRest();
+		treantRest = new ViewRest();
 		initialization();
 		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockDefaultUserManager());
@@ -45,7 +38,7 @@ public class TestTreantRest extends TestSetUp {
 	@Test
 	public void testProjectNullIssueKeyNullDepthNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "Treant can not be shown since project key is invalid.")).build()
+				.entity(ImmutableMap.of("error", INVALID_PROJECTKEY)).build()
 				.getEntity(), treantRest.getTreant(null, null, null).getEntity());
 	}
 	//
