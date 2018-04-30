@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.util;
+package de.uhd.ifi.se.decision.documentation.jira;
 
 import org.junit.Before;
 import org.junit.Test;
