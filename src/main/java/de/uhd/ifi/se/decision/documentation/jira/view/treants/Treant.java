@@ -1,16 +1,12 @@
 package de.uhd.ifi.se.decision.documentation.jira.view.treants;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import javax.xml.bind.annotation.*;
-
-import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonProperty;
-
-import com.google.common.collect.ImmutableMap;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.IDecisionKnowledgeElement;
@@ -38,7 +34,7 @@ public class Treant {
 	public Treant(String projectKey, String elementKey, int depth) {
 		StrategyProvider strategyProvider = new StrategyProvider();
 		strategy = strategyProvider.getStrategy(projectKey);
-		DecisionKnowledgeElement decisionKnowledgeElement = strategy.getDecisionKnowledgeElement(elementKey);
+		IDecisionKnowledgeElement decisionKnowledgeElement = strategy.getDecisionKnowledgeElement(elementKey);
 		this.setChart(new Chart());
 		this.setNodeStructure(createNodeStructure(decisionKnowledgeElement, depth, 0));
 	}

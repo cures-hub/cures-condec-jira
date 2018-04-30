@@ -2,11 +2,14 @@ package de.uhd.ifi.se.decision.documentation.jira.model;
 
 import java.util.List;
 
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+
 /**
  * @description Interface for decision knowledge elements
  */
-public interface IDecisionKnowledgeElement {
-	
+@JsonDeserialize(as = DecisionKnowledgeElement.class)
+public interface IDecisionKnowledgeElement {	
+
 	public long getId();
 
 	public void setId(long id);
@@ -22,7 +25,7 @@ public interface IDecisionKnowledgeElement {
 	public KnowledgeType getType();
 
 	public void setType(KnowledgeType type);
-	
+
 	public void setType(String type);
 	
 	public KnowledgeType getSuperType();
