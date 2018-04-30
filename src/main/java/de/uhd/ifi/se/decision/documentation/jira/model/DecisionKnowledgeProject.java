@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.documentation.jira.model;
 /**
  * @description Interface for a project and its configuration
  */
-public interface IProject {
+public interface DecisionKnowledgeProject {
 	public String getProjectKey();
 
 	public void setProjectKey(String projectKey);

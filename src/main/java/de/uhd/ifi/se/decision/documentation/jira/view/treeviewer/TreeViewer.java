@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.IDecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
@@ -42,10 +42,10 @@ public class TreeViewer {
 
 		StrategyProvider strategyProvider = new StrategyProvider();
 		strategy = strategyProvider.getStrategy(projectKey);
-		List<IDecisionKnowledgeElement> decisions = strategy.getDecisions(projectKey);
+		List<DecisionKnowledgeElement> decisions = strategy.getDecisions(projectKey);
 
 		HashSet<Data> dataSet = new HashSet<Data>();
-		for (IDecisionKnowledgeElement decision : decisions) {
+		for (DecisionKnowledgeElement decision : decisions) {
 			dataSet.add(new Data(decision));
 		}
 		this.makeEachIdUnique(dataSet);

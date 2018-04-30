@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.IDecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 
 /**
  * @description Model class for Treant node
@@ -34,7 +34,7 @@ public class Node {
 	public Node() {
 	}
 
-	public Node(IDecisionKnowledgeElement decisionKnowledgeElement) {
+	public Node(DecisionKnowledgeElement decisionKnowledgeElement) {
 		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getType().toString(),
 				"title", decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 		this.setNodeContent(nodeContent);

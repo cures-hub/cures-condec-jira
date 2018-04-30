@@ -20,8 +20,8 @@ import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLink;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.model.Link;
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.documentation.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 import de.uhd.ifi.se.decision.documentation.jira.rest.TreantRest;
@@ -163,13 +163,13 @@ public class TestTreantRest extends TestSetUp {
 	// PersistenceStrategy strategy = strategyProvider.getStrategy("TEST");
 	// Issue issue1 = ComponentAccessor.getIssueManager().getIssueObject((long) 12);
 	// Issue issue2 = ComponentAccessor.getIssueManager().getIssueObject((long) 13);
-	// strategy.insertDecisionKnowledgeElement(new DecisionKnowledgeElement(issue1),
+	// strategy.insertDecisionKnowledgeElement(new DecisionKnowledgeElementImpl(issue1),
 	// ComponentAccessor.getUserManager().getUserByName("NoFails"));
-	// strategy.insertDecisionKnowledgeElement(new DecisionKnowledgeElement(issue2),
+	// strategy.insertDecisionKnowledgeElement(new DecisionKnowledgeElementImpl(issue2),
 	// ComponentAccessor.getUserManager().getUserByName("NoFails"));
 	//
 	// MockIssueLink issuelink = new MockIssueLink((long)100);
-	// Link link = new Link(issuelink);
+	// LinkImpl link = new LinkImpl(issuelink);
 	// strategy.insertLink(link,ComponentAccessor.getUserManager().getUserByName("NoFails"));
 	//
 	// treantRest.getTreant("TEST","12", "3").getStatus();

@@ -2,119 +2,44 @@ package de.uhd.ifi.se.decision.documentation.jira.model;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
-import org.codehaus.jackson.annotate.JsonProperty;
-import com.atlassian.jira.issue.Issue;
-
-import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 /**
- * @description Model class for decision knowledge elements
+ * @description Interface for decision knowledge elements
  */
-public class DecisionKnowledgeElement implements IDecisionKnowledgeElement {
+@JsonDeserialize(as = DecisionKnowledgeElementImpl.class)
+public interface DecisionKnowledgeElement {
 
-	private long id;
-	private String summary;
-	private String description;
-	private KnowledgeType type;
-	private String projectKey;
-	private String key;
+	public long getId();
 
-	public DecisionKnowledgeElement() {
+	public void setId(long id);
 
-	}
+	public String getSummary();
 
-	public DecisionKnowledgeElement(long id, String summary, String description, KnowledgeType type, String projectKey, String key) {
-		this.id = id;
-		this.summary = summary;
-		this.description = description;
-		this.type = type;
-		this.projectKey = projectKey;
-		this.key = key;
-	}
+	public void setSummary(String summary);
 
-	public DecisionKnowledgeElement(Issue issue) {
-		this.id = issue.getId();
-		this.summary = issue.getSummary();
-		this.description = issue.getDescription();
-		this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
-		this.projectKey = issue.getProjectObject().getKey();
-		this.key = issue.getKey();
-	}
+	public String getDescription();
 
-	@XmlElement(name = "id")
-	public long getId() {
-		return id;
-	}
+	public void setDescription(String description);
 
-	public void setId(long id) {
-		this.id = id;
-	}
+	public KnowledgeType getType();
 
-	@XmlElement(name = "summary")
-	public String getSummary() {
-		return summary;
-	}
+	public void setType(KnowledgeType type);
 
-	public void setSummary(String summary) {
-		this.summary = summary;
-	}
+	public void setType(String type);
 
-	@XmlElement(name = "description")
-	public String getDescription() {
-		return description;
-	}
+	public KnowledgeType getSuperType();
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+	public String getProjectKey();
 
-	public KnowledgeType getType() {
-		return type;
-	}
+	public void setProjectKey(String projectKey);
 
-	@XmlElement(name = "type")
-	public String getTypeAsString() {
-		return type.toString();
-	}
+	/**
+	 * The key resembles "<<projectKey>>-<<project internal id>>"
+	 */
+	public String getKey();
 
-	public void setType(KnowledgeType type) {
-		this.type = type;
-	}
+	public void setKey(String key);
 
-	@JsonProperty("type")
-	public void setType(String type) {
-		this.type = KnowledgeType.getKnowledgeType(type);
-	}
-
-	public String getProjectKey() {
-		return projectKey;
-	}
-
-	public void setProjectKey(String projectKey) {
-		this.projectKey = projectKey;
-	}
-
-	@XmlElement(name = "key")
-	public String getKey() {
-		if (this.key == null) {
-			return this.projectKey + "-" + this.id;
-		}
-		return this.key;
-	}
-
-	public void setKey(String key) {
-		this.key = key;
-	}
-
-	public KnowledgeType getSuperType() {
-		return this.type.getSuperType();
-	}
-
-	public List<IDecisionKnowledgeElement> getChildren() {
-		StrategyProvider strategyProvider = new StrategyProvider();
-		PersistenceStrategy strategy = strategyProvider.getStrategy(this.getProjectKey());
-		return strategy.getChildren(this);
-	}
+	public List<DecisionKnowledgeElement> getChildren();
 }

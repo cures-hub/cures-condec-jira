@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
 
 /**
@@ -21,7 +21,7 @@ public class TestDecisionKnowledgeElementStrings {
 	private KnowledgeType type;
 	private String projectKey;
 	private String key;
-	private DecisionKnowledgeElement repre;
+	private DecisionKnowledgeElementImpl repre;
 
 	@Before
 	public void setUp() {
@@ -32,7 +32,7 @@ public class TestDecisionKnowledgeElementStrings {
 		this.projectKey = "Test";
 		this.key = "Test";
 
-		this.repre = new DecisionKnowledgeElement(id, summary, description, type, projectKey, key);
+		this.repre = new DecisionKnowledgeElementImpl(id, summary, description, type, projectKey, key);
 	}
 
 	@Test

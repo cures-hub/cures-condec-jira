@@ -8,8 +8,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.model.IDecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
@@ -34,19 +34,19 @@ public class Treant {
 	public Treant(String projectKey, String elementKey, int depth) {
 		StrategyProvider strategyProvider = new StrategyProvider();
 		strategy = strategyProvider.getStrategy(projectKey);
-		IDecisionKnowledgeElement decisionKnowledgeElement = strategy.getDecisionKnowledgeElement(elementKey);
+		DecisionKnowledgeElement decisionKnowledgeElement = strategy.getDecisionKnowledgeElement(elementKey);
 		this.setChart(new Chart());
 		this.setNodeStructure(createNodeStructure(decisionKnowledgeElement, depth, 0));
 	}
 
-	private Node createNodeStructure(IDecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
+	private Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
 		Node node = new Node(decisionKnowledgeElement);
 
 		if (currentDepth + 1 < depth) {
 			List<Node> nodes = new ArrayList<Node>();
-			List<IDecisionKnowledgeElement> children = strategy.getChildren(decisionKnowledgeElement);
+			List<DecisionKnowledgeElement> children = strategy.getChildren(decisionKnowledgeElement);
 
-			for (IDecisionKnowledgeElement child : children) {
+			for (DecisionKnowledgeElement child : children) {
 				nodes.add(createNodeStructure(child, depth, currentDepth + 1));
 			}
 			node.setChildren(nodes);

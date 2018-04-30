@@ -7,7 +7,7 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.Link;
+import de.uhd.ifi.se.decision.documentation.jira.model.LinkImpl;
 
 public class TestCreateLink extends TestIssueStrategySetUp {
 
@@ -19,7 +19,7 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 
 	@Test
 	public void testLinkRepresFilledUserNull() {
-		Link link = new Link();
+		LinkImpl link = new LinkImpl();
 		link.setIngoingId(1);
 		link.setLinkType("Contains");
 		link.setOutgoingId(2);
@@ -35,7 +35,7 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 
 	@Test
 	public void testLinkRepresFilledUserFilled() {
-		Link link = new Link();
+		LinkImpl link = new LinkImpl();
 		link.setIngoingId(1);
 		link.setLinkType("Contains");
 		link.setOutgoingId(2);
@@ -45,7 +45,7 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 
 	@Test
 	public void testLinkRepresFilledUserFilledIssueLinkNull() {
-		Link link = new Link();
+		LinkImpl link = new LinkImpl();
 		link.setIngoingId(2);
 		link.setLinkType("Contains");
 		link.setOutgoingId(3);
@@ -55,7 +55,7 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 
 	@Test
 	public void testCreateException() {
-		Link link = new Link();
+		LinkImpl link = new LinkImpl();
 		link.setIngoingId(2);
 		link.setLinkType("Contains");
 		link.setOutgoingId(3);
@@ -65,7 +65,7 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 
 	@Test
 	public void testMoreInwardLinks() {
-		Link link = new Link();
+		LinkImpl link = new LinkImpl();
 		link.setIngoingId(30);
 		link.setLinkType("Contains");
 		link.setOutgoingId(3);
@@ -75,7 +75,7 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 
 	@Test
 	public void testMoreOutwardLinks() {
-		Link link = new Link();
+		LinkImpl link = new LinkImpl();
 		link.setIngoingId(10);
 		link.setLinkType("Contains");
 		link.setOutgoingId(30);

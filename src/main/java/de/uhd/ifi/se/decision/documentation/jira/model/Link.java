@@ -1,53 +1,22 @@
 package de.uhd.ifi.se.decision.documentation.jira.model;
 
-import com.atlassian.jira.issue.link.IssueLink;
-
-import de.uhd.ifi.se.decision.documentation.jira.persistence.ILinkEntity;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 /**
- * @description Model class for links between decision knowledge elements
+ * @description Interface for links between knowledge elements
  */
-public class Link implements ILink {
-	private String linkType;
-	private long ingoingId;
-	private long outgoingId;
+@JsonDeserialize(as = LinkImpl.class)
+public interface Link {
 
-	public Link() {
-	}
+	public String getLinkType();
 
-	public Link(ILinkEntity link) {
-		this.linkType = link.getLinkType();
-		this.ingoingId = link.getIngoingId();
-		this.outgoingId = link.getOutgoingId();
-	}
+	public void setLinkType(String linkType);
 
-	public Link(IssueLink link) {
-		this.linkType = link.getIssueLinkType().getName();
-		this.ingoingId = link.getSourceObject().getId();
-		this.outgoingId = link.getDestinationObject().getId();
-	}
+	public long getIngoingId();
 
-	public String getLinkType() {
-		return linkType;
-	}
+	public void setIngoingId(long ingoingId);
 
-	public void setLinkType(String linkType) {
-		this.linkType = linkType;
-	}
+	public long getOutgoingId();
 
-	public long getIngoingId() {
-		return ingoingId;
-	}
-
-	public void setIngoingId(long ingoingId) {
-		this.ingoingId = ingoingId;
-	}
-
-	public long getOutgoingId() {
-		return outgoingId;
-	}
-
-	public void setOutgoingId(long outgoingId) {
-		this.outgoingId = outgoingId;
-	}
+	public void setOutgoingId(long outgoingId);
 }

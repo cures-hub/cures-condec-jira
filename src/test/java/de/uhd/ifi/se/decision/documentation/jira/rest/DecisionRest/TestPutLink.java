@@ -18,7 +18,7 @@ import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.documentation.jira.model.Link;
+import de.uhd.ifi.se.decision.documentation.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.documentation.jira.rest.DecisionsRest;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
@@ -28,7 +28,7 @@ public class TestPutLink extends TestSetUp {
 	private EntityManager entityManager;
 	private DecisionsRest decRest;
 	private HttpServletRequest req;
-	private Link link;
+	private LinkImpl link;
 
 	@Before
 	public void setUp() {
@@ -40,7 +40,7 @@ public class TestPutLink extends TestSetUp {
 		req.setAttribute("WithFails", false);
 		req.setAttribute("NoFails", true);
 
-		link = new Link();
+		link = new LinkImpl();
 		link.setIngoingId(1);
 		link.setOutgoingId(4);
 	}
