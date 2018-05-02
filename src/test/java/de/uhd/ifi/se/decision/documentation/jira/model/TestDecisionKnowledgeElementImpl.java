@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.model.TestDecisionKnowledgeProjectImpl;
+package de.uhd.ifi.se.decision.documentation.jira.model;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,7 +11,7 @@ import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeProjectI
  * @description Test class for configuration settings
  *
  */
-public class TestJiraProject {
+public class TestDecisionKnowledgeElementImpl {
 
 	private DecisionKnowledgeProjectImpl jiraProject;
 	private String projectKey;
