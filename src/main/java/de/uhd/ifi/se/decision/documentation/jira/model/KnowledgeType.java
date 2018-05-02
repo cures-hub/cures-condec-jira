@@ -10,6 +10,9 @@ public enum KnowledgeType {
 	ALTERNATIVE, ASSUMPTION, ASSESSMENT, ARGUMENT, CLAIM, CONTEXT, CONSTRAINT, DECISION, GOAL, ISSUE, IMPLICATION, PROBLEM, RATIONALE, SOLUTION, OTHER, QUESTION;
 
 	public static KnowledgeType getKnowledgeType(String type) {
+		if(type == null){
+			return KnowledgeType.OTHER;
+		}
 		switch (type.toLowerCase()) {
 		case "decision":
 			return KnowledgeType.DECISION;
@@ -46,6 +49,9 @@ public enum KnowledgeType {
 	}
 
 	public static KnowledgeType getSuperType(KnowledgeType type) {
+		if(type == null){
+			return null;
+		}
 		switch (type) {
 		case ISSUE:
 			return KnowledgeType.PROBLEM;
