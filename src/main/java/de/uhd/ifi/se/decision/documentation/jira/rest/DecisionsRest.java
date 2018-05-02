@@ -3,11 +3,18 @@ package de.uhd.ifi.se.decision.documentation.jira.rest;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.user.UserManager;
@@ -15,7 +22,6 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.model.IDecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.Link;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
@@ -54,7 +60,7 @@ public class DecisionsRest {
 		if (projectKey != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
 			PersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
-			List<IDecisionKnowledgeElement> linkedDecisionKnowledgeElements = strategy.getChildren(id);
+			List<DecisionKnowledgeElement> linkedDecisionKnowledgeElements = strategy.getChildren(id);
 			return Response.ok(linkedDecisionKnowledgeElements).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",

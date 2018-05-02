@@ -8,7 +8,7 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
 
 
@@ -23,13 +23,13 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 	@Test
 	(expected = NullPointerException.class)
 	public void testDecisionRepresFilledUserNull() {
-		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
+		DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
 		issueStrategy.deleteDecisionKnowledgeElement(dec, null);
 	}
 	
 	@Test
 	public void testDecisionRepresFilledUserFilledRight() {
-		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
+		DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
 		dec.setId(1);
 		dec.setProjectKey("TEST");
 		dec.setType(KnowledgeType.SOLUTION);
@@ -39,7 +39,7 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 	
 	@Test
 	public void testDecisionRepresIssueUnvalid() {
-		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
+		DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
 		dec.setId(1);
 		dec.setProjectKey("TEST");
 		dec.setType(KnowledgeType.SOLUTION);
@@ -49,7 +49,7 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 	
 	@Test
 	public void testDecisionRepresFilledUserFilledResultErrors() {
-		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
+		DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
 		dec.setId(1);
 		dec.setProjectKey("TEST");
 		dec.setType(KnowledgeType.SOLUTION);
@@ -59,7 +59,7 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 	
 	@Test
 	public void testDecisionRepresNoResultErrors() {
-		DecisionKnowledgeElement dec = new DecisionKnowledgeElement();
+		DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
 		dec.setId(1);
 		dec.setProjectKey("TEST");
 		dec.setType(KnowledgeType.SOLUTION);

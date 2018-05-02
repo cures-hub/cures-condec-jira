@@ -12,7 +12,7 @@ import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
 
 public class TestDecisionKnowledgeElementIssue {
@@ -21,7 +21,7 @@ public class TestDecisionKnowledgeElementIssue {
 	private String description;
 	private KnowledgeType type;
 	private String projectKey;
-	private DecisionKnowledgeElement repre;
+	private DecisionKnowledgeElementImpl repre;
 	
 	@Before 
 	public void setUp() {		
@@ -41,7 +41,7 @@ public class TestDecisionKnowledgeElementIssue {
 		((MockIssue)issue).setDescription(description);
 		((MockIssue)issue).setIssueType(issueType);
 		
-		repre = new DecisionKnowledgeElement(issue);
+		repre = new DecisionKnowledgeElementImpl(issue);
 	}
 	
 	@Test

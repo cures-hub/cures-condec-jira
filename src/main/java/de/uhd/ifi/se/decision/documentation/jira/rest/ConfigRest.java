@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.ConfigPersistence;
 
 /**
- * @description Rest resource for plug-in configuration
+ * @description REST resource for plug-in configuration
  */
 @Path("/config")
 @Scanned

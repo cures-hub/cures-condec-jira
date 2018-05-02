@@ -1,9 +1,13 @@
-package de.uhd.ifi.se.decision.documentation.jira.view.treants;
+package de.uhd.ifi.se.decision.documentation.jira.view.treant;
 
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
+
+import com.google.common.collect.ImmutableMap;
+
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 
 /**
  * @description Model class for Treant node
@@ -28,6 +32,14 @@ public class Node {
 	private List<Node> children;
 
 	public Node() {
+	}
+
+	public Node(DecisionKnowledgeElement decisionKnowledgeElement) {
+		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getType().toString(),
+				"title", decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
+		this.setNodeContent(nodeContent);
+		this.setHtmlClass(decisionKnowledgeElement.getSuperType().toString().toLowerCase());
+		this.setHtmlId(decisionKnowledgeElement.getId());
 	}
 
 	public Map<String, String> getNodeContent() {

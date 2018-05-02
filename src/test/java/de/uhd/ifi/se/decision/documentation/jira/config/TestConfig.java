@@ -5,13 +5,15 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeProjectImpl;
+
 /**
  * @description Test class for configuration settings
  *
  */
 public class TestConfig {
 
-	private JiraProject jiraProject;
+	private DecisionKnowledgeProjectImpl jiraProject;
 	private String projectKey;
 	private String projectName;
 	private boolean isActivated;
@@ -23,7 +25,7 @@ public class TestConfig {
 		this.projectName = "TestName";
 		this.isActivated = true;
 		this.isIssueStrategy = true;
-		this.jiraProject = new JiraProject(projectKey, projectName);
+		this.jiraProject = new DecisionKnowledgeProjectImpl(projectKey, projectName);
 	}
 
 	@Test

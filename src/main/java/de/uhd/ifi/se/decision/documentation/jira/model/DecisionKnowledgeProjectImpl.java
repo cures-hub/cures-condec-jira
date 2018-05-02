@@ -1,17 +1,16 @@
-package de.uhd.ifi.se.decision.documentation.jira.config;
+package de.uhd.ifi.se.decision.documentation.jira.model;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.IProject;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.ConfigPersistence;
 
 /**
- * @description Class for a JIRA project and its configuration
+ * @description Model class for a project and its configuration
  */
-public class JiraProject implements IProject {
+public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 
 	private String projectKey;
 	private String projectName;
 
-	public JiraProject(String projectKey, String projectName) {
+	public DecisionKnowledgeProjectImpl(String projectKey, String projectName) {
 		this.projectKey = projectKey;
 		this.projectName = projectName;
 		this.setActivated(this.isActivated());

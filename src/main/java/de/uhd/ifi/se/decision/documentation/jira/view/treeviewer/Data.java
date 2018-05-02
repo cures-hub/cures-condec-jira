@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.IDecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 
 /**
  * @description Model class for Tree Viewer nodes
@@ -22,25 +22,25 @@ public class Data {
 	private List<Data> children;
 
 	@XmlElement(name = "data")
-	private IDecisionKnowledgeElement nodeInfo;
+	private DecisionKnowledgeElement nodeInfo;
 
 	public Data() {
 	}
 
-	public Data(IDecisionKnowledgeElement decisionKnowledgeElement) {
+	public Data(DecisionKnowledgeElement decisionKnowledgeElement) {
 		this(decisionKnowledgeElement, true);
 	}
 
-	public Data(IDecisionKnowledgeElement decisionKnowledgeElement, boolean addChildren) {
+	public Data(DecisionKnowledgeElement decisionKnowledgeElement, boolean addChildren) {
 		this.setText(decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getSummary());
 		this.setId(String.valueOf(decisionKnowledgeElement.getId()));
 		this.setNodeInfo(decisionKnowledgeElement);
 
 		if (addChildren == true) {
-			List<IDecisionKnowledgeElement> children = decisionKnowledgeElement.getChildren();
+			List<DecisionKnowledgeElement> children = decisionKnowledgeElement.getChildren();
 
 			List<Data> childrenToData = new ArrayList<Data>();
-			for (IDecisionKnowledgeElement child : children) {
+			for (DecisionKnowledgeElement child : children) {
 				childrenToData.add(new Data(child, true));
 			}
 			this.setChildren(childrenToData);
@@ -71,11 +71,11 @@ public class Data {
 		this.children = children;
 	}
 
-	public IDecisionKnowledgeElement getNode() {
+	public DecisionKnowledgeElement getNode() {
 		return nodeInfo;
 	}
 
-	public void setNodeInfo(IDecisionKnowledgeElement nodeInfo) {
+	public void setNodeInfo(DecisionKnowledgeElement nodeInfo) {
 		this.nodeInfo = nodeInfo;
 	}
 }

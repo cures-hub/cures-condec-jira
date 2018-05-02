@@ -7,10 +7,10 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLink;
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.model.ILink;
-import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.documentation.jira.model.Link;
+import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.documentation.jira.model.LinkImpl;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,8 +30,8 @@ public class TestGetChildren  extends TestIssueStrategySetUp{
 
     @Test
     public void testDecisionKnowledgeElementEmpty(){
-        DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElement();
-        assertEquals(new ArrayList<DecisionKnowledgeElement>(), issueStrategy.getChildren(decisionKnowledgeElement));
+        DecisionKnowledgeElementImpl decisionKnowledgeElement = new DecisionKnowledgeElementImpl();
+        assertEquals(new ArrayList<DecisionKnowledgeElementImpl>(), issueStrategy.getChildren(decisionKnowledgeElement));
     }
 
     @Test
@@ -40,16 +40,16 @@ public class TestGetChildren  extends TestIssueStrategySetUp{
         Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
 
         long i = 2;
-        DecisionKnowledgeElement decision = null;
-        decision = new DecisionKnowledgeElement( (long) 5000, "TESTSummary", "TestDescription", KnowledgeType.DECISION, project.getKey(), "TEST-"+ 5000 );
+        DecisionKnowledgeElementImpl decision = null;
+        decision = new DecisionKnowledgeElementImpl( (long) 5000, "TESTSummary", "TestDescription", KnowledgeType.DECISION, project.getKey(), "TEST-"+ 5000 );
         decision.setId((long) 5000);
 
         issueStrategy.insertDecisionKnowledgeElement(decision, user);
         for(KnowledgeType type : KnowledgeType.values()) {
-            Link link = new Link();
+            LinkImpl link = new LinkImpl();
             link.setLinkType("support");
             if(type!= KnowledgeType.DECISION){
-                DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElement( i, "TESTSummary", "TestDescription", type, project.getKey(), "TEST-"+ i );
+                DecisionKnowledgeElementImpl decisionKnowledgeElement = new DecisionKnowledgeElementImpl( i, "TESTSummary", "TestDescription", type, project.getKey(), "TEST-"+ i );
                 issueStrategy.insertDecisionKnowledgeElement(decisionKnowledgeElement,user);
                 link.setOutgoingId(decision.getId());
                 link.setIngoingId(decisionKnowledgeElement.getId());
