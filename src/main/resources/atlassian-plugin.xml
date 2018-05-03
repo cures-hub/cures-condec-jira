@@ -82,11 +82,6 @@
 			Provides REST resources to manage decision knowledge.
 		</description>
 	</rest>
-	<rest key="view-rest" name="View REST" path="/decisions" version="1.0">
-		<description>Provides REST resources to build the treant and tree viewer (list of decision knowledge
-			elements).
-		</description>
-	</rest>
 
 	<!-- Administration -->
 	<web-section key="decdoc-admin-section" name="Web Section for DecDoc Plug-in Administration"
