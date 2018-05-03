@@ -48,28 +48,16 @@ public class TestGetUnlinkedIssues extends TestSetUp {
 				.build().getEntity(), decRest.getUnlinkedDecisionComponents(7, null).getEntity());
 	}
 
-	// @Test
-	// public void testIssueIdZeroProjectKeyDontExist() {
-	// assertEquals(200, decRest.getUnlinkedDecisionComponents(0,
-	// "NotTEST").getStatus());
-	// }
+	 @Test
+	 (expected = java.lang.NullPointerException.class)
+	 public void testIssueIdFilledProjectKeyDontExist() {
+		assertEquals(200,decRest.getUnlinkedDecisionComponents(7,"NotTEST").getStatus());
+	 }
 
-	// @Test
-	// public void testIssueIdFilledProjectKeyDontExist() {
-	// assertEquals(200,decRest.getUnlinkedDecisionComponents(7,
-	// "NotTEST").getStatus());
-	// }
 
-	// @Test
-	// public void testIssueIdZeroProjectKeyExist() {
-	// assertEquals(200,decRest.getUnlinkedDecisionComponents(0,
-	// "TEST").getStatus());
-	// }
-
-	// @Test
-	// public void testIssueIdFilledProjectKeyExist() {
-	// assertEquals(200,decRest.getUnlinkedDecisionComponents(7,
-	// "TEST").getStatus());
-	// }
-
+	 @Test
+	 public void testIssueIdFilledProjectKeyExist() {
+	 assertEquals(Status.OK.getStatusCode(),decRest.getUnlinkedDecisionComponents(7,
+	 "TEST").getStatus());
+	 }
 }
