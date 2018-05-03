@@ -17,7 +17,7 @@ import javax.ws.rs.core.Response;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestGetDecsiionKnowledgeElement extends TestDecisionSetUp {
+public class TestGetDecisionKnowledgeElement extends TestDecisionSetUp {
     private EntityManager entityManager;
     private DecisionsRest decRest;
 
