@@ -29,7 +29,6 @@ import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkTypeManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueService;
 import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
-import sun.awt.AWTAccessor;
 
 public class TestSetUp {
 	private ProjectManager projectManager;
