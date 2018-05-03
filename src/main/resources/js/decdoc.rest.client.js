@@ -216,7 +216,7 @@ function getTreeViewer(callback) {
 }
 
 function setActivated(isActivated, projectKey) {
-	postJSON(AJS.contextPath() + "/rest/admin/1.0/config/setActivated.json?projectKey=" + projectKey + "&isActivated=" + isActivated,
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setActivated.json?projectKey=" + projectKey + "&isActivated=" + isActivated,
 		function(error, response) {
 			if (error == null) {
 				showFlag("success", "Plug-in activation for project has been changed.");
@@ -227,7 +227,7 @@ function setActivated(isActivated, projectKey) {
 }
 
 function setIssueStrategy(isIssueStrategy, projectKey) {
-	postJSON(AJS.contextPath() + "/rest/admin/1.0/config/setIssueStrategy.json?projectKey=" + projectKey + "&isIssueStrategy="
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setIssueStrategy.json?projectKey=" + projectKey + "&isIssueStrategy="
 			+ isIssueStrategy, function(error, response) {
 		if (error == null) {
 			showFlag("success", "Strategy has been selected.");
