@@ -3,7 +3,9 @@ package de.uhd.ifi.se.decision.documentation.jira.model;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
+
 import org.codehaus.jackson.annotate.JsonProperty;
+
 import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
