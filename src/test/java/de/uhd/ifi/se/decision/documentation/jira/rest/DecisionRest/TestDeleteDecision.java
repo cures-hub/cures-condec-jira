@@ -25,4 +25,9 @@ public class TestDeleteDecision extends TestDecisionSetUp {
         req.setAttribute("NoFails", false);
         assertEquals(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build().getEntity(),decRest.deleteDecisionKnowledgeElement(req, dec).getEntity());
     }
+
+    @Test
+    public void testRequestNullDecNull(){
+        assertEquals(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build().getEntity(),decRest.deleteDecisionKnowledgeElement(null, null).getEntity());
+    }
 }
