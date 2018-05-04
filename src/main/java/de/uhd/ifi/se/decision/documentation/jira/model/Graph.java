@@ -6,24 +6,24 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class DecisionKnowledgeGraph {
+public class Graph {
 
 	private Set<DecisionKnowledgeElement> elements;
 	private Set<Link> links;
 	private Map<DecisionKnowledgeElement, Set<Link>> linkedElements;
 
-	public DecisionKnowledgeGraph() {
+	public Graph() {
 		this.elements = new HashSet<>();
 		this.links = new HashSet<>();
 		this.linkedElements = new HashMap<>();
 	}
 
-	public DecisionKnowledgeGraph(DecisionKnowledgeElement rootElement) {
+	public Graph(DecisionKnowledgeElement rootElement) {
 		this();
 		// TODO Build graph from root element
 	}
 
-	public DecisionKnowledgeGraph(DecisionKnowledgeElement rootElement, int linkDistance) {
+	public Graph(DecisionKnowledgeElement rootElement, int linkDistance) {
 		this(rootElement);
 		// TODO Build graph from root element
 	}
@@ -54,6 +54,10 @@ public class DecisionKnowledgeGraph {
 		linkedElements.get(outgoingElement).add(link);
 
 		return true;
+	}
+
+	public boolean addLink(DecisionKnowledgeElement element1, DecisionKnowledgeElement element2) {
+		return false;
 	}
 
 	public Set<Link> getLinks() {
