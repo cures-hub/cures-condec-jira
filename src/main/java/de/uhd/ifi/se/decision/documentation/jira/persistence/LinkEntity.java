@@ -23,4 +23,10 @@ public interface LinkEntity extends Link, RawEntity<Integer> {
 
 	@Ignore
 	public DecisionKnowledgeElement getIngoingElement();
+
+	@Ignore
+	public void setOutgoingElement(DecisionKnowledgeElement decisionKnowledgeElement);
+
+	@Ignore
+	public void setIngoingElement(DecisionKnowledgeElement decisionKnowledgeElement);
 }

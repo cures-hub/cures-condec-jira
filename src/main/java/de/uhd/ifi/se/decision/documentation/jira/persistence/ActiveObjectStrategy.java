@@ -181,9 +181,10 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 					}
 				});
 		if (decisionKnowledgeElement != null) {
-			return new DecisionKnowledgeElementImpl(decisionKnowledgeElement.getId(), decisionKnowledgeElement.getSummary(),
-					decisionKnowledgeElement.getDescription(), decisionKnowledgeElement.getType(),
-					decisionKnowledgeElement.getProjectKey(), decisionKnowledgeElement.getKey());
+			return new DecisionKnowledgeElementImpl(decisionKnowledgeElement.getId(),
+					decisionKnowledgeElement.getSummary(), decisionKnowledgeElement.getDescription(),
+					decisionKnowledgeElement.getType(), decisionKnowledgeElement.getProjectKey(),
+					decisionKnowledgeElement.getKey());
 		}
 		return null;
 	}
@@ -261,8 +262,7 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 
 					DecisionKnowledgeElementEntity decCompOutgoing;
 					DecisionKnowledgeElementEntity[] decCompOutgoingArray = activeObjects.find(
-							DecisionKnowledgeElementEntity.class,
-							Query.select().where("ID = ?", link.getOutgoingId()));
+							DecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", link.getOutgoingId()));
 					if (decCompOutgoingArray.length == 1) {
 						decCompOutgoing = decCompOutgoingArray[0];
 					} else {
@@ -325,6 +325,8 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 				Query.select().where("OUTGOING_ID = ?", decisionKnowledgeElement.getId()));
 		for (LinkEntity link : links) {
 			Link inwardLink = new LinkImpl(link);
+			inwardLink.setOutgoingElement(decisionKnowledgeElement);
+			inwardLink.setIngoingElement(this.getDecisionKnowledgeElement(link.getIngoingId()));
 			inwardLinks.add(inwardLink);
 		}
 		return inwardLinks;
@@ -337,6 +339,8 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 				Query.select().where("INGOING_ID = ?", decisionKnowledgeElement.getId()));
 		for (LinkEntity link : links) {
 			Link outwardLink = new LinkImpl(link);
+			outwardLink.setIngoingElement(decisionKnowledgeElement);
+			outwardLink.setOutgoingElement(this.getDecisionKnowledgeElement(link.getOutgoingId()));
 			outwardLinks.add(outwardLink);
 		}
 		return outwardLinks;

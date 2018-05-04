@@ -18,9 +18,13 @@ public interface Link {
 
 	public void setIngoingId(long ingoingId);
 
+	public void setIngoingElement(DecisionKnowledgeElement decisionKnowledgeElement);
+
 	public long getOutgoingId();
+
+	public void setOutgoingId(long outgoingId);
 
 	public DecisionKnowledgeElement getOutgoingElement();
 
-	public void setOutgoingId(long outgoingId);
+	public void setOutgoingElement(DecisionKnowledgeElement decisionKnowledgeElement);
 }
