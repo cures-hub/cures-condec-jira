@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.documentation.jira.persistence;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -159,32 +158,42 @@ public class IssueStrategy extends PersistenceStrategy {
 		return new DecisionKnowledgeElementImpl(issue);
 	}
 
-	// outwardElement.getType() != KnowledgeType.ARGUMENT
 	@Override
 	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
 
-		List<DecisionKnowledgeElement> children = new ArrayList<DecisionKnowledgeElement>();
-
 		List<IssueLink> outwardIssueLinks = ComponentAccessor.getIssueLinkManager()
 				.getOutwardLinks(decisionKnowledgeElement.getId());
-		for (IssueLink issueLink : outwardIssueLinks) {
-			Issue outwardIssue = issueLink.getDestinationObject();
-			DecisionKnowledgeElementImpl outwardElement = new DecisionKnowledgeElementImpl(outwardIssue);
-			children.add(outwardElement);
+		List<DecisionKnowledgeElement> children = new ArrayList<DecisionKnowledgeElement>();
+
+		if (decisionKnowledgeElement.getType() != KnowledgeType.ARGUMENT) {
+			for (IssueLink issueLink : outwardIssueLinks) {
+				Issue outwardIssue = issueLink.getDestinationObject();
+				if (outwardIssue != null) {
+					DecisionKnowledgeElementImpl outwardElement = new DecisionKnowledgeElementImpl(outwardIssue);
+					if (outwardElement.getType() != KnowledgeType.ARGUMENT) {
+						children.add(outwardElement);
+					}
+				}
+			}
 		}
 
 		List<IssueLink> inwardIssueLinks = ComponentAccessor.getIssueLinkManager()
 				.getInwardLinks(decisionKnowledgeElement.getId());
 		for (IssueLink issueLink : inwardIssueLinks) {
 			Issue inwardIssue = issueLink.getSourceObject();
-			DecisionKnowledgeElementImpl inwardElement = new DecisionKnowledgeElementImpl(inwardIssue);
-			children.add(inwardElement);
+			if (inwardIssue != null) {
+				DecisionKnowledgeElementImpl inwardElement = new DecisionKnowledgeElementImpl(inwardIssue);
+				if (inwardElement.getType() == KnowledgeType.ARGUMENT) {
+					children.add(new DecisionKnowledgeElementImpl(inwardIssue));
+				}
+			}
 		}
 
 		return children;
 	}
 
-	public List<DecisionKnowledgeElement> getLinkedElementsInOutwardDirection(DecisionKnowledgeElement decisionKnowledgeElement) {
+	public List<DecisionKnowledgeElement> getLinkedElementsInOutwardDirection(
+			DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<DecisionKnowledgeElement> elementsLinkedWithOutwardLinks = new ArrayList<DecisionKnowledgeElement>();
 		List<IssueLink> outwardIssueLinks = getOutwardIssueLinks(decisionKnowledgeElement);
 		for (IssueLink issueLink : outwardIssueLinks) {
@@ -197,7 +206,8 @@ public class IssueStrategy extends PersistenceStrategy {
 		return elementsLinkedWithOutwardLinks;
 	}
 
-	public List<DecisionKnowledgeElement> getLinkedElementsInInwardDirection(DecisionKnowledgeElement decisionKnowledgeElement) {
+	public List<DecisionKnowledgeElement> getLinkedElementsInInwardDirection(
+			DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<DecisionKnowledgeElement> elementsLinkedWithInwardLinks = new ArrayList<DecisionKnowledgeElement>();
 		List<IssueLink> inwardIssueLinks = getInwardIssueLinks(decisionKnowledgeElement);
 		for (IssueLink issueLink : inwardIssueLinks) {
