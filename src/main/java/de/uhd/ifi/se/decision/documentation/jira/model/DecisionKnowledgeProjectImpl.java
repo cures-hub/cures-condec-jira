@@ -14,8 +14,6 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 
 	public DecisionKnowledgeProjectImpl(String projectKey) {
 		this.projectKey = projectKey;
-		this.setActivated(this.isActivated());
-		this.setIssueStrategy(this.isIssueStrategy());
 	}
 
 	public DecisionKnowledgeProjectImpl(String projectKey, String projectName) {
