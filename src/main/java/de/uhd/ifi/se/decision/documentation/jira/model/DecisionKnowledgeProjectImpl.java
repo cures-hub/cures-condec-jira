@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.documentation.jira.model;
 
 import de.uhd.ifi.se.decision.documentation.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
 /**
  * @description Model class for a project and its configuration
@@ -10,11 +12,15 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	private String projectKey;
 	private String projectName;
 
-	public DecisionKnowledgeProjectImpl(String projectKey, String projectName) {
+	public DecisionKnowledgeProjectImpl(String projectKey) {
 		this.projectKey = projectKey;
-		this.projectName = projectName;
 		this.setActivated(this.isActivated());
 		this.setIssueStrategy(this.isIssueStrategy());
+	}
+
+	public DecisionKnowledgeProjectImpl(String projectKey, String projectName) {
+		this(projectKey);
+		this.projectName = projectName;
 	}
 
 	public String getProjectKey() {
@@ -47,5 +53,10 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 
 	public void setActivated(boolean isActivated) {
 		ConfigPersistence.setActivated(this.getProjectKey(), isActivated);
+	}
+
+	public PersistenceStrategy getPersistenceStrategy() {
+		StrategyProvider strategyProvider = new StrategyProvider();
+		return strategyProvider.getStrategy(this.projectKey);
 	}
 }
