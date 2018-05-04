@@ -39,12 +39,20 @@ public class LinkImpl implements Link {
 		return ingoingId;
 	}
 
+	public DecisionKnowledgeElement getIngoingElement() {
+		return null;//getDecisionKnowledgeElement(this.getIngoingId());
+	}
+
 	public void setIngoingId(long ingoingId) {
 		this.ingoingId = ingoingId;
 	}
 
 	public long getOutgoingId() {
 		return outgoingId;
+	}
+
+	public DecisionKnowledgeElement getOutgoingElement() {
+		return null;
 	}
 
 	public void setOutgoingId(long outgoingId) {

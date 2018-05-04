@@ -14,9 +14,13 @@ public interface Link {
 
 	public long getIngoingId();
 
+	public DecisionKnowledgeElement getIngoingElement();
+
 	public void setIngoingId(long ingoingId);
 
 	public long getOutgoingId();
+
+	public DecisionKnowledgeElement getOutgoingElement();
 
 	public void setOutgoingId(long outgoingId);
 }
