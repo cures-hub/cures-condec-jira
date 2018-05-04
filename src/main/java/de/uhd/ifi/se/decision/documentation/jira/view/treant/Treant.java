@@ -46,23 +46,23 @@ public class Treant {
 		DecisionKnowledgeElement decisionKnowledgeElement = strategy.getDecisionKnowledgeElement(elementKey);
 		this.setChart(new Chart());
 
-		Graph graph = new Graph(decisionKnowledgeElement);
-		Node node = new Node(decisionKnowledgeElement);
-		List<Node> nodes = new ArrayList<Node>();
-		Map<DecisionKnowledgeElement, Set<Link>> linkedElements = graph.getLinkedElements();
-		for (Map.Entry<DecisionKnowledgeElement, Set<Link>> linkedElement : linkedElements.entrySet()) {
-			DecisionKnowledgeElement element = linkedElement.getKey();
-			System.out.println("Summary " + element.getSummary());
-			Set<Link> links = linkedElement.getValue();
-			System.out.println("Number of links " + links.size());
-			for (Link link : links) {
-				nodes.add(new Node(link.getOutgoingElement()));
-				//nodes.add(new Node(link.getIngoingElement()));
-			}
-		}
-		node.setChildren(nodes);
-		this.setNodeStructure(node);
-//		this.setNodeStructure(createNodeStructure(decisionKnowledgeElement, depth, 0));
+//		Graph graph = new Graph(decisionKnowledgeElement);
+//		Node node = new Node(decisionKnowledgeElement);
+//		List<Node> nodes = new ArrayList<Node>();
+//		Map<DecisionKnowledgeElement, Set<Link>> linkedElements = graph.getLinkedElements();
+//		for (Map.Entry<DecisionKnowledgeElement, Set<Link>> linkedElement : linkedElements.entrySet()) {
+//			DecisionKnowledgeElement element = linkedElement.getKey();
+//			System.out.println("Summary " + element.getSummary());
+//			Set<Link> links = linkedElement.getValue();
+//			System.out.println("Number of links " + links.size());
+//			for (Link link : links) {
+//				nodes.add(new Node(link.getOutgoingElement()));
+//				//nodes.add(new Node(link.getIngoingElement()));
+//			}
+//		}
+//		node.setChildren(nodes);
+//		this.setNodeStructure(node);
+		this.setNodeStructure(createNodeStructure(decisionKnowledgeElement, depth, 0));
 	}
 
 	private Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {

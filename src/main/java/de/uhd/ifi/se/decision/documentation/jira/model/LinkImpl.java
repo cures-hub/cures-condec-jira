@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.documentation.jira.model;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLink;
 
@@ -10,35 +12,30 @@ import de.uhd.ifi.se.decision.documentation.jira.persistence.LinkEntity;
  */
 public class LinkImpl implements Link {
 	private String linkType;
-	private long ingoingId;
 	private DecisionKnowledgeElement ingoingElement;
-	private long outgoingId;
 	private DecisionKnowledgeElement outgoingElement;
 
 	public LinkImpl() {
+		this.ingoingElement = new DecisionKnowledgeElementImpl();
+		this.outgoingElement = new DecisionKnowledgeElementImpl();
 	}
 
 	public LinkImpl(DecisionKnowledgeElement ingoingElement, DecisionKnowledgeElement outgoingElement) {
-		this.ingoingId = ingoingElement.getId();
 		this.ingoingElement = ingoingElement;
-		this.outgoingId = outgoingElement.getId();
 		this.outgoingElement = outgoingElement;
 	}
 
 	public LinkImpl(IssueLink link) {
 		this.linkType = link.getIssueLinkType().getName();
 		Issue sourceIssue = link.getSourceObject();
-		this.ingoingId = sourceIssue.getId();
 		this.ingoingElement = new DecisionKnowledgeElementImpl(sourceIssue);
 		Issue destinationIssue = link.getDestinationObject();
-		this.outgoingId = destinationIssue.getId();
 		this.outgoingElement = new DecisionKnowledgeElementImpl(destinationIssue);
 	}
 
 	public LinkImpl(LinkEntity link) {
+		this();
 		this.linkType = link.getLinkType();
-		this.ingoingId = link.getIngoingId();
-		this.outgoingId = link.getOutgoingId();
 	}
 
 	public String getLinkType() {
@@ -49,28 +46,32 @@ public class LinkImpl implements Link {
 		this.linkType = linkType;
 	}
 
+
 	public long getIngoingId() {
-		return ingoingId;
+		return ingoingElement.getId();
+	}
+
+	@JsonProperty("ingoingId")
+	public void setIngoingId(long ingoingId) {
+		this.ingoingElement.setId(ingoingId);
 	}
 
 	public DecisionKnowledgeElement getIngoingElement() {
 		return ingoingElement;
 	}
 
-	public void setIngoingId(long ingoingId) {
-		this.ingoingId = ingoingId;
-	}
 
 	public long getOutgoingId() {
-		return outgoingId;
+		return outgoingElement.getId();
+	}
+
+	@JsonProperty("outgoingId")
+	public void setOutgoingId(long outgoingId) {
+		this.ingoingElement.setId(outgoingId);
 	}
 
 	public DecisionKnowledgeElement getOutgoingElement() {
 		return outgoingElement;
-	}
-
-	public void setOutgoingId(long outgoingId) {
-		this.outgoingId = outgoingId;
 	}
 
 	public void setIngoingElement(DecisionKnowledgeElement ingoingElement) {
