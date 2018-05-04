@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.documentation.jira.model;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,14 +14,17 @@ public class Graph {
 	private Map<DecisionKnowledgeElement, Set<Link>> linkedElements;
 
 	public Graph() {
-		this.elements = new HashSet<>();
-		this.links = new HashSet<>();
-		this.linkedElements = new HashMap<>();
+		this.elements = new HashSet<DecisionKnowledgeElement>();
+		this.links = new HashSet<Link>();
+		this.linkedElements = new HashMap<DecisionKnowledgeElement, Set<Link>>();
 	}
 
 	public Graph(DecisionKnowledgeElement rootElement) {
 		this();
-		// TODO Build graph from root element
+		List<Link> outwardLinks = rootElement.getOutwardLinks();
+		this.addLinks(outwardLinks);
+		List<Link> inwardLinks = rootElement.getInwardLinks();
+		this.addLinks(inwardLinks);
 	}
 
 	public Graph(DecisionKnowledgeElement rootElement, int linkDistance) {
@@ -47,8 +51,8 @@ public class Graph {
 		DecisionKnowledgeElement ingoingElement = link.getIngoingElement();
 		DecisionKnowledgeElement outgoingElement = link.getOutgoingElement();
 
-		linkedElements.putIfAbsent(ingoingElement, new HashSet<>());
-		linkedElements.putIfAbsent(outgoingElement, new HashSet<>());
+		linkedElements.putIfAbsent(ingoingElement, new HashSet<Link>());
+		linkedElements.putIfAbsent(outgoingElement, new HashSet<Link>());
 
 		linkedElements.get(ingoingElement).add(link);
 		linkedElements.get(outgoingElement).add(link);
@@ -56,8 +60,14 @@ public class Graph {
 		return true;
 	}
 
-	public boolean addLink(DecisionKnowledgeElement element1, DecisionKnowledgeElement element2) {
-		return false;
+	public boolean addLink(DecisionKnowledgeElement ingoingElement, DecisionKnowledgeElement outgoingElement) {
+		return addLink(new LinkImpl(ingoingElement, outgoingElement));
+	}
+
+	public void addLinks(List<Link> links) {
+		for (Link link : links) {
+			this.addLink(link);
+		}
 	}
 
 	public Set<Link> getLinks() {

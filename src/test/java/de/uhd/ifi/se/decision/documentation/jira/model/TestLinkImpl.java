@@ -29,12 +29,12 @@ public class TestLinkImpl {
         assertNotNull(linkImp);
     }
 
-    @Test
-    public void testConstructorIssueLink(){
-        IssueLink link = new MockIssueLink((long)54);
-        LinkImpl linkImp = new LinkImpl(link);
-        assertNotNull(linkImp);
-    }
+//    @Test
+//    public void testConstructorIssueLink(){
+//        IssueLink link = new MockIssueLink((long)54);
+//        LinkImpl linkImp = new LinkImpl(link);
+//        assertNotNull(linkImp);
+//    }
 
     @Test
     public void testGetLinkType(){

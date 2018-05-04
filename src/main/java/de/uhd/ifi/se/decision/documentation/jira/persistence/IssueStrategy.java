@@ -1,8 +1,6 @@
 package de.uhd.ifi.se.decision.documentation.jira.persistence;
 
 import java.util.ArrayList;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,10 +30,10 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ErrorCollection;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.documentation.jira.model.Link;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.documentation.jira.model.Link;
 import de.uhd.ifi.se.decision.documentation.jira.model.LinkImpl;
 
 /**
@@ -166,8 +164,6 @@ public class IssueStrategy extends PersistenceStrategy {
 	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
 
 		List<DecisionKnowledgeElement> children = new ArrayList<DecisionKnowledgeElement>();
-
-		Map<DecisionKnowledgeElement, DecisionKnowledgeElement> linkedArgumentMap = new HashMap<DecisionKnowledgeElement, DecisionKnowledgeElement>();
 
 		List<IssueLink> outwardIssueLinks = ComponentAccessor.getIssueLinkManager()
 				.getOutwardLinks(decisionKnowledgeElement.getId());

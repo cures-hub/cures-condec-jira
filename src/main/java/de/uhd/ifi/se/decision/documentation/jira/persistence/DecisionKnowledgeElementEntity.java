@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.documentation.jira.persistence;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeProject;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
 import net.java.ao.schema.Ignore;
@@ -21,6 +22,9 @@ public interface DecisionKnowledgeElementEntity extends DecisionKnowledgeElement
 
 	@Ignore
 	public void setType(String type);
+
+	@Ignore
+	public DecisionKnowledgeProject getProject();
 
 	@Ignore
 	public List<DecisionKnowledgeElement> getChildren();

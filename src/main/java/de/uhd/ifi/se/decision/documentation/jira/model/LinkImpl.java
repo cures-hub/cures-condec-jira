@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.documentation.jira.model;
 
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLink;
 
 import de.uhd.ifi.se.decision.documentation.jira.persistence.LinkEntity;
@@ -10,21 +11,34 @@ import de.uhd.ifi.se.decision.documentation.jira.persistence.LinkEntity;
 public class LinkImpl implements Link {
 	private String linkType;
 	private long ingoingId;
+	private DecisionKnowledgeElement ingoingElement;
 	private long outgoingId;
+	private DecisionKnowledgeElement outgoingElement;
 
 	public LinkImpl() {
+	}
+
+	public LinkImpl(DecisionKnowledgeElement ingoingElement, DecisionKnowledgeElement outgoingElement) {
+		this.ingoingId = ingoingElement.getId();
+		this.ingoingElement = ingoingElement;
+		this.outgoingId = outgoingElement.getId();
+		this.outgoingElement = outgoingElement;
+	}
+
+	public LinkImpl(IssueLink link) {
+		this.linkType = link.getIssueLinkType().getName();
+		Issue sourceIssue = link.getSourceObject();
+		this.ingoingId = sourceIssue.getId();
+		this.ingoingElement = new DecisionKnowledgeElementImpl(sourceIssue);
+		Issue destinationIssue = link.getDestinationObject();
+		this.outgoingId = destinationIssue.getId();
+		this.outgoingElement = new DecisionKnowledgeElementImpl(destinationIssue);
 	}
 
 	public LinkImpl(LinkEntity link) {
 		this.linkType = link.getLinkType();
 		this.ingoingId = link.getIngoingId();
 		this.outgoingId = link.getOutgoingId();
-	}
-
-	public LinkImpl(IssueLink link) {
-		this.linkType = link.getIssueLinkType().getName();
-		this.ingoingId = link.getSourceObject().getId();
-		this.outgoingId = link.getDestinationObject().getId();
 	}
 
 	public String getLinkType() {
@@ -40,7 +54,7 @@ public class LinkImpl implements Link {
 	}
 
 	public DecisionKnowledgeElement getIngoingElement() {
-		return null;//getDecisionKnowledgeElement(this.getIngoingId());
+		return ingoingElement;
 	}
 
 	public void setIngoingId(long ingoingId) {
@@ -52,10 +66,18 @@ public class LinkImpl implements Link {
 	}
 
 	public DecisionKnowledgeElement getOutgoingElement() {
-		return null;
+		return outgoingElement;
 	}
 
 	public void setOutgoingId(long outgoingId) {
 		this.outgoingId = outgoingId;
+	}
+
+	public void setIngoingElement(DecisionKnowledgeElement ingoingElement) {
+		this.ingoingElement = ingoingElement;
+	}
+
+	public void setOutgoingElement(DecisionKnowledgeElement outgoingElement) {
+		this.outgoingElement = outgoingElement;
 	}
 }

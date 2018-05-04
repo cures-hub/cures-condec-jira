@@ -8,9 +8,6 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.issue.Issue;
 
-import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
-
 /**
  * @description Model class for decision knowledge elements
  */
@@ -94,6 +91,10 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 		return projectKey;
 	}
 
+	public DecisionKnowledgeProject getProject() {
+		return new DecisionKnowledgeProjectImpl(projectKey);
+	}
+
 	public void setProjectKey(String projectKey) {
 		this.projectKey = projectKey;
 	}
@@ -115,8 +116,34 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	}
 
 	public List<DecisionKnowledgeElement> getChildren() {
-		StrategyProvider strategyProvider = new StrategyProvider();
-		PersistenceStrategy strategy = strategyProvider.getStrategy(this.getProjectKey());
-		return strategy.getChildren(this);
+		return this.getProject().getPersistenceStrategy().getChildren(this);
+	}
+
+	public List<Link> getOutwardLinks() {
+		return this.getProject().getPersistenceStrategy().getOutwardLinks(this);
+	}
+
+	public List<Link> getInwardLinks() {
+		return this.getProject().getPersistenceStrategy().getInwardLinks(this);
+	}
+
+	public boolean equals(Object object) {
+		if(object == null) {
+			return false;
+		}
+		if(object == this) {
+			return true;
+		}
+
+		DecisionKnowledgeElement element = (DecisionKnowledgeElement) object;
+		return this.id == element.getId();
+	}
+
+	public static void main(String[] args) {
+		DecisionKnowledgeElement element1 = new DecisionKnowledgeElementImpl();
+		//element1.setId(1);
+		DecisionKnowledgeElement element2 = new DecisionKnowledgeElementImpl();
+		//element2.setId(2);
+		System.out.println(element1.equals(element2));
 	}
 }

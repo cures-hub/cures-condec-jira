@@ -34,6 +34,8 @@ public interface DecisionKnowledgeElement {
 
 	public void setProjectKey(String projectKey);
 
+	public DecisionKnowledgeProject getProject();
+
 	/**
 	 * The key resembles "<<projectKey>>-<<project internal id>>"
 	 */
@@ -42,4 +44,8 @@ public interface DecisionKnowledgeElement {
 	public void setKey(String key);
 
 	public List<DecisionKnowledgeElement> getChildren();
+
+	public List<Link> getOutwardLinks();
+
+	public List<Link> getInwardLinks();
 }
