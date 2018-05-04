@@ -1,14 +1,23 @@
 package de.uhd.ifi.se.decision.documentation.jira.view.treant;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.Graph;
+import de.uhd.ifi.se.decision.documentation.jira.model.Link;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.ActiveObjectStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
@@ -18,6 +27,7 @@ import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 @XmlRootElement(name = "treant")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Treant {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Treant.class);
 
 	@XmlElement
 	private Chart chart;
@@ -35,7 +45,24 @@ public class Treant {
 		strategy = strategyProvider.getStrategy(projectKey);
 		DecisionKnowledgeElement decisionKnowledgeElement = strategy.getDecisionKnowledgeElement(elementKey);
 		this.setChart(new Chart());
-		this.setNodeStructure(createNodeStructure(decisionKnowledgeElement, depth, 0));
+
+		Graph graph = new Graph(decisionKnowledgeElement);
+		Node node = new Node(decisionKnowledgeElement);
+		List<Node> nodes = new ArrayList<Node>();
+		Map<DecisionKnowledgeElement, Set<Link>> linkedElements = graph.getLinkedElements();
+		for (Map.Entry<DecisionKnowledgeElement, Set<Link>> linkedElement : linkedElements.entrySet()) {
+			DecisionKnowledgeElement element = linkedElement.getKey();
+			System.out.println("Summary " + element.getSummary());
+			Set<Link> links = linkedElement.getValue();
+			System.out.println("Number of links " + links.size());
+			for (Link link : links) {
+				nodes.add(new Node(link.getOutgoingElement()));
+				//nodes.add(new Node(link.getIngoingElement()));
+			}
+		}
+		node.setChildren(nodes);
+		this.setNodeStructure(node);
+//		this.setNodeStructure(createNodeStructure(decisionKnowledgeElement, depth, 0));
 	}
 
 	private Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {

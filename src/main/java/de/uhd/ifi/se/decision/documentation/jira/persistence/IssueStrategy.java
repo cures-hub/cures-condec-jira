@@ -186,6 +186,9 @@ public class IssueStrategy extends PersistenceStrategy {
 				DecisionKnowledgeElementImpl inwardElement = new DecisionKnowledgeElementImpl(inwardIssue);
 				if (inwardElement.getType() == KnowledgeType.ARGUMENT) {
 					children.add(new DecisionKnowledgeElementImpl(inwardIssue));
+				}
+			}
+		}
 
 		return children;
 	}
