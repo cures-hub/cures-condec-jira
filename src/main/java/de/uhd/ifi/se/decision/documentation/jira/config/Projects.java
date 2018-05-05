@@ -1,8 +1,6 @@
 package de.uhd.ifi.se.decision.documentation.jira.config;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -12,12 +10,6 @@ import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeProjectImpl;
 
 public class Projects {
-
-	List<DecisionKnowledgeProject> projects;
-
-	public Projects() {
-		this.projects = new ArrayList<DecisionKnowledgeProject>();
-	}
 
 	public static Map<String, DecisionKnowledgeProject> getProjectsMap() {
 		Map<String, DecisionKnowledgeProject> configMap = new HashMap<String, DecisionKnowledgeProject>();

@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.documentation.jira.model.LinkImpl;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 import org.ofbiz.core.entity.GenericValue;
 
 import com.atlassian.jira.exception.CreateException;
@@ -17,6 +13,9 @@ import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.LinkCollection;
 import com.atlassian.jira.user.ApplicationUser;
+
+import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
+
 /**
  *
  * @author Tim Kuchenbuch
@@ -33,13 +32,13 @@ public class MockIssueLinkManager implements IssueLinkManager {
 	@Override
 	public void createIssueLink(Long arg0, Long arg1, Long arg2, Long arg3, ApplicationUser arg4)
 			throws CreateException {
-		if(arg0==4) {
+		if (arg0 == 4) {
 			return;
 		}
-		if(arg4==null) {
+		if (arg4 == null) {
 			throw new NullPointerException();
 		}
-		if(arg4.getUsername().equals("CreateExecption")) {
+		if (arg4.getUsername().equals("CreateExecption")) {
 			throw new CreateException();
 		}
 	}
@@ -47,16 +46,16 @@ public class MockIssueLinkManager implements IssueLinkManager {
 	@Override
 	public List<IssueLink> getInwardLinks(Long arg0) {
 		List<IssueLink> allInwardIssueLink = new ArrayList<>();
-		if(arg0==20) {
-			IssueLink link = new MockIssueLink((long)3);
+		if (arg0 == 20) {
+			IssueLink link = new MockIssueLink((long) 3);
 			allInwardIssueLink.add(link);
 		}
-		if(arg0==30) {
-			for(int i=0 ;i<10;i++) {
-				IssueLink link = new MockIssueLink((long)3);
-				((MockIssueLink)link).setSequence((long)i);
-				if(i==9) {
-					((MockIssueLink)link).setSequence((long)1);
+		if (arg0 == 30) {
+			for (int i = 0; i < 10; i++) {
+				IssueLink link = new MockIssueLink((long) 3);
+				((MockIssueLink) link).setSequence((long) i);
+				if (i == 9) {
+					((MockIssueLink) link).setSequence((long) 1);
 				}
 				allInwardIssueLink.add(link);
 			}
@@ -72,7 +71,7 @@ public class MockIssueLinkManager implements IssueLinkManager {
 
 	@Override
 	public IssueLink getIssueLink(Long arg0, Long arg1, Long arg2) {
-		if(arg1 == 1) {
+		if (arg1 == 1) {
 			IssueLink issueLink = new MockIssueLink(arg0);
 			return issueLink;
 		}
@@ -107,30 +106,28 @@ public class MockIssueLinkManager implements IssueLinkManager {
 	@Override
 	public List<IssueLink> getOutwardLinks(Long arg0) {
 		List<IssueLink> allOutwardIssueLink = new ArrayList<>();
-		if(arg0.intValue() == 5000){
-			long i = 2;
-			for(KnowledgeType type : KnowledgeType.values()){
+		if (arg0.intValue() == 5000) {
+			for (long i = 2; i <= KnowledgeType.values().length; i++) {
 				MockIssueLink link = new MockIssueLink(i);
 				allOutwardIssueLink.add(link);
-				i++;
 			}
 		}
-		if(arg0 == 20) {
-			IssueLink link = new MockIssueLink((long)4);
+		if (arg0 == 20) {
+			IssueLink link = new MockIssueLink((long) 4);
 			allOutwardIssueLink.add(link);
 		}
-		if(arg0 == 30) {
-			for(int i=0 ;i<10;i++) {
-				IssueLink link = new MockIssueLink((long)3);
-				((MockIssueLink)link).setSequence((long)i+10);
-				if(i==9) {
-					((MockIssueLink)link).setSequence((long)1);
+		if (arg0 == 30) {
+			for (int i = 0; i < 10; i++) {
+				IssueLink link = new MockIssueLink((long) 3);
+				((MockIssueLink) link).setSequence((long) i + 10);
+				if (i == 9) {
+					((MockIssueLink) link).setSequence((long) 1);
 				}
 				allOutwardIssueLink.add(link);
 			}
 		}
-		if(arg0 == 12) {
-			MockIssueLink link = new MockIssueLink((long)1);
+		if (arg0 == 12) {
+			MockIssueLink link = new MockIssueLink((long) 1);
 			allOutwardIssueLink.add(link);
 		}
 		return allOutwardIssueLink;

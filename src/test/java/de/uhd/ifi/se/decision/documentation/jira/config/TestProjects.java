@@ -24,31 +24,29 @@ import static org.junit.Assert.*;
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestProjects extends TestSetUp {
 
-    private EntityManager entityManager;
-    private ProjectManager projectManager;
+	private EntityManager entityManager;
+	private ProjectManager projectManager;
 
+	@Before
+	public void setUp() {
+		projectManager = new MockProjectManager();
+		new MockComponentWorker().init().addMock(ProjectManager.class, projectManager);
+		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
+				new MockDefaultUserManager());
+		new Projects();
+	}
 
-    private  Projects projects;
+	@Test
+	public void testGetProjectMapNoProject() {
+		Map<String, DecisionKnowledgeProject> map = new HashMap<String, DecisionKnowledgeProject>();
+		assertEquals(map, Projects.getProjectsMap());
+	}
 
-    @Before
-    public void setUp(){
-        projectManager = new MockProjectManager();
-        new MockComponentWorker().init().addMock(ProjectManager.class, projectManager);
-        new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
-        projects = new Projects();
-    }
-
-    @Test
-    public void testGetProjectMapNoProject(){
-       Map<String, DecisionKnowledgeProject> map = new HashMap<String, DecisionKnowledgeProject>();
-        assertEquals(map, this.projects.getProjectsMap());
-    }
-
-    @Test
-    public void testGetProjectMapProjects(){
-        Project project = new MockProject(1, "TEST");
-        ((MockProject) project).setKey("TEST");
-        ((MockProjectManager) projectManager).addProject(project);
-        assertTrue(this.projects.getProjectsMap().size()>=0);
-    }
+	@Test
+	public void testGetProjectMapProjects() {
+		Project project = new MockProject(1, "TEST");
+		((MockProject) project).setKey("TEST");
+		((MockProjectManager) projectManager).addProject(project);
+		assertTrue(Projects.getProjectsMap().size() >= 0);
+	}
 }

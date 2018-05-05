@@ -2,27 +2,21 @@ package de.uhd.ifi.se.decision.documentation.jira.view.treants;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import com.atlassian.activeobjects.test.TestActiveObjects;
-import com.atlassian.jira.mock.MockProjectManager;
-import com.atlassian.jira.mock.component.MockComponentWorker;
-import com.atlassian.jira.project.ProjectManager;
-import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.user.MockApplicationUser;
-import com.atlassian.jira.user.util.MockUserManager;
-import com.atlassian.jira.user.util.UserManager;
+
 import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
-import net.java.ao.EntityManager;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-import org.junit.Before;
-import org.junit.Test;
-
 import de.uhd.ifi.se.decision.documentation.jira.view.treant.Chart;
 import de.uhd.ifi.se.decision.documentation.jira.view.treant.Node;
 import de.uhd.ifi.se.decision.documentation.jira.view.treant.Treant;
-import org.junit.runner.RunWith;
+import net.java.ao.EntityManager;
+import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestTreant extends TestSetUp {
@@ -40,7 +34,8 @@ public class TestTreant extends TestSetUp {
 		this.treant = new Treant();
 		this.treant.setChart(chart);
 		this.treant.setNodeStructure(nodeStructure);
-		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
+		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
+				new MockDefaultUserManager());
 	}
 
 	@Test
@@ -68,8 +63,8 @@ public class TestTreant extends TestSetUp {
 	}
 
 	@Test
-	public void testConstructor(){
+	public void testConstructor() {
 		initialization();
-		this.treant = new Treant("TEST","14",3);
+		this.treant = new Treant("TEST", "14", 3);
 	}
 }

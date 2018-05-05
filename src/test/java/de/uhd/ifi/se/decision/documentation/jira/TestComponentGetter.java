@@ -18,19 +18,16 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 
-
 public class TestComponentGetter {
-
-	private ComponentGetter getter;
 
 	private PluginSettingsFactory factory;
 	private TransactionTemplate transactionTemplate;
 	private IssueService issueService;
 	private ProjectService projectService;
-    private SearchService searchService;
-    private UserManager userManager;
-    private TemplateRenderer templateRenderer;
-    private ActiveObjects ao;
+	private SearchService searchService;
+	private UserManager userManager;
+	private TemplateRenderer templateRenderer;
+	private ActiveObjects ao;
 
 	@Before
 	public void setUp() {
@@ -38,13 +35,13 @@ public class TestComponentGetter {
 		transactionTemplate = mock(TransactionTemplate.class);
 		issueService = mock(IssueService.class);
 		projectService = mock(ProjectService.class);
-		searchService= mock(SearchService.class);
+		searchService = mock(SearchService.class);
 		userManager = new MockDefaultUserManager();
 		templateRenderer = mock(TemplateRenderer.class);
 		ao = mock(ActiveObjects.class);
 
-		getter= new ComponentGetter(factory, transactionTemplate,
-				issueService, projectService, searchService, userManager, templateRenderer, ao);
+		new ComponentGetter(factory, transactionTemplate, issueService, projectService, searchService, userManager,
+				templateRenderer, ao);
 	}
 
 	@Test
@@ -89,7 +86,7 @@ public class TestComponentGetter {
 
 	@Test
 	public void testGetPluginStorageKey() {
-		assertEquals("de.uhd.ifi.se.decision.documentation.jira",ComponentGetter.getPluginStorageKey());
+		assertEquals("de.uhd.ifi.se.decision.documentation.jira", ComponentGetter.getPluginStorageKey());
 	}
 
 	@Test
