@@ -3,9 +3,7 @@ package de.uhd.ifi.se.decision.documentation.jira;
 import java.util.ArrayList;
 
 import com.atlassian.jira.bc.issue.IssueService;
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
-import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -52,9 +50,9 @@ public class TestSetUp {
 
 		new MockComponentWorker().init().addMock(IssueManager.class, issueManager)
 				.addMock(IssueLinkManager.class, new MockIssueLinkManager())
-				.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager()).addMock(IssueService.class, issueService)
-				.addMock(ProjectManager.class, projectManager).addMock(UserManager.class, userManager)
-				.addMock(ConstantsManager.class, constantsManager);
+				.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager())
+				.addMock(IssueService.class, issueService).addMock(ProjectManager.class, projectManager)
+				.addMock(UserManager.class, userManager).addMock(ConstantsManager.class, constantsManager);
 
 	}
 

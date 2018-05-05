@@ -18,45 +18,42 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 
-
 public class TestComponentGetter {
-	
-	private ComponentGetter getter;
-	
+
 	private PluginSettingsFactory factory;
 	private TransactionTemplate transactionTemplate;
-	private IssueService issueService; 
-	private ProjectService projectService; 
-    private SearchService searchService; 
-    private UserManager userManager;
-    private TemplateRenderer templateRenderer;
-    private ActiveObjects ao;
-	
+	private IssueService issueService;
+	private ProjectService projectService;
+	private SearchService searchService;
+	private UserManager userManager;
+	private TemplateRenderer templateRenderer;
+	private ActiveObjects ao;
+
 	@Before
 	public void setUp() {
 		factory = mock(PluginSettingsFactory.class);
 		transactionTemplate = mock(TransactionTemplate.class);
 		issueService = mock(IssueService.class);
 		projectService = mock(ProjectService.class);
-		searchService= mock(SearchService.class);
+		searchService = mock(SearchService.class);
 		userManager = new MockDefaultUserManager();
 		templateRenderer = mock(TemplateRenderer.class);
 		ao = mock(ActiveObjects.class);
-		
-		getter= new ComponentGetter(factory, transactionTemplate,
-				issueService, projectService, searchService, userManager, templateRenderer, ao);
+
+		new ComponentGetter(factory, transactionTemplate, issueService, projectService, searchService, userManager,
+				templateRenderer, ao);
 	}
-	
+
 	@Test
 	public void testgetPluginSettingsFactory() {
 		assertEquals(factory, ComponentGetter.getPluginSettingsFactory());
 	}
-	
+
 	@Test
 	public void testGetTransactionTemplate() {
 		assertEquals(transactionTemplate, ComponentGetter.getTransactionTemplate());
 	}
-	
+
 	@Test
 	public void testGetIssueService() {
 		assertEquals(issueService, ComponentGetter.getIssueService());
@@ -66,32 +63,32 @@ public class TestComponentGetter {
 	public void testGetProjectService() {
 		assertEquals(projectService, ComponentGetter.getProjectService());
 	}
-	
+
 	@Test
 	public void testGetSearchService() {
 		assertEquals(searchService, ComponentGetter.getSearchService());
 	}
-	
+
 	@Test
 	public void testGetUserManager() {
 		assertEquals(userManager, ComponentGetter.getUserManager());
 	}
-	
+
 	@Test
 	public void testGetTemplateRenderer() {
 		assertEquals(templateRenderer, ComponentGetter.getTemplateRenderer());
 	}
-	
+
 	@Test
 	public void testGetActivObjects() {
 		assertEquals(ao, ComponentGetter.getActiveObjects());
 	}
-	
+
 	@Test
 	public void testGetPluginStorageKey() {
-		assertEquals("de.uhd.ifi.se.decision.documentation.jira",ComponentGetter.getPluginStorageKey());
+		assertEquals("de.uhd.ifi.se.decision.documentation.jira", ComponentGetter.getPluginStorageKey());
 	}
-	
+
 	@Test
 	public void testSetAO() {
 		ActiveObjects newao = mock(ActiveObjects.class);
