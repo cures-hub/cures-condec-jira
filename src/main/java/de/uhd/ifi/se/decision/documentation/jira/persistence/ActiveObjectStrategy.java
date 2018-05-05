@@ -273,8 +273,8 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 						if (decCompIngoing.getProjectKey().equals(decCompOutgoing.getProjectKey())) {
 							// entities exist and are in the same project
 							final LinkEntity linkEntity = activeObjects.create(LinkEntity.class);
-							linkEntity.setIngoingElement(getDecisionKnowledgeElement(link.getIngoingId()));
-							linkEntity.setOutgoingElement(getDecisionKnowledgeElement(link.getOutgoingId()));
+							linkEntity.setIngoingId(link.getIngoingId());
+							linkEntity.setOutgoingId(link.getOutgoingId());
 							linkEntity.setLinkType(link.getLinkType());
 							linkEntity.save();
 							linkId = linkEntity.getId();

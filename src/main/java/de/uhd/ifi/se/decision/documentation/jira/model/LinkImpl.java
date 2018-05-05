@@ -46,13 +46,15 @@ public class LinkImpl implements Link {
 		this.linkType = linkType;
 	}
 
-
 	public long getIngoingId() {
 		return ingoingElement.getId();
 	}
 
 	@JsonProperty("ingoingId")
 	public void setIngoingId(long ingoingId) {
+		if (this.ingoingElement == null) {
+			this.ingoingElement = new DecisionKnowledgeElementImpl();
+		}
 		this.ingoingElement.setId(ingoingId);
 	}
 
@@ -60,6 +62,9 @@ public class LinkImpl implements Link {
 		return ingoingElement;
 	}
 
+	public void setIngoingElement(DecisionKnowledgeElement ingoingElement) {
+		this.ingoingElement = ingoingElement;
+	}
 
 	public long getOutgoingId() {
 		return outgoingElement.getId();
@@ -67,15 +72,14 @@ public class LinkImpl implements Link {
 
 	@JsonProperty("outgoingId")
 	public void setOutgoingId(long outgoingId) {
-		this.ingoingElement.setId(outgoingId);
+		if (this.outgoingElement == null) {
+			this.outgoingElement = new DecisionKnowledgeElementImpl();
+		}
+		this.outgoingElement.setId(outgoingId);
 	}
 
 	public DecisionKnowledgeElement getOutgoingElement() {
 		return outgoingElement;
-	}
-
-	public void setIngoingElement(DecisionKnowledgeElement ingoingElement) {
-		this.ingoingElement = ingoingElement;
 	}
 
 	public void setOutgoingElement(DecisionKnowledgeElement outgoingElement) {
