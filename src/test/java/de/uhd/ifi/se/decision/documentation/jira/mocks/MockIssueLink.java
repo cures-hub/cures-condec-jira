@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.documentation.jira.mocks;
 import java.sql.Timestamp;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.project.MockProject;
+import com.atlassian.jira.project.Project;
 import org.ofbiz.core.entity.GenericValue;
 
 import com.atlassian.jira.issue.Issue;
@@ -59,6 +61,9 @@ public class MockIssueLink implements IssueLink{
 		((MockIssue) issue).setIssueType(issueType);
 		((MockIssue) issue).setDescription("Test");
 		((MockIssue) issue).setSummary("Test");
+		Project project = new MockProject(1, "TEST");
+		((MockProject) project).setKey("TEST");
+		((MockIssue) issue).setProjectObject(project);
 		return issue;
 	}
 
@@ -102,6 +107,9 @@ public class MockIssueLink implements IssueLink{
 		((MockIssue) issue).setIssueType(issueType);
 		((MockIssue) issue).setDescription("Test");
 		((MockIssue) issue).setSummary("Test");
+		Project project = new MockProject(1, "TEST");
+		((MockProject) project).setKey("TEST");
+		((MockIssue) issue).setProjectObject(project);
 		return issue;
 	}
 
