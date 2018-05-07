@@ -155,6 +155,9 @@ public class IssueStrategy extends PersistenceStrategy {
 	public DecisionKnowledgeElementImpl getDecisionKnowledgeElement(long id) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue issue = issueManager.getIssueObject(id);
+		if(issue == null){
+			return null;
+		}
 		return new DecisionKnowledgeElementImpl(issue);
 	}
 
