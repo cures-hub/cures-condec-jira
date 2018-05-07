@@ -11,7 +11,7 @@ import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeProjectI
  * @description Test class for configuration settings
  *
  */
-public class TestDecisionKnowledgeElementImpl {
+public class TestDecisionKnowledgeProjectImpl {
 
 	private DecisionKnowledgeProjectImpl jiraProject;
 	private String projectKey;

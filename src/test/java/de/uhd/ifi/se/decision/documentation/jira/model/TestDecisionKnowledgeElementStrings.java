@@ -1,19 +1,30 @@
 package de.uhd.ifi.se.decision.documentation.jira.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
+import com.atlassian.activeobjects.test.TestActiveObjects;
+import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
+import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
+import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
+import net.java.ao.EntityManager;
+import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
+import org.junit.runner.RunWith;
 
 /**
  *
  * @description Test Class for Simple Geter and Setter Tests
  *
  */
-public class TestDecisionKnowledgeElementStrings {
+@RunWith(ActiveObjectsJUnitRunner.class)
+public class TestDecisionKnowledgeElementStrings extends TestSetUp{
+	protected EntityManager entityManager;
 
 	private Long id;
 	private String summary;
@@ -25,6 +36,7 @@ public class TestDecisionKnowledgeElementStrings {
 
 	@Before
 	public void setUp() {
+		initialization();
 		this.id = (long) 100;
 		this.summary = "Test";
 		this.description = "Test";
@@ -33,6 +45,14 @@ public class TestDecisionKnowledgeElementStrings {
 		this.key = "Test";
 
 		this.repre = new DecisionKnowledgeElementImpl(id, summary, description, type, projectKey, key);
+
+		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
+
+	}
+
+	@Test
+	public void testGetTypeAsString(){
+		assertEquals("Solution", repre.getTypeAsString());
 	}
 
 	@Test
@@ -88,5 +108,35 @@ public class TestDecisionKnowledgeElementStrings {
 	public void tstSetPKey() {
 		this.repre.setProjectKey(this.projectKey + "New");
 		assertEquals(this.projectKey + "New", this.repre.getProjectKey());
+	}
+
+	@Test
+	public void testGetKeyKeyNull(){
+		DecisionKnowledgeElementImpl impl = new DecisionKnowledgeElementImpl();
+		impl.setProjectKey("TEST");
+		impl.setId((long) 10);
+		assertEquals("TEST-10", impl.getKey());
+	}
+
+	@Test
+	public void testEqualsFalse(){
+		assertFalse(this.repre.equals(null));
+	}
+
+	@Test
+	public void testEqualsNotTheObject(){
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+		element.setId((long)123);
+		assertFalse(this.repre.equals(element));
+	}
+
+	@Test
+	public void testGetOutwardLinks(){
+		repre.getOutwardLinks();
+	}
+
+	@Test
+	public void testGetInwardLinks(){
+		repre.getInwardLinks();
 	}
 }
