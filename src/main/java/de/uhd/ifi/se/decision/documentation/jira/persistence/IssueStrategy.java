@@ -131,7 +131,10 @@ public class IssueStrategy extends PersistenceStrategy {
 			issueIds = issueManager.getIssueIdsForProject(project.getId());
 		} catch (GenericEntityException e) {
 			issueIds = new ArrayList<Long>();
+		} catch (NullPointerException e){
+			issueIds = new ArrayList<Long>();
 		}
+
 		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
 		for (Long issueId : issueIds) {
 			Issue issue = issueManager.getIssueObject(issueId);
