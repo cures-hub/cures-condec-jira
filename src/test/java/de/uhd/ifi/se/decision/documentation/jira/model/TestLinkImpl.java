@@ -19,6 +19,14 @@ public class TestLinkImpl {
 		linkImpl.setLinkType("Test");
 		linkImpl.setIngoingId((long) 14);
 		linkImpl.setOutgoingId((long) 15);
+		DecisionKnowledgeElement elementIn = new DecisionKnowledgeElementImpl();
+		elementIn.setId((long)14);
+		elementIn.setKey("TestIn");
+		DecisionKnowledgeElement elementOut = new DecisionKnowledgeElementImpl();
+		elementOut.setId((long)15);
+		elementOut.setKey("TestOut");
+		linkImpl.setIngoingElement(elementIn);
+		linkImpl.setOutgoingElement(elementOut);
 	}
 
 	@Test
@@ -29,7 +37,18 @@ public class TestLinkImpl {
 		assertNotNull(linkImp);
 	}
 
-	// TODO
+	@Test
+	public void testConstructorDecisionKnowledgeElement(){
+		DecisionKnowledgeElement elementIn = new DecisionKnowledgeElementImpl();
+		elementIn.setId((long)14);
+		elementIn.setKey("TestInCons");
+		DecisionKnowledgeElement elementOut = new DecisionKnowledgeElementImpl();
+		elementOut.setId((long)15);
+		elementOut.setKey("TestOutCons");
+		LinkImpl impl = new LinkImpl(elementIn,elementOut);
+		assertEquals("TestInCons", impl.getIngoingElement().getKey());
+	}
+
 	@Test
 	public void testConstructorIssueLink() {
 		IssueLink link = new MockIssueLink((long) 54);
@@ -50,5 +69,43 @@ public class TestLinkImpl {
 	@Test
 	public void testGetIngoingId() {
 		assertEquals((long) 14, linkImpl.getIngoingId());
+	}
+
+	@Test
+	public void testSetIngoingId(){
+		linkImpl.setIngoingId((long)323);
+		assertEquals((long) 323, linkImpl.getIngoingId());
+	}
+
+	@Test
+	public void testSetOutGoingId(){
+		linkImpl.setOutgoingId((long) 323);
+		assertEquals((long) 323, linkImpl.getOutgoingId());
+	}
+
+	@Test
+	public void testGetInGoingElement(){
+		assertEquals("TestIn",linkImpl.getIngoingElement().getKey());
+	}
+
+	@Test
+	public void testSetInGoingElement(){
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+		element.setKey("TestNew");
+		linkImpl.setIngoingElement(element);
+		assertEquals(element.getKey(),linkImpl.getIngoingElement().getKey());
+	}
+
+	@Test
+	public void testGetOutGoingElement(){
+		assertEquals("TestOut",linkImpl.getOutgoingElement().getKey());
+	}
+
+	@Test
+	public void testSetOutGoingElement(){
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+		element.setKey("TestNew");
+		linkImpl.setOutgoingElement(element);
+		assertEquals(element.getKey(),linkImpl.getOutgoingElement().getKey());
 	}
 }
