@@ -201,6 +201,9 @@ public class IssueStrategy extends PersistenceStrategy {
 
 	public List<DecisionKnowledgeElement> getLinkedElementsInOutwardDirection(
 			DecisionKnowledgeElement decisionKnowledgeElement) {
+		if(decisionKnowledgeElement == null){
+			return new ArrayList<>();
+		}
 		List<DecisionKnowledgeElement> elementsLinkedWithOutwardLinks = new ArrayList<DecisionKnowledgeElement>();
 		List<IssueLink> outwardIssueLinks = getOutwardIssueLinks(decisionKnowledgeElement);
 		for (IssueLink issueLink : outwardIssueLinks) {
@@ -215,6 +218,9 @@ public class IssueStrategy extends PersistenceStrategy {
 
 	public List<DecisionKnowledgeElement> getLinkedElementsInInwardDirection(
 			DecisionKnowledgeElement decisionKnowledgeElement) {
+		if(decisionKnowledgeElement == null){
+			return new ArrayList<>();
+		}
 		List<DecisionKnowledgeElement> elementsLinkedWithInwardLinks = new ArrayList<DecisionKnowledgeElement>();
 		List<IssueLink> inwardIssueLinks = getInwardIssueLinks(decisionKnowledgeElement);
 		for (IssueLink issueLink : inwardIssueLinks) {
@@ -229,6 +235,9 @@ public class IssueStrategy extends PersistenceStrategy {
 
 	@Override
 	public List<DecisionKnowledgeElement> getParents(DecisionKnowledgeElement decisionKnowledgeElement) {
+		if(decisionKnowledgeElement == null){
+			return new ArrayList<>();
+		}
 		List<IssueLink> inwardIssueLinks = ComponentAccessor.getIssueLinkManager()
 				.getInwardLinks(decisionKnowledgeElement.getId());
 		List<DecisionKnowledgeElement> parents = new ArrayList<DecisionKnowledgeElement>();

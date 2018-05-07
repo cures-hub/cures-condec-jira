@@ -49,7 +49,6 @@ public class TestGetUnlinkedIssues extends TestSetUp {
 	}
 
 	 @Test
-	 (expected = java.lang.NullPointerException.class)
 	 public void testIssueIdFilledProjectKeyDontExist() {
 		assertEquals(200,decRest.getUnlinkedDecisionComponents(7,"NotTEST").getStatus());
 	 }
