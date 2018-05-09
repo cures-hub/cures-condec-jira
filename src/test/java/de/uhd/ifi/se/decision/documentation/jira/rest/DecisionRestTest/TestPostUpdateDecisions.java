@@ -11,17 +11,18 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestPostUpdateDecisions extends TestDecisionSetUp {
+    private final static String UPDATE_ERROR = "Update of decision knowledge element failed.";
     @Test
     public void testActionTypeNullReqNullDecNull() {
         assertEquals(Response.status(Response.Status.BAD_REQUEST)
-                .entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build()
+                .entity(ImmutableMap.of("error", UPDATE_ERROR)).build()
                 .getEntity(), decRest.updateDecisionKnowledgeElement(null,null).getEntity());
     }
 
     @Test
     public void testActionTypeNullReqNullDecFilled() {
         assertEquals(Response.status(Response.Status.BAD_REQUEST)
-                .entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build()
+                .entity(ImmutableMap.of("error", UPDATE_ERROR)).build()
                 .getEntity(), decRest.updateDecisionKnowledgeElement(null, dec).getEntity());
     }
 
@@ -30,21 +31,21 @@ public class TestPostUpdateDecisions extends TestDecisionSetUp {
         req.setAttribute("WithFails", false);
         req.setAttribute("NoFails", true);
         assertEquals(Response.status(Response.Status.BAD_REQUEST)
-                .entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build()
+                .entity(ImmutableMap.of("error", UPDATE_ERROR)).build()
                 .getEntity(), decRest.updateDecisionKnowledgeElement( req, null).getEntity());
     }
 
     @Test
     public void testActionTypecreateReqNullDecNull() {
         assertEquals(Response.status(Response.Status.BAD_REQUEST)
-                .entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build()
+                .entity(ImmutableMap.of("error", UPDATE_ERROR)).build()
                 .getEntity(), decRest.updateDecisionKnowledgeElement(null, null).getEntity());
     }
 
     @Test
     public void testActionTypecreateReqNullDecFilled() {
         assertEquals(Response.status(Response.Status.BAD_REQUEST)
-                .entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build()
+                .entity(ImmutableMap.of("error", UPDATE_ERROR)).build()
                 .getEntity(), decRest.updateDecisionKnowledgeElement( null, dec).getEntity());
     }
 
@@ -53,7 +54,7 @@ public class TestPostUpdateDecisions extends TestDecisionSetUp {
         req.setAttribute("WithFails", false);
         req.setAttribute("NoFails", true);
         assertEquals(Response.status(Response.Status.BAD_REQUEST)
-                .entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build()
+                .entity(ImmutableMap.of("error", UPDATE_ERROR)).build()
                 .getEntity(), decRest.updateDecisionKnowledgeElement( req, null).getEntity());
     }
 
@@ -69,14 +70,14 @@ public class TestPostUpdateDecisions extends TestDecisionSetUp {
     @Test
     public void testActionTypeEditReqNullDecNull() {
         assertEquals(Response.status(Response.Status.BAD_REQUEST)
-                .entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build()
+                .entity(ImmutableMap.of("error", UPDATE_ERROR)).build()
                 .getEntity(), decRest.updateDecisionKnowledgeElement(null, null).getEntity());
     }
 
     @Test
     public void testActionTypeEditReqNullDecFilled() {
         assertEquals(Response.status(Response.Status.BAD_REQUEST)
-                .entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build()
+                .entity(ImmutableMap.of("error", UPDATE_ERROR)).build()
                 .getEntity(), decRest.updateDecisionKnowledgeElement(null, dec).getEntity());
     }
 }

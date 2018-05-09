@@ -21,6 +21,8 @@ public class TestLinkDecisionComponents extends TestDecisionSetUp {
     private EntityManager entityManager;
     private DecisionsRest decRest;
 
+    private final static String UNLINKED_ERRROR = "Unlinked decision components could not be received due to a bad request (element id or project key was missing).";
+
     @Before
     public void setUp() {
         decRest = new DecisionsRest();
@@ -31,16 +33,14 @@ public class TestLinkDecisionComponents extends TestDecisionSetUp {
     @Test
     public void testIssueIdZeroProjectKeyNull() {
         assertEquals(Response.status(Response.Status.BAD_REQUEST)
-                .entity(ImmutableMap.of("error",
-                        "Unlinked decision components could not be received due to a bad request (element id or project key was missing)."))
+                .entity(ImmutableMap.of("error", UNLINKED_ERRROR))
                 .build().getEntity(), decRest.getLinkedDecisionComponents(0, null).getEntity());
     }
 
     @Test
     public void testIssueIdFilledProjectKeyNull() {
         assertEquals(Response.status(Response.Status.BAD_REQUEST)
-                .entity(ImmutableMap.of("error",
-                        "Unlinked decision components could not be received due to a bad request (element id or project key was missing)."))
+                .entity(ImmutableMap.of("error", UNLINKED_ERRROR))
                 .build().getEntity(), decRest.getLinkedDecisionComponents(7, null).getEntity());
     }
 

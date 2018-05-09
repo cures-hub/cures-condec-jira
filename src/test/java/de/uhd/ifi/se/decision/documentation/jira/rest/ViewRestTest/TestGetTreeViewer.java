@@ -43,12 +43,14 @@ public class TestGetTreeViewer extends TestSetUp {
 
 	@Test
 	public void testProjectKeyNull() throws GenericEntityException {
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", INVALID_PROJECTKEY)).build().getEntity(), viewRest.getTreeViewer(null).getEntity());
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", INVALID_PROJECTKEY))
+				.build().getEntity(), viewRest.getTreeViewer(null).getEntity());
 	}
 
 	@Test
 	public void testProjectKeyDontExist() throws GenericEntityException {
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", INVALID_PROJECTKEY)).build().getEntity(), viewRest.getTreeViewer("NotTEST").getEntity());
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", INVALID_PROJECTKEY))
+				.build().getEntity(), viewRest.getTreeViewer("NotTEST").getEntity());
 	}
 
 

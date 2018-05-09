@@ -21,6 +21,7 @@ public class TestGetDecisionKnowledgeElement extends TestDecisionSetUp {
     private EntityManager entityManager;
     private DecisionsRest decRest;
 
+    private final static String ERROR_MISSING_KEY_ID = "Decision knowledge element could not be received due to a bad request (element id or project key was missing).";
     @Before
     public void setUp() {
         decRest = new DecisionsRest();
@@ -31,16 +32,14 @@ public class TestGetDecisionKnowledgeElement extends TestDecisionSetUp {
     @Test
     public void testIssueIdZeroProjectKeyNull() {
         assertEquals(Response.status(Response.Status.BAD_REQUEST)
-                .entity(ImmutableMap.of("error",
-                        "Decision knowledge element could not be received due to a bad request (element id or project key was missing)."))
+                .entity(ImmutableMap.of("error",ERROR_MISSING_KEY_ID))
                 .build().getEntity(), decRest.getDecisionKnowledgeElement(0, null).getEntity());
     }
 
     @Test
     public void testIssueIdFilledProjectKeyNull() {
         assertEquals(Response.status(Response.Status.BAD_REQUEST)
-                .entity(ImmutableMap.of("error",
-                        "Decision knowledge element could not be received due to a bad request (element id or project key was missing)."))
+                .entity(ImmutableMap.of("error",ERROR_MISSING_KEY_ID))
                 .build().getEntity(), decRest.getDecisionKnowledgeElement(7, null).getEntity());
     }
 
