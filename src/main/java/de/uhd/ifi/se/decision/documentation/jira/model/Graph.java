@@ -33,18 +33,30 @@ public class Graph {
 	}
 
 	public boolean addElement(DecisionKnowledgeElement element) {
+		if(element == null){
+			return false;
+		}
 		return elements.add(element);
 	}
 
 	public boolean addElements(Collection<DecisionKnowledgeElement> elements) {
+		if(elements == null){
+			return false;
+		}
 		return this.elements.addAll(elements);
 	}
 
 	public boolean removeElement(DecisionKnowledgeElement element) {
+		if(element == null){
+			return false;
+		}
 		return elements.remove(element);
 	}
 
 	public boolean addLink(Link link) {
+		if(link == null){
+			return false;
+		}
 		if (!links.add(link))
 			return false;
 
@@ -61,13 +73,20 @@ public class Graph {
 	}
 
 	public boolean addLink(DecisionKnowledgeElement ingoingElement, DecisionKnowledgeElement outgoingElement) {
+		if(ingoingElement == null || outgoingElement == null){
+			return false;
+		}
 		return addLink(new LinkImpl(ingoingElement, outgoingElement));
 	}
 
-	public void addLinks(List<Link> links) {
+	public boolean addLinks(List<Link> links) {
+		if(links == null || links.size() == 0){
+			return false;
+		}
 		for (Link link : links) {
 			this.addLink(link);
 		}
+		return true;
 	}
 
 	public Set<Link> getLinks() {
@@ -75,6 +94,9 @@ public class Graph {
 	}
 
 	public void setLinks(Set<Link> links) {
+		if(links == null){
+			return;
+		}
 		this.links = links;
 	}
 
@@ -83,6 +105,9 @@ public class Graph {
 	}
 
 	public void setElements(Set<DecisionKnowledgeElement> elements) {
+		if(elements == null){
+			return;
+		}
 		this.elements = elements;
 	}
 
@@ -91,6 +116,9 @@ public class Graph {
 	}
 
 	public void setLinkedElements(Map<DecisionKnowledgeElement, Set<Link>> linkedElements) {
+		if(linkedElements == null){
+			return;
+		}
 		this.linkedElements = linkedElements;
 	}
 }

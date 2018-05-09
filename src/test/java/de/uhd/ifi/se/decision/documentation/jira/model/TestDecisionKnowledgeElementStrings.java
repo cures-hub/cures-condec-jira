@@ -24,7 +24,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestDecisionKnowledgeElementStrings extends TestSetUp{
-	protected EntityManager entityManager;
+	private EntityManager entityManager;
 
 	private Long id;
 	private String summary;
