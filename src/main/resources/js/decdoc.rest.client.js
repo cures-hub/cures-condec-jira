@@ -238,7 +238,7 @@ function setIssueStrategy(isIssueStrategy, projectKey) {
 }
 
 function isIssueStrategy(projectKey,callback) {
-    getJSON(AJS.contextPath() + "/rest/decisions/latest/view/isIssueStrategy.json?projectKey=" + getProjectKey(), function(
+    getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isIssueStrategy.json?projectKey=" + getProjectKey(), function(
         error, isIssueBoolean) {
         if (error == null) {
             callback(isIssueBoolean)

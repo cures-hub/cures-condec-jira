@@ -61,19 +61,6 @@ public class ViewRest {
 		return Response.ok(treant).build();
 	}
 
-	//TODO Testing
-	@Path("/isIssueStrategy")
-	@GET
-	public Response isIssueStrategy(@QueryParam("projectKey") final String projectKey){
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		Boolean isIssueStrategy = ConfigPersistence.isIssueStrategy(projectKey);
-		return Response.ok(isIssueStrategy).build();
-
-	}
-
 	private Response checkIfProjectKeyIsValid(String projectKey) {
 		if (projectKey == null) {
 			return projectKeyIsInvalid();

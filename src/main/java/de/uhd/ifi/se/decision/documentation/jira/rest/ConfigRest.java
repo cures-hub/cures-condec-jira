@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.documentation.jira.rest;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
@@ -33,6 +34,19 @@ public class ConfigRest {
 	@Inject
 	public ConfigRest(UserManager userManager) {
 		this.userManager = userManager;
+	}
+
+	//TODO Testing
+	@Path("/isIssueStrategy")
+	@GET
+	public Response isIssueStrategy(@QueryParam("projectKey") final String projectKey){
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		Boolean isIssueStrategy = ConfigPersistence.isIssueStrategy(projectKey);
+		return Response.ok(isIssueStrategy).build();
+
 	}
 
 	@Path("/setActivated")
