@@ -158,6 +158,9 @@ var contextMenuEditAction = {
 }
 
 function setUpContextMenuContentForEditAction(id) {
+    var url = AJS.contextPath() + "/secure/EditIssue!default.jspa?id="+ id;
+    window.location.href = url;
+	/*
 	setUpModal();
 	setHeaderText(editKnowledgeElementText);
 	getDecisionKnowledgeElement(id, function (decisionKnowledgeElement) {
@@ -174,6 +177,7 @@ function setUpContextMenuContentForEditAction(id) {
             closeModal();
         };
     });
+    */
 }
 
 var contextMenuDeleteAction = {
