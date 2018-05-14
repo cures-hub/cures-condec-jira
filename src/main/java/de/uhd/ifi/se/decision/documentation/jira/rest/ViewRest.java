@@ -8,6 +8,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.documentation.jira.persistence.ConfigPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +59,19 @@ public class ViewRest {
 		}
 		Treant treant = new Treant(projectKey, elementKey, depth);
 		return Response.ok(treant).build();
+	}
+
+	//TODO Testing
+	@Path("/isIssueStrategy")
+	@GET
+	public Response isIssueStrategy(@QueryParam("projectKey") final String projectKey){
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		Boolean isIssueStrategy = ConfigPersistence.isIssueStrategy(projectKey);
+		return Response.ok(isIssueStrategy).build();
+
 	}
 
 	private Response checkIfProjectKeyIsValid(String projectKey) {

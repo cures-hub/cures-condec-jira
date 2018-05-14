@@ -158,26 +158,29 @@ var contextMenuEditAction = {
 }
 
 function setUpContextMenuContentForEditAction(id) {
-    var url = AJS.contextPath() + "/secure/EditIssue!default.jspa?id="+ id;
-    window.location.href = url;
-	/*
-	setUpModal();
-	setHeaderText(editKnowledgeElementText);
-	getDecisionKnowledgeElement(id, function (decisionKnowledgeElement) {
-        var summary = decisionKnowledgeElement.summary;
-        var description = decisionKnowledgeElement.description;
-        var type = decisionKnowledgeElement.type;
-        setUpContextMenuContent(summary, description, type, editKnowledgeElementText);
-        var submitButton = document.getElementById("form-input-submit");
-        submitButton.onclick = function () {
-            var summary = document.getElementById("form-input-summary").value;
-            var description = document.getElementById("form-input-description").value;
-            var type = $("select[name='form-select-type']").val();
-            editDecisionKnowledgeElementAsChild(summary, description, type, id);
-            closeModal();
-        };
-    });
-    */
+	isIssueStrategy(id,function (isIssueBoolean) {
+		if(isIssueBoolean == true){
+            var url = AJS.contextPath() + "/secure/EditIssue!default.jspa?id="+ id;
+            window.location.href = url;
+		} else{
+            setUpModal();
+            setHeaderText(editKnowledgeElementText);
+            getDecisionKnowledgeElement(id, function (decisionKnowledgeElement) {
+                var summary = decisionKnowledgeElement.summary;
+                var description = decisionKnowledgeElement.description;
+                var type = decisionKnowledgeElement.type;
+                setUpContextMenuContent(summary, description, type, editKnowledgeElementText);
+                var submitButton = document.getElementById("form-input-submit");
+                submitButton.onclick = function () {
+                    var summary = document.getElementById("form-input-summary").value;
+                    var description = document.getElementById("form-input-description").value;
+                    var type = $("select[name='form-select-type']").val();
+                    editDecisionKnowledgeElementAsChild(summary, description, type, id);
+                    closeModal();
+                }
+			});
+		}
+	});
 }
 
 var contextMenuDeleteAction = {

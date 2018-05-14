@@ -237,6 +237,17 @@ function setIssueStrategy(isIssueStrategy, projectKey) {
 	});
 }
 
+function isIssueStrategy(projectKey,callback) {
+    getJSON(AJS.contextPath() + "/rest/decisions/latest/view/isIssueStrategy.json?projectKey=" + getProjectKey(), function(
+        error, isIssueBoolean) {
+        if (error == null) {
+            callback(isIssueBoolean)
+        } else {
+            showFlag("error", "Strategy for the Project could not be received. Error-Code: " + error);
+        }
+    });
+}
+
 function showFlag(type, message) {
 	AJS.flag({
 		type : type,
