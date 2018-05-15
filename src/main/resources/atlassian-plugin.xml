@@ -111,6 +111,17 @@
 		<url-pattern>/adminservlet</url-pattern>
 	</servlet>
 
+	<!-- Project Settings -->
+	<web-section key="decisions-tabs-section" name="Web Section for DecDoc Plugin-in Project Settings"
+				 location="atl.jira.proj.config">
+		<label>Decisions</label>
+	</web-section>
+	<web-item name="decdoc-project-settings" key="decdoc-project-settings-activation" section="atl.jira.proj.config/decisions-tabs-section" weight="15">
+		<description>Adds the "DecDoc" Project Settings Menu to the ProjectSettings</description>
+		<label key="DecDoc Project Settings">DecDoc Project Settings</label>
+		<link>/plugins/servlet/adminservlet</link>
+	</web-item>
+
 	<!-- Active Objects -->
 	<ao key="ao-module" name="Active Objects Service">
 		<description>
