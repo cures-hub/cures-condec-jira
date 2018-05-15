@@ -112,6 +112,14 @@
 	</servlet>
 
 	<!-- Project Settings -->
+	<webwork1 key="decdoc-project-settings-action" name="DecDocProjectSettingsAction">
+		<description>The DecDoc Project Settings Action</description>
+		<actions>
+			<action name="de.uhd.ifi.se.decision.documentation.jira.config.ProjectSettings" alias="decdocProjectSettings">
+				<view name="input">/templates/projectSettings.vm</view>
+			</action>
+		</actions>
+	</webwork1>
 	<web-section key="decisions-tabs-section" name="Web Section for DecDoc Plugin-in Project Settings"
 				 location="atl.jira.proj.config">
 		<label>Decisions</label>
@@ -119,8 +127,10 @@
 	<web-item name="decdoc-project-settings" key="decdoc-project-settings-activation" section="atl.jira.proj.config/decisions-tabs-section" weight="15">
 		<description>Adds the "DecDoc" Project Settings Menu to the ProjectSettings</description>
 		<label key="DecDoc Project Settings">DecDoc Project Settings</label>
-		<link>/plugins/servlet/adminservlet</link>
+		<link linkId="decdoc-project-settings">/secure/decdocProjectSettings!default.jspa</link>
 	</web-item>
+
+
 
 	<!-- Active Objects -->
 	<ao key="ao-module" name="Active Objects Service">
