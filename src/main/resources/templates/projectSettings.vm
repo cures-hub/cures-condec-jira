@@ -5,11 +5,18 @@
     <meta name="decorator" content="atl.admin">
     <meta name="admin.active.section" content="atl.jira.proj.config"/>
     <meta name="admin.active.tab" content="decdoc-project-settings-activation"/>
+    <meta name="admin.active.tab" content="jira-menu-item1">
 
 </head>
 
 <body>
     <h2>DecDoc Project Settings</h2>
-    <p>This is only a Placeholder till the Page is finished</p>
+    <table>
+        <tr>
+            <th>Project Name</th>
+            <th>DecDoc Activated?</th>
+            <th>Use JIRA Issues to Store Decision Knowledge?</th>
+        </tr>
+    </table>
 </body>
 </html>
