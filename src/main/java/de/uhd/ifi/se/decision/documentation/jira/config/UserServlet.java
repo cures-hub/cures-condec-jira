@@ -4,6 +4,7 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.ConfigPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +12,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Path;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
@@ -19,6 +21,7 @@ import java.util.Map;
 public class UserServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServlet.class);
+    private ConfigPersistence configPersistence;
 
     @ComponentImport
     private UserManager userManager;
@@ -33,6 +36,7 @@ public class UserServlet extends HttpServlet {
         this.userManager = userManager;
         this.loginUriProvider = loginUriProvider;
         this.templateRenderer = renderer;
+        this.configPersistence = new ConfigPersistence();
     }
 
     @Override
@@ -46,10 +50,17 @@ public class UserServlet extends HttpServlet {
             redirectToLogin(request, response);
             return;
         }
-        Map<String, Object> velocityParams = new HashMap<String, Object>();
+        String projectKey = request.getParameter("projectKey");
+        Boolean isActivated = configPersistence.isActivated(projectKey);
+        Boolean isIssueStrategy = configPersistence.isIssueStrategy(projectKey);
 
         response.setContentType("text/html;charset=utf-8");
+
+        Map<String, Object> velocityParams = new HashMap<String, Object>();
         velocityParams.put("requestUrl", request.getRequestURL());
+        velocityParams.put("projectKey", projectKey);
+        velocityParams.put("isActivated", isActivated);
+        velocityParams.put("isIssueStrategy", isIssueStrategy);
         templateRenderer.render("templates/projectSettings.vm", velocityParams, response.getWriter());
     }
 
