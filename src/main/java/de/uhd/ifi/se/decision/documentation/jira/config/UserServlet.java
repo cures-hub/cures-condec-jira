@@ -12,7 +12,6 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.Path;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
@@ -46,7 +45,7 @@ public class UserServlet extends HttpServlet {
             return;
         }
         String username = userManager.getRemoteUsername(request);
-        if (username == null) {
+        if (username == null || userManager.isAdmin(username)) {
             redirectToLogin(request, response);
             return;
         }
