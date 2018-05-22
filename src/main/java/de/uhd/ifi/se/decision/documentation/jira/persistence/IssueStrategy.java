@@ -338,8 +338,8 @@ public class IssueStrategy extends PersistenceStrategy {
 	public List<Link> getOutwardLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<IssueLink> outwardIssueLinks = getOutwardIssueLinks(decisionKnowledgeElement);
 		List<Link> outwardLinks = new ArrayList<Link>();
-		for (IssueLink inwardIssueLink : outwardIssueLinks) {
-			outwardLinks.add(new LinkImpl(inwardIssueLink));
+		for (IssueLink outwardIssueLink : outwardIssueLinks) {
+			outwardLinks.add(new LinkImpl(outwardIssueLink));
 		}
 		return outwardLinks;
 	}
