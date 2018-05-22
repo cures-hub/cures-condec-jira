@@ -41,43 +41,9 @@ public class Treant {
 	}
 
 	public Treant(String projectKey, String elementKey, int depth) {
-		StrategyProvider strategyProvider = new StrategyProvider();
-		strategy = strategyProvider.getStrategy(projectKey);
-		DecisionKnowledgeElement decisionKnowledgeElement = strategy.getDecisionKnowledgeElement(elementKey);
+		Graph graph = new Graph(projectKey,elementKey,depth);
 		this.setChart(new Chart());
-
-//		Graph graph = new Graph(decisionKnowledgeElement);
-//		Node node = new Node(decisionKnowledgeElement);
-//		List<Node> nodes = new ArrayList<Node>();
-//		Map<DecisionKnowledgeElement, Set<Link>> linkedElements = graph.getLinkedElements();
-//		for (Map.Entry<DecisionKnowledgeElement, Set<Link>> linkedElement : linkedElements.entrySet()) {
-//			DecisionKnowledgeElement element = linkedElement.getKey();
-//			System.out.println("Summary " + element.getSummary());
-//			Set<Link> links = linkedElement.getValue();
-//			System.out.println("Number of links " + links.size());
-//			for (Link link : links) {
-//				nodes.add(new Node(link.getOutgoingElement()));
-//				//nodes.add(new Node(link.getIngoingElement()));
-//			}
-//		}
-//		node.setChildren(nodes);
-//		this.setNodeStructure(node);
-		this.setNodeStructure(createNodeStructure(decisionKnowledgeElement, depth, 0));
-	}
-
-	private Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
-		Node node = new Node(decisionKnowledgeElement);
-
-		if (currentDepth + 1 < depth) {
-			List<Node> nodes = new ArrayList<Node>();
-			List<DecisionKnowledgeElement> children = strategy.getChildren(decisionKnowledgeElement);
-
-			for (DecisionKnowledgeElement child : children) {
-				nodes.add(createNodeStructure(child, depth, currentDepth + 1));
-			}
-			node.setChildren(nodes);
-		}
-		return node;
+		this.setNodeStructure(graph.getNodeStructure());
 	}
 
 	public Chart getChart() {

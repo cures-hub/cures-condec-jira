@@ -1,35 +1,43 @@
 package de.uhd.ifi.se.decision.documentation.jira.model;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
+import de.uhd.ifi.se.decision.documentation.jira.view.treant.Node;
+
+import java.util.*;
 
 public class Graph {
+
+	private PersistenceStrategy strategy;
 
 	private Set<DecisionKnowledgeElement> elements;
 	private Set<Link> links;
 	private Map<DecisionKnowledgeElement, Set<Link>> linkedElements;
+	private List<Long> containedLinkIds;
 
-	public Graph() {
+	private Node nodeStructure;
+
+	public Graph(String projectKey) {
+		StrategyProvider strategyProvider = new StrategyProvider();
+		strategy = strategyProvider.getStrategy(projectKey);
 		this.elements = new HashSet<DecisionKnowledgeElement>();
 		this.links = new HashSet<Link>();
 		this.linkedElements = new HashMap<DecisionKnowledgeElement, Set<Link>>();
 	}
 
-	public Graph(DecisionKnowledgeElement rootElement) {
-		this();
-		List<Link> outwardLinks = rootElement.getOutwardLinks();
+	public Graph(String projectKey, String rootElement) {
+		this(projectKey);
+		DecisionKnowledgeElement decisionRootElement = strategy.getDecisionKnowledgeElement(rootElement);
+		List<Link> outwardLinks = decisionRootElement.getOutwardLinks();
 		this.addLinks(outwardLinks);
-		List<Link> inwardLinks = rootElement.getInwardLinks();
+		List<Link> inwardLinks = decisionRootElement.getInwardLinks();
 		this.addLinks(inwardLinks);
 	}
 
-	public Graph(DecisionKnowledgeElement rootElement, int linkDistance) {
-		this(rootElement);
-		// TODO Build graph from root element
+	public Graph(String projectKey, String rootElement, int linkDistance) {
+		this(projectKey, rootElement);
+		DecisionKnowledgeElement decisionRootElement = strategy.getDecisionKnowledgeElement(rootElement);
+		nodeStructure = createNodeStructure(decisionRootElement,linkDistance,0);
 	}
 
 	public boolean addElement(DecisionKnowledgeElement element) {
@@ -120,5 +128,24 @@ public class Graph {
 			return;
 		}
 		this.linkedElements = linkedElements;
+	}
+
+	public Node getNodeStructure() {
+		return nodeStructure;
+	}
+
+	private Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
+		Node node = new Node(decisionKnowledgeElement);
+
+		if (currentDepth + 1 < depth) {
+			List<Node> nodes = new ArrayList<Node>();
+			List<DecisionKnowledgeElement> children = strategy.getChildren(decisionKnowledgeElement);
+
+			for (DecisionKnowledgeElement child : children) {
+				nodes.add(createNodeStructure(child, depth, currentDepth + 1));
+			}
+			node.setChildren(nodes);
+		}
+		return node;
 	}
 }
