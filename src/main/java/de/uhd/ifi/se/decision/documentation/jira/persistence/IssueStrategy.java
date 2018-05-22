@@ -346,7 +346,7 @@ public class IssueStrategy extends PersistenceStrategy {
 
 	public List<IssueLink> getOutwardIssueLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<IssueLink> outwardIssueLinks = ComponentAccessor.getIssueLinkManager()
-				.getInwardLinks(decisionKnowledgeElement.getId());
+				.getOutwardLinks(decisionKnowledgeElement.getId());
 		return outwardIssueLinks;
 	}
 

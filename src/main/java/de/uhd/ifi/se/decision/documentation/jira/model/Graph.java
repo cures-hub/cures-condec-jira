@@ -14,6 +14,7 @@ public class Graph {
 	private Node nodeStructure;
 
 	public Graph(String projectKey) {
+		containedLinkIds = new ArrayList<>();
 		StrategyProvider strategyProvider = new StrategyProvider();
 		strategy = strategyProvider.getStrategy(projectKey);
 	}
@@ -38,8 +39,6 @@ public class Graph {
 
 		if (currentDepth + 1 < depth) {
 			List<Node> nodes = new ArrayList<Node>();
-			// Moving getChildren in Graph
-			// List<DecisionKnowledgeElement> children = strategy.getChildren(decisionKnowledgeElement);
 			List<DecisionKnowledgeElement> children = computeChildElements(decisionKnowledgeElement) ;
 
 			for (DecisionKnowledgeElement child : children) {
@@ -56,9 +55,10 @@ public class Graph {
 		List<Link> outwardIssueLinks = strategy.getOutwardLinks(decisionRootElement);
 		if (decisionRootElement.getType() != KnowledgeType.ARGUMENT) {
 			for (Link link : outwardIssueLinks) {
-				DecisionKnowledgeElement outwardElement = link.getOutgoingElement();
+				DecisionKnowledgeElement outwardElement = link.getDestinationObject();
 				if (outwardElement != null) {
 					if (outwardElement.getType() != KnowledgeType.ARGUMENT) {
+						containedLinkIds.add(link.getLinkId());
 						children.add(outwardElement);
 					}
 				}
@@ -66,10 +66,11 @@ public class Graph {
 		}
 
 		List<Link> inwardIssueLinks = strategy.getInwardLinks(decisionRootElement);
-		for (Link issueLink : inwardIssueLinks) {
-			DecisionKnowledgeElement inwardElement = issueLink.getIngoingElement();
+		for (Link link : inwardIssueLinks) {
+			DecisionKnowledgeElement inwardElement = link.getSourceObject();
 			if (inwardElement != null) {
 				if (inwardElement.getType() == KnowledgeType.ARGUMENT) {
+					containedLinkIds.add(link.getLinkId());
 					children.add(inwardElement);
 				}
 			}

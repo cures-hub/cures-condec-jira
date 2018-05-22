@@ -19,14 +19,14 @@ public interface LinkEntity extends Link, RawEntity<Integer> {
 	public long getId();
 
 	@Ignore
-	public DecisionKnowledgeElement getOutgoingElement();
+	public DecisionKnowledgeElement getDestinationObject();
 
 	@Ignore
-	public DecisionKnowledgeElement getIngoingElement();
+	public DecisionKnowledgeElement getSourceObject();
 
 	@Ignore
-	public void setOutgoingElement(DecisionKnowledgeElement decisionKnowledgeElement);
+	public void setDestinationObject(DecisionKnowledgeElement decisionKnowledgeElement);
 
 	@Ignore
-	public void setIngoingElement(DecisionKnowledgeElement decisionKnowledgeElement);
+	public void setSourceObject(DecisionKnowledgeElement decisionKnowledgeElement);
 }

@@ -11,31 +11,43 @@ import de.uhd.ifi.se.decision.documentation.jira.persistence.LinkEntity;
  * @description Model class for links between decision knowledge elements
  */
 public class LinkImpl implements Link {
+
+
+	private Long linkId;
 	private String linkType;
-	private DecisionKnowledgeElement ingoingElement;
-	private DecisionKnowledgeElement outgoingElement;
+	private DecisionKnowledgeElement sourceElement;
+	private DecisionKnowledgeElement destinationElement;
 
 	public LinkImpl() {
-		this.ingoingElement = new DecisionKnowledgeElementImpl();
-		this.outgoingElement = new DecisionKnowledgeElementImpl();
+		this.sourceElement = new DecisionKnowledgeElementImpl();
+		this.destinationElement = new DecisionKnowledgeElementImpl();
 	}
 
 	public LinkImpl(DecisionKnowledgeElement ingoingElement, DecisionKnowledgeElement outgoingElement) {
-		this.ingoingElement = ingoingElement;
-		this.outgoingElement = outgoingElement;
+		this.sourceElement = ingoingElement;
+		this.destinationElement = outgoingElement;
 	}
 
 	public LinkImpl(IssueLink link) {
+		this.linkId = link.getId();
 		this.linkType = link.getIssueLinkType().getName();
 		Issue sourceIssue = link.getSourceObject();
-		this.ingoingElement = new DecisionKnowledgeElementImpl(sourceIssue);
+		this.sourceElement = new DecisionKnowledgeElementImpl(sourceIssue);
 		Issue destinationIssue = link.getDestinationObject();
-		this.outgoingElement = new DecisionKnowledgeElementImpl(destinationIssue);
+		this.destinationElement = new DecisionKnowledgeElementImpl(destinationIssue);
 	}
 
 	public LinkImpl(LinkEntity link) {
 		this();
 		this.linkType = link.getLinkType();
+	}
+
+	public Long getLinkId() {
+		return linkId;
+	}
+
+	public void setLinkId(Long linkId) {
+		this.linkId = linkId;
 	}
 
 	public String getLinkType() {
@@ -47,42 +59,42 @@ public class LinkImpl implements Link {
 	}
 
 	public long getIngoingId() {
-		return ingoingElement.getId();
+		return sourceElement.getId();
 	}
 
 	@JsonProperty("ingoingId")
 	public void setIngoingId(long ingoingId) {
-		if (this.ingoingElement == null) {
-			this.ingoingElement = new DecisionKnowledgeElementImpl();
+		if (this.sourceElement == null) {
+			this.sourceElement = new DecisionKnowledgeElementImpl();
 		}
-		this.ingoingElement.setId(ingoingId);
+		this.sourceElement.setId(ingoingId);
 	}
 
-	public DecisionKnowledgeElement getIngoingElement() {
-		return ingoingElement;
+	public DecisionKnowledgeElement getSourceObject() {
+		return sourceElement;
 	}
 
-	public void setIngoingElement(DecisionKnowledgeElement ingoingElement) {
-		this.ingoingElement = ingoingElement;
+	public void setSourceObject(DecisionKnowledgeElement ingoingElement) {
+		this.sourceElement = ingoingElement;
 	}
 
 	public long getOutgoingId() {
-		return outgoingElement.getId();
+		return destinationElement.getId();
 	}
 
 	@JsonProperty("outgoingId")
 	public void setOutgoingId(long outgoingId) {
-		if (this.outgoingElement == null) {
-			this.outgoingElement = new DecisionKnowledgeElementImpl();
+		if (this.destinationElement == null) {
+			this.destinationElement = new DecisionKnowledgeElementImpl();
 		}
-		this.outgoingElement.setId(outgoingId);
+		this.destinationElement.setId(outgoingId);
 	}
 
-	public DecisionKnowledgeElement getOutgoingElement() {
-		return outgoingElement;
+	public DecisionKnowledgeElement getDestinationObject() {
+		return destinationElement;
 	}
 
-	public void setOutgoingElement(DecisionKnowledgeElement outgoingElement) {
-		this.outgoingElement = outgoingElement;
+	public void setDestinationObject(DecisionKnowledgeElement outgoingElement) {
+		this.destinationElement = outgoingElement;
 	}
 }

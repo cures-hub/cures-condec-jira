@@ -8,6 +8,10 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 @JsonDeserialize(as = LinkImpl.class)
 public interface Link {
 
+	public Long getLinkId();
+
+	public void setLinkId(Long linkId);
+
 	public String getLinkType();
 
 	public void setLinkType(String linkType);
@@ -16,15 +20,15 @@ public interface Link {
 
 	public void setIngoingId(long ingoingId);
 
-	public DecisionKnowledgeElement getIngoingElement();
+	public DecisionKnowledgeElement getSourceObject();
 
-	public void setIngoingElement(DecisionKnowledgeElement decisionKnowledgeElement);
+	public void setSourceObject(DecisionKnowledgeElement decisionKnowledgeElement);
 
 	public long getOutgoingId();
 
 	public void setOutgoingId(long outgoingId);
 
-	public DecisionKnowledgeElement getOutgoingElement();
+	public DecisionKnowledgeElement getDestinationObject();
 
-	public void setOutgoingElement(DecisionKnowledgeElement decisionKnowledgeElement);
+	public void setDestinationObject(DecisionKnowledgeElement decisionKnowledgeElement);
 }

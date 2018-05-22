@@ -325,8 +325,8 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 				Query.select().where("OUTGOING_ID = ?", decisionKnowledgeElement.getId()));
 		for (LinkEntity link : links) {
 			Link inwardLink = new LinkImpl(link);
-			inwardLink.setOutgoingElement(decisionKnowledgeElement);
-			inwardLink.setIngoingElement(this.getDecisionKnowledgeElement(link.getIngoingId()));
+			inwardLink.setDestinationObject(decisionKnowledgeElement);
+			inwardLink.setSourceObject(this.getDecisionKnowledgeElement(link.getIngoingId()));
 			inwardLinks.add(inwardLink);
 		}
 		return inwardLinks;
@@ -339,8 +339,8 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 				Query.select().where("INGOING_ID = ?", decisionKnowledgeElement.getId()));
 		for (LinkEntity link : links) {
 			Link outwardLink = new LinkImpl(link);
-			outwardLink.setIngoingElement(decisionKnowledgeElement);
-			outwardLink.setOutgoingElement(this.getDecisionKnowledgeElement(link.getOutgoingId()));
+			outwardLink.setSourceObject(decisionKnowledgeElement);
+			outwardLink.setDestinationObject(this.getDecisionKnowledgeElement(link.getOutgoingId()));
 			outwardLinks.add(outwardLink);
 		}
 		return outwardLinks;

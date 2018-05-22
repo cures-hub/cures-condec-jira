@@ -25,8 +25,8 @@ public class TestLinkImpl {
 		DecisionKnowledgeElement elementOut = new DecisionKnowledgeElementImpl();
 		elementOut.setId((long)15);
 		elementOut.setKey("TestOut");
-		linkImpl.setIngoingElement(elementIn);
-		linkImpl.setOutgoingElement(elementOut);
+		linkImpl.setSourceObject(elementIn);
+		linkImpl.setDestinationObject(elementOut);
 	}
 
 	@Test
@@ -46,7 +46,7 @@ public class TestLinkImpl {
 		elementOut.setId((long)15);
 		elementOut.setKey("TestOutCons");
 		LinkImpl impl = new LinkImpl(elementIn,elementOut);
-		assertEquals("TestInCons", impl.getIngoingElement().getKey());
+		assertEquals("TestInCons", impl.getSourceObject().getKey());
 	}
 
 	@Test
@@ -85,27 +85,27 @@ public class TestLinkImpl {
 
 	@Test
 	public void testGetInGoingElement(){
-		assertEquals("TestIn",linkImpl.getIngoingElement().getKey());
+		assertEquals("TestIn",linkImpl.getSourceObject().getKey());
 	}
 
 	@Test
 	public void testSetInGoingElement(){
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
 		element.setKey("TestNew");
-		linkImpl.setIngoingElement(element);
-		assertEquals(element.getKey(),linkImpl.getIngoingElement().getKey());
+		linkImpl.setSourceObject(element);
+		assertEquals(element.getKey(),linkImpl.getSourceObject().getKey());
 	}
 
 	@Test
 	public void testGetOutGoingElement(){
-		assertEquals("TestOut",linkImpl.getOutgoingElement().getKey());
+		assertEquals("TestOut",linkImpl.getDestinationObject().getKey());
 	}
 
 	@Test
 	public void testSetOutGoingElement(){
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
 		element.setKey("TestNew");
-		linkImpl.setOutgoingElement(element);
-		assertEquals(element.getKey(),linkImpl.getOutgoingElement().getKey());
+		linkImpl.setDestinationObject(element);
+		assertEquals(element.getKey(),linkImpl.getDestinationObject().getKey());
 	}
 }
