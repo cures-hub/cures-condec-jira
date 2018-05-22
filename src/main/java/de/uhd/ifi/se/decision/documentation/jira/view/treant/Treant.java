@@ -35,8 +35,6 @@ public class Treant {
 	@XmlElement(name = "nodeStructure")
 	private Node nodeStructure;
 
-	private PersistenceStrategy strategy;
-
 	public Treant() {
 	}
 
