@@ -1,13 +1,15 @@
-/*
-TODO Refactor and retest
 package de.uhd.ifi.se.decision.documentation.jira.model;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.project.Project;
+import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.IssueStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import org.junit.Before;
@@ -33,235 +35,76 @@ public class TestGraph extends TestSetUp {
         initialization();
         new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
 
-        graph = new Graph();
+
         element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long)14));
         newElement = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long)15));
         elements = new HashSet<DecisionKnowledgeElement>();
         elements.add(element);
         links = new ArrayList<>();
-
+        graph = new Graph("TEST", element.getKey(), 3);
     }
 
     @Test
     public void testRootElementConstructor(){
-        Graph graphRoot = new Graph(element);
-        assertNotNull(graphRoot.getElements());
+        Graph graphRoot = new Graph(element.getProjectKey());
     }
 
     @Test
     public void testRootElementLinkDistConstructor(){
-        Graph graphRoot = new Graph(element,1);
-        assertNotNull(graphRoot.getElements());
+        Graph graphRoot = new Graph(element.getProjectKey(),element.getKey(),1);
     }
 
     @Test
-    public void testAddElementNull(){
-        assertFalse(graph.addElement(null));
-        assertEquals(0,graph.getElements().size(),0.0);
+    public void testGetNodeStructure(){
+        assertEquals(3,graph.getNodeStructure().getNodeContent().size(), 0.0);
     }
 
     @Test
-    public void testAddElementFilled(){
-        assertTrue(graph.addElement(element));
-        assertEquals(1,graph.getElements().size(),0.0);
+    public void testgetDataStructureNull() {
+        assertEquals(Data.class, graph.getDataStructure(null).getClass());
     }
 
     @Test
-    public void testAddElementsNull(){
-        assertFalse(graph.addElements(null));
-        assertEquals(0,graph.getElements().size(),0.0);
+    public void testGetDataStructureFilled(){
+        assertEquals("Assessment / Test", graph.getDataStructure(element).getText());
     }
 
     @Test
-    public void testAddElementsFilled(){
-        assertTrue(graph.addElements(elements));
-        assertEquals(1,graph.getElements().size(),0.0);
-    }
+    public void testGetDataStructureDifferentFilled(){
+        IssueStrategy issueStrategy = new IssueStrategy();
+        ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+        Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
 
-    @Test
-    public void testRemoveElementNull(){
-        assertFalse(graph.removeElement(null));
-    }
+        long i = 2;
+        DecisionKnowledgeElementImpl decision = null;
+        decision = new DecisionKnowledgeElementImpl((long) 5000, "TESTSummary", "TestDescription",
+                KnowledgeType.DECISION, project.getKey(), "TEST-" + 5000);
+        decision.setId((long) 5000);
 
-    @Test
-    public void testRemoveElementEmptyList(){
-        assertFalse(graph.removeElement(element));
-    }
-
-    @Test
-    public void testRemoveElementNotContained(){
-        graph.addElements(elements);
-        assertFalse(graph.removeElement(newElement));
-    }
-
-    @Test
-    public void testRemoveElementContained(){
-        graph.addElement(element);
-        assertTrue(graph.removeElement(element));
-        assertEquals(0,graph.getElements().size(),0.0);
-    }
-
-    @Test
-    public void testAddLinkNull(){
-        assertFalse(graph.addLink(null));
-    }
-
-    @Test
-    public void testAddLinkAllreadyContained(){
-        Link link = new LinkImpl();
-        link.setLinkType("Test");
-        link.setOutgoingId(14);
-        link.setIngoingId(15);
-        link.setIngoingElement(newElement);
-        link.setOutgoingElement(element);
-        graph.addLink(link);
-        assertFalse(graph.addLink(link));
-    }
-
-    @Test
-    public void testAddLinkFilled(){
-        Link link = new LinkImpl();
-        link.setLinkType("Test");
-        link.setOutgoingId(14);
-        link.setIngoingId(15);
-        link.setIngoingElement(newElement);
-        link.setOutgoingElement(element);
-
-        assertTrue(graph.addLink(link));
-        assertEquals(1,graph.getLinks().size(),0.0);
-    }
-
-    @Test
-    public void testAddLinkElementsNull(){
-        assertFalse(graph.addLink(null,null));
-    }
-
-    @Test
-    public void testAddLinkElementsInNull(){
-        assertFalse(graph.addLink(null,newElement));
-    }
-
-    @Test
-    public void testAddLinkElementOutNull(){
-        assertFalse(graph.addLink(element,null));
-    }
-
-    @Test
-    public void testAddLinkElementFilled(){
-        assertTrue(graph.addLink(element,newElement));
-    }
-
-    @Test
-    public void testAddLinksNull(){
-        assertFalse(graph.addLinks(null));
-    }
-
-    @Test
-    public void testAddLinksEmptyList(){
-        assertFalse(graph.addLinks(new ArrayList<Link>()));
-    }
-
-    @Test
-    public void testAddLinksOneElement(){
-        Link link = new LinkImpl();
-        link.setLinkType("Test");
-        link.setOutgoingId(14);
-        link.setIngoingId(15);
-        link.setIngoingElement(newElement);
-        link.setOutgoingElement(element);
-        links.add(link);
-        assertTrue(graph.addLinks(links));
-    }
-
-    @Test
-    public void testAddLinksMoreElement(){
-        Link link = new LinkImpl();
-        link.setLinkType("Test");
-        link.setOutgoingId(14);
-        link.setIngoingId(15);
-        link.setIngoingElement(newElement);
-        link.setOutgoingElement(element);
-        links.add(link);
-        Link link2 = new LinkImpl();
-        link2.setLinkType("Test");
-        link2.setIngoingId(12);
-        link2.setOutgoingId(13);
-        assertTrue(graph.addLinks(links));
-    }
-
-    @Test
-    public void testSetLinksNull(){
-        graph.setLinks(null);
-        assertEquals(0, graph.getLinkedElements().size(),0.0);
-    }
-
-    @Test
-    public void testSetLinksEmpty(){
-        Set<Link> linksSet = new HashSet<>();
-        graph.setLinks(linksSet);
-        assertEquals(0, graph.getLinkedElements().size(),0.0);
-    }
-
-    @Test
-    public void testSetLinksFilled(){
-        Link link = new LinkImpl();
-        link.setLinkType("Test");
-        link.setOutgoingId(14);
-        link.setIngoingId(15);
-        link.setIngoingElement(newElement);
-        link.setOutgoingElement(element);
-        Set<Link> linksSet = new HashSet<>();
-        linksSet.add(link);
-        graph.setLinks(linksSet);
-        assertEquals(0, graph.getLinkedElements().size(),0.0);
-    }
-
-    @Test
-    public void testSetElementsNull(){
-        graph.setElements(null);
-        assertEquals(0, graph.getElements().size(),0.0);
-    }
-
-    @Test
-    public void testSetElementsEmpty(){
-        Set<DecisionKnowledgeElement> emptySet = new HashSet<>();
-        graph.setElements(emptySet);
-        assertEquals(0, graph.getElements().size(),0.0);
-    }
-
-    @Test
-    public void testSetElementsFilled(){
-        graph.setElements(elements);
-        assertEquals(1,graph.getElements().size(),0.0);
-    }
-
-    @Test
-    public void testSetLinkedElementsNull(){
-        graph.setLinkedElements(null);
-        assertEquals(0,graph.getLinkedElements().size(),0.0);
-    }
-
-    @Test
-    public void testSetLinkedElementsEmpty(){
-        Map<DecisionKnowledgeElement,Set<Link>> emptySet = new HashMap<>();
-        graph.setLinkedElements(emptySet);
-        assertEquals(0,graph.getLinkedElements().size(),0.0);
-    }
-
-    @Test
-    public void testSetLinkedElementsFilled(){
-        Link link = new LinkImpl();
-        link.setLinkType("Test");
-        link.setOutgoingId(14);
-        link.setIngoingId(15);
-        link.setIngoingElement(newElement);
-        link.setOutgoingElement(element);
-        Set<Link> linksSet = new HashSet<>();
-        linksSet.add(link);
-        Map<DecisionKnowledgeElement,Set<Link>> filledSet = new HashMap<>();
-        filledSet.put(element,linksSet);
-        graph.setLinkedElements(filledSet);
-        assertEquals(1,graph.getLinkedElements().size(),0.0);
+        issueStrategy.insertDecisionKnowledgeElement(decision, user);
+        for (KnowledgeType type : KnowledgeType.values()) {
+            LinkImpl link = new LinkImpl();
+            link.setLinkType("support");
+            if (type != KnowledgeType.DECISION) {
+                if(type.equals(KnowledgeType.ARGUMENT)){
+                    DecisionKnowledgeElementImpl decisionKnowledgeElement = new DecisionKnowledgeElementImpl(i,
+                            "TESTSummary", "TestDescription", type, project.getKey(), "TEST-" + i);
+                    issueStrategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
+                    link.setIngoingId(decision.getId());
+                    link.setOutgoingId(decisionKnowledgeElement.getId());
+                    issueStrategy.insertLink(link, user);
+                } else {
+                    DecisionKnowledgeElementImpl decisionKnowledgeElement = new DecisionKnowledgeElementImpl(i,
+                            "TESTSummary", "TestDescription", type, project.getKey(), "TEST-" + i);
+                    issueStrategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
+                    link.setLinkType("attack");
+                    link.setOutgoingId(decision.getId());
+                    link.setIngoingId(decisionKnowledgeElement.getId());
+                    issueStrategy.insertLink(link, user);
+                }
+            }
+            i++;
+        }
+        System.out.println(graph.getDataStructure(decision).getChildren().size());
     }
 }
-*/

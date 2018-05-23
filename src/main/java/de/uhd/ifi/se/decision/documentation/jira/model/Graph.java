@@ -30,6 +30,9 @@ public class Graph {
 	}
 
 	public Data getDataStructure(DecisionKnowledgeElement decisionKnowledgeElement){
+		if(decisionKnowledgeElement == null){
+			return new Data();
+		}
 		Data dataRoot = new Data(decisionKnowledgeElement);
 		dataRoot.setChildren(computeDataChildElements(decisionKnowledgeElement));
 		return  dataRoot;

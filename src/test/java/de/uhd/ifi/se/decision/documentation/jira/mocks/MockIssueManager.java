@@ -50,6 +50,9 @@ public class MockIssueManager extends com.atlassian.jira.mock.MockIssueManager {
 			if(key.equals(issue.getId().toString())) {
 				return (MutableIssue) issue;
 			}
+			if(key.equals(issue.getKey().toString())) {
+				return (MutableIssue) issue;
+			}
 		}
 		return null;
 	}
