@@ -35,16 +35,6 @@ public class Data {
 		this.setText(decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getSummary());
 		this.setId(String.valueOf(decisionKnowledgeElement.getId()));
 		this.setNodeInfo(decisionKnowledgeElement);
-
-		if (addChildren == true) {
-			List<DecisionKnowledgeElement> children = decisionKnowledgeElement.getChildren();
-
-			List<Data> childrenToData = new ArrayList<Data>();
-			for (DecisionKnowledgeElement child : children) {
-				childrenToData.add(new Data(child, true));
-			}
-			this.setChildren(childrenToData);
-		}
 	}
 
 	public String getId() {

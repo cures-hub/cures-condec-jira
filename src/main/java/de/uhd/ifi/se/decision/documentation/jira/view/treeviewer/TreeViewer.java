@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlElement;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.Graph;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
@@ -36,6 +37,8 @@ public class TreeViewer {
 	}
 
 	public TreeViewer(String projectKey) {
+		Graph graph = new Graph(projectKey);
+
 		this.setMultiple(false);
 		this.setCheckCallback(true);
 		this.setThemes(ImmutableMap.of("icons", false));
@@ -46,7 +49,7 @@ public class TreeViewer {
 
 		HashSet<Data> dataSet = new HashSet<Data>();
 		for (DecisionKnowledgeElement decision : decisions) {
-			dataSet.add(new Data(decision));
+			dataSet.add(graph.getDataStructure(decision));
 		}
 		this.makeEachIdUnique(dataSet);
 		this.setData(dataSet);

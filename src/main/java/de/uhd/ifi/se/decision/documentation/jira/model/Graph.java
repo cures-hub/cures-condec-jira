@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.documentation.jira.model;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 import de.uhd.ifi.se.decision.documentation.jira.view.treant.Node;
+import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.Data;
 
 import java.util.*;
 
@@ -10,7 +11,6 @@ public class Graph {
 
 	private PersistenceStrategy strategy;
 	private List<Long> containedLinkIds;
-
 	private Node nodeStructure;
 
 	public Graph(String projectKey) {
@@ -19,19 +19,32 @@ public class Graph {
 		strategy = strategyProvider.getStrategy(projectKey);
 	}
 
-	public Graph(String projectKey, String rootElement) {
-		this(projectKey);
-		DecisionKnowledgeElement decisionRootElement = strategy.getDecisionKnowledgeElement(rootElement);
-	}
-
 	public Graph(String projectKey, String rootElement, int linkDistance) {
-		this(projectKey, rootElement);
+		this(projectKey);
 		DecisionKnowledgeElement decisionRootElement = strategy.getDecisionKnowledgeElement(rootElement);
 		nodeStructure = createNodeStructure(decisionRootElement,linkDistance,0);
 	}
 
 	public Node getNodeStructure() {
 		return nodeStructure;
+	}
+
+	public Data getDataStructure(DecisionKnowledgeElement decisionKnowledgeElement){
+		Data dataRoot = new Data(decisionKnowledgeElement);
+		dataRoot.setChildren(computeDataChildElements(decisionKnowledgeElement));
+		return  dataRoot;
+	}
+
+	private List<Data> computeDataChildElements(DecisionKnowledgeElement decisionRootElement){
+		List<Data> childrenList = new ArrayList<>();
+
+		List<DecisionKnowledgeElement> children = computeChildElements(decisionRootElement);
+		for (DecisionKnowledgeElement child : children) {
+			Data dataChild = new Data(child);
+			dataChild.setChildren(computeDataChildElements(child));
+			childrenList.add(dataChild);
+		}
+		return  childrenList;
 	}
 
 	private Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
