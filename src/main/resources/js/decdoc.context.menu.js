@@ -160,8 +160,11 @@ var contextMenuEditAction = {
 function setUpContextMenuContentForEditAction(id) {
 	isIssueStrategy(id,function (isIssueBoolean) {
 		if(isIssueBoolean == true){
+			setUpModal();
+			var modal =  document.getElementById("modal-content");
             var url = AJS.contextPath() + "/secure/EditIssue!default.jspa?id="+ id;
-            window.location.href = url;
+            var iframe = "<iframe src='"+ url+"' style='border:none' height='100%' width='100%'></iframe>"
+			modal.insertAdjacentHTML("afterBegin",iframe);
 		} else{
             setUpModal();
             setHeaderText(editKnowledgeElementText);
