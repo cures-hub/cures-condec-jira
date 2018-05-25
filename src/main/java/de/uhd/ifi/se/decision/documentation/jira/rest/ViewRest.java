@@ -8,7 +8,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import de.uhd.ifi.se.decision.documentation.jira.persistence.ConfigPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

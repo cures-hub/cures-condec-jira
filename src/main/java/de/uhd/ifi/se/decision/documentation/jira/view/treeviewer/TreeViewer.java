@@ -33,11 +33,13 @@ public class TreeViewer {
 
 	private PersistenceStrategy strategy;
 
+	private Graph graph;
+
 	public TreeViewer() {
 	}
 
 	public TreeViewer(String projectKey) {
-		Graph graph = new Graph(projectKey);
+		graph = new Graph(projectKey);
 
 		this.setMultiple(false);
 		this.setCheckCallback(true);
@@ -49,10 +51,31 @@ public class TreeViewer {
 
 		HashSet<Data> dataSet = new HashSet<Data>();
 		for (DecisionKnowledgeElement decision : decisions) {
-			dataSet.add(graph.getDataStructure(decision));
+			dataSet.add(this.getDataStructure(decision));
 		}
 		this.makeEachIdUnique(dataSet);
 		this.setData(dataSet);
+	}
+
+	public Data getDataStructure(DecisionKnowledgeElement decisionKnowledgeElement) {
+		if (decisionKnowledgeElement == null) {
+			return new Data();
+		}
+		Data dataRoot = new Data(decisionKnowledgeElement);
+		dataRoot.setChildren(computeDataChildElements(decisionKnowledgeElement));
+		return dataRoot;
+	}
+
+	private List<Data> computeDataChildElements(DecisionKnowledgeElement decisionRootElement) {
+		List<Data> childrenList = new ArrayList<>();
+
+		List<DecisionKnowledgeElement> children = graph.getChildElements(decisionRootElement);
+		for (DecisionKnowledgeElement child : children) {
+			Data dataChild = new Data(child);
+			dataChild.setChildren(computeDataChildElements(child));
+			childrenList.add(dataChild);
+		}
+		return childrenList;
 	}
 
 	private void makeEachIdUnique(HashSet<Data> dataSet) {

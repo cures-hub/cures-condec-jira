@@ -1,25 +1,15 @@
 package de.uhd.ifi.se.decision.documentation.jira.view.treant;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.Graph;
-import de.uhd.ifi.se.decision.documentation.jira.model.Link;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.ActiveObjectStrategy;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
 /**
  * @description Model class for Treant
@@ -27,21 +17,37 @@ import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 @XmlRootElement(name = "treant")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Treant {
-	private static final Logger LOGGER = LoggerFactory.getLogger(Treant.class);
-
 	@XmlElement
 	private Chart chart;
 
 	@XmlElement(name = "nodeStructure")
 	private Node nodeStructure;
 
+	private Graph graph;
+
 	public Treant() {
 	}
 
 	public Treant(String projectKey, String elementKey, int depth) {
-		Graph graph = new Graph(projectKey,elementKey,depth);
+		graph = new Graph(projectKey, elementKey, depth);
+		DecisionKnowledgeElement rootElement = graph.getRootElement();
 		this.setChart(new Chart());
-		this.setNodeStructure(graph.getNodeStructure());
+		this.setNodeStructure(this.createNodeStructure(rootElement, depth, 0));
+	}
+
+	public Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
+		Node node = new Node(decisionKnowledgeElement);
+
+		if (currentDepth + 1 < depth) {
+			List<Node> nodes = new ArrayList<Node>();
+			List<DecisionKnowledgeElement> children = graph.getChildElements(decisionKnowledgeElement);
+
+			for (DecisionKnowledgeElement child : children) {
+				nodes.add(createNodeStructure(child, depth, currentDepth + 1));
+			}
+			node.setChildren(nodes);
+		}
+		return node;
 	}
 
 	public Chart getChart() {

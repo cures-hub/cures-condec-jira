@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.documentation.jira.view.treeviewer;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
