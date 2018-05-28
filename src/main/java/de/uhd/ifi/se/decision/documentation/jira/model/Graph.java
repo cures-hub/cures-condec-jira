@@ -33,6 +33,10 @@ public class Graph {
 	public List<DecisionKnowledgeElement> getChildElements(DecisionKnowledgeElement rootElement) {
 		List<DecisionKnowledgeElement> children = new ArrayList<DecisionKnowledgeElement>();
 
+		if(rootElement == null){
+			return children;
+		}
+
 		List<Link> outwardIssueLinks = persistenceStrategy.getOutwardLinks(rootElement);
 
 		for (Link link : outwardIssueLinks) {
