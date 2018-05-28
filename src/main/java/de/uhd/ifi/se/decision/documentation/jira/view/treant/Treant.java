@@ -36,6 +36,12 @@ public class Treant {
 	}
 
 	public Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
+		if(decisionKnowledgeElement == null || decisionKnowledgeElement.getProjectKey()==null){
+			return new Node();
+		}
+		if(graph == null){
+			graph = new Graph(decisionKnowledgeElement.getProjectKey());
+		}
 		Node node = new Node(decisionKnowledgeElement);
 
 		if (currentDepth + 1 < depth) {
