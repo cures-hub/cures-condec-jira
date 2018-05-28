@@ -61,6 +61,9 @@ public class TreeViewer {
 		if (decisionKnowledgeElement == null) {
 			return new Data();
 		}
+		if(graph == null){
+			graph = new Graph(decisionKnowledgeElement.getProjectKey());
+		}
 		Data dataRoot = new Data(decisionKnowledgeElement);
 		dataRoot.setChildren(computeDataChildElements(decisionKnowledgeElement));
 		return dataRoot;
