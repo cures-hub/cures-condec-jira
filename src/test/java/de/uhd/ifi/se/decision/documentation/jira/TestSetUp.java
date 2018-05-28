@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.documentation.jira;
 import java.util.ArrayList;
 
 import com.atlassian.jira.bc.issue.IssueService;
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
@@ -12,11 +13,14 @@ import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.mock.MockConstantsManager;
 import com.atlassian.jira.mock.MockProjectManager;
+import com.atlassian.jira.mock.MockProjectRoleManager;
 import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
+import com.atlassian.jira.security.roles.ProjectRole;
+import com.atlassian.jira.security.roles.ProjectRoleManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 import com.atlassian.jira.user.util.MockUserManager;
@@ -46,13 +50,14 @@ public class TestSetUp {
 		((MockUserManager) userManager).addUser(user);
 		((MockUserManager) userManager).addUser(user2);
 
-		creatingProjectIssueStructure();
-
 		new MockComponentWorker().init().addMock(IssueManager.class, issueManager)
 				.addMock(IssueLinkManager.class, new MockIssueLinkManager())
 				.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager())
 				.addMock(IssueService.class, issueService).addMock(ProjectManager.class, projectManager)
-				.addMock(UserManager.class, userManager).addMock(ConstantsManager.class, constantsManager);
+				.addMock(UserManager.class, userManager).addMock(ConstantsManager.class, constantsManager)
+				.addMock(ProjectRoleManager.class, new MockProjectRoleManager());
+
+		creatingProjectIssueStructure();
 
 	}
 

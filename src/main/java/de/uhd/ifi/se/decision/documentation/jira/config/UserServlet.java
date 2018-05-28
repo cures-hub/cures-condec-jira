@@ -1,8 +1,15 @@
 package de.uhd.ifi.se.decision.documentation.jira.config;
 
+import com.atlassian.jira.ComponentManager;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.comments.CommentManager;
+import com.atlassian.jira.project.Project;
+import com.atlassian.jira.security.roles.ProjectRole;
+import com.atlassian.jira.security.roles.ProjectRoleManager;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.user.UserManager;
+import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.ConfigPersistence;
 import org.slf4j.Logger;
@@ -14,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,12 +52,14 @@ public class UserServlet extends HttpServlet {
             LOGGER.error("Request or response in UserServlet is null");
             return;
         }
-        String username = userManager.getRemoteUsername(request);
-        if (username == null || userManager.isAdmin(username)) {
-            redirectToLogin(request, response);
-            return;
-        }
         String projectKey = request.getParameter("projectKey");
+        String username = userManager.getRemoteUsername(request);
+
+        if(!isProjectAdmin(username,projectKey)){
+            redirectToLogin(request,response);
+        }
+
+
         Boolean isActivated = configPersistence.isActivated(projectKey);
         Boolean isIssueStrategy = configPersistence.isIssueStrategy(projectKey);
 
@@ -61,6 +71,28 @@ public class UserServlet extends HttpServlet {
         velocityParams.put("isActivated", isActivated);
         velocityParams.put("isIssueStrategy", isIssueStrategy);
         templateRenderer.render("templates/projectSettings.vm", velocityParams, response.getWriter());
+    }
+
+    private boolean isProjectAdmin(String username, String projectKey){
+        if(username == null || projectKey == null){
+            LOGGER.error("Username or ProjectKey in UserServlet is null");
+        }
+        ApplicationUser user = ComponentAccessor.getUserManager().getUserByName(username);
+        Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
+
+
+        ProjectRoleManager projectRoleManager = ComponentAccessor.getComponent(ProjectRoleManager.class);
+        Collection<ProjectRole> roles = projectRoleManager.getProjectRoles(user, project);
+        if(roles == null){
+            LOGGER.error("User roles are not Set correctly");
+            return false;
+        }
+        for(ProjectRole role : roles){
+            if(role.getName().equalsIgnoreCase("Administrators")){
+                return true;
+            }
+        }
+        return false;
     }
 
     private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {

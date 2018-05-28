@@ -1,8 +1,11 @@
 package de.uhd.ifi.se.decision.documentation.jira.config;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.mock.MockProjectRoleManager;
 import com.atlassian.jira.mock.servlet.MockHttpServletResponse;
-import com.atlassian.jira.testkit.client.restclient.User;
+import com.atlassian.jira.security.roles.ProjectRole;
+import com.atlassian.jira.security.roles.ProjectRoleManager;
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
@@ -36,10 +39,16 @@ public class TestUserServlet extends TestSetUp{
 
         req = new MockHttpServletRequest();
         res = new MockHttpServletResponse();
+
+        ((MockHttpServletRequest)req).setParameter("projectKey", "TEST");
         LoginUriProvider login = new MockLoginUriProvider();
         TemplateRenderer renderer = new MockTemplateRenderer();
         UserManager userManager = new MockAdminUserManager();
         servlet = new UserServlet(userManager,login,renderer);
+
+        ProjectRole admin = new MockProjectRoleManager.MockProjectRole(1234321,"Administrators", "TEST");
+        ProjectRoleManager projectRoleManager = ComponentAccessor.getComponent(ProjectRoleManager.class);
+        ((MockProjectRoleManager)projectRoleManager).addRole(admin);
     }
     @Test
     public void testReqNullResNull() throws IOException {

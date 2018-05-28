@@ -29,7 +29,7 @@ public class Treant {
 	}
 
 	public Treant(String projectKey, String elementKey, int depth) {
-		graph = new Graph(projectKey, elementKey, depth);
+		graph = new Graph(projectKey, elementKey);
 		DecisionKnowledgeElement rootElement = graph.getRootElement();
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, depth, 0));

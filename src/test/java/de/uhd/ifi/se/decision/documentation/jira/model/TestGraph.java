@@ -40,7 +40,7 @@ public class TestGraph extends TestSetUp {
         elements = new HashSet<DecisionKnowledgeElement>();
         elements.add(element);
         links = new ArrayList<>();
-        graph = new Graph("TEST", element.getKey(), 3);
+        graph = new Graph("TEST", element.getKey());
     }
 
     @Test
@@ -50,7 +50,7 @@ public class TestGraph extends TestSetUp {
 
     @Test
     public void testRootElementLinkDistConstructor(){
-        Graph graphRoot = new Graph(element.getProjectKey(),element.getKey(),1);
+        Graph graphRoot = new Graph(element.getProjectKey(),element.getKey());
     }
 
 //    @Test

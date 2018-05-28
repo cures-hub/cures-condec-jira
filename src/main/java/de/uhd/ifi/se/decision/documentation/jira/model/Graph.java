@@ -25,7 +25,7 @@ public class Graph {
 		persistenceStrategy = strategyProvider.getStrategy(projectKey);
 	}
 
-	public Graph(String projectKey, String rootElementKey, int linkDistance) {
+	public Graph(String projectKey, String rootElementKey) {
 		this(projectKey);
 		rootElement = persistenceStrategy.getDecisionKnowledgeElement(rootElementKey);
 	}
