@@ -21,12 +21,22 @@ function buildTreeViewer(nodeId) {
 		}).jstree({
 			"core" : core,
 			// TODO: add drag n drop
-			"plugins" : [ "contextmenu", "wholerow", "sort", "search" ],
+			"plugins" : [ "dnd","contextmenu", "wholerow", "sort", "search" ],
 			"search" : {
 				"show_only_matches" : true
 			},
 			"contextmenu" : {
 				"items" : contextMenuActions
+			},
+			"dnd" : {
+				"drag_finish" : function (data) {
+					//TODO Adding functionality to Link the new Element
+                    console.log(data);
+                },
+				"drop_finish" : function () {
+                    //TODO Adding functionality to Unlink the old Element
+                    console.log("DROP");
+                }
 			}
 		});
 		document.getElementById("Details").style.display = "block";
