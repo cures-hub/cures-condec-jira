@@ -45,4 +45,11 @@ function buildTreeViewer(nodeId) {
 			$('#evts').jstree(true).search(searchString);
 		});
 	});
+    $(document)
+        .on('dnd_stop.vakata', function (e, data) {
+            var t = $(data.event.target);
+            var targetnode = t.closest('.jstree-node');
+            var nodeID = targetnode.attr("id");
+            console.log(nodeID);
+        });
 }
