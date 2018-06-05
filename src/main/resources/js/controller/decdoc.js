@@ -91,6 +91,33 @@ function createLinkToExistingElement(parentId, childId) {
     });
 }
 
+function deleteLinkToExisitingElement(parentId, childId) {
+    getDecisionKnowledgeElement(childId, function (decisionKnowledgeElement) {
+        var type = decisionKnowledgeElement.type;
+        switch (type) {
+            case "Pro Argument":
+                deleteLink(childId, parentId, "support", function () {
+                    buildTreeViewer(childId);
+                });
+                break;
+            case "Contra Argument":
+                deleteLink(childId, parentId, "attack", function () {
+                    buildTreeViewer(childId);
+                });
+                break;
+            case "Comment":
+                deleteLink(childId, parentId, "comment", function () {
+                    buildTreeViewer(childId);
+                });
+                break;
+            default:
+                deleteLink(parentId, childId, "contain", function () {
+                    buildTreeViewer(childId);
+                });
+        }
+    });
+}
+
 function clearInner(node) {
 	while (node.hasChildNodes()) {
 		clear(node.firstChild);

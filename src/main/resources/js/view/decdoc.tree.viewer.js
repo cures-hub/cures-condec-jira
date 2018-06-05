@@ -27,16 +27,6 @@ function buildTreeViewer(nodeId) {
 			},
 			"contextmenu" : {
 				"items" : contextMenuActions
-			},
-			"dnd" : {
-				"drag_finish" : function (data) {
-					//TODO Adding functionality to Link the new Element
-                    console.log(data);
-                },
-				"drop_finish" : function () {
-                    //TODO Adding functionality to Unlink the old Element
-                    console.log("DROP");
-                }
 			}
 		});
 		document.getElementById("Details").style.display = "block";
@@ -47,9 +37,16 @@ function buildTreeViewer(nodeId) {
 	});
     $(document)
         .on('dnd_stop.vakata', function (e, data) {
+		//Moved NodeID
+			var nodeID = data.data.nodes[0];
             var t = $(data.event.target);
             var targetnode = t.closest('.jstree-node');
-            var nodeID = targetnode.attr("id");
-            console.log(nodeID);
+            //New parentID
+            var parentID = targetnode.attr("id");
+            var tree = $('#evts').jstree(true);
+            var oldParentID = tree.get_parent(nodeID);
+            deleteLinkToExisitingElement(oldParentID,nodeID);
+            createLinkToExistingElement(parentID,nodeID);
+
         });
 }
