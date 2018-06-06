@@ -91,7 +91,7 @@ function createLinkToExistingElement(parentId, childId) {
     });
 }
 
-function deleteLinkToExisitingElement(parentId, childId) {
+function deleteLinkToExistingElement(parentId, childId) {
     getDecisionKnowledgeElement(childId, function (decisionKnowledgeElement) {
         var type = decisionKnowledgeElement.type;
         switch (type) {

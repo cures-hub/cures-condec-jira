@@ -45,7 +45,7 @@ function buildTreeViewer(nodeId) {
             var parentID = targetnode.attr("id");
             var tree = $('#evts').jstree(true);
             var oldParentID = tree.get_parent(nodeID);
-            deleteLinkToExisitingElement(oldParentID,nodeID);
+            deleteLinkToExistingElement(oldParentID,nodeID);
             createLinkToExistingElement(parentID,nodeID);
 
         });
