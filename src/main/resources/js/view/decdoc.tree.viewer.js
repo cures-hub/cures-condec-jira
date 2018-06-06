@@ -45,8 +45,14 @@ function buildTreeViewer(nodeId) {
             var parentID = targetnode.attr("id");
             var tree = $('#evts').jstree(true);
             var oldParentID = tree.get_parent(nodeID);
-            deleteLinkToExistingElement(oldParentID,nodeID);
-            createLinkToExistingElement(parentID,nodeID);
-
+            console.log(oldParentID);
+            if(oldParentID == '#'){
+		console.log("Decisions can not be linked to another Decision or Decision Knowledge Element");
+		location.reload();
+			} else {
+                deleteLinkToExistingElement(oldParentID, nodeID);
+                createLinkToExistingElement(parentID, nodeID);
+                location.reload();
+            }
         });
 }
