@@ -40,6 +40,8 @@ public class Node {
 		this.setNodeContent(nodeContent);
 		this.setHtmlClass(decisionKnowledgeElement.getSuperType().toString().toLowerCase());
 		this.setHtmlId(decisionKnowledgeElement.getId());
+
+		//this.setInnerHTML("draggable='true'");
 	}
 
 	public Map<String, String> getNodeContent() {

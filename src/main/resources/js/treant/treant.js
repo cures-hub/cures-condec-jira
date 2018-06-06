@@ -1844,6 +1844,7 @@
         if (this.image) {
             image = document.createElement('img');
             image.src = this.image;
+            image.draggable = true;
             node.appendChild(image);
         }
 
