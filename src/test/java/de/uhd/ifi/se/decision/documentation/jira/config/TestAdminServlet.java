@@ -19,7 +19,7 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
-import de.uhd.ifi.se.decision.documentation.jira.config.AdminServlet;
+import de.uhd.ifi.se.decision.documentation.jira.config.SettingsOfAllProjects;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockAdminUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockLoginUriProvider;
@@ -32,7 +32,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 public class TestAdminServlet extends TestSetUp {
 
 	private EntityManager entityManager;
-	private AdminServlet servlet;
+	private SettingsOfAllProjects servlet;
 	private HttpServletRequest req;
 	private HttpServletResponse res;
 
@@ -46,7 +46,7 @@ public class TestAdminServlet extends TestSetUp {
 		LoginUriProvider login = new MockLoginUriProvider();
 		TemplateRenderer renderer = new MockTemplateRenderer();
 		UserManager userManager = new MockAdminUserManager();
-		servlet = new AdminServlet(userManager, login, renderer);
+		servlet = new SettingsOfAllProjects(userManager, login, renderer);
 	}
 
 	@Test

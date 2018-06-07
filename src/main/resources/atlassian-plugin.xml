@@ -100,32 +100,36 @@
 	<web-item key="decdoc-admin-menu-item" name="Menu Item for DecDoc Plug-in Administration"
 		section="decdoc-admin-section/decdoc-admin-section-label" weight="10" application="jira">
 		<description>
-			Adds the "DecDoc" menu item that links to the administration page.
+			Adds the "DecDoc Settings" menu item that links to the administration page.
 		</description>
 		<label>DecDoc Settings</label>
-		<link>/plugins/servlet/adminservlet</link>
+		<link>/plugins/servlet/decdoc/globalsettings</link>
 	</web-item>
-	<servlet key="admin-servlet" name="Administration Servlet"
-		class="de.uhd.ifi.se.decision.documentation.jira.config.AdminServlet">
+	<servlet key="servlet-for-settings-of-all-projects" name="Servlet for Settings of All Projects"
+		class="de.uhd.ifi.se.decision.documentation.jira.config.SettingsOfAllProjects">
 		<description>Provides the administration page.</description>
-		<url-pattern>/adminservlet</url-pattern>
+		<url-pattern>/decdoc/globalsettings</url-pattern>
 	</servlet>
 
 	<!-- Project Settings -->
-	<web-section key="decisions-tabs-section" name="Web Section for DecDoc Plugin-in Project Settings"
+	<web-section key="decisions-tabs-section" name="Web Section for DecDoc Plug-in in Project Settings"
 		location="atl.jira.proj.config">
 		<label>Decisions</label>
+		<description>
+			Adds the "Decisions" label to the project settings menu.
+		</description>
 	</web-section>
-	<web-item name="decdoc-project-settings" key="decdoc-project-settings-activation" section="atl.jira.proj.config/decisions-tabs-section"
-		weight="15">
-		<description>Adds the "DecDoc" Project Settings Menu to the ProjectSettings</description>
-		<label key="DecDoc Project Settings">DecDoc Project Settings</label>
-		<link>/plugins/servlet/userservlet?projectKey=$projectKeyEncoded</link>
+	<web-item key="decdoc-project-settings-menu-item" name="Menu Item for DecDoc Plug-in Project Settings"
+		section="atl.jira.proj.config/decisions-tabs-section" weight="15">
+		<description>Adds the "DecDoc Settings" menu item that links to the project settings.
+		</description>
+		<label>DecDoc Project Settings</label>
+		<link>/plugins/servlet/decdoc/settings?projectKey=$projectKeyEncoded</link>
 	</web-item>
-	<servlet key="user-servlet" name="User Servlet"
-		class="de.uhd.ifi.se.decision.documentation.jira.config.UserServlet">
-		<description>Provides the project settings page for the "normal" user</description>
-		<url-pattern>/userservlet</url-pattern>
+	<servlet key="servlet-for-settings-of-single-project" name="Servlet for Settings of Single Project"
+		class="de.uhd.ifi.se.decision.documentation.jira.config.SettingsOfSingleProject">
+		<description>Provides the project settings page for the project administrators.</description>
+		<url-pattern>/decdoc/settings</url-pattern>
 	</servlet>
 
 	<!-- Active Objects -->
