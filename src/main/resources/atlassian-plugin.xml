@@ -113,21 +113,20 @@
 
 	<!-- Project Settings -->
 	<web-section key="decisions-tabs-section" name="Web Section for DecDoc Plugin-in Project Settings"
-				 location="atl.jira.proj.config">
+		location="atl.jira.proj.config">
 		<label>Decisions</label>
 	</web-section>
-	<web-item name="decdoc-project-settings" key="decdoc-project-settings-activation" section="atl.jira.proj.config/decisions-tabs-section" weight="15">
+	<web-item name="decdoc-project-settings" key="decdoc-project-settings-activation" section="atl.jira.proj.config/decisions-tabs-section"
+		weight="15">
 		<description>Adds the "DecDoc" Project Settings Menu to the ProjectSettings</description>
 		<label key="DecDoc Project Settings">DecDoc Project Settings</label>
 		<link>/plugins/servlet/userservlet?projectKey=$projectKeyEncoded</link>
 	</web-item>
 	<servlet key="user-servlet" name="User Servlet"
-			 class="de.uhd.ifi.se.decision.documentation.jira.config.UserServlet">
+		class="de.uhd.ifi.se.decision.documentation.jira.config.UserServlet">
 		<description>Provides the project settings page for the "normal" user</description>
 		<url-pattern>/userservlet</url-pattern>
 	</servlet>
-
-
 
 	<!-- Active Objects -->
 	<ao key="ao-module" name="Active Objects Service">

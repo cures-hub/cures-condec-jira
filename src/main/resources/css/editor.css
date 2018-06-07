@@ -145,3 +145,23 @@ a:focus a:hover {
 	text-decoration: none;
 	cursor: pointer;
 }
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+th, td {
+	padding: 8px;
+	text-align: left;
+	border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+	background-color: #f5f5f5
+}
+
+h2 {
+	margin-top: 0.83em;
+	margin-bottom: 0.83em;
+}

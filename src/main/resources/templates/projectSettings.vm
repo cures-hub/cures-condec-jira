@@ -1,60 +1,52 @@
 <html>
 <head>
-    <title>DecDoc Project Settings</title>
-
-    <meta name="decorator" content="atl.admin">
-    <meta name="admin.active.section" content="atl.jira.proj.config"/>
-    <meta name="admin.active.tab" content="decdoc-project-settings-activation"/>
-    <meta name="admin.active.tab" content="jira-menu-item1">
-    $webResourceManager.requireResource("com.atlassian.auiplugin:ajs")
-    $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select")
-    $webResourceManager.requireResource("com.atlassian.auiplugin:aui-form-notification")
-    $webResourceManager.requireResource("com.atlassian.auiplugin:aui-inline-dialog2")
-    $webResourceManager.requireResource("com.atlassian.auiplugin:aui-toggle")
-    $webResourceManager.requireResource("de.uhd.ifi.se.decision.documentation.jira:decision-documentation-resources")
+<title>DecDoc Project Settings</title>
+<meta name="decorator" content="atl.admin">
+<meta name="admin.active.section" content="atl.jira.proj.config" />
+<meta name="admin.active.tab"
+	content="decdoc-project-settings-activation" />
+<meta name="admin.active.tab" content="jira-menu-item1">
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-toggle")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.documentation.jira:decision-documentation-resources")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.documentation.jira:stylesheet-and-icon-resources")
 </head>
-
 <body>
-    <h2>DecDoc Project Settings</h2>
-    <table>
-        <tr>
-            <th>DecDoc Activated?</th>
-            <th>Use JIRA Issues to Store Decision Knowledge?</th>
-        </tr>
-        <tr>
-            <td><aui-toggle id="isActivated-toggle"
-                            data-projectKey=$projectKey></aui-toggle>
-                <script>
+	<h2>DecDoc Project Settings</h2>
+	<table>
+		<tr>
+			<th>DecDoc Activated?</th>
+			<th>Use JIRA Issues to Store Decision Knowledge?</th>
+		</tr>
+		<tr>
+			<td><aui-toggle id="isActivated-toggle" value=$projectKey></aui-toggle>
+				<script>
                 var toggle = document.getElementById('isActivated-toggle');
                     #if ($isActivated == true)
-                    toggle.checked = true;
+			toggle.checked = true;
                     #else
-                    toggle.checked = false;
+			toggle.checked = false;
                     #end
-                toggle.addEventListener('change', function(e) {
-                    var thisToggle = this;
-                    thisToggle.busy = true;
-                    setActivated(thisToggle.checked, thisToggle.dataset.projectkey);
-                    thisToggle.busy = false;
+                toggle.addEventListener('change', function(error) {
+                    this.busy = true;
+                    setActivated(this.checked, this.value);
+                    this.busy = false;
                 });
             </script></td>
-            <td><aui-toggle id="isIssueStrategy-toggle"
-                            data-projectKey=$projectKey></aui-toggle>
-                <script>
+			<td><aui-toggle id="isIssueStrategy-toggle" value=$projectKey></aui-toggle>
+				<script>
                 var toggle = document.getElementById('isIssueStrategy-toggle');
                     #if ($isIssueStrategy == true)
-                    toggle.checked = true;
+			toggle.checked = true;
                     #else
-                    toggle.checked = false;
+			toggle.checked = false;
                     #end
-                toggle.addEventListener('change', function(e) {
-                    var thisToggle = this;
-                    thisToggle.busy = true;
-                    setIssueStrategy(thisToggle.checked,thisToggle.dataset.projectkey);
-                    thisToggle.busy = false;
+                toggle.addEventListener('change', function(error) {
+                    this.busy = true;
+                    setIssueStrategy(this.checked, this.value);
+                    this.busy = false;
                 });
             </script></td>
-        </tr>
-    </table>
+		</tr>
+	</table>
 </body>
 </html>
