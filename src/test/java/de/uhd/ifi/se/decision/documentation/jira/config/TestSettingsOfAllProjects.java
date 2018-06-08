@@ -33,16 +33,17 @@ public class TestSettingsOfAllProjects extends TestSetUp {
 
 	private EntityManager entityManager;
 	private SettingsOfAllProjects servlet;
-	private HttpServletRequest req;
-	private HttpServletResponse res;
+	private HttpServletRequest request;
+	private HttpServletResponse response;
 
 	@Before
 	public void setUp() {
 		initialization();
-		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
+		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
+				new MockDefaultUserManager());
 
-		req = new MockHttpServletRequest();
-		res = new MockHttpServletResponse();
+		request = new MockHttpServletRequest();
+		response = new MockHttpServletResponse();
 		LoginUriProvider login = new MockLoginUriProvider();
 		TemplateRenderer renderer = new MockTemplateRenderer();
 		UserManager userManager = new MockAdminUserManager();
@@ -56,40 +57,41 @@ public class TestSettingsOfAllProjects extends TestSetUp {
 
 	@Test
 	public void testRequestFilledResponseNull() throws IOException, ServletException {
-		req.setAttribute("NoSysAdmin", false);
-		req.setAttribute("SysAdmin", false);
-		servlet.doGet(req, null);
+		request.setAttribute("NoSysAdmin", false);
+		request.setAttribute("SysAdmin", false);
+		servlet.doGet(request, null);
 	}
 
 	@Test
 	public void testRequestNullResponseFilled() throws IOException, ServletException {
-		servlet.doGet(null, res);
+		servlet.doGet(null, response);
 	}
+
 	@Test
 	public void testRequestFilledResponseFilled() throws IOException, ServletException {
-		req.setAttribute("NoSysAdmin", false);
-		req.setAttribute("SysAdmin", false);
-		servlet.doGet(req, res);
+		request.setAttribute("NoSysAdmin", false);
+		request.setAttribute("SysAdmin", false);
+		servlet.doGet(request, response);
 	}
 
 	@Test
 	public void testNoUserManager() throws IOException, ServletException {
-		((MockHttpServletRequest)req).setQueryString("Test");
-		req.setAttribute("NoSysAdmin", true);
-		servlet.doGet(req, res);
+		((MockHttpServletRequest) request).setQueryString("Test");
+		request.setAttribute("NoSysAdmin", true);
+		servlet.doGet(request, response);
 	}
 
 	@Test
 	public void testNoUserManagerQueryNull() throws IOException, ServletException {
-		((MockHttpServletRequest)req).setQueryString(null);
-		req.setAttribute("NoSysAdmin", true);
-		servlet.doGet(req, res);
+		((MockHttpServletRequest) request).setQueryString(null);
+		request.setAttribute("NoSysAdmin", true);
+		servlet.doGet(request, response);
 	}
 
 	@Test
 	public void testUserManager() throws IOException, ServletException {
-		req.setAttribute("NoSysAdmin", false);
-		req.setAttribute("SysAdmin", true);
-		servlet.doGet(req, res);
+		request.setAttribute("NoSysAdmin", false);
+		request.setAttribute("SysAdmin", true);
+		servlet.doGet(request, response);
 	}
 }

@@ -6,15 +6,16 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class TestGetParents extends TestIssueStrategySetUp {
+public class TestGetElementsLinkedWithInwardLinks extends TestIssueStrategySetUp {
 
     @Test
-    public void testElementNull(){
-        assertEquals(0,issueStrategy.getParents(null).size());
+    public void testElementNull() {
+        assertEquals(0, issueStrategy.getElementsLinkedWithInwardLinks(null).size());
     }
+
     @Test
-    public void testElementNotExistend(){
+    public void testElementNotExistend() {
         DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-        assertEquals(0,issueStrategy.getParents(element).size());
+        assertEquals(0, issueStrategy.getElementsLinkedWithInwardLinks(element).size());
     }
 }

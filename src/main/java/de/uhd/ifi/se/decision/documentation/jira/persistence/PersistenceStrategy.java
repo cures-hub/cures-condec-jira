@@ -41,23 +41,32 @@ public abstract class PersistenceStrategy {
 		return decisions;
 	}
 
-	public abstract List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement);
+	public abstract List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(
+			DecisionKnowledgeElement decisionKnowledgeElement);
 
-	public List<DecisionKnowledgeElement> getChildren(long id) {
-		DecisionKnowledgeElement decisionKnowledgeElement = this.getDecisionKnowledgeElement(id);
-		return this.getChildren(decisionKnowledgeElement);
+	public abstract List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(
+			DecisionKnowledgeElement decisionKnowledgeElement);
+
+	public List<DecisionKnowledgeElement> getLinkedElements(DecisionKnowledgeElement decisionKnowledgeElement) {
+		List<DecisionKnowledgeElement> linkedElements = new ArrayList<DecisionKnowledgeElement>();
+		linkedElements.addAll(this.getElementsLinkedWithOutwardLinks(decisionKnowledgeElement));
+		linkedElements.addAll(this.getElementsLinkedWithInwardLinks(decisionKnowledgeElement));
+		return linkedElements;
 	}
 
-	public abstract List<DecisionKnowledgeElement> getParents(DecisionKnowledgeElement decisionKnowledgeElement);
+	public List<DecisionKnowledgeElement> getLinkedElements(long id) {
+		DecisionKnowledgeElement decisionKnowledgeElement = this.getDecisionKnowledgeElement(id);
+		return this.getLinkedElements(decisionKnowledgeElement);
+	}
 
-	public List<DecisionKnowledgeElement> getUnlinkedDecisionComponents(long id, String projectKey){
+	public List<DecisionKnowledgeElement> getUnlinkedDecisionComponents(long id, String projectKey) {
 		DecisionKnowledgeElement rootElement = this.getDecisionKnowledgeElement(id);
 		if (rootElement == null) {
 			return new ArrayList<DecisionKnowledgeElement>();
 		}
 		List<DecisionKnowledgeElement> decisionKnowledgeElements = this.getDecisionKnowledgeElements(projectKey);
 		List<DecisionKnowledgeElement> unlinkedDecisionComponents = new ArrayList<DecisionKnowledgeElement>();
-		List<DecisionKnowledgeElement> outwardElements = this.getChildren(rootElement);
+		List<DecisionKnowledgeElement> outwardElements = this.getLinkedElements(rootElement);
 		for (DecisionKnowledgeElement decisionKnowledgeElement : decisionKnowledgeElements) {
 			if (decisionKnowledgeElement.getId() == id
 					|| decisionKnowledgeElement.getType() == KnowledgeType.DECISION) {

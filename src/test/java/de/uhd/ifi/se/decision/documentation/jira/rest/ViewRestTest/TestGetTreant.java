@@ -46,112 +46,117 @@ public class TestGetTreant extends TestSetUp {
 
 	@Test
 	public void testProjectNullIssueKeyNullDepthNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", INVALID_PROJECTKEY)).build()
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", INVALID_PROJECTKEY)).build()
 				.getEntity(), viewRest.getTreant(null, null, null).getEntity());
 	}
 
-	 @Test
-	 public void testProjectNullIssueKeyFilledDepthNull() throws GenericEntityException {
-	 assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR)
-			 .entity(ImmutableMap.of("error","Decision knowledge elements cannot be shown since project key is invalid."))
-			 .build().getEntity(), viewRest.getTreant(null, "3",
-	 null).getEntity());
-	 }
-
-	 @Test
-	 public void testProjectNullIssueKeyNullDepthFilled() throws GenericEntityException {
+	@Test
+	public void testProjectNullIssueKeyFilledDepthNull() throws GenericEntityException {
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error","Decision knowledge elements cannot be shown since project key is invalid."))
-				.build().getEntity(),viewRest.getTreant(null, null,"3").getEntity());
-	 }
+				.entity(ImmutableMap.of("error",
+						"Decision knowledge elements cannot be shown since project key is invalid."))
+				.build().getEntity(), viewRest.getTreant(null, "3", null).getEntity());
+	}
 
-	 @Test
-	 public void testProjectNullIssueKeyFilledDepthFilled() throws	 GenericEntityException {
+	@Test
+	public void testProjectNullIssueKeyNullDepthFilled() throws GenericEntityException {
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error","Decision knowledge elements cannot be shown since project key is invalid."))
-				.build().getEntity(),viewRest.getTreant(null, "3","1").getEntity());
-	 }
+				.entity(ImmutableMap.of("error",
+						"Decision knowledge elements cannot be shown since project key is invalid."))
+				.build().getEntity(), viewRest.getTreant(null, null, "3").getEntity());
+	}
 
-	 @Test
-	 public void testProjectExistsIssueKeyNullDepthNull() throws GenericEntityException {
+	@Test
+	public void testProjectNullIssueKeyFilledDepthFilled() throws GenericEntityException {
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error","Treant cannot be shown since element key is invalid."))
-				.build().getEntity(),viewRest.getTreant("TEST", null,null).getEntity());
-	 }
+				.entity(ImmutableMap.of("error",
+						"Decision knowledge elements cannot be shown since project key is invalid."))
+				.build().getEntity(), viewRest.getTreant(null, "3", "1").getEntity());
+	}
 
-	 @Test
-	 public void testProjectExistsIssueKeyFilledDepthNull() throws GenericEntityException {
-		assertEquals(200,viewRest.getTreant("TEST", "3", null).getStatus());
-	 }
-
-	 @Test
-	 public void testProjectExistsIssueKeyNullDepthFilled() throws	 GenericEntityException {
+	@Test
+	public void testProjectExistsIssueKeyNullDepthNull() throws GenericEntityException {
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error","Treant cannot be shown since element key is invalid."))
-				.build().getEntity(),viewRest.getTreant("TEST", null,"1").getEntity());
-	 }
+				.entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build()
+				.getEntity(), viewRest.getTreant("TEST", null, null).getEntity());
+	}
 
-	 @Test
-	 public void testProjectExistsIssueKeyFilledDepthFilled() throws GenericEntityException {
-		assertEquals(200,viewRest.getTreant("TEST", "3", "1").getStatus());
-	 }
+	@Test
+	public void testProjectExistsIssueKeyFilledDepthNull() throws GenericEntityException {
+		assertEquals(200, viewRest.getTreant("TEST", "3", null).getStatus());
+	}
 
-	 @Test
-	 public void testProjectNotExistsIssueKeyNullDepthNull() throws GenericEntityException {
+	@Test
+	public void testProjectExistsIssueKeyNullDepthFilled() throws GenericEntityException {
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error","Decision knowledge elements cannot be shown since project key is invalid."))
-				.build().getEntity(),viewRest.getTreant("NotTEST", null,null).getEntity());
-	 }
+				.entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build()
+				.getEntity(), viewRest.getTreant("TEST", null, "1").getEntity());
+	}
 
-	 @Test
-	 public void testProjectNotExistsIssueKeyFilledDepthNull() throws GenericEntityException {
+	@Test
+	public void testProjectExistsIssueKeyFilledDepthFilled() throws GenericEntityException {
+		assertEquals(200, viewRest.getTreant("TEST", "3", "1").getStatus());
+	}
+
+	@Test
+	public void testProjectNotExistsIssueKeyNullDepthNull() throws GenericEntityException {
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error","Decision knowledge elements cannot be shown since project key is invalid."))
-				.build().getEntity(),viewRest.getTreant("NotTEST", "3",null).getEntity());
-	 }
+				.entity(ImmutableMap.of("error",
+						"Decision knowledge elements cannot be shown since project key is invalid."))
+				.build().getEntity(), viewRest.getTreant("NotTEST", null, null).getEntity());
+	}
 
-	 @Test
-	 public void testProjectNotExistsIssueKeyNullDepthFilled() throws GenericEntityException {
+	@Test
+	public void testProjectNotExistsIssueKeyFilledDepthNull() throws GenericEntityException {
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR)
-			 .entity(ImmutableMap.of("error","Decision knowledge elements cannot be shown since project key is invalid."))
-			 .build().getEntity(),viewRest.getTreant("NotTEST", null,"1").getEntity());
-	 }
+				.entity(ImmutableMap.of("error",
+						"Decision knowledge elements cannot be shown since project key is invalid."))
+				.build().getEntity(), viewRest.getTreant("NotTEST", "3", null).getEntity());
+	}
 
-	 @Test
-	 public void testProjectNotExistsIssueKeyFilledDepthFilled() throws	 GenericEntityException {
+	@Test
+	public void testProjectNotExistsIssueKeyNullDepthFilled() throws GenericEntityException {
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error","Decision knowledge elements cannot be shown since project key is invalid."))
-				.build().getEntity(),viewRest.getTreant("NotTEST", "3","1").getEntity());
-	 }
+				.entity(ImmutableMap.of("error",
+						"Decision knowledge elements cannot be shown since project key is invalid."))
+				.build().getEntity(), viewRest.getTreant("NotTEST", null, "1").getEntity());
+	}
 
-	 @Test
-	 public void testProjectExistsIssueKeyFilledDepthNoInt() throws	 GenericEntityException {
-		assertEquals(200,viewRest.getTreant("TEST", "3", "Test").getStatus());
-	 }
+	@Test
+	public void testProjectNotExistsIssueKeyFilledDepthFilled() throws GenericEntityException {
+		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR)
+				.entity(ImmutableMap.of("error",
+						"Decision knowledge elements cannot be shown since project key is invalid."))
+				.build().getEntity(), viewRest.getTreant("NotTEST", "3", "1").getEntity());
+	}
 
-	 @Test
-	 public void testProjectExistsIssueKeyFilledAllTypes() throws GenericEntityException {
-		for(long i=2; i<= 16;i++){
-			viewRest.getTreant("TEST", Long.toString(i), "3").getStatus();
-		}
-	 }
+	@Test
+	public void testProjectExistsIssueKeyFilledDepthNoInt() throws GenericEntityException {
+		assertEquals(200, viewRest.getTreant("TEST", "3", "Test").getStatus());
+	}
 
-	 @Test
-	 public void testProjectExistsIssueKeyFilledChildElements() throws	 GenericEntityException {
+//	@Test
+//	public void testProjectExistsIssueKeyFilledAllTypes() throws GenericEntityException {
+//		for (long i = 2; i <= 16; i++) {
+//			viewRest.getTreant("TEST", Long.toString(i), "3").getStatus();
+//		}
+//	}
+
+	@Test
+	public void testProjectExistsIssueKeyFilledChildElements() throws GenericEntityException {
 		StrategyProvider strategyProvider = new StrategyProvider();
 		PersistenceStrategy strategy = strategyProvider.getStrategy("TEST");
 		Issue issue1 = ComponentAccessor.getIssueManager().getIssueObject((long) 12);
 		Issue issue2 = ComponentAccessor.getIssueManager().getIssueObject((long) 13);
 		strategy.insertDecisionKnowledgeElement(new DecisionKnowledgeElementImpl(issue1),
-		ComponentAccessor.getUserManager().getUserByName("NoFails"));
+				ComponentAccessor.getUserManager().getUserByName("NoFails"));
 		strategy.insertDecisionKnowledgeElement(new DecisionKnowledgeElementImpl(issue2),
-		ComponentAccessor.getUserManager().getUserByName("NoFails"));
+				ComponentAccessor.getUserManager().getUserByName("NoFails"));
 
-		MockIssueLink issuelink = new MockIssueLink((long)100);
+		MockIssueLink issuelink = new MockIssueLink((long) 100);
 		LinkImpl link = new LinkImpl(issuelink);
-		strategy.insertLink(link,ComponentAccessor.getUserManager().getUserByName("NoFails"));
+		strategy.insertLink(link, ComponentAccessor.getUserManager().getUserByName("NoFails"));
 
-		viewRest.getTreant("TEST","12", "3").getStatus();
-	 }
+		viewRest.getTreant("TEST", "12", "3").getStatus();
+	}
 }

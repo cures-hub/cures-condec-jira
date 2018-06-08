@@ -23,7 +23,11 @@ import com.atlassian.jira.user.MockApplicationUser;
 import com.atlassian.jira.user.util.MockUserManager;
 import com.atlassian.jira.user.util.UserManager;
 
-import de.uhd.ifi.se.decision.documentation.jira.mocks.*;
+import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkManager;
+import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkTypeManager;
+import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManager;
+import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueService;
+import de.uhd.ifi.se.decision.documentation.jira.mocks.MockProjectRoleManager;
 import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
 
 public class TestSetUp {
@@ -56,7 +60,6 @@ public class TestSetUp {
 				.addMock(ProjectRoleManager.class, new MockProjectRoleManager());
 
 		creatingProjectIssueStructure();
-
 	}
 
 	private void creatingProjectIssueStructure() {
@@ -83,7 +86,7 @@ public class TestSetUp {
 		types.add(KnowledgeType.PROBLEM);
 
 		for (int i = 2; i < types.size() + 2; i++) {
-			if (types.get(i - 2).equals("Problem")) {
+			if (types.get(i - 2).toString().equals("Problem")) {
 				MutableIssue issue = new MockIssue(30, "TEST-" + 30);
 				((MockIssue) issue).setProjectId(project.getId());
 				((MockIssue) issue).setProjectObject(project);
@@ -116,5 +119,4 @@ public class TestSetUp {
 		((MockIssueManager) issueManager).addIssue(issue);
 		((MockIssue) issue).setParentId((long) 3);
 	}
-
 }

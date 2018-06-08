@@ -39,18 +39,16 @@ public class TestPluginInitializer extends TestSetUp {
 	@Test
 	public void testExecutionAfterPropNoInit() throws Exception {
 		ProjectManager projectManager = new MockProjectManager();
-		IssueManager issueManager= new MockIssueManager();
-		ConstantsManager constManager = new  MockConstantsManager();
-		IssueService issueService=new MockIssueService();
-
+		IssueManager issueManager = new MockIssueManager();
+		ConstantsManager constManager = new MockConstantsManager();
+		IssueService issueService = new MockIssueService();
 
 		new MockComponentWorker().init().addMock(IssueManager.class, issueManager)
-		.addMock(IssueTypeManager.class, new MockIssueTypeManager())
-		.addMock(IssueLinkManager.class, new MockIssueLinkManager())
-		.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager(true))
-		.addMock(IssueService.class,issueService)
-		.addMock(ProjectManager.class,projectManager)
-		.addMock(ConstantsManager.class,constManager);
+				.addMock(IssueTypeManager.class, new MockIssueTypeManager())
+				.addMock(IssueLinkManager.class, new MockIssueLinkManager())
+				.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager(true))
+				.addMock(IssueService.class, issueService).addMock(ProjectManager.class, projectManager)
+				.addMock(ConstantsManager.class, constManager);
 
 		pluginInitializer.afterPropertiesSet();
 	}
@@ -58,20 +56,18 @@ public class TestPluginInitializer extends TestSetUp {
 	@Test
 	public void testExecutionAfterPropInit() throws Exception {
 		ProjectManager projectManager = new MockProjectManager();
-		IssueManager issueManager= new MockIssueManager();
-		ConstantsManager constManager = new  MockConstantsManager();
-		IssueService issueService=new MockIssueService();
-
+		IssueManager issueManager = new MockIssueManager();
+		ConstantsManager constManager = new MockConstantsManager();
+		IssueService issueService = new MockIssueService();
 
 		new MockComponentWorker().init().addMock(IssueManager.class, issueManager)
 				.addMock(IssueTypeManager.class, new MockIssueTypeManager())
 				.addMock(IssueLinkManager.class, new MockIssueLinkManager())
 				.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager(false))
-				.addMock(IssueService.class,issueService)
-				.addMock(ProjectManager.class,projectManager)
-				.addMock(ConstantsManager.class,constManager);
+				.addMock(IssueService.class, issueService).addMock(ProjectManager.class, projectManager)
+				.addMock(ConstantsManager.class, constManager);
 
-		//Adding all Issue Types
+		// Adding all Issue Types
 		constManager.insertIssueType("Decision", (long) 20, "Test", "Test", (long) 12290);
 		constManager.insertIssueType("Alternative", (long) 20, "Test", "Test", (long) 12290);
 		constManager.insertIssueType("Argument", (long) 20, "Test", "Test", (long) 12290);
@@ -86,8 +82,6 @@ public class TestPluginInitializer extends TestSetUp {
 		constManager.insertIssueType("Problem", (long) 20, "Test", "Test", (long) 12290);
 		constManager.insertIssueType("Solution", (long) 20, "Test", "Test", (long) 12290);
 
-
 		pluginInitializer.afterPropertiesSet();
 	}
-
 }

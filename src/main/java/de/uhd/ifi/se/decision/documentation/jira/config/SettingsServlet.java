@@ -17,6 +17,9 @@ import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
+/**
+ * @description Abstract super class to render the administration pages
+ */
 public abstract class SettingsServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 7361128574751637582L;

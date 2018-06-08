@@ -131,7 +131,7 @@ public class IssueStrategy extends PersistenceStrategy {
 			issueIds = issueManager.getIssueIdsForProject(project.getId());
 		} catch (GenericEntityException e) {
 			issueIds = new ArrayList<Long>();
-		} catch (NullPointerException e){
+		} catch (NullPointerException e) {
 			issueIds = new ArrayList<Long>();
 		}
 
@@ -158,51 +158,17 @@ public class IssueStrategy extends PersistenceStrategy {
 	public DecisionKnowledgeElementImpl getDecisionKnowledgeElement(long id) {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue issue = issueManager.getIssueObject(id);
-		if(issue == null){
+		if (issue == null) {
 			return null;
 		}
 		return new DecisionKnowledgeElementImpl(issue);
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
-
-		List<IssueLink> outwardIssueLinks = ComponentAccessor.getIssueLinkManager()
-				.getOutwardLinks(decisionKnowledgeElement.getId());
-		List<DecisionKnowledgeElement> children = new ArrayList<DecisionKnowledgeElement>();
-
-
-		if (decisionKnowledgeElement.getType() != KnowledgeType.ARGUMENT) {
-			for (IssueLink issueLink : outwardIssueLinks) {
-				Issue outwardIssue = issueLink.getDestinationObject();
-				if (outwardIssue != null) {
-					DecisionKnowledgeElementImpl outwardElement = new DecisionKnowledgeElementImpl(outwardIssue);
-					if (outwardElement.getType() != KnowledgeType.ARGUMENT) {
-						children.add(outwardElement);
-					}
-				}
-			}
-		}
-
-		List<IssueLink> inwardIssueLinks = ComponentAccessor.getIssueLinkManager()
-				.getInwardLinks(decisionKnowledgeElement.getId());
-		for (IssueLink issueLink : inwardIssueLinks) {
-			Issue inwardIssue = issueLink.getSourceObject();
-			if (inwardIssue != null) {
-				DecisionKnowledgeElementImpl inwardElement = new DecisionKnowledgeElementImpl(inwardIssue);
-				if (inwardElement.getType() == KnowledgeType.ARGUMENT) {
-					children.add(new DecisionKnowledgeElementImpl(inwardIssue));
-				}
-			}
-		}
-
-		return children;
-	}
-
-	public List<DecisionKnowledgeElement> getLinkedElementsInOutwardDirection(
+	public List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(
 			DecisionKnowledgeElement decisionKnowledgeElement) {
-		if(decisionKnowledgeElement == null){
-			return new ArrayList<>();
+		if (decisionKnowledgeElement == null) {
+			return new ArrayList<DecisionKnowledgeElement>();
 		}
 		List<DecisionKnowledgeElement> elementsLinkedWithOutwardLinks = new ArrayList<DecisionKnowledgeElement>();
 		List<IssueLink> outwardIssueLinks = getOutwardIssueLinks(decisionKnowledgeElement);
@@ -216,10 +182,11 @@ public class IssueStrategy extends PersistenceStrategy {
 		return elementsLinkedWithOutwardLinks;
 	}
 
-	public List<DecisionKnowledgeElement> getLinkedElementsInInwardDirection(
+	@Override
+	public List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(
 			DecisionKnowledgeElement decisionKnowledgeElement) {
-		if(decisionKnowledgeElement == null){
-			return new ArrayList<>();
+		if (decisionKnowledgeElement == null) {
+			return new ArrayList<DecisionKnowledgeElement>();
 		}
 		List<DecisionKnowledgeElement> elementsLinkedWithInwardLinks = new ArrayList<DecisionKnowledgeElement>();
 		List<IssueLink> inwardIssueLinks = getInwardIssueLinks(decisionKnowledgeElement);
@@ -231,23 +198,6 @@ public class IssueStrategy extends PersistenceStrategy {
 			}
 		}
 		return elementsLinkedWithInwardLinks;
-	}
-
-	@Override
-	public List<DecisionKnowledgeElement> getParents(DecisionKnowledgeElement decisionKnowledgeElement) {
-		if(decisionKnowledgeElement == null){
-			return new ArrayList<>();
-		}
-		List<IssueLink> inwardIssueLinks = ComponentAccessor.getIssueLinkManager()
-				.getInwardLinks(decisionKnowledgeElement.getId());
-		List<DecisionKnowledgeElement> parents = new ArrayList<DecisionKnowledgeElement>();
-		for (IssueLink issueLink : inwardIssueLinks) {
-			Issue inwardIssue = issueLink.getDestinationObject();
-			if (inwardIssue != null) {
-				parents.add(new DecisionKnowledgeElementImpl(inwardIssue));
-			}
-		}
-		return parents;
 	}
 
 	@Override

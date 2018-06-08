@@ -43,7 +43,7 @@ public interface DecisionKnowledgeElement {
 
 	public void setKey(String key);
 
-	public List<DecisionKnowledgeElement> getChildren();
+	public List<DecisionKnowledgeElement> getLinkedElements();
 
 	public List<Link> getOutwardLinks();
 

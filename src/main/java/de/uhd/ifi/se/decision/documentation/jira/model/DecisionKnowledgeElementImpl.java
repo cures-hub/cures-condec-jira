@@ -115,8 +115,8 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 		return this.type.getSuperType();
 	}
 
-	public List<DecisionKnowledgeElement> getChildren() {
-		return this.getProject().getPersistenceStrategy().getChildren(this);
+	public List<DecisionKnowledgeElement> getLinkedElements() {
+		return this.getProject().getPersistenceStrategy().getLinkedElements(this);
 	}
 
 	public List<Link> getOutwardLinks() {
@@ -137,13 +137,5 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 
 		DecisionKnowledgeElement element = (DecisionKnowledgeElement) object;
 		return this.id == element.getId();
-	}
-
-	public static void main(String[] args) {
-		DecisionKnowledgeElement element1 = new DecisionKnowledgeElementImpl();
-		//element1.setId(1);
-		DecisionKnowledgeElement element2 = new DecisionKnowledgeElementImpl();
-		//element2.setId(2);
-		System.out.println(element1.equals(element2));
 	}
 }

@@ -22,18 +22,23 @@ public class Graph {
 	public Graph(String projectKey) {
 		this();
 		StrategyProvider strategyProvider = new StrategyProvider();
-		persistenceStrategy = strategyProvider.getStrategy(projectKey);
+		this.persistenceStrategy = strategyProvider.getStrategy(projectKey);
 	}
 
 	public Graph(String projectKey, String rootElementKey) {
 		this(projectKey);
-		rootElement = persistenceStrategy.getDecisionKnowledgeElement(rootElementKey);
+		this.rootElement = persistenceStrategy.getDecisionKnowledgeElement(rootElementKey);
+	}
+
+	public Graph(DecisionKnowledgeElement rootElement) {
+		this(rootElement.getProjectKey());
+		this.rootElement = rootElement;
 	}
 
 	public List<DecisionKnowledgeElement> getChildElements(DecisionKnowledgeElement rootElement) {
 		List<DecisionKnowledgeElement> children = new ArrayList<DecisionKnowledgeElement>();
 
-		if(rootElement == null){
+		if (rootElement == null) {
 			return children;
 		}
 
