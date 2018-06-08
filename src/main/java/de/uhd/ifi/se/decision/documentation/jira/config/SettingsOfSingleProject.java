@@ -46,6 +46,7 @@ public class SettingsOfSingleProject extends SettingsServlet {
 	private boolean isProjectAdmin(String username, String projectKey) {
 		if (username == null || projectKey == null) {
 			LOGGER.error("Username or project key in SettingsOfSingleProject is null.");
+			return false;
 		}
 		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName(username);
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);

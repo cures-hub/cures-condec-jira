@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.documentation.jira;
 import java.util.ArrayList;
 
 import com.atlassian.jira.bc.issue.IssueService;
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
@@ -13,23 +12,18 @@ import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import com.atlassian.jira.mock.MockConstantsManager;
 import com.atlassian.jira.mock.MockProjectManager;
-import com.atlassian.jira.mock.MockProjectRoleManager;
 import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
-import com.atlassian.jira.security.roles.ProjectRole;
 import com.atlassian.jira.security.roles.ProjectRoleManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 import com.atlassian.jira.user.util.MockUserManager;
 import com.atlassian.jira.user.util.UserManager;
 
-import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkManager;
-import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkTypeManager;
-import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManager;
-import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueService;
+import de.uhd.ifi.se.decision.documentation.jira.mocks.*;
 import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
 
 public class TestSetUp {
@@ -47,8 +41,12 @@ public class TestSetUp {
 		userManager = new MockUserManager();
 		ApplicationUser user = new MockApplicationUser("NoFails");
 		ApplicationUser user2 = new MockApplicationUser("WithFails");
+		ApplicationUser user3 = new MockApplicationUser("NoSysAdmin");
+		ApplicationUser user4 = new MockApplicationUser("SysAdmin");
 		((MockUserManager) userManager).addUser(user);
 		((MockUserManager) userManager).addUser(user2);
+		((MockUserManager) userManager).addUser(user3);
+		((MockUserManager) userManager).addUser(user4);
 
 		new MockComponentWorker().init().addMock(IssueManager.class, issueManager)
 				.addMock(IssueLinkManager.class, new MockIssueLinkManager())
