@@ -16,7 +16,7 @@ import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
 /**
- * @description model class for treeviewer configuration
+ * @description Creates tree viewer content
  */
 public class TreeViewer {
 

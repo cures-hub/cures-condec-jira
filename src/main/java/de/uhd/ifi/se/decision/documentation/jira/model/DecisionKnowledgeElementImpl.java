@@ -24,7 +24,8 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 
 	}
 
-	public DecisionKnowledgeElementImpl(long id, String summary, String description, KnowledgeType type, String projectKey, String key) {
+	public DecisionKnowledgeElementImpl(long id, String summary, String description, KnowledgeType type,
+			String projectKey, String key) {
 		this.id = id;
 		this.summary = summary;
 		this.description = description;
@@ -128,13 +129,12 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	}
 
 	public boolean equals(Object object) {
-		if(object == null) {
+		if (object == null) {
 			return false;
 		}
-		if(object == this) {
+		if (object == this) {
 			return true;
 		}
-
 		DecisionKnowledgeElement element = (DecisionKnowledgeElement) object;
 		return this.id == element.getId();
 	}

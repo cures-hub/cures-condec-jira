@@ -301,7 +301,7 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 			@Override
 			public Boolean doInTransaction() {
 				for (LinkEntity linkEntity : activeObjects.find(LinkEntity.class)) {
-					if (link.getLinkType() == linkEntity.getLinkType()
+					if (link.getLinkType().equals(linkEntity.getLinkType())
 							&& link.getIngoingId() == linkEntity.getIngoingId()
 							&& link.getOutgoingId() == linkEntity.getOutgoingId()) {
 						try {

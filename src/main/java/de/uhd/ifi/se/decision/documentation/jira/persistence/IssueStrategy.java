@@ -62,7 +62,8 @@ public class IssueStrategy extends PersistenceStrategy {
 		IssueService.CreateValidationResult result = issueService.validateCreate(user, issueInputParameters);
 		if (result.getErrorCollection().hasAnyErrors()) {
 			for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
-				LOGGER.error(entry.getKey() + ": " + entry.getValue());
+				LOGGER.error("Insertion of decision knowledge element into database failed. " + entry.getKey() + ": "
+						+ entry.getValue());
 			}
 			return null;
 		} else {
@@ -89,7 +90,8 @@ public class IssueStrategy extends PersistenceStrategy {
 				issueInputParameters);
 		if (result.getErrorCollection().hasAnyErrors()) {
 			for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
-				LOGGER.error(entry.getKey() + ": " + entry.getValue());
+				LOGGER.error("Updating decision knowledge element in database failed. " + entry.getKey() + ": "
+						+ entry.getValue());
 			}
 			return false;
 		} else {
@@ -106,7 +108,8 @@ public class IssueStrategy extends PersistenceStrategy {
 			IssueService.DeleteValidationResult result = issueService.validateDelete(user, issue.getIssue().getId());
 			if (result.getErrorCollection().hasAnyErrors()) {
 				for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
-					LOGGER.error(entry.getKey() + ": " + entry.getValue());
+					LOGGER.error("Delition of decision knowledge element in database failed. " + entry.getKey() + ": "
+							+ entry.getValue());
 				}
 				return false;
 			} else {
@@ -121,8 +124,9 @@ public class IssueStrategy extends PersistenceStrategy {
 
 	@Override
 	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey) {
+		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
 		if (projectKey == null) {
-			return null;
+			return decisionKnowledgeElements;
 		}
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
@@ -135,7 +139,7 @@ public class IssueStrategy extends PersistenceStrategy {
 			issueIds = new ArrayList<Long>();
 		}
 
-		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
+
 		for (Long issueId : issueIds) {
 			Issue issue = issueManager.getIssueObject(issueId);
 
@@ -207,11 +211,13 @@ public class IssueStrategy extends PersistenceStrategy {
 		Collection<IssueLinkType> issueLinkTypeCollection = issueLinkTypeManager
 				.getIssueLinkTypesByName(link.getLinkType());
 		Iterator<IssueLinkType> issueLinkTypeIterator = issueLinkTypeCollection.iterator();
+
 		long typeId = 0;
 		while (issueLinkTypeIterator.hasNext()) {
 			IssueLinkType issueLinkType = issueLinkTypeIterator.next();
 			typeId = issueLinkType.getId();
 		}
+
 		long sequence = 0;
 		List<IssueLink> inwardIssueLinkList = issueLinkManager.getInwardLinks(link.getIngoingId());
 		List<IssueLink> outwardIssueLinkList = issueLinkManager.getOutwardLinks(link.getIngoingId());
@@ -228,10 +234,10 @@ public class IssueStrategy extends PersistenceStrategy {
 		try {
 			issueLinkManager.createIssueLink(link.getOutgoingId(), link.getIngoingId(), typeId, sequence, user);
 		} catch (CreateException e) {
-			LOGGER.error("CreateException");
+			LOGGER.error("Insertion of link into database failed due to a create exception.");
 			return (long) 0;
 		} catch (NullPointerException e) {
-			LOGGER.error("NullPointerException");
+			LOGGER.error("Insertion of link into database failed due to a null pointer exception.");
 			return (long) 0;
 		} finally {
 			outwardIssueLinkList = issueLinkManager.getOutwardLinks(link.getIngoingId());
@@ -241,7 +247,7 @@ public class IssueStrategy extends PersistenceStrategy {
 		}
 		IssueLink issueLink = issueLinkManager.getIssueLink(link.getOutgoingId(), link.getIngoingId(), typeId);
 		if (issueLink == null) {
-			LOGGER.error("issueLink == null");
+			LOGGER.error("Insertion of link into database failed.");
 			return (long) 0;
 		}
 		return issueLink.getId();

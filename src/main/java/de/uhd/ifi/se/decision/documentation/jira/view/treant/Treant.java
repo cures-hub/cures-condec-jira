@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.documentation.jira.model.Graph;
 import de.uhd.ifi.se.decision.documentation.jira.model.GraphImpl;
 
 /**
- * @description Model class for Treant
+ * @description Creates Treant content
  */
 @XmlRootElement(name = "treant")
 @XmlAccessorType(XmlAccessType.FIELD)
