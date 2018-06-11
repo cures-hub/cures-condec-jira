@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.documentation.jira.model.Link;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
@@ -25,10 +26,13 @@ public interface DecisionKnowledgeElementEntity extends DecisionKnowledgeElement
 	public void setType(String type);
 
 	@Ignore
+	public KnowledgeType getSuperType();
+
+	@Ignore
 	public DecisionKnowledgeProject getProject();
 
 	@Ignore
-	public List<DecisionKnowledgeElement> getChildren();
+	public List<DecisionKnowledgeElement> getLinkedElements();
 
 	@Ignore
 	public List<Link> getOutwardLinks();
