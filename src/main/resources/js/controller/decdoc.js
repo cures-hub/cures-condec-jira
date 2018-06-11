@@ -5,8 +5,6 @@ function getProjectKey() {
 }
 
 function createDecisionKnowledgeElementAsChild(summary, description, type, parentId) {
-	// TODO: Enable to show arguments. They are currently not shown due to
-	// an inward-outward link problem.
 	switch (type) {
 	case "Pro Argument":
 		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {

@@ -27,10 +27,6 @@ public class Data {
 	}
 
 	public Data(DecisionKnowledgeElement decisionKnowledgeElement) {
-		this(decisionKnowledgeElement, true);
-	}
-
-	public Data(DecisionKnowledgeElement decisionKnowledgeElement, boolean addChildren) {
 		this.setText(decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getSummary());
 		this.setId(String.valueOf(decisionKnowledgeElement.getId()));
 		this.setNodeInfo(decisionKnowledgeElement);

@@ -219,9 +219,9 @@ function setActivated(isActivated, projectKey) {
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setActivated.json?projectKey=" + projectKey + "&isActivated=" + isActivated,
 		function(error, response) {
 			if (error == null) {
-				showFlag("success", "Plug-in activation for project has been changed.");
+				showFlag("success", "Plug-in activation for the project has been changed.");
 			} else {
-				showFlag("error", "Plug-in activation for project has not been changed.");
+				showFlag("error", "Plug-in activation for the project has not been changed.");
 			}
 	});
 }
@@ -243,7 +243,7 @@ function isIssueStrategy(projectKey,callback) {
         if (error == null) {
             callback(isIssueBoolean)
         } else {
-            showFlag("error", "Strategy for the Project could not be received. Error-Code: " + error);
+            showFlag("error", "Persistence strategy for the project could not be received. Error-Code: " + error);
         }
     });
 }

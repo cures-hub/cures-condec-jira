@@ -40,11 +40,11 @@ public class TreeViewer {
 	}
 
 	public TreeViewer(String projectKey) {
-		graph = new GraphImpl(projectKey);
-
 		this.setMultiple(false);
 		this.setCheckCallback(true);
 		this.setThemes(ImmutableMap.of("icons", false));
+
+		graph = new GraphImpl(projectKey);
 
 		StrategyProvider strategyProvider = new StrategyProvider();
 		strategy = strategyProvider.getStrategy(projectKey);
@@ -62,24 +62,25 @@ public class TreeViewer {
 		if (decisionKnowledgeElement == null) {
 			return new Data();
 		}
-		if(graph == null){
+		if (graph == null) {
 			graph = new GraphImpl(decisionKnowledgeElement.getProjectKey());
 		}
-		Data dataRoot = new Data(decisionKnowledgeElement);
-		dataRoot.setChildren(computeDataChildElements(decisionKnowledgeElement));
-		return dataRoot;
+		Data data = new Data(decisionKnowledgeElement);
+		List<Data> children = this.getChildren(decisionKnowledgeElement);
+		data.setChildren(children);
+		return data;
 	}
 
-	private List<Data> computeDataChildElements(DecisionKnowledgeElement decisionRootElement) {
-		List<Data> childrenList = new ArrayList<>();
-
-		List<DecisionKnowledgeElement> children = graph.getLinkedElements(decisionRootElement);
-		for (DecisionKnowledgeElement child : children) {
-			Data dataChild = new Data(child);
-			dataChild.setChildren(computeDataChildElements(child));
-			childrenList.add(dataChild);
+	private List<Data> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
+		List<Data> children = new ArrayList<>();
+		List<DecisionKnowledgeElement> linkedElements = graph.getLinkedElements(decisionKnowledgeElement);
+		for (DecisionKnowledgeElement element : linkedElements) {
+			Data dataChild = new Data(element);
+			List<Data> childrenOfElement = this.getChildren(element);
+			dataChild.setChildren(childrenOfElement);
+			children.add(dataChild);
 		}
-		return childrenList;
+		return children;
 	}
 
 	private void makeEachIdUnique(HashSet<Data> dataSet) {

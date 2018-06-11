@@ -57,10 +57,8 @@ public class GraphImpl implements Graph {
 			if (!linkIds.contains(link.getLinkId())) {
 				DecisionKnowledgeElement outwardElement = link.getDestinationObject();
 				if (outwardElement != null) {
-					if (outwardElement.getType() != KnowledgeType.ARGUMENT) {
-						linkIds.add(link.getLinkId());
-						linkedElements.add(outwardElement);
-					}
+					linkIds.add(link.getLinkId());
+					linkedElements.add(outwardElement);
 				}
 			}
 		}
@@ -75,15 +73,13 @@ public class GraphImpl implements Graph {
 			return linkedElements;
 		}
 
-		List<Link> inwardIssueLinks = persistenceStrategy.getInwardLinks(rootElement);
+		List<Link> inwardIssueLinks = persistenceStrategy.getInwardLinks(element);
 		for (Link link : inwardIssueLinks) {
 			if (!linkIds.contains(link.getLinkId())) {
 				DecisionKnowledgeElement inwardElement = link.getSourceObject();
 				if (inwardElement != null) {
-					if (inwardElement.getType() == KnowledgeType.ARGUMENT) {
-						linkIds.add(link.getLinkId());
-						linkedElements.add(inwardElement);
-					}
+					linkIds.add(link.getLinkId());
+					linkedElements.add(inwardElement);
 				}
 			}
 		}

@@ -74,7 +74,8 @@ public class ViewRest {
 
 	private Response projectKeyIsInvalid() {
 		LOGGER.error("Decision knowledge elements cannot be shown since project key is invalid.");
-		return Response.status(Status.BAD_REQUEST)
-				.entity(ImmutableMap.of("error", "Decision knowledge elements cannot be shown since project key is invalid.")).build();
+		return Response.status(Status.BAD_REQUEST).entity(
+				ImmutableMap.of("error", "Decision knowledge elements cannot be shown since project key is invalid."))
+				.build();
 	}
 }
