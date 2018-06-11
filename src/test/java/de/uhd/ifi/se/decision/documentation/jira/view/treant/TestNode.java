@@ -29,9 +29,9 @@ public class TestNode {
 	public void setUp() {
 		nodeContent = new HashMap<>();
 		link = new HashMap<>();
-		htmlClass= "Test";
-		htmlId=(long)100;
-		innerHTML= "Test";
+		htmlClass = "Test";
+		htmlId = (long) 100;
+		innerHTML = "Test";
 		children = new ArrayList<>();
 
 		node = new Node();
@@ -44,7 +44,7 @@ public class TestNode {
 	}
 
 	@Test
-	public void testConstructor(){
+	public void testConstructor() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
 		element.setId(1);
 		element.setKey("Test-1");
@@ -72,7 +72,7 @@ public class TestNode {
 
 	@Test
 	public void testGetHtmlId() {
-		assertEquals(htmlId, this.node.getHtmlId(),0.0);
+		assertEquals(htmlId, this.node.getHtmlId(), 0.0);
 	}
 
 	@Test
@@ -87,7 +87,7 @@ public class TestNode {
 
 	@Test
 	public void testSetNodeContent() {
-		Map<String, String>newNodeContent = new HashMap<>();
+		Map<String, String> newNodeContent = new HashMap<>();
 		this.node.setNodeContent(newNodeContent);
 		assertEquals(newNodeContent, this.node.getNodeContent());
 	}
@@ -101,28 +101,28 @@ public class TestNode {
 
 	@Test
 	public void testSetHtmlClass() {
-		String newhtmlClass= htmlClass+"New";
+		String newhtmlClass = htmlClass + "New";
 		this.node.setHtmlClass(newhtmlClass);
 		assertEquals(newhtmlClass, this.node.getHtmlClass());
 	}
 
 	@Test
 	public void testSetHtmlId() {
-		long newHtmlId = htmlId+1;
+		long newHtmlId = htmlId + 1;
 		this.node.setHtmlId(newHtmlId);
-		assertEquals(newHtmlId, this.node.getHtmlId(),0.0);
+		assertEquals(newHtmlId, this.node.getHtmlId(), 0.0);
 	}
 
 	@Test
 	public void testSetInnerHtml() {
-		String newInnerHtml = innerHTML+"New";
+		String newInnerHtml = innerHTML + "New";
 		this.node.setInnerHTML(newInnerHtml);
 		assertEquals(newInnerHtml, this.node.getInnerHTML());
 	}
 
 	@Test
 	public void testSetChildren() {
-		List<Node> newchildren= new ArrayList<Node>();
+		List<Node> newchildren = new ArrayList<Node>();
 		this.node.setChildren(newchildren);
 		assertEquals(newchildren, this.node.getChildren());
 	}

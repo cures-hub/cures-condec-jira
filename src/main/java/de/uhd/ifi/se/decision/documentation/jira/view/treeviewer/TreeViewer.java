@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.Graph;
+import de.uhd.ifi.se.decision.documentation.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
@@ -39,7 +40,7 @@ public class TreeViewer {
 	}
 
 	public TreeViewer(String projectKey) {
-		graph = new Graph(projectKey);
+		graph = new GraphImpl(projectKey);
 
 		this.setMultiple(false);
 		this.setCheckCallback(true);
@@ -62,7 +63,7 @@ public class TreeViewer {
 			return new Data();
 		}
 		if(graph == null){
-			graph = new Graph(decisionKnowledgeElement.getProjectKey());
+			graph = new GraphImpl(decisionKnowledgeElement.getProjectKey());
 		}
 		Data dataRoot = new Data(decisionKnowledgeElement);
 		dataRoot.setChildren(computeDataChildElements(decisionKnowledgeElement));
@@ -72,7 +73,7 @@ public class TreeViewer {
 	private List<Data> computeDataChildElements(DecisionKnowledgeElement decisionRootElement) {
 		List<Data> childrenList = new ArrayList<>();
 
-		List<DecisionKnowledgeElement> children = graph.getChildElements(decisionRootElement);
+		List<DecisionKnowledgeElement> children = graph.getLinkedElements(decisionRootElement);
 		for (DecisionKnowledgeElement child : children) {
 			Data dataChild = new Data(child);
 			dataChild.setChildren(computeDataChildElements(child));

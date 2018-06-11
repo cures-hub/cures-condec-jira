@@ -30,7 +30,6 @@ public class TestGraph extends TestSetUp {
 	private Graph graph;
 	private Set<DecisionKnowledgeElement> elements;
 	private DecisionKnowledgeElement element;
-	// private DecisionKnowledgeElement newElement;
 
 	@Before
 	public void setUp() {
@@ -39,39 +38,36 @@ public class TestGraph extends TestSetUp {
 				new MockDefaultUserManager());
 
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
-		// newElement = new
-		// DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long)
-		// 15));
 		elements = new HashSet<DecisionKnowledgeElement>();
 		elements.add(element);
-		graph = new Graph("TEST", element.getKey());
+		graph = new GraphImpl("TEST", element.getKey());
 	}
 
 	@Test
 	public void testRootElementConstructor() {
-		Graph graphRoot = new Graph(element.getProjectKey());
+		GraphImpl graphRoot = new GraphImpl(element.getProjectKey());
 		assertNotNull(graphRoot);
 	}
 
 	@Test
 	public void testRootElementLinkDistConstructor() {
-		Graph graphRoot = new Graph(element.getProjectKey(), element.getKey());
+		GraphImpl graphRoot = new GraphImpl(element.getProjectKey(), element.getKey());
 		assertNotNull(graphRoot);
 	}
 
 	@Test
 	public void testGetChildrenNull() {
-		assertEquals(0, graph.getChildElements(null).size(), 0.0);
+		assertEquals(0, graph.getLinkedElements(null).size(), 0.0);
 	}
 
 	@Test
-	public void testGetChildrenEmpty() {
+	public void testGetLinkedElementsEmpty() {
 		DecisionKnowledgeElement emptyElement = new DecisionKnowledgeElementImpl();
-		assertEquals(0, graph.getChildElements(emptyElement).size(), 0.0);
+		assertEquals(0, graph.getLinkedElements(emptyElement).size(), 0.0);
 	}
 
 	@Test
-	public void testGetChildrenFilled() {
+	public void testGetLinkedElementsFilled() {
 		IssueStrategy issueStrategy = new IssueStrategy();
 		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
@@ -106,7 +102,7 @@ public class TestGraph extends TestSetUp {
 			}
 			i++;
 		}
-		System.out.println(graph.getChildElements(decision).size());
+		System.out.println(graph.getLinkedElements(decision).size());
 	}
 
 	@Test

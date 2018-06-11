@@ -33,13 +33,11 @@ public class TestTreeViewer extends TestSetUp {
 	private HashSet<Data> data;
 	private TreeViewer treeViewer;
 
-
-
 	@Before
 	public void setUp() {
-		multiple=false;
-		checkCallback=true;
-		themes= new HashMap<>();
+		multiple = false;
+		checkCallback = true;
+		themes = new HashMap<>();
 		themes.put("Test", false);
 		data = new HashSet<>();
 		data.add(new Data());
@@ -103,32 +101,32 @@ public class TestTreeViewer extends TestSetUp {
 	}
 
 	@Test
-	public void testGetDataStructureNull(){
-		assertEquals(Data.class,treeViewer.getDataStructure(null).getClass());
+	public void testGetDataStructureNull() {
+		assertEquals(Data.class, treeViewer.getDataStructure(null).getClass());
 	}
 
 	@Test
-	public void testGetDataStructureEmpty(){
+	public void testGetDataStructureEmpty() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
 		System.out.println(treeViewer.getDataStructure(element));
 	}
 
 	@Test
-	public void testGetDataStructureFilled(){
+	public void testGetDataStructureFilled() {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
-		assertEquals("14",treeViewer.getDataStructure(element).getId());
+		assertEquals("14", treeViewer.getDataStructure(element).getId());
 	}
 
 	@Test
-	public void testEmptyConstructor(){
+	public void testEmptyConstructor() {
 		assertNotNull(new TreeViewer());
 	}
 
 	@Test
-	public void testEmptyGraphGetDataStructure(){
+	public void testEmptyGraphGetDataStructure() {
 		TreeViewer tree = new TreeViewer();
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
-		assertEquals("14",tree.getDataStructure(element).getId());
+		assertEquals("14", tree.getDataStructure(element).getId());
 	}
 
 }

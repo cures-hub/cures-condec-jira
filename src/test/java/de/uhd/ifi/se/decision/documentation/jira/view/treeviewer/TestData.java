@@ -8,22 +8,22 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
 
 public class TestData {
 	private String id;
 	private String text;
 	private List<Data> children;
-	private DecisionKnowledgeElementImpl nodeInfo;
+	private DecisionKnowledgeElement nodeInfo;
 
 	private Data data;
-
 
 	@Before
 	public void setUp() {
 		id = "Test";
-		text= "Test";
-		children= new ArrayList<>();
+		text = "Test";
+		children = new ArrayList<>();
 		nodeInfo = new DecisionKnowledgeElementImpl();
 		data = new Data();
 		data.setChildren(children);
@@ -54,19 +54,19 @@ public class TestData {
 
 	@Test
 	public void testSetId() {
-		data.setId(id+"New");
-		assertEquals(data.getId(), id+"New");
+		data.setId(id + "New");
+		assertEquals(data.getId(), id + "New");
 	}
 
 	@Test
 	public void testSetText() {
-		data.setText(text+"New");
-		assertEquals(data.getText(), text+"New");
+		data.setText(text + "New");
+		assertEquals(data.getText(), text + "New");
 	}
 
 	@Test
 	public void testSetChildren() {
-		List<Data> newChilden  = new ArrayList<>();
+		List<Data> newChilden = new ArrayList<>();
 		data.setChildren(newChilden);
 		assertEquals(newChilden, data.getChildren());
 	}

@@ -279,6 +279,9 @@ public class IssueStrategy extends PersistenceStrategy {
 	}
 
 	public List<IssueLink> getInwardIssueLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
+		if (decisionKnowledgeElement == null) {
+			return new ArrayList<IssueLink>();
+		}
 		List<IssueLink> inwardIssueLinks = ComponentAccessor.getIssueLinkManager()
 				.getInwardLinks(decisionKnowledgeElement.getId());
 		return inwardIssueLinks;
@@ -295,6 +298,9 @@ public class IssueStrategy extends PersistenceStrategy {
 	}
 
 	public List<IssueLink> getOutwardIssueLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
+		if (decisionKnowledgeElement == null) {
+			return new ArrayList<IssueLink>();
+		}
 		List<IssueLink> outwardIssueLinks = ComponentAccessor.getIssueLinkManager()
 				.getOutwardLinks(decisionKnowledgeElement.getId());
 		return outwardIssueLinks;

@@ -76,37 +76,36 @@ public class TestTreant extends TestSetUp {
 	}
 
 	@Test
-	public void testCreateNodeStructureNullZeroZero(){
-		assertEquals(Node.class, treant.createNodeStructure(null,0,0).getClass());
+	public void testCreateNodeStructureNullZeroZero() {
+		assertEquals(Node.class, treant.createNodeStructure(null, 0, 0).getClass());
 	}
 
 	@Test
-	public void testCreateNodeStructureEmptyZeroZero(){
+	public void testCreateNodeStructureEmptyZeroZero() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		assertEquals(Node.class, treant.createNodeStructure(element,0,0).getClass());
+		assertEquals(Node.class, treant.createNodeStructure(element, 0, 0).getClass());
 	}
 
 	@Test
-	public void testCreateNodeStructureFilledZeroZero(){
+	public void testCreateNodeStructureFilledZeroZero() {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
-		assertEquals(Node.class, treant.createNodeStructure(element,0,0).getClass());
+		assertEquals(Node.class, treant.createNodeStructure(element, 0, 0).getClass());
 	}
 
 	@Test
-	public void testCreateNodeStructureNullFilledFilled(){
-		assertEquals(Node.class, treant.createNodeStructure(null,4,0).getClass());
+	public void testCreateNodeStructureNullFilledFilled() {
+		assertEquals(Node.class, treant.createNodeStructure(null, 4, 0).getClass());
 	}
 
 	@Test
-	public void testCreateNodeStructureEmptyFilledFilled(){
+	public void testCreateNodeStructureEmptyFilledFilled() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		assertEquals(Node.class, treant.createNodeStructure(element,4,0).getClass());
+		assertEquals(Node.class, treant.createNodeStructure(element, 4, 0).getClass());
 	}
 
 	@Test
-	public void testCreateNodeStructureFilledFilledFilled(){
+	public void testCreateNodeStructureFilledFilledFilled() {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
-		assertEquals(Node.class, treant.createNodeStructure(element,4,0).getClass());
+		assertEquals(Node.class, treant.createNodeStructure(element, 4, 0).getClass());
 	}
-
 }

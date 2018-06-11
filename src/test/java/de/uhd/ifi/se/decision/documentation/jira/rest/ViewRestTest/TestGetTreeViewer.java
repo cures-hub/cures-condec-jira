@@ -33,12 +33,12 @@ public class TestGetTreeViewer extends TestSetUp {
 
 	private static final String INVALID_PROJECTKEY = "Decision knowledge elements cannot be shown since project key is invalid.";
 
-
 	@Before
 	public void setUp() {
 		viewRest = new ViewRest();
 		initialization();
-		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
+		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
+				new MockDefaultUserManager());
 	}
 
 	@Test
@@ -53,7 +53,6 @@ public class TestGetTreeViewer extends TestSetUp {
 				.build().getEntity(), viewRest.getTreeViewer("NotTEST").getEntity());
 	}
 
-
 	@Test
 	public void testProjectKeyExists() throws GenericEntityException {
 		assertEquals(200, viewRest.getTreeViewer("TEST").getStatus());
@@ -62,8 +61,8 @@ public class TestGetTreeViewer extends TestSetUp {
 	@Test
 	public void testProjectKeyExistsNoObjects() throws GenericEntityException {
 		ProjectManager projectManager = ComponentAccessor.getProjectManager();
-		Project project = new MockProject(2,"TESTNO");
-		((MockProject)project).setKey("TESTNO");
+		Project project = new MockProject(2, "TESTNO");
+		((MockProject) project).setKey("TESTNO");
 		((MockProjectManager) projectManager).addProject(project);
 		assertEquals(200, viewRest.getTreeViewer("TESTNO").getStatus());
 	}

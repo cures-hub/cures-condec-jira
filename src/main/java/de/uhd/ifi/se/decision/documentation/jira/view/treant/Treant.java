@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.Graph;
+import de.uhd.ifi.se.decision.documentation.jira.model.GraphImpl;
 
 /**
  * @description Model class for Treant
@@ -29,24 +30,24 @@ public class Treant {
 	}
 
 	public Treant(String projectKey, String elementKey, int depth) {
-		graph = new Graph(projectKey, elementKey);
+		graph = new GraphImpl(projectKey, elementKey);
 		DecisionKnowledgeElement rootElement = graph.getRootElement();
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, depth, 0));
 	}
 
 	public Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, int depth, int currentDepth) {
-		if(decisionKnowledgeElement == null || decisionKnowledgeElement.getProjectKey()==null){
+		if (decisionKnowledgeElement == null || decisionKnowledgeElement.getProjectKey() == null) {
 			return new Node();
 		}
-		if(graph == null){
-			graph = new Graph(decisionKnowledgeElement.getProjectKey());
+		if (graph == null) {
+			graph = new GraphImpl(decisionKnowledgeElement.getProjectKey());
 		}
 		Node node = new Node(decisionKnowledgeElement);
 
 		if (currentDepth + 1 < depth) {
 			List<Node> nodes = new ArrayList<Node>();
-			List<DecisionKnowledgeElement> children = graph.getChildElements(decisionKnowledgeElement);
+			List<DecisionKnowledgeElement> children = graph.getLinkedElements(decisionKnowledgeElement);
 
 			for (DecisionKnowledgeElement child : children) {
 				nodes.add(createNodeStructure(child, depth, currentDepth + 1));
