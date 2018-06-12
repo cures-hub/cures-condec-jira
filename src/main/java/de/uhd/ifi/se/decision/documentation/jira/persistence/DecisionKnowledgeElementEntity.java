@@ -1,14 +1,7 @@
 package de.uhd.ifi.se.decision.documentation.jira.persistence;
 
-import java.util.List;
-
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.documentation.jira.model.Link;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
-import net.java.ao.schema.Ignore;
 import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
 
