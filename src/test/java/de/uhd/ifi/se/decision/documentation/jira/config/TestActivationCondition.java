@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.documentation.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
 import net.java.ao.EntityManager;
@@ -26,7 +27,8 @@ public class TestActivationCondition {
 		Map<String, String> context = new HashMap<>();
 		activationCondition = new ActivationCondition();
 		activationCondition.init(context);
-		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
+		new TestComponentGetter().setUp();
+		//new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
 	}
 
 	@Test

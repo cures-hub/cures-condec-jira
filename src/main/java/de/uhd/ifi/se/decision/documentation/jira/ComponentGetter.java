@@ -58,42 +58,70 @@ public class ComponentGetter {
 	public ComponentGetter(PluginSettingsFactory pluginSettingsFactory, TransactionTemplate transactionTemplate, IssueService issueService,
 			ProjectService projectService, SearchService searchService, UserManager userManager, TemplateRenderer templateRenderer,
 			ActiveObjects activeObjects) {
-		ComponentGetter.pluginSettingsFactory = pluginSettingsFactory;
-		ComponentGetter.transactionTemplate = transactionTemplate;
-		ComponentGetter.issueService = issueService;
-		ComponentGetter.projectService = projectService;
-		ComponentGetter.searchService = searchService;
-		ComponentGetter.userManager = userManager;
-		ComponentGetter.templateRenderer = templateRenderer;
-		ComponentGetter.activeObjects = checkNotNull(activeObjects);
+		setPluginSettingsFactory(pluginSettingsFactory);
+		setTransactionTemplate(transactionTemplate);
+		setIssueService(issueService);
+		setProjectService(projectService);
+		setSearchService(searchService);
+		setUserManager(userManager);
+		setTemplateRenderer(templateRenderer);
+		setActiveObjects(activeObjects);
 	}
 
 	public static PluginSettingsFactory getPluginSettingsFactory() {
 		return pluginSettingsFactory;
 	}
 
+	public static void setPluginSettingsFactory(PluginSettingsFactory pluginSettingsFactory) {
+		ComponentGetter.pluginSettingsFactory = pluginSettingsFactory;
+	}
+
 	public static TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
+	}
+
+	public static void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+		ComponentGetter.transactionTemplate = transactionTemplate;
 	}
 
 	public static IssueService getIssueService() {
 		return issueService;
 	}
 
+	public static void setIssueService(IssueService issueService) {
+		ComponentGetter.issueService = issueService;
+	}
+
 	public static ProjectService getProjectService() {
 		return projectService;
+	}
+
+	public static void setProjectService(ProjectService projectService) {
+		ComponentGetter.projectService = projectService;
 	}
 
 	public static SearchService getSearchService() {
 		return searchService;
 	}
 
+	public static void setSearchService(SearchService searchService) {
+		ComponentGetter.searchService = searchService;
+	}
+
 	public static UserManager getUserManager() {
 		return userManager;
 	}
 
+	public static void setUserManager(UserManager userManager) {
+		ComponentGetter.userManager = userManager;
+	}
+
 	public static TemplateRenderer getTemplateRenderer() {
 		return templateRenderer;
+	}
+
+	public static void setTemplateRenderer(TemplateRenderer templateRenderer) {
+		ComponentGetter.templateRenderer = templateRenderer;
 	}
 
 	public static ActiveObjects getActiveObjects() {
@@ -101,7 +129,7 @@ public class ComponentGetter {
 	}
 
 	public static void setActiveObjects(ActiveObjects activeObjects) {
-		ComponentGetter.activeObjects = activeObjects;
+		ComponentGetter.activeObjects = checkNotNull(activeObjects);
 	}
 
 	public static String getPluginStorageKey() {

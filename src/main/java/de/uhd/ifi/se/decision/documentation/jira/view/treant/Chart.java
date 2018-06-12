@@ -35,4 +35,32 @@ public class Chart {
 		this.subTreeSeparation = 30;
 		this.node = ImmutableMap.of("collapsable", true);
 	}
+
+	public String getContainer() {
+		return this.container;
+	}
+
+	public Map<String, String> getConnectors() {
+		return connectors;
+	}
+
+	public String getRootOrientation() {
+		return rootOrientation;
+	}
+
+	public int getLevelSeparation() {
+		return levelSeparation;
+	}
+
+	public int getSiblingSeparation() {
+		return siblingSeparation;
+	}
+
+	public int getSubTreeSeparation() {
+		return subTreeSeparation;
+	}
+
+	public Map<String, Boolean> getNode() {
+		return node;
+	}
 }

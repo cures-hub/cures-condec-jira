@@ -20,33 +20,33 @@ import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 
 public class TestComponentGetter {
 
-	private PluginSettingsFactory factory;
+	private PluginSettingsFactory pluginSettingsFactory;
 	private TransactionTemplate transactionTemplate;
 	private IssueService issueService;
 	private ProjectService projectService;
 	private SearchService searchService;
 	private UserManager userManager;
 	private TemplateRenderer templateRenderer;
-	private ActiveObjects ao;
+	private ActiveObjects activeObjects;
 
 	@Before
 	public void setUp() {
-		factory = mock(PluginSettingsFactory.class);
+		pluginSettingsFactory = mock(PluginSettingsFactory.class);
 		transactionTemplate = mock(TransactionTemplate.class);
 		issueService = mock(IssueService.class);
 		projectService = mock(ProjectService.class);
 		searchService = mock(SearchService.class);
 		userManager = new MockDefaultUserManager();
 		templateRenderer = mock(TemplateRenderer.class);
-		ao = mock(ActiveObjects.class);
+		activeObjects = mock(ActiveObjects.class);
 
-		new ComponentGetter(factory, transactionTemplate, issueService, projectService, searchService, userManager,
-				templateRenderer, ao);
+		new ComponentGetter(pluginSettingsFactory, transactionTemplate, issueService, projectService, searchService,
+				userManager, templateRenderer, activeObjects);
 	}
 
 	@Test
-	public void testgetPluginSettingsFactory() {
-		assertEquals(factory, ComponentGetter.getPluginSettingsFactory());
+	public void testGetPluginSettingsFactory() {
+		assertEquals(pluginSettingsFactory, ComponentGetter.getPluginSettingsFactory());
 	}
 
 	@Test
@@ -81,7 +81,7 @@ public class TestComponentGetter {
 
 	@Test
 	public void testGetActivObjects() {
-		assertEquals(ao, ComponentGetter.getActiveObjects());
+		assertEquals(activeObjects, ComponentGetter.getActiveObjects());
 	}
 
 	@Test
@@ -90,9 +90,9 @@ public class TestComponentGetter {
 	}
 
 	@Test
-	public void testSetAO() {
-		ActiveObjects newao = mock(ActiveObjects.class);
-		ComponentGetter.setActiveObjects(newao);
-		assertEquals(newao, ComponentGetter.getActiveObjects());
+	public void testSetActiveObjects() {
+		ActiveObjects activeObjects = mock(ActiveObjects.class);
+		ComponentGetter.setActiveObjects(activeObjects);
+		assertEquals(activeObjects, ComponentGetter.getActiveObjects());
 	}
 }
