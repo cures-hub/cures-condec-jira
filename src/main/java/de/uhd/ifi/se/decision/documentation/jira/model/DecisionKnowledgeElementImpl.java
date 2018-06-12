@@ -34,6 +34,11 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 		this.key = key;
 	}
 
+	public DecisionKnowledgeElementImpl(long id, String summary, String description, String type,
+			String projectKey, String key) {
+		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key);
+	}
+
 	public DecisionKnowledgeElementImpl(Issue issue) {
 		this.id = issue.getId();
 		this.summary = issue.getSummary();

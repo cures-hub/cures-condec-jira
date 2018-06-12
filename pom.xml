@@ -234,8 +234,8 @@
 	</build>
 	<properties>
 		<jira.version>7.5.0</jira.version>
-		<amps.version>6.3.6</amps.version>
-		<ao.version>1.2.3</ao.version>
+		<amps.version>6.3.3</amps.version>
+		<ao.version>1.5.0</ao.version>
 		<plugin.testrunner.version>1.2.3</plugin.testrunner.version>
 		<atlassian.spring.scanner.version>1.2.13</atlassian.spring.scanner.version>
 		<!-- This key is used to keep the consistency between the key in atlassian-plugin.xml and the key to

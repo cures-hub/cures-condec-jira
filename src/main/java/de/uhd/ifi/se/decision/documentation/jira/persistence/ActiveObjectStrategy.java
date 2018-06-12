@@ -46,7 +46,7 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 								decisionKnowledgeElement.getProjectKey().toUpperCase() + "-" + databaseEntry.getId());
 						databaseEntry.setSummary(decisionKnowledgeElement.getSummary());
 						databaseEntry.setDescription(decisionKnowledgeElement.getDescription());
-						databaseEntry.setType(decisionKnowledgeElement.getType());
+						databaseEntry.setType(decisionKnowledgeElement.getType().toString());
 						databaseEntry.setProjectKey(decisionKnowledgeElement.getProjectKey());
 						databaseEntry.save();
 						return databaseEntry;
@@ -72,7 +72,7 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 							if (databaseEntry.getId() == decisionKnowledgeElement.getId()) {
 								databaseEntry.setSummary(decisionKnowledgeElement.getSummary());
 								databaseEntry.setDescription(decisionKnowledgeElement.getDescription());
-								databaseEntry.setType(decisionKnowledgeElement.getType());
+								databaseEntry.setType(decisionKnowledgeElement.getType().toString());
 								databaseEntry.save();
 								return databaseEntry;
 							}

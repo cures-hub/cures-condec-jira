@@ -17,26 +17,24 @@ import net.java.ao.schema.Table;
  *              active object persistence strategy
  */
 @Table("DECISION")
-public interface DecisionKnowledgeElementEntity extends DecisionKnowledgeElement, RawEntity<Integer> {
+public interface DecisionKnowledgeElementEntity extends RawEntity<Integer> {
 	@AutoIncrement
 	@PrimaryKey("ID")
 	public long getId();
+	public void setId(long id);
 
-	@Ignore
+	public String getSummary();
+	public void setSummary(String summary);
+
+	public String getDescription();
+	public void setDescription(String description);
+
+	public String getType();
 	public void setType(String type);
 
-	@Ignore
-	public KnowledgeType getSuperType();
+	public String getProjectKey();
+	public void setProjectKey(String projectKey);
 
-	@Ignore
-	public DecisionKnowledgeProject getProject();
-
-	@Ignore
-	public List<DecisionKnowledgeElement> getLinkedElements();
-
-	@Ignore
-	public List<Link> getOutwardLinks();
-
-	@Ignore
-	public List<Link> getInwardLinks();
+	public String getKey();
+	public void setKey(String key);
 }
