@@ -1,4 +1,4 @@
-//Gloabal Variable for DnD
+// Global variable for DnD
 var dragId;
 
 function buildTreant(decisionKnowledgeElement) {
@@ -23,34 +23,31 @@ function createContextMenuForTreantNodes() {
 function addingDragAndDropSupport() {
 	var nodeDivs = document.getElementsByClassName("node");
 	var i;
-	for(i=0; i<nodeDivs.length; i++) {
-        nodeDivs[i].draggable = true;
-        nodeDivs[i].addEventListener('dragstart', drag, false);
-        nodeDivs[i].addEventListener('drop',function(){drop(event,this);});
-
-    }
-    var nodeDesc = document.getElementsByClassName("node-desc");
-    for(i=0; i<nodeDesc.length; i++) {
-	nodeDesc[i].addEventListener('dragover', allowDrop, false);
-    }
-
+	for (i = 0; i < nodeDivs.length; i++) {
+		nodeDivs[i].draggable = true;
+		nodeDivs[i].addEventListener('dragstart', drag, false);
+		nodeDivs[i].addEventListener('drop', function() {
+			drop(event, this);
+		});
+	}
+	var nodeDesc = document.getElementsByClassName("node-desc");
+	for (i = 0; i < nodeDesc.length; i++) {
+		nodeDesc[i].addEventListener('dragover', allowDrop, false);
+	}
 }
 
 function drag(event) {
-    event.dataTransfer.setData("text", event.target.id);
-    dragId = event.target.id;
+	event.dataTransfer.setData("text", event.target.id);
+	dragId = event.target.id;
 }
 
-function drop(event, target){
+function drop(event, target) {
 	event.preventDefault();
 	var parentId = target.id;
 	var childId = dragId;
-    createLinkToExistingElement(parentId, childId);
-
+	createLinkToExistingElement(parentId, childId);
 }
 
-function  allowDrop(event) {
+function allowDrop(event) {
 	event.preventDefault();
 }
-
-

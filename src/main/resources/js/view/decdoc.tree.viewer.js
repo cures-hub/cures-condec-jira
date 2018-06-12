@@ -21,7 +21,7 @@ function buildTreeViewer(nodeId) {
 		}).jstree({
 			"core" : core,
 			// TODO: add drag n drop
-			"plugins" : [ "dnd","contextmenu", "wholerow", "sort", "search" ],
+			"plugins" : [ "dnd", "contextmenu", "wholerow", "sort", "search" ],
 			"search" : {
 				"show_only_matches" : true
 			},
@@ -35,24 +35,30 @@ function buildTreeViewer(nodeId) {
 			$('#evts').jstree(true).search(searchString);
 		});
 	});
-    $(document)
-        .on('dnd_stop.vakata', function (e, data) {
-		//Moved NodeID
-			var nodeID = data.data.nodes[0];
-            var t = $(data.event.target);
-            var targetnode = t.closest('.jstree-node');
-            //New parentID
-            var parentID = targetnode.attr("id");
-            var tree = $('#evts').jstree(true);
-            var oldParentID = tree.get_parent(nodeID);
-            console.log(oldParentID);
-            if(oldParentID == '#'){
-		console.log("Decisions can not be linked to another Decision or Decision Knowledge Element");
+	$(document).on('dnd_stop.vakata', function(error, data) {
+		dragAndDropTreeViewer(error, data);
+	});
+}
+
+function dragAndDropTreeViewer(error, data) {
+	// Moved node id
+	var nodeId = data.data.nodes[0];
+
+	// New parent node id
+	var target = $(data.event.target);
+	var targetNode = target.closest('.jstree-node');
+	var newParentId = targetNode.attr("id");
+
+	// Old parent node id
+	var tree = $('#evts').jstree(true);
+	var oldParentId = tree.get_parent(nodeId);
+
+	if (oldParentId == '#') {
+		console.log("Decisions cannot be linked to another decision knowledge element.");
 		location.reload();
-			} else {
-                deleteLinkToExistingElement(oldParentID, nodeID);
-                createLinkToExistingElement(parentID, nodeID);
-                location.reload();
-            }
-        });
+	} else {
+		deleteLinkToExistingElement(oldParentId, nodeId);
+		createLinkToExistingElement(newParentId, nodeId);
+		location.reload();
+	}
 }
