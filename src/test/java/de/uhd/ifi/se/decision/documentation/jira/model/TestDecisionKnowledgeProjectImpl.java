@@ -59,15 +59,15 @@ public class TestDecisionKnowledgeProjectImpl {
 		assertEquals(this.projectName + "New", this.jiraProject.getProjectName());
 	}
 
-	@Test
-	public void testSetActivated() {
-		this.jiraProject.setActivated(this.isActivated);
-		assertEquals(this.isActivated, this.jiraProject.isActivated());
-	}
-
-	@Test
-	public void testSetIssueStrategy() {
-		this.jiraProject.setIssueStrategy(this.isIssueStrategy);
-		assertEquals(this.isIssueStrategy, this.jiraProject.isIssueStrategy());
-	}
+//	@Test
+//	public void testSetActivated() {
+//		this.jiraProject.setActivated(this.isActivated);
+//		assertEquals(this.isActivated, this.jiraProject.isActivated());
+//	}
+//
+//	@Test
+//	public void testSetIssueStrategy() {
+//		this.jiraProject.setIssueStrategy(this.isIssueStrategy);
+//		assertEquals(this.isIssueStrategy, this.jiraProject.isIssueStrategy());
+//	}
 }

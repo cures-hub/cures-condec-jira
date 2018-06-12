@@ -78,7 +78,6 @@ public class IssueStrategy extends PersistenceStrategy {
 	@Override
 	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
 		IssueService issueService = ComponentAccessor.getIssueService();
-
 		IssueResult issueResult = issueService.getIssue(user, decisionElement.getId());
 		MutableIssue issueToBeUpdated = issueResult.getIssue();
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
@@ -94,10 +93,9 @@ public class IssueStrategy extends PersistenceStrategy {
 						+ entry.getValue());
 			}
 			return false;
-		} else {
-			issueResult = issueService.update(user, result);
-			return true;
 		}
+		issueService.update(user, result);
+		return true;
 	}
 
 	@Override
@@ -138,7 +136,6 @@ public class IssueStrategy extends PersistenceStrategy {
 		} catch (NullPointerException e) {
 			issueIds = new ArrayList<Long>();
 		}
-
 
 		for (Long issueId : issueIds) {
 			Issue issue = issueManager.getIssueObject(issueId);

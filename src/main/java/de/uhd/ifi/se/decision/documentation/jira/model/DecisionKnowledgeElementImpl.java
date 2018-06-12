@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.documentation.jira.model;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -133,12 +134,19 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 		return this.getProject().getPersistenceStrategy().getInwardLinks(this);
 	}
 
+	public int hashCode() {
+		return Objects.hash(id, summary);
+	}
+
 	public boolean equals(Object object) {
 		if (object == null) {
 			return false;
 		}
 		if (object == this) {
 			return true;
+		}
+		if (!(object instanceof DecisionKnowledgeElement)) {
+			return false;
 		}
 		DecisionKnowledgeElement element = (DecisionKnowledgeElement) object;
 		return this.id == element.getId();

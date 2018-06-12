@@ -26,13 +26,8 @@ public class ConfigPersistence {
 	}
 
 	public static void setIssueStrategy(String projectKey, boolean isIssueStrategy) {
-		transactionTemplate.execute(new TransactionCallback<Object>() {
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-				settings.put(pluginStorageKey + ".isIssueStrategy", Boolean.toString(isIssueStrategy));
-				return null;
-			}
-		});
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey + ".isIssueStrategy", Boolean.toString(isIssueStrategy));
 	}
 
 	public static boolean isActivated(String projectKey) {
@@ -49,12 +44,7 @@ public class ConfigPersistence {
 	}
 
 	public static void setActivated(String projectKey, boolean isActivated) {
-		transactionTemplate.execute(new TransactionCallback<Object>() {
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-				settings.put(pluginStorageKey + ".isActivated", Boolean.toString(isActivated));
-				return null;
-			}
-		});
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey + ".isActivated", Boolean.toString(isActivated));
 	}
 }
