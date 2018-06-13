@@ -218,7 +218,7 @@ function setUpContextMenuContentForDeleteAction(id) {
 	var submitButton = document.getElementById("form-input-submit");
 	submitButton.onclick = function() {
 		deleteDecisionKnowledgeElement(id, function() {
-			buildTreeViewer(id);
+			updateView(id);
 		});
 		closeModal();
 	};

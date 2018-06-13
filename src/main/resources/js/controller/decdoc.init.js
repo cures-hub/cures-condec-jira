@@ -5,7 +5,7 @@ var simpleKnowledgeTypes = [ "Alternative", "Argument", "Assessment", "Assumptio
 		 "Goal", "Implication", "Issue", "Problem", "Solution" ];
 
 function initializeSite() {
-	buildTreeViewer(getProjectKey());
+	initView();
 
 	/* accordion elements */
 	$(document).ready(function() {
@@ -20,7 +20,7 @@ function initializeSite() {
 		var summary = DecisionInputField.value;
 		DecisionInputField.value = "";
 		createDecisionKnowledgeElement(summary, "", "Decision", function(childId) {
-			buildTreeViewer(getProjectKey(), childId);
+			updateView(getProjectKey(), childId);
 		});
 	});
 

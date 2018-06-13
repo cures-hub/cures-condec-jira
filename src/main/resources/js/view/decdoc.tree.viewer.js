@@ -4,11 +4,7 @@ function buildTreeViewer(nodeId) {
 			var tree = $('#evts').jstree(true);
 			tree.destroy();
 		}
-		$('#evts').on("select_node.jstree", function(error, data) {
-			var node = data.node.data;
-			fillAccordion(node);
-			buildTreant(node);
-		}).on("ready.jstree", function() {
+		$('#evts').on("ready.jstree", function() {
 			if (nodeId) {
 				var tree = $('#evts').jstree(true);
 				if (tree) {
@@ -20,7 +16,6 @@ function buildTreeViewer(nodeId) {
 			}
 		}).jstree({
 			"core" : core,
-			// TODO: add drag n drop
 			"plugins" : [ "dnd", "contextmenu", "wholerow", "sort", "search" ],
 			"search" : {
 				"show_only_matches" : true

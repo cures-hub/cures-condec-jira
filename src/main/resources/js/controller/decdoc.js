@@ -9,28 +9,28 @@ function createDecisionKnowledgeElementAsChild(summary, description, type, paren
 	case "Pro Argument":
 		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
 			createLink(childId, parentId, "support", function() {
-				buildTreeViewer(childId);
+				updateView(childId);
 			});
 		});
 		break;
 	case "Contra Argument":
 		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
 			createLink(childId, parentId, "attack", function() {
-                buildTreeViewer(childId);
+                updateView(childId);
             });
 		});
 		break;
 	case "Comment":
 		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
 			createLink(childId, parentId, "comment", function() {
-				buildTreeViewer(childId);
+                updateView(childId);
 			});
 		});
 		break;
 	default:
 		createDecisionKnowledgeElement(summary, description, type, function(childId) {
 			createLink(parentId, childId, "contain", function() {
-				buildTreeViewer(childId);
+                updateView(childId);
 			});
 		});
 	}
@@ -42,22 +42,22 @@ function editDecisionKnowledgeElementAsChild(summary, description, type, parentI
 	switch (type) {
 	case "Pro Argument":
 		editDecisionKnowledgeElement(parentId, summary, description, "Argument", function() {
-			buildTreeViewer(parentId);
+            updateView(parentId);
 		});
 		break;
 	case "Contra Argument":
 		editDecisionKnowledgeElement(parentId, summary, description, "Argument", function() {
-			buildTreeViewer(parentId);
+            updateView(parentId);
 		});
 		break;
 	case "Comment":
 		editDecisionKnowledgeElement(parentId, summary, description, "Argument", function() {
-			buildTreeViewer(parentId);
+            updateView(parentId);
 		});
 		break;
 	default:
 		editDecisionKnowledgeElement(parentId, summary, description, type, function() {
-			buildTreeViewer(parentId);
+            updateView(parentId);
 		});
 	}
 }
@@ -68,22 +68,22 @@ function createLinkToExistingElement(parentId, childId) {
         switch (type) {
             case "Pro Argument":
                 createLink(childId, parentId, "support", function () {
-                    buildTreeViewer(childId);
+                    updateView(childId);
                 });
                 break;
             case "Contra Argument":
                 createLink(childId, parentId, "attack", function () {
-                    buildTreeViewer(childId);
+                    updateView(childId);
                 });
                 break;
             case "Comment":
                 createLink(childId, parentId, "comment", function () {
-                    buildTreeViewer(childId);
+                    updateView(childId);
                 });
                 break;
             default:
                 createLink(parentId, childId, "contain", function () {
-                    buildTreeViewer(childId);
+                    updateView(childId);
                 });
         }
     });
@@ -95,22 +95,22 @@ function deleteLinkToExistingElement(parentId, childId) {
         switch (type) {
             case "Pro Argument":
                 deleteLink(childId, parentId, "support", function () {
-                    buildTreeViewer(childId);
+                    updateView(childId);
                 });
                 break;
             case "Contra Argument":
                 deleteLink(childId, parentId, "attack", function () {
-                    buildTreeViewer(childId);
+                    updateView(childId);
                 });
                 break;
             case "Comment":
                 deleteLink(childId, parentId, "comment", function () {
-                    buildTreeViewer(childId);
+                    updateView(childId);
                 });
                 break;
             default:
                 deleteLink(parentId, childId, "contain", function () {
-                    buildTreeViewer(childId);
+                    updateView(childId);
                 });
         }
     });

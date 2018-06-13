@@ -51,6 +51,7 @@
 		<resource type="download" name="decdoc.init.js" location="/js/controller/decdoc.init.js" />
 		<resource type="download" name="decdoc.js" location="/js/controller/decdoc.js" />
 		<resource type="download" name="decdoc.rest.client.js" location="/js/controller/decdoc.rest.client.js" />
+		<resource type="download" name="decdoc.viewhandler.js" location="/js/controller/decdoc.viewhandler.js"/>
 		<resource type="download" name="decdoc.accordion.editor.js" location="/js/view/decdoc.accordion.editor.js" />
 		<resource type="download" name="decdoc.treant.js" location="/js/view/decdoc.treant.js" />
 		<resource type="download" name="decdoc.tree.viewer.js" location="/js/view/decdoc.tree.viewer.js" />

@@ -18,7 +18,7 @@ function showDetails(id, summary, description, type) {
 	updateButton.addEventListener("click", function() {
 		var description = document.getElementById("form-description").value;
 		editDecisionKnowledgeElement(id, summary, description, type, function() {
-			buildTreeViewer(id);
+			updateView(id);
 		});
 	});
 }
