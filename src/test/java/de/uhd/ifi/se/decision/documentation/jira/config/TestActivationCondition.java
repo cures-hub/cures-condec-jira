@@ -27,8 +27,7 @@ public class TestActivationCondition {
 		Map<String, String> context = new HashMap<>();
 		activationCondition = new ActivationCondition();
 		activationCondition.init(context);
-		new TestComponentGetter().setUp();
-		//new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
+		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
 	}
 
 	@Test
