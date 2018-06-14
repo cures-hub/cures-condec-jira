@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.documentation.jira.model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,8 +24,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 	private EntityManager entityManager;
-
-	private Long id;
+	private long id;
 	private String summary;
 	private String description;
 	private KnowledgeType type;
@@ -47,7 +47,6 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockDefaultUserManager());
-
 	}
 
 	@Test
@@ -56,7 +55,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 	}
 
 	@Test
-	public void testgetId() {
+	public void testGetId() {
 		assertEquals(this.id, this.decisionKnowledgeElement.getId(), 0.0);
 	}
 
@@ -76,18 +75,18 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 	}
 
 	@Test
-	public void testGetPKey() {
+	public void testGetProjectKey() {
 		assertEquals(this.projectKey, this.decisionKnowledgeElement.getProjectKey());
 	}
 
 	@Test
 	public void testSetId() {
 		this.decisionKnowledgeElement.setId(this.id + 1);
-		assertEquals(this.id + 1, this.decisionKnowledgeElement.getId(), 0.0);
+		assertEquals(this.id + 1, this.decisionKnowledgeElement.getId());
 	}
 
 	@Test
-	public void testSetName() {
+	public void testSetSummary() {
 		this.decisionKnowledgeElement.setSummary(this.summary + "New");
 		assertEquals(this.summary + "New", this.decisionKnowledgeElement.getSummary());
 	}
@@ -105,22 +104,22 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 	}
 
 	@Test
-	public void tstSetPKey() {
+	public void testSetProjectKey() {
 		this.decisionKnowledgeElement.setProjectKey(this.projectKey + "New");
 		assertEquals(this.projectKey + "New", this.decisionKnowledgeElement.getProjectKey());
 	}
 
 	@Test
 	public void testGetKeyKeyNull() {
-		DecisionKnowledgeElementImpl impl = new DecisionKnowledgeElementImpl();
-		impl.setProjectKey("TEST");
-		impl.setId((long) 10);
-		assertEquals("TEST-10", impl.getKey());
+		DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl();
+		decisionKnowledgeElement.setProjectKey("TEST");
+		decisionKnowledgeElement.setId((long) 10);
+		assertEquals("TEST-10", decisionKnowledgeElement.getKey());
 	}
 
 	@Test
-	public void testEqualsFalse() {
-		assertFalse(this.decisionKnowledgeElement.equals(null));
+	public void testDecisionKnowledgeElementInitialized() {
+		assertNotNull(this.decisionKnowledgeElement);
 	}
 
 	@Test

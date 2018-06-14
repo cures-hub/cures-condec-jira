@@ -45,7 +45,7 @@ public class TestDecisionKnowledgeElementIssue {
 	}
 
 	@Test
-	public void testgetId() {
+	public void testGetId() {
 		assertEquals(this.id, this.decisionKnowledgeElement.getId(), 0.0);
 	}
 
@@ -65,7 +65,7 @@ public class TestDecisionKnowledgeElementIssue {
 	}
 
 	@Test
-	public void testGetPKey() {
+	public void testGetProjectKey() {
 		assertEquals(this.projectKey, this.decisionKnowledgeElement.getProjectKey());
 	}
 
@@ -94,7 +94,7 @@ public class TestDecisionKnowledgeElementIssue {
 	}
 
 	@Test
-	public void tstSetPKey() {
+	public void testSetProjectKey() {
 		this.decisionKnowledgeElement.setProjectKey(this.projectKey + "New");
 		assertEquals(this.projectKey + "New", this.decisionKnowledgeElement.getProjectKey());
 	}

@@ -38,25 +38,25 @@ public class TestGraph extends TestSetUp {
 
 	@Test
 	public void testRootElementConstructor() {
-		GraphImpl graphRoot = new GraphImpl(element.getProjectKey());
+		Graph graphRoot = new GraphImpl(element.getProjectKey());
 		assertNotNull(graphRoot);
 	}
 
 	@Test
 	public void testRootElementLinkDistConstructor() {
-		GraphImpl graphRoot = new GraphImpl(element.getProjectKey(), element.getKey());
+		Graph graphRoot = new GraphImpl(element.getProjectKey(), element.getKey());
 		assertNotNull(graphRoot);
 	}
 
 	@Test
 	public void testGetLinkedElementsNull() {
-		assertEquals(0, graph.getLinkedElements(null).size(), 0.0);
+		assertEquals(0, graph.getLinkedElements(null).size());
 	}
 
 	@Test
 	public void testGetLinkedElementsEmpty() {
 		DecisionKnowledgeElement emptyElement = new DecisionKnowledgeElementImpl();
-		assertEquals(0, graph.getLinkedElements(emptyElement).size(), 0.0);
+		assertEquals(0, graph.getLinkedElements(emptyElement).size());
 	}
 
 	@Test
