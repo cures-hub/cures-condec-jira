@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import de.uhd.ifi.se.decision.documentation.jira.rest.ViewRest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,10 +18,11 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.documentation.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.documentation.jira.rest.ViewRest;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
@@ -37,7 +37,7 @@ public class TestGetTreeViewer extends TestSetUp {
 	public void setUp() {
 		viewRest = new ViewRest();
 		initialization();
-		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
+		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockDefaultUserManager());
 	}
 

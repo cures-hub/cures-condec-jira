@@ -41,19 +41,6 @@ public class ComponentGetter {
 	@ComponentImport
 	private static ActiveObjects activeObjects;
 
-	/*
-	 * For test use Only
-	 */
-	public ComponentGetter() {
-	}
-
-	/*
-	 * For test use Only
-	 */
-	public void init(ActiveObjects testao, TransactionTemplate transactiontemp, UserManager userManager) {
-		new ComponentGetter(null, transactiontemp, null, null, null, userManager, null, testao);
-	}
-
 	@Inject
 	public ComponentGetter(PluginSettingsFactory pluginSettingsFactory, TransactionTemplate transactionTemplate, IssueService issueService,
 			ProjectService projectService, SearchService searchService, UserManager userManager, TemplateRenderer templateRenderer,

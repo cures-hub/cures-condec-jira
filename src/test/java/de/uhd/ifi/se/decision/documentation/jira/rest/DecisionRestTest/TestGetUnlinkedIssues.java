@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.documentation.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
@@ -31,7 +31,7 @@ public class TestGetUnlinkedIssues extends TestSetUp {
 	public void setUp() {
 		decRest = new DecisionsRest();
 		initialization();
-		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
+		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
 	}
 
 	@Test

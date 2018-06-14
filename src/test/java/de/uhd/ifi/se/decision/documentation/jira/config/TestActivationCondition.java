@@ -6,16 +6,17 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import com.atlassian.activeobjects.test.TestActiveObjects;
-import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
+
 import de.uhd.ifi.se.decision.documentation.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestActivationCondition {
@@ -27,7 +28,8 @@ public class TestActivationCondition {
 		Map<String, String> context = new HashMap<>();
 		activationCondition = new ActivationCondition();
 		activationCondition.init(context);
-		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
+		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
+				new MockDefaultUserManager());
 	}
 
 	@Test

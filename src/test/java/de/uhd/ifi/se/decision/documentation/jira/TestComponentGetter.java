@@ -29,6 +29,10 @@ public class TestComponentGetter {
 	private TemplateRenderer templateRenderer;
 	private ActiveObjects activeObjects;
 
+	public static void init(ActiveObjects activeObjects, TransactionTemplate transactionTemplate, UserManager userManager) {
+		new ComponentGetter(null, transactionTemplate, null, null, null, userManager, null, activeObjects);
+	}
+
 	@Before
 	public void setUp() {
 		pluginSettingsFactory = mock(PluginSettingsFactory.class);

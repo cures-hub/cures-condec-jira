@@ -5,28 +5,28 @@ import static org.junit.Assert.assertEquals;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.ofbiz.core.entity.GenericEntityException;
+
+import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.google.common.collect.ImmutableMap;
+
+import de.uhd.ifi.se.decision.documentation.jira.TestComponentGetter;
+import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
+import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLink;
+import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.documentation.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 import de.uhd.ifi.se.decision.documentation.jira.rest.ViewRest;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import com.atlassian.activeobjects.test.TestActiveObjects;
-import com.google.common.collect.ImmutableMap;
-
-import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
-import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
-import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-import org.ofbiz.core.entity.GenericEntityException;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestGetTreant extends TestSetUp {
@@ -40,7 +40,7 @@ public class TestGetTreant extends TestSetUp {
 	public void setUp() {
 		viewRest = new ViewRest();
 		initialization();
-		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
+		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockDefaultUserManager());
 	}
 
@@ -135,12 +135,13 @@ public class TestGetTreant extends TestSetUp {
 		assertEquals(200, viewRest.getTreant("TEST", "3", "Test").getStatus());
 	}
 
-//	@Test
-//	public void testProjectExistsIssueKeyFilledAllTypes() throws GenericEntityException {
-//		for (long i = 2; i <= 16; i++) {
-//			viewRest.getTreant("TEST", Long.toString(i), "3").getStatus();
-//		}
-//	}
+	// @Test
+	// public void testProjectExistsIssueKeyFilledAllTypes() throws
+	// GenericEntityException {
+	// for (long i = 2; i <= 16; i++) {
+	// viewRest.getTreant("TEST", Long.toString(i), "3").getStatus();
+	// }
+	// }
 
 	@Test
 	public void testProjectExistsIssueKeyFilledChildElements() throws GenericEntityException {

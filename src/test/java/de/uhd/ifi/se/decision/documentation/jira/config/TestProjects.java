@@ -1,25 +1,29 @@
 package de.uhd.ifi.se.decision.documentation.jira.config;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
-import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
+
+import de.uhd.ifi.se.decision.documentation.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
-import de.uhd.ifi.se.decision.documentation.jira.mocks.*;
+import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
+import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeProject;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.Assert.*;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestProjects extends TestSetUp {
@@ -31,7 +35,7 @@ public class TestProjects extends TestSetUp {
 	public void setUp() {
 		projectManager = new MockProjectManager();
 		new MockComponentWorker().init().addMock(ProjectManager.class, projectManager);
-		new ComponentGetter().init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
+		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockDefaultUserManager());
 		new Projects();
 	}
