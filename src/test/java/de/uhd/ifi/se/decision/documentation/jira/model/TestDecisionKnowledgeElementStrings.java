@@ -17,12 +17,11 @@ import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 /**
- *
- * @description Test Class for Simple Geter and Setter Tests
- *
+ * @description Test class for decision knowledge element getter and setter
+ *              methods
  */
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestDecisionKnowledgeElementStrings extends TestSetUp{
+public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 	private EntityManager entityManager;
 
 	private Long id;
@@ -31,7 +30,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp{
 	private KnowledgeType type;
 	private String projectKey;
 	private String key;
-	private DecisionKnowledgeElementImpl repre;
+	private DecisionKnowledgeElement decisionKnowledgeElement;
 
 	@Before
 	public void setUp() {
@@ -43,74 +42,76 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp{
 		this.projectKey = "Test";
 		this.key = "Test";
 
-		this.repre = new DecisionKnowledgeElementImpl(id, summary, description, type, projectKey, key);
+		this.decisionKnowledgeElement = new DecisionKnowledgeElementImpl(id, summary, description, type, projectKey,
+				key);
 
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockDefaultUserManager());
+		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
+				new MockDefaultUserManager());
 
 	}
 
 	@Test
-	public void testGetTypeAsString(){
-		assertEquals("Solution", repre.getTypeAsString());
+	public void testGetTypeAsString() {
+		assertEquals("Solution", decisionKnowledgeElement.getType().toString());
 	}
 
 	@Test
 	public void testgetId() {
-		assertEquals(this.id, this.repre.getId(), 0.0);
+		assertEquals(this.id, this.decisionKnowledgeElement.getId(), 0.0);
 	}
 
 	@Test
 	public void testGetName() {
-		assertEquals(this.summary, this.repre.getSummary());
+		assertEquals(this.summary, this.decisionKnowledgeElement.getSummary());
 	}
 
 	@Test
 	public void testGetDescription() {
-		assertEquals(this.description, this.repre.getDescription());
+		assertEquals(this.description, this.decisionKnowledgeElement.getDescription());
 	}
 
 	@Test
 	public void testGetType() {
-		assertEquals(this.type, this.repre.getType());
+		assertEquals(this.type, this.decisionKnowledgeElement.getType());
 	}
 
 	@Test
 	public void testGetPKey() {
-		assertEquals(this.projectKey, this.repre.getProjectKey());
+		assertEquals(this.projectKey, this.decisionKnowledgeElement.getProjectKey());
 	}
 
 	@Test
 	public void testSetId() {
-		this.repre.setId(this.id + 1);
-		assertEquals(this.id + 1, this.repre.getId(), 0.0);
+		this.decisionKnowledgeElement.setId(this.id + 1);
+		assertEquals(this.id + 1, this.decisionKnowledgeElement.getId(), 0.0);
 	}
 
 	@Test
 	public void testSetName() {
-		this.repre.setSummary(this.summary + "New");
-		assertEquals(this.summary + "New", this.repre.getSummary());
+		this.decisionKnowledgeElement.setSummary(this.summary + "New");
+		assertEquals(this.summary + "New", this.decisionKnowledgeElement.getSummary());
 	}
 
 	@Test
 	public void testSetDescription() {
-		this.repre.setDescription(this.description + "New");
-		assertEquals(this.description + "New", this.repre.getDescription());
+		this.decisionKnowledgeElement.setDescription(this.description + "New");
+		assertEquals(this.description + "New", this.decisionKnowledgeElement.getDescription());
 	}
 
 	@Test
 	public void testSetType() {
-		this.repre.setType(KnowledgeType.ALTERNATIVE);
-		assertEquals(KnowledgeType.ALTERNATIVE, this.repre.getType());
+		this.decisionKnowledgeElement.setType(KnowledgeType.ALTERNATIVE);
+		assertEquals(KnowledgeType.ALTERNATIVE, this.decisionKnowledgeElement.getType());
 	}
 
 	@Test
 	public void tstSetPKey() {
-		this.repre.setProjectKey(this.projectKey + "New");
-		assertEquals(this.projectKey + "New", this.repre.getProjectKey());
+		this.decisionKnowledgeElement.setProjectKey(this.projectKey + "New");
+		assertEquals(this.projectKey + "New", this.decisionKnowledgeElement.getProjectKey());
 	}
 
 	@Test
-	public void testGetKeyKeyNull(){
+	public void testGetKeyKeyNull() {
 		DecisionKnowledgeElementImpl impl = new DecisionKnowledgeElementImpl();
 		impl.setProjectKey("TEST");
 		impl.setId((long) 10);
@@ -118,24 +119,24 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp{
 	}
 
 	@Test
-	public void testEqualsFalse(){
-		assertFalse(this.repre.equals(null));
+	public void testEqualsFalse() {
+		assertFalse(this.decisionKnowledgeElement.equals(null));
 	}
 
 	@Test
-	public void testEqualsNotTheObject(){
+	public void testEqualsNotTheObject() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		element.setId((long)123);
-		assertFalse(this.repre.equals(element));
+		element.setId((long) 123);
+		assertFalse(this.decisionKnowledgeElement.equals(element));
 	}
 
 	@Test
-	public void testGetOutwardLinks(){
-		repre.getOutwardLinks();
+	public void testGetOutwardLinks() {
+		decisionKnowledgeElement.getOutwardLinks();
 	}
 
 	@Test
-	public void testGetInwardLinks(){
-		repre.getInwardLinks();
+	public void testGetInwardLinks() {
+		decisionKnowledgeElement.getInwardLinks();
 	}
 }

@@ -3,9 +3,6 @@ package de.uhd.ifi.se.decision.documentation.jira.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,10 +22,9 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestGraph extends TestSetUp {
-	private EntityManager entityManager;
 
+	private EntityManager entityManager;
 	private Graph graph;
-	private Set<DecisionKnowledgeElement> elements;
 	private DecisionKnowledgeElement element;
 
 	@Before
@@ -36,10 +32,7 @@ public class TestGraph extends TestSetUp {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockDefaultUserManager());
-
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
-		elements = new HashSet<DecisionKnowledgeElement>();
-		elements.add(element);
 		graph = new GraphImpl("TEST", element.getKey());
 	}
 
@@ -56,7 +49,7 @@ public class TestGraph extends TestSetUp {
 	}
 
 	@Test
-	public void testGetChildrenNull() {
+	public void testGetLinkedElementsNull() {
 		assertEquals(0, graph.getLinkedElements(null).size(), 0.0);
 	}
 

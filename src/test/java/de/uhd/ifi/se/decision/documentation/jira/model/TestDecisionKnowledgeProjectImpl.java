@@ -8,11 +8,11 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeProjectImpl;
 
 /**
- * @description Test class for configuration settings
+ * @description Test class for project configuration settings
  */
 public class TestDecisionKnowledgeProjectImpl {
 
-	private DecisionKnowledgeProjectImpl jiraProject;
+	private DecisionKnowledgeProject jiraProject;
 	private String projectKey;
 	private String projectName;
 	private boolean isActivated;

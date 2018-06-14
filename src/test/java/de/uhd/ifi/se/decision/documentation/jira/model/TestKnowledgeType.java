@@ -14,12 +14,12 @@ public class TestKnowledgeType {
 	}
 
 	@Test
-	public void testGetKnowledgeTypeNotExistend() {
+	public void testGetKnowledgeTypeNonExistent() {
 		assertEquals(KnowledgeType.OTHER, KnowledgeType.getKnowledgeType("Test"));
 	}
 
 	@Test
-	public void testGetKnowledgeTypeExistend() {
+	public void testGetKnowledgeTypeExistent() {
 		for (KnowledgeType type : KnowledgeType.values()) {
 			assertEquals(type, KnowledgeType.getKnowledgeType(type.toString()));
 		}
