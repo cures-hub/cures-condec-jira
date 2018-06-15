@@ -1,13 +1,14 @@
 // Global variable for DnD
 var dragId;
+var treant;
 
 function buildTreant(decisionKnowledgeElement) {
 	var depthOfTree = document.getElementById("depthOfTreeInput").value;
 	getTreant(decisionKnowledgeElement.key, depthOfTree, function(treant) {
 		document.getElementById("treant-container").innerHTML = "";
-		new Treant(treant);
+		treant = new Treant(treant);
 		createContextMenuForTreantNodes();
-		addingDragAndDropSupport();
+		addDragAndDropSupportForTreant();
 	});
 }
 
@@ -20,31 +21,36 @@ function createContextMenuForTreantNodes() {
 	});
 }
 
-function addingDragAndDropSupport() {
-	var nodeDivs = document.getElementsByClassName("node");
+function addDragAndDropSupportForTreant() {
+	var treantNodes = document.getElementsByClassName("node");
 	var i;
-	for (i = 0; i < nodeDivs.length; i++) {
-		nodeDivs[i].draggable = true;
-		nodeDivs[i].addEventListener('dragstart', drag, false);
-		nodeDivs[i].addEventListener('drop', function(event) {
+	for (i = 0; i < treantNodes.length; i++) {
+		treantNodes[i].draggable = true;
+		treantNodes[i].addEventListener("dragstart", function(event) {
+			drag(event);
+		});
+		treantNodes[i].addEventListener("drop", function(event) {
 			drop(event, this);
 		});
 	}
 	var nodeDesc = document.getElementsByClassName("node-desc");
 	for (i = 0; i < nodeDesc.length; i++) {
-		nodeDesc[i].addEventListener('dragover', allowDrop, false);
+		nodeDesc[i].addEventListener("dragover", allowDrop, false);
 	}
 }
 
 function drag(event) {
-	event.dataTransfer.setData("text", event.target.id);
 	dragId = event.target.id;
+	event.dataTransfer.setData("text", dragId);
+	console.log("Child Id: " + dragId);
+	//var node = treant.tree.getNodeDb().get(dragId);
 }
 
 function drop(event, target) {
 	event.preventDefault();
 	var parentId = target.id;
 	var childId = dragId;
+	//deleteLinkToExistingElement(oldParentId, nodeId);
 	createLinkToExistingElement(parentId, childId);
 }
 

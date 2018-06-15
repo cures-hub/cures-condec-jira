@@ -31,28 +31,23 @@ function buildTreeViewer(nodeId) {
 		});
 	});
 
-    $('#evts').on('move_node.jstree', function (object, node) {
-	if(node.node.id !=0){
-		if(node.parent!=0){
-			if(node.old_parent!=0){
-                    dragAndDropTreeViewer(node.node.id, node.parent, node.old_parent);
-				}
-			}
+	$('#evts').on('move_node.jstree', function(object, node) {
+		if (node.node.id != 0 && node.parent != 0 && node.old_parent != 0) {
+			addDragAndDropSupportForTreeViewer(node.node.id, node.parent, node.old_parent);
 		}
-
-    });
+	});
 }
 
-function dragAndDropTreeViewer(nodeId, parentId, oldParentId) {
+function addDragAndDropSupportForTreeViewer(nodeId, parentId, oldParentId) {
 	if (oldParentId == "#") {
-		console.log("Decisions cannot be linked to another decision knowledge element.");
+		showFlag("error", "Decisions cannot be linked to another decision knowledge element.");
 		document.location.reload();
 	}
-	if(parentId =="#"){
-		console.log("Decision Knowledge Element can not be a root Element");
-        document.location.reload();
+	if (parentId == "#") {
+		showFlag("error", "This decision knowledge element cannot be a root element.");
+		document.location.reload();
 	}
-	if(parentId !='#' && oldParentId != '#'){
+	if (parentId != '#' && oldParentId != '#') {
 		deleteLinkToExistingElement(oldParentId, nodeId);
 		createLinkToExistingElement(parentId, nodeId);
 	}
