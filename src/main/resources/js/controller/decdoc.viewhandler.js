@@ -5,7 +5,6 @@ function updateView(nodeId){
     }
     $('#evts').on("select_node.jstree", function(error, data) {
         var node = data.node.data;
-        console.log(node);
         fillAccordion(node);
         buildTreant(node);
     });
