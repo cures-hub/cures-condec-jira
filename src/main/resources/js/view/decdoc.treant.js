@@ -26,7 +26,7 @@ function addingDragAndDropSupport() {
 	for (i = 0; i < nodeDivs.length; i++) {
 		nodeDivs[i].draggable = true;
 		nodeDivs[i].addEventListener('dragstart', drag, false);
-		nodeDivs[i].addEventListener('drop', function() {
+		nodeDivs[i].addEventListener('drop', function(event) {
 			drop(event, this);
 		});
 	}
