@@ -175,6 +175,23 @@ function createLink(parentId, childId, linkType, callback) {
 			});
 }
 
+function editLink(parentId, childId,linkType, callback) {
+    var jsondata = {
+        "linkType" : linkType,
+        "ingoingId" : childId,
+        "outgoingId" : parentId
+    };
+    putJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/editLink.json?projectKey=" + getProjectKey(),
+        jsondata, function(error, link) {
+            if (error == null) {
+                showFlag("success", "Link has been created.");
+                callback(link);
+            } else {
+                showFlag("error", "Link could not be created.");
+            }
+        });
+}
+
 function deleteLink(parentId, childId, linkType, callback) {
 	var jsondata = {
 		"linkType" : linkType,

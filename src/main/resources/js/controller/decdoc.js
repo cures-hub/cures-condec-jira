@@ -36,16 +36,14 @@ function createDecisionKnowledgeElementAsChild(summary, description, type, paren
 	}
 }
 
-function editDecisionKnowledgeElementAsChild(summary, description, type, parentId) {
-	// TODO: Links need to be updated when the type is changed to an argument
-	// (or from an argument to a different type), first we need a getLink method
+function editDecisionKnowledgeElementAsChild(summary, description, type, childId) {
 	switch (type) {
 	case "Pro Argument":
-		editDecisionKnowledgeElement(parentId, summary, description, "Argument", function() {
-            getLinkedDecisionComponents(parentId, function(childElements) {
-                for (var counter = 0; counter < childElements.length; counter++) {
-                    deleteLinkToExistingElement(childElements[counter].id, parentId);
-                    createLink(parentId, childElements[counter].id,  "support", function() {
+		editDecisionKnowledgeElement(childId, summary, description, "Argument", function() {
+            getLinkedDecisionComponents(childId, function(parentElement) {
+                for (var counter = 0; counter < parentElement.length; counter++) {
+                    var parentId = parentElement[counter].id;
+                    editLink(childId, parentId, "support", function() {
                         updateView(parentId);
                     });
                 }
@@ -53,11 +51,11 @@ function editDecisionKnowledgeElementAsChild(summary, description, type, parentI
 		});
 		break;
 	case "Contra Argument":
-		editDecisionKnowledgeElement(parentId, summary, description, "Argument", function() {
-            getLinkedDecisionComponents(parentId, function(childElements) {
-                for (var counter = 0; counter < childElements.length; counter++) {
-                    deleteLinkToExistingElement(childElements[counter].id, parentId);
-                    createLink(parentId, childElements[counter].id,  "attack", function() {
+		editDecisionKnowledgeElement(childId, summary, description, "Argument", function() {
+            getLinkedDecisionComponents(childId, function(parentElement) {
+                for (var counter = 0; counter < parentElement.length; counter++) {
+                    var parentId = parentElement[counter].id;
+                    editLink(childId, parentId, "attack", function() {
                         updateView(parentId);
                     });
                 }
@@ -65,11 +63,11 @@ function editDecisionKnowledgeElementAsChild(summary, description, type, parentI
 		});
 		break;
 	case "Comment":
-		editDecisionKnowledgeElement(parentId, summary, description, "Argument", function() {
-            getLinkedDecisionComponents(parentId, function(childElements) {
-                for (var counter = 0; counter < childElements.length; counter++) {
-                    deleteLinkToExistingElement(childElements[counter].id, parentId);
-                    createLink(parentId, childElements[counter].id,  "comment", function() {
+		editDecisionKnowledgeElement(childId, summary, description, "Argument", function() {
+            getLinkedDecisionComponents(childId, function(parentElement) {
+                for (var counter = 0; counter < parentElement.length; counter++) {
+                    var parentId = parentElement[counter].id;
+                    editLink(childId, parentId, "comment", function() {
                         updateView(parentId);
                     });
                 }
@@ -77,11 +75,11 @@ function editDecisionKnowledgeElementAsChild(summary, description, type, parentI
 		});
 		break;
 	default:
-		editDecisionKnowledgeElement(parentId, summary, description, type, function() {
-            getLinkedDecisionComponents(parentId, function(childElements) {
-                for (var counter = 0; counter < childElements.length; counter++) {
-                    deleteLinkToExistingElement(childElements[counter].id, parentId);
-                    createLink(parentId, childElements[counter].id, "contain", function() {
+		editDecisionKnowledgeElement(childId, summary, description, type, function() {
+            getLinkedDecisionComponents(childId, function(parentElement) {
+                for (var counter = 0; counter < parentElement.length; counter++) {
+			var parentId = parentElement[counter].id;
+                    editLink(parentId, childId, "contain", function() {
                         updateView(parentId);
                     });
                 }
