@@ -42,22 +42,50 @@ function editDecisionKnowledgeElementAsChild(summary, description, type, parentI
 	switch (type) {
 	case "Pro Argument":
 		editDecisionKnowledgeElement(parentId, summary, description, "Argument", function() {
-			updateView(parentId);
+            getLinkedDecisionComponents(parentId, function(childElements) {
+                for (var counter = 0; counter < childElements.length; counter++) {
+                    deleteLinkToExistingElement(childElements[counter].id, parentId);
+                    createLink(parentId, childElements[counter].id,  "support", function() {
+                        updateView(parentId);
+                    });
+                }
+            });
 		});
 		break;
 	case "Contra Argument":
 		editDecisionKnowledgeElement(parentId, summary, description, "Argument", function() {
-			updateView(parentId);
+            getLinkedDecisionComponents(parentId, function(childElements) {
+                for (var counter = 0; counter < childElements.length; counter++) {
+                    deleteLinkToExistingElement(childElements[counter].id, parentId);
+                    createLink(parentId, childElements[counter].id,  "attack", function() {
+                        updateView(parentId);
+                    });
+                }
+            });
 		});
 		break;
 	case "Comment":
 		editDecisionKnowledgeElement(parentId, summary, description, "Argument", function() {
-			updateView(parentId);
+            getLinkedDecisionComponents(parentId, function(childElements) {
+                for (var counter = 0; counter < childElements.length; counter++) {
+                    deleteLinkToExistingElement(childElements[counter].id, parentId);
+                    createLink(parentId, childElements[counter].id,  "comment", function() {
+                        updateView(parentId);
+                    });
+                }
+            });
 		});
 		break;
 	default:
 		editDecisionKnowledgeElement(parentId, summary, description, type, function() {
-			updateView(parentId);
+            getLinkedDecisionComponents(parentId, function(childElements) {
+                for (var counter = 0; counter < childElements.length; counter++) {
+                    deleteLinkToExistingElement(childElements[counter].id, parentId);
+                    createLink(parentId, childElements[counter].id, "contain", function() {
+                        updateView(parentId);
+                    });
+                }
+            });
 		});
 	}
 }
