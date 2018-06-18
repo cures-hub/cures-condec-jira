@@ -296,6 +296,16 @@ public class ActiveObjectStrategy extends PersistenceStrategy {
 	}
 
 	@Override
+	public boolean editLink(Link link, ApplicationUser user){
+		if(deleteLink(link,user)){
+			if(insertLink(link,user)!=0){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
 	public boolean deleteLink(Link link, ApplicationUser user) {
 		return activeObjects.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override

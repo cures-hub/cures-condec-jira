@@ -181,7 +181,7 @@ function editLink(parentId, childId,linkType, callback) {
         "ingoingId" : childId,
         "outgoingId" : parentId
     };
-    putJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/editLink.json?projectKey=" + getProjectKey(),
+    postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/editLink.json?projectKey=" + getProjectKey(),
         jsondata, function(error, link) {
             if (error == null) {
                 showFlag("success", "Link has been created.");
