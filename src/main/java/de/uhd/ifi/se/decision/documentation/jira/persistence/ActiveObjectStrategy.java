@@ -4,6 +4,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.documentation.jira.model.Link;
+import de.uhd.ifi.se.decision.documentation.jira.model.LinkImpl;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +17,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 
 import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.documentation.jira.model.*;
 import net.java.ao.Query;
 
 /**
@@ -27,7 +30,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 
 	@Override
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement,
-			ApplicationUser user) {
+																   ApplicationUser user) {
 		if (decisionKnowledgeElement == null) {
 			LOGGER.error("AOStrategy insertDecisionKnowledgeElement the DecisionRepresentation is null");
 			return null;
