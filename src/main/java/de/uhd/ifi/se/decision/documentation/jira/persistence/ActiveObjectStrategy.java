@@ -153,7 +153,6 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 			idAsString = key.split("-")[1];
 		} catch (ArrayIndexOutOfBoundsException e) {
 			LOGGER.error("Key cannot be split into the project key and id.");
-			e.printStackTrace();
 		}
 		if (idAsString != null) {
 			long knowledgeElementId = Long.parseLong(idAsString);
@@ -318,7 +317,6 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 							return true;
 						} catch (SQLException e) {
 							LOGGER.error("LinkEntity could not be deleted");
-							e.printStackTrace();
 						}
 					}
 				}
