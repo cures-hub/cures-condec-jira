@@ -35,6 +35,7 @@ public abstract class AbstractSettingsServlet extends HttpServlet {
 	@Inject
 	public AbstractSettingsServlet(@ComponentImport UserManager userManager, @ComponentImport LoginUriProvider loginUriProvider,
 								   @ComponentImport TemplateRenderer renderer) {
+		super();
 		this.userManager = userManager;
 		this.loginUriProvider = loginUriProvider;
 		this.templateRenderer = renderer;
