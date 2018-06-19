@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
  * @description Abstract Class to create, edit, delete and retrieve decision
  *              knowledge elements and their links
  */
-public abstract class PersistenceStrategy {
+public abstract class AbstractPersistenceStrategy {
 
 	public abstract DecisionKnowledgeElement insertDecisionKnowledgeElement(
 			DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);

@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.documentation.jira.view.treant;
 
 import static org.junit.Assert.assertEquals;
 
+import de.uhd.ifi.se.decision.documentation.jira.persistence.AbstractPersistenceStrategy;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +15,6 @@ import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
@@ -22,7 +22,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestTreant extends TestSetUp {
 	private EntityManager entityManager;
-	private PersistenceStrategy persistenceStrategy;
+	private AbstractPersistenceStrategy abstractPersistenceStrategy;
 
 	private Chart chart;
 	private Node nodeStructure;
@@ -39,7 +39,7 @@ public class TestTreant extends TestSetUp {
 				new MockDefaultUserManager());
 		initialization();
 		StrategyProvider strategyProvider = new StrategyProvider();
-		persistenceStrategy = strategyProvider.getStrategy("TEST");
+		abstractPersistenceStrategy = strategyProvider.getStrategy("TEST");
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class TestTreant extends TestSetUp {
 
 	@Test
 	public void testCreateNodeStructureFilledZeroZero() {
-		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		DecisionKnowledgeElement element = abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
 		assertEquals(Node.class, treant.createNodeStructure(element, 0, 0).getClass());
 	}
 
@@ -102,7 +102,7 @@ public class TestTreant extends TestSetUp {
 
 	@Test
 	public void testCreateNodeStructureFilledFilledFilled() {
-		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		DecisionKnowledgeElement element = abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
 		assertEquals(Node.class, treant.createNodeStructure(element, 4, 0).getClass());
 	}
 }

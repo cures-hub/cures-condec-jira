@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.documentation.jira.model;
 
-import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.AbstractPersistenceStrategy;
 
 /**
  * @description Interface for a project and its configuration
@@ -22,5 +22,5 @@ public interface DecisionKnowledgeProject {
 
 	public void setIssueStrategy(boolean isIssueStrategy);
 
-	public PersistenceStrategy getPersistenceStrategy();
+	public AbstractPersistenceStrategy getPersistenceStrategy();
 }

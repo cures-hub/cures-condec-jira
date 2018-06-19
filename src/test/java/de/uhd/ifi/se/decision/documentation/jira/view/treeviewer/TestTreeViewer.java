@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import de.uhd.ifi.se.decision.documentation.jira.persistence.AbstractPersistenceStrategy;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +20,6 @@ import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
@@ -27,7 +27,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestTreeViewer extends TestSetUp {
 	private EntityManager entityManager;
-	private PersistenceStrategy persistenceStrategy;
+	private AbstractPersistenceStrategy abstractPersistenceStrategy;
 
 	private boolean multiple;
 	private boolean checkCallback;
@@ -53,7 +53,7 @@ public class TestTreeViewer extends TestSetUp {
 				new MockDefaultUserManager());
 		initialization();
 		StrategyProvider strategyProvider = new StrategyProvider();
-		persistenceStrategy = strategyProvider.getStrategy("TEST");
+		abstractPersistenceStrategy = strategyProvider.getStrategy("TEST");
 	}
 
 	@Test
@@ -115,7 +115,7 @@ public class TestTreeViewer extends TestSetUp {
 
 	@Test
 	public void testGetDataStructureFilled() {
-		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		DecisionKnowledgeElement element = abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
 		assertEquals("14", treeViewer.getDataStructure(element).getId());
 	}
 
@@ -127,7 +127,7 @@ public class TestTreeViewer extends TestSetUp {
 	@Test
 	public void testEmptyGraphGetDataStructure() {
 		TreeViewer tree = new TreeViewer();
-		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		DecisionKnowledgeElement element = abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
 		assertEquals("14", tree.getDataStructure(element).getId());
 	}
 

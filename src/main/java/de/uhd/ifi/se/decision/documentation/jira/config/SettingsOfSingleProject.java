@@ -22,14 +22,14 @@ import de.uhd.ifi.se.decision.documentation.jira.persistence.ConfigPersistence;
 /**
  * @description Renders the administration page to change the plug-in configuration of a single project
  */
-public class SettingsOfSingleProject extends SettingsServlet {
+public class SettingsOfSingleProject extends AbstractSettingsServlet {
 
 	private static final long serialVersionUID = 8699708658914306058L;
 	private static final String TEMPLATEPATH = "templates/settingsForSingleProject.vm";
 
 	@Inject
 	public SettingsOfSingleProject(@ComponentImport UserManager userManager,
-			@ComponentImport LoginUriProvider loginUriProvider, @ComponentImport TemplateRenderer renderer) {
+								   @ComponentImport LoginUriProvider loginUriProvider, @ComponentImport TemplateRenderer renderer) {
 		super(userManager, loginUriProvider, renderer);
 	}
 

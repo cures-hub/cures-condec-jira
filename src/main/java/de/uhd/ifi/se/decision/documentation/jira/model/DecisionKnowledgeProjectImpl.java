@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.documentation.jira.model;
 
 import de.uhd.ifi.se.decision.documentation.jira.persistence.ConfigPersistence;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
 /**
@@ -53,7 +53,7 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 		ConfigPersistence.setActivated(this.getProjectKey(), isActivated);
 	}
 
-	public PersistenceStrategy getPersistenceStrategy() {
+	public AbstractPersistenceStrategy getPersistenceStrategy() {
 		StrategyProvider strategyProvider = new StrategyProvider();
 		return strategyProvider.getStrategy(this.projectKey);
 	}

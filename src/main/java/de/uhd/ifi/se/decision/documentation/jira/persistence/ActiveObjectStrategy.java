@@ -17,11 +17,11 @@ import de.uhd.ifi.se.decision.documentation.jira.model.*;
 import net.java.ao.Query;
 
 /**
- * @description Extends the abstract class PersistenceStrategy. Uses the active
+ * @description Extends the abstract class AbstractPersistenceStrategy. Uses the active
  *              object framework to store decision knowledge.
  */
 @JsonAutoDetect
-public class ActiveObjectStrategy extends PersistenceStrategy {
+public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectStrategy.class);
 	private static final ActiveObjects activeObjects = ComponentGetter.getActiveObjects();
 

@@ -36,11 +36,11 @@ import de.uhd.ifi.se.decision.documentation.jira.model.Link;
 import de.uhd.ifi.se.decision.documentation.jira.model.LinkImpl;
 
 /**
- * @description Extends the abstract class PersistenceStrategy. Uses JIRA issues
+ * @description Extends the abstract class AbstractPersistenceStrategy. Uses JIRA issues
  *              to store decision knowledge.
  */
 @JsonAutoDetect
-public class IssueStrategy extends PersistenceStrategy {
+public class IssueStrategy extends AbstractPersistenceStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IssueStrategy.class);
 
 	@Override

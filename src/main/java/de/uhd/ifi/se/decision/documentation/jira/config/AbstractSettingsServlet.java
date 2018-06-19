@@ -20,10 +20,10 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 /**
  * @description Abstract super class to render the administration pages
  */
-public abstract class SettingsServlet extends HttpServlet {
+public abstract class AbstractSettingsServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 7361128574751637582L;
-	protected static final Logger LOGGER = LoggerFactory.getLogger(SettingsServlet.class);
+	protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractSettingsServlet.class);
 
 	@ComponentImport
 	protected UserManager userManager;
@@ -33,8 +33,8 @@ public abstract class SettingsServlet extends HttpServlet {
 	protected TemplateRenderer templateRenderer;
 
 	@Inject
-	public SettingsServlet(@ComponentImport UserManager userManager, @ComponentImport LoginUriProvider loginUriProvider,
-			@ComponentImport TemplateRenderer renderer) {
+	public AbstractSettingsServlet(@ComponentImport UserManager userManager, @ComponentImport LoginUriProvider loginUriProvider,
+								   @ComponentImport TemplateRenderer renderer) {
 		this.userManager = userManager;
 		this.loginUriProvider = loginUriProvider;
 		this.templateRenderer = renderer;

@@ -5,7 +5,7 @@ package de.uhd.ifi.se.decision.documentation.jira.persistence;
  */
 public class StrategyProvider {
 
-	public PersistenceStrategy getStrategy(String projectKey) {
+	public AbstractPersistenceStrategy getStrategy(String projectKey) {
 		if (projectKey == null) {
 			throw new IllegalArgumentException("The project key cannot be null.");
 		}

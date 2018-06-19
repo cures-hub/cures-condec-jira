@@ -18,14 +18,14 @@ import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeProject;
  * @description Renders the administration page to change the plug-in configuration of all projects
  */
 @Scanned
-public class SettingsOfAllProjects extends SettingsServlet {
+public class SettingsOfAllProjects extends AbstractSettingsServlet {
 
 	private static final long serialVersionUID = 4640871992639394730L;
 	private static final String TEMPLATEPATH = "templates/settingsForAllProjects.vm";
 
 	@Inject
 	public SettingsOfAllProjects(@ComponentImport UserManager userManager,
-			@ComponentImport LoginUriProvider loginUriProvider, @ComponentImport TemplateRenderer renderer) {
+								 @ComponentImport LoginUriProvider loginUriProvider, @ComponentImport TemplateRenderer renderer) {
 		super(userManager, loginUriProvider, renderer);
 	}
 

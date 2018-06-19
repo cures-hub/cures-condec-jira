@@ -12,7 +12,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.Graph;
 import de.uhd.ifi.se.decision.documentation.jira.model.GraphImpl;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
+import de.uhd.ifi.se.decision.documentation.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
 /**
@@ -32,7 +32,7 @@ public class TreeViewer {
 	@XmlElement
 	private HashSet<Data> data;
 
-	private PersistenceStrategy strategy;
+	private AbstractPersistenceStrategy strategy;
 
 	private Graph graph;
 

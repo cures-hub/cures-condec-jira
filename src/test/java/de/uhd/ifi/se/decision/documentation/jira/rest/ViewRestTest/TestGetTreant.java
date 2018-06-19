@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.documentation.jira.persistence.AbstractPersistenceStrategy;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +23,6 @@ import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLink;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.documentation.jira.model.LinkImpl;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 import de.uhd.ifi.se.decision.documentation.jira.rest.ViewRest;
 import net.java.ao.EntityManager;
@@ -146,7 +146,7 @@ public class TestGetTreant extends TestSetUp {
 	@Test
 	public void testProjectExistsIssueKeyFilledChildElements() throws GenericEntityException {
 		StrategyProvider strategyProvider = new StrategyProvider();
-		PersistenceStrategy strategy = strategyProvider.getStrategy("TEST");
+		AbstractPersistenceStrategy strategy = strategyProvider.getStrategy("TEST");
 		Issue issue1 = ComponentAccessor.getIssueManager().getIssueObject((long) 12);
 		Issue issue2 = ComponentAccessor.getIssueManager().getIssueObject((long) 13);
 		strategy.insertDecisionKnowledgeElement(new DecisionKnowledgeElementImpl(issue1),

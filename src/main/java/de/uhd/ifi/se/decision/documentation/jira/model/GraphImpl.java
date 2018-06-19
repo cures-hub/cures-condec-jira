@@ -3,9 +3,9 @@ package de.uhd.ifi.se.decision.documentation.jira.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.documentation.jira.persistence.AbstractPersistenceStrategy;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
-import de.uhd.ifi.se.decision.documentation.jira.persistence.PersistenceStrategy;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
 /**
@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 @JsonAutoDetect
 public class GraphImpl implements Graph {
 
-	private PersistenceStrategy persistenceStrategy;
+	private AbstractPersistenceStrategy abstractPersistenceStrategy;
 	private List<Long> linkIds;
 	private DecisionKnowledgeElement rootElement;
 
@@ -25,12 +25,12 @@ public class GraphImpl implements Graph {
 	public GraphImpl(String projectKey) {
 		this();
 		StrategyProvider strategyProvider = new StrategyProvider();
-		this.persistenceStrategy = strategyProvider.getStrategy(projectKey);
+		this.abstractPersistenceStrategy = strategyProvider.getStrategy(projectKey);
 	}
 
 	public GraphImpl(String projectKey, String rootElementKey) {
 		this(projectKey);
-		this.rootElement = persistenceStrategy.getDecisionKnowledgeElement(rootElementKey);
+		this.rootElement = abstractPersistenceStrategy.getDecisionKnowledgeElement(rootElementKey);
 	}
 
 	public GraphImpl(DecisionKnowledgeElement rootElement) {
@@ -52,7 +52,7 @@ public class GraphImpl implements Graph {
 			return linkedElements;
 		}
 
-		List<Link> outwardIssueLinks = persistenceStrategy.getOutwardLinks(element);
+		List<Link> outwardIssueLinks = abstractPersistenceStrategy.getOutwardLinks(element);
 		for (Link link : outwardIssueLinks) {
 			if (!linkIds.contains(link.getLinkId())) {
 				DecisionKnowledgeElement outwardElement = link.getDestinationObject();
@@ -73,7 +73,7 @@ public class GraphImpl implements Graph {
 			return linkedElements;
 		}
 
-		List<Link> inwardIssueLinks = persistenceStrategy.getInwardLinks(element);
+		List<Link> inwardIssueLinks = abstractPersistenceStrategy.getInwardLinks(element);
 		for (Link link : inwardIssueLinks) {
 			if (!linkIds.contains(link.getLinkId())) {
 				DecisionKnowledgeElement inwardElement = link.getSourceObject();
