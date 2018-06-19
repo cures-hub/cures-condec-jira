@@ -4,9 +4,9 @@ import com.atlassian.jira.security.roles.ProjectRole;
 
 public class MockProjectRole implements ProjectRole {
 
-    Long id;
-    String name;
-    String description;
+    private Long id;
+    private String name;
+    private String description;
 
     @Override
     public Long getId() {
