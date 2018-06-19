@@ -7,7 +7,7 @@ function buildTreant(decisionKnowledgeElement) {
 	var depthOfTree = document.getElementById("depthOfTreeInput").value;
 	getTreant(decisionKnowledgeElement.key, depthOfTree, function(treant) {
 		document.getElementById("treant-container").innerHTML = "";
-        treantTree = new Treant(treant);
+		treantTree = new Treant(treant);
 		createContextMenuForTreantNodes();
 		addDragAndDropSupportForTreant();
 	});
@@ -44,7 +44,7 @@ function drag(event) {
 	dragId = event.target.id;
 	event.dataTransfer.setData("text", dragId);
 	findOldParentNode(dragId);
-	console.log(dragId +" "+ oldParentId);
+	console.log(dragId + " " + oldParentId);
 }
 
 function drop(event, target) {
@@ -57,13 +57,13 @@ function drop(event, target) {
 
 function findOldParentNode(dragId) {
 	var nodes = treantTree.tree.nodeDB.db;
-    var i;
-    for (i = 0; i < nodes.length; i++) {
-	if(nodes[i].nodeHTMLid == dragId){
-		var parentElement = treantTree.tree.getNodeDb().get(nodes[i].parentId);
-		oldParentId = parentElement.nodeHTMLid;
+	var i;
+	for (i = 0; i < nodes.length; i++) {
+		if (nodes[i].nodeHTMLid == dragId) {
+			var parentElement = treantTree.tree.getNodeDb().get(nodes[i].parentId);
+			oldParentId = parentElement.nodeHTMLid;
 		}
-    }
+	}
 }
 
 function allowDrop(event) {

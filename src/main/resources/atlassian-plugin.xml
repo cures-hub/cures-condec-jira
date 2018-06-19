@@ -125,7 +125,7 @@
 		<description>Adds the "DecDoc Settings" menu item that links to the project settings.
 		</description>
 		<label>DecDoc Project Settings</label>
-		<link>/plugins/servlet/decdoc/settings?projectKey=$projectKeyEncoded</link>
+		<link linkId="decdoc-project-settings-menu-item">/plugins/servlet/decdoc/settings?projectKey=$projectKeyEncoded</link>
 	</web-item>
 	<servlet key="servlet-for-settings-of-single-project" name="Servlet for Settings of Single Project"
 		class="de.uhd.ifi.se.decision.documentation.jira.config.SettingsOfSingleProject">
