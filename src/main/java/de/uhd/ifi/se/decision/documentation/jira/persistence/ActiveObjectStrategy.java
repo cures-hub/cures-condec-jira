@@ -23,7 +23,7 @@ import net.java.ao.Query;
 @JsonAutoDetect
 public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectStrategy.class);
-	private static final ActiveObjects activeObjects = ComponentGetter.getActiveObjects();
+	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
 	@Override
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement,
@@ -36,11 +36,11 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 			LOGGER.error("AOStrategy insertDecisionKnowledgeElement the ApplicationUser is null");
 			return null;
 		}
-		DecisionKnowledgeElementEntity databaseEntry = activeObjects
+		DecisionKnowledgeElementEntity databaseEntry = ACTIVE_OBJECTS
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementEntity>() {
 					@Override
 					public DecisionKnowledgeElementEntity doInTransaction() {
-						DecisionKnowledgeElementEntity databaseEntry = activeObjects
+						DecisionKnowledgeElementEntity databaseEntry = ACTIVE_OBJECTS
 								.create(DecisionKnowledgeElementEntity.class);
 						databaseEntry.setKey(
 								decisionKnowledgeElement.getProjectKey().toUpperCase() + "-" + databaseEntry.getId());
@@ -63,11 +63,11 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	@Override
 	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement,
 			ApplicationUser user) {
-		DecisionKnowledgeElementEntity databaseEntry = activeObjects
+		DecisionKnowledgeElementEntity databaseEntry = ACTIVE_OBJECTS
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementEntity>() {
 					@Override
 					public DecisionKnowledgeElementEntity doInTransaction() {
-						for (DecisionKnowledgeElementEntity databaseEntry : activeObjects
+						for (DecisionKnowledgeElementEntity databaseEntry : ACTIVE_OBJECTS
 								.find(DecisionKnowledgeElementEntity.class)) {
 							if (databaseEntry.getId() == decisionKnowledgeElement.getId()) {
 								databaseEntry.setSummary(decisionKnowledgeElement.getSummary());
@@ -80,20 +80,20 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 						return null;
 					}
 				});
-		if (databaseEntry != null) {
-			return true;
-		} else {
+		if (databaseEntry == null) {
 			return false;
+		} else {
+			return true;
 		}
 	}
 
 	@Override
 	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement,
 			ApplicationUser user) {
-		return activeObjects.executeInTransaction(new TransactionCallback<Boolean>() {
+		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction() {
-				for (DecisionKnowledgeElementEntity databaseEntry : activeObjects
+				for (DecisionKnowledgeElementEntity databaseEntry : ACTIVE_OBJECTS
 						.find(DecisionKnowledgeElementEntity.class)) {
 					if (databaseEntry.getId() == decisionKnowledgeElement.getId()) {
 						try {
@@ -101,7 +101,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 						} catch (SQLException e) {
 							return false;
 						} finally {
-							for (LinkEntity linkEntity : activeObjects.find(LinkEntity.class)) {
+							for (LinkEntity linkEntity : ACTIVE_OBJECTS.find(LinkEntity.class)) {
 								if (linkEntity.getIngoingId() == decisionKnowledgeElement.getId()
 										|| linkEntity.getOutgoingId() == decisionKnowledgeElement.getId()) {
 									try {
@@ -124,14 +124,14 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey) {
 		List<DecisionKnowledgeElement> decisionKnowledgeElements = null;
 		if (projectKey != null) {
-			decisionKnowledgeElements = activeObjects
+			decisionKnowledgeElements = ACTIVE_OBJECTS
 					.executeInTransaction(new TransactionCallback<List<DecisionKnowledgeElement>>() {
 						@Override
 						public List<DecisionKnowledgeElement> doInTransaction() {
 							final List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
 							// Returns all instances of interface DecisionKnowledgeElementEntity for the
 							// given project key
-							DecisionKnowledgeElementEntity[] decisionArray = activeObjects.find(
+							DecisionKnowledgeElementEntity[] decisionArray = ACTIVE_OBJECTS.find(
 									DecisionKnowledgeElementEntity.class,
 									Query.select().where("PROJECT_KEY = ?", projectKey));
 							for (DecisionKnowledgeElementEntity entity : decisionArray) {
@@ -167,11 +167,11 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id) {
-		DecisionKnowledgeElementEntity decisionKnowledgeElement = activeObjects
+		DecisionKnowledgeElementEntity decisionKnowledgeElement = ACTIVE_OBJECTS
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementEntity>() {
 					@Override
 					public DecisionKnowledgeElementEntity doInTransaction() {
-						DecisionKnowledgeElementEntity[] decisionKnowledgeElement = activeObjects
+						DecisionKnowledgeElementEntity[] decisionKnowledgeElement = ACTIVE_OBJECTS
 								.find(DecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", id));
 						// 0 or 1 decision knowledge elements might be returned by this query
 						if (decisionKnowledgeElement.length == 1) {
@@ -195,10 +195,10 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 		List<DecisionKnowledgeElement> children = new ArrayList<DecisionKnowledgeElement>();
 		for (Link inwardLink : inwardLinks) {
 			children.add(castToDecisionKnowledgeElement(
-					activeObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementEntity>() {
+					ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementEntity>() {
 						@Override
 						public DecisionKnowledgeElementEntity doInTransaction() {
-							DecisionKnowledgeElementEntity[] entityList = activeObjects.find(
+							DecisionKnowledgeElementEntity[] entityList = ACTIVE_OBJECTS.find(
 									DecisionKnowledgeElementEntity.class,
 									Query.select().where("ID = ?", inwardLink.getIngoingId()));
 							if (entityList.length == 1) {
@@ -218,10 +218,10 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 		List<DecisionKnowledgeElement> parents = new ArrayList<DecisionKnowledgeElement>();
 		for (Link outwardLink : outwardLinks) {
 			parents.add(castToDecisionKnowledgeElement(
-					activeObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementEntity>() {
+					ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementEntity>() {
 						@Override
 						public DecisionKnowledgeElementEntity doInTransaction() {
-							DecisionKnowledgeElementEntity[] entityList = activeObjects.find(
+							DecisionKnowledgeElementEntity[] entityList = ACTIVE_OBJECTS.find(
 									DecisionKnowledgeElementEntity.class,
 									Query.select().where("ID = ?", outwardLink.getOutgoingId()));
 							if (entityList.length == 1) {
@@ -237,12 +237,12 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 
 	@Override
 	public long insertLink(Link link, ApplicationUser user) {
-		return activeObjects.executeInTransaction(new TransactionCallback<Long>() {
+		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction() {
 				boolean linkAlreadyExists = false;
 				long linkId = 0;
-				for (LinkEntity linkEntity : activeObjects.find(LinkEntity.class)) {
+				for (LinkEntity linkEntity : ACTIVE_OBJECTS.find(LinkEntity.class)) {
 					if (linkEntity.getIngoingId() == link.getIngoingId()
 							&& linkEntity.getOutgoingId() == link.getOutgoingId()) {
 						linkAlreadyExists = true;
@@ -251,7 +251,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 				}
 				if (!linkAlreadyExists) {
 					DecisionKnowledgeElementEntity decCompIngoing;
-					DecisionKnowledgeElementEntity[] decCompIngoingArray = activeObjects.find(
+					DecisionKnowledgeElementEntity[] decCompIngoingArray = ACTIVE_OBJECTS.find(
 							DecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", link.getIngoingId()));
 					if (decCompIngoingArray.length == 1) {
 						decCompIngoing = decCompIngoingArray[0];
@@ -261,7 +261,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 					}
 
 					DecisionKnowledgeElementEntity decCompOutgoing;
-					DecisionKnowledgeElementEntity[] decCompOutgoingArray = activeObjects.find(
+					DecisionKnowledgeElementEntity[] decCompOutgoingArray = ACTIVE_OBJECTS.find(
 							DecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", link.getOutgoingId()));
 					if (decCompOutgoingArray.length == 1) {
 						decCompOutgoing = decCompOutgoingArray[0];
@@ -272,7 +272,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 					if (decCompIngoing != null && decCompOutgoing != null) {
 						if (decCompIngoing.getProjectKey().equals(decCompOutgoing.getProjectKey())) {
 							// entities exist and are in the same project
-							final LinkEntity linkEntity = activeObjects.create(LinkEntity.class);
+							final LinkEntity linkEntity = ACTIVE_OBJECTS.create(LinkEntity.class);
 							linkEntity.setIngoingId(link.getIngoingId());
 							linkEntity.setOutgoingId(link.getOutgoingId());
 							linkEntity.setLinkType(link.getLinkType());
@@ -307,10 +307,10 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 
 	@Override
 	public boolean deleteLink(Link link, ApplicationUser user) {
-		return activeObjects.executeInTransaction(new TransactionCallback<Boolean>() {
+		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction() {
-				for (LinkEntity linkEntity : activeObjects.find(LinkEntity.class)) {
+				for (LinkEntity linkEntity : ACTIVE_OBJECTS.find(LinkEntity.class)) {
 					if ((link.getIngoingId() == linkEntity.getIngoingId() && link.getOutgoingId() == linkEntity.getOutgoingId())
 							||(link.getOutgoingId() == linkEntity.getIngoingId() && link.getIngoingId() == linkEntity.getOutgoingId())) {
 						try {
@@ -330,7 +330,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	@Override
 	public List<Link> getInwardLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Link> inwardLinks = new ArrayList<>();
-		LinkEntity[] links = activeObjects.find(LinkEntity.class,
+		LinkEntity[] links = ACTIVE_OBJECTS.find(LinkEntity.class,
 				Query.select().where("OUTGOING_ID = ?", decisionKnowledgeElement.getId()));
 		for (LinkEntity link : links) {
 			Link inwardLink = new LinkImpl(link);
@@ -344,7 +344,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	@Override
 	public List<Link> getOutwardLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Link> outwardLinks = new ArrayList<>();
-		LinkEntity[] links = activeObjects.find(LinkEntity.class,
+		LinkEntity[] links = ACTIVE_OBJECTS.find(LinkEntity.class,
 				Query.select().where("INGOING_ID = ?", decisionKnowledgeElement.getId()));
 		for (LinkEntity link : links) {
 			Link outwardLink = new LinkImpl(link);
