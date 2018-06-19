@@ -44,8 +44,10 @@ public enum KnowledgeType {
 			return KnowledgeType.ARGUMENT;
 		case "assessment":
 			return KnowledgeType.ASSESSMENT;
+		default:
+			return KnowledgeType.OTHER;
 		}
-		return KnowledgeType.OTHER;
+
 	}
 
 	public static KnowledgeType getSuperType(KnowledgeType type) {
