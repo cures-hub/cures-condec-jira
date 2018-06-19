@@ -12,7 +12,6 @@ import de.uhd.ifi.se.decision.documentation.jira.persistence.LinkEntity;
  */
 public class LinkImpl implements Link {
 
-
 	private Long linkId;
 	private String linkType;
 	private DecisionKnowledgeElement sourceElement;
@@ -32,9 +31,13 @@ public class LinkImpl implements Link {
 		this.linkId = link.getId();
 		this.linkType = link.getIssueLinkType().getName();
 		Issue sourceIssue = link.getSourceObject();
-		this.sourceElement = new DecisionKnowledgeElementImpl(sourceIssue);
+		if (sourceIssue != null) {
+			this.sourceElement = new DecisionKnowledgeElementImpl(sourceIssue);
+		}
 		Issue destinationIssue = link.getDestinationObject();
-		this.destinationElement = new DecisionKnowledgeElementImpl(destinationIssue);
+		if (destinationIssue != null) {
+			this.destinationElement = new DecisionKnowledgeElementImpl(destinationIssue);
+		}
 	}
 
 	public LinkImpl(LinkEntity link) {
