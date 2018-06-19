@@ -6,12 +6,12 @@ import org.ofbiz.core.entity.GenericValue;
 
 import com.atlassian.jira.issue.link.IssueLinkType;
 
-public class MockIssueLinkType implements IssueLinkType{
+public class MockIssueLinkType implements IssueLinkType {
 	private Long id;
 	private String name;
 
 	public MockIssueLinkType(Long id) {
-		this.id=id;
+		this.id = id;
 	}
 
 	@Override
@@ -40,8 +40,8 @@ public class MockIssueLinkType implements IssueLinkType{
 	}
 
 	@Override
-	public int compareTo(IssueLinkType arg0) {
-		if(name.equals(arg0.getName())){
+	public int compareTo(IssueLinkType issueLinkType) {
+		if (name.equals(issueLinkType.getName())) {
 			return 1;
 		}
 		return 0;
@@ -64,7 +64,7 @@ public class MockIssueLinkType implements IssueLinkType{
 	}
 
 	public void setName(String name) {
-		this.name=name;
+		this.name = name;
 	}
 
 	@Override
@@ -87,4 +87,34 @@ public class MockIssueLinkType implements IssueLinkType{
 		return false;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MockIssueLinkType other = (MockIssueLinkType) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
+	}
 }
