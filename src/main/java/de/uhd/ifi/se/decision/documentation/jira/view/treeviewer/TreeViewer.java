@@ -40,9 +40,9 @@ public class TreeViewer {
 	}
 
 	public TreeViewer(String projectKey) {
-		this.setMultiple(false);
-		this.setCheckCallback(true);
-		this.setThemes(ImmutableMap.of("icons", false));
+		this.multiple = false;
+		this.checkCallback = true;
+		this.themes = ImmutableMap.of("icons", false);
 
 		graph = new GraphImpl(projectKey);
 
@@ -55,7 +55,7 @@ public class TreeViewer {
 			dataSet.add(this.getDataStructure(decision));
 		}
 		this.makeEachIdUnique(dataSet);
-		this.setData(dataSet);
+		this.data = dataSet;
 	}
 
 	public Data getDataStructure(DecisionKnowledgeElement decisionKnowledgeElement) {

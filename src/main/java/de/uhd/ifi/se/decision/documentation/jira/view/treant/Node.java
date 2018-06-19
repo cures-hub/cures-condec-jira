@@ -37,11 +37,9 @@ public class Node {
 	public Node(DecisionKnowledgeElement decisionKnowledgeElement) {
 		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getType().toString(),
 				"title", decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
-		this.setNodeContent(nodeContent);
-		this.setHtmlClass(decisionKnowledgeElement.getSuperType().toString().toLowerCase());
-		this.setHtmlId(decisionKnowledgeElement.getId());
-
-		//this.setInnerHTML("draggable='true'");
+		this.nodeContent = nodeContent;
+		this.htmlClass = decisionKnowledgeElement.getSuperType().toString().toLowerCase();
+		this.htmlId = decisionKnowledgeElement.getId();
 	}
 
 	public Map<String, String> getNodeContent() {

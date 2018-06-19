@@ -27,9 +27,9 @@ public class Data {
 	}
 
 	public Data(DecisionKnowledgeElement decisionKnowledgeElement) {
-		this.setText(decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getSummary());
-		this.setId(String.valueOf(decisionKnowledgeElement.getId()));
-		this.setNodeInfo(decisionKnowledgeElement);
+		this.text = decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getSummary();
+		this.id = String.valueOf(decisionKnowledgeElement.getId());
+		this.nodeInfo = decisionKnowledgeElement;
 	}
 
 	public String getId() {
