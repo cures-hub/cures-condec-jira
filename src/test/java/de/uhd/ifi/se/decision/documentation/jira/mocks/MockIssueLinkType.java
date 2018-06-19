@@ -41,6 +41,9 @@ public class MockIssueLinkType implements IssueLinkType{
 
 	@Override
 	public int compareTo(IssueLinkType arg0) {
+		if(name.equals(arg0.getName())){
+			return 1;
+		}
 		return 0;
 	}
 

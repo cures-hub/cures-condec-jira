@@ -14,7 +14,7 @@ import com.atlassian.jira.issue.MutableIssue;
  * @description This function is not implemented in the Jira Mock Class
  *
  */
-public class MockIssueManager extends com.atlassian.jira.mock.MockIssueManager {
+public class MockIssueManagerSelfImpl extends com.atlassian.jira.mock.MockIssueManager {
 
 	public Collection<Long> getIssueIdsForProject(Long id) throws GenericEntityException{
 		if(id==10) {
@@ -29,13 +29,9 @@ public class MockIssueManager extends com.atlassian.jira.mock.MockIssueManager {
 		// Iterate over the IssueTypes that are added in the TestIssueStartegySup
 		for(int i=2;i<=15;i++) {
 			Issue issue=this.getIssueObject((long)i);
-			if(id==issue.getProjectId()) {
+			if(id.equals(issue.getProjectId())) {
 				col.add(issue.getId());
 			}
-		}
-		if(id==30) {
-			Issue issue=this.getIssueObject((long)30);
-			col.add(issue.getId());
 		}
 		return col;
 	}

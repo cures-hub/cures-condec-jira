@@ -25,7 +25,7 @@ import com.atlassian.jira.user.util.UserManager;
 
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkTypeManager;
-import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManager;
+import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueService;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockProjectRoleManager;
 import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
@@ -38,7 +38,7 @@ public class TestSetUp {
 
 	public void initialization() {
 		projectManager = new MockProjectManager();
-		issueManager = new MockIssueManager();
+		issueManager = new MockIssueManagerSelfImpl();
 		constantsManager = new MockConstantsManager();
 		IssueService issueService = new MockIssueService();
 
@@ -94,7 +94,7 @@ public class TestSetUp {
 				((MockConstantsManager) constantsManager).addIssueType(issueType);
 				((MockIssue) issue).setIssueType(issueType);
 				((MockIssue) issue).setSummary("Test");
-				((MockIssueManager) issueManager).addIssue(issue);
+				((MockIssueManagerSelfImpl) issueManager).addIssue(issue);
 			} else {
 				MutableIssue issue = new MockIssue(i, "TEST-" + i);
 				((MockIssue) issue).setProjectId(project.getId());
@@ -103,7 +103,7 @@ public class TestSetUp {
 				((MockConstantsManager) constantsManager).addIssueType(issueType);
 				((MockIssue) issue).setIssueType(issueType);
 				((MockIssue) issue).setSummary("Test");
-				((MockIssueManager) issueManager).addIssue(issue);
+				((MockIssueManagerSelfImpl) issueManager).addIssue(issue);
 				if (i > types.size() - 4) {
 					((MockIssue) issue).setParentId((long) 3);
 				}
@@ -116,7 +116,7 @@ public class TestSetUp {
 		((MockConstantsManager) constantsManager).addIssueType(issueType);
 		((MockIssue) issue).setIssueType(issueType);
 		((MockIssue) issue).setSummary("Test");
-		((MockIssueManager) issueManager).addIssue(issue);
+		((MockIssueManagerSelfImpl) issueManager).addIssue(issue);
 		((MockIssue) issue).setParentId((long) 3);
 	}
 }

@@ -17,7 +17,7 @@ import com.atlassian.jira.project.ProjectManager;
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkTypeManager;
-import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManager;
+import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueService;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueTypeManager;
 
@@ -39,7 +39,7 @@ public class TestPluginInitializer extends TestSetUp {
 	@Test
 	public void testExecutionAfterPropNoInit() throws Exception {
 		ProjectManager projectManager = new MockProjectManager();
-		IssueManager issueManager = new MockIssueManager();
+		IssueManager issueManager = new MockIssueManagerSelfImpl();
 		ConstantsManager constManager = new MockConstantsManager();
 		IssueService issueService = new MockIssueService();
 
@@ -56,7 +56,7 @@ public class TestPluginInitializer extends TestSetUp {
 	@Test
 	public void testExecutionAfterPropInit() throws Exception {
 		ProjectManager projectManager = new MockProjectManager();
-		IssueManager issueManager = new MockIssueManager();
+		IssueManager issueManager = new MockIssueManagerSelfImpl();
 		ConstantsManager constManager = new MockConstantsManager();
 		IssueService issueService = new MockIssueService();
 

@@ -37,7 +37,6 @@ public class TestProjects extends TestSetUp {
 		new MockComponentWorker().init().addMock(ProjectManager.class, projectManager);
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockDefaultUserManager());
-		new Projects();
 	}
 
 	@Test
