@@ -32,10 +32,13 @@ The .jar file is installed by uploading it to your JIRA application:
 
 ## Configuration
 The [project setting page](https://github.com/cures-hub/cures-decdoc-jira/raw/master/doc/config_plugin.png) enables the user to:
-- Activate the plug-in for specific projects
+- Activate the plug-in for the specific project.
 - Choose the persistence strategy (either *issue strategy* or *active object strategy*). If you choose the issue strategy, you need to associate the project with the *decision knowledge issue type scheme*.
 
 ## Implementation Details
+
+## Model
+The [model interfaces and classes](https://github.com/cures-hub/cures-decdoc-jira/tree/master/src/main/java/de/uhd/ifi/se/decision/documentation/jira/model) are used to represent decision knowledge in JIRA.
 
 ### User Interface
 
@@ -57,7 +60,7 @@ The tree view was implemented using the [Treant.js library](http://fperucic.gith
 *Accordion editor*
 
 ### Persistence Strategies
-The JIRA DecDoc plug-in supports two strategies to implement the DDM: the *issue strategy* and the *active object strategy*.
+The JIRA DecDoc plug-in supports two strategies to [persist decision knowledge in JIRA](https://github.com/cures-hub/cures-decdoc-jira/tree/master/src/main/java/de/uhd/ifi/se/decision/documentation/jira/persistence): the *issue strategy* and the *active object strategy*.
 
 ![Persistence strategies](https://github.com/cures-hub/cures-decdoc-jira/raw/master/doc/decision_storage_strategies.png)
 *Persistence strategies*
@@ -71,5 +74,8 @@ This strategy uses object-relational mapping to communicate with JIRA's internal
 
 ### REST API
 This plug-in provides a [representational state transfer (REST) application programming interface (API)](https://github.com/cures-hub/cures-decdoc-jira/tree/master/src/main/java/de/uhd/ifi/se/decision/documentation/jira/rest) to retrieve, insert, update, and delete decision knowledge in JIRA.
-These services can be accessed via the following link: *JIRA base URL*/rest/decisions/latest/decisions/*REST service*
-The JIRA DecDoc plug-in uses the REST services via a [REST Java Script client](https://github.com/cures-hub/cures-decdoc-jira/blob/master/src/main/resources/js/controller/decdoc.rest.client.js) in the user interface.
+These services can be accessed via the following link:
+
+*JIRA base URL*/rest/decisions/latest/decisions/*REST service*
+
+The JIRA DecDoc plug-in uses the REST services in the [REST Java Script client](https://github.com/cures-hub/cures-decdoc-jira/blob/master/src/main/resources/js/controller/decdoc.rest.client.js) from the user interface.
