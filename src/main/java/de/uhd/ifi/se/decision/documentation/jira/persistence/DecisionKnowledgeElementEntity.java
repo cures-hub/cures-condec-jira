@@ -13,21 +13,21 @@ import net.java.ao.schema.Table;
 public interface DecisionKnowledgeElementEntity extends RawEntity<Integer> {
 	@AutoIncrement
 	@PrimaryKey("ID")
-	public long getId();
-	public void setId(long id);
+	long getId();
+	void setId(long id);
 
-	public String getSummary();
-	public void setSummary(String summary);
+	String getSummary();
+	void setSummary(String summary);
 
-	public String getDescription();
-	public void setDescription(String description);
+	String getDescription();
+	void setDescription(String description);
 
-	public String getType();
-	public void setType(String type);
+	String getType();
+	void setType(String type);
 
-	public String getProjectKey();
-	public void setProjectKey(String projectKey);
+	String getProjectKey();
+	void setProjectKey(String projectKey);
 
-	public String getKey();
-	public void setKey(String key);
+	String getKey();
+	void setKey(String key);
 }

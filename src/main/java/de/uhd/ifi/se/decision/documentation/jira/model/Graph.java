@@ -6,9 +6,9 @@ import java.util.List;
  * @description Interface for a graph of decision knowledge elements
  */
 public interface Graph {
-	public DecisionKnowledgeElement getRootElement();
+	DecisionKnowledgeElement getRootElement();
 
-	public void setRootElement(DecisionKnowledgeElement rootElement);
+	void setRootElement(DecisionKnowledgeElement rootElement);
 
-	public List<DecisionKnowledgeElement> getLinkedElements(DecisionKnowledgeElement element);
+	List<DecisionKnowledgeElement> getLinkedElements(DecisionKnowledgeElement element);
 }

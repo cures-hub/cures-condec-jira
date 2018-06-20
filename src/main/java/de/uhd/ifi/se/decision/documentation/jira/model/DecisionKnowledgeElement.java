@@ -10,42 +10,42 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 @JsonDeserialize(as = DecisionKnowledgeElementImpl.class)
 public interface DecisionKnowledgeElement {
 
-	public long getId();
+	long getId();
 
-	public void setId(long id);
+	void setId(long id);
 
-	public String getSummary();
+	String getSummary();
 
-	public void setSummary(String summary);
+	void setSummary(String summary);
 
-	public String getDescription();
+	String getDescription();
 
-	public void setDescription(String description);
+	void setDescription(String description);
 
-	public KnowledgeType getType();
+	KnowledgeType getType();
 
-	public void setType(KnowledgeType type);
+	void setType(KnowledgeType type);
 
-	public void setType(String type);
+	void setType(String type);
 
-	public KnowledgeType getSuperType();
+	KnowledgeType getSuperType();
 
-	public String getProjectKey();
+	String getProjectKey();
 
-	public void setProjectKey(String projectKey);
+	void setProjectKey(String projectKey);
 
-	public DecisionKnowledgeProject getProject();
+	DecisionKnowledgeProject getProject();
 
 	/**
 	 * The key resembles "<<projectKey>>-<<project internal id>>"
 	 */
-	public String getKey();
+	String getKey();
 
-	public void setKey(String key);
+	void setKey(String key);
 
-	public List<DecisionKnowledgeElement> getLinkedElements();
+	List<DecisionKnowledgeElement> getLinkedElements();
 
-	public List<Link> getOutwardLinks();
+	List<Link> getOutwardLinks();
 
-	public List<Link> getInwardLinks();
+	List<Link> getInwardLinks();
 }

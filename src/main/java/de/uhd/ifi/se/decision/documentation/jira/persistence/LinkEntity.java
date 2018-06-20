@@ -16,17 +16,17 @@ import net.java.ao.schema.Table;
 public interface LinkEntity extends Link, RawEntity<Integer> {
 	@AutoIncrement
 	@PrimaryKey("ID")
-	public long getId();
+	long getId();
 
 	@Ignore
-	public DecisionKnowledgeElement getDestinationObject();
+	DecisionKnowledgeElement getDestinationObject();
 
 	@Ignore
-	public DecisionKnowledgeElement getSourceObject();
+	DecisionKnowledgeElement getSourceObject();
 
 	@Ignore
-	public void setDestinationObject(DecisionKnowledgeElement decisionKnowledgeElement);
+	void setDestinationObject(DecisionKnowledgeElement decisionKnowledgeElement);
 
 	@Ignore
-	public void setSourceObject(DecisionKnowledgeElement decisionKnowledgeElement);
+	void setSourceObject(DecisionKnowledgeElement decisionKnowledgeElement);
 }

@@ -8,27 +8,27 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 @JsonDeserialize(as = LinkImpl.class)
 public interface Link {
 
-	public Long getLinkId();
+	Long getLinkId();
 
-	public void setLinkId(Long linkId);
+	void setLinkId(Long linkId);
 
-	public String getLinkType();
+	String getLinkType();
 
-	public void setLinkType(String linkType);
+	void setLinkType(String linkType);
 
-	public long getIngoingId();
+	long getIngoingId();
 
-	public void setIngoingId(long ingoingId);
+	void setIngoingId(long ingoingId);
 
-	public DecisionKnowledgeElement getSourceObject();
+	DecisionKnowledgeElement getSourceObject();
 
-	public void setSourceObject(DecisionKnowledgeElement decisionKnowledgeElement);
+	void setSourceObject(DecisionKnowledgeElement decisionKnowledgeElement);
 
-	public long getOutgoingId();
+	long getOutgoingId();
 
-	public void setOutgoingId(long outgoingId);
+	void setOutgoingId(long outgoingId);
 
-	public DecisionKnowledgeElement getDestinationObject();
+	DecisionKnowledgeElement getDestinationObject();
 
-	public void setDestinationObject(DecisionKnowledgeElement decisionKnowledgeElement);
+	void setDestinationObject(DecisionKnowledgeElement decisionKnowledgeElement);
 }
