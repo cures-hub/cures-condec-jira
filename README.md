@@ -37,7 +37,7 @@ The [project setting page](https://github.com/cures-hub/cures-decdoc-jira/raw/ma
 
 ## Implementation Details
 
-## Model
+### Model
 The [model interfaces and classes](https://github.com/cures-hub/cures-decdoc-jira/tree/master/src/main/java/de/uhd/ifi/se/decision/documentation/jira/model) are used to represent decision knowledge in JIRA.
 
 ### User Interface
