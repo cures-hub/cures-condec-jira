@@ -175,21 +175,21 @@ function createLink(parentId, childId, linkType, callback) {
 			});
 }
 
-function editLink(parentId, childId,linkType, callback) {
-    var jsondata = {
-        "linkType" : linkType,
-        "ingoingId" : childId,
-        "outgoingId" : parentId
-    };
-    postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/editLink.json?projectKey=" + getProjectKey(),
-        jsondata, function(error, link) {
-            if (error == null) {
-                showFlag("success", "Link has been created.");
-                callback(link);
-            } else {
-                showFlag("error", "Link could not be created.");
-            }
-        });
+function editLink(parentId, childId, linkType, callback) {
+	var jsondata = {
+		"linkType" : linkType,
+		"ingoingId" : childId,
+		"outgoingId" : parentId
+	};
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/editLink.json?projectKey=" + getProjectKey(),
+			jsondata, function(error, link) {
+				if (error == null) {
+					showFlag("success", "Link has been created.");
+					callback(link);
+				} else {
+					showFlag("error", "Link could not be created.");
+				}
+			});
 }
 
 function deleteLink(parentId, childId, linkType, callback) {
@@ -198,21 +198,21 @@ function deleteLink(parentId, childId, linkType, callback) {
 		"ingoingId" : childId,
 		"outgoingId" : parentId
 	};
-	deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLink.json?projectKey=" + getProjectKey(), jsondata,
-		function(error, link) {
-            if (error == null) {
-                showFlag("success", "Link has been deleted.");
-                callback();
-            } else {
-                showFlag("error", "Link could not be deleted.");
-            }
+	deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLink.json?projectKey=" + getProjectKey(),
+			jsondata, function(error, link) {
+				if (error == null) {
+					showFlag("success", "Link has been deleted.");
+					callback();
+				} else {
+					showFlag("error", "Link could not be deleted.");
+				}
 
-		});
+			});
 }
 
 function getTreant(key, depthOfTree, callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?projectKey=" + getProjectKey() + "&elementKey="
-			+ key + "&depthOfTree=" + depthOfTree, function(error, treant) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?projectKey=" + getProjectKey()
+			+ "&elementKey=" + key + "&depthOfTree=" + depthOfTree, function(error, treant) {
 		if (error == null) {
 			callback(treant);
 		} else {
@@ -222,30 +222,30 @@ function getTreant(key, depthOfTree, callback) {
 }
 
 function getTreeViewer(callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer.json?projectKey=" + getProjectKey(), function(
-			error, core) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer.json?projectKey=" + getProjectKey(),
+			function(error, core) {
+				if (error == null) {
+					callback(core)
+				} else {
+					showFlag("error", "Tree viewer data could not be received. Error-Code: " + error);
+				}
+			});
+}
+
+function setActivated(isActivated, projectKey) {
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setActivated.json?projectKey=" + projectKey
+			+ "&isActivated=" + isActivated, function(error, response) {
 		if (error == null) {
-			callback(core)
+			showFlag("success", "Plug-in activation for the project has been changed.");
 		} else {
-			showFlag("error", "Tree viewer data could not be received. Error-Code: " + error);
+			showFlag("error", "Plug-in activation for the project has not been changed.");
 		}
 	});
 }
 
-function setActivated(isActivated, projectKey) {
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setActivated.json?projectKey=" + projectKey + "&isActivated=" + isActivated,
-		function(error, response) {
-			if (error == null) {
-				showFlag("success", "Plug-in activation for the project has been changed.");
-			} else {
-				showFlag("error", "Plug-in activation for the project has not been changed.");
-			}
-	});
-}
-
 function setIssueStrategy(isIssueStrategy, projectKey) {
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setIssueStrategy.json?projectKey=" + projectKey + "&isIssueStrategy="
-			+ isIssueStrategy, function(error, response) {
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setIssueStrategy.json?projectKey=" + projectKey
+			+ "&isIssueStrategy=" + isIssueStrategy, function(error, response) {
 		if (error == null) {
 			showFlag("success", "Strategy has been selected.");
 		} else {
@@ -254,15 +254,16 @@ function setIssueStrategy(isIssueStrategy, projectKey) {
 	});
 }
 
-function isIssueStrategy(projectKey,callback) {
-    getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isIssueStrategy.json?projectKey=" + getProjectKey(), function(
-        error, isIssueBoolean) {
-        if (error == null) {
-            callback(isIssueBoolean)
-        } else {
-            showFlag("error", "Persistence strategy for the project could not be received. Error-Code: " + error);
-        }
-    });
+function isIssueStrategy(projectKey, callback) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isIssueStrategy.json?projectKey=" + getProjectKey(),
+			function(error, isIssueBoolean) {
+				if (error == null) {
+					callback(isIssueBoolean)
+				} else {
+					showFlag("error", "Persistence strategy for the project could not be received. Error-Code: "
+							+ error);
+				}
+			});
 }
 
 function showFlag(type, message) {
@@ -272,4 +273,10 @@ function showFlag(type, message) {
 		title : type.charAt(0).toUpperCase() + type.slice(1),
 		body : message
 	});
+}
+
+function getProjectKey() {
+	var pathname = window.location.pathname;
+	var stringArray = pathname.split("/");
+	return stringArray[stringArray.length - 1];
 }

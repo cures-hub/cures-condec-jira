@@ -10,7 +10,7 @@ import de.uhd.ifi.se.decision.documentation.jira.model.Link;
 import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
 
 /**
- * @description Abstract Class to create, edit, delete and retrieve decision
+ * @description Abstract class to create, edit, delete and retrieve decision
  *              knowledge elements and their links
  */
 public abstract class AbstractPersistenceStrategy {

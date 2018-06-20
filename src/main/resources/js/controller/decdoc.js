@@ -1,9 +1,3 @@
-function getProjectKey() {
-	var pathname = window.location.pathname;
-	var stringArray = pathname.split("/");
-	return stringArray[stringArray.length - 1];
-}
-
 function createDecisionKnowledgeElementAsChild(summary, description, type, parentId) {
 	switch (type) {
 	case "Pro Argument":
