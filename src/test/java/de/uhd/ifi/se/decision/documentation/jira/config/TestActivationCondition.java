@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +26,7 @@ public class TestActivationCondition {
 
 	@Before
 	public void setUp() {
-		Map<String, String> context = new HashMap<>();
+		Map<String, String> context = new ConcurrentHashMap<>();
 		activationCondition = new ActivationCondition();
 		activationCondition.init(context);
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
@@ -39,13 +40,13 @@ public class TestActivationCondition {
 
 	@Test
 	public void testShouldDisplayEmpty() {
-		Map<String, Object> context = new HashMap<>();
+		Map<String, Object> context = new ConcurrentHashMap<>();
 		assertFalse(activationCondition.shouldDisplay(context));
 	}
 
 	@Test
 	public void testShouldDisplayFilled() {
-		Map<String, Object> context = new HashMap<String, Object>();
+		Map<String, Object> context = new ConcurrentHashMap<String, Object>();
 		context.put("projectKey", "TEST");
 		assertTrue(activationCondition.shouldDisplay(context));
 	}

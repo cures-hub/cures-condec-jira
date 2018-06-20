@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.documentation.jira.config;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.Project;
@@ -12,7 +13,7 @@ import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeProjectI
 public class Projects {
 
 	public static Map<String, DecisionKnowledgeProject> getProjectsMap() {
-		Map<String, DecisionKnowledgeProject> configMap = new HashMap<String, DecisionKnowledgeProject>();
+		Map<String, DecisionKnowledgeProject> configMap = new ConcurrentHashMap<String, DecisionKnowledgeProject>();
 		for (Project project : ComponentAccessor.getProjectManager().getProjects()) {
 			String projectKey = project.getKey();
 			String projectName = project.getName();

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.persistence.AbstractPersistenceStrategy;
 import org.junit.Before;
@@ -90,7 +91,7 @@ public class TestTreeViewer extends TestSetUp {
 
 	@Test
 	public void testSetThemes() {
-		Map<String, Boolean> newThemes = new HashMap<>();
+		Map<String, Boolean> newThemes = new ConcurrentHashMap<>();
 		treeViewer.setThemes(newThemes);
 		assertEquals(treeViewer.getThemes(), newThemes);
 	}

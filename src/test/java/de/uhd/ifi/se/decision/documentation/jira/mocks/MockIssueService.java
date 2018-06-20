@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.documentation.jira.mocks;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.atlassian.jira.action.MockAction;
 import com.atlassian.jira.bc.issue.IssueService;
@@ -136,8 +137,8 @@ public class MockIssueService implements IssueService {
 		IssueType issueType = new MockIssueType(12, "Solution");
 		((MockIssue) issue).setIssueType(issueType);
 		ErrorCollection col = new MockAction();
-		Map<String,Object> fieldValuesHolder = new HashMap<>();
-		Map<String,org.codehaus.jackson.JsonNode> properties = new HashMap<>();
+		Map<String,Object> fieldValuesHolder = new ConcurrentHashMap<>();
+		Map<String,org.codehaus.jackson.JsonNode> properties = new ConcurrentHashMap<>();
 		if(arg0.getName().equals("NoFails")) {
 			return new CreateValidationResult(issue, col, fieldValuesHolder, properties);
 		}
@@ -189,7 +190,7 @@ public class MockIssueService implements IssueService {
 		IssueType issueType = new MockIssueType(12, "Solution");
 		((MockIssue) issue).setIssueType(issueType);
 		ErrorCollection col = new MockAction();
-		Map<String,Object> fieldValuesHolder = new HashMap<>();
+		Map<String,Object> fieldValuesHolder = new ConcurrentHashMap<>();
 		if(arg0.getName().equals("NoFails")) {
 			return new UpdateValidationResult(issue, col, fieldValuesHolder);
 		}

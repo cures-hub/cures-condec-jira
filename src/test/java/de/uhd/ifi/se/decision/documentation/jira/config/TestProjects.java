@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +42,7 @@ public class TestProjects extends TestSetUp {
 
 	@Test
 	public void testGetProjectMapNoProject() {
-		Map<String, DecisionKnowledgeProject> map = new HashMap<String, DecisionKnowledgeProject>();
+		Map<String, DecisionKnowledgeProject> map = new ConcurrentHashMap<String, DecisionKnowledgeProject>();
 		assertEquals(map, Projects.getProjectsMap());
 	}
 

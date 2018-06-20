@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
@@ -87,14 +88,14 @@ public class TestNode {
 
 	@Test
 	public void testSetNodeContent() {
-		Map<String, String> newNodeContent = new HashMap<>();
+		Map<String, String> newNodeContent = new ConcurrentHashMap<>();
 		this.node.setNodeContent(newNodeContent);
 		assertEquals(newNodeContent, this.node.getNodeContent());
 	}
 
 	@Test
 	public void testSetLink() {
-		Map<String, String> newLink = new HashMap<>();
+		Map<String, String> newLink = new ConcurrentHashMap<>();
 		this.node.setLink(newLink);
 		assertEquals(newLink, this.node.getLink());
 	}

@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.documentation.jira.config;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -74,7 +75,7 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		boolean isActivated = ConfigPersistence.isActivated(projectKey);
 		boolean isIssueStrategy = ConfigPersistence.isIssueStrategy(projectKey);
 
-		Map<String, Object> velocityParameters = new HashMap<String, Object>();
+		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
 		velocityParameters.put("requestUrl", request.getRequestURL());
 		velocityParameters.put("projectKey", projectKey);
 		velocityParameters.put("isActivated", isActivated);
