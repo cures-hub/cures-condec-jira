@@ -69,9 +69,6 @@ public class MockIssueLinkTypeManager implements IssueLinkTypeManager{
 		Collection<IssueLinkType> issueLinkTypeCollection = new HashSet<>();
 		IssueLinkType linkType = new MockIssueLinkType((long) 1);
 		issueLinkTypeCollection.add(linkType);
-		if(arg0.equals("Ok")) {
-
-		}
 		return issueLinkTypeCollection;
 	}
 
