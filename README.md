@@ -3,16 +3,15 @@
 [![Build Status](https://travis-ci.org/cures-hub/cures-decdoc-jira.svg?branch=master)](https://travis-ci.org/cures-hub/cures-decdoc-jira)
 [![Codecoverage](https://codecov.io/gh/cures-hub/cures-decdoc-jira/branch/master/graph/badge.svg)](https://codecov.io/gh/cures-hub/cures-decdoc-jira/branch/master)
 
-The CURES DecDoc JIRA plugin enables the user to capture and explore decision knowledge in [JIRA](https://de.atlassian.com/software/jira).
-Decision knowledge is composed of decisions and their decision components (e.g., arguments, alternatives, problem, context, ...).
-Decisions and decision components can be linked to JIRA issues such as requirements, work items, bugs, and features.
+The CURES DecDoc JIRA plug-in enables the user to capture and explore decision knowledge in [JIRA](https://de.atlassian.com/software/jira).
+Decision knowledge covers knowledge about decisions, the problems they address, solution proposals, their context, and justifications (rationale). The documented decision knowledge can be linked to JIRA issues such as features, tasks to implement a feature, or bug reports.
 
 ## Prerequisites
-The following prerequisites are necessary to compile the plugin from source code:
+The following prerequisites are necessary to compile the plug-in from source code:
 - Java 8 JDK
 - [Atlassian SDK](https://developer.atlassian.com/docs/getting-started/set-up-the-atlassian-plugin-sdk-and-build-a-project)
 
-## Compilation via terminal
+## Compilation via Terminal
 The source code is compiled via terminal.
 Navigate into the cures-decdoc-jira folder and run the following command:
 ```
@@ -20,33 +19,34 @@ atlas-mvn package
 ```
 The .jar file is created.
 
-## Download of precompiled .jar-File
-The precompiled .jar-File for the latest release can be found here: (https://github.com/cures-hub/cures-decdoc-jira/releases/latest)
+## Download of Precompiled .jar-File
+The precompiled .jar-File for the latest release can be found here: https://github.com/cures-hub/cures-decdoc-jira/releases/latest
 
 ## Installation in JIRA
 The .jar file is installed by uploading it to your JIRA application:
 - As a system administrator, navigate to JIRA's administration console and click the "Add-ons" tab.
-- Select "Manage add-ons" on the sidebar.
+- Select "Manage add-ons" on the side-bar.
 - Click on "Upload add-on" and select the previously compiled .jar file.
-- Click "Upload" for upload, installation and activation.
+- Click "Upload" for upload and installation.
+- [Activate the "Decision Documentation" plug-in.](https://github.com/cures-hub/cures-decdoc-jira/blob/master/doc/installed_plugin.png)
 
-![Add-ons](https://github.com/cures-hub/cures-decdoc-jira/raw/master/doc/installed_plugin.png)
-
-## Settings
-![DecDoc settings](https://github.com/cures-hub/cures-decdoc-jira/raw/master/doc/config_plugin.png)
+## Configuration
+The [project setting page](https://github.com/cures-hub/cures-decdoc-jira/raw/master/doc/config_plugin.png) enables the user to:
+- Activate the plug-in for specific projects
+- Choose the persistence strategy (either *issue strategy* or *active object strategy*). If you choose the issue strategy, you need to associate the project with the *decision knowledge issue type scheme*.
 
 ## Implementation Details
 
 ### User Interface
 
 In order to understand which decisions were made during the project, JIRA DecDoc provides a *TreeViewer* that lists all documented decisions.
-The TreeViewer was implemented using the [jsTree jQuery plugin](https://www.jstree.com).
+The TreeViewer was implemented using the [jsTree jQuery plug-in](https://www.jstree.com).
 The decisions can be selected and their decision components can be viewed and selected as well.
 
 ![JIRA DecDoc plug-in](https://github.com/cures-hub/cures-decdoc-jira/raw/master/doc/example_treant_radargrammetry.png)
 *TreeViewer (left) and tree view of a single decision (right)*
 
-Currently, the JIRA DecDoc plugin provides two views: an accordion editor and a tree view (different to the TreeViewer).
+Currently, the JIRA DecDoc plug-in provides two views: an accordion editor and a tree view (different to the TreeViewer).
 
 The accordion editor enables the user to refine decisions incrementally and collaboratively.
 The accordion editor was implemented using the jQuery [accordion widget](https://jqueryui.com/accordion).
@@ -70,7 +70,6 @@ To overcome this disadvantage, the active object strategy uses distinct model cl
 This strategy uses object-relational mapping to communicate with JIRA's internal database.
 
 ### REST API
-The plug-in provides four REST services.
-
-![REST services](https://github.com/cures-hub/cures-decdoc-jira/raw/master/doc/rest_services.png)
-*REST services provided by the JIRA DecDoc plug-in*
+This plug-in provides a [representational state transfer (REST) application programming interface (API)](https://github.com/cures-hub/cures-decdoc-jira/raw/master/doc/rest_services.png) to retrieve, insert, update, and delete decision knowledge in JIRA.
+These services can be accessed via the following link: *JIRA base URL*/rest/decisions/latest/decisions/*REST service*
+The JIRA DecDoc plug-in uses the REST services via a [REST Java Script client](https://github.com/cures-hub/cures-decdoc-jira/blob/master/src/main/resources/js/controller/decdoc.rest.client.js) in the user interface.
