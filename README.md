@@ -76,6 +76,6 @@ This strategy uses object-relational mapping to communicate with JIRA's internal
 This plug-in provides a [representational state transfer (REST) application programming interface (API)](https://github.com/cures-hub/cures-decdoc-jira/tree/master/src/main/java/de/uhd/ifi/se/decision/documentation/jira/rest) to retrieve, insert, update, and delete decision knowledge in JIRA.
 These services can be accessed via the following link:
 
-*<JIRA base URL>/rest/decisions/latest/<decisions|config|view>/<REST service>*
+**JIRA base URL**/rest/decisions/latest/**decisions|config|view**/**REST service**
 
 The JIRA DecDoc plug-in uses the REST services in the [REST Java Script client](https://github.com/cures-hub/cures-decdoc-jira/blob/master/src/main/resources/js/controller/decdoc.rest.client.js) from the user interface.
