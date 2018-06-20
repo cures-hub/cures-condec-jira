@@ -65,15 +65,13 @@ public class MockIssueLinkManager implements IssueLinkManager {
 
 	@Override
 	public IssueLink getIssueLink(Long arg0) {
-		IssueLink issueLink = new MockIssueLink(arg0);
-		return issueLink;
+		return new MockIssueLink(arg0);
 	}
 
 	@Override
 	public IssueLink getIssueLink(Long arg0, Long arg1, Long arg2) {
 		if (arg1 == 1) {
-			IssueLink issueLink = new MockIssueLink(arg0);
-			return issueLink;
+			return new MockIssueLink(arg0);
 		}
 		return null;
 	}

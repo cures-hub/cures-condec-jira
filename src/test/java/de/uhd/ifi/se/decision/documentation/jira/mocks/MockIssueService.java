@@ -32,8 +32,7 @@ public class MockIssueService implements IssueService {
 
 	@Override
 	public IssueResult create(ApplicationUser arg0, CreateValidationResult arg1) {
-		IssueResult issueResult = new IssueResult((MutableIssue) arg1.getIssue());
-		return issueResult;
+		return new IssueResult((MutableIssue) arg1.getIssue());
 	}
 
 	@Override
@@ -67,8 +66,7 @@ public class MockIssueService implements IssueService {
 		if(arg0.getName().equals("WithFails")) {
 			ErrorCollection col = new MockAction();
 			col.addError("Test", "Test");
-			IssueResult newres =  new IssueResult(issue, col);
-			return newres;
+			return new IssueResult(issue, col);
 		}
 		return result;
 	}
@@ -83,8 +81,7 @@ public class MockIssueService implements IssueService {
 		if(arg0.getName().equals("WithFails")) {
 			ErrorCollection col = new MockAction();
 			col.addError("Test", "Test");
-			IssueResult newres =  new IssueResult(issue, col);
-			return newres;
+			return new IssueResult(issue, col);
 		}
 		return result;
 	}
@@ -96,14 +93,12 @@ public class MockIssueService implements IssueService {
 
 	@Override
 	public IssueInputParameters newIssueInputParameters() {
-		IssueInputParameters issueInputParameters = new MockIssueInputParameters();
-		return issueInputParameters;
+		return new MockIssueInputParameters();
 	}
 
 	@Override
 	public IssueInputParameters newIssueInputParameters(Map<String, String[]> arg0) {
-		IssueInputParameters issueInputParameters = new MockIssueInputParameters();
-		return issueInputParameters;
+		return new MockIssueInputParameters();
 	}
 
 	@Override
@@ -144,17 +139,14 @@ public class MockIssueService implements IssueService {
 		Map<String,Object> fieldValuesHolder = new HashMap<>();
 		Map<String,org.codehaus.jackson.JsonNode> properties = new HashMap<>();
 		if(arg0.getName().equals("NoFails")) {
-			IssueService.CreateValidationResult ret = new CreateValidationResult(issue, col, fieldValuesHolder, properties);
-			return ret;
+			return new CreateValidationResult(issue, col, fieldValuesHolder, properties);
 		}
 		if(arg0.getName().equals("WithResFails")) {
 			col.addError("Test", "Test");
-			IssueService.CreateValidationResult ret = new CreateValidationResult(issue, col, fieldValuesHolder, properties);
-			return ret;
+			return new CreateValidationResult(issue, col, fieldValuesHolder, properties);
 		}
 		col.addError("Test", "Test");
-		IssueService.CreateValidationResult ret = new CreateValidationResult(issue, col, fieldValuesHolder, properties);
-		return ret;
+		return new CreateValidationResult(issue, col, fieldValuesHolder, properties);
 	}
 
 	@Override
@@ -165,15 +157,13 @@ public class MockIssueService implements IssueService {
 		((MockIssue) issue).setIssueType(issueType);
 		ErrorCollection col = new MockAction();
 		if(arg0.getUsername().equals("NoFails")) {
-			IssueService.DeleteValidationResult ret = new DeleteValidationResult(issue, col);
-			return ret;
+			return new DeleteValidationResult(issue, col);
 		}
 		if(arg0.getName().equals("WithResFails")) {
 			col.addError("Test", "Test");
-			IssueService.DeleteValidationResult ret = new DeleteValidationResult(issue, col);
-			return ret;
+			return new DeleteValidationResult(issue, col);
 		}
-		return  new DeleteValidationResult(issue, col);
+		return new DeleteValidationResult(issue, col);
 	}
 
 	@Override
@@ -201,13 +191,11 @@ public class MockIssueService implements IssueService {
 		ErrorCollection col = new MockAction();
 		Map<String,Object> fieldValuesHolder = new HashMap<>();
 		if(arg0.getName().equals("NoFails")) {
-			IssueService.UpdateValidationResult ret = new UpdateValidationResult(issue, col, fieldValuesHolder);
-			return ret;
+			return new UpdateValidationResult(issue, col, fieldValuesHolder);
 		}
 		if(arg0.getName().equals("WithFails")) {
 			col.addError("Test", "Test");
-			IssueService.UpdateValidationResult ret = new UpdateValidationResult(issue, col, fieldValuesHolder);
-			return ret;
+			return new UpdateValidationResult(issue, col, fieldValuesHolder);
 		}
 		return null;
 	}

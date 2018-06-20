@@ -291,9 +291,8 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		if (decisionKnowledgeElement == null) {
 			return new ArrayList<IssueLink>();
 		}
-		List<IssueLink> inwardIssueLinks = ComponentAccessor.getIssueLinkManager()
+		return ComponentAccessor.getIssueLinkManager()
 				.getInwardLinks(decisionKnowledgeElement.getId());
-		return inwardIssueLinks;
 	}
 
 	@Override
@@ -310,9 +309,8 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		if (decisionKnowledgeElement == null) {
 			return new ArrayList<IssueLink>();
 		}
-		List<IssueLink> outwardIssueLinks = ComponentAccessor.getIssueLinkManager()
+		return ComponentAccessor.getIssueLinkManager()
 				.getOutwardLinks(decisionKnowledgeElement.getId());
-		return outwardIssueLinks;
 	}
 
 	private String getIssueTypeId(KnowledgeType type) {

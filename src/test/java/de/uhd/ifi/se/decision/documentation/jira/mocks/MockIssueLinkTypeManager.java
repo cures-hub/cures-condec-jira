@@ -42,8 +42,7 @@ public class MockIssueLinkTypeManager implements IssueLinkTypeManager{
 	@Override
 	public Collection<IssueLinkType> getIssueLinkTypes(boolean arg0) {
 		if(notInit==true) {
-			Collection<IssueLinkType> isseLTypes = new HashSet<>();
-			return isseLTypes;
+			return new HashSet<>();
 		}
 		Collection<IssueLinkType> isseLTypes = new HashSet<>();
 		ArrayList<String> types= new ArrayList<>();

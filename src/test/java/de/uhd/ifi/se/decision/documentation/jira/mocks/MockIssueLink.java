@@ -75,8 +75,7 @@ public class MockIssueLink implements IssueLink {
 
 	@Override
 	public IssueLinkType getIssueLinkType() {
-		IssueLinkType issueLinkType = new MockIssueLinkType((long) 123);
-		return issueLinkType;
+		return new MockIssueLinkType((long) 123);
 	}
 
 	@Override

@@ -38,8 +38,7 @@ public class MockIssueManagerSelfImpl extends com.atlassian.jira.mock.MockIssueM
 
 	public MutableIssue getIssueByCurrentKey(String key) {
 		if(key.equals("30")) {
-			Issue issue=this.getIssueObject((long)30);
-			return (MutableIssue) issue;
+			return this.getIssueObject((long)30);
 		}
 		for(int i=2;i<=16;i++) {
 			Issue issue=this.getIssueObject((long)i);

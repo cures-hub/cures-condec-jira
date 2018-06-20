@@ -358,8 +358,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 
 	// Converting the Entity to a DecisionKnowledgeElementImpl for future use
 	private DecisionKnowledgeElement castToDecisionKnowledgeElement(DecisionKnowledgeElementEntity entity) {
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(entity.getId(), entity.getSummary(),
+		return new DecisionKnowledgeElementImpl(entity.getId(), entity.getSummary(),
 				entity.getDescription(), entity.getType(), entity.getProjectKey(), entity.getKey());
-		return element;
 	}
 }
