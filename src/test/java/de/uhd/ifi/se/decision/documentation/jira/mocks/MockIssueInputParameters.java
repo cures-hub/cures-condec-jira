@@ -7,7 +7,6 @@ import org.codehaus.jackson.JsonNode;
 
 import com.atlassian.jira.issue.IssueInputParameters;
 import com.atlassian.jira.issue.changehistory.metadata.HistoryMetadata;
-import org.hsqldb.lib.ArrayUtil;
 
 public class MockIssueInputParameters implements IssueInputParameters{
 

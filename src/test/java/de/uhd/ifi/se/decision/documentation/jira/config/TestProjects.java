@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.documentation.jira.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
