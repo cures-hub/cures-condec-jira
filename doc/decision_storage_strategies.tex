@@ -11,11 +11,13 @@
     \textit{+ getDecisionKnowledgeElement(key : String) : DecisionKnowledgeElement}\\
     \textit{+ getDecisionKnowledgeElement(id : long) : DecisionKnowledgeElement}\\
     + getDecisions(projectKey : String) : List<DecisionKnowledgeElement>\\
-    + getChildren(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>\\
-    + getParents(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>\\
+    + getLinkedElements(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>\\
+    + getLinkedElements(id : long) : List<DecisionKnowledgeElement>\\
+    \textit{+ getElementsLinkedWithOutwardLinks(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>}\\
+    \textit{+ getElementsLinkedWithInwardLinks(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>}\\
     \textit{+ getUnlinkedDecisionComponents(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>}\\
-
     \textit{+ insertLink(link : Link) : long}\\
+    \textit{+ updateLink(link : Link) : boolean}\\
     \textit{+ deleteLink(link : Link) : boolean}\\
     \textit{+ getInwardLinks(element : decisionKnowledgeElement) : List<Link>}\\
     \textit{+ getOutwardLinks(element : decisionKnowledgeElement) : List<Link>}\\
@@ -26,10 +28,10 @@
 \umlclass[x=12, y=-1]{ActiveObjectStrategy}{}{}
 
 % client
-\umlclass[x=-10.5, y=0]{Client}{}{}
+\umlclass[x=-11, y=0]{Client}{}{}
 
 % associations
 \umlinherit{IssueStrategy}{AbstractPersistenceStrategy}
 \umlinherit{ActiveObjectStrategy}{AbstractPersistenceStrategy}
-\umluniassoc[arg1=uses, pos1=0.5]{Client}{IPersistenceStrategy}
+\umluniassoc[arg1=uses, pos1=0.5]{Client}{AbstractPersistenceStrategy}
 \end{tikzpicture}
