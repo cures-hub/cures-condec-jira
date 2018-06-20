@@ -77,7 +77,7 @@ public abstract class AbstractSettingsServlet extends HttpServlet {
 	private URI getUri(HttpServletRequest request) {
 		StringBuffer builder = request.getRequestURL();
 		if (request.getQueryString() != null) {
-			builder.append("?");
+			builder.append('?');
 			builder.append(request.getQueryString());
 		}
 		return URI.create(builder.toString());
