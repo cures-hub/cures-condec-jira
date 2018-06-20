@@ -7,6 +7,7 @@ import org.codehaus.jackson.JsonNode;
 
 import com.atlassian.jira.issue.IssueInputParameters;
 import com.atlassian.jira.issue.changehistory.metadata.HistoryMetadata;
+import org.hsqldb.lib.ArrayUtil;
 
 public class MockIssueInputParameters implements IssueInputParameters{
 
@@ -42,7 +43,7 @@ public class MockIssueInputParameters implements IssueInputParameters{
 
 	@Override
 	public Long[] getAffectedVersionIds() {
-		return null;
+		return new Long[0];
 	}
 
 	@Override
@@ -57,17 +58,17 @@ public class MockIssueInputParameters implements IssueInputParameters{
 
 	@Override
 	public Long[] getComponentIds() {
-		return null;
+		return new Long[0];
 	}
 
 	@Override
 	public String[] getCustomFieldValue(Long arg0) {
-		return null;
+		return new String[0];
 	}
 
 	@Override
 	public String[] getCustomFieldValue(String arg0) {
-		return null;
+		return new String[0];
 	}
 
 	@Override
@@ -92,7 +93,7 @@ public class MockIssueInputParameters implements IssueInputParameters{
 
 	@Override
 	public Long[] getFixVersionIds() {
-		return null;
+		return new Long[0];
 	}
 
 	@Override
