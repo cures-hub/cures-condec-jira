@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.documentation.jira.view.treant;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -38,7 +39,7 @@ public class Node {
 		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getType().toString(),
 				"title", decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 		this.nodeContent = nodeContent;
-		this.htmlClass = decisionKnowledgeElement.getSuperType().toString().toLowerCase();
+		this.htmlClass = decisionKnowledgeElement.getSuperType().toString().toLowerCase(Locale.ENGLISH);
 		this.htmlId = decisionKnowledgeElement.getId();
 	}
 

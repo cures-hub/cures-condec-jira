@@ -12,6 +12,8 @@ import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 
+import java.util.Locale;
+
 
 public class TestDecisionKnowledgeElementIssue {
 	private int id;
@@ -29,7 +31,7 @@ public class TestDecisionKnowledgeElementIssue {
 		this.type = KnowledgeType.SOLUTION;
 		this.projectKey = "TEST";
 
-		IssueType issueType = new MockIssueType(2, type.toString().toLowerCase());
+		IssueType issueType = new MockIssueType(2, type.toString().toLowerCase(Locale.ENGLISH));
 
 		Project project = new MockProject(1, projectKey);
 

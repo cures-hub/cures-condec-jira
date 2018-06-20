@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.documentation.jira.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @description Type of decision knowledge element
@@ -13,7 +14,7 @@ public enum KnowledgeType {
 		if(type == null){
 			return KnowledgeType.OTHER;
 		}
-		switch (type.toLowerCase()) {
+		switch (type.toLowerCase(Locale.ENGLISH)) {
 		case "decision":
 			return KnowledgeType.DECISION;
 		case "constraint":
@@ -83,7 +84,7 @@ public enum KnowledgeType {
 	}
 
 	public String toString() {
-		return this.name().substring(0, 1).toUpperCase() + this.name().substring(1).toLowerCase();
+		return this.name().substring(0, 1).toUpperCase(Locale.ENGLISH) + this.name().substring(1).toLowerCase(Locale.ENGLISH);
 	}
 
 	public static List<String> toList() {

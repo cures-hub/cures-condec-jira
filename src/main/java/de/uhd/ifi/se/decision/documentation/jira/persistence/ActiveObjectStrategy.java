@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.documentation.jira.persistence;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
@@ -46,7 +47,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 						DecisionKnowledgeElementEntity databaseEntry = ACTIVE_OBJECTS
 								.create(DecisionKnowledgeElementEntity.class);
 						databaseEntry.setKey(
-								decisionKnowledgeElement.getProjectKey().toUpperCase() + "-" + databaseEntry.getId());
+								decisionKnowledgeElement.getProjectKey().toUpperCase(Locale.ENGLISH) + "-" + databaseEntry.getId());
 						databaseEntry.setSummary(decisionKnowledgeElement.getSummary());
 						databaseEntry.setDescription(decisionKnowledgeElement.getDescription());
 						databaseEntry.setType(decisionKnowledgeElement.getType().toString());

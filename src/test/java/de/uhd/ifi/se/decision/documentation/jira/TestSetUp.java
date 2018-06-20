@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.documentation.jira;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.config.ConstantsManager;
@@ -90,7 +91,7 @@ public class TestSetUp {
 				MutableIssue issue = new MockIssue(30, "TEST-" + 30);
 				((MockIssue) issue).setProjectId(project.getId());
 				((MockIssue) issue).setProjectObject(project);
-				IssueType issueType = new MockIssueType(i, types.get(i - 2).toString().toLowerCase());
+				IssueType issueType = new MockIssueType(i, types.get(i - 2).toString().toLowerCase(Locale.ENGLISH));
 				((MockConstantsManager) constantsManager).addIssueType(issueType);
 				((MockIssue) issue).setIssueType(issueType);
 				((MockIssue) issue).setSummary("Test");
@@ -99,7 +100,7 @@ public class TestSetUp {
 				MutableIssue issue = new MockIssue(i, "TEST-" + i);
 				((MockIssue) issue).setProjectId(project.getId());
 				((MockIssue) issue).setProjectObject(project);
-				IssueType issueType = new MockIssueType(i, types.get(i - 2).toString().toLowerCase());
+				IssueType issueType = new MockIssueType(i, types.get(i - 2).toString().toLowerCase(Locale.ENGLISH));
 				((MockConstantsManager) constantsManager).addIssueType(issueType);
 				((MockIssue) issue).setIssueType(issueType);
 				((MockIssue) issue).setSummary("Test");
