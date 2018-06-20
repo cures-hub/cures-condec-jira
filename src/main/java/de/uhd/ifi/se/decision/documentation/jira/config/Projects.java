@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.documentation.jira.config;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

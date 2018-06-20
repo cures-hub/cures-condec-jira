@@ -12,8 +12,8 @@ public class MockLoginUriProvider implements LoginUriProvider{
 		try {
 			return new URI("TEST");
 		} catch (URISyntaxException e) {
+			return null;
 		}
-		return null;
 	}
 
 }
