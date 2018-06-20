@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.persistence.IssueStrategyTest;
+package de.uhd.ifi.se.decision.documentation.jira.persistence.issusstrategytest;
 
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;

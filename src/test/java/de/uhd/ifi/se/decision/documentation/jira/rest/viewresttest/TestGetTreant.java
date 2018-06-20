@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.rest.ViewRestTest;
+package de.uhd.ifi.se.decision.documentation.jira.rest.viewresttest;
 
 import static org.junit.Assert.assertEquals;
 

@@ -6,4 +6,4 @@ coverage:
   round: down
   range: "50...90"
 ignore:
-  -"*/db/strategy/impl/ActiveObjectStrategyTest.java"
+  -"*/db/strategy/impl/activeobjectstrategytest.java"

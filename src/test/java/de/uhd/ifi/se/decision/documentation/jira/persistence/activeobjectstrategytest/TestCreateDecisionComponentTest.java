@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.persistence.ActiveObjectStrategyTest;
+package de.uhd.ifi.se.decision.documentation.jira.persistence.activeobjectstrategytest;
 
 
 import com.atlassian.jira.user.ApplicationUser;
