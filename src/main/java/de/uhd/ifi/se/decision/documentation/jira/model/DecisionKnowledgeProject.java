@@ -6,21 +6,21 @@ import de.uhd.ifi.se.decision.documentation.jira.persistence.AbstractPersistence
  * @description Interface for a project and its configuration
  */
 public interface DecisionKnowledgeProject {
-	public String getProjectKey();
+	String getProjectKey();
 
-	public void setProjectKey(String projectKey);
+	void setProjectKey(String projectKey);
 
-	public String getProjectName();
+	String getProjectName();
 
-	public void setProjectName(String projectName);
+	void setProjectName(String projectName);
 
-	public boolean isActivated();
+	boolean isActivated();
 
-	public void setActivated(boolean isActivated);
+	void setActivated(boolean isActivated);
 
-	public boolean isIssueStrategy();
+	boolean isIssueStrategy();
 
-	public void setIssueStrategy(boolean isIssueStrategy);
+	void setIssueStrategy(boolean isIssueStrategy);
 
-	public AbstractPersistenceStrategy getPersistenceStrategy();
+	AbstractPersistenceStrategy getPersistenceStrategy();
 }

@@ -313,8 +313,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 			@Override
 			public Boolean doInTransaction() {
 				for (LinkEntity linkEntity : ACTIVE_OBJECTS.find(LinkEntity.class)) {
-					if ((link.getIngoingId() == linkEntity.getIngoingId() && link.getOutgoingId() == linkEntity.getOutgoingId())
-							||(link.getOutgoingId() == linkEntity.getIngoingId() && link.getIngoingId() == linkEntity.getOutgoingId())) {
+					if (link.getIngoingId() == linkEntity.getIngoingId() && link.getOutgoingId() == linkEntity.getOutgoingId()
+							||link.getOutgoingId() == linkEntity.getIngoingId() && link.getIngoingId() == linkEntity.getOutgoingId()) {
 						try {
 							linkEntity.getEntityManager().delete(linkEntity);
 							return true;
