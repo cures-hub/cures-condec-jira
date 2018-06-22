@@ -1,5 +1,6 @@
 # cures-decdoc-jira
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/adea1e352d594e39925b5b96c1aac2b3)](https://app.codacy.com/app/anja.kleebaum/cures-decdoc-jira?utm_source=github.com&utm_medium=referral&utm_content=cures-hub/cures-decdoc-jira&utm_campaign=badger)
 [![Build Status](https://travis-ci.org/cures-hub/cures-decdoc-jira.svg?branch=master)](https://travis-ci.org/cures-hub/cures-decdoc-jira)
 [![Codecoverage](https://codecov.io/gh/cures-hub/cures-decdoc-jira/branch/master/graph/badge.svg)](https://codecov.io/gh/cures-hub/cures-decdoc-jira/branch/master)
 
