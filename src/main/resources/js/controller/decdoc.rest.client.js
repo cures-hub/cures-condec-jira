@@ -68,7 +68,7 @@ function deleteJSON(url, data, callback) {
 function getDecisionKnowledgeElement(id, callback) {
 	getJSON(
 			AJS.contextPath() + "/rest/decisions/latest/decisions/getDecisionKnowledgeElement.json?projectKey="
-					+ getProjectKey() + '&id=' + id,
+					+ getProjectKey() + "&id=" + id,
 			function(error, decisionKnowledgeElement) {
 				if (error == null) {
 					callback(decisionKnowledgeElement);
