@@ -31,10 +31,7 @@ public class SettingsOfAllProjects extends AbstractSettingsServlet {
 
 	protected boolean isValidUser(HttpServletRequest request) {
 		String username = userManager.getRemoteUsername(request);
-		if (username == null || !userManager.isSystemAdmin(username)) {
-			return false;
-		}
-		return true;
+		return username != null && userManager.isSystemAdmin(username);
 	}
 
 	protected String getTemplatePath() {
