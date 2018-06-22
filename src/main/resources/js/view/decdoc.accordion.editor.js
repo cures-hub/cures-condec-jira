@@ -1,3 +1,9 @@
+function addOptionsToAllDecisionComponents(id) {
+    for (var index = 0; index < simpleKnowledgeTypes.length; index++) {
+        addOptionToAddDecisionComponent(simpleKnowledgeTypes[index], id);
+    }
+}
+
 function fillAccordion(node) {
 	deleteContentOfAccordionEditor();
 	var id = node.id;
@@ -35,8 +41,8 @@ function enableLinkingUnlinkedDecisionComponents(parentId) {
 				insertString += '</select><input type="button" name="linkExistingIssueButton" id="linkExistingIssueButton" value="Create Link"/>';
 				document.getElementById("Details").insertAdjacentHTML('beforeend', insertString);
 				var linkButton = document.getElementById("linkExistingIssueButton");
-				linkButton.addEventListener('click', function() {
-					var childId = $('select[name="linkExistingIssueSearchField"] option:selected').val();
+				linkButton.addEventListener("click", function() {
+					var childId = $("select[name='linkExistingIssueSearchField'] option:selected").val();
 					createLinkToExistingElement(parentId, childId);
 				});
 			});
@@ -61,12 +67,6 @@ function showDetailsOfSingleChild(decisionKnowledgeElement) {
 							+ '<p>Description: ' + decisionKnowledgeElement.description + '</p></div>');
 			document.getElementById(simpleKnowledgeTypes[i]).style.display = "block";
 		}
-	}
-}
-
-function addOptionsToAllDecisionComponents(id) {
-	for (var index = 0; index < simpleKnowledgeTypes.length; index++) {
-		addOptionToAddDecisionComponent(simpleKnowledgeTypes[index], id);
 	}
 }
 
