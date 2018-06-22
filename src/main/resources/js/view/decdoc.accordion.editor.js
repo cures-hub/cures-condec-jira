@@ -87,9 +87,9 @@ function addOptionToAddDecisionComponent(type, id) {
 function setUpEditorContentForAddingComponent(type) {
 	var radioButtons = "";
 	if (type == "Argument") {
-		var radioButtons = '<input type="radio" name="form-radio-argument" value="Pro Argument" checked="checked">Pro'
-				+ '<input type="radio" name="form-radio-argument" value="Contra Argument">Contra'
-				+ '<input type="radio" name="form-radio-argument" value="Comment">Comment';
+		var radioButtons = "<input type='radio' name='form-radio-argument' value='Pro Argument' checked='checked'>Pro"
+				+ "<input type='radio' name='form-radio-argument' value='Contra Argument'>Contra"
+				+ "<input type='radio' name='form-radio-argument' value='Comment'>Comment";
 	}
 	document.getElementById(type).insertAdjacentHTML(
 			'beforeend',
