@@ -81,7 +81,7 @@ function getDecisionKnowledgeElement(id, callback) {
 
 function getLinkedDecisionComponents(id, callback) {
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getLinkedDecisionComponents.json?projectKey="
-			+ getProjectKey() + '&id=' + id, function(error, linkedDecisionComponents) {
+			+ getProjectKey() + "&id=" + id, function(error, linkedDecisionComponents) {
 		if (error == null) {
 			callback(linkedDecisionComponents);
 		} else {
@@ -93,7 +93,7 @@ function getLinkedDecisionComponents(id, callback) {
 
 function getUnlinkedDecisionComponents(id, callback) {
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getUnlinkedDecisionComponents.json?projectKey="
-			+ getProjectKey() + '&id=' + id, function(error, unlinkedDecisionComponents) {
+			+ getProjectKey() + "&id=" + id, function(error, unlinkedDecisionComponents) {
 		if (error == null) {
 			callback(unlinkedDecisionComponents);
 		} else {
@@ -225,7 +225,7 @@ function getTreeViewer(callback) {
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer.json?projectKey=" + getProjectKey(),
 			function(error, core) {
 				if (error == null) {
-					callback(core)
+					callback(core);
 				} else {
 					showFlag("error", "Tree viewer data could not be received. Error-Code: " + error);
 				}
@@ -258,7 +258,7 @@ function isIssueStrategy(projectKey, callback) {
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isIssueStrategy.json?projectKey=" + getProjectKey(),
 			function(error, isIssueBoolean) {
 				if (error == null) {
-					callback(isIssueBoolean)
+					callback(isIssueBoolean);
 				} else {
 					showFlag("error", "Persistence strategy for the project could not be received. Error-Code: "
 							+ error);

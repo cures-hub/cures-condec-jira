@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.documentation.jira.persistence.issusstrategytest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 
@@ -53,6 +54,6 @@ public class TestGetLinkedElements extends TestIssueStrategySetUp {
 			}
 			i++;
 		}
-		System.out.println(issueStrategy.getLinkedElements(decision));
+		assertNotNull(issueStrategy.getLinkedElements(decision));
 	}
 }
