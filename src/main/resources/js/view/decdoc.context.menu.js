@@ -163,7 +163,7 @@ function setUpContextMenuContentForEditAction(id) {
 			setUpModal();
 			var modal =  document.getElementById("modal-content");
             var url = AJS.contextPath() + "/secure/EditIssue!default.jspa?id="+ id;
-            var iframe = "<iframe src='"+ url+"' style='border:none' height='100%' width='100%'></iframe>"
+            var iframe = "<iframe src='"+ url+"' style='border:none' height='100%' width='100%'></iframe>";
 			modal.insertAdjacentHTML("afterBegin",iframe);
 		} else{
             setUpModal();
