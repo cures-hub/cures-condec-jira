@@ -1,7 +1,6 @@
 <html>
 <head>
 <title>DecDoc Settings</title>
-<meta name="decorator" content="atl.general">
 <meta name="decorator" content="atl.admin" />
 <meta name="admin.active.section"
 	content="admin_plugins_menu/new_plugin_section" />

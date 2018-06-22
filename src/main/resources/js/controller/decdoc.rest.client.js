@@ -1,3 +1,18 @@
+function showFlag(type, message) {
+	AJS.flag({
+		type : type,
+		close : "auto",
+		title : type.charAt(0).toUpperCase() + type.slice(1),
+		body : message
+	});
+}
+
+function getProjectKey() {
+	var pathname = window.location.pathname;
+	var stringArray = pathname.split("/");
+	return stringArray[stringArray.length - 1];
+}
+
 function getJSON(url, callback) {
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET", url, true);
@@ -264,19 +279,4 @@ function isIssueStrategy(projectKey, callback) {
 							+ error);
 				}
 			});
-}
-
-function showFlag(type, message) {
-	AJS.flag({
-		type : type,
-		close : "auto",
-		title : type.charAt(0).toUpperCase() + type.slice(1),
-		body : message
-	});
-}
-
-function getProjectKey() {
-	var pathname = window.location.pathname;
-	var stringArray = pathname.split("/");
-	return stringArray[stringArray.length - 1];
 }
