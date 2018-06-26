@@ -1,7 +1,7 @@
 function addOptionsToAllDecisionComponents(id) {
-    for (var index = 0; index < simpleKnowledgeTypes.length; index++) {
-        addOptionToAddDecisionComponent(simpleKnowledgeTypes[index], id);
-    }
+	for (var index = 0; index < simpleKnowledgeTypes.length; index++) {
+		addOptionToAddDecisionComponent(simpleKnowledgeTypes[index], id);
+	}
 }
 
 function fillAccordion(node) {
@@ -36,7 +36,8 @@ function enableLinkingUnlinkedDecisionComponents(parentId) {
 				var insertString = '<select name="linkExistingIssueSearchField">';
 				for (var index = 0; index < unlinkedDecisionComponents.length; index++) {
 					insertString += '<option value="' + unlinkedDecisionComponents[index].id + '">'
-							+ unlinkedDecisionComponents[index].type + ' / ' + unlinkedDecisionComponents[index].summary + '</option>';
+							+ unlinkedDecisionComponents[index].type + ' / '
+							+ unlinkedDecisionComponents[index].summary + '</option>';
 				}
 				insertString += '</select><input type="button" name="linkExistingIssueButton" id="linkExistingIssueButton" value="Create Link"/>';
 				document.getElementById("Details").insertAdjacentHTML('beforeend', insertString);
@@ -87,7 +88,7 @@ function addOptionToAddDecisionComponent(type, id) {
 function setUpEditorContentForAddingComponent(type) {
 	var radioButtons = "";
 	if (type == "Argument") {
-		var radioButtons = "<input type='radio' name='form-radio-argument' value='Pro Argument' checked='checked'>Pro"
+		radioButtons = "<input type='radio' name='form-radio-argument' value='Pro Argument' checked='checked'>Pro"
 				+ "<input type='radio' name='form-radio-argument' value='Contra Argument'>Contra"
 				+ "<input type='radio' name='form-radio-argument' value='Comment'>Comment";
 	}

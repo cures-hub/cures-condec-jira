@@ -15,11 +15,11 @@ var contextMenuCreateAction = {
 		var id = getSelectedTreantNodeId(options);
 		setUpContextMenuContentForCreateAction(id);
 	}
-}
+};
 
 function getSelectedTreeViewerNodeId(node) {
 	var selector = node.reference.prevObject.selector;
-	nodeData = $("#evts").jstree(true).get_node(selector).data;
+	var nodeData = $("#evts").jstree(true).get_node(selector).data;
 	return nodeData.id;
 }
 
@@ -57,7 +57,7 @@ function setUpModal() {
 
 	// closes modal window if user clicks anywhere outside of the modal
 	window.onclick = function(event) {
-		if (event.target == modal) {
+		if (event.target === modal) {
 			closeModal();
 		}
 	};
@@ -87,10 +87,9 @@ function setUpContextMenuContent(summary, description, knowledgeType, buttonText
 							+ "' style='float:right;'/></p>");
 
 	for (var index = 0; index < knowledgeTypes.length; index++) {
+		var isSelected = "";
 		if (isKnowledgeTypeLocatedAtIndex(knowledgeType, index)) {
-			var isSelected = "selected ";
-		} else {
-			var isSelected = "";
+			isSelected = "selected ";
 		}
 		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
 				+ knowledgeTypes[index] + "'>" + knowledgeTypes[index] + "</option>");
@@ -98,7 +97,7 @@ function setUpContextMenuContent(summary, description, knowledgeType, buttonText
 }
 
 function isKnowledgeTypeLocatedAtIndex(knowledgeType, index) {
-	return knowledgeType.toLowerCase() == knowledgeTypes[index].toLocaleLowerCase();
+	return knowledgeType.toLowerCase() === knowledgeTypes[index].toLocaleLowerCase();
 }
 
 var contextMenuLinkAction = {
@@ -126,7 +125,8 @@ function setUpContextMenuContentForLinkAction(id) {
 						+ "<select name='form-select-component' style='width:50%;' />";
 				for (var index = 0; index < unlinkedDecisionComponents.length; index++) {
 					insertString += "<option value='" + unlinkedDecisionComponents[index].id + "'>"
-							+ unlinkedDecisionComponents[index].type + ' / ' + unlinkedDecisionComponents[index].summary + "</option>";
+							+ unlinkedDecisionComponents[index].type + ' / '
+							+ unlinkedDecisionComponents[index].summary + "</option>";
 				}
 				insertString += "</p> <p><input name='form-input-submit' id='form-input-submit' type='submit' value='"
 						+ linkKnowledgeElementText + "' style='float:right;'/></p>";
@@ -158,29 +158,29 @@ var contextMenuEditAction = {
 }
 
 function setUpContextMenuContentForEditAction(id) {
-	isIssueStrategy(id,function (isIssueBoolean) {
-		if(isIssueBoolean == true){
+	isIssueStrategy(id, function(isIssueStrategy) {
+		if (isIssueStrategy === true) {
 			setUpModal();
-			var modal =  document.getElementById("modal-content");
-            var url = AJS.contextPath() + "/secure/EditIssue!default.jspa?id="+ id;
-            var iframe = "<iframe src='"+ url+"' style='border:none' height='100%' width='100%'></iframe>";
-			modal.insertAdjacentHTML("afterBegin",iframe);
-		} else{
-            setUpModal();
-            setHeaderText(editKnowledgeElementText);
-            getDecisionKnowledgeElement(id, function (decisionKnowledgeElement) {
-                var summary = decisionKnowledgeElement.summary;
-                var description = decisionKnowledgeElement.description;
-                var type = decisionKnowledgeElement.type;
-                setUpContextMenuContent(summary, description, type, editKnowledgeElementText);
-                var submitButton = document.getElementById("form-input-submit");
-                submitButton.onclick = function () {
-                    var summary = document.getElementById("form-input-summary").value;
-                    var description = document.getElementById("form-input-description").value;
-                    var type = $("select[name='form-select-type']").val();
-                    editDecisionKnowledgeElementAsChild(summary, description, type, id);
-                    closeModal();
-                }
+			var modal = document.getElementById("modal-content");
+			var url = AJS.contextPath() + "/secure/EditIssue!default.jspa?id=" + id;
+			var iframe = "<iframe src='" + url + "' style='border:none' height='100%' width='100%'></iframe>";
+			modal.insertAdjacentHTML("afterBegin", iframe);
+		} else {
+			setUpModal();
+			setHeaderText(editKnowledgeElementText);
+			getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
+				var summary = decisionKnowledgeElement.summary;
+				var description = decisionKnowledgeElement.description;
+				var type = decisionKnowledgeElement.type;
+				setUpContextMenuContent(summary, description, type, editKnowledgeElementText);
+				var submitButton = document.getElementById("form-input-submit");
+				submitButton.onclick = function() {
+					var summary = document.getElementById("form-input-summary").value;
+					var description = document.getElementById("form-input-description").value;
+					var type = $("select[name='form-select-type']").val();
+					editDecisionKnowledgeElementAsChild(summary, description, type, id);
+					closeModal();
+				}
 			});
 		}
 	});
