@@ -1,4 +1,5 @@
-/*globals jQuery, define, module, exports, require, window, document, postMessage */
+/* eslint-disable */
+/* globals jQuery, define, module, exports, require, window, document, postMessage */
 (function (factory) {
 	"use strict";
 	if (typeof define === 'function' && define.amd) {

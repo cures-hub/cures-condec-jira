@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * jQuery contextMenu v@VERSION - Plugin for simple contextMenu handling
  *
