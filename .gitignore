@@ -1,8 +1,11 @@
-target/
-\.classpath
-\.project
-\.idea/
-DecisionDocumentation\.iml
-\.settings
+# Gitignore for JIRA DecDoc plug-in
 
+# Directories
+target/
+.idea/
+
+# Files
+.classpath
+.project
+.settings
 *.iml
