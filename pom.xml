@@ -22,7 +22,7 @@
 	</developers>
 	<packaging>atlassian-plugin</packaging>
 	<dependencies>
-		<!-- JIRA -->
+		<!-- Jira -->
 		<dependency>
 			<groupId>com.atlassian.jira</groupId>
 			<artifactId>jira-core</artifactId>
@@ -79,6 +79,11 @@
 			<version>1</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>5.0.7.RELEASE</version>
+		</dependency>
 		<!-- REST -->
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
@@ -97,28 +102,28 @@
 			<artifactId>gson</artifactId>
 			<version>2.2.2-atlassian-1</version>
 		</dependency>
-		<!-- LOGGER -->
+		<!-- Logger -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>1.6.6</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- ActiveObjects -->
+		<!-- Active Objects -->
 		<dependency>
 			<groupId>com.atlassian.activeobjects</groupId>
 			<artifactId>activeobjects-plugin</artifactId>
 			<version>${ao.version}</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- Google Collections, useful utilities for manipulating collections -->
+		<!-- Google Collections -->
 		<dependency>
 			<groupId>com.google.collections</groupId>
 			<artifactId>google-collections</artifactId>
 			<version>1.0</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- TESTS -->
+		<!-- Tests -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
@@ -167,6 +172,7 @@
 			<version>${jira.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- Database -->
 		<dependency>
 			<groupId>hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
@@ -190,7 +196,7 @@
 					<enableFastdev>false</enableFastdev>
 					<instructions>
 						<Atlassian-Plugin-Key>${atlassian.plugin.key}</Atlassian-Plugin-Key>
-						<Export-Package>de.uhd.ifi.se.decision.documentation.jira.api,</Export-Package>
+						<Export-Package>de.uhd.ifi.se.decision.documentation.jira,</Export-Package>
 						<Spring-Context>*</Spring-Context>
 					</instructions>
 				</configuration>
@@ -238,8 +244,7 @@
 		<ao.version>1.5.0</ao.version>
 		<plugin.testrunner.version>1.2.3</plugin.testrunner.version>
 		<atlassian.spring.scanner.version>1.2.13</atlassian.spring.scanner.version>
-		<!-- This key is used to keep the consistency between the key in atlassian-plugin.xml and the key to
-			generate bundle. -->
+		<!-- This key is also used in atlassian-plugin.xml -->
 		<atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
