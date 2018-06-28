@@ -6,14 +6,12 @@ import java.util.Objects;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.stereotype.Component;
 
 import com.atlassian.jira.issue.Issue;
 
 /**
  * @description Model class for decision knowledge elements
  */
-@Component
 public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 
 	private long id;

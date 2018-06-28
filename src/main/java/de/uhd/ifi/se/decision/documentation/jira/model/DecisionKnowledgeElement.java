@@ -3,12 +3,10 @@ package de.uhd.ifi.se.decision.documentation.jira.model;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
-import org.springframework.stereotype.Component;
 
 /**
  * @description Interface for decision knowledge elements
  */
-@Component
 @JsonDeserialize(as = DecisionKnowledgeElementImpl.class)
 public interface DecisionKnowledgeElement {
 
