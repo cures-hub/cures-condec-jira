@@ -1,9 +1,7 @@
-/* required LIB STYLES */
-/* .Treant se automatski dodaje na svaki chart conatiner */
 .Treant {
 	position: relative;
 	overflow: hidden;
-	padding: 0 !important;
+	padding: 0;
 }
 
 .Treant>.node, .Treant>.pseudo {
@@ -13,7 +11,7 @@
 }
 
 .Treant.Treant-loaded .node, .Treant.Treant-loaded .pseudo {
-	visibility: inherit;
+	visibility: visible;
 }
 
 .Treant>.pseudo {
@@ -24,22 +22,118 @@
 }
 
 .Treant .collapse-switch {
-	width: 5px;
-	height: 5px;
+	width: 10px;
+	height: 10px;
 	display: block;
 	border: 1px solid black;
 	border-radius: 5px;
 	position: absolute;
-	bottom: 3px;
-	right: 3px;
+	bottom: -10px;
+	right: 78px;
 	cursor: pointer;
+	background-color: #ff2a28;
 }
 
-.Treant .collapsed .collapse-switch {
-	background-color: #868DEE;
+.Treant .node.collapsed .collapse-switch {
+	background-color: #41fb1d;
 }
 
 .Treant>.node img {
 	border: none;
 	float: left;
+}
+
+.chart {
+	width: 64.5%;
+	border: 1px solid rgba(204, 204, 204, 1);
+	min-height: 1px;
+	visibility: hidden;
+	float: left;
+	overflow: auto;
+}
+
+.Treant .node {
+	margin: 0;
+	padding: 3px;
+	border-radius: 3px;
+}
+
+.Treant>.node {
+	padding: 2px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	border: 1px solid #000;
+	font-family: Tahoma;
+	font-size: 12px;
+	visibility: inherit;
+	width: 160px;
+}
+
+.Treant>p {
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light",
+		"Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+	font-weight: bold;
+	font-size: 12px;
+}
+
+.node-name {
+	font-weight: bold;
+	visibility: inherit;
+}
+
+.context {
+	background-color: rgb(255, 231, 231);
+}
+
+.rationale {
+	background-color: rgb(255, 255, 221);
+}
+
+.solution {
+	background-color: rgb(222, 250, 222);
+}
+
+.problem {
+	background-color: rgb(244, 240, 255);
+}
+
+.comments {
+	width: 427px;
+	margin: 15px auto;
+}
+
+.comments ul {
+	margin-left: 35px;
+	list-style: none;
+}
+
+.node {
+	color: #333333;
+	display: inline-block;
+	font-size: 12px;
+	margin-top: 6px;
+	width: 190px;
+}
+
+.node img {
+	border-radius: 3px 3px 3px 3px;
+	float: left;
+	height: 30px;
+	margin-right: 8px;
+	margin-top: 3px;
+	width: 15px;
+}
+
+.node p {
+	color: #42474A;
+	font-size: 12px;
+	line-height: 1.4em;
+	margin-bottom: 0;
+	max-height: 16.8em;
+	overflow: hidden;
+}
+
+.node a {
+	font-size: 12px;
 }

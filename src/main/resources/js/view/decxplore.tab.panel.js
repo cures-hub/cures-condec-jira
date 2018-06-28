@@ -1,4 +1,4 @@
-var treantTree;
+var issueTabTreantTree;
 
 function fillIssueTabPanel() {
 	console.log("init");
@@ -17,7 +17,8 @@ function buildTreantIssueTabPanel(decisionKnowledgeElementKey) {
 	var depthOfTree = 4;
 	getTreant(decisionKnowledgeElementKey, depthOfTree, function(treant) {
 		document.getElementById("treant-container").innerHTML = "";
-		treantTree = new Treant(treant);
+		new Treant(treant);
+
 		//createContextMenuForTreantNodes();
 		//addDragAndDropSupportForTreant();
 	});
