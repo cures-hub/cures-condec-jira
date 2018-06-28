@@ -40,8 +40,9 @@ public class ViewRest {
 	@Path("/getTreant")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getTreant(@QueryParam("projectKey") final String projectKey,
-			@QueryParam("elementKey") String elementKey, @QueryParam("depthOfTree") String depthOfTree) {
+	public Response getTreant(@QueryParam("elementKey") String elementKey,
+			@QueryParam("depthOfTree") String depthOfTree) {
+		String projectKey = getProjectKey(elementKey);
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -58,6 +59,10 @@ public class ViewRest {
 		}
 		Treant treant = new Treant(projectKey, elementKey, depth);
 		return Response.ok(treant).build();
+	}
+
+	private String getProjectKey(String elementKey) {
+		return elementKey.split("-")[0];
 	}
 
 	private Response checkIfProjectKeyIsValid(String projectKey) {

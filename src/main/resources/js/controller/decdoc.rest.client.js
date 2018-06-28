@@ -226,8 +226,8 @@ function deleteLink(parentId, childId, linkType, callback) {
 }
 
 function getTreant(key, depthOfTree, callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?projectKey=" + getProjectKey()
-			+ "&elementKey=" + key + "&depthOfTree=" + depthOfTree, function(error, treant) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?&elementKey=" + key + "&depthOfTree="
+			+ depthOfTree, function(error, treant) {
 		if (error === null) {
 			callback(treant);
 		} else {

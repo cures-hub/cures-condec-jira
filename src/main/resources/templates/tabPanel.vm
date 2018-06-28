@@ -1,28 +1,19 @@
 <html>
 <head>
-<meta name="decorator" content="DecisionDocumentation"/>
-<title>Decision Exploration</title>
+<meta name="decorator" content="atl.general" />
+<!-- load all dependencies -->
 $webResourceManager.requireResource("com.atlassian.auiplugin:ajs")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.documentation.jira:stylesheet-and-icon-resources")
-$webResourceManager.requireResource("de.uhd.ifi.se.decision.documentation.jira:decision-documentation-resources")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.documentation.jira:issue-tab-panel-resources")
 $webResourceManager.requireResource("com.atlassian.auiplugin:aui-flag")
-<script>
-	$().ready(function() {
-		var $scrollingDiv = $("#scrollingDiv");
+</head>
 
-		$(window).scroll(function(){
-			$scrollingDiv
-				.stop()
-				.animate({"marginTop": ($(window).scrollTop() + 30) + "px"}, "slow" );
-		});
-	});
-</script>
 </head>
 <body>
 	Decision Knowledge from Git
 	<div class="chart" id="treant-container"></div>
 	<script>
-
+	fillIssueTabPanel();
     </script>
 </body>
 </html>

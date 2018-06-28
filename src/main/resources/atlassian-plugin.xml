@@ -17,6 +17,7 @@
 		<description>
 			Provides the style sheets and icons used in this plug-in.
 		</description>
+		<!--  <context>atl.general</context> -->
 		<!-- icons -->
 		<resource type="download" name="Add.png" location="/images/Add.png" />
 		<resource type="download" name="Delete.png" location="/images/Delete.png" />
@@ -32,7 +33,7 @@
 		<resource type="download" name="jquery.contextMenu.css" location="/css/jquery.contextMenu.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
 	</web-resource>
-	<web-resource key="decision-documentation-resources" name="Java Script Resources">
+	<web-resource key="decision-documentation-resources" name="DecDoc Java Script Resources">
 		<description>
 			Provides the Java Script files used in this plug-in.
 		</description>
@@ -56,6 +57,32 @@
 		<resource type="download" name="decdoc.treant.js" location="/js/view/decdoc.treant.js" />
 		<resource type="download" name="decdoc.tree.viewer.js" location="/js/view/decdoc.tree.viewer.js" />
 		<resource type="download" name="decdoc.context.menu.js" location="/js/view/decdoc.context.menu.js" />
+	</web-resource>
+	<web-resource key="issue-tab-panel-resources" name="DecDoc Java Script Resources for the Issue Tab Panel">
+		<description>
+			Provides the Java Script file used in the issue tab panel.
+		</description>
+		<context>atl.general</context>
+		<!-- treant -->
+		<resource type="download" name="Treant.js" location="/js/treant/treant.js" />
+		<resource type="download" name="raphael.js" location="/js/treant/raphael.js" />
+		<!-- jquery -->
+		<resource type="download" name="jquery.easing.js" location="/js/jquery/jquery.easing.js" />
+		<!-- jquery.contextMenu -->
+		<resource type="download" name="jquery.ui.position.js" location="/js/jquery/jquery.ui.position.js" />
+		<resource type="download" name="jquery.contextMenu.js" location="/js/jquery/jquery.contextMenu.js" />
+		<!-- jstree -->
+		<resource type="download" name="jstree.js" location="/js/jstree/jstree.js" />
+		<!-- DecDoc java script files -->
+		<resource type="download" name="decdoc.init.js" location="/js/controller/decdoc.init.js" />
+		<resource type="download" name="decdoc.js" location="/js/controller/decdoc.js" />
+		<resource type="download" name="decdoc.rest.client.js" location="/js/controller/decdoc.rest.client.js" />
+		<resource type="download" name="decdoc.viewhandler.js" location="/js/controller/decdoc.viewhandler.js"/>
+		<resource type="download" name="decdoc.accordion.editor.js" location="/js/view/decdoc.accordion.editor.js" />
+		<resource type="download" name="decdoc.treant.js" location="/js/view/decdoc.treant.js" />
+		<resource type="download" name="decdoc.tree.viewer.js" location="/js/view/decdoc.tree.viewer.js" />
+		<resource type="download" name="decdoc.context.menu.js" location="/js/view/decdoc.context.menu.js" />
+		<resource type="download" name="decxplore.tab.panel.js" location="/js/view/decxplore.tab.panel.js" />
 	</web-resource>
 
 	<!-- Decision Knowledge Page -->
