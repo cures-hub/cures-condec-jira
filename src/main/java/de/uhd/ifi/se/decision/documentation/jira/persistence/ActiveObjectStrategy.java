@@ -21,8 +21,8 @@ import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import net.java.ao.Query;
 
 /**
- * @description Extends the abstract class AbstractPersistenceStrategy. Uses the active
- *              object framework to store decision knowledge.
+ * @description Extends the abstract class AbstractPersistenceStrategy. Uses the
+ *              active object framework to store decision knowledge.
  */
 @JsonAutoDetect
 public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
@@ -31,7 +31,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 
 	@Override
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement,
-																   ApplicationUser user) {
+			ApplicationUser user) {
 		if (decisionKnowledgeElement == null) {
 			LOGGER.error("AOStrategy insertDecisionKnowledgeElement the DecisionRepresentation is null");
 			return null;
@@ -46,8 +46,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 					public DecisionKnowledgeElementEntity doInTransaction() {
 						DecisionKnowledgeElementEntity databaseEntry = ACTIVE_OBJECTS
 								.create(DecisionKnowledgeElementEntity.class);
-						databaseEntry.setKey(
-								decisionKnowledgeElement.getProjectKey().toUpperCase(Locale.ENGLISH) + "-" + databaseEntry.getId());
+						databaseEntry.setKey(decisionKnowledgeElement.getProjectKey().toUpperCase(Locale.ENGLISH) + "-"
+								+ databaseEntry.getId());
 						databaseEntry.setSummary(decisionKnowledgeElement.getSummary());
 						databaseEntry.setDescription(decisionKnowledgeElement.getDescription());
 						databaseEntry.setType(decisionKnowledgeElement.getType().toString());
@@ -84,11 +84,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 						return null;
 					}
 				});
-		if (databaseEntry == null) {
-			return false;
-		} else {
-			return true;
-		}
+		return databaseEntry != null;
 	}
 
 	@Override
@@ -193,7 +189,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
+	public List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(
+			DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Link> inwardLinks = this.getInwardLinks(decisionKnowledgeElement);
 		List<DecisionKnowledgeElement> children = new ArrayList<DecisionKnowledgeElement>();
 		for (Link inwardLink : inwardLinks) {
@@ -216,7 +213,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
+	public List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(
+			DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Link> outwardLinks = this.getOutwardLinks(decisionKnowledgeElement);
 		List<DecisionKnowledgeElement> parents = new ArrayList<DecisionKnowledgeElement>();
 		for (Link outwardLink : outwardLinks) {
@@ -299,13 +297,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	}
 
 	@Override
-	public boolean editLink(Link link, ApplicationUser user){
-		if(deleteLink(link,user)){
-			if(insertLink(link,user)!=0){
-				return true;
-			}
-		}
-		return false;
+	public boolean editLink(Link link, ApplicationUser user) {
+		return deleteLink(link, user) && insertLink(link, user) != 0;
 	}
 
 	@Override
@@ -314,8 +307,10 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 			@Override
 			public Boolean doInTransaction() {
 				for (LinkEntity linkEntity : ACTIVE_OBJECTS.find(LinkEntity.class)) {
-					if (link.getIngoingId() == linkEntity.getIngoingId() && link.getOutgoingId() == linkEntity.getOutgoingId()
-							||link.getOutgoingId() == linkEntity.getIngoingId() && link.getIngoingId() == linkEntity.getOutgoingId()) {
+					if (link.getIngoingId() == linkEntity.getIngoingId()
+							&& link.getOutgoingId() == linkEntity.getOutgoingId()
+							|| link.getOutgoingId() == linkEntity.getIngoingId()
+									&& link.getIngoingId() == linkEntity.getOutgoingId()) {
 						try {
 							linkEntity.getEntityManager().delete(linkEntity);
 							return true;
@@ -359,7 +354,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 
 	// Converting the Entity to a DecisionKnowledgeElementImpl for future use
 	private DecisionKnowledgeElement castToDecisionKnowledgeElement(DecisionKnowledgeElementEntity entity) {
-		return new DecisionKnowledgeElementImpl(entity.getId(), entity.getSummary(),
-				entity.getDescription(), entity.getType(), entity.getProjectKey(), entity.getKey());
+		return new DecisionKnowledgeElementImpl(entity.getId(), entity.getSummary(), entity.getDescription(),
+				entity.getType(), entity.getProjectKey(), entity.getKey());
 	}
 }
