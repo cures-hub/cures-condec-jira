@@ -20,7 +20,8 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.ConfigPersistence;
 
 /**
- * @description Renders the administration page to change the plug-in configuration of a single project
+ * @description Renders the administration page to change the plug-in
+ *              configuration of a single project
  */
 public class SettingsOfSingleProject extends AbstractSettingsServlet {
 
@@ -29,7 +30,7 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 
 	@Inject
 	public SettingsOfSingleProject(@ComponentImport UserManager userManager,
-								   @ComponentImport LoginUriProvider loginUriProvider, @ComponentImport TemplateRenderer renderer) {
+			@ComponentImport LoginUriProvider loginUriProvider, @ComponentImport TemplateRenderer renderer) {
 		super(userManager, loginUriProvider, renderer);
 	}
 
@@ -37,10 +38,7 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		String projectKey = request.getParameter("projectKey");
 
 		String username = userManager.getRemoteUsername(request);
-		if (isProjectAdmin(username, projectKey)) {
-			return true;
-		}
-		return false;
+		return isProjectAdmin(username, projectKey);
 	}
 
 	private boolean isProjectAdmin(String username, String projectKey) {

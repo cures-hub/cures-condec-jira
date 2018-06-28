@@ -19,10 +19,7 @@ public class ConfigPersistence {
 				return settings.get(pluginStorageKey + ".isIssueStrategy");
 			}
 		});
-		if (isIssueStrategy instanceof String && isIssueStrategy.equals("true")) {
-			return true;
-		}
-		return false;
+		return isIssueStrategy instanceof String && "true".equals(isIssueStrategy);
 	}
 
 	public static void setIssueStrategy(String projectKey, boolean isIssueStrategy) {
@@ -37,10 +34,7 @@ public class ConfigPersistence {
 				return settings.get(pluginStorageKey + ".isActivated");
 			}
 		});
-		if (isActivated instanceof String && isActivated.equals("true")) {
-			return true;
-		}
-		return false;
+		return isActivated instanceof String && "true".equals(isActivated);
 	}
 
 	public static void setActivated(String projectKey, boolean isActivated) {

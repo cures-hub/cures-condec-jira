@@ -59,7 +59,7 @@ function findOldParentNode(dragId) {
 	var nodes = treantTree.tree.nodeDB.db;
 	var i;
 	for (i = 0; i < nodes.length; i++) {
-		if (nodes[i].nodeHTMLid == dragId) {
+		if (nodes[i].nodeHTMLid === dragId) {
 			var parentElement = treantTree.tree.getNodeDb().get(nodes[i].parentId);
 			oldParentId = parentElement.nodeHTMLid;
 		}

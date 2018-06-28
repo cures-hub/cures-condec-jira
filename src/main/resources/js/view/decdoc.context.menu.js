@@ -52,7 +52,7 @@ function setUpModal() {
 	for (var counter = 0; counter < elementsWithCloseFunction.length; counter++) {
 		elementsWithCloseFunction[counter].onclick = function() {
 			closeModal();
-		}
+		};
 	}
 
 	// closes modal window if user clicks anywhere outside of the modal
@@ -112,7 +112,7 @@ var contextMenuLinkAction = {
 		var id = getSelectedTreantNodeId(options);
 		setUpContextMenuContentForLinkAction(id);
 	}
-}
+};
 
 function setUpContextMenuContentForLinkAction(id) {
 	setUpModal();
@@ -155,7 +155,7 @@ var contextMenuEditAction = {
 		var id = getSelectedTreantNodeId(options);
 		setUpContextMenuContentForEditAction(id);
 	}
-}
+};
 
 function setUpContextMenuContentForEditAction(id) {
 	isIssueStrategy(id, function(isIssueStrategy) {
@@ -173,6 +173,7 @@ function setUpContextMenuContentForEditAction(id) {
 				var description = decisionKnowledgeElement.description;
 				var type = decisionKnowledgeElement.type;
 				setUpContextMenuContent(summary, description, type, editKnowledgeElementText);
+
 				var submitButton = document.getElementById("form-input-submit");
 				submitButton.onclick = function() {
 					var summary = document.getElementById("form-input-summary").value;
@@ -198,7 +199,7 @@ var contextMenuDeleteAction = {
 		var id = getSelectedTreantNodeId(options);
 		setUpContextMenuContentForDeleteAction(id);
 	}
-}
+};
 
 function setUpContextMenuContentForDeleteAction(id) {
 	setUpModal();
@@ -229,7 +230,7 @@ var contextMenuActions = {
 	"link" : contextMenuLinkAction,
 	"edit" : contextMenuEditAction,
 	"delete" : contextMenuDeleteAction
-}
+};
 
 function closeModal() {
 	var modal = document.getElementById("ContextMenuModal");

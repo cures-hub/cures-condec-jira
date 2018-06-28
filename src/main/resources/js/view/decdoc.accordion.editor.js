@@ -61,7 +61,7 @@ function showDetailsOfChildren(parentId) {
 function showDetailsOfSingleChild(decisionKnowledgeElement) {
 	var type = decisionKnowledgeElement.type;
 	for (var i = 0; i < simpleKnowledgeTypes.length; i++) {
-		if (simpleKnowledgeTypes[i].toLocaleLowerCase() == type.toLocaleLowerCase()) {
+		if (simpleKnowledgeTypes[i].toLocaleLowerCase() === type.toLocaleLowerCase()) {
 			document.getElementById(simpleKnowledgeTypes[i]).insertAdjacentHTML(
 					'beforeend',
 					'<div class="issuelinkbox"><p>' + type + ' / ' + decisionKnowledgeElement.summary + '</p>'
@@ -87,7 +87,7 @@ function addOptionToAddDecisionComponent(type, id) {
 
 function setUpEditorContentForAddingComponent(type) {
 	var radioButtons = "";
-	if (type == "Argument") {
+	if (type === "Argument") {
 		radioButtons = "<input type='radio' name='form-radio-argument' value='Pro Argument' checked='checked'>Pro"
 				+ "<input type='radio' name='form-radio-argument' value='Contra Argument'>Contra"
 				+ "<input type='radio' name='form-radio-argument' value='Comment'>Comment";

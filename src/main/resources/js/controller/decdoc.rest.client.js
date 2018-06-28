@@ -109,7 +109,7 @@ function getLinkedDecisionComponents(id, callback) {
 function getUnlinkedDecisionComponents(id, callback) {
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getUnlinkedDecisionComponents.json?projectKey="
 			+ getProjectKey() + "&id=" + id, function(error, unlinkedDecisionComponents) {
-		if (error == null) {
+		if (error === null) {
 			callback(unlinkedDecisionComponents);
 		} else {
 			showFlag("error",
