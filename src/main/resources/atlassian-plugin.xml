@@ -146,4 +146,14 @@
 			de.uhd.ifi.se.decision.documentation.jira.persistence.LinkEntity
 		</entity>
 	</ao>
+
+	<!-- Decision Exploration Page -->
+	<issue-tabpanel key="DecXplore" name="DecXplore"
+		class="de.uhd.ifi.se.decision.documentation.jira.view.IssueTabPanelRenderer">
+		<description>Exploration of Decision Knowledge</description>
+		<label>DecXplore</label>
+		<order>10</order>
+		<resource type="velocity" name="view" location="templates/tabPanel.vm" />
+		<supports-ajax-load>true</supports-ajax-load>
+	</issue-tabpanel>
 </atlassian-plugin>
