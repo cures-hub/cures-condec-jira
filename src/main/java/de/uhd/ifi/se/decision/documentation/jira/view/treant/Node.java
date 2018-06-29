@@ -18,6 +18,9 @@ public class Node {
 	private Map<String, String> nodeContent;
 
 	@XmlElement
+	private Map<String, Map<String ,String >> connectors;
+
+	@XmlElement
 	private Map<String, String> link;
 
 	@XmlElement(name = "HTMLclass")
@@ -36,6 +39,7 @@ public class Node {
 	}
 
 	public Node(DecisionKnowledgeElement decisionKnowledgeElement) {
+		connectors = ImmutableMap.of("style", ImmutableMap.of("stroke", "#00CE67"));
 		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getType().toString(),
 				"title", decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 		this.nodeContent = nodeContent;
