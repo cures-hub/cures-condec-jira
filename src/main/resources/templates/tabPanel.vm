@@ -4,9 +4,20 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.documentation.jira:s
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.documentation.jira:treant-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.documentation.jira:rest-client-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.documentation.jira:issue-tab-panel-resources")
+<script>
+	$().ready(function() {
+		var $scrollingDiv = $("#scrollingDiv");
+
+		$(window).scroll(function(){
+			$scrollingDiv
+				.stop()
+				.animate({"marginTop": ($(window).scrollTop() + 30) + "px"}, "slow" );
+		});
+	});
+</script>
 </head>
 <body>
-	<div class="chart" id="treant-container">
+	<div id="treant-container">
 		<p>No Element has been selected</p>
 	</div>
 	<script>

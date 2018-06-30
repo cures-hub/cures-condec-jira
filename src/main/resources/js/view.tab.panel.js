@@ -21,9 +21,7 @@ function buildTreantIssueTabPanel(elementKey) {
 
 		console.log(treeStructure);
 
-		new Treant(treeStructure);
-		// createContextMenuForTreantNodes();
-		// addDragAndDropSupportForTreant();
+		issueTabTreantTree = new Treant(treeStructure);
 	});
 }
 
