@@ -7,21 +7,22 @@ import java.util.HashSet;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 
-public class MockIssueLinkTypeManager implements IssueLinkTypeManager{
+public class MockIssueLinkTypeManager implements IssueLinkTypeManager {
 	private boolean notInit;
 
 	public MockIssueLinkTypeManager() {
 		super();
 	}
+
 	public MockIssueLinkTypeManager(boolean notInit) {
-		if(notInit==true) {
-			this.notInit=true;
+		if (notInit) {
+			this.notInit = true;
 		}
 	}
 
 	@Override
 	public void createIssueLinkType(String arg0, String arg1, String arg2, String arg3) {
-
+		// method empty since not used for testing
 	}
 
 	@Override
@@ -41,19 +42,19 @@ public class MockIssueLinkTypeManager implements IssueLinkTypeManager{
 
 	@Override
 	public Collection<IssueLinkType> getIssueLinkTypes(boolean arg0) {
-		if(notInit==true) {
+		if (notInit == true) {
 			return new HashSet<>();
 		}
 		Collection<IssueLinkType> isseLTypes = new HashSet<>();
-		ArrayList<String> types= new ArrayList<>();
+		ArrayList<String> types = new ArrayList<>();
 
 		types.add("contain");
 		types.add("attack");
 		types.add("support");
 		types.add("comment");
-		for(String type: types) {
+		for (String type : types) {
 			IssueLinkType lt = new MockIssueLinkType((long) 1);
-			((MockIssueLinkType)lt).setName(type);
+			((MockIssueLinkType) lt).setName(type);
 			isseLTypes.add(lt);
 		}
 		return isseLTypes;
@@ -84,12 +85,11 @@ public class MockIssueLinkTypeManager implements IssueLinkTypeManager{
 
 	@Override
 	public void removeIssueLinkType(Long arg0) {
-
+		// method empty since not used for testing
 	}
 
 	@Override
 	public void updateIssueLinkType(IssueLinkType arg0, String arg1, String arg2, String arg3) {
-
+		// method empty since not used for testing
 	}
-
 }

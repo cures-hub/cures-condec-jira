@@ -29,7 +29,7 @@ public class MockIssueTypeManager implements IssueTypeManager {
 
 	@Override
 	public void editIssueType(IssueType arg0, String arg1, String arg2, String arg3) {
-
+		// method empty since not used for testing
 	}
 
 	@Override
@@ -54,12 +54,12 @@ public class MockIssueTypeManager implements IssueTypeManager {
 
 	@Override
 	public void removeIssueType(String arg0, String arg1) {
-
+		// method empty since not used for testing
 	}
 
 	@Override
 	public void updateIssueType(IssueType arg0, String arg1, String arg2, Long arg3) {
-
+		// method empty since not used for testing
 	}
 
 }

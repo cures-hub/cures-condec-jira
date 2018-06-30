@@ -29,7 +29,6 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 	private String description;
 	private KnowledgeType type;
 	private String projectKey;
-	private String key;
 	private DecisionKnowledgeElement decisionKnowledgeElement;
 
 	@Before
@@ -40,7 +39,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 		this.description = "Test";
 		this.type = KnowledgeType.SOLUTION;
 		this.projectKey = "Test";
-		this.key = "Test";
+		String key = "Test";
 
 		this.decisionKnowledgeElement = new DecisionKnowledgeElementImpl(id, summary, description, type, projectKey,
 				key);
@@ -131,11 +130,11 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 
 	@Test
 	public void testGetOutwardLinks() {
-		decisionKnowledgeElement.getOutwardLinks();
+		assertNotNull(decisionKnowledgeElement.getOutwardLinks());
 	}
 
 	@Test
 	public void testGetInwardLinks() {
-		decisionKnowledgeElement.getInwardLinks();
+		assertNotNull(decisionKnowledgeElement.getInwardLinks());
 	}
 }

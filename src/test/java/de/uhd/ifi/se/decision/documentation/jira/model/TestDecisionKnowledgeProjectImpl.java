@@ -7,7 +7,7 @@ import org.junit.Test;
 
 
 /**
- * @description Test class for project configuration settings
+ * Test class for a JIRA project with the configuration settings used in this plug-in
  */
 public class TestDecisionKnowledgeProjectImpl {
 

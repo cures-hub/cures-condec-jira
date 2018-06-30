@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.documentation.jira.mocks;
 
-import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
@@ -11,13 +10,12 @@ public class MockTemplateRenderer implements TemplateRenderer {
 
 	@Override
 	public void render(String templateName, Writer writer) throws RenderingException {
-
+		// method empty since not used for testing
 	}
 
 	@Override
-	public void render(String templateName, Map<String, Object> context, Writer writer)
-			throws RenderingException {
-
+	public void render(String templateName, Map<String, Object> context, Writer writer) throws RenderingException {
+		// method empty since not used for testing
 	}
 
 	@Override
