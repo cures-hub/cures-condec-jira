@@ -1,30 +1,34 @@
 package de.uhd.ifi.se.decision.documentation.jira.persistence;
 
-import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
 
+import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
+
 public class TestStrategyProvider extends TestSetUp {
-	private StrategyProvider provider;
+	private StrategyProvider strategyProvider;
 
 	@Before
 	public void setUp() {
 		initialization();
-		provider = new StrategyProvider();
+		strategyProvider = new StrategyProvider();
 	}
 
 	@Test(expected = java.lang.IllegalArgumentException.class)
 	public void testProjectKeyNull() {
-		provider.getStrategy(null);
+		strategyProvider.getStrategy(null);
 	}
 
 	@Test
 	public void testProjectKeyNotExist() {
-		provider.getStrategy("TESTNOT");
+		assertTrue(strategyProvider.getStrategy("TESTNOT") instanceof IssueStrategy);
+
 	}
 
 	@Test
 	public void testProjectKeyExists() {
-		provider.getStrategy("TEST");
+		assertTrue(strategyProvider.getStrategy("TEST") instanceof IssueStrategy);
 	}
 }
