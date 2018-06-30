@@ -5,7 +5,7 @@ var simpleKnowledgeTypes = [ "Alternative", "Argument", "Assessment", "Assumptio
 		 "Goal", "Implication", "Issue", "Problem", "Solution" ];
 
 function initializeSite() {
-	initView();
+	updateView(getProjectKey());
 
 	/* accordion elements */
 	$(document).ready(function() {

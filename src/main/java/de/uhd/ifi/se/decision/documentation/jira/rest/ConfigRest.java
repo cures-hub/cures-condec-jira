@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.ConfigPersistence;
 
 /**
- * @description REST resource for plug-in configuration
+ * REST resource for plug-in configuration
  */
 @Path("/config")
 @Scanned
@@ -36,10 +36,10 @@ public class ConfigRest {
 		this.userManager = userManager;
 	}
 
-	//TODO Testing
+	// TODO Testing
 	@Path("/isIssueStrategy")
 	@GET
-	public Response isIssueStrategy(@QueryParam("projectKey") final String projectKey){
+	public Response isIssueStrategy(@QueryParam("projectKey") final String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -78,7 +78,8 @@ public class ConfigRest {
 			return isValidDataResponse;
 		}
 		if (isIssueStrategy == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isIssueStrategy = null")).build();
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isIssueStrategy = null"))
+					.build();
 		}
 		try {
 			ConfigPersistence.setIssueStrategy(projectKey, Boolean.valueOf(isIssueStrategy));
@@ -119,7 +120,8 @@ public class ConfigRest {
 	private Response checkIfProjectKeyIsValid(String projectKey) {
 		if (projectKey == null || projectKey.equals("")) {
 			LOGGER.error("Project configuration could not be changed since the project key is invalid.");
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project key is invalid.")).build();
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Project key is invalid."))
+					.build();
 		}
 		return Response.status(Status.OK).build();
 	}

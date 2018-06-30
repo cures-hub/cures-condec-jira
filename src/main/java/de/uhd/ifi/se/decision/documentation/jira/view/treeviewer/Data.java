@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
 
 /**
- * @description Model class for Tree Viewer nodes
+ * Model class for Tree Viewer nodes
  */
 public class Data {
 

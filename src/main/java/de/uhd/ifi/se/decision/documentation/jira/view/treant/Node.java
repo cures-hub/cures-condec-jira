@@ -9,16 +9,17 @@ import javax.xml.bind.annotation.XmlElement;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.documentation.jira.model.Link;
 
 /**
- * @description Model class for Treant node
+ * Model class for Treant node
  */
 public class Node {
 	@XmlElement(name = "text")
 	private Map<String, String> nodeContent;
 
 	@XmlElement
-	private Map<String, Map<String ,String >> connectors;
+	private Map<String, Map<String, String>> connectors;
 
 	@XmlElement
 	private Map<String, String> link;
@@ -36,15 +37,36 @@ public class Node {
 	private List<Node> children;
 
 	public Node() {
+		this.connectors = ImmutableMap.of("style", ImmutableMap.of("stroke", "#000000"));
 	}
 
 	public Node(DecisionKnowledgeElement decisionKnowledgeElement) {
-		connectors = ImmutableMap.of("style", ImmutableMap.of("stroke", "#00CE67"));
-		Map<String, String> nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getType().toString(),
+		this();
+		this.nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getType().toString(),
 				"title", decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
-		this.nodeContent = nodeContent;
 		this.htmlClass = decisionKnowledgeElement.getSuperType().toString().toLowerCase(Locale.ENGLISH);
 		this.htmlId = decisionKnowledgeElement.getId();
+	}
+
+	public Node(DecisionKnowledgeElement decisionKnowledgeElement, Link link) {
+		this(decisionKnowledgeElement);
+		switch (link.getLinkType()) {
+		case "support":
+			this.nodeContent = ImmutableMap.of("name", "Supporting Argument",
+					"title", decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
+			this.htmlClass = "pro";
+			//this.connectors = ImmutableMap.of("style", ImmutableMap.of("stroke", "#00CE67"));
+			break;
+		case "attack":
+			this.nodeContent = ImmutableMap.of("name", "Attacking Argument",
+					"title", decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
+			this.htmlClass = "contra";
+			//this.connectors = ImmutableMap.of("style", ImmutableMap.of("stroke", "#FF0000"));
+			break;
+		default:
+			//this.connectors = ImmutableMap.of("style", ImmutableMap.of("stroke", "#000000"));
+			break;
+		}
 	}
 
 	public Map<String, String> getNodeContent() {
@@ -93,5 +115,13 @@ public class Node {
 
 	public void setChildren(List<Node> children) {
 		this.children = children;
+	}
+
+	public Map<String, Map<String, String>> getConnectors() {
+		return connectors;
+	}
+
+	public void setConnectors(Map<String, Map<String, String>> connectors) {
+		this.connectors = connectors;
 	}
 }

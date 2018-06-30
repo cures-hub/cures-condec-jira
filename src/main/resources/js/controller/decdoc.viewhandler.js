@@ -10,7 +10,3 @@ function updateView(nodeId){
     });
     buildTreeViewer(nodeId);
 }
-
-function initView() {
-   updateView(getProjectKey());
-}

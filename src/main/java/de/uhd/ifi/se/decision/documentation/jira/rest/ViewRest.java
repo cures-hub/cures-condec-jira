@@ -20,7 +20,7 @@ import de.uhd.ifi.se.decision.documentation.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.documentation.jira.view.treeviewer.TreeViewer;
 
 /**
- * @description REST resource for view
+ * REST resource for view
  */
 @Path("/view")
 public class ViewRest {
