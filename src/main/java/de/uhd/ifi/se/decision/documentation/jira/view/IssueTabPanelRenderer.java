@@ -16,6 +16,11 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.VelocityParamFactory;
 import com.atlassian.velocity.VelocityManager;
 
+import de.uhd.ifi.se.decision.documentation.jira.persistence.ConfigPersistence;
+
+/**
+ * Renders the issue tab panel
+ */
 public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements IssueTabPanel {
 	public List<IssueAction> getActions(Issue issue, ApplicationUser remoteUser) {
 
@@ -39,6 +44,11 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 	}
 
 	public boolean showPanel(Issue issue, ApplicationUser remoteUser) {
-		return true;
+		String projectKey = this.getProjectKey(issue.getKey());
+		return ConfigPersistence.isActivated((String) projectKey);
+	}
+
+	private String getProjectKey(String issueKey) {
+		return issueKey.split("-")[0];
 	}
 }
