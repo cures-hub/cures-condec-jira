@@ -50,7 +50,6 @@ public class Treant {
 		Node node;
 		if (link != null) {
 			node = new Node(decisionKnowledgeElement, link);
-			System.out.println(decisionKnowledgeElement.getSummary() + ": " + link.getLinkType());
 		} else {
 			node = new Node(decisionKnowledgeElement);
 		}
@@ -61,10 +60,7 @@ public class Treant {
 					.getLinkedElementsAndLinks(decisionKnowledgeElement);
 
 			for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-				Link childLink = childAndLink.getValue();
-//				System.out.println(childLink.getLinkType());
-//				childLink.setLinkType("supports");
-				nodes.add(createNodeStructure(childAndLink.getKey(), childLink, depth, currentDepth + 1));
+				nodes.add(createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth, currentDepth + 1));
 			}
 			node.setChildren(nodes);
 		}

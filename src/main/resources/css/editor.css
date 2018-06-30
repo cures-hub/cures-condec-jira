@@ -6,7 +6,7 @@ a:focus a:hover {
 	text-decoration: none;
 }
 
-#DepthOfTreeWarning {
+#depth-of-tree-warning {
 	visibility: hidden;
 	color: rgba(255, 85, 85, 1)
 }
@@ -15,7 +15,7 @@ a:focus a:hover {
 	margin-right: 0.1%;
 }
 
-#linkExistingIssueSearchField {
+#link-existing-element-selection-field {
 	display: none;
 }
 
@@ -46,17 +46,17 @@ a:focus a:hover {
 	float: left;
 }
 
-#DecisionInputField {
+#decision-input-field {
 	border: 1px solid rgba(204, 204, 204, 1);
 	width: 22.4%;
 	height: 19px;
 }
 
-#CreateDecision {
+#create-decision-button {
 	width: 11%;
 }
 
-.equalMarginRegulator {
+.equal-margin-regulator {
 	margin: 0.1%;
 }
 
@@ -78,7 +78,7 @@ a:focus a:hover {
 	background-color: rgba(230, 230, 230, 1);
 }
 
-.editorheader {
+.editor-header {
 	font-weight: bold;
 	background: rgba(245, 245, 245, 1);
 	float: left;
@@ -88,7 +88,7 @@ a:focus a:hover {
 	text-align: center;
 }
 
-.editorheader:hover {
+.editor-header:hover {
 	color: black;
 	background: rgba(230, 230, 230, 1);
 }

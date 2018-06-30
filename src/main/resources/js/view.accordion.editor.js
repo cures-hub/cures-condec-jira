@@ -33,7 +33,7 @@ function enableLinkingUnlinkedDecisionComponents(parentId) {
 	getUnlinkedDecisionComponents(
 			parentId,
 			function(unlinkedDecisionComponents) {
-				var insertString = '<select name="linkExistingIssueSearchField">';
+				var insertString = '<select name="linkExistingIssueSearchField" class="link-existing-element-selection-field">';
 				for (var index = 0; index < unlinkedDecisionComponents.length; index++) {
 					insertString += '<option value="' + unlinkedDecisionComponents[index].id + '">'
 							+ unlinkedDecisionComponents[index].type + ' / '

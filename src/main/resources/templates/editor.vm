@@ -7,101 +7,101 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.documentation.jira:d
 </head>
 <body>
 	<div>
-		<input type="text" id="DecisionInputField"
-			class="equalMarginRegulator" placeholder="Insert new decision">
-		<input type="button" name="CreateDecision" id="CreateDecision"
-			class="equalMarginRegulator" value="Create Decision" /> <label
-			for="depthOfTreeInput">Depth of Tree</label> <input type="number"
-			id="depthOfTreeInput" value="4" min="1" class="equalMarginRegulator"
-			placeholder="Enter depth of tree..."> <label
-			for="depthOfTreeInput" id="DepthOfTreeWarning">Depth must be
-			positive</label>
+		<input type="text" id="decision-input-field"
+			class="equal-margin-regulator " placeholder="Insert new decision">
+		<input type="button" id="create-decision-button" name="create-decision-button"
+			class="equal-margin-regulator" value="Create Decision" /> <label
+			for="depth-of-tree-input">Depth of Tree</label> <input type="number"
+			id="depth-of-tree-input" value="4" min="1"
+			class="equal-margin-regulator " placeholder="Enter depth of tree...">
+		<label for="depth-of-tree-input" id="depth-of-tree-warning">Depth
+			must be positive</label>
 		<div>
 			<div>
-				<input class="search-input form-control equalMarginRegulator"
+				<input class="search-input form-control equal-margin-regulator "
 					id="jstree-search-input" placeholder="Search decision knowledge">
 			</div>
-			<div id="switch-wrapper" class="equalMarginRegulator">
+			<div id="switch-wrapper" class="equal-margin-regulator ">
 				<div class="switch-on-click" id="view-editor">Editor</div>
 				<div class="switch-on-click" id="view-tree">Tree</div>
 			</div>
 		</div>
 		<div>
 			<div>
-				<div id="evts" class="demo equalMarginRegulator"></div>
+				<div id="evts" class="demo equal-margin-regulator "></div>
 			</div>
 			<div>
-				<div id="container" class="equalMarginRegulator">
+				<div id="container" class="equal-margin-regulator ">
 					<dl>
-						<dt class="editorheader">
+						<dt class="editor-header">
 							Details<a href="#" id="button" class="closed">Details</a>
 						</dt>
 						<dd class="foldout" id="Details">No Element has been selected</dd>
-						<dt class="editorheader">
+						<dt class="editor-header">
 							Problems<a href="#" id="button" class="closed">Details</a>
 						</dt>
 						<dd class="foldout" id="Problem">No Element has been selected</dd>
-						<dt class="editorheader">
+						<dt class="editor-header">
 							Issues<a href="#" id="button" class="closed">Details</a>
 						</dt>
 						<dd class="foldout" id="Issue">No Element has been selected</dd>
-						<dt class="editorheader">
+						<dt class="editor-header">
 							Goals<a href="#" id="button" class="closed">Details</a>
 						</dt>
 						<dd class="foldout" id="Goal">No Element has been selected</dd>
-						<dt class="editorheader">
+						<dt class="editor-header">
 							Solutions<a href="#" id="button" class="closed">Details</a>
 						</dt>
 						<dd class="foldout" id="Solution">No Element has been
 							selected</dd>
-						<dt class="editorheader">
+						<dt class="editor-header">
 							Alternatives<a href="#" id="button" class="closed">Details</a>
 						</dt>
 						<dd class="foldout" id="Alternative">No Element has been
 							selected</dd>
-						<dt class="editorheader">
+						<dt class="editor-header">
 							Claims<a href="#" id="button" class="closed">Details</a>
 						</dt>
 						<dd class="foldout" id="Claim">No Element has been selected</dd>
-						<dt class="editorheader">
+						<dt class="editor-header">
 							Contexts<a href="#" id="button" class="closed">Details</a>
 						</dt>
 						<dd class="foldout" id="Context">No Element has been selected</dd>
-						<dt class="editorheader">
+						<dt class="editor-header">
 							Assumptions<a href="#" id="button" class="closed">Details</a>
 						</dt>
 						<dd class="foldout" id="Assumption">No Element has been
 							selected</dd>
-						<dt class="editorheader">
+						<dt class="editor-header">
 							Constraints<a href="#" id="button" class="closed">Details</a>
 						</dt>
 						<dd class="foldout" id="Constraint">No Element has been
 							selected</dd>
-						<dt class="editorheader">
+						<dt class="editor-header">
 							Implications<a href="#" id="button" class="closed">Details</a>
 						</dt>
 						<dd class="foldout" id="Implication">No Element has been
 							selected</dd>
-						<dt class="editorheader">
+						<dt class="editor-header">
 							Assessments<a href="#" id="button" class="closed">Details</a>
 						</dt>
 						<dd class="foldout" id="Assessment">No Element has been
 							selected</dd>
-						<dt class="editorheader">
+						<dt class="editor-header">
 							Arguments<a href="#" id="button" class="closed">Details</a>
 						</dt>
 						<dd class="foldout" id="Argument">No Element has been
 							selected</dd>
 					</dl>
 				</div>
-				<div class="chart equalMarginRegulator" id="treant-container">
+				<div class="chart equal-margin-regulator " id="treant-container">
 					<p>No Element has been selected</p>
 				</div>
 			</div>
 		</div>
 	</div>
 	<!-- The Modal -->
-	<div id="ContextMenuModal" class="modal">
+	<div id="context-menu-modal" class="modal">
 		<div class="modal-wrapper">
 			<div class="modal-header">
 				<h2 id="modal-header">

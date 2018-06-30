@@ -14,11 +14,11 @@ function initializeSite() {
 		});
 	});
 
-	var createDecisionButton = document.getElementById("CreateDecision");
-	var DecisionInputField = document.getElementById("DecisionInputField");
+	var createDecisionButton = document.getElementById("create-decision-button");
+	var decisionInputField = document.getElementById("decision-input-field");
 	createDecisionButton.addEventListener("click", function() {
-		var summary = DecisionInputField.value;
-		DecisionInputField.value = "";
+		var summary = decisionInputField.value;
+		decisionInputField.value = "";
 		createDecisionKnowledgeElement(summary, "", "Decision", function(childId) {
 			updateView(getProjectKey(), childId);
 		});
@@ -40,13 +40,13 @@ function initializeSite() {
 		editorContainer.style.display = "none";
 	});
 
-	var depthOfTreeInput = document.getElementById("depthOfTreeInput");
+	var depthOfTreeInput = document.getElementById("depth-of-tree-input");
 	depthOfTreeInput.addEventListener("input", function() {
-		var DepthOfTreeWarningLabel = document.getElementById("DepthOfTreeWarning");
+		var depthOfTreeWarningLabel = document.getElementById("depth-of-tree-warning");
 		if (this.value > 0) {
-			DepthOfTreeWarningLabel.style.visibility = "hidden";
+			depthOfTreeWarningLabel.style.visibility = "hidden";
 		} else {
-			DepthOfTreeWarningLabel.style.visibility = "visible";
+			depthOfTreeWarningLabel.style.visibility = "visible";
 		}
 	});
 }

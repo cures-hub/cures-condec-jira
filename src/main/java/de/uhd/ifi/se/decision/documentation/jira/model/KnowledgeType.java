@@ -48,7 +48,6 @@ public enum KnowledgeType {
 		default:
 			return KnowledgeType.OTHER;
 		}
-
 	}
 
 	public static KnowledgeType getSuperType(KnowledgeType type) {

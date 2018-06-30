@@ -39,7 +39,7 @@
 }
 
 .Treant.Treant-loaded .node, .Treant.Treant-loaded .pseudo {
-	visibility: visible;
+	visibility: inherit;
 }
 
 .Treant>.pseudo {
@@ -62,7 +62,7 @@
 }
 
 .Treant .collapsed .collapse-switch {
-	background-color: #868DEE;
+	background-color: #d6d6c2;
 }
 
 .Treant>.node img {

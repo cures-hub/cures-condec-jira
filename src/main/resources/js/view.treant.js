@@ -4,7 +4,7 @@ var oldParentId;
 var treantTree;
 
 function buildTreant(decisionKnowledgeElement) {
-	var depthOfTree = document.getElementById("depthOfTreeInput").value;
+	var depthOfTree = document.getElementById("depth-of-tree-input").value;
 	getTreant(decisionKnowledgeElement.key, depthOfTree, function(treant) {
 		document.getElementById("treant-container").innerHTML = "";
 		treantTree = new Treant(treant);
@@ -16,7 +16,7 @@ function buildTreant(decisionKnowledgeElement) {
 function createContextMenuForTreantNodes() {
 	$(function() {
 		$.contextMenu({
-			selector : ".decision, .rationale, .context, .problem, .solution",
+			selector : ".decision, .rationale, .context, .problem, .solution, .support, .attack",
 			items : contextMenuActions
 		});
 	});

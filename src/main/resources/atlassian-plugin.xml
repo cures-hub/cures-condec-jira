@@ -88,7 +88,7 @@
 		<description>Provides the "Decisions" link to the plug-in page in the project's navigation side
 			bar.
 		</description>
-		<label>Decisions</label>
+		<label>Decision Knowledge</label>
 		<param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-bp-decisions" />
 		<link> /projects/$pathEncodedProjectKey?selectedItem=decisions-page	</link>
 		<condition class="de.uhd.ifi.se.decision.documentation.jira.config.ActivationCondition">
@@ -117,17 +117,17 @@
 	</web-section>
 	<web-section key="decdoc-admin-section-label" name="Web Section Label for DecDoc Plug-in Administration"
 		location="decdoc-admin-section">
-		<label>Decisions</label>
+		<label>Decision Knowledge</label>
 		<description>
 			Adds the "Decisions" label to the DecDoc section in the add-ons menu.
 		</description>
 	</web-section>
 	<web-item key="decdoc-admin-menu-item" name="Menu Item for DecDoc Plug-in Administration"
 		section="decdoc-admin-section/decdoc-admin-section-label" weight="10" application="jira">
+		<label>ConDec Settings</label>
 		<description>
 			Adds the "DecDoc Settings" menu item that links to the administration page.
 		</description>
-		<label>DecDoc Settings</label>
 		<link>/plugins/servlet/decdoc/globalsettings</link>
 	</web-item>
 	<servlet key="servlet-for-settings-of-all-projects" name="Servlet for Settings of All Projects"
@@ -139,7 +139,7 @@
 	<!-- Project Settings -->
 	<web-section key="decisions-tabs-section" name="Web Section for DecDoc Plug-in in Project Settings"
 		location="atl.jira.proj.config">
-		<label>Decisions</label>
+		<label>Decision Knowledge</label>
 		<description>
 			Adds the "Decisions" label to the project settings menu.
 		</description>
@@ -148,7 +148,7 @@
 		section="atl.jira.proj.config/decisions-tabs-section" weight="15">
 		<description>Adds the "DecDoc Settings" menu item that links to the project settings.
 		</description>
-		<label>DecDoc Project Settings</label>
+		<label>ConDec Project Settings</label>
 		<link linkId="decdoc-project-settings-menu-item">/plugins/servlet/decdoc/settings?projectKey=$projectKeyEncoded</link>
 	</web-item>
 	<servlet key="servlet-for-settings-of-single-project" name="Servlet for Settings of Single Project"
@@ -175,7 +175,7 @@
 	<issue-tabpanel key="DecXplore" name="DecXplore"
 		class="de.uhd.ifi.se.decision.documentation.jira.view.IssueTabPanelRenderer">
 		<description>Exploration of Decision Knowledge</description>
-		<label>DecXplore</label>
+		<label>Decision Knowledge</label>
 		<order>10</order>
 		<resource type="velocity" name="view" location="templates/tabPanel.vm" />
 		<supports-ajax-load>true</supports-ajax-load>

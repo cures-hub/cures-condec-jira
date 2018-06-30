@@ -55,16 +55,11 @@ public class Node {
 			this.nodeContent = ImmutableMap.of("name", "Supporting Argument",
 					"title", decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 			this.htmlClass = "support";
-			//this.connectors = ImmutableMap.of("style", ImmutableMap.of("stroke", "#00CE67"));
 			break;
 		case "attack":
 			this.nodeContent = ImmutableMap.of("name", "Attacking Argument",
 					"title", decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 			this.htmlClass = "attack";
-			//this.connectors = ImmutableMap.of("style", ImmutableMap.of("stroke", "#FF0000"));
-			break;
-		default:
-			//this.connectors = ImmutableMap.of("style", ImmutableMap.of("stroke", "#000000"));
 			break;
 		}
 	}

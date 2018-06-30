@@ -9,7 +9,9 @@ function buildTreantIssueTabPanel(elementKey) {
 	// var depthOfTree = document.getElementById("depthOfTreeInput").value;
 	var depthOfTree = 4;
 	getTreant(elementKey, depthOfTree, function(treeStructure) {
-		document.getElementById("treant-container").innerHTML = "";
+		var treantContainer = document.getElementById("treant-container");
+		treantContainer.innerHTML = "";
+		treantContainer.style.visibility = "visible";
 
 		var commitData = getData(AJS.contextPath() + "/rest/gitplugin/1.0/issues/" + elementKey + "/commits");
 		var commits = commitData.commits;

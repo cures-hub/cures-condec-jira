@@ -44,7 +44,7 @@ function setUpContextMenuContentForCreateAction(id) {
 }
 
 function setUpModal() {
-	var modal = document.getElementById("ContextMenuModal");
+	var modal = document.getElementById("context-menu-modal");
 	modal.style.display = "block";
 
 	// adds click-handler for elements in modal to close modal window
@@ -233,7 +233,7 @@ var contextMenuActions = {
 };
 
 function closeModal() {
-	var modal = document.getElementById("ContextMenuModal");
+	var modal = document.getElementById("context-menu-modal");
 	modal.style.display = "none";
 	var modalHeader = document.getElementById("modal-header");
 	if (modalHeader.hasChildNodes()) {
