@@ -1,7 +1,7 @@
 package de.uhd.ifi.se.decision.documentation.jira.persistence;
 
 /**
- * @description Provides the persistence strategy for a project
+ * Provides the persistence strategy for a project
  */
 public class StrategyProvider {
 

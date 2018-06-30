@@ -9,8 +9,8 @@ import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
 
 /**
- * @description Interface for links between knowledge elements used in the
- *              active object persistence strategy
+ * Interface for links between knowledge elements used in the active object
+ * persistence strategy
  */
 @Table("LINK")
 public interface LinkEntity extends Link, RawEntity<Integer> {

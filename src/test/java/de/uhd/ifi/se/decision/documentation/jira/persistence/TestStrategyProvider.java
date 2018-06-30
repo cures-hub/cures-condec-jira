@@ -24,7 +24,6 @@ public class TestStrategyProvider extends TestSetUp {
 	@Test
 	public void testProjectKeyNotExist() {
 		assertTrue(strategyProvider.getStrategy("TESTNOT") instanceof IssueStrategy);
-
 	}
 
 	@Test

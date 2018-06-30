@@ -21,8 +21,8 @@ import de.uhd.ifi.se.decision.documentation.jira.ComponentGetter;
 import net.java.ao.Query;
 
 /**
- * @description Extends the abstract class AbstractPersistenceStrategy. Uses the
- *              active object framework to store decision knowledge.
+ * Extends the abstract class AbstractPersistenceStrategy. Uses the active
+ * object framework to store decision knowledge.
  */
 @JsonAutoDetect
 public class ActiveObjectStrategy extends AbstractPersistenceStrategy {

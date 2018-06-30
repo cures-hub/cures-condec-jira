@@ -17,6 +17,7 @@ public class ActivationCondition implements Condition {
 
 	@Override
 	public void init(Map<String, String> params) {
+		// method is not used in this plug-in
 	}
 
 	@Override

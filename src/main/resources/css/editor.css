@@ -108,7 +108,7 @@ a:focus a:hover {
 	overflow: auto;
 	border: 1px solid rgba(204, 204, 204, 1);
 	width: 34%;
-	float: left !important;
+	float: left;
 }
 
 /* The Modal (background) */

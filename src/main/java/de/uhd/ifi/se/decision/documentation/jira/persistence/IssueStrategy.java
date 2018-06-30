@@ -36,8 +36,8 @@ import de.uhd.ifi.se.decision.documentation.jira.model.Link;
 import de.uhd.ifi.se.decision.documentation.jira.model.LinkImpl;
 
 /**
- * @description Extends the abstract class AbstractPersistenceStrategy. Uses JIRA issues
- *              to store decision knowledge.
+ * Extends the abstract class AbstractPersistenceStrategy. Uses JIRA issues to
+ * store decision knowledge.
  */
 @JsonAutoDetect
 public class IssueStrategy extends AbstractPersistenceStrategy {
@@ -112,7 +112,7 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 				return false;
 			} else {
 				ErrorCollection errorCollection = issueService.delete(user, result);
-                return !errorCollection.hasAnyErrors();
+				return !errorCollection.hasAnyErrors();
 			}
 		}
 		return false;
@@ -248,9 +248,10 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		return issueLink.getId();
 	}
 
-	//TODO If the Update functions are also used in the IssueStrategy this function needs to be Implemented
+	// TODO If the Update functions are also used in the IssueStrategy this function
+	// needs to be Implemented
 	@Override
-	public boolean editLink(Link link, ApplicationUser user){
+	public boolean editLink(Link link, ApplicationUser user) {
 		return false;
 	}
 
@@ -289,8 +290,7 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		if (decisionKnowledgeElement == null) {
 			return new ArrayList<IssueLink>();
 		}
-		return ComponentAccessor.getIssueLinkManager()
-				.getInwardLinks(decisionKnowledgeElement.getId());
+		return ComponentAccessor.getIssueLinkManager().getInwardLinks(decisionKnowledgeElement.getId());
 	}
 
 	@Override
@@ -307,8 +307,7 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		if (decisionKnowledgeElement == null) {
 			return new ArrayList<IssueLink>();
 		}
-		return ComponentAccessor.getIssueLinkManager()
-				.getOutwardLinks(decisionKnowledgeElement.getId());
+		return ComponentAccessor.getIssueLinkManager().getOutwardLinks(decisionKnowledgeElement.getId());
 	}
 
 	private String getIssueTypeId(KnowledgeType type) {

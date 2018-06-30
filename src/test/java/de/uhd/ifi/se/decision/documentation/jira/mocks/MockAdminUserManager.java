@@ -42,8 +42,8 @@ public class MockAdminUserManager implements UserManager{
 	}
 
 	@Override
-	public boolean isSystemAdmin(String arg0) {
-        return !arg0.equals("NoSysAdmin");
+	public boolean isSystemAdmin(String adminOrNot) {
+        return !"NoSysAdmin".equals(adminOrNot);
     }
 
 	@Override

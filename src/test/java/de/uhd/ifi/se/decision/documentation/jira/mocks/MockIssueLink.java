@@ -44,7 +44,7 @@ public class MockIssueLink implements IssueLink {
 
 	@Override
 	public void store() {
-
+		// method empty since not used for testing
 	}
 
 	@Override

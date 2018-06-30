@@ -32,8 +32,6 @@ public class TreeViewer {
 	@XmlElement
 	private HashSet<Data> data;
 
-	private AbstractPersistenceStrategy strategy;
-
 	private Graph graph;
 
 	public TreeViewer() {
@@ -47,7 +45,7 @@ public class TreeViewer {
 		graph = new GraphImpl(projectKey);
 
 		StrategyProvider strategyProvider = new StrategyProvider();
-		strategy = strategyProvider.getStrategy(projectKey);
+		AbstractPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 		List<DecisionKnowledgeElement> decisions = strategy.getDecisions(projectKey);
 
 		HashSet<Data> dataSet = new HashSet<Data>();

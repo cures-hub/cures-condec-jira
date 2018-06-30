@@ -35,7 +35,6 @@ public class TestSetUp {
 	private ProjectManager projectManager;
 	private IssueManager issueManager;
 	private ConstantsManager constantsManager;
-	private UserManager userManager;
 
 	public void initialization() {
 		projectManager = new MockProjectManager();
@@ -43,7 +42,7 @@ public class TestSetUp {
 		constantsManager = new MockConstantsManager();
 		IssueService issueService = new MockIssueService();
 
-		userManager = new MockUserManager();
+		UserManager userManager = new MockUserManager();
 		ApplicationUser user = new MockApplicationUser("NoFails");
 		ApplicationUser user2 = new MockApplicationUser("WithFails");
 		ApplicationUser user3 = new MockApplicationUser("NoSysAdmin");

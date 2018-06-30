@@ -181,7 +181,7 @@ function setUpContextMenuContentForEditAction(id) {
 					var type = $("select[name='form-select-type']").val();
 					editDecisionKnowledgeElementAsChild(summary, description, type, id);
 					closeModal();
-				}
+				};
 			});
 		}
 	});
