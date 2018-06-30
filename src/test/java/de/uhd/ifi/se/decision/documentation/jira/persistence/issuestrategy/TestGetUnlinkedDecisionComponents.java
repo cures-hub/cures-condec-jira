@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.persistence.issusstrategytest;
+package de.uhd.ifi.se.decision.documentation.jira.persistence.issuestrategy;
 
 import org.junit.Test;
 

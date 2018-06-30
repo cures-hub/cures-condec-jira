@@ -52,7 +52,7 @@
 		<resource type="download" name="Treant.js" location="/js/treant/treant.js" />
 		<resource type="download" name="raphael.js" location="/js/treant/raphael.js" />
 		<resource type="download" name="jquery.easing.js" location="/js/jquery/jquery.easing.js" />
-		<resource type="download" name="decdoc.treant.js" location="/js/view/decdoc.treant.js" />
+		<resource type="download" name="decdoc.treant.js" location="/js/view.treant.js" />
 	</web-resource>
 
 	<web-resource key="decision-documentation-resources" name="DecDoc Java Script Resources">
@@ -69,9 +69,9 @@
 		<!-- DecDoc java script files -->
 		<resource type="download" name="decdoc.init.js" location="/js/controller/decdoc.init.js" />
 		<resource type="download" name="decdoc.viewhandler.js" location="/js/controller/decdoc.viewhandler.js" />
-		<resource type="download" name="decdoc.accordion.editor.js" location="/js/view/decdoc.accordion.editor.js" />
-		<resource type="download" name="decdoc.tree.viewer.js" location="/js/view/decdoc.tree.viewer.js" />
-		<resource type="download" name="decdoc.context.menu.js" location="/js/view/decdoc.context.menu.js" />
+		<resource type="download" name="decdoc.accordion.editor.js" location="/js/view.accordion.editor.js" />
+		<resource type="download" name="decdoc.tree.viewer.js" location="/js/view.tree.viewer.js" />
+		<resource type="download" name="decdoc.context.menu.js" location="/js/view.context.menu.js" />
 	</web-resource>
 
 	<web-resource key="issue-tab-panel-resources" name="DecDoc Java Script Resources for the Issue Tab Panel">
@@ -79,7 +79,7 @@
 			Provides the Java Script file used in the issue tab panel.
 		</description>
 		<context>jira.view.issue</context>
-		<resource type="download" name="decxplore.tab.panel.js" location="/js/view/decxplore.tab.panel.js" />
+		<resource type="download" name="decxplore.tab.panel.js" location="/js/view.tab.panel.js" />
 	</web-resource>
 
 	<!-- Decision Knowledge Page -->

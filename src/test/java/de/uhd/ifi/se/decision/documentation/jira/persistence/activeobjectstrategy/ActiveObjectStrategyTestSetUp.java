@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.persistence.activeobjectstrategytest;
+package de.uhd.ifi.se.decision.documentation.jira.persistence.activeobjectstrategy;
 
 import de.uhd.ifi.se.decision.documentation.jira.persistence.ActiveObjectStrategy;
 import org.junit.Before;

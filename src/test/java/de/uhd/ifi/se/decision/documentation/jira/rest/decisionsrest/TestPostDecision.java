@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.rest.decisionresttest;
+package de.uhd.ifi.se.decision.documentation.jira.rest.decisionsrest;
 
 import static org.junit.Assert.assertEquals;
 

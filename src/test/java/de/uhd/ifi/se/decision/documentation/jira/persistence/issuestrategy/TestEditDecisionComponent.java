@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.documentation.jira.persistence.issusstrategytest;
+package de.uhd.ifi.se.decision.documentation.jira.persistence.issuestrategy;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
