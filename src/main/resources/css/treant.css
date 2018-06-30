@@ -1,3 +1,31 @@
+.context {
+	background-color: rgb(255, 255, 221);
+}
+
+.rationale {
+	background-color: rgb(255, 255, 221);
+}
+
+.attack {
+	background-color: rgb(255, 231, 231);
+}
+
+.support {
+	background-color: rgb(222, 250, 222);
+}
+
+.solution {
+	background-color: rgb(255, 255, 221);
+}
+
+.decision {
+	background-color: rgb(255, 255, 221);
+}
+
+.problem {
+	background-color: rgb(244, 240, 255);
+}
+
 .Treant {
 	position: relative;
 	overflow: hidden;
@@ -22,20 +50,19 @@
 }
 
 .Treant .collapse-switch {
-	width: 10px;
-	height: 10px;
+	width: 8px;
+	height: 8px;
 	display: block;
 	border: 1px solid black;
 	border-radius: 5px;
 	position: absolute;
-	bottom: -10px;
-	right: 78px;
+	bottom: 3px;
+	right: 3px;
 	cursor: pointer;
-	background-color: #ff2a28;
 }
 
-.Treant .node.collapsed .collapse-switch {
-	background-color: #41fb1d;
+.Treant .collapsed .collapse-switch {
+	background-color: #868DEE;
 }
 
 .Treant>.node img {
@@ -80,30 +107,6 @@
 .node-name {
 	font-weight: bold;
 	visibility: inherit;
-}
-
-.context {
-	background-color: rgb(255, 231, 231);
-}
-
-.rationale {
-	background-color: rgb(255, 255, 221);
-}
-
-.contra {
-	background-color: rgb(255, 102, 102);
-}
-
-.pro {
-	background-color: rgb(102, 255, 102);
-}
-
-.solution {
-	background-color: rgb(222, 250, 222);
-}
-
-.problem {
-	background-color: rgb(244, 240, 255);
 }
 
 .comments {
