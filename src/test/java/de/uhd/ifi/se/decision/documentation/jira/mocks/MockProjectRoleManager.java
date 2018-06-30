@@ -56,12 +56,12 @@ public class MockProjectRoleManager implements ProjectRoleManager {
 
     @Override
     public void deleteRole(ProjectRole projectRole) {
-
+	// method empty since not used for testing
     }
 
     @Override
     public void updateRole(ProjectRole projectRole) {
-
+	// method empty since not used for testing
     }
 
     @Override
@@ -71,7 +71,7 @@ public class MockProjectRoleManager implements ProjectRoleManager {
 
     @Override
     public void updateProjectRoleActors(ProjectRoleActors projectRoleActors) {
-
+	// method empty since not used for testing
     }
 
     @Override
@@ -81,22 +81,22 @@ public class MockProjectRoleManager implements ProjectRoleManager {
 
     @Override
     public void updateDefaultRoleActors(DefaultRoleActors defaultRoleActors) {
-
+	// method empty since not used for testing
     }
 
     @Override
     public void applyDefaultsRolesToProject(Project project) {
-
+	// method empty since not used for testing
     }
 
     @Override
     public void removeAllRoleActorsByNameAndType(String s, String s1) {
-
+	// method empty since not used for testing
     }
 
     @Override
     public void removeAllRoleActorsByProject(Project project) {
-
+	// method empty since not used for testing
     }
 
     @Override

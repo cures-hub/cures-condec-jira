@@ -112,9 +112,7 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 				return false;
 			} else {
 				ErrorCollection errorCollection = issueService.delete(user, result);
-				if (!errorCollection.hasAnyErrors()) {
-					return true;
-				}
+                return !errorCollection.hasAnyErrors();
 			}
 		}
 		return false;

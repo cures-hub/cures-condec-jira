@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.documentation.jira.config;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -52,47 +55,51 @@ public class TestSettingsOfSingleProject extends TestSetUp {
 	}
 
 	@Test
-	public void testReqNullResNull() throws IOException {
-		servlet.doGet(null, null);
+	public void testRequestNullResponseNull() throws IOException, ServletException {
+		assertFalse(servlet.isValidParameters(null, null));
 	}
 
 	@Test
 	public void testRequestFilledResponseNull() throws IOException, ServletException {
 		request.setAttribute("NoSysAdmin", false);
 		request.setAttribute("SysAdmin", false);
-		servlet.doGet(request, null);
+		assertFalse(servlet.isValidUser(request));
 	}
 
 	@Test
 	public void testRequestNullResponseFilled() throws IOException, ServletException {
-		servlet.doGet(null, response);
+		assertFalse(servlet.isValidParameters(null, response));
 	}
 
 	@Test
 	public void testRequestFilledResponseFilled() throws IOException, ServletException {
 		request.setAttribute("NoSysAdmin", false);
 		request.setAttribute("SysAdmin", false);
-		servlet.doGet(request, response);
+		assertFalse(servlet.isValidUser(request));
+		assertTrue(servlet.isValidParameters(request, response));
 	}
 
 	@Test
 	public void testNoUserManager() throws IOException, ServletException {
 		((MockHttpServletRequest) request).setQueryString("Test");
 		request.setAttribute("NoSysAdmin", true);
-		servlet.doGet(request, response);
+		assertFalse(servlet.isValidUser(request));
+		assertTrue(servlet.isValidParameters(request, response));
 	}
 
 	@Test
 	public void testNoUserManagerQueryNull() throws IOException, ServletException {
 		((MockHttpServletRequest) request).setQueryString(null);
 		request.setAttribute("NoSysAdmin", true);
-		servlet.doGet(request, response);
+		assertFalse(servlet.isValidUser(request));
+		assertTrue(servlet.isValidParameters(request, response));
 	}
 
 	@Test
 	public void testUserManager() throws IOException, ServletException {
 		request.setAttribute("NoSysAdmin", false);
 		request.setAttribute("SysAdmin", true);
-		servlet.doGet(request, response);
+		assertTrue(servlet.isValidUser(request));
+		assertTrue(servlet.isValidParameters(request, response));
 	}
 }

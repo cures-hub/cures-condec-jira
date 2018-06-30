@@ -43,11 +43,8 @@ public class MockDefaultUserManager implements UserManager {
 
 	@Override
 	public boolean isSystemAdmin(String arg0) {
-		if(arg0.equals("NoFails")) {
-			return true;
-		}
-		return false;
-	}
+        return arg0.equals("NoFails");
+    }
 
 	@Override
 	public boolean isUserInGroup(String arg0, String arg1) {

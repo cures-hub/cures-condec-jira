@@ -9,8 +9,8 @@ import com.atlassian.plugin.web.Condition;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.ConfigPersistence;
 
 /**
- * @description Condition for side bar link to plug-in. Determines whether link
- *              is displayed for a project. Is used in atlassian-plugin.xml
+ * Condition for side bar link to plug-in. Determines whether link is displayed
+ * for a project. Is used in atlassian-plugin.xml
  */
 public class ActivationCondition implements Condition {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActivationCondition.class);

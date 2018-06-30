@@ -20,8 +20,8 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.ConfigPersistence;
 
 /**
- * @description Renders the administration page to change the plug-in
- *              configuration of a single project
+ * Renders the administration page to change the plug-in configuration of a
+ * single project
  */
 public class SettingsOfSingleProject extends AbstractSettingsServlet {
 

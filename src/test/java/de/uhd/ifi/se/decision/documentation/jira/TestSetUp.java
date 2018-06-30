@@ -90,34 +90,34 @@ public class TestSetUp {
 			if (types.get(i - 2).toString().equals("Problem")) {
 				MutableIssue issue = new MockIssue(30, "TEST-" + 30);
 				((MockIssue) issue).setProjectId(project.getId());
-				((MockIssue) issue).setProjectObject(project);
+				issue.setProjectObject(project);
 				IssueType issueType = new MockIssueType(i, types.get(i - 2).toString().toLowerCase(Locale.ENGLISH));
 				((MockConstantsManager) constantsManager).addIssueType(issueType);
-				((MockIssue) issue).setIssueType(issueType);
-				((MockIssue) issue).setSummary("Test");
+				issue.setIssueType(issueType);
+				issue.setSummary("Test");
 				((MockIssueManagerSelfImpl) issueManager).addIssue(issue);
 			} else {
 				MutableIssue issue = new MockIssue(i, "TEST-" + i);
 				((MockIssue) issue).setProjectId(project.getId());
-				((MockIssue) issue).setProjectObject(project);
+				issue.setProjectObject(project);
 				IssueType issueType = new MockIssueType(i, types.get(i - 2).toString().toLowerCase(Locale.ENGLISH));
 				((MockConstantsManager) constantsManager).addIssueType(issueType);
-				((MockIssue) issue).setIssueType(issueType);
-				((MockIssue) issue).setSummary("Test");
+				issue.setIssueType(issueType);
+				issue.setSummary("Test");
 				((MockIssueManagerSelfImpl) issueManager).addIssue(issue);
 				if (i > types.size() - 4) {
-					((MockIssue) issue).setParentId((long) 3);
+					issue.setParentId((long) 3);
 				}
 			}
 		}
 		MutableIssue issue = new MockIssue(50, "TEST-50");
 		((MockIssue) issue).setProjectId(project.getId());
-		((MockIssue) issue).setProjectObject(project);
+		issue.setProjectObject(project);
 		IssueType issueType = new MockIssueType(50, "Class");
 		((MockConstantsManager) constantsManager).addIssueType(issueType);
-		((MockIssue) issue).setIssueType(issueType);
-		((MockIssue) issue).setSummary("Test");
+		issue.setIssueType(issueType);
+		issue.setSummary("Test");
 		((MockIssueManagerSelfImpl) issueManager).addIssue(issue);
-		((MockIssue) issue).setParentId((long) 3);
+		issue.setParentId((long) 3);
 	}
 }

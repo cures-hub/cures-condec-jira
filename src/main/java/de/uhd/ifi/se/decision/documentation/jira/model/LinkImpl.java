@@ -8,7 +8,7 @@ import com.atlassian.jira.issue.link.IssueLink;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.LinkEntity;
 
 /**
- * @description Model class for links between decision knowledge elements
+ * Model class for links between decision knowledge elements
  */
 public class LinkImpl implements Link {
 

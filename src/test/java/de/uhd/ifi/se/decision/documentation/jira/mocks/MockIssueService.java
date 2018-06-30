@@ -32,7 +32,7 @@ public class MockIssueService implements IssueService {
 
 	@Override
 	public IssueResult create(ApplicationUser arg0, CreateValidationResult arg1) {
-		return new IssueResult((MutableIssue) arg1.getIssue());
+		return new IssueResult(arg1.getIssue());
 	}
 
 	@Override
@@ -134,7 +134,7 @@ public class MockIssueService implements IssueService {
 	public CreateValidationResult validateCreate(ApplicationUser arg0, IssueInputParameters arg1) {
 		MutableIssue issue = new MockIssue(1, "TEST-12");
 		IssueType issueType = new MockIssueType(12, "Solution");
-		((MockIssue) issue).setIssueType(issueType);
+		issue.setIssueType(issueType);
 		ErrorCollection col = new MockAction();
 		Map<String,Object> fieldValuesHolder = new ConcurrentHashMap<>();
 		Map<String,org.codehaus.jackson.JsonNode> properties = new ConcurrentHashMap<>();
@@ -154,7 +154,7 @@ public class MockIssueService implements IssueService {
 		System.out.println(arg0.getUsername());
 		MutableIssue issue = new MockIssue(1, "TEST-12");
 		IssueType issueType = new MockIssueType(12, "Solution");
-		((MockIssue) issue).setIssueType(issueType);
+		issue.setIssueType(issueType);
 		ErrorCollection col = new MockAction();
 		if(arg0.getUsername().equals("NoFails")) {
 			return new DeleteValidationResult(issue, col);
@@ -187,7 +187,7 @@ public class MockIssueService implements IssueService {
 	public UpdateValidationResult validateUpdate(ApplicationUser arg0, Long arg1, IssueInputParameters arg2) {
 		MutableIssue issue = new MockIssue(1, "TEST-12");
 		IssueType issueType = new MockIssueType(12, "Solution");
-		((MockIssue) issue).setIssueType(issueType);
+		issue.setIssueType(issueType);
 		ErrorCollection col = new MockAction();
 		Map<String,Object> fieldValuesHolder = new ConcurrentHashMap<>();
 		if(arg0.getName().equals("NoFails")) {

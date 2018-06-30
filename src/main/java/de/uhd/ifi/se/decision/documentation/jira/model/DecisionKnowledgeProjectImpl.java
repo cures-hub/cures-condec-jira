@@ -5,7 +5,7 @@ import de.uhd.ifi.se.decision.documentation.jira.persistence.AbstractPersistence
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
 /**
- * @description Model class for a project and its configuration
+ * Model class for a project and its configuration
  */
 public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 

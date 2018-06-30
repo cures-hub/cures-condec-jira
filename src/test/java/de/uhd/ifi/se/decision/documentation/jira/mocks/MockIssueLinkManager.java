@@ -26,7 +26,7 @@ public class MockIssueLinkManager implements IssueLinkManager {
 
 	@Override
 	public void changeIssueLinkType(IssueLink arg0, IssueLinkType arg1, ApplicationUser arg2) {
-
+		// method empty since not used for testing
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class MockIssueLinkManager implements IssueLinkManager {
 			return;
 		}
 		if (arg4 == null) {
-			throw new NullPointerException();
+			throw new CreateException();
 		}
 		if (arg4.getUsername().equals("CreateExecption")) {
 			throw new CreateException();
@@ -138,12 +138,12 @@ public class MockIssueLinkManager implements IssueLinkManager {
 
 	@Override
 	public void moveIssueLink(List<IssueLink> arg0, Long arg1, Long arg2) {
-
+		// method empty since not used for testing
 	}
 
 	@Override
 	public void removeIssueLink(IssueLink arg0, ApplicationUser arg1) {
-
+		// method empty since not used for testing
 	}
 
 	@Override
@@ -163,7 +163,7 @@ public class MockIssueLinkManager implements IssueLinkManager {
 
 	@Override
 	public void resetSequences(List<IssueLink> arg0) {
-
+		// method empty since not used for testing
 	}
 
 }

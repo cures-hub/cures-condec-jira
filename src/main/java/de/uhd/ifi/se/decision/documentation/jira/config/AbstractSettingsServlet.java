@@ -18,7 +18,7 @@ import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 /**
- * @description Abstract super class to render the administration pages
+ * Abstract super class to render the administration pages
  */
 public abstract class AbstractSettingsServlet extends HttpServlet {
 

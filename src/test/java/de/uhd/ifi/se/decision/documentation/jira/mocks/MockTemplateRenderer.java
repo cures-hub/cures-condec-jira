@@ -10,13 +10,13 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 public class MockTemplateRenderer implements TemplateRenderer {
 
 	@Override
-	public void render(String templateName, Writer writer) throws RenderingException, IOException {
+	public void render(String templateName, Writer writer) throws RenderingException {
 
 	}
 
 	@Override
 	public void render(String templateName, Map<String, Object> context, Writer writer)
-			throws RenderingException, IOException {
+			throws RenderingException {
 
 	}
 

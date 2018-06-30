@@ -18,7 +18,7 @@ import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
 
 /**
- * @description Handles plug-in initialization
+ * Handles plug-in initialization
  */
 @Named("PluginInitializer")
 public class PluginInitializer implements InitializingBean {
@@ -39,9 +39,7 @@ public class PluginInitializer implements InitializingBean {
 	public List<String> findMissingDecisionKnowledgeIssueTypes() {
 		List<String> knowledgeTypes = KnowledgeType.toList();
 		for (String issueTypeName : getNamesOfExistingIssueTypes()) {
-			if (knowledgeTypes.contains(issueTypeName)) {
-				knowledgeTypes.remove(issueTypeName);
-			}
+            knowledgeTypes.remove(issueTypeName);
 		}
 		return knowledgeTypes;
 	}

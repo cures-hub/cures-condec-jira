@@ -1949,7 +1949,7 @@
 
         /////////// BUILD NODE CONTENT //////////////
         if ( !this.pseudo ) {
-            node = this.nodeInnerHTML? this.buildNodeFromHtml(node) : this.buildNodeFromText(node)
+            node = this.nodeInnerHTML? this.buildNodeFromHtml(node) : this.buildNodeFromText(node);
 
             // handle collapse switch
             if ( this.collapsed || (this.collapsable && this.childrenCount() && !this.stackParentId) ) {

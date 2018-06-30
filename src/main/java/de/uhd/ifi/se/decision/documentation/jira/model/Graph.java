@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.documentation.jira.model;
 import java.util.List;
 
 /**
- * @description Interface for a graph of decision knowledge elements
+ * Interface for a graph of decision knowledge elements
  */
 public interface Graph {
 	DecisionKnowledgeElement getRootElement();

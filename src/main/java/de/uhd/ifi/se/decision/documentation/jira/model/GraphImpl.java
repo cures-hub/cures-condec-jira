@@ -9,7 +9,7 @@ import org.codehaus.jackson.annotate.JsonAutoDetect;
 import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
 
 /**
- * @description Model class for a graph of decision knowledge elements
+ * Model class for a graph of decision knowledge elements
  */
 @JsonAutoDetect
 public class GraphImpl implements Graph {

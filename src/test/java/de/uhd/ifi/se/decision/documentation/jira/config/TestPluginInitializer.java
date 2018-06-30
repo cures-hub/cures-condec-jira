@@ -31,13 +31,13 @@ public class TestPluginInitializer extends TestSetUp {
 	}
 
 	@Test(expected = java.lang.NullPointerException.class)
-	public void testExecutionAfterProp() throws Exception {
+	public void testExecutionAfterProp() {
 		initialization();
 		pluginInitializer.afterPropertiesSet();
 	}
 
 	@Test
-	public void testExecutionAfterPropNoInit() throws Exception {
+	public void testExecutionAfterPropNoInit() {
 		ProjectManager projectManager = new MockProjectManager();
 		IssueManager issueManager = new MockIssueManagerSelfImpl();
 		ConstantsManager constManager = new MockConstantsManager();

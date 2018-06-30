@@ -10,7 +10,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import com.atlassian.jira.issue.Issue;
 
 /**
- * @description Model class for decision knowledge elements
+ * Model class for decision knowledge elements
  */
 public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 

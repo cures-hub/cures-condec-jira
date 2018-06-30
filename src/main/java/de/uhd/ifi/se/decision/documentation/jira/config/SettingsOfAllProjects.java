@@ -15,7 +15,7 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeProject;
 
 /**
- * @description Renders the administration page to change the plug-in configuration of all projects
+ * Renders the administration page to change the plug-in configuration of all projects
  */
 @Scanned
 public class SettingsOfAllProjects extends AbstractSettingsServlet {

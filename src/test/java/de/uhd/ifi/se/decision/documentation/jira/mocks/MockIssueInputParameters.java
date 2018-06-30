@@ -8,7 +8,7 @@ import org.codehaus.jackson.JsonNode;
 import com.atlassian.jira.issue.IssueInputParameters;
 import com.atlassian.jira.issue.changehistory.metadata.HistoryMetadata;
 
-public class MockIssueInputParameters implements IssueInputParameters{
+public class MockIssueInputParameters implements IssueInputParameters {
 
 	@Override
 	public IssueInputParameters addCustomFieldValue(Long arg0, String... arg1) {
@@ -22,7 +22,7 @@ public class MockIssueInputParameters implements IssueInputParameters{
 
 	@Override
 	public void addFieldToForcePresent(String arg0) {
-
+		// method empty since not used for testing
 	}
 
 	@Override
@@ -212,13 +212,11 @@ public class MockIssueInputParameters implements IssueInputParameters{
 
 	@Override
 	public void setApplyDefaultValuesWhenParameterNotProvided(boolean arg0) {
-
-
+		// method empty since not used for testing
 	}
 
 	@Override
 	public IssueInputParameters setAssigneeId(String arg0) {
-
 		return null;
 	}
 
@@ -259,7 +257,7 @@ public class MockIssueInputParameters implements IssueInputParameters{
 
 	@Override
 	public void setFieldValuesHolder(Map<String, Object> arg0) {
-
+		// method empty since not used for testing
 	}
 
 	@Override
@@ -309,7 +307,7 @@ public class MockIssueInputParameters implements IssueInputParameters{
 
 	@Override
 	public void setProvidedFields(Collection<String> arg0) {
-
+		// method empty since not used for testing
 	}
 
 	@Override
@@ -339,12 +337,12 @@ public class MockIssueInputParameters implements IssueInputParameters{
 
 	@Override
 	public void setRetainExistingValuesWhenParameterNotProvided(boolean arg0) {
-
+		// method empty since not used for testing
 	}
 
 	@Override
 	public void setRetainExistingValuesWhenParameterNotProvided(boolean arg0, boolean arg1) {
-
+		// method empty since not used for testing
 	}
 
 	@Override
@@ -354,12 +352,12 @@ public class MockIssueInputParameters implements IssueInputParameters{
 
 	@Override
 	public void setSkipLicenceCheck(boolean arg0) {
-
+		// method empty since not used for testing
 	}
 
 	@Override
 	public void setSkipScreenCheck(boolean arg0) {
-
+		// method empty since not used for testing
 	}
 
 	@Override

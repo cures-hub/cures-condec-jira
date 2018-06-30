@@ -5,7 +5,7 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 /**
- * @description Interface for decision knowledge elements
+ * Interface for decision knowledge elements
  */
 @JsonDeserialize(as = DecisionKnowledgeElementImpl.class)
 public interface DecisionKnowledgeElement {

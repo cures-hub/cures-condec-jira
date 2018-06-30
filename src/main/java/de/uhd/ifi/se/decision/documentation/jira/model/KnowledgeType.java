@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * @description Type of decision knowledge element
+ * Type of decision knowledge element
  */
 public enum KnowledgeType {
 	ALTERNATIVE, ASSUMPTION, ASSESSMENT, ARGUMENT, CLAIM, CONTEXT, CONSTRAINT, DECISION, GOAL, ISSUE, IMPLICATION, PROBLEM, RATIONALE, SOLUTION, OTHER, QUESTION;
