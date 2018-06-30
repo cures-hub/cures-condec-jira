@@ -16,7 +16,7 @@ function fillAccordion(node) {
 function showDetails(id, summary, description, type) {
 	var detailsElement = document.getElementById("Details");
 	detailsElement.insertAdjacentHTML('beforeend', '<p>' + type + ' / ' + summary
-			+ ' <input type="submit" id="update" value="Update"/></p>' + '<p><textarea id="form-description" '
+			+ ' <input type="submit" class="aui-button" id="update" value="Update"/></p>' + '<p><textarea id="form-description" '
 			+ 'style="width:99%; height:auto;border: 1px solid rgba(204,204,204,1); ">' + description
 			+ '</textarea></p>');
 	detailsElement.style.display = "block";
@@ -33,13 +33,13 @@ function enableLinkingUnlinkedDecisionComponents(parentId) {
 	getUnlinkedDecisionComponents(
 			parentId,
 			function(unlinkedDecisionComponents) {
-				var insertString = '<select name="linkExistingIssueSearchField" class="link-existing-element-selection-field">';
+				var insertString = '<select name="linkExistingIssueSearchField" class="select">';
 				for (var index = 0; index < unlinkedDecisionComponents.length; index++) {
 					insertString += '<option value="' + unlinkedDecisionComponents[index].id + '">'
 							+ unlinkedDecisionComponents[index].type + ' / '
 							+ unlinkedDecisionComponents[index].summary + '</option>';
 				}
-				insertString += '</select><input type="button" name="linkExistingIssueButton" id="linkExistingIssueButton" value="Create Link"/>';
+				insertString += '</select><input type="button" name="linkExistingIssueButton" id="linkExistingIssueButton" class="aui-button" value="Create Link"/>';
 				document.getElementById("Details").insertAdjacentHTML('beforeend', insertString);
 				var linkButton = document.getElementById("linkExistingIssueButton");
 				linkButton.addEventListener("click", function() {
@@ -96,7 +96,7 @@ function setUpEditorContentForAddingComponent(type) {
 			'beforeend',
 			'<p>Do you want to add an additional ' + type + '? ' + radioButtons
 					+ '<input type="text" id="form-input-summary' + type + '" placeholder="Summary of ' + type
-					+ '"> <input type="submit" id="form-input-submit' + type + '" value="Add ' + type + '"/></p>');
+					+ '"> <input type="submit" class="aui-button" id="form-input-submit' + type + '" value="Add ' + type + '"/></p>');
 }
 
 function deleteContentOfAccordionEditor() {

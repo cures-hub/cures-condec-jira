@@ -47,9 +47,7 @@ a:focus a:hover {
 }
 
 #decision-input-field {
-	border: 1px solid rgba(204, 204, 204, 1);
 	width: 22.4%;
-	height: 19px;
 }
 
 #create-decision-button {
