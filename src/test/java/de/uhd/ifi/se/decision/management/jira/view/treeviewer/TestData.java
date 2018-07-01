@@ -78,5 +78,4 @@ public class TestData {
 		data.setNodeInfo(newInfo);
 		assertEquals(newInfo, data.getNode());
 	}
-
 }

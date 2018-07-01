@@ -196,7 +196,7 @@ var contextMenuDeleteAction = {
 	"label" : deleteKnowledgeElementText,
 	"name" : deleteKnowledgeElementText,
 	"action" : function(position) {
-		var node = getSelectedTreeViewerNodeId(position);
+		var id = getSelectedTreeViewerNodeId(position);
 		setUpContextMenuContentForDeleteAction(id);
 	},
 	"callback" : function(key, options) {
