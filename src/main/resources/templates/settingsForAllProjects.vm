@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>DecDoc Settings</title>
+<title>ConDec Settings</title>
 <meta name="decorator" content="atl.admin" />
 <meta name="admin.active.section"
 	content="admin_plugins_menu/new_plugin_section" />
@@ -10,11 +10,12 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rest
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 </head>
 <body>
-	<h2>DecDoc Settings</h2>
+<form class="aui">
+	<h1>Continuous Management of Decision Knowledge (ConDec) Settings</h1>
 	<table>
 		<tr>
 			<th>Project Name</th>
-			<th>DecDoc Activated?</th>
+			<th>ConDec Activated?</th>
 			<th>Use JIRA Issues to Store Decision Knowledge?</th>
 		</tr>
 		#foreach ($proj in $projectsMap)
@@ -55,5 +56,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		</tr>
 		#end
 	</table>
+	</form>
 </body>
 </html>

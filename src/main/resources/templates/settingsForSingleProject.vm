@@ -1,25 +1,23 @@
 <html>
 <head>
-<title>DecDoc Project Settings</title>
-<meta name="decorator" content="admin" />
+<title>ConDec Project Settings</title>
+<meta name="decorator" content="atl.admin" />
 <meta name="admin.active.section" content="atl.jira.proj.config" />
 <meta name="admin.active.tab"
 	content="decdoc-project-settings-menu-item" />
-<meta name="projectKey" content="$projectKey"/>
+<meta name="projectKey" content="$projectKey" />
 $webResourceManager.requireResource("com.atlassian.auiplugin:aui-toggle")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rest-client-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 </head>
 <body>
-	<h2>DecDoc Project Settings</h2>
-	<table>
-		<tr>
-			<th>DecDoc Activated?</th>
-			<th>Use JIRA Issues to Store Decision Knowledge?</th>
-		</tr>
-		<tr>
-			<td><aui-toggle id="isActivated-toggle" value=$projectKey></aui-toggle>
-				<script>
+	<form class="aui">
+		<h1>Continuous Management of Decision Knowledge (ConDec)</h1>
+		<h2>Project Settings</h2>
+		<div class="field-group">
+			<label for="isActivated-toggle">ConDec Activated?</label>
+			<aui-toggle id="isActivated-toggle" value=$projectKey></aui-toggle>
+			<script>
                 var toggle = document.getElementById('isActivated-toggle');
                     #if ($isActivated == true)
 			toggle.checked = true;
@@ -31,9 +29,14 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                     setActivated(this.checked, this.value);
                     this.busy = false;
                 });
-            </script></td>
-			<td><aui-toggle id="isIssueStrategy-toggle" value=$projectKey></aui-toggle>
-				<script>
+            </script>
+			<div class="description">Enables or disables the plug-in for
+				this project.</div>
+		</div>
+		<div class="field-group">
+			<label for="isIssueStrategy-toggle">Store in Issues?</label>
+			<aui-toggle id="isIssueStrategy-toggle" value=$projectKey></aui-toggle>
+			<script>
                 var toggle = document.getElementById('isIssueStrategy-toggle');
                     #if ($isIssueStrategy == true)
 			toggle.checked = true;
@@ -45,8 +48,13 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                     setIssueStrategy(this.checked, this.value);
                     this.busy = false;
                 });
-            </script></td>
-		</tr>
-	</table>
+            </script>
+			<div class="description">Sets the persistence strategy for this
+				project (either issue strategy or active object strategy). If
+				enabled, decision knowledge is stored in JIRA issues. If you choose
+				the issue strategy, you need to associate the project with the
+				decision knowledge issue type scheme.</div>
+		</div>
+	</form>
 </body>
 </html>
