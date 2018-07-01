@@ -1,9 +1,9 @@
 package de.uhd.ifi.se.decision.documentation.jira.persistence.issuestrategy;
 
-import de.uhd.ifi.se.decision.documentation.jira.persistence.IssueStrategy;
 import org.junit.Before;
 
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.persistence.IssueStrategy;
 
 public class TestIssueStrategySetUp extends TestSetUp{
 

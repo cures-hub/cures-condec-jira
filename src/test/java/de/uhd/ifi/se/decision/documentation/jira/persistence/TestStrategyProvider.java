@@ -6,6 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.persistence.IssueStrategy;
+import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 
 public class TestStrategyProvider extends TestSetUp {
 	private StrategyProvider strategyProvider;

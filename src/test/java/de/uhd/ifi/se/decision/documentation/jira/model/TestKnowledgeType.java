@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+
 public class TestKnowledgeType {
 	@Test
 	public void testGetKnowledgeTypeNull() {

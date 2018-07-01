@@ -35,7 +35,8 @@ import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockLoginUriProvider;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTemplateRenderer;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.config.SettingsOfAllProjects;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 

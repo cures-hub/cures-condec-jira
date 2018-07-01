@@ -8,8 +8,8 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 
 public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {

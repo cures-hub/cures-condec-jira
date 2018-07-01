@@ -16,6 +16,7 @@ import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 
 public class TestComponentGetter {
 
@@ -89,7 +90,7 @@ public class TestComponentGetter {
 
 	@Test
 	public void testGetPluginStorageKey() {
-		assertEquals("de.uhd.ifi.se.decision.documentation.jira", ComponentGetter.getPluginStorageKey());
+		assertEquals("de.uhd.ifi.se.decision.management.jira", ComponentGetter.getPluginStorageKey());
 	}
 
 	@Test

@@ -7,7 +7,7 @@ import org.junit.Test;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 
 public class TestCreateLink extends TestIssueStrategySetUp {
 

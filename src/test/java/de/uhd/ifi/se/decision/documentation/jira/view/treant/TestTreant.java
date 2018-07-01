@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.documentation.jira.view.treant;
 
 import static org.junit.Assert.assertEquals;
 
-import de.uhd.ifi.se.decision.documentation.jira.persistence.AbstractPersistenceStrategy;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,9 +12,13 @@ import de.uhd.ifi.se.decision.documentation.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
+import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
+import de.uhd.ifi.se.decision.management.jira.view.treant.Chart;
+import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
+import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 

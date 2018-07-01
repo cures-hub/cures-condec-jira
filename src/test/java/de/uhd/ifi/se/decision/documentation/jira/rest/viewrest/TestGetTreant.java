@@ -1,12 +1,12 @@
 package de.uhd.ifi.se.decision.documentation.jira.rest.viewrest;
-//package de.uhd.ifi.se.decision.documentation.jira.rest.viewrest;
+//package de.uhd.ifi.se.decision.management.jira.rest.viewrest;
 //
 //import static org.junit.Assert.assertEquals;
 //
 //import javax.ws.rs.core.Response;
 //import javax.ws.rs.core.Response.Status;
 //
-//import de.uhd.ifi.se.decision.documentation.jira.persistence.AbstractPersistenceStrategy;
+//import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 //import org.junit.Before;
 //import org.junit.Test;
 //import org.junit.runner.RunWith;
@@ -17,15 +17,15 @@ package de.uhd.ifi.se.decision.documentation.jira.rest.viewrest;
 //import com.atlassian.jira.issue.Issue;
 //import com.google.common.collect.ImmutableMap;
 //
-//import de.uhd.ifi.se.decision.documentation.jira.TestComponentGetter;
-//import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
-//import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
-//import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLink;
-//import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
-//import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
-//import de.uhd.ifi.se.decision.documentation.jira.model.LinkImpl;
-//import de.uhd.ifi.se.decision.documentation.jira.persistence.StrategyProvider;
-//import de.uhd.ifi.se.decision.documentation.jira.rest.ViewRest;
+//import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
+//import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+//import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
+//import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
+//import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+//import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+//import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
+//import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
+//import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 //import net.java.ao.EntityManager;
 //import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 //

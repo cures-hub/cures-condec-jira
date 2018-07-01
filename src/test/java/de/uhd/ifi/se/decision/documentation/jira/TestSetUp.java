@@ -29,7 +29,7 @@ import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkTypeManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueService;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockProjectRoleManager;
-import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class TestSetUp {
 	private ProjectManager projectManager;

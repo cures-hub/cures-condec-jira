@@ -1,8 +1,9 @@
 package de.uhd.ifi.se.decision.documentation.jira.persistence.issuestrategy;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
 import org.junit.Test;
+
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 
 import static org.junit.Assert.assertEquals;
 

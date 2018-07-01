@@ -20,6 +20,7 @@ import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueLinkTypeManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueService;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockIssueTypeManager;
+import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 
 public class TestPluginInitializer extends TestSetUp {
 

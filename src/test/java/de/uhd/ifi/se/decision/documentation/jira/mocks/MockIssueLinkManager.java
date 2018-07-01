@@ -14,7 +14,7 @@ import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.LinkCollection;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
  *

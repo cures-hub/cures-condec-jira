@@ -11,9 +11,9 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.documentation.jira.model.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 
 public class TestGetLinkedElements extends TestIssueStrategySetUp {
 

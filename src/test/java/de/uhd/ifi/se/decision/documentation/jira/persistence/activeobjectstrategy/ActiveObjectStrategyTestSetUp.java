@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.documentation.jira.persistence.activeobjectstrategy;
 
-import de.uhd.ifi.se.decision.documentation.jira.persistence.ActiveObjectStrategy;
 import org.junit.Before;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
@@ -10,6 +9,7 @@ import de.uhd.ifi.se.decision.documentation.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.persistence.ActiveObjectStrategy;
 import net.java.ao.EntityManager;
 
 public class ActiveObjectStrategyTestSetUp extends TestSetUp {

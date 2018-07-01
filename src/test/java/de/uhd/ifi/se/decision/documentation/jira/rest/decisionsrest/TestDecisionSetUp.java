@@ -13,9 +13,9 @@ import de.uhd.ifi.se.decision.documentation.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.documentation.jira.TestSetUp;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.documentation.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.documentation.jira.model.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.documentation.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.documentation.jira.rest.DecisionsRest;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.rest.DecisionsRest;
 import net.java.ao.EntityManager;
 
 public class TestDecisionSetUp extends TestSetUp {
