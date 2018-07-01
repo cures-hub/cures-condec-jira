@@ -36,6 +36,7 @@
 		<dependency>com.atlassian.auiplugin:aui-flag</dependency>
 		<dependency>com.atlassian.auiplugin:aui-buttons</dependency>
 		<dependency>com.atlassian.auiplugin:aui-forms</dependency>
+		<dependency>com.atlassian.auiplugin:aui-navigation</dependency>
 	</web-resource>
 
 	<web-resource key="rest-client-resources" name="DecDoc Rest Client Resources">

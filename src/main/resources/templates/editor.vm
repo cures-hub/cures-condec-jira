@@ -8,20 +8,22 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 <body>
 	<form class="aui">
 		<div>
-			<input type="text" id="decision-input-field"
-				class="equal-margin-regulator" placeholder="Insert new decision">
+			<input type="text"
+				class="equal-margin-regulator text medium-long-field"
+				id="decision-input-field" placeholder="Insert new decision">
 			<input type="button" id="create-decision-button"
-				name="create-decision-button"
 				class="button submit equal-margin-regulator" value="Create Decision" />
 			<label for="depth-of-tree-input">Depth of Tree<span
 				class="aui-icon icon-required"></span></label> <input type="number"
 				id="depth-of-tree-input" value="4" min="1"
-				class="equal-margin-regulator " placeholder="Enter depth of tree...">
-			<label for="depth-of-tree-input" id="depth-of-tree-warning">Depth
+				class="text short-field equal-margin-regulator "
+				placeholder="Enter depth of tree..."> <label
+				for="depth-of-tree-input" id="depth-of-tree-warning">Depth
 				must be positive</label>
 			<div>
 				<div>
-					<input class="search-input form-control equal-margin-regulator"
+					<input
+						class="search-input form-control equal-margin-regulator text long-field"
 						id="jstree-search-input" placeholder="Search decision knowledge">
 				</div>
 				<div id="switch-wrapper" class="equal-margin-regulator ">
@@ -100,8 +102,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 								selected</dd>
 						</dl>
 					</div>
-					<div class="chart equal-margin-regulator"
-						id="treant-container">
+					<div class="chart equal-margin-regulator" id="treant-container">
 						<p>No Element has been selected</p>
 					</div>
 				</div>

@@ -15,10 +15,6 @@ a:focus a:hover {
 	margin-right: 0.1%;
 }
 
-#link-existing-element-selection-field {
-	display: none;
-}
-
 #container {
 	width: 64.5%;
 	float: left;
@@ -34,11 +30,9 @@ a:focus a:hover {
 }
 
 #jstree-search-input {
-	width: 34%;
-	height: 20px;
-	border: 1px solid rgba(204, 204, 204, 1);
+	width: 33.3%;
+	height: 24px;
 	float: left;
-	padding: 0px;
 }
 
 #switch-wrapper {
@@ -47,11 +41,11 @@ a:focus a:hover {
 }
 
 #decision-input-field {
-	width: 22.4%;
+	width: 23%;
 }
 
 #create-decision-button {
-	width: 11%;
+	width: 10%;
 }
 
 .equal-margin-regulator {
@@ -105,7 +99,7 @@ a:focus a:hover {
 .demo {
 	overflow: auto;
 	border: 1px solid rgba(204, 204, 204, 1);
-	width: 34%;
+	width: 33%;
 	float: left;
 }
 
