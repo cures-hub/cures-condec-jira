@@ -1,14 +1,15 @@
-var createKnowledgeElementText = "Add Decision Component";
-var linkKnowledgeElementText = "Link Decision Component";
-var editKnowledgeElementText = "Edit Decision Component";
-var deleteKnowledgeElementText = "Delete Decision Component";
+var createKnowledgeElementText = "Add Element";
+var linkKnowledgeElementText = "Link Existing Element";
+var deleteLinkToParentText = "Delete Link to Parent";
+var editKnowledgeElementText = "Edit Element";
+var deleteKnowledgeElementText = "Delete Element";
 
 var contextMenuCreateAction = {
 	// label for Tree Viewer, name for Treant context menu
 	"label" : createKnowledgeElementText,
 	"name" : createKnowledgeElementText,
-	"action" : function(node) {
-		var id = getSelectedTreeViewerNodeId(node);
+	"action" : function(position) {
+		var id = getSelectedTreeViewerNodeId(position);
 		setUpContextMenuContentForCreateAction(id);
 	},
 	"callback" : function(key, options) {
@@ -17,10 +18,13 @@ var contextMenuCreateAction = {
 	}
 };
 
+function getSelectedTreeViewerNode(position) {
+	var selector = position.reference.prevObject.selector;
+	return $("#evts").jstree(true).get_node(selector);
+}
+
 function getSelectedTreeViewerNodeId(node) {
-	var selector = node.reference.prevObject.selector;
-	var nodeData = $("#evts").jstree(true).get_node(selector).data;
-	return nodeData.id;
+	return getSelectedTreeViewerNode(node).id;
 }
 
 function getSelectedTreantNodeId(options) {
@@ -104,8 +108,8 @@ var contextMenuLinkAction = {
 	// label for Tree Viewer, name for Treant context menu
 	"label" : linkKnowledgeElementText,
 	"name" : linkKnowledgeElementText,
-	"action" : function(node) {
-		var id = getSelectedTreeViewerNodeId(node);
+	"action" : function(position) {
+		var id = getSelectedTreeViewerNodeId(position);
 		setUpContextMenuContentForLinkAction(id);
 	},
 	"callback" : function(key, options) {
@@ -147,8 +151,8 @@ var contextMenuEditAction = {
 	// label for Tree Viewer, name for Treant context menu
 	"label" : editKnowledgeElementText,
 	"name" : editKnowledgeElementText,
-	"action" : function(node) {
-		var id = getSelectedTreeViewerNodeId(node);
+	"action" : function(position) {
+		var id = getSelectedTreeViewerNodeId(position);
 		setUpContextMenuContentForEditAction(id);
 	},
 	"callback" : function(key, options) {
@@ -191,8 +195,8 @@ var contextMenuDeleteAction = {
 	// label for Tree Viewer, name for Treant context menu
 	"label" : deleteKnowledgeElementText,
 	"name" : deleteKnowledgeElementText,
-	"action" : function(node) {
-		var id = getSelectedTreeViewerNodeId(node);
+	"action" : function(position) {
+		var node = getSelectedTreeViewerNodeId(position);
 		setUpContextMenuContentForDeleteAction(id);
 	},
 	"callback" : function(key, options) {
@@ -225,10 +229,50 @@ function setUpContextMenuContentForDeleteAction(id) {
 	};
 }
 
+var contextMenuDeleteLinkAction = {
+	// label for Tree Viewer, name for Treant context menu
+	"label" : deleteLinkToParentText,
+	"name" : deleteLinkToParentText,
+	"action" : function(position) {
+		var node = getSelectedTreeViewerNode(position);
+		var id = node.id;
+		var parentId = node.parent;
+		setUpContextMenuContentForDeleteLinkAction(id, parentId);
+	},
+	"callback" : function(key, options) {
+		var id = getSelectedTreantNodeId(options);
+		var parentId = findParentId(id);
+		setUpContextMenuContentForDeleteLinkAction(id, parentId);
+	}
+};
+
+function setUpContextMenuContentForDeleteLinkAction(id, parentId) {
+	setUpModal();
+	setHeaderText(deleteLinkToParentText);
+
+	var content = document.getElementById("modal-content");
+	content.insertAdjacentHTML("afterBegin",
+			"<p><input id='abort-submit' type='submit' value='Abort Deletion' style='float:right;'/>"
+					+ "<input id='form-input-submit' type='submit' value=" + deleteLinkToParentText
+					+ " style='float:right;'/></p>");
+
+	var abortButton = document.getElementById("abort-submit");
+	abortButton.onclick = function() {
+		closeModal();
+	};
+
+	var submitButton = document.getElementById("form-input-submit");
+	submitButton.onclick = function() {
+		deleteLinkToExistingElement(parentId, id);
+		closeModal();
+	};
+}
+
 var contextMenuActions = {
 	"create" : contextMenuCreateAction,
-	"link" : contextMenuLinkAction,
 	"edit" : contextMenuEditAction,
+	"link" : contextMenuLinkAction,
+	"deleteLink" : contextMenuDeleteLinkAction,
 	"delete" : contextMenuDeleteAction
 };
 

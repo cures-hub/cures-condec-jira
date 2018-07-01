@@ -43,8 +43,19 @@ function addDragAndDropSupportForTreant() {
 function drag(event) {
 	dragId = event.target.id;
 	event.dataTransfer.setData("text", dragId);
-	findOldParentNode(dragId);
-	console.log(dragId + " " + oldParentId);
+	oldParentId = findParentId(dragId);
+}
+
+function findParentId(elementId) {
+	var nodes = treantTree.tree.nodeDB.db;
+	var i;
+	for (i = 0; i < nodes.length; i++) {
+		if (nodes[i].nodeHTMLid == elementId) {
+			var parentNode = treantTree.tree.getNodeDb().get(nodes[i].parentId);
+			var parentId = parentNode.nodeHTMLid;
+			return parentId;
+		}
+	}
 }
 
 function drop(event, target) {
@@ -53,17 +64,6 @@ function drop(event, target) {
 	var childId = dragId;
 	deleteLinkToExistingElement(oldParentId, childId);
 	createLinkToExistingElement(parentId, childId);
-}
-
-function findOldParentNode(dragId) {
-	var nodes = treantTree.tree.nodeDB.db;
-	var i;
-	for (i = 0; i < nodes.length; i++) {
-		if (nodes[i].nodeHTMLid === dragId) {
-			var parentElement = treantTree.tree.getNodeDb().get(nodes[i].parentId);
-			oldParentId = parentElement.nodeHTMLid;
-		}
-	}
 }
 
 function allowDrop(event) {
