@@ -55,6 +55,18 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				the issue strategy, you need to associate the project with the
 				decision knowledge issue type scheme.</div>
 		</div>
+		<h2>Webhook</h2>
+		<div class="field-group">
+			<label for="webhook-url">URL</label> <input type="text"
+				class="text long-field" id="webhook-url" />
+			<div class="description">URL that decision knowledge is posted
+				to when updated.</div>
+		</div>
+		<div class="field-group">
+			<label for="webhook-secret">Shared Secret</label> <input type="text"
+				class="text long-field" id="webhook-secret" />
+			<div class="description">Key to authenticate with remote server.</div>
+		</div>
 	</form>
 </body>
 </html>
