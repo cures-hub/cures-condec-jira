@@ -18,14 +18,29 @@
 			Provides the style sheets and icons used in this plug-in.
 		</description>
 		<context>atl.general</context>
-		<!-- icons -->
-		<resource type="download" name="Add.png" location="/images/Add.png" />
-		<resource type="download" name="Delete.png" location="/images/Delete.png" />
-		<resource type="download" name="Open.png" location="/images/Open.png" />
-		<resource type="download" name="Edit.png" location="/images/Edit.png" />
+		<!-- general icons -->
+		<resource type="download" name="add.png" location="/images/add.png" />
+		<resource type="download" name="delete.png" location="/images/delete.png" />
+		<resource type="download" name="open.png" location="/images/open.png" />
+		<resource type="download" name="edit.png" location="/images/edit.png" />
 		<resource type="download" name="32px.png" location="/images/32px.png" />
 		<resource type="download" name="40px.png" location="/images/40px.png" />
 		<resource type="download" name="throbber.gif" location="/images/throbber.gif" />
+		<!-- default decision knowledge icons -->
+		<resource type="download" name="decision.png" location="/images/decision.png" />
+		<resource type="download" name="problem.png" location="/images/problem.png" />
+		<resource type="download" name="alternative.png" location="/images/alternative.png" />
+		<resource type="download" name="solution.png" location="/images/solution.png" />
+		<resource type="download" name="argument.png" location="/images/argument.png" />
+		<!-- additional decision knowledge icons -->
+		<resource type="download" name="issue.png" location="/images/issue.png" />
+		<resource type="download" name="goal.png" location="/images/goal.png" />
+		<resource type="download" name="claim.png" location="/images/claim.png" />
+		<resource type="download" name="context.png" location="/images/context.png" />
+		<resource type="download" name="constraint.png" location="/images/constraint.png" />
+		<resource type="download" name="implication.png" location="/images/implication.png" />
+		<resource type="download" name="assumption.png" location="/images/assumption.png" />
+		<resource type="download" name="assessment.png" location="/images/assessment.png" />
 		<!-- style sheets -->
 		<resource type="download" name="treant.css" location="/css/treant.css" />
 		<resource type="download" name="editor.css" location="/css/editor.css" />

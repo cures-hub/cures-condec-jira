@@ -1,8 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Type of decision knowledge element
@@ -92,5 +94,9 @@ public enum KnowledgeType {
 			knowledgeTypes.add(knowledgeType.toString());
 		}
 		return knowledgeTypes;
+	}
+
+	public static Set<KnowledgeType> getDefaulTypes() {
+		return EnumSet.of(DECISION, PROBLEM, ALTERNATIVE, ARGUMENT);
 	}
 }
