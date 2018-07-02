@@ -1,11 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
+import java.util.Set;
+
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class ConfigPersistence {
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentGetter.getPluginSettingsFactory();
@@ -40,5 +43,14 @@ public class ConfigPersistence {
 	public static void setActivated(String projectKey, boolean isActivated) {
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 		settings.put(pluginStorageKey + ".isActivated", Boolean.toString(isActivated));
+	}
+
+	public static Set<KnowledgeType> getKnowledgeTypes(String projectKey) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static void setKnowledgeTypes(String projectKey, Set<KnowledgeType> knowledgeTypes) {
+		// TODO Auto-generated method stub
 	}
 }

@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.Set;
+
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
@@ -56,5 +58,13 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	public AbstractPersistenceStrategy getPersistenceStrategy() {
 		StrategyProvider strategyProvider = new StrategyProvider();
 		return strategyProvider.getStrategy(this.projectKey);
+	}
+
+	public Set<KnowledgeType> getKnowledgeTypes() {
+		return ConfigPersistence.getKnowledgeTypes(this.getProjectKey());
+	}
+
+	public void setKnowledgeTypes(Set<KnowledgeType> knowledgeTypes) {
+		ConfigPersistence.setKnowledgeTypes(this.getProjectKey(), knowledgeTypes);
 	}
 }

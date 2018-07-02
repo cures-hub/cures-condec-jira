@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.Set;
+
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 
 /**
@@ -21,6 +23,10 @@ public interface DecisionKnowledgeProject {
 	boolean isIssueStrategy();
 
 	void setIssueStrategy(boolean isIssueStrategy);
+
+	Set<KnowledgeType> getKnowledgeTypes();
+
+	void setKnowledgeTypes(Set<KnowledgeType> knowledgeTypes);
 
 	AbstractPersistenceStrategy getPersistenceStrategy();
 }
