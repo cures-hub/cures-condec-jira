@@ -43,58 +43,18 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 							</dt>
 							<dd class="foldout" id="Details">No Element has been
 								selected</dd>
-							<dt class="editor-header">
-								Problems<a href="#" id="button" class="closed">Details</a>
-							</dt>
-							<dd class="foldout" id="Problem">No Element has been
-								selected</dd>
-							<dt class="editor-header">
-								Issues<a href="#" id="button" class="closed">Details</a>
-							</dt>
-							<dd class="foldout" id="Issue">No Element has been selected</dd>
-							<dt class="editor-header">
-								Goals<a href="#" id="button" class="closed">Details</a>
-							</dt>
-							<dd class="foldout" id="Goal">No Element has been selected</dd>
-							<dt class="editor-header">
-								Solutions<a href="#" id="button" class="closed">Details</a>
-							</dt>
-							<dd class="foldout" id="Solution">No Element has been
-								selected</dd>
-							<dt class="editor-header">
-								Alternatives<a href="#" id="button" class="closed">Details</a>
-							</dt>
-							<dd class="foldout" id="Alternative">No Element has been
-								selected</dd>
-							<dt class="editor-header">
-								Claims<a href="#" id="button" class="closed">Details</a>
-							</dt>
-							<dd class="foldout" id="Claim">No Element has been selected</dd>
-							<dt class="editor-header">
-								Contexts<a href="#" id="button" class="closed">Details</a>
-							</dt>
-							<dd class="foldout" id="Context">No Element has been
-								selected</dd>
-							<dt class="editor-header">
-								Assumptions<a href="#" id="button" class="closed">Details</a>
-							</dt>
-							<dd class="foldout" id="Assumption">No Element has been
-								selected</dd>
-							<dt class="editor-header">
-								Constraints<a href="#" id="button" class="closed">Details</a>
-							</dt>
-							<dd class="foldout" id="Constraint">No Element has been
-								selected</dd>
-							<dt class="editor-header">
-								Implications<a href="#" id="button" class="closed">Details</a>
-							</dt>
-							<dd class="foldout" id="Implication">No Element has been
-								selected</dd>
-							<dt class="editor-header">
-								Assessments<a href="#" id="button" class="closed">Details</a>
-							</dt>
-							<dd class="foldout" id="Assessment">No Element has been
-								selected</dd>
+							<script>
+							var knowledgeTypes = getKnowledgeTypes();
+							var html = "";
+							for (i in knowledgeTypes) {
+							html += "<dt class='editor-header'>";
+							html +=	knowledgeTypes[i];
+							html += "s<a href='#' id='button' class='closed'>Details</a></dt><dd class='foldout' id='";
+							html += knowledgeTypes[i];
+							html += "'>No Element has been selected</dd>";
+								}
+							document.getElementById("Details").insertAdjacentHTML('afterend', html);
+							</script>
 							<dt class="editor-header">
 								Arguments<a href="#" id="button" class="closed">Details</a>
 							</dt>
