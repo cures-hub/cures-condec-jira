@@ -11,10 +11,13 @@ import org.springframework.beans.factory.InitializingBean;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
+import com.atlassian.jira.config.properties.APKeys;
+import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
@@ -32,14 +35,25 @@ public class PluginInitializer implements InitializingBean {
 	public void createDecisionKnowledgeIssueTypes() {
 		List<String> missingDecisionKnowledgeIssueTypeNames = findMissingDecisionKnowledgeIssueTypes();
 		for (String issueTypeName : missingDecisionKnowledgeIssueTypeNames) {
-			createIssueType(issueTypeName);
+			createIssueType(issueTypeName, getIconUrl(issueTypeName));
 		}
 	}
 
+	public String getIconUrl(String issueTypeName) {
+		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
+		String iconUrl = applicationProperties.getString(APKeys.JIRA_BASEURL) + "/download/resources/"
+				+ ComponentGetter.getPluginStorageKey() + ":stylesheet-and-icon-resources/"
+				+ issueTypeName.toLowerCase() + ".png";
+		return iconUrl;
+	}
+
 	public List<String> findMissingDecisionKnowledgeIssueTypes() {
-		List<String> knowledgeTypes = KnowledgeType.toList();
+		List<String> knowledgeTypes = new ArrayList<String>();
+		for (KnowledgeType type : KnowledgeType.getDefaulTypes()) {
+			knowledgeTypes.add(type.toString());
+		}
 		for (String issueTypeName : getNamesOfExistingIssueTypes()) {
-            knowledgeTypes.remove(issueTypeName);
+			knowledgeTypes.remove(issueTypeName);
 		}
 		return knowledgeTypes;
 	}
@@ -57,6 +71,14 @@ public class PluginInitializer implements InitializingBean {
 	public void createIssueType(String issueTypeName) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
 		issueTypeManager.createIssueType(issueTypeName, issueTypeName, (long) 10300);
+	}
+
+	public void createIssueType(String issueTypeName, String iconUrl) {
+		// ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
+		// constantsManager.validateCreateIssueType(issueTypeName, null, issueTypeName,
+		// iconUrl, null, null);
+		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
+		issueTypeManager.createIssueType(issueTypeName, issueTypeName + " (decision knowledge element)", iconUrl);
 	}
 
 	public void createDecisionKnowledgeLinkTypes() {
