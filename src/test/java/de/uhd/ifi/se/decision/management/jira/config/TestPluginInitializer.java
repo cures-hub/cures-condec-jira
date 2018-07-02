@@ -15,7 +15,6 @@ import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.project.ProjectManager;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkTypeManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;

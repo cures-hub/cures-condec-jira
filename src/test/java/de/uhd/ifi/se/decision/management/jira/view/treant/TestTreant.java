@@ -12,21 +12,13 @@ import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
-import de.uhd.ifi.se.decision.management.jira.view.treant.Chart;
-import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
-import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestTreant extends TestSetUp {
 	private EntityManager entityManager;
-	private AbstractPersistenceStrategy abstractPersistenceStrategy;
-
 	private Chart chart;
 	private Node nodeStructure;
 	private Treant treant;
@@ -42,7 +34,7 @@ public class TestTreant extends TestSetUp {
 				new MockDefaultUserManager());
 		initialization();
 		StrategyProvider strategyProvider = new StrategyProvider();
-		abstractPersistenceStrategy = strategyProvider.getStrategy("TEST");
+		strategyProvider.getStrategy("TEST");
 	}
 
 	@Test

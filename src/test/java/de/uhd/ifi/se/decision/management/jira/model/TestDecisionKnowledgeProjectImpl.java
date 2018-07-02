@@ -5,10 +5,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
-
-
 /**
  * Test class for a JIRA project with the configuration settings used in this plug-in
  */

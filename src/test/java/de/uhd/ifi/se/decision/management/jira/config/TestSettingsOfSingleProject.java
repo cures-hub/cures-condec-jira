@@ -22,7 +22,6 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.config.SettingsOfSingleProject;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockAdminUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockLoginUriProvider;
