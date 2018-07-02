@@ -11,7 +11,7 @@ public interface Graph {
 
 	void setRootElement(DecisionKnowledgeElement rootElement);
 
-	List<DecisionKnowledgeElement> getLinkedElements(DecisionKnowledgeElement element);
-
 	Map<DecisionKnowledgeElement, Link> getLinkedElementsAndLinks(DecisionKnowledgeElement element);
+
+	List<DecisionKnowledgeElement> getLinkedElements(DecisionKnowledgeElement element);
 }
