@@ -2,6 +2,11 @@ package de.uhd.ifi.se.decision.management.jira.view.treant;
 
 import static org.junit.Assert.assertEquals;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +27,7 @@ public class TestTreant extends TestSetUp {
 	private Chart chart;
 	private Node nodeStructure;
 	private Treant treant;
+	private AbstractPersistenceStrategy abstractPersistenceStrategy;
 
 	@Before
 	public void setUp() {
@@ -34,7 +40,7 @@ public class TestTreant extends TestSetUp {
 				new MockDefaultUserManager());
 		initialization();
 		StrategyProvider strategyProvider = new StrategyProvider();
-		strategyProvider.getStrategy("TEST");
+		abstractPersistenceStrategy = strategyProvider.getStrategy("TEST");
 	}
 
 	@Test
@@ -67,37 +73,52 @@ public class TestTreant extends TestSetUp {
 		this.treant = new Treant("TEST", "14", 3);
 	}
 
-//	@Test
-//	public void testCreateNodeStructureNullZeroZero() {
-//		assertEquals(Node.class, treant.createNodeStructure(null, 0, 0).getClass());
-//	}
-//
-//	@Test
-//	public void testCreateNodeStructureEmptyZeroZero() {
-//		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-//		assertEquals(Node.class, treant.createNodeStructure(element, 0, 0).getClass());
-//	}
-//
-//	@Test
-//	public void testCreateNodeStructureFilledZeroZero() {
-//		DecisionKnowledgeElement element = abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
-//		assertEquals(Node.class, treant.createNodeStructure(element, 0, 0).getClass());
-//	}
-//
-//	@Test
-//	public void testCreateNodeStructureNullFilledFilled() {
-//		assertEquals(Node.class, treant.createNodeStructure(null, 4, 0).getClass());
-//	}
-//
-//	@Test
-//	public void testCreateNodeStructureEmptyFilledFilled() {
-//		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-//		assertEquals(Node.class, treant.createNodeStructure(element, 4, 0).getClass());
-//	}
-//
-//	@Test
-//	public void testCreateNodeStructureFilledFilledFilled() {
-//		DecisionKnowledgeElement element = abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
-//		assertEquals(Node.class, treant.createNodeStructure(element, 4, 0).getClass());
-//	}
+
+	@Test
+	public void testCreateNodeStructureNullNullZeroZero() {
+		assertEquals(Node.class, treant.createNodeStructure(null, null, 0, 0).getClass());
+	}
+
+	@Test
+	public void testCreateNodeStructureEmptyNullZeroZero() {
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+		assertEquals(Node.class, treant.createNodeStructure(element, null,  0,  0).getClass());
+	}
+
+	@Test
+	public void testCreateNodeStructureFilledNullZeroZero() {
+		DecisionKnowledgeElement element = abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		assertEquals(Node.class, treant.createNodeStructure(element, null,0,  0).getClass());
+	}
+
+
+	@Test
+	public void testCreateNodeStructureNullNullFilledFilled() {
+		assertEquals(Node.class, treant.createNodeStructure(null, null, 4, 0).getClass());
+	}
+
+	@Test
+	public void testCreateNodeStructureEmptyNullFilledFilled() {
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+		assertEquals(Node.class, treant.createNodeStructure(element, null,  4, 0).getClass());
+	}
+
+	@Test
+	public void testCreateNodeStructureFilledNullFilledFilled() {
+		DecisionKnowledgeElement element = abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		assertEquals(Node.class, treant.createNodeStructure(element, null, 4, 0).getClass());
+	}
+
+	@Test
+	public void testCreateNodeStructureFilledFilledFilledFilled(){
+		DecisionKnowledgeElement element = abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		Link link = new LinkImpl();
+		link.setLinkType("support");
+		link.setIngoingId(10);
+		link.setOutgoingId(14);
+		link.setDestinationObject(abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14));
+		link.setSourceObject(abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 10));
+		link.setLinkId((long)23);
+		assertEquals(Node.class, treant.createNodeStructure(element,link,4,0).getClass());
+	}
 }
