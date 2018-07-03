@@ -24,11 +24,9 @@ import com.atlassian.jira.user.MockApplicationUser;
 import com.atlassian.jira.user.util.MockUserManager;
 import com.atlassian.jira.user.util.UserManager;
 
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkTypeManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueService;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockProjectRoleManager;
+import com.atlassian.jira.util.VelocityParamFactory;
+import com.atlassian.velocity.VelocityManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.*;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class TestSetUp {
@@ -57,7 +55,9 @@ public class TestSetUp {
 				.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager())
 				.addMock(IssueService.class, issueService).addMock(ProjectManager.class, projectManager)
 				.addMock(UserManager.class, userManager).addMock(ConstantsManager.class, constantsManager)
-				.addMock(ProjectRoleManager.class, new MockProjectRoleManager());
+				.addMock(ProjectRoleManager.class, new MockProjectRoleManager())
+				.addMock(VelocityManager.class, new MockVelocityManager())
+				.addMock(VelocityParamFactory.class, new MockVelocitryParamFactory());
 
 		creatingProjectIssueStructure();
 	}

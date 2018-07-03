@@ -17,12 +17,19 @@ import com.atlassian.jira.util.VelocityParamFactory;
 import com.atlassian.velocity.VelocityManager;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Renders the issue tab panel
  */
 public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements IssueTabPanel {
+	private static final Logger LOGGER = LoggerFactory.getLogger(IssueTabPanelRenderer.class);
 	public List<IssueAction> getActions(Issue issue, ApplicationUser remoteUser) {
+		if(issue == null || remoteUser == null){
+			LOGGER.error("Issue or User are Null");
+			return new ArrayList<>();
+		}
 
 		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
 		String baseUrl = applicationProperties.getString(APKeys.JIRA_BASEURL);
@@ -44,6 +51,10 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 	}
 
 	public boolean showPanel(Issue issue, ApplicationUser remoteUser) {
+		if(issue == null || remoteUser == null){
+			LOGGER.error("Issue or User are Null");
+			return false;
+		}
 		String projectKey = this.getProjectKey(issue.getKey());
 		return ConfigPersistence.isActivated((String) projectKey);
 	}
