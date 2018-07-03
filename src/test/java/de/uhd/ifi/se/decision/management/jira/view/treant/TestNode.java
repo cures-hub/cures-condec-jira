@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.treant;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.common.collect.ImmutableMap;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,6 +29,8 @@ public class TestNode {
 
 	private Node node;
 
+	private DecisionKnowledgeElement element;
+
 	@Before
 	public void setUp() {
 		nodeContent = new HashMap<>();
@@ -41,18 +47,44 @@ public class TestNode {
 		node.setInnerHTML(innerHTML);
 		node.setLink(link);
 		node.setNodeContent(nodeContent);
-	}
 
-	@Test
-	public void testConstructor() {
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+		element = new DecisionKnowledgeElementImpl();
 		element.setId(1);
 		element.setKey("Test-1");
 		element.setType("TEST");
 		element.setDescription("Test");
 		element.setProjectKey("Test");
 		element.setSummary("TESTfwf");
+	}
+
+	@Test
+	public void testConstructor() {
 		this.node = new Node(element);
+		assertNotNull(node);
+	}
+
+	@Test
+	public void testElementLinkEmptyConstructor(){
+		Link link = new LinkImpl();
+		link.setLinkType("Test");
+		Node newNode = new Node(element,link);
+		assertNotNull(newNode);
+	}
+
+	@Test
+	public void testElementLinkSupportConstructor(){
+		Link link = new LinkImpl();
+		link.setLinkType("support");
+		Node newNode = new Node(element,link);
+		assertNotNull(newNode);
+	}
+
+	@Test
+	public void testElementLinkAttackConstructor(){
+		Link link = new LinkImpl();
+		link.setLinkType("attack");
+		Node newNode = new Node(element,link);
+		assertNotNull(newNode);
 	}
 
 	@Test
@@ -125,5 +157,17 @@ public class TestNode {
 		List<Node> newchildren = new ArrayList<Node>();
 		this.node.setChildren(newchildren);
 		assertEquals(newchildren, this.node.getChildren());
+	}
+
+	@Test
+	public void testGetConnectors(){
+		assertEquals(ImmutableMap.of("style", ImmutableMap.of("stroke", "#000000")),node.getConnectors());
+	}
+
+	@Test
+	public void testSetConnectors(){
+		Map<String, Map<String, String>> newConnectors = ImmutableMap.of("style", ImmutableMap.of("stroke", "#000001"));
+		node.setConnectors(newConnectors);
+		assertEquals(newConnectors, node.getConnectors());
 	}
 }
