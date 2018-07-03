@@ -37,7 +37,7 @@ public class TestGraph extends TestSetUp {
 	}
 
 	@Test
-	public void testRootElementConstructor() {
+	public void testProjectKeyConstructor() {
 		Graph graphRoot = new GraphImpl(element.getProjectKey());
 		assertNotNull(graphRoot);
 	}
@@ -45,6 +45,12 @@ public class TestGraph extends TestSetUp {
 	@Test
 	public void testRootElementLinkDistConstructor() {
 		Graph graphRoot = new GraphImpl(element.getProjectKey(), element.getKey());
+		assertNotNull(graphRoot);
+	}
+
+	@Test
+	public void testRootElementConstructor(){
+		Graph graphRoot = new GraphImpl(element);
 		assertNotNull(graphRoot);
 	}
 
@@ -66,8 +72,7 @@ public class TestGraph extends TestSetUp {
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
 
 		long i = 2;
-		DecisionKnowledgeElementImpl decision = null;
-		decision = new DecisionKnowledgeElementImpl((long) 5000, "TESTSummary", "TestDescription",
+		DecisionKnowledgeElementImpl decision = new DecisionKnowledgeElementImpl((long) 5000, "TESTSummary", "TestDescription",
 				KnowledgeType.DECISION, project.getKey(), "TEST-" + 5000);
 		decision.setId((long) 5000);
 
@@ -96,6 +101,17 @@ public class TestGraph extends TestSetUp {
 			i++;
 		}
 		System.out.println(graph.getLinkedElements(decision).size());
+	}
+
+	@Test
+	public void testGetLinkedElementsAndLinksNull(){
+		assertEquals(0, graph.getLinkedElementsAndLinks(null).size());
+	}
+
+	@Test
+	public void testGetLinkedElementsAndLinksEmpty() {
+		DecisionKnowledgeElement emptyElement = new DecisionKnowledgeElementImpl();
+		assertEquals(0, graph.getLinkedElements(emptyElement).size());
 	}
 
 	@Test
