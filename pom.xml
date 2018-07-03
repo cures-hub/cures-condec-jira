@@ -22,6 +22,10 @@
 			<name>Ewald Rode</name>
 		</developer>
 		<developer>
+			<id>Jcl15</id>
+			<name>Jochen Clormann</name>
+		</developer>
+		<developer>
 			<name>Ines Hamma</name>
 		</developer>
 	</developers>
@@ -187,7 +191,7 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>cures-decdoc-jira</finalName>
+		<finalName>cures-condec-jira</finalName>
 		<plugins>
 			<plugin>
 				<groupId>com.atlassian.maven.plugins</groupId>
@@ -257,5 +261,5 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
-	<url>https://github.com/cures-hub/cures-decdoc-jira</url>
+	<url>https://github.com/cures-hub/cures-condec-jira</url>
 </project>
