@@ -65,6 +65,35 @@ public class TestSettingsOfAllProjects extends TestSetUp {
 	}
 
 	@Test
+	public void testDoGetNullNull() throws IOException {
+		servlet.doGet(null,null);
+	}
+
+	@Test
+	public void testDoGetNullFilled() throws IOException {
+		servlet.doGet(null,response);
+	}
+
+	@Test
+	public void testDoGetFilledNull() throws IOException {
+		servlet.doGet(request,null);
+	}
+
+	@Test
+	public void testDoGetNoSysFilled() throws IOException {
+		request.setAttribute("NoSysAdmin", true);
+		request.setAttribute("SysAdmin", false);
+		servlet.doGet(request, response);
+	}
+
+	@Test
+	public void testDoGetSysFilled() throws IOException {
+		request.setAttribute("NoSysAdmin", false);
+		request.setAttribute("SysAdmin", true);
+		servlet.doGet(request, response);
+	}
+
+	@Test
 	public void testRequestNullResponseNull() throws IOException, ServletException {
 		assertFalse(servlet.isValidParameters(null, null));
 	}
