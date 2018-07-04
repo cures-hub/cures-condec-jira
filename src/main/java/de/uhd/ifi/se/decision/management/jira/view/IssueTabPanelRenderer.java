@@ -27,7 +27,7 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 	private static final Logger LOGGER = LoggerFactory.getLogger(IssueTabPanelRenderer.class);
 	public List<IssueAction> getActions(Issue issue, ApplicationUser remoteUser) {
 		if(issue == null || remoteUser == null){
-			LOGGER.error("Issue or User are Null");
+			LOGGER.error("Issue tab panel cannot be rendered correctly since no issue or user are provided.");
 			return new ArrayList<>();
 		}
 
@@ -52,11 +52,12 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 
 	public boolean showPanel(Issue issue, ApplicationUser remoteUser) {
 		if(issue == null || remoteUser == null){
-			LOGGER.error("Issue or User are Null");
+			LOGGER.error("Issue tab panel cannot be rendered correctly since no issue or user are provided.");
 			return false;
 		}
 		String projectKey = this.getProjectKey(issue.getKey());
-		return ConfigPersistence.isActivated((String) projectKey);
+		//return ConfigPersistence.isActivated((String) projectKey);
+		return false;
 	}
 
 	private String getProjectKey(String issueKey) {

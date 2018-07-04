@@ -54,12 +54,12 @@
 		<dependency>com.atlassian.auiplugin:aui-navigation</dependency>
 	</web-resource>
 
-	<web-resource key="rest-client-resources" name="DecDoc Rest Client Resources">
+	<web-resource key="rest-client-resources" name="ConDec Rest Client Resources">
 		<context>atl.general</context>
 		<description>
 			Provides the Java Script REST Client for the REST API used in this plug-in.
 		</description>
-		<resource type="download" name="decdoc.rest.client.js" location="/js/rest.client.js" />
+		<resource type="download" name="rest.client.js" location="/js/rest.client.js" />
 		<resource type="download" name="decdoc.js" location="/js/controller/decdoc.js" />
 	</web-resource>
 
@@ -71,10 +71,10 @@
 		<resource type="download" name="Treant.js" location="/js/treant/treant.js" />
 		<resource type="download" name="raphael.js" location="/js/treant/raphael.js" />
 		<resource type="download" name="jquery.easing.js" location="/js/jquery/jquery.easing.js" />
-		<resource type="download" name="decdoc.treant.js" location="/js/view.treant.js" />
+		<resource type="download" name="view.treant.js" location="/js/view.treant.js" />
 	</web-resource>
 
-	<web-resource key="decision-documentation-resources" name="DecDoc Java Script Resources">
+	<web-resource key="decision-management-resources" name="ConDec Java Script Resources">
 		<description>
 			Provides the Java Script files used in this plug-in.
 		</description>
@@ -85,24 +85,24 @@
 		<resource type="download" name="jquery.contextMenu.js" location="/js/jquery/jquery.contextMenu.js" />
 		<!-- jstree -->
 		<resource type="download" name="jstree.js" location="/js/jstree/jstree.js" />
-		<!-- DecDoc java script files -->
+		<!-- ConDec java script files -->
 		<resource type="download" name="decdoc.init.js" location="/js/controller/decdoc.init.js" />
 		<resource type="download" name="decdoc.viewhandler.js" location="/js/controller/decdoc.viewhandler.js" />
-		<resource type="download" name="decdoc.accordion.editor.js" location="/js/view.accordion.editor.js" />
-		<resource type="download" name="decdoc.tree.viewer.js" location="/js/view.tree.viewer.js" />
-		<resource type="download" name="decdoc.context.menu.js" location="/js/view.context.menu.js" />
+		<resource type="download" name="view.accordion.editor.js" location="/js/view.accordion.editor.js" />
+		<resource type="download" name="view.tree.viewer.js" location="/js/view.tree.viewer.js" />
+		<resource type="download" name="view.context.menu.js" location="/js/view.context.menu.js" />
 	</web-resource>
 
-	<web-resource key="issue-tab-panel-resources" name="DecDoc Java Script Resources for the Issue Tab Panel">
+	<web-resource key="issue-module-resources" name="ConDec Java Script Resources for the Issue Module">
 		<description>
-			Provides the Java Script file used in the issue tab panel.
+			Provides the Java Script file used in the issue module.
 		</description>
 		<context>jira.view.issue</context>
-		<resource type="download" name="decxplore.tab.panel.js" location="/js/view.tab.panel.js" />
+		<resource type="download" name="view.issue.module.js" location="/js/view.issue.module.js" />
 	</web-resource>
 
 	<!-- Decision Knowledge Page -->
-	<web-item name="Link to the DecDoc Plug-in in Side Bar" key="side-bar-link"
+	<web-item name="Link to the ConDec Plug-in in Side Bar" key="side-bar-link"
 		section="jira.project.sidebar.plugins.navigation" weight="1000">
 		<description>Provides the "Decisions" link to the plug-in page in the project's navigation side
 			bar.
@@ -114,7 +114,7 @@
 			<param name="projectKey" value="$pathEncodedProjectKey" />
 		</condition>
 	</web-item>
-	<web-panel name="DecDoc Plug-in Page" key="decisions-page" location="decisions-page"
+	<web-panel name="ConDec Plug-in Page" key="decisions-page" location="decisions-page"
 		weight="1000">
 		<description>
 			Provides the plug-in page that developers use to manage decision knowledge.
@@ -128,52 +128,52 @@
 	</rest>
 
 	<!-- Administration -->
-	<web-section key="decdoc-admin-section" name="Web Section for DecDoc Plug-in Administration"
+	<web-section key="condec-admin-section" name="Web Section for ConDec Plug-in Administration"
 		location="admin_plugins_menu">
 		<description>
 			Adds a section to the add-ons menu.
 		</description>
 	</web-section>
-	<web-section key="decdoc-admin-section-label" name="Web Section Label for DecDoc Plug-in Administration"
-		location="decdoc-admin-section">
+	<web-section key="condec-admin-section-label" name="Web Section Label for ConDec Plug-in Administration"
+		location="condec-admin-section">
 		<label>Decision Knowledge</label>
 		<description>
-			Adds the "Decisions" label to the DecDoc section in the add-ons menu.
+			Adds the "Decisions" label to the ConDec section in the add-ons menu.
 		</description>
 	</web-section>
-	<web-item key="decdoc-admin-menu-item" name="Menu Item for DecDoc Plug-in Administration"
-		section="decdoc-admin-section/decdoc-admin-section-label" weight="10" application="jira">
+	<web-item key="condec-admin-menu-item" name="Menu Item for ConDec Plug-in Administration"
+		section="condec-admin-section/condec-admin-section-label" weight="10" application="jira">
 		<label>ConDec Settings</label>
 		<description>
-			Adds the "DecDoc Settings" menu item that links to the administration page.
+			Adds the "ConDec Settings" menu item that links to the administration page.
 		</description>
-		<link>/plugins/servlet/decdoc/globalsettings</link>
+		<link>/plugins/servlet/condec/globalsettings</link>
 	</web-item>
 	<servlet key="servlet-for-settings-of-all-projects" name="Servlet for Settings of All Projects"
 		class="de.uhd.ifi.se.decision.management.jira.config.SettingsOfAllProjects">
 		<description>Provides the administration page.</description>
-		<url-pattern>/decdoc/globalsettings</url-pattern>
+		<url-pattern>/condec/globalsettings</url-pattern>
 	</servlet>
 
 	<!-- Project Settings -->
-	<web-section key="decisions-tabs-section" name="Web Section for DecDoc Plug-in in Project Settings"
+	<web-section key="decisions-tabs-section" name="Web Section for ConDec Plug-in in Project Settings"
 		location="atl.jira.proj.config">
 		<label>Decision Knowledge</label>
 		<description>
 			Adds the "Decisions" label to the project settings menu.
 		</description>
 	</web-section>
-	<web-item key="decdoc-project-settings-menu-item" name="Menu Item for DecDoc Plug-in Project Settings"
+	<web-item key="condec-project-settings-menu-item" name="Menu Item for ConDec Plug-in Project Settings"
 		section="atl.jira.proj.config/decisions-tabs-section" weight="15">
-		<description>Adds the "DecDoc Settings" menu item that links to the project settings.
+		<description>Adds the "ConDec Settings" menu item that links to the project settings.
 		</description>
 		<label>ConDec Project Settings</label>
-		<link linkId="decdoc-project-settings-menu-item">/plugins/servlet/decdoc/settings?projectKey=$projectKeyEncoded</link>
+		<link linkId="condec-project-settings-menu-item">/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded</link>
 	</web-item>
 	<servlet key="servlet-for-settings-of-single-project" name="Servlet for Settings of Single Project"
 		class="de.uhd.ifi.se.decision.management.jira.config.SettingsOfSingleProject">
 		<description>Provides the project settings page for the project administrators.</description>
-		<url-pattern>/decdoc/settings</url-pattern>
+		<url-pattern>/condec/settings</url-pattern>
 	</servlet>
 
 	<!-- Active Objects -->
@@ -190,13 +190,23 @@
 		</entity>
 	</ao>
 
-	<!-- Decision Exploration Page -->
-	<issue-tabpanel key="DecXplore" name="DecXplore"
-		class="de.uhd.ifi.se.decision.management.jira.view.IssueTabPanelRenderer">
-		<description>Exploration of Decision Knowledge</description>
+	<!-- Decision Knowledge Issue Module -->
+	<web-panel key="condec-issue-module" location="atl.jira.view.issue.left.context" weight="200">
+		<description>Decision Knowledge related to a JIRA Issue</description>
 		<label>Decision Knowledge</label>
+		<resource type="velocity" name="view" location="templates/issueModule.vm" />
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationConditionForIssueModule" />
+		<supports-ajax-load>true</supports-ajax-load>
+	</web-panel>
+
+	<!-- Decision Knowledge Extraction Tab Panel -->
+	<issue-tabpanel key="DecXtract" name="DecXtract"
+		class="de.uhd.ifi.se.decision.management.jira.view.IssueTabPanelRenderer">
+		<description>Extraction of Decision Knowledge from Issue Comments</description>
+		<label>Decision Knowledge Extraction</label>
 		<order>10</order>
 		<resource type="velocity" name="view" location="templates/tabPanel.vm" />
 		<supports-ajax-load>true</supports-ajax-load>
 	</issue-tabpanel>
+
 </atlassian-plugin>

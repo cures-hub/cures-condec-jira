@@ -1,6 +1,4 @@
-var issueTabTreantTree;
-
-function fillIssueTabPanel() {
+function fillIssueModule() {
 	var issueKey = JIRA.Issue.getIssueKey();
 	buildTreantIssueTabPanel(issueKey);
 }
@@ -21,7 +19,9 @@ function buildTreantIssueTabPanel(elementKey) {
 
 		console.log(treeStructure);
 
-		issueTabTreantTree = new Treant(treeStructure);
+		treantTree = new Treant(treeStructure);
+		createContextMenuForTreantNodes();
+		addDragAndDropSupportForTreant();
 	});
 }
 
