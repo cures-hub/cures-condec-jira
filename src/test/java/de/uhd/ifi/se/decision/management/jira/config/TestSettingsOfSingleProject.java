@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -76,23 +77,22 @@ public class TestSettingsOfSingleProject extends TestSetUp {
 		request.setAttribute("NoSysAdmin", false);
 		request.setAttribute("SysAdmin", false);
 		assertFalse(servlet.isValidUser(request));
-		assertTrue(servlet.isValidParameters(request, response));
 	}
 
 	@Test
 	public void testNoUserManager() throws IOException, ServletException {
 		((MockHttpServletRequest) request).setQueryString("Test");
 		request.setAttribute("NoSysAdmin", true);
+		request.setAttribute("SysAdmin", false);
 		assertFalse(servlet.isValidUser(request));
-		assertTrue(servlet.isValidParameters(request, response));
 	}
 
 	@Test
 	public void testNoUserManagerQueryNull() throws IOException, ServletException {
 		((MockHttpServletRequest) request).setQueryString(null);
 		request.setAttribute("NoSysAdmin", true);
+		request.setAttribute("SysAdmin", false);
 		assertFalse(servlet.isValidUser(request));
-		assertTrue(servlet.isValidParameters(request, response));
 	}
 
 	@Test
@@ -100,6 +100,21 @@ public class TestSettingsOfSingleProject extends TestSetUp {
 		request.setAttribute("NoSysAdmin", false);
 		request.setAttribute("SysAdmin", true);
 		assertTrue(servlet.isValidUser(request));
-		assertTrue(servlet.isValidParameters(request, response));
+	}
+
+	@Test
+	public void testGetTemplatePath(){
+		assertEquals("templates/settingsForSingleProject.vm", servlet.getTemplatePath());
+	}
+
+	@Test
+	public void testGetVelocityParametersNull(){
+		assertEquals(0, servlet.getVelocityParameters(null).size());
+	}
+
+	@Test
+	public void testGetVelocityParametersFilled(){
+		request.setAttribute("projectKey", "TEST");
+		assertEquals(4, servlet.getVelocityParameters(request).size());
 	}
 }

@@ -68,6 +68,9 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 	}
 
 	protected Map<String, Object> getVelocityParameters(HttpServletRequest request) {
+		if(request == null){
+			return new ConcurrentHashMap<String, Object>();
+		}
 		String projectKey = request.getParameter("projectKey");
 		boolean isActivated = ConfigPersistence.isActivated(projectKey);
 		boolean isIssueStrategy = ConfigPersistence.isIssueStrategy(projectKey);
