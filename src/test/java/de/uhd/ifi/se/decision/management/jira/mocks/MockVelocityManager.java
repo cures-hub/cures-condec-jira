@@ -47,11 +47,11 @@ public class MockVelocityManager implements VelocityManager {
 
     @Override
     public void writeEncodedBodyForContent(Writer writer, String contentFragment, Context context) throws VelocityException, IOException {
-
+        contentFragment.equals("do Something?");
     }
 
     @Override
     public void writeEncodedBody(Writer writer, String templateDirectory, String template, String encoding, Context context) throws VelocityException, IOException {
-
+        templateDirectory.equals("do Something?");
     }
 }
