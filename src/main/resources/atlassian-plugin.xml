@@ -59,7 +59,7 @@
 		<description>
 			Provides the Java Script REST Client for the REST API used in this plug-in.
 		</description>
-		<resource type="download" name="decdoc.rest.client.js" location="/js/controller/decdoc.rest.client.js" />
+		<resource type="download" name="decdoc.rest.client.js" location="/js/rest.client.js" />
 		<resource type="download" name="decdoc.js" location="/js/controller/decdoc.js" />
 	</web-resource>
 
