@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestIssueTabPanelRenderer extends TestSetUp{
@@ -82,6 +83,6 @@ public class TestIssueTabPanelRenderer extends TestSetUp{
         ((MockIssue)issue).setProjectObject(project);
         ((MockIssue)issue).setKey("TEST-1");
         ApplicationUser user = new MockApplicationUser("NoFails");
-        System.out.println(renderer.showPanel(issue,user));
+        assertTrue(renderer.showPanel(issue,user));
     }
 }

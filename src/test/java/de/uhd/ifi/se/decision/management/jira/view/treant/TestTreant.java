@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.treant;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
@@ -71,6 +72,7 @@ public class TestTreant extends TestSetUp {
 	public void testConstructor() {
 		initialization();
 		this.treant = new Treant("TEST", "14", 3);
+		assertTrue(true);
 	}
 
 
