@@ -26,6 +26,9 @@ public class ConfigPersistence {
 	}
 
 	public static void setIssueStrategy(String projectKey, boolean isIssueStrategy) {
+		if(projectKey == null){
+			return;
+		}
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 		settings.put(pluginStorageKey + ".isIssueStrategy", Boolean.toString(isIssueStrategy));
 	}
@@ -41,6 +44,9 @@ public class ConfigPersistence {
 	}
 
 	public static void setActivated(String projectKey, boolean isActivated) {
+		if(projectKey == null){
+			return;
+		}
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 		settings.put(pluginStorageKey + ".isActivated", Boolean.toString(isActivated));
 	}

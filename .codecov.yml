@@ -3,7 +3,7 @@ codecov:
     require_ci_to_pass: yes
 coverage:
   precision: 2
-  round: down
+  round: up
   range: "50...90"
 ignore:
   -"*/persistence/activeobjectstrategy/ActiveObjectStrategyTestSetUp.java"

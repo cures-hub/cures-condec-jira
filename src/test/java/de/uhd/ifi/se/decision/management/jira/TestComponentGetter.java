@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira;
 
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,7 +30,7 @@ public class TestComponentGetter {
 	private ActiveObjects activeObjects;
 
 	public static void init(ActiveObjects activeObjects, TransactionTemplate transactionTemplate, UserManager userManager) {
-		new ComponentGetter(null, transactionTemplate, null, null, null, userManager, null, activeObjects);
+		new ComponentGetter(new MockPluginSettingsFactory(), transactionTemplate, null, null, null, userManager, null, activeObjects);
 	}
 
 	@Before
