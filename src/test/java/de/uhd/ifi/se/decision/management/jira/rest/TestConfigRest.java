@@ -49,6 +49,30 @@ public class TestConfigRest extends TestSetUp {
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", errorMessage)).build();
 	}
 
+	// Testing isIssueStrategy
+	@Test
+	public void testIsIssueStrategyNull(){
+		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
+				confRest.isIssueStrategy(null).getEntity());
+	}
+
+	@Test
+	public void testIsIssueStrategyProjectKeyEmpty(){
+		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
+				confRest.isIssueStrategy("").getEntity());
+	}
+
+	@Test
+	public void testIsIssueStrategyProjectKeyFalse(){
+		assertEquals(Response.status(Status.OK).build().getStatus(),
+				confRest.isIssueStrategy("InvalidKey").getStatus());
+	}
+
+	@Test
+	public void testIsIssueStrategyProjectKeyOK(){
+		assertEquals(Response.status(Status.OK).build().getStatus(),confRest.isIssueStrategy("TEST").getStatus());
+	}
+
 	// Testing setActivated
 	@Test
 	public void testSetActivatedRequestNullProjectKeyNullIsActivatedNull() {

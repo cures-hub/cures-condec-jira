@@ -36,7 +36,6 @@ public class ConfigRest {
 		this.userManager = userManager;
 	}
 
-	// TODO Testing
 	@Path("/isIssueStrategy")
 	@GET
 	public Response isIssueStrategy(@QueryParam("projectKey") final String projectKey) {
