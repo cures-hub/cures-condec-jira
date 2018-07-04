@@ -86,7 +86,6 @@ public class TestSettingsOfAllProjects extends TestSetUp {
 		request.setAttribute("NoSysAdmin", false);
 		request.setAttribute("SysAdmin", false);
 		assertFalse(servlet.isValidUser(request));
-		assertTrue(servlet.isValidParameters(request, response));
 	}
 
 	@Test
@@ -94,7 +93,6 @@ public class TestSettingsOfAllProjects extends TestSetUp {
 		((MockHttpServletRequest) request).setQueryString("Test");
 		request.setAttribute("NoSysAdmin", true);
 		assertFalse(servlet.isValidUser(request));
-		assertTrue(servlet.isValidParameters(request, response));
 	}
 
 	@Test
@@ -102,7 +100,6 @@ public class TestSettingsOfAllProjects extends TestSetUp {
 		((MockHttpServletRequest) request).setQueryString(null);
 		request.setAttribute("NoSysAdmin", true);
 		assertFalse(servlet.isValidUser(request));
-		assertTrue(servlet.isValidParameters(request, response));
 	}
 
 	@Test
@@ -110,7 +107,6 @@ public class TestSettingsOfAllProjects extends TestSetUp {
 		request.setAttribute("NoSysAdmin", false);
 		request.setAttribute("SysAdmin", true);
 		assertTrue(servlet.isValidUser(request));
-		assertTrue(servlet.isValidParameters(request, response));
 	}
 
 	@Test
@@ -125,5 +121,23 @@ public class TestSettingsOfAllProjects extends TestSetUp {
 		((MockProject) project).setKey("TEST");
 		((MockProjectManager) projectManager).addProject(project);
 		assertTrue(SettingsOfAllProjects.getProjectsMap().size() >= 0);
+	}
+
+	@Test
+	public void testGetTemplatePath(){
+		assertEquals("templates/settingsForAllProjects.vm", servlet.getTemplatePath());
+	}
+
+	@Test
+	public void testGetVerlocityParametersNull(){
+		assertEquals(0, servlet.getVelocityParameters(null).size());
+	}
+
+	@Test
+	public void testGetVelocityParametersFilled(){
+		Project project = new MockProject(1, "TEST");
+		((MockProject) project).setKey("TEST");
+		((MockProjectManager) projectManager).addProject(project);
+		assertEquals(2, servlet.getVelocityParameters(request).size());
 	}
 }

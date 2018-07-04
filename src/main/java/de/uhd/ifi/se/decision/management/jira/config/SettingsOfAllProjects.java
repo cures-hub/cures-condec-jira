@@ -43,6 +43,9 @@ public class SettingsOfAllProjects extends AbstractSettingsServlet {
 	}
 
 	protected Map<String, Object> getVelocityParameters(HttpServletRequest request) {
+		if(request == null){
+			return  new ConcurrentHashMap<>();
+		}
 		Map<String, DecisionKnowledgeProject> configMap = getProjectsMap();
 		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
 		velocityParameters.put("requestUrl", request.getRequestURL());
