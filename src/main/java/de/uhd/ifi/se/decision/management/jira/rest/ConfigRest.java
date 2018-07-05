@@ -10,6 +10,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.objectweb.carol.cmi.compiler.Conf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,17 @@ public class ConfigRest {
 	@Inject
 	public ConfigRest(UserManager userManager) {
 		this.userManager = userManager;
+	}
+
+	@Path("/isKnowledgeExtractedFromGit")
+	@GET
+	public Response isKnowledgeExtractedFromGit(@QueryParam("projectKey") final String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		Boolean isKnowledgeExtractedFromGit = ConfigPersistence.isKnowledgeExtractedFromGit(projectKey);
+		return Response.ok(isKnowledgeExtractedFromGit).build();
 	}
 
 	@Path("/isIssueStrategy")

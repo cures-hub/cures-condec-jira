@@ -59,7 +59,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			<aui-toggle id="isKnowledgeExtractedFromGit-toggle" label="$projectKey" + "isKnowledgeExtractedFromGit" value=$projectKey></aui-toggle>
 			<script>
 				var toggle = document.getElementById('isKnowledgeExtractedFromGit-toggle');
-					console.log($isKnowledgeExtractedFromGit);
 					#if ($isKnowledgeExtractedFromGit == true)
 						toggle.checked = true;
 					#else

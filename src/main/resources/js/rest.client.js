@@ -300,6 +300,14 @@ function setKnowledgeExtractedFromGit(isKnowledgeExtractedFromGit, projectKey){
     });
 }
 
-function isKnowledgeExtractedFromGit(projectKey) {
-	return false;
+function isKnowledgeExtractedFromGit(projectKey, callback) {
+    getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isKnowledgeExtractedFromGit.json?projectKey=" + projectKey,
+		function (error, isKnowledgeBoolean) {
+			if(error === null){
+				callback(isKnowledgeBoolean);
+            } else {
+                showFlag("error", "Persistence strategy for the project could not be received. Error-Code: "
+                    + error);
+            }
+        });
 }
