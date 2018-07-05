@@ -55,11 +55,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 								}
 							document.getElementById("Details").insertAdjacentHTML('afterend', html);
 							</script>
-							<dt class="editor-header">
-								Arguments<a href="#" id="button" class="closed">Details</a>
-							</dt>
-							<dd class="foldout" id="Argument">No Element has been
-								selected</dd>
 						</dl>
 					</div>
 					<div class="chart equal-margin-regulator" id="treant-container">

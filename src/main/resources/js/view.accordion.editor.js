@@ -16,7 +16,8 @@ function fillAccordion(node) {
 function showDetails(id, summary, description, type) {
 	var detailsElement = document.getElementById("Details");
 	detailsElement.insertAdjacentHTML('beforeend', '<p>' + type + ' / ' + summary
-			+ ' <input type="submit" class="aui-button" id="update" value="Update"/></p>' + '<p><textarea id="form-description" '
+			+ ' <input type="submit" class="aui-button" id="update" value="Update"/></p>'
+			+ '<p><textarea id="form-description" '
 			+ 'style="width:99%; height:auto;border: 1px solid rgba(204,204,204,1); ">' + description
 			+ '</textarea></p>');
 	detailsElement.style.display = "block";
@@ -88,15 +89,19 @@ function addOptionToAddDecisionComponent(type, id) {
 function setUpEditorContentForAddingComponent(type) {
 	var radioButtons = "";
 	if (type === "Argument") {
-		radioButtons = "<input type='radio' name='form-radio-argument' value='Pro Argument' checked='checked'>Pro"
-				+ "<input type='radio' name='form-radio-argument' value='Contra Argument'>Contra"
-				+ "<input type='radio' name='form-radio-argument' value='Comment'>Comment";
+		radioButtons = "<input type='radio' class='radio' name='form-radio-argument' id='Pro' value='Pro Argument' checked='checked'>"
+				+ "<label for='Pro'>Pro</label> "
+				+ "<input type='radio' class='radio' name='form-radio-argument' id='Contra' value='Contra Argument'>"
+				+ "<label for='Contra'>Contra</label> "
+				+ "<input type='radio' class='radio' name='form-radio-argument' id='Comment' value='Comment'>"
+				+ "<label for='Comment'>Comment</label> ";
 	}
 	document.getElementById(type).insertAdjacentHTML(
 			'beforeend',
 			'<p>Do you want to add an additional ' + type + '? ' + radioButtons
 					+ '<input type="text" id="form-input-summary' + type + '" placeholder="Summary of ' + type
-					+ '"> <input type="submit" class="aui-button" id="form-input-submit' + type + '" value="Add ' + type + '"/></p>');
+					+ '" class="text long-field"> <input type="submit" class="aui-button" id="form-input-submit'
+					+ type + '" value="Add ' + type + '"/></p>');
 }
 
 function deleteContentOfAccordionEditor() {
