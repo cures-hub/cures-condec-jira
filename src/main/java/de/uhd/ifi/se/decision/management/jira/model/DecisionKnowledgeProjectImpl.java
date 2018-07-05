@@ -47,6 +47,11 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 		ConfigPersistence.setIssueStrategy(this.getProjectKey(), isIssueStrategy);
 	}
 
+	public boolean isUsingDecXplore() {
+		//TODO fill with the check
+		return false;
+	}
+
 	public boolean isActivated() {
 		return ConfigPersistence.isActivated(this.getProjectKey());
 	}

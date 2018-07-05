@@ -280,3 +280,14 @@ function isIssueStrategy(projectKey, callback) {
 				}
 			});
 }
+
+function useDecXplore(useDecXplore, projectKey){
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/useDecXplore.json?projectKey=" + projectKey
+		+ "&useDecXplore=" + useDecXplore, function (error, response) {
+        if (error === null) {
+            showFlag("success", "Strategy has been selected.");
+        } else {
+            showFlag("error", "Strategy could not be selected.");
+        }
+    });
+}

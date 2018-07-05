@@ -89,6 +89,28 @@ public class ConfigRest {
 		}
 	}
 
+	@Path("/useDecXplore")
+	@POST
+	public Response useDecXplore(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+								 @QueryParam("useDecXplore") String useDecXplore){
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if(useDecXplore == null){
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "useDecXplore = null"))
+					.build();
+		}
+		try {
+			//TODO Config functions and Backend
+			return Response.ok(Status.ACCEPTED).build();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
+
+	}
+
 	private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build();

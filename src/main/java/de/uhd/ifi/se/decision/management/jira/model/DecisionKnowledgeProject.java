@@ -24,6 +24,8 @@ public interface DecisionKnowledgeProject {
 
 	void setIssueStrategy(boolean isIssueStrategy);
 
+	boolean isUsingDecXplore();
+
 	Set<KnowledgeType> getKnowledgeTypes();
 
 	void setKnowledgeTypes(Set<KnowledgeType> knowledgeTypes);
