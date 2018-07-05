@@ -89,16 +89,16 @@ public class ConfigRest {
 		}
 	}
 
-	@Path("/useDecXplore")
+	@Path("/setKnowledgeExtractedFromGit")
 	@POST
 	public Response useDecXplore(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-								 @QueryParam("useDecXplore") String useDecXplore){
+								 @QueryParam("isKnowledgeExtractedFromGit") String isKnowledgeExtractedFromGit){
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if(useDecXplore == null){
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "useDecXplore = null"))
+		if(isKnowledgeExtractedFromGit == null){
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isKnowledgeExtractedFromGit = null"))
 					.build();
 		}
 		try {

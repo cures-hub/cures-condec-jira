@@ -24,7 +24,9 @@ public interface DecisionKnowledgeProject {
 
 	void setIssueStrategy(boolean isIssueStrategy);
 
-	boolean isUsingDecXplore();
+	boolean isKnowledgeExtractedFromGit();
+
+	void setKnowledgeExtractedFromGit(boolean isKnowledgeExtractedFromGit);
 
 	Set<KnowledgeType> getKnowledgeTypes();
 

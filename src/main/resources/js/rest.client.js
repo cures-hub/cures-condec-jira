@@ -289,13 +289,17 @@ function isTypeEnabled(knowledgeType, projectKey) {
 	return false;
 }
 
-function useDecXplore(useDecXplore, projectKey){
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/useDecXplore.json?projectKey=" + projectKey
-		+ "&useDecXplore=" + useDecXplore, function (error, response) {
+function setKnowledgeExtractedFromGit(isKnowledgeExtractedFromGit, projectKey){
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setKnowledgeExtractedFromGit.json?projectKey=" + projectKey
+		+ "&isKnowledgeExtractedFromGit=" + isKnowledgeExtractedFromGit, function (error, response) {
         if (error === null) {
-            showFlag("success", "Strategy has been selected.");
+            showFlag("success", "Git connection for this project has been changed.");
         } else {
-            showFlag("error", "Strategy could not be selected.");
+            showFlag("error", "Git connection for this project could not be configured.");
         }
     });
+}
+
+function isKnowledgeExtractedFromGit(projectKey) {
+	return false;
 }

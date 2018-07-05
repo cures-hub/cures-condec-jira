@@ -54,6 +54,25 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				the issue strategy, you need to associate the project with the
 				decision knowledge issue type scheme.</div>
 		</div>
+		<div class="field-group">
+			<label for="isKnowledgeExtractedFromGit-toggle">Extract from Git?</label>
+			<aui-toggle id="isKnowledgeExtractedFromGit-toggle" value=$projectKey></aui-toggle>
+			<script>
+			var toggle = document.getElementById('isKnowledgeExtractedFromGit-toggle');
+						#if ($isKnowledgeExtractedFromGit == true)
+				toggle.checked = true;
+						#else
+				toggle.checked = false;
+						#end
+                        toggle.addEventListener('change', function(error) {
+                            this.busy = true;
+                            setKnowledgeExtractedFromGit(this.checked, this.value);
+                            this.busy = false;
+                        });
+            </script>
+			<div class="description">Enables or disables whether decision
+				knowledge is extracted from Git for this project.</div>
+		</div>
 		<h2 id="additionale-types-header">Additional Decision Knowledge
 			Types</h2>
 		<script>
