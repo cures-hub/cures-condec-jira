@@ -59,4 +59,25 @@ public class ConfigPersistence {
 	public static void setKnowledgeTypes(String projectKey, Set<KnowledgeType> knowledgeTypes) {
 		// TODO Auto-generated method stub
 	}
+
+	public static void setKnowledgeExtractedFromGit(String projectKey, boolean setKnowledgeExtractedFromGit){
+		if(projectKey == null){
+			return;
+		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey+ ".isKnowledgeExtractedFromGit", Boolean.toString(setKnowledgeExtractedFromGit));
+	}
+
+	public static boolean isKnowledgeExtractedFromGit(String projectKey){
+		if(projectKey == null){
+			return false;
+		}
+		Object isKnowledgeExtractedFromGit = transactionTemplate.execute(new TransactionCallback<Object>() {
+			public Object doInTransaction() {
+				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+				return settings.get(pluginStorageKey + ".isKnowledgeExtractedFromGit");
+			}
+		});
+		return isKnowledgeExtractedFromGit	instanceof String && "true".equals(isKnowledgeExtractedFromGit);
+	}
 }

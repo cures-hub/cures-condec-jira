@@ -102,7 +102,7 @@ public class ConfigRest {
 					.build();
 		}
 		try {
-			//TODO Config functions and Backend
+			ConfigPersistence.setKnowledgeExtractedFromGit(projectKey, Boolean.valueOf(isKnowledgeExtractedFromGit));
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());

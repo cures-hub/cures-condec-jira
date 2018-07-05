@@ -56,12 +56,11 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	}
 
 	public boolean isKnowledgeExtractedFromGit() {
-		//TODO fill with the check
-		return false;
+		return ConfigPersistence.isKnowledgeExtractedFromGit(projectKey);
 	}
 
 	public void setKnowledgeExtractedFromGit(boolean isKnowledgeExtractedFromGit) {
-		// TODO Auto-generated method stub
+		ConfigPersistence.setKnowledgeExtractedFromGit(projectKey, isKnowledgeExtractedFromGit);
 	}
 
 	public AbstractPersistenceStrategy getPersistenceStrategy() {
