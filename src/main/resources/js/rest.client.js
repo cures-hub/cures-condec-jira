@@ -281,6 +281,14 @@ function isIssueStrategy(projectKey, callback) {
 			});
 }
 
+function enableType(isEnabled, knowledgeType, projectKey) {
+}
+
+
+function isTypeEnabled(knowledgeType, projectKey) {
+	return false;
+}
+
 function useDecXplore(useDecXplore, projectKey){
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/useDecXplore.json?projectKey=" + projectKey
 		+ "&useDecXplore=" + useDecXplore, function (error, response) {

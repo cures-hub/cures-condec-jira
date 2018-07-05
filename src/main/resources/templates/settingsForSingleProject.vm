@@ -6,14 +6,13 @@
 <meta name="admin.active.tab"
 	content="decdoc-project-settings-menu-item" />
 <meta name="projectKey" content="$projectKey" />
-$webResourceManager.requireResource("com.atlassian.auiplugin:aui-toggle")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rest-client-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 </head>
 <body>
 	<form class="aui">
 		<h1>Continuous Management of Decision Knowledge (ConDec)</h1>
-		<h2>Project Settings</h2>
+		<h2>Basic Project Settings</h2>
 		<div class="field-group">
 			<label for="isActivated-toggle">ConDec Activated?</label>
 			<aui-toggle id="isActivated-toggle" value=$projectKey></aui-toggle>
@@ -55,6 +54,38 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				the issue strategy, you need to associate the project with the
 				decision knowledge issue type scheme.</div>
 		</div>
+		<h2 id="additionale-types-header">Additional Decision Knowledge
+			Types</h2>
+		<script>
+		var additionalKnowledgeTypes = [ "Assessment", "Assumption", "Claim", "Constraint", "Context",
+		"Goal", "Implication", "Issue", "Solution" ];
+		for (i in additionalKnowledgeTypes) {
+			var toggleName = additionalKnowledgeTypes[i] + "-toggle";
+			html = "<div class='field-group'>";
+			html += "<label for=" + toggleName + ">" + additionalKnowledgeTypes[i] + "</label>";
+			html += "<aui-toggle id=" + toggleName + " value=$projectKey></aui-toggle>";
+			html += "<div class='description'>Enables the " + additionalKnowledgeTypes[i] + " element for this project.</div>";
+			html += "</div>";
+			document.getElementById("additionale-types-header").insertAdjacentHTML('afterend', html);
+		}
+		</script>
+		<script>
+		for (i in additionalKnowledgeTypes) {
+			var toggleName = additionalKnowledgeTypes[i] + "-toggle";
+			var toggle = document.getElementById(toggleName);
+			var isTypeEnabled = isTypeEnabled(additionalKnowledgeTypes[i], toggle.value);
+			if (isTypeEnabled == true) {
+                    toggle.checked = true;
+                } else {
+                    toggle.checked = false;
+                }
+            toggle.addEventListener('change', function(error) {
+                this.busy = true;
+                enableType(this.checked, additionalKnowledgeTypes[i], this.value);
+                this.busy = false;
+            });
+		}
+		</script>
 		<h2>Webhook</h2>
 		<div class="field-group">
 			<label for="webhook-url">URL</label> <input type="text"
@@ -65,7 +96,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		<div class="field-group">
 			<label for="webhook-secret">Shared Secret</label> <input type="text"
 				class="text long-field" id="webhook-secret" />
-			<div class="description">Key to authenticate with remote server.</div>
+			<div class="description">Key to authenticate with remote
+				server.</div>
 		</div>
 	</form>
 </body>
