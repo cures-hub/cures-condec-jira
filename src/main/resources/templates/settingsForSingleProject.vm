@@ -15,7 +15,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		<h2>Basic Project Settings</h2>
 		<div class="field-group">
 			<label for="isActivated-toggle">ConDec Activated?</label>
-			<aui-toggle id="isActivated-toggle" value=$projectKey></aui-toggle>
+			<aui-toggle id="isActivated-toggle" label="$pojectKey" + "-isActivated" value=$projectKey></aui-toggle>
 			<script>
                 var toggle = document.getElementById('isActivated-toggle');
                     #if ($isActivated == true)
@@ -34,7 +34,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		</div>
 		<div class="field-group">
 			<label for="isIssueStrategy-toggle">Store in Issues?</label>
-			<aui-toggle id="isIssueStrategy-toggle" value=$projectKey></aui-toggle>
+			<aui-toggle id="isIssueStrategy-toggle" label="$projectKey" + "-isIssueStrategy" value=$projectKey></aui-toggle>
 			<script>
                 var toggle = document.getElementById('isIssueStrategy-toggle');
                     #if ($isIssueStrategy == true)
@@ -56,19 +56,20 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		</div>
 		<div class="field-group">
 			<label for="isKnowledgeExtractedFromGit-toggle">Extract from Git?</label>
-			<aui-toggle id="isKnowledgeExtractedFromGit-toggle" value=$projectKey></aui-toggle>
+			<aui-toggle id="isKnowledgeExtractedFromGit-toggle" label="$projectKey" + "isKnowledgeExtractedFromGit" value=$projectKey></aui-toggle>
 			<script>
-			var toggle = document.getElementById('isKnowledgeExtractedFromGit-toggle');
-						#if ($isKnowledgeExtractedFromGit == true)
-				toggle.checked = true;
-						#else
-				toggle.checked = false;
-						#end
-                        toggle.addEventListener('change', function(error) {
-                            this.busy = true;
-                            setKnowledgeExtractedFromGit(this.checked, this.value);
-                            this.busy = false;
-                        });
+				var toggle = document.getElementById('isKnowledgeExtractedFromGit-toggle');
+					console.log($isKnowledgeExtractedFromGit);
+					#if ($isKnowledgeExtractedFromGit == true)
+						toggle.checked = true;
+					#else
+						toggle.checked = false;
+					#end
+				toggle.addEventListener('change', function(error) {
+					this.busy = true;
+					setKnowledgeExtractedFromGit(this.checked, this.value);
+					this.busy = false;
+				});
             </script>
 			<div class="description">Enables or disables whether decision
 				knowledge is extracted from Git for this project.</div>
@@ -82,7 +83,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			var toggleName = additionalKnowledgeTypes[i] + "-toggle";
 			html = "<div class='field-group'>";
 			html += "<label for=" + toggleName + ">" + additionalKnowledgeTypes[i] + "</label>";
-			html += "<aui-toggle id=" + toggleName + " value=$projectKey></aui-toggle>";
+			html += "<aui-toggle id=" + toggleName +" " + "label='$projectKey'-"+ toggleName +" value=$projectKey></aui-toggle>";
 			html += "<div class='description'>Enables the " + additionalKnowledgeTypes[i] + " element for this project.</div>";
 			html += "</div>";
 			document.getElementById("additionale-types-header").insertAdjacentHTML('afterend', html);
