@@ -11,17 +11,21 @@ function buildTreantIssueTabPanel(elementKey) {
 		treantContainer.innerHTML = "";
 		treantContainer.style.visibility = "visible";
 
-		var commitData = getData(AJS.contextPath() + "/rest/gitplugin/1.0/issues/" + elementKey + "/commits");
-		var commits = commitData.commits;
-		if (commits.length > 0) {
-			treeStructure.nodeStructure.children = addCommits(commits, treeStructure.nodeStructure.children);
-		}
+		isKnowledgeExtractedFromGit(getProjectKey(), function(isKnowledgeExtractedFromGit) {
+			if (isKnowledgeExtractedFromGit == true) {
+				var commitData = getData(AJS.contextPath() + "/rest/gitplugin/1.0/issues/" + elementKey + "/commits");
+				var commits = commitData.commits;
+				if (commits.length > 0) {
+					treeStructure.nodeStructure.children = addCommits(commits, treeStructure.nodeStructure.children);
+				}
+			}
+		});
 
 		console.log(treeStructure);
 
 		treantTree = new Treant(treeStructure);
-//		createContextMenuForTreantNodes();
-//		addDragAndDropSupportForTreant();
+		// createContextMenuForTreantNodes();
+		// addDragAndDropSupportForTreant();
 	});
 }
 
@@ -44,7 +48,7 @@ function addCommits(commits, elementArray) {
 
 		var decision;
 		var element;
-		for (var i in splitMessage) {
+		for ( var i in splitMessage) {
 			var split = splitMessage[i].split(" ");
 			var message = splitMessage[i].substr(splitMessage[i].indexOf(" ") + 1);
 			switch (split[0]) {

@@ -10,7 +10,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.objectweb.carol.cmi.compiler.Conf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,17 +36,6 @@ public class ConfigRest {
 		this.userManager = userManager;
 	}
 
-	@Path("/isKnowledgeExtractedFromGit")
-	@GET
-	public Response isKnowledgeExtractedFromGit(@QueryParam("projectKey") final String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		Boolean isKnowledgeExtractedFromGit = ConfigPersistence.isKnowledgeExtractedFromGit(projectKey);
-		return Response.ok(isKnowledgeExtractedFromGit).build();
-	}
-
 	@Path("/isIssueStrategy")
 	@GET
 	public Response isIssueStrategy(@QueryParam("projectKey") final String projectKey) {
@@ -57,27 +45,6 @@ public class ConfigRest {
 		}
 		Boolean isIssueStrategy = ConfigPersistence.isIssueStrategy(projectKey);
 		return Response.ok(isIssueStrategy).build();
-
-	}
-
-	@Path("/setActivated")
-	@POST
-	public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivated") String isActivated) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		if (isActivated == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
-		}
-		try {
-			ConfigPersistence.setActivated(projectKey, Boolean.valueOf(isActivated));
-			return Response.ok(Status.ACCEPTED).build();
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-			return Response.status(Status.CONFLICT).build();
-		}
 	}
 
 	@Path("/setIssueStrategy")
@@ -101,17 +68,49 @@ public class ConfigRest {
 		}
 	}
 
-	@Path("/setKnowledgeExtractedFromGit")
+	@Path("/setActivated")
 	@POST
-	public Response useDecXplore(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-								 @QueryParam("isKnowledgeExtractedFromGit") String isKnowledgeExtractedFromGit){
+	public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			@QueryParam("isActivated") String isActivated) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if(isKnowledgeExtractedFromGit == null){
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isKnowledgeExtractedFromGit = null"))
-					.build();
+		if (isActivated == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
+		}
+		try {
+			ConfigPersistence.setActivated(projectKey, Boolean.valueOf(isActivated));
+			return Response.ok(Status.ACCEPTED).build();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
+	}
+
+	@Path("/isKnowledgeExtractedFromGit")
+	@GET
+	public Response isKnowledgeExtractedFromGit(@QueryParam("projectKey") final String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		Boolean isKnowledgeExtractedFromGit = ConfigPersistence.isKnowledgeExtractedFromGit(projectKey);
+		return Response.ok(isKnowledgeExtractedFromGit).build();
+	}
+
+	@Path("/setKnowledgeExtractedFromGit")
+	@POST
+	public Response setKnowledgeExtractedFromGit(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey,
+			@QueryParam("isKnowledgeExtractedFromGit") String isKnowledgeExtractedFromGit) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if (isKnowledgeExtractedFromGit == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "isKnowledgeExtractedFromGit = null")).build();
 		}
 		try {
 			ConfigPersistence.setKnowledgeExtractedFromGit(projectKey, Boolean.valueOf(isKnowledgeExtractedFromGit));
@@ -120,7 +119,6 @@ public class ConfigRest {
 			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
-
 	}
 
 	private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {

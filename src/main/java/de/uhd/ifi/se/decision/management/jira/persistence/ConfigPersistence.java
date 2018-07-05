@@ -26,7 +26,7 @@ public class ConfigPersistence {
 	}
 
 	public static void setIssueStrategy(String projectKey, boolean isIssueStrategy) {
-		if(projectKey == null){
+		if (projectKey == null) {
 			return;
 		}
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
@@ -44,7 +44,7 @@ public class ConfigPersistence {
 	}
 
 	public static void setActivated(String projectKey, boolean isActivated) {
-		if(projectKey == null){
+		if (projectKey == null) {
 			return;
 		}
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
@@ -60,16 +60,16 @@ public class ConfigPersistence {
 		// TODO Auto-generated method stub
 	}
 
-	public static void setKnowledgeExtractedFromGit(String projectKey, boolean setKnowledgeExtractedFromGit){
-		if(projectKey == null){
+	public static void setKnowledgeExtractedFromGit(String projectKey, boolean setKnowledgeExtractedFromGit) {
+		if (projectKey == null) {
 			return;
 		}
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey+ ".isKnowledgeExtractedFromGit", Boolean.toString(setKnowledgeExtractedFromGit));
+		settings.put(pluginStorageKey + ".isKnowledgeExtractedFromGit", Boolean.toString(setKnowledgeExtractedFromGit));
 	}
 
-	public static boolean isKnowledgeExtractedFromGit(String projectKey){
-		if(projectKey == null){
+	public static boolean isKnowledgeExtractedFromGit(String projectKey) {
+		if (projectKey == null) {
 			return false;
 		}
 		Object isKnowledgeExtractedFromGit = transactionTemplate.execute(new TransactionCallback<Object>() {
@@ -78,6 +78,6 @@ public class ConfigPersistence {
 				return settings.get(pluginStorageKey + ".isKnowledgeExtractedFromGit");
 			}
 		});
-		return isKnowledgeExtractedFromGit	instanceof String && "true".equals(isKnowledgeExtractedFromGit);
+		return isKnowledgeExtractedFromGit instanceof String && "true".equals(isKnowledgeExtractedFromGit);
 	}
 }

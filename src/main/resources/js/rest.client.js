@@ -8,9 +8,7 @@ function showFlag(type, message) {
 }
 
 function getProjectKey() {
-	var pathname = window.location.pathname;
-	var stringArray = pathname.split("/");
-	return stringArray[stringArray.length - 1];
+	return JIRA.API.Projects.getCurrentProjectKey();
 }
 
 function getJSON(url, callback) {
@@ -281,33 +279,32 @@ function isIssueStrategy(projectKey, callback) {
 			});
 }
 
-function enableType(isEnabled, knowledgeType, projectKey) {
+function setKnowledgeTypeEnabled(isKnowledgeTypeEnabled, knowledgeType, projectKey) {
 }
 
-
-function isTypeEnabled(knowledgeType, projectKey) {
+function isKnowledgeTypeEnabled(knowledgeType, projectKey) {
 	return false;
 }
 
-function setKnowledgeExtractedFromGit(isKnowledgeExtractedFromGit, projectKey){
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setKnowledgeExtractedFromGit.json?projectKey=" + projectKey
-		+ "&isKnowledgeExtractedFromGit=" + isKnowledgeExtractedFromGit, function (error, response) {
-        if (error === null) {
-            showFlag("success", "Git connection for this project has been changed.");
-        } else {
-            showFlag("error", "Git connection for this project could not be configured.");
-        }
-    });
+function setKnowledgeExtractedFromGit(isKnowledgeExtractedFromGit, projectKey) {
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setKnowledgeExtractedFromGit.json?projectKey="
+			+ projectKey + "&isKnowledgeExtractedFromGit=" + isKnowledgeExtractedFromGit, function(error, response) {
+		if (error === null) {
+			showFlag("success", "Git connection for this project has been changed.");
+		} else {
+			showFlag("error", "Git connection for this project could not be configured.");
+		}
+	});
 }
 
 function isKnowledgeExtractedFromGit(projectKey, callback) {
-    getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isKnowledgeExtractedFromGit.json?projectKey=" + projectKey,
-		function (error, isKnowledgeBoolean) {
-			if(error === null){
-				callback(isKnowledgeBoolean);
-            } else {
-                showFlag("error", "Persistence strategy for the project could not be received. Error-Code: "
-                    + error);
-            }
-        });
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isKnowledgeExtractedFromGit.json?projectKey="
+			+ projectKey, function(error, isKnowledgeExtractedFromGit) {
+		if (error === null) {
+			callback(isKnowledgeExtractedFromGit);
+		} else {
+			showFlag("error", "It could not be received whether decision knowledge is extracted from git. Error-Code: "
+					+ error);
+		}
+	});
 }
