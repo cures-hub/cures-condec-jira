@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
@@ -42,8 +43,14 @@ public class Node {
 
 	public Node(DecisionKnowledgeElement decisionKnowledgeElement) {
 		this();
-		this.nodeContent = ImmutableMap.of("name", decisionKnowledgeElement.getType().toString(),
-				"title", decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
+		KnowledgeType type = decisionKnowledgeElement.getType();
+		if (type == KnowledgeType.OTHER) {
+			this.nodeContent = ImmutableMap.of("title", decisionKnowledgeElement.getSummary(), "desc",
+					decisionKnowledgeElement.getKey());
+		} else {
+			this.nodeContent = ImmutableMap.of("name", type.toString(), "title", decisionKnowledgeElement.getSummary(),
+					"desc", decisionKnowledgeElement.getKey());
+		}
 		this.htmlClass = decisionKnowledgeElement.getSuperType().toString().toLowerCase(Locale.ENGLISH);
 		this.htmlId = decisionKnowledgeElement.getId();
 	}
@@ -52,13 +59,13 @@ public class Node {
 		this(decisionKnowledgeElement);
 		switch (link.getLinkType()) {
 		case "support":
-			this.nodeContent = ImmutableMap.of("name", "Supporting Argument",
-					"title", decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
+			this.nodeContent = ImmutableMap.of("name", "Supporting Argument", "title",
+					decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 			this.htmlClass = "support";
 			break;
 		case "attack":
-			this.nodeContent = ImmutableMap.of("name", "Attacking Argument",
-					"title", decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
+			this.nodeContent = ImmutableMap.of("name", "Attacking Argument", "title",
+					decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 			this.htmlClass = "attack";
 			break;
 		}
