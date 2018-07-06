@@ -282,4 +282,20 @@ public class TestConfigRest extends TestSetUp {
 		assertEquals(Status.UNAUTHORIZED.getStatusCode(),
 				confRest.setIssueStrategy(request, "NotTEST", "false").getStatus());
 	}
+
+	//Test isKnowledgeExtractedFromGit
+	@Test
+	public void testIsKnowledgeExtractedNull(){
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),confRest.isKnowledgeExtractedFromGit(null).getStatus());
+	}
+
+	@Test
+	public void testIsKnowledgeExtractedNonExistend(){
+		assertEquals(Status.OK.getStatusCode(),confRest.isKnowledgeExtractedFromGit("NotTEST").getStatus());
+	}
+
+	@Test
+	public void testIsKnowledgeExtratedExistend(){
+		assertEquals(Status.OK.getStatusCode(),confRest.isKnowledgeExtractedFromGit("TEST").getStatus());
+	}
 }
