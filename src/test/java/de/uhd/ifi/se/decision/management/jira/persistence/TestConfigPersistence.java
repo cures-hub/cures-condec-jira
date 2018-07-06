@@ -82,4 +82,51 @@ public class TestConfigPersistence extends TestSetUp{
     public void testSetActivatedValid(){
         configPersistence.setActivated("TEST", true);
     }
+
+    //IsKnowledgeExtractedFromGit
+    @Test
+    public void testIsKnowledgeExtractedNull(){
+        assertFalse(configPersistence.isKnowledgeExtractedFromGit(null));
+    }
+
+    @Ignore
+    public void testIsKnowledgeExtractedInvalid(){
+        assertFalse(configPersistence.isKnowledgeExtractedFromGit("NotTEST"));
+    }
+
+    @Test
+    public void testIsKnowledgeExtractedFilled(){
+        assertTrue(configPersistence.isKnowledgeExtractedFromGit("TEST"));
+    }
+
+    //SetKnowledgeExtractedFromGit
+    @Test
+    public void testSetKnowledgeExtractedNullFalse(){
+        configPersistence.setKnowledgeExtractedFromGit(null,false);
+    }
+
+    @Test
+    public void testSetKnowledgeExtractedNullTrue(){
+        configPersistence.setKnowledgeExtractedFromGit(null,true);
+    }
+
+    @Test
+    public void testSetKnowledgeExtractedInvalidFalse(){
+        configPersistence.setKnowledgeExtractedFromGit("NotTEST", false);
+    }
+
+    @Test
+    public void testSetKnowledgeExtractedInvalidTrue(){
+        configPersistence.setKnowledgeExtractedFromGit("NotTEST", true);
+    }
+
+    @Test
+    public void testSetKnowledgeExtractedFilledFalse(){
+        configPersistence.setKnowledgeExtractedFromGit("TEST", false);
+    }
+
+    @Test
+    public void testSetKnowledgeExtractedFilledTrue(){
+        configPersistence.setKnowledgeExtractedFromGit("TEST", true);
+    }
 }
