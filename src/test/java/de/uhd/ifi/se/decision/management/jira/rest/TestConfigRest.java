@@ -298,4 +298,74 @@ public class TestConfigRest extends TestSetUp {
 	public void testIsKnowledgeExtratedExistend(){
 		assertEquals(Status.OK.getStatusCode(),confRest.isKnowledgeExtractedFromGit("TEST").getStatus());
 	}
+
+	//Test setKnowledgeExtractedFromGit
+	@Test
+	public void testSetKnowledgeExtractedNullNullNull(){
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), confRest.setKnowledgeExtractedFromGit(null, null, null ).getStatus());
+	}
+
+	@Test
+	public void testSetKnowledgeExtractedNullFilledNull(){
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), confRest.setKnowledgeExtractedFromGit(null,"TEST", null).getStatus());
+	}
+
+	@Test
+	public void testSetKnowledgeExtractedNullNullFilled(){
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), confRest.setKnowledgeExtractedFromGit(null, null, "false").getStatus());
+	}
+
+	@Test
+	public void testSetKnowledgeExtractedFilledNullNull(){
+		request.setAttribute("WithFails", false);
+		request.setAttribute("NoFails", false);
+		assertEquals(Status.UNAUTHORIZED.getStatusCode(), confRest.setKnowledgeExtractedFromGit(request, null, null).getStatus());
+	}
+
+	@Test
+	public void testSetKnowledgeExtractedFilledFilledNull(){
+		request.setAttribute("WithFails", false);
+		request.setAttribute("NoFails", false);
+		assertEquals(Status.UNAUTHORIZED.getStatusCode(), confRest.setKnowledgeExtractedFromGit(request, "TEST", null).getStatus());
+	}
+
+	@Test
+	public void testSetKnowledgeExtractedFilledNoFailsFilledNull(){
+		request.setAttribute("WithFails", false);
+		request.setAttribute("NoFails", true);
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), confRest.setKnowledgeExtractedFromGit(request, "TEST", null).getStatus());
+	}
+
+	@Test
+	public void testSetKnowledgeExtractedNullFilledFilled(){
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), confRest.setKnowledgeExtractedFromGit(null,"TEST", "false").getStatus());
+	}
+
+	@Test
+	public void testSetKnowledgeExtractedFilledFilledFilled(){
+		request.setAttribute("WithFails", false);
+		request.setAttribute("NoFails", false);
+		assertEquals(Status.UNAUTHORIZED.getStatusCode(), confRest.setKnowledgeExtractedFromGit(request, "TEST", "false").getStatus());
+	}
+
+	@Test
+	public void testSetKnowledgeExtractedFilledWithFailsFilledFilled(){
+		request.setAttribute("WithFails", true);
+		request.setAttribute("NoFails", false);
+		assertEquals(Status.UNAUTHORIZED.getStatusCode(), confRest.setKnowledgeExtractedFromGit(request, "TEST", "false").getStatus());
+	}
+
+	@Test
+	public void testSetKnowledgeExtractedFilledNoFailsFilledFilled(){
+		request.setAttribute("WithFails", false);
+		request.setAttribute("NoFails", true);
+		assertEquals(Status.OK.getStatusCode(), confRest.setKnowledgeExtractedFromGit(request, "TEST", "false").getStatus());
+	}
+
+	@Test
+	public void testSetKnowledgeExtractedFilledNoFailsFilledInvalid(){
+		request.setAttribute("WithFails", false);
+		request.setAttribute("NoFails", true);
+		assertEquals(Status.OK.getStatusCode(), confRest.setKnowledgeExtractedFromGit(request, "TEST", "testNotABoolean").getStatus());
+	}
 }
