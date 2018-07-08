@@ -11,9 +11,15 @@ import org.springframework.beans.factory.InitializingBean;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
+import com.atlassian.jira.issue.IssueFieldConstants;
+import com.atlassian.jira.issue.fields.config.FieldConfigScheme;
+import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
+import com.atlassian.jira.issue.fields.option.OptionSet;
+import com.atlassian.jira.issue.fields.option.OptionSetManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
+import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -33,12 +39,8 @@ public class PluginInitializer implements InitializingBean {
 	public void createDecisionKnowledgeIssueTypes() {
 		List<String> missingDecisionKnowledgeIssueTypeNames = findMissingDecisionKnowledgeIssueTypes();
 		for (String issueTypeName : missingDecisionKnowledgeIssueTypeNames) {
-			createIssueType(issueTypeName, getIconUrl(issueTypeName));
+			createIssueType(issueTypeName);
 		}
-	}
-
-	public static String getIconUrl(String issueTypeName) {
-		return ComponentGetter.getUrlOfImageFolder() + issueTypeName.toLowerCase() + ".png";
 	}
 
 	public List<String> findMissingDecisionKnowledgeIssueTypes() {
@@ -62,17 +64,36 @@ public class PluginInitializer implements InitializingBean {
 		return existingIssueTypeNames;
 	}
 
-	public void createIssueType(String issueTypeName) {
-		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
-		issueTypeManager.createIssueType(issueTypeName, issueTypeName, (long) 10300);
-	}
+	public static void createIssueType(String issueTypeName) {
+		// IssueTypeManager issueTypeManager =
+		// ComponentAccessor.getComponent(IssueTypeManager.class);
+		// issueTypeManager.createIssueType(issueTypeName, issueTypeName, (long) 10300);
 
-	public void createIssueType(String issueTypeName, String iconUrl) {
 		// ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
 		// constantsManager.validateCreateIssueType(issueTypeName, null, issueTypeName,
 		// iconUrl, null, null);
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
+		String iconUrl = getIconUrl(issueTypeName);
 		issueTypeManager.createIssueType(issueTypeName, issueTypeName + " (decision knowledge element)", iconUrl);
+	}
+
+	public static void associateIssueType(String issueTypeName, String projectKey) {
+		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
+		IssueType issueType = issueTypeManager.getIssueType(issueTypeName);
+
+		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
+		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
+		FieldConfigScheme configScheme = issueTypeSchemeManager.getConfigScheme(project);
+		OptionSetManager optionSetManager = ComponentAccessor.getComponent(OptionSetManager.class);
+		if (!configScheme.getAssociatedIssueTypes().contains(issueType)) {
+            final OptionSet options = optionSetManager.getOptionsForConfig(configScheme.getOneAndOnlyConfig());
+            options.addOption(IssueFieldConstants.ISSUE_TYPE, issueType.getId());
+            issueTypeSchemeManager.update(configScheme, options.getOptionIds());
+        }
+	}
+
+	public static String getIconUrl(String issueTypeName) {
+		return ComponentGetter.getUrlOfImageFolder() + issueTypeName.toLowerCase() + ".png";
 	}
 
 	public void createDecisionKnowledgeLinkTypes() {

@@ -27,6 +27,14 @@ function getJSON(url, callback) {
 	xhr.send();
 }
 
+function getResponseAsReturnValue(url) {
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", url, false);
+	xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+	xhr.send();
+	return JSON.parse(xhr.response);
+}
+
 function postJSON(url, data, callback) {
 	var xhr = new XMLHttpRequest();
 	xhr.open("POST", url, true);
@@ -325,14 +333,12 @@ function isKnowledgeTypeEnabled(knowledgeType, projectKey, toggle, callback) {
 	});
 }
 
-function getKnowledgeTypes(projectKey, callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/getKnowledgeTypes.json?projectKey=" + projectKey,
-			function(error, knowledgeTypes) {
-				if (error === null) {
-					simpleKnowledgeTypes = knowledgeTypes;
-					callback(knowledgeTypes);
-				} else {
-					showFlag("error", "The knowledge types could not be received. Error-Code: " + error);
-				}
-			});
+function getKnowledgeTypes(projectKey) {
+	var knowledgeTypes = getResponseAsReturnValue(AJS.contextPath() + "/rest/decisions/latest/config/getKnowledgeTypes.json?projectKey="
+			+ projectKey);
+	if (knowledgeTypes !== null) {
+		return knowledgeTypes;
+	} else {
+		showFlag("error", "The knowledge types could not be received. Error-Code: " + error);
+	}
 }

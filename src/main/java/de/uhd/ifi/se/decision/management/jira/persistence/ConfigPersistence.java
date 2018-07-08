@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
+import java.util.Set;
+
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
@@ -47,6 +49,17 @@ public class ConfigPersistence {
 		}
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 		settings.put(pluginStorageKey + ".isActivated", Boolean.toString(isActivated));
+		if (isActivated) {
+			activateDefaultKnowledgeTypes(projectKey);
+		}
+	}
+
+	public static void activateDefaultKnowledgeTypes(String projectKey) {
+		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaulTypes();
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
+			settings.put(pluginStorageKey + "." + knowledgeType, "true");
+		}
 	}
 
 	public static boolean isKnowledgeExtractedFromGit(String projectKey) {

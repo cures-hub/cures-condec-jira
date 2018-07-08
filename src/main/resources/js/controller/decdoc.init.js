@@ -4,11 +4,8 @@ var knowledgeTypes = [ "Alternative", "Assessment", "Assumption", "Claim", "Comm
 var simpleKnowledgeTypes = [ "Alternative", "Argument", "Assessment", "Assumption", "Claim", "Constraint", "Context",
 		 "Goal", "Implication", "Issue", "Problem", "Solution" ];
 
-function getKnowledgeTypes() {
-	return simpleKnowledgeTypes;
-}
-
 function initializeSite() {
+	simpleKnowledgeTypes = getKnowledgeTypes(getProjectKey());
 	updateView(getProjectKey());
 
 	/* accordion elements */

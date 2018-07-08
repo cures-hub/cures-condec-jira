@@ -30,7 +30,5 @@ public interface DecisionKnowledgeProject {
 
 	Set<KnowledgeType> getKnowledgeTypes();
 
-	void setKnowledgeTypes(Set<KnowledgeType> knowledgeTypes);
-
 	AbstractPersistenceStrategy getPersistenceStrategy();
 }

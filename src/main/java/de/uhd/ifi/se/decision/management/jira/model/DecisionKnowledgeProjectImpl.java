@@ -1,5 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
@@ -69,11 +73,13 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	}
 
 	public Set<KnowledgeType> getKnowledgeTypes() {
-		return null;
-		//return ConfigPersistence.getKnowledgeTypes(this.getProjectKey());
-	}
-
-	public void setKnowledgeTypes(Set<KnowledgeType> knowledgeTypes) {
-		//ConfigPersistence.setKnowledgeTypes(this.getProjectKey(), knowledgeTypes);
+		Set<KnowledgeType> knowledgeTypes = new HashSet<KnowledgeType>();
+		for(KnowledgeType knowledgeType : KnowledgeType.values()) {
+			boolean isEnabled = ConfigPersistence.isKnowledgeTypeEnabled(this.projectKey, knowledgeType);
+			if(isEnabled) {
+				knowledgeTypes.add(knowledgeType);
+			}
+		}
+		return knowledgeTypes;
 	}
 }

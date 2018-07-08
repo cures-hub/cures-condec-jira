@@ -2,8 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -22,6 +20,7 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
@@ -154,6 +153,9 @@ public class ConfigRest {
 		}
 		try {
 			ConfigPersistence.setKnowledgeTypeEnabled(projectKey, knowledgeType, Boolean.valueOf(isKnowledgeTypeEnabled));
+			if(ConfigPersistence.isIssueStrategy(projectKey)) {
+				PluginInitializer.createIssueType(knowledgeType);
+			}
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -170,7 +172,7 @@ public class ConfigRest {
 		}
 		List<String> knowledgeTypes = new ArrayList<String>();
 		for(KnowledgeType knowledgeType : KnowledgeType.values()) {
-			Boolean isEnabled = ConfigPersistence.isKnowledgeTypeEnabled(projectKey, knowledgeType);
+			boolean isEnabled = ConfigPersistence.isKnowledgeTypeEnabled(projectKey, knowledgeType);
 			if(isEnabled) {
 				knowledgeTypes.add(knowledgeType.toString());
 			}
