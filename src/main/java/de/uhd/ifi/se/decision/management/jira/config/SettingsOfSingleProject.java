@@ -17,6 +17,7 @@ import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
 /**
@@ -76,10 +77,11 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		boolean isIssueStrategy = ConfigPersistence.isIssueStrategy(projectKey);
 
 		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
-		velocityParameters.put("requestUrl", request.getRequestURL());
 		velocityParameters.put("projectKey", projectKey);
 		velocityParameters.put("isActivated", isActivated);
 		velocityParameters.put("isIssueStrategy", isIssueStrategy);
+		velocityParameters.put("imageFolderUrl", ComponentGetter.getUrlOfImageFolder());
+		velocityParameters.put("requestUrl", request.getRequestURL());
 		return velocityParameters;
 	}
 }

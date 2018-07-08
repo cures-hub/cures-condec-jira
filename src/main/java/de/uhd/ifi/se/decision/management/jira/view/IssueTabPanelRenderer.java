@@ -56,7 +56,7 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 			return false;
 		}
 		String projectKey = this.getProjectKey(issue.getKey());
-		//return ConfigPersistence.isActivated((String) projectKey);
+		//return ConfigPersistence.isActivated((String) projectKey) && ConfigPersistence.isKnowledgeExtractedFromIssue((String) projectKey);
 		return false;
 	}
 

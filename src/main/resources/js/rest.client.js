@@ -280,10 +280,26 @@ function isIssueStrategy(projectKey, callback) {
 }
 
 function setKnowledgeTypeEnabled(isKnowledgeTypeEnabled, knowledgeType, projectKey) {
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setKnowledgeTypeEnabled.json?projectKey=" + projectKey
+			+ "&knowledgeType=" + knowledgeType + "&isKnowledgeTypeEnabled=" + isKnowledgeTypeEnabled, function(error,
+			response) {
+		if (error === null) {
+			showFlag("success", "The activation of " + knowledgeType + " for this project has been changed.");
+		} else {
+			showFlag("error", "The activation of " + knowledgeType + " for this project could not be changed.");
+		}
+	});
 }
 
-function isKnowledgeTypeEnabled(knowledgeType, projectKey) {
-	return false;
+function isKnowledgeTypeEnabled(knowledgeType, projectKey, toggle, callback) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isKnowledgeTypeEnabled.json?knowledgeType="
+			+ knowledgeType + "&projectKey=" + projectKey, function(error, isKnowledgeTypeEnabled) {
+		if (error === null) {
+			callback(isKnowledgeTypeEnabled, toggle);
+		} else {
+			showFlag("error", "It could not be received whether the knowledge type is enabled. Error-Code: " + error);
+		}
+	});
 }
 
 function setKnowledgeExtractedFromGit(isKnowledgeExtractedFromGit, projectKey) {

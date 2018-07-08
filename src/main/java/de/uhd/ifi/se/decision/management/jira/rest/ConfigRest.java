@@ -121,6 +121,41 @@ public class ConfigRest {
 		}
 	}
 
+	@Path("/isKnowledgeTypeEnabled")
+	@GET
+	public Response isKnowledgeTypeEnabled(@QueryParam("projectKey") final String projectKey,
+			@QueryParam("knowledgeType") String knowledgeType) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		Boolean isKnowledgeTypeEnabled = ConfigPersistence.isKnowledgeTypeEnabled(projectKey, knowledgeType);
+		return Response.ok(isKnowledgeTypeEnabled).build();
+	}
+
+	@Path("/setKnowledgeTypeEnabled")
+	@POST
+	public Response setKnowledgeTypeEnabled(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey,
+			@QueryParam("isKnowledgeTypeEnabled") String isKnowledgeTypeEnabled,
+			@QueryParam("knowledgeType") String knowledgeType) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if (isKnowledgeTypeEnabled == null || knowledgeType == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "isKnowledgeTypeEnabled = null")).build();
+		}
+		try {
+			ConfigPersistence.setKnowledgeTypeEnabled(projectKey, knowledgeType, Boolean.valueOf(isKnowledgeTypeEnabled));
+			return Response.ok(Status.ACCEPTED).build();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
+	}
+
 	private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build();

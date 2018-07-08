@@ -51,21 +51,23 @@ public class ConfigPersistence {
 		settings.put(pluginStorageKey + ".isActivated", Boolean.toString(isActivated));
 	}
 
-	public static Set<KnowledgeType> getKnowledgeTypes(String projectKey) {
-		// TODO Auto-generated method stub
-		return null;
+	public static boolean isKnowledgeTypeEnabled(String projectKey, String knowledgeType) {
+		Object isKnowledgeTypeEnabled = transactionTemplate.execute(new TransactionCallback<Object>() {
+			public Object doInTransaction() {
+				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+				return settings.get(pluginStorageKey + "." + knowledgeType);
+			}
+		});
+		return isKnowledgeTypeEnabled instanceof String && "true".equals(isKnowledgeTypeEnabled);
 	}
 
-	public static void setKnowledgeTypes(String projectKey, Set<KnowledgeType> knowledgeTypes) {
-		// TODO Auto-generated method stub
-	}
-
-	public static void setKnowledgeExtractedFromGit(String projectKey, boolean setKnowledgeExtractedFromGit) {
+	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeTypes,
+			boolean isKnowledgeTypeEnabled) {
 		if (projectKey == null) {
 			return;
 		}
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey + ".isKnowledgeExtractedFromGit", Boolean.toString(setKnowledgeExtractedFromGit));
+		settings.put(pluginStorageKey + "." + knowledgeTypes, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
 	public static boolean isKnowledgeExtractedFromGit(String projectKey) {
@@ -79,5 +81,13 @@ public class ConfigPersistence {
 			}
 		});
 		return isKnowledgeExtractedFromGit instanceof String && "true".equals(isKnowledgeExtractedFromGit);
+	}
+
+	public static void setKnowledgeExtractedFromGit(String projectKey, boolean setKnowledgeExtractedFromGit) {
+		if (projectKey == null) {
+			return;
+		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey + ".isKnowledgeExtractedFromGit", Boolean.toString(setKnowledgeExtractedFromGit));
 	}
 }

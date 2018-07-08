@@ -69,10 +69,11 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	}
 
 	public Set<KnowledgeType> getKnowledgeTypes() {
-		return ConfigPersistence.getKnowledgeTypes(this.getProjectKey());
+		return null;
+		//return ConfigPersistence.getKnowledgeTypes(this.getProjectKey());
 	}
 
 	public void setKnowledgeTypes(Set<KnowledgeType> knowledgeTypes) {
-		ConfigPersistence.setKnowledgeTypes(this.getProjectKey(), knowledgeTypes);
+		//ConfigPersistence.setKnowledgeTypes(this.getProjectKey(), knowledgeTypes);
 	}
 }

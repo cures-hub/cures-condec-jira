@@ -11,8 +11,6 @@ import org.springframework.beans.factory.InitializingBean;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
-import com.atlassian.jira.config.properties.APKeys;
-import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
@@ -39,12 +37,8 @@ public class PluginInitializer implements InitializingBean {
 		}
 	}
 
-	public String getIconUrl(String issueTypeName) {
-		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
-		String iconUrl = applicationProperties.getString(APKeys.JIRA_BASEURL) + "/download/resources/"
-				+ ComponentGetter.getPluginStorageKey() + ":stylesheet-and-icon-resources/"
-				+ issueTypeName.toLowerCase() + ".png";
-		return iconUrl;
+	public static String getIconUrl(String issueTypeName) {
+		return ComponentGetter.getUrlOfImageFolder() + issueTypeName.toLowerCase() + ".png";
 	}
 
 	public List<String> findMissingDecisionKnowledgeIssueTypes() {

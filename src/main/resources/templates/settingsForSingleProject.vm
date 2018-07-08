@@ -15,8 +15,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		<h2>Basic Project Settings</h2>
 		<div class="field-group">
 			<label for="isActivated-toggle">ConDec Activated?</label>
-			<aui-toggle id="isActivated-toggle" label="$pojectKey"
-				+ "-isActivated" value=$projectKey></aui-toggle>
+			<aui-toggle id="isActivated-toggle" value="$projectKey"
+				label="ConDec Activated?"></aui-toggle>
 			<script>
                 var activationToggle = document.getElementById('isActivated-toggle');
                     #if ($isActivated == true)
@@ -35,8 +35,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		</div>
 		<div class="field-group">
 			<label for="isIssueStrategy-toggle">Store in Issues?</label>
-			<aui-toggle id="isIssueStrategy-toggle" label="$projectKey"
-				+ "-isIssueStrategy" value=$projectKey></aui-toggle>
+			<aui-toggle id="isIssueStrategy-toggle" value="$projectKey"
+				label="Store in Issues?"></aui-toggle>
 			<script>
                 var strategyToggle = document.getElementById('isIssueStrategy-toggle');
                     #if ($isIssueStrategy == true)
@@ -60,8 +60,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			<label for="isKnowledgeExtractedFromGit-toggle">Extract from
 				Git?</label>
 			<aui-toggle id="isKnowledgeExtractedFromGit-toggle"
-				label="$projectKey"
-				+ "isKnowledgeExtractedFromGit" value=$projectKey></aui-toggle>
+				value="$projectKey" label="Extract from	Git?"></aui-toggle>
 			<script>
 				var gitToggle = document.getElementById('isKnowledgeExtractedFromGit-toggle');
 				isKnowledgeExtractedFromGit(gitToggle.value, function(isKnowledgeExtractedFromGit) {
@@ -84,29 +83,33 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		<script>
 		var additionalKnowledgeTypes = [ "Assessment", "Assumption", "Claim", "Constraint", "Context",
 		"Goal", "Implication", "Issue", "Solution" ];
+		var typeToggles = [];
 		for (i in additionalKnowledgeTypes) {
 			var toggleName = additionalKnowledgeTypes[i] + "-toggle";
-			html = "<div class='field-group'>";
-			html += "<label for=" + toggleName + ">" + additionalKnowledgeTypes[i] + "</label>";
-			html += "<aui-toggle id=" + toggleName +" " + "label='$projectKey'-"+ toggleName +" value=$projectKey></aui-toggle>";
+			html =  "<div class='field-group'>";
+			html += "<label for=" + toggleName + ">" + additionalKnowledgeTypes[i];
+			html += "&nbsp;&nbsp;<img src='$imageFolderUrl" + additionalKnowledgeTypes[i] + ".png'></label>";
+			html += "<aui-toggle id='" + toggleName + "' value='" + additionalKnowledgeTypes[i] + "' label='" + additionalKnowledgeTypes[i] + "'></aui-toggle>";
 			html += "<div class='description'>Enables the " + additionalKnowledgeTypes[i] + " element for this project.</div>";
 			html += "</div>";
 			document.getElementById("additionale-types-header").insertAdjacentHTML('afterend', html);
+			typeToggles.push(document.getElementById(toggleName));
 		}
+		console.log(typeToggles);
 		</script>
 		<script>
-		for (i in additionalKnowledgeTypes) {
-			var toggleName = additionalKnowledgeTypes[i] + "-toggle";
-			var toggle = document.getElementById(toggleName);
-			var isTypeEnabled = isKnowledgeTypeEnabled(additionalKnowledgeTypes[i], toggle.value);
+		for (j in additionalKnowledgeTypes) {
+			console.log(typeToggles[j].value);
+			isKnowledgeTypeEnabled(typeToggles[j].value, '$projectKey', typeToggles[j], function(isTypeEnabled, toggle) {
+				console.log(toggle.value);
 			if (isTypeEnabled == true) {
                     toggle.checked = true;
                 } else {
                     toggle.checked = false;
-                }
-            toggle.addEventListener('change', function(error) {
+                }});
+            typeToggles[j].addEventListener('change', function(error) {
                 this.busy = true;
-                setKnowledgeTypeEnabled(this.checked, additionalKnowledgeTypes[i], this.value);
+                setKnowledgeTypeEnabled(this.checked, this.value, '$projectKey');
                 this.busy = false;
             });
 		}

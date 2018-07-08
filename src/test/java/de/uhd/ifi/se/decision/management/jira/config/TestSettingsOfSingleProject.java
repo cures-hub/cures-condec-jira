@@ -103,18 +103,18 @@ public class TestSettingsOfSingleProject extends TestSetUp {
 	}
 
 	@Test
-	public void testGetTemplatePath(){
+	public void testGetTemplatePath() {
 		assertEquals("templates/settingsForSingleProject.vm", servlet.getTemplatePath());
 	}
 
 	@Test
-	public void testGetVelocityParametersNull(){
+	public void testGetVelocityParametersNull() {
 		assertEquals(0, servlet.getVelocityParameters(null).size());
 	}
 
 	@Test
-	public void testGetVelocityParametersFilled(){
+	public void testGetVelocityParametersFilled() {
 		request.setAttribute("projectKey", "TEST");
-		assertEquals(4, servlet.getVelocityParameters(request).size());
+		assertEquals(5, servlet.getVelocityParameters(request).size());
 	}
 }

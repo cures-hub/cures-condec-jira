@@ -7,6 +7,9 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.ProjectService;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.properties.APKeys;
+import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
@@ -121,5 +124,11 @@ public class ComponentGetter {
 
 	public static String getPluginStorageKey() {
 		return PLUGIN_STORAGE_KEY;
+	}
+
+	public static String getUrlOfImageFolder() {
+		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
+		return applicationProperties.getString(APKeys.JIRA_BASEURL) + "/download/resources/"
+				+ ComponentGetter.getPluginStorageKey() + ":stylesheet-and-icon-resources/";
 	}
 }
