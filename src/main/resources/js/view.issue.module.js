@@ -1,5 +1,9 @@
 function fillIssueModule() {
 	var issueKey = JIRA.Issue.getIssueKey();
+	if(issueKey == null) {
+		issueKey = AJS.Meta.get("issue-key");
+	}
+	console.log("test" + issueKey);
 	buildTreantIssueTabPanel(issueKey);
 }
 
