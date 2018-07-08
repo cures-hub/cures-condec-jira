@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import java.util.Set;
-
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
@@ -51,25 +49,6 @@ public class ConfigPersistence {
 		settings.put(pluginStorageKey + ".isActivated", Boolean.toString(isActivated));
 	}
 
-	public static boolean isKnowledgeTypeEnabled(String projectKey, String knowledgeType) {
-		Object isKnowledgeTypeEnabled = transactionTemplate.execute(new TransactionCallback<Object>() {
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-				return settings.get(pluginStorageKey + "." + knowledgeType);
-			}
-		});
-		return isKnowledgeTypeEnabled instanceof String && "true".equals(isKnowledgeTypeEnabled);
-	}
-
-	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeTypes,
-			boolean isKnowledgeTypeEnabled) {
-		if (projectKey == null) {
-			return;
-		}
-		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey + "." + knowledgeTypes, Boolean.toString(isKnowledgeTypeEnabled));
-	}
-
 	public static boolean isKnowledgeExtractedFromGit(String projectKey) {
 		if (projectKey == null) {
 			return false;
@@ -89,5 +68,28 @@ public class ConfigPersistence {
 		}
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 		settings.put(pluginStorageKey + ".isKnowledgeExtractedFromGit", Boolean.toString(setKnowledgeExtractedFromGit));
+	}
+
+	public static boolean isKnowledgeTypeEnabled(String projectKey, String knowledgeType) {
+		Object isKnowledgeTypeEnabled = transactionTemplate.execute(new TransactionCallback<Object>() {
+			public Object doInTransaction() {
+				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+				return settings.get(pluginStorageKey + "." + knowledgeType);
+			}
+		});
+		return isKnowledgeTypeEnabled instanceof String && "true".equals(isKnowledgeTypeEnabled);
+	}
+
+	public static boolean isKnowledgeTypeEnabled(String projectKey, KnowledgeType knowledgeType) {
+		return isKnowledgeTypeEnabled(projectKey, knowledgeType.toString());
+	}
+
+	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeTypes,
+			boolean isKnowledgeTypeEnabled) {
+		if (projectKey == null) {
+			return;
+		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey + "." + knowledgeTypes, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 }

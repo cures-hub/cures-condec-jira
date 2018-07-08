@@ -15,7 +15,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		<tr>
 			<th>Project Name</th>
 			<th>ConDec Activated?</th>
-			<th>Use JIRA Issues to Store Decision Knowledge?</th>
+			<th>Store Knowledge in JIRA Issues?</th>
 			<th>Extract Knowledge From Git?</th>
 		</tr>
 		#foreach ($proj in $projectsMap)

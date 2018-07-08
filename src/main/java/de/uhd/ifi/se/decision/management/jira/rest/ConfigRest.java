@@ -1,5 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -18,6 +22,7 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
 /**
@@ -154,6 +159,23 @@ public class ConfigRest {
 			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
+	}
+
+	@Path("/getKnowledgeTypes")
+	@GET
+	public Response getKnowledgeTypes(@QueryParam("projectKey") final String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		List<String> knowledgeTypes = new ArrayList<String>();
+		for(KnowledgeType knowledgeType : KnowledgeType.values()) {
+			Boolean isEnabled = ConfigPersistence.isKnowledgeTypeEnabled(projectKey, knowledgeType);
+			if(isEnabled) {
+				knowledgeTypes.add(knowledgeType.toString());
+			}
+		}
+		return Response.ok(knowledgeTypes).build();
 	}
 
 	private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {

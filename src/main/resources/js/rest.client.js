@@ -279,6 +279,29 @@ function isIssueStrategy(projectKey, callback) {
 			});
 }
 
+function setKnowledgeExtractedFromGit(isKnowledgeExtractedFromGit, projectKey) {
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setKnowledgeExtractedFromGit.json?projectKey="
+			+ projectKey + "&isKnowledgeExtractedFromGit=" + isKnowledgeExtractedFromGit, function(error, response) {
+		if (error === null) {
+			showFlag("success", "Git connection for this project has been changed.");
+		} else {
+			showFlag("error", "Git connection for this project could not be configured.");
+		}
+	});
+}
+
+function isKnowledgeExtractedFromGit(projectKey, callback) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isKnowledgeExtractedFromGit.json?projectKey="
+			+ projectKey, function(error, isKnowledgeExtractedFromGit) {
+		if (error === null) {
+			callback(isKnowledgeExtractedFromGit);
+		} else {
+			showFlag("error", "It could not be received whether decision knowledge is extracted from git. Error-Code: "
+					+ error);
+		}
+	});
+}
+
 function setKnowledgeTypeEnabled(isKnowledgeTypeEnabled, knowledgeType, projectKey) {
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setKnowledgeTypeEnabled.json?projectKey=" + projectKey
 			+ "&knowledgeType=" + knowledgeType + "&isKnowledgeTypeEnabled=" + isKnowledgeTypeEnabled, function(error,
@@ -302,25 +325,14 @@ function isKnowledgeTypeEnabled(knowledgeType, projectKey, toggle, callback) {
 	});
 }
 
-function setKnowledgeExtractedFromGit(isKnowledgeExtractedFromGit, projectKey) {
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setKnowledgeExtractedFromGit.json?projectKey="
-			+ projectKey + "&isKnowledgeExtractedFromGit=" + isKnowledgeExtractedFromGit, function(error, response) {
-		if (error === null) {
-			showFlag("success", "Git connection for this project has been changed.");
-		} else {
-			showFlag("error", "Git connection for this project could not be configured.");
-		}
-	});
-}
-
-function isKnowledgeExtractedFromGit(projectKey, callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isKnowledgeExtractedFromGit.json?projectKey="
-			+ projectKey, function(error, isKnowledgeExtractedFromGit) {
-		if (error === null) {
-			callback(isKnowledgeExtractedFromGit);
-		} else {
-			showFlag("error", "It could not be received whether decision knowledge is extracted from git. Error-Code: "
-					+ error);
-		}
-	});
+function getKnowledgeTypes(projectKey, callback) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/getKnowledgeTypes.json?projectKey=" + projectKey,
+			function(error, knowledgeTypes) {
+				if (error === null) {
+					simpleKnowledgeTypes = knowledgeTypes;
+					callback(knowledgeTypes);
+				} else {
+					showFlag("error", "The knowledge types could not be received. Error-Code: " + error);
+				}
+			});
 }

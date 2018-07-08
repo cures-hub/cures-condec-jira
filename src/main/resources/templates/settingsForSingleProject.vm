@@ -63,12 +63,11 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				value="$projectKey" label="Extract from	Git?"></aui-toggle>
 			<script>
 				var gitToggle = document.getElementById('isKnowledgeExtractedFromGit-toggle');
-				isKnowledgeExtractedFromGit(gitToggle.value, function(isKnowledgeExtractedFromGit) {
-					if (isKnowledgeExtractedFromGit == true) {
+					if ($isKnowledgeExtractedFromGit == true) {
 						gitToggle.checked = true;
 					} else {
 						gitToggle.checked = false;
-					}});
+					};
 				gitToggle.addEventListener('change', function(error) {
 					this.busy = true;
 					setKnowledgeExtractedFromGit(this.checked, this.value);
@@ -95,13 +94,10 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			document.getElementById("additionale-types-header").insertAdjacentHTML('afterend', html);
 			typeToggles.push(document.getElementById(toggleName));
 		}
-		console.log(typeToggles);
 		</script>
 		<script>
 		for (j in additionalKnowledgeTypes) {
-			console.log(typeToggles[j].value);
 			isKnowledgeTypeEnabled(typeToggles[j].value, '$projectKey', typeToggles[j], function(isTypeEnabled, toggle) {
-				console.log(toggle.value);
 			if (isTypeEnabled == true) {
                     toggle.checked = true;
                 } else {
