@@ -41,6 +41,7 @@ public class Node {
 		this.connectors = ImmutableMap.of("style", ImmutableMap.of("stroke", "#000000"));
 	}
 
+	// TODO Link key to actual issue when using the issue persistence strategy
 	public Node(DecisionKnowledgeElement decisionKnowledgeElement) {
 		this();
 		KnowledgeType type = decisionKnowledgeElement.getType();

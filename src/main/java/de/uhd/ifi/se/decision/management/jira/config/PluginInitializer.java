@@ -64,6 +64,7 @@ public class PluginInitializer implements InitializingBean {
 		return existingIssueTypeNames;
 	}
 
+	// TODO Replace createIssueType with validateCreateIssueType
 	public static void createIssueType(String issueTypeName) {
 		// IssueTypeManager issueTypeManager =
 		// ComponentAccessor.getComponent(IssueTypeManager.class);
@@ -77,7 +78,8 @@ public class PluginInitializer implements InitializingBean {
 		issueTypeManager.createIssueType(issueTypeName, issueTypeName + " (decision knowledge element)", iconUrl);
 	}
 
-	public static void associateIssueType(String issueTypeName, String projectKey) {
+	// TODO This method is currently not working maybe because the user is not authenticated
+	public static void addIssueTypeToScheme(String issueTypeName, String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
 		IssueType issueType = issueTypeManager.getIssueType(issueTypeName);
 
