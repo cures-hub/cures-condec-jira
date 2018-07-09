@@ -61,7 +61,7 @@
 			Provides the Java Script REST Client for the REST API used in this plug-in.
 		</description>
 		<resource type="download" name="rest.client.js" location="/js/rest.client.js" />
-		<resource type="download" name="decdoc.js" location="/js/controller/decdoc.js" />
+		<resource type="download" name="management.js" location="/js/management.js" />
 	</web-resource>
 
 	<web-resource key="treant-resources" name="Treant.js Resources">
@@ -87,8 +87,7 @@
 		<!-- jstree -->
 		<resource type="download" name="jstree.js" location="/js/jstree/jstree.js" />
 		<!-- ConDec java script files -->
-		<resource type="download" name="decdoc.init.js" location="/js/controller/decdoc.init.js" />
-		<resource type="download" name="decdoc.viewhandler.js" location="/js/controller/decdoc.viewhandler.js" />
+		<resource type="download" name="view.decision.knowledge.page.js" location="/js/view.decision.knowledge.page.js" />
 		<resource type="download" name="view.accordion.editor.js" location="/js/view.accordion.editor.js" />
 		<resource type="download" name="view.tree.viewer.js" location="/js/view.tree.viewer.js" />
 		<resource type="download" name="view.context.menu.js" location="/js/view.context.menu.js" />
@@ -120,7 +119,7 @@
 		<description>
 			Provides the plug-in page that developers use to manage decision knowledge.
 		</description>
-		<resource name="view" type="velocity" location="templates/editor.vm" />
+		<resource name="view" type="velocity" location="templates/decisionKnowledgePage.vm" />
 	</web-panel>
 	<rest name="Decision Knowledge REST" key="decision-knowledge-rest" path="/decisions" version="1.0">
 		<description>

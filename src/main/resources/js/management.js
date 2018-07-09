@@ -1,3 +1,9 @@
+var knowledgeTypes = [ "Alternative", "Assessment", "Assumption", "Claim", "Comment", "Constraint", "Contra Argument",
+		"Context", "Decision", "Goal", "Implication", "Issue", "Problem", "Pro Argument", "Solution" ];
+
+var simpleKnowledgeTypes = [ "Alternative", "Argument", "Assessment", "Assumption", "Claim", "Constraint", "Context",
+		 "Goal", "Implication", "Issue", "Problem", "Solution" ];
+
 function createDecisionKnowledgeElementAsChild(summary, description, type, parentId) {
 	switch (type) {
 	case "Pro Argument":
@@ -133,6 +139,27 @@ function deleteLinkToExistingElement(parentId, childId) {
 				updateView(childId);
 			});
 		}
+	});
+}
+
+function getProjectKey() {
+	return JIRA.API.Projects.getCurrentProjectKey();
+}
+
+function getIssueKey() {
+	var issueKey = JIRA.Issue.getIssueKey();
+	if (issueKey == null) {
+		issueKey = AJS.Meta.get("issue-key");
+	}
+	return issueKey;
+}
+
+function showFlag(type, message) {
+	AJS.flag({
+		type : type,
+		close : "auto",
+		title : type.charAt(0).toUpperCase() + type.slice(1),
+		body : message
 	});
 }
 

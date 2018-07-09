@@ -1,16 +1,3 @@
-function showFlag(type, message) {
-	AJS.flag({
-		type : type,
-		close : "auto",
-		title : type.charAt(0).toUpperCase() + type.slice(1),
-		body : message
-	});
-}
-
-function getProjectKey() {
-	return JIRA.API.Projects.getCurrentProjectKey();
-}
-
 function getJSON(url, callback) {
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET", url, true);
@@ -231,8 +218,8 @@ function deleteLink(parentId, childId, linkType, callback) {
 			});
 }
 
-function getTreant(key, depthOfTree, callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?&elementKey=" + key + "&depthOfTree="
+function getTreant(elementKey, depthOfTree, callback) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?&elementKey=" + elementKey + "&depthOfTree="
 			+ depthOfTree, function(error, treant) {
 		if (error === null) {
 			callback(treant);
@@ -341,4 +328,19 @@ function getKnowledgeTypes(projectKey) {
 	} else {
 		showFlag("error", "The knowledge types could not be received. Error-Code: " + error);
 	}
+}
+
+function getCommits(elementKey, callback) {
+	getJSON(AJS.contextPath() + "/rest/gitplugin/latest/issues/" + elementKey + "/commits", function(error, commitData) {
+		if (error === null) {
+			callback(commitData.commits);
+		} else {
+			showFlag("error", "Commits for this element could not be received. Error-Code: " + error);
+		}
+	});
+}
+
+function getCommitsAsReturnValue(elementKey) {
+	var commitData = getResponseAsReturnValue(AJS.contextPath() + "/rest/gitplugin/latest/issues/" + elementKey + "/commits");
+	return commitData.commits;
 }

@@ -1,10 +1,4 @@
-var knowledgeTypes = [ "Alternative", "Assessment", "Assumption", "Claim", "Comment", "Constraint", "Contra Argument",
-		"Context", "Decision", "Goal", "Implication", "Issue", "Problem", "Pro Argument", "Solution" ];
-
-var simpleKnowledgeTypes = [ "Alternative", "Argument", "Assessment", "Assumption", "Claim", "Constraint", "Context",
-		 "Goal", "Implication", "Issue", "Problem", "Solution" ];
-
-function initializeSite() {
+function initializeDecisionKnowledgePage() {
 	simpleKnowledgeTypes = getKnowledgeTypes(getProjectKey());
 	updateView(getProjectKey());
 
@@ -50,4 +44,17 @@ function initializeSite() {
 			depthOfTreeWarningLabel.style.visibility = "visible";
 		}
 	});
+}
+
+function updateView(nodeId){
+    if ($('#evts').jstree(true)) {
+        var tree = $('#evts').jstree(true);
+        tree.destroy();
+    }
+    $('#evts').on("select_node.jstree", function(error, data) {
+        var node = data.node.data;
+        fillAccordion(node);
+        buildTreant(node.key);
+    });
+    buildTreeViewer(nodeId);
 }
