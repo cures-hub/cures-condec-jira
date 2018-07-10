@@ -1,6 +1,6 @@
 function addOptionsToAllDecisionComponents(id) {
-	for (var index = 0; index < simpleKnowledgeTypes.length; index++) {
-		addOptionToAddDecisionComponent(simpleKnowledgeTypes[index], id);
+	for (var index = 0; index < knowledgeTypes.length; index++) {
+		addOptionToAddDecisionComponent(knowledgeTypes[index], id);
 	}
 }
 
@@ -61,13 +61,13 @@ function showDetailsOfChildren(parentId) {
 
 function showDetailsOfSingleChild(decisionKnowledgeElement) {
 	var type = decisionKnowledgeElement.type;
-	for (var i = 0; i < simpleKnowledgeTypes.length; i++) {
-		if (simpleKnowledgeTypes[i].toLocaleLowerCase() === type.toLocaleLowerCase()) {
-			document.getElementById(simpleKnowledgeTypes[i]).insertAdjacentHTML(
+	for (var i = 0; i < knowledgeTypes.length; i++) {
+		if (knowledgeTypes[i].toLocaleLowerCase() === type.toLocaleLowerCase()) {
+			document.getElementById(knowledgeTypes[i]).insertAdjacentHTML(
 					'beforeend',
 					'<div class="issuelinkbox"><p>' + type + ' / ' + decisionKnowledgeElement.summary + '</p>'
 							+ '<p>Description: ' + decisionKnowledgeElement.description + '</p></div>');
-			document.getElementById(simpleKnowledgeTypes[i]).style.display = "block";
+			document.getElementById(knowledgeTypes[i]).style.display = "block";
 		}
 	}
 }
@@ -108,8 +108,8 @@ function deleteContentOfAccordionEditor() {
 	var details = document.getElementById("Details");
 	clearInner(details);
 	details.innerHTML = "";
-	for (var index = 0; index < simpleKnowledgeTypes.length; index++) {
-		document.getElementById(simpleKnowledgeTypes[index]).innerHTML = "";
-		document.getElementById(simpleKnowledgeTypes[index]).style.display = "none";
+	for (var index = 0; index < knowledgeTypes.length; index++) {
+		document.getElementById(knowledgeTypes[index]).innerHTML = "";
+		document.getElementById(knowledgeTypes[index]).style.display = "none";
 	}
 }

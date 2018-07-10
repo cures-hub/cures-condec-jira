@@ -1,8 +1,19 @@
-var knowledgeTypes = [ "Alternative", "Assessment", "Assumption", "Claim", "Comment", "Constraint", "Contra Argument",
-		"Context", "Decision", "Goal", "Implication", "Issue", "Problem", "Pro Argument", "Solution" ];
+/*
+ * Knowledge types are a subset of "Alternative", "Argument", "Assessment",
+ * "Assumption", "Claim", "Constraint", "Context", "Decision",
+ * "Goal", "Implication", "Issue", "Problem", and "Solution".
+ */
+var knowledgeTypes = getKnowledgeTypes(getProjectKey());
+var extendedKnowledgeTypes = replaceArgumentWithLinkTypes(knowledgeTypes);
 
-var simpleKnowledgeTypes = [ "Alternative", "Argument", "Assessment", "Assumption", "Claim", "Constraint", "Context",
-		 "Goal", "Implication", "Issue", "Problem", "Solution" ];
+function replaceArgumentWithLinkTypes(knowledgeTypes) {
+	var extendedKnowledgeTypes = $knowledgeTypes.val();
+	remove(extendedKnowledgeTypes, "Argument");
+	extendedKnowledgeTypes.push("Pro Argument");
+	extendedKnowledgeTypes.push("Contra Argument");
+	extendedKnowledgeTypes.push("Comment");
+	return extendedKnowledgeTypes;
+}
 
 function createDecisionKnowledgeElementAsChild(summary, description, type, parentId) {
 	switch (type) {
@@ -161,6 +172,14 @@ function showFlag(type, message) {
 		title : type.charAt(0).toUpperCase() + type.slice(1),
 		body : message
 	});
+}
+
+function remove(array, item) {
+    for (var i = array.length; i--;) {
+        if (array[i] === item) {
+            array.splice(i, 1);
+        }
+    }
 }
 
 function clearInner(node) {

@@ -44,7 +44,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 							<dd class="foldout" id="Details">No Element has been
 								selected</dd>
 							<script>
-								var knowledgeTypes = getKnowledgeTypes(getProjectKey());
 				var html = "";
 				for (i in knowledgeTypes) {
 					html += "<dt class='editor-header'>";

@@ -1,9 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;

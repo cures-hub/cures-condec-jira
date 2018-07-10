@@ -1,5 +1,4 @@
 function initializeDecisionKnowledgePage() {
-    simpleKnowledgeTypes = getKnowledgeTypes(getProjectKey());
 	updateView(getProjectKey());
 
 	/* accordion elements */
