@@ -320,15 +320,18 @@ function isKnowledgeTypeEnabled(knowledgeType, projectKey, toggle, callback) {
 	});
 }
 
-function getKnowledgeTypes(projectKey) {
-	var knowledgeTypes = getResponseAsReturnValue(AJS.contextPath() + "/rest/decisions/latest/config/getKnowledgeTypes.json?projectKey="
-			+ projectKey);
-	if (knowledgeTypes !== null) {
-		return knowledgeTypes;
-	} else {
-		showFlag("error", "The knowledge types could not be received. Error-Code: " + error);
-	}
+function getKnowledgeTypes(projectKey, callback) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/getKnowledgeTypes.json?projectKey="
+        + projectKey,function (error, knowledgeTypes) {
+		if(error === null){
+			callback(knowledgeTypes);
+		} else {
+            showFlag("error", "The knowledge types could not be received. Error-Code: " + error);
+        }
+
+    })
 }
+
 
 function getCommits(elementKey, callback) {
 	getJSON(AJS.contextPath() + "/rest/gitplugin/latest/issues/" + elementKey + "/commits", function(error, commitData) {
