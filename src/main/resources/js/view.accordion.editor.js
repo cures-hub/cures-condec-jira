@@ -1,7 +1,9 @@
 function addOptionsToAllDecisionComponents(id) {
-	for (var index = 0; index < simpleKnowledgeTypes.length; index++) {
-		addOptionToAddDecisionComponent(simpleKnowledgeTypes[index], id);
-	}
+    getKnowledgeTypes(getProjectKey(),function (knowledgeTypes) {
+        for (var index = 0; index < knowledgeTypes.length; index++) {
+            addOptionToAddDecisionComponent(knowledgeTypes[index], id);
+        }
+    });
 }
 
 function fillAccordion(node) {
@@ -108,8 +110,11 @@ function deleteContentOfAccordionEditor() {
 	var details = document.getElementById("Details");
 	clearInner(details);
 	details.innerHTML = "";
-	for (var index = 0; index < simpleKnowledgeTypes.length; index++) {
-		document.getElementById(simpleKnowledgeTypes[index]).innerHTML = "";
-		document.getElementById(simpleKnowledgeTypes[index]).style.display = "none";
-	}
+    getKnowledgeTypes(getProjectKey(),function (knowledgeTypes) {
+        for (var index = 0; index < knowledgeTypes.length; index++) {
+            document.getElementById(knowledgeTypes[index]).innerHTML = "";
+            document.getElementById(knowledgeTypes[index]).style.display = "none";
+        }
+    });
+
 }
