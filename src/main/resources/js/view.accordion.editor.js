@@ -1,9 +1,7 @@
 function addOptionsToAllDecisionComponents(id) {
-    getKnowledgeTypes(getProjectKey(),function (knowledgeTypes) {
-        for (var index = 0; index < knowledgeTypes.length; index++) {
-            addOptionToAddDecisionComponent(knowledgeTypes[index], id);
-        }
-    });
+	for (var index = 0; index < simpleKnowledgeTypes.length; index++) {
+		addOptionToAddDecisionComponent(simpleKnowledgeTypes[index], id);
+	}
 }
 
 function fillAccordion(node) {
@@ -102,19 +100,16 @@ function setUpEditorContentForAddingComponent(type) {
 			'beforeend',
 			'<p>Do you want to add an additional ' + type + '? ' + radioButtons
 					+ '<input type="text" id="form-input-summary' + type + '" placeholder="Summary of ' + type
-					+ '" class="text long-field"> <input type="submit" class="aui-button" id="form-input-submit'
-					+ type + '" value="Add ' + type + '"/></p>');
+					+ '" class="text long-field"> <input type="submit" class="aui-button" id="form-input-submit' + type
+					+ '" value="Add ' + type + '"/></p>');
 }
 
 function deleteContentOfAccordionEditor() {
 	var details = document.getElementById("Details");
 	clearInner(details);
 	details.innerHTML = "";
-    getKnowledgeTypes(getProjectKey(),function (knowledgeTypes) {
-        for (var index = 0; index < knowledgeTypes.length; index++) {
-            document.getElementById(knowledgeTypes[index]).innerHTML = "";
-            document.getElementById(knowledgeTypes[index]).style.display = "none";
-        }
-    });
-
+	for (var index = 0; index < simpleKnowledgeTypes.length; index++) {
+		document.getElementById(simpleKnowledgeTypes[index]).innerHTML = "";
+		document.getElementById(simpleKnowledgeTypes[index]).style.display = "none";
+	}
 }

@@ -219,8 +219,8 @@ function deleteLink(parentId, childId, linkType, callback) {
 }
 
 function getTreant(elementKey, depthOfTree, callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?&elementKey=" + elementKey + "&depthOfTree="
-			+ depthOfTree, function(error, treant) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?&elementKey=" + elementKey
+			+ "&depthOfTree=" + depthOfTree, function(error, treant) {
 		if (error === null) {
 			callback(treant);
 		} else {
@@ -320,30 +320,30 @@ function isKnowledgeTypeEnabled(knowledgeType, projectKey, toggle, callback) {
 	});
 }
 
-function getKnowledgeTypes(projectKey, callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/getKnowledgeTypes.json?projectKey="
-        + projectKey,function (error, knowledgeTypes) {
-		if(error === null){
-			callback(knowledgeTypes);
-		} else {
-            showFlag("error", "The knowledge types could not be received. Error-Code: " + error);
-        }
-
-    })
+function getKnowledgeTypes(projectKey) {
+	var knowledgeTypes = getResponseAsReturnValue(AJS.contextPath()
+			+ "/rest/decisions/latest/config/getKnowledgeTypes.json?projectKey=" + projectKey);
+	if (knowledgeTypes !== null) {
+		return knowledgeTypes;
+	} else {
+		showFlag("error", "The knowledge types could not be received. Error-Code: " + error);
+	}
 }
 
-
 function getCommits(elementKey, callback) {
-	getJSON(AJS.contextPath() + "/rest/gitplugin/latest/issues/" + elementKey + "/commits", function(error, commitData) {
-		if (error === null) {
-			callback(commitData.commits);
-		} else {
-			showFlag("error", "Commits for this element could not be received. Error-Code: " + error);
-		}
-	});
+	getJSON(AJS.contextPath() + "/rest/gitplugin/latest/issues/" + elementKey + "/commits",
+			function(error, commitData) {
+				if (error === null) {
+					callback(commitData.commits);
+				} else {
+					showFlag("error", "Commits for this element could not be received. Error-Code: " + error);
+					callback();
+				}
+			});
 }
 
 function getCommitsAsReturnValue(elementKey) {
-	var commitData = getResponseAsReturnValue(AJS.contextPath() + "/rest/gitplugin/latest/issues/" + elementKey + "/commits");
+	var commitData = getResponseAsReturnValue(AJS.contextPath() + "/rest/gitplugin/latest/issues/" + elementKey
+			+ "/commits");
 	return commitData.commits;
 }

@@ -10,23 +10,30 @@ function buildTreant(elementKey) {
 		depthOfTree = depthOfTreeInput.value;
 	}
 	getTreant(elementKey, depthOfTree, function(treeStructure) {
-		var treantContainer = document.getElementById("treant-container");
-		treantContainer.innerHTML = "";
-		treantContainer.style.visibility = "visible";
+		document.getElementById("treant-container").innerHTML = "";
 
 		isKnowledgeExtractedFromGit(getProjectKey(), function(isKnowledgeExtractedFromGit) {
 			if (isKnowledgeExtractedFromGit) {
-				var commits = getCommitsAsReturnValue(elementKey);
-				if (commits.length > 0) {
-					treeStructure.nodeStructure.children = addCommits(commits, treeStructure.nodeStructure.children);
-				}
-				//console.log(treeStructure);
+				getCommits(elementKey,
+						function(commits) {
+							if (commits.length > 0) {
+								treeStructure.nodeStructure.children = addCommits(commits,
+										treeStructure.nodeStructure.children);
+							}
+							// console.log(treeStructure);
+							createTreant(treeStructure);
+						});
+			} else {
+				createTreant(treeStructure);
 			}
-			treantTree = new Treant(treeStructure);
-			createContextMenuForTreantNodes();
-			addDragAndDropSupportForTreant();
 		});
 	});
+}
+
+function createTreant(treeStructure) {
+	treantTree = new Treant(treeStructure);
+	createContextMenuForTreantNodes();
+	addDragAndDropSupportForTreant();
 }
 
 function createContextMenuForTreantNodes() {

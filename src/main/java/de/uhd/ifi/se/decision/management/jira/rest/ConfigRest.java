@@ -171,10 +171,6 @@ public class ConfigRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		List<String> knowledgeTypes = new ArrayList<String>();
-		knowledgeTypes.add(KnowledgeType.DECISION.toString());
-		knowledgeTypes.add(KnowledgeType.PROBLEM.toString());
-		knowledgeTypes.add(KnowledgeType.ALTERNATIVE.toString());
-		knowledgeTypes.add(KnowledgeType.ARGUMENT.toString());
 		for(KnowledgeType knowledgeType : KnowledgeType.values()) {
 			boolean isEnabled = ConfigPersistence.isKnowledgeTypeEnabled(projectKey, knowledgeType);
 			if(isEnabled) {
