@@ -28,6 +28,10 @@ public interface DecisionKnowledgeProject {
 
 	void setKnowledgeExtractedFromGit(boolean isKnowledgeExtractedFromGit);
 
+	boolean isKnowledgeExtractedFromIssues();
+
+	void setKnowledgeExtractedFromIssues(boolean isKnowledgeExtractedFromIssues);
+
 	Set<KnowledgeType> getKnowledgeTypes();
 
 	AbstractPersistenceStrategy getPersistenceStrategy();

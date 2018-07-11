@@ -83,6 +83,27 @@ public class ConfigPersistence {
 		settings.put(pluginStorageKey + ".isKnowledgeExtractedFromGit", Boolean.toString(setKnowledgeExtractedFromGit));
 	}
 
+	public static boolean isKnowledgeExtractedFromIssues(String projectKey) {
+		if (projectKey == null) {
+			return false;
+		}
+		Object isKnowledgeExtractedFromIssues = transactionTemplate.execute(new TransactionCallback<Object>() {
+			public Object doInTransaction() {
+				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+				return settings.get(pluginStorageKey + ".isKnowledgeExtractedFromIssues");
+			}
+		});
+		return isKnowledgeExtractedFromIssues instanceof String && "true".equals(isKnowledgeExtractedFromIssues);
+	}
+
+	public static void setKnowledgeExtractedFromIssues(String projectKey, boolean setKnowledgeExtractedFromIssues) {
+		if (projectKey == null) {
+			return;
+		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey + ".isKnowledgeExtractedFromIssues", Boolean.toString(setKnowledgeExtractedFromIssues));
+	}
+
 	public static boolean isKnowledgeTypeEnabled(String projectKey, String knowledgeType) {
 		Object isKnowledgeTypeEnabled = transactionTemplate.execute(new TransactionCallback<Object>() {
 			public Object doInTransaction() {

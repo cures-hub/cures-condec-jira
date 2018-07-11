@@ -77,6 +77,27 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			<div class="description">Enables or disables whether decision
 				knowledge is extracted from Git for this project.</div>
 		</div>
+		<div class="field-group">
+			<label for="isKnowledgeExtractedFromIssues-toggle">Extract from
+				Issue Comments?</label>
+			<aui-toggle id="isKnowledgeExtractedFromIssues-toggle"
+				value="$projectKey" label="Extract from	Issue Comments?"></aui-toggle>
+			<script>
+				var issueToggle = document.getElementById('isKnowledgeExtractedFromIssues-toggle');
+					if ($isKnowledgeExtractedFromIssues == true) {
+						issueToggle.checked = true;
+					} else {
+						issueToggle.checked = false;
+					};
+				issueToggle.addEventListener('change', function(error) {
+					this.busy = true;
+					setKnowledgeExtractedFromIssues(this.checked, this.value);
+					this.busy = false;
+				});
+            </script>
+			<div class="description">Enables or disables whether decision
+				knowledge is extracted from issue comments for this project.</div>
+		</div>
 		<h2 id="additionale-types-header">Additional Decision Knowledge
 			Types</h2>
 		<script>

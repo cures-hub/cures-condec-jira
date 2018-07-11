@@ -64,6 +64,14 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 		ConfigPersistence.setKnowledgeExtractedFromGit(projectKey, isKnowledgeExtractedFromGit);
 	}
 
+	public boolean isKnowledgeExtractedFromIssues() {
+		return ConfigPersistence.isKnowledgeExtractedFromIssues(projectKey);
+	}
+
+	public void setKnowledgeExtractedFromIssues(boolean isKnowledgeExtractedFromIssues) {
+		ConfigPersistence.setKnowledgeExtractedFromIssues(projectKey, isKnowledgeExtractedFromIssues);
+	}
+
 	public AbstractPersistenceStrategy getPersistenceStrategy() {
 		StrategyProvider strategyProvider = new StrategyProvider();
 		return strategyProvider.getStrategy(this.projectKey);

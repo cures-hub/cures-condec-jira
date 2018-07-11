@@ -126,6 +126,39 @@ public class ConfigRest {
 		}
 	}
 
+	@Path("/isKnowledgeExtractedFromIssues")
+	@GET
+	public Response isKnowledgeExtractedFromIssues(@QueryParam("projectKey") final String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		Boolean isKnowledgeExtractedFromIssues = ConfigPersistence.isKnowledgeExtractedFromIssues(projectKey);
+		return Response.ok(isKnowledgeExtractedFromIssues).build();
+	}
+
+	@Path("/setKnowledgeExtractedFromIssues")
+	@POST
+	public Response setKnowledgeExtractedFromIssues(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey,
+			@QueryParam("isKnowledgeExtractedFromIssues") String isKnowledgeExtractedFromIssues) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if (isKnowledgeExtractedFromIssues == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "isKnowledgeExtractedFromIssues = null")).build();
+		}
+		try {
+			ConfigPersistence.setKnowledgeExtractedFromIssues(projectKey, Boolean.valueOf(isKnowledgeExtractedFromIssues));
+			return Response.ok(Status.ACCEPTED).build();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
+	}
+
 	@Path("/isKnowledgeTypeEnabled")
 	@GET
 	public Response isKnowledgeTypeEnabled(@QueryParam("projectKey") final String projectKey,

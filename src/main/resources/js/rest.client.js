@@ -297,6 +297,31 @@ function isKnowledgeExtractedFromGit(projectKey, callback) {
 	});
 }
 
+function setKnowledgeExtractedFromIssues(isKnowledgeExtractedFromIssues, projectKey) {
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setKnowledgeExtractedFromIssues.json?projectKey="
+			+ projectKey + "&isKnowledgeExtractedFromIssues=" + isKnowledgeExtractedFromIssues, function(error,
+			response) {
+		if (error === null) {
+			showFlag("success", "Extraction from issue comments for this project has been changed.");
+		} else {
+			showFlag("error", "Extraction from issue comments for this project could not be configured.");
+		}
+	});
+}
+
+function isKnowledgeExtractedFromIssues(projectKey, callback) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isKnowledgeExtractedFromIssues.json?projectKey="
+			+ projectKey, function(error, isKnowledgeExtractedFromIssues) {
+		if (error === null) {
+			callback(isKnowledgeExtractedFromIssues);
+		} else {
+			showFlag("error",
+					"It could not be received whether decision knowledge is extracted from issue comments. Error-Code: "
+							+ error);
+		}
+	});
+}
+
 function setKnowledgeTypeEnabled(isKnowledgeTypeEnabled, knowledgeType, projectKey) {
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setKnowledgeTypeEnabled.json?projectKey=" + projectKey
 			+ "&knowledgeType=" + knowledgeType + "&isKnowledgeTypeEnabled=" + isKnowledgeTypeEnabled, function(error,

@@ -76,12 +76,14 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		boolean isActivated = ConfigPersistence.isActivated(projectKey);
 		boolean isIssueStrategy = ConfigPersistence.isIssueStrategy(projectKey);
 		boolean isKnowledgeExtractedFromGit = ConfigPersistence.isKnowledgeExtractedFromGit(projectKey);
+		boolean isKnowledgeExtractedFromIssues = ConfigPersistence.isKnowledgeExtractedFromIssues(projectKey);
 
 		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
 		velocityParameters.put("projectKey", projectKey);
 		velocityParameters.put("isActivated", isActivated);
 		velocityParameters.put("isIssueStrategy", isIssueStrategy);
 		velocityParameters.put("isKnowledgeExtractedFromGit", isKnowledgeExtractedFromGit);
+		velocityParameters.put("isKnowledgeExtractedFromIssues", isKnowledgeExtractedFromIssues);
 		velocityParameters.put("imageFolderUrl", ComponentGetter.getUrlOfImageFolder());
 		velocityParameters.put("requestUrl", request.getRequestURL());
 		return velocityParameters;
