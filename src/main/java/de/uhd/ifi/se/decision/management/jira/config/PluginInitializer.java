@@ -6,6 +6,9 @@ import java.util.List;
 
 import javax.inject.Named;
 
+import com.atlassian.jira.project.ProjectManager;
+import com.atlassian.jira.util.ErrorCollection;
+import com.atlassian.jira.util.SimpleErrorCollection;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -66,32 +69,43 @@ public class PluginInitializer implements InitializingBean {
 
 	// TODO Replace createIssueType with validateCreateIssueType
 	public static void createIssueType(String issueTypeName) {
-		// IssueTypeManager issueTypeManager =
-		// ComponentAccessor.getComponent(IssueTypeManager.class);
-		// issueTypeManager.createIssueType(issueTypeName, issueTypeName, (long) 10300);
-
-		// ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
-		// constantsManager.validateCreateIssueType(issueTypeName, null, issueTypeName,
-		// iconUrl, null, null);
-		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
+		IssueTypeManager issueTypeManager =	ComponentAccessor.getComponent(IssueTypeManager.class);
+		Collection<IssueType> types = issueTypeManager.getIssueTypes();
+		if(types != null) {
+			for (IssueType type : types) {
+				if (type.getName().equals(issueTypeName)) {
+					return;
+				}
+			}
+		}
 		String iconUrl = getIconUrl(issueTypeName);
+        /*ErrorCollection errors = new SimpleErrorCollection();
+		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
+		constantsManager.validateCreateIssueType(issueTypeName, null, issueTypeName,
+		iconUrl, errors, null);
+		System.out.println(errors.getErrorMessages().toString());*/
 		issueTypeManager.createIssueType(issueTypeName, issueTypeName + " (decision knowledge element)", iconUrl);
 	}
 
 	// TODO This method is currently not working maybe because the user is not authenticated
 	public static void addIssueTypeToScheme(String issueTypeName, String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
-		IssueType issueType = issueTypeManager.getIssueType(issueTypeName);
-
-		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
-		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
-		FieldConfigScheme configScheme = issueTypeSchemeManager.getConfigScheme(project);
-		OptionSetManager optionSetManager = ComponentAccessor.getComponent(OptionSetManager.class);
-		if (!configScheme.getAssociatedIssueTypes().contains(issueType)) {
-            final OptionSet options = optionSetManager.getOptionsForConfig(configScheme.getOneAndOnlyConfig());
-            options.addOption(IssueFieldConstants.ISSUE_TYPE, issueType.getId());
-            issueTypeSchemeManager.update(configScheme, options.getOptionIds());
-        }
+		Collection<IssueType> types = issueTypeManager.getIssueTypes();
+		if(types != null) {
+			for (IssueType issueType : types) {
+				if (issueType.getName().equals(issueTypeName)) {
+					IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
+					Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
+					FieldConfigScheme configScheme = issueTypeSchemeManager.getConfigScheme(project);
+					OptionSetManager optionSetManager = ComponentAccessor.getComponent(OptionSetManager.class);
+					if (!configScheme.getAssociatedIssueTypes().contains(issueType)) {
+						final OptionSet options = optionSetManager.getOptionsForConfig(configScheme.getOneAndOnlyConfig());
+						options.addOption(IssueFieldConstants.ISSUE_TYPE, issueType.getId());
+						issueTypeSchemeManager.update(configScheme, options.getOptionIds());
+					}
+				}
+			}
+		}
 	}
 
 	public static String getIconUrl(String issueTypeName) {

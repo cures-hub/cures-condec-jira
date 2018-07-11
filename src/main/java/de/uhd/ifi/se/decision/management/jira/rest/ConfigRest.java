@@ -12,6 +12,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.atlassian.jira.issue.issuetype.IssueType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,6 +156,7 @@ public class ConfigRest {
 			ConfigPersistence.setKnowledgeTypeEnabled(projectKey, knowledgeType, Boolean.valueOf(isKnowledgeTypeEnabled));
 			if(ConfigPersistence.isIssueStrategy(projectKey)) {
 				PluginInitializer.createIssueType(knowledgeType);
+				PluginInitializer.addIssueTypeToScheme(knowledgeType,projectKey);
 			}
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
