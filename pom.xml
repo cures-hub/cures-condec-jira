@@ -193,12 +193,16 @@
 			<version>1.8.0.10</version>
 			<scope>test</scope>
 		</dependency>
-		 <dependency>
-            <groupId>nz.ac.waikato.cms.weka</groupId>
-            <artifactId>weka-stable</artifactId>
-            <version>3.8.2</version>
-            <scope>provided</scope>
-        </dependency>
+		<!-- DecXtract -->
+
+		<dependency>
+			<groupId>nz.ac.waikato.cms.weka</groupId>
+			<artifactId>weka-stable</artifactId>
+			<version>3.8.0</version>
+		</dependency>
+
+
+
 	</dependencies>
 	<build>
 		<finalName>cures-condec-jira</finalName>
