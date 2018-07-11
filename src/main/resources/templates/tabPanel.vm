@@ -3,8 +3,52 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:treant-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rest-client-resources")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decXtract-ressources")
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-experimental-iconfont")
+
+
 </head>
 <body>
-DecXtract Panel
+<table>
+<tbody>
+<tr>
+<td> <input type="checkbox" id="isIssue" name="feature"
+               value="scales" onchange = 'dosth(this);' checked />
+        <label for="isIssue">isIssue</label></td>
+<td><input type="checkbox" id="isDecision" name="feature"
+               value="scales" checked />
+        <label for="isDecision">isDecision</label></td>
+<td><input type="checkbox" id="isAlternative" name="feature"
+               value="scales" checked />
+        <label for="isAlternative">isAlternative</label></td>
+<td><input type="checkbox" id="isPro" name="feature"
+               value="scales" checked />
+        <label for="isPro">isPro</label></td>
+<td><input type="checkbox" id="isCon" name="feature"
+               value="scales" checked />
+        <label for="isCon">isCon</label></td>
+</tr>
+</tbody>
+</table>
+
+#macro ( index $array $element)
+	#foreach($item in $array)
+		#if($velocityCount == $element)
+			$item
+			#break
+		#end
+	#end
+#end
+
+
+  #foreach( $comment in $comments )
+
+    <a class="user-hover user-avatar" rel="admin" id="commentauthor_10102_verbose" href="/jira/secure/ViewProfile.jspa?name=admin"><span class="aui-avatar aui-avatar-xsmall"><span class="aui-avatar-inner"><img src="http://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&amp;s=16" alt="admin"></span></span> #index($authorNames,$velocityCount)</a>
+   - <span class="commentdate_10102_verbose subText"><span class="date user-tz" >#index($dates,$velocityCount)</span></span>  </div>
+        </div>
+        <div class="action-body flooded">
+<p> $comment</p></div>
+    </div>
+  #end
 </body>
 </html>

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.view;
+package de.uhd.ifi.se.decision.management.jira.decXtract.view;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +16,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.VelocityParamFactory;
 import com.atlassian.velocity.VelocityManager;
 
+import de.uhd.ifi.se.decision.management.jira.decXtract.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,28 +26,22 @@ import org.slf4j.LoggerFactory;
  */
 public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements IssueTabPanel {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IssueTabPanelRenderer.class);
+
+	private ViewConnector viewConnector;
+
+
 	public List<IssueAction> getActions(Issue issue, ApplicationUser remoteUser) {
 		if(issue == null || remoteUser == null){
 			LOGGER.error("Issue tab panel cannot be rendered correctly since no issue or user are provided.");
 			return new ArrayList<>();
 		}
+		//Initialize viewConnector with the current shown Issue
+		viewConnector = new ViewConnector(issue);
 
-		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
-		String baseUrl = applicationProperties.getString(APKeys.JIRA_BASEURL);
-		String webworkEncoding = applicationProperties.getString(APKeys.JIRA_WEBWORK_ENCODING);
-
-		VelocityManager velocityManager = ComponentAccessor.getVelocityManager();
-		VelocityParamFactory velocityParamFactory = ComponentAccessor.getVelocityParamFactory();
-
-		Map<String, Object> context = velocityParamFactory.getDefaultVelocityParams();
-
-		String renderedText = velocityManager.getEncodedBody("templates/", "tabPanel.vm", baseUrl, webworkEncoding, context);
-
-		GenericMessageAction messageAction = new GenericMessageAction(renderedText);
-
+		GenericMessageAction messageAction = new GenericMessageAction(getVelocityTemplate());
 		List<IssueAction> issueActions = new ArrayList<IssueAction>();
 		issueActions.add(messageAction);
-
+		System.out.println("hier"+issueActions.size());
 		return issueActions;
 	}
 
@@ -62,4 +57,29 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 	private String getProjectKey(String issueKey) {
 		return issueKey.split("-")[0];
 	}
+
+	private String getVelocityTemplate() {
+		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
+		String baseUrl = applicationProperties.getString(APKeys.JIRA_BASEURL);
+		String webworkEncoding = applicationProperties.getString(APKeys.JIRA_WEBWORK_ENCODING);
+
+		VelocityManager velocityManager = ComponentAccessor.getVelocityManager();
+		VelocityParamFactory velocityParamFactory = ComponentAccessor.getVelocityParamFactory();
+
+		Map<String, Object> context = velocityParamFactory.getDefaultVelocityParams();
+
+		context = addParamsToContext(context);
+
+		return(velocityManager.getEncodedBody("templates/", "tabPanel.vm", baseUrl, webworkEncoding, context));
+
+	}
+
+	private Map<String, Object> addParamsToContext(Map<String, Object> context) {
+		context.put("comments",this.viewConnector.getAllCommentsBody());
+		context.put("authorNames",this.viewConnector.getAllCommentsAuthorNames());
+		context.put("dates", this.viewConnector.getAllCommentsDates());
+		return context;
+	}
+
+
 }
