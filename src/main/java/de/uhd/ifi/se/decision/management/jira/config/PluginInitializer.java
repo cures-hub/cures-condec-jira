@@ -97,13 +97,11 @@ public class PluginInitializer implements InitializingBean {
 					Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
 					FieldConfigScheme configScheme = issueTypeSchemeManager.getConfigScheme(project);
 					OptionSetManager optionSetManager = ComponentAccessor.getComponent(OptionSetManager.class);
-					if(isKnowledgeTypeEnabled) {
-						if (! issueTypeSchemeManager.getIssueTypesForProject(project).contains(issueType)) {
-							final OptionSet options = optionSetManager.getOptionsForConfig(configScheme.getOneAndOnlyConfig());
-							options.addOption(IssueFieldConstants.ISSUE_TYPE, issueType.getId());
-							issueTypeSchemeManager.update(configScheme, options.getOptionIds());
-							return;
-						}
+					if (isKnowledgeTypeEnabled && !issueTypeSchemeManager.getIssueTypesForProject(project).contains(issueType)) {
+						final OptionSet options = optionSetManager.getOptionsForConfig(configScheme.getOneAndOnlyConfig());
+						options.addOption(IssueFieldConstants.ISSUE_TYPE, issueType.getId());
+						issueTypeSchemeManager.update(configScheme, options.getOptionIds());
+						return;
 					}
 				}
 			}
