@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -12,7 +13,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.atlassian.jira.issue.issuetype.IssueType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,7 +151,8 @@ public class ConfigRest {
 					.entity(ImmutableMap.of("error", "isKnowledgeExtractedFromIssues = null")).build();
 		}
 		try {
-			ConfigPersistence.setKnowledgeExtractedFromIssues(projectKey, Boolean.valueOf(isKnowledgeExtractedFromIssues));
+			ConfigPersistence.setKnowledgeExtractedFromIssues(projectKey,
+					Boolean.valueOf(isKnowledgeExtractedFromIssues));
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -175,21 +176,26 @@ public class ConfigRest {
 	@POST
 	public Response setKnowledgeTypeEnabled(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey,
-			@QueryParam("isKnowledgeTypeEnabled") String isKnowledgeTypeEnabled,
+			@QueryParam("isKnowledgeTypeEnabled") String isKnowledgeTypeEnabledString,
 			@QueryParam("knowledgeType") String knowledgeType) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (isKnowledgeTypeEnabled == null || knowledgeType == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "isKnowledgeTypeEnabled = null")).build();
+		if (isKnowledgeTypeEnabledString == null || knowledgeType == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isKnowledgeTypeEnabled = null"))
+					.build();
 		}
 		try {
-			ConfigPersistence.setKnowledgeTypeEnabled(projectKey, knowledgeType, Boolean.valueOf(isKnowledgeTypeEnabled));
-			if(ConfigPersistence.isIssueStrategy(projectKey)) {
-				PluginInitializer.createIssueType(knowledgeType);
-				PluginInitializer.addIssueTypeToScheme(knowledgeType,projectKey,Boolean.valueOf(isKnowledgeTypeEnabled));
+			boolean isKnowledgeTypeEnabled = Boolean.valueOf(isKnowledgeTypeEnabledString);
+			ConfigPersistence.setKnowledgeTypeEnabled(projectKey, knowledgeType, isKnowledgeTypeEnabled);
+			if (ConfigPersistence.isIssueStrategy(projectKey)) {
+				if (isKnowledgeTypeEnabled) {
+					PluginInitializer.createIssueType(knowledgeType);
+					PluginInitializer.addIssueTypeToScheme(knowledgeType, projectKey);
+				} else {
+					PluginInitializer.removeIssueTypeFromScheme(knowledgeType, projectKey);
+				}
 			}
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
@@ -206,13 +212,30 @@ public class ConfigRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		List<String> knowledgeTypes = new ArrayList<String>();
-		for(KnowledgeType knowledgeType : KnowledgeType.values()) {
+		for (KnowledgeType knowledgeType : KnowledgeType.values()) {
 			boolean isEnabled = ConfigPersistence.isKnowledgeTypeEnabled(projectKey, knowledgeType);
-			if(isEnabled) {
+			if (isEnabled) {
 				knowledgeTypes.add(knowledgeType.toString());
 			}
 		}
 		return Response.ok(knowledgeTypes).build();
+	}
+
+	@Path("/getDefaultKnowledgeTypes")
+	@GET
+	public Response getDefaultKnowledgeTypes(@QueryParam("projectKey") final String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		List<String> defaultKnowledgeTypes = new ArrayList<String>();
+		for (KnowledgeType knowledgeType : KnowledgeType.getDefaulTypes()) {
+			boolean isEnabled = ConfigPersistence.isKnowledgeTypeEnabled(projectKey, knowledgeType);
+			if (isEnabled) {
+				defaultKnowledgeTypes.add(knowledgeType.toString());
+			}
+		}
+		return Response.ok(defaultKnowledgeTypes).build();
 	}
 
 	private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {

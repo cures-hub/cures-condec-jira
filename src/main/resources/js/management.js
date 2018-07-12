@@ -4,10 +4,15 @@
  * "Goal", "Implication", "Issue", "Problem", and "Solution".
  */
 var knowledgeTypes = getKnowledgeTypes(getProjectKey());
+/*
+ * Default knowledge types are "Alternative", "Argument", "Decision", and
+ * "Issue".
+ */
+var defaultKnowledgeTypes = getDefaultKnowledgeTypes(getProjectKey());
 var extendedKnowledgeTypes = replaceArgumentWithLinkTypes(knowledgeTypes);
 
 function replaceArgumentWithLinkTypes(knowledgeTypes) {
-	var extendedKnowledgeTypes = $knowledgeTypes.val();
+	var extendedKnowledgeTypes = getKnowledgeTypes(getProjectKey());
 	remove(extendedKnowledgeTypes, "Argument");
 	extendedKnowledgeTypes.push("Pro Argument");
 	extendedKnowledgeTypes.push("Contra Argument");
@@ -51,50 +56,50 @@ function editDecisionKnowledgeElementAsChild(summary, description, type, childId
 	switch (type) {
 	case "Pro Argument":
 		editDecisionKnowledgeElement(childId, summary, description, "Argument", function() {
-            getLinkedDecisionComponents(childId, function(parentElement) {
-                for (var counter = 0; counter < parentElement.length; counter++) {
-                    var parentId = parentElement[counter].id;
-                    editLink(childId, parentId, "support", function() {
-                        updateView(parentId);
-                    });
-                }
-            });
+			getLinkedDecisionComponents(childId, function(parentElement) {
+				for (var counter = 0; counter < parentElement.length; counter++) {
+					var parentId = parentElement[counter].id;
+					editLink(childId, parentId, "support", function() {
+						updateView(parentId);
+					});
+				}
+			});
 		});
 		break;
 	case "Contra Argument":
 		editDecisionKnowledgeElement(childId, summary, description, "Argument", function() {
-            getLinkedDecisionComponents(childId, function(parentElement) {
-                for (var counter = 0; counter < parentElement.length; counter++) {
-                    var parentId = parentElement[counter].id;
-                    editLink(childId, parentId, "attack", function() {
-                        updateView(parentId);
-                    });
-                }
-            });
+			getLinkedDecisionComponents(childId, function(parentElement) {
+				for (var counter = 0; counter < parentElement.length; counter++) {
+					var parentId = parentElement[counter].id;
+					editLink(childId, parentId, "attack", function() {
+						updateView(parentId);
+					});
+				}
+			});
 		});
 		break;
 	case "Comment":
 		editDecisionKnowledgeElement(childId, summary, description, "Argument", function() {
-            getLinkedDecisionComponents(childId, function(parentElement) {
-                for (var counter = 0; counter < parentElement.length; counter++) {
-                    var parentId = parentElement[counter].id;
-                    editLink(childId, parentId, "comment", function() {
-                        updateView(parentId);
-                    });
-                }
-            });
+			getLinkedDecisionComponents(childId, function(parentElement) {
+				for (var counter = 0; counter < parentElement.length; counter++) {
+					var parentId = parentElement[counter].id;
+					editLink(childId, parentId, "comment", function() {
+						updateView(parentId);
+					});
+				}
+			});
 		});
 		break;
 	default:
 		editDecisionKnowledgeElement(childId, summary, description, type, function() {
-            getLinkedDecisionComponents(childId, function(parentElement) {
-                for (var counter = 0; counter < parentElement.length; counter++) {
-			var parentId = parentElement[counter].id;
-                    editLink(parentId, childId, "contain", function() {
-                        updateView(parentId);
-                    });
-                }
-            });
+			getLinkedDecisionComponents(childId, function(parentElement) {
+				for (var counter = 0; counter < parentElement.length; counter++) {
+					var parentId = parentElement[counter].id;
+					editLink(parentId, childId, "contain", function() {
+						updateView(parentId);
+					});
+				}
+			});
 		});
 	}
 }
@@ -175,11 +180,11 @@ function showFlag(type, message) {
 }
 
 function remove(array, item) {
-    for (var i = array.length; i--;) {
-        if (array[i] === item) {
-            array.splice(i, 1);
-        }
-    }
+	for (var i = array.length; i--;) {
+		if (array[i] === item) {
+			array.splice(i, 1);
+		}
+	}
 }
 
 function clearInner(node) {

@@ -355,6 +355,16 @@ function getKnowledgeTypes(projectKey) {
 	}
 }
 
+function getDefaultKnowledgeTypes(projectKey) {
+	var defaultKnowledgeTypes = getResponseAsReturnValue(AJS.contextPath()
+			+ "/rest/decisions/latest/config/getDefaultKnowledgeTypes.json?projectKey=" + projectKey);
+	if (defaultKnowledgeTypes !== null) {
+		return defaultKnowledgeTypes;
+	} else {
+		showFlag("error", "The default knowledge types could not be received. Error-Code: " + error);
+	}
+}
+
 function getCommits(elementKey, callback) {
 	getJSON(AJS.contextPath() + "/rest/gitplugin/latest/issues/" + elementKey + "/commits",
 			function(error, commitData) {

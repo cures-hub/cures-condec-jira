@@ -90,18 +90,18 @@ function setUpContextMenuContent(summary, description, knowledgeType, buttonText
 							+ "<p><input id='form-input-submit' type='submit' value='" + buttonText
 							+ "' style='float:right;'/></p>");
 
-	for (var index = 0; index < knowledgeTypes.length; index++) {
+	for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
 		var isSelected = "";
 		if (isKnowledgeTypeLocatedAtIndex(knowledgeType, index)) {
 			isSelected = "selected ";
 		}
 		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
-				+ knowledgeTypes[index] + "'>" + knowledgeTypes[index] + "</option>");
+				+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
 	}
 }
 
 function isKnowledgeTypeLocatedAtIndex(knowledgeType, index) {
-	return knowledgeType.toLowerCase() === knowledgeTypes[index].toLocaleLowerCase();
+	return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLocaleLowerCase();
 }
 
 var contextMenuLinkAction = {

@@ -57,7 +57,7 @@ public class TestSetUp {
 				.addMock(UserManager.class, userManager).addMock(ConstantsManager.class, constantsManager)
 				.addMock(ProjectRoleManager.class, new MockProjectRoleManager())
 				.addMock(VelocityManager.class, new MockVelocityManager())
-				.addMock(VelocityParamFactory.class, new MockVelocitryParamFactory());
+				.addMock(VelocityParamFactory.class, new MockVelocityParamFactory());
 
 		creatingProjectIssueStructure();
 	}

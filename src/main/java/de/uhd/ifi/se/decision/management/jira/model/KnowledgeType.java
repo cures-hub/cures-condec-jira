@@ -97,6 +97,6 @@ public enum KnowledgeType {
 	}
 
 	public static Set<KnowledgeType> getDefaulTypes() {
-		return EnumSet.of(DECISION, PROBLEM, ALTERNATIVE, ARGUMENT);
+		return EnumSet.of(DECISION, ISSUE, ARGUMENT, ALTERNATIVE);
 	}
 }

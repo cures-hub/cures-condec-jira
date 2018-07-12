@@ -101,18 +101,17 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		<h2 id="additionale-types-header">Additional Decision Knowledge
 			Types</h2>
 		<script>
-		var defaultKnowledgeTypes = [ "Decision", "Problem", "Alternative", "Argument" ];
-		html = "<p id='additionale-types-text'> The default decision knowledge types are: ";
+		html = "<p id='additionale-types-text'> The default decision knowledge types are:";
 		for (i in defaultKnowledgeTypes) {
-			html += defaultKnowledgeTypes[i];
-			html += "&nbsp;&nbsp;<img src='$imageFolderUrl" + defaultKnowledgeTypes[i] + ".png'> ";
+			html += " <span class='aui-lozenge'>" + defaultKnowledgeTypes[i];
+			html += "&nbsp;<img src='$imageFolderUrl" + defaultKnowledgeTypes[i] + ".png'></span>";
 		}
 		html += ". If you enable additional decision knowledge types, you need to add them to the ";
 		html += "current issue type scheme (when using the issue strategy).<br/><br/></p>";
 		document.getElementById("additionale-types-header").insertAdjacentHTML('afterend', html);
 
 		var additionalKnowledgeTypes = [ "Assessment", "Assumption", "Claim", "Constraint", "Context",
-		"Goal", "Implication", "Issue", "Solution" ];
+		"Implication", "Goal", "Solution", "Problem", "Issue" ];
 		var typeToggles = [];
 		for (i in additionalKnowledgeTypes) {
 			var toggleName = additionalKnowledgeTypes[i] + "-toggle";

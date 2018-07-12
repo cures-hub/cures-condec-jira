@@ -17,6 +17,7 @@ import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.IssueFieldConstants;
 import com.atlassian.jira.issue.fields.config.FieldConfigScheme;
 import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
+import com.atlassian.jira.issue.fields.option.Option;
 import com.atlassian.jira.issue.fields.option.OptionSet;
 import com.atlassian.jira.issue.fields.option.OptionSetManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -69,9 +70,9 @@ public class PluginInitializer implements InitializingBean {
 
 	// TODO Replace createIssueType with validateCreateIssueType
 	public static void createIssueType(String issueTypeName) {
-		IssueTypeManager issueTypeManager =	ComponentAccessor.getComponent(IssueTypeManager.class);
+		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
 		Collection<IssueType> types = issueTypeManager.getIssueTypes();
-		if(types != null) {
+		if (types != null) {
 			for (IssueType type : types) {
 				if (type.getName().equals(issueTypeName)) {
 					return;
@@ -79,31 +80,63 @@ public class PluginInitializer implements InitializingBean {
 			}
 		}
 		String iconUrl = getIconUrl(issueTypeName);
-        /*ErrorCollection errors = new SimpleErrorCollection();
-		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
-		constantsManager.validateCreateIssueType(issueTypeName, null, issueTypeName,
-		iconUrl, errors, "errors");
-		System.out.println(errors.getErrorMessages().toString());*/
+		/*
+		 * ErrorCollection errors = new SimpleErrorCollection(); ConstantsManager
+		 * constantsManager = ComponentAccessor.getConstantsManager();
+		 * constantsManager.validateCreateIssueType(issueTypeName, null, issueTypeName,
+		 * iconUrl, errors, "errors");
+		 * System.out.println(errors.getErrorMessages().toString());
+		 */
 		issueTypeManager.createIssueType(issueTypeName, issueTypeName + " (decision knowledge element)", iconUrl);
 	}
 
-	public static void addIssueTypeToScheme(String issueTypeName, String projectKey, Boolean isKnowledgeTypeEnabled) {
+	public static void addIssueTypeToScheme(String issueTypeName, String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
-		Collection<IssueType> types = issueTypeManager.getIssueTypes();
-		if(types != null) {
-			for (IssueType issueType : types) {
-				if (issueType.getName().equals(issueTypeName)) {
-					IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
-					Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
-					FieldConfigScheme configScheme = issueTypeSchemeManager.getConfigScheme(project);
-					OptionSetManager optionSetManager = ComponentAccessor.getComponent(OptionSetManager.class);
-					if (isKnowledgeTypeEnabled && !issueTypeSchemeManager.getIssueTypesForProject(project).contains(issueType)) {
-						final OptionSet options = optionSetManager.getOptionsForConfig(configScheme.getOneAndOnlyConfig());
-						options.addOption(IssueFieldConstants.ISSUE_TYPE, issueType.getId());
-						issueTypeSchemeManager.update(configScheme, options.getOptionIds());
-						return;
+		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
+		if (issueTypes == null) {
+			return;
+		}
+
+		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
+		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
+
+		for (IssueType issueType : issueTypes) {
+			if (issueType.getName().equals(issueTypeName)
+					&& !issueTypeSchemeManager.getIssueTypesForProject(project).contains(issueType)) {
+				FieldConfigScheme configScheme = issueTypeSchemeManager.getConfigScheme(project);
+				OptionSetManager optionSetManager = ComponentAccessor.getComponent(OptionSetManager.class);
+				final OptionSet options = optionSetManager.getOptionsForConfig(configScheme.getOneAndOnlyConfig());
+				options.addOption(IssueFieldConstants.ISSUE_TYPE, issueType.getId());
+				issueTypeSchemeManager.update(configScheme, options.getOptionIds());
+				return;
+			}
+		}
+	}
+
+	public static void removeIssueTypeFromScheme(String issueTypeName, String projectKey) {
+		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
+		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
+		if (issueTypes == null) {
+			return;
+		}
+
+		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
+		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
+
+		for (IssueType issueType : issueTypes) {
+			if (issueType.getName().equals(issueTypeName)
+					&& issueTypeSchemeManager.getIssueTypesForProject(project).contains(issueType)) {
+				FieldConfigScheme configScheme = issueTypeSchemeManager.getConfigScheme(project);
+				OptionSetManager optionSetManager = ComponentAccessor.getComponent(OptionSetManager.class);
+				final OptionSet options = optionSetManager.getOptionsForConfig(configScheme.getOneAndOnlyConfig());
+				Collection<String> optionIds = options.getOptionIds();
+				for (String optionId : optionIds) {
+					if(optionId == issueType.getId()) {
+						optionIds.remove(optionId);
 					}
 				}
+				issueTypeSchemeManager.update(configScheme, optionIds);
+				return;
 			}
 		}
 	}

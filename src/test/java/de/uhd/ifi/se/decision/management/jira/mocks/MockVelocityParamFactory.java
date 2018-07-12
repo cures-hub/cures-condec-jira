@@ -6,7 +6,7 @@ import com.atlassian.jira.util.VelocityParamFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MockVelocitryParamFactory implements VelocityParamFactory {
+public class MockVelocityParamFactory implements VelocityParamFactory {
     @Override
     public Map<String, Object> getDefaultVelocityParams(JiraAuthenticationContext jiraAuthenticationContext) {
         return null;

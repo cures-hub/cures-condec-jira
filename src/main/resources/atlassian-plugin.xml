@@ -53,6 +53,7 @@
 		<dependency>com.atlassian.auiplugin:aui-forms</dependency>
 		<dependency>com.atlassian.auiplugin:aui-navigation</dependency>
 		<dependency>com.atlassian.auiplugin:aui-toggle</dependency>
+		<dependency>com.atlassian.auiplugin:aui-lozenge</dependency>
 	</web-resource>
 
 	<web-resource key="rest-client-resources" name="ConDec Rest Client Resources">
