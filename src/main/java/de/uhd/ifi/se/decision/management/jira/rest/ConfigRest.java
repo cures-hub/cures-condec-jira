@@ -189,7 +189,7 @@ public class ConfigRest {
 			ConfigPersistence.setKnowledgeTypeEnabled(projectKey, knowledgeType, Boolean.valueOf(isKnowledgeTypeEnabled));
 			if(ConfigPersistence.isIssueStrategy(projectKey)) {
 				PluginInitializer.createIssueType(knowledgeType);
-				PluginInitializer.addIssueTypeToScheme(knowledgeType,projectKey);
+				PluginInitializer.addIssueTypeToScheme(knowledgeType,projectKey,Boolean.valueOf(isKnowledgeTypeEnabled));
 			}
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {

@@ -82,13 +82,12 @@ public class PluginInitializer implements InitializingBean {
         /*ErrorCollection errors = new SimpleErrorCollection();
 		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
 		constantsManager.validateCreateIssueType(issueTypeName, null, issueTypeName,
-		iconUrl, errors, null);
+		iconUrl, errors, "errors");
 		System.out.println(errors.getErrorMessages().toString());*/
 		issueTypeManager.createIssueType(issueTypeName, issueTypeName + " (decision knowledge element)", iconUrl);
 	}
 
-	// TODO This method is currently not working maybe because the user is not authenticated
-	public static void addIssueTypeToScheme(String issueTypeName, String projectKey) {
+	public static void addIssueTypeToScheme(String issueTypeName, String projectKey, Boolean isKnowledgeTypeEnabled) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
 		Collection<IssueType> types = issueTypeManager.getIssueTypes();
 		if(types != null) {
@@ -98,10 +97,13 @@ public class PluginInitializer implements InitializingBean {
 					Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
 					FieldConfigScheme configScheme = issueTypeSchemeManager.getConfigScheme(project);
 					OptionSetManager optionSetManager = ComponentAccessor.getComponent(OptionSetManager.class);
-					if (!configScheme.getAssociatedIssueTypes().contains(issueType)) {
-						final OptionSet options = optionSetManager.getOptionsForConfig(configScheme.getOneAndOnlyConfig());
-						options.addOption(IssueFieldConstants.ISSUE_TYPE, issueType.getId());
-						issueTypeSchemeManager.update(configScheme, options.getOptionIds());
+					if(isKnowledgeTypeEnabled) {
+						if (! issueTypeSchemeManager.getIssueTypesForProject(project).contains(issueType)) {
+							final OptionSet options = optionSetManager.getOptionsForConfig(configScheme.getOneAndOnlyConfig());
+							options.addOption(IssueFieldConstants.ISSUE_TYPE, issueType.getId());
+							issueTypeSchemeManager.update(configScheme, options.getOptionIds());
+							return;
+						}
 					}
 				}
 			}

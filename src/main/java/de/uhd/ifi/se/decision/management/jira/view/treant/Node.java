@@ -6,11 +6,12 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.properties.APKeys;
+import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.*;
 
 /**
  * Model class for Treant node
@@ -54,6 +55,11 @@ public class Node {
 		}
 		this.htmlClass = decisionKnowledgeElement.getSuperType().toString().toLowerCase(Locale.ENGLISH);
 		this.htmlId = decisionKnowledgeElement.getId();
+		DecisionKnowledgeProject project = new DecisionKnowledgeProjectImpl(decisionKnowledgeElement.getProjectKey());
+		if(project.isIssueStrategy()){
+			ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
+			link =  ImmutableMap.of("href", applicationProperties.getString(APKeys.JIRA_BASEURL) +"/browse/"+ decisionKnowledgeElement.getKey());
+		}
 	}
 
 	public Node(DecisionKnowledgeElement decisionKnowledgeElement, Link link) {
