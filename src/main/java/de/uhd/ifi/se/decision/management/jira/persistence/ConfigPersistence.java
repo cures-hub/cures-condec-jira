@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import java.util.Set;
-
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
@@ -10,6 +8,9 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
+/**
+ * Class to store and receive configuration settings
+ */
 public class ConfigPersistence {
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentGetter.getPluginSettingsFactory();
 	private static TransactionTemplate transactionTemplate = ComponentGetter.getTransactionTemplate();
@@ -49,17 +50,6 @@ public class ConfigPersistence {
 		}
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 		settings.put(pluginStorageKey + ".isActivated", Boolean.toString(isActivated));
-		if (isActivated) {
-			activateDefaultKnowledgeTypes(projectKey);
-		}
-	}
-
-	public static void activateDefaultKnowledgeTypes(String projectKey) {
-		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaulTypes();
-		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
-			settings.put(pluginStorageKey + "." + knowledgeType, "true");
-		}
 	}
 
 	public static boolean isKnowledgeExtractedFromGit(String projectKey) {
@@ -101,7 +91,8 @@ public class ConfigPersistence {
 			return;
 		}
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey + ".isKnowledgeExtractedFromIssues", Boolean.toString(setKnowledgeExtractedFromIssues));
+		settings.put(pluginStorageKey + ".isKnowledgeExtractedFromIssues",
+				Boolean.toString(setKnowledgeExtractedFromIssues));
 	}
 
 	public static boolean isKnowledgeTypeEnabled(String projectKey, String knowledgeType) {
@@ -118,12 +109,12 @@ public class ConfigPersistence {
 		return isKnowledgeTypeEnabled(projectKey, knowledgeType.toString());
 	}
 
-	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeTypes,
+	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
 			boolean isKnowledgeTypeEnabled) {
 		if (projectKey == null) {
 			return;
 		}
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey + "." + knowledgeTypes, Boolean.toString(isKnowledgeTypeEnabled));
+		settings.put(pluginStorageKey + "." + knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 }

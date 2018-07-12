@@ -18,7 +18,8 @@ import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
 
 /**
  * Renders the administration page to change the plug-in configuration of a
@@ -73,17 +74,11 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 			return new ConcurrentHashMap<String, Object>();
 		}
 		String projectKey = request.getParameter("projectKey");
-		boolean isActivated = ConfigPersistence.isActivated(projectKey);
-		boolean isIssueStrategy = ConfigPersistence.isIssueStrategy(projectKey);
-		boolean isKnowledgeExtractedFromGit = ConfigPersistence.isKnowledgeExtractedFromGit(projectKey);
-		boolean isKnowledgeExtractedFromIssues = ConfigPersistence.isKnowledgeExtractedFromIssues(projectKey);
+		DecisionKnowledgeProject decisionKnowledgeProject = new DecisionKnowledgeProjectImpl(projectKey);
 
 		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
 		velocityParameters.put("projectKey", projectKey);
-		velocityParameters.put("isActivated", isActivated);
-		velocityParameters.put("isIssueStrategy", isIssueStrategy);
-		velocityParameters.put("isKnowledgeExtractedFromGit", isKnowledgeExtractedFromGit);
-		velocityParameters.put("isKnowledgeExtractedFromIssues", isKnowledgeExtractedFromIssues);
+		velocityParameters.put("project", decisionKnowledgeProject);
 		velocityParameters.put("imageFolderUrl", ComponentGetter.getUrlOfImageFolder());
 		velocityParameters.put("requestUrl", request.getRequestURL());
 		return velocityParameters;

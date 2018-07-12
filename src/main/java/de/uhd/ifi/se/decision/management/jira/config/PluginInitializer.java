@@ -17,7 +17,6 @@ import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.IssueFieldConstants;
 import com.atlassian.jira.issue.fields.config.FieldConfigScheme;
 import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
-import com.atlassian.jira.issue.fields.option.Option;
 import com.atlassian.jira.issue.fields.option.OptionSet;
 import com.atlassian.jira.issue.fields.option.OptionSetManager;
 import com.atlassian.jira.issue.issuetype.IssueType;

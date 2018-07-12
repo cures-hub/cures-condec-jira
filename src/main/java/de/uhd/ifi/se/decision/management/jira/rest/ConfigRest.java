@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +42,36 @@ public class ConfigRest {
 		this.userManager = userManager;
 	}
 
+	@Path("/setActivated")
+	@POST
+	public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			@QueryParam("isActivated") String isActivatedString) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if (isActivatedString == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
+		}
+		try {
+			boolean isActivated = Boolean.valueOf(isActivatedString);
+			ConfigPersistence.setActivated(projectKey, isActivated);
+			setDefaultKnowledgeTypesEnabled(projectKey, isActivated, ConfigPersistence.isIssueStrategy(projectKey));
+			return Response.ok(Status.ACCEPTED).build();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
+	}
+
+	public static void setDefaultKnowledgeTypesEnabled(String projectKey, boolean isActivated,
+			boolean isIssueStrategy) {
+		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaulTypes();
+		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
+			ConfigPersistence.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), isActivated);
+		}
+	}
+
 	@Path("/isIssueStrategy")
 	@GET
 	public Response isIssueStrategy(@QueryParam("projectKey") final String projectKey) {
@@ -55,17 +86,19 @@ public class ConfigRest {
 	@Path("/setIssueStrategy")
 	@POST
 	public Response setIssueStrategy(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isIssueStrategy") String isIssueStrategy) {
+			@QueryParam("isIssueStrategy") String isIssueStrategyString) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (isIssueStrategy == null) {
+		if (isIssueStrategyString == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isIssueStrategy = null"))
 					.build();
 		}
 		try {
-			ConfigPersistence.setIssueStrategy(projectKey, Boolean.valueOf(isIssueStrategy));
+			boolean isIssueStrategy = Boolean.valueOf(isIssueStrategyString);
+			ConfigPersistence.setIssueStrategy(projectKey, isIssueStrategy);
+			manageDefaultIssueTypes(projectKey, isIssueStrategy);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -73,23 +106,16 @@ public class ConfigRest {
 		}
 	}
 
-	@Path("/setActivated")
-	@POST
-	public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivated") String isActivated) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		if (isActivated == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
-		}
-		try {
-			ConfigPersistence.setActivated(projectKey, Boolean.valueOf(isActivated));
-			return Response.ok(Status.ACCEPTED).build();
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-			return Response.status(Status.CONFLICT).build();
+	public static void manageDefaultIssueTypes(String projectKey, boolean isIssueStrategy) {
+		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaulTypes();
+		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
+			if (isIssueStrategy) {
+				ConfigPersistence.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), true);
+				PluginInitializer.createIssueType(knowledgeType.toString());
+				PluginInitializer.addIssueTypeToScheme(knowledgeType.toString(), projectKey);
+			} else {
+				PluginInitializer.removeIssueTypeFromScheme(knowledgeType.toString(), projectKey);
+			}
 		}
 	}
 
@@ -230,10 +256,7 @@ public class ConfigRest {
 		}
 		List<String> defaultKnowledgeTypes = new ArrayList<String>();
 		for (KnowledgeType knowledgeType : KnowledgeType.getDefaulTypes()) {
-			boolean isEnabled = ConfigPersistence.isKnowledgeTypeEnabled(projectKey, knowledgeType);
-			if (isEnabled) {
-				defaultKnowledgeTypes.add(knowledgeType.toString());
-			}
+			defaultKnowledgeTypes.add(knowledgeType.toString());
 		}
 		return Response.ok(defaultKnowledgeTypes).build();
 	}

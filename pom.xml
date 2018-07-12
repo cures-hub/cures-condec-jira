@@ -18,16 +18,16 @@
 			<name>Tim Kuchenbuch</name>
 		</developer>
 		<developer>
-			<id>EwaldRode</id>
-			<name>Ewald Rode</name>
-		</developer>
-		<developer>
 			<id>Jcl15</id>
 			<name>Jochen Clormann</name>
 		</developer>
 		<developer>
 			<id>larstralle</id>
 			<name>Lars Tralle</name>
+		</developer>
+		<developer>
+			<id>EwaldRode</id>
+			<name>Ewald Rode</name>
 		</developer>
 		<developer>
 			<name>Ines Hamma</name>
@@ -194,13 +194,6 @@
 			<scope>test</scope>
 		</dependency>
 		<!-- DecXtract -->
-		 <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.6</version>
-            <scope>provided</scope>
-        </dependency>
-
 		<dependency>
 			<groupId>nz.ac.waikato.cms.weka</groupId>
 			<artifactId>weka-stable</artifactId>
@@ -208,13 +201,10 @@
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/nz.ac.waikato.cms.weka.thirdparty/bounce -->
 		<dependency>
-		    <groupId>nz.ac.waikato.cms.weka.thirdparty</groupId>
-		    <artifactId>bounce</artifactId>
-		    <version>0.18</version>
+			<groupId>nz.ac.waikato.cms.weka.thirdparty</groupId>
+			<artifactId>bounce</artifactId>
+			<version>0.18</version>
 		</dependency>
-
-
-
 	</dependencies>
 	<build>
 		<finalName>cures-condec-jira</finalName>

@@ -19,7 +19,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				label="ConDec Activated?"></aui-toggle>
 			<script>
                 var activationToggle = document.getElementById('isActivated-toggle');
-                    #if ($isActivated == true)
+                    #if ($project.isActivated() == true)
 			activationToggle.checked = true;
                     #else
 			activationToggle.checked = false;
@@ -39,7 +39,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				label="Store in Issues?"></aui-toggle>
 			<script>
                 var strategyToggle = document.getElementById('isIssueStrategy-toggle');
-                    #if ($isIssueStrategy == true)
+                    #if ($project.isIssueStrategy() == true)
 			strategyToggle.checked = true;
                     #else
 			strategyToggle.checked = false;
@@ -63,7 +63,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				value="$projectKey" label="Extract from	Git?"></aui-toggle>
 			<script>
 				var gitToggle = document.getElementById('isKnowledgeExtractedFromGit-toggle');
-					if ($isKnowledgeExtractedFromGit == true) {
+					if ($project.isKnowledgeExtractedFromGit() == true) {
 						gitToggle.checked = true;
 					} else {
 						gitToggle.checked = false;
@@ -84,7 +84,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				value="$projectKey" label="Extract from	Issue Comments?"></aui-toggle>
 			<script>
 				var issueToggle = document.getElementById('isKnowledgeExtractedFromIssues-toggle');
-					if ($isKnowledgeExtractedFromIssues == true) {
+					if ($project.isKnowledgeExtractedFromIssues() == true) {
 						issueToggle.checked = true;
 					} else {
 						issueToggle.checked = false;
