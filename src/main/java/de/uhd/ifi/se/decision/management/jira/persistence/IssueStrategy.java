@@ -216,6 +216,7 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		long sequence = 0;
 		List<IssueLink> inwardIssueLinkList = issueLinkManager.getInwardLinks(link.getIngoingId());
 		List<IssueLink> outwardIssueLinkList = issueLinkManager.getOutwardLinks(link.getIngoingId());
+
 		for (IssueLink issueLink : inwardIssueLinkList) {
 			if (sequence <= issueLink.getSequence()) {
 				sequence = issueLink.getSequence() + 1;

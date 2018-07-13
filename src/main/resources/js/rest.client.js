@@ -166,13 +166,13 @@ function deleteDecisionKnowledgeElement(id, callback) {
 			});
 }
 
-function createLink(parentId, childId, linkType, callback) {
+function linkElements(parentId, childId, linkType, callback) {
 	var jsondata = {
 		"linkType" : linkType,
 		"ingoingId" : childId,
 		"outgoingId" : parentId
 	};
-	putJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLink.json?projectKey=" + getProjectKey(),
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLink.json?projectKey=" + getProjectKey(),
 			jsondata, function(error, link) {
 				if (error === null) {
 					showFlag("success", "Link has been created.");

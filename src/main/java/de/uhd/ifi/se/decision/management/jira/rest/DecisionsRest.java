@@ -157,7 +157,7 @@ public class DecisionsRest {
 	}
 
 	@Path("/createLink")
-	@PUT
+	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {

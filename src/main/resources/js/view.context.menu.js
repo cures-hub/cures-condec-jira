@@ -10,11 +10,11 @@ var contextMenuCreateAction = {
 	"name" : createKnowledgeElementText,
 	"action" : function(position) {
 		var id = getSelectedTreeViewerNodeId(position);
-		setUpContextMenuContentForCreateAction(id);
+		setUpDialogForCreateAction(id);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		setUpContextMenuContentForCreateAction(id);
+		setUpDialogForCreateAction(id);
 	}
 };
 
@@ -32,10 +32,10 @@ function getSelectedTreantNodeId(options) {
 	return context.id;
 }
 
-function setUpContextMenuContentForCreateAction(id) {
-	setUpModal();
+function setUpDialogForCreateAction(id) {
+	setUpDialog();
 	setHeaderText(createKnowledgeElementText);
-	setUpContextMenuContent("", "", "Alternative");
+	setUpCreateOrEditDialog("", "", "Alternative");
 
 	var submitButton = document.getElementById("dialog-submit-button");
 	submitButton.textContent = createKnowledgeElementText;
@@ -44,57 +44,54 @@ function setUpContextMenuContentForCreateAction(id) {
 		var description = document.getElementById("form-input-description").value;
 		var type = $("select[name='form-select-type']").val();
 		createDecisionKnowledgeElementAsChild(summary, description, type, id);
-		var createCreateIssueForm = require('quick-edit/form/factory/create-issue');
-		closeModal();
+		closeDialog();
 	};
 
-	var extensionButton = document.getElementById("dialog-extension-button");
-	extensionButton.style.visibility = "visible";
-	extensionButton.onclick = function() {
-		var createCreateIssueForm = require('quick-edit/form/factory/create-issue');
-		createCreateIssueForm({
-			parentIssueId : id,
-			pid : getProjectId()
-		}).asDialog({
-			windowTitle : createKnowledgeElementText
-		}).show();
-		closeModal();
-	};
+	isIssueStrategy(id, function(isIssueStrategy) {
+		if (isIssueStrategy === true) {
+			var extensionButton = document.getElementById("dialog-extension-button");
+			extensionButton.style.visibility = "visible";
+			extensionButton.onclick = function() {
+				var createCreateIssueForm = require('quick-edit/form/factory/create-issue');
+				createCreateIssueForm({
+					parentIssueId : id,
+					pid : getProjectId()
+				}).asDialog({
+					windowTitle : createKnowledgeElementText
+				}).show();
+				closeDialog();
+			};
+		}
+	});
 }
 
-function setUpModal() {
-	AJS.dialog2("#context-menu-modal").show();
-	AJS.dialog2("#context-menu-modal").on("hide", function() {
-		clearModalContent();
+function setUpDialog() {
+	AJS.dialog2("#dialog").show();
+	AJS.dialog2("#dialog").on("hide", function() {
+		resetDialog();
 	});
 	AJS.$(document).on("click", "#dialog-cancel-button", function(e) {
 		e.preventDefault();
-		AJS.dialog2("#context-menu-modal").hide();
+		AJS.dialog2("#dialog").hide();
 	});
-	document.getElementById("dialog-extension-button").style.visibility = "hidden";
 }
 
 function setHeaderText(headerText) {
-	var header = document.getElementById("context-menu-header");
+	var header = document.getElementById("dialog-header");
 	header.textContent = headerText;
 }
 
-function setUpContextMenuContent(summary, description, knowledgeType) {
-	document
-			.getElementById("modal-content")
-			.insertAdjacentHTML(
-					"afterBegin",
-					"<form class='aui'><div class='field-group'><label for='form-input-summary'>Summary:</label>"
-							+ "<input id='form-input-summary' type='text' placeholder='Summary' value='"
-							+ summary
-							+ "' class='text long-field'/></div>"
-							+ "<div class='field-group'><label for='form-input-description'>Description:</label>"
-							+ "<textarea id='form-input-description' placeholder='Description' value='"
-							+ description
-							+ "' class='textarea'></textarea></div>"
-							+ "<div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
-							+ "<select name='form-select-type' class='select'/></div>"
-							+ "</form>");
+function setUpCreateOrEditDialog(summary, description, knowledgeType) {
+	document.getElementById("dialog-content").insertAdjacentHTML(
+			"afterBegin",
+			"<form class='aui'><div class='field-group'><label for='form-input-summary'>Summary:</label>"
+					+ "<input id='form-input-summary' type='text' placeholder='Summary' value='" + summary
+					+ "' class='text long-field'/></div>"
+					+ "<div class='field-group'><label for='form-input-description'>Description:</label>"
+					+ "<textarea id='form-input-description' placeholder='Description' value='" + description
+					+ "' class='textarea'></textarea></div>"
+					+ "<div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
+					+ "<select name='form-select-type' class='select'/></div>" + "</form>");
 
 	for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
 		var isSelected = "";
@@ -116,16 +113,16 @@ var contextMenuLinkAction = {
 	"name" : linkKnowledgeElementText,
 	"action" : function(position) {
 		var id = getSelectedTreeViewerNodeId(position);
-		setUpContextMenuContentForLinkAction(id);
+		setUpDialogForLinkAction(id);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		setUpContextMenuContentForLinkAction(id);
+		setUpDialogForLinkAction(id);
 	}
 };
 
-function setUpContextMenuContentForLinkAction(id) {
-	setUpModal();
+function setUpDialogForLinkAction(id) {
+	setUpDialog();
 	setHeaderText(linkKnowledgeElementText);
 
 	getUnlinkedDecisionComponents(
@@ -140,7 +137,7 @@ function setUpContextMenuContentForLinkAction(id) {
 				}
 				insertString += "</div></form>";
 
-				var content = document.getElementById("modal-content");
+				var content = document.getElementById("dialog-content");
 				content.insertAdjacentHTML("afterBegin", insertString);
 
 				var submitButton = document.getElementById("dialog-submit-button");
@@ -148,7 +145,7 @@ function setUpContextMenuContentForLinkAction(id) {
 				submitButton.onclick = function() {
 					var childId = $("select[name='form-select-component']").val();
 					createLinkToExistingElement(id, childId);
-					closeModal();
+					closeDialog();
 				};
 			});
 }
@@ -159,44 +156,48 @@ var contextMenuEditAction = {
 	"name" : editKnowledgeElementText,
 	"action" : function(position) {
 		var id = getSelectedTreeViewerNodeId(position);
-		setUpContextMenuContentForEditAction(id);
+		setUpDialogForEditAction(id);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		setUpContextMenuContentForEditAction(id);
+		setUpDialogForEditAction(id);
 	}
 };
 
-function setUpContextMenuContentForEditAction(id) {
-	isIssueStrategy(id, function(isIssueStrategy) {
-		if (isIssueStrategy === true) {
-			JIRA.Forms.createEditIssueForm({
-				issueId : id
-			}).asDialog({
-				id : "condec-edit-dialog"
-			}, {
-				windowTitle : editKnowledgeElementText
-			}).show();
-		} else {
-			setUpModal();
-			setHeaderText(editKnowledgeElementText);
-			getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
-				var summary = decisionKnowledgeElement.summary;
-				var description = decisionKnowledgeElement.description;
-				var type = decisionKnowledgeElement.type;
-				setUpContextMenuContent(summary, description, type);
+function setUpDialogForEditAction(id) {
+	setUpDialog();
+	setHeaderText(editKnowledgeElementText);
+	getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
+		var summary = decisionKnowledgeElement.summary;
+		var description = decisionKnowledgeElement.description;
+		var type = decisionKnowledgeElement.type;
+		setUpCreateOrEditDialog(summary, description, type);
 
-				var submitButton = document.getElementById("dialog-submit-button");
-				submitButton.textContent = editKnowledgeElementText;
-				submitButton.onclick = function() {
-					var summary = document.getElementById("form-input-summary").value;
-					var description = document.getElementById("form-input-description").value;
-					var type = $("select[name='form-select-type']").val();
-					editDecisionKnowledgeElementAsChild(summary, description, type, id);
-					closeModal();
+		var submitButton = document.getElementById("dialog-submit-button");
+		submitButton.textContent = editKnowledgeElementText;
+		submitButton.onclick = function() {
+			var summary = document.getElementById("form-input-summary").value;
+			var description = document.getElementById("form-input-description").value;
+			var type = $("select[name='form-select-type']").val();
+			editDecisionKnowledgeElementAsChild(summary, description, type, id);
+			closeDialog();
+		};
+
+		isIssueStrategy(id, function(isIssueStrategy) {
+			if (isIssueStrategy === true) {
+				var extensionButton = document.getElementById("dialog-extension-button");
+				extensionButton.style.visibility = "visible";
+				extensionButton.onclick = function() {
+					var createEditIssueForm = require('quick-edit/form/factory/edit-issue');
+					createEditIssueForm({
+						issueId : id
+					}).asDialog({
+						windowTitle : editKnowledgeElementText
+					}).show();
+					closeDialog();
 				};
-			});
-		}
+			}
+		});
 	});
 }
 
@@ -206,19 +207,19 @@ var contextMenuDeleteAction = {
 	"name" : deleteKnowledgeElementText,
 	"action" : function(position) {
 		var id = getSelectedTreeViewerNodeId(position);
-		setUpContextMenuContentForDeleteAction(id);
+		setUpDialogForDeleteAction(id);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		setUpContextMenuContentForDeleteAction(id);
+		setUpDialogForDeleteAction(id);
 	}
 };
 
-function setUpContextMenuContentForDeleteAction(id) {
-	setUpModal();
+function setUpDialogForDeleteAction(id) {
+	setUpDialog();
 	setHeaderText(deleteKnowledgeElementText);
 
-	var content = document.getElementById("modal-content");
+	var content = document.getElementById("dialog-content");
 	content.textContent = "Do you really want to delete this element?";
 
 	var submitButton = document.getElementById("dialog-submit-button");
@@ -227,7 +228,7 @@ function setUpContextMenuContentForDeleteAction(id) {
 		deleteDecisionKnowledgeElement(id, function() {
 			updateView(id);
 		});
-		closeModal();
+		closeDialog();
 	};
 }
 
@@ -239,27 +240,27 @@ var contextMenuDeleteLinkAction = {
 		var node = getSelectedTreeViewerNode(position);
 		var id = node.id;
 		var parentId = node.parent;
-		setUpContextMenuContentForDeleteLinkAction(id, parentId);
+		setUpDialogForDeleteLinkAction(id, parentId);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
 		var parentId = findParentId(id);
-		setUpContextMenuContentForDeleteLinkAction(id, parentId);
+		setUpDialogForDeleteLinkAction(id, parentId);
 	}
 };
 
-function setUpContextMenuContentForDeleteLinkAction(id, parentId) {
-	setUpModal();
+function setUpDialogForDeleteLinkAction(id, parentId) {
+	setUpDialog();
 	setHeaderText(deleteLinkToParentText);
 
-	var content = document.getElementById("modal-content");
+	var content = document.getElementById("dialog-content");
 	content.textContent = "Do you really want to delete the link to the parent element?";
 
 	var submitButton = document.getElementById("dialog-submit-button");
 	submitButton.textContent = deleteLinkToParentText;
 	submitButton.onclick = function() {
 		deleteLinkToExistingElement(parentId, id);
-		closeModal();
+		closeDialog();
 	};
 }
 
@@ -271,13 +272,14 @@ var contextMenuActions = {
 	"delete" : contextMenuDeleteAction
 };
 
-function closeModal() {
-	AJS.dialog2("#context-menu-modal").hide();
+function closeDialog() {
+	AJS.dialog2("#dialog").hide();
 }
 
-function clearModalContent() {
-	var modalHeader = document.getElementById("context-menu-header");
+function resetDialog() {
+	var modalHeader = document.getElementById("dialog-header");
 	modalHeader.innerHTML = "";
-	var modalContent = document.getElementById("modal-content");
+	var modalContent = document.getElementById("dialog-content");
 	modalContent.innerHTML = "";
+	document.getElementById("dialog-extension-button").style.visibility = "hidden";
 }

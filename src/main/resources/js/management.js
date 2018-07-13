@@ -24,29 +24,30 @@ function createDecisionKnowledgeElementAsChild(summary, description, type, paren
 	switch (type) {
 	case "Pro Argument":
 		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
-			createLink(childId, parentId, "support", function() {
-				updateView(childId);
+			linkElements(childId, parentId, "support", function() {
+//				updateView(childId);
 			});
 		});
 		break;
 	case "Contra Argument":
 		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
-			createLink(childId, parentId, "attack", function() {
-				updateView(childId);
+			linkElements(childId, parentId, "attack", function() {
+//				updateView(childId);
 			});
 		});
 		break;
 	case "Comment":
 		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
-			createLink(childId, parentId, "comment", function() {
-				updateView(childId);
+			linkElements(childId, parentId, "comment", function() {
+//				updateView(childId);
 			});
 		});
 		break;
 	default:
 		createDecisionKnowledgeElement(summary, description, type, function(childId) {
-			createLink(parentId, childId, "contain", function() {
-				updateView(childId);
+			linkElements(parentId, childId, "contain", function(link) {
+				console.log(link);
+//				updateView(childId);
 			});
 		});
 	}
@@ -109,22 +110,22 @@ function createLinkToExistingElement(parentId, childId) {
 		var type = decisionKnowledgeElement.type;
 		switch (type) {
 		case "Pro Argument":
-			createLink(childId, parentId, "support", function() {
+			linkElements(childId, parentId, "support", function() {
 				updateView(parentId);
 			});
 			break;
 		case "Contra Argument":
-			createLink(childId, parentId, "attack", function() {
+			linkElements(childId, parentId, "attack", function() {
 				updateView(parentId);
 			});
 			break;
 		case "Comment":
-			createLink(childId, parentId, "comment", function() {
+			linkElements(childId, parentId, "comment", function() {
 				updateView(parentId);
 			});
 			break;
 		default:
-			createLink(parentId, childId, "contain", function() {
+			linkElements(parentId, childId, "contain", function() {
 				updateView(parentId);
 			});
 		}

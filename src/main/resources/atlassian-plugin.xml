@@ -58,10 +58,10 @@
 	</web-resource>
 
 	<web-resource key="rest-client-resources" name="ConDec Rest Client Resources">
-		<context>atl.general</context>
 		<description>
 			Provides the Java Script REST Client for the REST API used in this plug-in.
 		</description>
+		<context>atl.general</context>
 		<resource type="download" name="rest.client.js" location="/js/rest.client.js" />
 		<resource type="download" name="management.js" location="/js/management.js" />
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-edit-issue</dependency>
