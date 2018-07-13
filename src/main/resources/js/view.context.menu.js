@@ -44,6 +44,20 @@ function setUpContextMenuContentForCreateAction(id) {
 		var description = document.getElementById("form-input-description").value;
 		var type = $("select[name='form-select-type']").val();
 		createDecisionKnowledgeElementAsChild(summary, description, type, id);
+		var createCreateIssueForm = require('quick-edit/form/factory/create-issue');
+		closeModal();
+	};
+
+	var extensionButton = document.getElementById("dialog-extension-button");
+	extensionButton.style.visibility = "visible";
+	extensionButton.onclick = function() {
+		var createCreateIssueForm = require('quick-edit/form/factory/create-issue');
+		createCreateIssueForm({
+			parentIssueId : id,
+			pid : getProjectId()
+		}).asDialog({
+			windowTitle : createKnowledgeElementText
+		}).show();
 		closeModal();
 	};
 }
@@ -53,6 +67,11 @@ function setUpModal() {
 	AJS.dialog2("#context-menu-modal").on("hide", function() {
 		clearModalContent();
 	});
+	AJS.$(document).on("click", "#dialog-cancel-button", function(e) {
+		e.preventDefault();
+		AJS.dialog2("#context-menu-modal").hide();
+	});
+	document.getElementById("dialog-extension-button").style.visibility = "hidden";
 }
 
 function setHeaderText(headerText) {
@@ -70,11 +89,12 @@ function setUpContextMenuContent(summary, description, knowledgeType) {
 							+ summary
 							+ "' class='text long-field'/></div>"
 							+ "<div class='field-group'><label for='form-input-description'>Description:</label>"
-							+ "<input id='form-input-description' type='text' placeholder='Description' value='"
+							+ "<textarea id='form-input-description' placeholder='Description' value='"
 							+ description
-							+ "' class='text long-field'/></div>"
+							+ "' class='textarea'></textarea></div>"
 							+ "<div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
-							+ "<select name='form-select-type' class='select'/></div></form>");
+							+ "<select name='form-select-type' class='select'/></div>"
+							+ "</form>");
 
 	for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
 		var isSelected = "";
@@ -150,11 +170,13 @@ var contextMenuEditAction = {
 function setUpContextMenuContentForEditAction(id) {
 	isIssueStrategy(id, function(isIssueStrategy) {
 		if (isIssueStrategy === true) {
-			setUpModal();
-			var modal = document.getElementById("modal-content");
-			var url = AJS.contextPath() + "/secure/EditIssue!default.jspa?id=" + id;
-			var iframe = "<iframe src='" + url + "' style='border:none' height='100%' width='100%'></iframe>";
-			modal.insertAdjacentHTML("afterBegin", iframe);
+			JIRA.Forms.createEditIssueForm({
+				issueId : id
+			}).asDialog({
+				id : "condec-edit-dialog"
+			}, {
+				windowTitle : editKnowledgeElementText
+			}).show();
 		} else {
 			setUpModal();
 			setHeaderText(editKnowledgeElementText);
@@ -255,17 +277,7 @@ function closeModal() {
 
 function clearModalContent() {
 	var modalHeader = document.getElementById("context-menu-header");
-	if (modalHeader.hasChildNodes()) {
-		var childNodes = modalHeader.childNodes;
-		for (var index = 0; index < childNodes.length; ++index) {
-			var child = childNodes[index];
-			if (child.nodeType === 3) {
-				child.parentNode.removeChild(child);
-			}
-		}
-	}
+	modalHeader.innerHTML = "";
 	var modalContent = document.getElementById("modal-content");
-	if (modalContent) {
-		clearInner(modalContent);
-	}
+	modalContent.innerHTML = "";
 }

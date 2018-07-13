@@ -162,6 +162,10 @@ function getProjectKey() {
 	return JIRA.API.Projects.getCurrentProjectKey();
 }
 
+function getProjectId() {
+	return JIRA.API.Projects.getCurrentProjectId();
+}
+
 function getIssueKey() {
 	var issueKey = JIRA.Issue.getIssueKey();
 	if (issueKey == null) {

@@ -75,8 +75,11 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 		<div id="modal-content" class="aui-dialog2-content"></div>
 		<footer class="aui-dialog2-footer">
 			<div class="aui-dialog2-footer-actions">
+				<button id="dialog-extension-button" class="aui-button">Extended
+					Editor</button>
 				<button id="dialog-submit-button"
 					class="aui-button aui-button-primary">Do it!</button>
+				<button id="dialog-cancel-button" class="aui-button aui-button-link">Cancel</button>
 			</div>
 		</footer>
 	</section>
