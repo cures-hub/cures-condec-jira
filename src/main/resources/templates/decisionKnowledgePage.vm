@@ -63,21 +63,25 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 			</div>
 		</div>
 	</form>
-	<!-- The Modal -->
-	<div id="context-menu-modal" class="modal">
-		<div class="modal-wrapper">
-			<div class="modal-header">
-				<h2 id="modal-header">
-					<span id="context-menu-header"></span> <span id="modal-close-x"
-						class="modal-close" style="float: right;">&times;</span>
-				</h2>
-				<hr>
+	<section id="context-menu-modal"
+		class="aui-dialog2 aui-dialog2-medium aui-layer" role="dialog"
+		aria-hidden="true">
+		<header class="aui-dialog2-header">
+			<h2 id="context-menu-header" class="aui-dialog2-header-main"></h2>
+			<a class="aui-dialog2-header-close"> <span
+				class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+			</a>
+		</header>
+		<div id="modal-content" class="aui-dialog2-content"></div>
+		<footer class="aui-dialog2-footer">
+			<div class="aui-dialog2-footer-actions">
+				<button id="dialog-submit-button"
+					class="aui-button aui-button-primary">Do it!</button>
 			</div>
-			<div id="modal-content"></div>
-		</div>
-	</div>
+		</footer>
+	</section>
 	<script>
-			initializeDecisionKnowledgePage();
+		initializeDecisionKnowledgePage();
 	</script>
 </body>
 </html>

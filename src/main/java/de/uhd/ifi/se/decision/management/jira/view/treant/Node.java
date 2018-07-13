@@ -42,7 +42,6 @@ public class Node {
 		this.connectors = ImmutableMap.of("style", ImmutableMap.of("stroke", "#000000"));
 	}
 
-	// TODO Link key to actual issue when using the issue persistence strategy
 	public Node(DecisionKnowledgeElement decisionKnowledgeElement) {
 		this();
 		KnowledgeType type = decisionKnowledgeElement.getType();
@@ -56,9 +55,10 @@ public class Node {
 		this.htmlClass = decisionKnowledgeElement.getSuperType().toString().toLowerCase(Locale.ENGLISH);
 		this.htmlId = decisionKnowledgeElement.getId();
 		DecisionKnowledgeProject project = new DecisionKnowledgeProjectImpl(decisionKnowledgeElement.getProjectKey());
-		if(project.isIssueStrategy()){
+		if (project.isIssueStrategy()) {
 			ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
-			link =  ImmutableMap.of("href", applicationProperties.getString(APKeys.JIRA_BASEURL) +"/browse/"+ decisionKnowledgeElement.getKey());
+			this.link = ImmutableMap.of("href", applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/"
+					+ decisionKnowledgeElement.getKey());
 		}
 	}
 

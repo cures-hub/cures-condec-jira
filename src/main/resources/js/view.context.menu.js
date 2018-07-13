@@ -35,9 +35,10 @@ function getSelectedTreantNodeId(options) {
 function setUpContextMenuContentForCreateAction(id) {
 	setUpModal();
 	setHeaderText(createKnowledgeElementText);
-	setUpContextMenuContent("", "", "Alternative", createKnowledgeElementText);
+	setUpContextMenuContent("", "", "Alternative");
 
-	var submitButton = document.getElementById("form-input-submit");
+	var submitButton = document.getElementById("dialog-submit-button");
+	submitButton.textContent = createKnowledgeElementText;
 	submitButton.onclick = function() {
 		var summary = document.getElementById("form-input-summary").value;
 		var description = document.getElementById("form-input-description").value;
@@ -48,23 +49,10 @@ function setUpContextMenuContentForCreateAction(id) {
 }
 
 function setUpModal() {
-	var modal = document.getElementById("context-menu-modal");
-	modal.style.display = "block";
-
-	// adds click-handler for elements in modal to close modal window
-	var elementsWithCloseFunction = document.getElementsByClassName("modal-close");
-	for (var counter = 0; counter < elementsWithCloseFunction.length; counter++) {
-		elementsWithCloseFunction[counter].onclick = function() {
-			closeModal();
-		};
-	}
-
-	// closes modal window if user clicks anywhere outside of the modal
-	window.onclick = function(event) {
-		if (event.target === modal) {
-			closeModal();
-		}
-	};
+	AJS.dialog2("#context-menu-modal").show();
+	AJS.dialog2("#context-menu-modal").on("hide", function() {
+		clearModalContent();
+	});
 }
 
 function setHeaderText(headerText) {
@@ -72,23 +60,21 @@ function setHeaderText(headerText) {
 	header.textContent = headerText;
 }
 
-function setUpContextMenuContent(summary, description, knowledgeType, buttonText) {
+function setUpContextMenuContent(summary, description, knowledgeType) {
 	document
 			.getElementById("modal-content")
 			.insertAdjacentHTML(
 					"afterBegin",
-					"<p><label for='form-input-summary' style='display:block;width:45%;float:left;'>Summary:</label>"
+					"<form class='aui'><div class='field-group'><label for='form-input-summary'>Summary:</label>"
 							+ "<input id='form-input-summary' type='text' placeholder='Summary' value='"
 							+ summary
-							+ "' style='width:50%;'/></p>"
-							+ "<p><label for='form-input-description' style='display:block;width:45%;float:left;'>Description:</label>"
+							+ "' class='text long-field'/></div>"
+							+ "<div class='field-group'><label for='form-input-description'>Description:</label>"
 							+ "<input id='form-input-description' type='text' placeholder='Description' value='"
 							+ description
-							+ "' style='width:50%;'/></p>"
-							+ "<p><label for='form-select-type' style='display:block;width:45%;float:left;'>Knowledge type:</label>"
-							+ "<select name='form-select-type' style='width:50%;'/></p>"
-							+ "<p><input id='form-input-submit' type='submit' value='" + buttonText
-							+ "' style='float:right;'/></p>");
+							+ "' class='text long-field'/></div>"
+							+ "<div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
+							+ "<select name='form-select-type' class='select'/></div></form>");
 
 	for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
 		var isSelected = "";
@@ -125,20 +111,20 @@ function setUpContextMenuContentForLinkAction(id) {
 	getUnlinkedDecisionComponents(
 			id,
 			function(unlinkedDecisionComponents) {
-				var insertString = "<p><label for='form-select-component' style='display:block;width:45%;float:left;'>Unlinked Element:</label>"
-						+ "<select name='form-select-component' style='width:50%;' />";
+				var insertString = "<form class='aui'><div class='field-group'><label for='form-select-component'>Unlinked Element:</label>"
+						+ "<select name='form-select-component' class='select'/>";
 				for (var index = 0; index < unlinkedDecisionComponents.length; index++) {
 					insertString += "<option value='" + unlinkedDecisionComponents[index].id + "'>"
 							+ unlinkedDecisionComponents[index].type + ' / '
 							+ unlinkedDecisionComponents[index].summary + "</option>";
 				}
-				insertString += "</p> <p><input name='form-input-submit' id='form-input-submit' type='submit' value='"
-						+ linkKnowledgeElementText + "' style='float:right;'/></p>";
+				insertString += "</div></form>";
 
 				var content = document.getElementById("modal-content");
 				content.insertAdjacentHTML("afterBegin", insertString);
 
-				var submitButton = document.getElementById("form-input-submit");
+				var submitButton = document.getElementById("dialog-submit-button");
+				submitButton.textContent = linkKnowledgeElementText;
 				submitButton.onclick = function() {
 					var childId = $("select[name='form-select-component']").val();
 					createLinkToExistingElement(id, childId);
@@ -176,9 +162,10 @@ function setUpContextMenuContentForEditAction(id) {
 				var summary = decisionKnowledgeElement.summary;
 				var description = decisionKnowledgeElement.description;
 				var type = decisionKnowledgeElement.type;
-				setUpContextMenuContent(summary, description, type, editKnowledgeElementText);
+				setUpContextMenuContent(summary, description, type);
 
-				var submitButton = document.getElementById("form-input-submit");
+				var submitButton = document.getElementById("dialog-submit-button");
+				submitButton.textContent = editKnowledgeElementText;
 				submitButton.onclick = function() {
 					var summary = document.getElementById("form-input-summary").value;
 					var description = document.getElementById("form-input-description").value;
@@ -210,17 +197,10 @@ function setUpContextMenuContentForDeleteAction(id) {
 	setHeaderText(deleteKnowledgeElementText);
 
 	var content = document.getElementById("modal-content");
-	content.insertAdjacentHTML("afterBegin",
-			"<p><input id='abort-submit' type='submit' value='Abort Deletion' style='float:right;'/>"
-					+ "<input id='form-input-submit' type='submit' value=" + deleteKnowledgeElementText
-					+ " style='float:right;'/></p>");
+	content.textContent = "Do you really want to delete this element?";
 
-	var abortButton = document.getElementById("abort-submit");
-	abortButton.onclick = function() {
-		closeModal();
-	};
-
-	var submitButton = document.getElementById("form-input-submit");
+	var submitButton = document.getElementById("dialog-submit-button");
+	submitButton.textContent = deleteKnowledgeElementText;
 	submitButton.onclick = function() {
 		deleteDecisionKnowledgeElement(id, function() {
 			updateView(id);
@@ -251,17 +231,10 @@ function setUpContextMenuContentForDeleteLinkAction(id, parentId) {
 	setHeaderText(deleteLinkToParentText);
 
 	var content = document.getElementById("modal-content");
-	content.insertAdjacentHTML("afterBegin",
-			"<p><input id='abort-submit' type='submit' value='Abort Deletion' style='float:right;'/>"
-					+ "<input id='form-input-submit' type='submit' value=" + deleteLinkToParentText
-					+ " style='float:right;'/></p>");
+	content.textContent = "Do you really want to delete the link to the parent element?";
 
-	var abortButton = document.getElementById("abort-submit");
-	abortButton.onclick = function() {
-		closeModal();
-	};
-
-	var submitButton = document.getElementById("form-input-submit");
+	var submitButton = document.getElementById("dialog-submit-button");
+	submitButton.textContent = deleteLinkToParentText;
 	submitButton.onclick = function() {
 		deleteLinkToExistingElement(parentId, id);
 		closeModal();
@@ -277,9 +250,11 @@ var contextMenuActions = {
 };
 
 function closeModal() {
-	var modal = document.getElementById("context-menu-modal");
-	modal.style.display = "none";
-	var modalHeader = document.getElementById("modal-header");
+	AJS.dialog2("#context-menu-modal").hide();
+}
+
+function clearModalContent() {
+	var modalHeader = document.getElementById("context-menu-header");
 	if (modalHeader.hasChildNodes()) {
 		var childNodes = modalHeader.childNodes;
 		for (var index = 0; index < childNodes.length; ++index) {
