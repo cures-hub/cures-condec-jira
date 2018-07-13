@@ -34,7 +34,7 @@ function enableLinkingUnlinkedDecisionComponents(parentId) {
 	getUnlinkedDecisionComponents(
 			parentId,
 			function(unlinkedDecisionComponents) {
-				var insertString = '<select name="linkExistingIssueSearchField" class="select">';
+				var insertString = '<select id="form-select-component-accordion" name="linkExistingIssueSearchField" class="select full-width-field">';
 				for (var index = 0; index < unlinkedDecisionComponents.length; index++) {
 					insertString += '<option value="' + unlinkedDecisionComponents[index].id + '">'
 							+ unlinkedDecisionComponents[index].type + ' / '
@@ -42,6 +42,8 @@ function enableLinkingUnlinkedDecisionComponents(parentId) {
 				}
 				insertString += '</select><input type="button" name="linkExistingIssueButton" id="linkExistingIssueButton" class="aui-button" value="Create Link"/>';
 				document.getElementById("Details").insertAdjacentHTML('beforeend', insertString);
+				AJS.$("#form-select-component-accordion").auiSelect2();
+
 				var linkButton = document.getElementById("linkExistingIssueButton");
 				linkButton.addEventListener("click", function() {
 					var childId = $("select[name='linkExistingIssueSearchField'] option:selected").val();

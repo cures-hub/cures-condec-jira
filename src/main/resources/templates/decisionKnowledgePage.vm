@@ -1,49 +1,44 @@
-<html>
-<head>
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:treant-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rest-client-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-management-resources")
-</head>
-<body>
-	<form class="aui">
+<form class="aui">
+	<div>
+		<input type="text"
+			class="equal-margin-regulator text medium-long-field"
+			id="decision-input-field" placeholder="Insert new decision">
+		<input type="button" id="create-decision-button"
+			class="button submit equal-margin-regulator" value="Create Decision" />
+		<label for="depth-of-tree-input">Depth of Tree<span
+			class="aui-icon icon-required"></span></label> <input type="number"
+			id="depth-of-tree-input" value="4" min="1"
+			class="text short-field equal-margin-regulator "
+			placeholder="Enter depth of tree..."> <label
+			for="depth-of-tree-input" id="depth-of-tree-warning">Depth
+			must be positive</label>
 		<div>
-			<input type="text"
-				class="equal-margin-regulator text medium-long-field"
-				id="decision-input-field" placeholder="Insert new decision">
-			<input type="button" id="create-decision-button"
-				class="button submit equal-margin-regulator" value="Create Decision" />
-			<label for="depth-of-tree-input">Depth of Tree<span
-				class="aui-icon icon-required"></span></label> <input type="number"
-				id="depth-of-tree-input" value="4" min="1"
-				class="text short-field equal-margin-regulator "
-				placeholder="Enter depth of tree..."> <label
-				for="depth-of-tree-input" id="depth-of-tree-warning">Depth
-				must be positive</label>
 			<div>
-				<div>
-					<input
-						class="search-input form-control equal-margin-regulator text long-field"
-						id="jstree-search-input" placeholder="Search decision knowledge">
-				</div>
-				<div id="switch-wrapper" class="equal-margin-regulator ">
-					<div class="switch-on-click" id="view-editor">Editor</div>
-					<div class="switch-on-click" id="view-tree">Tree</div>
-				</div>
+				<input
+					class="search-input form-control equal-margin-regulator text long-field"
+					id="jstree-search-input" placeholder="Search decision knowledge">
+			</div>
+			<div id="switch-wrapper" class="equal-margin-regulator ">
+				<div class="switch-on-click" id="view-editor">Editor</div>
+				<div class="switch-on-click" id="view-tree">Tree</div>
+			</div>
+		</div>
+		<div>
+			<div>
+				<div id="evts" class="demo equal-margin-regulator "></div>
 			</div>
 			<div>
-				<div>
-					<div id="evts" class="demo equal-margin-regulator "></div>
-				</div>
-				<div>
-					<div id="container" class="equal-margin-regulator ">
-						<dl>
-							<dt class="editor-header">
-								Details<a href="#" id="button" class="closed">Details</a>
-							</dt>
-							<dd class="foldout" id="Details">No Element has been
-								selected</dd>
-							<script>
+				<div id="container" class="equal-margin-regulator ">
+					<dl>
+						<dt class="editor-header">
+							Details<a href="#" id="button" class="closed">Details</a>
+						</dt>
+						<dd class="foldout" id="Details">No Element has been selected</dd>
+						<script>
 				var html = "";
 				for (i in knowledgeTypes) {
 					html += "<dt class='editor-header'>";
@@ -54,37 +49,15 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
                                 }
 				document.getElementById("Details").insertAdjacentHTML('afterend', html);
 							</script>
-						</dl>
-					</div>
-					<div class="chart equal-margin-regulator" id="treant-container">
-						<p>No Element has been selected</p>
-					</div>
+					</dl>
+				</div>
+				<div class="chart equal-margin-regulator" id="treant-container">
+					<p>No Element has been selected</p>
 				</div>
 			</div>
 		</div>
-	</form>
-	<section id="dialog"
-		class="aui-dialog2 aui-dialog2-medium aui-layer" role="dialog"
-		aria-hidden="true">
-		<header class="aui-dialog2-header">
-			<h2 id="dialog-header" class="aui-dialog2-header-main"></h2>
-			<a class="aui-dialog2-header-close"> <span
-				class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
-			</a>
-		</header>
-		<div id="dialog-content" class="aui-dialog2-content"></div>
-		<footer class="aui-dialog2-footer">
-			<div class="aui-dialog2-footer-actions">
-				<button id="dialog-extension-button" class="aui-button">Extended
-					Editor</button>
-				<button id="dialog-submit-button"
-					class="aui-button aui-button-primary">Do it!</button>
-				<button id="dialog-cancel-button" class="aui-button aui-button-link">Cancel</button>
-			</div>
-		</footer>
-	</section>
-	<script>
-		initializeDecisionKnowledgePage();
-	</script>
-</body>
-</html>
+	</div>
+</form>
+<script>
+	initializeDecisionKnowledgePage();
+</script>

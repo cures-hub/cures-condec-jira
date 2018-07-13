@@ -55,6 +55,7 @@
 		<dependency>com.atlassian.auiplugin:aui-toggle</dependency>
 		<dependency>com.atlassian.auiplugin:aui-lozenge</dependency>
 		<dependency>com.atlassian.auiplugin:dialog2</dependency>
+		<dependency>com.atlassian.auiplugin:aui-select2</dependency>
 	</web-resource>
 
 	<web-resource key="rest-client-resources" name="ConDec Rest Client Resources">
@@ -124,6 +125,7 @@
 			Provides the plug-in page that developers use to manage decision knowledge.
 		</description>
 		<resource name="view" type="velocity" location="templates/decisionKnowledgePage.vm" />
+		<resource name="view" type="velocity" location="templates/dialog.vm" />
 	</web-panel>
 	<rest name="Decision Knowledge REST" key="decision-knowledge-rest" path="/decisions" version="1.0">
 		<description>
@@ -210,6 +212,7 @@
 		<label>Decision Knowledge Extraction</label>
 		<order>10</order>
 		<resource type="velocity" name="view" location="templates/tabPanel.vm" />
+		<resource type="velocity" name="view" location="templates/dialog.vm" />
 		<supports-ajax-load>true</supports-ajax-load>
 	</issue-tabpanel>
 

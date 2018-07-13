@@ -86,12 +86,12 @@ function setUpCreateOrEditDialog(summary, description, knowledgeType) {
 			"afterBegin",
 			"<form class='aui'><div class='field-group'><label for='form-input-summary'>Summary:</label>"
 					+ "<input id='form-input-summary' type='text' placeholder='Summary' value='" + summary
-					+ "' class='text long-field'/></div>"
+					+ "' class='text full-width-field'/></div>"
 					+ "<div class='field-group'><label for='form-input-description'>Description:</label>"
 					+ "<textarea id='form-input-description' placeholder='Description' value='" + description
-					+ "' class='textarea'></textarea></div>"
+					+ "' class='textarea full-width-field'></textarea></div>"
 					+ "<div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
-					+ "<select name='form-select-type' class='select'/></div>" + "</form>");
+					+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>" + "</form>");
 
 	for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
 		var isSelected = "";
@@ -101,6 +101,7 @@ function setUpCreateOrEditDialog(summary, description, knowledgeType) {
 		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
 				+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
 	}
+	AJS.$("#form-select-type").auiSelect2();
 }
 
 function isKnowledgeTypeLocatedAtIndex(knowledgeType, index) {
@@ -129,7 +130,7 @@ function setUpDialogForLinkAction(id) {
 			id,
 			function(unlinkedDecisionComponents) {
 				var insertString = "<form class='aui'><div class='field-group'><label for='form-select-component'>Unlinked Element:</label>"
-						+ "<select name='form-select-component' class='select'/>";
+						+ "<select id='form-select-component' name='form-select-component' class='select full-width-field'/>";
 				for (var index = 0; index < unlinkedDecisionComponents.length; index++) {
 					insertString += "<option value='" + unlinkedDecisionComponents[index].id + "'>"
 							+ unlinkedDecisionComponents[index].type + ' / '
@@ -139,6 +140,7 @@ function setUpDialogForLinkAction(id) {
 
 				var content = document.getElementById("dialog-content");
 				content.insertAdjacentHTML("afterBegin", insertString);
+				AJS.$("#form-select-component").auiSelect2();
 
 				var submitButton = document.getElementById("dialog-submit-button");
 				submitButton.textContent = linkKnowledgeElementText;
