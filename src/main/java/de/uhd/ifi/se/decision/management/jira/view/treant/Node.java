@@ -58,7 +58,7 @@ public class Node {
 		if (project.isIssueStrategy()) {
 			ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
 			this.link = ImmutableMap.of("href", applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/"
-					+ decisionKnowledgeElement.getKey());
+					+ decisionKnowledgeElement.getKey(), "target", "_blank");
 		}
 	}
 

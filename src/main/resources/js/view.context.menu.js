@@ -20,7 +20,7 @@ var contextMenuCreateAction = {
 
 function getSelectedTreeViewerNode(position) {
 	var selector = position.reference.prevObject.selector;
-	return $("#evts").jstree(true).get_node(selector);
+	return $("#jstree").jstree(true).get_node(selector);
 }
 
 function getSelectedTreeViewerNodeId(node) {
