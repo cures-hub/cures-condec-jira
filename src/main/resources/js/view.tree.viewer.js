@@ -1,8 +1,8 @@
 function buildTreeViewer(nodeId) {
 	getTreeViewer(function(core) {
-		$('#evts').on("ready.jstree", function() {
+		$('#jstree').on("ready.jstree", function() {
 			if (nodeId) {
-				var tree = $('#evts').jstree(true);
+				var tree = $('#jstree').jstree(true);
 				if (tree) {
 					tree.select_node("" + nodeId);
 					console.log("select_node");
@@ -20,14 +20,13 @@ function buildTreeViewer(nodeId) {
 				"items" : contextMenuActions
 			}
 		});
-		document.getElementById("Details").style.display = "block";
-		$(".search-input").keyup(function() {
+		$("#jstree-search-input").keyup(function() {
 			var searchString = $(this).val();
-			$('#evts').jstree(true).search(searchString);
+			$('#jstree').jstree(true).search(searchString);
 		});
 	});
 
-	$('#evts').on('move_node.jstree', function(object, node) {
+	$('#jstree').on('move_node.jstree', function(object, node) {
 		if (node.node.id !== 0 && node.parent !== 0 && node.old_parent !== 0) {
 			addDragAndDropSupportForTreeViewer(node.node.id, node.parent, node.old_parent);
 		}

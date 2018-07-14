@@ -11,21 +11,6 @@ function initializeDecisionKnowledgePage() {
 		});
 	});
 
-	var graphContainer = document.getElementById("graph-container");
-	var treantContainer = document.getElementById("treant-container");
-
-	var viewEditorButton = document.getElementById("view-graph");
-	viewEditorButton.addEventListener("click", function() {
-		graphContainer.style.display = "block";
-		treantContainer.style.display = "none";
-	});
-
-	var viewTreeButton = document.getElementById("view-tree");
-	viewTreeButton.addEventListener("click", function() {
-		treantContainer.style.display = "block";
-		graphContainer.style.display = "none";
-	});
-
 	var depthOfTreeInput = document.getElementById("depth-of-tree-input");
 	depthOfTreeInput.addEventListener("input", function() {
 		var depthOfTreeWarningLabel = document.getElementById("depth-of-tree-warning");
@@ -38,11 +23,11 @@ function initializeDecisionKnowledgePage() {
 }
 
 function updateView(nodeId){
-    if ($('#evts').jstree(true)) {
-        var tree = $('#evts').jstree(true);
+    if ($('#jstree').jstree(true)) {
+        var tree = $('#jstree').jstree(true);
         tree.destroy();
     }
-    $('#evts').on("select_node.jstree", function(error, data) {
+    $('#jstree').on("select_node.jstree", function(error, data) {
         var node = data.node.data;
         buildTreant(node.key);
     });

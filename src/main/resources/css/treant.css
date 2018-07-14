@@ -70,13 +70,6 @@
 	float: left;
 }
 
-.chart {
-	width: 64.5%;
-	visibility: hidden;
-	float: left;
-	overflow: auto;
-}
-
 .Treant .node {
 	margin: 0;
 	padding: 3px;

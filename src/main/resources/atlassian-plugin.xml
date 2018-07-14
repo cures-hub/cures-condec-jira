@@ -43,7 +43,7 @@
 		<resource type="download" name="assessment.png" location="/images/assessment.png" />
 		<!-- style sheets -->
 		<resource type="download" name="treant.css" location="/css/treant.css" />
-		<resource type="download" name="editor.css" location="/css/editor.css" />
+		<resource type="download" name="condec.css" location="/css/condec.css" />
 		<resource type="download" name="jquery.contextMenu.css" location="/css/jquery.contextMenu.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
 		<!-- look and feel like JIRA -->
