@@ -7,6 +7,7 @@ function initializeDecisionKnowledgePage() {
 			$(this).next("dd").slideToggle("fast");
 		});
 	});
+	document.getElementById("container").style.display = "none";
 
 	var createDecisionButton = document.getElementById("create-decision-button");
 	var decisionInputField = document.getElementById("decision-input-field");
@@ -23,14 +24,14 @@ function initializeDecisionKnowledgePage() {
 		var editorContainer = document.getElementById("container");
 		var treantContainer = document.getElementById("treant-container");
 		editorContainer.style.display = "block";
-		treantContainer.style.visibility = "hidden";
+		treantContainer.style.display = "none";
 	});
 
 	var viewTreeButton = document.getElementById("view-tree");
 	viewTreeButton.addEventListener("click", function() {
 		var editorContainer = document.getElementById("container");
 		var treantContainer = document.getElementById("treant-container");
-		treantContainer.style.visibility = "visible";
+		treantContainer.style.display = "block";
 		editorContainer.style.display = "none";
 	});
 
