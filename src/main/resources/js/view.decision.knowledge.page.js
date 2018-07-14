@@ -1,14 +1,6 @@
 function initializeDecisionKnowledgePage() {
 	updateView(getProjectKey());
 
-	/* accordion elements */
-	$(document).ready(function() {
-		$("dt").click(function() {
-			$(this).next("dd").slideToggle("fast");
-		});
-	});
-	document.getElementById("container").style.display = "none";
-
 	var createDecisionButton = document.getElementById("create-decision-button");
 	var decisionInputField = document.getElementById("decision-input-field");
 	createDecisionButton.addEventListener("click", function() {
@@ -19,20 +11,19 @@ function initializeDecisionKnowledgePage() {
 		});
 	});
 
-	var viewEditorButton = document.getElementById("view-editor");
+	var graphContainer = document.getElementById("graph-container");
+	var treantContainer = document.getElementById("treant-container");
+
+	var viewEditorButton = document.getElementById("view-graph");
 	viewEditorButton.addEventListener("click", function() {
-		var editorContainer = document.getElementById("container");
-		var treantContainer = document.getElementById("treant-container");
-		editorContainer.style.display = "block";
+		graphContainer.style.display = "block";
 		treantContainer.style.display = "none";
 	});
 
 	var viewTreeButton = document.getElementById("view-tree");
 	viewTreeButton.addEventListener("click", function() {
-		var editorContainer = document.getElementById("container");
-		var treantContainer = document.getElementById("treant-container");
 		treantContainer.style.display = "block";
-		editorContainer.style.display = "none";
+		graphContainer.style.display = "none";
 	});
 
 	var depthOfTreeInput = document.getElementById("depth-of-tree-input");
@@ -53,7 +44,6 @@ function updateView(nodeId){
     }
     $('#evts').on("select_node.jstree", function(error, data) {
         var node = data.node.data;
-        fillAccordion(node);
         buildTreant(node.key);
     });
     buildTreeViewer(nodeId);

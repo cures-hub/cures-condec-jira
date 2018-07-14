@@ -22,37 +22,21 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 					class="search-input form-control equal-margin-regulator text long-field"
 					id="jstree-search-input" placeholder="Search decision knowledge">
 			</div>
-			<div id="switch-wrapper" class="equal-margin-regulator ">
-				<div class="switch-on-click" id="view-tree">Treant</div>
-				<div class="switch-on-click" id="view-editor">Editor</div>
+			<div id="switch-wrapper" class="equal-margin-regulator">
+				<div class="switch-on-click" id="view-tree">Tree</div>
+				<div class="switch-on-click" id="view-graph">Graph</div>
 			</div>
 		</div>
 		<div>
 			<div>
-				<div id="evts" class="demo equal-margin-regulator "></div>
+				<div id="evts" class="jstee equal-margin-regulator "></div>
 			</div>
 			<div>
 				<div id="treant-container" class="chart">
 					<p>No Element has been selected</p>
 				</div>
-				<div id="container" class="equal-margin-regulator ">
-					<dl>
-						<dt class="editor-header">
-							Details<a href="#" id="button" class="closed">Details</a>
-						</dt>
-						<dd class="foldout" id="Details">No Element has been selected</dd>
-						<script>
-				var html = "";
-				for (i in knowledgeTypes) {
-					html += "<dt class='editor-header'>";
-						html +=    knowledgeTypes[i];
-					html += "s<a href='#' id='button' class='closed'>Details</a></dt><dd class='foldout' id='";
-					html += knowledgeTypes[i];
-					html += "'>No Element has been selected</dd>";
-                                }
-				document.getElementById("Details").insertAdjacentHTML('afterend', html);
-							</script>
-					</dl>
+				<div id="graph-container">
+
 				</div>
 			</div>
 		</div>

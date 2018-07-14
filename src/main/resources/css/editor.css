@@ -11,14 +11,13 @@ a:focus a:hover {
 	color: rgba(255, 85, 85, 1)
 }
 
-#view-editor {
+#view-graph {
 	margin-right: 0.1%;
 }
 
-#container {
+#graph-container {
 	width: 64.5%;
 	float: left;
-	border: 1px solid rgba(204, 204, 204, 1);
 }
 
 #button {
@@ -70,35 +69,8 @@ a:focus a:hover {
 	background-color: rgba(230, 230, 230, 1);
 }
 
-.editor-header {
-	font-weight: bold;
-	background: rgba(245, 245, 245, 1);
-	float: left;
-	width: 99.4%;
-	padding: 2px;
-	cursor: pointer;
-	text-align: center;
-}
-
-.editor-header:hover {
-	color: black;
-	background: rgba(230, 230, 230, 1);
-}
-
-.foldout {
-	display: none;
-	float: left;
-	width: 93%;
-	padding: 2px;
-}
-
-.issuelinkbox {
-	border: 1px solid rgba(204, 204, 204, 1);
-}
-
-.demo {
+.jstree {
 	overflow: auto;
-	border: 1px solid rgba(204, 204, 204, 1);
 	width: 33%;
 	float: left;
 }

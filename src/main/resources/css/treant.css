@@ -72,8 +72,6 @@
 
 .chart {
 	width: 64.5%;
-	border: 1px solid rgba(204, 204, 204, 1);
-	min-height: 1px;
 	visibility: hidden;
 	float: left;
 	overflow: auto;
