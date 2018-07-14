@@ -25,29 +25,28 @@ function createDecisionKnowledgeElementAsChild(summary, description, type, paren
 	case "Pro Argument":
 		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
 			linkElements(childId, parentId, "support", function() {
-//				updateView(childId);
+				updateView();
 			});
 		});
 		break;
 	case "Contra Argument":
 		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
 			linkElements(childId, parentId, "attack", function() {
-//				updateView(childId);
+				updateView();
 			});
 		});
 		break;
 	case "Comment":
 		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
 			linkElements(childId, parentId, "comment", function() {
-//				updateView(childId);
+				updateView();
 			});
 		});
 		break;
 	default:
 		createDecisionKnowledgeElement(summary, description, type, function(childId) {
-			linkElements(parentId, childId, "contain", function(link) {
-				console.log(link);
-//				updateView(childId);
+			linkElements(parentId, childId, "contain", function() {
+				updateView();
 			});
 		});
 	}
@@ -111,22 +110,22 @@ function createLinkToExistingElement(parentId, childId) {
 		switch (type) {
 		case "Pro Argument":
 			linkElements(childId, parentId, "support", function() {
-				updateView(parentId);
+				updateView();
 			});
 			break;
 		case "Contra Argument":
 			linkElements(childId, parentId, "attack", function() {
-				updateView(parentId);
+				updateView();
 			});
 			break;
 		case "Comment":
 			linkElements(childId, parentId, "comment", function() {
-				updateView(parentId);
+				updateView();
 			});
 			break;
 		default:
 			linkElements(parentId, childId, "contain", function() {
-				updateView(parentId);
+				updateView();
 			});
 		}
 	});
@@ -138,22 +137,22 @@ function deleteLinkToExistingElement(parentId, childId) {
 		switch (type) {
 		case "Pro Argument":
 			deleteLink(childId, parentId, "support", function() {
-				updateView(childId);
+				updateView();
 			});
 			break;
 		case "Contra Argument":
 			deleteLink(childId, parentId, "attack", function() {
-				updateView(childId);
+				updateView();
 			});
 			break;
 		case "Comment":
 			deleteLink(childId, parentId, "comment", function() {
-				updateView(childId);
+				updateView();
 			});
 			break;
 		default:
 			deleteLink(parentId, childId, "contain", function() {
-				updateView(childId);
+				updateView();
 			});
 		}
 	});
@@ -190,17 +189,4 @@ function remove(array, item) {
 			array.splice(i, 1);
 		}
 	}
-}
-
-function clearInner(node) {
-	while (node.hasChildNodes()) {
-		clear(node.firstChild);
-	}
-}
-
-function clear(node) {
-	while (node.hasChildNodes()) {
-		clear(node.firstChild);
-	}
-	node.parentNode.removeChild(node);
 }

@@ -1,16 +1,7 @@
-function buildTreeViewer(nodeId) {
+function buildTreeViewer() {
+	resetTreeViewer();
 	getTreeViewer(function(core) {
-		$('#jstree').on("ready.jstree", function() {
-			if (nodeId) {
-				var tree = $('#jstree').jstree(true);
-				if (tree) {
-					tree.select_node("" + nodeId);
-					console.log("select_node");
-				} else {
-					console.log("set_back");
-				}
-			}
-		}).jstree({
+		$('#jstree').jstree({
 			"core" : core,
 			"plugins" : [ "dnd", "contextmenu", "wholerow", "sort", "search" ],
 			"search" : {
@@ -31,6 +22,13 @@ function buildTreeViewer(nodeId) {
 			addDragAndDropSupportForTreeViewer(node.node.id, node.parent, node.old_parent);
 		}
 	});
+}
+
+function resetTreeViewer() {
+	if ($('#jstree').jstree(true)) {
+		var tree = $('#jstree').jstree(true);
+		tree.destroy();
+	}
 }
 
 function addDragAndDropSupportForTreeViewer(nodeId, parentId, oldParentId) {

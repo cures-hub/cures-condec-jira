@@ -11,7 +11,8 @@ function buildTreant(elementKey) {
 	}
 	getTreant(elementKey, depthOfTree, function(treeStructure) {
 		document.getElementById("treant-container").innerHTML = "";
-		document.getElementById("treant-container").style.visibility = "visible";
+
+		console.log(document.getElementById("treant-container"));
 
 		isKnowledgeExtractedFromGit(getProjectKey(), function(isKnowledgeExtractedFromGit) {
 			if (isKnowledgeExtractedFromGit) {
