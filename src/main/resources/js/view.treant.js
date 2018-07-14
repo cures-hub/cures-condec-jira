@@ -65,6 +65,12 @@ function addDragAndDropSupportForTreant() {
 	}
 }
 
+function getCurrentRootElement() {
+	if (treantTree) {
+		return treantTree.tree.initJsonConfig.graph.rootElement;
+	}
+}
+
 function drag(event) {
 	dragId = event.target.id;
 	event.dataTransfer.setData("text", dragId);

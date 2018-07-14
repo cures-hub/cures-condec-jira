@@ -1,5 +1,5 @@
 function initializeDecisionKnowledgePage() {
-	updateView(getProjectKey());
+	updateView();
 
 	var createDecisionButton = document.getElementById("create-decision-button");
 	var decisionInputField = document.getElementById("decision-input-field");
@@ -13,10 +13,10 @@ function initializeDecisionKnowledgePage() {
 
 	var depthOfTreeInput = document.getElementById("depth-of-tree-input");
 	depthOfTreeInput.addEventListener("input", function() {
-
 		var depthOfTreeWarningLabel = document.getElementById("depth-of-tree-warning");
 		if (this.value > 0) {
 			depthOfTreeWarningLabel.style.visibility = "hidden";
+			updateView();
 		} else {
 			depthOfTreeWarningLabel.style.visibility = "visible";
 		}
@@ -36,20 +36,5 @@ function updateView(nodeId) {
 	$('#jstree').on("select_node.jstree", function(error, tree) {
 		var node = tree.node.data;
 		buildTreant(node.key);
-	});
-}
-
-function getCurrentRootElement() {
-	if (treantTree) {
-		return treantTree.tree.initJsonConfig.graph.rootElement;
-	}
-}
-
-function selectNodeInTreeViewer(nodeId) {
-	$('#jstree').on("ready.jstree", function() {
-		var treeViewer = $('#jstree').jstree(true);
-		if (treeViewer) {
-			treeViewer.select_node("" + nodeId);
-		}
 	});
 }

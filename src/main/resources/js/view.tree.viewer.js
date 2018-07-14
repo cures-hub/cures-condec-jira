@@ -31,6 +31,15 @@ function resetTreeViewer() {
 	}
 }
 
+function selectNodeInTreeViewer(nodeId) {
+	$('#jstree').on("ready.jstree", function() {
+		var treeViewer = $('#jstree').jstree(true);
+		if (treeViewer) {
+			treeViewer.select_node("" + nodeId);
+		}
+	});
+}
+
 function addDragAndDropSupportForTreeViewer(nodeId, parentId, oldParentId) {
 	if (oldParentId === "#") {
 		showFlag("error", "Decisions cannot be linked to another decision knowledge element.");
