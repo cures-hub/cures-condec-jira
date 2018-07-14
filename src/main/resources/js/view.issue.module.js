@@ -1,11 +1,8 @@
 function fillIssueModule() {
-	var issueKey = getIssueKey();
-	buildTreant(issueKey);
+	updateView();
 }
 
 function updateView() {
-	var rootElement = getCurrentRootElement();
-	if (rootElement) {
-		buildTreant(rootElement.key);
-	}
+	var issueKey = getIssueKey();
+	buildTreant(issueKey);
 }

@@ -16,7 +16,6 @@ function replaceArgumentWithLinkTypes(knowledgeTypes) {
 	remove(extendedKnowledgeTypes, "Argument");
 	extendedKnowledgeTypes.push("Pro Argument");
 	extendedKnowledgeTypes.push("Contra Argument");
-	extendedKnowledgeTypes.push("Comment");
 	return extendedKnowledgeTypes;
 }
 
@@ -32,13 +31,6 @@ function createDecisionKnowledgeElementAsChild(summary, description, type, paren
 	case "Contra Argument":
 		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
 			linkElements(childId, parentId, "attack", function() {
-				updateView();
-			});
-		});
-		break;
-	case "Comment":
-		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
-			linkElements(childId, parentId, "comment", function() {
 				updateView();
 			});
 		});
@@ -78,18 +70,6 @@ function editDecisionKnowledgeElementAsChild(summary, description, type, childId
 			});
 		});
 		break;
-	case "Comment":
-		editDecisionKnowledgeElement(childId, summary, description, "Argument", function() {
-			getLinkedDecisionComponents(childId, function(parentElement) {
-				for (var counter = 0; counter < parentElement.length; counter++) {
-					var parentId = parentElement[counter].id;
-					editLink(childId, parentId, "comment", function() {
-						updateView(parentId);
-					});
-				}
-			});
-		});
-		break;
 	default:
 		editDecisionKnowledgeElement(childId, summary, description, type, function() {
 			getLinkedDecisionComponents(childId, function(parentElement) {
@@ -118,11 +98,6 @@ function createLinkToExistingElement(parentId, childId) {
 				updateView();
 			});
 			break;
-		case "Comment":
-			linkElements(childId, parentId, "comment", function() {
-				updateView();
-			});
-			break;
 		default:
 			linkElements(parentId, childId, "contain", function() {
 				updateView();
@@ -142,11 +117,6 @@ function deleteLinkToExistingElement(parentId, childId) {
 			break;
 		case "Contra Argument":
 			deleteLink(childId, parentId, "attack", function() {
-				updateView();
-			});
-			break;
-		case "Comment":
-			deleteLink(childId, parentId, "comment", function() {
 				updateView();
 			});
 			break;

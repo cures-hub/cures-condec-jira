@@ -157,9 +157,6 @@ public class PluginInitializer implements InitializingBean {
 		if (!existingIssueLinkTypeNames.contains("support")) {
 			issueLinkTypeManager.createIssueLinkType("support", "supports", "is supported by", "contain_style");
 		}
-		if (!existingIssueLinkTypeNames.contains("comment")) {
-			issueLinkTypeManager.createIssueLinkType("comment", "comments on", "is commented on by", "contain_style");
-		}
 	}
 
 	public List<String> getNamesOfExistingIssueLinkTypes() {
