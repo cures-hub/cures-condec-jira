@@ -1,6 +1,5 @@
-<section id="dialog"
-	class="aui-dialog2 aui-dialog2-medium aui-layer" role="dialog"
-	aria-hidden="true">
+<section id="dialog" class="aui-dialog2 aui-dialog2-medium aui-layer"
+	role="dialog" aria-hidden="true">
 	<header class="aui-dialog2-header">
 		<h2 id="dialog-header" class="aui-dialog2-header-main"></h2>
 		<a class="aui-dialog2-header-close"> <span

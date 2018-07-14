@@ -89,9 +89,10 @@ function setUpCreateOrEditDialog(summary, description, knowledgeType) {
 					+ "' class='text full-width-field'/></div>"
 					+ "<div class='field-group'><label for='form-input-description'>Description:</label>"
 					+ "<textarea id='form-input-description' placeholder='Description' value='" + description
-					+ "' class='textarea full-width-field'></textarea></div>"
+					+ "' class='textarea full-width-field'>" + description + "</textarea></div>"
 					+ "<div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
-					+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>" + "</form>");
+					+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
+					+ "</form>");
 
 	for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
 		var isSelected = "";
