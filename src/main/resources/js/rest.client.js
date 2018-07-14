@@ -200,9 +200,8 @@ function editLink(parentId, childId, linkType, callback) {
 			});
 }
 
-function deleteLink(parentId, childId, linkType, callback) {
+function deleteLink(parentId, childId, callback) {
 	var jsondata = {
-		"linkType" : linkType,
 		"ingoingId" : childId,
 		"outgoingId" : parentId
 	};

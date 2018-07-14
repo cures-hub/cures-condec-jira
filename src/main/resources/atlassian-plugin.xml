@@ -74,20 +74,21 @@
 			Provides the Treant Java Script visualization framework.
 		</description>
 		<context>jira.view.issue</context>
+		<context>atl.general</context>
 		<resource type="download" name="Treant.js" location="/js/treant/treant.js" />
 		<resource type="download" name="raphael.js" location="/js/treant/raphael.js" />
 		<resource type="download" name="jquery.easing.js" location="/js/jquery/jquery.easing.js" />
 		<resource type="download" name="view.treant.js" location="/js/view.treant.js" />
 	</web-resource>
 
-	<web-resource key="decision-management-resources" name="ConDec Java Script Resources">
+	<web-resource key="decision-knowledge-page-resources" name="ConDec Decision Knowledge Page Resources">
 		<description>
-			Provides the Java Script files used in this plug-in.
+			Provides the Java Script files for the separate decision knowledge page of this
+			plug-in.
 		</description>
 		<!-- jquery -->
 		<resource type="download" name="jquery.js" location="/js/jquery/jquery.js" />
 		<!-- jquery.contextMenu -->
-		<resource type="download" name="jquery.ui.position.js" location="/js/jquery/jquery.ui.position.js" />
 		<resource type="download" name="jquery.contextMenu.js" location="/js/jquery/jquery.contextMenu.js" />
 		<!-- jstree -->
 		<resource type="download" name="jstree.js" location="/js/jstree/jstree.js" />
@@ -103,8 +104,14 @@
 			Provides the Java Script file used in the issue module.
 		</description>
 		<context>jira.view.issue</context>
+		<!-- jquery -->
+		<!-- <resource type="download" name="jquery.js" location="/js/jquery/jquery.js" /> -->
+		<!-- jquery.contextMenu -->
+		<!-- <resource type="download" name="jquery.contextMenu.js" location="/js/jquery/jquery.contextMenu.js"
+			/> -->
 		<!-- ConDec java script files -->
 		<resource type="download" name="view.issue.module.js" location="/js/view.issue.module.js" />
+		<!-- <resource type="download" name="view.context.menu.js" location="/js/view.context.menu.js" /> -->
 	</web-resource>
 
 	<!-- Decision Knowledge Page -->
@@ -133,7 +140,7 @@
 		</description>
 	</rest>
 
-	<!-- Administration -->
+	<!-- Global Settings -->
 	<web-section key="condec-admin-section" name="Web Section for ConDec Plug-in Administration"
 		location="admin_plugins_menu">
 		<description>
@@ -197,7 +204,8 @@
 	</ao>
 
 	<!-- Decision Knowledge Issue Module -->
-	<web-panel key="condec-issue-module" location="atl.jira.view.issue.left.context" weight="200">
+	<web-panel key="condec-issue-module" name="Decision Knowledge Issue Module" location="atl.jira.view.issue.left.context"
+		weight="200">
 		<description>Decision Knowledge related to a JIRA Issue</description>
 		<label>Decision Knowledge</label>
 		<resource type="velocity" name="view" location="templates/issueModule.vm" />

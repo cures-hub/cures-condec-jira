@@ -52,7 +52,7 @@ function editDecisionKnowledgeElementAsChild(summary, description, type, childId
 				for (var counter = 0; counter < parentElement.length; counter++) {
 					var parentId = parentElement[counter].id;
 					editLink(childId, parentId, "support", function() {
-						updateView(parentId);
+						updateView();
 					});
 				}
 			});
@@ -64,7 +64,7 @@ function editDecisionKnowledgeElementAsChild(summary, description, type, childId
 				for (var counter = 0; counter < parentElement.length; counter++) {
 					var parentId = parentElement[counter].id;
 					editLink(childId, parentId, "attack", function() {
-						updateView(parentId);
+						updateView();
 					});
 				}
 			});
@@ -76,7 +76,7 @@ function editDecisionKnowledgeElementAsChild(summary, description, type, childId
 				for (var counter = 0; counter < parentElement.length; counter++) {
 					var parentId = parentElement[counter].id;
 					editLink(parentId, childId, "contain", function() {
-						updateView(parentId);
+						updateView();
 					});
 				}
 			});
@@ -100,28 +100,6 @@ function createLinkToExistingElement(parentId, childId) {
 			break;
 		default:
 			linkElements(parentId, childId, "contain", function() {
-				updateView();
-			});
-		}
-	});
-}
-
-function deleteLinkToExistingElement(parentId, childId) {
-	getDecisionKnowledgeElement(childId, function(decisionKnowledgeElement) {
-		var type = decisionKnowledgeElement.type;
-		switch (type) {
-		case "Pro Argument":
-			deleteLink(childId, parentId, "support", function() {
-				updateView();
-			});
-			break;
-		case "Contra Argument":
-			deleteLink(childId, parentId, "attack", function() {
-				updateView();
-			});
-			break;
-		default:
-			deleteLink(parentId, childId, "contain", function() {
 				updateView();
 			});
 		}

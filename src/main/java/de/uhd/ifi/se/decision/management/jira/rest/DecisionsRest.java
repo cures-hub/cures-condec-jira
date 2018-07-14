@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 
@@ -211,9 +212,16 @@ public class DecisionsRest {
 			boolean isDeleted = strategy.deleteLink(link, user);
 			if (isDeleted) {
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
+			} else {
+				Link inverseLink = new LinkImpl(link.getDestinationObject(), link.getSourceObject());
+				isDeleted = strategy.deleteLink(inverseLink, user);
+				if (isDeleted) {
+					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
+				} else {
+					return Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
+				}
 			}
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
 					.build();

@@ -12,8 +12,6 @@ function buildTreant(elementKey) {
 	getTreant(elementKey, depthOfTree, function(treeStructure) {
 		document.getElementById("treant-container").innerHTML = "";
 
-		console.log(document.getElementById("treant-container"));
-
 		isKnowledgeExtractedFromGit(getProjectKey(), function(isKnowledgeExtractedFromGit) {
 			if (isKnowledgeExtractedFromGit) {
 				getCommits(elementKey,
@@ -34,11 +32,11 @@ function buildTreant(elementKey) {
 
 function createTreant(treeStructure) {
 	treantTree = new Treant(treeStructure);
-	createContextMenuForTreantNodes();
+	createContextMenuForTreantNodes(treantTree);
 	addDragAndDropSupportForTreant();
 }
 
-function createContextMenuForTreantNodes() {
+function createContextMenuForTreantNodes(treantTree) {
 	$(function() {
 		$.contextMenu({
 			selector : ".decision, .rationale, .context, .problem, .solution, .support, .attack",

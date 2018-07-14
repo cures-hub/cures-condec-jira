@@ -262,7 +262,9 @@ function setUpDialogForDeleteLinkAction(id, parentId) {
 	var submitButton = document.getElementById("dialog-submit-button");
 	submitButton.textContent = deleteLinkToParentText;
 	submitButton.onclick = function() {
-		deleteLinkToExistingElement(parentId, id);
+		deleteLink(parentId, id, function() {
+			updateView();
+		});
 		closeDialog();
 	};
 }

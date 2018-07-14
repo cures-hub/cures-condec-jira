@@ -34,6 +34,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
 /**
  * Extends the abstract class AbstractPersistenceStrategy. Uses JIRA issues to
@@ -260,20 +261,23 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 	public boolean deleteLink(Link link, ApplicationUser user) {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
-		Collection<IssueLinkType> issueLinkTypeCollection = issueLinkTypeManager
-				.getIssueLinkTypesByName(link.getLinkType());
-		Iterator<IssueLinkType> issueLinkTypeIterator = issueLinkTypeCollection.iterator();
-		long typeId = 0;
-		while (issueLinkTypeIterator.hasNext()) {
-			IssueLinkType issueLinkType = issueLinkTypeIterator.next();
-			typeId = issueLinkType.getId();
-		}
-		IssueLink issueLink = issueLinkManager.getIssueLink(link.getOutgoingId(), link.getIngoingId(), typeId);
-		if (issueLink != null) {
-			issueLinkManager.removeIssueLink(issueLink, user);
-			return true;
-		}
 
+		List<String> linkTypes = LinkType.toList();
+		for (String linkType : linkTypes) {
+			Collection<IssueLinkType> issueLinkTypeCollection = issueLinkTypeManager
+					.getIssueLinkTypesByName(linkType);
+			Iterator<IssueLinkType> issueLinkTypeIterator = issueLinkTypeCollection.iterator();
+			long typeId = 0;
+			while (issueLinkTypeIterator.hasNext()) {
+				IssueLinkType issueLinkType = issueLinkTypeIterator.next();
+				typeId = issueLinkType.getId();
+			}
+			IssueLink issueLink = issueLinkManager.getIssueLink(link.getOutgoingId(), link.getIngoingId(), typeId);
+			if (issueLink != null) {
+				issueLinkManager.removeIssueLink(issueLink, user);
+				return true;
+			}
+		}
 		return false;
 	}
 
