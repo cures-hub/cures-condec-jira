@@ -127,29 +127,50 @@ function setUpDialogForLinkAction(id) {
 	setUpDialog();
 	setHeaderText(linkKnowledgeElementText);
 
-	getUnlinkedDecisionComponents(
-			id,
-			function(unlinkedDecisionComponents) {
-				var insertString = "<form class='aui'><div class='field-group'><label for='form-select-component'>Unlinked Element:</label>"
-						+ "<select id='form-select-component' name='form-select-component' class='select full-width-field'/>";
-				for (var index = 0; index < unlinkedDecisionComponents.length; index++) {
-					insertString += "<option value='" + unlinkedDecisionComponents[index].id + "'>"
-							+ unlinkedDecisionComponents[index].type + ' / '
-							+ unlinkedDecisionComponents[index].summary + "</option>";
+	getUnlinkedDecisionComponents(id, function(unlinkedDecisionComponents) {
+		var insertString = "<form class='aui'><div class='field-group' id='select-field-group'></div>"
+				+ "<div class='field-group' id='argument-field-group'></div></form>";
+		var content = document.getElementById("dialog-content");
+		content.insertAdjacentHTML("afterBegin", insertString);
+
+		insertString = "<label for='form-select-component'>Unlinked Element:</label>"
+				+ "<select id='form-select-component' name='form-select-component' "
+				+ "onchange='linkArguments()' class='select full-width-field'/>";
+		for (var index = 0; index < unlinkedDecisionComponents.length; index++) {
+			insertString += "<option value='" + unlinkedDecisionComponents[index].id + "'>"
+					+ unlinkedDecisionComponents[index].type + ' / ' + unlinkedDecisionComponents[index].summary
+					+ "</option>";
+		}
+		var selectFieldGroup = document.getElementById("select-field-group");
+		selectFieldGroup.insertAdjacentHTML("afterBegin", insertString);
+		AJS.$("#form-select-component").auiSelect2();
+
+		var submitButton = document.getElementById("dialog-submit-button");
+		submitButton.textContent = linkKnowledgeElementText;
+		submitButton.onclick = function() {
+			var childId = $("select[name='form-select-component']").val();
+			var knowledgeTypeOfChild = $('input[name=form-radio-argument]:checked').val();
+			createLinkToExistingElement(id, childId, knowledgeTypeOfChild);
+			closeDialog();
+		};
+	});
+}
+
+function linkArguments() {
+	var childId = $("select[name='form-select-component']").val();
+	var argumentFieldGroup = document.getElementById("argument-field-group");
+	argumentFieldGroup.innerHTML = "";
+	getDecisionKnowledgeElement(
+			childId,
+			function(decisionKnowledgeElement) {
+				if (decisionKnowledgeElement && decisionKnowledgeElement.type === "Argument") {
+					insertString = "<label for='form-radio-argument'>Type of Argument:</label>"
+							+ "<div class='radio'><input type='radio' class='radio' name='form-radio-argument' id='Pro' value='Pro Argument' checked='checked'>"
+							+ "<label for='Pro'>Pro</label></div>"
+							+ "<div class='radio'><input type='radio' class='radio' name='form-radio-argument' id='Contra' value='Contra Argument'>"
+							+ "<label for='Contra'>Contra</label></div>";
+					argumentFieldGroup.insertAdjacentHTML("afterBegin", insertString);
 				}
-				insertString += "</div></form>";
-
-				var content = document.getElementById("dialog-content");
-				content.insertAdjacentHTML("afterBegin", insertString);
-				AJS.$("#form-select-component").auiSelect2();
-
-				var submitButton = document.getElementById("dialog-submit-button");
-				submitButton.textContent = linkKnowledgeElementText;
-				submitButton.onclick = function() {
-					var childId = $("select[name='form-select-component']").val();
-					createLinkToExistingElement(id, childId);
-					closeDialog();
-				};
 			});
 }
 

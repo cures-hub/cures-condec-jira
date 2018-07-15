@@ -32,11 +32,11 @@ function buildTreant(elementKey) {
 
 function createTreant(treeStructure) {
 	treantTree = new Treant(treeStructure);
-	createContextMenuForTreantNodes(treantTree);
+	createContextMenuForTreantNodes();
 	addDragAndDropSupportForTreant();
 }
 
-function createContextMenuForTreantNodes(treantTree) {
+function createContextMenuForTreantNodes() {
 	$(function() {
 		$.contextMenu({
 			selector : ".decision, .rationale, .context, .problem, .solution, .support, .attack",

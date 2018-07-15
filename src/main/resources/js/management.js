@@ -84,26 +84,23 @@ function editDecisionKnowledgeElementAsChild(summary, description, type, childId
 	}
 }
 
-function createLinkToExistingElement(parentId, childId) {
-	getDecisionKnowledgeElement(childId, function(decisionKnowledgeElement) {
-		var type = decisionKnowledgeElement.type;
-		switch (type) {
-		case "Pro Argument":
-			linkElements(childId, parentId, "support", function() {
-				updateView();
-			});
-			break;
-		case "Contra Argument":
-			linkElements(childId, parentId, "attack", function() {
-				updateView();
-			});
-			break;
-		default:
-			linkElements(parentId, childId, "contain", function() {
-				updateView();
-			});
-		}
-	});
+function createLinkToExistingElement(parentId, childId, knowledgeTypeOfChild) {
+	switch (knowledgeTypeOfChild) {
+	case "Pro Argument":
+		linkElements(childId, parentId, "support", function() {
+			updateView();
+		});
+		break;
+	case "Contra Argument":
+		linkElements(childId, parentId, "attack", function() {
+			updateView();
+		});
+		break;
+	default:
+		linkElements(parentId, childId, "contain", function() {
+			updateView();
+		});
+	}
 }
 
 function getProjectKey() {
