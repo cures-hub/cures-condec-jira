@@ -225,13 +225,6 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		return typeId;
 	}
 
-	// TODO If the Update functions are also used in the IssueStrategy this function
-	// needs to be Implemented
-	@Override
-	public boolean editLink(Link link, ApplicationUser user) {
-		return false;
-	}
-
 	@Override
 	public boolean deleteLink(Link link, ApplicationUser user) {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();

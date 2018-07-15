@@ -177,28 +177,6 @@ public class DecisionsRest {
 		}
 	}
 
-	@Path("/editLink")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response editLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
-			Link link) {
-		if (projectKey != null && request != null && link != null) {
-			StrategyProvider strategyProvider = new StrategyProvider();
-			AbstractPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
-			ApplicationUser user = getCurrentUser(request);
-			boolean isEdited = strategy.editLink(link, user);
-			if (isEdited) {
-				return Response.status(Status.OK).entity(ImmutableMap.of("Edited:", isEdited)).build();
-			} else {
-				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", "Editing the link failed.")).build();
-			}
-		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Editing the link failed."))
-					.build();
-		}
-	}
-
 	@Path("/deleteLink")
 	@DELETE
 	@Produces({ MediaType.APPLICATION_JSON })

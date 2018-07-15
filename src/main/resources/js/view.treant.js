@@ -39,7 +39,7 @@ function createTreant(treeStructure) {
 function createContextMenuForTreantNodes() {
 	$(function() {
 		$.contextMenu({
-			selector : ".decision, .rationale, .context, .problem, .solution, .support, .attack, .other",
+			selector : ".decision, .rationale, .context, .problem, .solution, .pro, .contra, .other",
 			items : contextMenuActions
 		});
 	});

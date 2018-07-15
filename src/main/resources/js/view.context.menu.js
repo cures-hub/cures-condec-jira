@@ -107,7 +107,7 @@ function setUpCreateOrEditDialog(summary, description, knowledgeType) {
 }
 
 function isKnowledgeTypeLocatedAtIndex(knowledgeType, index) {
-	return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLocaleLowerCase();
+	return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase();
 }
 
 var contextMenuLinkAction = {
@@ -189,7 +189,7 @@ var contextMenuEditAction = {
 	}
 };
 
-function setUpDialogForEditAction(id) {
+function setUpDialogForEditAction(id, type) {
 	setUpDialog();
 	setHeaderText(editKnowledgeElementText);
 	getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
@@ -204,7 +204,7 @@ function setUpDialogForEditAction(id) {
 			var summary = document.getElementById("form-input-summary").value;
 			var description = document.getElementById("form-input-description").value;
 			var type = $("select[name='form-select-type']").val();
-			editDecisionKnowledgeElementAsChild(summary, description, type, id);
+			updateDecisionKnowledgeElementAsChild(id, summary, description, type);
 			closeDialog();
 		};
 

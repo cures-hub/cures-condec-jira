@@ -14,21 +14,21 @@ var extendedKnowledgeTypes = replaceArgumentWithLinkTypes(knowledgeTypes);
 function replaceArgumentWithLinkTypes(knowledgeTypes) {
 	var extendedKnowledgeTypes = getKnowledgeTypes(getProjectKey());
 	remove(extendedKnowledgeTypes, "Argument");
-	extendedKnowledgeTypes.push("Pro Argument");
-	extendedKnowledgeTypes.push("Contra Argument");
+	extendedKnowledgeTypes.push("Pro");
+	extendedKnowledgeTypes.push("Contra");
 	return extendedKnowledgeTypes;
 }
 
 function createDecisionKnowledgeElementAsChild(summary, description, type, parentId) {
 	switch (type) {
-	case "Pro Argument":
+	case "Pro":
 		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
 			linkElements(childId, parentId, "support", function() {
 				updateView();
 			});
 		});
 		break;
-	case "Contra Argument":
+	case "Contra":
 		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
 			linkElements(childId, parentId, "attack", function() {
 				updateView();
@@ -44,54 +44,55 @@ function createDecisionKnowledgeElementAsChild(summary, description, type, paren
 	}
 }
 
-function editDecisionKnowledgeElementAsChild(summary, description, type, childId) {
+function updateDecisionKnowledgeElementAsChild(childId, summary, description, type) {
 	switch (type) {
-	case "Pro Argument":
-		editDecisionKnowledgeElement(childId, summary, description, "Argument", function() {
-			getLinkedDecisionComponents(childId, function(parentElement) {
-				for (var counter = 0; counter < parentElement.length; counter++) {
-					var parentId = parentElement[counter].id;
-					editLink(childId, parentId, "support", function() {
-						updateView();
-					});
-				}
+	case "Pro":
+		updateDecisionKnowledgeElement(childId, summary, description, "Argument", function() {
+			var parentId = findParentId(childId);
+			deleteLink(parentId, childId, function() {
+				linkElements(childId, parentId, "support", function() {
+					updateView();
+				});
 			});
 		});
 		break;
-	case "Contra Argument":
-		editDecisionKnowledgeElement(childId, summary, description, "Argument", function() {
-			getLinkedDecisionComponents(childId, function(parentElement) {
-				for (var counter = 0; counter < parentElement.length; counter++) {
-					var parentId = parentElement[counter].id;
-					editLink(childId, parentId, "attack", function() {
-						updateView();
-					});
-				}
+	case "Contra":
+		updateDecisionKnowledgeElement(childId, summary, description, "Argument", function() {
+			var parentId = findParentId(childId);
+			deleteLink(parentId, childId, function() {
+				linkElements(childId, parentId, "attack", function() {
+					updateView();
+				});
 			});
 		});
 		break;
 	default:
-		editDecisionKnowledgeElement(childId, summary, description, type, function() {
-			getLinkedDecisionComponents(childId, function(parentElement) {
-				for (var counter = 0; counter < parentElement.length; counter++) {
-					var parentId = parentElement[counter].id;
-					editLink(parentId, childId, "contain", function() {
-						updateView();
+		updateDecisionKnowledgeElement(childId, summary, description, type, function() {
+			getDecisionKnowledgeElement(childId, function(decisionKnowledgeElement) {
+				if (decisionKnowledgeElement.type !== type) {
+					var parentId = findParentId(childId);
+					deleteLink(parentId, childId, function() {
+						linkElements(parentId, childId, "contain", function() {
+							updateView();
+						});
 					});
+				} else {
+					updateView();
 				}
 			});
 		});
+		break;
 	}
 }
 
 function createLinkToExistingElement(parentId, childId, knowledgeTypeOfChild) {
 	switch (knowledgeTypeOfChild) {
-	case "Pro Argument":
+	case "Pro":
 		linkElements(childId, parentId, "support", function() {
 			updateView();
 		});
 		break;
-	case "Contra Argument":
+	case "Contra":
 		linkElements(childId, parentId, "attack", function() {
 			updateView();
 		});

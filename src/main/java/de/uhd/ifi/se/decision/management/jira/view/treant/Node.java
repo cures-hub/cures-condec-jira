@@ -67,16 +67,16 @@ public class Node {
 		switch (link.getLinkType()) {
 		case "support":
 			if (decisionKnowledgeElement.getId() == link.getIngoingId()) {
-				this.nodeContent = ImmutableMap.of("name", "Supporting Argument", "title",
+				this.nodeContent = ImmutableMap.of("name", "Pro", "title",
 						decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
-				this.htmlClass = "support";
+				this.htmlClass = "pro";
 			}
 			break;
 		case "attack":
 			if (decisionKnowledgeElement.getId() == link.getIngoingId()) {
-				this.nodeContent = ImmutableMap.of("name", "Attacking Argument", "title",
+				this.nodeContent = ImmutableMap.of("name", "Contra", "title",
 						decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
-				this.htmlClass = "attack";
+				this.htmlClass = "contra";
 			}
 			break;
 		default:

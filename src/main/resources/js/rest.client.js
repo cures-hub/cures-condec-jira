@@ -131,7 +131,7 @@ function createDecisionKnowledgeElement(summary, description, type, callback) {
 	}
 }
 
-function editDecisionKnowledgeElement(id, summary, description, type, callback) {
+function updateDecisionKnowledgeElement(id, summary, description, type, callback) {
 	var jsondata = {
 		"id" : id,
 		"summary" : summary,
@@ -173,23 +173,6 @@ function linkElements(parentId, childId, linkType, callback) {
 		"outgoingId" : parentId
 	};
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLink.json?projectKey=" + getProjectKey(),
-			jsondata, function(error, link) {
-				if (error === null) {
-					showFlag("success", "Link has been created.");
-					callback(link);
-				} else {
-					showFlag("error", "Link could not be created.");
-				}
-			});
-}
-
-function editLink(parentId, childId, linkType, callback) {
-	var jsondata = {
-		"linkType" : linkType,
-		"ingoingId" : childId,
-		"outgoingId" : parentId
-	};
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/editLink.json?projectKey=" + getProjectKey(),
 			jsondata, function(error, link) {
 				if (error === null) {
 					showFlag("success", "Link has been created.");

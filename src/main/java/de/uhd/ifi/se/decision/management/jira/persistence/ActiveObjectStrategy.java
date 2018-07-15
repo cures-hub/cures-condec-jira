@@ -297,11 +297,6 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	}
 
 	@Override
-	public boolean editLink(Link link, ApplicationUser user) {
-		return deleteLink(link, user) && insertLink(link, user) != 0;
-	}
-
-	@Override
 	public boolean deleteLink(Link link, ApplicationUser user) {
 		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
