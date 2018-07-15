@@ -202,51 +202,27 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 	@Override
 	public long insertLink(Link link, ApplicationUser user) {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
-		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
-		Collection<IssueLinkType> issueLinkTypeCollection = issueLinkTypeManager
-				.getIssueLinkTypesByName(link.getLinkType());
-		Iterator<IssueLinkType> issueLinkTypeIterator = issueLinkTypeCollection.iterator();
+		long linkTypeId = getLinkTypeId(link.getLinkType());
+		try {
+			issueLinkManager.createIssueLink(link.getOutgoingId(), link.getIngoingId(), linkTypeId, (long) 0, user);
+			IssueLink issueLink = issueLinkManager.getIssueLink(link.getOutgoingId(), link.getIngoingId(), linkTypeId);
+			return issueLink.getId();
+		} catch (CreateException | NullPointerException e) {
+			LOGGER.error("Insertion of link into database failed.");
+		}
+		return (long) 0;
+	}
 
+	private long getLinkTypeId(String linkTypeName) {
+		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
+		Collection<IssueLinkType> issueLinkTypeCollection = issueLinkTypeManager.getIssueLinkTypesByName(linkTypeName);
+		Iterator<IssueLinkType> issueLinkTypeIterator = issueLinkTypeCollection.iterator();
 		long typeId = 0;
 		while (issueLinkTypeIterator.hasNext()) {
 			IssueLinkType issueLinkType = issueLinkTypeIterator.next();
 			typeId = issueLinkType.getId();
 		}
-
-		long sequence = 0;
-		List<IssueLink> inwardIssueLinkList = issueLinkManager.getInwardLinks(link.getIngoingId());
-		List<IssueLink> outwardIssueLinkList = issueLinkManager.getOutwardLinks(link.getIngoingId());
-
-		for (IssueLink issueLink : inwardIssueLinkList) {
-			if (sequence <= issueLink.getSequence()) {
-				sequence = issueLink.getSequence() + 1;
-			}
-		}
-		for (IssueLink issueLink : outwardIssueLinkList) {
-			if (sequence <= issueLink.getSequence()) {
-				sequence = issueLink.getSequence() + 1;
-			}
-		}
-		try {
-			issueLinkManager.createIssueLink(link.getOutgoingId(), link.getIngoingId(), typeId, sequence, user);
-		} catch (CreateException e) {
-			LOGGER.error("Insertion of link into database failed due to a create exception.");
-			return (long) 0;
-		} catch (NullPointerException e) {
-			LOGGER.error("Insertion of link into database failed due to a null pointer exception.");
-			return (long) 0;
-		} finally {
-			outwardIssueLinkList = issueLinkManager.getOutwardLinks(link.getIngoingId());
-			issueLinkManager.resetSequences(outwardIssueLinkList);
-			inwardIssueLinkList = issueLinkManager.getInwardLinks(link.getIngoingId());
-			issueLinkManager.resetSequences(inwardIssueLinkList);
-		}
-		IssueLink issueLink = issueLinkManager.getIssueLink(link.getOutgoingId(), link.getIngoingId(), typeId);
-		if (issueLink == null) {
-			LOGGER.error("Insertion of link into database failed.");
-			return (long) 0;
-		}
-		return issueLink.getId();
+		return typeId;
 	}
 
 	// TODO If the Update functions are also used in the IssueStrategy this function

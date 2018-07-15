@@ -75,6 +75,8 @@ public class Node {
 					decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 			this.htmlClass = "attack";
 			break;
+		default:
+			break;
 		}
 	}
 
