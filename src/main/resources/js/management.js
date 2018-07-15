@@ -114,7 +114,7 @@ function getProjectId() {
 
 function getIssueKey() {
 	var issueKey = JIRA.Issue.getIssueKey();
-	if (issueKey == null) {
+	if (issueKey === null) {
 		issueKey = AJS.Meta.get("issue-key");
 	}
 	return issueKey;

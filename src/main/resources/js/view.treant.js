@@ -6,7 +6,7 @@ var treantTree;
 function buildTreant(elementKey) {
 	var depthOfTreeInput = document.getElementById("depth-of-tree-input");
 	var depthOfTree = 4;
-	if (depthOfTreeInput != null) {
+	if (depthOfTreeInput !== null) {
 		depthOfTree = depthOfTreeInput.value;
 	}
 	getTreant(elementKey, depthOfTree, function(treeStructure) {
@@ -109,9 +109,9 @@ function addCommits(commits, elementArray) {
 
 		var decision;
 		var element;
-		for ( var i in splitMessage) {
+		for (var i in splitMessage) {
 			var split = splitMessage[i].split(" ");
-			var message = splitMessage[i].substr(splitMessage[i].indexOf(" ") + 1);
+			message = splitMessage[i].substr(splitMessage[i].indexOf(" ") + 1);
 			switch (split[0]) {
 			case "Decision:":
 				decision = {

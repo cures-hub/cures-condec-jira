@@ -1,5 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.view;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -7,6 +15,7 @@ import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.decXtract.view.IssueTabPanelRenderer;
@@ -14,13 +23,6 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestIssueTabPanelRenderer extends TestSetUp {
@@ -84,7 +86,6 @@ public class TestIssueTabPanelRenderer extends TestSetUp {
 		((MockIssue) issue).setProjectObject(project);
 		((MockIssue) issue).setKey("TEST-1");
 		ApplicationUser user = new MockApplicationUser("NoFails");
-		// Tab panel is currently disabled
-		//assertFalse(renderer.showPanel(issue, user));
+		assertTrue(renderer.showPanel(issue, user));
 	}
 }

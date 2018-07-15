@@ -18,115 +18,113 @@ import static org.junit.Assert.assertTrue;
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestConfigPersistence extends TestSetUp{
     private EntityManager entityManager;
-    private ConfigPersistence configPersistence;
 
     @Before
     public void setUp(){
         initialization();
         TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
                 new MockDefaultUserManager());
-        configPersistence = new ConfigPersistence();
     }
 
     //IsIssueStrategy
     //Because the TransactionCallbacks are hardcoded on true in the Test the Tests are only fore the Right values
     @Ignore
     public void testIsIssueStrategyInvalid(){
-        assertFalse(configPersistence.isIssueStrategy("InvalidKey"));
+        assertFalse(ConfigPersistence.isIssueStrategy("InvalidKey"));
     }
 
     @Test
     public void testIsIssueStrategyOk(){
-        assertTrue(configPersistence.isIssueStrategy("TEST"));
+        assertTrue(ConfigPersistence.isIssueStrategy("TEST"));
     }
 
     //SetIssueStrategy
     @Test
     public void testSetIssueStrategyNullFalse(){
-        configPersistence.setIssueStrategy(null,false);
+        ConfigPersistence.setIssueStrategy(null,false);
     }
 
     @Test
     public void testSetIssueStrategyNullTrue(){
-        configPersistence.setIssueStrategy(null,true);
+        ConfigPersistence.setIssueStrategy(null,true);
     }
 
     @Test
     public void testSetIssueStrategyValid(){
-        configPersistence.setIssueStrategy("TEST", true);
+        ConfigPersistence.setIssueStrategy("TEST", true);
     }
 
     //IsActivated
     @Ignore
     public void testIsActivatedInvalid(){
-        assertFalse(configPersistence.isActivated("InvalidKey"));
+        assertFalse(ConfigPersistence.isActivated("InvalidKey"));
     }
 
     @Test
     public void testIsActivatedOk(){
-        assertTrue(configPersistence.isActivated("TEST"));
+        assertTrue(ConfigPersistence.isActivated("TEST"));
     }
 
     //SetActivated
     @Test
     public void testSetActivatedNullFalse(){
-        configPersistence.setActivated(null,false);
+        ConfigPersistence.setActivated(null,false);
     }
 
     @Test
     public void testSetActivateNullTrue(){
-        configPersistence.setActivated(null, true);
+        ConfigPersistence.setActivated(null, true);
     }
 
     @Test
     public void testSetActivatedValid(){
-        configPersistence.setActivated("TEST", true);
+        ConfigPersistence.setActivated("TEST", true);
     }
 
     //IsKnowledgeExtractedFromGit
     @Test
     public void testIsKnowledgeExtractedNull(){
-        assertFalse(configPersistence.isKnowledgeExtractedFromGit(null));
+        assertFalse(ConfigPersistence.isKnowledgeExtractedFromGit(null));
     }
 
     @Ignore
     public void testIsKnowledgeExtractedInvalid(){
-        assertFalse(configPersistence.isKnowledgeExtractedFromGit("NotTEST"));
+        assertFalse(ConfigPersistence.isKnowledgeExtractedFromGit("NotTEST"));
     }
 
     @Test
     public void testIsKnowledgeExtractedFilled(){
-        assertTrue(configPersistence.isKnowledgeExtractedFromGit("TEST"));
+        assertTrue(ConfigPersistence.isKnowledgeExtractedFromGit("TEST"));
     }
 
     //SetKnowledgeExtractedFromGit
     @Test
     public void testSetKnowledgeExtractedNullFalse(){
-        configPersistence.setKnowledgeExtractedFromGit(null,false);
+        ConfigPersistence.setKnowledgeExtractedFromGit(null,false);
     }
 
     @Test
     public void testSetKnowledgeExtractedNullTrue(){
-        configPersistence.setKnowledgeExtractedFromGit(null,true);
+        ConfigPersistence.setKnowledgeExtractedFromGit(null,true);
     }
 
     @Test
     public void testSetKnowledgeExtractedInvalidFalse(){
-        configPersistence.setKnowledgeExtractedFromGit("NotTEST", false);
+        ConfigPersistence.setKnowledgeExtractedFromGit("NotTEST", false);
     }
 
     @Test
     public void testSetKnowledgeExtractedInvalidTrue(){
-        configPersistence.setKnowledgeExtractedFromGit("NotTEST", true);
+        ConfigPersistence.setKnowledgeExtractedFromGit("NotTEST", true);
     }
 
     @Test
     public void testSetKnowledgeExtractedFilledFalse(){
-        configPersistence.setKnowledgeExtractedFromGit("TEST", false);
+        ConfigPersistence.setKnowledgeExtractedFromGit("TEST", false);
     }
 
     @Test
     public void testSetKnowledgeExtractedFilledTrue(){
-        configPersistence.setKnowledgeExtractedFromGit("TEST", true);
+        ConfigPersistence.setKnowledgeExtractedFromGit("TEST", true);
     }
 }
