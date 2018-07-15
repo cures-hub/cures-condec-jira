@@ -66,8 +66,9 @@ function setUpDialogForCreateAction(id) {
 }
 
 function setUpDialog() {
+	resetDialog();
 	AJS.dialog2("#dialog").show();
-	AJS.dialog2("#dialog").on("hide", function() {
+	AJS.dialog2("#dialog").on("show", function() {
 		resetDialog();
 	});
 	AJS.$(document).on("click", "#dialog-cancel-button", function(e) {
@@ -250,7 +251,7 @@ function setUpDialogForDeleteAction(id) {
 	submitButton.textContent = deleteKnowledgeElementText;
 	submitButton.onclick = function() {
 		deleteDecisionKnowledgeElement(id, function() {
-			updateView(id);
+			updateView();
 		});
 		closeDialog();
 	};

@@ -20,53 +20,53 @@ public class TestPostDecision extends TestDecisionSetUp {
 	public void testActionTypeNullReqNullDecNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST)
 				.entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), decRest.createDecisionKnowledgeElement(null, null).getEntity());
+				.getEntity(), decisionsRest.createDecisionKnowledgeElement(null, null).getEntity());
 	}
 
 	@Test
 	public void testActionTypeNullReqNullDecFilled() {
 		assertEquals(Response.status(Status.BAD_REQUEST)
 				.entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), decRest.createDecisionKnowledgeElement(null, dec).getEntity());
+				.getEntity(), decisionsRest.createDecisionKnowledgeElement(null, dec).getEntity());
 	}
 
 	@Test
 	public void testActionTypeNullReqFilledDecNull() {
-		req.setAttribute("WithFails", false);
-		req.setAttribute("NoFails", true);
+		request.setAttribute("WithFails", false);
+		request.setAttribute("NoFails", true);
 		assertEquals(Response.status(Status.BAD_REQUEST)
 				.entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), decRest.createDecisionKnowledgeElement( req, null).getEntity());
+				.getEntity(), decisionsRest.createDecisionKnowledgeElement( request, null).getEntity());
 	}
 
 	@Test
 	public void testActionTypecreateReqNullDecNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST)
 				.entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), decRest.createDecisionKnowledgeElement(null, null).getEntity());
+				.getEntity(), decisionsRest.createDecisionKnowledgeElement(null, null).getEntity());
 	}
 
 	@Test
 	public void testActionTypecreateReqNullDecFilled() {
 		assertEquals(Response.status(Status.BAD_REQUEST)
 				.entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), decRest.createDecisionKnowledgeElement( null, dec).getEntity());
+				.getEntity(), decisionsRest.createDecisionKnowledgeElement( null, dec).getEntity());
 	}
 
 	@Test
 	public void testActionTypecreateReqFilledDecNull() {
-		req.setAttribute("WithFails", false);
-		req.setAttribute("NoFails", true);
+		request.setAttribute("WithFails", false);
+		request.setAttribute("NoFails", true);
 		assertEquals(Response.status(Status.BAD_REQUEST)
 				.entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), decRest.createDecisionKnowledgeElement( req, null).getEntity());
+				.getEntity(), decisionsRest.createDecisionKnowledgeElement( request, null).getEntity());
 	}
 
 	@Test
 	public void testActionTypecreateReqFilledDecFilled() {
-		req.setAttribute("WithFails", false);
-		req.setAttribute("NoFails", true);
-		assertEquals(Status.OK.getStatusCode(), decRest.createDecisionKnowledgeElement( req, dec).getStatus());
+		request.setAttribute("WithFails", false);
+		request.setAttribute("NoFails", true);
+		assertEquals(Status.OK.getStatusCode(), decisionsRest.createDecisionKnowledgeElement( request, dec).getStatus());
 	}
 
 
@@ -75,13 +75,13 @@ public class TestPostDecision extends TestDecisionSetUp {
 	public void testActionTypeEditReqNullDecNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST)
 				.entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), decRest.createDecisionKnowledgeElement(null, null).getEntity());
+				.getEntity(), decisionsRest.createDecisionKnowledgeElement(null, null).getEntity());
 	}
 
 	@Test
 	public void testActionTypeEditReqNullDecFilled() {
 		assertEquals(Response.status(Status.BAD_REQUEST)
 				.entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), decRest.createDecisionKnowledgeElement(null, dec).getEntity());
+				.getEntity(), decisionsRest.createDecisionKnowledgeElement(null, dec).getEntity());
 	}
 }

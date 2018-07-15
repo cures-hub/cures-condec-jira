@@ -39,7 +39,7 @@ function createTreant(treeStructure) {
 function createContextMenuForTreantNodes() {
 	$(function() {
 		$.contextMenu({
-			selector : ".decision, .rationale, .context, .problem, .solution, .support, .attack",
+			selector : ".decision, .rationale, .context, .problem, .solution, .support, .attack, .other",
 			items : contextMenuActions
 		});
 	});
@@ -91,8 +91,9 @@ function drop(event, target) {
 	event.preventDefault();
 	var parentId = target.id;
 	var childId = dragId;
-	deleteLinkToExistingElement(oldParentId, childId);
-	createLinkToExistingElement(parentId, childId);
+	deleteLink(oldParentId, childId, function() {
+		createLinkToExistingElement(parentId, childId);
+	});
 }
 
 function allowDrop(event) {

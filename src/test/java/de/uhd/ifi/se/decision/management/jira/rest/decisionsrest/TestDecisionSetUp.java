@@ -20,13 +20,13 @@ import net.java.ao.EntityManager;
 
 public class TestDecisionSetUp extends TestSetUp {
 	protected EntityManager entityManager;
-	protected DecisionsRest decRest;
+	protected DecisionsRest decisionsRest;
 	protected DecisionKnowledgeElementImpl dec;
-	protected HttpServletRequest req;
+	protected HttpServletRequest request;
 
 	@Before
 	public void setUp() {
-		decRest = new DecisionsRest();
+		decisionsRest = new DecisionsRest();
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockDefaultUserManager());
@@ -36,6 +36,6 @@ public class TestDecisionSetUp extends TestSetUp {
 		dec.setId(1);
 		dec.setProjectKey("TEST");
 		dec.setType(KnowledgeType.SOLUTION);
-		req = new MockHttpServletRequest();
+		request = new MockHttpServletRequest();
 	}
 }

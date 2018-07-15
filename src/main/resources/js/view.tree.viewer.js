@@ -50,7 +50,8 @@ function addDragAndDropSupportForTreeViewer(nodeId, parentId, oldParentId) {
 		document.location.reload();
 	}
 	if (parentId !== '#' && oldParentId !== '#') {
-		deleteLinkToExistingElement(oldParentId, nodeId);
-		createLinkToExistingElement(parentId, nodeId);
+		deleteLink(oldParentId, nodeId, function() {
+			createLinkToExistingElement(parentId, nodeId);
+		});
 	}
 }
