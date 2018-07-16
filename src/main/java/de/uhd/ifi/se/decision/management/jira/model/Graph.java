@@ -34,6 +34,7 @@ public interface Graph {
 	 *
 	 * @see DecisionKnowledgeElement
 	 * @see Link
+	 * @param element decision knowledge element in the graph
 	 * @return map of decision knowledge elements and the respective links in the
 	 *         graph.
 	 */
@@ -44,6 +45,7 @@ public interface Graph {
 	 * element.
 	 *
 	 * @see DecisionKnowledgeElement
+	 * @param element decision knowledge element in the graph
 	 * @return list of decision knowledge elements in the graph.
 	 */
 	List<DecisionKnowledgeElement> getLinkedElements(DecisionKnowledgeElement element);

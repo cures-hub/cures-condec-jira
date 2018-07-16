@@ -71,7 +71,7 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
-	@JsonProperty("ingoingId")
+	@JsonProperty("idOfSourceElement")
 	public void setSourceElement(long id) {
 		if (this.sourceElement == null) {
 			this.sourceElement = new DecisionKnowledgeElementImpl();
@@ -95,7 +95,7 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
-	@JsonProperty("outgoingId")
+	@JsonProperty("idOfDestinationElement")
 	public void setDestinationElement(long id) {
 		if (this.destinationElement == null) {
 			this.destinationElement = new DecisionKnowledgeElementImpl();

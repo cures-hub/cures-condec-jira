@@ -18,6 +18,14 @@ public interface LinkEntity extends Link, RawEntity<Integer> {
 	@PrimaryKey("ID")
 	long getId();
 
+	long getIdOfSourceElement();
+
+	void setIdOfSourceElement(long id);
+
+	long getIdOfDestinationElement();
+
+	void setIdOfDestinationElement(long id);
+
 	@Ignore
 	DecisionKnowledgeElement getDestinationElement();
 

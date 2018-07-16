@@ -169,8 +169,8 @@ function deleteDecisionKnowledgeElement(id, callback) {
 function linkElements(parentId, childId, linkType, callback) {
 	var jsondata = {
 		"linkType" : linkType,
-		"ingoingId" : childId,
-		"outgoingId" : parentId
+		"idOfSourceElement" : childId,
+		"idOfDestinationElement" : parentId
 	};
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLink.json?projectKey=" + getProjectKey(),
 			jsondata, function(error, link) {
@@ -185,8 +185,8 @@ function linkElements(parentId, childId, linkType, callback) {
 
 function deleteLink(parentId, childId, callback) {
 	var jsondata = {
-		"ingoingId" : childId,
-		"outgoingId" : parentId
+		"idOfSourceElement" : childId,
+		"idOfDestinationElement" : parentId
 	};
 	deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLink.json?projectKey=" + getProjectKey(),
 			jsondata, function(error, link) {

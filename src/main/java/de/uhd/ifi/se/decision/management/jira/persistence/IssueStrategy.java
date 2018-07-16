@@ -106,7 +106,7 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 			IssueService.DeleteValidationResult result = issueService.validateDelete(user, issue.getIssue().getId());
 			if (result.getErrorCollection().hasAnyErrors()) {
 				for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
-					LOGGER.error("Delition of decision knowledge element in database failed. " + entry.getKey() + ": "
+					LOGGER.error("Deletion of decision knowledge element in database failed. " + entry.getKey() + ": "
 							+ entry.getValue());
 				}
 				return false;
