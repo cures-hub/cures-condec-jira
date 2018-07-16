@@ -5,7 +5,6 @@ import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
-import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 
 /**
  * Model class for a project and its configuration
@@ -14,6 +13,7 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 
 	private String projectKey;
 	private String projectName;
+	private AbstractPersistenceStrategy persistenceStrategy;
 
 	public DecisionKnowledgeProjectImpl(String projectKey) {
 		this.projectKey = projectKey;
@@ -24,67 +24,83 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 		this.projectName = projectName;
 	}
 
+	@Override
 	public String getProjectKey() {
 		return projectKey;
 	}
 
+	@Override
 	public void setProjectKey(String projectKey) {
 		this.projectKey = projectKey;
 	}
 
+	@Override
 	public String getProjectName() {
 		return projectName;
 	}
 
+	@Override
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
 	}
 
-	public boolean isIssueStrategy() {
-		return ConfigPersistence.isIssueStrategy(this.getProjectKey());
-	}
-
-	public void setIssueStrategy(boolean isIssueStrategy) {
-		ConfigPersistence.setIssueStrategy(this.getProjectKey(), isIssueStrategy);
-	}
-
+	@Override
 	public boolean isActivated() {
 		return ConfigPersistence.isActivated(this.getProjectKey());
 	}
 
+	@Override
 	public void setActivated(boolean isActivated) {
 		ConfigPersistence.setActivated(this.getProjectKey(), isActivated);
 	}
 
-	public boolean isKnowledgeExtractedFromGit() {
-		return ConfigPersistence.isKnowledgeExtractedFromGit(projectKey);
+	@Override
+	public boolean isIssueStrategy() {
+		return ConfigPersistence.isIssueStrategy(this.getProjectKey());
 	}
 
-	public void setKnowledgeExtractedFromGit(boolean isKnowledgeExtractedFromGit) {
-		ConfigPersistence.setKnowledgeExtractedFromGit(projectKey, isKnowledgeExtractedFromGit);
+	@Override
+	public void setIssueStrategy(boolean isIssueStrategy) {
+		ConfigPersistence.setIssueStrategy(this.getProjectKey(), isIssueStrategy);
 	}
 
-	public boolean isKnowledgeExtractedFromIssues() {
-		return ConfigPersistence.isKnowledgeExtractedFromIssues(projectKey);
-	}
-
-	public void setKnowledgeExtractedFromIssues(boolean isKnowledgeExtractedFromIssues) {
-		ConfigPersistence.setKnowledgeExtractedFromIssues(projectKey, isKnowledgeExtractedFromIssues);
-	}
-
+	@Override
 	public AbstractPersistenceStrategy getPersistenceStrategy() {
-		StrategyProvider strategyProvider = new StrategyProvider();
-		return strategyProvider.getStrategy(this.projectKey);
+		if (this.persistenceStrategy == null) {
+			this.persistenceStrategy = DecisionKnowledgeProject.getPersistenceStrategy(this.projectKey);
+		}
+		return this.persistenceStrategy;
 	}
 
+	@Override
 	public Set<KnowledgeType> getKnowledgeTypes() {
 		Set<KnowledgeType> knowledgeTypes = new HashSet<KnowledgeType>();
-		for(KnowledgeType knowledgeType : KnowledgeType.values()) {
+		for (KnowledgeType knowledgeType : KnowledgeType.values()) {
 			boolean isEnabled = ConfigPersistence.isKnowledgeTypeEnabled(this.projectKey, knowledgeType);
-			if(isEnabled) {
+			if (isEnabled) {
 				knowledgeTypes.add(knowledgeType);
 			}
 		}
 		return knowledgeTypes;
+	}
+
+	@Override
+	public boolean isKnowledgeExtractedFromGit() {
+		return ConfigPersistence.isKnowledgeExtractedFromGit(projectKey);
+	}
+
+	@Override
+	public void setKnowledgeExtractedFromGit(boolean isKnowledgeExtractedFromGit) {
+		ConfigPersistence.setKnowledgeExtractedFromGit(projectKey, isKnowledgeExtractedFromGit);
+	}
+
+	@Override
+	public boolean isKnowledgeExtractedFromIssues() {
+		return ConfigPersistence.isKnowledgeExtractedFromIssues(projectKey);
+	}
+
+	@Override
+	public void setKnowledgeExtractedFromIssues(boolean isKnowledgeExtractedFromIssues) {
+		ConfigPersistence.setKnowledgeExtractedFromIssues(projectKey, isKnowledgeExtractedFromIssues);
 	}
 }

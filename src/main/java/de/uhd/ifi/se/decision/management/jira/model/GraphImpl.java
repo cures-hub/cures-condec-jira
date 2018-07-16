@@ -7,18 +7,15 @@ import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
-import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
-
 /**
  * Model class for a graph of decision knowledge elements
  */
 @JsonAutoDetect
 public class GraphImpl implements Graph {
 
-	private AbstractPersistenceStrategy persistenceStrategy;
-	private List<Long> linkIds;
 	private DecisionKnowledgeElement rootElement;
+	private List<Long> linkIds;
+	private DecisionKnowledgeProject project;
 
 	public GraphImpl() {
 		linkIds = new ArrayList<>();
@@ -26,13 +23,12 @@ public class GraphImpl implements Graph {
 
 	public GraphImpl(String projectKey) {
 		this();
-		StrategyProvider strategyProvider = new StrategyProvider();
-		this.persistenceStrategy = strategyProvider.getStrategy(projectKey);
+		this.project = new DecisionKnowledgeProjectImpl(projectKey);
 	}
 
 	public GraphImpl(String projectKey, String rootElementKey) {
 		this(projectKey);
-		this.rootElement = persistenceStrategy.getDecisionKnowledgeElement(rootElementKey);
+		this.rootElement = this.project.getPersistenceStrategy().getDecisionKnowledgeElement(rootElementKey);
 	}
 
 	public GraphImpl(DecisionKnowledgeElement rootElement) {
@@ -40,6 +36,7 @@ public class GraphImpl implements Graph {
 		this.rootElement = rootElement;
 	}
 
+	@Override
 	public Map<DecisionKnowledgeElement, Link> getLinkedElementsAndLinks(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 		linkedElementsAndLinks.putAll(this.getElementsLinkedWithOutwardLinks(element));
@@ -47,23 +44,25 @@ public class GraphImpl implements Graph {
 		return linkedElementsAndLinks;
 	}
 
+	@Override
 	public List<DecisionKnowledgeElement> getLinkedElements(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = this.getLinkedElementsAndLinks(element);
-		List<DecisionKnowledgeElement> linkedElements = new ArrayList<DecisionKnowledgeElement>(linkedElementsAndLinks.keySet());
+		List<DecisionKnowledgeElement> linkedElements = new ArrayList<DecisionKnowledgeElement>(
+				linkedElementsAndLinks.keySet());
 		return linkedElements;
 	}
 
-	public Map<DecisionKnowledgeElement, Link> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement element) {
+	private Map<DecisionKnowledgeElement, Link> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
 		if (element == null) {
 			return linkedElementsAndLinks;
 		}
 
-		List<Link> outwardLinks = persistenceStrategy.getOutwardLinks(element);
+		List<Link> outwardLinks = this.project.getPersistenceStrategy().getOutwardLinks(element);
 		for (Link link : outwardLinks) {
 			if (!linkIds.contains(link.getLinkId())) {
-				DecisionKnowledgeElement outwardElement = link.getDestinationObject();
+				DecisionKnowledgeElement outwardElement = link.getDestinationElement();
 				if (outwardElement != null) {
 					linkIds.add(link.getLinkId());
 					linkedElementsAndLinks.put(outwardElement, link);
@@ -74,17 +73,17 @@ public class GraphImpl implements Graph {
 		return linkedElementsAndLinks;
 	}
 
-	public Map<DecisionKnowledgeElement, Link> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element) {
+	private Map<DecisionKnowledgeElement, Link> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
 		if (element == null) {
 			return linkedElementsAndLinks;
 		}
 
-		List<Link> inwardLinks = persistenceStrategy.getInwardLinks(element);
+		List<Link> inwardLinks = this.project.getPersistenceStrategy().getInwardLinks(element);
 		for (Link link : inwardLinks) {
 			if (!linkIds.contains(link.getLinkId())) {
-				DecisionKnowledgeElement inwardElement = link.getSourceObject();
+				DecisionKnowledgeElement inwardElement = link.getSourceElement();
 				if (inwardElement != null) {
 					linkIds.add(link.getLinkId());
 					linkedElementsAndLinks.put(inwardElement, link);
@@ -95,10 +94,12 @@ public class GraphImpl implements Graph {
 		return linkedElementsAndLinks;
 	}
 
+	@Override
 	public DecisionKnowledgeElement getRootElement() {
 		return rootElement;
 	}
 
+	@Override
 	public void setRootElement(DecisionKnowledgeElement rootElement) {
 		this.rootElement = rootElement;
 	}

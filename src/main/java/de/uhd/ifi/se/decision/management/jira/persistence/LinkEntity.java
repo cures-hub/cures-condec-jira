@@ -19,14 +19,14 @@ public interface LinkEntity extends Link, RawEntity<Integer> {
 	long getId();
 
 	@Ignore
-	DecisionKnowledgeElement getDestinationObject();
+	DecisionKnowledgeElement getDestinationElement();
 
 	@Ignore
-	DecisionKnowledgeElement getSourceObject();
+	DecisionKnowledgeElement getSourceElement();
 
 	@Ignore
-	void setDestinationObject(DecisionKnowledgeElement decisionKnowledgeElement);
+	void setDestinationElement(DecisionKnowledgeElement decisionKnowledgeElement);
 
 	@Ignore
-	void setSourceObject(DecisionKnowledgeElement decisionKnowledgeElement);
+	void setSourceElement(DecisionKnowledgeElement decisionKnowledgeElement);
 }

@@ -102,8 +102,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 							return false;
 						} finally {
 							for (LinkEntity linkEntity : ACTIVE_OBJECTS.find(LinkEntity.class)) {
-								if (linkEntity.getIngoingId() == decisionKnowledgeElement.getId()
-										|| linkEntity.getOutgoingId() == decisionKnowledgeElement.getId()) {
+								if (linkEntity.getIdOfSourceElement() == decisionKnowledgeElement.getId()
+										|| linkEntity.getIdOfDestinationElement() == decisionKnowledgeElement.getId()) {
 									try {
 										linkEntity.getEntityManager().delete(linkEntity);
 									} catch (SQLException e) {
@@ -200,7 +200,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 						public DecisionKnowledgeElementEntity doInTransaction() {
 							DecisionKnowledgeElementEntity[] entityList = ACTIVE_OBJECTS.find(
 									DecisionKnowledgeElementEntity.class,
-									Query.select().where("ID = ?", inwardLink.getIngoingId()));
+									Query.select().where("ID = ?", inwardLink.getIdOfSourceElement()));
 							if (entityList.length == 1) {
 								return entityList[0];
 							}
@@ -224,7 +224,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 						public DecisionKnowledgeElementEntity doInTransaction() {
 							DecisionKnowledgeElementEntity[] entityList = ACTIVE_OBJECTS.find(
 									DecisionKnowledgeElementEntity.class,
-									Query.select().where("ID = ?", outwardLink.getOutgoingId()));
+									Query.select().where("ID = ?", outwardLink.getIdOfDestinationElement()));
 							if (entityList.length == 1) {
 								return entityList[0];
 							}
@@ -244,8 +244,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 				boolean linkAlreadyExists = false;
 				long linkId = 0;
 				for (LinkEntity linkEntity : ACTIVE_OBJECTS.find(LinkEntity.class)) {
-					if (linkEntity.getIngoingId() == link.getIngoingId()
-							&& linkEntity.getOutgoingId() == link.getOutgoingId()) {
+					if (linkEntity.getIdOfSourceElement() == link.getIdOfSourceElement()
+							&& linkEntity.getIdOfDestinationElement() == link.getIdOfDestinationElement()) {
 						linkAlreadyExists = true;
 						linkId = linkEntity.getId();
 					}
@@ -253,7 +253,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 				if (!linkAlreadyExists) {
 					DecisionKnowledgeElementEntity decCompIngoing;
 					DecisionKnowledgeElementEntity[] decCompIngoingArray = ACTIVE_OBJECTS.find(
-							DecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", link.getIngoingId()));
+							DecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", link.getIdOfSourceElement()));
 					if (decCompIngoingArray.length == 1) {
 						decCompIngoing = decCompIngoingArray[0];
 					} else {
@@ -263,7 +263,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 
 					DecisionKnowledgeElementEntity decCompOutgoing;
 					DecisionKnowledgeElementEntity[] decCompOutgoingArray = ACTIVE_OBJECTS.find(
-							DecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", link.getOutgoingId()));
+							DecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", link.getIdOfDestinationElement()));
 					if (decCompOutgoingArray.length == 1) {
 						decCompOutgoing = decCompOutgoingArray[0];
 					} else {
@@ -274,8 +274,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 						if (decCompIngoing.getProjectKey().equals(decCompOutgoing.getProjectKey())) {
 							// entities exist and are in the same project
 							final LinkEntity linkEntity = ACTIVE_OBJECTS.create(LinkEntity.class);
-							linkEntity.setIngoingId(link.getIngoingId());
-							linkEntity.setOutgoingId(link.getOutgoingId());
+							linkEntity.setIdOfSourceElement(link.getIdOfSourceElement());
+							linkEntity.setIdOfDestinationElement(link.getIdOfDestinationElement());
 							linkEntity.setLinkType(link.getLinkType());
 							linkEntity.save();
 							linkId = linkEntity.getId();
@@ -302,10 +302,10 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 			@Override
 			public Boolean doInTransaction() {
 				for (LinkEntity linkEntity : ACTIVE_OBJECTS.find(LinkEntity.class)) {
-					if (link.getIngoingId() == linkEntity.getIngoingId()
-							&& link.getOutgoingId() == linkEntity.getOutgoingId()
-							|| link.getOutgoingId() == linkEntity.getIngoingId()
-									&& link.getIngoingId() == linkEntity.getOutgoingId()) {
+					if (link.getIdOfSourceElement() == linkEntity.getIdOfSourceElement()
+							&& link.getIdOfDestinationElement() == linkEntity.getIdOfDestinationElement()
+							|| link.getIdOfDestinationElement() == linkEntity.getIdOfSourceElement()
+									&& link.getIdOfSourceElement() == linkEntity.getIdOfDestinationElement()) {
 						try {
 							linkEntity.getEntityManager().delete(linkEntity);
 							return true;
@@ -326,8 +326,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 				Query.select().where("OUTGOING_ID = ?", decisionKnowledgeElement.getId()));
 		for (LinkEntity link : links) {
 			Link inwardLink = new LinkImpl(link);
-			inwardLink.setDestinationObject(decisionKnowledgeElement);
-			inwardLink.setSourceObject(this.getDecisionKnowledgeElement(link.getIngoingId()));
+			inwardLink.setDestinationElement(decisionKnowledgeElement);
+			inwardLink.setSourceElement(this.getDecisionKnowledgeElement(link.getIdOfSourceElement()));
 			inwardLinks.add(inwardLink);
 		}
 		return inwardLinks;
@@ -340,8 +340,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 				Query.select().where("INGOING_ID = ?", decisionKnowledgeElement.getId()));
 		for (LinkEntity link : links) {
 			Link outwardLink = new LinkImpl(link);
-			outwardLink.setSourceObject(decisionKnowledgeElement);
-			outwardLink.setDestinationObject(this.getDecisionKnowledgeElement(link.getOutgoingId()));
+			outwardLink.setSourceElement(decisionKnowledgeElement);
+			outwardLink.setDestinationElement(this.getDecisionKnowledgeElement(link.getIdOfDestinationElement()));
 			outwardLinks.add(outwardLink);
 		}
 		return outwardLinks;

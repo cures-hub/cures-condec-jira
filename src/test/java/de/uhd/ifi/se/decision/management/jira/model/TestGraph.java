@@ -85,16 +85,16 @@ public class TestGraph extends TestSetUp {
 					DecisionKnowledgeElementImpl decisionKnowledgeElement = new DecisionKnowledgeElementImpl(i,
 							"TESTSummary", "TestDescription", type, project.getKey(), "TEST-" + i);
 					issueStrategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
-					link.setIngoingId(decision.getId());
-					link.setOutgoingId(decisionKnowledgeElement.getId());
+					link.setIdOfSourceElement(decision.getId());
+					link.setIdOfDestinationElement(decisionKnowledgeElement.getId());
 					issueStrategy.insertLink(link, user);
 				} else {
 					DecisionKnowledgeElementImpl decisionKnowledgeElement = new DecisionKnowledgeElementImpl(i,
 							"TESTSummary", "TestDescription", type, project.getKey(), "TEST-" + i);
 					issueStrategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
 					link.setLinkType("attack");
-					link.setOutgoingId(decision.getId());
-					link.setIngoingId(decisionKnowledgeElement.getId());
+					link.setIdOfDestinationElement(decision.getId());
+					link.setIdOfSourceElement(decisionKnowledgeElement.getId());
 					issueStrategy.insertLink(link, user);
 				}
 			}

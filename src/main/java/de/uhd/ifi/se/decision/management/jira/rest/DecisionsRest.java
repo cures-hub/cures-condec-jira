@@ -190,7 +190,7 @@ public class DecisionsRest {
 			if (isDeleted) {
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 			} else {
-				Link inverseLink = new LinkImpl(link.getDestinationObject(), link.getSourceObject());
+				Link inverseLink = new LinkImpl(link.getDestinationElement(), link.getSourceElement());
 				isDeleted = strategy.deleteLink(inverseLink, user);
 				if (isDeleted) {
 					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();

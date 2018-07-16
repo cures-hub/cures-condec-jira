@@ -12,8 +12,24 @@ import java.util.Set;
 public enum KnowledgeType {
 	ALTERNATIVE, ASSUMPTION, ASSESSMENT, ARGUMENT, CLAIM, CONTEXT, CONSTRAINT, DECISION, GOAL, ISSUE, IMPLICATION, PROBLEM, RATIONALE, SOLUTION, OTHER, QUESTION;
 
+	/**
+	 * Get the minimal set of decision knowledge types for the management of
+	 * decision knowledge (decision, issue, argument, alternative).
+	 *
+	 * @return minimal set of decision knowledge types.
+	 */
+	public static Set<KnowledgeType> getDefaulTypes() {
+		return EnumSet.of(DECISION, ISSUE, ARGUMENT, ALTERNATIVE);
+	}
+
+	/**
+	 * Convert a string to a knowledge type.
+	 *
+	 * @param type
+	 *            as a String.
+	 */
 	public static KnowledgeType getKnowledgeType(String type) {
-		if(type == null){
+		if (type == null) {
 			return KnowledgeType.OTHER;
 		}
 		switch (type.toLowerCase(Locale.ENGLISH)) {
@@ -52,8 +68,16 @@ public enum KnowledgeType {
 		}
 	}
 
+	/**
+	 * Get the super class of a knowledge type in the decision documentation model.
+	 * For example, the super type of argument is rationale and the super type of
+	 * issue is problem.
+	 *
+	 * @param type of knowledge
+	 * @return super knowledge type of the decision knowledge element.
+	 */
 	public static KnowledgeType getSuperType(KnowledgeType type) {
-		if(type == null){
+		if (type == null) {
 			return null;
 		}
 		switch (type) {
@@ -80,23 +104,38 @@ public enum KnowledgeType {
 		}
 	}
 
+	/**
+	 * Get the super class of a knowledge type in the decision documentation model.
+	 * For example, the super type of argument is rationale and the super type of
+	 * issue is problem.
+	 *
+	 * @return super knowledge type of the decision knowledge element.
+	 */
 	public KnowledgeType getSuperType() {
 		return getSuperType(this);
 	}
 
+	/**
+	 * Convert the knowledge type to a String starting with a capital letter, e.g., Argument, Decision or Alternative.
+	 *
+	 * @return knowledge type as a String starting with a capital letter.
+	 */
+	@Override
 	public String toString() {
-		return this.name().substring(0, 1).toUpperCase(Locale.ENGLISH) + this.name().substring(1).toLowerCase(Locale.ENGLISH);
+		return this.name().substring(0, 1).toUpperCase(Locale.ENGLISH)
+				+ this.name().substring(1).toLowerCase(Locale.ENGLISH);
 	}
 
+	/**
+	 * Convert all knowledge types to a list of String.
+	 *
+	 * @return list of knowledge types as Strings starting with a capital letter.
+	 */
 	public static List<String> toList() {
 		List<String> knowledgeTypes = new ArrayList<String>();
 		for (KnowledgeType knowledgeType : KnowledgeType.values()) {
 			knowledgeTypes.add(knowledgeType.toString());
 		}
 		return knowledgeTypes;
-	}
-
-	public static Set<KnowledgeType> getDefaulTypes() {
-		return EnumSet.of(DECISION, ISSUE, ARGUMENT, ALTERNATIVE);
 	}
 }

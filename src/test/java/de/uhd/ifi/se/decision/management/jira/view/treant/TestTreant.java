@@ -116,10 +116,10 @@ public class TestTreant extends TestSetUp {
 		DecisionKnowledgeElement element = abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
 		Link link = new LinkImpl();
 		link.setLinkType("support");
-		link.setIngoingId(10);
-		link.setOutgoingId(14);
-		link.setDestinationObject(abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14));
-		link.setSourceObject(abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 10));
+		link.setIdOfSourceElement(10);
+		link.setIdOfDestinationElement(14);
+		link.setDestinationElement(abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14));
+		link.setSourceElement(abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 10));
 		link.setLinkId((long)23);
 		assertEquals(Node.class, treant.createNodeStructure(element,link,4,0).getClass());
 	}

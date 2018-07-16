@@ -12,13 +12,13 @@ a:focus a:hover {
 }
 
 .left {
-	width: 26%;
+	width: 33%;
 	float: left;
 	overflow: auto;
 }
 
 .right {
-	width: 74%;
+	width: 67%;
 	float: left;
 	overflow: auto;
 }

@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.LinkEntity;
  */
 public class LinkImpl implements Link {
 
-	private Long linkId;
+	private long linkId;
 	private String linkType;
 	private DecisionKnowledgeElement sourceElement;
 	private DecisionKnowledgeElement destinationElement;
@@ -45,59 +45,71 @@ public class LinkImpl implements Link {
 		this.linkType = link.getLinkType();
 	}
 
-	public Long getLinkId() {
+	@Override
+	public long getLinkId() {
 		return linkId;
 	}
 
+	@Override
 	public void setLinkId(Long linkId) {
 		this.linkId = linkId;
 	}
 
+	@Override
 	public String getLinkType() {
 		return linkType;
 	}
 
+	@Override
 	public void setLinkType(String linkType) {
 		this.linkType = linkType;
 	}
 
-	public long getIngoingId() {
+	@Override
+	public long getIdOfSourceElement() {
 		return sourceElement.getId();
 	}
 
+	@Override
 	@JsonProperty("ingoingId")
-	public void setIngoingId(long ingoingId) {
+	public void setIdOfSourceElement(long id) {
 		if (this.sourceElement == null) {
 			this.sourceElement = new DecisionKnowledgeElementImpl();
 		}
-		this.sourceElement.setId(ingoingId);
+		this.sourceElement.setId(id);
 	}
 
-	public DecisionKnowledgeElement getSourceObject() {
+	@Override
+	public DecisionKnowledgeElement getSourceElement() {
 		return sourceElement;
 	}
 
-	public void setSourceObject(DecisionKnowledgeElement ingoingElement) {
-		this.sourceElement = ingoingElement;
+	@Override
+	public void setSourceElement(DecisionKnowledgeElement sourceElement) {
+		this.sourceElement = sourceElement;
 	}
 
-	public long getOutgoingId() {
+	@Override
+	public long getIdOfDestinationElement() {
 		return destinationElement.getId();
 	}
 
+	@Override
 	@JsonProperty("outgoingId")
-	public void setOutgoingId(long outgoingId) {
+	public void setIdOfDestinationElement(long id) {
 		if (this.destinationElement == null) {
 			this.destinationElement = new DecisionKnowledgeElementImpl();
 		}
-		this.destinationElement.setId(outgoingId);
+		this.destinationElement.setId(id);
 	}
 
-	public DecisionKnowledgeElement getDestinationObject() {
+	@Override
+	public DecisionKnowledgeElement getDestinationElement() {
 		return destinationElement;
 	}
 
-	public void setDestinationObject(DecisionKnowledgeElement outgoingElement) {
-		this.destinationElement = outgoingElement;
+	@Override
+	public void setDestinationElement(DecisionKnowledgeElement destinationElement) {
+		this.destinationElement = destinationElement;
 	}
 }

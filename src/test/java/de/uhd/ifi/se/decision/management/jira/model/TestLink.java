@@ -21,8 +21,8 @@ public class TestLink {
 		this.outgoingId = (long) 100;
 		this.link = new LinkImpl();
 		this.link.setLinkType(linkType);
-		this.link.setIngoingId(ingoingId);
-		this.link.setOutgoingId(outgoingId);
+		this.link.setIdOfSourceElement(ingoingId);
+		this.link.setIdOfDestinationElement(outgoingId);
 	}
 
 	@Test
@@ -32,12 +32,12 @@ public class TestLink {
 
 	@Test
 	public void testGetIngoingId() {
-		assertEquals(this.ingoingId, this.link.getIngoingId(), 0.0);
+		assertEquals(this.ingoingId, this.link.getIdOfSourceElement(), 0.0);
 	}
 
 	@Test
 	public void testGetoutGoingId() {
-		assertEquals(this.outgoingId, this.link.getOutgoingId(), 0.0);
+		assertEquals(this.outgoingId, this.link.getIdOfDestinationElement(), 0.0);
 	}
 
 	@Test
@@ -48,13 +48,13 @@ public class TestLink {
 
 	@Test
 	public void testSetIngoingId() {
-		this.link.setIngoingId(ingoingId + 1);
-		assertEquals(this.ingoingId + 1, this.link.getIngoingId(), 0.0);
+		this.link.setIdOfSourceElement(ingoingId + 1);
+		assertEquals(this.ingoingId + 1, this.link.getIdOfSourceElement(), 0.0);
 	}
 
 	@Test
 	public void testSetOutgoingId() {
-		this.link.setOutgoingId(outgoingId + 1);
-		assertEquals(this.outgoingId + 1, this.link.getOutgoingId(), 0.0);
+		this.link.setIdOfDestinationElement(outgoingId + 1);
+		assertEquals(this.outgoingId + 1, this.link.getIdOfDestinationElement(), 0.0);
 	}
 }

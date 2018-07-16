@@ -3,32 +3,109 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 /**
- * Interface for links between knowledge elements
+ * Interface for links between knowledge elements. The links are directed, i.e.,
+ * they are arrows starting from a source element and ending in a destination element.
  */
 @JsonDeserialize(as = LinkImpl.class)
 public interface Link {
 
-	Long getLinkId();
+	/**
+	 * Get the id of the link. This id is the internal database id.
+	 *
+	 * @return id of the link.
+	 */
+	long getLinkId();
 
+	/**
+	 * Set the id of the link. This id is the internal database id.
+	 *
+	 * @param id
+	 *            of the link.
+	 */
 	void setLinkId(Long linkId);
 
+	/**
+	 * Get the type of the link.
+	 *
+	 * @see LinkType
+	 * @return type of the link.
+	 */
 	String getLinkType();
 
+	/**
+	 * Set the type of the link.
+	 *
+	 * @see LinkType
+	 * @param type
+	 *            of the link.
+	 */
 	void setLinkType(String linkType);
 
-	long getIngoingId();
+	/**
+	 * Get the id of the source element of this link.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @return id of the source element of this link.
+	 */
+	long getIdOfSourceElement();
 
-	void setIngoingId(long ingoingId);
+	/**
+	 * Set the id of the source element of this link.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @param id
+	 *            of the source element of this link.
+	 */
+	void setIdOfSourceElement(long id);
 
-	DecisionKnowledgeElement getSourceObject();
+	/**
+	 * Get the source element of this link.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @return source element of this link.
+	 */
+	DecisionKnowledgeElement getSourceElement();
 
-	void setSourceObject(DecisionKnowledgeElement decisionKnowledgeElement);
+	/**
+	 * Set the source element of this link.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @param decisionKnowledgeElement
+	 *            that is the source element of this link.
+	 */
+	void setSourceElement(DecisionKnowledgeElement decisionKnowledgeElement);
 
-	long getOutgoingId();
+	/**
+	 * Get the id of the destination element of this link.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @return id of the destination element of this link.
+	 */
+	long getIdOfDestinationElement();
 
-	void setOutgoingId(long outgoingId);
+	/**
+	 * Set the id of the destination element of this link.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @param id
+	 *            of the destination element of this link.
+	 */
+	void setIdOfDestinationElement(long id);
 
-	DecisionKnowledgeElement getDestinationObject();
+	/**
+	 * Get the destination element of this link.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @return destination element of this link.
+	 */
+	DecisionKnowledgeElement getDestinationElement();
 
-	void setDestinationObject(DecisionKnowledgeElement decisionKnowledgeElement);
+	/**
+	 * Set the destination element of this link.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @param decisionKnowledgeElement
+	 *            that is the destination element of this link.
+	 */
+	void setDestinationElement(DecisionKnowledgeElement decisionKnowledgeElement);
 }

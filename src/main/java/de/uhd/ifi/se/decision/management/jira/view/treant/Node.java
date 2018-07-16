@@ -66,14 +66,14 @@ public class Node {
 		this(decisionKnowledgeElement);
 		switch (link.getLinkType()) {
 		case "support":
-			if (decisionKnowledgeElement.getId() == link.getIngoingId()) {
+			if (decisionKnowledgeElement.getId() == link.getIdOfSourceElement()) {
 				this.nodeContent = ImmutableMap.of("name", "Pro", "title",
 						decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 				this.htmlClass = "pro";
 			}
 			break;
 		case "attack":
-			if (decisionKnowledgeElement.getId() == link.getIngoingId()) {
+			if (decisionKnowledgeElement.getId() == link.getIdOfSourceElement()) {
 				this.nodeContent = ImmutableMap.of("name", "Contra", "title",
 						decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 				this.htmlClass = "contra";

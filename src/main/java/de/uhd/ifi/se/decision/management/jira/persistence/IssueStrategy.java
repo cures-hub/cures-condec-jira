@@ -204,8 +204,10 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		long linkTypeId = getLinkTypeId(link.getLinkType());
 		try {
-			issueLinkManager.createIssueLink(link.getOutgoingId(), link.getIngoingId(), linkTypeId, (long) 0, user);
-			IssueLink issueLink = issueLinkManager.getIssueLink(link.getOutgoingId(), link.getIngoingId(), linkTypeId);
+			issueLinkManager.createIssueLink(link.getIdOfDestinationElement(), link.getIdOfSourceElement(), linkTypeId,
+					(long) 0, user);
+			IssueLink issueLink = issueLinkManager.getIssueLink(link.getIdOfDestinationElement(),
+					link.getIdOfSourceElement(), linkTypeId);
 			return issueLink.getId();
 		} catch (CreateException | NullPointerException e) {
 			LOGGER.error("Insertion of link into database failed.");
@@ -232,7 +234,8 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		Collection<IssueLinkType> issueLinkTypes = issueLinkTypeManager.getIssueLinkTypes();
 		for (IssueLinkType linkType : issueLinkTypes) {
 			long typeId = linkType.getId();
-			IssueLink issueLink = issueLinkManager.getIssueLink(link.getOutgoingId(), link.getIngoingId(), typeId);
+			IssueLink issueLink = issueLinkManager.getIssueLink(link.getDestinationElement().getId(),
+					link.getSourceElement().getId(), typeId);
 			if (issueLink != null) {
 				issueLinkManager.removeIssueLink(issueLink, user);
 				return true;

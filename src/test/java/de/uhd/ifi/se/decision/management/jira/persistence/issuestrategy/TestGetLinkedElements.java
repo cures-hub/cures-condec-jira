@@ -48,8 +48,8 @@ public class TestGetLinkedElements extends TestIssueStrategySetUp {
 				DecisionKnowledgeElementImpl decisionKnowledgeElement = new DecisionKnowledgeElementImpl(i,
 						"TESTSummary", "TestDescription", type, project.getKey(), "TEST-" + i);
 				issueStrategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
-				link.setOutgoingId(decision.getId());
-				link.setIngoingId(decisionKnowledgeElement.getId());
+				link.setIdOfDestinationElement(decision.getId());
+				link.setIdOfSourceElement(decisionKnowledgeElement.getId());
 				issueStrategy.insertLink(link, user);
 			}
 			i++;

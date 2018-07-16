@@ -25,7 +25,7 @@ function initializeDecisionKnowledgePage() {
 
 function updateView(nodeId) {
 	buildTreeViewer();
-	if (nodeId === null) {
+	if (nodeId === undefined) {
 		var rootElement = getCurrentRootElement();
 		if (rootElement) {
 			selectNodeInTreeViewer(rootElement.id);
