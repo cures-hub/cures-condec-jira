@@ -27,7 +27,7 @@ public class TestPostDecision extends TestDecisionSetUp {
 	public void testActionTypeNullReqNullDecFilled() {
 		assertEquals(Response.status(Status.BAD_REQUEST)
 				.entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), decisionsRest.createDecisionKnowledgeElement(null, dec).getEntity());
+				.getEntity(), decisionsRest.createDecisionKnowledgeElement(null, decisionKnowledgeElement).getEntity());
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class TestPostDecision extends TestDecisionSetUp {
 	public void testActionTypecreateReqNullDecFilled() {
 		assertEquals(Response.status(Status.BAD_REQUEST)
 				.entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), decisionsRest.createDecisionKnowledgeElement( null, dec).getEntity());
+				.getEntity(), decisionsRest.createDecisionKnowledgeElement( null, decisionKnowledgeElement).getEntity());
 	}
 
 	@Test
@@ -66,7 +66,7 @@ public class TestPostDecision extends TestDecisionSetUp {
 	public void testActionTypecreateReqFilledDecFilled() {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
-		assertEquals(Status.OK.getStatusCode(), decisionsRest.createDecisionKnowledgeElement( request, dec).getStatus());
+		assertEquals(Status.OK.getStatusCode(), decisionsRest.createDecisionKnowledgeElement( request, decisionKnowledgeElement).getStatus());
 	}
 
 
@@ -82,6 +82,6 @@ public class TestPostDecision extends TestDecisionSetUp {
 	public void testActionTypeEditReqNullDecFilled() {
 		assertEquals(Response.status(Status.BAD_REQUEST)
 				.entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), decisionsRest.createDecisionKnowledgeElement(null, dec).getEntity());
+				.getEntity(), decisionsRest.createDecisionKnowledgeElement(null, decisionKnowledgeElement).getEntity());
 	}
 }

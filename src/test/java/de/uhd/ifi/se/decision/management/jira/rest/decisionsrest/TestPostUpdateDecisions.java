@@ -23,7 +23,7 @@ public class TestPostUpdateDecisions extends TestDecisionSetUp {
     public void testActionTypeNullReqNullDecFilled() {
         assertEquals(Response.status(Response.Status.BAD_REQUEST)
                 .entity(ImmutableMap.of("error", UPDATE_ERROR)).build()
-                .getEntity(), decisionsRest.updateDecisionKnowledgeElement(null, dec).getEntity());
+                .getEntity(), decisionsRest.updateDecisionKnowledgeElement(null, decisionKnowledgeElement).getEntity());
     }
 
     @Test
@@ -46,7 +46,7 @@ public class TestPostUpdateDecisions extends TestDecisionSetUp {
     public void testActionTypecreateReqNullDecFilled() {
         assertEquals(Response.status(Response.Status.BAD_REQUEST)
                 .entity(ImmutableMap.of("error", UPDATE_ERROR)).build()
-                .getEntity(), decisionsRest.updateDecisionKnowledgeElement( null, dec).getEntity());
+                .getEntity(), decisionsRest.updateDecisionKnowledgeElement( null, decisionKnowledgeElement).getEntity());
     }
 
     @Test
@@ -62,7 +62,7 @@ public class TestPostUpdateDecisions extends TestDecisionSetUp {
     public void testActionTypecreateReqFilledDecFilled() {
         request.setAttribute("WithFails", false);
         request.setAttribute("NoFails", true);
-        assertEquals(Response.Status.OK.getStatusCode(), decisionsRest.updateDecisionKnowledgeElement( request, dec).getStatus());
+        assertEquals(Response.Status.OK.getStatusCode(), decisionsRest.updateDecisionKnowledgeElement( request, decisionKnowledgeElement).getStatus());
     }
 
 
@@ -78,6 +78,6 @@ public class TestPostUpdateDecisions extends TestDecisionSetUp {
     public void testActionTypeEditReqNullDecFilled() {
         assertEquals(Response.status(Response.Status.BAD_REQUEST)
                 .entity(ImmutableMap.of("error", UPDATE_ERROR)).build()
-                .getEntity(), decisionsRest.updateDecisionKnowledgeElement(null, dec).getEntity());
+                .getEntity(), decisionsRest.updateDecisionKnowledgeElement(null, decisionKnowledgeElement).getEntity());
     }
 }

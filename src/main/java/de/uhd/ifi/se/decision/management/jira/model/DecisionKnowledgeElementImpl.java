@@ -18,7 +18,6 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	private String summary;
 	private String description;
 	private KnowledgeType type;
-	private String projectKey;
 	private DecisionKnowledgeProject project;
 	private String key;
 
@@ -32,7 +31,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 		this.summary = summary;
 		this.description = description;
 		this.type = type;
-		this.projectKey = projectKey;
+		this.project = new DecisionKnowledgeProjectImpl(projectKey);
 		this.key = key;
 	}
 
@@ -46,7 +45,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 		this.summary = issue.getSummary();
 		this.description = issue.getDescription();
 		this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
-		this.projectKey = issue.getProjectObject().getKey();
+		this.project = new DecisionKnowledgeProjectImpl(issue.getProjectObject().getKey());
 		this.key = issue.getKey();
 	}
 
@@ -105,28 +104,31 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	}
 
 	@Override
-	public String getProjectKey() {
-		return projectKey;
-	}
-
-	@Override
 	public DecisionKnowledgeProject getProject() {
-		if (this.project == null) {
-			this.project = new DecisionKnowledgeProjectImpl(projectKey);
-		}
 		return this.project;
 	}
 
 	@Override
-	public void setProjectKey(String projectKey) {
-		this.projectKey = projectKey;
+	public void setProject(DecisionKnowledgeProject project) {
+		this.project = project;
+	}
+
+	@Override
+	@JsonProperty("projectKey")
+	public void setProject(String projectKey) {
+		this.project = new DecisionKnowledgeProjectImpl(projectKey);
+	}
+
+	@Override
+	public String getProjectKey() {
+		return this.project.getProjectKey();
 	}
 
 	@Override
 	@XmlElement(name = "key")
 	public String getKey() {
 		if (this.key == null) {
-			return this.projectKey + "-" + this.id;
+			return this.project.getProjectKey() + "-" + this.id;
 		}
 		return this.key;
 	}

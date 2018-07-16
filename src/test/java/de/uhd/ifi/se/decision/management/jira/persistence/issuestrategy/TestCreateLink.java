@@ -20,9 +20,9 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 	@Test
 	public void testLinkRepresFilledUserNull() {
 		LinkImpl link = new LinkImpl();
-		link.setIdOfSourceElement(1);
+		link.setSourceElement(1);
 		link.setLinkType("Contains");
-		link.setIdOfDestinationElement(2);
+		link.setDestinationElement(2);
 		assertEquals(0,issueStrategy.insertLink(link, null),0.0);
 	}
 
@@ -36,9 +36,9 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 	@Test
 	public void testLinkRepresFilledUserFilled() {
 		LinkImpl link = new LinkImpl();
-		link.setIdOfSourceElement(1);
+		link.setSourceElement(1);
 		link.setLinkType("Contains");
-		link.setIdOfDestinationElement(2);
+		link.setDestinationElement(2);
 		ApplicationUser user = new MockApplicationUser("Test");
 		issueStrategy.insertLink(link,user);
 	}
@@ -46,9 +46,9 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 	@Test
 	public void testLinkRepresFilledUserFilledIssueLinkNull() {
 		LinkImpl link = new LinkImpl();
-		link.setIdOfSourceElement(2);
+		link.setSourceElement(2);
 		link.setLinkType("Contains");
-		link.setIdOfDestinationElement(3);
+		link.setDestinationElement(3);
 		ApplicationUser user = new MockApplicationUser("Test");
 		assertEquals(0,issueStrategy.insertLink(link,user),0.0);
 	}
@@ -56,9 +56,9 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 	@Test
 	public void testCreateException() {
 		LinkImpl link = new LinkImpl();
-		link.setIdOfSourceElement(2);
+		link.setSourceElement(2);
 		link.setLinkType("Contains");
-		link.setIdOfDestinationElement(3);
+		link.setDestinationElement(3);
 		ApplicationUser user = new MockApplicationUser("CreateExecption");
 		assertEquals(0,issueStrategy.insertLink(link,user),0.0);
 	}
@@ -66,9 +66,9 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 	@Test
 	public void testMoreInwardLinks() {
 		LinkImpl link = new LinkImpl();
-		link.setIdOfSourceElement(30);
+		link.setSourceElement(30);
 		link.setLinkType("Contains");
-		link.setIdOfDestinationElement(3);
+		link.setDestinationElement(3);
 		ApplicationUser user = new MockApplicationUser("Test");
 		assertEquals(0,issueStrategy.insertLink(link,user),0.0);
 	}
@@ -76,9 +76,9 @@ public class TestCreateLink extends TestIssueStrategySetUp {
 	@Test
 	public void testMoreOutwardLinks() {
 		LinkImpl link = new LinkImpl();
-		link.setIdOfSourceElement(10);
+		link.setSourceElement(10);
 		link.setLinkType("Contains");
-		link.setIdOfDestinationElement(30);
+		link.setDestinationElement(30);
 		ApplicationUser user = new MockApplicationUser("Test");
 		assertEquals(0,issueStrategy.insertLink(link,user),0.0);
 	}

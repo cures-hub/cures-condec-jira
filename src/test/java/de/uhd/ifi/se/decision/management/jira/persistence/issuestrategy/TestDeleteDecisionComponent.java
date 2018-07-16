@@ -31,7 +31,7 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 	public void testDecisionRepresFilledUserFilledRight() {
 		DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
 		dec.setId(1);
-		dec.setProjectKey("TEST");
+		dec.setProject("TEST");
 		dec.setType(KnowledgeType.SOLUTION);
 		ApplicationUser user = new MockApplicationUser("NoFails");
 		assertTrue(issueStrategy.deleteDecisionKnowledgeElement(dec, user));
@@ -41,7 +41,7 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 	public void testDecisionRepresIssueUnvalid() {
 		DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
 		dec.setId(1);
-		dec.setProjectKey("TEST");
+		dec.setProject("TEST");
 		dec.setType(KnowledgeType.SOLUTION);
 		ApplicationUser user = new MockApplicationUser("WithFails");
 		assertFalse(issueStrategy.deleteDecisionKnowledgeElement(dec, user));
@@ -51,7 +51,7 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 	public void testDecisionRepresFilledUserFilledResultErrors() {
 		DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
 		dec.setId(1);
-		dec.setProjectKey("TEST");
+		dec.setProject("TEST");
 		dec.setType(KnowledgeType.SOLUTION);
 		ApplicationUser user = new MockApplicationUser("WithResFails");
 		assertFalse(issueStrategy.deleteDecisionKnowledgeElement(dec, user));
@@ -61,7 +61,7 @@ public class TestDeleteDecisionComponent extends TestIssueStrategySetUp {
 	public void testDecisionRepresNoResultErrors() {
 		DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
 		dec.setId(1);
-		dec.setProjectKey("TEST");
+		dec.setProject("TEST");
 		dec.setType(KnowledgeType.SOLUTION);
 		ApplicationUser user = new MockApplicationUser("ValidNoResErrors");
 		assertFalse(issueStrategy.deleteDecisionKnowledgeElement(dec, user));

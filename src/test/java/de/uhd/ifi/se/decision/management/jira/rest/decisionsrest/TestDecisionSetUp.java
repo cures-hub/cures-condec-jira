@@ -13,6 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.rest.DecisionsRest;
@@ -21,7 +22,7 @@ import net.java.ao.EntityManager;
 public class TestDecisionSetUp extends TestSetUp {
 	protected EntityManager entityManager;
 	protected DecisionsRest decisionsRest;
-	protected DecisionKnowledgeElementImpl dec;
+	protected DecisionKnowledgeElement decisionKnowledgeElement;
 	protected HttpServletRequest request;
 
 	@Before
@@ -32,10 +33,10 @@ public class TestDecisionSetUp extends TestSetUp {
 				new MockDefaultUserManager());
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
-		dec = new DecisionKnowledgeElementImpl(issue);
-		dec.setId(1);
-		dec.setProjectKey("TEST");
-		dec.setType(KnowledgeType.SOLUTION);
+		decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);
+		decisionKnowledgeElement.setId(1);
+		decisionKnowledgeElement.setProject("TEST");
+		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 		request = new MockHttpServletRequest();
 	}
 }

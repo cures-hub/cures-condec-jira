@@ -30,7 +30,7 @@ public class TestEditDecisionComponent extends TestIssueStrategySetUp {
 	public void testDecisionRepresentationFilledApplicUserFilledRight() {
 		DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
 		dec.setId(1);
-		dec.setProjectKey("TEST");
+		dec.setProject("TEST");
 		dec.setType(KnowledgeType.SOLUTION);
 		ApplicationUser user = new MockApplicationUser("NoFails");
 		assertNotNull(issueStrategy.updateDecisionKnowledgeElement(dec, user));
@@ -40,7 +40,7 @@ public class TestEditDecisionComponent extends TestIssueStrategySetUp {
 	public void testDecisionRepresentationFilledApplicUserFilledWrong() {
 		DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
 		dec.setId(1);
-		dec.setProjectKey("TEST");
+		dec.setProject("TEST");
 		dec.setType(KnowledgeType.SOLUTION);
 		ApplicationUser user = new MockApplicationUser("WithFails");
 		assertFalse(issueStrategy.updateDecisionKnowledgeElement(dec, user));

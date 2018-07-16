@@ -19,8 +19,8 @@ public class TestLinkImpl {
 	public void setUp() {
 		linkImpl = new LinkImpl();
 		linkImpl.setLinkType("Test");
-		linkImpl.setIdOfSourceElement((long) 14);
-		linkImpl.setIdOfDestinationElement((long) 15);
+		linkImpl.setSourceElement((long) 14);
+		linkImpl.setDestinationElement((long) 15);
 		DecisionKnowledgeElement elementIn = new DecisionKnowledgeElementImpl();
 		elementIn.setId((long) 14);
 		elementIn.setKey("TestIn");
@@ -75,13 +75,13 @@ public class TestLinkImpl {
 
 	@Test
 	public void testSetIngoingId() {
-		linkImpl.setIdOfSourceElement((long) 323);
+		linkImpl.setSourceElement((long) 323);
 		assertEquals((long) 323, linkImpl.getIdOfSourceElement());
 	}
 
 	@Test
 	public void testSetOutGoingId() {
-		linkImpl.setIdOfDestinationElement((long) 323);
+		linkImpl.setDestinationElement((long) 323);
 		assertEquals((long) 323, linkImpl.getIdOfDestinationElement());
 	}
 

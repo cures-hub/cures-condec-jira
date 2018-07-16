@@ -50,8 +50,8 @@ public class TestDeleteLinks extends TestDecisionSetUp {
 	@Test
 	public void testProjectKeyNullReqNullLinkFilled() {
 		Link link = new LinkImpl();
-		link.setIdOfSourceElement(14);
-		link.setIdOfDestinationElement(15);
+		link.setSourceElement(14);
+		link.setDestinationElement(15);
 		link.setLinkType("Test");
 		assertEquals(
 				Response.status(Response.Status.BAD_REQUEST)
@@ -62,8 +62,8 @@ public class TestDeleteLinks extends TestDecisionSetUp {
 	@Test
 	public void testProjectKeyFilledReqWithFailsLinkFilled() {
 		Link link = new LinkImpl();
-		link.setIdOfSourceElement(14);
-		link.setIdOfDestinationElement(15);
+		link.setSourceElement(14);
+		link.setDestinationElement(15);
 		link.setLinkType("Test");
 		request.setAttribute("WithFails", true);
 		request.setAttribute("NoFails", false);
@@ -77,8 +77,8 @@ public class TestDeleteLinks extends TestDecisionSetUp {
 	@Test
 	public void testProjectKeyFilledReqNoFailsLinkFilled() {
 		Link link = new LinkImpl();
-		link.setIdOfSourceElement(1);
-		link.setIdOfDestinationElement(15);
+		link.setSourceElement(1);
+		link.setDestinationElement(15);
 		link.setLinkType("Test");
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);

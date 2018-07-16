@@ -22,19 +22,19 @@ public class LinkImpl implements Link {
 		this.destinationElement = new DecisionKnowledgeElementImpl();
 	}
 
-	public LinkImpl(DecisionKnowledgeElement ingoingElement, DecisionKnowledgeElement outgoingElement) {
-		this.sourceElement = ingoingElement;
-		this.destinationElement = outgoingElement;
+	public LinkImpl(DecisionKnowledgeElement sourceElement, DecisionKnowledgeElement destinationElement) {
+		this.sourceElement = sourceElement;
+		this.destinationElement = destinationElement;
 	}
 
-	public LinkImpl(IssueLink link) {
-		this.linkId = link.getId();
-		this.linkType = link.getIssueLinkType().getName();
-		Issue sourceIssue = link.getSourceObject();
+	public LinkImpl(IssueLink issueLink) {
+		this.linkId = issueLink.getId();
+		this.linkType = issueLink.getIssueLinkType().getName();
+		Issue sourceIssue = issueLink.getSourceObject();
 		if (sourceIssue != null) {
 			this.sourceElement = new DecisionKnowledgeElementImpl(sourceIssue);
 		}
-		Issue destinationIssue = link.getDestinationObject();
+		Issue destinationIssue = issueLink.getDestinationObject();
 		if (destinationIssue != null) {
 			this.destinationElement = new DecisionKnowledgeElementImpl(destinationIssue);
 		}
@@ -72,7 +72,7 @@ public class LinkImpl implements Link {
 
 	@Override
 	@JsonProperty("ingoingId")
-	public void setIdOfSourceElement(long id) {
+	public void setSourceElement(long id) {
 		if (this.sourceElement == null) {
 			this.sourceElement = new DecisionKnowledgeElementImpl();
 		}
@@ -96,7 +96,7 @@ public class LinkImpl implements Link {
 
 	@Override
 	@JsonProperty("outgoingId")
-	public void setIdOfDestinationElement(long id) {
+	public void setDestinationElement(long id) {
 		if (this.destinationElement == null) {
 			this.destinationElement = new DecisionKnowledgeElementImpl();
 		}

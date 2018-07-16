@@ -104,14 +104,14 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 
 	@Test
 	public void testSetProjectKey() {
-		this.decisionKnowledgeElement.setProjectKey(this.projectKey + "New");
+		this.decisionKnowledgeElement.setProject(this.projectKey + "New");
 		assertEquals(this.projectKey + "New", this.decisionKnowledgeElement.getProjectKey());
 	}
 
 	@Test
 	public void testGetKeyKeyNull() {
 		DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl();
-		decisionKnowledgeElement.setProjectKey("TEST");
+		decisionKnowledgeElement.setProject("TEST");
 		decisionKnowledgeElement.setId((long) 10);
 		assertEquals("TEST-10", decisionKnowledgeElement.getKey());
 	}

@@ -42,23 +42,6 @@ public interface Link {
 	void setLinkType(String linkType);
 
 	/**
-	 * Get the id of the source element of this link.
-	 *
-	 * @see DecisionKnowledgeElement
-	 * @return id of the source element of this link.
-	 */
-	long getIdOfSourceElement();
-
-	/**
-	 * Set the id of the source element of this link.
-	 *
-	 * @see DecisionKnowledgeElement
-	 * @param id
-	 *            of the source element of this link.
-	 */
-	void setIdOfSourceElement(long id);
-
-	/**
 	 * Get the source element of this link.
 	 *
 	 * @see DecisionKnowledgeElement
@@ -76,21 +59,21 @@ public interface Link {
 	void setSourceElement(DecisionKnowledgeElement decisionKnowledgeElement);
 
 	/**
-	 * Get the id of the destination element of this link.
-	 *
-	 * @see DecisionKnowledgeElement
-	 * @return id of the destination element of this link.
-	 */
-	long getIdOfDestinationElement();
-
-	/**
-	 * Set the id of the destination element of this link.
+	 * Set the source element of this link by its id.
 	 *
 	 * @see DecisionKnowledgeElement
 	 * @param id
-	 *            of the destination element of this link.
+	 *            of the source element of this link.
 	 */
-	void setIdOfDestinationElement(long id);
+	void setSourceElement(long id);
+
+	/**
+	 * Get the id of the source element of this link.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @return id of the source element of this link.
+	 */
+	long getIdOfSourceElement();
 
 	/**
 	 * Get the destination element of this link.
@@ -108,4 +91,21 @@ public interface Link {
 	 *            that is the destination element of this link.
 	 */
 	void setDestinationElement(DecisionKnowledgeElement decisionKnowledgeElement);
+
+	/**
+	 * Set the destination element of this link by its id.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @param id
+	 *            of the destination element of this link.
+	 */
+	void setDestinationElement(long id);
+
+	/**
+	 * Get the id of the destination element of this link.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @return id of the destination element of this link.
+	 */
+	long getIdOfDestinationElement();
 }

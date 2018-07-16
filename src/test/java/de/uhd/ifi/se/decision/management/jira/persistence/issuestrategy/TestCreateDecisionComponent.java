@@ -29,7 +29,7 @@ public class TestCreateDecisionComponent extends TestIssueStrategySetUp {
 	@Test
 	public void testCreateDecisionComponentRepresFilledUserFilledNoFails() {
 		DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
-		dec.setProjectKey("TEST");
+		dec.setProject("TEST");
 		dec.setType(KnowledgeType.SOLUTION);
 		ApplicationUser user = new MockApplicationUser("NoFails");
 		assertNotNull(issueStrategy.insertDecisionKnowledgeElement(dec, user));
@@ -38,7 +38,7 @@ public class TestCreateDecisionComponent extends TestIssueStrategySetUp {
 	@Test
 	public void testCreateDecisionComponentRepresFilledUserFilledWithFails() {
 		DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
-		dec.setProjectKey("TEST");
+		dec.setProject("TEST");
 		dec.setType(KnowledgeType.SOLUTION);
 		ApplicationUser user = new MockApplicationUser("WithFails");
 		assertNull(issueStrategy.insertDecisionKnowledgeElement(dec, user));

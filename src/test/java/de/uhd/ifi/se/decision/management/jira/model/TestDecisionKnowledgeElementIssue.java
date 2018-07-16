@@ -95,7 +95,7 @@ public class TestDecisionKnowledgeElementIssue {
 
 	@Test
 	public void testSetProjectKey() {
-		this.decisionKnowledgeElement.setProjectKey(this.projectKey + "New");
+		this.decisionKnowledgeElement.setProject(this.projectKey + "New");
 		assertEquals(this.projectKey + "New", this.decisionKnowledgeElement.getProjectKey());
 	}
 }

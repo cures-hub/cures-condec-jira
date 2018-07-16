@@ -33,7 +33,7 @@ public class TestCreateDecisionComponentTest extends ActiveObjectStrategyTestSet
     @Ignore
     public void testRepresFilledUserNoFails(){
         DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
-        dec.setProjectKey("TEST");
+        dec.setProject("TEST");
         dec.setType(KnowledgeType.SOLUTION);
         ApplicationUser user = new MockApplicationUser("NoFails");
         assertNotNull(aoStrategy.insertDecisionKnowledgeElement(dec,user));
@@ -43,7 +43,7 @@ public class TestCreateDecisionComponentTest extends ActiveObjectStrategyTestSet
     @Ignore
     public void testRepresFilledUserWithFails(){
         DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
-        dec.setProjectKey("TEST");
+        dec.setProject("TEST");
         dec.setType(KnowledgeType.SOLUTION);
         ApplicationUser user = new MockApplicationUser("WithFails");
         assertNull(aoStrategy.insertDecisionKnowledgeElement(dec, user));

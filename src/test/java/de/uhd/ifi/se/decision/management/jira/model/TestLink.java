@@ -21,8 +21,8 @@ public class TestLink {
 		this.outgoingId = (long) 100;
 		this.link = new LinkImpl();
 		this.link.setLinkType(linkType);
-		this.link.setIdOfSourceElement(ingoingId);
-		this.link.setIdOfDestinationElement(outgoingId);
+		this.link.setSourceElement(ingoingId);
+		this.link.setDestinationElement(outgoingId);
 	}
 
 	@Test
@@ -48,13 +48,13 @@ public class TestLink {
 
 	@Test
 	public void testSetIngoingId() {
-		this.link.setIdOfSourceElement(ingoingId + 1);
+		this.link.setSourceElement(ingoingId + 1);
 		assertEquals(this.ingoingId + 1, this.link.getIdOfSourceElement(), 0.0);
 	}
 
 	@Test
 	public void testSetOutgoingId() {
-		this.link.setIdOfDestinationElement(outgoingId + 1);
+		this.link.setDestinationElement(outgoingId + 1);
 		assertEquals(this.outgoingId + 1, this.link.getIdOfDestinationElement(), 0.0);
 	}
 }

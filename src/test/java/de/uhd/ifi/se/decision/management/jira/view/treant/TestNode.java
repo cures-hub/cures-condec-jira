@@ -53,7 +53,7 @@ public class TestNode {
 		element.setKey("Test-1");
 		element.setType("TEST");
 		element.setDescription("Test");
-		element.setProjectKey("Test");
+		element.setProject("Test");
 		element.setSummary("TESTfwf");
 	}
 

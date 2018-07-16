@@ -18,14 +18,14 @@ public class TestDeleteDecision extends TestDecisionSetUp {
     public void testActionTypeDeleteReqFilledDecFilled() {
         request.setAttribute("WithFails", false);
         request.setAttribute("NoFails", true);
-        assertEquals(Response.Status.OK.getStatusCode(),decisionsRest.deleteDecisionKnowledgeElement( request, dec).getStatus());
+        assertEquals(Response.Status.OK.getStatusCode(),decisionsRest.deleteDecisionKnowledgeElement( request, decisionKnowledgeElement).getStatus());
     }
 
     @Test
     public void testActionTypeDeleteErrorReqFilledDecFilled() {
         request.setAttribute("WithFails", true);
         request.setAttribute("NoFails", false);
-        assertEquals(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", DELETION_ERROR)).build().getEntity(),decisionsRest.deleteDecisionKnowledgeElement(request, dec).getEntity());
+        assertEquals(Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", DELETION_ERROR)).build().getEntity(),decisionsRest.deleteDecisionKnowledgeElement(request, decisionKnowledgeElement).getEntity());
     }
 
     @Test

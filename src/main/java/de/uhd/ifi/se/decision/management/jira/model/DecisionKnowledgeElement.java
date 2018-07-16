@@ -105,25 +105,6 @@ public interface DecisionKnowledgeElement {
 	KnowledgeType getSuperType();
 
 	/**
-	 * Get the key of the JIRA project that the decision knowledge element belongs
-	 * to.
-	 *
-	 * @see DecisionKnowledgeProject
-	 * @return key of the JIRA project.
-	 */
-	String getProjectKey();
-
-	/**
-	 * Set the key of the JIRA project that the decision knowledge element belongs
-	 * to.
-	 *
-	 * @see DecisionKnowledgeProject
-	 * @param projectKey
-	 *            of the JIRA project.
-	 */
-	void setProjectKey(String projectKey);
-
-	/**
 	 * Get the project that the decision knowledge element belongs to. The project
 	 * is a JIRA project that is extended with settings for this plug-in, for
 	 * example, whether the plug-in is activated for the project.
@@ -132,6 +113,37 @@ public interface DecisionKnowledgeElement {
 	 * @return project.
 	 */
 	DecisionKnowledgeProject getProject();
+
+	/**
+	 * Set the project that the decision knowledge element belongs to. The project
+	 * is a JIRA project that is extended with settings for this plug-in, for
+	 * example, whether the plug-in is activated for the project.
+	 *
+	 * @see DecisionKnowledgeProject
+	 * @param project
+	 *            decision knowledge project.
+	 */
+	void setProject(DecisionKnowledgeProject project);
+
+	/**
+	 * Set the project that the decision knowledge element belongs to via its key. The project
+	 * is a JIRA project that is extended with settings for this plug-in, for
+	 * example, whether the plug-in is activated for the project.
+	 *
+	 * @see DecisionKnowledgeProject
+	 * @param projectKey
+	 *            key of JIRA project.
+	 */
+	void setProject(String projectKey);
+
+	/**
+	 * Get the key of the JIRA project that the decision knowledge element belongs
+	 * to.
+	 *
+	 * @see DecisionKnowledgeProject
+	 * @return key of the JIRA project.
+	 */
+	String getProjectKey();
 
 	/**
 	 * Get the key of the decision knowledge element.

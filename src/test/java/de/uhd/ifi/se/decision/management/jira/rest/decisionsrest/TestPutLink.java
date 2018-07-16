@@ -44,8 +44,8 @@ public class TestPutLink extends TestSetUp {
 		req.setAttribute("NoFails", true);
 
 		link = new LinkImpl();
-		link.setIdOfSourceElement(1);
-		link.setIdOfDestinationElement(4);
+		link.setSourceElement(1);
+		link.setDestinationElement(4);
 	}
 
 	@Test
@@ -182,7 +182,7 @@ public class TestPutLink extends TestSetUp {
 	@Test
 	public void testactionTypeCreateKeyFilledReqFilledLinkIdZero() {
 		link.setLinkType("Zero");
-		link.setIdOfSourceElement(3);
+		link.setSourceElement(3);
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", CREATION_ERROR))
 				.build().getEntity(), decRest.createLink("create", req, link).getEntity());
 	}
