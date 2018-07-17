@@ -33,7 +33,8 @@ public class TestGraph extends TestSetUp {
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockDefaultUserManager());
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
-		graph = new GraphImpl("TEST", element.getKey());
+		element.setProject(new DecisionKnowledgeProjectImpl("Test"));
+		graph = new GraphImpl(element.getProject().getProjectKey(), element.getKey());
 	}
 
 	@Test

@@ -27,15 +27,13 @@ public class GraphImpl implements Graph {
 	}
 
 	public GraphImpl(String projectKey, String rootElementKey) {
-		this();
+		this(projectKey);
 		this.rootElement = this.project.getPersistenceStrategy().getDecisionKnowledgeElement(rootElementKey);
-		this.project = this.rootElement.getProject();
 	}
 
 	public GraphImpl(DecisionKnowledgeElement rootElement) {
-		this();
+		this(rootElement.getProject().getProjectKey());
 		this.rootElement = rootElement;
-		this.project = this.rootElement.getProject();
 	}
 
 	@Override
