@@ -3,6 +3,7 @@
 # Directories
 target/
 .idea/
+.metadata/
 
 # Files
 .classpath

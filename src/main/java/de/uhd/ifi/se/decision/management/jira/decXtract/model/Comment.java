@@ -2,11 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.decXtract.model;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
-
-import org.radeox.util.logging.SystemOutLogger;
 
 public class Comment {
 
@@ -52,9 +49,9 @@ public class Comment {
 		this.body = this.body.replace("<br>", "").replace("\n", "").replace("\r", "").replaceAll("\\<.*?>", "")
 				.replace("\'", "\\'").toString();
 
-		// String[] result = this.body.split("\\. ");
 		// Using break Iterator from
 		// https://stackoverflow.com/questions/2687012/split-string-into-sentences
+		//Instead of:  this.body.split("\\. ");
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
 		String source = this.body;
 		iterator.setText(source);

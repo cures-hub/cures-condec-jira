@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.config.properties.ApplicationProperties;
@@ -18,8 +21,6 @@ import com.atlassian.velocity.VelocityManager;
 
 import de.uhd.ifi.se.decision.management.jira.decXtract.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Renders the issue tab panel
@@ -41,7 +42,7 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 		GenericMessageAction messageAction = new GenericMessageAction(getVelocityTemplate());
 		List<IssueAction> issueActions = new ArrayList<IssueAction>();
 		issueActions.add(messageAction);
-		System.out.println("hier"+issueActions.size());
+
 		return issueActions;
 	}
 
@@ -75,7 +76,7 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 	}
 
 	private Map<String, Object> addParamsToContext(Map<String, Object> context) {
-		context.put("comments",this.viewConnector.getAllCommentsBody());
+		context.put("comments",this.viewConnector.getAllTaggedComments());
 		context.put("authorNames",this.viewConnector.getAllCommentsAuthorNames());
 		context.put("dates", this.viewConnector.getAllCommentsDates());
 		return context;

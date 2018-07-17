@@ -1,50 +1,22 @@
 package de.uhd.ifi.se.decision.management.jira.decXtract.classification;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import org.h2.store.Data;
-import org.radeox.util.logging.SystemOutLogger;
-
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 
 import de.uhd.ifi.se.decision.management.jira.decXtract.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.decXtract.model.Sentence;
-import sun.rmi.runtime.NewThreadAction;
-import weka.classifiers.Classifier;
-import weka.classifiers.bayes.NaiveBayesMultinomial;
-import weka.classifiers.evaluation.Evaluation;
-import weka.classifiers.functions.SMO;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.core.Attribute;
-import weka.core.Debug.Random;
 import weka.core.DenseInstance;
-import weka.core.FastVector;
-import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.converters.ArffSaver;
-import weka.core.converters.CSVLoader;
-import weka.core.tokenizers.NGramTokenizer;
-import weka.core.tokenizers.Tokenizer;
-import weka.filters.unsupervised.attribute.StringToWordVector;
 
 public class WekaInitializer {
 
 	private static FilteredClassifier fc;
 
-	public static ArrayList<Comment> predict(ArrayList<Comment> commentsList) {
+	public static List<Comment> predict(List<Comment> commentsList) {
 
-		ArrayList<Double> areRelevant = new ArrayList<Double>();
+		List<Double> areRelevant = new ArrayList<Double>();
 
 		Instances data;
 		try {
@@ -69,7 +41,7 @@ public class WekaInitializer {
 		return commentsList;
 	}
 
-	private static Instances tryToReadFromStrings(ArrayList<Comment> commentsList) {
+	private static Instances tryToReadFromStrings(List<Comment> commentsList) {
 		ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
 
 		// Declare text attribute to hold the message (free form text)
@@ -100,7 +72,7 @@ public class WekaInitializer {
 		return data;
 	}
 
-	public static void init(ArrayList<Comment> commentsList) throws Exception {
+	public static void init(List<Comment> commentsList) throws Exception {
 		// System.out.println("bin hier: "+System.getProperty("user.dir"));
 		fc = new FilteredClassifier();
 		fc = (FilteredClassifier) weka.core.SerializationHelper.read("./fc.model");
