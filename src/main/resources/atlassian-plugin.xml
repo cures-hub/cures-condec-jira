@@ -214,7 +214,7 @@
 	</web-panel>
 
 	<!-- Decision Knowledge Extraction Tab Panel -->
-	<issue-tabpanel key="DecXtract" name="DecXtract"
+	<issue-tabpanel key="condec-tab-panel" name="Decision Knowledge Extraction Tab Panel"
 		class="de.uhd.ifi.se.decision.management.jira.decXtract.view.IssueTabPanelRenderer">
 		<description>Extraction of Decision Knowledge from Issue Comments</description>
 		<label>Decision Knowledge Extraction</label>
