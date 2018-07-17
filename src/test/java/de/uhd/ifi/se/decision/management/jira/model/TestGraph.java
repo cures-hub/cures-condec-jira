@@ -38,13 +38,13 @@ public class TestGraph extends TestSetUp {
 
 	@Test
 	public void testProjectKeyConstructor() {
-		Graph graphRoot = new GraphImpl(element.getProjectKey());
+		Graph graphRoot = new GraphImpl(element.getProject().getProjectKey());
 		assertNotNull(graphRoot);
 	}
 
 	@Test
 	public void testRootElementLinkDistConstructor() {
-		Graph graphRoot = new GraphImpl(element.getProjectKey(), element.getKey());
+		Graph graphRoot = new GraphImpl(element.getProject().getProjectKey(), element.getKey());
 		assertNotNull(graphRoot);
 	}
 

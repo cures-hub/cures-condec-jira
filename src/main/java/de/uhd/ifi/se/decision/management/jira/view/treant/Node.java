@@ -52,9 +52,9 @@ public class Node {
 			this.nodeContent = ImmutableMap.of("name", type.toString(), "title", decisionKnowledgeElement.getSummary(),
 					"desc", decisionKnowledgeElement.getKey());
 		}
-		this.htmlClass = decisionKnowledgeElement.getSuperType().toString().toLowerCase(Locale.ENGLISH);
+		this.htmlClass = decisionKnowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
 		this.htmlId = decisionKnowledgeElement.getId();
-		DecisionKnowledgeProject project = new DecisionKnowledgeProjectImpl(decisionKnowledgeElement.getProjectKey());
+		DecisionKnowledgeProject project = new DecisionKnowledgeProjectImpl(decisionKnowledgeElement.getProject().getProjectKey());
 		if (project.isIssueStrategy()) {
 			ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
 			this.link = ImmutableMap.of("href", applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/"

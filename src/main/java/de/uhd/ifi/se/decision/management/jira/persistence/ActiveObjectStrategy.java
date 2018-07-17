@@ -46,12 +46,12 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 					public DecisionKnowledgeElementEntity doInTransaction() {
 						DecisionKnowledgeElementEntity databaseEntry = ACTIVE_OBJECTS
 								.create(DecisionKnowledgeElementEntity.class);
-						databaseEntry.setKey(decisionKnowledgeElement.getProjectKey().toUpperCase(Locale.ENGLISH) + "-"
+						databaseEntry.setKey(decisionKnowledgeElement.getProject().getProjectKey().toUpperCase(Locale.ENGLISH) + "-"
 								+ databaseEntry.getId());
 						databaseEntry.setSummary(decisionKnowledgeElement.getSummary());
 						databaseEntry.setDescription(decisionKnowledgeElement.getDescription());
 						databaseEntry.setType(decisionKnowledgeElement.getType().toString());
-						databaseEntry.setProjectKey(decisionKnowledgeElement.getProjectKey());
+						databaseEntry.setProjectKey(decisionKnowledgeElement.getProject().getProjectKey());
 						databaseEntry.save();
 						return databaseEntry;
 					}
@@ -247,7 +247,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 					if (linkEntity.getIdOfSourceElement() == link.getIdOfSourceElement()
 							&& linkEntity.getIdOfDestinationElement() == link.getIdOfDestinationElement()) {
 						linkAlreadyExists = true;
-						linkId = linkEntity.getId();
+						linkId = linkEntity.getLinkId();
 					}
 				}
 				if (!linkAlreadyExists) {
@@ -274,11 +274,11 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 						if (decCompIngoing.getProjectKey().equals(decCompOutgoing.getProjectKey())) {
 							// entities exist and are in the same project
 							final LinkEntity linkEntity = ACTIVE_OBJECTS.create(LinkEntity.class);
-							linkEntity.setSourceElement(link.getIdOfSourceElement());
-							linkEntity.setDestinationElement(link.getIdOfDestinationElement());
+							linkEntity.setIdOfSourceElement(link.getIdOfSourceElement());
+							linkEntity.setIdOfDestinationElement(link.getIdOfDestinationElement());
 							linkEntity.setLinkType(link.getLinkType());
 							linkEntity.save();
-							linkId = linkEntity.getId();
+							linkId = linkEntity.getLinkId();
 						} else {
 							LOGGER.error("entities to be linked are not in the same project");
 							return (long) 0;

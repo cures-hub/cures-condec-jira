@@ -120,11 +120,6 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	}
 
 	@Override
-	public String getProjectKey() {
-		return this.project.getProjectKey();
-	}
-
-	@Override
 	@XmlElement(name = "key")
 	public String getKey() {
 		if (this.key == null) {
@@ -136,11 +131,6 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	@Override
 	public void setKey(String key) {
 		this.key = key;
-	}
-
-	@Override
-	public KnowledgeType getSuperType() {
-		return this.type.getSuperType();
 	}
 
 	@Override

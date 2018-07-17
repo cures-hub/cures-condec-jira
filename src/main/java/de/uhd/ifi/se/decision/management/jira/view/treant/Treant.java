@@ -40,11 +40,11 @@ public class Treant {
 
 	public Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, Link link, int depth,
 			int currentDepth) {
-		if (decisionKnowledgeElement == null || decisionKnowledgeElement.getProjectKey() == null) {
+		if (decisionKnowledgeElement == null || decisionKnowledgeElement.getProject().getProjectKey() == null) {
 			return new Node();
 		}
 		if (graph == null) {
-			graph = new GraphImpl(decisionKnowledgeElement.getProjectKey());
+			graph = new GraphImpl(decisionKnowledgeElement.getProject().getProjectKey());
 		}
 
 		Node node;

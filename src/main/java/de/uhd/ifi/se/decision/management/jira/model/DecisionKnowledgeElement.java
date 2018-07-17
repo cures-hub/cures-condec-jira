@@ -95,16 +95,6 @@ public interface DecisionKnowledgeElement {
 	void setType(String type);
 
 	/**
-	 * Get the super class of a knowledge type in the decision documentation model.
-	 * For example, the super type of argument is rationale and the super type of
-	 * issue is problem.
-	 *
-	 * @see KnowledgeType
-	 * @return super knowledge type of the decision knowledge element.
-	 */
-	KnowledgeType getSuperType();
-
-	/**
 	 * Get the project that the decision knowledge element belongs to. The project
 	 * is a JIRA project that is extended with settings for this plug-in, for
 	 * example, whether the plug-in is activated for the project.
@@ -135,15 +125,6 @@ public interface DecisionKnowledgeElement {
 	 *            key of JIRA project.
 	 */
 	void setProject(String projectKey);
-
-	/**
-	 * Get the key of the JIRA project that the decision knowledge element belongs
-	 * to.
-	 *
-	 * @see DecisionKnowledgeProject
-	 * @return key of the JIRA project.
-	 */
-	String getProjectKey();
 
 	/**
 	 * Get the key of the decision knowledge element.

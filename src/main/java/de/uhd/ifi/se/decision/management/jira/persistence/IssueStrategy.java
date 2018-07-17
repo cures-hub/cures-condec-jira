@@ -53,7 +53,7 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		issueInputParameters.setAssigneeId(user.getName());
 		issueInputParameters.setReporterId(user.getName());
 
-		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(decisionElement.getProjectKey());
+		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(decisionElement.getProject().getProjectKey());
 		issueInputParameters.setProjectId(project.getId());
 		String issueTypeId = getIssueTypeId(decisionElement.getType());
 		issueInputParameters.setIssueTypeId(issueTypeId);

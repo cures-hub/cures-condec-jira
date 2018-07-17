@@ -73,6 +73,7 @@ public enum KnowledgeType {
 	 * For example, the super type of argument is rationale and the super type of
 	 * issue is problem.
 	 *
+	 * @see DecisionKnowledgeElement
 	 * @param type of knowledge
 	 * @return super knowledge type of the decision knowledge element.
 	 */
@@ -109,6 +110,7 @@ public enum KnowledgeType {
 	 * For example, the super type of argument is rationale and the super type of
 	 * issue is problem.
 	 *
+	 * @see DecisionKnowledgeElement
 	 * @return super knowledge type of the decision knowledge element.
 	 */
 	public KnowledgeType getSuperType() {

@@ -96,7 +96,7 @@ public class DecisionsRest {
 	public Response createDecisionKnowledgeElement(@Context HttpServletRequest request,
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement != null && request != null) {
-			String projectKey = decisionKnowledgeElement.getProjectKey();
+			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
 			StrategyProvider strategyProvider = new StrategyProvider();
 			AbstractPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
@@ -118,7 +118,7 @@ public class DecisionsRest {
 	public Response updateDecisionKnowledgeElement(@Context HttpServletRequest request,
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement != null && request != null) {
-			String projectKey = decisionKnowledgeElement.getProjectKey();
+			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
 			StrategyProvider strategyProvider = new StrategyProvider();
 			AbstractPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
@@ -139,7 +139,7 @@ public class DecisionsRest {
 	public Response deleteDecisionKnowledgeElement(@Context HttpServletRequest request,
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement != null && request != null) {
-			String projectKey = decisionKnowledgeElement.getProjectKey();
+			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
 			StrategyProvider strategyProvider = new StrategyProvider();
 			AbstractPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);

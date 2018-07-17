@@ -8,6 +8,7 @@ import net.java.ao.schema.Table;
 /**
  * Interface for decision knowledge elements used in the active object
  * persistence strategy
+ * @see DecisionKnowledgeElement
  */
 @Table("DECISION")
 public interface DecisionKnowledgeElementEntity extends RawEntity<Integer> {
