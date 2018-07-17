@@ -194,11 +194,23 @@
 			<scope>test</scope>
 		</dependency>
 		<!-- DecXtract -->
+		 <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+            <scope>provided</scope>
+        </dependency>
 
 		<dependency>
 			<groupId>nz.ac.waikato.cms.weka</groupId>
 			<artifactId>weka-stable</artifactId>
-			<version>3.8.0</version>
+			<version>3.8.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/nz.ac.waikato.cms.weka.thirdparty/bounce -->
+		<dependency>
+		    <groupId>nz.ac.waikato.cms.weka.thirdparty</groupId>
+		    <artifactId>bounce</artifactId>
+		    <version>0.18</version>
 		</dependency>
 
 
