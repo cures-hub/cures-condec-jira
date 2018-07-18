@@ -5,6 +5,7 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.decXtract.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.decXtract.model.Sentence;
+import meka.classifiers.multilabel.LC;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -13,6 +14,8 @@ import weka.core.Instances;
 public class WekaInitializer {
 
 	private static FilteredClassifier fc;
+
+	private static LC binaryRelevance = null;
 
 	public static List<Comment> predict(List<Comment> commentsList) {
 
@@ -76,6 +79,10 @@ public class WekaInitializer {
 		// System.out.println("bin hier: "+System.getProperty("user.dir"));
 		fc = new FilteredClassifier();
 		fc = (FilteredClassifier) weka.core.SerializationHelper.read("./fc.model");
+
+		binaryRelevance = (LC) weka.core.SerializationHelper.read("./br.model");
+
+
 	}
 
 }

@@ -1,12 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.decXtract.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Sentence {
 
 	private boolean isRelevant;
 
-	private ArrayList<Rationale> classification;
+	private List<Rationale> classification;
 
 	private String body = "";
 
@@ -45,11 +46,19 @@ public class Sentence {
 
 	}
 
-	public ArrayList<Rationale> getClassification() {
+	public List<Rationale> getClassification() {
 		return classification;
 	}
 
-	public void setClassification(ArrayList<Rationale> classification) {
-		this.classification = classification;
+	public void setClassification(List<Rationale> list) {
+		this.classification = list;
+	}
+
+	public void classificationToString() {
+		String classI = "";
+		for (Rationale classi : classification) {
+			classI += Rationale.getString(classi);
+		}
+		System.out.println(classI);
 	}
 }

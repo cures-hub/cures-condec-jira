@@ -44,10 +44,9 @@ public class Comment {
 	private void splitCommentIntoSentences() {
 
 		this.sentences = new ArrayList<Sentence>();
-		// Delete breaklines, Escape "'" characters for later correct classification
-		// parsing.
-		this.body = this.body.replace("<br>", "").replace("\n", "").replace("\r", "").replaceAll("\\<.*?>", "")
-				.replace("\'", "\\'").toString();
+		// Delete breaklines,
+		this.body = this.body.replace("<br>", " ").replace("\n", " ").replace("\r", " ").replaceAll("\\<.*?>", "")
+				.toString();
 
 		// Using break Iterator from
 		// https://stackoverflow.com/questions/2687012/split-string-into-sentences
@@ -73,12 +72,12 @@ public class Comment {
 		String result = "";
 		for (Sentence sentence : this.sentences) {
 			if (sentence.isRelevant()) {
-				result = result + Rationale.getOpeningTag("isRelevant") + sentence.getBody()
-						+ Rationale.getClosingTag("isRelevant");
+				result = result + Rationale.getOpeningTag("isRelevant")  + Rationale.getOpeningTag(sentence.getClassification())+ sentence.getBody()
+				+ Rationale.getClosingTag(sentence.getClassification()) + Rationale.getClosingTag("isRelevant");
 			} else {
 				result = result + sentence.getBody();
-				// System.out.println("not: "+ sentence.getBody());
 			}
+
 		}
 		return result;
 	}
