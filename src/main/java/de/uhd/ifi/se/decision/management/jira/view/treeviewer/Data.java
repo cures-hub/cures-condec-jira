@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 
 /**
@@ -23,12 +24,16 @@ public class Data {
 	@XmlElement(name = "data")
 	private DecisionKnowledgeElement nodeInfo;
 
+	@XmlElement
+	private String icon;
+
 	public Data() {
 	}
 
 	public Data(DecisionKnowledgeElement decisionKnowledgeElement) {
-		this.text = decisionKnowledgeElement.getType() + " / " + decisionKnowledgeElement.getSummary();
 		this.id = String.valueOf(decisionKnowledgeElement.getId());
+		this.text = decisionKnowledgeElement.getSummary();
+		this.icon = ComponentGetter.getUrlOfImageFolder() + decisionKnowledgeElement.getType().toString() + ".png";
 		this.nodeInfo = decisionKnowledgeElement;
 	}
 

@@ -40,7 +40,7 @@ public class TreeViewer {
 	public TreeViewer(String projectKey) {
 		this.multiple = false;
 		this.checkCallback = true;
-		this.themes = ImmutableMap.of("icons", false);
+		this.themes = ImmutableMap.of("icons", true);
 
 		graph = new GraphImpl(projectKey);
 

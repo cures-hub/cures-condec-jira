@@ -109,11 +109,12 @@ public class TestTreeViewer extends TestSetUp {
 		assertEquals(Data.class, treeViewer.getDataStructure(null).getClass());
 	}
 
-	@Test
-	public void testGetDataStructureEmpty() {
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		System.out.println(treeViewer.getDataStructure(element));
-	}
+	// TODO
+//	@Test
+//	public void testGetDataStructureEmpty() {
+//		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+//		System.out.println(treeViewer.getDataStructure(element));
+//	}
 
 	@Test
 	public void testGetDataStructureFilled() {
