@@ -199,11 +199,11 @@
 			<artifactId>weka-stable</artifactId>
 			<version>3.8.2</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/nz.ac.waikato.cms.weka.thirdparty/bounce -->
+		<!-- https://mvnrepository.com/artifact/net.sf.meka/meka -->
 		<dependency>
-			<groupId>nz.ac.waikato.cms.weka.thirdparty</groupId>
-			<artifactId>bounce</artifactId>
-			<version>0.18</version>
+		    <groupId>net.sf.meka</groupId>
+		    <artifactId>meka</artifactId>
+		    <version>1.9.2</version>
 		</dependency>
 		 <dependency>
             <groupId>commons-io</groupId>
