@@ -5,9 +5,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.decXtract.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.decXtract.model.Rationale;
 import de.uhd.ifi.se.decision.management.jira.decXtract.model.Sentence;
@@ -111,13 +114,12 @@ public class MekaInitializer {
 		// MLUtils.prepareData(structure);
 
 		LC binaryRelevance = null;
-		File f = new File("./br.model");
-		if (f.isFile()) {
-			binaryRelevance = (LC) weka.core.SerializationHelper.read("./br.model");
-		} else {
-			// TODO: Exception handling
-			return;
-		}
+
+		String path = ComponentGetter.getUrlOfClassifierFolder() + "br.model";
+		InputStream is = new URL(path).openStream();
+		binaryRelevance = (LC) weka.core.SerializationHelper.read(is);
+
+
 		// Classify string instances
 		List<double[]> results = new ArrayList<double[]>();
 		for (int n = 0; n < structure.size(); n++) {

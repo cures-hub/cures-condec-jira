@@ -1,9 +1,24 @@
 package de.uhd.ifi.se.decision.management.jira.decXtract.view;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,11 +31,16 @@ import com.atlassian.jira.plugin.issuetabpanel.AbstractIssueTabPanel;
 import com.atlassian.jira.plugin.issuetabpanel.IssueAction;
 import com.atlassian.jira.plugin.issuetabpanel.IssueTabPanel;
 import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.util.PathUtils;
 import com.atlassian.jira.util.VelocityParamFactory;
 import com.atlassian.velocity.VelocityManager;
+import com.opensymphony.util.ClassLoaderUtil;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.decXtract.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import meka.classifiers.multilabel.LC;
+import weka.classifiers.meta.FilteredClassifier;
 
 /**
  * Renders the issue tab panel
@@ -70,6 +90,7 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 		Map<String, Object> context = velocityParamFactory.getDefaultVelocityParams();
 
 		context = addParamsToContext(context);
+
 
 		return(velocityManager.getEncodedBody("templates/", "tabPanel.vm", baseUrl, webworkEncoding, context));
 

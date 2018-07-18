@@ -45,9 +45,9 @@ public class ComponentGetter {
 	private static ActiveObjects activeObjects;
 
 	@Inject
-	public ComponentGetter(PluginSettingsFactory pluginSettingsFactory, TransactionTemplate transactionTemplate, IssueService issueService,
-			ProjectService projectService, SearchService searchService, UserManager userManager, TemplateRenderer templateRenderer,
-			ActiveObjects activeObjects) {
+	public ComponentGetter(PluginSettingsFactory pluginSettingsFactory, TransactionTemplate transactionTemplate,
+			IssueService issueService, ProjectService projectService, SearchService searchService,
+			UserManager userManager, TemplateRenderer templateRenderer, ActiveObjects activeObjects) {
 		setPluginSettingsFactory(pluginSettingsFactory);
 		setTransactionTemplate(transactionTemplate);
 		setIssueService(issueService);
@@ -130,5 +130,11 @@ public class ComponentGetter {
 		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
 		return applicationProperties.getString(APKeys.JIRA_BASEURL) + "/download/resources/"
 				+ ComponentGetter.getPluginStorageKey() + ":stylesheet-and-icon-resources/";
+	}
+
+	public static String getUrlOfClassifierFolder() {
+		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
+		return applicationProperties.getString(APKeys.JIRA_BASEURL) + "/download/resources/"
+				+ ComponentGetter.getPluginStorageKey() + ":classifier-resources/";
 	}
 }
