@@ -103,4 +103,14 @@ public class GraphImpl implements Graph {
 	public void setRootElement(DecisionKnowledgeElement rootElement) {
 		this.rootElement = rootElement;
 	}
+
+	@Override
+	public DecisionKnowledgeProject getProject() {
+		return project;
+	}
+
+	@Override
+	public void setProject(DecisionKnowledgeProject project) {
+		this.project = project;
+	}
 }

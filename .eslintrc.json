@@ -1,5 +1,5 @@
 {
-  // ESLint patterns for JIRA DecDoc plug-in
+  // ESLint patterns for JIRA ConDec plug-in
   // http://eslint.org/docs/rules/
 
   "ecmaFeatures": {

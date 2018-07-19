@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -30,9 +31,11 @@ public class TreeViewer {
 	private Map<String, Boolean> themes;
 
 	@XmlElement
-	private HashSet<Data> data;
+	private Set<Data> data;
 
 	private Graph graph;
+	private List<String> ids;
+	private long index;
 
 	public TreeViewer() {
 	}
@@ -42,17 +45,17 @@ public class TreeViewer {
 		this.checkCallback = true;
 		this.themes = ImmutableMap.of("icons", true);
 
-		graph = new GraphImpl(projectKey);
+		this.ids = new ArrayList<String>();
+		this.index = 1;
 
 		StrategyProvider strategyProvider = new StrategyProvider();
 		AbstractPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 		List<DecisionKnowledgeElement> decisions = strategy.getDecisions(projectKey);
 
-		HashSet<Data> dataSet = new HashSet<Data>();
+		Set<Data> dataSet = new HashSet<Data>();
 		for (DecisionKnowledgeElement decision : decisions) {
 			dataSet.add(this.getDataStructure(decision));
 		}
-		this.makeEachIdUnique(dataSet);
 		this.data = dataSet;
 	}
 
@@ -60,10 +63,9 @@ public class TreeViewer {
 		if (decisionKnowledgeElement == null) {
 			return new Data();
 		}
-		if (graph == null) {
-			graph = new GraphImpl(decisionKnowledgeElement.getProject().getProjectKey());
-		}
+		this.graph = new GraphImpl(decisionKnowledgeElement);
 		Data data = new Data(decisionKnowledgeElement);
+		data = this.makeIdUnique(data);
 		List<Data> children = this.getChildren(decisionKnowledgeElement);
 		data.setChildren(children);
 		return data;
@@ -74,6 +76,7 @@ public class TreeViewer {
 		List<DecisionKnowledgeElement> linkedElements = graph.getLinkedElements(decisionKnowledgeElement);
 		for (DecisionKnowledgeElement element : linkedElements) {
 			Data dataChild = new Data(element);
+			dataChild = this.makeIdUnique(dataChild);
 			List<Data> childrenOfElement = this.getChildren(element);
 			dataChild.setChildren(childrenOfElement);
 			children.add(dataChild);
@@ -81,19 +84,14 @@ public class TreeViewer {
 		return children;
 	}
 
-	private void makeEachIdUnique(HashSet<Data> dataSet) {
-		List<String> ids = new ArrayList<>();
-		ArrayList<Data> dataList = new ArrayList<>(dataSet);
-		for (int index = 0; index < dataList.size(); index++) {
-			Data parent = dataList.get(index);
-			if (!ids.contains(parent.getId())) {
-				ids.add(parent.getId());
-				dataList.addAll(parent.getChildren());
-			} else {
-				parent.setId(index + parent.getId());
-				dataList.addAll(parent.getChildren());
-			}
+	private Data makeIdUnique(Data data) {
+		if (!ids.contains(data.getId())) {
+			ids.add(data.getId());
+		} else {
+			data.setId(index + data.getId());
+			index++;
 		}
+		return data;
 	}
 
 	public boolean isMultiple() {
@@ -120,11 +118,19 @@ public class TreeViewer {
 		this.themes = themes;
 	}
 
-	public HashSet<Data> getData() {
+	public Set<Data> getData() {
 		return data;
 	}
 
-	public void setData(HashSet<Data> data) {
+	public void setData(Set<Data> data) {
 		this.data = data;
+	}
+
+	public List<String> getIds() {
+		return ids;
+	}
+
+	public void setIds(List<String> ids) {
+		this.ids = ids;
 	}
 }

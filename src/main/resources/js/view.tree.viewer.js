@@ -16,42 +16,51 @@ function buildTreeViewer() {
 			$('#jstree').jstree(true).search(searchString);
 		});
 	});
-
-	$('#jstree').on('move_node.jstree', function(object, node) {
-		if (node.node.id !== 0 && node.parent !== 0 && node.old_parent !== 0) {
-			addDragAndDropSupportForTreeViewer(node.node.id, node.parent, node.old_parent);
-		}
-	});
+	addDragAndDropSupportForTreeViewer();
 }
 
 function resetTreeViewer() {
-	if ($('#jstree').jstree(true)) {
-		var tree = $('#jstree').jstree(true);
-		tree.destroy();
+	var treeViewer = $('#jstree').jstree(true);
+	if (treeViewer) {
+		treeViewer.destroy();
 	}
+}
+
+function getTreeViewerNodeById(nodeId) {
+	if (nodeId === "#") {
+		return nodeId;
+	}
+	return $('#jstree').jstree(true).get_node(nodeId);
 }
 
 function selectNodeInTreeViewer(nodeId) {
 	$('#jstree').on("ready.jstree", function() {
 		var treeViewer = $('#jstree').jstree(true);
 		if (treeViewer) {
-			treeViewer.select_node("" + nodeId);
+			treeViewer.select_node(nodeId);
 		}
 	});
 }
 
-function addDragAndDropSupportForTreeViewer(nodeId, parentId, oldParentId) {
-	if (oldParentId === "#") {
-		showFlag("error", "Decisions cannot be linked to another decision knowledge element.");
-		document.location.reload();
-	}
-	if (parentId === "#") {
-		showFlag("error", "This decision knowledge element cannot be a root element.");
-		document.location.reload();
-	}
-	if (parentId !== '#' && oldParentId !== '#') {
-		deleteLink(oldParentId, nodeId, function() {
-			createLinkToExistingElement(parentId, nodeId);
-		});
-	}
+function addDragAndDropSupportForTreeViewer() {
+	$('#jstree').on('move_node.jstree', function(object, nodeInContext) {
+		var node = nodeInContext.node;
+		var parentNode = getTreeViewerNodeById(nodeInContext.parent);
+		var oldParentNode = getTreeViewerNodeById(nodeInContext.old_parent);
+
+		var nodeId = node.data.id;
+		if (oldParentNode === "#" && parentNode !== "#") {
+			createLinkToExistingElement(parentNode.data.id, nodeId);
+		}
+		if (parentNode === "#" && oldParentNode !== "#") {
+			deleteLink(oldParentNode.data.id, nodeId, function() {
+				updateView();
+			});
+		}
+		if (parentNode !== '#' && oldParentNode !== '#') {
+			deleteLink(oldParentNode.data.id, nodeId, function() {
+				createLinkToExistingElement(parentNode.data.id, nodeId);
+			});
+		}
+	});
 }

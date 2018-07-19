@@ -24,7 +24,7 @@ function getSelectedTreeViewerNode(position) {
 }
 
 function getSelectedTreeViewerNodeId(node) {
-	return getSelectedTreeViewerNode(node).id;
+	return getSelectedTreeViewerNode(node).data.id;
 }
 
 function getSelectedTreantNodeId(options) {
@@ -136,7 +136,7 @@ function setUpDialogForLinkAction(id) {
 
 		insertString = "<label for='form-select-component'>Unlinked Element:</label>"
 				+ "<select id='form-select-component' name='form-select-component' "
-				+ "onchange='linkArguments()' class='select full-width-field'/>";
+				+ "onchange='addFormForArguments()' class='select full-width-field'/>";
 		for (var index = 0; index < unlinkedDecisionComponents.length; index++) {
 			insertString += "<option value='" + unlinkedDecisionComponents[index].id + "'>"
 					+ unlinkedDecisionComponents[index].type + ' / ' + unlinkedDecisionComponents[index].summary
@@ -145,6 +145,7 @@ function setUpDialogForLinkAction(id) {
 		var selectFieldGroup = document.getElementById("select-field-group");
 		selectFieldGroup.insertAdjacentHTML("afterBegin", insertString);
 		AJS.$("#form-select-component").auiSelect2();
+		addFormForArguments();
 
 		var submitButton = document.getElementById("dialog-submit-button");
 		submitButton.textContent = linkKnowledgeElementText;
@@ -157,7 +158,7 @@ function setUpDialogForLinkAction(id) {
 	});
 }
 
-function linkArguments() {
+function addFormForArguments() {
 	var childId = $("select[name='form-select-component']").val();
 	var argumentFieldGroup = document.getElementById("argument-field-group");
 	argumentFieldGroup.innerHTML = "";
