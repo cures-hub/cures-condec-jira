@@ -167,10 +167,10 @@ function addFormForArguments() {
 			function(decisionKnowledgeElement) {
 				if (decisionKnowledgeElement && decisionKnowledgeElement.type === "Argument") {
 					insertString = "<label for='form-radio-argument'>Type of Argument:</label>"
-							+ "<div class='radio'><input type='radio' class='radio' name='form-radio-argument' id='Pro' value='Pro' checked='checked'>"
-							+ "<label for='Pro'>Pro</label></div>"
-							+ "<div class='radio'><input type='radio' class='radio' name='form-radio-argument' id='Contra' value='Contra'>"
-							+ "<label for='Contra'>Contra</label></div>";
+							+ "<div class='radio'><input type='radio' class='radio' name='form-radio-argument' id='Pro-argument' value='Pro-argument' checked='checked'>"
+							+ "<label for='Pro'>Pro-argument</label></div>"
+							+ "<div class='radio'><input type='radio' class='radio' name='form-radio-argument' id='Con-argument' value='Con-argument'>"
+							+ "<label for='Contra'>Con-argument</label></div>";
 					argumentFieldGroup.insertAdjacentHTML("afterBegin", insertString);
 				}
 			});

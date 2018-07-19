@@ -14,94 +14,71 @@ var extendedKnowledgeTypes = replaceArgumentWithLinkTypes(knowledgeTypes);
 function replaceArgumentWithLinkTypes(knowledgeTypes) {
 	var extendedKnowledgeTypes = getKnowledgeTypes(getProjectKey());
 	remove(extendedKnowledgeTypes, "Argument");
-	extendedKnowledgeTypes.push("Pro");
-	extendedKnowledgeTypes.push("Contra");
+	extendedKnowledgeTypes.push("Pro-argument");
+	extendedKnowledgeTypes.push("Con-argument");
 	return extendedKnowledgeTypes;
 }
 
-function createDecisionKnowledgeElementAsChild(summary, description, type, parentId) {
+function createLinkToExistingElement(idOfDestinationElement, idOfSourceElement, knowledgeTypeOfChild) {
+	switchLinkTypes(knowledgeTypeOfChild, idOfDestinationElement, idOfSourceElement, function(linkType,
+			idOfDestinationElement, idOfSourceElement) {
+		linkElements(idOfDestinationElement, idOfSourceElement, linkType, function() {
+			updateView();
+		});
+	});
+}
+
+function switchLinkTypes(type, idOfDestinationElement, idOfSourceElement, linkTypeFunction) {
 	switch (type) {
-	case "Pro":
-		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
-			linkElements(childId, parentId, "support", function() {
-				updateView();
-			});
-		});
+	case "Pro-argument":
+		linkTypeFunction("support", idOfSourceElement, idOfDestinationElement);
 		break;
-	case "Contra":
-		createDecisionKnowledgeElement(summary, description, "Argument", function(childId) {
-			linkElements(childId, parentId, "attack", function() {
-				updateView();
-			});
-		});
+	case "Con-argument":
+		linkTypeFunction("attack", idOfSourceElement, idOfDestinationElement);
 		break;
 	default:
-		createDecisionKnowledgeElement(summary, description, type, function(childId) {
-			linkElements(parentId, childId, "contain", function() {
-				updateView();
-			});
-		});
+		linkTypeFunction("contain", idOfDestinationElement, idOfSourceElement);
 	}
 }
 
 function updateDecisionKnowledgeElementAsChild(childId, summary, description, type) {
-	switch (type) {
-	case "Pro":
-		updateDecisionKnowledgeElement(childId, summary, description, "Argument", function() {
-			var parentId = findParentId(childId);
-			deleteLink(parentId, childId, function() {
-				linkElements(childId, parentId, "support", function() {
-					updateView();
-				});
-			});
-		});
-		break;
-	case "Contra":
-		updateDecisionKnowledgeElement(childId, summary, description, "Argument", function() {
-			var parentId = findParentId(childId);
-			deleteLink(parentId, childId, function() {
-				linkElements(childId, parentId, "attack", function() {
-					updateView();
-				});
-			});
-		});
-		break;
-	default:
-		updateDecisionKnowledgeElement(childId, summary, description, type, function() {
-			getDecisionKnowledgeElement(childId, function(decisionKnowledgeElement) {
-				if (decisionKnowledgeElement.type !== type) {
-					var parentId = findParentId(childId);
+	var simpleType = getSimpleType(type);
+	updateDecisionKnowledgeElement(childId, summary, description, simpleType, function() {
+		getDecisionKnowledgeElement(childId, function(decisionKnowledgeElement) {
+			if (decisionKnowledgeElement.type !== type) {
+				var parentId = findParentId(childId);
+				switchLinkTypes(type, parentId, childId, function(linkType, parentId, childId) {
 					deleteLink(parentId, childId, function() {
-						linkElements(parentId, childId, "contain", function() {
+						linkElements(parentId, childId, linkType, function() {
 							updateView();
 						});
 					});
-				} else {
-					updateView();
-				}
-			});
+				});
+			} else {
+				updateView();
+			}
 		});
-		break;
-	}
+	});
 }
 
-function createLinkToExistingElement(parentId, childId, knowledgeTypeOfChild) {
-	switch (knowledgeTypeOfChild) {
-	case "Pro":
-		linkElements(childId, parentId, "support", function() {
-			updateView();
-		});
-		break;
-	case "Contra":
-		linkElements(childId, parentId, "attack", function() {
-			updateView();
-		});
-		break;
-	default:
-		linkElements(parentId, childId, "contain", function() {
-			updateView();
-		});
+function getSimpleType(type) {
+	var simpleType = type;
+	if (type === "Pro-argument" || type === "Con-argument") {
+		simpleType = "Argument";
 	}
+	return simpleType;
+}
+
+function createDecisionKnowledgeElementAsChild(summary, description, type, idOfDestinationElement) {
+	var simpleType = getSimpleType(type);
+	createDecisionKnowledgeElement(summary, description, simpleType, function(idOfSourceElement) {
+		switchLinkTypes(type, idOfDestinationElement, idOfSourceElement, function(linkType, idOfDestinationElement,
+				idOfSourceElement) {
+			linkElements(idOfDestinationElement, idOfSourceElement, linkType, function() {
+				updateView();
+			});
+		});
+	});
 }
 
 function getProjectKey() {

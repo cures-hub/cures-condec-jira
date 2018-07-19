@@ -54,7 +54,7 @@ public class Node {
 		}
 		this.htmlClass = decisionKnowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
 		this.htmlId = decisionKnowledgeElement.getId();
-		DecisionKnowledgeProject project = new DecisionKnowledgeProjectImpl(decisionKnowledgeElement.getProject().getProjectKey());
+		DecisionKnowledgeProject project = decisionKnowledgeElement.getProject();
 		if (project.isIssueStrategy()) {
 			ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
 			this.link = ImmutableMap.of("href", applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/"
@@ -67,14 +67,14 @@ public class Node {
 		switch (link.getLinkType()) {
 		case "support":
 			if (decisionKnowledgeElement.getId() == link.getIdOfSourceElement()) {
-				this.nodeContent = ImmutableMap.of("name", "Pro", "title",
+				this.nodeContent = ImmutableMap.of("name", "Pro-argument", "title",
 						decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 				this.htmlClass = "pro";
 			}
 			break;
 		case "attack":
 			if (decisionKnowledgeElement.getId() == link.getIdOfSourceElement()) {
-				this.nodeContent = ImmutableMap.of("name", "Contra", "title",
+				this.nodeContent = ImmutableMap.of("name", "Con-argument", "title",
 						decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 				this.htmlClass = "contra";
 			}
