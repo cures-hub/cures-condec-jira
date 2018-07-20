@@ -40,35 +40,16 @@ public class TreeViewer {
 	private long index;
 
 	public TreeViewer() {
-	}
-
-	public TreeViewer(String projectKey) {
 		this.multiple = false;
 		this.checkCallback = true;
 		this.themes = ImmutableMap.of("icons", true);
 
 		this.ids = new ArrayList<String>();
 		this.index = 1;
-
-		StrategyProvider strategyProvider = new StrategyProvider();
-		AbstractPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
-		List<DecisionKnowledgeElement> decisions = strategy.getDecisions(projectKey);
-
-		Set<Data> dataSet = new HashSet<Data>();
-		for (DecisionKnowledgeElement decision : decisions) {
-			dataSet.add(this.getDataStructure(decision));
-		}
-		this.data = dataSet;
 	}
 
 	public TreeViewer(String projectKey, KnowledgeType rootElementType) {
-		this.multiple = false;
-		this.checkCallback = true;
-		this.themes = ImmutableMap.of("icons", true);
-
-		this.ids = new ArrayList<String>();
-		this.index = 1;
-
+		this();
 		StrategyProvider strategyProvider = new StrategyProvider();
 		AbstractPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
 		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements(projectKey, rootElementType);
@@ -78,6 +59,10 @@ public class TreeViewer {
 			dataSet.add(this.getDataStructure(element));
 		}
 		this.data = dataSet;
+	}
+
+	public TreeViewer(String projectKey) {
+		this(projectKey, KnowledgeType.DECISION);
 	}
 
 	public Data getDataStructure(DecisionKnowledgeElement decisionKnowledgeElement) {

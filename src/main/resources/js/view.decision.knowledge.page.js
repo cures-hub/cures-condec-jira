@@ -8,12 +8,13 @@ function initializeDecisionKnowledgePage() {
 				+ knowledgeTypes[index] + "'>" + knowledgeTypes[index] + "</option>");
 	}
 
-	var createDecisionButton = document.getElementById("create-decision-button");
-	var decisionInputField = document.getElementById("decision-input-field");
-	createDecisionButton.addEventListener("click", function() {
-		var summary = decisionInputField.value;
-		decisionInputField.value = "";
-		createDecisionKnowledgeElement(summary, "", "Decision", function(id) {
+	var createElementButton = document.getElementById("create-element-button");
+	var elementInputField = document.getElementById("element-input-field");
+	createElementButton.addEventListener("click", function() {
+		var summary = elementInputField.value;
+		var type = $("select[name='select-root-element-type']").val();
+		elementInputField.value = "";
+		createDecisionKnowledgeElement(summary, "", type, function(id) {
 			updateView(id);
 		});
 	});
