@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 
@@ -73,11 +74,13 @@ public class TreeViewer {
 
 	private List<Data> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Data> children = new ArrayList<>();
-		List<DecisionKnowledgeElement> linkedElements = graph.getLinkedElements(decisionKnowledgeElement);
-		for (DecisionKnowledgeElement element : linkedElements) {
-			Data dataChild = new Data(element);
+		Map<DecisionKnowledgeElement, Link> childrenAndLinks = this.graph
+				.getLinkedElementsAndLinks(decisionKnowledgeElement);
+
+		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
+			Data dataChild = new Data(childAndLink.getKey(), childAndLink.getValue());
 			dataChild = this.makeIdUnique(dataChild);
-			List<Data> childrenOfElement = this.getChildren(element);
+			List<Data> childrenOfElement = this.getChildren(childAndLink.getKey());
 			dataChild.setChildren(childrenOfElement);
 			children.add(dataChild);
 		}

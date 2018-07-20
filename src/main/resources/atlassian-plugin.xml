@@ -32,6 +32,8 @@
 		<resource type="download" name="alternative.png" location="/images/alternative.png" />
 		<resource type="download" name="solution.png" location="/images/solution.png" />
 		<resource type="download" name="argument.png" location="/images/argument.png" />
+		<resource type="download" name="argument_pro.png" location="/images/argument_pro.png" />
+		<resource type="download" name="argument_con.png" location="/images/argument_con.png" />
 		<!-- additional decision knowledge icons -->
 		<resource type="download" name="issue.png" location="/images/issue.png" />
 		<resource type="download" name="goal.png" location="/images/goal.png" />
@@ -58,9 +60,9 @@
 		<dependency>com.atlassian.auiplugin:aui-select2</dependency>
 	</web-resource>
 
-	<web-resource key="classifier-resources" name="Classifier for Decision Extraction">
+	<web-resource key="classifier-resources" name="Classifiers for Decision Extraction">
 		<description>
-			Provides the model fliles for Weka and Meka Classifiers
+			Provides the model files for Weka and Meka classifiers
 		</description>
 		<context>atl.general</context>
 		<resource type="download" name="fc.model" location="/classifier/fc.model" />

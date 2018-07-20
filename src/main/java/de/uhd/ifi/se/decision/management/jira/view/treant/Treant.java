@@ -32,8 +32,8 @@ public class Treant {
 	}
 
 	public Treant(String projectKey, String elementKey, int depth) {
-		graph = new GraphImpl(projectKey, elementKey);
-		DecisionKnowledgeElement rootElement = graph.getRootElement();
+		this.graph = new GraphImpl(projectKey, elementKey);
+		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 0));
 	}
@@ -44,7 +44,7 @@ public class Treant {
 			return new Node();
 		}
 		if (graph == null) {
-			graph = new GraphImpl(decisionKnowledgeElement.getProject().getProjectKey());
+			graph = new GraphImpl(decisionKnowledgeElement);
 		}
 
 		Node node;

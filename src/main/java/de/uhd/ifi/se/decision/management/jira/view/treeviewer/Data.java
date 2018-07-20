@@ -4,8 +4,11 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import com.google.common.collect.ImmutableMap;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
  * Model class for Tree Viewer nodes
@@ -35,6 +38,24 @@ public class Data {
 		this.text = decisionKnowledgeElement.getSummary();
 		this.icon = ComponentGetter.getUrlOfImageFolder() + decisionKnowledgeElement.getType().toString() + ".png";
 		this.nodeInfo = decisionKnowledgeElement;
+	}
+
+	public Data(DecisionKnowledgeElement decisionKnowledgeElement, Link link) {
+		this(decisionKnowledgeElement);
+		switch (link.getLinkType()) {
+		case "support":
+			if (decisionKnowledgeElement.getId() == link.getIdOfSourceElement()) {
+				this.icon = ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
+			}
+			break;
+		case "attack":
+			if (decisionKnowledgeElement.getId() == link.getIdOfSourceElement()) {
+				this.icon = ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
+			}
+			break;
+		default:
+			break;
+		}
 	}
 
 	public String getId() {
