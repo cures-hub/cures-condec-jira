@@ -15,6 +15,15 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  */
 public abstract class AbstractPersistenceStrategy {
 
+	private String projectKey;
+
+	public AbstractPersistenceStrategy() {
+	}
+
+	public AbstractPersistenceStrategy(String projectKey) {
+		this.setProjectKey(projectKey);
+	}
+
 	public abstract DecisionKnowledgeElement insertDecisionKnowledgeElement(
 			DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
 
@@ -26,20 +35,36 @@ public abstract class AbstractPersistenceStrategy {
 
 	public abstract List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey);
 
+	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements() {
+		return this.getDecisionKnowledgeElements(this.projectKey);
+	};
+
+	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey, KnowledgeType type) {
+		List<DecisionKnowledgeElement> decisionKnowledgeElements = this.getDecisionKnowledgeElements(projectKey);
+		List<DecisionKnowledgeElement> decisionKnowledgeElementsWithType = new ArrayList<DecisionKnowledgeElement>();
+		for (DecisionKnowledgeElement decisionKnowledgeElement : decisionKnowledgeElements) {
+			if (decisionKnowledgeElement.getType() == type) {
+				decisionKnowledgeElementsWithType.add(decisionKnowledgeElement);
+			}
+		}
+		return decisionKnowledgeElementsWithType;
+	}
+
+	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type) {
+		return this.getDecisionKnowledgeElements(this.projectKey, type);
+	};
+
+	public List<DecisionKnowledgeElement> getDecisions(String projectKey) {
+		return getDecisionKnowledgeElements(projectKey, KnowledgeType.DECISION);
+	}
+
+	public List<DecisionKnowledgeElement> getDecisions() {
+		return getDecisionKnowledgeElements(this.projectKey, KnowledgeType.DECISION);
+	}
+
 	public abstract DecisionKnowledgeElement getDecisionKnowledgeElement(String key);
 
 	public abstract DecisionKnowledgeElement getDecisionKnowledgeElement(long id);
-
-	public List<DecisionKnowledgeElement> getDecisions(String projectKey) {
-		List<DecisionKnowledgeElement> decisionKnowledgeElements = this.getDecisionKnowledgeElements(projectKey);
-		List<DecisionKnowledgeElement> decisions = new ArrayList<DecisionKnowledgeElement>();
-		for (DecisionKnowledgeElement decisionKnowledgeElement : decisionKnowledgeElements) {
-			if (decisionKnowledgeElement.getType().toString().equalsIgnoreCase("Decision")) {
-				decisions.add(decisionKnowledgeElement);
-			}
-		}
-		return decisions;
-	}
 
 	public abstract List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(
 			DecisionKnowledgeElement decisionKnowledgeElement);
@@ -86,6 +111,10 @@ public abstract class AbstractPersistenceStrategy {
 		return unlinkedDecisionComponents;
 	}
 
+	public List<DecisionKnowledgeElement> getUnlinkedDecisionComponents(long id) {
+		return getUnlinkedDecisionComponents(id, this.projectKey);
+	}
+
 	public abstract long insertLink(Link link, ApplicationUser user);
 
 	public abstract boolean deleteLink(Link link, ApplicationUser user);
@@ -93,4 +122,12 @@ public abstract class AbstractPersistenceStrategy {
 	public abstract List<Link> getInwardLinks(DecisionKnowledgeElement element);
 
 	public abstract List<Link> getOutwardLinks(DecisionKnowledgeElement element);
+
+	public String getProjectKey() {
+		return projectKey;
+	}
+
+	public void setProjectKey(String projectKey) {
+		this.projectKey = projectKey;
+	}
 }

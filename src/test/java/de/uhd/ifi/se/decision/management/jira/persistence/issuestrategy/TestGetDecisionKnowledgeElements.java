@@ -12,7 +12,7 @@ public class TestGetDecisionKnowledgeElements extends TestIssueStrategySetUp {
 
 	@Test
 	public void testKeyNull() {
-		assertEquals(issueStrategy.getDecisionKnowledgeElements(null), new ArrayList<DecisionKnowledgeElement>());
+		assertEquals(issueStrategy.getDecisionKnowledgeElements(), new ArrayList<DecisionKnowledgeElement>());
 	}
 
 	@Test
