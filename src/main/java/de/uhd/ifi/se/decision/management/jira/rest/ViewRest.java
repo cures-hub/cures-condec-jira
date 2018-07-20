@@ -16,6 +16,7 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
 
@@ -28,12 +29,16 @@ public class ViewRest {
 
 	@Path("/getTreeViewer")
 	@GET
-	public Response getTreeViewer(@QueryParam("projectKey") String projectKey) {
+	public Response getTreeViewer(@QueryParam("projectKey") String projectKey,
+			@QueryParam("rootElementType") String rootElementType) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		TreeViewer treeViewer = new TreeViewer(projectKey);
+		if(rootElementType == null) {
+			rootElementType = "decision";
+		}
+		TreeViewer treeViewer = new TreeViewer(projectKey, KnowledgeType.getKnowledgeType(rootElementType));
 		return Response.ok(treeViewer).build();
 	}
 
@@ -57,7 +62,7 @@ public class ViewRest {
 			depth = Integer.parseInt(depthOfTree);
 		} catch (NumberFormatException e) {
 			LOGGER.error("Depth of tree could not be parsed, the default value of 4 is used.");
-			return  Response.status(Status.BAD_REQUEST)
+			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Treant cannot be shown since depth of Tree is NaN")).build();
 		}
 		Treant treant = new Treant(projectKey, elementKey, depth);

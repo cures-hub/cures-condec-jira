@@ -211,15 +211,15 @@ function getTreant(elementKey, depthOfTree, callback) {
 	});
 }
 
-function getTreeViewer(callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer.json?projectKey=" + getProjectKey(),
-			function(error, core) {
-				if (error === null) {
-					callback(core);
-				} else {
-					showFlag("error", "Tree viewer data could not be received. Error-Code: " + error);
-				}
-			});
+function getTreeViewer(rootElementType, callback) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer.json?projectKey=" + getProjectKey()
+			+ "&rootElementType=" + rootElementType, function(error, core) {
+		if (error === null) {
+			callback(core);
+		} else {
+			showFlag("error", "Tree viewer data could not be received. Error-Code: " + error);
+		}
+	});
 }
 
 function setActivated(isActivated, projectKey) {

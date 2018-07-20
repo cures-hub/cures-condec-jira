@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
@@ -56,6 +57,25 @@ public class TreeViewer {
 		Set<Data> dataSet = new HashSet<Data>();
 		for (DecisionKnowledgeElement decision : decisions) {
 			dataSet.add(this.getDataStructure(decision));
+		}
+		this.data = dataSet;
+	}
+
+	public TreeViewer(String projectKey, KnowledgeType rootElementType) {
+		this.multiple = false;
+		this.checkCallback = true;
+		this.themes = ImmutableMap.of("icons", true);
+
+		this.ids = new ArrayList<String>();
+		this.index = 1;
+
+		StrategyProvider strategyProvider = new StrategyProvider();
+		AbstractPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements(projectKey, rootElementType);
+
+		Set<Data> dataSet = new HashSet<Data>();
+		for (DecisionKnowledgeElement element : elements) {
+			dataSet.add(this.getDataStructure(element));
 		}
 		this.data = dataSet;
 	}

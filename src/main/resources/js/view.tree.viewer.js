@@ -1,6 +1,7 @@
 function buildTreeViewer() {
 	resetTreeViewer();
-	getTreeViewer(function(core) {
+	var rootElementType = $("select[name='select-root-element-type']").val();
+	getTreeViewer(rootElementType, function(core) {
 		$('#jstree').jstree({
 			"core" : core,
 			"plugins" : [ "dnd", "contextmenu", "wholerow", "sort", "search" ],

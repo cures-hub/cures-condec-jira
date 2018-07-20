@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import com.google.common.collect.ImmutableMap;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;

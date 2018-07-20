@@ -1,5 +1,12 @@
 function initializeDecisionKnowledgePage() {
-	updateView();
+	for (var index = 0; index < knowledgeTypes.length; index++) {
+		var isSelected = "";
+		if (knowledgeTypes[index] === "Decision") {
+			isSelected = "selected ";
+		}
+		$("select[name='select-root-element-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + " value='"
+				+ knowledgeTypes[index] + "'>" + knowledgeTypes[index] + "</option>");
+	}
 
 	var createDecisionButton = document.getElementById("create-decision-button");
 	var decisionInputField = document.getElementById("decision-input-field");
@@ -21,6 +28,8 @@ function initializeDecisionKnowledgePage() {
 			depthOfTreeWarningLabel.style.visibility = "visible";
 		}
 	});
+
+	updateView();
 }
 
 function updateView(nodeId) {
