@@ -42,6 +42,7 @@ public class LinkImpl implements Link {
 
 	public LinkImpl(LinkEntity link) {
 		this();
+		this.id = link.getId();
 		this.type = link.getType();
 	}
 

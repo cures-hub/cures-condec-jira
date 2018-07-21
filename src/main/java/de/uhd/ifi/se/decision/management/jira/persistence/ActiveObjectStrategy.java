@@ -196,15 +196,15 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	public List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Link> inwardLinks = this.getInwardLinks(decisionKnowledgeElement);
-		List<DecisionKnowledgeElement> destinationElements = new ArrayList<DecisionKnowledgeElement>();
-		for (Link inwardLink : inwardLinks) {
-			destinationElements.add(castToDecisionKnowledgeElement(
+		List<DecisionKnowledgeElement> sourceElements = new ArrayList<DecisionKnowledgeElement>();
+		for (Link link : inwardLinks) {
+			sourceElements.add(castToDecisionKnowledgeElement(
 					ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementEntity>() {
 						@Override
 						public DecisionKnowledgeElementEntity doInTransaction() {
 							DecisionKnowledgeElementEntity[] entityList = ACTIVE_OBJECTS.find(
 									DecisionKnowledgeElementEntity.class,
-									Query.select().where("ID = ?", inwardLink.getDestinationElement().getId()));
+									Query.select().where("ID = ?", link.getSourceElement().getId()));
 							if (entityList.length == 1) {
 								return entityList[0];
 							}
@@ -213,22 +213,22 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 						}
 					})));
 		}
-		return destinationElements;
+		return sourceElements;
 	}
 
 	@Override
 	public List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Link> outwardLinks = this.getOutwardLinks(decisionKnowledgeElement);
-		List<DecisionKnowledgeElement> sourceElements = new ArrayList<DecisionKnowledgeElement>();
-		for (Link outwardLink : outwardLinks) {
-			sourceElements.add(castToDecisionKnowledgeElement(
+		List<DecisionKnowledgeElement> destinationElements = new ArrayList<DecisionKnowledgeElement>();
+		for (Link link : outwardLinks) {
+			destinationElements.add(castToDecisionKnowledgeElement(
 					ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementEntity>() {
 						@Override
 						public DecisionKnowledgeElementEntity doInTransaction() {
 							DecisionKnowledgeElementEntity[] entityList = ACTIVE_OBJECTS.find(
 									DecisionKnowledgeElementEntity.class,
-									Query.select().where("ID = ?", outwardLink.getSourceElement().getId()));
+									Query.select().where("ID = ?", link.getDestinationElement().getId()));
 							if (entityList.length == 1) {
 								return entityList[0];
 							}
@@ -237,7 +237,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 						}
 					})));
 		}
-		return sourceElements;
+		return destinationElements;
 	}
 
 	@Override
@@ -275,8 +275,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 
 				// elements exist
 				final LinkEntity linkEntity = ACTIVE_OBJECTS.create(LinkEntity.class);
-				linkEntity.setIdOfSourceElement(link.getSourceElement().getId());
-				linkEntity.setIdOfDestinationElement(link.getDestinationElement().getId());
+				linkEntity.setIdOfSourceElement(link.getDestinationElement().getId());
+				linkEntity.setIdOfDestinationElement(link.getSourceElement().getId());
 				linkEntity.setType(link.getType());
 				linkEntity.save();
 				return linkEntity.getId();
@@ -290,15 +290,13 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 			@Override
 			public Boolean doInTransaction() {
 				for (LinkEntity linkEntity : ACTIVE_OBJECTS.find(LinkEntity.class)) {
-					if (link.getSourceElement().getId() == linkEntity.getIdOfSourceElement()
-							&& link.getDestinationElement().getId() == linkEntity.getIdOfDestinationElement()
-							|| link.getDestinationElement().getId() == linkEntity.getIdOfSourceElement()
-									&& link.getSourceElement().getId() == linkEntity.getIdOfDestinationElement()) {
+					if (link.getDestinationElement().getId() == linkEntity.getIdOfDestinationElement()
+							&& link.getSourceElement().getId() == linkEntity.getIdOfSourceElement()) {
 						try {
 							linkEntity.getEntityManager().delete(linkEntity);
 							return true;
 						} catch (SQLException e) {
-							LOGGER.error("LinkEntity could not be deleted");
+							LOGGER.error("Link could not be deleted.");
 						}
 					}
 				}
