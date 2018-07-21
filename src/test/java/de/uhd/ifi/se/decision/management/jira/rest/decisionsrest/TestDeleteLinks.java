@@ -52,7 +52,7 @@ public class TestDeleteLinks extends TestDecisionSetUp {
 		Link link = new LinkImpl();
 		link.setSourceElement(14);
 		link.setDestinationElement(15);
-		link.setLinkType("Test");
+		link.setType("Test");
 		assertEquals(
 				Response.status(Response.Status.BAD_REQUEST)
 						.entity(ImmutableMap.of("error", DELETION_LINK_ERROR)).build().getEntity(),
@@ -64,7 +64,7 @@ public class TestDeleteLinks extends TestDecisionSetUp {
 		Link link = new LinkImpl();
 		link.setSourceElement(14);
 		link.setDestinationElement(15);
-		link.setLinkType("Test");
+		link.setType("Test");
 		request.setAttribute("WithFails", true);
 		request.setAttribute("NoFails", false);
 		// TODO
@@ -79,7 +79,7 @@ public class TestDeleteLinks extends TestDecisionSetUp {
 		Link link = new LinkImpl();
 		link.setSourceElement(1);
 		link.setDestinationElement(15);
-		link.setLinkType("Test");
+		link.setType("Test");
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
 		// TODO

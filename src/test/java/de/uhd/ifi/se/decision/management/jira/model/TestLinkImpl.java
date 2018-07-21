@@ -19,7 +19,7 @@ public class TestLinkImpl {
 	@Before
 	public void setUp() {
 		linkImpl = new LinkImpl();
-		linkImpl.setLinkType("Test");
+		linkImpl.setType("Test");
 		linkImpl.setSourceElement(14);
 		linkImpl.setDestinationElement(15);
 		DecisionKnowledgeElement elementIn = new DecisionKnowledgeElementImpl();
@@ -61,7 +61,7 @@ public class TestLinkImpl {
 
 	@Test
 	public void testGetLinkType() {
-		assertEquals("Test", linkImpl.getLinkType());
+		assertEquals("Test", linkImpl.getType());
 	}
 
 	@Test

@@ -112,7 +112,7 @@ public class TestTreant extends TestSetUp {
 	public void testCreateNodeStructureFilledFilledFilledFilled() {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
 		Link link = new LinkImpl();
-		link.setLinkType("support");
+		link.setType("support");
 		link.setSourceElement(10);
 		link.setDestinationElement(14);
 		link.setDestinationElement(persistenceStrategy.getDecisionKnowledgeElement(14));

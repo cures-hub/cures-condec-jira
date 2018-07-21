@@ -18,9 +18,9 @@ public interface LinkEntity extends RawEntity<Integer> {
 
 	void setId(long id);
 
-	String getLinkType();
+	String getType();
 
-	void setLinkType(String type);
+	void setType(String type);
 
 	long getIdOfSourceElement();
 

@@ -168,7 +168,7 @@ function deleteDecisionKnowledgeElement(id, callback) {
 
 function linkElements(parentId, childId, linkType, callback) {
 	var jsondata = {
-		"linkType" : linkType,
+		"type" : linkType,
 		"idOfSourceElement" : childId,
 		"idOfDestinationElement" : parentId
 	};

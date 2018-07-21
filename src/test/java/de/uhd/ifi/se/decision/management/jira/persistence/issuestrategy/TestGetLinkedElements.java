@@ -43,7 +43,7 @@ public class TestGetLinkedElements extends TestIssueStrategySetUp {
 		issueStrategy.insertDecisionKnowledgeElement(element, user);
 		for (KnowledgeType type : KnowledgeType.values()) {
 			Link link = new LinkImpl();
-			link.setLinkType("support");
+			link.setType("support");
 			if (type != KnowledgeType.DECISION) {
 				DecisionKnowledgeElementImpl decisionKnowledgeElement = new DecisionKnowledgeElementImpl(i,
 						"TESTSummary", "TestDescription", type, project.getKey(), "TEST-" + i);

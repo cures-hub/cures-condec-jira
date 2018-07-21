@@ -23,6 +23,7 @@ import net.java.ao.Query;
 /**
  * Extends the abstract class AbstractPersistenceStrategy. Uses the active
  * object framework to store decision knowledge.
+ * @see AbstractPersistenceStrategy
  */
 @JsonAutoDetect
 public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
@@ -282,7 +283,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 							final LinkEntity linkEntity = ACTIVE_OBJECTS.create(LinkEntity.class);
 							linkEntity.setIdOfSourceElement(link.getSourceElement().getId());
 							linkEntity.setIdOfDestinationElement(link.getDestinationElement().getId());
-							linkEntity.setLinkType(link.getLinkType());
+							linkEntity.setType(link.getType());
 							linkEntity.save();
 							linkId = linkEntity.getId();
 						} else {

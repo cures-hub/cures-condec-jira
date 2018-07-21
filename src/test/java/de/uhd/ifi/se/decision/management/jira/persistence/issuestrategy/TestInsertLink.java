@@ -22,7 +22,7 @@ public class TestInsertLink extends TestIssueStrategySetUp {
 	public void testLinkFilledUserNull() {
 		Link link = new LinkImpl();
 		link.setSourceElement(1);
-		link.setLinkType("Contains");
+		link.setType("Contains");
 		link.setDestinationElement(2);
 		assertEquals(0, issueStrategy.insertLink(link, null), 0.0);
 	}
@@ -37,7 +37,7 @@ public class TestInsertLink extends TestIssueStrategySetUp {
 	public void testLinkFilledUserFilled() {
 		Link link = new LinkImpl();
 		link.setSourceElement(1);
-		link.setLinkType("Contains");
+		link.setType("Contains");
 		link.setDestinationElement(2);
 		ApplicationUser user = new MockApplicationUser("Test");
 		long linkId = issueStrategy.insertLink(link, user);
@@ -48,7 +48,7 @@ public class TestInsertLink extends TestIssueStrategySetUp {
 	public void testLinkFilledUserFilledIssueLinkNull() {
 		Link link = new LinkImpl();
 		link.setSourceElement(2);
-		link.setLinkType("Contains");
+		link.setType("Contains");
 		link.setDestinationElement(3);
 		ApplicationUser user = new MockApplicationUser("Test");
 		assertEquals(0, issueStrategy.insertLink(link, user));
@@ -58,7 +58,7 @@ public class TestInsertLink extends TestIssueStrategySetUp {
 	public void testCreateException() {
 		Link link = new LinkImpl();
 		link.setSourceElement(2);
-		link.setLinkType("Contains");
+		link.setType("Contains");
 		link.setDestinationElement(3);
 		ApplicationUser user = new MockApplicationUser("CreateExecption");
 		assertEquals(0, issueStrategy.insertLink(link, user));
@@ -68,7 +68,7 @@ public class TestInsertLink extends TestIssueStrategySetUp {
 	public void testMoreInwardLinks() {
 		Link link = new LinkImpl();
 		link.setSourceElement(30);
-		link.setLinkType("Contains");
+		link.setType("Contains");
 		link.setDestinationElement(3);
 		ApplicationUser user = new MockApplicationUser("Test");
 		assertEquals(0, issueStrategy.insertLink(link, user));
@@ -78,7 +78,7 @@ public class TestInsertLink extends TestIssueStrategySetUp {
 	public void testMoreOutwardLinks() {
 		Link link = new LinkImpl();
 		link.setSourceElement(10);
-		link.setLinkType("Contains");
+		link.setType("Contains");
 		link.setDestinationElement(30);
 		ApplicationUser user = new MockApplicationUser("Test");
 		assertEquals(0, issueStrategy.insertLink(link, user));

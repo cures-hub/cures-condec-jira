@@ -13,6 +13,8 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 /**
  * Abstract class to create, edit, delete and retrieve decision knowledge
  * elements and their links
+ * @see IssueStrategy
+ * @see ActiveObjectStrategy
  */
 public abstract class AbstractPersistenceStrategy {
 

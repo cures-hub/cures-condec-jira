@@ -39,6 +39,7 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 /**
  * Extends the abstract class AbstractPersistenceStrategy. Uses JIRA issues to
  * store decision knowledge.
+ * @see AbstractPersistenceStrategy
  */
 @JsonAutoDetect
 public class IssueStrategy extends AbstractPersistenceStrategy {
@@ -208,7 +209,7 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 	@Override
 	public long insertLink(Link link, ApplicationUser user) {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
-		long linkTypeId = getLinkTypeId(link.getLinkType());
+		long linkTypeId = getLinkTypeId(link.getType());
 		try {
 			issueLinkManager.createIssueLink(link.getDestinationElement().getId(), link.getSourceElement().getId(),
 					linkTypeId, (long) 0, user);

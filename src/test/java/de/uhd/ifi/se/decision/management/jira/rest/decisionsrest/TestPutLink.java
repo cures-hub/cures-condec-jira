@@ -56,13 +56,13 @@ public class TestPutLink extends TestSetUp {
 
 	@Test
 	public void testactionTypeNullKeyNullReqNullLinkIdZero() {
-		link.setLinkType("Zero");
+		link.setType("Zero");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), decRest.createLink(null, null, link).getEntity());
 	}
 
 	public void testactionTypeNullKeyNullReqNullLinkIdFilled() {
-		link.setLinkType("Ok");
+		link.setType("Ok");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), decRest.createLink(null, null, link).getEntity());
 	}
@@ -75,14 +75,14 @@ public class TestPutLink extends TestSetUp {
 
 	@Test
 	public void testactionTypeNullKeyNullReqFilledLinkIdZero() {
-		link.setLinkType("Zero");
+		link.setType("Zero");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), decRest.createLink(null, req, link).getEntity());
 	}
 
 	@Test
 	public void testactionTypeNullKeyNullReqFilledLinkIdFilled() {
-		link.setLinkType("Ok");
+		link.setType("Ok");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), decRest.createLink(null, req, link).getEntity());
 	}
@@ -95,14 +95,14 @@ public class TestPutLink extends TestSetUp {
 
 	@Test
 	public void testactionTypeNullKeyFilledReqNullLinkIdZero() {
-		link.setLinkType("Zero");
+		link.setType("Zero");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), decRest.createLink(null, null, link).getEntity());
 	}
 
 	@Test
 	public void testactionTypeNullKeyFilledReqNullLinkIdFilled() {
-		link.setLinkType("Ok");
+		link.setType("Ok");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), decRest.createLink(null, null, link).getEntity());
 	}
@@ -115,14 +115,14 @@ public class TestPutLink extends TestSetUp {
 
 	@Test
 	public void testactionTypeNullKeyFilledReqFilledLinkIdZero() {
-		link.setLinkType("Zero");
+		link.setType("Zero");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), decRest.createLink(null, req, link).getEntity());
 	}
 
 	@Test
 	public void testactionTypeNullKeyFilledReqFilledLinkIdFilled() {
-		link.setLinkType("Ok");
+		link.setType("Ok");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), decRest.createLink(null, req, link).getEntity());
 	}
@@ -135,14 +135,14 @@ public class TestPutLink extends TestSetUp {
 
 	@Test
 	public void testactionTypeCreateKeyNullReqNullLinkIdZero() {
-		link.setLinkType("Zero");
+		link.setType("Zero");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), decRest.createLink("create", null, link).getEntity());
 	}
 
 	@Test
 	public void testactionTypeCreateKeyNullReqNullLinkIdFilled() {
-		link.setLinkType("Ok");
+		link.setType("Ok");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), decRest.createLink("create", null, link).getEntity());
 	}
@@ -161,14 +161,14 @@ public class TestPutLink extends TestSetUp {
 
 	@Test
 	public void testactionTypeCreateKeyFilledReqNullLinkIdZero() {
-		link.setLinkType("Zero");
+		link.setType("Zero");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), decRest.createLink("create", null, link).getEntity());
 	}
 
 	@Test
 	public void testactionTypeCreateKeyFilledReqNullLinkIdFilled() {
-		link.setLinkType("Ok");
+		link.setType("Ok");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), decRest.createLink("create", null, link).getEntity());
 	}
@@ -181,7 +181,7 @@ public class TestPutLink extends TestSetUp {
 
 	@Test
 	public void testactionTypeCreateKeyFilledReqFilledLinkIdZero() {
-		link.setLinkType("Zero");
+		link.setType("Zero");
 		link.setSourceElement(3);
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", CREATION_ERROR))
 				.build().getEntity(), decRest.createLink("create", req, link).getEntity());
@@ -189,7 +189,7 @@ public class TestPutLink extends TestSetUp {
 
 	@Test
 	public void testactionTypeCreateKeyFilledReqFilledLinkIdFilled() {
-		link.setLinkType("Ok");
+		link.setType("Ok");
 		assertEquals(Status.OK.getStatusCode(), decRest.createLink("create", req, link).getStatus());
 	}
 
@@ -201,14 +201,14 @@ public class TestPutLink extends TestSetUp {
 
 	@Test
 	public void testactionTypeNotCreateKeyNullReqNullLinkIdZero() {
-		link.setLinkType("Zero");
+		link.setType("Zero");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), decRest.createLink("notCreate", null, link).getEntity());
 	}
 
 	@Test
 	public void testactionTypeNotCreateKeyNullReqNullLinkIdFilled() {
-		link.setLinkType("Ok");
+		link.setType("Ok");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), decRest.createLink("notCreate", null, link).getEntity());
 	}
@@ -227,14 +227,14 @@ public class TestPutLink extends TestSetUp {
 
 	@Test
 	public void testactionTypeNotCreateKeyFilledReqNullLinkIdZero() {
-		link.setLinkType("Zero");
+		link.setType("Zero");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), decRest.createLink("notCreate", null, link).getEntity());
 	}
 
 	@Test
 	public void testactionTypeNotCreateKeyFilledReqNullLinkIdFilled() {
-		link.setLinkType("Ok");
+		link.setType("Ok");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), decRest.createLink("notCreate", null, link).getEntity());
 	}

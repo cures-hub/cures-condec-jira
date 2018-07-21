@@ -67,7 +67,7 @@ public class TestNode {
 	@Test
 	public void testElementLinkEmptyConstructor(){
 		Link link = new LinkImpl();
-		link.setLinkType("Test");
+		link.setType("Test");
 		Node newNode = new Node(element,link);
 		assertNotNull(newNode);
 	}
@@ -75,7 +75,7 @@ public class TestNode {
 	@Test
 	public void testElementLinkSupportConstructor(){
 		Link link = new LinkImpl();
-		link.setLinkType("support");
+		link.setType("support");
 		Node newNode = new Node(element,link);
 		assertNotNull(newNode);
 	}
@@ -83,7 +83,7 @@ public class TestNode {
 	@Test
 	public void testElementLinkAttackConstructor(){
 		Link link = new LinkImpl();
-		link.setLinkType("attack");
+		link.setType("attack");
 		Node newNode = new Node(element,link);
 		assertNotNull(newNode);
 	}

@@ -20,14 +20,14 @@ public class TestLink {
 		ingoingId = 100;
 		outgoingId = 100;
 		link = new LinkImpl();
-		link.setLinkType(linkType);
+		link.setType(linkType);
 		link.setSourceElement(ingoingId);
 		link.setDestinationElement(outgoingId);
 	}
 
 	@Test
 	public void testgetLinkType() {
-		assertEquals(this.linkType, this.link.getLinkType());
+		assertEquals(this.linkType, this.link.getType());
 	}
 
 	@Test
@@ -42,8 +42,8 @@ public class TestLink {
 
 	@Test
 	public void testSetLinkType() {
-		this.link.setLinkType(this.linkType + "New");
-		assertEquals(this.linkType + "New", this.link.getLinkType());
+		this.link.setType(this.linkType + "New");
+		assertEquals(this.linkType + "New", this.link.getType());
 	}
 
 	@Test

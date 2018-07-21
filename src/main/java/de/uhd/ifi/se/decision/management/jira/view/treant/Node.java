@@ -67,7 +67,7 @@ public class Node {
 
 	public Node(DecisionKnowledgeElement decisionKnowledgeElement, Link link) {
 		this(decisionKnowledgeElement);
-		switch (link.getLinkType()) {
+		switch (link.getType()) {
 		case "support":
 			if (decisionKnowledgeElement.getId() == link.getSourceElement().getId()) {
 				this.nodeContent = ImmutableMap.of("name", "Pro-argument", "title",

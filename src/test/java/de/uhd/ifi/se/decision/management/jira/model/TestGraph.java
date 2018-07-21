@@ -80,7 +80,7 @@ public class TestGraph extends TestSetUp {
 		issueStrategy.insertDecisionKnowledgeElement(decision, user);
 		for (KnowledgeType type : KnowledgeType.values()) {
 			LinkImpl link = new LinkImpl();
-			link.setLinkType("support");
+			link.setType("support");
 			if (type != KnowledgeType.DECISION) {
 				if (type.equals(KnowledgeType.ARGUMENT)) {
 					DecisionKnowledgeElementImpl decisionKnowledgeElement = new DecisionKnowledgeElementImpl(i,
@@ -93,7 +93,7 @@ public class TestGraph extends TestSetUp {
 					DecisionKnowledgeElementImpl decisionKnowledgeElement = new DecisionKnowledgeElementImpl(i,
 							"TESTSummary", "TestDescription", type, project.getKey(), "TEST-" + i);
 					issueStrategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
-					link.setLinkType("attack");
+					link.setType("attack");
 					link.setDestinationElement(decision.getId());
 					link.setSourceElement(decisionKnowledgeElement.getId());
 					issueStrategy.insertLink(link, user);

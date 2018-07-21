@@ -30,7 +30,7 @@ public interface Link {
 	 * @see LinkType
 	 * @return type of the link.
 	 */
-	String getLinkType();
+	String getType();
 
 	/**
 	 * Set the type of the link.
@@ -39,7 +39,7 @@ public interface Link {
 	 * @param type
 	 *            of the link.
 	 */
-	void setLinkType(String linkType);
+	void setType(String type);
 
 	/**
 	 * Get the source element of this link.

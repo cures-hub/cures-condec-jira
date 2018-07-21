@@ -40,7 +40,7 @@ public class Data {
 
 	public Data(DecisionKnowledgeElement decisionKnowledgeElement, Link link) {
 		this(decisionKnowledgeElement);
-		switch (link.getLinkType()) {
+		switch (link.getType()) {
 		case "support":
 			if (decisionKnowledgeElement.getId() == link.getSourceElement().getId()) {
 				this.icon = ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
