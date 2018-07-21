@@ -39,8 +39,7 @@ public class DecisionsRest {
 	public Response getDecisionKnowledgeElement(@QueryParam("id") long id,
 			@QueryParam("projectKey") String projectKey) {
 		if (projectKey != null) {
-			StrategyProvider strategyProvider = new StrategyProvider();
-			AbstractPersistenceStrategy strategy = strategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			DecisionKnowledgeElement decisionKnowledgeElement = strategy.getDecisionKnowledgeElement(id);
 			if (decisionKnowledgeElement != null) {
 				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
@@ -61,8 +60,7 @@ public class DecisionsRest {
 	public Response getLinkedDecisionComponents(@QueryParam("id") long id,
 			@QueryParam("projectKey") String projectKey) {
 		if (projectKey != null) {
-			StrategyProvider strategyProvider = new StrategyProvider();
-			AbstractPersistenceStrategy strategy = strategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			List<DecisionKnowledgeElement> linkedDecisionKnowledgeElements = strategy.getLinkedElements(id);
 			return Response.ok(linkedDecisionKnowledgeElements).build();
 		} else {
@@ -78,8 +76,7 @@ public class DecisionsRest {
 	public Response getUnlinkedDecisionComponents(@QueryParam("id") long id,
 			@QueryParam("projectKey") String projectKey) {
 		if (projectKey != null) {
-			StrategyProvider strategyProvider = new StrategyProvider();
-			AbstractPersistenceStrategy strategy = strategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			List<DecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = strategy
 					.getUnlinkedElements(id);
 			return Response.ok(unlinkedDecisionKnowledgeElements).build();
@@ -97,8 +94,7 @@ public class DecisionsRest {
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
-			StrategyProvider strategyProvider = new StrategyProvider();
-			AbstractPersistenceStrategy strategy = strategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			decisionKnowledgeElement = strategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
 			if (decisionKnowledgeElement != null) {
@@ -119,8 +115,7 @@ public class DecisionsRest {
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
-			StrategyProvider strategyProvider = new StrategyProvider();
-			AbstractPersistenceStrategy strategy = strategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			if (strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user)) {
 				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
@@ -140,8 +135,7 @@ public class DecisionsRest {
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
-			StrategyProvider strategyProvider = new StrategyProvider();
-			AbstractPersistenceStrategy strategy = strategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			boolean isDeleted = strategy.deleteDecisionKnowledgeElement(decisionKnowledgeElement, user);
 			if (isDeleted) {
@@ -162,8 +156,7 @@ public class DecisionsRest {
 	public Response createLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
-			StrategyProvider strategyProvider = new StrategyProvider();
-			AbstractPersistenceStrategy strategy = strategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			long linkId = strategy.insertLink(link, user);
 			if (linkId == 0) {
@@ -183,8 +176,7 @@ public class DecisionsRest {
 	public Response deleteLinks(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
-			StrategyProvider strategyProvider = new StrategyProvider();
-			AbstractPersistenceStrategy strategy = strategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			boolean isDeleted = strategy.deleteLink(link, user);
 			if (isDeleted) {

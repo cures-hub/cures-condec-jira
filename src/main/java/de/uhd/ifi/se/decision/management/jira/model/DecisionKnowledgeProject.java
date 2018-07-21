@@ -102,8 +102,9 @@ public interface DecisionKnowledgeProject {
 	 * @see AbstractPersistenceStrategy
 	 * @see IssueStrategy
 	 * @see ActiveObjectStrategy
-	 * @return persistence strategy for decision knowledge used in this project
-	 *         (either issue strategy or active object strategy).
+	 * @return persistence strategy for decision knowledge used in this project,
+	 *         either issue strategy or active object strategy. The active object
+	 *         strategy is the default strategy.
 	 */
 	AbstractPersistenceStrategy getPersistenceStrategy();
 
@@ -115,12 +116,12 @@ public interface DecisionKnowledgeProject {
 	 * @see ActiveObjectStrategy
 	 * @param projectKey
 	 *            of the JIRA project.
-	 * @return persistence strategy for decision knowledge used in this project
-	 *         (either issue strategy or active object strategy).
+	 * @return persistence strategy for decision knowledge used in this project,
+	 *         either issue strategy or active object strategy. The active object
+	 *         strategy is the default strategy.
 	 */
 	static AbstractPersistenceStrategy getPersistenceStrategy(String projectKey) {
-		StrategyProvider strategyProvider = new StrategyProvider();
-		return strategyProvider.getPersistenceStrategy(projectKey);
+		return StrategyProvider.getPersistenceStrategy(projectKey);
 	}
 
 	/**

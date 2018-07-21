@@ -39,6 +39,7 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 /**
  * Extends the abstract class AbstractPersistenceStrategy. Uses JIRA issues to
  * store decision knowledge.
+ *
  * @see AbstractPersistenceStrategy
  */
 @JsonAutoDetect
@@ -64,10 +65,11 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		Project project = ComponentAccessor.getProjectManager()
 				.getProjectByCurrentKey(element.getProject().getProjectKey());
 		issueInputParameters.setProjectId(project.getId());
+
 		String issueTypeId = getIssueTypeId(element.getType());
 		issueInputParameters.setIssueTypeId(issueTypeId);
-		IssueService issueService = ComponentAccessor.getIssueService();
 
+		IssueService issueService = ComponentAccessor.getIssueService();
 		CreateValidationResult result = issueService.validateCreate(user, issueInputParameters);
 		if (result.getErrorCollection().hasAnyErrors()) {
 			for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
@@ -75,13 +77,23 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 						+ entry.getValue());
 			}
 			return null;
-		} else {
-			IssueResult issueResult = issueService.create(user, result);
-			Issue issue = issueResult.getIssue();
-			element.setId(issue.getId());
-			element.setKey(issue.getKey());
-			return element;
 		}
+		IssueResult issueResult = issueService.create(user, result);
+		Issue issue = issueResult.getIssue();
+		element.setId(issue.getId());
+		element.setKey(issue.getKey());
+		return element;
+	}
+
+	private static String getIssueTypeId(KnowledgeType type) {
+		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
+		Collection<IssueType> listOfIssueTypes = constantsManager.getAllIssueTypeObjects();
+		for (IssueType issueType : listOfIssueTypes) {
+			if (issueType.getName().equalsIgnoreCase(type.toString())) {
+				return issueType.getId();
+			}
+		}
+		return "";
 	}
 
 	@Override
@@ -119,10 +131,9 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 							+ entry.getValue());
 				}
 				return false;
-			} else {
-				ErrorCollection errorCollection = issueService.delete(user, result);
-				return !errorCollection.hasAnyErrors();
 			}
+			ErrorCollection errorCollection = issueService.delete(user, result);
+			return !errorCollection.hasAnyErrors();
 		}
 		return false;
 	}
@@ -138,13 +149,11 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		Collection<Long> issueIds;
 		try {
 			issueIds = issueManager.getIssueIdsForProject(project.getId());
-		} catch (GenericEntityException e) {
-			issueIds = new ArrayList<Long>();
-		} catch (NullPointerException e) {
+		} catch (GenericEntityException | NullPointerException e) {
 			issueIds = new ArrayList<Long>();
 		}
 
-		for (Long issueId : issueIds) {
+		for (long issueId : issueIds) {
 			Issue issue = issueManager.getIssueObject(issueId);
 
 			KnowledgeType type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
@@ -182,7 +191,7 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		for (IssueLink issueLink : outwardIssueLinks) {
 			Issue outwardIssue = issueLink.getDestinationObject();
 			if (outwardIssue != null) {
-				DecisionKnowledgeElementImpl outwardElement = new DecisionKnowledgeElementImpl(outwardIssue);
+				DecisionKnowledgeElement outwardElement = new DecisionKnowledgeElementImpl(outwardIssue);
 				elementsLinkedWithOutwardLinks.add(outwardElement);
 			}
 		}
@@ -199,7 +208,7 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		for (IssueLink issueLink : inwardIssueLinks) {
 			Issue inwardIssue = issueLink.getSourceObject();
 			if (inwardIssue != null) {
-				DecisionKnowledgeElementImpl inwardElement = new DecisionKnowledgeElementImpl(inwardIssue);
+				DecisionKnowledgeElement inwardElement = new DecisionKnowledgeElementImpl(inwardIssue);
 				elementsLinkedWithInwardLinks.add(inwardElement);
 			}
 		}
@@ -222,7 +231,7 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		return 0;
 	}
 
-	private long getLinkTypeId(String linkTypeName) {
+	private static long getLinkTypeId(String linkTypeName) {
 		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		Collection<IssueLinkType> issueLinkTypeCollection = issueLinkTypeManager.getIssueLinkTypesByName(linkTypeName);
 		Iterator<IssueLinkType> issueLinkTypeIterator = issueLinkTypeCollection.iterator();
@@ -248,6 +257,7 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 				return true;
 			}
 		}
+		LOGGER.error("Deletion of link in database failed.");
 		return false;
 	}
 
@@ -261,7 +271,7 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		return inwardLinks;
 	}
 
-	public List<IssueLink> getInwardIssueLinks(DecisionKnowledgeElement element) {
+	public static List<IssueLink> getInwardIssueLinks(DecisionKnowledgeElement element) {
 		if (element == null) {
 			return new ArrayList<IssueLink>();
 		}
@@ -278,21 +288,10 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		return outwardLinks;
 	}
 
-	public List<IssueLink> getOutwardIssueLinks(DecisionKnowledgeElement element) {
+	public static List<IssueLink> getOutwardIssueLinks(DecisionKnowledgeElement element) {
 		if (element == null) {
 			return new ArrayList<IssueLink>();
 		}
 		return ComponentAccessor.getIssueLinkManager().getOutwardLinks(element.getId());
-	}
-
-	private String getIssueTypeId(KnowledgeType type) {
-		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
-		Collection<IssueType> listOfIssueTypes = constantsManager.getAllIssueTypeObjects();
-		for (IssueType issueType : listOfIssueTypes) {
-			if (issueType.getName().equalsIgnoreCase(type.toString())) {
-				return issueType.getId();
-			}
-		}
-		return "";
 	}
 }

@@ -144,7 +144,7 @@ public interface DecisionKnowledgeElement {
 	void setKey(String key);
 
 	/**
-	 * Get all linked element of the decision knowledge element. It does not matter
+	 * Get all linked elements of the decision knowledge element. It does not matter
 	 * whether this decision knowledge element is the source or the destination
 	 * element.
 	 *

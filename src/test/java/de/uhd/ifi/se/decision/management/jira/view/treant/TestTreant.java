@@ -40,8 +40,7 @@ public class TestTreant extends TestSetUp {
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockDefaultUserManager());
 		initialization();
-		StrategyProvider strategyProvider = new StrategyProvider();
-		persistenceStrategy = strategyProvider.getPersistenceStrategy("TEST");
+		persistenceStrategy = StrategyProvider.getPersistenceStrategy("TEST");
 	}
 
 	@Test

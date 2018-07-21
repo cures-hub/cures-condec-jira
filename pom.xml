@@ -199,17 +199,16 @@
 			<artifactId>weka-stable</artifactId>
 			<version>3.8.2</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/net.sf.meka/meka -->
 		<dependency>
-		    <groupId>net.sf.meka</groupId>
-		    <artifactId>meka</artifactId>
-		    <version>1.9.2</version>
+			<groupId>net.sf.meka</groupId>
+			<artifactId>meka</artifactId>
+			<version>1.9.2</version>
 		</dependency>
-		 <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.6</version>
-        </dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.6</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>cures-condec-jira</finalName>
@@ -226,8 +225,6 @@
 					<enableFastdev>false</enableFastdev>
 					<instructions>
 						<Atlassian-Plugin-Key>${atlassian.plugin.key}</Atlassian-Plugin-Key>
-						<Import-Package>Package>org.springframework.osgi.*;resolution:="optional",org.eclipse.gemini.blueprint.*;resolution:="optional",*;version="0";resolution:=optional</Import-Package>
-						<Export-Package>de.uhd.ifi.se.decision.management.jira.api,</Export-Package>
 						<Spring-Context>*</Spring-Context>
 					</instructions>
 				</configuration>

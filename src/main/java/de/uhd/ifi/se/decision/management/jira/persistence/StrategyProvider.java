@@ -5,7 +5,19 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
  */
 public class StrategyProvider {
 
-	public AbstractPersistenceStrategy getPersistenceStrategy(String projectKey) {
+	/**
+	 * Get the persistence strategy for decision knowledge used in a project.
+	 *
+	 * @see AbstractPersistenceStrategy
+	 * @see IssueStrategy
+	 * @see ActiveObjectStrategy
+	 * @param projectKey
+	 *            of the JIRA project.
+	 * @return persistence strategy for decision knowledge used in the given
+	 *         project, either issue strategy or active object strategy. The active
+	 *         object strategy is the default strategy.
+	 */
+	public static AbstractPersistenceStrategy getPersistenceStrategy(String projectKey) {
 		if (projectKey == null) {
 			throw new IllegalArgumentException("The project key cannot be null.");
 		}
