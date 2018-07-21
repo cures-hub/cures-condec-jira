@@ -68,7 +68,7 @@ public class TestGraph extends TestSetUp {
 
 	@Test
 	public void testGetLinkedElementsFilled() {
-		IssueStrategy issueStrategy = new IssueStrategy();
+		IssueStrategy issueStrategy = new IssueStrategy("TEST");
 		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
 

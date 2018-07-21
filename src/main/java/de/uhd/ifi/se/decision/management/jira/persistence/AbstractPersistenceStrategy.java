@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.atlassian.jira.user.ApplicationUser;
@@ -15,104 +16,59 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  */
 public abstract class AbstractPersistenceStrategy {
 
-	private String projectKey;
-
-	public AbstractPersistenceStrategy() {
-	}
-
-	public AbstractPersistenceStrategy(String projectKey) {
-		this.setProjectKey(projectKey);
-	}
-
-	public abstract DecisionKnowledgeElement insertDecisionKnowledgeElement(
-			DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user);
-
-	public abstract boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement,
+	public abstract DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
 			ApplicationUser user);
 
-	public abstract boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement,
-			ApplicationUser user);
+	public abstract boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
 
-	public abstract List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey);
+	public abstract boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
 
-	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements() {
-		return this.getDecisionKnowledgeElements(this.projectKey);
-	};
-
-	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey, KnowledgeType type) {
-		List<DecisionKnowledgeElement> decisionKnowledgeElements = this.getDecisionKnowledgeElements(projectKey);
-		List<DecisionKnowledgeElement> decisionKnowledgeElementsWithType = new ArrayList<DecisionKnowledgeElement>();
-		for (DecisionKnowledgeElement decisionKnowledgeElement : decisionKnowledgeElements) {
-			if (decisionKnowledgeElement.getType() == type) {
-				decisionKnowledgeElementsWithType.add(decisionKnowledgeElement);
-			}
-		}
-		return decisionKnowledgeElementsWithType;
-	}
-
-	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type) {
-		return this.getDecisionKnowledgeElements(this.projectKey, type);
-	};
-
-	public List<DecisionKnowledgeElement> getDecisions(String projectKey) {
-		return getDecisionKnowledgeElements(projectKey, KnowledgeType.DECISION);
-	}
-
-	public List<DecisionKnowledgeElement> getDecisions() {
-		return getDecisionKnowledgeElements(this.projectKey, KnowledgeType.DECISION);
-	}
+	public abstract List<DecisionKnowledgeElement> getDecisionKnowledgeElements();
 
 	public abstract DecisionKnowledgeElement getDecisionKnowledgeElement(String key);
 
 	public abstract DecisionKnowledgeElement getDecisionKnowledgeElement(long id);
 
-	public abstract List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(
-			DecisionKnowledgeElement decisionKnowledgeElement);
+	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type) {
+		List<DecisionKnowledgeElement> elements = this.getDecisionKnowledgeElements();
+		Iterator<DecisionKnowledgeElement> iterator = elements.iterator();
+		while(iterator.hasNext()) {
+			DecisionKnowledgeElement element = iterator.next();
+			if (element.getType() != type) {
+				iterator.remove();
+			}
+		}
+		return elements;
+	}
 
-	public abstract List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(
-			DecisionKnowledgeElement decisionKnowledgeElement);
+	public abstract List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement element);
 
-	public List<DecisionKnowledgeElement> getLinkedElements(DecisionKnowledgeElement decisionKnowledgeElement) {
+	public abstract List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element);
+
+	public List<DecisionKnowledgeElement> getLinkedElements(DecisionKnowledgeElement element) {
 		List<DecisionKnowledgeElement> linkedElements = new ArrayList<DecisionKnowledgeElement>();
-		linkedElements.addAll(this.getElementsLinkedWithOutwardLinks(decisionKnowledgeElement));
-		linkedElements.addAll(this.getElementsLinkedWithInwardLinks(decisionKnowledgeElement));
+		linkedElements.addAll(this.getElementsLinkedWithOutwardLinks(element));
+		linkedElements.addAll(this.getElementsLinkedWithInwardLinks(element));
 		return linkedElements;
 	}
 
 	public List<DecisionKnowledgeElement> getLinkedElements(long id) {
-		DecisionKnowledgeElement decisionKnowledgeElement = this.getDecisionKnowledgeElement(id);
-		return this.getLinkedElements(decisionKnowledgeElement);
+		DecisionKnowledgeElement element = this.getDecisionKnowledgeElement(id);
+		return this.getLinkedElements(element);
 	}
 
-	public List<DecisionKnowledgeElement> getUnlinkedDecisionComponents(long id, String projectKey) {
+	public List<DecisionKnowledgeElement> getUnlinkedElements(long id) {
+		List<DecisionKnowledgeElement> elements = this.getDecisionKnowledgeElements();
 		DecisionKnowledgeElement rootElement = this.getDecisionKnowledgeElement(id);
 		if (rootElement == null) {
-			return new ArrayList<DecisionKnowledgeElement>();
+			return elements;
 		}
-		List<DecisionKnowledgeElement> decisionKnowledgeElements = this.getDecisionKnowledgeElements(projectKey);
-		List<DecisionKnowledgeElement> unlinkedDecisionComponents = new ArrayList<DecisionKnowledgeElement>();
-		List<DecisionKnowledgeElement> outwardElements = this.getLinkedElements(rootElement);
-		for (DecisionKnowledgeElement decisionKnowledgeElement : decisionKnowledgeElements) {
-			if (decisionKnowledgeElement.getId() == id
-					|| decisionKnowledgeElement.getType() == KnowledgeType.DECISION) {
-				continue;
-			}
-			boolean linked = false;
-			for (DecisionKnowledgeElement element : outwardElements) {
-				if (element.getId() == decisionKnowledgeElement.getId()) {
-					linked = true;
-					break;
-				}
-			}
-			if (!linked) {
-				unlinkedDecisionComponents.add(decisionKnowledgeElement);
-			}
-		}
-		return unlinkedDecisionComponents;
-	}
+		elements.remove(rootElement);
 
-	public List<DecisionKnowledgeElement> getUnlinkedDecisionComponents(long id) {
-		return getUnlinkedDecisionComponents(id, this.projectKey);
+		List<DecisionKnowledgeElement> linkedElements = this.getLinkedElements(rootElement);
+		elements.removeAll(linkedElements);
+
+		return elements;
 	}
 
 	public abstract long insertLink(Link link, ApplicationUser user);
@@ -122,12 +78,4 @@ public abstract class AbstractPersistenceStrategy {
 	public abstract List<Link> getInwardLinks(DecisionKnowledgeElement element);
 
 	public abstract List<Link> getOutwardLinks(DecisionKnowledgeElement element);
-
-	public String getProjectKey() {
-		return projectKey;
-	}
-
-	public void setProjectKey(String projectKey) {
-		this.projectKey = projectKey;
-	}
 }

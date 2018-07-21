@@ -5,15 +5,15 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
  */
 public class StrategyProvider {
 
-	public AbstractPersistenceStrategy getStrategy(String projectKey) {
+	public AbstractPersistenceStrategy getPersistenceStrategy(String projectKey) {
 		if (projectKey == null) {
 			throw new IllegalArgumentException("The project key cannot be null.");
 		}
 
 		boolean isIssueStrategy = ConfigPersistence.isIssueStrategy(projectKey);
 		if (isIssueStrategy) {
-			return new IssueStrategy();
+			return new IssueStrategy(projectKey);
 		}
-		return new ActiveObjectStrategy();
+		return new ActiveObjectStrategy(projectKey);
 	}
 }

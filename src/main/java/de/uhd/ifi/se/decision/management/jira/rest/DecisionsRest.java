@@ -40,7 +40,7 @@ public class DecisionsRest {
 			@QueryParam("projectKey") String projectKey) {
 		if (projectKey != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
-			AbstractPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+			AbstractPersistenceStrategy strategy = strategyProvider.getPersistenceStrategy(projectKey);
 			DecisionKnowledgeElement decisionKnowledgeElement = strategy.getDecisionKnowledgeElement(id);
 			if (decisionKnowledgeElement != null) {
 				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
@@ -62,7 +62,7 @@ public class DecisionsRest {
 			@QueryParam("projectKey") String projectKey) {
 		if (projectKey != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
-			AbstractPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+			AbstractPersistenceStrategy strategy = strategyProvider.getPersistenceStrategy(projectKey);
 			List<DecisionKnowledgeElement> linkedDecisionKnowledgeElements = strategy.getLinkedElements(id);
 			return Response.ok(linkedDecisionKnowledgeElements).build();
 		} else {
@@ -79,9 +79,9 @@ public class DecisionsRest {
 			@QueryParam("projectKey") String projectKey) {
 		if (projectKey != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
-			AbstractPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+			AbstractPersistenceStrategy strategy = strategyProvider.getPersistenceStrategy(projectKey);
 			List<DecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = strategy
-					.getUnlinkedDecisionComponents(id, projectKey);
+					.getUnlinkedElements(id);
 			return Response.ok(unlinkedDecisionKnowledgeElements).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
@@ -98,7 +98,7 @@ public class DecisionsRest {
 		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
 			StrategyProvider strategyProvider = new StrategyProvider();
-			AbstractPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+			AbstractPersistenceStrategy strategy = strategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			decisionKnowledgeElement = strategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
 			if (decisionKnowledgeElement != null) {
@@ -120,7 +120,7 @@ public class DecisionsRest {
 		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
 			StrategyProvider strategyProvider = new StrategyProvider();
-			AbstractPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+			AbstractPersistenceStrategy strategy = strategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			if (strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user)) {
 				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
@@ -141,7 +141,7 @@ public class DecisionsRest {
 		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
 			StrategyProvider strategyProvider = new StrategyProvider();
-			AbstractPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+			AbstractPersistenceStrategy strategy = strategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			boolean isDeleted = strategy.deleteDecisionKnowledgeElement(decisionKnowledgeElement, user);
 			if (isDeleted) {
@@ -163,7 +163,7 @@ public class DecisionsRest {
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
-			AbstractPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+			AbstractPersistenceStrategy strategy = strategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			long linkId = strategy.insertLink(link, user);
 			if (linkId == 0) {
@@ -184,7 +184,7 @@ public class DecisionsRest {
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
 			StrategyProvider strategyProvider = new StrategyProvider();
-			AbstractPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
+			AbstractPersistenceStrategy strategy = strategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			boolean isDeleted = strategy.deleteLink(link, user);
 			if (isDeleted) {

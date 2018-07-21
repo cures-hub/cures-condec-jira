@@ -118,7 +118,7 @@ public interface DecisionKnowledgeProject {
 	 */
 	static AbstractPersistenceStrategy getPersistenceStrategy(String projectKey) {
 		StrategyProvider strategyProvider = new StrategyProvider();
-		return strategyProvider.getStrategy(projectKey);
+		return strategyProvider.getPersistenceStrategy(projectKey);
 	}
 
 	/**

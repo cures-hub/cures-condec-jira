@@ -41,7 +41,7 @@ public class TestTreant extends TestSetUp {
 				new MockDefaultUserManager());
 		initialization();
 		StrategyProvider strategyProvider = new StrategyProvider();
-		abstractPersistenceStrategy = strategyProvider.getStrategy("TEST");
+		abstractPersistenceStrategy = strategyProvider.getPersistenceStrategy("TEST");
 	}
 
 	@Test

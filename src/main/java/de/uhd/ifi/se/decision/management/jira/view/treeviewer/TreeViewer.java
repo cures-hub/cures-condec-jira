@@ -51,8 +51,8 @@ public class TreeViewer {
 	public TreeViewer(String projectKey, KnowledgeType rootElementType) {
 		this();
 		StrategyProvider strategyProvider = new StrategyProvider();
-		AbstractPersistenceStrategy strategy = strategyProvider.getStrategy(projectKey);
-		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements(projectKey, rootElementType);
+		AbstractPersistenceStrategy strategy = strategyProvider.getPersistenceStrategy(projectKey);
+		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements(rootElementType);
 
 		Set<Data> dataSet = new HashSet<Data>();
 		for (DecisionKnowledgeElement element : elements) {

@@ -29,6 +29,12 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectStrategy.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
+	private String projectKey;
+
+	public ActiveObjectStrategy(String projectKey) {
+		this.projectKey = projectKey;
+	}
+
 	@Override
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement,
 			ApplicationUser user) {
@@ -121,9 +127,9 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey) {
+	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements() {
 		List<DecisionKnowledgeElement> decisionKnowledgeElements = null;
-		if (projectKey != null) {
+		if (this.projectKey != null) {
 			decisionKnowledgeElements = ACTIVE_OBJECTS
 					.executeInTransaction(new TransactionCallback<List<DecisionKnowledgeElement>>() {
 						@Override

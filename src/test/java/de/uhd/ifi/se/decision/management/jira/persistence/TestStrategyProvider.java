@@ -18,16 +18,16 @@ public class TestStrategyProvider extends TestSetUp {
 
 	@Test(expected = java.lang.IllegalArgumentException.class)
 	public void testProjectKeyNull() {
-		strategyProvider.getStrategy(null);
+		strategyProvider.getPersistenceStrategy(null);
 	}
 
 	@Test
 	public void testProjectKeyNotExist() {
-		assertTrue(strategyProvider.getStrategy("TESTNOT") instanceof IssueStrategy);
+		assertTrue(strategyProvider.getPersistenceStrategy("TESTNOT") instanceof IssueStrategy);
 	}
 
 	@Test
 	public void testProjectKeyExists() {
-		assertTrue(strategyProvider.getStrategy("TEST") instanceof IssueStrategy);
+		assertTrue(strategyProvider.getPersistenceStrategy("TEST") instanceof IssueStrategy);
 	}
 }

@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.bc.issue.IssueService;
+import com.atlassian.jira.bc.issue.IssueService.CreateValidationResult;
 import com.atlassian.jira.bc.issue.IssueService.IssueResult;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
@@ -43,23 +44,30 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 public class IssueStrategy extends AbstractPersistenceStrategy {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IssueStrategy.class);
 
+	private String projectKey;
+
+	public IssueStrategy(String projectKey) {
+		this.projectKey = projectKey;
+	}
+
 	@Override
-	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement,
+	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
 			ApplicationUser user) {
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
 
-		issueInputParameters.setSummary(decisionElement.getSummary());
-		issueInputParameters.setDescription(decisionElement.getDescription());
+		issueInputParameters.setSummary(element.getSummary());
+		issueInputParameters.setDescription(element.getDescription());
 		issueInputParameters.setAssigneeId(user.getName());
 		issueInputParameters.setReporterId(user.getName());
 
-		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(decisionElement.getProject().getProjectKey());
+		Project project = ComponentAccessor.getProjectManager()
+				.getProjectByCurrentKey(element.getProject().getProjectKey());
 		issueInputParameters.setProjectId(project.getId());
-		String issueTypeId = getIssueTypeId(decisionElement.getType());
+		String issueTypeId = getIssueTypeId(element.getType());
 		issueInputParameters.setIssueTypeId(issueTypeId);
 		IssueService issueService = ComponentAccessor.getIssueService();
 
-		IssueService.CreateValidationResult result = issueService.validateCreate(user, issueInputParameters);
+		CreateValidationResult result = issueService.validateCreate(user, issueInputParameters);
 		if (result.getErrorCollection().hasAnyErrors()) {
 			for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
 				LOGGER.error("Insertion of decision knowledge element into database failed. " + entry.getKey() + ": "
@@ -69,21 +77,21 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		} else {
 			IssueResult issueResult = issueService.create(user, result);
 			Issue issue = issueResult.getIssue();
-			decisionElement.setId(issue.getId());
-			decisionElement.setKey(issue.getKey());
-			return decisionElement;
+			element.setId(issue.getId());
+			element.setKey(issue.getKey());
+			return element;
 		}
 	}
 
 	@Override
-	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
+	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
 		IssueService issueService = ComponentAccessor.getIssueService();
-		IssueResult issueResult = issueService.getIssue(user, decisionElement.getId());
+		IssueResult issueResult = issueService.getIssue(user, element.getId());
 		MutableIssue issueToBeUpdated = issueResult.getIssue();
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
-		issueInputParameters.setSummary(decisionElement.getSummary());
-		issueInputParameters.setDescription(decisionElement.getDescription());
-		String issueTypeId = getIssueTypeId(decisionElement.getType());
+		issueInputParameters.setSummary(element.getSummary());
+		issueInputParameters.setDescription(element.getDescription());
+		String issueTypeId = getIssueTypeId(element.getType());
 		issueInputParameters.setIssueTypeId(issueTypeId);
 		IssueService.UpdateValidationResult result = issueService.validateUpdate(user, issueToBeUpdated.getId(),
 				issueInputParameters);
@@ -99,9 +107,9 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 	}
 
 	@Override
-	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement decisionElement, ApplicationUser user) {
+	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
 		IssueService issueService = ComponentAccessor.getIssueService();
-		IssueService.IssueResult issue = issueService.getIssue(user, decisionElement.getId());
+		IssueService.IssueResult issue = issueService.getIssue(user, element.getId());
 		if (issue.isValid()) {
 			IssueService.DeleteValidationResult result = issueService.validateDelete(user, issue.getIssue().getId());
 			if (result.getErrorCollection().hasAnyErrors()) {
@@ -119,13 +127,13 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(String projectKey) {
+	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements() {
 		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
-		if (projectKey == null) {
+		if (this.projectKey == null) {
 			return decisionKnowledgeElements;
 		}
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
-		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
+		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(this.projectKey);
 		Collection<Long> issueIds;
 		try {
 			issueIds = issueManager.getIssueIdsForProject(project.getId());
@@ -164,13 +172,12 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(
-			DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (decisionKnowledgeElement == null) {
+	public List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement element) {
+		if (element == null) {
 			return new ArrayList<DecisionKnowledgeElement>();
 		}
 		List<DecisionKnowledgeElement> elementsLinkedWithOutwardLinks = new ArrayList<DecisionKnowledgeElement>();
-		List<IssueLink> outwardIssueLinks = getOutwardIssueLinks(decisionKnowledgeElement);
+		List<IssueLink> outwardIssueLinks = getOutwardIssueLinks(element);
 		for (IssueLink issueLink : outwardIssueLinks) {
 			Issue outwardIssue = issueLink.getDestinationObject();
 			if (outwardIssue != null) {
@@ -182,13 +189,12 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(
-			DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (decisionKnowledgeElement == null) {
+	public List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element) {
+		if (element == null) {
 			return new ArrayList<DecisionKnowledgeElement>();
 		}
 		List<DecisionKnowledgeElement> elementsLinkedWithInwardLinks = new ArrayList<DecisionKnowledgeElement>();
-		List<IssueLink> inwardIssueLinks = getInwardIssueLinks(decisionKnowledgeElement);
+		List<IssueLink> inwardIssueLinks = getInwardIssueLinks(element);
 		for (IssueLink issueLink : inwardIssueLinks) {
 			Issue inwardIssue = issueLink.getSourceObject();
 			if (inwardIssue != null) {
@@ -245,8 +251,8 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 	}
 
 	@Override
-	public List<Link> getInwardLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
-		List<IssueLink> inwardIssueLinks = getInwardIssueLinks(decisionKnowledgeElement);
+	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
+		List<IssueLink> inwardIssueLinks = getInwardIssueLinks(element);
 		List<Link> inwardLinks = new ArrayList<Link>();
 		for (IssueLink inwardIssueLink : inwardIssueLinks) {
 			inwardLinks.add(new LinkImpl(inwardIssueLink));
@@ -254,16 +260,16 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		return inwardLinks;
 	}
 
-	public List<IssueLink> getInwardIssueLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (decisionKnowledgeElement == null) {
+	public List<IssueLink> getInwardIssueLinks(DecisionKnowledgeElement element) {
+		if (element == null) {
 			return new ArrayList<IssueLink>();
 		}
-		return ComponentAccessor.getIssueLinkManager().getInwardLinks(decisionKnowledgeElement.getId());
+		return ComponentAccessor.getIssueLinkManager().getInwardLinks(element.getId());
 	}
 
 	@Override
-	public List<Link> getOutwardLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
-		List<IssueLink> outwardIssueLinks = getOutwardIssueLinks(decisionKnowledgeElement);
+	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
+		List<IssueLink> outwardIssueLinks = getOutwardIssueLinks(element);
 		List<Link> outwardLinks = new ArrayList<Link>();
 		for (IssueLink outwardIssueLink : outwardIssueLinks) {
 			outwardLinks.add(new LinkImpl(outwardIssueLink));
@@ -271,11 +277,11 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		return outwardLinks;
 	}
 
-	public List<IssueLink> getOutwardIssueLinks(DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (decisionKnowledgeElement == null) {
+	public List<IssueLink> getOutwardIssueLinks(DecisionKnowledgeElement element) {
+		if (element == null) {
 			return new ArrayList<IssueLink>();
 		}
-		return ComponentAccessor.getIssueLinkManager().getOutwardLinks(decisionKnowledgeElement.getId());
+		return ComponentAccessor.getIssueLinkManager().getOutwardLinks(element.getId());
 	}
 
 	private String getIssueTypeId(KnowledgeType type) {
