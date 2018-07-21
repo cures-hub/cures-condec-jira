@@ -9,14 +9,14 @@ import static org.junit.Assert.assertEquals;
 
 public class TestGetElementsLinkedWithInwardLinks extends TestIssueStrategySetUp {
 
-    @Test
-    public void testElementNull() {
-        assertEquals(0, issueStrategy.getElementsLinkedWithInwardLinks(null).size());
-    }
+	@Test
+	public void testElementNull() {
+		assertEquals(0, issueStrategy.getElementsLinkedWithInwardLinks(null).size());
+	}
 
-    @Test
-    public void testElementNotExistend() {
-        DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-        assertEquals(0, issueStrategy.getElementsLinkedWithInwardLinks(element).size());
-    }
+	@Test
+	public void testElementNonExistent() {
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+		assertEquals(0, issueStrategy.getElementsLinkedWithInwardLinks(element).size());
+	}
 }

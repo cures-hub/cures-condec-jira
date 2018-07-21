@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 public class TestKnowledgeType {
+
 	@Test
 	public void testGetKnowledgeTypeNull() {
 		assertEquals(KnowledgeType.OTHER, KnowledgeType.getKnowledgeType(null));

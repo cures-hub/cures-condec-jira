@@ -15,7 +15,7 @@ public class TestGetElementsLinkedWithOutwardLinks extends TestIssueStrategySetU
 	}
 
 	@Test
-	public void testElementNotExistend() {
+	public void testElementNonExistent() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
 		assertEquals(0, issueStrategy.getElementsLinkedWithInwardLinks(element).size());
 	}

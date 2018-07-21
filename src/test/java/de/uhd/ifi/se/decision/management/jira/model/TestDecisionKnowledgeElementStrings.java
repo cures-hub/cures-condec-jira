@@ -18,8 +18,7 @@ import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 /**
- * @description Test class for decision knowledge element getter and setter
- *              methods
+ * Test class for decision knowledge element getter and setter methods
  */
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestDecisionKnowledgeElementStrings extends TestSetUp {

@@ -32,7 +32,7 @@ public abstract class AbstractPersistenceStrategy {
 	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type) {
 		List<DecisionKnowledgeElement> elements = this.getDecisionKnowledgeElements();
 		Iterator<DecisionKnowledgeElement> iterator = elements.iterator();
-		while(iterator.hasNext()) {
+		while (iterator.hasNext()) {
 			DecisionKnowledgeElement element = iterator.next();
 			if (element.getType() != type) {
 				iterator.remove();

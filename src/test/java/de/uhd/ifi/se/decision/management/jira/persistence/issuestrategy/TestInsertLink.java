@@ -1,85 +1,86 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.issuestrategy;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 
-public class TestCreateLink extends TestIssueStrategySetUp {
+public class TestInsertLink extends TestIssueStrategySetUp {
 
-	@Test
-	(expected = NullPointerException.class)
-	public void testLinkRepresNullUserNull() {
+	@Test(expected = NullPointerException.class)
+	public void testLinkNullUserNull() {
 		issueStrategy.insertLink(null, null);
 	}
 
 	@Test
-	public void testLinkRepresFilledUserNull() {
-		LinkImpl link = new LinkImpl();
+	public void testLinkFilledUserNull() {
+		Link link = new LinkImpl();
 		link.setSourceElement(1);
 		link.setLinkType("Contains");
 		link.setDestinationElement(2);
-		assertEquals(0,issueStrategy.insertLink(link, null),0.0);
+		assertEquals(0, issueStrategy.insertLink(link, null), 0.0);
 	}
 
-	@Test
-	(expected = NullPointerException.class)
-	public void testLinkRepresNullUserFilled() {
+	@Test(expected = NullPointerException.class)
+	public void testLinkNullUserFilled() {
 		ApplicationUser user = new MockApplicationUser("Test");
-		issueStrategy.insertLink(null,user);
+		issueStrategy.insertLink(null, user);
 	}
 
 	@Test
-	public void testLinkRepresFilledUserFilled() {
-		LinkImpl link = new LinkImpl();
+	public void testLinkFilledUserFilled() {
+		Link link = new LinkImpl();
 		link.setSourceElement(1);
 		link.setLinkType("Contains");
 		link.setDestinationElement(2);
 		ApplicationUser user = new MockApplicationUser("Test");
-		issueStrategy.insertLink(link,user);
+		long linkId = issueStrategy.insertLink(link, user);
+		assertNotNull(linkId);
 	}
 
 	@Test
-	public void testLinkRepresFilledUserFilledIssueLinkNull() {
-		LinkImpl link = new LinkImpl();
+	public void testLinkFilledUserFilledIssueLinkNull() {
+		Link link = new LinkImpl();
 		link.setSourceElement(2);
 		link.setLinkType("Contains");
 		link.setDestinationElement(3);
 		ApplicationUser user = new MockApplicationUser("Test");
-		assertEquals(0,issueStrategy.insertLink(link,user),0.0);
+		assertEquals(0, issueStrategy.insertLink(link, user));
 	}
 
 	@Test
 	public void testCreateException() {
-		LinkImpl link = new LinkImpl();
+		Link link = new LinkImpl();
 		link.setSourceElement(2);
 		link.setLinkType("Contains");
 		link.setDestinationElement(3);
 		ApplicationUser user = new MockApplicationUser("CreateExecption");
-		assertEquals(0,issueStrategy.insertLink(link,user),0.0);
+		assertEquals(0, issueStrategy.insertLink(link, user));
 	}
 
 	@Test
 	public void testMoreInwardLinks() {
-		LinkImpl link = new LinkImpl();
+		Link link = new LinkImpl();
 		link.setSourceElement(30);
 		link.setLinkType("Contains");
 		link.setDestinationElement(3);
 		ApplicationUser user = new MockApplicationUser("Test");
-		assertEquals(0,issueStrategy.insertLink(link,user),0.0);
+		assertEquals(0, issueStrategy.insertLink(link, user));
 	}
 
 	@Test
 	public void testMoreOutwardLinks() {
-		LinkImpl link = new LinkImpl();
+		Link link = new LinkImpl();
 		link.setSourceElement(10);
 		link.setLinkType("Contains");
 		link.setDestinationElement(30);
 		ApplicationUser user = new MockApplicationUser("Test");
-		assertEquals(0,issueStrategy.insertLink(link,user),0.0);
+		assertEquals(0, issueStrategy.insertLink(link, user));
 	}
 }

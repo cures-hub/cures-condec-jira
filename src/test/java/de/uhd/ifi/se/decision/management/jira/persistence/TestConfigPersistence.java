@@ -16,115 +16,116 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestConfigPersistence extends TestSetUp{
-    private EntityManager entityManager;
+public class TestConfigPersistence extends TestSetUp {
+	private EntityManager entityManager;
 
-    @Before
-    public void setUp(){
-        initialization();
-        TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-                new MockDefaultUserManager());
-    }
+	@Before
+	public void setUp() {
+		initialization();
+		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
+				new MockDefaultUserManager());
+	}
 
-    //IsIssueStrategy
-    //Because the TransactionCallbacks are hardcoded on true in the Test the Tests are only fore the Right values
-    @Ignore
-    public void testIsIssueStrategyInvalid(){
-        assertFalse(ConfigPersistence.isIssueStrategy("InvalidKey"));
-    }
+	// IsIssueStrategy
+	// Because the TransactionCallbacks are hardcoded on true in the Test the Tests
+	// are only fore the right values
+	@Ignore
+	public void testIsIssueStrategyInvalid() {
+		assertFalse(ConfigPersistence.isIssueStrategy("InvalidKey"));
+	}
 
-    @Test
-    public void testIsIssueStrategyOk(){
-        assertTrue(ConfigPersistence.isIssueStrategy("TEST"));
-    }
+	@Test
+	public void testIsIssueStrategyOk() {
+		assertTrue(ConfigPersistence.isIssueStrategy("TEST"));
+	}
 
-    //SetIssueStrategy
-    @Test
-    public void testSetIssueStrategyNullFalse(){
-        ConfigPersistence.setIssueStrategy(null,false);
-    }
+	// SetIssueStrategy
+	@Test
+	public void testSetIssueStrategyNullFalse() {
+		ConfigPersistence.setIssueStrategy(null, false);
+	}
 
-    @Test
-    public void testSetIssueStrategyNullTrue(){
-        ConfigPersistence.setIssueStrategy(null,true);
-    }
+	@Test
+	public void testSetIssueStrategyNullTrue() {
+		ConfigPersistence.setIssueStrategy(null, true);
+	}
 
-    @Test
-    public void testSetIssueStrategyValid(){
-        ConfigPersistence.setIssueStrategy("TEST", true);
-    }
+	@Test
+	public void testSetIssueStrategyValid() {
+		ConfigPersistence.setIssueStrategy("TEST", true);
+	}
 
-    //IsActivated
-    @Ignore
-    public void testIsActivatedInvalid(){
-        assertFalse(ConfigPersistence.isActivated("InvalidKey"));
-    }
+	// IsActivated
+	@Ignore
+	public void testIsActivatedInvalid() {
+		assertFalse(ConfigPersistence.isActivated("InvalidKey"));
+	}
 
-    @Test
-    public void testIsActivatedOk(){
-        assertTrue(ConfigPersistence.isActivated("TEST"));
-    }
+	@Test
+	public void testIsActivatedOk() {
+		assertTrue(ConfigPersistence.isActivated("TEST"));
+	}
 
-    //SetActivated
-    @Test
-    public void testSetActivatedNullFalse(){
-        ConfigPersistence.setActivated(null,false);
-    }
+	// SetActivated
+	@Test
+	public void testSetActivatedNullFalse() {
+		ConfigPersistence.setActivated(null, false);
+	}
 
-    @Test
-    public void testSetActivateNullTrue(){
-        ConfigPersistence.setActivated(null, true);
-    }
+	@Test
+	public void testSetActivateNullTrue() {
+		ConfigPersistence.setActivated(null, true);
+	}
 
-    @Test
-    public void testSetActivatedValid(){
-        ConfigPersistence.setActivated("TEST", true);
-    }
+	@Test
+	public void testSetActivatedValid() {
+		ConfigPersistence.setActivated("TEST", true);
+	}
 
-    //IsKnowledgeExtractedFromGit
-    @Test
-    public void testIsKnowledgeExtractedNull(){
-        assertFalse(ConfigPersistence.isKnowledgeExtractedFromGit(null));
-    }
+	// IsKnowledgeExtractedFromGit
+	@Test
+	public void testIsKnowledgeExtractedNull() {
+		assertFalse(ConfigPersistence.isKnowledgeExtractedFromGit(null));
+	}
 
-    @Ignore
-    public void testIsKnowledgeExtractedInvalid(){
-        assertFalse(ConfigPersistence.isKnowledgeExtractedFromGit("NotTEST"));
-    }
+	@Ignore
+	public void testIsKnowledgeExtractedInvalid() {
+		assertFalse(ConfigPersistence.isKnowledgeExtractedFromGit("NotTEST"));
+	}
 
-    @Test
-    public void testIsKnowledgeExtractedFilled(){
-        assertTrue(ConfigPersistence.isKnowledgeExtractedFromGit("TEST"));
-    }
+	@Test
+	public void testIsKnowledgeExtractedFilled() {
+		assertTrue(ConfigPersistence.isKnowledgeExtractedFromGit("TEST"));
+	}
 
-    //SetKnowledgeExtractedFromGit
-    @Test
-    public void testSetKnowledgeExtractedNullFalse(){
-        ConfigPersistence.setKnowledgeExtractedFromGit(null,false);
-    }
+	// SetKnowledgeExtractedFromGit
+	@Test
+	public void testSetKnowledgeExtractedNullFalse() {
+		ConfigPersistence.setKnowledgeExtractedFromGit(null, false);
+	}
 
-    @Test
-    public void testSetKnowledgeExtractedNullTrue(){
-        ConfigPersistence.setKnowledgeExtractedFromGit(null,true);
-    }
+	@Test
+	public void testSetKnowledgeExtractedNullTrue() {
+		ConfigPersistence.setKnowledgeExtractedFromGit(null, true);
+	}
 
-    @Test
-    public void testSetKnowledgeExtractedInvalidFalse(){
-        ConfigPersistence.setKnowledgeExtractedFromGit("NotTEST", false);
-    }
+	@Test
+	public void testSetKnowledgeExtractedInvalidFalse() {
+		ConfigPersistence.setKnowledgeExtractedFromGit("NotTEST", false);
+	}
 
-    @Test
-    public void testSetKnowledgeExtractedInvalidTrue(){
-        ConfigPersistence.setKnowledgeExtractedFromGit("NotTEST", true);
-    }
+	@Test
+	public void testSetKnowledgeExtractedInvalidTrue() {
+		ConfigPersistence.setKnowledgeExtractedFromGit("NotTEST", true);
+	}
 
-    @Test
-    public void testSetKnowledgeExtractedFilledFalse(){
-        ConfigPersistence.setKnowledgeExtractedFromGit("TEST", false);
-    }
+	@Test
+	public void testSetKnowledgeExtractedFilledFalse() {
+		ConfigPersistence.setKnowledgeExtractedFromGit("TEST", false);
+	}
 
-    @Test
-    public void testSetKnowledgeExtractedFilledTrue(){
-        ConfigPersistence.setKnowledgeExtractedFromGit("TEST", true);
-    }
+	@Test
+	public void testSetKnowledgeExtractedFilledTrue() {
+		ConfigPersistence.setKnowledgeExtractedFromGit("TEST", true);
+	}
 }

@@ -22,12 +22,12 @@ public class TestStrategyProvider extends TestSetUp {
 	}
 
 	@Test
-	public void testProjectKeyNotExist() {
+	public void testProjectKeyNonExistent() {
 		assertTrue(strategyProvider.getPersistenceStrategy("TESTNOT") instanceof IssueStrategy);
 	}
 
 	@Test
-	public void testProjectKeyExists() {
+	public void testProjectKeyExistent() {
 		assertTrue(strategyProvider.getPersistenceStrategy("TEST") instanceof IssueStrategy);
 	}
 }

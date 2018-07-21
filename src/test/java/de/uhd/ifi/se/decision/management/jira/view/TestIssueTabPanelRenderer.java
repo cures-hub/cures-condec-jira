@@ -55,11 +55,14 @@ public class TestIssueTabPanelRenderer extends TestSetUp {
 		assertEquals(0, renderer.getActions(null, user).size(), 0.0);
 	}
 
-	@Test
-	public void testGetActionsFilledFilled() {
+	@Test(expected = NullPointerException.class)
+	public void testGetActionsFilledFilledTemplateNotProvided() {
+		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
 		Issue issue = new MockIssue();
+		((MockIssue) issue).setProjectObject(project);
+		((MockIssue) issue).setKey("TEST-1");
 		ApplicationUser user = new MockApplicationUser("NoFails");
-		//assertEquals(0, renderer.getActions(issue, user).size(), 0.0);
+		renderer.getActions(issue, user).size();
 	}
 
 	@Test

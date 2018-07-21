@@ -28,7 +28,7 @@ public class TestTreant extends TestSetUp {
 	private Chart chart;
 	private Node nodeStructure;
 	private Treant treant;
-	private AbstractPersistenceStrategy abstractPersistenceStrategy;
+	private AbstractPersistenceStrategy persistenceStrategy;
 
 	@Before
 	public void setUp() {
@@ -41,7 +41,7 @@ public class TestTreant extends TestSetUp {
 				new MockDefaultUserManager());
 		initialization();
 		StrategyProvider strategyProvider = new StrategyProvider();
-		abstractPersistenceStrategy = strategyProvider.getPersistenceStrategy("TEST");
+		persistenceStrategy = strategyProvider.getPersistenceStrategy("TEST");
 	}
 
 	@Test
@@ -70,59 +70,54 @@ public class TestTreant extends TestSetUp {
 
 	@Test
 	public void testConstructor() {
-		initialization();
 		this.treant = new Treant("TEST", "14", 3);
 		assertNotNull(this.treant);
 	}
-
 
 	@Test
 	public void testCreateNodeStructureNullNullZeroZero() {
 		assertEquals(Node.class, treant.createNodeStructure(null, null, 0, 0).getClass());
 	}
 
-	// TODO
-//	@Test
-//	public void testCreateNodeStructureEmptyNullZeroZero() {
-//		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-//		assertEquals(Node.class, treant.createNodeStructure(element, null,  0,  0).getClass());
-//	}
+	@Test(expected = NullPointerException.class)
+	public void testCreateNodeStructureEmptyNullZeroZero() {
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+		assertEquals(Node.class, treant.createNodeStructure(element, null, 0, 0).getClass());
+	}
 
 	@Test
 	public void testCreateNodeStructureFilledNullZeroZero() {
-		DecisionKnowledgeElement element = abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
-		assertEquals(Node.class, treant.createNodeStructure(element, null,0,  0).getClass());
+		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		assertEquals(Node.class, treant.createNodeStructure(element, null, 0, 0).getClass());
 	}
-
 
 	@Test
 	public void testCreateNodeStructureNullNullFilledFilled() {
 		assertEquals(Node.class, treant.createNodeStructure(null, null, 4, 0).getClass());
 	}
 
-	// TODO
-//	@Test
-//	public void testCreateNodeStructureEmptyNullFilledFilled() {
-//		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-//		assertEquals(Node.class, treant.createNodeStructure(element, null,  4, 0).getClass());
-//	}
-
-	@Test
-	public void testCreateNodeStructureFilledNullFilledFilled() {
-		DecisionKnowledgeElement element = abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
+	@Test(expected = NullPointerException.class)
+	public void testCreateNodeStructureEmptyNullFilledFilled() {
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
 		assertEquals(Node.class, treant.createNodeStructure(element, null, 4, 0).getClass());
 	}
 
 	@Test
-	public void testCreateNodeStructureFilledFilledFilledFilled(){
-		DecisionKnowledgeElement element = abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
+	public void testCreateNodeStructureFilledNullFilledFilled() {
+		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		assertEquals(Node.class, treant.createNodeStructure(element, null, 4, 0).getClass());
+	}
+
+	@Test
+	public void testCreateNodeStructureFilledFilledFilledFilled() {
+		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
 		Link link = new LinkImpl();
 		link.setLinkType("support");
 		link.setSourceElement(10);
 		link.setDestinationElement(14);
-		link.setDestinationElement(abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14));
-		link.setSourceElement(abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 10));
-		link.setLinkId((long)23);
-		assertEquals(Node.class, treant.createNodeStructure(element,link,4,0).getClass());
+		link.setDestinationElement(persistenceStrategy.getDecisionKnowledgeElement((long) 14));
+		link.setSourceElement(persistenceStrategy.getDecisionKnowledgeElement((long) 10));
+		link.setLinkId((long) 23);
+		assertEquals(Node.class, treant.createNodeStructure(element, link, 4, 0).getClass());
 	}
 }

@@ -11,8 +11,10 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 
 public class TestGetLinkedElements extends TestIssueStrategySetUp {
@@ -24,9 +26,8 @@ public class TestGetLinkedElements extends TestIssueStrategySetUp {
 
 	@Test
 	public void testDecisionKnowledgeElementEmpty() {
-		DecisionKnowledgeElementImpl decisionKnowledgeElement = new DecisionKnowledgeElementImpl();
-		assertEquals(new ArrayList<DecisionKnowledgeElementImpl>(),
-				issueStrategy.getLinkedElements(decisionKnowledgeElement));
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+		assertEquals(new ArrayList<DecisionKnowledgeElementImpl>(), issueStrategy.getLinkedElements(element));
 	}
 
 	@Test
@@ -35,25 +36,24 @@ public class TestGetLinkedElements extends TestIssueStrategySetUp {
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
 
 		long i = 2;
-		DecisionKnowledgeElementImpl decision = null;
-		decision = new DecisionKnowledgeElementImpl((long) 5000, "TESTSummary", "TestDescription",
-				KnowledgeType.DECISION, project.getKey(), "TEST-" + 5000);
-		decision.setId((long) 5000);
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl((long) 5000, "TESTSummary",
+				"TestDescription", KnowledgeType.DECISION, project.getKey(), "TEST-" + 5000);
+		element.setId((long) 5000);
 
-		issueStrategy.insertDecisionKnowledgeElement(decision, user);
+		issueStrategy.insertDecisionKnowledgeElement(element, user);
 		for (KnowledgeType type : KnowledgeType.values()) {
-			LinkImpl link = new LinkImpl();
+			Link link = new LinkImpl();
 			link.setLinkType("support");
 			if (type != KnowledgeType.DECISION) {
 				DecisionKnowledgeElementImpl decisionKnowledgeElement = new DecisionKnowledgeElementImpl(i,
 						"TESTSummary", "TestDescription", type, project.getKey(), "TEST-" + i);
 				issueStrategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
-				link.setDestinationElement(decision.getId());
+				link.setDestinationElement(element.getId());
 				link.setSourceElement(decisionKnowledgeElement.getId());
 				issueStrategy.insertLink(link, user);
 			}
 			i++;
 		}
-		assertNotNull(issueStrategy.getLinkedElements(decision));
+		assertNotNull(issueStrategy.getLinkedElements(element));
 	}
 }
