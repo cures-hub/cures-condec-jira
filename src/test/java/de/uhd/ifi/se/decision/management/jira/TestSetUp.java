@@ -23,10 +23,16 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 import com.atlassian.jira.user.util.MockUserManager;
 import com.atlassian.jira.user.util.UserManager;
-
 import com.atlassian.jira.util.VelocityParamFactory;
 import com.atlassian.velocity.VelocityManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.*;
+
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkTypeManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueService;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockProjectRoleManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityParamFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class TestSetUp {

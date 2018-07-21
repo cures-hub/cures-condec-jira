@@ -42,12 +42,12 @@ public class Data {
 		this(decisionKnowledgeElement);
 		switch (link.getLinkType()) {
 		case "support":
-			if (decisionKnowledgeElement.getId() == link.getIdOfSourceElement()) {
+			if (decisionKnowledgeElement.getId() == link.getSourceElement().getId()) {
 				this.icon = ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
 			}
 			break;
 		case "attack":
-			if (decisionKnowledgeElement.getId() == link.getIdOfSourceElement()) {
+			if (decisionKnowledgeElement.getId() == link.getSourceElement().getId()) {
 				this.icon = ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
 			}
 			break;

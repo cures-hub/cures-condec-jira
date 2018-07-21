@@ -11,7 +11,10 @@ import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
  * Model class for Treant node
@@ -66,14 +69,14 @@ public class Node {
 		this(decisionKnowledgeElement);
 		switch (link.getLinkType()) {
 		case "support":
-			if (decisionKnowledgeElement.getId() == link.getIdOfSourceElement()) {
+			if (decisionKnowledgeElement.getId() == link.getSourceElement().getId()) {
 				this.nodeContent = ImmutableMap.of("name", "Pro-argument", "title",
 						decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 				this.htmlClass = "pro";
 			}
 			break;
 		case "attack":
-			if (decisionKnowledgeElement.getId() == link.getIdOfSourceElement()) {
+			if (decisionKnowledgeElement.getId() == link.getSourceElement().getId()) {
 				this.nodeContent = ImmutableMap.of("name", "Con-argument", "title",
 						decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 				this.htmlClass = "contra";

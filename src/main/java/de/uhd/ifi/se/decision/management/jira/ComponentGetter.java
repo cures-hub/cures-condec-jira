@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -16,8 +18,6 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
-
-import static com.google.common.base.Preconditions.*;
 
 /**
  * @description Provides access to JIRA components. Automatically initialized.

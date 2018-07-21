@@ -1,13 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
-import com.atlassian.velocity.VelocityManager;
-import org.apache.velocity.context.Context;
-import org.apache.velocity.exception.VelocityException;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.text.DateFormat;
 import java.util.Map;
+
+import org.apache.velocity.context.Context;
+import org.apache.velocity.exception.VelocityException;
+
+import com.atlassian.velocity.VelocityManager;
 
 public class MockVelocityManager implements VelocityManager {
 	@Override

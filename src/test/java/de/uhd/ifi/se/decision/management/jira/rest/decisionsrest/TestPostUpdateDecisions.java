@@ -1,13 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.rest.decisionsrest;
 
-import com.google.common.collect.ImmutableMap;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.Assert.assertEquals;
 
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import com.google.common.collect.ImmutableMap;
+
+import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestPostUpdateDecisions extends TestDecisionSetUp {

@@ -36,9 +36,9 @@ public class TestGetLinkedElements extends TestIssueStrategySetUp {
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
 
 		long i = 2;
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl((long) 5000, "TESTSummary",
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(5000, "TESTSummary",
 				"TestDescription", KnowledgeType.DECISION, project.getKey(), "TEST-" + 5000);
-		element.setId((long) 5000);
+		element.setId(5000);
 
 		issueStrategy.insertDecisionKnowledgeElement(element, user);
 		for (KnowledgeType type : KnowledgeType.values()) {

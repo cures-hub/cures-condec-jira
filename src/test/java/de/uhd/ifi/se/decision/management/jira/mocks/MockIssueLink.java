@@ -2,17 +2,17 @@ package de.uhd.ifi.se.decision.management.jira.mocks;
 
 import java.sql.Timestamp;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.project.MockProject;
-import com.atlassian.jira.project.Project;
 import org.ofbiz.core.entity.GenericValue;
 
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.issuetype.MockIssueType;
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.issue.link.IssueLinkType;
 import com.atlassian.jira.mock.issue.MockIssue;
+import com.atlassian.jira.project.MockProject;
+import com.atlassian.jira.project.Project;
 
 public class MockIssueLink implements IssueLink {
 	private Long id;

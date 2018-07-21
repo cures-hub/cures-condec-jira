@@ -9,14 +9,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.common.collect.ImmutableMap;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableMap;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 
 public class TestNode {
 
@@ -36,7 +37,7 @@ public class TestNode {
 		nodeContent = new HashMap<>();
 		link = new HashMap<>();
 		htmlClass = "Test";
-		htmlId = (long) 100;
+		htmlId = 100;
 		innerHTML = "Test";
 		children = new ArrayList<>();
 

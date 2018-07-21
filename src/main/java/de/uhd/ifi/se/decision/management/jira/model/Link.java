@@ -14,7 +14,7 @@ public interface Link {
 	 *
 	 * @return id of the link.
 	 */
-	long getLinkId();
+	long getId();
 
 	/**
 	 * Set the id of the link. This id is the internal database id.
@@ -22,7 +22,7 @@ public interface Link {
 	 * @param id
 	 *            of the link.
 	 */
-	void setLinkId(Long linkId);
+	void setId(long id);
 
 	/**
 	 * Get the type of the link.
@@ -68,14 +68,6 @@ public interface Link {
 	void setSourceElement(long id);
 
 	/**
-	 * Get the id of the source element of this link.
-	 *
-	 * @see DecisionKnowledgeElement
-	 * @return id of the source element of this link.
-	 */
-	long getIdOfSourceElement();
-
-	/**
 	 * Get the destination element of this link.
 	 *
 	 * @see DecisionKnowledgeElement
@@ -100,12 +92,4 @@ public interface Link {
 	 *            of the destination element of this link.
 	 */
 	void setDestinationElement(long id);
-
-	/**
-	 * Get the id of the destination element of this link.
-	 *
-	 * @see DecisionKnowledgeElement
-	 * @return id of the destination element of this link.
-	 */
-	long getIdOfDestinationElement();
 }

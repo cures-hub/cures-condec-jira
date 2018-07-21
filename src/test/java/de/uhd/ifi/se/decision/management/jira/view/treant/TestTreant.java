@@ -87,7 +87,7 @@ public class TestTreant extends TestSetUp {
 
 	@Test
 	public void testCreateNodeStructureFilledNullZeroZero() {
-		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
 		assertEquals(Node.class, treant.createNodeStructure(element, null, 0, 0).getClass());
 	}
 
@@ -104,20 +104,20 @@ public class TestTreant extends TestSetUp {
 
 	@Test
 	public void testCreateNodeStructureFilledNullFilledFilled() {
-		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
 		assertEquals(Node.class, treant.createNodeStructure(element, null, 4, 0).getClass());
 	}
 
 	@Test
 	public void testCreateNodeStructureFilledFilledFilledFilled() {
-		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
 		Link link = new LinkImpl();
 		link.setLinkType("support");
 		link.setSourceElement(10);
 		link.setDestinationElement(14);
-		link.setDestinationElement(persistenceStrategy.getDecisionKnowledgeElement((long) 14));
-		link.setSourceElement(persistenceStrategy.getDecisionKnowledgeElement((long) 10));
-		link.setLinkId((long) 23);
+		link.setDestinationElement(persistenceStrategy.getDecisionKnowledgeElement(14));
+		link.setSourceElement(persistenceStrategy.getDecisionKnowledgeElement(10));
+		link.setId((long) 23);
 		assertEquals(Node.class, treant.createNodeStructure(element, link, 4, 0).getClass());
 	}
 }

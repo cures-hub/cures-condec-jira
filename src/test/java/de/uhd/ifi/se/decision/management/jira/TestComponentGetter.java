@@ -1,11 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira;
 
-import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.bc.issue.IssueService;
@@ -17,6 +16,7 @@ import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 
 public class TestComponentGetter {
 

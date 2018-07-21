@@ -14,9 +14,9 @@ import net.java.ao.schema.Table;
 public interface LinkEntity extends RawEntity<Integer> {
 	@AutoIncrement
 	@PrimaryKey("ID")
-	long getLinkId();
+	long getId();
 
-	void setLinkId(long linkId);
+	void setId(long id);
 
 	String getLinkType();
 

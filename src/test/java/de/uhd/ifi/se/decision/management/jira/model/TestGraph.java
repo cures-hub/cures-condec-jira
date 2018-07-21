@@ -73,9 +73,9 @@ public class TestGraph extends TestSetUp {
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
 
 		long i = 2;
-		DecisionKnowledgeElementImpl decision = new DecisionKnowledgeElementImpl((long) 5000, "TESTSummary", "TestDescription",
+		DecisionKnowledgeElementImpl decision = new DecisionKnowledgeElementImpl(5000, "TESTSummary", "TestDescription",
 				KnowledgeType.DECISION, project.getKey(), "TEST-" + 5000);
-		decision.setId((long) 5000);
+		decision.setId(5000);
 
 		issueStrategy.insertDecisionKnowledgeElement(decision, user);
 		for (KnowledgeType type : KnowledgeType.values()) {

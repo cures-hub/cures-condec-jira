@@ -1,11 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.issuestrategy;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
-
-import static org.junit.Assert.assertEquals;
 
 public class TestGetElementsLinkedWithOutwardLinks extends TestIssueStrategySetUp {
 

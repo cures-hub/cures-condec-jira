@@ -36,6 +36,7 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		super(userManager, loginUriProvider, renderer);
 	}
 
+	@Override
 	protected boolean isValidUser(HttpServletRequest request) {
 		String projectKey = request.getParameter("projectKey");
 
@@ -65,10 +66,12 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		return false;
 	}
 
+	@Override
 	protected String getTemplatePath() {
 		return TEMPLATEPATH;
 	}
 
+	@Override
 	protected Map<String, Object> getVelocityParameters(HttpServletRequest request) {
 		if(request == null){
 			return new ConcurrentHashMap<String, Object>();

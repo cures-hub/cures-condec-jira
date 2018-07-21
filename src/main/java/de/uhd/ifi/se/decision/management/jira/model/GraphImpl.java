@@ -61,10 +61,10 @@ public class GraphImpl implements Graph {
 
 		List<Link> outwardLinks = this.project.getPersistenceStrategy().getOutwardLinks(element);
 		for (Link link : outwardLinks) {
-			if (!linkIds.contains(link.getLinkId())) {
+			if (!linkIds.contains(link.getId())) {
 				DecisionKnowledgeElement outwardElement = link.getDestinationElement();
 				if (outwardElement != null) {
-					linkIds.add(link.getLinkId());
+					linkIds.add(link.getId());
 					linkedElementsAndLinks.put(outwardElement, link);
 				}
 			}
@@ -82,10 +82,10 @@ public class GraphImpl implements Graph {
 
 		List<Link> inwardLinks = this.project.getPersistenceStrategy().getInwardLinks(element);
 		for (Link link : inwardLinks) {
-			if (!linkIds.contains(link.getLinkId())) {
+			if (!linkIds.contains(link.getId())) {
 				DecisionKnowledgeElement inwardElement = link.getSourceElement();
 				if (inwardElement != null) {
-					linkIds.add(link.getLinkId());
+					linkIds.add(link.getId());
 					linkedElementsAndLinks.put(inwardElement, link);
 				}
 			}

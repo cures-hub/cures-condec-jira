@@ -25,6 +25,7 @@ public class TestGetDecisionKnowledgeElement extends TestDecisionSetUp {
 
 	private final static String ERROR_MISSING_KEY_ID = "Decision knowledge element could not be received due to a bad request (element id or project key was missing).";
 
+	@Override
 	@Before
 	public void setUp() {
 		decRest = new DecisionsRest();

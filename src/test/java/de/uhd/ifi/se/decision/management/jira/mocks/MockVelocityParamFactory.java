@@ -1,10 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
-import com.atlassian.jira.security.JiraAuthenticationContext;
-import com.atlassian.jira.util.VelocityParamFactory;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.atlassian.jira.security.JiraAuthenticationContext;
+import com.atlassian.jira.util.VelocityParamFactory;
 
 public class MockVelocityParamFactory implements VelocityParamFactory {
     @Override

@@ -206,7 +206,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 						public DecisionKnowledgeElementEntity doInTransaction() {
 							DecisionKnowledgeElementEntity[] entityList = ACTIVE_OBJECTS.find(
 									DecisionKnowledgeElementEntity.class,
-									Query.select().where("ID = ?", inwardLink.getIdOfSourceElement()));
+									Query.select().where("ID = ?", inwardLink.getSourceElement().getId()));
 							if (entityList.length == 1) {
 								return entityList[0];
 							}
@@ -230,7 +230,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 						public DecisionKnowledgeElementEntity doInTransaction() {
 							DecisionKnowledgeElementEntity[] entityList = ACTIVE_OBJECTS.find(
 									DecisionKnowledgeElementEntity.class,
-									Query.select().where("ID = ?", outwardLink.getIdOfDestinationElement()));
+									Query.select().where("ID = ?", outwardLink.getDestinationElement().getId()));
 							if (entityList.length == 1) {
 								return entityList[0];
 							}
@@ -250,16 +250,16 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 				boolean linkAlreadyExists = false;
 				long linkId = 0;
 				for (LinkEntity linkEntity : ACTIVE_OBJECTS.find(LinkEntity.class)) {
-					if (linkEntity.getIdOfSourceElement() == link.getIdOfSourceElement()
-							&& linkEntity.getIdOfDestinationElement() == link.getIdOfDestinationElement()) {
+					if (linkEntity.getIdOfSourceElement() == link.getSourceElement().getId()
+							&& linkEntity.getIdOfDestinationElement() == link.getDestinationElement().getId()) {
 						linkAlreadyExists = true;
-						linkId = linkEntity.getLinkId();
+						linkId = linkEntity.getId();
 					}
 				}
 				if (!linkAlreadyExists) {
 					DecisionKnowledgeElementEntity decCompIngoing;
 					DecisionKnowledgeElementEntity[] decCompIngoingArray = ACTIVE_OBJECTS.find(
-							DecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", link.getIdOfSourceElement()));
+							DecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", link.getSourceElement().getId()));
 					if (decCompIngoingArray.length == 1) {
 						decCompIngoing = decCompIngoingArray[0];
 					} else {
@@ -269,7 +269,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 
 					DecisionKnowledgeElementEntity decCompOutgoing;
 					DecisionKnowledgeElementEntity[] decCompOutgoingArray = ACTIVE_OBJECTS.find(
-							DecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", link.getIdOfDestinationElement()));
+							DecisionKnowledgeElementEntity.class, Query.select().where("ID = ?", link.getDestinationElement().getId()));
 					if (decCompOutgoingArray.length == 1) {
 						decCompOutgoing = decCompOutgoingArray[0];
 					} else {
@@ -280,11 +280,11 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 						if (decCompIngoing.getProjectKey().equals(decCompOutgoing.getProjectKey())) {
 							// entities exist and are in the same project
 							final LinkEntity linkEntity = ACTIVE_OBJECTS.create(LinkEntity.class);
-							linkEntity.setIdOfSourceElement(link.getIdOfSourceElement());
-							linkEntity.setIdOfDestinationElement(link.getIdOfDestinationElement());
+							linkEntity.setIdOfSourceElement(link.getSourceElement().getId());
+							linkEntity.setIdOfDestinationElement(link.getDestinationElement().getId());
 							linkEntity.setLinkType(link.getLinkType());
 							linkEntity.save();
-							linkId = linkEntity.getLinkId();
+							linkId = linkEntity.getId();
 						} else {
 							LOGGER.error("entities to be linked are not in the same project");
 							return (long) 0;
@@ -308,10 +308,10 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 			@Override
 			public Boolean doInTransaction() {
 				for (LinkEntity linkEntity : ACTIVE_OBJECTS.find(LinkEntity.class)) {
-					if (link.getIdOfSourceElement() == linkEntity.getIdOfSourceElement()
-							&& link.getIdOfDestinationElement() == linkEntity.getIdOfDestinationElement()
-							|| link.getIdOfDestinationElement() == linkEntity.getIdOfSourceElement()
-									&& link.getIdOfSourceElement() == linkEntity.getIdOfDestinationElement()) {
+					if (link.getSourceElement().getId() == linkEntity.getIdOfSourceElement()
+							&& link.getDestinationElement().getId() == linkEntity.getIdOfDestinationElement()
+							|| link.getDestinationElement().getId() == linkEntity.getIdOfSourceElement()
+									&& link.getSourceElement().getId() == linkEntity.getIdOfDestinationElement()) {
 						try {
 							linkEntity.getEntityManager().delete(linkEntity);
 							return true;

@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
+import de.uhd.ifi.se.decision.management.jira.persistence.ActiveObjectStrategy;
+import de.uhd.ifi.se.decision.management.jira.persistence.IssueStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 
 /**

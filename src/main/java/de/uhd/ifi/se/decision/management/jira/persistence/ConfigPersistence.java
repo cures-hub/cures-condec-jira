@@ -18,6 +18,7 @@ public class ConfigPersistence {
 
 	public static boolean isIssueStrategy(String projectKey) {
 		Object isIssueStrategy = transactionTemplate.execute(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction() {
 				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 				return settings.get(pluginStorageKey + ".isIssueStrategy");
@@ -36,6 +37,7 @@ public class ConfigPersistence {
 
 	public static boolean isActivated(String projectKey) {
 		Object isActivated = transactionTemplate.execute(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction() {
 				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 				return settings.get(pluginStorageKey + ".isActivated");
@@ -57,6 +59,7 @@ public class ConfigPersistence {
 			return false;
 		}
 		Object isKnowledgeExtractedFromGit = transactionTemplate.execute(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction() {
 				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 				return settings.get(pluginStorageKey + ".isKnowledgeExtractedFromGit");
@@ -78,6 +81,7 @@ public class ConfigPersistence {
 			return false;
 		}
 		Object isKnowledgeExtractedFromIssues = transactionTemplate.execute(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction() {
 				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 				return settings.get(pluginStorageKey + ".isKnowledgeExtractedFromIssues");
@@ -97,6 +101,7 @@ public class ConfigPersistence {
 
 	public static boolean isKnowledgeTypeEnabled(String projectKey, String knowledgeType) {
 		Object isKnowledgeTypeEnabled = transactionTemplate.execute(new TransactionCallback<Object>() {
+			@Override
 			public Object doInTransaction() {
 				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 				return settings.get(pluginStorageKey + "." + knowledgeType);

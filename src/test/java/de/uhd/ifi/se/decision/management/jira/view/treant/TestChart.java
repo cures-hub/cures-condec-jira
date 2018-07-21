@@ -3,9 +3,10 @@ package de.uhd.ifi.se.decision.management.jira.view.treant;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.google.common.collect.ImmutableMap;
 
 public class TestChart {
 

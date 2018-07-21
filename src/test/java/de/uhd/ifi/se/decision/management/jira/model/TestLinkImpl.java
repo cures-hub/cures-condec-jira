@@ -1,15 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import com.atlassian.jira.issue.link.IssueLink;
-
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
-import de.uhd.ifi.se.decision.management.jira.persistence.LinkEntity;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
+import com.atlassian.jira.issue.link.IssueLink;
+
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
+import de.uhd.ifi.se.decision.management.jira.persistence.LinkEntity;
 
 public class TestLinkImpl {
 
@@ -19,13 +20,13 @@ public class TestLinkImpl {
 	public void setUp() {
 		linkImpl = new LinkImpl();
 		linkImpl.setLinkType("Test");
-		linkImpl.setSourceElement((long) 14);
-		linkImpl.setDestinationElement((long) 15);
+		linkImpl.setSourceElement(14);
+		linkImpl.setDestinationElement(15);
 		DecisionKnowledgeElement elementIn = new DecisionKnowledgeElementImpl();
-		elementIn.setId((long) 14);
+		elementIn.setId(14);
 		elementIn.setKey("TestIn");
 		DecisionKnowledgeElement elementOut = new DecisionKnowledgeElementImpl();
-		elementOut.setId((long) 15);
+		elementOut.setId(15);
 		elementOut.setKey("TestOut");
 		linkImpl.setSourceElement(elementIn);
 		linkImpl.setDestinationElement(elementOut);
@@ -42,10 +43,10 @@ public class TestLinkImpl {
 	@Test
 	public void testConstructorDecisionKnowledgeElement() {
 		DecisionKnowledgeElement elementIn = new DecisionKnowledgeElementImpl();
-		elementIn.setId((long) 14);
+		elementIn.setId(14);
 		elementIn.setKey("TestInCons");
 		DecisionKnowledgeElement elementOut = new DecisionKnowledgeElementImpl();
-		elementOut.setId((long) 15);
+		elementOut.setId(15);
 		elementOut.setKey("TestOutCons");
 		Link impl = new LinkImpl(elementIn, elementOut);
 		assertEquals("TestInCons", impl.getSourceElement().getKey());
@@ -65,24 +66,24 @@ public class TestLinkImpl {
 
 	@Test
 	public void testGetOutGoingId() {
-		assertEquals((long) 15, linkImpl.getIdOfDestinationElement());
+		assertEquals(15, linkImpl.getDestinationElement().getId());
 	}
 
 	@Test
 	public void testGetIngoingId() {
-		assertEquals((long) 14, linkImpl.getIdOfSourceElement());
+		assertEquals(14, linkImpl.getSourceElement().getId());
 	}
 
 	@Test
 	public void testSetIngoingId() {
-		linkImpl.setSourceElement((long) 323);
-		assertEquals((long) 323, linkImpl.getIdOfSourceElement());
+		linkImpl.setSourceElement(323);
+		assertEquals(323, linkImpl.getSourceElement().getId());
 	}
 
 	@Test
 	public void testSetOutGoingId() {
-		linkImpl.setDestinationElement((long) 323);
-		assertEquals((long) 323, linkImpl.getIdOfDestinationElement());
+		linkImpl.setDestinationElement(323);
+		assertEquals(323, linkImpl.getDestinationElement().getId());
 	}
 
 	@Test

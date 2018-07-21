@@ -33,7 +33,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 	@Before
 	public void setUp() {
 		initialization();
-		this.id = (long) 100;
+		this.id = 100;
 		this.summary = "Test";
 		this.description = "Test";
 		this.type = KnowledgeType.SOLUTION;
@@ -111,7 +111,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 	public void testGetKeyKeyNull() {
 		DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl();
 		decisionKnowledgeElement.setProject("TEST");
-		decisionKnowledgeElement.setId((long) 10);
+		decisionKnowledgeElement.setId(10);
 		assertEquals("TEST-10", decisionKnowledgeElement.getKey());
 	}
 
@@ -123,7 +123,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUp {
 	@Test
 	public void testEqualsNotTheObject() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		element.setId((long) 123);
+		element.setId(123);
 		assertFalse(this.decisionKnowledgeElement.equals(element));
 	}
 

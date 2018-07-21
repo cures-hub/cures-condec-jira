@@ -13,6 +13,7 @@ import com.atlassian.jira.issue.MutableIssue;
  */
 public class MockIssueManagerSelfImpl extends com.atlassian.jira.mock.MockIssueManager {
 
+	@Override
 	public Collection<Long> getIssueIdsForProject(Long id) throws GenericEntityException {
 		if (id == 10) {
 			throw new GenericEntityException();
@@ -33,6 +34,7 @@ public class MockIssueManagerSelfImpl extends com.atlassian.jira.mock.MockIssueM
 		return col;
 	}
 
+	@Override
 	public MutableIssue getIssueByCurrentKey(String key) {
 		if ("30".equals(key)) {
 			return this.getIssueObject((long) 30);

@@ -6,9 +6,6 @@ import java.util.List;
 
 import javax.inject.Named;
 
-import com.atlassian.jira.project.ProjectManager;
-import com.atlassian.jira.util.ErrorCollection;
-import com.atlassian.jira.util.SimpleErrorCollection;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.atlassian.jira.component.ComponentAccessor;

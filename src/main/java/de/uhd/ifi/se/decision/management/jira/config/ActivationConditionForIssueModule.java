@@ -22,6 +22,6 @@ public class ActivationConditionForIssueModule extends AbstractWebCondition {
 	@Override
 	public boolean shouldDisplay(ApplicationUser applicationUser, JiraHelper jiraHelper) {
 		String projectKey = jiraHelper.getProject().getKey();
-		return ConfigPersistence.isActivated((String) projectKey);
+		return ConfigPersistence.isActivated(projectKey);
 	}
 }

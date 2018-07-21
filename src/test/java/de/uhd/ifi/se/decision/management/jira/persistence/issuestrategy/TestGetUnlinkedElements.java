@@ -8,11 +8,11 @@ public class TestGetUnlinkedElements extends TestIssueStrategySetUp {
 
 	@Test
 	public void testIdCannotBeFound() {
-		assertEquals(numberOfElements, issueStrategy.getUnlinkedElements((long) 0).size());
+		assertEquals(numberOfElements, issueStrategy.getUnlinkedElements(0).size());
 	}
 
 	@Test
 	public void testIdCanBeFound() {
-		assertEquals(numberOfElements - 1, issueStrategy.getUnlinkedElements((long) 15).size());
+		assertEquals(numberOfElements - 1, issueStrategy.getUnlinkedElements(15).size());
 	}
 }

@@ -33,15 +33,18 @@ public class SettingsOfAllProjects extends AbstractSettingsServlet {
 		super(userManager, loginUriProvider, renderer);
 	}
 
+	@Override
 	protected boolean isValidUser(HttpServletRequest request) {
 		String username = userManager.getRemoteUsername(request);
 		return username != null && userManager.isSystemAdmin(username);
 	}
 
+	@Override
 	protected String getTemplatePath() {
 		return TEMPLATEPATH;
 	}
 
+	@Override
 	protected Map<String, Object> getVelocityParameters(HttpServletRequest request) {
 		if(request == null){
 			return  new ConcurrentHashMap<>();
