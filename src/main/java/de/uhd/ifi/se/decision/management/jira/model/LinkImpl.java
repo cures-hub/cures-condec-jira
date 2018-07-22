@@ -27,6 +27,11 @@ public class LinkImpl implements Link {
 		this.destinationElement = destinationElement;
 	}
 
+	public LinkImpl(long idOfSourceElement, long idOfDestinationElement) {
+		this.setSourceElement(idOfSourceElement);
+		this.setDestinationElement(idOfDestinationElement);
+	}
+
 	public LinkImpl(IssueLink issueLink) {
 		this.id = issueLink.getId();
 		this.type = issueLink.getIssueLinkType().getName();

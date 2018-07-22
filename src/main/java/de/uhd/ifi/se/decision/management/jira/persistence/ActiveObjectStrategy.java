@@ -38,60 +38,6 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	}
 
 	@Override
-	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
-			ApplicationUser user) {
-		DecisionKnowledgeElementEntity databaseEntry = ACTIVE_OBJECTS
-				.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementEntity>() {
-					@Override
-					public DecisionKnowledgeElementEntity doInTransaction() {
-						DecisionKnowledgeElementEntity databaseEntry = ACTIVE_OBJECTS
-								.create(DecisionKnowledgeElementEntity.class);
-						databaseEntry.setKey(element.getProject().getProjectKey().toUpperCase(Locale.ENGLISH) + "-"
-								+ databaseEntry.getId());
-						databaseEntry.setSummary(element.getSummary());
-						databaseEntry.setDescription(element.getDescription());
-						databaseEntry.setType(element.getType().toString());
-						databaseEntry.setProjectKey(element.getProject().getProjectKey());
-						databaseEntry.save();
-						return databaseEntry;
-					}
-				});
-		if (databaseEntry == null) {
-			LOGGER.error("Insertion of decision knowledge element into database failed.");
-			return null;
-		}
-		element.setId(databaseEntry.getId());
-		element.setKey(databaseEntry.getKey());
-		return element;
-	}
-
-	@Override
-	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
-		DecisionKnowledgeElementEntity databaseEntry = ACTIVE_OBJECTS
-				.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementEntity>() {
-					@Override
-					public DecisionKnowledgeElementEntity doInTransaction() {
-						for (DecisionKnowledgeElementEntity databaseEntry : ACTIVE_OBJECTS
-								.find(DecisionKnowledgeElementEntity.class)) {
-							if (databaseEntry.getId() == element.getId()) {
-								databaseEntry.setSummary(element.getSummary());
-								databaseEntry.setDescription(element.getDescription());
-								databaseEntry.setType(element.getType().toString());
-								databaseEntry.save();
-								return databaseEntry;
-							}
-						}
-						return null;
-					}
-				});
-		if (databaseEntry == null) {
-			LOGGER.error("Updating of decision knowledge element in database failed.");
-			return false;
-		}
-		return true;
-	}
-
-	@Override
 	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement,
 			ApplicationUser user) {
 		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Boolean>() {
@@ -125,45 +71,24 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements() {
-		List<DecisionKnowledgeElement> decisionKnowledgeElements = null;
-		if (this.projectKey != null) {
-			decisionKnowledgeElements = ACTIVE_OBJECTS
-					.executeInTransaction(new TransactionCallback<List<DecisionKnowledgeElement>>() {
-						@Override
-						public List<DecisionKnowledgeElement> doInTransaction() {
-							final List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
-							DecisionKnowledgeElementEntity[] decisionArray = ACTIVE_OBJECTS.find(
-									DecisionKnowledgeElementEntity.class,
-									Query.select().where("PROJECT_KEY = ?", projectKey));
-							for (DecisionKnowledgeElementEntity entity : decisionArray) {
-								decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(entity));
-							}
-							return decisionKnowledgeElements;
+	public boolean deleteLink(Link link, ApplicationUser user) {
+		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Boolean>() {
+			@Override
+			public Boolean doInTransaction() {
+				for (LinkEntity linkEntity : ACTIVE_OBJECTS.find(LinkEntity.class)) {
+					if (link.getDestinationElement().getId() == linkEntity.getIdOfDestinationElement()
+							&& link.getSourceElement().getId() == linkEntity.getIdOfSourceElement()) {
+						try {
+							linkEntity.getEntityManager().delete(linkEntity);
+							return true;
+						} catch (SQLException e) {
+							LOGGER.error("Link could not be deleted.");
 						}
-					});
-		}
-		return decisionKnowledgeElements;
-	}
-
-	@Override
-	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
-		// Split key into project key and id
-		String idAsString = null;
-		try {
-			idAsString = key.split("-")[1];
-		} catch (ArrayIndexOutOfBoundsException e) {
-			LOGGER.error("Key cannot be split into the project key and id.");
-		}
-		if (idAsString != null) {
-			long id = Long.parseLong(idAsString);
-			DecisionKnowledgeElement element = getDecisionKnowledgeElement(id);
-			if (element != null) {
-				return element;
+					}
+				}
+				return false;
 			}
-		}
-		LOGGER.error("No decision knowledge element with " + key + " could be found.");
-		return null;
+		});
 	}
 
 	@Override
@@ -191,6 +116,48 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	}
 
 	@Override
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
+		// Split key into project key and id
+		String idAsString = null;
+		try {
+			idAsString = key.split("-")[1];
+		} catch (ArrayIndexOutOfBoundsException e) {
+			LOGGER.error("Key cannot be split into the project key and id.");
+		}
+		if (idAsString != null) {
+			long id = Long.parseLong(idAsString);
+			DecisionKnowledgeElement element = getDecisionKnowledgeElement(id);
+			if (element != null) {
+				return element;
+			}
+		}
+		LOGGER.error("No decision knowledge element with " + key + " could be found.");
+		return null;
+	}
+
+	@Override
+	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements() {
+		List<DecisionKnowledgeElement> decisionKnowledgeElements = null;
+		if (this.projectKey != null) {
+			decisionKnowledgeElements = ACTIVE_OBJECTS
+					.executeInTransaction(new TransactionCallback<List<DecisionKnowledgeElement>>() {
+						@Override
+						public List<DecisionKnowledgeElement> doInTransaction() {
+							final List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
+							DecisionKnowledgeElementEntity[] decisionArray = ACTIVE_OBJECTS.find(
+									DecisionKnowledgeElementEntity.class,
+									Query.select().where("PROJECT_KEY = ?", projectKey));
+							for (DecisionKnowledgeElementEntity entity : decisionArray) {
+								decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(entity));
+							}
+							return decisionKnowledgeElements;
+						}
+					});
+		}
+		return decisionKnowledgeElements;
+	}
+
+	@Override
 	public List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Link> inwardLinks = this.getInwardLinks(decisionKnowledgeElement);
@@ -206,7 +173,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 							if (entityList.length == 1) {
 								return entityList[0];
 							}
-							LOGGER.error("Inward Link has no Element to return");
+							LOGGER.error("Inward link has no element to return.");
 							return null;
 						}
 					})));
@@ -230,12 +197,68 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 							if (entityList.length == 1) {
 								return entityList[0];
 							}
-							LOGGER.error("Outward Link has no Element to return");
+							LOGGER.error("Outward link has no element to return.");
 							return null;
 						}
 					})));
 		}
 		return destinationElements;
+	}
+
+	@Override
+	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
+		List<Link> inwardLinks = new ArrayList<>();
+		LinkEntity[] links = ACTIVE_OBJECTS.find(LinkEntity.class,
+				Query.select().where("ID_OF_DESTINATION_ELEMENT = ?", element.getId()));
+		for (LinkEntity link : links) {
+			Link inwardLink = new LinkImpl(link);
+			inwardLink.setDestinationElement(element);
+			inwardLink.setSourceElement(this.getDecisionKnowledgeElement(link.getIdOfSourceElement()));
+			inwardLinks.add(inwardLink);
+		}
+		return inwardLinks;
+	}
+
+	@Override
+	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
+		List<Link> outwardLinks = new ArrayList<>();
+		LinkEntity[] links = ACTIVE_OBJECTS.find(LinkEntity.class,
+				Query.select().where("ID_OF_SOURCE_ELEMENT = ?", element.getId()));
+		for (LinkEntity link : links) {
+			Link outwardLink = new LinkImpl(link);
+			outwardLink.setSourceElement(element);
+			outwardLink.setDestinationElement(this.getDecisionKnowledgeElement(link.getIdOfDestinationElement()));
+			outwardLinks.add(outwardLink);
+		}
+		return outwardLinks;
+	}
+
+	@Override
+	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
+			ApplicationUser user) {
+		DecisionKnowledgeElementEntity databaseEntry = ACTIVE_OBJECTS
+				.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementEntity>() {
+					@Override
+					public DecisionKnowledgeElementEntity doInTransaction() {
+						DecisionKnowledgeElementEntity databaseEntry = ACTIVE_OBJECTS
+								.create(DecisionKnowledgeElementEntity.class);
+						databaseEntry.setKey(element.getProject().getProjectKey().toUpperCase(Locale.ENGLISH) + "-"
+								+ databaseEntry.getId());
+						databaseEntry.setSummary(element.getSummary());
+						databaseEntry.setDescription(element.getDescription());
+						databaseEntry.setType(element.getType().toString());
+						databaseEntry.setProjectKey(element.getProject().getProjectKey());
+						databaseEntry.save();
+						return databaseEntry;
+					}
+				});
+		if (databaseEntry == null) {
+			LOGGER.error("Insertion of decision knowledge element into database failed.");
+			return null;
+		}
+		element.setId(databaseEntry.getId());
+		element.setKey(databaseEntry.getKey());
+		return element;
 	}
 
 	@Override
@@ -273,8 +296,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 
 				// elements exist
 				final LinkEntity linkEntity = ACTIVE_OBJECTS.create(LinkEntity.class);
-				linkEntity.setIdOfSourceElement(link.getDestinationElement().getId());
-				linkEntity.setIdOfDestinationElement(link.getSourceElement().getId());
+				linkEntity.setIdOfSourceElement(link.getSourceElement().getId());
+				linkEntity.setIdOfDestinationElement(link.getDestinationElement().getId());
 				linkEntity.setType(link.getType());
 				linkEntity.save();
 				return linkEntity.getId();
@@ -283,51 +306,28 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	}
 
 	@Override
-	public boolean deleteLink(Link link, ApplicationUser user) {
-		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Boolean>() {
-			@Override
-			public Boolean doInTransaction() {
-				for (LinkEntity linkEntity : ACTIVE_OBJECTS.find(LinkEntity.class)) {
-					if (link.getDestinationElement().getId() == linkEntity.getIdOfDestinationElement()
-							&& link.getSourceElement().getId() == linkEntity.getIdOfSourceElement()) {
-						try {
-							linkEntity.getEntityManager().delete(linkEntity);
-							return true;
-						} catch (SQLException e) {
-							LOGGER.error("Link could not be deleted.");
+	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
+		DecisionKnowledgeElementEntity databaseEntry = ACTIVE_OBJECTS
+				.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementEntity>() {
+					@Override
+					public DecisionKnowledgeElementEntity doInTransaction() {
+						for (DecisionKnowledgeElementEntity databaseEntry : ACTIVE_OBJECTS
+								.find(DecisionKnowledgeElementEntity.class)) {
+							if (databaseEntry.getId() == element.getId()) {
+								databaseEntry.setSummary(element.getSummary());
+								databaseEntry.setDescription(element.getDescription());
+								databaseEntry.setType(element.getType().toString());
+								databaseEntry.save();
+								return databaseEntry;
+							}
 						}
+						return null;
 					}
-				}
-				return false;
-			}
-		});
-	}
-
-	@Override
-	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
-		List<Link> inwardLinks = new ArrayList<>();
-		LinkEntity[] links = ACTIVE_OBJECTS.find(LinkEntity.class,
-				Query.select().where("ID_OF_DESTINATION_ELEMENT = ?", element.getId()));
-		for (LinkEntity link : links) {
-			Link inwardLink = new LinkImpl(link);
-			inwardLink.setDestinationElement(element);
-			inwardLink.setSourceElement(this.getDecisionKnowledgeElement(link.getIdOfSourceElement()));
-			inwardLinks.add(inwardLink);
+				});
+		if (databaseEntry == null) {
+			LOGGER.error("Updating of decision knowledge element in database failed.");
+			return false;
 		}
-		return inwardLinks;
-	}
-
-	@Override
-	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
-		List<Link> outwardLinks = new ArrayList<>();
-		LinkEntity[] links = ACTIVE_OBJECTS.find(LinkEntity.class,
-				Query.select().where("ID_OF_SOURCE_ELEMENT = ?", element.getId()));
-		for (LinkEntity link : links) {
-			Link outwardLink = new LinkImpl(link);
-			outwardLink.setSourceElement(element);
-			outwardLink.setDestinationElement(this.getDecisionKnowledgeElement(link.getIdOfDestinationElement()));
-			outwardLinks.add(outwardLink);
-		}
-		return outwardLinks;
+		return true;
 	}
 }

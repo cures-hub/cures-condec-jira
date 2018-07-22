@@ -166,11 +166,11 @@ function deleteDecisionKnowledgeElement(id, callback) {
 			});
 }
 
-function linkElements(parentId, childId, linkType, callback) {
+function linkElements(idOfDestinationElement, idOfSourceElement, linkType, callback) {
 	var jsondata = {
 		"type" : linkType,
-		"idOfSourceElement" : childId,
-		"idOfDestinationElement" : parentId
+		"idOfSourceElement" : idOfSourceElement,
+		"idOfDestinationElement" : idOfDestinationElement
 	};
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLink.json?projectKey=" + getProjectKey(),
 			jsondata, function(error, link) {
@@ -183,10 +183,10 @@ function linkElements(parentId, childId, linkType, callback) {
 			});
 }
 
-function deleteLink(parentId, childId, callback) {
+function deleteLink(idOfDestinationElement, idOfSourceElement, callback) {
 	var jsondata = {
-		"idOfSourceElement" : childId,
-		"idOfDestinationElement" : parentId
+		"idOfSourceElement" : idOfSourceElement,
+		"idOfDestinationElement" : idOfDestinationElement
 	};
 	deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLink.json?projectKey=" + getProjectKey(),
 			jsondata, function(error, link) {

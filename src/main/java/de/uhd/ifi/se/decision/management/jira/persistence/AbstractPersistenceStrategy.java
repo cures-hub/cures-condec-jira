@@ -23,35 +23,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 public abstract class AbstractPersistenceStrategy {
 
 	/**
-	 * Insert a new decision knowledge element into database.
-	 *
-	 * @see DecisionKnowledgeElement
-	 * @see ApplicationUser
-	 * @param element
-	 *            decision knowledge element with attributes such as a summary, the
-	 *            knowledge type, and an optional description.
-	 * @param user
-	 *            authenticated JIRA application user
-	 * @return decision knowledge element that is now filled with internal database
-	 *         id and key, null if insertion failed.
-	 */
-	public abstract DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
-			ApplicationUser user);
-
-	/**
-	 * Update an existing decision knowledge element in database.
-	 *
-	 * @see DecisionKnowledgeElement
-	 * @see ApplicationUser
-	 * @param element
-	 *            decision knowledge element with id in database.
-	 * @param user
-	 *            authenticated JIRA application user
-	 * @return true if updating was successful.
-	 */
-	public abstract boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
-
-	/**
 	 * Delete an existing decision knowledge element in database.
 	 *
 	 * @see DecisionKnowledgeElement
@@ -65,12 +36,18 @@ public abstract class AbstractPersistenceStrategy {
 	public abstract boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
 
 	/**
-	 * Get a decision knowledge element in database by its key.
+	 * Delete an existing link in database.
 	 *
-	 * @see DecisionKnowledgeElement
-	 * @return decision knowledge element.
+	 * @see Link
+	 * @see ApplicationUser
+	 * @param link
+	 *            link between a source and a destination decision knowledge
+	 *            element.
+	 * @param user
+	 *            authenticated JIRA application user
+	 * @return true if insertion was successful.
 	 */
-	public abstract DecisionKnowledgeElement getDecisionKnowledgeElement(String key);
+	public abstract boolean deleteLink(Link link, ApplicationUser user);
 
 	/**
 	 * Get a decision knowledge element in database by its id.
@@ -79,6 +56,14 @@ public abstract class AbstractPersistenceStrategy {
 	 * @return decision knowledge element.
 	 */
 	public abstract DecisionKnowledgeElement getDecisionKnowledgeElement(long id);
+
+	/**
+	 * Get a decision knowledge element in database by its key.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @return decision knowledge element.
+	 */
+	public abstract DecisionKnowledgeElement getDecisionKnowledgeElement(String key);
 
 	/**
 	 * Get all decision knowledge elements for a project.
@@ -113,6 +98,20 @@ public abstract class AbstractPersistenceStrategy {
 
 	/**
 	 * Get all linked elements of the decision knowledge element for a project where
+	 * this decision knowledge element is the destination element.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see Link
+	 * @see DecisionKnowledgeProject
+	 * @param element
+	 *            decision knowledge element with id in database.
+	 * @return list of linked elements where this decision knowledge element is the
+	 *         destination element.
+	 */
+	public abstract List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element);
+
+	/**
+	 * Get all linked elements of the decision knowledge element for a project where
 	 * this decision knowledge element is the source element.
 	 *
 	 * @see DecisionKnowledgeElement
@@ -126,18 +125,16 @@ public abstract class AbstractPersistenceStrategy {
 	public abstract List<DecisionKnowledgeElement> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement element);
 
 	/**
-	 * Get all linked elements of the decision knowledge element for a project where
-	 * this decision knowledge element is the destination element.
+	 * Get all links where the decision knowledge element is the destination
+	 * element.
 	 *
-	 * @see DecisionKnowledgeElement
 	 * @see Link
-	 * @see DecisionKnowledgeProject
 	 * @param element
 	 *            decision knowledge element with id in database.
-	 * @return list of linked elements where this decision knowledge element is the
+	 * @return list of links where the given decision knowledge element is the
 	 *         destination element.
 	 */
-	public abstract List<DecisionKnowledgeElement> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element);
+	public abstract List<Link> getInwardLinks(DecisionKnowledgeElement element);
 
 	/**
 	 * Get all linked elements of the decision knowledge element for a project. It
@@ -173,6 +170,17 @@ public abstract class AbstractPersistenceStrategy {
 		DecisionKnowledgeElement element = this.getDecisionKnowledgeElement(id);
 		return this.getLinkedElements(element);
 	}
+
+	/**
+	 * Get all links where the decision knowledge element is the source element.
+	 *
+	 * @see Link
+	 * @param element
+	 *            decision knowledge element with id in database.
+	 * @return list of links where the given decision knowledge element is the
+	 *         source element.
+	 */
+	public abstract List<Link> getOutwardLinks(DecisionKnowledgeElement element);
 
 	/**
 	 * Get all unlinked elements of the decision knowledge element for a project.
@@ -212,6 +220,22 @@ public abstract class AbstractPersistenceStrategy {
 	}
 
 	/**
+	 * Insert a new decision knowledge element into database.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see ApplicationUser
+	 * @param element
+	 *            decision knowledge element with attributes such as a summary, the
+	 *            knowledge type, and an optional description.
+	 * @param user
+	 *            authenticated JIRA application user
+	 * @return decision knowledge element that is now filled with internal database
+	 *         id and key, null if insertion failed.
+	 */
+	public abstract DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
+			ApplicationUser user);
+
+	/**
 	 * Insert a new link into database.
 	 *
 	 * @see Link
@@ -226,39 +250,15 @@ public abstract class AbstractPersistenceStrategy {
 	public abstract long insertLink(Link link, ApplicationUser user);
 
 	/**
-	 * Delete an existing link in database.
+	 * Update an existing decision knowledge element in database.
 	 *
-	 * @see Link
+	 * @see DecisionKnowledgeElement
 	 * @see ApplicationUser
-	 * @param link
-	 *            link between a source and a destination decision knowledge
-	 *            element.
+	 * @param element
+	 *            decision knowledge element with id in database.
 	 * @param user
 	 *            authenticated JIRA application user
-	 * @return true if insertion was successful.
+	 * @return true if updating was successful.
 	 */
-	public abstract boolean deleteLink(Link link, ApplicationUser user);
-
-	/**
-	 * Get all links where the decision knowledge element is the destination
-	 * element.
-	 *
-	 * @see Link
-	 * @param element
-	 *            decision knowledge element with id in database.
-	 * @return list of links where the given decision knowledge element is the
-	 *         destination element.
-	 */
-	public abstract List<Link> getInwardLinks(DecisionKnowledgeElement element);
-
-	/**
-	 * Get all links where the decision knowledge element is the source element.
-	 *
-	 * @see Link
-	 * @param element
-	 *            decision knowledge element with id in database.
-	 * @return list of links where the given decision knowledge element is the
-	 *         source element.
-	 */
-	public abstract List<Link> getOutwardLinks(DecisionKnowledgeElement element);
+	public abstract boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
 }

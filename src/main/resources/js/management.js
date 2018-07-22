@@ -19,25 +19,25 @@ function replaceArgumentWithLinkTypes(knowledgeTypes) {
 	return extendedKnowledgeTypes;
 }
 
-function createLinkToExistingElement(idOfDestinationElement, idOfSourceElement, knowledgeTypeOfChild) {
-	switchLinkTypes(knowledgeTypeOfChild, idOfDestinationElement, idOfSourceElement, function(linkType,
-			idOfDestinationElement, idOfSourceElement) {
-		linkElements(idOfDestinationElement, idOfSourceElement, linkType, function() {
+function createLinkToExistingElement(idOfExistingElement, idOfNewElement, knowledgeTypeOfChild) {
+	switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, function(linkType,
+			idOfExistingElement, idOfNewElement) {
+		linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
 			updateView();
 		});
 	});
 }
 
-function switchLinkTypes(type, idOfDestinationElement, idOfSourceElement, linkTypeFunction) {
+function switchLinkTypes(type, idOfExistingElement, idOfNewElement, linkTypeFunction) {
 	switch (type) {
 	case "Pro-argument":
-		linkTypeFunction("support", idOfSourceElement, idOfDestinationElement);
+		linkTypeFunction("support", idOfExistingElement, idOfNewElement);
 		break;
 	case "Con-argument":
-		linkTypeFunction("attack", idOfSourceElement, idOfDestinationElement);
+		linkTypeFunction("attack", idOfExistingElement, idOfNewElement);
 		break;
 	default:
-		linkTypeFunction("contain", idOfDestinationElement, idOfSourceElement);
+		linkTypeFunction("contain", idOfNewElement, idOfExistingElement);
 	}
 }
 
@@ -69,12 +69,12 @@ function getSimpleType(type) {
 	return simpleType;
 }
 
-function createDecisionKnowledgeElementAsChild(summary, description, type, idOfDestinationElement) {
+function createDecisionKnowledgeElementAsChild(summary, description, type, idOfExistingElement) {
 	var simpleType = getSimpleType(type);
-	createDecisionKnowledgeElement(summary, description, simpleType, function(idOfSourceElement) {
-		switchLinkTypes(type, idOfDestinationElement, idOfSourceElement, function(linkType, idOfDestinationElement,
-				idOfSourceElement) {
-			linkElements(idOfDestinationElement, idOfSourceElement, linkType, function() {
+	createDecisionKnowledgeElement(summary, description, simpleType, function(idOfNewElement) {
+		switchLinkTypes(type, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
+				idOfNewElement) {
+			linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
 				updateView();
 			});
 		});
