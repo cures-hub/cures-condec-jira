@@ -2,36 +2,46 @@
 \begin{tikzpicture}[font = \sffamily, thick]
 \tikzumlset{font = \sffamily, fill class=white, fill package=white, fill note=white}
 
-% abstract strategy/interface
+% abstract strategy
 \umlclass[type=abstract]{AbstractPersistenceStrategy}{}{
-    \textit{+ insertDecisionKnowledgeElement(element : DecisionKnowledgeElement) : DecisionKnowledgeElement}\\
-    \textit{+ updateDecisionKnowledgeElement(element : DecisionKnowledgeElement) : boolean}\\
-    \textit{+ deleteDecisionKnowledgeElement(element : DecisionKnowledgeElement) : boolean}\\
-    \textit{+ getDecisionKnowledgeElements(projectKey : String) : List<DecisionKnowledgeElement>}\\
-    \textit{+ getDecisionKnowledgeElement(key : String) : DecisionKnowledgeElement}\\
-    \textit{+ getDecisionKnowledgeElement(id : long) : DecisionKnowledgeElement}\\
-    + getDecisions(projectKey : String) : List<DecisionKnowledgeElement>\\
-    + getLinkedElements(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>\\
-    + getLinkedElements(id : long) : List<DecisionKnowledgeElement>\\
-    \textit{+ getElementsLinkedWithOutwardLinks(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>}\\
-    \textit{+ getElementsLinkedWithInwardLinks(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>}\\
-    \textit{+ getUnlinkedDecisionComponents(element : DecisionKnowledgeElement) : List<DecisionKnowledgeElement>}\\
-    \textit{+ insertLink(link : Link) : long}\\
-    \textit{+ updateLink(link : Link) : boolean}\\
-    \textit{+ deleteLink(link : Link) : boolean}\\
-    \textit{+ getInwardLinks(element : decisionKnowledgeElement) : List<Link>}\\
-    \textit{+ getOutwardLinks(element : decisionKnowledgeElement) : List<Link>}\\
+    \textit{+ deleteDecisionKnowledgeElement(element: DecisionKnowledgeElement, user: ApplicationUser): boolean}\\
+    \textit{+ deleteLink(link: Link, user: ApplicationUser): boolean}\\
+    \textit{+ getDecisionKnowledgeElement(id: long): DecisionKnowledgeElement}\\
+    \textit{+ getDecisionKnowledgeElement(key: String): DecisionKnowledgeElement}\\
+    \textit{+ getDecisionKnowledgeElements(): List<DecisionKnowledgeElement>}\\
+		+ getDecisionKnowledgeElements(type: KnowledgeType): List<DecisionKnowledgeElement>\\
+    \textit{+ getElementsLinkedWithInwardLinks(element: DecisionKnowledgeElement): List<DecisionKnowledgeElement>}\\
+    \textit{+ getElementsLinkedWithOutwardLinks(element: DecisionKnowledgeElement): List<DecisionKnowledgeElement>}\\
+    \textit{+ getInwardLinks(element: DecisionKnowledgeElement): List<Link>}\\
+		+ getLinkedElements(element: DecisionKnowledgeElement): List<DecisionKnowledgeElement>\\
+		+ getLinkedElements(id: long): List<DecisionKnowledgeElement>\\
+    \textit{+ getOutwardLinks(element: DecisionKnowledgeElement): List<Link>}\\
+		+ getUnlinkedElements(element: DecisionKnowledgeElement): List<DecisionKnowledgeElement>\\
+		+ getUnlinkedElements(id: long): List<DecisionKnowledgeElement>\\
+    \textit{+ insertDecisionKnowledgeElement(element: DecisionKnowledgeElement, user: ApplicationUser): DecisionKnowledgeElement}\\
+    \textit{+ insertLink(link: Link, user: ApplicationUser): long}\\
+    \textit{+ updateDecisionKnowledgeElement(element: DecisionKnowledgeElement, user: ApplicationUser): boolean}\\
 }
 
-% concrete strategy
-\umlclass[x=12, y=1]{IssueStrategy}{}{}
-\umlclass[x=12, y=-1]{ActiveObjectStrategy}{}{}
+% concrete strategies
+\umlclass[x=-4, y=-6]{IssueStrategy}{
+	projectKey: String}{
+	+ IssueStrategy(projectKey: String)
+}
+\umlclass[x=4, y=-6]{ActiveObjectStrategy}{
+	projectKey: String}{
+	+ ActiveObjectStrategy(projectKey: String)
+}
 
 % client
-\umlclass[x=-11, y=0]{Client}{}{}
+\umlclass[x=-13, y=0]{DecisionKnowledgeProject}{
+	projectKey: String\\
+	...}{
+	+ getPersistenceStrategy()\\
+	...}
 
 % associations
 \umlinherit{IssueStrategy}{AbstractPersistenceStrategy}
 \umlinherit{ActiveObjectStrategy}{AbstractPersistenceStrategy}
-\umluniassoc[arg1=uses, pos1=0.5]{Client}{AbstractPersistenceStrategy}
+\umlassoc{DecisionKnowledgeProject}{AbstractPersistenceStrategy}
 \end{tikzpicture}
