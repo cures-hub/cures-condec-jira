@@ -133,13 +133,11 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 						@Override
 						public List<DecisionKnowledgeElement> doInTransaction() {
 							final List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
-							// Returns all instances of interface DecisionKnowledgeElementEntity for the
-							// given project key
 							DecisionKnowledgeElementEntity[] decisionArray = ACTIVE_OBJECTS.find(
 									DecisionKnowledgeElementEntity.class,
 									Query.select().where("PROJECT_KEY = ?", projectKey));
 							for (DecisionKnowledgeElementEntity entity : decisionArray) {
-								decisionKnowledgeElements.add(castToDecisionKnowledgeElement(entity));
+								decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(entity));
 							}
 							return decisionKnowledgeElements;
 						}
@@ -198,7 +196,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 		List<Link> inwardLinks = this.getInwardLinks(decisionKnowledgeElement);
 		List<DecisionKnowledgeElement> sourceElements = new ArrayList<DecisionKnowledgeElement>();
 		for (Link link : inwardLinks) {
-			sourceElements.add(castToDecisionKnowledgeElement(
+			sourceElements.add(new DecisionKnowledgeElementImpl(
 					ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementEntity>() {
 						@Override
 						public DecisionKnowledgeElementEntity doInTransaction() {
@@ -222,7 +220,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 		List<Link> outwardLinks = this.getOutwardLinks(decisionKnowledgeElement);
 		List<DecisionKnowledgeElement> destinationElements = new ArrayList<DecisionKnowledgeElement>();
 		for (Link link : outwardLinks) {
-			destinationElements.add(castToDecisionKnowledgeElement(
+			destinationElements.add(new DecisionKnowledgeElementImpl(
 					ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementEntity>() {
 						@Override
 						public DecisionKnowledgeElementEntity doInTransaction() {
@@ -331,11 +329,5 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 			outwardLinks.add(outwardLink);
 		}
 		return outwardLinks;
-	}
-
-	// Converting the Entity to a DecisionKnowledgeElementImpl for future use
-	private DecisionKnowledgeElement castToDecisionKnowledgeElement(DecisionKnowledgeElementEntity entity) {
-		return new DecisionKnowledgeElementImpl(entity.getId(), entity.getSummary(), entity.getDescription(),
-				entity.getType(), entity.getProjectKey(), entity.getKey());
 	}
 }
