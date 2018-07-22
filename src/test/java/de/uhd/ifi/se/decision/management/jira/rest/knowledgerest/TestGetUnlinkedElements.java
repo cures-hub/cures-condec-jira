@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.decisionsrest;
+package de.uhd.ifi.se.decision.management.jira.rest.knowledgerest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -16,45 +16,44 @@ import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.management.jira.rest.DecisionsRest;
+import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestGetUnlinkedIssues extends TestSetUp {
+public class TestGetUnlinkedElements extends TestSetUp {
 	private EntityManager entityManager;
-	private DecisionsRest decRest;
+	private KnowledgeRest knowledgeRest;
 
-	private final static String UNLINKED_ERRROR = "Unlinked decision components could not be received due to a bad request (element id or project key was missing).";
+	private final static String UNLINKED_ERRROR = "Unlinked decision knowledge elements could not be received due to a bad request (element id or project key was missing).";
 
 	@Before
 	public void setUp() {
-		decRest = new DecisionsRest();
+		knowledgeRest = new KnowledgeRest();
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockDefaultUserManager());
 	}
 
 	@Test
-	public void testIssueIdZeroProjectKeyNull() {
+	public void testElementIdZeroProjectKeyNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", UNLINKED_ERRROR)).build()
-				.getEntity(), decRest.getUnlinkedDecisionComponents(0, null).getEntity());
+				.getEntity(), knowledgeRest.getUnlinkedElements(0, null).getEntity());
 	}
 
 	@Test
-	public void testIssueIdFilledProjectKeyNull() {
+	public void testElementIdFilledProjectKeyNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", UNLINKED_ERRROR)).build()
-				.getEntity(), decRest.getUnlinkedDecisionComponents(7, null).getEntity());
+				.getEntity(), knowledgeRest.getUnlinkedElements(7, null).getEntity());
 	}
 
-	//TODO
-//	@Test
-//	public void testIssueIdFilledProjectKeyDontExist() {
-//		assertEquals(200, decRest.getUnlinkedDecisionComponents(7, "NotTEST").getStatus());
-//	}
+	@Test
+	public void testIssueIdFilledProjectKeyDontExist() {
+		assertEquals(Status.OK.getStatusCode(), knowledgeRest.getUnlinkedElements(7, "NotTEST").getStatus());
+	}
 
-//	@Test
-//	public void testIssueIdFilledProjectKeyExist() {
-//		assertEquals(Status.OK.getStatusCode(), decRest.getUnlinkedDecisionComponents(7, "TEST").getStatus());
-//	}
+	@Test
+	public void testIssueIdFilledProjectKeyExist() {
+		assertEquals(Status.OK.getStatusCode(), knowledgeRest.getUnlinkedElements(7, "TEST").getStatus());
+	}
 }

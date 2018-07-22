@@ -87,26 +87,26 @@ function getDecisionKnowledgeElement(id, callback) {
 			});
 }
 
-function getLinkedDecisionComponents(id, callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getLinkedDecisionComponents.json?projectKey="
-			+ getProjectKey() + "&id=" + id, function(error, linkedDecisionComponents) {
+function getLinkedElements(id, callback) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getLinkedElements.json?projectKey="
+			+ getProjectKey() + "&id=" + id, function(error, linkedElements) {
 		if (error === null) {
-			callback(linkedDecisionComponents);
+			callback(linkedElements);
 		} else {
 			showFlag("error",
-					"An error occured when receiving the linked decision components for the selected element.");
+					"An error occured when receiving the linked decision knowledge elements for the selected element.");
 		}
 	});
 }
 
-function getUnlinkedDecisionComponents(id, callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getUnlinkedDecisionComponents.json?projectKey="
-			+ getProjectKey() + "&id=" + id, function(error, unlinkedDecisionComponents) {
+function getUnlinkedElements(id, callback) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getUnlinkedElements.json?projectKey="
+			+ getProjectKey() + "&id=" + id, function(error, unlinkedElements) {
 		if (error === null) {
-			callback(unlinkedDecisionComponents);
+			callback(unlinkedElements);
 		} else {
 			showFlag("error",
-					"An error occured when receiving the unlinked decision components for the selected element.");
+					"An error occured when receiving the unlinked decision knowledge elements for the selected element.");
 		}
 	});
 }

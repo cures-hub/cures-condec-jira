@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.decisionsrest;
+package de.uhd.ifi.se.decision.management.jira.rest.knowledgerest;
 
 import static org.junit.Assert.assertEquals;
 
@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestDeleteLinks extends TestDecisionSetUp {
+public class TestDeleteLink extends TestKnowledgeRestSetUp {
 
 	private final static String DELETION_LINK_ERROR = "Deletion of link failed.";
 
@@ -23,7 +23,7 @@ public class TestDeleteLinks extends TestDecisionSetUp {
 		assertEquals(
 				Response.status(Response.Status.BAD_REQUEST)
 						.entity(ImmutableMap.of("error", DELETION_LINK_ERROR)).build().getEntity(),
-				decisionsRest.deleteLinks(null, null, null).getEntity());
+				knowledgeRest.deleteLink(null, null, null).getEntity());
 
 	}
 
@@ -32,7 +32,7 @@ public class TestDeleteLinks extends TestDecisionSetUp {
 		assertEquals(
 				Response.status(Response.Status.BAD_REQUEST)
 						.entity(ImmutableMap.of("error", DELETION_LINK_ERROR)).build().getEntity(),
-				decisionsRest.deleteLinks("TEST", null, null).getEntity());
+				knowledgeRest.deleteLink("TEST", null, null).getEntity());
 
 	}
 
@@ -43,7 +43,7 @@ public class TestDeleteLinks extends TestDecisionSetUp {
 		assertEquals(
 				Response.status(Response.Status.BAD_REQUEST)
 						.entity(ImmutableMap.of("error", DELETION_LINK_ERROR)).build().getEntity(),
-				decisionsRest.deleteLinks(null, request, null).getEntity());
+				knowledgeRest.deleteLink(null, request, null).getEntity());
 
 	}
 
@@ -56,7 +56,7 @@ public class TestDeleteLinks extends TestDecisionSetUp {
 		assertEquals(
 				Response.status(Response.Status.BAD_REQUEST)
 						.entity(ImmutableMap.of("error", DELETION_LINK_ERROR)).build().getEntity(),
-				decisionsRest.deleteLinks(null, null, link).getEntity());
+				knowledgeRest.deleteLink(null, null, link).getEntity());
 	}
 
 	@Test
@@ -71,7 +71,7 @@ public class TestDeleteLinks extends TestDecisionSetUp {
 //		assertEquals(
 //				Response.status(Response.Status.BAD_REQUEST)
 //						.entity(ImmutableMap.of("error", DELETION_LINK_ERROR)).build().getEntity(),
-//				decisionsRest.deleteLinks("TEST", request, link).getEntity());
+//				knowledgeRest.deleteLinks("TEST", request, link).getEntity());
 	}
 
 	@Test
@@ -83,6 +83,6 @@ public class TestDeleteLinks extends TestDecisionSetUp {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
 		// TODO
-//		assertEquals(Response.Status.OK.getStatusCode(), decisionsRest.deleteLinks("TEST", request, link).getStatus());
+//		assertEquals(Response.Status.OK.getStatusCode(), knowledgeRest.deleteLinks("TEST", request, link).getStatus());
 	}
 }

@@ -128,7 +128,7 @@ function setUpDialogForLinkAction(id) {
 	setUpDialog();
 	setHeaderText(linkKnowledgeElementText);
 
-	getUnlinkedDecisionComponents(id, function(unlinkedDecisionComponents) {
+	getUnlinkedElements(id, function(unlinkedElements) {
 		var insertString = "<form class='aui'><div class='field-group' id='select-field-group'></div>"
 				+ "<div class='field-group' id='argument-field-group'></div></form>";
 		var content = document.getElementById("dialog-content");
@@ -137,9 +137,9 @@ function setUpDialogForLinkAction(id) {
 		insertString = "<label for='form-select-component'>Unlinked Element:</label>"
 				+ "<select id='form-select-component' name='form-select-component' "
 				+ "onchange='addFormForArguments()' class='select full-width-field'/>";
-		for (var index = 0; index < unlinkedDecisionComponents.length; index++) {
-			insertString += "<option value='" + unlinkedDecisionComponents[index].id + "'>"
-					+ unlinkedDecisionComponents[index].type + ' / ' + unlinkedDecisionComponents[index].summary
+		for (var index = 0; index < unlinkedElements.length; index++) {
+			insertString += "<option value='" + unlinkedElements[index].id + "'>"
+					+ unlinkedElements[index].type + ' / ' + unlinkedElements[index].summary
 					+ "</option>";
 		}
 		var selectFieldGroup = document.getElementById("select-field-group");

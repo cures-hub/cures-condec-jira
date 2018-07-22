@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.decisionsrest;
+package de.uhd.ifi.se.decision.management.jira.rest.knowledgerest;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,18 +16,18 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.rest.DecisionsRest;
+import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import net.java.ao.EntityManager;
 
-public class TestDecisionSetUp extends TestSetUp {
+public class TestKnowledgeRestSetUp extends TestSetUp {
 	protected EntityManager entityManager;
-	protected DecisionsRest decisionsRest;
+	protected KnowledgeRest knowledgeRest;
 	protected DecisionKnowledgeElement decisionKnowledgeElement;
 	protected HttpServletRequest request;
 
 	@Before
 	public void setUp() {
-		decisionsRest = new DecisionsRest();
+		knowledgeRest = new KnowledgeRest();
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockDefaultUserManager());

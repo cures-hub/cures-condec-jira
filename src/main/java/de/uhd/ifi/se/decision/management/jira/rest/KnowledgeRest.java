@@ -31,7 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
  * elements and their links
  */
 @Path("/decisions")
-public class DecisionsRest {
+public class KnowledgeRest {
 
 	@Path("/getDecisionKnowledgeElement")
 	@GET
@@ -54,10 +54,10 @@ public class DecisionsRest {
 		}
 	}
 
-	@Path("/getLinkedDecisionComponents")
+	@Path("/getLinkedElements")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getLinkedDecisionComponents(@QueryParam("id") long id,
+	public Response getLinkedElements(@QueryParam("id") long id,
 			@QueryParam("projectKey") String projectKey) {
 		if (projectKey != null) {
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
@@ -65,15 +65,15 @@ public class DecisionsRest {
 			return Response.ok(linkedDecisionKnowledgeElements).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"Unlinked decision components could not be received due to a bad request (element id or project key was missing)."))
+					"Linked decision knowledge elments could not be received due to a bad request (element id or project key was missing)."))
 					.build();
 		}
 	}
 
-	@Path("/getUnlinkedDecisionComponents")
+	@Path("/getUnlinkedElements")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getUnlinkedDecisionComponents(@QueryParam("id") long id,
+	public Response getUnlinkedElements(@QueryParam("id") long id,
 			@QueryParam("projectKey") String projectKey) {
 		if (projectKey != null) {
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
@@ -82,7 +82,7 @@ public class DecisionsRest {
 			return Response.ok(unlinkedDecisionKnowledgeElements).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"Unlinked decision components could not be received due to a bad request (element id or project key was missing)."))
+					"Unlinked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
 					.build();
 		}
 	}
@@ -173,7 +173,7 @@ public class DecisionsRest {
 	@Path("/deleteLink")
 	@DELETE
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response deleteLinks(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
+	public Response deleteLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
