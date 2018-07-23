@@ -49,7 +49,10 @@ The tree view was implemented using the [Treant.js library](http://fperucic.gith
 
 The user can [filter the decision knowledge](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/example_radargrammetry_filter.png) and manage it using drag and drop and a [context menu](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/example_radargrammetry_context_menu.png).
 
-## Configuration
+### Issue Module
+JIRA ConDec provides an [issue module that enables the user to explore decision knowledge related to JIRA issues such as feature tasks](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/example_radargrammetry_issue_module.png).
+
+### Configuration
 The [project setting page](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/config_plugin.png) enables the user to:
 - Activate the plug-in for the specific project.
 - Choose the persistence strategy (either *issue strategy* or *active object strategy*). If you choose the issue strategy, you need to associate the project with the *decision knowledge issue type scheme*.
