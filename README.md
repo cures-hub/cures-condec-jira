@@ -41,6 +41,9 @@ The [project setting page](https://github.com/cures-hub/cures-condec-jira/raw/ma
 ### Model
 The [model interfaces and classes](https://github.com/cures-hub/cures-condec-jira/tree/master/src/main/java/de/uhd/ifi/se/decision/management/jira/model) are used to represent decision knowledge in JIRA.
 
+![Model](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/model.png)
+*Model interfaces and classes*
+
 ### User Interface
 
 In order to understand which decisions were made during the project, JIRA ConDec provides a *TreeViewer* that lists all documented decisions.

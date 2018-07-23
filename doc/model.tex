@@ -1,0 +1,126 @@
+% UML class diagram of JIRA ConDec model
+\begin{tikzpicture}[font = \sffamily, thick]
+\tikzumlset{font = \sffamily, fill class=white, fill package=white, fill note=white}
+
+\umlclass[x=0, y=-4]{DecisionKnowledgeProjectImpl}{
+	projectKey: String\\
+	projectName: String\\
+	/isActivated: boolean\\
+	/isIssueStrategy: boolean\\
+	persistenceStrategy: AbstractPersistenceStrategy\\
+	/isKnowledgeExtractedFromGit: boolean\\
+	/isKnowledgeExtractedFromIssues : boolean\\
+	/knowledgeTypes: Set<KnowledgeType>
+}{
+	+ DecisionKnowledgeProjectImpl(projectKey: String)\\
+	+ DecisionKnowledgeProjectImpl(projectKey: String, \\ ~~~~projectName: String)
+}
+
+\umlclass[x=6.5, y=-11]{DecisionKnowledgeElementImpl}{
+	id: long\\
+	summary: String\\
+	description: String\\
+	type: KnowledgeType\\
+	project: DecisionKnowledgeProject\\
+	key: String
+}{
+	+ DecisionKnowledgeElementImpl()\\
+	+ DecisionKnowledgeElementImpl(id: long, summary: String, description: String,\\ ~~~~type: KnowledgeType, projectKey: String, key: String)\\
+	+ DecisionKnowledgeElementImpl(issue: Issue)\\
+	+ setType(type : String)\\
+	+ getLinkedElements(): List<DecisionKnowledgeElement>\\
+	+ getOutwardLinks(): List<Link>\\
+	+ getInwardLinks(): List<Link>
+}
+
+\umlclass[x=12.5, y=-4]{GraphImpl}{
+	rootElement: DecisionKnowledgeElement\\
+	linkIds: List<Link>\\
+	project: DecisionKnowledgeProject
+}{
+	+ GraphImpl()\\
+	+ GraphImpl(projectKey: String)\\
+	+ GraphImpl(projectKey: String, rootElementKey: String)\\
+	+ GraphImpl(rootElement: DecisionKnowledgeElement)\\
+	+ getLinkedElementsAndLinks(element: DecisionKnowledgeElement):\\ ~~~~Map<DecisionKnowledgeElement, Link>\\
+	+ getLinkedElements(element: DecisionKnowledgeElement):\\ ~~~~List<DecisionKnowledgeElement>
+}
+
+\umlclass[x=18.5, y=-11]{LinkImpl}{
+	id: long\\
+	type: LinkType\\
+	sourceElement: DecisionKnowledgeElement\\
+	destinationElement: DecisionKnowledgeElement
+}{
+	+ LinkImpl()\\
+	+ LinkImpl(sourceElement: DecisionKnowledgeElement,\\ ~~~~destinationElement: DecisionKnowledgeElement)\\
+	+ LinkImpl(issueLink: IssueLink)\\
+	+ setType(type : String)
+}
+
+% enums
+\umlclass[type=enum, x=25, y=-2]{KnowledgeType}{
+	ALTERNATIVE\\
+	ASSUMPTION\\
+	ASSESSMENT\\
+	ARGUMENT\\
+	CLAIM\\
+	CONTEXT\\
+	CONSTRAINT\\
+	DECISION\\
+	GOAL\\
+	ISSUE\\
+	IMPLICATION\\
+	PROBLEM\\
+	QUESTION\\
+	RATIONALE\\
+	SOLUTION\\
+	OTHER
+}{
+	+ \underline{getDefaultTypes(): Set<KnowledgeType>}\\
+	+ \underline{getKnowledgeType(type: String): KnowledgeType}\\
+	+ \underline{getSuperType(type: KnowledgeType): KnowledgeType}\\
+	+ getSuperType(): KnowledgeType\\
+	+ toString(): String\\
+	+ \underline{toList(): List<String>}
+}
+
+\umlclass[type=enum, x=26, y=-11]{LinkType}{
+	CONTAIN\\
+	SUPPORT\\
+	ATTACK
+}{
+	+ toString(): String\\
+	+ \underline{toList(): List<String>}
+}
+
+% interfaces
+\umlsimpleclass[type=interface, x=0, y=0]{DecisionKnowledgeProject}{}{}
+\umlsimpleclass[type=interface, x=6.5, y=0]{DecisionKnowledgeElement}{}{}
+\umlsimpleclass[type=interface, x=12.5, y=0]{Graph}{}{}
+\umlsimpleclass[type=interface, x=18.5, y=0]{Link}{}{}
+
+% abstract strategy/interface
+\umlsimpleclass[type=abstract, x=-6, y=0]{AbstractPersistenceStrategy}{}{}
+
+% concrete strategy
+\umlsimpleclass[x=-6, y=-2]{IssueStrategy}{}{}
+\umlsimpleclass[x=-6.5, y=-3]{ActiveObjectStrategy}{}{}
+
+% associations
+\umlinherit[geometry=-|]{IssueStrategy}{AbstractPersistenceStrategy}
+\umlinherit[geometry=-|, anchor2=-170]{ActiveObjectStrategy}{AbstractPersistenceStrategy}
+\umlassoc{DecisionKnowledgeProject}{AbstractPersistenceStrategy}
+
+\umlimpl{DecisionKnowledgeProjectImpl}{DecisionKnowledgeProject}
+\umlimpl{DecisionKnowledgeElementImpl}{DecisionKnowledgeElement}
+\umlimpl{GraphImpl}{Graph}
+\umlimpl{LinkImpl}{Link}
+
+\umlassoc[geometry=|-|, anchor1=north, anchor2=north, arm2=1.7cm, mult1=1, mult2=0..$^*$, pos2=2.8]{DecisionKnowledgeProject}{Graph}
+\umlassoc[mult1=1, mult2=0..$^*$]{DecisionKnowledgeProject}{DecisionKnowledgeElement}
+\umlassoc[mult1=1..$^*$, mult2=1..$^*$]{DecisionKnowledgeElement}{Graph}
+\umlassoc[geometry=|-|, anchor1=155, anchor2=25, arm2=0.8cm, mult1=1, mult2=0..$^*$, arg2={linkedElements}, pos1=0.4, pos2=2.5]{DecisionKnowledgeElement}{DecisionKnowledgeElement}
+\umlassoc[geometry=|-|, anchor1=165, anchor2=north, arm2=1.2cm, mult1=2, mult2=0..$^*$, pos2=2.7]{DecisionKnowledgeElement}{Link}
+\umlassoc[mult1=1..$^*$, mult2=0..$^*$]{Graph}{Link}
+\end{tikzpicture}
