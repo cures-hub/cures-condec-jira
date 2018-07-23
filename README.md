@@ -7,12 +7,14 @@
 The CURES ConDec JIRA plug-in enables the user to capture and explore decision knowledge in [JIRA](https://de.atlassian.com/software/jira).
 Decision knowledge covers knowledge about decisions, the problems they address, solution proposals, their context, and justifications (rationale). The documented decision knowledge can be linked to JIRA issues such as features, tasks to implement a feature, or bug reports.
 
-## Prerequisites
+## Installation
+
+### Prerequisites
 The following prerequisites are necessary to compile the plug-in from source code:
 - Java 8 JDK
 - [Atlassian SDK](https://developer.atlassian.com/docs/getting-started/set-up-the-atlassian-plugin-sdk-and-build-a-project)
 
-## Compilation via Terminal
+### Compilation via Terminal
 The source code is compiled via terminal.
 Navigate into the cures-condec-jira folder and run the following command:
 ```
@@ -20,16 +22,32 @@ atlas-mvn package
 ```
 The .jar file is created.
 
-## Download of Precompiled .jar-File
+### Download of Precompiled .jar-File
 The precompiled .jar-File for the latest release can be found here: https://github.com/cures-hub/cures-condec-jira/releases/latest
 
-## Installation in JIRA
+### Installation in JIRA
 The .jar file is installed by uploading it to your JIRA application:
 - As a system administrator, navigate to JIRA's administration console and click the "Add-ons" tab.
 - Select "Manage add-ons" on the side-bar.
 - Click on "Upload add-on" and select the previously compiled .jar file.
 - Click "Upload" for upload and installation.
 - [Activate the "Decision Documentation and Exploration" plug-in.](https://github.com/cures-hub/cures-condec-jira/blob/master/doc/installed_plugin.png)
+
+## User Interface
+
+### Decision Knowledge Page
+JIRA ConDec provides a *TreeViewer* that lists all documented decision knowledge elements.
+The user can choose the type of the top level decision knowledge element, e.g., to understand which decisions were made or which issues were addressed during the project.
+The TreeViewer was implemented using the [jsTree jQuery plug-in](https://www.jstree.com).
+Decision knowledge elements can be selected and the related elements can be viewed and selected as well.
+
+![JIRA ConDec plug-in](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/example_radargrammetry.png)
+*TreeViewer (left) and tree view of a single decision (right)*
+
+The *Tree* view enables the user to explore decision knowledge related to the selected decision knowledge element.
+The tree view was implemented using the [Treant.js library](http://fperucic.github.io/treant-js).
+
+The user can [filter the decision knowledge](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/example_radargrammetry_filter.png) and manage it using drag and drop and a [context menu](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/example_radargrammetry_context_menu.png).
 
 ## Configuration
 The [project setting page](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/config_plugin.png) enables the user to:
@@ -44,36 +62,17 @@ The [model interfaces and classes](https://github.com/cures-hub/cures-condec-jir
 ![Model](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/model.png)
 *Model interfaces and classes*
 
-### User Interface
-
-In order to understand which decisions were made during the project, JIRA ConDec provides a *TreeViewer* that lists all documented decisions.
-The TreeViewer was implemented using the [jsTree jQuery plug-in](https://www.jstree.com).
-The decisions can be selected and their decision components can be viewed and selected as well.
-
-![JIRA ConDec plug-in](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/example_treant_radargrammetry.png)
-*TreeViewer (left) and tree view of a single decision (right)*
-
-Currently, the JIRA ConDec plug-in provides two views: an accordion editor and a tree view (different to the TreeViewer).
-
-The accordion editor enables the user to refine decisions incrementally and collaboratively.
-The accordion editor was implemented using the jQuery [accordion widget](https://jqueryui.com/accordion).
-The *Tree* view enables the developer to see the decision components of a single decision.
-The tree view was implemented using the [Treant.js library](http://fperucic.github.io/treant-js).
-
-![Accordion editor](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/example_editor_radargrammetry.png)
-*Accordion editor*
-
 ### Persistence Strategies
 The JIRA ConDec plug-in supports two strategies to [persist decision knowledge in JIRA](https://github.com/cures-hub/cures-condec-jira/tree/master/src/main/java/de/uhd/ifi/se/decision/management/jira/persistence): the *issue strategy* and the *active object strategy*.
 
 ![Persistence strategies](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/decision_storage_strategies.png)
 *Persistence strategies*
 
-The issue strategy represents the concepts of the DDM as JIRA issues.
-JIRA issue links are used to link DDM elements to each other and to JIRA issues of other types such as feature tasks.
+The issue strategy represents decision knowledge elements as JIRA issues.
+JIRA issue links are used to link decision knowledge elements to each other and to JIRA issues of other types such as feature tasks.
 The advantage of this strategy is that all features available for JIRA issues can be used to manage decision knowledge, e.g., searching for a decision in the list of issues.
 The disadvantage is that the dedicated issue type scheme needs to be assigned to the JIRA project.
-To overcome this disadvantage, the active object strategy uses distinct model classes for decision, decision components, and links.
+To overcome this disadvantage, the active object strategy uses distinct model classes for decision knowledge elements and their links.
 This strategy uses object-relational mapping to communicate with JIRA's internal database.
 
 ### REST API
