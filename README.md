@@ -31,7 +31,7 @@ The .jar file is installed by uploading it to your JIRA application:
 - Select "Manage add-ons" on the side-bar.
 - Click on "Upload add-on" and select the previously compiled .jar file.
 - Click "Upload" for upload and installation.
-- [Activate the "Decision Documentation and Exploration" plug-in.](https://github.com/cures-hub/cures-condec-jira/blob/master/doc/installed_plugin.png)
+- [Activate the "Decision Documentation and Exploration" plug-in.](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/installed_plugin.png)
 
 ## User Interface
 
