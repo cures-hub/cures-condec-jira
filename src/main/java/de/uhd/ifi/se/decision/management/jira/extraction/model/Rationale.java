@@ -53,7 +53,8 @@ public enum Rationale {
 	public static String getOpeningTag(String text) {
 		switch (text) {
 		case "isRelevant":
-			return "[isR]<b>";
+			//return "[isR]<b>";
+			return "<span style=\"background-color: #F2F5A9\">";
 
 		default:
 			return "";
@@ -63,7 +64,8 @@ public enum Rationale {
 	public static String getClosingTag(String text) {
 		switch (text) {
 		case "isRelevant":
-			return "</b>[/isR]";
+			//return "</b>[/isR]";
+			return "</span>";
 
 		default:
 			return "";
@@ -97,19 +99,19 @@ public enum Rationale {
 		String tags = "";
 		for (Rationale classi : classification) {
 			if(classi == isIssue) {
-				tags += "[/issue]";
+				tags += "[/isIssue]";
 			}
 			if (classi == isDecision) {
-				tags += "[/decision]";
+				tags += "[/isDecision]";
 			}
 			if (classi == isAlternative) {
-				tags += "[/alternative]";
+				tags += "[/isAlternative]";
 			}
 			if (classi == isPro) {
-				tags += "[/pro]";
+				tags += "[/isPro]";
 			}
 			if (classi == isCon) {
-				tags += "[/con]";
+				tags += "[/isCon]";
 			}
 		}
 		return tags;
@@ -119,19 +121,19 @@ public enum Rationale {
 		String tags = "";
 		for (Rationale classi : classification) {
 			if(classi == isIssue) {
-				tags += "[issue]";
+				tags += "[isIssue]";
 			}
 			if (classi == isDecision) {
-				tags += "[decision]";
+				tags += "[isDecision]";
 			}
 			if (classi == isAlternative) {
-				tags += "[alternative]";
+				tags += "[isAlternative]";
 			}
 			if (classi == isPro) {
-				tags += "[pro]";
+				tags += "[isPro]";
 			}
 			if (classi == isCon) {
-				tags += "[con]";
+				tags += "[isCon]";
 			}
 		}
 		return tags;

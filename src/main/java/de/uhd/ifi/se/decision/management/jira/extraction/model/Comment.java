@@ -72,12 +72,11 @@ public class Comment {
 		String result = "";
 		for (Sentence sentence : this.sentences) {
 			if (sentence.isRelevant()) {
-				result = result + Rationale.getOpeningTag("isRelevant")  + Rationale.getOpeningTag(sentence.getClassification())+ sentence.getBody()
-				+ Rationale.getClosingTag(sentence.getClassification()) + Rationale.getClosingTag("isRelevant");
+				result = result   + Rationale.getOpeningTag(sentence.getClassification())+ Rationale.getOpeningTag("isRelevant")+ sentence.getBody()
+				+ Rationale.getClosingTag("isRelevant")+ Rationale.getClosingTag(sentence.getClassification()) ;
 			} else {
-				result = result + sentence.getBody();
+				result = result+"";// + sentence.getBody(); if commented, irrelevant sentences will not be shown
 			}
-
 		}
 		return result;
 	}

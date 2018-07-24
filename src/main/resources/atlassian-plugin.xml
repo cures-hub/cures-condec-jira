@@ -65,8 +65,10 @@
 			Provides the model files for Weka and Meka classifiers
 		</description>
 		<context>atl.general</context>
+		<context>jira.view.issue</context>
 		<resource type="download" name="fc.model" location="/classifier/fc.model" />
 		<resource type="download" name="br.model" location="/classifier/br.model" />
+		<resource type="download" name="decXtract.js" location="/js/decXtract.js" />
 	</web-resource>
 
 	<web-resource key="rest-client-resources" name="ConDec Rest Client Resources">

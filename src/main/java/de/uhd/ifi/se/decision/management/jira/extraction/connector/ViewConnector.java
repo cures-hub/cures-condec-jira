@@ -53,11 +53,18 @@ public class ViewConnector {
 	}
 
 	public List<String> getAllTaggedComments() {
-		List<String> comments = new ArrayList<String>();
+		List<String> comments1 = new ArrayList<String>();
 		for (Comment c : commentsList) {
-			comments.add("<p>" + c.getTaggedBody() + "</p>");
+			comments1.add(c.getTaggedBody());
 		}
-		return comments;
+		List<String> comments2 = new ArrayList<String>();
+		for(String comment: comments1) {
+			if(comment.length() > 0) {
+				comments2.add(comment);
+			}
+		}
+		comments1 = null;
+		return comments2;
 	}
 
 	public List<String> getAllCommentsBody() {

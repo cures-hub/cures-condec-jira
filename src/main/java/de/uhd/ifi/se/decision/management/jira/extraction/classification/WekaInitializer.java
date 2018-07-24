@@ -26,6 +26,7 @@ public class WekaInitializer {
 		try {
 
 			data = tryToReadFromStrings(commentsList);
+			//System.out.println("Noch da"+ fc.toString());
 			for (int i = 0; i < data.numInstances(); i++) {
 				data.get(i).setClassMissing();
 				Double n = fc.classifyInstance(data.get(i));

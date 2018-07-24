@@ -8,12 +8,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.decXtract.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.decXtract.model.Rationale;
 import de.uhd.ifi.se.decision.management.jira.decXtract.model.Sentence;
+import meka.classifiers.multilabel.BR;
 import meka.classifiers.multilabel.LC;
 import meka.core.MLUtils;
 import weka.classifiers.Evaluation;
@@ -67,35 +69,35 @@ public class MekaInitializer {
 		return stwv;
 	}
 
-	private static Attribute getAttribute(String name) {
+	private static Attribute getAttribute(String name,int index) {
 		ArrayList<String> rationaleAttribute = new ArrayList<String>();
 		rationaleAttribute.add("0");
 		rationaleAttribute.add("1");
-		return new Attribute(name, rationaleAttribute);
+		return new Attribute(name, rationaleAttribute,index);
 	}
 
 	private static Instances buildDataset(List<Comment> commentsList) {
 		ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
 
 		// Declare Class value with {0,1} as possible values
-		wekaAttributes.add(getAttribute("isIssue"));
-		wekaAttributes.add(getAttribute("isDecision"));
-		wekaAttributes.add(getAttribute("isAlternative"));
-		wekaAttributes.add(getAttribute("isPro"));
-		wekaAttributes.add(getAttribute("isCon"));
+		wekaAttributes.add(getAttribute("isAlternative",0));
+		wekaAttributes.add(getAttribute("isPro",1));
+		wekaAttributes.add(getAttribute("isCon",2));
+		wekaAttributes.add(getAttribute("isDecision",3));
+		wekaAttributes.add(getAttribute("isIssue",4));
 
 		// Declare text attribute to hold the message (free form text)
-		Attribute attributeText = new Attribute("sentence", (List<String>) null);
+		Attribute attributeText = new Attribute("sentence", (List<String>) null,5);
 
 		// Declare the feature vector
 		wekaAttributes.add(attributeText);
 
-		Instances data = new Instances("sentences -C 5 ", wekaAttributes, 1000000);
+		Instances data = new Instances("sentences: -C 5 ", wekaAttributes, 1000000);
 
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
 				if (sentence.isRelevant()) {
-					DenseInstance newInstance = new DenseInstance(6);
+					Instance newInstance = new DenseInstance(6);
 					// To avoid misunderstandings: For unknown reason, if you watch into newInstance
 					// here, the string is replaced by a number. If you watch it later when
 					// predicting classes, it's shown correctly
@@ -124,7 +126,10 @@ public class MekaInitializer {
 		List<double[]> results = new ArrayList<double[]>();
 		for (int n = 0; n < structure.size(); n++) {
 			Instance test = structure.get(n);
-			results.add(binaryRelevance.distributionForInstance(test));
+			System.out.println(test);
+			double[] res = binaryRelevance.distributionForInstance(test);
+			System.out.println(Arrays.toString(res));
+			results.add(res);
 
 		}
 		// Write classification results back to sentence objects
