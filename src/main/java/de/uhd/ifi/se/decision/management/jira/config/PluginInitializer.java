@@ -5,7 +5,12 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Named;
+import javax.swing.*;
 
+import com.atlassian.jira.avatar.Avatar;
+import com.atlassian.jira.avatar.AvatarImpl;
+import com.atlassian.jira.avatar.AvatarManager;
+import com.atlassian.jira.icon.IconType;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -23,6 +28,8 @@ import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+
+import static com.atlassian.jira.avatar.AvatarImpl.createCustomAvatar;
 
 /**
  * Handles plug-in initialization
@@ -76,14 +83,10 @@ public class PluginInitializer implements InitializingBean {
 			}
 		}
 		String iconUrl = getIconUrl(issueTypeName);
-		/*
-		 * ErrorCollection errors = new SimpleErrorCollection(); ConstantsManager
-		 * constantsManager = ComponentAccessor.getConstantsManager();
-		 * constantsManager.validateCreateIssueType(issueTypeName, null, issueTypeName,
-		 * iconUrl, errors, "errors");
-		 * System.out.println(errors.getErrorMessages().toString());
-		 */
-		issueTypeManager.createIssueType(issueTypeName, issueTypeName + " (decision knowledge element)", iconUrl);
+		Avatar avatar = createCustomAvatar(iconUrl,issueTypeName,"1",IconType.ISSUE_TYPE_ICON_TYPE);
+		Long avatarId = avatar.getId();
+		ComponentAccessor.getAvatarManager().create(avatar);
+		issueTypeManager.createIssueType(issueTypeName, issueTypeName + " (decision knowledge element)",avatarId );
 	}
 
 	public static void addIssueTypeToScheme(String issueTypeName, String projectKey) {

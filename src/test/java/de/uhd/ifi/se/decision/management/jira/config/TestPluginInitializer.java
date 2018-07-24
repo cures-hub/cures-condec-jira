@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.bc.issue.IssueService;
@@ -36,7 +37,7 @@ public class TestPluginInitializer extends TestSetUp {
 		pluginInitializer.afterPropertiesSet();
 	}
 
-	@Test
+	@Ignore
 	public void testExecutionAfterPropNoInit() {
 		ProjectManager projectManager = new MockProjectManager();
 		IssueManager issueManager = new MockIssueManagerSelfImpl();
