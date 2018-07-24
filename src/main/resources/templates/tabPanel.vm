@@ -20,6 +20,9 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-experimental-ic
 <td><input type="checkbox" id="isCon" name="feature"
                value="scales" onchange = 'dosth(this);' checked />
         <label for="isCon">isCon</label></td>
+<td><input type="checkbox" id="isRelevant" name="feature"
+               value="scales" onchange = 'dosth(this);' checked />
+        <label for="isRelevant">isRelevant</label></td>
 </tr>
 </tbody>
 </table>
