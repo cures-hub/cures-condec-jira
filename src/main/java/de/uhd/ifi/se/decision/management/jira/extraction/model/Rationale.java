@@ -1,11 +1,24 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.jhlabs.image.Colormap;
 
 public enum Rationale {
 	isRelevant, isIssue, isDecision, isAlternative, isPro, isCon;
 
+
+	@SuppressWarnings("serial")
+	private static Map<String, String> rationaleColorMap = new HashMap<String, String>() {{
+	    put("isIssue","#F2F5A9");
+	    put("isAlternative","#f1ccf9");
+	    put("isDecision","#c5f2f9");
+	    put("isPro","#b9f7c0");
+	    put("isCon","#ffdeb5");
+	}};
 	public static Rationale getRationale(String text) {
 		if (text == null) {
 			return null;
@@ -54,7 +67,7 @@ public enum Rationale {
 		switch (text) {
 		case "isRelevant":
 			//return "[isR]<b>";
-			return "<span style=\"background-color: #F2F5A9\">";
+			//return "<span style=\"background-color:"+rationaleColorMap.get("isIssue") +"\">";
 
 		default:
 			return "";
@@ -65,7 +78,7 @@ public enum Rationale {
 		switch (text) {
 		case "isRelevant":
 			//return "</b>[/isR]";
-			return "</span>";
+			//return "</span>";
 
 		default:
 			return "";
@@ -97,21 +110,22 @@ public enum Rationale {
 
 	public static String getClosingTag(List<Rationale> classification) {
 		String tags = "";
-		for (Rationale classi : classification) {
-			if(classi == isIssue) {
-				tags += "[/isIssue]";
+		for (Rationale label : classification) {
+			if(label == isIssue) {
+				tags += "</span>"+"[/isIssue]";
 			}
-			if (classi == isDecision) {
-				tags += "[/isDecision]";
+			if (label == isDecision) {
+				tags += "</span>"+"[/isDecision]";
 			}
-			if (classi == isAlternative) {
-				tags += "[/isAlternative]";
+			if (label == isAlternative) {
+				tags += "</span>"+"[/isAlternative]";
 			}
-			if (classi == isPro) {
-				tags += "[/isPro]";
+			if (label == isPro) {
+				tags += "</span>"+"[/isPro]";
 			}
-			if (classi == isCon) {
-				tags += "[/isCon]";
+			if (label == isCon) {
+
+				tags += "</span>"+"[/isCon]";
 			}
 		}
 		return tags;
@@ -119,21 +133,21 @@ public enum Rationale {
 
 	public static String getOpeningTag(List<Rationale> classification) {
 		String tags = "";
-		for (Rationale classi : classification) {
-			if(classi == isIssue) {
-				tags += "[isIssue]";
+		for (Rationale label : classification) {
+			if(label == isIssue) {
+				tags += "[isIssue]"+"<span style=\"background-color:"+rationaleColorMap.get("isIssue") +"\">";
 			}
-			if (classi == isDecision) {
-				tags += "[isDecision]";
+			if (label == isDecision) {
+				tags += "[isDecision]"+"<span style=\"background-color:"+rationaleColorMap.get("isDecision") +"\">";
 			}
-			if (classi == isAlternative) {
-				tags += "[isAlternative]";
+			if (label == isAlternative) {
+				tags += "[isAlternative]"+"<span style=\"background-color:"+rationaleColorMap.get("isAlternative") +"\">";
 			}
-			if (classi == isPro) {
-				tags += "[isPro]";
+			if (label == isPro) {
+				tags += "[isPro]"+"<span style=\"background-color:"+rationaleColorMap.get("isPro") +"\">";
 			}
-			if (classi == isCon) {
-				tags += "[isCon]";
+			if (label == isCon) {
+				tags += "[isCon]"+"<span style=\"background-color:"+rationaleColorMap.get("isCon") +"\">";
 			}
 		}
 		return tags;
