@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decXtract.classification;
+package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.decXtract.model.Comment;
-import de.uhd.ifi.se.decision.management.jira.decXtract.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import meka.classifiers.multilabel.LC;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.core.Attribute;

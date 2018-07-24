@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decXtract.model;
+package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,19 +77,19 @@ public enum Rationale {
 
 		for (int i = 0; i < ds.length; i++) {
 			if (ds[i] == 1. && i == 0) {
-				rList.add(isIssue);
-			}
-			if (ds[i] == 1. && i == 1) {
-				rList.add(isDecision);
-			}
-			if (ds[i] == 1. && i == 2) {
 				rList.add(isAlternative);
 			}
-			if (ds[i] == 1. && i == 3) {
+			if (ds[i] == 1. && i == 1) {
 				rList.add(isPro);
 			}
-			if (ds[i] == 1. && i == 4) {
+			if (ds[i] == 1. && i == 2) {
 				rList.add(isCon);
+			}
+			if (ds[i] == 1. && i == 3) {
+				rList.add(isDecision);
+			}
+			if (ds[i] == 1. && i == 4) {
+				rList.add(isIssue);
 			}
 		}
 		return rList;

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decXtract.connector;
+package de.uhd.ifi.se.decision.management.jira.extraction.connector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,9 +7,9 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.CommentManager;
 
-import de.uhd.ifi.se.decision.management.jira.decXtract.classification.MekaInitializer;
-import de.uhd.ifi.se.decision.management.jira.decXtract.classification.WekaInitializer;
-import de.uhd.ifi.se.decision.management.jira.decXtract.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.extraction.classification.MekaInitializer;
+import de.uhd.ifi.se.decision.management.jira.extraction.classification.WekaInitializer;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 
 public class ViewConnector {
 

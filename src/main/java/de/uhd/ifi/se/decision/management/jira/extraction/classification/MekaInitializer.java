@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decXtract.classification;
+package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,9 +12,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.decXtract.model.Comment;
-import de.uhd.ifi.se.decision.management.jira.decXtract.model.Rationale;
-import de.uhd.ifi.se.decision.management.jira.decXtract.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Rationale;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import meka.classifiers.multilabel.BR;
 import meka.classifiers.multilabel.LC;
 import meka.core.MLUtils;
@@ -91,16 +91,13 @@ public class MekaInitializer {
 
 		// Declare the feature vector
 		wekaAttributes.add(attributeText);
-
 		Instances data = new Instances("sentences: -C 5 ", wekaAttributes, 1000000);
 
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
 				if (sentence.isRelevant()) {
 					Instance newInstance = new DenseInstance(6);
-					// To avoid misunderstandings: For unknown reason, if you watch into newInstance
-					// here, the string is replaced by a number. If you watch it later when
-					// predicting classes, it's shown correctly
+					//The value is meka internal stored in a array similar structure, so if you read the value here, you likely get an index
 					newInstance.setValue(attributeText, sentence.getBody());
 					data.add(newInstance);
 				}
@@ -115,23 +112,20 @@ public class MekaInitializer {
 		structure.setClassIndex(5);
 		// MLUtils.prepareData(structure);
 
+		//Read model from supplied path
 		LC binaryRelevance = null;
-
 		String path = ComponentGetter.getUrlOfClassifierFolder() + "br.model";
 		InputStream is = new URL(path).openStream();
 		binaryRelevance = (LC) weka.core.SerializationHelper.read(is);
-
 
 		// Classify string instances
 		List<double[]> results = new ArrayList<double[]>();
 		for (int n = 0; n < structure.size(); n++) {
 			Instance test = structure.get(n);
-			System.out.println(test);
 			double[] res = binaryRelevance.distributionForInstance(test);
-			System.out.println(Arrays.toString(res));
 			results.add(res);
-
 		}
+
 		// Write classification results back to sentence objects
 		int i = 0;
 		for (Comment comment : commentsList) {
@@ -139,35 +133,9 @@ public class MekaInitializer {
 				if (sentence.isRelevant()) {
 					sentence.setClassification(Rationale.transferRationaleList(results.get(i)));
 					i++;
-
 				}
 			}
 		}
-
-	}
-
-	private static void train() {
-		/*
-		 * binaryRelevance = new LC(); FilteredClassifier fc = new FilteredClassifier();
-		 * fc.setFilter(getSTWV()); fc.setClassifier(new NaiveBayesMultinomial());
-		 * binaryRelevance.setClassifier(fc);
-		 *
-		 *
-		 * Evaluation rate = new Evaluation(structure); Random seed = new Random(1);
-		 * Instances datarandom = new Instances(structure); datarandom.randomize(seed);
-		 *
-		 * int folds = 10; datarandom.stratify(folds);
-		 * rate.crossValidateModel(binaryRelevance, structure, folds, seed);
-		 *
-		 * binaryRelevance.buildClassifier(structure);
-		 * weka.core.SerializationHelper.write("./br.model", binaryRelevance);
-		 *
-		 * System.out.println(rate.toSummaryString());
-		 * System.out.println("Structure num classes: "+structure.numClasses());
-		 *
-		 * for(int i = 0; i < structure.numClasses(); i++)
-		 * {System.out.println(rate.fMeasure(i));}
-		 */
 	}
 
 }

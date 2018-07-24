@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decXtract.classification;
+package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;

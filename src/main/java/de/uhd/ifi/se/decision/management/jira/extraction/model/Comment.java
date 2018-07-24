@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decXtract.model;
+package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;

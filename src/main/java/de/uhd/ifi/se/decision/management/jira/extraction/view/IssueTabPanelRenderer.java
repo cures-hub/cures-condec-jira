@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.decXtract.view;
+package de.uhd.ifi.se.decision.management.jira.extraction.view;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.VelocityParamFactory;
 import com.atlassian.velocity.VelocityManager;
 
-import de.uhd.ifi.se.decision.management.jira.decXtract.connector.ViewConnector;
+import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
 /**
