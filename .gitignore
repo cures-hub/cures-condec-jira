@@ -11,3 +11,4 @@ target/
 .settings
 *.iml
 *.class
+/bin/
