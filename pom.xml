@@ -199,14 +199,11 @@
 		    <artifactId>weka-stable</artifactId>
 		    <version>3.8.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/net.sf.meka/meka -->
-		<!-- <dependency>
-		    <groupId>net.sf.meka</groupId>
+		 <dependency>
+		    <groupId>net.sf.meka</groupId><!-- https://mvnrepository.com/artifact/net.sf.meka/meka -->
 		    <artifactId>meka</artifactId>
 		    <version>1.9.2</version>
-			 <scope>compile</scope>
-
-		</dependency> -->
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>cures-condec-jira</finalName>
@@ -217,6 +214,7 @@
 				<version>${amps.version}</version>
 				<extensions>true</extensions>
 				<configuration>
+					<extractDependencies>false</extractDependencies> <!-- If enabled, external .jar files will be unzipped into the final .jar file -->
 					<productVersion>${jira.version}</productVersion>
 					<productDataVersion>${jira.version}</productDataVersion>
 					<enableQuickReload>true</enableQuickReload>
