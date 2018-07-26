@@ -82,13 +82,13 @@ public class PluginInitializer implements InitializingBean {
 				}
 			}
 		}
-		/*String issueImageString = issueTypeName.toLowerCase()+ ".png";
-		Avatar tmpAvatar = createCustomAvatar(issueImageString,"image/","1",IconType.ISSUE_TYPE_ICON_TYPE);
+		String issueImageString = issueTypeName.toLowerCase()+ ".png";
+		Avatar tmpAvatar = createCustomAvatar(ComponentGetter.getUrlOfImageFolder() + "/" + issueImageString,"image/png","1",IconType.ISSUE_TYPE_ICON_TYPE);
 		Avatar issueAvatar = ComponentAccessor.getAvatarManager().create(tmpAvatar);
-		issueTypeManager.createIssueType(issueTypeName, issueTypeName + " (decision knowledge element)",issueAvatar.getId() );*/
+		issueTypeManager.createIssueType(issueTypeName, issueTypeName + " (decision knowledge element)",issueAvatar.getId() );
 
-		String iconUrl = getIconUrl(issueTypeName);
-		issueTypeManager.createIssueType(issueTypeName, issueTypeName + " (decision knowledge element)", iconUrl);
+		/*String iconUrl = getIconUrl(issueTypeName);
+		issueTypeManager.createIssueType(issueTypeName, issueTypeName + " (decision knowledge element)", iconUrl);*/
 	}
 
 	public static void addIssueTypeToScheme(String issueTypeName, String projectKey) {
