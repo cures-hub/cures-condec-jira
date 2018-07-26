@@ -3,6 +3,33 @@ var dragId;
 var oldParentId;
 var treantTree;
 
+function buildIssueTreant(elementKey) {
+    var depthOfTreeInput = document.getElementById("depth-of-tree-input");
+    var depthOfTree = 4;
+    if (depthOfTreeInput !== null) {
+        depthOfTree = depthOfTreeInput.value;
+    }
+    getTreant(elementKey, depthOfTree, function(treeStructure) {
+        document.getElementById("treant-container").innerHTML = "";
+
+        isKnowledgeExtractedFromGit(getProjectKey(), function(isKnowledgeExtractedFromGit) {
+            if (isKnowledgeExtractedFromGit) {
+                getCommits(elementKey,
+                    function(commits) {
+                        if (commits.length > 0) {
+                            treeStructure.nodeStructure.children = addCommits(commits,
+                                treeStructure.nodeStructure.children);
+                        }
+                        // console.log(treeStructure);
+                        treantTree = new Treant(treeStructure);
+                    });
+            } else {
+                treantTree = new Treant(treeStructure);
+            }
+        });
+    });
+}
+
 function buildTreant(elementKey) {
 	var depthOfTreeInput = document.getElementById("depth-of-tree-input");
 	var depthOfTree = 4;

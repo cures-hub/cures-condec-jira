@@ -7,7 +7,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 		placeholder="Search decision knowledge" />
 	<select
 		id="select-root-element-type" name="select-root-element-type"
-		class="select medium-field" onchange='updateView()'/>
+		class="select medium-field" onchange='updateIssueModule()'/>
 	<input type="text"
 		class="text medium-long-field" id="element-input-field"
 		placeholder="Summary of new element" />

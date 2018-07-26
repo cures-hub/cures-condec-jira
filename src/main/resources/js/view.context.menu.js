@@ -252,7 +252,7 @@ function setUpDialogForDeleteAction(id) {
 	submitButton.textContent = deleteKnowledgeElementText;
 	submitButton.onclick = function() {
 		deleteDecisionKnowledgeElement(id, function() {
-			updateView();
+			updateIssueModule();
 		});
 		closeDialog();
 	};
@@ -286,7 +286,7 @@ function setUpDialogForDeleteLinkAction(id, parentId) {
 	submitButton.textContent = deleteLinkToParentText;
 	submitButton.onclick = function() {
 		deleteLink(parentId, id, function() {
-			updateView();
+			updateIssueModule();
 		});
 		closeDialog();
 	};

@@ -56,7 +56,7 @@ function addDragAndDropSupportForTreeViewer() {
 		}
 		if (parentNode === "#" && oldParentNode !== "#") {
 			deleteLink(oldParentNode.data.id, nodeId, function() {
-				updateView();
+				updateIssueModule();
 			});
 		}
 		if (parentNode !== '#' && oldParentNode !== '#') {
