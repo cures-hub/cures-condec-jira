@@ -7,7 +7,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.CommentManager;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.classification.MekaInitializer;
+//import de.uhd.ifi.se.decision.management.jira.extraction.classification.MekaInitializer;
 import de.uhd.ifi.se.decision.management.jira.extraction.classification.WekaInitializer;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 
@@ -37,7 +37,7 @@ public class ViewConnector {
 		}
 		this.commentsList = WekaInitializer.predict(commentsList);
 		try {
-			MekaInitializer.doSth(this.commentsList);
+//			MekaInitializer.doSth(this.commentsList);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -195,18 +195,18 @@
 		</dependency>
 		<!-- DecXtract -->
 		<dependency>
-			<groupId>nz.ac.waikato.cms.weka</groupId>
-			<artifactId>weka-stable</artifactId>
-			<version>3.8.2</version>
-			<!-- <scope>provided</scope> -->
+		    <groupId>nz.ac.waikato.cms.weka</groupId>
+		    <artifactId>weka-stable</artifactId>
+		    <version>3.8.0</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/net.sf.meka/meka -->
-		<dependency>
+		<!-- <dependency>
 		    <groupId>net.sf.meka</groupId>
 		    <artifactId>meka</artifactId>
 		    <version>1.9.2</version>
-			<!-- 	<scope>provided</scope> -->
-		</dependency>
+			 <scope>compile</scope>
+
+		</dependency> -->
 	</dependencies>
 	<build>
 		<finalName>cures-condec-jira</finalName>
