@@ -23,10 +23,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-experimental-ic
 <td><input type="checkbox" id="isRelevant" name="feature"
                value="scales" onchange = 'dosth(this);' checked />
         <label for="isRelevant">isRelevant</label></td>
-</tr>
-<td><input type="checkbox" id="isRelevant" name="feature"
-               value="scales" onchange = 'dosth(this);' checked />
-        <label for="isRelevant">isRelevant</label></td>
+<td><button id="call dialog" class="aui-button aui-button-link" onclick="callDialog()">Export</button></td>
 </tr>
 </tbody>
 </table>
@@ -43,9 +40,21 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-experimental-ic
   #foreach( $comment in $comments )
   <div class="comment">
     <a class="user-hover user-avatar" rel="admin" id="commentauthor_10102_verbose" href="/jira/secure/ViewProfile.jspa?name=admin"><span class="aui-avatar aui-avatar-xsmall"><span class="aui-avatar-inner"><img src="http://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&amp;s=16" alt="admin"></span></span> #index($authorNames,$velocityCount)</a>
-   - <span class="commentdate_10102_verbose subText"><span class="date user-tz" >#index($dates,$velocityCount)</span></span>  </div>
-        </div>
-        <div class="action-body flooded">
-<p> $comment</p></div>
-    </div>
+    - <span class="commentdate_10102_verbose subText"><span class="date user-tz" >#index($dates,$velocityCount)</span></span>
+
+  <div class="commentBody" style="visibility: visible;"> <p> $comment</p></div>
+  </div>
+
   #end
+</body>
+
+
+
+<script>
+function callDialog(){
+  AJS.dialog2("#dialog").show();
+}
+
+</script>
+
+#include("templates/comment2decisionDialog.vm")
