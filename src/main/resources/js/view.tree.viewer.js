@@ -1,5 +1,6 @@
 function buildTreeViewer() {
 	resetTreeViewer();
+	resizeTreeViewer();
 	var rootElementType = $("select[name='select-root-element-type']").val();
 	getTreeViewer(rootElementType, function(core) {
 		$('#jstree').jstree({
@@ -64,4 +65,9 @@ function addDragAndDropSupportForTreeViewer() {
 			});
 		}
 	});
+}
+function resizeTreeViewer() {
+    $(function () {
+        $("#jstree").resizable();
+    });
 }

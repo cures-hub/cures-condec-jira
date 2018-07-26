@@ -48,6 +48,7 @@
 		<resource type="download" name="condec.css" location="/css/condec.css" />
 		<resource type="download" name="jquery.contextMenu.css" location="/css/jquery.contextMenu.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
+		<resource type="download" name="jstree-ui.css" location="/css/jstree-ui.css" />
 		<!-- look and feel like JIRA -->
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
 		<dependency>com.atlassian.auiplugin:aui-flag</dependency>
@@ -55,6 +56,7 @@
 		<dependency>com.atlassian.auiplugin:aui-forms</dependency>
 		<dependency>com.atlassian.auiplugin:aui-navigation</dependency>
 		<dependency>com.atlassian.auiplugin:aui-toggle</dependency>
+		<dependency>com.atlassian.auiplugin:table</dependency>
 		<dependency>com.atlassian.auiplugin:aui-lozenge</dependency>
 		<dependency>com.atlassian.auiplugin:dialog2</dependency>
 		<dependency>com.atlassian.auiplugin:aui-select2</dependency>
@@ -101,6 +103,8 @@
 		</description>
 		<!-- jquery -->
 		<resource type="download" name="jquery.js" location="/js/jquery/jquery.js" />
+		<!-- jquery.ui -->
+		<resource type="download" name="jquery-ui.js" location="/js/jquery/jquery-ui.js"/>
 		<!-- jquery.contextMenu -->
 		<resource type="download" name="jquery.contextMenu.js" location="/js/jquery/jquery.contextMenu.js" />
 		<!-- jstree -->
