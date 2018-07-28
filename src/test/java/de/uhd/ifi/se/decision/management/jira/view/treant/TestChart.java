@@ -8,6 +8,9 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class TestChart {
 
 	private Chart chart;
@@ -29,7 +32,13 @@ public class TestChart {
 
 	@Test
 	public void testGetConnectors(){
-		assertEquals(ImmutableMap.of("type", "straight"), chart.getConnectors());
+		Map connectors = new ConcurrentHashMap();
+		connectors.put("type", "straight");
+		Map style = new ConcurrentHashMap();
+		style.put("arrow-end", "classic-wide-long");
+		style.put("stroke-width", 2);
+		connectors.put("style", style);
+		assertEquals(connectors, chart.getConnectors());
 	}
 
 	@Test

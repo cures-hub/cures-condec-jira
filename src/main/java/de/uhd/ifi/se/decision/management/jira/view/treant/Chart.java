@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.treant;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -13,7 +14,7 @@ public class Chart {
 	@XmlElement
 	private String container;
 	@XmlElement
-	private Map<String, String> connectors;
+	private Map connectors;
 	@XmlElement
 	private String rootOrientation;
 	@XmlElement
@@ -28,7 +29,12 @@ public class Chart {
 
 	public Chart() {
 		this.container = "#treant-container";
-		this.connectors = ImmutableMap.of("type", "straight");
+		this.connectors = new ConcurrentHashMap<>();
+		this.connectors.put("type", "straight");
+		Map style = new ConcurrentHashMap();
+		style.put("arrow-end", "classic-wide-long");
+		style.put("stroke-width", 2);
+		this.connectors.put("style", style);
 		this.rootOrientation = "NORTH";
 		this.levelSeparation = 30;
 		this.siblingSeparation = 30;
