@@ -25,9 +25,6 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestIsKnowledgeExtractedFromGit extends TestConfigSuper {
-
-
-	//Test isKnowledgeExtractedFromGit
 	@Test
 	public void testIsKnowledgeExtractedNull(){
 		assertEquals(Status.BAD_REQUEST.getStatusCode(),confRest.isKnowledgeExtractedFromGit(null).getStatus());
