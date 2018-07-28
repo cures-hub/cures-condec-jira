@@ -5,11 +5,8 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Named;
-import javax.swing.*;
 
 import com.atlassian.jira.avatar.Avatar;
-import com.atlassian.jira.avatar.AvatarImpl;
-import com.atlassian.jira.avatar.AvatarManager;
 import com.atlassian.jira.icon.IconType;
 import org.springframework.beans.factory.InitializingBean;
 
