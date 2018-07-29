@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import com.atlassian.jira.exception.CreateException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +29,7 @@ public class TestGraph extends TestSetUp {
 	private DecisionKnowledgeElement element;
 
 	@Before
-	public void setUp() {
+	public void setUp() throws CreateException {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockDefaultUserManager());

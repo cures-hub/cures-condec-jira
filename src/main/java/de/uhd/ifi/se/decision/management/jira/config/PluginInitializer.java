@@ -91,7 +91,7 @@ public class PluginInitializer implements InitializingBean {
 	public static void addIssueTypeToScheme(String issueTypeName, String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
 		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
-		if (issueTypes == null) {
+		if (issueTypes == null || projectKey == null) {
 			return;
 		}
 
@@ -114,7 +114,7 @@ public class PluginInitializer implements InitializingBean {
 	public static void removeIssueTypeFromScheme(String issueTypeName, String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
 		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
-		if (issueTypes == null) {
+		if (issueTypes == null || projectKey == null) {
 			return;
 		}
 

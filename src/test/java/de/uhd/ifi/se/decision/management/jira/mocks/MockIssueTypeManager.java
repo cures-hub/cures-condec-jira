@@ -1,11 +1,45 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
+import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
+import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.issuetype.IssueType;
+import com.atlassian.jira.issue.issuetype.IssueTypeImpl;
+import com.atlassian.jira.mock.MockConstantsManager;
 
 public class MockIssueTypeManager implements IssueTypeManager {
+
+	private Collection<IssueType> types;
+
+	public MockIssueTypeManager(){
+		super();
+		types = new ArrayList<>();
+	}
+
+	public void addingAllIssueTypes() throws CreateException {
+		ConstantsManager constManager = new MockConstantsManager();
+		constManager.insertIssueType("Decision", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Alternative", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Argument", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Assessment", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Assumption", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Claim", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Constraint", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Context", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Goal", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Implication", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Issue", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Problem", (long) 20, "Test", "Test", (long) 12290);
+		constManager.insertIssueType("Solution", (long) 20, "Test", "Test", (long) 12290);
+		types.addAll(constManager.getAllIssueTypeObjects());
+	}
+
+	public void addIssueType(Collection<IssueType> issueTypes){
+		types.addAll(issueTypes);
+	}
 
 	@Override
 	public IssueType createIssueType(String arg0, String arg1, String arg2) {
@@ -44,7 +78,7 @@ public class MockIssueTypeManager implements IssueTypeManager {
 
 	@Override
 	public Collection<IssueType> getIssueTypes() {
-		return null;
+		return types;
 	}
 
 	@Override

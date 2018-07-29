@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
+import com.atlassian.jira.avatar.AvatarManager;
+import com.atlassian.jira.exception.CreateException;
+import de.uhd.ifi.se.decision.management.jira.mocks.*;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -16,11 +19,6 @@ import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.project.ProjectManager;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkTypeManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueService;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeManager;
 
 public class TestPluginInitializer extends TestSetUp {
 
@@ -31,26 +29,26 @@ public class TestPluginInitializer extends TestSetUp {
 		pluginInitializer = new PluginInitializer();
 	}
 
-	@Test(expected = java.lang.NullPointerException.class)
-	public void testExecutionAfterProp() {
+	@Test
+	public void testExecutionAfterProp() throws CreateException {
 		initialization();
 		pluginInitializer.afterPropertiesSet();
 	}
 
-	@Ignore
+	@Test
 	public void testExecutionAfterPropNoInit() {
 		ProjectManager projectManager = new MockProjectManager();
+		IssueTypeManager issueTypeManager = new MockIssueTypeManager();
 		IssueManager issueManager = new MockIssueManagerSelfImpl();
 		ConstantsManager constManager = new MockConstantsManager();
 		IssueService issueService = new MockIssueService();
 
 		new MockComponentWorker().init().addMock(IssueManager.class, issueManager)
-				.addMock(IssueTypeManager.class, new MockIssueTypeManager())
+				.addMock(IssueTypeManager.class, issueTypeManager)
 				.addMock(IssueLinkManager.class, new MockIssueLinkManager())
 				.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager(true))
 				.addMock(IssueService.class, issueService).addMock(ProjectManager.class, projectManager)
-				.addMock(ConstantsManager.class, constManager);
-
+				.addMock(ConstantsManager.class, constManager).addMock(AvatarManager.class, new MockAvatarManager());
 		pluginInitializer.afterPropertiesSet();
 	}
 
@@ -60,9 +58,10 @@ public class TestPluginInitializer extends TestSetUp {
 		IssueManager issueManager = new MockIssueManagerSelfImpl();
 		ConstantsManager constManager = new MockConstantsManager();
 		IssueService issueService = new MockIssueService();
+		IssueTypeManager issueTypeManager = new MockIssueTypeManager();
 
 		new MockComponentWorker().init().addMock(IssueManager.class, issueManager)
-				.addMock(IssueTypeManager.class, new MockIssueTypeManager())
+				.addMock(IssueTypeManager.class, issueTypeManager)
 				.addMock(IssueLinkManager.class, new MockIssueLinkManager())
 				.addMock(IssueLinkTypeManager.class, new MockIssueLinkTypeManager(false))
 				.addMock(IssueService.class, issueService).addMock(ProjectManager.class, projectManager)
@@ -83,6 +82,56 @@ public class TestPluginInitializer extends TestSetUp {
 		constManager.insertIssueType("Problem", (long) 20, "Test", "Test", (long) 12290);
 		constManager.insertIssueType("Solution", (long) 20, "Test", "Test", (long) 12290);
 
+		((MockIssueTypeManager)issueTypeManager).addIssueType(constManager.getAllIssueTypeObjects());
+
 		pluginInitializer.afterPropertiesSet();
+	}
+
+	@Test
+	public void testAddIssueTypeToSchemeIssueTypeNullProjectKeyNull() {
+		initialization();
+		pluginInitializer.addIssueTypeToScheme(null,null);
+	}
+
+	@Test
+	public void testAddIssueTypeToSchemeIssueTypeNullProjectKeyFilled() {
+		initialization();
+		pluginInitializer.addIssueTypeToScheme(null,"TEST");
+	}
+
+	@Test
+	public void testAddIssueTypeToSchemeIssueTypeFilledProjectKeyNull() {
+		initialization();
+		pluginInitializer.addIssueTypeToScheme("Decision",null);
+	}
+
+	@Test
+	public void testAddIssueTypeToSchemeIssueTypeFilledProjectKeyFilled(){
+		initialization();
+		pluginInitializer.addIssueTypeToScheme("Decision","TEST");
+	}
+
+	@Test
+	public void testRemoveIssueTypeToSchemeIssueTypeNullProjectKeyNull() {
+		initialization();
+		pluginInitializer.removeIssueTypeFromScheme(null,null);
+	}
+
+	@Test
+	public void testRemoveIssueTypeToSchemeIssueTypeNullProjectKeyFilled() {
+		initialization();
+		pluginInitializer.removeIssueTypeFromScheme(null,"TEST");
+	}
+
+	@Test
+	public void testRemoveIssueTypeToSchemeIssueTypeFilledProjectKeyNull(){
+		initialization();
+		pluginInitializer.removeIssueTypeFromScheme("Decision",null);
+	}
+
+	@Test
+	public void testRemoveIssueTypeToSchemeIssueTypeFilledProjectKeyFilled(){
+		initialization();
+		pluginInitializer.removeIssueTypeFromScheme("Decision","TEST");
 	}
 }
