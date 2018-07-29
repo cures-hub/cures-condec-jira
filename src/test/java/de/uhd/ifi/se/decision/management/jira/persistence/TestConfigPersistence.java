@@ -138,12 +138,12 @@ public class TestConfigPersistence extends TestSetUp {
 
 	//isKnowledgeTypeEnabled
 	@Test
-	public void testisKnowledgeTypeEnabledKeyNullTypeFilled(){
+	public void testIsKnowledgeTypeEnabledKeyNullTypeFilled(){
 		assertFalse(ConfigPersistence.isKnowledgeTypeEnabled(null, KnowledgeType.SOLUTION.toString()));
 	}
 
 	@Test
-	public void testisKnowledgeTypeEnabledKeyFilledTypeFilled(){
+	public void testIsKnowledgeTypeEnabledKeyFilledTypeFilled(){
 		assertTrue(ConfigPersistence.isKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString()));
 	}
 
@@ -170,42 +170,42 @@ public class TestConfigPersistence extends TestSetUp {
 
 	//setKnowledgeTypeEnabled
 	@Test
-	public void TestSetKnowledgeTypeEnabledKeyNullTypeNullEnabledFalse(){
+	public void testSetKnowledgeTypeEnabledKeyNullTypeNullEnabledFalse(){
 		ConfigPersistence.setKnowledgeTypeEnabled(null, null, false);
 	}
 
 	@Test
-	public void TestSetKnowledgeTypeEnabledKeyNullTypeNullEnabledTrue(){
+	public void testSetKnowledgeTypeEnabledKeyNullTypeNullEnabledTrue(){
 		ConfigPersistence.setKnowledgeTypeEnabled(null, null, true);
 	}
 
 	@Test
-	public void TestSetKnowledgeTypeEnabledKeyNullTypeFilledEnabledFalse(){
+	public void testSetKnowledgeTypeEnabledKeyNullTypeFilledEnabledFalse(){
 		ConfigPersistence.setKnowledgeTypeEnabled(null, KnowledgeType.SOLUTION.toString(), false);
 	}
 
 	@Test
-	public void TestSetKnowledgeTypeEnabledKeyNullTypeFilledEnabledTrue(){
+	public void testSetKnowledgeTypeEnabledKeyNullTypeFilledEnabledTrue(){
 		ConfigPersistence.setKnowledgeTypeEnabled(null, KnowledgeType.SOLUTION.toString(), true);
 	}
 
 	@Test
-	public void TestSetKnowledgeTypeEnabledKeyFilledTypeNullEnabledFalse(){
+	public void testSetKnowledgeTypeEnabledKeyFilledTypeNullEnabledFalse(){
 		ConfigPersistence.setKnowledgeTypeEnabled("TEST", null, false);
 	}
 
 	@Test
-	public void TestSetKnowledgeTypeEnabledKeyFilledTypeNullEnabledTrue(){
+	public void testSetKnowledgeTypeEnabledKeyFilledTypeNullEnabledTrue(){
 		ConfigPersistence.setKnowledgeTypeEnabled("TEST", null, true);
 	}
 
 	@Test
-	public void TestSetKnowledgeTypeEnabledKeyFilledTypeFilledEnabledFalse(){
+	public void testSetKnowledgeTypeEnabledKeyFilledTypeFilledEnabledFalse(){
 		ConfigPersistence.setKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString(), false);
 	}
 
 	@Test
-	public void TestSetKnowledgeTypeEnabledKeyFilledTypeFilledEnabledTrue(){
+	public void testSetKnowledgeTypeEnabledKeyFilledTypeFilledEnabledTrue(){
 		ConfigPersistence.setKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString(), true);
 	}
 }
