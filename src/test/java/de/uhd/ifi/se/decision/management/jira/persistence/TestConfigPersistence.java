@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -29,11 +30,9 @@ public class TestConfigPersistence extends TestSetUp {
 	}
 
 	// IsIssueStrategy
-	// Because the TransactionCallbacks are hardcoded on true in the Test the Tests
-	// are only fore the right values
-	@Ignore
+	@Test
 	public void testIsIssueStrategyInvalid() {
-		assertFalse(ConfigPersistence.isIssueStrategy("InvalidKey"));
+		assertFalse(ConfigPersistence.isIssueStrategy(null));
 	}
 
 	@Test
@@ -90,11 +89,6 @@ public class TestConfigPersistence extends TestSetUp {
 		assertFalse(ConfigPersistence.isKnowledgeExtractedFromGit(null));
 	}
 
-	@Ignore
-	public void testIsKnowledgeExtractedInvalid() {
-		assertFalse(ConfigPersistence.isKnowledgeExtractedFromGit("NotTEST"));
-	}
-
 	@Test
 	public void testIsKnowledgeExtractedFilled() {
 		assertTrue(ConfigPersistence.isKnowledgeExtractedFromGit("TEST"));
@@ -129,5 +123,89 @@ public class TestConfigPersistence extends TestSetUp {
 	@Test
 	public void testSetKnowledgeExtractedFilledTrue() {
 		ConfigPersistence.setKnowledgeExtractedFromGit("TEST", true);
+	}
+
+	//IsKnowledgeExtractedFromIssues
+	@Test
+	public void testIsKnowledgeExtractedIssuesKeyNull(){
+		assertFalse(ConfigPersistence.isKnowledgeExtractedFromIssues(null));
+	}
+
+	@Test
+	public void testIsKnowledgeExtractedIssuesKeyFilled(){
+		assertTrue(ConfigPersistence.isKnowledgeExtractedFromIssues("TEST"));
+	}
+
+	//isKnowledgeTypeEnabled
+	@Test
+	public void testisKnowledgeTypeEnabledKeyNullTypeFilled(){
+		assertFalse(ConfigPersistence.isKnowledgeTypeEnabled(null, KnowledgeType.SOLUTION.toString()));
+	}
+
+	@Test
+	public void testisKnowledgeTypeEnabledKeyFilledTypeFilled(){
+		assertTrue(ConfigPersistence.isKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString()));
+	}
+
+	//setKnowledgeExtractedFromIssues
+	@Test
+	public void testSetKnowledgeExtractedFromIssuesKeyNullIssueTrue(){
+		ConfigPersistence.setKnowledgeExtractedFromIssues(null,true);
+	}
+
+	@Test
+	public void  testSetKnowledgeExtractedFromIssuesKeyNullIssueFalse(){
+		ConfigPersistence.setKnowledgeExtractedFromIssues(null,false);
+	}
+
+	@Test
+	public void testSetKnowledgeExtractedFromIssuesKeyFilledIssueTrue(){
+		ConfigPersistence.setKnowledgeExtractedFromIssues("TEST", true);
+	}
+
+	@Test
+	public void testSetKnowledgeExtractedFromIssuesKeyFilledIssueFalse(){
+		ConfigPersistence.setKnowledgeExtractedFromIssues("TEST", false);
+	}
+
+	//setKnowledgeTypeEnabled
+	@Test
+	public void TestSetKnowledgeTypeEnabledKeyNullTypeNullEnabledFalse(){
+		ConfigPersistence.setKnowledgeTypeEnabled(null, null, false);
+	}
+
+	@Test
+	public void TestSetKnowledgeTypeEnabledKeyNullTypeNullEnabledTrue(){
+		ConfigPersistence.setKnowledgeTypeEnabled(null, null, true);
+	}
+
+	@Test
+	public void TestSetKnowledgeTypeEnabledKeyNullTypeFilledEnabledFalse(){
+		ConfigPersistence.setKnowledgeTypeEnabled(null, KnowledgeType.SOLUTION.toString(), false);
+	}
+
+	@Test
+	public void TestSetKnowledgeTypeEnabledKeyNullTypeFilledEnabledTrue(){
+		ConfigPersistence.setKnowledgeTypeEnabled(null, KnowledgeType.SOLUTION.toString(), true);
+	}
+
+	@Test
+	public void TestSetKnowledgeTypeEnabledKeyFilledTypeNullEnabledFalse(){
+		ConfigPersistence.setKnowledgeTypeEnabled("TEST", null, false);
+	}
+
+	@Test
+	public void TestSetKnowledgeTypeEnabledKeyFilledTypeNullEnabledTrue(){
+		ConfigPersistence.setKnowledgeTypeEnabled("TEST", null, true);
+	}
+
+	@Test
+	public void TestSetKnowledgeTypeEnabledKeyFilledTypeFilledEnabledFalse(){
+		ConfigPersistence.setKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString(), false);
+	}
+
+	@Test
+	public void TestSetKnowledgeTypeEnabledKeyFilledTypeFilledEnabledTrue(){
+		ConfigPersistence.setKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString(), true);
 	}
 }

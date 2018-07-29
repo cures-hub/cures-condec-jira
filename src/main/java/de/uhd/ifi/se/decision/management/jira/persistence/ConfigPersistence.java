@@ -28,6 +28,9 @@ public class ConfigPersistence {
 	}
 
 	public static boolean isIssueStrategy(String projectKey) {
+	    if(projectKey == null){
+	        return false;
+        }
 		Object isIssueStrategy = transactionTemplate.execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction() {
@@ -71,6 +74,9 @@ public class ConfigPersistence {
 	}
 
 	public static boolean isKnowledgeTypeEnabled(String projectKey, String knowledgeType) {
+	    if(projectKey == null){
+	        return false;
+        }
 		Object isKnowledgeTypeEnabled = transactionTemplate.execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction() {
