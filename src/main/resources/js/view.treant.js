@@ -3,39 +3,8 @@ var dragId;
 var oldParentId;
 var treantTree;
 
-function buildIssueTreant(elementKey) {
-    var depthOfTreeInput = document.getElementById("depth-of-tree-input");
-    var depthOfTree = 4;
-    if (depthOfTreeInput !== null) {
-        depthOfTree = depthOfTreeInput.value;
-    }
-    getTreant(elementKey, depthOfTree, function(treeStructure) {
-        document.getElementById("treant-container").innerHTML = "";
-
-        isKnowledgeExtractedFromGit(getProjectKey(), function(isKnowledgeExtractedFromGit) {
-            if (isKnowledgeExtractedFromGit) {
-                getCommits(elementKey,
-                    function(commits) {
-                        if (commits.length > 0) {
-                            treeStructure.nodeStructure.children = addCommits(commits,
-                                treeStructure.nodeStructure.children);
-                        }
-                        // console.log(treeStructure);
-                        treantTree = new Treant(treeStructure);
-                    });
-            } else {
-                treantTree = new Treant(treeStructure);
-            }
-        });
-    });
-}
-
-function buildTreant(elementKey) {
-	var depthOfTreeInput = document.getElementById("depth-of-tree-input");
-	var depthOfTree = 4;
-	if (depthOfTreeInput !== null) {
-		depthOfTree = depthOfTreeInput.value;
-	}
+function buildTreant(elementKey, isInteractive) {
+	var depthOfTree = getDepthOfTree();
 	getTreant(elementKey, depthOfTree, function(treeStructure) {
 		document.getElementById("treant-container").innerHTML = "";
 
@@ -48,19 +17,30 @@ function buildTreant(elementKey) {
 										treeStructure.nodeStructure.children);
 							}
 							// console.log(treeStructure);
-							createTreant(treeStructure);
+							createTreant(treeStructure, isInteractive);
 						});
 			} else {
-				createTreant(treeStructure);
+				createTreant(treeStructure, isInteractive);
 			}
 		});
 	});
 }
 
+function getDepthOfTree() {
+	var depthOfTreeInput = document.getElementById("depth-of-tree-input");
+	var depthOfTree = 4;
+	if (depthOfTreeInput !== null) {
+		depthOfTree = depthOfTreeInput.value;
+	}
+	return depthOfTree;
+}
+
 function createTreant(treeStructure) {
 	treantTree = new Treant(treeStructure);
-	createContextMenuForTreantNodes();
-	addDragAndDropSupportForTreant();
+	if (isInteractive !== undefined && isInteractive) {
+		createContextMenuForTreantNodes();
+		addDragAndDropSupportForTreant();
+	}
 }
 
 function createContextMenuForTreantNodes() {
@@ -136,7 +116,7 @@ function addCommits(commits, elementArray) {
 
 		var decision;
 		var element;
-		for (var i in splitMessage) {
+		for ( var i in splitMessage) {
 			var split = splitMessage[i].split(" ");
 			message = splitMessage[i].substr(splitMessage[i].indexOf(" ") + 1);
 			switch (split[0]) {

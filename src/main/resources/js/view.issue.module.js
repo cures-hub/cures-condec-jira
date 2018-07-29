@@ -4,5 +4,5 @@ function fillIssueModule() {
 
 function updateIssueModule() {
 	var issueKey = getIssueKey();
-	buildIssueTreant(issueKey);
+	buildTreant(issueKey, false);
 }

@@ -66,6 +66,7 @@ function addDragAndDropSupportForTreeViewer() {
 		}
 	});
 }
+
 function resizeTreeViewer() {
     $(function () {
         $("#jstree").resizable();

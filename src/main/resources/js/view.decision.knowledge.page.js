@@ -45,6 +45,6 @@ function updateView(nodeId) {
 	}
 	$('#jstree').on("select_node.jstree", function(error, tree) {
 		var node = tree.node.data;
-		buildTreant(node.key);
+		buildTreant(node.key, true);
 	});
 }
