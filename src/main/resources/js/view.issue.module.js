@@ -1,8 +1,8 @@
 function fillIssueModule() {
-	updateIssueModule();
+	updateView();
 }
 
-function updateIssueModule() {
+function updateView() {
 	var issueKey = getIssueKey();
 	buildTreant(issueKey, false);
 }

@@ -23,7 +23,7 @@ function createLinkToExistingElement(idOfExistingElement, idOfNewElement, knowle
 	switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, function(linkType,
 			idOfExistingElement, idOfNewElement) {
 		linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
-			updateIssueModule();
+			updateView();
 		});
 	});
 }
@@ -50,12 +50,12 @@ function updateDecisionKnowledgeElementAsChild(childId, summary, description, ty
 				switchLinkTypes(type, parentId, childId, function(linkType, parentId, childId) {
 					deleteLink(parentId, childId, function() {
 						linkElements(parentId, childId, linkType, function() {
-							updateIssueModule();
+							updateView();
 						});
 					});
 				});
 			} else {
-				updateIssueModule();
+				updateView();
 			}
 		});
 	});
@@ -75,7 +75,7 @@ function createDecisionKnowledgeElementAsChild(summary, description, type, idOfE
 		switchLinkTypes(type, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
 				idOfNewElement) {
 			linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
-				updateIssueModule();
+				updateView();
 			});
 		});
 	});

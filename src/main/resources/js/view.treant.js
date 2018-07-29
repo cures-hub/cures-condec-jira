@@ -35,7 +35,7 @@ function getDepthOfTree() {
 	return depthOfTree;
 }
 
-function createTreant(treeStructure) {
+function createTreant(treeStructure, isInteractive) {
 	treantTree = new Treant(treeStructure);
 	if (isInteractive !== undefined && isInteractive) {
 		createContextMenuForTreantNodes();
