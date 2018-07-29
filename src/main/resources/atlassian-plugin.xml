@@ -48,7 +48,7 @@
 		<resource type="download" name="condec.css" location="/css/condec.css" />
 		<resource type="download" name="jquery.contextMenu.css" location="/css/jquery.contextMenu.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
-		<resource type="download" name="jstree-ui.css" location="/css/jstree-ui.css" />
+		<resource type="download" name="jquery-ui.css" location="/css/jquery.ui.css" />
 		<!-- look and feel like JIRA -->
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
 		<dependency>com.atlassian.auiplugin:aui-flag</dependency>
@@ -104,7 +104,7 @@
 		<!-- jquery -->
 		<resource type="download" name="jquery.js" location="/js/jquery/jquery.js" />
 		<!-- jquery.ui -->
-		<resource type="download" name="jquery-ui.js" location="/js/jquery/jquery-ui.js"/>
+		<resource type="download" name="jquery-ui.js" location="/js/jquery/jquery.ui.js"/>
 		<!-- jquery.contextMenu -->
 		<resource type="download" name="jquery.contextMenu.js" location="/js/jquery/jquery.contextMenu.js" />
 		<!-- jstree -->
@@ -121,14 +121,8 @@
 			Provides the Java Script file used in the issue module.
 		</description>
 		<context>jira.view.issue</context>
-		<!-- jquery -->
-		<!-- <resource type="download" name="jquery.js" location="/js/jquery/jquery.js" /> -->
-		<!-- jquery.contextMenu -->
-		<!-- <resource type="download" name="jquery.contextMenu.js" location="/js/jquery/jquery.contextMenu.js"
-			/> -->
 		<!-- ConDec java script files -->
 		<resource type="download" name="view.issue.module.js" location="/js/view.issue.module.js" />
-		<!-- <resource type="download" name="view.context.menu.js" location="/js/view.context.menu.js" /> -->
 	</web-resource>
 
 	<!-- Decision Knowledge Page -->
