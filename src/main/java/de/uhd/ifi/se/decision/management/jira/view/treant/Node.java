@@ -43,6 +43,12 @@ public class Node {
 
 	public Node() {
 		this.connectors = ImmutableMap.of("style", ImmutableMap.of("stroke", "#000000"));
+		// this.connectors = new ConcurrentHashMap<String, Map<String, String>>();
+		// Map<String, String> connectorStyle = new ConcurrentHashMap<String, String>();
+		// this.connectorStyle.put("stroke", "#000000");
+		// this.connectorStyle.put("stroke-width", "2");
+		// this.connectorStyle.put("arrow-start", "block-wide-long");
+		// this.connectors.put("style", connectorStyle);
 	}
 
 	public Node(DecisionKnowledgeElement decisionKnowledgeElement) {
@@ -73,6 +79,7 @@ public class Node {
 				this.nodeContent = ImmutableMap.of("name", "Pro-argument", "title",
 						decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 				this.htmlClass = "pro";
+
 			}
 			break;
 		case "attack":

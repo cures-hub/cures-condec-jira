@@ -65,26 +65,26 @@ public class TestNode {
 	}
 
 	@Test
-	public void testElementLinkEmptyConstructor(){
+	public void testElementLinkEmptyConstructor() {
 		Link link = new LinkImpl();
 		link.setType("Test");
-		Node newNode = new Node(element,link);
+		Node newNode = new Node(element, link);
 		assertNotNull(newNode);
 	}
 
 	@Test
-	public void testElementLinkSupportConstructor(){
+	public void testElementLinkSupportConstructor() {
 		Link link = new LinkImpl();
 		link.setType("support");
-		Node newNode = new Node(element,link);
+		Node newNode = new Node(element, link);
 		assertNotNull(newNode);
 	}
 
 	@Test
-	public void testElementLinkAttackConstructor(){
+	public void testElementLinkAttackConstructor() {
 		Link link = new LinkImpl();
 		link.setType("attack");
-		Node newNode = new Node(element,link);
+		Node newNode = new Node(element, link);
 		assertNotNull(newNode);
 	}
 
@@ -161,12 +161,12 @@ public class TestNode {
 	}
 
 	@Test
-	public void testGetConnectors(){
-		assertEquals(ImmutableMap.of("style", ImmutableMap.of("stroke", "#000000")),node.getConnectors());
+	public void testGetConnectors() {
+		assertEquals(ImmutableMap.of("style", ImmutableMap.of("stroke", "#000000")), node.getConnectors());
 	}
 
 	@Test
-	public void testSetConnectors(){
+	public void testSetConnectors() {
 		Map<String, Map<String, String>> newConnectors = ImmutableMap.of("style", ImmutableMap.of("stroke", "#000001"));
 		node.setConnectors(newConnectors);
 		assertEquals(newConnectors, node.getConnectors());

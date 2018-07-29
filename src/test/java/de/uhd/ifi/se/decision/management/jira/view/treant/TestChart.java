@@ -16,7 +16,7 @@ public class TestChart {
 	private Chart chart;
 
 	@Before
-	public void setUp(){
+	public void setUp() {
 		chart = new Chart();
 	}
 
@@ -26,43 +26,39 @@ public class TestChart {
 	}
 
 	@Test
-	public void testGetContainer(){
+	public void testGetContainer() {
 		assertEquals("#treant-container", chart.getContainer());
 	}
 
 	@Test
-	public void testGetConnectors(){
-		Map connectors = new ConcurrentHashMap();
+	public void testGetConnectors() {
+		Map<String, String> connectors = new ConcurrentHashMap<String, String>();
 		connectors.put("type", "straight");
-		Map style = new ConcurrentHashMap();
-		style.put("arrow-end", "classic-wide-long");
-		style.put("stroke-width", 2);
-		connectors.put("style", style);
 		assertEquals(connectors, chart.getConnectors());
 	}
 
 	@Test
-	public void testGetRootOrientation(){
+	public void testGetRootOrientation() {
 		assertEquals("NORTH", chart.getRootOrientation());
 	}
 
 	@Test
-	public void testGetLevelSeparation(){
+	public void testGetLevelSeparation() {
 		assertEquals(30, chart.getLevelSeparation(), 0.0);
 	}
 
 	@Test
-	public void testGetSiblingSeparation(){
+	public void testGetSiblingSeparation() {
 		assertEquals(30, chart.getSiblingSeparation(), 0.0);
 	}
 
 	@Test
-	public void testGetSubTreeSeparation(){
+	public void testGetSubTreeSeparation() {
 		assertEquals(30, chart.getSubTreeSeparation(), 0.0);
 	}
 
 	@Test
-	public void testGetNode(){
+	public void testGetNode() {
 		assertEquals(ImmutableMap.of("collapsable", true), chart.getNode());
 	}
 }
