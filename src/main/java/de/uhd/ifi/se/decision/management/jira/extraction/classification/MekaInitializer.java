@@ -97,17 +97,16 @@ public class MekaInitializer {
 		return data;
 	}
 
-	public static void doSth(List<Comment> commentsList) throws Exception {
+	public static void classifySentencesFineGrained(List<Comment> commentsList) throws Exception {
 		Instances structure = buildDataset(commentsList);
 
 		structure.setClassIndex(5);
 		// MLUtils.prepareData(structure);
 
 		//Read model from supplied path
-		LC binaryRelevance = null;
 		String path = ComponentGetter.getUrlOfClassifierFolder() + "br.model";
 		InputStream is = new URL(path).openStream();
-		binaryRelevance = (LC) weka.core.SerializationHelper.read(is);
+		LC binaryRelevance = (LC) weka.core.SerializationHelper.read(is);
 
 		// Classify string instances
 		List<double[]> results = new ArrayList<double[]>();

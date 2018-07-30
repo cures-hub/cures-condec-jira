@@ -3,11 +3,15 @@ package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+
+import com.atlassian.jira.web.component.CreateIssueWebComponent;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistance.ActiveObjectsManager;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -17,7 +21,8 @@ public class WekaInitializer {
 
 	private static FilteredClassifier fc;
 
-	public static List<Comment> predict(List<Comment> commentsList) {
+	public static List<Comment> predict(List<Comment> commentsList) throws Exception {
+		init();
 
 		List<Double> areRelevant = new ArrayList<Double>();
 
@@ -25,7 +30,7 @@ public class WekaInitializer {
 		try {
 
 			data = tryToReadFromStrings(commentsList);
-			//System.out.println("Noch da"+ fc.toString());
+			// System.out.println("Noch da"+ fc.toString());
 			for (int i = 0; i < data.numInstances(); i++) {
 				data.get(i).setClassMissing();
 				Double n = fc.classifyInstance(data.get(i));
@@ -45,7 +50,7 @@ public class WekaInitializer {
 		return commentsList;
 	}
 
-	private static Instances tryToReadFromStrings(List<Comment> commentsList) {
+	private static ArrayList<Attribute> createWekaAttributes() {
 		ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
 
 		// Declare text attribute to hold the message (free form text)
@@ -62,6 +67,14 @@ public class WekaInitializer {
 		Attribute isRelevant = new Attribute("isRelevant", relevantValues);
 		wekaAttributes.add(isRelevant);
 
+		return wekaAttributes;
+	}
+
+	private static Instances tryToReadFromStrings(List<Comment> commentsList) {
+
+		commentsList = removeDataWhichIsAlreadyDefinedInAo(commentsList);
+
+		ArrayList<Attribute> wekaAttributes = createWekaAttributes();
 		Instances data = new Instances("sentences", wekaAttributes, 1000000);
 
 		data.setClassIndex(data.numAttributes() - 1);
@@ -76,14 +89,22 @@ public class WekaInitializer {
 		return data;
 	}
 
-	public static void init(List<Comment> commentsList) throws Exception {
-		// System.out.println("bin hier: "+System.getProperty("user.dir"));
-		fc = new FilteredClassifier();
+	private static List<Comment> removeDataWhichIsAlreadyDefinedInAo(List<Comment> commentsList) {
+		List<Comment> commentsList2 = new ArrayList<Comment>();
+		for (Comment comment : commentsList) {
+			if (!ActiveObjectsManager.checkCommentExistingInAO(comment.getId(), true)) {
+				commentsList2.add(comment);
+			}
+		}
+		commentsList = null;
+		return commentsList2;
+	}
 
+	public static void init() throws Exception {
+		fc = new FilteredClassifier();
 		String path = ComponentGetter.getUrlOfClassifierFolder() + "fc.model";
 		InputStream is = new URL(path).openStream();
 		fc = (FilteredClassifier) weka.core.SerializationHelper.read(is);
-
 
 	}
 

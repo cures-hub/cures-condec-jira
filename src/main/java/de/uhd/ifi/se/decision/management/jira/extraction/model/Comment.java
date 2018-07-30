@@ -5,15 +5,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.persistance.ActiveObjectsManager;
+
 public class Comment {
 
 	private ArrayList<Sentence> sentences;
 
 	private String body = "";
 
-	private Long Id;
+	private long Id;
 
 	private String authorFullName;
+
+	private long authorId;
 
 	private Date created;
 
@@ -30,6 +34,8 @@ public class Comment {
 		this.body = comment.getBody();
 		this.created = comment.getCreated();
 		this.authorFullName = comment.getAuthorFullName();
+		this.Id = comment.getId();
+		this.authorId = comment.getAuthorApplicationUser().getId();
 		splitCommentIntoSentences();
 	}
 
@@ -42,21 +48,19 @@ public class Comment {
 	}
 
 	private void splitCommentIntoSentences() {
-
 		this.sentences = new ArrayList<Sentence>();
 		// Delete breaklines,
 		this.body = this.body.replace("<br>", " ").replace("\n", " ").replace("\r", " ").replaceAll("\\<.*?>", "")
 				.toString();
-
-		// Using break Iterator from
-		// https://stackoverflow.com/questions/2687012/split-string-into-sentences
-		//Instead of:  this.body.split("\\. ");
+		// Using break Iterator from https://stackoverflow.com/questions/2687012/split-string-into-sentences
+		//to split sentences in pieces
+		long aoId =0;
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
-		String source = this.body;
-		iterator.setText(source);
+		iterator.setText(this.body);
 		int start = iterator.first();
 		for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
-			this.sentences.add(new Sentence(source.substring(start, end)));
+			aoId = ActiveObjectsManager.addElement(this.Id, false, end, start, this.authorId);
+			this.sentences.add(new Sentence(this.body.substring(start, end),aoId));
 		}
 	}
 
@@ -66,6 +70,16 @@ public class Comment {
 
 	public void setSentences(ArrayList<Sentence> sentences) {
 		this.sentences = sentences;
+	}
+
+	public ArrayList<Sentence> getUnlabeledSentences() {
+		ArrayList<Sentence> unlabeled = new ArrayList<Sentence>();
+		for(Sentence sentence: this.sentences) {
+			if(!sentence.isRelevant()) {
+				unlabeled.add(sentence);
+			}
+		}
+		return unlabeled;
 	}
 
 	public String getTaggedBody() {
@@ -89,11 +103,11 @@ public class Comment {
 		this.body = body;
 	}
 
-	public Long getId() {
+	public long getId() {
 		return Id;
 	}
 
-	public void setId(Long id) {
+	public void setId(long id) {
 		Id = id;
 	}
 
@@ -111,6 +125,14 @@ public class Comment {
 
 	public void setCreated(Date created) {
 		this.created = created;
+	}
+
+	public long getAuthorId() {
+		return authorId;
+	}
+
+	public void setAuthorId(long authorId) {
+		this.authorId = authorId;
 	}
 
 }
