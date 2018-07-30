@@ -33,7 +33,6 @@ public class ViewConnector {
 		}
 		this.startClassification();
 
-		ActiveObjectsManager.init();
 	}
 
 	public void startClassification() {

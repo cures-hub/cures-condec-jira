@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.persistance;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.sal.api.transaction.TransactionCallback;
+import com.sun.org.apache.bcel.internal.generic.DADD;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 
@@ -84,6 +85,21 @@ public class ActiveObjectsManager {
 
 	}
 
+	public static DecisionKnowledgeInCommentEntity getElementFromAO(long aoId) {
+		init();
+		return ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+			@Override
+			public DecisionKnowledgeInCommentEntity doInTransaction() {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class)) {
+					if (databaseEntry.getId() == aoId) {
+						return databaseEntry;
+					}
+				}
+				return null;
+			}
+		});
+	}
+
 	private static boolean equalsDatabase(DecisionKnowledgeInCommentEntity databaseEntry, long commentId,
 			int endSubtringCount, int startSubstringCount, long userId) {
 		if (databaseEntry.getCommentId() == commentId && databaseEntry.getEndSubstringCount() == endSubtringCount
@@ -93,5 +109,29 @@ public class ActiveObjectsManager {
 		}
 		return false;
 	}
+
+	public static boolean updateRelevance(long activeObjectId, boolean isRelevant) {
+		init();
+		DecisionKnowledgeInCommentEntity databaseEntry = ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+			@Override
+			public DecisionKnowledgeInCommentEntity doInTransaction() {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class)) {
+					if (databaseEntry.getId() == activeObjectId) {
+						databaseEntry.setIsRelevant(isRelevant);
+						//If relevant is true or false, it's tagged, so set it on true
+						databaseEntry.setIsTagged(true);
+						databaseEntry.save();
+						return databaseEntry;
+					}
+				}
+				return null;
+			}
+		});
+		if (databaseEntry == null) {
+			return false;
+		}
+		return true;
+	}
+
 
 }

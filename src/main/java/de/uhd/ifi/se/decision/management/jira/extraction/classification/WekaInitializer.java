@@ -29,8 +29,8 @@ public class WekaInitializer {
 		Instances data;
 		try {
 
-			data = tryToReadFromStrings(commentsList);
-			// System.out.println("Noch da"+ fc.toString());
+			data = retrieveDataFromCommentStrings(commentsList);
+
 			for (int i = 0; i < data.numInstances(); i++) {
 				data.get(i).setClassMissing();
 				Double n = fc.classifyInstance(data.get(i));
@@ -43,8 +43,11 @@ public class WekaInitializer {
 		int i = 0;
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
-				sentence.setRelevant(areRelevant.get(i));
-				i++;
+				if (!sentence.isTagged()) {
+					sentence.setRelevant(areRelevant.get(i));
+					sentence.isTagged(true);
+					i++;
+				}
 			}
 		}
 		return commentsList;
@@ -70,34 +73,25 @@ public class WekaInitializer {
 		return wekaAttributes;
 	}
 
-	private static Instances tryToReadFromStrings(List<Comment> commentsList) {
+	private static Instances retrieveDataFromCommentStrings(List<Comment> commentsList) {
 
-		commentsList = removeDataWhichIsAlreadyDefinedInAo(commentsList);
+		// commentsList = removeDataWhichIsAlreadyDefinedInAo(commentsList);
 
 		ArrayList<Attribute> wekaAttributes = createWekaAttributes();
 		Instances data = new Instances("sentences", wekaAttributes, 1000000);
 
 		data.setClassIndex(data.numAttributes() - 1);
-		//TODO: use data from active objects
+		// TODO: use data from active objects
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
-				DenseInstance newInstance = new DenseInstance(2);
-				newInstance.setValue(wekaAttributes.get(0), sentence.getBody());
-				data.add(newInstance);
+				if (!sentence.isTagged()) {
+					DenseInstance newInstance = new DenseInstance(2);
+					newInstance.setValue(wekaAttributes.get(0), sentence.getBody());
+					data.add(newInstance);
+				}
 			}
 		}
 		return data;
-	}
-
-	private static List<Comment> removeDataWhichIsAlreadyDefinedInAo(List<Comment> commentsList) {
-		List<Comment> commentsList2 = new ArrayList<Comment>();
-		for (Comment comment : commentsList) {
-			if (!ActiveObjectsManager.checkCommentExistingInAO(comment.getId(), true)) {
-				commentsList2.add(comment);
-			}
-		}
-		commentsList = null;
-		return commentsList2;
 	}
 
 	public static void init() throws Exception {

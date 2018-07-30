@@ -3,6 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.extraction.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.persistance.ActiveObjectsManager;
+
 public class Sentence {
 
 	private boolean isTagged;
@@ -15,17 +17,22 @@ public class Sentence {
 
 	private long activeObjectId;
 
+	private int startSubstringCount;
+
+	private int endSubstringCount;
+
 	public Sentence(String body, long aoId) {
 		this.setBody(body);
 		this.classification = new ArrayList<Rationale>();
 		this.setActiveObjectId(aoId);
+		this.isTagged(ActiveObjectsManager.checkCommentExistingInAO(aoId,true));
+		this.setRelevant(ActiveObjectsManager.getElementFromAO(aoId).getIsRelevant());
 	}
 
 	public Sentence(String body, boolean isRelevant) {
 		this.setBody(body);
 		this.setRelevant(isRelevant);
 	}
-
 
 	public boolean isTagged() {
 		return isTagged;
@@ -52,13 +59,12 @@ public class Sentence {
 	}
 
 	public void setRelevant(Double double1) {
-		this.isTagged = true;
 		if (double1 == 1.) {
 			setRelevant(true);
 		} else {
 			setRelevant(false);
 		}
-
+		ActiveObjectsManager.updateRelevance(this.getActiveObjectId(),isRelevant);
 	}
 
 	public List<Rationale> getClassification() {
@@ -66,7 +72,6 @@ public class Sentence {
 	}
 
 	public void setClassification(List<Rationale> list) {
-		this.isTagged = true;
 		this.classification = list;
 	}
 
@@ -75,7 +80,7 @@ public class Sentence {
 		for (Rationale classi : classification) {
 			classI += Rationale.getString(classi);
 		}
-		System.out.println(classI);
+		//System.out.println(classI);
 	}
 
 	public long getActiveObjectId() {
@@ -87,10 +92,26 @@ public class Sentence {
 	}
 
 	public String toString() {
-		String result ="";
-		result+="isRelevant:\t"+isRelevant+"\n";
-		result+="body:\t"+body+"\n";
-		result+="activeObjects Id:\t"+activeObjectId+"\n";
+		String result = "";
+		result += "isRelevant:\t" + isRelevant + "\n";
+		result += "body:\t" + body + "\n";
+		result += "activeObjects Id:\t" + activeObjectId + "\n";
 		return result;
+	}
+
+	public int getStartSubstringCount() {
+		return startSubstringCount;
+	}
+
+	public void setStartSubstringCount(int startSubstringCount) {
+		this.startSubstringCount = startSubstringCount;
+	}
+
+	public int getEndSubstringCount() {
+		return endSubstringCount;
+	}
+
+	public void setEndSubstringCount(int endSubstringCount) {
+		this.endSubstringCount = endSubstringCount;
 	}
 }

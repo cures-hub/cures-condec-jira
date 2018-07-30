@@ -19,6 +19,26 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Integer> {
 
 	void setIsRelevant(boolean isRelevant);
 
+	boolean getIsIssue();
+
+	void setIsIssue(boolean isIssue);
+
+	boolean getIsDecision();
+
+	void setIsDecision(boolean isDecision);
+
+	boolean getIsAlternative();
+
+	void setIsAlternative(boolean isAlternative);
+
+	boolean getIsPro();
+
+	void setIsPro(boolean isPro);
+
+	boolean getIsCon();
+
+	void setIsCon(boolean isCon);
+
 	boolean getIsTagged();
 
 	void setIsTagged(boolean isTagged);

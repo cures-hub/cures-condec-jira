@@ -59,10 +59,10 @@ public class Comment {
 		iterator.setText(this.body);
 		int start = iterator.first();
 		for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
+			//Sync sentence objects with AO database
 			aoId = ActiveObjectsManager.addElement(this.Id, false, end, start, this.authorId);
 			this.sentences.add(new Sentence(this.body.substring(start, end),aoId));
 		}
-		//TODO: use data from active objects
 	}
 
 	public ArrayList<Sentence> getSentences() {
@@ -73,10 +73,10 @@ public class Comment {
 		this.sentences = sentences;
 	}
 
-	public ArrayList<Sentence> getUnlabeledSentences() {
+	public ArrayList<Sentence> getUnTaggedSentences() {
 		ArrayList<Sentence> unlabeled = new ArrayList<Sentence>();
 		for(Sentence sentence: this.sentences) {
-			if(!sentence.isRelevant()) {
+			if(!sentence.isTagged()) {
 				unlabeled.add(sentence);
 			}
 		}

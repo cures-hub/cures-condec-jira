@@ -4,6 +4,7 @@ import java.beans.PropertyChangeListener;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import electric.soap.security.signature.xml.IReferenceProcessor;
 import net.java.ao.EntityManager;
 import net.java.ao.RawEntity;
 
@@ -12,6 +13,16 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 	private long id;
 
 	private boolean isRelevant;
+
+	private boolean isIssue;
+
+	private boolean isDecision;
+
+	private boolean isAlternative;
+
+	private boolean isPro;
+
+	private boolean isCon;
 
 	private boolean isTagged;
 
@@ -147,6 +158,81 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 	public void setIsTagged(boolean isTagged) {
 		this.isTagged = isTagged;
 
+	}
+
+
+
+	@Override
+	@XmlElement(name = "isIssue")
+	public boolean getIsIssue() {
+		return isIssue;
+	}
+
+
+
+	@Override
+	public void setIsIssue(boolean isIssue) {
+		this.isIssue = isIssue;
+	}
+
+
+
+	@Override
+	@XmlElement(name = "isDecision")
+	public boolean getIsDecision() {
+		return isDecision;
+	}
+
+
+
+	@Override
+	public void setIsDecision(boolean isDecision) {
+		this.isDecision = isDecision;
+	}
+
+
+
+	@Override
+	@XmlElement(name = "isAlternative")
+	public boolean getIsAlternative() {
+		return isAlternative;
+	}
+
+
+
+	@Override
+	public void setIsAlternative(boolean isAlternative) {
+		this.isAlternative = isAlternative;
+	}
+
+
+
+	@Override
+	@XmlElement(name = "isPro")
+	public boolean getIsPro() {
+		return isPro;
+	}
+
+
+
+	@Override
+	public void setIsPro(boolean isPro) {
+		this.isPro=isPro;
+	}
+
+
+
+	@Override
+	@XmlElement(name = "isCon")
+	public boolean getIsCon() {
+		return isCon;
+	}
+
+
+
+	@Override
+	public void setIsCon(boolean isCon) {
+		this.isCon = isCon;
 	}
 
 
