@@ -38,7 +38,6 @@ public class ViewConnector {
 
 	public void startClassification() {
 		try {
-
 			this.commentsList = WekaInitializer.predict(commentsList);
 		} catch (Exception e) {
 			e.printStackTrace();

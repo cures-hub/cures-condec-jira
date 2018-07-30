@@ -108,6 +108,7 @@ public class MekaInitializer {
 		InputStream is = new URL(path).openStream();
 		LC binaryRelevance = (LC) weka.core.SerializationHelper.read(is);
 
+		//TODO: use data from active objects
 		// Classify string instances
 		List<double[]> results = new ArrayList<double[]>();
 		for (int n = 0; n < structure.size(); n++) {

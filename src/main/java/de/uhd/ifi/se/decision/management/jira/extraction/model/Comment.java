@@ -62,6 +62,7 @@ public class Comment {
 			aoId = ActiveObjectsManager.addElement(this.Id, false, end, start, this.authorId);
 			this.sentences.add(new Sentence(this.body.substring(start, end),aoId));
 		}
+		//TODO: use data from active objects
 	}
 
 	public ArrayList<Sentence> getSentences() {

@@ -78,7 +78,7 @@ public class WekaInitializer {
 		Instances data = new Instances("sentences", wekaAttributes, 1000000);
 
 		data.setClassIndex(data.numAttributes() - 1);
-
+		//TODO: use data from active objects
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
 				DenseInstance newInstance = new DenseInstance(2);
