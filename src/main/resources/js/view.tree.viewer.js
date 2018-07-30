@@ -68,5 +68,5 @@ function addDragAndDropSupportForTreeViewer() {
 }
 
 function makeTreeViewerResizable() {
-	$("#jstree").resizable();
+	$("#resizable").resizable();
 }

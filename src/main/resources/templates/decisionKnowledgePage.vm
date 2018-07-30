@@ -20,8 +20,10 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 		must be positive</label>
 </form>
 <div class="aui-group">
-<div id="jstree" class="left ui-resizable"></div>
-<div id="treant-container" class="right"></div>
+	<div id="resizable" class="ui-resizable left">
+        <div id="jstree"></div>
+	</div>
+    <div id="treant-container" class="right"></div>
 </div>
 <script>
 	initializeDecisionKnowledgePage();

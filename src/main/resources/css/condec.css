@@ -14,7 +14,7 @@ a:focus a:hover {
 .left {
 	width: 33%;
 	float: left;
-	overflow: auto;
+	overflow: hidden;
 }
 
 .right {
