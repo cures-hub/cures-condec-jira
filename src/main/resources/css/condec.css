@@ -14,13 +14,15 @@ a:focus a:hover {
 .left {
 	width: 33%;
 	float: left;
-	overflow: hidden;
+	overflow: auto;
+	resize: both;
 }
 
 .right {
 	width: 67%;
 	float: left;
 	overflow: auto;
+	resize: both;
 }
 
 table {

@@ -7,14 +7,13 @@ import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.issuetype.IssueType;
-import com.atlassian.jira.issue.issuetype.IssueTypeImpl;
 import com.atlassian.jira.mock.MockConstantsManager;
 
 public class MockIssueTypeManager implements IssueTypeManager {
 
 	private Collection<IssueType> types;
 
-	public MockIssueTypeManager(){
+	public MockIssueTypeManager() {
 		super();
 		types = new ArrayList<>();
 	}
@@ -37,7 +36,7 @@ public class MockIssueTypeManager implements IssueTypeManager {
 		types.addAll(constManager.getAllIssueTypeObjects());
 	}
 
-	public void addIssueType(Collection<IssueType> issueTypes){
+	public void addIssueType(Collection<IssueType> issueTypes) {
 		types.addAll(issueTypes);
 	}
 

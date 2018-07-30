@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import com.atlassian.jira.avatar.AvatarManager;
-import com.atlassian.jira.avatar.AvatarManagerImpl;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
@@ -32,7 +31,17 @@ import com.atlassian.jira.user.util.UserManager;
 import com.atlassian.jira.util.VelocityParamFactory;
 import com.atlassian.velocity.VelocityManager;
 
-import de.uhd.ifi.se.decision.management.jira.mocks.*;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockAvatarManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkTypeManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueService;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeSchemeManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockOptionSetManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockProjectRoleManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityParamFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class TestSetUp {
@@ -40,13 +49,13 @@ public class TestSetUp {
 	private IssueManager issueManager;
 	private ConstantsManager constantsManager;
 
-	public void initialization(){
+	public void initialization() {
 		projectManager = new MockProjectManager();
 		issueManager = new MockIssueManagerSelfImpl();
 		constantsManager = new MockConstantsManager();
 		IssueTypeManager issueTypeManager = new MockIssueTypeManager();
 		try {
-			((MockIssueTypeManager)issueTypeManager).addingAllIssueTypes();
+			((MockIssueTypeManager) issueTypeManager).addingAllIssueTypes();
 		} catch (CreateException e) {
 			e.printStackTrace();
 		}
@@ -70,8 +79,7 @@ public class TestSetUp {
 				.addMock(ProjectRoleManager.class, new MockProjectRoleManager())
 				.addMock(VelocityManager.class, new MockVelocityManager())
 				.addMock(VelocityParamFactory.class, new MockVelocityParamFactory())
-				.addMock(AvatarManager.class, new MockAvatarManager())
-				.addMock(IssueTypeManager.class, issueTypeManager)
+				.addMock(AvatarManager.class, new MockAvatarManager()).addMock(IssueTypeManager.class, issueTypeManager)
 				.addMock(IssueTypeSchemeManager.class, new MockIssueTypeSchemeManager())
 				.addMock(OptionSetManager.class, new MockOptionSetManager());
 

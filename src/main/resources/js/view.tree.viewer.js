@@ -17,7 +17,6 @@ function buildTreeViewer() {
 			$("#jstree").jstree(true).search(searchString);
 		});
 	});
-	makeTreeViewerResizable();
 	addDragAndDropSupportForTreeViewer();
 }
 
@@ -65,8 +64,4 @@ function addDragAndDropSupportForTreeViewer() {
 			});
 		}
 	});
-}
-
-function makeTreeViewerResizable() {
-	$("#resizable").resizable();
 }

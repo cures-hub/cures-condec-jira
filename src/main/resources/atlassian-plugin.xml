@@ -28,14 +28,14 @@
 		<resource type="download" name="throbber.gif" location="/images/throbber.gif" />
 		<!-- default decision knowledge icons -->
 		<resource type="download" name="decision.png" location="/images/decision.png" />
-		<resource type="download" name="problem.png" location="/images/problem.png" />
+		<resource type="download" name="issue.png" location="/images/issue.png" />
 		<resource type="download" name="alternative.png" location="/images/alternative.png" />
 		<resource type="download" name="solution.png" location="/images/solution.png" />
 		<resource type="download" name="argument.png" location="/images/argument.png" />
 		<resource type="download" name="argument_pro.png" location="/images/argument_pro.png" />
 		<resource type="download" name="argument_con.png" location="/images/argument_con.png" />
 		<!-- additional decision knowledge icons -->
-		<resource type="download" name="issue.png" location="/images/issue.png" />
+		<resource type="download" name="problem.png" location="/images/problem.png" />
 		<resource type="download" name="goal.png" location="/images/goal.png" />
 		<resource type="download" name="claim.png" location="/images/claim.png" />
 		<resource type="download" name="context.png" location="/images/context.png" />
@@ -48,7 +48,6 @@
 		<resource type="download" name="condec.css" location="/css/condec.css" />
 		<resource type="download" name="jquery.contextMenu.css" location="/css/jquery.contextMenu.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
-		<resource type="download" name="jquery-ui.css" location="/css/jquery.ui.css" />
 		<!-- look and feel like JIRA -->
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
 		<dependency>com.atlassian.auiplugin:aui-flag</dependency>
@@ -64,7 +63,7 @@
 
 	<web-resource key="classifier-resources" name="Classifiers for Decision Extraction">
 		<description>
-			Provides the model files for Weka and Meka classifiers
+			Provides the model files for Weka and Meka classifiers.
 		</description>
 		<context>atl.general</context>
 		<context>jira.view.issue</context>
@@ -103,8 +102,6 @@
 		</description>
 		<!-- jquery -->
 		<resource type="download" name="jquery.js" location="/js/jquery/jquery.js" />
-		<!-- jquery.ui -->
-		<resource type="download" name="jquery-ui.js" location="/js/jquery/jquery.ui.js"/>
 		<!-- jquery.contextMenu -->
 		<resource type="download" name="jquery.contextMenu.js" location="/js/jquery/jquery.contextMenu.js" />
 		<!-- jstree -->
