@@ -305,9 +305,7 @@ function closeDialog() {
 }
 
 function resetDialog() {
-	var modalHeader = document.getElementById("dialog-header");
-	modalHeader.innerHTML = "";
-	var modalContent = document.getElementById("dialog-content");
-	modalContent.innerHTML = "";
+	document.getElementById("dialog-header").innerHTML = "";
+	document.getElementById("dialog-content").innerHTML = "";
 	document.getElementById("dialog-extension-button").style.visibility = "hidden";
 }

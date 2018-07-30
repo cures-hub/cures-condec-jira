@@ -59,17 +59,19 @@
 		<dependency>com.atlassian.auiplugin:aui-lozenge</dependency>
 		<dependency>com.atlassian.auiplugin:dialog2</dependency>
 		<dependency>com.atlassian.auiplugin:aui-select2</dependency>
+		<dependency>com.atlassian.auiplugin:aui-experimental-iconfont</dependency>
 	</web-resource>
 
-	<web-resource key="classifier-resources" name="Classifiers for Decision Extraction">
+	<web-resource key="classifier-resources" name="Resources for Decision Extraction">
 		<description>
-			Provides the model files for Weka and Meka classifiers.
+			Provides the resources needed for extraction of decision knowledge from issue
+			comments such as the model files for Weka and Meka classifiers.
 		</description>
 		<context>atl.general</context>
 		<context>jira.view.issue</context>
 		<resource type="download" name="fc.model" location="/classifier/fc.model" />
 		<resource type="download" name="br.model" location="/classifier/br.model" />
-		<resource type="download" name="decXtract.js" location="/js/decXtract.js" />
+		<resource type="download" name="view.tab.panel.js" location="/js/view.tab.panel.js" />
 	</web-resource>
 
 	<web-resource key="rest-client-resources" name="ConDec Rest Client Resources">
