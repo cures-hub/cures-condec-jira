@@ -26,7 +26,7 @@ import com.atlassian.jira.project.Project;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-import static com.atlassian.jira.avatar.AvatarImpl.createCustomAvatar;
+import com.atlassian.jira.avatar.AvatarImpl;
 
 /**
  * Handles plug-in initialization
@@ -68,7 +68,8 @@ public class PluginInitializer implements InitializingBean {
 		return existingIssueTypeNames;
 	}
 
-	// TODO Replace createIssueType with validateCreateIssueType
+	// TODO Replace deprecated createIssueType method
+	@SuppressWarnings("deprecation")
 	public static void createIssueType(String issueTypeName) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
 		Collection<IssueType> types = issueTypeManager.getIssueTypes();
@@ -79,13 +80,19 @@ public class PluginInitializer implements InitializingBean {
 				}
 			}
 		}
-		String issueImageString = issueTypeName.toLowerCase()+ ".png";
-		Avatar tmpAvatar = createCustomAvatar(ComponentGetter.getUrlOfImageFolder() + "/" + issueImageString,"image/png","1",IconType.ISSUE_TYPE_ICON_TYPE);
-		Avatar issueAvatar = ComponentAccessor.getAvatarManager().create(tmpAvatar);
-		issueTypeManager.createIssueType(issueTypeName, issueTypeName + " (decision knowledge element)",issueAvatar.getId() );
+		String iconUrl = getIconUrl(issueTypeName);
+		issueTypeManager.createIssueType(issueTypeName, issueTypeName + " (decision knowledge element)", iconUrl);
 
-		/*String iconUrl = getIconUrl(issueTypeName);
-		issueTypeManager.createIssueType(issueTypeName, issueTypeName + " (decision knowledge element)", iconUrl);*/
+		// Avatar tmpAvatar = AvatarImpl.createSystemAvatar(iconUrl, "image/png",
+		// IconType.ISSUE_TYPE_ICON_TYPE);
+		// Avatar issueAvatar = ComponentAccessor.getAvatarManager().create(tmpAvatar);
+		// issueTypeManager.createIssueType(issueTypeName, issueTypeName + " (decision
+		// knowledge element)",
+		// issueAvatar.getId());
+	}
+
+	public static String getIconUrl(String issueTypeName) {
+		return ComponentGetter.getUrlOfImageFolder() + issueTypeName.toLowerCase() + ".png";
 	}
 
 	public static void addIssueTypeToScheme(String issueTypeName, String projectKey) {
@@ -129,7 +136,7 @@ public class PluginInitializer implements InitializingBean {
 				final OptionSet options = optionSetManager.getOptionsForConfig(configScheme.getOneAndOnlyConfig());
 				Collection<String> optionIds = options.getOptionIds();
 				for (String optionId : optionIds) {
-					if(optionId == issueType.getId()) {
+					if (optionId == issueType.getId()) {
 						optionIds.remove(optionId);
 					}
 				}
@@ -137,10 +144,6 @@ public class PluginInitializer implements InitializingBean {
 				return;
 			}
 		}
-	}
-
-	public static String getIconUrl(String issueTypeName) {
-		return ComponentGetter.getUrlOfImageFolder() + issueTypeName.toLowerCase() + ".png";
 	}
 
 	public void createDecisionKnowledgeLinkTypes() {
