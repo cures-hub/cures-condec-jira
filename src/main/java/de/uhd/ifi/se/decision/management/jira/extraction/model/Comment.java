@@ -3,17 +3,18 @@ package de.uhd.ifi.se.decision.management.jira.extraction.model;
 import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.persistance.ActiveObjectsManager;
 
 public class Comment {
 
-	private ArrayList<Sentence> sentences;
+	private List<Sentence> sentences;
 
 	private String body = "";
 
-	private long Id;
+	private long id;
 
 	private String authorFullName;
 
@@ -34,7 +35,7 @@ public class Comment {
 		this.body = comment.getBody();
 		this.created = comment.getCreated();
 		this.authorFullName = comment.getAuthorFullName();
-		this.Id = comment.getId();
+		this.id = comment.getId();
 		this.authorId = comment.getAuthorApplicationUser().getId();
 		splitCommentIntoSentences();
 	}
@@ -60,12 +61,12 @@ public class Comment {
 		int start = iterator.first();
 		for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
 			//Sync sentence objects with AO database
-			aoId = ActiveObjectsManager.addElement(this.Id, false, end, start, this.authorId);
+			aoId = ActiveObjectsManager.addElement(this.id, false, end, start, this.authorId);
 			this.sentences.add(new Sentence(this.body.substring(start, end),aoId));
 		}
 	}
 
-	public ArrayList<Sentence> getSentences() {
+	public List<Sentence> getSentences() {
 		return sentences;
 	}
 
@@ -105,11 +106,11 @@ public class Comment {
 	}
 
 	public long getId() {
-		return Id;
+		return id;
 	}
 
 	public void setId(long id) {
-		Id = id;
+		this.id = id;
 	}
 
 	public String getAuthorFullName() {
