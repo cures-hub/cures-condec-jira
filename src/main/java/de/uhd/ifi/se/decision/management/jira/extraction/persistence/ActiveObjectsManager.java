@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.persistance;
+package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
 
 import java.util.ArrayList;
 import java.util.List;

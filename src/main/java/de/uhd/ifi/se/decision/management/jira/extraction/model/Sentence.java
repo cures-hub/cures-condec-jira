@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.persistance.ActiveObjectsManager;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 
 public class Sentence {
 
