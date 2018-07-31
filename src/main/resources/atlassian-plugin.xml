@@ -67,10 +67,12 @@
 			Provides the resources needed for extraction of decision knowledge from issue
 			comments such as the model files for Weka and Meka classifiers.
 		</description>
-		<context>atl.general</context>
 		<context>jira.view.issue</context>
+		<context>atl.general</context>
 		<resource type="download" name="fc.model" location="/classifier/fc.model" />
 		<resource type="download" name="br.model" location="/classifier/br.model" />
+		<resource type="download" name="view.context.menu.js" location="/js/view.context.menu.js" />
+		<resource type="download" name="view.tree.viewer.js" location="/js/view.tree.viewer.js" />
 		<resource type="download" name="view.tab.panel.js" location="/js/view.tab.panel.js" />
 	</web-resource>
 
@@ -110,7 +112,6 @@
 		<resource type="download" name="jstree.js" location="/js/jstree/jstree.js" />
 		<!-- ConDec java script files -->
 		<resource type="download" name="view.decision.knowledge.page.js" location="/js/view.decision.knowledge.page.js" />
-		<resource type="download" name="view.accordion.editor.js" location="/js/view.accordion.editor.js" />
 		<resource type="download" name="view.tree.viewer.js" location="/js/view.tree.viewer.js" />
 		<resource type="download" name="view.context.menu.js" location="/js/view.context.menu.js" />
 	</web-resource>

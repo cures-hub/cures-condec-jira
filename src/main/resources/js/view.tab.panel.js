@@ -18,16 +18,13 @@ function dosth(a) {
 	}
 }
 
-function initTabPanel() {
-	var exportButton = document.getElementById("export-button");
+function callDialog() {
+	var submitButton = document.getElementById("dialog-submit-button");
+	submitButton.textContent = "Save";
+	submitButton.onclick = function() {
+		closeDialog();
+	};
 
-	exportButton.addEventListener("click", function() {
-//		var submitButton = document.getElementById("dialog-submit-button");
-//		submitButton.textContent = "Save";
-//
-//		var extensionButton = document.getElementById("dialog-extension-button");
-//		extensionButton.style.visibility = "hidden";
-
-		AJS.dialog2("#dialog").show();
-	});
+	setUpDialog();
+	setHeaderText("Edit and Link Decision Knowledge in Issue Comments");
 }
