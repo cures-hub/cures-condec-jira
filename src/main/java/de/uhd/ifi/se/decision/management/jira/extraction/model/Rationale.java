@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,6 +110,7 @@ public enum Rationale {
 
 	public static String getClosingTag(List<Rationale> classification) {
 		String tags = "";
+		Collections.reverse(classification);//reverse list, so last opened tag will be first closed
 		for (Rationale label : classification) {
 			if(label == isIssue) {
 				tags += "</span>"+"[/isIssue]";

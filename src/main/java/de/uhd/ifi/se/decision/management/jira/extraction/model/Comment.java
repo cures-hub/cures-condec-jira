@@ -14,7 +14,7 @@ public class Comment {
 
 	private String body = "";
 
-	private long id;
+	private long jiraCommentId;
 
 	private String authorFullName;
 
@@ -35,7 +35,7 @@ public class Comment {
 		this.body = comment.getBody();
 		this.created = comment.getCreated();
 		this.authorFullName = comment.getAuthorFullName();
-		this.id = comment.getId();
+		this.jiraCommentId = comment.getId();
 		this.authorId = comment.getAuthorApplicationUser().getId();
 		splitCommentIntoSentences();
 	}
@@ -61,7 +61,7 @@ public class Comment {
 		int start = iterator.first();
 		for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
 			//Sync sentence objects with AO database
-			aoId = ActiveObjectsManager.addElement(this.id, false, end, start, this.authorId);
+			aoId = ActiveObjectsManager.addElement(this.jiraCommentId, false, end, start, this.authorId);
 			this.sentences.add(new Sentence(this.body.substring(start, end),aoId));
 		}
 	}
@@ -106,11 +106,11 @@ public class Comment {
 	}
 
 	public long getId() {
-		return id;
+		return jiraCommentId;
 	}
 
 	public void setId(long id) {
-		this.id = id;
+		this.jiraCommentId = id;
 	}
 
 	public String getAuthorFullName() {
