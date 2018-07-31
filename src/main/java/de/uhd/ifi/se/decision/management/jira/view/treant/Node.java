@@ -42,7 +42,7 @@ public class Node {
 	private List<Node> children;
 
 	@XmlElement
-	private Map<String,Boolean> collapsed;
+	private Map<String, Boolean> collapsed;
 
 	public Node() {
 		this.connectors = ImmutableMap.of("style", ImmutableMap.of("stroke", "#000000"));
@@ -54,7 +54,7 @@ public class Node {
 		// this.connectors.put("style", connectorStyle);
 	}
 
-	public Node(DecisionKnowledgeElement decisionKnowledgeElement) {
+	public Node(DecisionKnowledgeElement decisionKnowledgeElement, boolean isCollapsed) {
 		this();
 		KnowledgeType type = decisionKnowledgeElement.getType();
 		if (type == KnowledgeType.OTHER) {
@@ -72,10 +72,13 @@ public class Node {
 			this.link = ImmutableMap.of("href", applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/"
 					+ decisionKnowledgeElement.getKey(), "target", "_blank");
 		}
+		if (isCollapsed) {
+			this.collapsed = ImmutableMap.of("collapsed", isCollapsed);
+		}
 	}
 
-	public Node(DecisionKnowledgeElement decisionKnowledgeElement, Link link) {
-		this(decisionKnowledgeElement);
+	public Node(DecisionKnowledgeElement decisionKnowledgeElement, Link link, boolean isCollapsed) {
+		this(decisionKnowledgeElement, isCollapsed);
 		switch (link.getType()) {
 		case "support":
 			if (decisionKnowledgeElement.getId() == link.getSourceElement().getId()) {
@@ -95,16 +98,6 @@ public class Node {
 		default:
 			break;
 		}
-	}
-
-	public Node(DecisionKnowledgeElement decisionKnowledgeElement, Boolean collapsed){
-		this(decisionKnowledgeElement);
-		this.collapsed = ImmutableMap.of("collapsed", collapsed);
-	}
-
-	public Node(DecisionKnowledgeElement decisionKnowledgeElement, Link link, Boolean collapsed){
-		this(decisionKnowledgeElement, link);
-		this.collapsed = ImmutableMap.of("collapsed", collapsed);
 	}
 
 	public Map<String, String> getNodeContent() {

@@ -27,6 +27,7 @@ public class TestNode {
 	private long htmlId;
 	private String innerHTML;
 	private List<Node> children;
+	private boolean isCollapsed;
 
 	private Node node;
 
@@ -56,11 +57,13 @@ public class TestNode {
 		element.setDescription("Test");
 		element.setProject("Test");
 		element.setSummary("TESTfwf");
+
+		isCollapsed = false;
 	}
 
 	@Test
 	public void testConstructor() {
-		this.node = new Node(element);
+		this.node = new Node(element, isCollapsed);
 		assertNotNull(node);
 	}
 
@@ -68,7 +71,7 @@ public class TestNode {
 	public void testElementLinkEmptyConstructor() {
 		Link link = new LinkImpl();
 		link.setType("Test");
-		Node newNode = new Node(element, link);
+		Node newNode = new Node(element, link, isCollapsed);
 		assertNotNull(newNode);
 	}
 
@@ -76,7 +79,7 @@ public class TestNode {
 	public void testElementLinkSupportConstructor() {
 		Link link = new LinkImpl();
 		link.setType("support");
-		Node newNode = new Node(element, link);
+		Node newNode = new Node(element, link, isCollapsed);
 		assertNotNull(newNode);
 	}
 
@@ -84,7 +87,7 @@ public class TestNode {
 	public void testElementLinkAttackConstructor() {
 		Link link = new LinkImpl();
 		link.setType("attack");
-		Node newNode = new Node(element, link);
+		Node newNode = new Node(element, link, isCollapsed);
 		assertNotNull(newNode);
 	}
 

@@ -35,53 +35,37 @@ public class Treant {
 		this.graph = new GraphImpl(projectKey, elementKey);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
 		this.setChart(new Chart());
-		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 0));
+		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
 	}
 
-	public Node createNodeStructure(DecisionKnowledgeElement decisionKnowledgeElement, Link link, int depth,
-			int currentDepth) {
-		if (decisionKnowledgeElement == null || decisionKnowledgeElement.getProject().getProjectKey() == null) {
+	public Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth) {
+		if (element == null || element.getProject().getProjectKey() == null) {
 			return new Node();
 		}
 		if (graph == null) {
-			graph = new GraphImpl(decisionKnowledgeElement);
+			graph = new GraphImpl(element);
 		}
-		Node node = null;
-		if (currentDepth +1 < depth) {
-			if (link != null) {
-				node = new Node(decisionKnowledgeElement, link);
-			} else {
-				node = new Node(decisionKnowledgeElement);
-			}
-			List<Node> nodes = new ArrayList<Node>();
-			Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph
-					.getLinkedElementsAndLinks(decisionKnowledgeElement);
 
-			for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-				nodes.add(createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth, currentDepth + 1));
-			}
-			node.setChildren(nodes);
-		} else {
-			List<Node> nodes = new ArrayList<Node>();
-			Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph
-					.getLinkedElementsAndLinks(decisionKnowledgeElement);
-			if(childrenAndLinks.size()==0){
-				if (link != null) {
-					return new Node(decisionKnowledgeElement, link);
-				} else {
-					return new Node(decisionKnowledgeElement);
-				}
-			}
-			if (link != null) {
-				node = new Node(decisionKnowledgeElement, link, true);
-			} else {
-				node = new Node(decisionKnowledgeElement, true);
-			}
-			for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-				nodes.add(createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth, currentDepth + 1));
-			}
-			node.setChildren(nodes);
+		List<Node> nodes = new ArrayList<Node>();
+		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getLinkedElementsAndLinks(element);
+
+		boolean isCollapsed = false;
+		if (currentDepth == depth && childrenAndLinks.size() != 0) {
+			isCollapsed = true;
 		}
+
+		Node node;
+		if (link != null) {
+			node = new Node(element, link, isCollapsed);
+		} else {
+			node = new Node(element, isCollapsed);
+		}
+
+		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
+			nodes.add(createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth, currentDepth + 1));
+		}
+		node.setChildren(nodes);
+
 		return node;
 	}
 
