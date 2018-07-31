@@ -21,12 +21,18 @@ public class Sentence {
 
 	private int endSubstringCount;
 
+	private boolean isTaggedManually;
+
+	private boolean isTaggedFineGrained;
+
 	public Sentence(String body, long aoId) {
 		this.setBody(body);
 		this.classification = new ArrayList<Rationale>();
 		this.setActiveObjectId(aoId);
 		this.isTagged(ActiveObjectsManager.checkCommentExistingInAO(aoId,true));
 		this.setRelevant(ActiveObjectsManager.getElementFromAO(aoId).getIsRelevant());
+		this.setTaggedFineGrained(ActiveObjectsManager.getElementFromAO(aoId).getIsTaggedFineGrained());
+		this.setTaggedManually(ActiveObjectsManager.getElementFromAO(aoId).getIsTaggedManually());
 	}
 
 	public Sentence(String body, boolean isRelevant) {
@@ -75,12 +81,16 @@ public class Sentence {
 		this.classification = list;
 	}
 
-	public void classificationToString() {
+	public void addClassification(Rationale element) {
+		this.classification.add(element);
+	}
+
+	public String classificationToString() {
 		String classI = "";
 		for (Rationale classi : classification) {
 			classI += Rationale.getString(classi);
 		}
-		//System.out.println(classI);
+		return classI;
 	}
 
 	public long getActiveObjectId() {
@@ -113,5 +123,21 @@ public class Sentence {
 
 	public void setEndSubstringCount(int endSubstringCount) {
 		this.endSubstringCount = endSubstringCount;
+	}
+
+	public boolean isTaggedManually() {
+		return isTaggedManually;
+	}
+
+	public void setTaggedManually(boolean isTaggedManually) {
+		this.isTaggedManually = isTaggedManually;
+	}
+
+	public boolean isTaggedFineGrained() {
+		return isTaggedFineGrained;
+	}
+
+	public void setTaggedFineGrained(boolean isTaggedFineGrained) {
+		this.isTaggedFineGrained = isTaggedFineGrained;
 	}
 }

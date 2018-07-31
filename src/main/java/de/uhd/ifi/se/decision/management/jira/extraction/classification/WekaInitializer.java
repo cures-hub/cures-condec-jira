@@ -21,7 +21,7 @@ public class WekaInitializer {
 
 	private static FilteredClassifier fc;
 
-	public static List<Comment> predict(List<Comment> commentsList) throws Exception {
+	public static List<Comment> classifySentencesBinary(List<Comment> commentsList) throws Exception {
 		init();
 
 		List<Double> areRelevant = new ArrayList<Double>();

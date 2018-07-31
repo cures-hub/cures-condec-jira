@@ -1,10 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.persistance;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.sal.api.transaction.TransactionCallback;
-import com.sun.org.apache.bcel.internal.generic.DADD;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Rationale;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 
 public class ActiveObjectsManager {
 
@@ -110,6 +113,47 @@ public class ActiveObjectsManager {
 		return false;
 	}
 
+
+	public static boolean updateSentenceClassifications(Sentence sentence) {
+		init();
+		DecisionKnowledgeInCommentEntity databaseEntry = ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+			@Override
+			public DecisionKnowledgeInCommentEntity doInTransaction() {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class)) {
+					if (databaseEntry.getId() == sentence.getActiveObjectId()) {
+						for(Rationale rationale: sentence.getClassification()) {
+							switch(Rationale.getString(rationale)) {
+							case "isIssue":
+								databaseEntry.setIsIssue(true);
+								break;
+							case "isDecision":
+								databaseEntry.setIsDecision(true);
+								break;
+							case "isAlternative":
+								databaseEntry.setIsAlternative(true);
+								break;
+							case "isPro":
+								databaseEntry.setIsPro(true);
+								break;
+							case "isCon":
+								databaseEntry.setIsCon(true);
+								break;
+							}
+						}
+						databaseEntry.setIsTaggedFineGrained(true);
+						databaseEntry.save();
+						return databaseEntry;
+					}
+				}
+				return null;
+			}
+		});
+		if (databaseEntry == null) {
+			return false;
+		}
+		return true;
+	}
+
 	public static boolean updateRelevance(long activeObjectId, boolean isRelevant) {
 		init();
 		DecisionKnowledgeInCommentEntity databaseEntry = ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
@@ -131,6 +175,39 @@ public class ActiveObjectsManager {
 			return false;
 		}
 		return true;
+	}
+
+	public static List<Rationale> getRationaleType (long activeObjectId){
+		init();
+		DecisionKnowledgeInCommentEntity databaseEntry = ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+			@Override
+			public DecisionKnowledgeInCommentEntity doInTransaction() {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class)) {
+					if (databaseEntry.getId() == activeObjectId) {
+						return databaseEntry;
+					}
+				}
+				return null;
+			}
+		});
+		List<Rationale> rationale = new ArrayList<Rationale>();
+		if(databaseEntry.getIsIssue()) {
+			rationale.add(Rationale.isIssue);
+		}
+		if(databaseEntry.getIsAlternative()) {
+			rationale.add(Rationale.isAlternative);
+		}
+		if(databaseEntry.getIsDecision()) {
+			rationale.add(Rationale.isDecision);
+		}
+		if(databaseEntry.getIsPro()) {
+			rationale.add(Rationale.isPro);
+		}
+		if(databaseEntry.getIsCon()) {
+			rationale.add(Rationale.isCon);
+		}
+
+		return rationale;
 	}
 
 

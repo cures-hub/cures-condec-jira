@@ -9,6 +9,8 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Rationale;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistance.ActiveObjectsManager;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistance.DecisionKnowledgeInCommentEntity;
 import meka.classifiers.multilabel.LC;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -43,7 +45,7 @@ public class MekaInitializer {
 
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
-				if (sentence.isRelevant()) {
+				if (sentence.isRelevant() && !sentence.isTaggedFineGrained()) {
 					Instance newInstance = new DenseInstance(6);
 					// The value is meka internal stored in a array similar structure, so if you
 					// read the value here, you likely get an index
@@ -78,9 +80,13 @@ public class MekaInitializer {
 		int i = 0;
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
-				if (sentence.isRelevant()) {
+				if (sentence.isRelevant() && !sentence.isTaggedFineGrained()) {
 					sentence.setClassification(Rationale.transferRationaleList(results.get(i)));
+					ActiveObjectsManager.updateSentenceClassifications(sentence);
+					sentence.setTaggedFineGrained(true);
 					i++;
+				}else if(sentence.isRelevant() && sentence.isTaggedFineGrained()) {
+					sentence.setClassification(ActiveObjectsManager.getRationaleType(sentence.getActiveObjectId()));
 				}
 			}
 		}

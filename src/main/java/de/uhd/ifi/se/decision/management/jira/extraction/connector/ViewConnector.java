@@ -37,7 +37,7 @@ public class ViewConnector {
 
 	public void startClassification() {
 		try {
-			this.commentsList = WekaInitializer.predict(commentsList);
+			this.commentsList = WekaInitializer.classifySentencesBinary(commentsList);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

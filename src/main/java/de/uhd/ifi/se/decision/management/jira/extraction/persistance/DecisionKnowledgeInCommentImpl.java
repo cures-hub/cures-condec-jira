@@ -34,7 +34,9 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 
 	private int endSubstringCount;
 
+	private boolean isTaggedManually;
 
+	private boolean isTaggedFineGrained;
 
 	public DecisionKnowledgeInCommentImpl() {
 
@@ -233,6 +235,36 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 	@Override
 	public void setIsCon(boolean isCon) {
 		this.isCon = isCon;
+	}
+
+
+
+	@Override
+	@XmlElement(name = "isaggedManually")
+	public boolean getIsTaggedManually() {
+		return isTaggedManually;
+	}
+
+
+
+	@Override
+	public void setIsTaggedMannually(boolean isTaggedManually) {
+		this.isTaggedManually= isTaggedManually;
+	}
+
+
+
+	@Override
+	@XmlElement(name = "isTaggedFineGrained")
+	public boolean getIsTaggedFineGrained() {
+		return isTaggedFineGrained;
+	}
+
+
+
+	@Override
+	public void setIsTaggedFineGrained(boolean isTagged) {
+		this.isTaggedFineGrained = isTagged;
 	}
 
 

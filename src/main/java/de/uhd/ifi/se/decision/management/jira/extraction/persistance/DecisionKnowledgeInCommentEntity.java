@@ -43,6 +43,14 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Integer> {
 
 	void setIsTagged(boolean isTagged);
 
+	boolean getIsTaggedManually();
+
+	void setIsTaggedMannually(boolean isTaggedManually);
+
+	boolean getIsTaggedFineGrained();
+
+	void setIsTaggedFineGrained(boolean isTagged);
+
 	long getCommentId();
 
     void setCommentId(long id);
