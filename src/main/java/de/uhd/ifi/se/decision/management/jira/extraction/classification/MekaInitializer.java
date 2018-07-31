@@ -10,7 +10,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Rationale;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import meka.classifiers.multilabel.LC;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
