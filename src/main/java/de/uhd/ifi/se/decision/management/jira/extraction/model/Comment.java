@@ -90,7 +90,7 @@ public class Comment {
 				result = result   + Rationale.getOpeningTag(sentence.getClassification())+ Rationale.getOpeningTag("isRelevant")+ sentence.getBody()
 				+ Rationale.getClosingTag("isRelevant")+ Rationale.getClosingTag(sentence.getClassification()) ;
 			} else {
-				result = result+"";// + sentence.getBody(); if commented, irrelevant sentences will not be shown
+				result = result+ sentence.getBody();// + sentence.getBody(); if commented, irrelevant sentences will not be shown
 			}
 		}
 		return result;

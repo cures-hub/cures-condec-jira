@@ -3,19 +3,12 @@ package de.uhd.ifi.se.decision.management.jira.extraction.connector;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.CommentManager;
-import com.atlassian.sal.api.transaction.TransactionCallback;
-
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.classification.MekaInitializer;
 import de.uhd.ifi.se.decision.management.jira.extraction.classification.WekaInitializer;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistance.ActiveObjectsManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistance.DecisionKnowledgeInCommentEntity;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistance.DecisionKnowledgeInCommentImpl;
 
 public class ViewConnector {
 
