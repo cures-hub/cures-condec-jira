@@ -41,6 +41,9 @@ public class Node {
 	@XmlElement
 	private List<Node> children;
 
+	@XmlElement
+	private Map<String,Boolean> collapsed;
+
 	public Node() {
 		this.connectors = ImmutableMap.of("style", ImmutableMap.of("stroke", "#000000"));
 		// this.connectors = new ConcurrentHashMap<String, Map<String, String>>();
@@ -92,6 +95,16 @@ public class Node {
 		default:
 			break;
 		}
+	}
+
+	public Node(DecisionKnowledgeElement decisionKnowledgeElement, Boolean collapsed){
+		this(decisionKnowledgeElement);
+		this.collapsed = ImmutableMap.of("collapsed", collapsed);
+	}
+
+	public Node(DecisionKnowledgeElement decisionKnowledgeElement, Link link, Boolean collapsed){
+		this(decisionKnowledgeElement, link);
+		this.collapsed = ImmutableMap.of("collapsed", collapsed);
 	}
 
 	public Map<String, String> getNodeContent() {
@@ -148,5 +161,13 @@ public class Node {
 
 	public void setConnectors(Map<String, Map<String, String>> connectors) {
 		this.connectors = connectors;
+	}
+
+	public Map<String, Boolean> getCollapsed() {
+		return collapsed;
+	}
+
+	public void setCollapsed(Map<String, Boolean> collapsed) {
+		this.collapsed = collapsed;
 	}
 }

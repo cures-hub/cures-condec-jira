@@ -46,19 +46,37 @@ public class Treant {
 		if (graph == null) {
 			graph = new GraphImpl(decisionKnowledgeElement);
 		}
-
-		Node node;
-		if (link != null) {
-			node = new Node(decisionKnowledgeElement, link);
-		} else {
-			node = new Node(decisionKnowledgeElement);
-		}
-
-		if (currentDepth + 1 < depth) {
+		Node node = null;
+		if (currentDepth +1 < depth) {
+			if (link != null) {
+				node = new Node(decisionKnowledgeElement, link);
+			} else {
+				node = new Node(decisionKnowledgeElement);
+			}
 			List<Node> nodes = new ArrayList<Node>();
 			Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph
 					.getLinkedElementsAndLinks(decisionKnowledgeElement);
 
+			for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
+				nodes.add(createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth, currentDepth + 1));
+			}
+			node.setChildren(nodes);
+		} else {
+			List<Node> nodes = new ArrayList<Node>();
+			Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph
+					.getLinkedElementsAndLinks(decisionKnowledgeElement);
+			if(childrenAndLinks.size()==0){
+				if (link != null) {
+					return new Node(decisionKnowledgeElement, link);
+				} else {
+					return new Node(decisionKnowledgeElement);
+				}
+			}
+			if (link != null) {
+				node = new Node(decisionKnowledgeElement, link, true);
+			} else {
+				node = new Node(decisionKnowledgeElement, true);
+			}
 			for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
 				nodes.add(createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth, currentDepth + 1));
 			}
