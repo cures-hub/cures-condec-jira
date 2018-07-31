@@ -47,5 +47,4 @@ $comment in $comments )
 	</div>
 </div>
 #end
-</body>
 #include("templates/dialog.vm")

@@ -42,11 +42,10 @@ public class Treant {
 		if (element == null || element.getProject().getProjectKey() == null) {
 			return new Node();
 		}
+
 		if (graph == null) {
 			graph = new GraphImpl(element);
 		}
-
-		List<Node> nodes = new ArrayList<Node>();
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getLinkedElementsAndLinks(element);
 
 		boolean isCollapsed = false;
@@ -61,6 +60,7 @@ public class Treant {
 			node = new Node(element, isCollapsed);
 		}
 
+		List<Node> nodes = new ArrayList<Node>();
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
 			nodes.add(createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth, currentDepth + 1));
 		}
