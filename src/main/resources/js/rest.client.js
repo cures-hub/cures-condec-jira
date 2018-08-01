@@ -347,6 +347,17 @@ function getDefaultKnowledgeTypes(projectKey) {
 	}
 }
 
+function setGitAddress(projectKey, gitAddress) {
+    postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setGitAddress.json?projectKey=" + projectKey
+    + "&gitAddress=" + gitAddress, function(error, response) {
+        if (error === null) {
+            showFlag("success", "The setting  of the Git Adress  " + gitAddress + " for this project has been changed.");
+        } else {
+            showFlag("error", "The setting  of the Git Adress  " + gitAddress + " for this project could not be changed.");
+        }
+    });
+}
+
 function getCommits(elementKey, callback) {
 	getJSON(AJS.contextPath() + "/rest/gitplugin/latest/issues/" + elementKey + "/commits",
 			function(error, commitData) {

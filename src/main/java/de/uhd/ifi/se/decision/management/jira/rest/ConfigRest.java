@@ -14,6 +14,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.management.jira.config.GitConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -259,6 +260,30 @@ public class ConfigRest {
 			defaultKnowledgeTypes.add(knowledgeType.toString());
 		}
 		return Response.ok(defaultKnowledgeTypes).build();
+	}
+
+	@Path("/setGitConnector")
+	@POST
+	public Response setGitConnector(@Context HttpServletRequest request,
+			@QueryParam("projectKey") final String projectKey,
+			@QueryParam("gitAddress") final String gitAddress){
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if (gitAddress == null ) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "gitAddress = null"))
+					.build();
+		}
+		try {
+			ConfigPersistence.setGitAddress(projectKey, gitAddress);
+			GitConfig gitConfig = new GitConfig(gitAddress);
+			//TODO
+			return Response.ok(Status.ACCEPTED).build();
+		}catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
 	}
 
 	private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {

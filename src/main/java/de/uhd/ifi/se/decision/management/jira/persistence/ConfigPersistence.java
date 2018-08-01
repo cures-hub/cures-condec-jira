@@ -128,4 +128,13 @@ public class ConfigPersistence {
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 		settings.put(pluginStorageKey + "." + knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
+
+	//TODO Testing
+	public static void setGitAddress(String projectKey, String gitAddress){
+		if(projectKey == null || gitAddress == null){
+			return;
+		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey +".gitAddress", gitAddress);
+	}
 }

@@ -77,6 +77,19 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			<div class="description">Enables or disables whether decision
 				knowledge is extracted from Git for this project.</div>
 		</div>
+        <div class="field-group">
+            <label for="git-address">Git Address</label>
+            <input id="git-address" type="text" class="text"/>
+			<button id="gitSubmitButton"class="aui-button aui-button-primary">Submit</button>
+            <div class="description">Git Address to Extract the decisions from</div>
+			<script>
+				var gitSubmitButton = document.getElementById('gitSubmitButton');
+				gitSubmitButton.onclick = function() {
+				    var gitAdressInput = document.getElementById('git-address');
+				    setGitAddress(getProjectKey(),gitAdressInput.value);
+				};
+			</script>
+        </div>
 		<div class="field-group">
 			<label for="isKnowledgeExtractedFromIssues-toggle">Extract from
 				Issue Comments?</label>
