@@ -15,6 +15,10 @@ import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.tokenizers.NGramTokenizer;
+import weka.core.tokenizers.Tokenizer;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.StringToWordVector;
 
 public class MekaInitializer {
 
@@ -55,7 +59,23 @@ public class MekaInitializer {
 		}
 		return data;
 	}
+	private static Tokenizer getTokenizer() throws Exception {
+		Tokenizer t = new NGramTokenizer();
+		String[] options = weka.core.Utils.splitOptions(
+				"weka.core.tokenizers.NGramTokenizer -max 3 -min 1 -delimiters \" \\r\\n\\t.,;:\\'\\\"()?!\"");
+		t.setOptions(options);
+		return t;
+	}
 
+	private static StringToWordVector getSTWV() throws Exception {
+		StringToWordVector stwv = new StringToWordVector();
+		stwv.setLowerCaseTokens(true);
+		stwv.setIDFTransform(true);
+		stwv.setTFTransform(true);
+		stwv.setTokenizer(getTokenizer());
+		stwv.setWordsToKeep(1000000);
+		return stwv;
+	}
 	public static void classifySentencesFineGrained(List<Comment> commentsList) throws Exception {
 		Instances structure = buildDataset(commentsList);
 
@@ -66,6 +86,11 @@ public class MekaInitializer {
 		String path = ComponentGetter.getUrlOfClassifierFolder() + "br.model";
 		InputStream is = new URL(path).openStream();
 		LC binaryRelevance = (LC) weka.core.SerializationHelper.read(is);
+
+		Filter stwv = getSTWV();
+		stwv.setInputFormat(structure);
+		structure = Filter.useFilter(structure, stwv);
+		structure.setClassIndex(5);
 
 		// Classify string instances
 		List<double[]> results = new ArrayList<double[]>();
