@@ -18,6 +18,7 @@ function buildTreeViewer() {
 		});
 	});
 	addDragAndDropSupportForTreeViewer();
+	changeHoverStyle();
 }
 
 function resetTreeViewer() {
@@ -64,4 +65,8 @@ function addDragAndDropSupportForTreeViewer() {
 			});
 		}
 	});
+}
+
+function changeHoverStyle() {
+    AJS.$("#simple-tooltip").tooltip();
 }

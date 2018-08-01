@@ -1,9 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -28,6 +31,9 @@ public class Data {
 	@XmlElement
 	private String icon;
 
+	@XmlElement
+	private Map a_attr;
+
 	public Data() {
 	}
 
@@ -36,6 +42,11 @@ public class Data {
 		this.text = decisionKnowledgeElement.getSummary();
 		this.icon = ComponentGetter.getUrlOfImageFolder() + decisionKnowledgeElement.getType().toString() + ".png";
 		this.nodeInfo = decisionKnowledgeElement;
+		if(decisionKnowledgeElement.getDescription()!=null && !decisionKnowledgeElement.getDescription().equals("")){
+		    this.a_attr = new HashMap();
+            this.a_attr.put("title", decisionKnowledgeElement.getDescription());
+			this.a_attr.put("id", "simple-tooltip");
+		}
 	}
 
 	public Data(DecisionKnowledgeElement decisionKnowledgeElement, Link link) {
