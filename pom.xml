@@ -195,14 +195,20 @@
 		</dependency>
 		<!-- DecXtract -->
 		<dependency>
-		    <groupId>nz.ac.waikato.cms.weka</groupId>
-		    <artifactId>weka-stable</artifactId>
-		    <version>3.8.0</version>
+			<groupId>nz.ac.waikato.cms.weka</groupId>
+			<artifactId>weka-stable</artifactId>
+			<version>3.8.0</version>
 		</dependency>
-		 <dependency>
-		    <groupId>net.sf.meka</groupId><!-- https://mvnrepository.com/artifact/net.sf.meka/meka -->
-		    <artifactId>meka</artifactId>
-		    <version>1.9.2</version>
+		<dependency>
+			<groupId>net.sf.meka</groupId><!-- https://mvnrepository.com/artifact/net.sf.meka/meka -->
+			<artifactId>meka</artifactId>
+			<version>1.9.2</version>
+		</dependency>
+		<!-- Git -->
+		<dependency>
+			<groupId>org.eclipse.jgit</groupId>
+			<artifactId>org.eclipse.jgit</artifactId>
+			<version>5.0.1.201806211838-r</version>
 		</dependency>
 	</dependencies>
 	<build>
