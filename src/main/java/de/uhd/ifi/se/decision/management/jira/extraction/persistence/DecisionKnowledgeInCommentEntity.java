@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
 
-import net.java.ao.OneToMany;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
 import net.java.ao.schema.PrimaryKey;

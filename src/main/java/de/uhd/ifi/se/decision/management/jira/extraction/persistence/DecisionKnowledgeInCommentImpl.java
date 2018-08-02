@@ -4,7 +4,6 @@ import java.beans.PropertyChangeListener;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import electric.soap.security.signature.xml.IReferenceProcessor;
 import net.java.ao.EntityManager;
 import net.java.ao.RawEntity;
 

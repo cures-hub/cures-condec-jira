@@ -3,10 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-
-import com.atlassian.jira.web.component.CreateIssueWebComponent;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
@@ -26,10 +23,7 @@ public class WekaInitializer {
 
 		List<Double> areRelevant = new ArrayList<Double>();
 
-		Instances data;
-
-
-		data = createDataset(commentsList);
+		Instances data = createDataset(commentsList);
 		if(!data.isEmpty()) {
 			try {
 				for (int i = 0; i < data.numInstances(); i++) {
@@ -46,6 +40,7 @@ public class WekaInitializer {
 				for (Sentence sentence : comment.getSentences()) {
 					if (!sentence.isTagged()) {
 						sentence.setRelevant(areRelevant.get(i));
+						ActiveObjectsManager.updateRelevance(sentence.getActiveObjectId(),sentence.isRelevant());
 						sentence.isTagged(true);
 						i++;
 					}

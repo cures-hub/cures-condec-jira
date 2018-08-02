@@ -70,7 +70,6 @@ public class Sentence {
 		} else {
 			setRelevant(false);
 		}
-		ActiveObjectsManager.updateRelevance(this.getActiveObjectId(),isRelevant);
 	}
 
 	public List<Rationale> getClassification() {
