@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
@@ -95,9 +96,9 @@ public class MekaInitializer {
 		// Classify string instances
 		List<double[]> results = new ArrayList<double[]>();
 		for (int n = 0; n < structure.size(); n++) {
-			Instance test = structure.get(n);
-			double[] res = binaryRelevance.distributionForInstance(test);
-			results.add(res);
+			Instance predictionInstance = structure.get(n);
+			double[] predictionResult = binaryRelevance.distributionForInstance(predictionInstance);
+			results.add(predictionResult);
 		}
 
 		// Write classification results back to sentence objects
