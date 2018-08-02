@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
@@ -23,7 +22,7 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
 
 public class MekaInitializer {
 
-	private static Attribute getAttribute(String name, int index) {
+	private static Attribute createAttribute(String name, int index) {
 		ArrayList<String> rationaleAttribute = new ArrayList<String>();
 		rationaleAttribute.add("0");
 		rationaleAttribute.add("1");
@@ -34,11 +33,11 @@ public class MekaInitializer {
 		ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
 
 		// Declare Class value with {0,1} as possible values
-		wekaAttributes.add(getAttribute("isAlternative", 0));
-		wekaAttributes.add(getAttribute("isPro", 1));
-		wekaAttributes.add(getAttribute("isCon", 2));
-		wekaAttributes.add(getAttribute("isDecision", 3));
-		wekaAttributes.add(getAttribute("isIssue", 4));
+		wekaAttributes.add(createAttribute("isAlternative", 0));
+		wekaAttributes.add(createAttribute("isPro", 1));
+		wekaAttributes.add(createAttribute("isCon", 2));
+		wekaAttributes.add(createAttribute("isDecision", 3));
+		wekaAttributes.add(createAttribute("isIssue", 4));
 
 		// Declare text attribute to hold the message (free form text)
 		Attribute attributeText = new Attribute("sentence", (List<String>) null, 5);
@@ -60,6 +59,7 @@ public class MekaInitializer {
 		}
 		return data;
 	}
+
 	private static Tokenizer getTokenizer() throws Exception {
 		Tokenizer t = new NGramTokenizer();
 		String[] options = weka.core.Utils.splitOptions(
@@ -77,44 +77,57 @@ public class MekaInitializer {
 		stwv.setWordsToKeep(1000000);
 		return stwv;
 	}
+
 	public static void classifySentencesFineGrained(List<Comment> commentsList) throws Exception {
 		Instances structure = buildDataset(commentsList);
-
-		structure.setClassIndex(5);
-		// MLUtils.prepareData(structure);
-
-		// Read model from supplied path
-		String path = ComponentGetter.getUrlOfClassifierFolder() + "br.model";
-		InputStream is = new URL(path).openStream();
-		LC binaryRelevance = (LC) weka.core.SerializationHelper.read(is);
-
-		Filter stwv = getSTWV();
-		stwv.setInputFormat(structure);
-		structure = Filter.useFilter(structure, stwv);
-		structure.setClassIndex(5);
-
-		// Classify string instances
-		List<double[]> results = new ArrayList<double[]>();
-		for (int n = 0; n < structure.size(); n++) {
-			Instance predictionInstance = structure.get(n);
-			double[] predictionResult = binaryRelevance.distributionForInstance(predictionInstance);
-			results.add(predictionResult);
+		boolean empty;
+		try {
+			empty = structure.isEmpty();
+		} catch (Exception e) {
+			empty = true;
 		}
+		if (!empty) {
+			structure.setClassIndex(5);
+			// MLUtils.prepareData(structure);
 
-		// Write classification results back to sentence objects
-		int i = 0;
-		for (Comment comment : commentsList) {
-			for (Sentence sentence : comment.getSentences()) {
-				if (sentence.isRelevant() && !sentence.isTaggedFineGrained()) {
-					sentence.setClassification(Rationale.transferRationaleList(results.get(i)));
-					ActiveObjectsManager.updateSentenceClassifications(sentence);
-					sentence.setTaggedFineGrained(true);
-					i++;
-				}else if(sentence.isRelevant() && sentence.isTaggedFineGrained()) {
+			// Read model from supplied path
+			String path = ComponentGetter.getUrlOfClassifierFolder() + "br.model";
+			InputStream is = new URL(path).openStream();
+			LC binaryRelevance = (LC) weka.core.SerializationHelper.read(is);
+
+			Filter stwv = getSTWV();
+			stwv.setInputFormat(structure);
+			structure = Filter.useFilter(structure, stwv);
+			structure.setClassIndex(5);
+
+			// Classify string instances
+			List<double[]> results = new ArrayList<double[]>();
+			for (int n = 0; n < structure.size(); n++) {
+				Instance predictionInstance = structure.get(n);
+				double[] predictionResult = binaryRelevance.distributionForInstance(predictionInstance);
+				results.add(predictionResult);
+			}
+
+			// Write classification results back to sentence objects
+			int i = 0;
+			for (Comment comment : commentsList) {
+				for (Sentence sentence : comment.getSentences()) {
+					if (sentence.isRelevant() && !sentence.isTaggedFineGrained()) {
+						sentence.setClassification(Rationale.transferRationaleList(results.get(i)));
+						ActiveObjectsManager.updateSentenceClassifications(sentence);
+						sentence.setTaggedFineGrained(true);
+						i++;
+					} else if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {
+						sentence.setClassification(ActiveObjectsManager.getRationaleType(sentence.getActiveObjectId()));
+					}
+				}
+			}
+		} else {
+			for (Comment comment : commentsList) {
+				for (Sentence sentence : comment.getSentences()) {
 					sentence.setClassification(ActiveObjectsManager.getRationaleType(sentence.getActiveObjectId()));
 				}
 			}
 		}
 	}
-
 }

@@ -27,26 +27,34 @@ public class WekaInitializer {
 		List<Double> areRelevant = new ArrayList<Double>();
 
 		Instances data;
-		try {
 
-			data = retrieveDataFromCommentStrings(commentsList);
 
-			for (int i = 0; i < data.numInstances(); i++) {
-				data.get(i).setClassMissing();
-				Double n = fc.classifyInstance(data.get(i));
-				areRelevant.add(n);
+		data = createDataset(commentsList);
+		if(!data.isEmpty()) {
+			try {
+				for (int i = 0; i < data.numInstances(); i++) {
+					data.get(i).setClassMissing();
+					Double n = fc.classifyInstance(data.get(i));
+					areRelevant.add(n);
+				}
+			} catch (Exception e) {
+				System.err.println("Classification failed");
 			}
-		} catch (Exception e) {
-			System.err.println("Classification failed");
-		}
-		// Match classification back on data
-		int i = 0;
-		for (Comment comment : commentsList) {
-			for (Sentence sentence : comment.getSentences()) {
-				if (!sentence.isTagged()) {
-					sentence.setRelevant(areRelevant.get(i));
-					sentence.isTagged(true);
-					i++;
+			// Match classification back on data
+			int i = 0;
+			for (Comment comment : commentsList) {
+				for (Sentence sentence : comment.getSentences()) {
+					if (!sentence.isTagged()) {
+						sentence.setRelevant(areRelevant.get(i));
+						sentence.isTagged(true);
+						i++;
+					}
+				}
+			}
+		}else {
+			for (Comment comment : commentsList) {
+				for (Sentence sentence : comment.getSentences()) {
+					sentence.setRelevant(ActiveObjectsManager.getElementFromAO(sentence.getActiveObjectId()).getIsRelevant());
 				}
 			}
 		}
@@ -73,7 +81,7 @@ public class WekaInitializer {
 		return wekaAttributes;
 	}
 
-	private static Instances retrieveDataFromCommentStrings(List<Comment> commentsList) {
+	private static Instances createDataset(List<Comment> commentsList) {
 
 		// commentsList = removeDataWhichIsAlreadyDefinedInAo(commentsList);
 
