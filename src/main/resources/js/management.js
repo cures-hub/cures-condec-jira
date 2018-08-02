@@ -20,8 +20,8 @@ function replaceArgumentWithLinkTypes(knowledgeTypes) {
 }
 
 function createLinkToExistingElement(idOfExistingElement, idOfNewElement, knowledgeTypeOfChild) {
-	switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, function(linkType,
-			idOfExistingElement, idOfNewElement) {
+	switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
+			idOfNewElement) {
 		linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
 			updateView();
 		});
@@ -82,11 +82,23 @@ function createDecisionKnowledgeElementAsChild(summary, description, type, idOfE
 }
 
 function getProjectKey() {
-	return JIRA.API.Projects.getCurrentProjectKey();
+	var projectKey;
+	try {
+		projectKey = JIRA.API.Projects.getCurrentProjectKey();
+	} catch (error) {
+		console.log(error);
+	}
+	return projectKey;
 }
 
 function getProjectId() {
-	return JIRA.API.Projects.getCurrentProjectId();
+	var projectId;
+	try {
+		var projectId = JIRA.API.Projects.getCurrentProjectId();
+	} catch (error) {
+		console.log(error);
+	}
+	return projectId;
 }
 
 function getIssueKey() {
