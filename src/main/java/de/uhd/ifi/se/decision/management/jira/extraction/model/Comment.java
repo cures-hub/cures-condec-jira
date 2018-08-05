@@ -51,7 +51,7 @@ public class Comment {
 	private void splitCommentIntoSentences() {
 		this.sentences = new ArrayList<Sentence>();
 		// Delete breaklines,
-		this.body = this.body.replace("<br>", " ").replace("\n", " ").replace("\r", " ").replaceAll("\\<.*?>", "")
+		this.body = this.body.replace("<br>", " ").replace("\n", " ").replace("\r", " ").replaceAll("\\{.*?\\} .*?\\{*\\}", "")
 				.toString();
 		// Using break Iterator from https://stackoverflow.com/questions/2687012/split-string-into-sentences
 		//to split sentences in pieces
