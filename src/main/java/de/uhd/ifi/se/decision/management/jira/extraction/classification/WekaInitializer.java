@@ -18,79 +18,87 @@ public class WekaInitializer {
 
 	private static FilteredClassifier fc;
 
-	public static List<Comment> classifySentencesBinary(List<Comment> commentsList) throws Exception {
-		init();
 
+	private static List<Comment> makePredictions(Instances data, List<Comment> commentsList) {
 		List<Double> areRelevant = new ArrayList<Double>();
 
-		Instances data = createDataset(commentsList);
-		if(!data.isEmpty()) {
-			try {
-				for (int i = 0; i < data.numInstances(); i++) {
-					data.get(i).setClassMissing();
-					Double n = fc.classifyInstance(data.get(i));
-					areRelevant.add(n);
-				}
-			} catch (Exception e) {
-				System.err.println("Classification failed");
+		try {
+			for (int i = 0; i < data.numInstances(); i++) {
+				data.get(i).setClassMissing();
+				Double n = fc.classifyInstance(data.get(i));
+				areRelevant.add(n);
 			}
-			// Match classification back on data
-			int i = 0;
-			for (Comment comment : commentsList) {
-				for (Sentence sentence : comment.getSentences()) {
-					if (!sentence.isTagged()) {
-						sentence.setRelevant(areRelevant.get(i));
-						ActiveObjectsManager.updateRelevance(sentence.getActiveObjectId(),sentence.isRelevant());
-						sentence.isTagged(true);
-						i++;
-					}
-				}
-			}
-		}else {
-			for (Comment comment : commentsList) {
-				for (Sentence sentence : comment.getSentences()) {
-					sentence.setRelevant(ActiveObjectsManager.getElementFromAO(sentence.getActiveObjectId()).getIsRelevant());
+		} catch (Exception e) {
+			System.err.println("Classification failed");
+		}
+		// Match classification back on data
+		int i = 0;
+		for (Comment comment : commentsList) {
+			for (Sentence sentence : comment.getSentences()) {
+				if (!sentence.isTagged()) {
+					sentence.setRelevant(areRelevant.get(i));
+					ActiveObjectsManager.updateRelevance(sentence.getActiveObjectId(),sentence.isRelevant());
+					sentence.isTagged(true);
+					i++;
 				}
 			}
 		}
 		return commentsList;
 	}
 
+	private static List<Comment> writeDataFromActiveObjectsToSentences(List<Comment> commentsList) {
+		for (Comment comment : commentsList) {
+			for (Sentence sentence : comment.getSentences()) {
+				sentence.setRelevant(ActiveObjectsManager.getElementFromAO(sentence.getActiveObjectId()).getIsRelevant());
+			}
+		}
+		return commentsList;
+	}
+
+	public static List<Comment> classifySentencesBinary(List<Comment> commentsList) throws Exception {
+		init();
+
+		Instances data = createDataset(commentsList);
+		if(!data.isEmpty()) {
+			return makePredictions(data,commentsList);
+		}else {
+			return writeDataFromActiveObjectsToSentences(commentsList);
+		}
+	}
+
+	private static ArrayList<String> createClassAttribute() {
+		// Declare Class value with {0,1} as possible values
+		ArrayList<String> relevantAttribute = new ArrayList<String>();
+		relevantAttribute.add("0");
+		relevantAttribute.add("1");
+		return relevantAttribute;
+	}
+
 	private static ArrayList<Attribute> createWekaAttributes() {
 		ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
 
 		// Declare text attribute to hold the message (free form text)
-		Attribute attributeText = new Attribute("sentence", (List<String>) null);
-
-		// Declare the feature vector
-		wekaAttributes = new ArrayList<Attribute>();
-		wekaAttributes.add(attributeText);
-
-		// Declare Class value with {0,1} as possible values
-		ArrayList<String> relevantValues = new ArrayList<String>();
-		relevantValues.add("0");
-		relevantValues.add("1");
-		Attribute isRelevant = new Attribute("isRelevant", relevantValues);
-		wekaAttributes.add(isRelevant);
+		wekaAttributes.add(new Attribute("sentence", (List<String>) null));
+		wekaAttributes.add(new Attribute("isRelevant", createClassAttribute()));
 
 		return wekaAttributes;
 	}
 
+	private static DenseInstance createInstance(int size, ArrayList<Attribute> wekaAttributes, Sentence sentence) {
+		DenseInstance newInstance = new DenseInstance(size);
+		newInstance.setValue(wekaAttributes.get(0), sentence.getBody());
+		return newInstance;
+	}
+
 	private static Instances createDataset(List<Comment> commentsList) {
-
-		// commentsList = removeDataWhichIsAlreadyDefinedInAo(commentsList);
-
 		ArrayList<Attribute> wekaAttributes = createWekaAttributes();
 		Instances data = new Instances("sentences", wekaAttributes, 1000000);
 
 		data.setClassIndex(data.numAttributes() - 1);
-		// TODO: use data from active objects
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
 				if (!sentence.isTagged()) {
-					DenseInstance newInstance = new DenseInstance(2);
-					newInstance.setValue(wekaAttributes.get(0), sentence.getBody());
-					data.add(newInstance);
+					data.add(createInstance(2,wekaAttributes,sentence));
 				}
 			}
 		}
