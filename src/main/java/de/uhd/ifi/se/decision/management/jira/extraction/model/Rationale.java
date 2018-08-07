@@ -63,26 +63,16 @@ public enum Rationale {
 		}
 	}
 
-	public static String getOpeningTag(String text) {
-		switch (text) {
-		case "isRelevant":
-			//return "[isR]<b>";
-			//return "<span style=\"background-color:"+rationaleColorMap.get("isIssue") +"\">";
-
-		default:
-			return "";
+	public static String getRelevantTag(Boolean isRelevant) {
+		if(isRelevant) {
+			return "<span class=\"isRelevant\">";
+		}else {
+			return "<span class=\"isNotRelevant\">";
 		}
 	}
 
-	public static String getClosingTag(String text) {
-		switch (text) {
-		case "isRelevant":
-			//return "</b>[/isR]";
-			//return "</span>";
-
-		default:
-			return "";
-		}
+	public static String getRelevantClosingTag() {
+			return "</span> ";
 	}
 
 	public static List<Rationale> transferRationaleList(double[] ds) {
