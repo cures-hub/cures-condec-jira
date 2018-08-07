@@ -49,10 +49,14 @@ public class ViewConnector {
 		this.currentIssue = currentIssue;
 	}
 
+	//two comment lists to remove empty comments
+	//index for spanning index classes in html over single comments
 	public List<String> getAllTaggedComments() {
 		List<String> comments1 = new ArrayList<String>();
+		int index = 0;
 		for (Comment c : commentsList) {
-			comments1.add(c.getTaggedBody());
+			index++;
+			comments1.add(c.getTaggedBody(index));
 		}
 		List<String> comments2 = new ArrayList<String>();
 		for(String comment: comments1) {

@@ -84,17 +84,17 @@ public class Comment {
 		return unlabeled;
 	}
 
-	public String getTaggedBody() {
-		String result = "";
+	public String getTaggedBody(int index) {
+		String result = "<span id=\"comment"+index+"\">";
 		for (Sentence sentence : this.sentences) {
 			if (sentence.isRelevant()) {
-				result = result   + Rationale.getOpeningTag(sentence.getClassification())+ Rationale.getOpeningTag("isRelevant")+ sentence.getBody()
-				+ Rationale.getClosingTag("isRelevant")+ Rationale.getClosingTag(sentence.getClassification()) ;
+				result = result + "<span class=\"sentence\">"  + Rationale.getOpeningTag(sentence.getClassification())+ sentence.getBody()
+				+ Rationale.getClosingTag(sentence.getClassification()) +"</span>";
 			} else {
-				result = result+ sentence.getBody();// + sentence.getBody(); if commented, irrelevant sentences will not be shown
+				result =  "<span class=\"sentence\">" +result+Rationale.getRelevantTag(false)+ sentence.getBody()+ Rationale.getRelevantClosingTag()+"</span>";
 			}
 		}
-		return result;
+		return result+"</span>";
 	}
 
 	public String getBody() {
