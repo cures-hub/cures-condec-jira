@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
@@ -10,6 +11,8 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Rationale;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
+import meka.classifiers.multilabel.BR;
+import meka.classifiers.multilabel.CC;
 import meka.classifiers.multilabel.LC;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -93,7 +96,7 @@ public class MekaInitializer {
 			// Read model from supplied path
 			String path = ComponentGetter.getUrlOfClassifierFolder() + "br.model";
 			InputStream is = new URL(path).openStream();
-			LC binaryRelevance = (LC) weka.core.SerializationHelper.read(is);
+			CC binaryRelevance = (CC) weka.core.SerializationHelper.read(is);
 
 			Filter stwv = getSTWV();
 			stwv.setInputFormat(structure);
@@ -104,7 +107,9 @@ public class MekaInitializer {
 			List<double[]> results = new ArrayList<double[]>();
 			for (int n = 0; n < structure.size(); n++) {
 				Instance predictionInstance = structure.get(n);
+				//Create a extra array to use debugging
 				double[] predictionResult = binaryRelevance.distributionForInstance(predictionInstance);
+				//System.out.println(Arrays.toString(predictionResult));
 				results.add(predictionResult);
 			}
 
