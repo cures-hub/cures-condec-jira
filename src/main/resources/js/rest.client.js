@@ -222,7 +222,8 @@ function getTreeViewer(rootElementType, callback) {
 	});
 }
 
-function getTreeViewer(callback) {
+//check if this can be (re) used in getTreeViewer(.) -Jochen
+function getTreeViewerWithoutRootElement(callback) {
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer.json?projectKey=" + getProjectKey()
 			, function(error, core) {
 		if (error === null) {

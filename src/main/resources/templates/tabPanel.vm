@@ -23,7 +23,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:clas
 				value="scales" onchange='dosth(this);' checked /> <label
 				for="isRelevant">isRelevant</label></td>
 			<td><button id="link-button" class="aui-button aui-button-link"
-					onclick="callDialog()">Link and Edit</button></td>
+					onclick="callDialog2()">Link and Edit</button></td>
 		</tr>
 	</tbody>
 </table>

@@ -61,7 +61,7 @@ function callDialog2(){
 
 function buildTreeViewer2() {
 	resetTreeViewer();
-	getTreeViewer("", function(core) {
+	getTreeViewerWithoutRootElement( function(core) {
 		$("#jstree").jstree({
 			"core" : core,
 			"plugins" : [ "dnd", "contextmenu", "wholerow", "sort", "search" ],
