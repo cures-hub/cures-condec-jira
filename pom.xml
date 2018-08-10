@@ -196,8 +196,8 @@
 		<!-- DecXtract -->
 		<dependency>
 			<groupId>nz.ac.waikato.cms.weka</groupId>
-			<artifactId>weka-stable</artifactId>
-			<version>3.8.0</version>
+			<artifactId>weka-dev</artifactId>
+			<version>3.9.2</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.meka</groupId><!-- https://mvnrepository.com/artifact/net.sf.meka/meka -->
@@ -226,7 +226,9 @@
 					<enableQuickReload>true</enableQuickReload>
 					<instructions>
 						<Atlassian-Plugin-Key>${atlassian.plugin.key}</Atlassian-Plugin-Key>
-						<Import-Package></Import-Package>
+						<Import-Package> org.springframework.osgi.*;resolution:="optional",
+                            org.eclipse.gemini.blueprint.*;resolution:="optional",
+                            *;resolution:=optional</Import-Package>
 						<Export-Package></Export-Package>
 						<Spring-Context>*</Spring-Context>
 					</instructions>
