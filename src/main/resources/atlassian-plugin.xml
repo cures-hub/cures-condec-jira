@@ -72,9 +72,11 @@
 		<context>atl.general</context>
 		<resource type="download" name="fc.model" location="/classifier/fc.model" />
 		<resource type="download" name="br.model" location="/classifier/br.model" />
-		<resource type="download" name="view.context.menu.js" location="/js/view.context.menu.js" />
-		<resource type="download" name="view.tree.viewer.js" location="/js/view.tree.viewer.js" />
 		<resource type="download" name="view.tab.panel.js" location="/js/view.tab.panel.js" />
+		
+		<resource type="download" name="view.tree.viewer.js" location="/js/view.tree.viewer.js" />
+		<resource type="download" name="view.context.menu.js" location="/js/view.context.menu.js" />
+		<dependency>com.atlassian.plugins.jquery:jquery</dependency>
 	</web-resource>
 
 	<web-resource key="rest-client-resources" name="ConDec Rest Client Resources">
