@@ -30,6 +30,7 @@ public class WekaInitializer {
 			}
 		} catch (Exception e) {
 			System.err.println("Classification failed");
+			return commentsList;
 		}
 		// Match classification back on data
 		int i = 0;
