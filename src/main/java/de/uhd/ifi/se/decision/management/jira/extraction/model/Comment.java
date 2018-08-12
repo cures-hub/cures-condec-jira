@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.Locale;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 
-public class Comment {
+public class Comment extends DecisionKnowledgeElementImpl {
 
 	private List<Sentence> sentences;
 
@@ -32,6 +33,8 @@ public class Comment {
 	}
 
 	public Comment(com.atlassian.jira.issue.comments.Comment comment) {
+//		super(0, "", "", KnowledgeType.ALTERNATIVE, comment.getIssue().getProjectObject().getOriginalKey(),
+//				comment.getIssue().getProjectObject().getOriginalKey() + "-0");
 		this.body = comment.getBody();
 		this.created = comment.getCreated();
 		this.authorFullName = comment.getAuthorFullName();
@@ -51,18 +54,20 @@ public class Comment {
 	private void splitCommentIntoSentences() {
 		this.sentences = new ArrayList<Sentence>();
 		// Delete breaklines,
-		this.body = this.body.replace("<br>", " ").replace("\n", " ").replace("\r", " ").replaceAll("\\{.*?\\} .*?\\{*\\}", "")
-				.toString();
-		// Using break Iterator from https://stackoverflow.com/questions/2687012/split-string-into-sentences
-		//to split sentences in pieces
-		long aoId =0;
+		this.body = this.body.replace("<br>", " ").replace("\n", " ").replace("\r", " ")
+				.replaceAll("\\{.*?\\} .*?\\{*\\}", "").toString();
+		
+		ActiveObjectsManager.checkIfCommentHasChanged(this);
+		// Using break Iterator  to split sentences in pieces from
+		// https://stackoverflow.com/questions/2687012/split-string-into-sentences
+		long aoId = 0;
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
 		iterator.setText(this.body);
 		int start = iterator.first();
 		for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
-			//Sync sentence objects with AO database
+			// Sync sentence objects with AO database
 			aoId = ActiveObjectsManager.addElement(this.jiraCommentId, false, end, start, this.authorId);
-			this.sentences.add(new Sentence(this.body.substring(start, end),aoId));
+			this.sentences.add(new Sentence(this.body.substring(start, end), aoId));
 		}
 	}
 
@@ -76,8 +81,8 @@ public class Comment {
 
 	public ArrayList<Sentence> getUnTaggedSentences() {
 		ArrayList<Sentence> unlabeled = new ArrayList<Sentence>();
-		for(Sentence sentence: this.sentences) {
-			if(!sentence.isTagged()) {
+		for (Sentence sentence : this.sentences) {
+			if (!sentence.isTagged()) {
 				unlabeled.add(sentence);
 			}
 		}
@@ -85,16 +90,17 @@ public class Comment {
 	}
 
 	public String getTaggedBody(int index) {
-		String result = "<span id=\"comment"+index+"\">";
+		String result = "<span id=\"comment" + index + "\">";
 		for (Sentence sentence : this.sentences) {
 			if (sentence.isRelevant()) {
-				result = result + "<span class=\"sentence\">"  + Rationale.getOpeningTag(sentence.getClassification())+ sentence.getBody()
-				+ Rationale.getClosingTag(sentence.getClassification()) +"</span>";
+				result = result + "<span class=\"sentence\">" + Rationale.getOpeningTag(sentence.getClassification())
+						+ sentence.getBody() + Rationale.getClosingTag(sentence.getClassification()) + "</span>";
 			} else {
-				result =  "<span class=\"sentence\">" +result+Rationale.getRelevantTag(false)+ sentence.getBody()+ Rationale.getRelevantClosingTag()+"</span>";
+				result = "<span class=\"sentence\">" + result + Rationale.getRelevantTag(false) + sentence.getBody()
+						+ Rationale.getRelevantClosingTag() + "</span>";
 			}
 		}
-		return result+"</span>";
+		return result + "</span>";
 	}
 
 	public String getBody() {
@@ -105,11 +111,11 @@ public class Comment {
 		this.body = body;
 	}
 
-	public long getId() {
+	public long getJiraCommentId() {
 		return jiraCommentId;
 	}
 
-	public void setId(long id) {
+	public void setJiraCommentId(long id) {
 		this.jiraCommentId = id;
 	}
 

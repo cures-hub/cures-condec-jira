@@ -105,6 +105,9 @@ public class Sentence {
 		result += "isRelevant:\t" + isRelevant + "\n";
 		result += "body:\t" + body + "\n";
 		result += "activeObjects Id:\t" + activeObjectId + "\n";
+		result += "isTagged Manually:\t"+isTaggedManually +"\n";
+		result += "isTagged Fine:\t"+isTaggedFineGrained +"\n";
+		result += "isTagged Binary:\t"+isTaggedFineGrained +"\n";
 		return result;
 	}
 
