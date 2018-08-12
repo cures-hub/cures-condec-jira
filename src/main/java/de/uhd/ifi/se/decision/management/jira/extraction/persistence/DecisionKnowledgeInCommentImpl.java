@@ -247,7 +247,7 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 
 
 	@Override
-	public void setIsTaggedMannually(boolean isTaggedManually) {
+	public void setIsTaggedManually(boolean isTaggedManually) {
 		this.isTaggedManually= isTaggedManually;
 	}
 
