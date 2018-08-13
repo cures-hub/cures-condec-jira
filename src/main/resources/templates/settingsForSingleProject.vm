@@ -86,7 +86,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				var gitSubmitButton = document.getElementById('gitSubmitButton');
 				gitSubmitButton.onclick = function() {
 				    var gitAdressInput = document.getElementById('git-address');
-				    setGitAddress(getProjectKey(),gitAdressInput.value);
+                    setGitConnector(getProjectKey(),gitAdressInput.value);
 				};
 			</script>
         </div>
