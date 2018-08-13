@@ -103,4 +103,11 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	public void setKnowledgeExtractedFromIssues(boolean isKnowledgeExtractedFromIssues) {
 		ConfigPersistence.setKnowledgeExtractedFromIssues(projectKey, isKnowledgeExtractedFromIssues);
 	}
+
+	@Override
+	public String getGitAddress() {
+		return ConfigPersistence.getGitAddress(projectKey);
+	}
+
+
 }
