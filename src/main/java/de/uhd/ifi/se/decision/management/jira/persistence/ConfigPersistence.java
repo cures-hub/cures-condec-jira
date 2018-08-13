@@ -137,4 +137,22 @@ public class ConfigPersistence {
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 		settings.put(pluginStorageKey +".gitAddress", gitAddress);
 	}
+
+	//TODO Testing
+	public static String getGitAddress(String projectKey){
+		if(projectKey == null){
+			return "";
+		}
+		Object gitAddress = transactionTemplate.execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction() {
+				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+				return settings.get(pluginStorageKey + "..gitAddress");
+			}
+		});
+		if(gitAddress instanceof String){
+			return (String) gitAddress;
+		}
+		return "";
+	}
 }

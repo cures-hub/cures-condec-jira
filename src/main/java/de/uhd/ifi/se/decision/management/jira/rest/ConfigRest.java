@@ -286,6 +286,17 @@ public class ConfigRest {
 		}
 	}
 
+	@Path("/getGitAddress")
+	@GET
+	public Response getGitAddress(@QueryParam("projectKey") final String projectKey){
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		String gitAddress = ConfigPersistence.getGitAddress(projectKey);
+		return Response.ok(gitAddress).build();
+	}
+
 	private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {
 		if (request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build();
