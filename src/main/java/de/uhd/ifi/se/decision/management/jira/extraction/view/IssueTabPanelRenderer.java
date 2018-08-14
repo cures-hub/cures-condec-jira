@@ -38,7 +38,7 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 			return new ArrayList<>();
 		}
 		//Initialize viewConnector with the current shown Issue
-		viewConnector = new ViewConnector(issue);
+		viewConnector = new ViewConnector(issue,false);
 
 		GenericMessageAction messageAction = new GenericMessageAction(getVelocityTemplate());
 		List<IssueAction> issueActions = new ArrayList<IssueAction>();

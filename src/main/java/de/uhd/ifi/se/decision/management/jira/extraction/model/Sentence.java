@@ -3,9 +3,14 @@ package de.uhd.ifi.se.decision.management.jira.extraction.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-public class Sentence {
+public class Sentence extends DecisionKnowledgeElementImpl {
 
 	private boolean isTagged;
 
@@ -25,14 +30,46 @@ public class Sentence {
 
 	private boolean isTaggedFineGrained;
 
-	public Sentence(String body, long aoId) {
+	public Sentence(String body, long aoId, long jiraCommentId) {
+		super();
 		this.setBody(body);
 		this.classification = new ArrayList<Rationale>();
 		this.setActiveObjectId(aoId);
-		this.isTagged(ActiveObjectsManager.checkCommentExistingInAO(aoId,true));
+		this.isTagged(ActiveObjectsManager.checkCommentExistingInAO(aoId, true));
 		this.setRelevant(ActiveObjectsManager.getElementFromAO(aoId).getIsRelevant());
 		this.setTaggedFineGrained(ActiveObjectsManager.getElementFromAO(aoId).getIsTaggedFineGrained());
 		this.setTaggedManually(ActiveObjectsManager.getElementFromAO(aoId).getIsTaggedManually());
+
+		if (this.isTaggedFineGrained) {
+			this.setClassificationFromAO();
+		}
+
+		super.setDescription(this.body);
+		super.setId(0);
+		super.setKey(jiraCommentId + "-" + aoId);
+		super.setSummary(body);
+		super.setProject(
+				new DecisionKnowledgeProjectImpl(ComponentGetter.getProjectService().getProjectKeyDescription()));
+
+	}
+
+	private void setClassificationFromAO() {
+		DecisionKnowledgeInCommentEntity databaseElement = ActiveObjectsManager.getElementFromAO(this.activeObjectId);
+		if (databaseElement.getIsIssue()) {
+			this.classification.add(Rationale.isIssue);
+		}
+		if (databaseElement.getIsDecision()) {
+			this.classification.add(Rationale.isDecision);
+		}
+		if (databaseElement.getIsAlternative()) {
+			this.classification.add(Rationale.isAlternative);
+		}
+		if (databaseElement.getIsPro()) {
+			this.classification.add(Rationale.isPro);
+		}
+		if (databaseElement.getIsCon()) {
+			this.classification.add(Rationale.isCon);
+		}
 	}
 
 	public Sentence(String body, boolean isRelevant) {
@@ -105,9 +142,9 @@ public class Sentence {
 		result += "isRelevant:\t" + isRelevant + "\n";
 		result += "body:\t" + body + "\n";
 		result += "activeObjects Id:\t" + activeObjectId + "\n";
-		result += "isTagged Manually:\t"+isTaggedManually +"\n";
-		result += "isTagged Fine:\t"+isTaggedFineGrained +"\n";
-		result += "isTagged Binary:\t"+isTaggedFineGrained +"\n";
+		result += "isTagged Manually:\t" + isTaggedManually + "\n";
+		result += "isTagged Fine:\t" + isTaggedFineGrained + "\n";
+		result += "isTagged Binary:\t" + isTaggedFineGrained + "\n";
 		return result;
 	}
 
@@ -141,5 +178,25 @@ public class Sentence {
 
 	public void setTaggedFineGrained(boolean isTaggedFineGrained) {
 		this.isTaggedFineGrained = isTaggedFineGrained;
+	}
+
+	public KnowledgeType getKnowledgeTypeEquivalent() {
+		for (Rationale rational : this.classification) {
+			switch (rational) {
+			case isIssue:
+				return KnowledgeType.ISSUE;
+			case isAlternative:
+				return KnowledgeType.ALTERNATIVE;
+			case isDecision:
+				return KnowledgeType.DECISION;
+			case isPro:
+				return KnowledgeType.ARGUMENT;
+			case isCon:
+				return KnowledgeType.ARGUMENT;
+			default:
+				return null;
+			}
+		}
+		return null;
 	}
 }

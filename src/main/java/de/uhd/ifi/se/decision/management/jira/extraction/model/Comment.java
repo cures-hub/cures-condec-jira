@@ -7,9 +7,8 @@ import java.util.List;
 import java.util.Locale;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 
-public class Comment extends DecisionKnowledgeElementImpl {
+public class Comment {
 
 	private List<Sentence> sentences;
 
@@ -33,8 +32,9 @@ public class Comment extends DecisionKnowledgeElementImpl {
 	}
 
 	public Comment(com.atlassian.jira.issue.comments.Comment comment) {
-//		super(0, "", "", KnowledgeType.ALTERNATIVE, comment.getIssue().getProjectObject().getOriginalKey(),
-//				comment.getIssue().getProjectObject().getOriginalKey() + "-0");
+		// super(0, "", "", KnowledgeType.ALTERNATIVE,
+		// comment.getIssue().getProjectObject().getOriginalKey(),
+		// comment.getIssue().getProjectObject().getOriginalKey() + "-0");
 		this.body = comment.getBody();
 		this.created = comment.getCreated();
 		this.authorFullName = comment.getAuthorFullName();
@@ -56,9 +56,9 @@ public class Comment extends DecisionKnowledgeElementImpl {
 		// Delete breaklines,
 		this.body = this.body.replace("<br>", " ").replace("\n", " ").replace("\r", " ")
 				.replaceAll("\\{.*?\\} .*?\\{*\\}", "").toString();
-		
+
 		ActiveObjectsManager.checkIfCommentHasChanged(this);
-		// Using break Iterator  to split sentences in pieces from
+		// Using break Iterator to split sentences in pieces from
 		// https://stackoverflow.com/questions/2687012/split-string-into-sentences
 		long aoId = 0;
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
@@ -67,7 +67,7 @@ public class Comment extends DecisionKnowledgeElementImpl {
 		for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
 			// Sync sentence objects with AO database
 			aoId = ActiveObjectsManager.addElement(this.jiraCommentId, false, end, start, this.authorId);
-			this.sentences.add(new Sentence(this.body.substring(start, end), aoId));
+			this.sentences.add(new Sentence(this.body.substring(start, end), aoId, jiraCommentId));
 		}
 	}
 

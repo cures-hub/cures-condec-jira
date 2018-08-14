@@ -234,8 +234,7 @@ public class ActiveObjectsManager {
 		for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
 			starts.add(start);
 			ends.add(end);
-		}
-		ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+		}		ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 			@Override
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
 				boolean deleteFlag =false;

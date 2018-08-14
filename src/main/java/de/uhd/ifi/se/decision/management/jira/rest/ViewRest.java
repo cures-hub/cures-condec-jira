@@ -35,10 +35,24 @@ public class ViewRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		if(rootElementType == null) {
+		if (rootElementType == null) {
 			rootElementType = "decision";
 		}
 		TreeViewer treeViewer = new TreeViewer(projectKey, KnowledgeType.getKnowledgeType(rootElementType));
+		return Response.ok(treeViewer).build();
+	}
+
+	@Path("/getTreeViewer2")
+	@GET
+	public Response getTreeViewer2(@QueryParam("issueKey") String issueKey,
+			@QueryParam("showRelevant") boolean showRelevant) {
+		String projectKey = issueKey.substring(0, issueKey.indexOf("-"));
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+
+		TreeViewer treeViewer = new TreeViewer(issueKey, showRelevant);
 		return Response.ok(treeViewer).build();
 	}
 
