@@ -52,10 +52,9 @@ function callDialog2(){
 	callDialogFromView();
 	closeDialog();
 	callDialogFromView();
-	document.getElementById("dialog-content").id = "jstree";
+	document.getElementById("dialog-content").innerHTML = "<div id =header2> </div> <div id =jstree> </div> ";
+	document.getElementById("header2").innerHTML = "<input class=text medium-long-field id=jstree-search-input placeholder=Search decision knowledge />";
 	buildTreeViewer2(document.getElementById("isRelevant").checked);
-
-
 	//fillTree();
 }
 
@@ -72,12 +71,16 @@ function buildTreeViewer2(showRelevant) {
 				"items" : contextMenuActions
 			}
 		});
+		$("#jstree-search-input").keyup(function() {
+			var searchString = $(this).val();
+			$("#jstree").jstree(true).search(searchString);x
+		});
 	});
 	addDragAndDropSupportForTreeViewer();
 	changeHoverStyle();
 }
 
-
+/*
 function fillTree(){
 	var index = 1;
 	$('#jstree').on('ready.jstree', function (e, data) {
@@ -97,4 +100,4 @@ function fillTree(){
 function createNode(parent_node, new_node_id, new_node_text, position) {
 	$('#jstree').jstree('create_node', $(parent_node), { "text":new_node_text, "id":new_node_id }, position, false, false);
 
-}
+}*/
