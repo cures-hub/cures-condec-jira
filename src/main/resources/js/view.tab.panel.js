@@ -53,15 +53,15 @@ function callDialog2(){
 	closeDialog();
 	callDialogFromView();
 	document.getElementById("dialog-content").id = "jstree";
-	buildTreeViewer2();
+	buildTreeViewer2(document.getElementById("isRelevant").checked);
 
 
 	//fillTree();
 }
 
-function buildTreeViewer2() {
+function buildTreeViewer2(showRelevant) {
 	resetTreeViewer();
-	getTreeViewerWithoutRootElement( function(core) {
+	getTreeViewerWithoutRootElement(showRelevant, function(core) {
 		$("#jstree").jstree({
 			"core" : core,
 			"plugins" : [ "dnd", "contextmenu", "wholerow", "sort", "search" ],
@@ -71,10 +71,6 @@ function buildTreeViewer2() {
 			"contextmenu" : {
 				"items" : contextMenuActions
 			}
-		});
-		$("#jstree-search-input").keyup(function() {
-			var searchString = $(this).val();
-			$("#jstree").jstree(true).search(searchString);
 		});
 	});
 	addDragAndDropSupportForTreeViewer();

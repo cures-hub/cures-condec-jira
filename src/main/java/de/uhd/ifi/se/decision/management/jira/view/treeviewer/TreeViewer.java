@@ -8,8 +8,12 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
@@ -62,6 +66,28 @@ public class TreeViewer {
 
 	public TreeViewer(String projectKey) {
 		this(projectKey, KnowledgeType.DECISION);
+	}
+
+	public TreeViewer(String issueId, boolean showRelevant) {
+		this();
+		Issue currentIssue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
+		ViewConnector vc = new ViewConnector(currentIssue, true);
+
+		Set<Data> dataSet = new HashSet<Data>();
+		for (Sentence sentence : vc.getAllSentenceInstances()) {
+			sentence.setType(KnowledgeType.OTHER);
+			if (sentence.getKnowledgeTypeEquivalent() != null) {
+				sentence.setType(sentence.getKnowledgeTypeEquivalent());
+			}
+			if (!showRelevant && sentence.isRelevant()) {
+				dataSet.add(this.getDataStructure(sentence));
+			}
+			if (showRelevant) {
+				dataSet.add(this.getDataStructure(sentence));
+			}
+		}
+		this.data = dataSet;
+
 	}
 
 	public Data getDataStructure(DecisionKnowledgeElement decisionKnowledgeElement) {

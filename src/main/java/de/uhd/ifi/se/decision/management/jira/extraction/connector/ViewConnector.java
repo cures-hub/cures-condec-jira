@@ -9,6 +9,7 @@ import com.atlassian.jira.issue.comments.CommentManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.classification.MekaInitializer;
 import de.uhd.ifi.se.decision.management.jira.extraction.classification.WekaInitializer;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 
 public class ViewConnector {
 
@@ -16,7 +17,7 @@ public class ViewConnector {
 
 	private List<Comment> commentsList;
 
-	public ViewConnector(Issue issue) {
+	public ViewConnector(Issue issue, boolean callFromRest) {
 		this.setCurrentIssue(issue);
 		CommentManager cm = ComponentAccessor.getCommentManager();
 		this.commentsList = new ArrayList<Comment>();
@@ -24,7 +25,9 @@ public class ViewConnector {
 		for (com.atlassian.jira.issue.comments.Comment comment : cm.getComments(issue)) {
 			commentsList.add(new Comment(comment));
 		}
-		this.startClassification();
+		if (!callFromRest) {
+			this.startClassification();
+		}
 
 	}
 
@@ -49,8 +52,8 @@ public class ViewConnector {
 		this.currentIssue = currentIssue;
 	}
 
-	//two comment lists to remove empty comments
-	//index for spanning index classes in html over single comments
+	// two comment lists to remove empty comments
+	// index for spanning index classes in html over single comments
 	public List<String> getAllTaggedComments() {
 		List<String> comments1 = new ArrayList<String>();
 		int index = 0;
@@ -59,13 +62,23 @@ public class ViewConnector {
 			comments1.add(c.getTaggedBody(index));
 		}
 		List<String> comments2 = new ArrayList<String>();
-		for(String comment: comments1) {
-			if(comment.length() > 0) {
+		for (String comment : comments1) {
+			if (comment.length() > 0) {
 				comments2.add(comment);
 			}
 		}
 		comments1 = null;
 		return comments2;
+	}
+
+	public List<Sentence> getAllSentenceInstances() {
+		List<Sentence> sentences = new ArrayList<Sentence>();
+		for (Comment comment : commentsList) {
+			for (Sentence sentence : comment.getSentences()) {
+				sentences.add(sentence);
+			}
+		}
+		return sentences;
 	}
 
 	public List<String> getAllCommentsBody() {
@@ -79,7 +92,7 @@ public class ViewConnector {
 	public List<Long> getAllCommentsIDs() {
 		List<Long> comments = new ArrayList<Long>();
 		for (Comment c : commentsList) {
-			comments.add(c.getId());
+			comments.add(c.getJiraCommentId());
 		}
 		return comments;
 	}
