@@ -5,6 +5,7 @@ import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.management.jira.webhook.WebConnector;
 
 /**
  * Model class for a project and its configuration
@@ -107,6 +108,11 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	@Override
 	public String getGitAddress() {
 		return ConfigPersistence.getGitAddress(projectKey);
+	}
+
+	public void testWebHook(){
+		WebConnector connector = new WebConnector();
+		connector.sendWebHookTreant();
 	}
 
 

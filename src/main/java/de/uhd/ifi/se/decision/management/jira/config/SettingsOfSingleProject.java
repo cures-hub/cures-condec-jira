@@ -39,8 +39,8 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 	@Override
 	protected boolean isValidUser(HttpServletRequest request) {
 		String projectKey = request.getParameter("projectKey");
-
 		String username = userManager.getRemoteUsername(request);
+		System.out.println(request.getParameterMap().toString());
 		return isProjectAdmin(username, projectKey);
 	}
 

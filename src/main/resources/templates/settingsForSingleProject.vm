@@ -80,7 +80,10 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
         <div class="field-group">
             <label for="git-address">Git Address</label>
             <input id="git-address" type="text" class="text"/>
-			<button id="gitSubmitButton"class="aui-button aui-button-primary">Submit</button>
+            <form method="GET">
+                <input type="hidden" name="projectKey" value='$projectKey'/>
+				<button id="gitSubmitButton" class="aui-button aui-button-primary" value="$projectKey">Submit</button>
+			</form>
             <div class="description">Git Address to Extract the decisions from</div>
 			<script>
 				var gitAddress = document.getElementById('git-address');
@@ -88,7 +91,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				var gitSubmitButton = document.getElementById('gitSubmitButton');
 				gitSubmitButton.onclick = function() {
 				    var gitAdressInput = document.getElementById('git-address');
-                    setGitConnector(getProjectKey(),gitAdressInput.value);
+                    setGitConnector( '$projectKey',gitAdressInput.value);
 				};
 			</script>
         </div>
@@ -168,6 +171,18 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			<div class="description">Key to authenticate with remote
 				server.</div>
 		</div>
+        <div class="field-group">
+            <form method="GET">
+                <input type="hidden" name="projectKey" value='$projectKey'/>
+				<button id="testWebHook">Test</button>
+			</form>
+		</div>
+		<script>
+			var webHookTest = document.getElementById("testWebHook");
+            webHookTest.onclick = function () {
+				$project.testWebHook();
+			}
+		</script>
 	</form>
 </body>
 </html>
