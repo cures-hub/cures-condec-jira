@@ -22,6 +22,11 @@ atlas-mvn package
 ```
 The .jar file is created.
 
+Run the plug-in locally via:
+```
+atlas-run
+```
+
 ### Download of Precompiled .jar-File
 The precompiled .jar-File for the latest release can be found here: https://github.com/cures-hub/cures-condec-jira/releases/latest
 
@@ -32,6 +37,7 @@ The .jar file is installed by uploading it to your JIRA application:
 - Click on "Upload add-on" and select the previously compiled .jar file.
 - Click "Upload" for upload and installation.
 - [Activate the "Decision Documentation and Exploration" plug-in.](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/installed_plugin.png)
+- Activate the plug-in for the specific project in the [setting page.](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/config_plugin.png)
 
 ## User Interface
 
