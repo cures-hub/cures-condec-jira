@@ -55,7 +55,7 @@ function callDialog2(){
 	document.getElementById("dialog-content").innerHTML = "<div id =header2> </div> <div id =jstree> </div> ";
 	document.getElementById("header2").innerHTML = "<input class=text medium-long-field id=jstree-search-input placeholder=Search decision knowledge />";
 	buildTreeViewer2(document.getElementById("isRelevant").checked);
-	//fillTree();
+
 }
 
 function buildTreeViewer2(showRelevant) {
@@ -78,9 +78,17 @@ function buildTreeViewer2(showRelevant) {
 	});
 	addSentenceDragAndDropSupportForTreeViewer();
 	changeHoverStyle();
+
+	document.getElementById("jstree").addEventListener("mousemove",bringContextMenuToFront);
+ 
 }
 
-
+function bringContextMenuToFront(){
+	if(document.getElementsByClassName("vakata-context").length > 0){
+		document.getElementsByClassName("vakata-context")[0].style.zIndex = 9999;
+	}
+	
+}
 
 function addSentenceDragAndDropSupportForTreeViewer() {
 	$("#jstree").on('move_node.jstree', function(object, nodeInContext) {
@@ -93,13 +101,11 @@ function addSentenceDragAndDropSupportForTreeViewer() {
 			createSentenceLinkToExistingElement(parentNode.data.id, nodeId);
 		}
 		if (parentNode === "#" && oldParentNode !== "#") {
-			deleteLink(oldParentNode.data.id, nodeId, function() {
-				updateIssueModule();
-			});
+			deleteSentenceLink(oldParentNode.data.id, nodeId, function() {});
 		}
 		if (parentNode !== '#' && oldParentNode !== '#') {
-			deleteLink(oldParentNode.data.id, nodeId, function() {
-				createLinkToExistingElement(parentNode.data.id, nodeId);
+			deleteSentenceLink(oldParentNode.data.id, nodeId, function() {
+				createSentenceLinkToExistingElement(parentNode.data.id, nodeId);
 			});
 		}
 	});
@@ -116,33 +122,3 @@ function createSentenceLinkToExistingElement(idOfExistingElement, idOfNewElement
 
 
 
-
-
-
-
-
-
-
-
-
-/*
-function fillTree(){
-	var index = 1;
-	$('#jstree').on('ready.jstree', function (e, data) {
-		do{//loop through all comments
-			comment = document.getElementById("comment"+index);
-			if(comment){
-				var sentences = comment.getElementsByClassName("sentence");
-				for (var i = sentences.length - 1; i >= 0; i--) { //loop through all sentences in comments
-					$('#jstree').jstree('create_node', $("#jstree"), { "text":sentences[i].innerHTML, "id":index+"-"+i }, "first", false, false);
-				}
-				index = index+1;
-			}
-		}while(document.getElementById("comment"+index));
-	});
-}
-
-function createNode(parent_node, new_node_id, new_node_text, position) {
-	$('#jstree').jstree('create_node', $(parent_node), { "text":new_node_text, "id":new_node_id }, position, false, false);
-
-}*/
