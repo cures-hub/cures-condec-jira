@@ -220,6 +220,9 @@
 		<entity>
 			de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity
 		</entity>
+		<entity>
+			de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinksInSentencesEntity
+		</entity>
 
 	</ao>
 

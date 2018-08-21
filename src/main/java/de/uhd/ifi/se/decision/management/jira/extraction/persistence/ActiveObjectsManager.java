@@ -7,11 +7,20 @@ import java.util.List;
 import java.util.Locale;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
+import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Rationale;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementEntity;
+import de.uhd.ifi.se.decision.management.jira.persistence.LinkEntity;
+import net.java.ao.Query;
 
 public class ActiveObjectsManager {
 
@@ -261,5 +270,104 @@ public class ActiveObjectsManager {
 			}
 		});
 	}
+	
+	
+	public static long insertLink(Link link, ApplicationUser user) {
+		init();
+		return ao.executeInTransaction(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction() {
+				for (LinksInSentencesEntity linkEntity : ao.find(LinksInSentencesEntity.class)) {
+					if (linkEntity.getIdOfSourceElement() == link.getSourceElement().getId()
+							&& linkEntity.getIdOfDestinationElement() == link.getDestinationElement().getId()) {
+						return linkEntity.getId();
+					}
+				}
+
+				DecisionKnowledgeInCommentEntity sourceElement = null;
+				DecisionKnowledgeInCommentEntity[] sourceElements = ao.find(
+						DecisionKnowledgeInCommentEntity.class,
+						Query.select().where("ID = ?", link.getSourceElement().getId()));
+				if (sourceElements.length == 1) {
+					sourceElement = sourceElements[0];
+				}
+
+				DecisionKnowledgeInCommentEntity destinationElement = null;
+				DecisionKnowledgeInCommentEntity[] destinationElements = ao.find(
+						DecisionKnowledgeInCommentEntity.class,
+						Query.select().where("ID = ?", link.getDestinationElement().getId()));
+				if (destinationElements.length == 1) {
+					destinationElement = destinationElements[0];
+				}
+				if (sourceElement == null || destinationElement == null) {
+					return (long) 0;
+				}
+
+				// elements exist
+				final LinksInSentencesEntity linkEntity = ao.create(LinksInSentencesEntity.class);
+				linkEntity.setIdOfSourceElement(link.getSourceElement().getId());
+				linkEntity.setIdOfDestinationElement(link.getDestinationElement().getId());
+				linkEntity.setType(link.getType());
+				linkEntity.save();
+				return linkEntity.getId();
+			}
+		});
+	}
+	
+	public static List<Link> getInwardLinks(DecisionKnowledgeElement element) {
+		init();
+		List<Link> inwardLinks = new ArrayList<>();
+		LinksInSentencesEntity[] links = ao.find(LinksInSentencesEntity.class,
+				Query.select().where("ID_OF_DESTINATION_ELEMENT = ?", element.getId()));
+		for (LinksInSentencesEntity link : links) {
+			Link inwardLink = new LinkImpl(link);
+			inwardLink.setDestinationElement(element);
+			inwardLink.setSourceElement(getDecisionKnowledgeElement(link.getIdOfSourceElement()));
+			inwardLinks.add(inwardLink);
+		}
+		return inwardLinks;
+	}
+
+	public static List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
+		init();
+		List<Link> outwardLinks = new ArrayList<>();
+		LinksInSentencesEntity[] links = ao.find(LinksInSentencesEntity.class,
+				Query.select().where("ID_OF_SOURCE_ELEMENT = ?", element.getId()));
+		for (LinksInSentencesEntity link : links) {
+			Link outwardLink = new LinkImpl(link);
+			outwardLink.setSourceElement(element);
+			outwardLink.setDestinationElement(getDecisionKnowledgeElement(link.getIdOfDestinationElement()));
+		
+			outwardLinks.add(outwardLink);
+		}
+		return outwardLinks;
+	}
+	
+	private static DecisionKnowledgeElementImpl getDecisionKnowledgeElement(long id) {
+		init();
+		DecisionKnowledgeInCommentEntity decisionKnowledgeElement = ao
+				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+					@Override
+					public DecisionKnowledgeInCommentEntity doInTransaction() {
+						DecisionKnowledgeInCommentEntity[] decisionKnowledgeElement = ao
+								.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("ID = ?", id));
+						// 0 or 1 decision knowledge elements might be returned by this query
+						if (decisionKnowledgeElement.length == 1) {
+							return decisionKnowledgeElement[0];
+						}
+						return null;
+					}
+				});
+		if (decisionKnowledgeElement != null) {
+			Sentence sentence = new Sentence(id);
+			sentence.setType(KnowledgeType.OTHER);
+			if (sentence.getKnowledgeTypeEquivalent() != null) {
+				sentence.setType(sentence.getKnowledgeTypeEquivalent());
+			}
+			return sentence;
+		}
+		return null;
+	}
+
 
 }
