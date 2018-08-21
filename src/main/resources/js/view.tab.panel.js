@@ -73,12 +73,57 @@ function buildTreeViewer2(showRelevant) {
 		});
 		$("#jstree-search-input").keyup(function() {
 			var searchString = $(this).val();
-			$("#jstree").jstree(true).search(searchString);x
+			$("#jstree").jstree(true).search(searchString);
 		});
 	});
-	addDragAndDropSupportForTreeViewer();
+	addSentenceDragAndDropSupportForTreeViewer();
 	changeHoverStyle();
 }
+
+
+
+function addSentenceDragAndDropSupportForTreeViewer() {
+	$("#jstree").on('move_node.jstree', function(object, nodeInContext) {
+		var node = nodeInContext.node;
+		var parentNode = getTreeViewerNodeById(nodeInContext.parent);
+		var oldParentNode = getTreeViewerNodeById(nodeInContext.old_parent);
+
+		var nodeId = node.data.id;
+		if (oldParentNode === "#" && parentNode !== "#") {
+			createSentenceLinkToExistingElement(parentNode.data.id, nodeId);
+		}
+		if (parentNode === "#" && oldParentNode !== "#") {
+			deleteLink(oldParentNode.data.id, nodeId, function() {
+				updateIssueModule();
+			});
+		}
+		if (parentNode !== '#' && oldParentNode !== '#') {
+			deleteLink(oldParentNode.data.id, nodeId, function() {
+				createLinkToExistingElement(parentNode.data.id, nodeId);
+			});
+		}
+	});
+}
+
+function createSentenceLinkToExistingElement(idOfExistingElement, idOfNewElement, knowledgeTypeOfChild) {
+	switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
+			idOfNewElement) {
+		linkSentences(idOfExistingElement, idOfNewElement, linkType, function() {
+		});
+	});
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 function fillTree(){

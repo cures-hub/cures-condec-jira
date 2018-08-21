@@ -5,6 +5,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLink;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinksInSentencesEntity;
 import de.uhd.ifi.se.decision.management.jira.persistence.LinkEntity;
 
 /**
@@ -51,6 +52,12 @@ public class LinkImpl implements Link {
 		this.type = link.getType();
 	}
 
+	public LinkImpl(LinksInSentencesEntity link) {
+		this();
+		this.id = link.getId();
+		this.type = link.getType();
+	}
+	
 	@Override
 	public long getId() {
 		return id;
