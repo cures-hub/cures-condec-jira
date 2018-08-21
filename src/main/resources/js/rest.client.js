@@ -183,6 +183,23 @@ function linkElements(idOfDestinationElement, idOfSourceElement, linkType, callb
 			});
 }
 
+function linkSentences(idOfDestinationElement, idOfSourceElement, linkType, callback) {
+	var jsondata = {
+		"type" : linkType,
+		"idOfSourceElement" : idOfSourceElement,
+		"idOfDestinationElement" : idOfDestinationElement
+	};
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLinkBetweenSentences.json?projectKey=" + getProjectKey(),
+			jsondata, function(error, link) {
+				if (error === null) {
+					showFlag("success", "Link has been created.");
+					callback(link);
+				} else {
+					showFlag("error", "Link could not be created.");
+				}
+			});
+}
+
 function deleteLink(idOfDestinationElement, idOfSourceElement, callback) {
 	var jsondata = {
 		"idOfSourceElement" : idOfSourceElement,
@@ -222,9 +239,9 @@ function getTreeViewer(rootElementType, callback) {
 	});
 }
 
-//check if this can be (re) used in getTreeViewer(.) -Jochen
 function getTreeViewerWithoutRootElement(showRelevant ,callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer2.json?issueKey=" + "TEST-1" + "&showRelevant=" + showRelevant //getIssueKey()
+	var issueId = AJS.$("meta[name='ajs-issue-key']").attr("content");
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer2.json?issueKey=" + issueId + "&showRelevant=" + showRelevant 
 			, function(error, core) {
 		if (error === null) {
 			callback(core);

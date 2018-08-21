@@ -20,6 +20,7 @@ import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
@@ -159,6 +160,26 @@ public class KnowledgeRest {
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			long linkId = strategy.insertLink(link, user);
+			if (linkId == 0) {
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
+			}
+			return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
+		} else {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Creation of link failed."))
+					.build();
+		}
+	}
+	
+	//Identisch zu Link Elements, Unterschied: Aufruf nicht über strategy provider
+	@Path("/createLinkBetweenSentences")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response createLinkBetweenSentences(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
+			Link link) {
+		if (projectKey != null && request != null && link != null) {
+			ApplicationUser user = getCurrentUser(request);
+			long linkId = ActiveObjectsManager.insertLink(link, user);
 			if (linkId == 0) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
