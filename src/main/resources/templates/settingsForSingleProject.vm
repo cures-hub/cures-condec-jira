@@ -185,19 +185,10 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			webHookSubmit.onclick = function () {
 				var urlInput = document.getElementById("webhook-url");
 				var secretInput = document.getElementById("webhook-secret");
+                setWebhookData('$projectKey', urlInput.value, secretInput.value);
+				urlInput.value = $project.getWebhookUrl();
+				secretInput.value = $project.getWebhookSecret();
             };
-		</script>
-        <div class="field-group">
-            <form method="GET">
-                <input type="hidden" name="projectKey" value='$projectKey'/>
-				<button id="testWebHook" >Test</button>
-			</form>
-		</div>
-		<script>
-			var webHookTest = document.getElementById("testWebHook");
-            webHookTest.onclick = function () {
-				$project.testWebHook();
-			}
 		</script>
 	</form>
 </body>

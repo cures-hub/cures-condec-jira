@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
@@ -9,8 +10,18 @@ import org.apache.commons.httpclient.NameValuePair;
 import java.io.IOException;
 
 public class WebConnector{
-    private String url = "https://cuu-staging.ase.in.tum.de/api/v1/projects/ConDecDev/integrations/conDec";
-    private String secret = "03f90207-73bc-44d9-9848-d3f1f8c8254e";
+    private String url;
+    private String secret;
+
+    public WebConnector(String projectKey){
+        this.url = ConfigPersistence.getWebhookUrl(projectKey);
+        this.secret = ConfigPersistence.getWebhookSecret(projectKey);
+    }
+
+    public WebConnector(String webhookUrl, String webhookSecret){
+        this.url = webhookUrl;
+        this.secret = webhookSecret;
+    }
 
     public boolean sendWebHookTreant() {
         HttpClient httpClient = new HttpClient();

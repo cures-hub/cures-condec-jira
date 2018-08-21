@@ -382,6 +382,17 @@ function getCommits(elementKey, callback) {
 			});
 }
 
+function setWebhookData(projectKey, webhookUrl, webhookSecret) {
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookData.json?projectKey="+projectKey
+	+ "&webhookUrl=" + webhookUrl + "&webhookSecret=" + webhookSecret, function (error, response) {
+        if (error === null) {
+            showFlag("success", "The setting  of the Webhook Data for this project has been changed.");
+        } else {
+            showFlag("error", "The setting  of the Webhook Data for this project could not be changed.");
+        }
+    });
+}
+
 function getCommitsAsReturnValue(elementKey) {
 	var commitData = getResponseAsReturnValue(AJS.contextPath() + "/rest/gitplugin/latest/issues/" + elementKey
 			+ "/commits");

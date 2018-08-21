@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import de.uhd.ifi.se.decision.management.jira.config.GitConfig;
+import de.uhd.ifi.se.decision.management.jira.webhook.WebConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -295,6 +296,34 @@ public class ConfigRest {
 		}
 		String gitAddress = ConfigPersistence.getGitAddress(projectKey);
 		return Response.ok(gitAddress).build();
+	}
+
+	@Path("/setWebhookData")
+	@POST
+	public Response setWebhookData(@Context HttpServletRequest request,
+								   @QueryParam("projectKey") final  String projectKey,
+								   @QueryParam("webhookUrl") final  String webhookUrl,
+								   @QueryParam("webhookSecret") final String webhookSecret){
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if( webhookUrl == null || webhookSecret == null){
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "webhook Data = null"))
+					.build();
+		}
+		try {
+			ConfigPersistence.setWebhookUrl(projectKey, webhookUrl);
+			ConfigPersistence.setWebhookSecret(projectKey, webhookSecret);
+
+			//TODO Changing default send after the connection is working like intended
+			WebConnector connector = new WebConnector(webhookUrl, webhookSecret);
+			connector.sendWebHookTreant();
+			return Response.ok(Status.ACCEPTED).build();
+		}catch (Exception e){
+			LOGGER.error(e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
 	}
 
 	private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {

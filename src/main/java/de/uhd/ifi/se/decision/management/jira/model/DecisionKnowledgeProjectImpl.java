@@ -126,7 +126,7 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 		return  ConfigPersistence.getWebhookSecret(projectKey);
 	}
 	public void testWebHook(){
-		WebConnector connector = new WebConnector();
+		WebConnector connector = new WebConnector(projectKey);
 		connector.sendWebHookTreant();
 	}
 
