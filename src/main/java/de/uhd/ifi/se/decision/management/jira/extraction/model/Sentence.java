@@ -3,7 +3,11 @@ package de.uhd.ifi.se.decision.management.jira.extraction.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
@@ -34,23 +38,51 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		super();
 		this.setBody(body);
 		this.classification = new ArrayList<Rationale>();
-		this.setActiveObjectId(aoId);
-		this.isTagged(ActiveObjectsManager.checkCommentExistingInAO(aoId, true));
-		this.setRelevant(ActiveObjectsManager.getElementFromAO(aoId).getIsRelevant());
-		this.setTaggedFineGrained(ActiveObjectsManager.getElementFromAO(aoId).getIsTaggedFineGrained());
-		this.setTaggedManually(ActiveObjectsManager.getElementFromAO(aoId).getIsTaggedManually());
+		this.setValuesFromAoId(aoId);
 
-		if (this.isTaggedFineGrained) {
-			this.setClassificationFromAO();
-		}
+		
 
 		super.setDescription(this.body);
-		super.setId(0);
+		super.setId(aoId);
 		super.setKey(jiraCommentId + "-" + aoId);
 		super.setSummary(body);
 		super.setProject(
 				new DecisionKnowledgeProjectImpl(ComponentGetter.getProjectService().getProjectKeyDescription()));
 
+	}
+	
+
+
+	public Sentence(long aoId) {
+		super();
+		this.classification = new ArrayList<Rationale>();
+		this.setValuesFromAoId(aoId);
+		
+		
+		com.atlassian.jira.issue.comments.Comment c = ComponentAccessor.getCommentManager().getCommentById(ActiveObjectsManager.getElementFromAO(aoId).getCommentId());
+		super.setDescription((String) c.getBody().subSequence(startSubstringCount, endSubstringCount));
+		super.setSummary(super.getDescription());
+		this.setBody(super.getDescription());
+		super.setProject(
+				new DecisionKnowledgeProjectImpl(ComponentGetter.getProjectService().getProjectKeyDescription()));
+		super.setKey(c.getIssue().getId() + "-" +aoId);
+		super.setId(aoId);
+		
+		
+	}
+	
+	private void setValuesFromAoId(long aoId) {
+		this.setActiveObjectId(aoId);
+		this.isTagged(ActiveObjectsManager.checkCommentExistingInAO(aoId, true));
+		this.setRelevant(ActiveObjectsManager.getElementFromAO(aoId).getIsRelevant());
+		this.setTaggedFineGrained(ActiveObjectsManager.getElementFromAO(aoId).getIsTaggedFineGrained());
+		this.setTaggedManually(ActiveObjectsManager.getElementFromAO(aoId).getIsTaggedManually());
+		this.setStartSubstringCount(ActiveObjectsManager.getElementFromAO(aoId).getStartSubstringCount());
+		this.setEndSubstringCount(ActiveObjectsManager.getElementFromAO(aoId).getEndSubstringCount());
+		
+		if (this.isTaggedFineGrained) {
+			this.setClassificationFromAO();
+		}
 	}
 
 	private void setClassificationFromAO() {
