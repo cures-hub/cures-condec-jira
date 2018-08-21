@@ -1,12 +1,20 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
-//TODO Creates a connection to the given Git Repository
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+
 public class GitConfig {
 
 
     private String path;
+    private String projectKey;
 
-    public GitConfig(String path){
+    public GitConfig(String projectKey){
+        this.projectKey = projectKey;
+       ConfigPersistence persistence = new ConfigPersistence();
+       this.path = persistence.getGitAddress(projectKey);
+    }
+
+    public GitConfig(String projectKey, String path){
         this.path = path;
     }
 

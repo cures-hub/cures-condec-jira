@@ -277,7 +277,7 @@ public class ConfigRest {
 		}
 		try {
 			ConfigPersistence.setGitAddress(projectKey, gitAddress);
-			GitConfig gitConfig = new GitConfig(gitAddress);
+			GitConfig gitConfig = new GitConfig(projectKey ,gitAddress);
 			//TODO
 			return Response.ok(Status.ACCEPTED).build();
 		}catch (Exception e) {
