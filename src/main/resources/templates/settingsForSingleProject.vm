@@ -79,19 +79,19 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		</div>
         <div class="field-group">
             <label for="git-address">Git Address</label>
-            <input id="git-address" type="text" class="text"/>
+            <input id="git-address" type="text" class="text" value="$project.getGitAddress()"/>
             <form method="GET">
                 <input type="hidden" name="projectKey" value='$projectKey'/>
-				<button id="gitSubmitButton" class="aui-button aui-button-primary" value="$projectKey">Submit</button>
+				<button id="gitSubmitButton" class="aui-button aui-button-primary">Submit</button>
 			</form>
             <div class="description">Git Address to Extract the decisions from</div>
 			<script>
-				var gitAddress = document.getElementById('git-address');
-				gitAddress.value = $project.getGitAddress();
 				var gitSubmitButton = document.getElementById('gitSubmitButton');
 				gitSubmitButton.onclick = function() {
 				    var gitAdressInput = document.getElementById('git-address');
                     setGitConnector( '$projectKey',gitAdressInput.value);
+                    var gitInput = document.getElementById('git-address');
+                    gitInput.value = $project.getGitAddress();
 				};
 			</script>
         </div>

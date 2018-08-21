@@ -147,7 +147,7 @@ public class ConfigPersistence {
 			@Override
 			public Object doInTransaction() {
 				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-				return settings.get(pluginStorageKey + "..gitAddress");
+				return settings.get(pluginStorageKey + ".gitAddress");
 			}
 		});
 		if(gitAddress instanceof String){
