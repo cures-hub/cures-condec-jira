@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
@@ -226,9 +223,9 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 			case isCon:
 				return KnowledgeType.ARGUMENT;
 			default:
-				return null;
+				return KnowledgeType.OTHER;
 			}
 		}
-		return null;
+		return KnowledgeType.OTHER;
 	}
 }
