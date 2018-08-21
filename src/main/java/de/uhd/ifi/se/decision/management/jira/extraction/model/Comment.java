@@ -93,7 +93,7 @@ public class Comment {
 		String result = "<span id=\"comment" + index + "\">";
 		for (Sentence sentence : this.sentences) {
 			if (sentence.isRelevant()) {
-				result = result + "<span class=\"sentence\">" + Rationale.getOpeningTag(sentence.getClassification())
+				result = result + "<span class=\"sentence "+sentence.classificationToString()+" \">" + Rationale.getOpeningTag(sentence.getClassification())
 						+ sentence.getBody() + Rationale.getClosingTag(sentence.getClassification()) + "</span>";
 			} else {
 				result = "<span class=\"sentence\">" + result + Rationale.getRelevantTag(false) + sentence.getBody()
