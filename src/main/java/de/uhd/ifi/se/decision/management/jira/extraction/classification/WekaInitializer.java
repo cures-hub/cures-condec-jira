@@ -29,7 +29,7 @@ public class WekaInitializer {
 				areRelevant.add(n);
 			}
 		} catch (Exception e) {
-			System.err.println("Classification failed");
+			System.err.println("Binary Classification failed");
 			return commentsList;
 		}
 		// Match classification back on data
