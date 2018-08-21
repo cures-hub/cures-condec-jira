@@ -95,6 +95,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				};
 			</script>
         </div>
+	</form>
+    <form class="aui">
 		<div class="field-group">
 			<label for="isKnowledgeExtractedFromIssues-toggle">Extract from
 				Issue Comments?</label>
@@ -114,7 +116,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				});
             </script>
 			<div class="description">Enables or disables whether decision
-				knowledge is extracted from issue comments for this project.</div>
+				knowledge is extracted from issue comments for this project.
+			</div>
 		</div>
 		<h2 id="additionale-types-header">Additional Decision Knowledge
 			Types</h2>
@@ -171,10 +174,23 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			<div class="description">Key to authenticate with remote
 				server.</div>
 		</div>
+		<div class="field-group">
+            <form method="GET">
+                <input type="hidden" name="projectKey" value='$projectKey'/>
+                <button id="submitWebhook" class="aui-button aui-button-primary">Submit</button>
+            </form>
+		</div>
+		<script>
+			var webHookSubmit = document.getElementById("submitWebhook");
+			webHookSubmit.onclick = function () {
+				var urlInput = document.getElementById("webhook-url");
+				var secretInput = document.getElementById("webhook-secret");
+            };
+		</script>
         <div class="field-group">
             <form method="GET">
                 <input type="hidden" name="projectKey" value='$projectKey'/>
-				<button id="testWebHook">Test</button>
+				<button id="testWebHook" >Test</button>
 			</form>
 		</div>
 		<script>

@@ -110,6 +110,21 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 		return ConfigPersistence.getGitAddress(projectKey);
 	}
 
+	@Override
+	public void setWebhookData(String webhookUrl, String webhookSecret){
+		ConfigPersistence.setWebhookUrl(projectKey, webhookUrl);
+		ConfigPersistence.setWebhookSecret(projectKey, webhookSecret);
+	}
+
+	@Override
+	public String getWebhookUrl(){
+		return ConfigPersistence.getWebhookUrl(projectKey);
+	}
+
+	@Override
+	public  String getWebhookSecret(){
+		return  ConfigPersistence.getWebhookSecret(projectKey);
+	}
 	public void testWebHook(){
 		WebConnector connector = new WebConnector();
 		connector.sendWebHookTreant();

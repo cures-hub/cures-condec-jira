@@ -171,4 +171,25 @@ public interface DecisionKnowledgeProject {
 	 * 				a empty String will be returned.
 	 */
 	String getGitAddress();
+
+	/**
+	 * Set the Url where the Data should be send and also set the Secret for th
+	 * submission.
+	 *
+	 * @param webhookData
+	 * @param webhookSecret
+	 */
+	void setWebhookData(String webhookUrl, String webhookSecret);
+
+	/**
+	 *
+	 * @return returns the Webhook Url where the data should be send to.
+	 */
+	String getWebhookUrl();
+
+	/**
+	 *
+	 * @return returns the Secret for the submission of the data.
+	 */
+	String getWebhookSecret();
 }

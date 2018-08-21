@@ -155,4 +155,58 @@ public class ConfigPersistence {
 		}
 		return "";
 	}
+
+	//TODO Testing
+	public static void setWebhookUrl(String projectKey, String webhookUrl){
+		if( projectKey == null || webhookUrl == null){
+			return;
+		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey + ".webhookUrl", webhookUrl);
+	}
+
+	//TODO Testing
+	public static String getWebhookUrl(String projectKey){
+		if(projectKey == null){
+			return "";
+		}
+		Object webhookUrl = transactionTemplate.execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction() {
+				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+				return settings.get(pluginStorageKey + ".webhookUrl");
+			}
+		});
+		if(webhookUrl instanceof  String){
+			return (String) webhookUrl;
+		}
+		return "";
+	}
+
+	//TODO Testing
+	public static void setWebhookSecret(String projectKey, String webhookSecret){
+		if(projectKey == null || webhookSecret == null){
+			return;
+		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey+ ".webhookSecret", webhookSecret);
+	}
+
+	//TODO Testing
+	public  static String getWebhookSecret(String projectKey){
+		if(projectKey == null){
+			return "";
+		}
+		Object webhookSecret = transactionTemplate.execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction() {
+				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+				return settings.get(pluginStorageKey + ".webhookSecret");
+			}
+		});
+		if(webhookSecret instanceof  String){
+			return (String) webhookSecret;
+		}
+		return "";
+	}
 }
