@@ -216,6 +216,12 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.5</version>
         </dependency>
+		<!-- JSON -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20180130</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>cures-condec-jira</finalName>

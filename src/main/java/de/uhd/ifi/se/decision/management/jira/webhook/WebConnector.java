@@ -27,6 +27,7 @@ public class WebConnector{
         HttpClient httpClient = new HttpClient();
         PostMethod postMethod = new PostMethod(url);
 
+        //TODO Building the TreantJs JSON
         Treant treant = new Treant("Test", "Test", 1);
         NameValuePair head = new NameValuePair("issueKey", "CONDEC-1234");
         NameValuePair body = new NameValuePair("ConDeTree", treant.toString());
