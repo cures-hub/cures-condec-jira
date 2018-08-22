@@ -50,6 +50,7 @@ public class TreeViewerForSentences extends TreeViewer {
 			return new Data();
 		}
 		this.graph = new SentenceExtractionGraphImpl(decisionKnowledgeElement);
+		decisionKnowledgeElement.setDescription("");
 		Data data = new Data(decisionKnowledgeElement);
 		data = this.makeIdUnique(data);
 		List<Data> children = this.getChildrenOfSentences(decisionKnowledgeElement);
