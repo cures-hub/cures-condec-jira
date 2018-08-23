@@ -42,8 +42,6 @@ public class WebBodyProvider {
     }
 
     private JSONObject createTreantJsonString(){
-        JSONObject treantJSON = new JSONObject();
-
         Chart chart = this.treant.getChart();
         JSONObject chartJSON = new JSONObject();
         chartJSON.put("container", chart.getContainer());
@@ -57,6 +55,10 @@ public class WebBodyProvider {
         JSONObject nodeStructure = new JSONObject();
         nodeStructure.put("text", new JSONObject(treant.getNodeStructure().getNodeContent()));
         nodeStructure.put("children", treant.getNodeStructure().getChildren());
+
+        JSONObject treantJSON = new JSONObject();
+        treantJSON.put("chart",chartJSON);
+        treantJSON.put("nodeStructure", nodeStructure);
         return treantJSON;
     }
 
