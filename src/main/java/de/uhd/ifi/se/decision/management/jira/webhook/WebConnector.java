@@ -1,11 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
-import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
+import javafx.geometry.Pos;
+import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.NameValuePair;
 
 import java.io.IOException;
 
@@ -23,20 +21,13 @@ public class WebConnector{
         this.secret = webhookSecret;
     }
 
-    public boolean sendWebHookTreant() {
-        HttpClient httpClient = new HttpClient();
-        PostMethod postMethod = new PostMethod(url);
-
-        //TODO Building the TreantJs JSON
-        Treant treant = new Treant("Test", "Test", 1);
-        NameValuePair head = new NameValuePair("issueKey", "CONDEC-1234");
-        NameValuePair body = new NameValuePair("ConDeTree", treant.toString());
-        postMethod.addParameter(head);
-        postMethod.addParameter(body);
-
+    public boolean sendWebHookTreant(String projectKey, String issueKey) {
         try {
+            HttpClient httpClient = new HttpClient();
+            WebBodyProvider provider = new WebBodyProvider(projectKey, issueKey);
+            PostMethod postMethod = provider.getPostMethod();
+            postMethod.setURI(new HttpsURL(url));
             int respEntity = httpClient.executeMethod(postMethod);
-            System.out.println(treant.toString());
             System.out.println(respEntity);
             if (respEntity == 200) {
                 return true;

@@ -39,6 +39,10 @@ public class MockIssueManagerSelfImpl extends com.atlassian.jira.mock.MockIssueM
 		if ("30".equals(key)) {
 			return this.getIssueObject((long) 30);
 		}
+		if("CONDEC-1234".equals(key)){
+			Issue issue = this.getIssueObject((long)1234);
+			return (MutableIssue) issue;
+		}
 		for (int i = 2; i <= 16; i++) {
 			Issue issue = this.getIssueObject((long) i);
 			if (key.equals(issue.getId().toString())) {
@@ -48,6 +52,7 @@ public class MockIssueManagerSelfImpl extends com.atlassian.jira.mock.MockIssueM
 				return (MutableIssue) issue;
 			}
 		}
+
 		return null;
 	}
 }

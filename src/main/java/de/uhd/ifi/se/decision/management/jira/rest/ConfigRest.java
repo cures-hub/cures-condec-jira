@@ -316,9 +316,7 @@ public class ConfigRest {
 			ConfigPersistence.setWebhookUrl(projectKey, webhookUrl);
 			ConfigPersistence.setWebhookSecret(projectKey, webhookSecret);
 
-			//TODO Changing default send after the connection is working like intended
-			WebConnector connector = new WebConnector(webhookUrl, webhookSecret);
-			connector.sendWebHookTreant();
+			//TODO Changing default send after the connection is working like intended;
 			return Response.ok(Status.ACCEPTED).build();
 		}catch (Exception e){
 			LOGGER.error(e.getMessage());

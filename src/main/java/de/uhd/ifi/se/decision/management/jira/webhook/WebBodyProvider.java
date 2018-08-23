@@ -4,6 +4,8 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Chart;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
+import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.json.JSONObject;
 
 /**
@@ -23,22 +25,27 @@ import org.json.JSONObject;
  */
 public class WebBodyProvider {
 
-    private String jsonString;
+    private PostMethod postMethod;
     private Treant treant;
     private DecisionKnowledgeProject project;
 
     public WebBodyProvider(String projectKey, String elementKey) {
+        postMethod = new PostMethod();
+        if(projectKey == null || elementKey == null){
+            return;
+        }
         this.treant = new Treant(projectKey, elementKey, 4);
         this.project = new DecisionKnowledgeProjectImpl(projectKey);
-        createJsonString();
+        createJsonString(elementKey);
     }
 
-    private void createJsonString(){
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("commit", new JSONObject().put("hash",project.getWebhookSecret()));
+    private void createJsonString(String issueKey){
+        String issueKeyString =  new JSONObject().put("issueKey",issueKey).toString();
+        NameValuePair issuePair = new NameValuePair("commit",issueKeyString);
         JSONObject treantJSON = createTreantJsonString();
-        jsonObject.put("ConDeTree",treantJSON);
-        this.jsonString = jsonObject.toString();
+        NameValuePair conDeTreePair = new NameValuePair("ConDeTree",treantJSON.toString());
+        postMethod.addParameter(issuePair);
+        postMethod.addParameter(conDeTreePair);
     }
 
     private JSONObject createTreantJsonString(){
@@ -62,7 +69,7 @@ public class WebBodyProvider {
         return treantJSON;
     }
 
-    public String getJsonString() {
-        return jsonString;
+    public PostMethod getPostMethod() {
+        return postMethod;
     }
 }

@@ -142,5 +142,14 @@ public class TestSetUp {
 		issue.setSummary("Test");
 		((MockIssueManagerSelfImpl) issueManager).addIssue(issue);
 		issue.setParentId((long) 3);
+
+		Project condecProject = new MockProject(3, "CONDEC");
+		((MockProject) condecProject).setKey("CONDEC");
+		((MockProjectManager) projectManager).addProject(condecProject);
+		MutableIssue cuuIssue = new MockIssue(1234, "CONDEC-1234");
+		cuuIssue.setIssueType(constantsManager.getIssueType("2"));
+		cuuIssue.setSummary("Test Send");
+		cuuIssue.setProjectObject(condecProject);
+		((MockIssueManagerSelfImpl) issueManager).addIssue(cuuIssue);
 	}
 }
