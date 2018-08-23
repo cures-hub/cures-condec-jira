@@ -8,6 +8,10 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Creates the Body for the Webhook.
  *
@@ -44,8 +48,10 @@ public class WebBodyProvider {
         NameValuePair issuePair = new NameValuePair("commit",issueKeyString);
         JSONObject treantJSON = createTreantJsonString();
         NameValuePair conDeTreePair = new NameValuePair("ConDeTree",treantJSON.toString());
-        postMethod.addParameter(issuePair);
-        postMethod.addParameter(conDeTreePair);
+        NameValuePair[] bodySet = new NameValuePair[2];
+        bodySet[0] = issuePair;
+        bodySet[1] = conDeTreePair;
+        postMethod.setRequestBody(bodySet);
     }
 
     private JSONObject createTreantJsonString(){

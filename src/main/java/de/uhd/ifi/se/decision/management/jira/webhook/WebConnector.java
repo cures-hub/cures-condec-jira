@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
-import javafx.geometry.Pos;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.PostMethod;
 
@@ -31,9 +30,6 @@ public class WebConnector{
             System.out.println(respEntity);
             if (respEntity == 200) {
                 return true;
-            }
-            if (respEntity == 404) {
-                return false;
             }
         } catch (HttpException e) {
             // writing exception to log
