@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
-import de.uhd.ifi.se.decision.management.jira.persistence.IssueStrategy;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.slf4j.Logger;
@@ -15,21 +14,42 @@ public class WebConnector{
     private String secret;
 
     public WebConnector(String projectKey){
-        this.url = ConfigPersistence.getWebhookUrl(projectKey);
-        this.secret = ConfigPersistence.getWebhookSecret(projectKey);
+        if(projectKey != null){
+            this.url = ConfigPersistence.getWebhookUrl(projectKey);
+            this.secret = ConfigPersistence.getWebhookSecret(projectKey);
+        }
+        if(url == null) {
+            url = "";
+            LOGGER.error("Webhook could not be created because Webhook Url is null");
+        }
+        if(secret == null){
+            secret = "";
+            LOGGER.error("Webhook could not be created because Webhook Secret is null");
+        }
     }
 
     public WebConnector(String webhookUrl, String webhookSecret){
-        if(webhookUrl == null || webhookSecret == null){
+        if(webhookUrl == null) {
             webhookUrl = "";
+            LOGGER.error("Webhook could not be created because Webhook Url is null");
+        }
+        if( webhookSecret == null){
             webhookSecret = "";
-            LOGGER.error("Webhook could not be created because Webhook Url and Secret are null");
+            LOGGER.error("Webhook could not be created because Webhook Secret is null");
         }
         this.url = webhookUrl;
         this.secret = webhookSecret;
     }
 
     public boolean sendWebHookTreant(String projectKey, String issueKey) {
+        if(projectKey == null || projectKey.equals("")){
+            LOGGER.error("Could not send WebHook data because projectKey Null or empty");
+            return false;
+        }
+        if(issueKey == null || issueKey.equals("")){
+            LOGGER.error("Could not send WebHook data because issueKey Null or empty");
+            return false;
+        }
         try {
             HttpClient httpClient = new HttpClient();
             WebBodyProvider provider = new WebBodyProvider(projectKey, issueKey);
@@ -49,4 +69,21 @@ public class WebConnector{
         }
         return false;
     }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
+    }
+
 }
