@@ -8,6 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -24,9 +25,12 @@ public class TestWebConnector extends TestSetUp{
         initialization();
     }
 
-    @Test
+    @Ignore
     public void testConnectionSend(){
         WebConnector connector = new WebConnector("https://cuu-staging.ase.in.tum.de/api/v1/projects/ConDecDev/integrations/conDec","03f90207-73bc-44d9-9848-d3f1f8c8254e");
         assertTrue(connector.sendWebHookTreant("CONDEC", "CONDEC-1234"));
     }
+
+    @Test
+    public void
 }
