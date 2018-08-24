@@ -70,7 +70,13 @@ public class TreeViewer {
 
 	public TreeViewer(String issueId, boolean showRelevant) {
 		this();
+		if(issueId == null){
+			return;
+		}
 		Issue currentIssue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
+		if(currentIssue == null){
+			return;
+		}
 		ViewConnector vc = new ViewConnector(currentIssue, true);
 
 		Set<Data> dataSet = new HashSet<Data>();

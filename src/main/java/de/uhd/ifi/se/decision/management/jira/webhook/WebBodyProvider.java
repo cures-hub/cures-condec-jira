@@ -7,11 +7,6 @@ import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * Creates the Body for the Webhook.
  *

@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.mocks;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 import org.ofbiz.core.entity.GenericEntityException;
 
 import com.atlassian.jira.issue.Issue;
@@ -52,7 +53,15 @@ public class MockIssueManagerSelfImpl extends com.atlassian.jira.mock.MockIssueM
 				return (MutableIssue) issue;
 			}
 		}
-
 		return null;
+	}
+
+	@Override
+	public MutableIssue getIssueObject(String key){
+		if("false".equals(key)){
+			return null;
+		}
+		Issue issue = this.getIssueObject((long)14);
+		return (MutableIssue) issue;
 	}
 }
