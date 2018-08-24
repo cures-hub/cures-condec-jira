@@ -26,7 +26,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStr
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-import sun.reflect.generics.tree.Tree;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestTreeViewer extends TestSetUp {
