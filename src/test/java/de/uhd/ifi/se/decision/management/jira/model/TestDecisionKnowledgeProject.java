@@ -1,15 +1,25 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import com.atlassian.activeobjects.test.TestActiveObjects;
+import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import net.java.ao.EntityManager;
+import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * Test class for a JIRA project with the configuration settings used in this plug-in
  */
-public class TestDecisionKnowledgeProject {
-
+@RunWith(ActiveObjectsJUnitRunner.class)
+public class TestDecisionKnowledgeProject extends TestSetUp {
+	private EntityManager entityManager;
 	private DecisionKnowledgeProject project;
 	private String projectKey;
 	private String projectName;
@@ -18,6 +28,9 @@ public class TestDecisionKnowledgeProject {
 
 	@Before
 	public void setUp() {
+		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
+				new MockDefaultUserManager());
+		initialization();
 		this.projectKey = "TestKey";
 		this.projectName = "TestName";
 		this.isActivated = true;
@@ -67,5 +80,61 @@ public class TestDecisionKnowledgeProject {
 	public void testSetIssueStrategy() {
 		this.project.setIssueStrategy(this.isIssueStrategy);
 		assertEquals(this.isIssueStrategy, this.project.isIssueStrategy());
+	}
+
+	@Test
+	public void testGetKnowledgeTypes(){
+		assertEquals(16,project.getKnowledgeTypes().size(), 0.0);
+	}
+
+	@Test
+	public void testSetIsKnowledgeExtractedFromGit(){
+		project.setKnowledgeExtractedFromGit(true);
+		assertTrue(project.isKnowledgeExtractedFromGit());
+	}
+
+	@Test
+	public void testSetIsKnowledgeExtrectedFromIssues(){
+		project.setKnowledgeExtractedFromIssues(true);
+		assertTrue(project.isKnowledgeExtractedFromIssues());
+	}
+
+	@Test
+	public void testGetGitAddress(){
+		assertEquals("true", project.getGitAddress());
+	}
+
+	@Test
+	public void  testSetWebhookDataNullNull(){
+		project.setWebhookData(null, null);
+		assertTrue(true);
+	}
+
+	@Test
+	public void  testSetWebhookDataNullFilled(){
+		project.setWebhookData(null, "TEST-Sec");
+		assertTrue(true);
+	}
+
+	@Test
+	public void  testSetWebhookDataFilledNull(){
+		project.setWebhookData("TEST", null);
+		assertTrue(true);
+	}
+
+	@Test
+	public void  testSetWebhookDataFilledFilled(){
+		project.setWebhookData("TEST", "TEST-Sec");
+		assertTrue(true);
+	}
+
+	@Test
+	public void testGetWebhookUrl(){
+		assertEquals("true", project.getWebhookUrl());
+	}
+
+	@Test
+	public void testGetWebhookSecret(){
+		assertEquals("true", project.getWebhookSecret());
 	}
 }

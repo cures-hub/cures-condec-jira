@@ -124,4 +124,11 @@ public class TestGraph extends TestSetUp {
 		graph.setRootElement(element);
 		assertEquals(element.getSummary(), graph.getRootElement().getSummary());
 	}
+
+	@Test
+	public void testSetGetProject(){
+		DecisionKnowledgeProject project = new DecisionKnowledgeProjectImpl("TEST-Set");
+		graph.setProject(project);
+		assertEquals("TEST-Set", graph.getProject().getProjectKey());
+	}
 }

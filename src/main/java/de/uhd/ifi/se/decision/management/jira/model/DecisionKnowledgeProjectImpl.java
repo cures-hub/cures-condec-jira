@@ -112,6 +112,9 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 
 	@Override
 	public void setWebhookData(String webhookUrl, String webhookSecret){
+		if(webhookUrl == null || webhookSecret == null){
+			return;
+		}
 		ConfigPersistence.setWebhookUrl(projectKey, webhookUrl);
 		ConfigPersistence.setWebhookSecret(projectKey, webhookSecret);
 	}
