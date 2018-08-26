@@ -28,6 +28,9 @@ public class WebBodyProvider {
     }
 
     public PostMethod getPostMethodForIssueKey() {
+        if(project == null || identifierKey == null){
+            return new PostMethod();
+        }
         treant = new Treant(project.getProjectKey(), identifierKey, 4);
         project = new DecisionKnowledgeProjectImpl(project.getProjectKey());
         createJsonStringForIssueKey();
@@ -35,6 +38,9 @@ public class WebBodyProvider {
     }
 
     public PostMethod getPostMethodForGitHash() {
+        if(project == null || identifierKey == null){
+            return new PostMethod();
+        }
         treant = new Treant(project.getProjectKey(), identifierKey, 4);
         project = new DecisionKnowledgeProjectImpl(project.getProjectKey());
         creatJsonStringForGitHash();

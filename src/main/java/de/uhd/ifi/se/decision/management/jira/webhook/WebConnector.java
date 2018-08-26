@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
-import javafx.geometry.Pos;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.slf4j.Logger;
