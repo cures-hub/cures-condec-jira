@@ -53,7 +53,7 @@ public class WebConnector{
         try {
             HttpClient httpClient = new HttpClient();
             WebBodyProvider provider = new WebBodyProvider(projectKey, issueKey);
-            PostMethod postMethod = provider.getPostMethod();
+            PostMethod postMethod = provider.getPostMethodForIssueKey();
             postMethod.setURI(new HttpsURL(url));
             int respEntity = httpClient.executeMethod(postMethod);
             System.out.println(respEntity);

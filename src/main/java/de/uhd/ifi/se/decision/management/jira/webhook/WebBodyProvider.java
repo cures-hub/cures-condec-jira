@@ -9,42 +9,55 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.json.JSONObject;
 /**
  * Creates the Body for the Webhook.
- *
- * {
- *  "commit": {
- *     "hash": "string"
- * },
- *  "ConDeTree": {TreantJS JSON Config/Data}
- *  }
- *  or
- * {
- *  "issueKey": "string",
- *  " ConDeTree": { ..TreantJS JSON Config.. }
- * }
  */
 public class WebBodyProvider {
 
     private PostMethod postMethod;
     private Treant treant;
     private DecisionKnowledgeProject project;
+    private String identifierKey;
 
-    public WebBodyProvider(String projectKey, String elementKey) {
+    public WebBodyProvider(String projectKey, String identifierKey) {
         postMethod = new PostMethod();
-        if(projectKey == null || elementKey == null){
+        if(projectKey == null || identifierKey == null){
             return;
         }
-        this.treant = new Treant(projectKey, elementKey, 4);
-        this.project = new DecisionKnowledgeProjectImpl(projectKey);
-        createJsonString(elementKey);
+        this.identifierKey = identifierKey;
+        project = new DecisionKnowledgeProjectImpl(projectKey);
+
     }
 
-    private void createJsonString(String issueKey){
-        String issueKeyString =  new JSONObject().put("issueKey",issueKey).toString();
-        NameValuePair issuePair = new NameValuePair("commit",issueKeyString);
+    /**
+     * {
+     *  "issueKey": "string",
+     *  " ConDeTree": { ..TreantJS JSON Config.. }
+     * }
+     */
+    private void createJsonStringForIssueKey(){
+        NameValuePair issuePair = new NameValuePair("issueKey",identifierKey);
         JSONObject treantJSON = createTreantJsonString();
         NameValuePair conDeTreePair = new NameValuePair("ConDeTree",treantJSON.toString());
         NameValuePair[] bodySet = new NameValuePair[2];
         bodySet[0] = issuePair;
+        bodySet[1] = conDeTreePair;
+        postMethod.setRequestBody(bodySet);
+    }
+
+    /**
+     * {
+     *  "commit": {
+     *     "hash": "string"
+     * },
+     *  "ConDeTree": {TreantJS JSON Config/Data}
+     *  }
+     */
+    private void creatJsonStringForGitHash(){
+        String gitHashString = new JSONObject().put("hash", identifierKey).toString();
+        JSONObject treantJSON = createTreantJsonString();
+        NameValuePair commitPair = new NameValuePair("commit", gitHashString);
+        NameValuePair conDeTreePair = new NameValuePair("ConDeTree",treantJSON.toString());
+        NameValuePair[] bodySet = new NameValuePair[2];
+        bodySet[0] = commitPair;
         bodySet[1] = conDeTreePair;
         postMethod.setRequestBody(bodySet);
     }
@@ -70,7 +83,17 @@ public class WebBodyProvider {
         return treantJSON;
     }
 
-    public PostMethod getPostMethod() {
+    public PostMethod getPostMethodForIssueKey() {
+        treant = new Treant(project.getProjectKey(), identifierKey, 4);
+        project = new DecisionKnowledgeProjectImpl(project.getProjectKey());
+        createJsonStringForIssueKey();
+        return postMethod;
+    }
+
+    public PostMethod getPostMethodForGitHash() {
+        treant = new Treant(project.getProjectKey(), identifierKey, 4);
+        project = new DecisionKnowledgeProjectImpl(project.getProjectKey());
+        creatJsonStringForGitHash();
         return postMethod;
     }
 }

@@ -29,24 +29,24 @@ public class TestWebBodyProvider extends TestSetUp{
     @Test
     public void testConstructorNullNull() throws IOException {
         WebBodyProvider provider = new WebBodyProvider(null,null);
-        assertEquals(0,provider.getPostMethod().getParameters().length,0.0);
+        assertEquals(0,provider.getPostMethodForIssueKey().getParameters().length,0.0);
     }
 
     @Test
     public void testConstructorNullFilled() throws IOException {
         WebBodyProvider provider = new WebBodyProvider(null,"TEST-14");
-        assertEquals(0,provider.getPostMethod().getParameters().length,0.0);
+        assertEquals(0,provider.getPostMethodForIssueKey().getParameters().length,0.0);
     }
 
     @Test
     public void testConstructorFilledNull() throws IOException {
         WebBodyProvider provider = new WebBodyProvider("TEST",null);
-        assertEquals(0,provider.getPostMethod().getParameters().length, 0.0);
+        assertEquals(0,provider.getPostMethodForIssueKey().getParameters().length, 0.0);
     }
 
     @Test
     public void testFilledFilled() throws IOException {
         WebBodyProvider provider = new WebBodyProvider("TEST", "TEST-14");
-        assertEquals(2,provider.getPostMethod().getParameters().length, 0.0);
+        assertEquals(2,provider.getPostMethodForIssueKey().getParameters().length, 0.0);
     }
 }
