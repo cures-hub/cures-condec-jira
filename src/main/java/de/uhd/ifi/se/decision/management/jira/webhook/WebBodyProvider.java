@@ -27,6 +27,20 @@ public class WebBodyProvider {
 
     }
 
+    public PostMethod getPostMethodForIssueKey() {
+        treant = new Treant(project.getProjectKey(), identifierKey, 4);
+        project = new DecisionKnowledgeProjectImpl(project.getProjectKey());
+        createJsonStringForIssueKey();
+        return postMethod;
+    }
+
+    public PostMethod getPostMethodForGitHash() {
+        treant = new Treant(project.getProjectKey(), identifierKey, 4);
+        project = new DecisionKnowledgeProjectImpl(project.getProjectKey());
+        creatJsonStringForGitHash();
+        return postMethod;
+    }
+
     /**
      * {
      *  "issueKey": "string",
@@ -81,19 +95,5 @@ public class WebBodyProvider {
         treantJSON.put("chart",chartJSON);
         treantJSON.put("nodeStructure", nodeStructure);
         return treantJSON;
-    }
-
-    public PostMethod getPostMethodForIssueKey() {
-        treant = new Treant(project.getProjectKey(), identifierKey, 4);
-        project = new DecisionKnowledgeProjectImpl(project.getProjectKey());
-        createJsonStringForIssueKey();
-        return postMethod;
-    }
-
-    public PostMethod getPostMethodForGitHash() {
-        treant = new Treant(project.getProjectKey(), identifierKey, 4);
-        project = new DecisionKnowledgeProjectImpl(project.getProjectKey());
-        creatJsonStringForGitHash();
-        return postMethod;
     }
 }

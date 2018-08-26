@@ -33,7 +33,7 @@ public class TestWebConnector extends TestSetUp{
     @Ignore
     public void testConnectionSend(){
         WebConnector connector = new WebConnector("https://cuu-staging.ase.in.tum.de/api/v1/projects/ConDecDev/integrations/conDec","03f90207-73bc-44d9-9848-d3f1f8c8254e");
-        assertTrue(connector.sendWebHookTreant("CONDEC", "CONDEC-1234"));
+        assertTrue(connector.sendWebHookForIssueKey("CONDEC", "CONDEC-1234"));
     }
 
     @Test
@@ -87,41 +87,41 @@ public class TestWebConnector extends TestSetUp{
 
     @Test
     public void testsendWebhookNullNull(){
-        assertFalse(connectorHook.sendWebHookTreant(null, null));
+        assertFalse(connectorHook.sendWebHookForIssueKey(null, null));
     }
 
     @Test
     public void testsendWebhookNullEmpty(){
-        assertFalse(connectorHook.sendWebHookTreant(null, ""));
+        assertFalse(connectorHook.sendWebHookForIssueKey(null, ""));
     }
 
     @Test
     public void testsendWebhookEmptyNull(){
-        assertFalse(connectorHook.sendWebHookTreant("", null));
+        assertFalse(connectorHook.sendWebHookForIssueKey("", null));
     }
 
     @Test
     public void testsendWebhookEmptyEmpty(){
-        assertFalse(connectorHook.sendWebHookTreant("", ""));
+        assertFalse(connectorHook.sendWebHookForIssueKey("", ""));
     }
 
     @Test
     public void testsendWebhookNullFilled(){
-        assertFalse(connectorHook.sendWebHookTreant(null, "TEST-12"));
+        assertFalse(connectorHook.sendWebHookForIssueKey(null, "TEST-12"));
     }
 
     @Test
     public void testsendWebhookEmptyFilled(){
-        assertFalse(connectorHook.sendWebHookTreant("", "TEST-12"));
+        assertFalse(connectorHook.sendWebHookForIssueKey("", "TEST-12"));
     }
 
     @Test
     public void testsendWebhookFilledNull(){
-        assertFalse(connectorHook.sendWebHookTreant("TEST", null));
+        assertFalse(connectorHook.sendWebHookForIssueKey("TEST", null));
     }
 
     @Test
     public void testsendWebhookFilledEmpty(){
-        assertFalse(connectorHook.sendWebHookTreant("TEST", ""));
+        assertFalse(connectorHook.sendWebHookForIssueKey("TEST", ""));
     }
 }
