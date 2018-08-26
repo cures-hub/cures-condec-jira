@@ -31,9 +31,27 @@ public class TestWebConnector extends TestSetUp{
 
     //Can be used to try if the connection is working like intended
     @Ignore
-    public void testConnectionSend(){
+    public void testConnectionSendIssueKey(){
         WebConnector connector = new WebConnector("https://cuu-staging.ase.in.tum.de/api/v1/projects/ConDecDev/integrations/conDec","03f90207-73bc-44d9-9848-d3f1f8c8254e");
         assertTrue(connector.sendWebHookForIssueKey("CONDEC", "CONDEC-1234"));
+    }
+
+    @Ignore
+    public void testConnectionSendGitHash(){
+        WebConnector connector = new WebConnector("https://cuu-staging.ase.in.tum.de/api/v1/projects/ConDecDev/integrations/conDec","03f90207-73bc-44d9-9848-d3f1f8c8254e");
+        assertTrue(connector.sendWebHookForIssueKey("CONDEC", "55780011c"));
+    }
+
+    @Test
+    public void testSetGetUrl(){
+        connectorHook.setUrl("Test-New");
+        assertEquals("Test-New", connectorHook.getUrl());
+    }
+
+    @Test
+    public void testSetGetSecret(){
+        connectorHook.setSecret("Test-New");
+        assertEquals("Test-New", connectorHook.getSecret());
     }
 
     @Test
@@ -86,42 +104,82 @@ public class TestWebConnector extends TestSetUp{
     }
 
     @Test
-    public void testsendWebhookNullNull(){
+    public void testSendWebHookForIssueKeyNullNull(){
         assertFalse(connectorHook.sendWebHookForIssueKey(null, null));
     }
 
     @Test
-    public void testsendWebhookNullEmpty(){
+    public void testSendWebHookForIssueKeyNullEmpty(){
         assertFalse(connectorHook.sendWebHookForIssueKey(null, ""));
     }
 
     @Test
-    public void testsendWebhookEmptyNull(){
+    public void testSendWebHookForIssueKeyEmptyNull(){
         assertFalse(connectorHook.sendWebHookForIssueKey("", null));
     }
 
     @Test
-    public void testsendWebhookEmptyEmpty(){
+    public void testSendWebHookForIssueKeyEmptyEmpty(){
         assertFalse(connectorHook.sendWebHookForIssueKey("", ""));
     }
 
     @Test
-    public void testsendWebhookNullFilled(){
+    public void testSendWebHookForIssueKeyNullFilled(){
         assertFalse(connectorHook.sendWebHookForIssueKey(null, "TEST-12"));
     }
 
     @Test
-    public void testsendWebhookEmptyFilled(){
+    public void testSendWebHookForIssueKeyEmptyFilled(){
         assertFalse(connectorHook.sendWebHookForIssueKey("", "TEST-12"));
     }
 
     @Test
-    public void testsendWebhookFilledNull(){
+    public void testSendWebHookForIssueKeyFilledNull(){
         assertFalse(connectorHook.sendWebHookForIssueKey("TEST", null));
     }
 
     @Test
-    public void testsendWebhookFilledEmpty(){
+    public void testSendWebHookForIssueKeyFilledEmpty(){
         assertFalse(connectorHook.sendWebHookForIssueKey("TEST", ""));
+    }
+
+    @Test
+    public void testSendWebHookForGitHashNullNull(){
+        assertFalse(connectorHook.sendWebHookForGitHash(null, null));
+    }
+
+    @Test
+    public void  testSendWebHookForGitHashNullEmpty(){
+        assertFalse(connectorHook.sendWebHookForIssueKey(null, ""));
+    }
+
+    @Test
+    public void testSendWebHookForGitHashEmptyNull(){
+        assertFalse(connectorHook.sendWebHookForGitHash("", null));
+    }
+
+    @Test
+    public void  testSendWebHookForGitHashEmptyEmpty(){
+        assertFalse(connectorHook.sendWebHookForGitHash("", ""));
+    }
+
+    @Test
+    public void  testSendWebHookForGitHashNullFilled(){
+        assertFalse(connectorHook.sendWebHookForGitHash(null, "TEST-12"));
+    }
+
+    @Test
+    public void  testSendWebHookForGitHashEmptyFilled(){
+        assertFalse(connectorHook.sendWebHookForGitHash("", "TEST-12"));
+    }
+
+    @Test
+    public void  testSendWebHookForGitHashFilledNull(){
+        assertFalse(connectorHook.sendWebHookForGitHash("TEST", null));
+    }
+
+    @Test
+    public void  testSendWebHookForGitHashFilledEmpty(){
+        assertFalse(connectorHook.sendWebHookForGitHash("TEST", ""));
     }
 }
