@@ -136,10 +136,16 @@
 		</description>
 		<label>Decision Knowledge</label>
 		<param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-decision" />
-		<link> /projects/$pathEncodedProjectKey?selectedItem=decisions-page	</link>
-		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition">
-			<param name="projectKey" value="$pathEncodedProjectKey" />
-		</condition>
+		<link> /projects/$pathEncodedProjectKey?selectedItem=decisions-page</link>
+		<conditions type="AND">
+			<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition">
+				<param name="projectKey" value="$pathEncodedProjectKey" />
+			</condition>
+			<!-- TODO needs to be added in the link path -->
+			<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition">
+				<param name="selectedIssueKey" value="$selectedIssueKey"/>
+			</condition>
+		</conditions>
 	</web-item>
 	<web-panel name="ConDec Plug-in Page" key="decisions-page" location="decisions-page"
 		weight="1000">
