@@ -432,6 +432,9 @@ public class ActiveObjectsManager {
 					if (sentenceEntity.getId() == id) {
 						sentenceEntity = setKnowledgeType(knowledgeType.toString(), sentenceEntity);
 						sentenceEntity.setKnowledgeType(knowledgeType);
+						if(knowledgeType != KnowledgeType.OTHER) {
+							sentenceEntity.setIsRelevant(true);
+						}
 						sentenceEntity.save();
 						return true;
 					}
@@ -496,6 +499,7 @@ public class ActiveObjectsManager {
 						sentenceEntity.setIsIssue(false);
 						sentenceEntity.setIsDecision(false);
 						sentenceEntity.setIsTaggedManually(isTaggedManually);
+						sentenceEntity.setKnowledgeType(KnowledgeType.OTHER);
 						
 						sentenceEntity.save();
 						return true;

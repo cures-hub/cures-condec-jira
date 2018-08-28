@@ -426,7 +426,7 @@ var contextMenuDeleteSentenceAction = {
 		var node = getSelectedTreeViewerNode(position);
 		var id = node.id;
 		setSentenceIrrelevant(id,function(core,node){
-			$("#jstree").jstree(true).set_icon(node,"https://player.fm/static/images/128pixel.png");
+			$("#jstree").jstree(true).set_icon($('#jstree').jstree(true).get_node(id),"https://player.fm/static/images/128pixel.png");
 			document.getElementById("ui"+id).getElementsByClassName("tag")[0].textContent="";
 			document.getElementById("ui"+id).getElementsByClassName("tag")[1].textContent="";
 			document.getElementById("ui"+id).classList.remove("isDecision","isIssue","isAlternative","isPro","isCon");

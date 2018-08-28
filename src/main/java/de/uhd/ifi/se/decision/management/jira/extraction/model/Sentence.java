@@ -294,14 +294,14 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 	}
 
 	public String getOpeningTagSpan() {
-		if(super.type == null  || super.type == KnowledgeType.OTHER) {
+		if(super.type == null  || super.type == KnowledgeType.OTHER || !this.isRelevant) {
 			return "<span class =tag ></span>" ;
 		}
 		return "<span class =tag>["+super.type.toString()+"]</span>";
 	}
 	
 	public String getClosingTagSpan() {
-		if(super.type == null || super.type == KnowledgeType.OTHER) {
+		if(super.type == null || super.type == KnowledgeType.OTHER || !this.isRelevant) {
 			return "<span class =tag ></span>" ;
 		}
 		return "<span class =tag>[/"+super.type.toString()+"]</span>";
