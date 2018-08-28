@@ -11,7 +11,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Rationale;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
@@ -42,11 +41,6 @@ public class ActiveObjectsManager {
 					todo.setEndSubstringCount(endSubStringCount);
 					todo.setStartSubstringCount(startSubstringCount);
 					todo.setUserId(userId);
-					todo.setIsAlternative(false);
-					todo.setIsCon(false);
-					todo.setIsDecision(false);
-					todo.setIsPro(false);
-					todo.setIsIssue(false);
 					todo.setIsTagged(false);
 					todo.setIsTaggedFineGrained(false);
 					todo.setIsTaggedManually(false);
@@ -187,41 +181,6 @@ public class ActiveObjectsManager {
 			return false;
 		}
 		return true;
-	}
-
-	public static List<Rationale> getRationaleType(long activeObjectId) {
-		init();
-		DecisionKnowledgeInCommentEntity databaseEntry = ao
-				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-					@Override
-					public DecisionKnowledgeInCommentEntity doInTransaction() {
-						for (DecisionKnowledgeInCommentEntity databaseEntry : ao
-								.find(DecisionKnowledgeInCommentEntity.class)) {
-							if (databaseEntry.getId() == activeObjectId) {
-								return databaseEntry;
-							}
-						}
-						return null;
-					}
-				});
-		List<Rationale> rationale = new ArrayList<Rationale>();
-		if (databaseEntry.getIsIssue()) {
-			rationale.add(Rationale.isIssue);
-		}
-		if (databaseEntry.getIsAlternative()) {
-			rationale.add(Rationale.isAlternative);
-		}
-		if (databaseEntry.getIsDecision()) {
-			rationale.add(Rationale.isDecision);
-		}
-		if (databaseEntry.getIsPro()) {
-			rationale.add(Rationale.isPro);
-		}
-		if (databaseEntry.getIsCon()) {
-			rationale.add(Rationale.isCon);
-		}
-
-		return rationale;
 	}
 
 	public static void checkIfCommentBodyHasChangedOutsideOfPlugin(Comment comment) {
@@ -389,7 +348,6 @@ public class ActiveObjectsManager {
 				for (DecisionKnowledgeInCommentEntity sentenceEntity : ao
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
-						sentenceEntity = setKnowledgeType(knowledgeType.toString(), sentenceEntity);
 						sentenceEntity.setKnowledgeType(knowledgeType);
 						if(knowledgeType != KnowledgeType.OTHER) {
 							sentenceEntity.setIsRelevant(true);
@@ -405,44 +363,6 @@ public class ActiveObjectsManager {
 	}
 
 
-	private static DecisionKnowledgeInCommentEntity setKnowledgeType(String knowledgeType,
-			DecisionKnowledgeInCommentEntity databaseElement) {
-		if (knowledgeType.startsWith("is")) {
-			knowledgeType = knowledgeType.substring(2);
-		}
-		resetClasses(databaseElement);
-		switch (knowledgeType) {
-		case "Issue":
-			databaseElement.setIsIssue(true);
-			break;
-		case "Alternative":
-			databaseElement.setIsAlternative(true);
-			break;
-		case "Decision":
-			databaseElement.setIsDecision(true);
-			break;
-		case "Pro":
-			databaseElement.setIsPro(true);
-			break;
-		case "Con":
-			databaseElement.setIsCon(true);
-			break;
-		}
-		databaseElement.setIsTaggedFineGrained(true);
-		databaseElement.save();
-		return databaseElement;
-	}
-
-	private static DecisionKnowledgeInCommentEntity resetClasses(DecisionKnowledgeInCommentEntity databaseElement) {
-		databaseElement.setIsAlternative(false);
-		databaseElement.setIsCon(false);
-		databaseElement.setIsDecision(false);
-		databaseElement.setIsIssue(false);
-		databaseElement.setIsPro(false);
-		databaseElement.save();
-		return databaseElement;
-	}
-
 	public static boolean setSentenceIrrelevant(long id,boolean isTaggedManually) {
 		init();
 		return ao.executeInTransaction(new TransactionCallback<Boolean>() {
@@ -452,14 +372,8 @@ public class ActiveObjectsManager {
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
 						sentenceEntity.setIsRelevant(false);
-						sentenceEntity.setIsAlternative(false);
-						sentenceEntity.setIsCon(false);
-						sentenceEntity.setIsPro(false);
-						sentenceEntity.setIsIssue(false);
-						sentenceEntity.setIsDecision(false);
 						sentenceEntity.setIsTaggedManually(isTaggedManually);
 						sentenceEntity.setKnowledgeType(KnowledgeType.OTHER);
-						
 						sentenceEntity.save();
 						return true;
 					}
