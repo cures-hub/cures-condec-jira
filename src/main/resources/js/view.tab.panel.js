@@ -63,12 +63,12 @@ function buildTreeViewer2(showRelevant) {
 	getTreeViewerWithoutRootElement(showRelevant, function(core) {
 		$("#jstree").jstree({
 			"core" : core,
-			"plugins" : [ "dnd", "contextmenu", "wholerow", "sort", "search" ],
+			"plugins" : [ "dnd", "contextmenu", "wholerow", "search" ],
 			"search" : {
 				"show_only_matches" : true
 			},
 			"contextmenu" : {
-				"items" : contextMenuActions
+				"items" : contextMenuActionsForSentences
 			}
 		});
 		$("#jstree-search-input").keyup(function() {
@@ -77,10 +77,7 @@ function buildTreeViewer2(showRelevant) {
 		});
 	});
 	addSentenceDragAndDropSupportForTreeViewer();
-	changeHoverStyle();
-
-	document.getElementById("jstree").addEventListener("mousemove",bringContextMenuToFront);
- 
+	document.getElementById("jstree").addEventListener("mousemove",bringContextMenuToFront); 
 }
 
 function bringContextMenuToFront(){

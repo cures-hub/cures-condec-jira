@@ -183,6 +183,24 @@ function linkElements(idOfDestinationElement, idOfSourceElement, linkType, callb
 			});
 }
 
+function deleteLink(idOfDestinationElement, idOfSourceElement, callback) {
+	var jsondata = {
+		"idOfSourceElement" : idOfSourceElement,
+		"idOfDestinationElement" : idOfDestinationElement
+	};
+	deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLink.json?projectKey=" + getProjectKey(),
+			jsondata, function(error, link) {
+				if (error === null) {
+					showFlag("success", "Link has been deleted.");
+					callback();
+				} else {
+					showFlag("error", "Link could not be deleted.");
+				}
+
+			});
+}
+
+
 function linkSentences(idOfDestinationElement, idOfSourceElement, linkType, callback) {
 	var jsondata = {
 		"type" : linkType,
@@ -200,12 +218,12 @@ function linkSentences(idOfDestinationElement, idOfSourceElement, linkType, call
 			});
 }
 
-function deleteLink(idOfDestinationElement, idOfSourceElement, callback) {
+function deleteSentenceLink(idOfDestinationElement, idOfSourceElement, callback) {
 	var jsondata = {
 		"idOfSourceElement" : idOfSourceElement,
 		"idOfDestinationElement" : idOfDestinationElement
 	};
-	deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLink.json?projectKey=" + getProjectKey(),
+	deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLinkBetweenSentences.json?projectKey=" + getProjectKey(),
 			jsondata, function(error, link) {
 				if (error === null) {
 					showFlag("success", "Link has been deleted.");
@@ -214,6 +232,60 @@ function deleteLink(idOfDestinationElement, idOfSourceElement, callback) {
 					showFlag("error", "Link could not be deleted.");
 				}
 
+			});
+}
+
+function setSentenceIrrelevant(id, callback) {
+		var jsondata = {
+		"id" : id,
+		"summary" : "",
+		"type" : "",
+		"projectKey" : "",
+		"description" : ""
+	};
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/setSentenceIrrelevant.json", jsondata,
+			function(error) {
+				if (error === null) {
+					showFlag("success", "Decision knowledge element has been updated.");
+					callback();
+				} else {
+					showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
+				}
+			});
+}
+
+function changeKnowledgeTypeOfSentence(id,type,callback) {
+	var jsondata = {
+		"id" : id,
+		"type" : type
+	};
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/changeKnowledgeTypeOfSentence.json?projectKey=" + getProjectKey(),
+			jsondata, function(error, link) {
+				if (error === null) {
+					showFlag("success", "Link has been created.");
+					callback(link);
+				} else {
+					showFlag("error", "Link could not be created.");
+				}
+			});
+}
+
+function editSentenceBody(id,body,type,callback){
+	var jsondata = {
+		"id" : id,
+		"summary" : "",
+		"type" : type,
+		"projectKey" : getProjectKey(),
+		"description" : body
+	};
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/editSentenceBody.json", jsondata,
+			function(error, id,type) {
+				if (error === null) {
+					showFlag("success", "Decision knowledge element has been updated.");
+					callback(id,type);
+				} else {
+					showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
+				}
 			});
 }
 

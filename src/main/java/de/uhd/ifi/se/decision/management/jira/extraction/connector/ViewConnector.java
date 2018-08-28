@@ -113,4 +113,23 @@ public class ViewConnector {
 		return commentDate;
 	}
 
+	public String getSentenceStyles() {
+		String style = "<style>";
+		style +=".isIssue {" + 
+				"    background-color: #F2F5A9;} ";
+		style +=".isAlternative {" + 
+				"    background-color: #f1ccf9;} ";
+		style +=".isDecision {" + 
+				"    background-color: #c5f2f9;} ";
+		style +=".isPro {" + 
+				"    background-color: #b9f7c0;} ";
+		style +=".isCon {" + 
+				"    background-color: #ffdeb5;} ";
+		style +=".tag {" + 
+				"    background-color: #ffffff;} ";
+		style +="</style>";
+		
+		return style;
+	}
+
 }

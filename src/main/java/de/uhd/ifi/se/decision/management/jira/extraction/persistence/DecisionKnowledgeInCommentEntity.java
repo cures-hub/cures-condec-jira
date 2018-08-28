@@ -6,7 +6,7 @@ import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
 
 @Table("Sentence")
-public interface DecisionKnowledgeInCommentEntity extends RawEntity<Integer> {
+public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long> {
 
 	@AutoIncrement
 	@PrimaryKey("ID")
@@ -65,5 +65,6 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Integer> {
 	int getEndSubstringCount();
 
 	void setEndSubstringCount(int count);
+
 
 }

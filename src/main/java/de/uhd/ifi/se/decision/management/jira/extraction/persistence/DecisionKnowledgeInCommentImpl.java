@@ -43,6 +43,9 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 
 
 
+	
+
+
 	@Override
 	@XmlElement(name = "id")
 	public long getId() {
@@ -66,11 +69,6 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 		return null;
 	}
 
-	@Override
-	public <X extends RawEntity<Integer>> Class<X> getEntityType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public void init() {
@@ -93,7 +91,8 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 	@Override
 	public void setIsRelevant(boolean isRelevant) {
 		this.isRelevant = isRelevant;
-		setIsTagged(true);
+		this.setIsTagged(true);
+		
 	}
 
 	@Override
@@ -125,14 +124,13 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 	}
 
 	@Override
+	@XmlElement(name = "endSubstringCount")
 	public void setEndSubstringCount(int count) {
 		this.endSubstringCount = count;
 	}
 
 	@Override
 	public void save() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -265,6 +263,20 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 	public void setIsTaggedFineGrained(boolean isTagged) {
 		this.isTaggedFineGrained = isTagged;
 	}
+
+
+
+
+
+	@Override
+	public <X extends RawEntity<Long>> Class<X> getEntityType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+
 
 
 

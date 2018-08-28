@@ -45,19 +45,19 @@ public class TreeViewerForSentences extends TreeViewer {
 		this.data = dataSet;
 	}
 
-	public Data getDataStructureWithSentenceGraph(DecisionKnowledgeElement decisionKnowledgeElement) {
+	public Data getDataStructureWithSentenceGraph(Sentence decisionKnowledgeElement) {
 		if (decisionKnowledgeElement == null) {
 			return new Data();
 		}
 		this.graph = new SentenceExtractionGraphImpl(decisionKnowledgeElement);
-		decisionKnowledgeElement.setDescription("");
+		decisionKnowledgeElement.setDescription("");//must be empty to not cause an error by adding additional attributes in the data constructor
 		Data data = new Data(decisionKnowledgeElement);
 		data = this.makeIdUnique(data);
 		List<Data> children = this.getChildrenOfSentences(decisionKnowledgeElement);
 		data.setChildren(children);
 		return data;
 	}
-
+	
 	private List<Data> getChildrenOfSentences(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Data> children = new ArrayList<>();
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = this.graph
