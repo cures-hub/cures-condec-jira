@@ -41,7 +41,7 @@ public class Comment {
 	}
 	
 	public static String textRule(String text) {
-		return text.replace("<br>", " ")//.replace("\n", " ").replace("\r", " ")
+		return text.replace("<br>", " ")
 				.replaceAll("\\{quote\\}[^<]*\\{quote\\}", "").toString();
 	}
 
@@ -56,7 +56,7 @@ public class Comment {
 	private void splitCommentIntoSentences() {
 		this.sentences = new ArrayList<Sentence>();
 		this.body = textRule(this.body);
-		ActiveObjectsManager.checkIfCommentHasChanged(this);
+		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(this);
 		// Using break Iterator to split sentences in pieces from
 		// https://stackoverflow.com/questions/2687012/split-string-into-sentences
 		long aoId = 0;
@@ -64,7 +64,7 @@ public class Comment {
 		iterator.setText(this.body);
 		int start = iterator.first();
 		for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
-			// Sync sentence objects with AO database
+			// Sync sentence objects with AO database if sentence is larger than one character
 			if(end - start > 1) {
 				aoId = ActiveObjectsManager.addElement(this.jiraCommentId, false, end, start, this.authorId);
 				this.sentences.add(new Sentence(this.body.substring(start, end), aoId, jiraCommentId));

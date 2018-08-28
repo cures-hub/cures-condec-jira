@@ -181,7 +181,7 @@ public class ActiveObjectsManager {
 		return true;
 	}
 
-	public static boolean updateRelevance(long activeObjectId, boolean isRelevant) {
+	public static boolean setIsRelevantIntoAo(long activeObjectId, boolean isRelevant) {
 		init();
 		DecisionKnowledgeInCommentEntity databaseEntry = ao
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
@@ -241,7 +241,7 @@ public class ActiveObjectsManager {
 		return rationale;
 	}
 
-	public static void checkIfCommentHasChanged(Comment comment) {
+	public static void checkIfCommentBodyHasChangedOutsideOfPlugin(Comment comment) {
 		init();
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
 		List<Integer> starts = new ArrayList<Integer>();
