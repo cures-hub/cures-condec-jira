@@ -39,10 +39,9 @@ public class Comment {
 		this.authorId = comment.getAuthorApplicationUser().getId();
 		splitCommentIntoSentences();
 	}
-	
+
 	public static String textRule(String text) {
-		return text.replace("<br>", " ")
-				.replaceAll("\\{quote\\}[^<]*\\{quote\\}", "").toString();
+		return text.replace("<br>", " ").replaceAll("\\{quote\\}[^<]*\\{quote\\}", "").toString();
 	}
 
 	public static ArrayList<Comment> getCommentsFromStringList(ArrayList<String> strings) {
@@ -64,8 +63,9 @@ public class Comment {
 		iterator.setText(this.body);
 		int start = iterator.first();
 		for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
-			// Sync sentence objects with AO database if sentence is larger than one character
-			if(end - start > 1) {
+			// Sync sentence objects with AO database if sentence is larger than one
+			// character
+			if (end - start > 1) {
 				aoId = ActiveObjectsManager.addElement(this.jiraCommentId, false, end, start, this.authorId);
 				this.sentences.add(new Sentence(this.body.substring(start, end), aoId, jiraCommentId));
 			}
@@ -94,23 +94,15 @@ public class Comment {
 		String result = "<span id=\"comment" + index + "\">";
 		for (Sentence sentence : this.sentences) {
 			if (sentence.isRelevant()) {
-				result = result 
-						+ "<span class=\"sentence "+sentence.classificationToString()+"\"  id  = ui"+sentence.getActiveObjectId()+">" 
-							+ Rationale.getOpeningTag(sentence.getClassification())
-								+"<span class = sentenceBody>"
-									+ sentence.getBody()
-								+"</span>"	
-							+ Rationale.getClosingTag(sentence.getClassification()) 
+				result = result + "<span class=\"sentence " + sentence.classificationToString() + " " + // weg
+						sentence.getKnowledgeTypeString() + // done
+						"\"  id  = ui" + sentence.getActiveObjectId() + ">" + sentence.getOpeningTagSpan()
+						+ "<span class = sentenceBody>" + sentence.getBody() + "</span>" + sentence.getClosingTagSpan()
 						+ "</span>";
 			} else {
-				result = result 
-						+ "<span class=\"sentence "+sentence.classificationToString()+"\"  id  = ui"+sentence.getActiveObjectId()+">" 
-						+ Rationale.getOpeningTag(sentence.getClassification())
-							+"<span class = sentenceBody>"
-								+ sentence.getBody()
-							+"</span>"	
-						+ Rationale.getClosingTag(sentence.getClassification()) 
-					+ "</span>";
+				result = result + "<span class=\"sentence \"  id  = ui" + sentence.getActiveObjectId() + ">"
+						+ sentence.getOpeningTagSpan() + "<span class = sentenceBody>" + sentence.getBody() + "</span>"
+						+ sentence.getClosingTagSpan() + "</span>";
 			}
 		}
 		return result + "</span>";

@@ -276,4 +276,25 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 	public void setKnowledgeType(String string) {
 		this.knowledgeType = KnowledgeType.getKnowledgeType(string);
 	}
+
+	public String getKnowledgeTypeString() {
+		if(knowledgeType == null) {
+			return "";
+		}
+		return knowledgeType.toString();
+	}
+
+	public String getOpeningTagSpan() {
+		if(knowledgeType == null) {
+			return "<span class =tag ></span>" ;
+		}
+		return "<span class =tag>["+this.knowledgeType.toString()+"]</span>";
+	}
+	
+	public String getClosingTagSpan() {
+		if(knowledgeType == null) {
+			return "<span class =tag ></span>" ;
+		}
+		return "<span class =tag>[/"+this.knowledgeType.toString()+"]</span>";
+	}
 }
