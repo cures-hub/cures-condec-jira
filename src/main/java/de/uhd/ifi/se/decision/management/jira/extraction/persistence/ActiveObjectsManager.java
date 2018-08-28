@@ -139,47 +139,6 @@ public class ActiveObjectsManager {
 		return false;
 	}
 
-	public static boolean updateSentenceClassifications(Sentence sentence) {
-		init();
-		DecisionKnowledgeInCommentEntity databaseEntry = ao
-				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-					@Override
-					public DecisionKnowledgeInCommentEntity doInTransaction() {
-						for (DecisionKnowledgeInCommentEntity databaseEntry : ao
-								.find(DecisionKnowledgeInCommentEntity.class)) {
-							if (databaseEntry.getId() == sentence.getActiveObjectId()) {
-								for (Rationale rationale : sentence.getClassification()) {
-									switch (Rationale.getString(rationale)) {
-									case "isIssue":
-										databaseEntry.setIsIssue(true);
-										break;
-									case "isDecision":
-										databaseEntry.setIsDecision(true);
-										break;
-									case "isAlternative":
-										databaseEntry.setIsAlternative(true);
-										break;
-									case "isPro":
-										databaseEntry.setIsPro(true);
-										break;
-									case "isCon":
-										databaseEntry.setIsCon(true);
-										break;
-									}
-								}
-								databaseEntry.setIsTaggedFineGrained(true);
-								databaseEntry.save();
-								return databaseEntry;
-							}
-						}
-						return null;
-					}
-				});
-		if (databaseEntry == null) {
-			return false;
-		}
-		return true;
-	}
 	
 	public static void setSentenceKnowledgeType(Sentence sentence) {
 		init();
@@ -392,10 +351,10 @@ public class ActiveObjectsManager {
 				});
 		if (decisionKnowledgeElement != null) {
 			Sentence sentence = new Sentence(id);
-			sentence.setType(KnowledgeType.OTHER);
-			if (sentence.getKnowledgeTypeEquivalent() != null) {
-				sentence.setType(sentence.getKnowledgeTypeEquivalent());
-			}
+//			sentence.setType(KnowledgeType.OTHER);
+//			if (sentence.getKnowledgeTypeEquivalent() != null) {
+//				sentence.setType(sentence.getKnowledgeTypeEquivalent());
+//			}
 			return sentence;
 		}
 		return null;

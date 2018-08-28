@@ -96,7 +96,6 @@ public class Comment {
 			if (sentence.isRelevant()) {
 				result = result 
 						+ "<span class=\"sentence "+
-							sentence.classificationToString()+ " "+  //weg
 							sentence.getKnowledgeTypeString()+	//done
 							"\"  id  = ui"+
 							sentence.getActiveObjectId()+">" 

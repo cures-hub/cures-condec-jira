@@ -366,14 +366,12 @@ function changeKtTo(id,position,type){
 		});
 		var idOfUiElement = "ui"+id;
 		replaceTagsFromContent(idOfUiElement,type);
-		document.getElementById(idOfUiElement).classList.remove("isDecision","isIssue","isAlternative","isPro","isCon");
-		document.getElementById(idOfUiElement).classList.add("is"+type);
+		document.getElementById(idOfUiElement).classList.remove("Decision","Issue","Alternative","Pro","Con");
+		document.getElementById(idOfUiElement).classList.add(type);
 	});
 }
 
 function getArrayId(array,id){
-	console.log(array);
-	console.log(id)
 	for (var i = array.length - 1; i >= 0; i--) {
 		if(array[i].id == id){
 			return i;
@@ -429,7 +427,7 @@ var contextMenuDeleteSentenceAction = {
 			$("#jstree").jstree(true).set_icon($('#jstree').jstree(true).get_node(id),"https://player.fm/static/images/128pixel.png");
 			document.getElementById("ui"+id).getElementsByClassName("tag")[0].textContent="";
 			document.getElementById("ui"+id).getElementsByClassName("tag")[1].textContent="";
-			document.getElementById("ui"+id).classList.remove("isDecision","isIssue","isAlternative","isPro","isCon");
+			document.getElementById("ui"+id).classList.remove("Decision","Issue","Alternative","Pro","Con");
 		})
 	},
 	"callback" : function(key, options) {
@@ -439,7 +437,7 @@ var contextMenuDeleteSentenceAction = {
 			$("#jstree").jstree(true).set_icon(node,"https://player.fm/static/images/128pixel.png");
 			document.getElementById("ui"+id).getElementsByClassName("tag")[0].textContent="";
 			document.getElementById("ui"+id).getElementsByClassName("tag")[1].textContent="";
-			document.getElementById("ui"+id).classList.remove("isDecision","isIssue","isAlternative","isPro","isCon");
+			document.getElementById("ui"+id).classList.remove("Decision","Issue","Alternative","Pro","Con");
 
 
 		})
@@ -506,8 +504,8 @@ function setUpEditSentenceDialog(node) {
 			var idOfUiElement = "ui"+id;
 			replaceTagsFromContent(idOfUiElement,type);
 
-			document.getElementById(idOfUiElement).classList.remove("isDecision","isIssue","isAlternative","isPro","isCon");
-			document.getElementById(idOfUiElement).classList.add("is"+type);
+			document.getElementById(idOfUiElement).classList.remove("Decision","Issue","Alternative","Pro","Con");
+			document.getElementById(idOfUiElement).classList.add(type);
 			document.getElementById(idOfUiElement).getElementsByClassName("sentenceBody")[0].textContent=description;
 
 			closeDialog();

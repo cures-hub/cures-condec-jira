@@ -292,7 +292,6 @@ public class KnowledgeRest {
 			 ActiveObjectsManager.updateSentenceBody(decisionKnowledgeElement.getId(),
 			 decisionKnowledgeElement.getDescription());
 
-			 int i = 0;
 			 Response r =Response.status(Status.OK).entity(ImmutableMap.of("id", decisionKnowledgeElement.getId())).build();
 			 System.out.println(r);
 			return r;

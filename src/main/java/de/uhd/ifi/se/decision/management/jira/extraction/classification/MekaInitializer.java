@@ -114,14 +114,11 @@ public class MekaInitializer {
 			for (Comment comment : commentsList) {
 				for (Sentence sentence : comment.getSentences()) {
 					if (sentence.isRelevant() && !sentence.isTaggedFineGrained()) {
-						sentence.setClassification(Rationale.transferRationaleList(results.get(i)));//weg
 						sentence.setKnowledgeType(results.get(i));//done
-						ActiveObjectsManager.updateSentenceClassifications(sentence);//weg
 						ActiveObjectsManager.setSentenceKnowledgeType(sentence); //done
 						sentence.setTaggedFineGrained(true);
 						i++;
 					} else if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {
-						sentence.setClassification(ActiveObjectsManager.getRationaleType(sentence.getActiveObjectId()));//weg
 						sentence.setKnowledgeType(ActiveObjectsManager.getElementFromAO(sentence.getId()).getKnowledgeType());//done
 					}
 				}
@@ -130,7 +127,6 @@ public class MekaInitializer {
 			for (Comment comment : commentsList) {
 				for (Sentence sentence : comment.getSentences()) {
 					 if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {
-						sentence.setClassification(ActiveObjectsManager.getRationaleType(sentence.getActiveObjectId()));//weg
 						sentence.setKnowledgeType(ActiveObjectsManager.getElementFromAO(sentence.getId()).getKnowledgeType().toString());//done
 					}
 				}

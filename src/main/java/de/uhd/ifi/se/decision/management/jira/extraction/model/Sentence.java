@@ -17,8 +17,6 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 
 	private boolean isRelevant;
 
-	private List<Rationale> classification;
-
 	private String body = "";
 
 	private long activeObjectId;
@@ -38,7 +36,6 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		this.setBody(body);
 		
 		super.type = KnowledgeType.OTHER;
-		this.classification = new ArrayList<Rationale>();
 		this.setValuesFromAoId(aoId);
 
 		super.setDescription(this.body);
@@ -54,7 +51,6 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 	public Sentence(long aoId) {
 		super();
 		super.type = KnowledgeType.OTHER;
-		this.classification = new ArrayList<Rationale>();
 		this.setValuesFromAoId(aoId);
 		this.setSuperValues(aoId);
 	}
@@ -80,35 +76,13 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		this.setStartSubstringCount(ActiveObjectsManager.getElementFromAO(aoId).getStartSubstringCount());
 		this.setEndSubstringCount(ActiveObjectsManager.getElementFromAO(aoId).getEndSubstringCount());
 
-		if (this.isTaggedFineGrained) {
-			this.setClassificationFromAO();
-		}
 		KnowledgeType kt =  ActiveObjectsManager.getElementFromAO(aoId).getKnowledgeType();
 		if(kt == null) {
 			super.type = KnowledgeType.OTHER;
-		}else {
+		}else if(this.isTaggedFineGrained) {
 			super.type = kt;
 		}
 		
-	}
-
-	private void setClassificationFromAO() {
-		DecisionKnowledgeInCommentEntity databaseElement = ActiveObjectsManager.getElementFromAO(this.activeObjectId);
-		if (databaseElement.getIsIssue()) {
-			this.classification.add(Rationale.isIssue);
-		}
-		if (databaseElement.getIsDecision()) {
-			this.classification.add(Rationale.isDecision);
-		}
-		if (databaseElement.getIsAlternative()) {
-			this.classification.add(Rationale.isAlternative);
-		}
-		if (databaseElement.getIsPro()) {
-			this.classification.add(Rationale.isPro);
-		}
-		if (databaseElement.getIsCon()) {
-			this.classification.add(Rationale.isCon);
-		}
 	}
 
 	public Sentence(String body, boolean isRelevant) {
@@ -148,25 +122,7 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		}
 	}
 
-	public List<Rationale> getClassification() {
-		return classification;
-	}
 
-	public void setClassification(List<Rationale> list) {
-		this.classification = list;
-	}
-
-	public void addClassification(Rationale element) {
-		this.classification.add(element);
-	}
-
-	public String classificationToString() {
-		String classI = "";
-		for (Rationale classi : classification) {
-			classI += Rationale.getString(classi);
-		}
-		return classI;
-	}
 
 	public long getActiveObjectId() {
 		return activeObjectId;
@@ -217,26 +173,6 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 
 	public void setTaggedFineGrained(boolean isTaggedFineGrained) {
 		this.isTaggedFineGrained = isTaggedFineGrained;
-	}
-
-	public KnowledgeType getKnowledgeTypeEquivalent() {
-		for (Rationale rational : this.classification) {
-			switch (rational) {
-			case isIssue:
-				return KnowledgeType.ISSUE;
-			case isAlternative:
-				return KnowledgeType.ALTERNATIVE;
-			case isDecision:
-				return KnowledgeType.DECISION;
-			case isPro:
-				return KnowledgeType.ARGUMENT;
-			case isCon:
-				return KnowledgeType.ARGUMENT;
-			default:
-				return KnowledgeType.OTHER;
-			}
-		}
-		return KnowledgeType.OTHER;
 	}
 
 	public KnowledgeType getKnowledgeType() throws NullPointerException{
