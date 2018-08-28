@@ -1,6 +1,6 @@
 
 function hideSelectedDecisionElements(element){
-	var decisionElements =["isIssue","isDecision","isAlternative","isPro","isCon"]
+	var decisionElements =["Issue","Decision","Alternative","Pro","Con"]
 	var sentences = document.getElementsByClassName(element.id);
 	if(element.id != "isRelevant"){
 		for (var i = sentences.length - 1; i >= 0; i--) {

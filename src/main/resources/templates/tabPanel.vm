@@ -5,24 +5,24 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 <table>
 	<tbody>
 		<tr>
-			<td><input type="checkbox" id="isIssue" name="feature"
+			<td><input type="checkbox" id="Issue" name="feature"
 				value="scales" onchange='hideSelectedDecisionElements(this);' checked /> <label
-				for="isIssue">Issue</label></td>
-			<td><input type="checkbox" id="isDecision" name="feature"
+				for="Issue">Issue</label></td>
+			<td><input type="checkbox" id="Decision" name="feature"
 				value="scales" onchange='hideSelectedDecisionElements(this);' checked /> <label
-				for="isDecision">Decision</label></td>
-			<td><input type="checkbox" id="isAlternative" name="feature"
+				for="Decision">Decision</label></td>
+			<td><input type="checkbox" id="Alternative" name="feature"
 				value="scales" onchange='hideSelectedDecisionElements(this);' checked /> <label
-				for="isAlternative">Alternative</label></td>
-			<td><input type="checkbox" id="isPro" name="feature"
+				for="Alternative">Alternative</label></td>
+			<td><input type="checkbox" id="Pro" name="feature"
 				value="scales" onchange='hideSelectedDecisionElements(this);' checked /> <label
-				for="isPro">Pro</label></td>
-			<td><input type="checkbox" id="isCon" name="feature"
+				for="Pro">Pro</label></td>
+			<td><input type="checkbox" id="Con" name="feature"
 				value="scales" onchange='hideSelectedDecisionElements(this);' checked /> <label
-				for="isCon">Con</label></td>
-			<td><input type="checkbox" id="isRelevant" name="feature"
+				for="Con">Con</label></td>
+			<td><input type="checkbox" id="Relevant" name="feature"
 				value="scales" onchange='hideSelectedDecisionElements(this);' checked /> <label
-				for="isRelevant">Relevant</label></td>
+				for="Relevant">Relevant</label></td>
 			<td><button id="link-button" class="aui-button aui-button-link"
 					onclick="callDialog2()">Link and Edit</button></td>
 		</tr>
