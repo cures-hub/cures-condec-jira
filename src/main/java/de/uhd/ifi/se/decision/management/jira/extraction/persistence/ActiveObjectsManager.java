@@ -145,6 +145,7 @@ public class ActiveObjectsManager {
 							if (databaseEntry.getId() == sentence.getActiveObjectId()) {
 								databaseEntry.setKnowledgeType(sentence.getKnowledgeType());
 								databaseEntry.setIsTaggedFineGrained(true);
+								databaseEntry.setArgument(sentence.getArgument());
 								databaseEntry.save();
 								return databaseEntry;
 							}
@@ -154,9 +155,6 @@ public class ActiveObjectsManager {
 				});
 		
 	}
-	
-	
-	
 
 	public static boolean setIsRelevantIntoAo(long activeObjectId, boolean isRelevant) {
 		init();

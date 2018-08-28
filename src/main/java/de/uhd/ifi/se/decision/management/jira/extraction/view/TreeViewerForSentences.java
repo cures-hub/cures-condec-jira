@@ -9,6 +9,7 @@ import java.util.Set;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.SentenceExtractionGraphImpl;
@@ -51,12 +52,22 @@ public class TreeViewerForSentences extends TreeViewer {
 		this.graph = new SentenceExtractionGraphImpl(decisionKnowledgeElement);
 		decisionKnowledgeElement.setDescription("");//must be empty to not cause an error by adding additional attributes in the data constructor
 		Data data = new Data(decisionKnowledgeElement);
+		data = checkIcons(decisionKnowledgeElement,data);
 		data = this.makeIdUnique(data);
 		List<Data> children = this.getChildrenOfSentences(decisionKnowledgeElement);
 		data.setChildren(children);
 		return data;
 	}
 	
+	private Data checkIcons(Sentence decisionKnowledgeElement, Data data) {
+		if(decisionKnowledgeElement.getArgument().equals("Pro")) {
+			data.setIcon(ComponentGetter.getUrlOfImageFolder() + "argument_pro.png");
+		}else if(decisionKnowledgeElement.getArgument().equals("Con")){
+			data.setIcon(ComponentGetter.getUrlOfImageFolder() + "argument_con.png");
+		}
+		return data;
+	}
+
 	private List<Data> getChildrenOfSentences(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Data> children = new ArrayList<>();
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = this.graph

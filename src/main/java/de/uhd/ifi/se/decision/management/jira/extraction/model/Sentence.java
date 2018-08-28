@@ -29,7 +29,8 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 
 	private boolean isTaggedFineGrained;
 
-	private String linkType;
+	private String argument="";
+	
 
 	public Sentence(String body, long aoId, long jiraCommentId) {
 		super();
@@ -75,6 +76,7 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		this.setTaggedManually(ActiveObjectsManager.getElementFromAO(aoId).getIsTaggedManually());
 		this.setStartSubstringCount(ActiveObjectsManager.getElementFromAO(aoId).getStartSubstringCount());
 		this.setEndSubstringCount(ActiveObjectsManager.getElementFromAO(aoId).getEndSubstringCount());
+		this.setArgument(ActiveObjectsManager.getElementFromAO(aoId).getArgument());
 
 		KnowledgeType kt =  ActiveObjectsManager.getElementFromAO(aoId).getKnowledgeType();
 		if(kt == null) {
@@ -183,12 +185,15 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		super.type = knowledgeType;
 	}
 
-	public String getLinkType() {
-		return linkType;
+	public String getArgument() {
+		if(this.argument == null) {
+			return "";
+		}
+		return argument;
 	}
 
-	public void setLinkType(String linkType) {
-		this.linkType = linkType;
+	public void setArgument(String linkType) {
+		this.argument = linkType;
 	}
 
 	public void setKnowledgeType(double[] resultArray) {
@@ -199,12 +204,12 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 			}
 			if (resultArray[i] == 1. && i == 1) {
 				super.type = KnowledgeType.ARGUMENT;
-				this.linkType = "Pro";
+				this.argument = "Pro";
 				break;
 			}
 			if (resultArray[i] == 1. && i == 2) {
 				super.type = KnowledgeType.ARGUMENT;
-				this.linkType = "Con";
+				this.argument = "Con";
 				break;
 			}
 			if (resultArray[i] == 1. && i == 3) {
@@ -226,6 +231,9 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		if(super.type == null) {
 			return "";
 		}
+		if(super.type.equals(KnowledgeType.ARGUMENT)) {
+			return this.argument;
+		}
 		return super.type.toString();
 	}
 
@@ -233,13 +241,21 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		if(super.type == null  || super.type == KnowledgeType.OTHER || !this.isRelevant) {
 			return "<span class =tag ></span>" ;
 		}
-		return "<span class =tag>["+super.type.toString()+"]</span>";
+		String typeText = super.type.toString();
+		if(super.type.equals(KnowledgeType.ARGUMENT)) {
+			typeText = this.argument;
+		}
+		return "<span class =tag>["+typeText+"]</span>";
 	}
 	
 	public String getClosingTagSpan() {
-		if(super.type == null || super.type == KnowledgeType.OTHER || !this.isRelevant) {
+		if(super.type == null  || super.type == KnowledgeType.OTHER || !this.isRelevant) {
 			return "<span class =tag ></span>" ;
 		}
-		return "<span class =tag>[/"+super.type.toString()+"]</span>";
+		String typeText = super.type.toString();
+		if(super.type.equals(KnowledgeType.ARGUMENT)) {
+			typeText = this.argument;
+		}
+		return "<span class =tag>[/"+typeText+"]</span>";
 	}
 }

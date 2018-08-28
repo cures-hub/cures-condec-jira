@@ -50,6 +50,10 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long> {
 	KnowledgeType getKnowledgeType();
 	
 	void setKnowledgeType(KnowledgeType type);
+	
+	void setArgument(String argument);
+	
+	String getArgument();
 
 
 }
