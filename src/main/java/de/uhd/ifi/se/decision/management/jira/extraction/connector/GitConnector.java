@@ -5,6 +5,7 @@ import static java.util.Collections.singleton;
 import java.io.File;
 import java.io.IOException;
 
+import de.uhd.ifi.se.decision.management.jira.config.GitConfig;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.CommitCommand;
@@ -56,8 +57,21 @@ public class GitConnector {
      * Initializes the uri with the given one and sets the directory to an default value
      * @param uri to clone the repository from.
      */
+    /*
     public GitConnector(String uri) {
         this.uri = uri;
+        this.directory = new File("/var/tmp/fd/FeatureRefactoringPluginRepository");
+
+        userNamePassword = new UsernamePasswordCredentialsProvider("jgit", "VCSs3cr3T");
+    }*/
+
+    /**
+     * Initializes the uri with the set one of the GitConfig and sets the directory to an default value
+     * @param projectKey to get the repository from.
+     */
+    public GitConnector(String projectKey){
+        GitConfig config = new GitConfig(projectKey);
+        this.uri = config.getPath();
         this.directory = new File("/var/tmp/fd/FeatureRefactoringPluginRepository");
 
         userNamePassword = new UsernamePasswordCredentialsProvider("jgit", "VCSs3cr3T");

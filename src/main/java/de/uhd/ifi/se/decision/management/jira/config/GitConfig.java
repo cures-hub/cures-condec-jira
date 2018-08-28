@@ -10,11 +10,16 @@ public class GitConfig {
 
     public GitConfig(String projectKey){
         this.projectKey = projectKey;
-       ConfigPersistence persistence = new ConfigPersistence();
-       this.path = persistence.getGitAddress(projectKey);
+        ConfigPersistence persistence = new ConfigPersistence();
+        this.path = persistence.getGitAddress(projectKey);
     }
 
     public GitConfig(String projectKey, String path){
+        this.projectKey = projectKey;
+        ConfigPersistence persistence = new ConfigPersistence();
+        if(persistence.getGitAddress(projectKey)!=path){
+            persistence.setGitAddress(projectKey,path);
+        }
         this.path = path;
     }
 
