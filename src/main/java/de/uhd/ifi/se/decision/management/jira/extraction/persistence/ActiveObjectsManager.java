@@ -180,6 +180,30 @@ public class ActiveObjectsManager {
 		}
 		return true;
 	}
+	
+	public static void setSentenceKnowledgeType(Sentence sentence) {
+		init();
+		DecisionKnowledgeInCommentEntity databaseEntry = ao
+				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+					@Override
+					public DecisionKnowledgeInCommentEntity doInTransaction() {
+						for (DecisionKnowledgeInCommentEntity databaseEntry : ao
+								.find(DecisionKnowledgeInCommentEntity.class)) {
+							if (databaseEntry.getId() == sentence.getActiveObjectId()) {
+								databaseEntry.setKnowledgeType(sentence.getKnowledgeType());
+								databaseEntry.setIsTaggedFineGrained(true);
+								databaseEntry.save();
+								return databaseEntry;
+							}
+						}
+						return null; 
+					}
+				});
+		
+	}
+	
+	
+	
 
 	public static boolean setIsRelevantIntoAo(long activeObjectId, boolean isRelevant) {
 		init();
@@ -511,5 +535,7 @@ public class ActiveObjectsManager {
 			}
 		});
 	}
+
+	
 
 }

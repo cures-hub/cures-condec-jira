@@ -230,7 +230,7 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		return KnowledgeType.OTHER;
 	}
 
-	public KnowledgeType getKnowledgeType() {
+	public KnowledgeType getKnowledgeType() throws NullPointerException{
 		return knowledgeType;
 	}
 
@@ -244,5 +244,36 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 
 	public void setLinkType(String linkType) {
 		this.linkType = linkType;
+	}
+
+	public void setKnowledgeType(double[] resultArray) {
+		for (int i = 0; i < resultArray.length; i++) {
+			if (resultArray[i] == 1. && i == 0) {
+				this.knowledgeType = KnowledgeType.ALTERNATIVE;
+				break;
+			}
+			if (resultArray[i] == 1. && i == 1) {
+				this.knowledgeType = KnowledgeType.ARGUMENT;
+				this.linkType = "Pro";
+				break;
+			}
+			if (resultArray[i] == 1. && i == 2) {
+				this.knowledgeType = KnowledgeType.ARGUMENT;
+				this.linkType = "Con";
+				break;
+			}
+			if (resultArray[i] == 1. && i == 3) {
+				this.knowledgeType = KnowledgeType.DECISION;
+				break;
+			}
+			if (resultArray[i] == 1. && i == 4) {
+				this.knowledgeType = KnowledgeType.ISSUE;
+				break;
+			}
+		}
+	}
+
+	public void setKnowledgeType(String string) {
+		this.knowledgeType = KnowledgeType.getKnowledgeType(string);
 	}
 }
