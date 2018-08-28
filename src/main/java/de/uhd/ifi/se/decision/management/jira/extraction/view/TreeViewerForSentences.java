@@ -33,7 +33,6 @@ public class TreeViewerForSentences extends TreeViewer {
 		for (Sentence sentence : vc.getAllSentenceInstances()) {
 			// Check to not display elements that are child elements for other elements
 			if (ActiveObjectsManager.getInwardLinks(sentence).size() == 0) {
-				sentence.setType(sentence.getKnowledgeTypeEquivalent());
 				if (!showRelevant && sentence.isRelevant()) {
 					dataSet.add(this.getDataStructureWithSentenceGraph(sentence));
 				}

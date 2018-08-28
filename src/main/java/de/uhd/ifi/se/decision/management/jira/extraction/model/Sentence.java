@@ -31,13 +31,13 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 
 	private boolean isTaggedFineGrained;
 
-	private KnowledgeType knowledgeType;
-
 	private String linkType;
 
 	public Sentence(String body, long aoId, long jiraCommentId) {
 		super();
 		this.setBody(body);
+		
+		super.type = KnowledgeType.OTHER;
 		this.classification = new ArrayList<Rationale>();
 		this.setValuesFromAoId(aoId);
 
@@ -48,10 +48,12 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		super.setProject(
 				new DecisionKnowledgeProjectImpl(ComponentGetter.getProjectService().getProjectKeyDescription()));
 
+
 	}
 
 	public Sentence(long aoId) {
 		super();
+		super.type = KnowledgeType.OTHER;
 		this.classification = new ArrayList<Rationale>();
 		this.setValuesFromAoId(aoId);
 		this.setSuperValues(aoId);
@@ -81,6 +83,13 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		if (this.isTaggedFineGrained) {
 			this.setClassificationFromAO();
 		}
+		KnowledgeType kt =  ActiveObjectsManager.getElementFromAO(aoId).getKnowledgeType();
+		if(kt == null) {
+			super.type = KnowledgeType.OTHER;
+		}else {
+			super.type = kt;
+		}
+		
 	}
 
 	private void setClassificationFromAO() {
@@ -231,11 +240,11 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 	}
 
 	public KnowledgeType getKnowledgeType() throws NullPointerException{
-		return knowledgeType;
+		return super.type;
 	}
 
 	public void setKnowledgeType(KnowledgeType knowledgeType) {
-		this.knowledgeType = knowledgeType;
+		super.type = knowledgeType;
 	}
 
 	public String getLinkType() {
@@ -249,52 +258,52 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 	public void setKnowledgeType(double[] resultArray) {
 		for (int i = 0; i < resultArray.length; i++) {
 			if (resultArray[i] == 1. && i == 0) {
-				this.knowledgeType = KnowledgeType.ALTERNATIVE;
+				super.type = KnowledgeType.ALTERNATIVE;
 				break;
 			}
 			if (resultArray[i] == 1. && i == 1) {
-				this.knowledgeType = KnowledgeType.ARGUMENT;
+				super.type = KnowledgeType.ARGUMENT;
 				this.linkType = "Pro";
 				break;
 			}
 			if (resultArray[i] == 1. && i == 2) {
-				this.knowledgeType = KnowledgeType.ARGUMENT;
+				super.type = KnowledgeType.ARGUMENT;
 				this.linkType = "Con";
 				break;
 			}
 			if (resultArray[i] == 1. && i == 3) {
-				this.knowledgeType = KnowledgeType.DECISION;
+				super.type = KnowledgeType.DECISION;
 				break;
 			}
 			if (resultArray[i] == 1. && i == 4) {
-				this.knowledgeType = KnowledgeType.ISSUE;
+				super.type = KnowledgeType.ISSUE;
 				break;
 			}
 		}
 	}
 
 	public void setKnowledgeType(String string) {
-		this.knowledgeType = KnowledgeType.getKnowledgeType(string);
+		super.type = KnowledgeType.getKnowledgeType(string);
 	}
 
 	public String getKnowledgeTypeString() {
-		if(knowledgeType == null) {
+		if(super.type == null) {
 			return "";
 		}
-		return knowledgeType.toString();
+		return super.type.toString();
 	}
 
 	public String getOpeningTagSpan() {
-		if(knowledgeType == null) {
+		if(super.type == null  || super.type == KnowledgeType.OTHER) {
 			return "<span class =tag ></span>" ;
 		}
-		return "<span class =tag>["+this.knowledgeType.toString()+"]</span>";
+		return "<span class =tag>["+super.type.toString()+"]</span>";
 	}
 	
 	public String getClosingTagSpan() {
-		if(knowledgeType == null) {
+		if(super.type == null || super.type == KnowledgeType.OTHER) {
 			return "<span class =tag ></span>" ;
 		}
-		return "<span class =tag>[/"+this.knowledgeType.toString()+"]</span>";
+		return "<span class =tag>[/"+super.type.toString()+"]</span>";
 	}
 }
