@@ -198,7 +198,7 @@ public class KnowledgeRest {
 			@Context HttpServletRequest request, DecisionKnowledgeElement newElement) {
 		if (projectKey != null && request != null && newElement != null) {
 			Boolean result = ActiveObjectsManager.updateKnowledgeTypeOfSentence(newElement.getId(),
-					newElement.getType().toString());
+					newElement.getType());
 			if (!result) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Update of element failed.")).build();
@@ -288,7 +288,7 @@ public class KnowledgeRest {
 			}
 
 			ActiveObjectsManager.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),
-					decisionKnowledgeElement.getType().toString());
+					decisionKnowledgeElement.getType());
 			 ActiveObjectsManager.updateSentenceBody(decisionKnowledgeElement.getId(),
 			 decisionKnowledgeElement.getDescription());
 

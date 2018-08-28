@@ -422,7 +422,7 @@ public class ActiveObjectsManager {
 		});
 	}
 
-	public static Boolean updateKnowledgeTypeOfSentence(long id, String knowledgeType) {
+	public static Boolean updateKnowledgeTypeOfSentence(long id, KnowledgeType knowledgeType) {
 		init();
 		return ao.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
@@ -430,7 +430,8 @@ public class ActiveObjectsManager {
 				for (DecisionKnowledgeInCommentEntity sentenceEntity : ao
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
-						sentenceEntity = setKnowledgeType(knowledgeType, sentenceEntity);
+						sentenceEntity = setKnowledgeType(knowledgeType.toString(), sentenceEntity);
+						sentenceEntity.setKnowledgeType(knowledgeType);
 						sentenceEntity.save();
 						return true;
 					}
