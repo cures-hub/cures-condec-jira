@@ -31,13 +31,15 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 
 	private boolean isTaggedFineGrained;
 
+	private KnowledgeType knowledgeType;
+
+	private String linkType;
+
 	public Sentence(String body, long aoId, long jiraCommentId) {
 		super();
 		this.setBody(body);
 		this.classification = new ArrayList<Rationale>();
 		this.setValuesFromAoId(aoId);
-
-		
 
 		super.setDescription(this.body);
 		super.setId(aoId);
@@ -47,27 +49,26 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 				new DecisionKnowledgeProjectImpl(ComponentGetter.getProjectService().getProjectKeyDescription()));
 
 	}
-	
-
 
 	public Sentence(long aoId) {
 		super();
 		this.classification = new ArrayList<Rationale>();
 		this.setValuesFromAoId(aoId);
-		
-		
-		com.atlassian.jira.issue.comments.Comment c = ComponentAccessor.getCommentManager().getCommentById(ActiveObjectsManager.getElementFromAO(aoId).getCommentId());
+		this.setSuperValues(aoId);
+	}
+
+	private void setSuperValues(long aoId) {
+		com.atlassian.jira.issue.comments.Comment c = ComponentAccessor.getCommentManager()
+				.getCommentById(ActiveObjectsManager.getElementFromAO(aoId).getCommentId());
 		super.setDescription((String) c.getBody().subSequence(startSubstringCount, endSubstringCount));
 		super.setSummary(super.getDescription());
 		this.setBody(super.getDescription());
 		super.setProject(
 				new DecisionKnowledgeProjectImpl(ComponentGetter.getProjectService().getProjectKeyDescription()));
-		super.setKey(c.getIssue().getId() + "-" +aoId);
+		super.setKey(c.getIssue().getId() + "-" + aoId);
 		super.setId(aoId);
-		
-		
 	}
-	
+
 	private void setValuesFromAoId(long aoId) {
 		this.setActiveObjectId(aoId);
 		this.isTagged(ActiveObjectsManager.checkCommentExistingInAO(aoId, true));
@@ -76,7 +77,7 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		this.setTaggedManually(ActiveObjectsManager.getElementFromAO(aoId).getIsTaggedManually());
 		this.setStartSubstringCount(ActiveObjectsManager.getElementFromAO(aoId).getStartSubstringCount());
 		this.setEndSubstringCount(ActiveObjectsManager.getElementFromAO(aoId).getEndSubstringCount());
-		
+
 		if (this.isTaggedFineGrained) {
 			this.setClassificationFromAO();
 		}
@@ -227,5 +228,21 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 			}
 		}
 		return KnowledgeType.OTHER;
+	}
+
+	public KnowledgeType getKnowledgeType() {
+		return knowledgeType;
+	}
+
+	public void setKnowledgeType(KnowledgeType knowledgeType) {
+		this.knowledgeType = knowledgeType;
+	}
+
+	public String getLinkType() {
+		return linkType;
+	}
+
+	public void setLinkType(String linkType) {
+		this.linkType = linkType;
 	}
 }
