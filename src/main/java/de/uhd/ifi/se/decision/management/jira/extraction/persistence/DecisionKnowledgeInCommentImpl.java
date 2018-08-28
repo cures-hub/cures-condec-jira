@@ -4,6 +4,7 @@ import java.beans.PropertyChangeListener;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.EntityManager;
 import net.java.ao.RawEntity;
 
@@ -36,6 +37,8 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 	private boolean isTaggedManually;
 
 	private boolean isTaggedFineGrained;
+	
+	private KnowledgeType knowledgeType;
 
 	public DecisionKnowledgeInCommentImpl() {
 
@@ -272,6 +275,27 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 	public <X extends RawEntity<Long>> Class<X> getEntityType() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+
+
+
+
+	@Override
+	public KnowledgeType getKnowledgeType() {
+		return this.knowledgeType;
+	}
+
+
+
+
+
+
+	@Override
+	@XmlElement(name = "knowledgeType")
+	public void setKnowledgeType(KnowledgeType type) {
+		this.knowledgeType = type;
 	}
 
 
