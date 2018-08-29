@@ -359,7 +359,7 @@ var changeKnowledgeTypeAction = {
 
 function changeKtTo(id,position,type){
 	changeKnowledgeTypeOfSentence(id,type, function() {
-		getTreeViewerWithoutRootElement(document.getElementById("isRelevant").checked, function(core) {
+		getTreeViewerWithoutRootElement(document.getElementById("Relevant").checked, function(core) {
 			var indexOfNode = getArrayId(core.data,getSelectedTreeViewerNodeId(position));
 			var url = getIconUrl(core,indexOfNode,type);
 			 $("#jstree").jstree(true).set_icon(getSelectedTreeViewerNode(position),url);
@@ -405,12 +405,12 @@ var contextMenuDeleteSentenceLinkAction = {
 		var node = getSelectedTreeViewerNode(position);
 		var id = node.id;
 		var parentId = node.parent;
-		deleteSentenceLink(parentId, id,function(core){buildTreeViewer2(document.getElementById("isRelevant").checked);});
+		deleteSentenceLink(parentId, id,function(core){buildTreeViewer2(document.getElementById("Relevant").checked);});
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
 		var parentId = findParentId(id);
-		deleteSentenceLink(parentId, id,function(core){buildTreeViewer2(document.getElementById("isRelevant").checked);});
+		deleteSentenceLink(parentId, id,function(core){buildTreeViewer2(document.getElementById("Relevant").checked);});
 	}
 };
 

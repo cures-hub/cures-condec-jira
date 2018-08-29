@@ -54,7 +54,7 @@ function callDialog2(){
 	callDialogFromView();
 	document.getElementById("dialog-content").innerHTML = "<div id =header2> </div> <div id =jstree> </div> ";
 	document.getElementById("header2").innerHTML = "<input class=text medium-long-field id=jstree-search-input placeholder=Search decision knowledge />";
-	buildTreeViewer2(document.getElementById("isRelevant").checked);
+	buildTreeViewer2(document.getElementById("Relevant").checked);
 
 }
 
