@@ -56,6 +56,9 @@ public class WebConnector{
         return submitPostMethod();
     }
 
+    //TODO Needs some kind of getGitHash function in the persistence strategy
+    //Error in line 31 in Graph
+    // this.rootElement = this.project.getPersistenceStrategy().getDecisionKnowledgeElement(rootElementKey);
     public boolean sendWebHookForGitHash(String projectKey, String gitHash){
         if(projectKey == null || projectKey.equals("")){
             LOGGER.error("Could not send WebHook data because projectKey Null or empty");
@@ -89,6 +92,12 @@ public class WebConnector{
     private boolean submitPostMethod(){
         try {
             HttpClient httpClient = new HttpClient();
+            
+            Header header = new Header();
+            header.setName("X-Hub-Signature");
+            header.setValue(this.secret);
+            postMethod.setRequestHeader(header);
+            postMethod.setRequestHeader(header);
             postMethod.setURI(new HttpsURL(url));
             int respEntity = httpClient.executeMethod(postMethod);
             System.out.println(respEntity);
