@@ -43,8 +43,8 @@ public class Data {
 		this.nodeInfo = decisionKnowledgeElement;
 		if(decisionKnowledgeElement.getDescription()!=null && !decisionKnowledgeElement.getDescription().equals("")){
 		    this.a_attr = new HashMap();
-            this.a_attr.put("title", decisionKnowledgeElement.getDescription());
 			this.a_attr.put("id", "simple-tooltip");
+            this.a_attr.put("title", decisionKnowledgeElement.getDescription());
 		}
 	}
 

@@ -30,7 +30,7 @@ public class TestWebConnector extends TestSetUp{
     }
 
     //Can be used to try if the connection is working like intended
-    @Test
+    @Ignore
     public void testConnectionSendIssueKey(){
         WebConnector connector = new WebConnector("https://cuu-staging.ase.in.tum.de/api/v1/projects/ConDecDev/integrations/conDec","03f90207-73bc-44d9-9848-d3f1f8c8254e");
         assertTrue(connector.sendWebHookForIssueKey("CONDEC", "CONDEC-1234"));
