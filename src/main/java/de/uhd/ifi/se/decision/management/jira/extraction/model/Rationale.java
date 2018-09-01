@@ -2,23 +2,11 @@ package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public enum Rationale {
 	isRelevant, isIssue, isDecision, isAlternative, isPro, isCon;
 
-	@SuppressWarnings("serial")
-	private static Map<String, String> rationaleColorMap = new HashMap<String, String>() {
-		{
-			put("isIssue", "#F2F5A9");
-			put("isAlternative", "#f1ccf9");
-			put("isDecision", "#c5f2f9");
-			put("isPro", "#b9f7c0");
-			put("isCon", "#ffdeb5");
-		}
-	};
 
 	public static Rationale getRationale(String text) {
 		if (text == null) {
@@ -105,51 +93,46 @@ public enum Rationale {
 	}
 
 	public static String getClosingTag(List<Rationale> classification) {
-		String tags = "";
 		Collections.reverse(classification);// reverse list, so last opened tag will be first closed
 		for (Rationale label : classification) {
 			if (label == isIssue) {
-				tags += "</span>" + "[/isIssue]";
+				return  "<span class =tag>[/Issue]</span>";
 			}
 			if (label == isDecision) {
-				tags += "</span>" + "[/isDecision]";
+				return  "<span class =tag>[/Decision]</span>";
 			}
 			if (label == isAlternative) {
-				tags += "</span>" + "[/isAlternative]";
+				return "<span class =tag>[/Alternative]</span>";
 			}
 			if (label == isPro) {
-				tags += "</span>" + "[/isPro]";
+				return  "<span class =tag>[/Pro]</span>";
 			}
 			if (label == isCon) {
-
-				tags += "</span>" + "[/isCon]";
+				return  "<span class =tag>[/Con]</span>";
 			}
 		}
-		return tags;
+		return "<span class =tag ></span>" ;
 	}
 
 	public static String getOpeningTag(List<Rationale> classification) {
-		String tags = "";
 		for (Rationale label : classification) {
 			if (label == isIssue) {
-				tags += "[isIssue]" + "<span style=\"background-color:" + rationaleColorMap.get("isIssue") + "\">";
+				return "<span class =tag>[Issue]</span>" ;
 			}
 			if (label == isDecision) {
-				tags += "[isDecision]" + "<span style=\"background-color:" + rationaleColorMap.get("isDecision")
-						+ "\">";
+				return "<span class =tag>[Decision]</span>" ;
 			}
 			if (label == isAlternative) {
-				tags += "[isAlternative]" + "<span style=\"background-color:" + rationaleColorMap.get("isAlternative")
-						+ "\">";
+				return "<span class =tag>[Alternative]</span>" ;
 			}
 			if (label == isPro) {
-				tags += "[isPro]" + "<span style=\"background-color:" + rationaleColorMap.get("isPro") + "\">";
+				return "<span class =tag>[Pro]</span>" ;
 			}
 			if (label == isCon) {
-				tags += "[isCon]" + "<span style=\"background-color:" + rationaleColorMap.get("isCon") + "\">";
+				return "<span class =tag>[Con]</span>" ;
 			}
 		}
-		return tags;
+		return "<span class =tag ></span>" ;
 	}
 
 }

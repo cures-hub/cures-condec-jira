@@ -200,6 +200,95 @@ function deleteLink(idOfDestinationElement, idOfSourceElement, callback) {
 			});
 }
 
+
+function linkSentences(idOfDestinationElement, idOfSourceElement, linkType, callback) {
+	var jsondata = {
+		"type" : linkType,
+		"idOfSourceElement" : idOfSourceElement,
+		"idOfDestinationElement" : idOfDestinationElement
+	};
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLinkBetweenSentences.json?projectKey=" + getProjectKey(),
+			jsondata, function(error, link) {
+				if (error === null) {
+					showFlag("success", "Link has been created.");
+					callback(link);
+				} else {
+					showFlag("error", "Link could not be created.");
+				}
+			});
+}
+
+function deleteSentenceLink(idOfDestinationElement, idOfSourceElement, callback) {
+	var jsondata = {
+		"idOfSourceElement" : idOfSourceElement,
+		"idOfDestinationElement" : idOfDestinationElement
+	};
+	deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLinkBetweenSentences.json?projectKey=" + getProjectKey(),
+			jsondata, function(error, link) {
+				if (error === null) {
+					showFlag("success", "Link has been deleted.");
+					callback();
+				} else {
+					showFlag("error", "Link could not be deleted.");
+				}
+
+			});
+}
+
+function setSentenceIrrelevant(id, callback) {
+		var jsondata = {
+		"id" : id,
+		"summary" : "",
+		"type" : "",
+		"projectKey" : "",
+		"description" : ""
+	};
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/setSentenceIrrelevant.json", jsondata,
+			function(error) {
+				if (error === null) {
+					showFlag("success", "Decision knowledge element has been updated.");
+					callback();
+				} else {
+					showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
+				}
+			});
+}
+
+function changeKnowledgeTypeOfSentence(id,type,callback) {
+	var jsondata = {
+		"id" : id,
+		"type" : type
+	};
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/changeKnowledgeTypeOfSentence.json?projectKey=" + getProjectKey(),
+			jsondata, function(error, link) {
+				if (error === null) {
+					showFlag("success", "Link has been created.");
+					callback(link);
+				} else {
+					showFlag("error", "Link could not be created.");
+				}
+			});
+}
+
+function editSentenceBody(id,body,type,callback){
+	var jsondata = {
+		"id" : id,
+		"summary" : "",
+		"type" : type,
+		"projectKey" : getProjectKey(),
+		"description" : body
+	};
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/editSentenceBody.json", jsondata,
+			function(error, id,type) {
+				if (error === null) {
+					showFlag("success", "Decision knowledge element has been updated.");
+					callback(id,type);
+				} else {
+					showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
+				}
+			});
+}
+
 function getTreant(elementKey, depthOfTree, callback) {
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?&elementKey=" + elementKey
 			+ "&depthOfTree=" + depthOfTree, function(error, treant) {
@@ -222,9 +311,9 @@ function getTreeViewer(rootElementType, callback) {
 	});
 }
 
-//check if this can be (re) used in getTreeViewer(.) -Jochen
 function getTreeViewerWithoutRootElement(showRelevant ,callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer2.json?issueKey=" + "TEST-1" + "&showRelevant=" + showRelevant //getIssueKey()
+	var issueId = AJS.$("meta[name='ajs-issue-key']").attr("content");
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer2.json?issueKey=" + issueId + "&showRelevant=" + showRelevant 
 			, function(error, core) {
 		if (error === null) {
 			callback(core);
@@ -359,13 +448,13 @@ function getDefaultKnowledgeTypes(projectKey) {
 	}
 }
 
-function setGitConnector(projectKey, gitAddress) {
-    postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setGitConnector.json?projectKey=" + projectKey
+function setGitAddress(projectKey, gitAddress) {
+    postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setGitAddress.json?projectKey=" + projectKey
     + "&gitAddress=" + gitAddress, function(error, response) {
         if (error === null) {
-            showFlag("success", "The setting  of the Git Address  " + gitAddress + " for this project has been changed.");
+            showFlag("success", "The setting  of the Git Adress  " + gitAddress + " for this project has been changed.");
         } else {
-            showFlag("error", "The setting  of the Git Address  " + gitAddress + " for this project could not be changed.");
+            showFlag("error", "The setting  of the Git Adress  " + gitAddress + " for this project could not be changed.");
         }
     });
 }

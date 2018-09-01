@@ -7,11 +7,17 @@ import java.util.List;
 import java.util.Locale;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
+import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Rationale;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
+import net.java.ao.Query;
 
 public class ActiveObjectsManager {
 
@@ -35,7 +41,11 @@ public class ActiveObjectsManager {
 					todo.setEndSubstringCount(endSubStringCount);
 					todo.setStartSubstringCount(startSubstringCount);
 					todo.setUserId(userId);
+					todo.setIsTagged(false);
+					todo.setIsTaggedFineGrained(false);
+					todo.setIsTaggedManually(false);
 					todo.save();
+					System.out.println("Created:\t"+todo.getId());
 					return todo;
 				}
 			}).getId();
@@ -80,17 +90,20 @@ public class ActiveObjectsManager {
 	public static DecisionKnowledgeInCommentEntity getElementFromAO(long commentId, int endSubtringCount,
 			int startSubstringCount, long userId) {
 		init();
-		DecisionKnowledgeInCommentEntity element = ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-			@Override
-			public DecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class)) {
-					if (equalsDatabase(databaseEntry, commentId, endSubtringCount, startSubstringCount, userId)) {
-						return databaseEntry;
+		DecisionKnowledgeInCommentEntity element = ao
+				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+					@Override
+					public DecisionKnowledgeInCommentEntity doInTransaction() {
+						for (DecisionKnowledgeInCommentEntity databaseEntry : ao
+								.find(DecisionKnowledgeInCommentEntity.class)) {
+							if (equalsDatabase(databaseEntry, commentId, endSubtringCount, startSubstringCount,
+									userId)) {
+								return databaseEntry;
+							}
+						}
+						return null;
 					}
-				}
-				return null;
-			}
-		});
+				});
 		return element;
 
 	}
@@ -120,7 +133,8 @@ public class ActiveObjectsManager {
 		return false;
 	}
 
-	public static boolean updateSentenceClassifications(Sentence sentence) {
+	
+	public static void setSentenceKnowledgeType(Sentence sentence) {
 		init();
 		DecisionKnowledgeInCommentEntity databaseEntry = ao
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
@@ -129,40 +143,20 @@ public class ActiveObjectsManager {
 						for (DecisionKnowledgeInCommentEntity databaseEntry : ao
 								.find(DecisionKnowledgeInCommentEntity.class)) {
 							if (databaseEntry.getId() == sentence.getActiveObjectId()) {
-								for (Rationale rationale : sentence.getClassification()) {
-									switch (Rationale.getString(rationale)) {
-									case "isIssue":
-										databaseEntry.setIsIssue(true);
-										break;
-									case "isDecision":
-										databaseEntry.setIsDecision(true);
-										break;
-									case "isAlternative":
-										databaseEntry.setIsAlternative(true);
-										break;
-									case "isPro":
-										databaseEntry.setIsPro(true);
-										break;
-									case "isCon":
-										databaseEntry.setIsCon(true);
-										break;
-									}
-								}
+								databaseEntry.setKnowledgeType(sentence.getKnowledgeType());
 								databaseEntry.setIsTaggedFineGrained(true);
+								databaseEntry.setArgument(sentence.getArgument());
 								databaseEntry.save();
 								return databaseEntry;
 							}
 						}
-						return null;
+						return null; 
 					}
 				});
-		if (databaseEntry == null) {
-			return false;
-		}
-		return true;
+		
 	}
 
-	public static boolean updateRelevance(long activeObjectId, boolean isRelevant) {
+	public static boolean setIsRelevantIntoAo(long activeObjectId, boolean isRelevant) {
 		init();
 		DecisionKnowledgeInCommentEntity databaseEntry = ao
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
@@ -187,43 +181,7 @@ public class ActiveObjectsManager {
 		return true;
 	}
 
-	public static List<Rationale> getRationaleType(long activeObjectId) {
-		init();
-		DecisionKnowledgeInCommentEntity databaseEntry = ao
-				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-					@Override
-					public DecisionKnowledgeInCommentEntity doInTransaction() {
-						for (DecisionKnowledgeInCommentEntity databaseEntry : ao
-								.find(DecisionKnowledgeInCommentEntity.class)) {
-							if (databaseEntry.getId() == activeObjectId) {
-								return databaseEntry;
-							}
-						}
-						return null;
-					}
-				});
-		List<Rationale> rationale = new ArrayList<Rationale>();
-		if (databaseEntry.getIsIssue()) {
-			rationale.add(Rationale.isIssue);
-		}
-		if (databaseEntry.getIsAlternative()) {
-			rationale.add(Rationale.isAlternative);
-		}
-		if (databaseEntry.getIsDecision()) {
-			rationale.add(Rationale.isDecision);
-		}
-		if (databaseEntry.getIsPro()) {
-			rationale.add(Rationale.isPro);
-		}
-		if (databaseEntry.getIsCon()) {
-			rationale.add(Rationale.isCon);
-		}
-
-		return rationale;
-	}
-	
-
-	public static void checkIfCommentHasChanged(Comment comment) {
+	public static void checkIfCommentBodyHasChangedOutsideOfPlugin(Comment comment) {
 		init();
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
 		List<Integer> starts = new ArrayList<Integer>();
@@ -232,23 +190,25 @@ public class ActiveObjectsManager {
 		iterator.setText(comment.getBody());
 		int start = iterator.first();
 		for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
-			starts.add(start);
-			ends.add(end);
-		}		ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+			if (end - start > 1) {
+				starts.add(start);
+				ends.add(end);
+			}
+		}
+		ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 			@Override
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
-				boolean deleteFlag =false;
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ao
-						.find(DecisionKnowledgeInCommentEntity.class)) {
+				boolean deleteFlag = false;
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (databaseEntry.getCommentId() == comment.getJiraCommentId()) {
-						if(!starts.contains(databaseEntry.getStartSubstringCount()) || !ends.contains(databaseEntry.getEndSubstringCount())) {
+						if (!starts.contains(databaseEntry.getStartSubstringCount())
+								|| !ends.contains(databaseEntry.getEndSubstringCount())) {
 							deleteFlag = true;
 						}
 					}
 				}
-				//delete all here
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ao
-						.find(DecisionKnowledgeInCommentEntity.class)) {
+				// delete all here
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (databaseEntry.getCommentId() == comment.getJiraCommentId() && deleteFlag) {
 						try {
 							databaseEntry.getEntityManager().delete(databaseEntry);
@@ -261,5 +221,197 @@ public class ActiveObjectsManager {
 			}
 		});
 	}
+
+	public static long insertLink(Link link, ApplicationUser user) {
+		init();
+		return ao.executeInTransaction(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction() {
+				for (LinksInSentencesEntity linkEntity : ao.find(LinksInSentencesEntity.class)) {
+					if (linkEntity.getIdOfSourceElement() == link.getSourceElement().getId()
+							&& linkEntity.getIdOfDestinationElement() == link.getDestinationElement().getId()) {
+						return linkEntity.getId();
+					}
+				}
+
+				DecisionKnowledgeInCommentEntity sourceElement = null;
+				DecisionKnowledgeInCommentEntity[] sourceElements = ao.find(DecisionKnowledgeInCommentEntity.class,
+						Query.select().where("ID = ?", link.getSourceElement().getId()));
+				if (sourceElements.length == 1) {
+					sourceElement = sourceElements[0];
+				}
+
+				DecisionKnowledgeInCommentEntity destinationElement = null;
+				DecisionKnowledgeInCommentEntity[] destinationElements = ao.find(DecisionKnowledgeInCommentEntity.class,
+						Query.select().where("ID = ?", link.getDestinationElement().getId()));
+				if (destinationElements.length == 1) {
+					destinationElement = destinationElements[0];
+				}
+				if (sourceElement == null || destinationElement == null) {
+					return (long) 0;
+				}
+
+				// elements exist
+				final LinksInSentencesEntity linkEntity = ao.create(LinksInSentencesEntity.class);
+				linkEntity.setIdOfSourceElement(link.getSourceElement().getId());
+				linkEntity.setIdOfDestinationElement(link.getDestinationElement().getId());
+				linkEntity.setType(link.getType());
+				linkEntity.save();
+				return linkEntity.getId();
+			}
+		});
+	}
+
+	public static List<Link> getInwardLinks(DecisionKnowledgeElement element) {
+		init();
+		List<Link> inwardLinks = new ArrayList<>();
+		LinksInSentencesEntity[] links = ao.find(LinksInSentencesEntity.class,
+				Query.select().where("ID_OF_DESTINATION_ELEMENT = ?", element.getId()));
+		for (LinksInSentencesEntity link : links) {
+			Link inwardLink = new LinkImpl(link);
+			inwardLink.setDestinationElement(element);
+			inwardLink.setSourceElement(getDecisionKnowledgeElement(link.getIdOfSourceElement()));
+			inwardLinks.add(inwardLink);
+		}
+		return inwardLinks;
+	}
+
+	public static List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
+		init();
+		List<Link> outwardLinks = new ArrayList<>();
+		LinksInSentencesEntity[] links = ao.find(LinksInSentencesEntity.class,
+				Query.select().where("ID_OF_SOURCE_ELEMENT = ?", element.getId()));
+		for (LinksInSentencesEntity link : links) {
+			Link outwardLink = new LinkImpl(link);
+			outwardLink.setSourceElement(element);
+			outwardLink.setDestinationElement(getDecisionKnowledgeElement(link.getIdOfDestinationElement()));
+
+			outwardLinks.add(outwardLink);
+		}
+		return outwardLinks;
+	}
+
+	private static DecisionKnowledgeElementImpl getDecisionKnowledgeElement(long id) {
+		init();
+		DecisionKnowledgeInCommentEntity decisionKnowledgeElement = ao
+				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+					@Override
+					public DecisionKnowledgeInCommentEntity doInTransaction() {
+						DecisionKnowledgeInCommentEntity[] decisionKnowledgeElement = ao
+								.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("ID = ?", id));
+						// 0 or 1 decision knowledge elements might be returned by this query
+						if (decisionKnowledgeElement.length == 1) {
+							return decisionKnowledgeElement[0];
+						}
+						return null;
+					}
+				});
+		if (decisionKnowledgeElement != null) {
+			Sentence sentence = new Sentence(id);
+//			sentence.setType(KnowledgeType.OTHER);
+//			if (sentence.getKnowledgeTypeEquivalent() != null) {
+//				sentence.setType(sentence.getKnowledgeTypeEquivalent());
+//			}
+			return sentence;
+		}
+		return null;
+	}
+
+	public static boolean deleteLinkBetweenSentences(Link link) {
+		init();
+		return ao.executeInTransaction(new TransactionCallback<Boolean>() {
+			@Override
+			public Boolean doInTransaction() {
+				for (LinksInSentencesEntity linkEntity : ao.find(LinksInSentencesEntity.class)) {
+					if (link.getDestinationElement().getId() == linkEntity.getIdOfDestinationElement()
+							&& link.getSourceElement().getId() == linkEntity.getIdOfSourceElement()) {
+						try {
+							linkEntity.getEntityManager().delete(linkEntity);
+							return true;
+						} catch (SQLException e) {
+							return false;
+						}
+					}
+				}
+				return false;
+			}
+		});
+	}
+
+	public static Boolean updateKnowledgeTypeOfSentence(long id, KnowledgeType knowledgeType) {
+		init();
+		return ao.executeInTransaction(new TransactionCallback<Boolean>() {
+			@Override
+			public Boolean doInTransaction() {
+				for (DecisionKnowledgeInCommentEntity sentenceEntity : ao
+						.find(DecisionKnowledgeInCommentEntity.class)) {
+					if (sentenceEntity.getId() == id) {
+						sentenceEntity.setKnowledgeType(knowledgeType);
+						if(knowledgeType != KnowledgeType.OTHER) {
+							sentenceEntity.setIsRelevant(true);
+						}
+						sentenceEntity.save();
+						return true;
+					}
+				}
+				return false;
+			}
+		});
+
+	}
+
+
+	public static boolean setSentenceIrrelevant(long id,boolean isTaggedManually) {
+		init();
+		return ao.executeInTransaction(new TransactionCallback<Boolean>() {
+			@Override
+			public Boolean doInTransaction() {
+				for (DecisionKnowledgeInCommentEntity sentenceEntity : ao
+						.find(DecisionKnowledgeInCommentEntity.class)) {
+					if (sentenceEntity.getId() == id) {
+						sentenceEntity.setIsRelevant(false);
+						sentenceEntity.setIsTaggedManually(isTaggedManually);
+						sentenceEntity.setKnowledgeType(KnowledgeType.OTHER);
+						sentenceEntity.save();
+						return true;
+					}
+				}
+				return false;
+			}
+		});
+	}
+
+	public static boolean updateSentenceBody(long id, String description) {
+		init();
+		return ao.executeInTransaction(new TransactionCallback<Boolean>() {
+			@Override
+			public Boolean doInTransaction() {
+				int lengthDifference = 0;
+				int startSubstringCount = 0;
+				for (DecisionKnowledgeInCommentEntity sentenceEntity : ao
+						.find(DecisionKnowledgeInCommentEntity.class , "ID = ?", id)) {
+						int oldLength = sentenceEntity.getEndSubstringCount() - sentenceEntity.getStartSubstringCount();
+						lengthDifference = Math.abs(oldLength -description.length()); 
+						startSubstringCount = sentenceEntity.getStartSubstringCount();
+						int newLength =sentenceEntity.getEndSubstringCount()+lengthDifference;
+						sentenceEntity.setEndSubstringCount(newLength);
+						sentenceEntity.save();				
+				}
+				for (DecisionKnowledgeInCommentEntity sentenceEntity : ao
+						.find(DecisionKnowledgeInCommentEntity.class)) {
+					if(sentenceEntity.getStartSubstringCount() > startSubstringCount && sentenceEntity.getId() != id) {
+						int a = sentenceEntity.getStartSubstringCount() + lengthDifference;
+						sentenceEntity.setStartSubstringCount(a);
+						a = sentenceEntity.getEndSubstringCount() + lengthDifference;
+						sentenceEntity.setEndSubstringCount(a);
+						sentenceEntity.save();
+					}
+				}
+				return true;
+			}
+		});
+	}
+
+	
 
 }

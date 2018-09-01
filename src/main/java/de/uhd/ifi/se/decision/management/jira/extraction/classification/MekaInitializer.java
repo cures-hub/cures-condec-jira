@@ -88,13 +88,13 @@ public class MekaInitializer {
 		}
 		if (!empty) {
 			structure.setClassIndex(5);
-			// MLUtils.prepareData(structure);
 
 			// Read model from supplied path
 			String path = ComponentGetter.getUrlOfClassifierFolder() + "br.model";
 			InputStream is = new URL(path).openStream();
 			LC binaryRelevance = (LC) weka.core.SerializationHelper.read(is);
-
+			
+			//Create Filter
 			Filter stwv = getSTWV();
 			stwv.setInputFormat(structure);
 			structure = Filter.useFilter(structure, stwv);
@@ -104,9 +104,8 @@ public class MekaInitializer {
 			List<double[]> results = new ArrayList<double[]>();
 			for (int n = 0; n < structure.size(); n++) {
 				Instance predictionInstance = structure.get(n);
-				// Create a extra array to use debugging
+				// Create a extra array to better use debugging
 				double[] predictionResult = binaryRelevance.distributionForInstance(predictionInstance);
-				// System.out.println(Arrays.toString(predictionResult));
 				results.add(predictionResult);
 			}
 
@@ -115,19 +114,21 @@ public class MekaInitializer {
 			for (Comment comment : commentsList) {
 				for (Sentence sentence : comment.getSentences()) {
 					if (sentence.isRelevant() && !sentence.isTaggedFineGrained()) {
-						sentence.setClassification(Rationale.transferRationaleList(results.get(i)));
-						ActiveObjectsManager.updateSentenceClassifications(sentence);
+						sentence.setKnowledgeType(results.get(i));//done
+						ActiveObjectsManager.setSentenceKnowledgeType(sentence); //done
 						sentence.setTaggedFineGrained(true);
 						i++;
 					} else if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {
-						sentence.setClassification(ActiveObjectsManager.getRationaleType(sentence.getActiveObjectId()));
+						sentence.setKnowledgeType(ActiveObjectsManager.getElementFromAO(sentence.getId()).getKnowledgeType());//done
 					}
 				}
 			}
 		} else {
 			for (Comment comment : commentsList) {
 				for (Sentence sentence : comment.getSentences()) {
-					sentence.setClassification(ActiveObjectsManager.getRationaleType(sentence.getActiveObjectId()));
+					 if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {
+						sentence.setKnowledgeType(ActiveObjectsManager.getElementFromAO(sentence.getId()).getKnowledgeType().toString());//done
+					}
 				}
 			}
 		}

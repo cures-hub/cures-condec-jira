@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.atlassian.jira.component.ComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
@@ -16,8 +17,6 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 
 	private boolean isRelevant;
 
-	private List<Rationale> classification;
-
 	private String body = "";
 
 	private long activeObjectId;
@@ -30,46 +29,62 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 
 	private boolean isTaggedFineGrained;
 
+	private String argument="";
+	
+
 	public Sentence(String body, long aoId, long jiraCommentId) {
 		super();
 		this.setBody(body);
-		this.classification = new ArrayList<Rationale>();
-		this.setActiveObjectId(aoId);
-		this.isTagged(ActiveObjectsManager.checkCommentExistingInAO(aoId, true));
-		this.setRelevant(ActiveObjectsManager.getElementFromAO(aoId).getIsRelevant());
-		this.setTaggedFineGrained(ActiveObjectsManager.getElementFromAO(aoId).getIsTaggedFineGrained());
-		this.setTaggedManually(ActiveObjectsManager.getElementFromAO(aoId).getIsTaggedManually());
-
-		if (this.isTaggedFineGrained) {
-			this.setClassificationFromAO();
-		}
+		
+		super.type = KnowledgeType.OTHER;
+		this.setValuesFromAoId(aoId);
 
 		super.setDescription(this.body);
-		super.setId(0);
+		super.setId(aoId);
 		super.setKey(jiraCommentId + "-" + aoId);
 		super.setSummary(body);
 		super.setProject(
 				new DecisionKnowledgeProjectImpl(ComponentGetter.getProjectService().getProjectKeyDescription()));
 
+
 	}
 
-	private void setClassificationFromAO() {
-		DecisionKnowledgeInCommentEntity databaseElement = ActiveObjectsManager.getElementFromAO(this.activeObjectId);
-		if (databaseElement.getIsIssue()) {
-			this.classification.add(Rationale.isIssue);
+	public Sentence(long aoId) {
+		super();
+		super.type = KnowledgeType.OTHER;
+		this.setValuesFromAoId(aoId);
+		this.setSuperValues(aoId);
+	}
+
+	private void setSuperValues(long aoId) {
+		com.atlassian.jira.issue.comments.Comment c = ComponentAccessor.getCommentManager()
+				.getCommentById(ActiveObjectsManager.getElementFromAO(aoId).getCommentId());
+		super.setDescription((String) c.getBody().subSequence(startSubstringCount, endSubstringCount));
+		super.setSummary(super.getDescription());
+		this.setBody(super.getDescription());
+		super.setProject(
+				new DecisionKnowledgeProjectImpl(ComponentGetter.getProjectService().getProjectKeyDescription()));
+		super.setKey(c.getIssue().getId() + "-" + aoId);
+		super.setId(aoId);
+	}
+
+	private void setValuesFromAoId(long aoId) {
+		this.setActiveObjectId(aoId);
+		this.isTagged(ActiveObjectsManager.checkCommentExistingInAO(aoId, true));
+		this.setRelevant(ActiveObjectsManager.getElementFromAO(aoId).getIsRelevant());
+		this.setTaggedFineGrained(ActiveObjectsManager.getElementFromAO(aoId).getIsTaggedFineGrained());
+		this.setTaggedManually(ActiveObjectsManager.getElementFromAO(aoId).getIsTaggedManually());
+		this.setStartSubstringCount(ActiveObjectsManager.getElementFromAO(aoId).getStartSubstringCount());
+		this.setEndSubstringCount(ActiveObjectsManager.getElementFromAO(aoId).getEndSubstringCount());
+		this.setArgument(ActiveObjectsManager.getElementFromAO(aoId).getArgument());
+
+		KnowledgeType kt =  ActiveObjectsManager.getElementFromAO(aoId).getKnowledgeType();
+		if(kt == null) {
+			super.type = KnowledgeType.OTHER;
+		}else if(this.isTaggedFineGrained) {
+			super.type = kt;
 		}
-		if (databaseElement.getIsDecision()) {
-			this.classification.add(Rationale.isDecision);
-		}
-		if (databaseElement.getIsAlternative()) {
-			this.classification.add(Rationale.isAlternative);
-		}
-		if (databaseElement.getIsPro()) {
-			this.classification.add(Rationale.isPro);
-		}
-		if (databaseElement.getIsCon()) {
-			this.classification.add(Rationale.isCon);
-		}
+		
 	}
 
 	public Sentence(String body, boolean isRelevant) {
@@ -109,25 +124,7 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		}
 	}
 
-	public List<Rationale> getClassification() {
-		return classification;
-	}
 
-	public void setClassification(List<Rationale> list) {
-		this.classification = list;
-	}
-
-	public void addClassification(Rationale element) {
-		this.classification.add(element);
-	}
-
-	public String classificationToString() {
-		String classI = "";
-		for (Rationale classi : classification) {
-			classI += Rationale.getString(classi);
-		}
-		return classI;
-	}
 
 	public long getActiveObjectId() {
 		return activeObjectId;
@@ -180,23 +177,85 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		this.isTaggedFineGrained = isTaggedFineGrained;
 	}
 
-	public KnowledgeType getKnowledgeTypeEquivalent() {
-		for (Rationale rational : this.classification) {
-			switch (rational) {
-			case isIssue:
-				return KnowledgeType.ISSUE;
-			case isAlternative:
-				return KnowledgeType.ALTERNATIVE;
-			case isDecision:
-				return KnowledgeType.DECISION;
-			case isPro:
-				return KnowledgeType.ARGUMENT;
-			case isCon:
-				return KnowledgeType.ARGUMENT;
-			default:
-				return null;
+	public KnowledgeType getKnowledgeType() throws NullPointerException{
+		return super.type;
+	}
+
+	public void setKnowledgeType(KnowledgeType knowledgeType) {
+		super.type = knowledgeType;
+	}
+
+	public String getArgument() {
+		if(this.argument == null) {
+			return "";
+		}
+		return argument;
+	}
+
+	public void setArgument(String linkType) {
+		this.argument = linkType;
+	}
+
+	public void setKnowledgeType(double[] resultArray) {
+		for (int i = 0; i < resultArray.length; i++) {
+			if (resultArray[i] == 1. && i == 0) {
+				super.type = KnowledgeType.ALTERNATIVE;
+				break;
+			}
+			if (resultArray[i] == 1. && i == 1) {
+				super.type = KnowledgeType.ARGUMENT;
+				this.argument = "Pro";
+				break;
+			}
+			if (resultArray[i] == 1. && i == 2) {
+				super.type = KnowledgeType.ARGUMENT;
+				this.argument = "Con";
+				break;
+			}
+			if (resultArray[i] == 1. && i == 3) {
+				super.type = KnowledgeType.DECISION;
+				break;
+			}
+			if (resultArray[i] == 1. && i == 4) {
+				super.type = KnowledgeType.ISSUE;
+				break;
 			}
 		}
-		return null;
+	}
+
+	public void setKnowledgeType(String string) {
+		super.type = KnowledgeType.getKnowledgeType(string);
+	}
+
+	public String getKnowledgeTypeString() {
+		if(super.type == null) {
+			return "";
+		}
+		if(super.type.equals(KnowledgeType.ARGUMENT)) {
+			return this.argument;
+		}
+		return super.type.toString();
+	}
+
+	public String getOpeningTagSpan() {
+		if(super.type == null  || super.type == KnowledgeType.OTHER || !this.isRelevant) {
+			return "<span class =tag ></span>" ;
+		}
+		String typeText = super.type.toString();
+		if(super.type.equals(KnowledgeType.ARGUMENT)) {
+			typeText = this.argument;
+		}
+		return "<span class =tag>["+typeText+"]</span>";
+	}
+	
+	public String getClosingTagSpan() {
+		if(super.type == null  || super.type == KnowledgeType.OTHER || !this.isRelevant) {
+			return "<span class =tag ></span>" ;
+		}
+		String typeText = super.type.toString();
+		if(super.type.equals(KnowledgeType.ARGUMENT)) {
+			typeText = this.argument;
+		}
+		return "<span class =tag>[/"+typeText+"]</span>";
 	}
 }

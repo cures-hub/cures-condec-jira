@@ -16,6 +16,7 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.view.TreeViewerForSentences;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
@@ -52,7 +53,7 @@ public class ViewRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 
-		TreeViewer treeViewer = new TreeViewer(issueKey, showRelevant);
+		TreeViewer treeViewer = new TreeViewerForSentences(issueKey, showRelevant);
 		return Response.ok(treeViewer).build();
 	}
 

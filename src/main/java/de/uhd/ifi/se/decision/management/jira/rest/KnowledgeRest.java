@@ -15,11 +15,16 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.comments.CommentManager;
+import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
@@ -57,8 +62,7 @@ public class KnowledgeRest {
 	@Path("/getLinkedElements")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getLinkedElements(@QueryParam("id") long id,
-			@QueryParam("projectKey") String projectKey) {
+	public Response getLinkedElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey) {
 		if (projectKey != null) {
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			List<DecisionKnowledgeElement> linkedDecisionKnowledgeElements = strategy.getLinkedElements(id);
@@ -73,12 +77,10 @@ public class KnowledgeRest {
 	@Path("/getUnlinkedElements")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getUnlinkedElements(@QueryParam("id") long id,
-			@QueryParam("projectKey") String projectKey) {
+	public Response getUnlinkedElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey) {
 		if (projectKey != null) {
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
-			List<DecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = strategy
-					.getUnlinkedElements(id);
+			List<DecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = strategy.getUnlinkedElements(id);
 			return Response.ok(unlinkedDecisionKnowledgeElements).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
@@ -167,6 +169,135 @@ public class KnowledgeRest {
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Creation of link failed."))
 					.build();
+		}
+	}
+
+	@Path("/createLinkBetweenSentences")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response createLinkBetweenSentences(@QueryParam("projectKey") String projectKey,
+			@Context HttpServletRequest request, Link link) {
+		if (projectKey != null && request != null && link != null) {
+			ApplicationUser user = getCurrentUser(request);
+			long linkId = ActiveObjectsManager.insertLink(link, user);
+			if (linkId == 0) {
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
+			}
+			return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
+		} else {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Creation of link failed."))
+					.build();
+		}
+	}
+
+	@Path("/changeKnowledgeTypeOfSentence")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response changeKnowledgeTypeOfSentence(@QueryParam("projectKey") String projectKey,
+			@Context HttpServletRequest request, DecisionKnowledgeElement newElement) {
+		if (projectKey != null && request != null && newElement != null) {
+			Boolean result = ActiveObjectsManager.updateKnowledgeTypeOfSentence(newElement.getId(),
+					newElement.getType());
+			if (!result) {
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(ImmutableMap.of("error", "Update of element failed.")).build();
+			}
+			return Response.status(Status.OK).entity(ImmutableMap.of("id", newElement.getId())).build();
+		}
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Update of element failed."))
+				.build();
+	}
+
+	@Path("/deleteLinkBetweenSentences")
+	@DELETE
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response deleteLinkBetweenSentences(@QueryParam("projectKey") String projectKey,
+			@Context HttpServletRequest request, Link link) {
+		if (projectKey != null && request != null && link != null) {
+			boolean isDeleted = ActiveObjectsManager.deleteLinkBetweenSentences(link);
+			if (isDeleted) {
+				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
+			} else {
+				Link inverseLink = new LinkImpl(link.getDestinationElement(), link.getSourceElement());
+				isDeleted = ActiveObjectsManager.deleteLinkBetweenSentences(inverseLink);
+				if (isDeleted) {
+					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
+				} else {
+					return Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
+				}
+			}
+		} else {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
+					.build();
+		}
+	}
+
+	@Path("/setSentenceIrrelevant")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response setSentenceIrrelevant(@Context HttpServletRequest request,
+			DecisionKnowledgeElement decisionKnowledgeElement) {
+		if (decisionKnowledgeElement.getId() > 0) {
+			boolean isDeleted = ActiveObjectsManager.setSentenceIrrelevant(decisionKnowledgeElement.getId(), true);
+			if (isDeleted) {
+				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
+			} else {
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
+
+			}
+		} else {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
+					.build();
+		}
+	}
+
+	@Path("/editSentenceBody")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response editSentenceBody(@Context HttpServletRequest request,
+			DecisionKnowledgeElement decisionKnowledgeElement) {
+		if (decisionKnowledgeElement != null && request != null) {
+
+			// Get corresponding element from ao database
+			DecisionKnowledgeInCommentEntity databaseEntity = ActiveObjectsManager
+					.getElementFromAO(decisionKnowledgeElement.getId());
+			if ((databaseEntity.getEndSubstringCount()
+					- databaseEntity.getStartSubstringCount()) != decisionKnowledgeElement.getDescription().length()) {
+				// Get JIRA Comment instance
+				CommentManager cm = ComponentAccessor.getCommentManager();
+				MutableComment mc = (MutableComment) cm.getCommentById(databaseEntity.getCommentId());
+				// Generate sentence data generated for classification
+				String commentBody = Comment.textRule(mc.getBody());
+
+				String sentenceToSearch = commentBody.substring(databaseEntity.getStartSubstringCount(),
+						databaseEntity.getEndSubstringCount());
+
+				int index = mc.getBody().trim().indexOf(sentenceToSearch.trim());
+				int whitespaces = mc.getBody().substring(0, index).length()
+						- mc.getBody().replaceAll(" ", "").substring(0, index).length();
+
+				String first = mc.getBody().substring(0, index + whitespaces);
+				String second = decisionKnowledgeElement.getDescription();
+				String third = mc.getBody().substring(index + whitespaces + second.length());
+
+				mc.setBody(first + second + third);
+				cm.update(mc, true);
+			}
+
+			ActiveObjectsManager.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),
+					decisionKnowledgeElement.getType());
+			 ActiveObjectsManager.updateSentenceBody(decisionKnowledgeElement.getId(),
+			 decisionKnowledgeElement.getDescription());
+
+			 Response r =Response.status(Status.OK).entity(ImmutableMap.of("id", decisionKnowledgeElement.getId())).build();
+			 System.out.println(r);
+			return r;
+		} else {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build();
 		}
 	}
 

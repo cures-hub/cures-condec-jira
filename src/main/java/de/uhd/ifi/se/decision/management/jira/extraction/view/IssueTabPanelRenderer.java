@@ -82,6 +82,7 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 		context.put("comments",this.viewConnector.getAllTaggedComments());
 		context.put("authorNames",this.viewConnector.getAllCommentsAuthorNames());
 		context.put("dates", this.viewConnector.getAllCommentsDates());
+		context.put("style", this.viewConnector.getSentenceStyles());
 		return context;
 	}
 

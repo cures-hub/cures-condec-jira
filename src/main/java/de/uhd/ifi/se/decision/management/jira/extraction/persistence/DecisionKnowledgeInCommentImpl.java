@@ -4,6 +4,7 @@ import java.beans.PropertyChangeListener;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.EntityManager;
 import net.java.ao.RawEntity;
 
@@ -12,16 +13,6 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 	private long id;
 
 	private boolean isRelevant;
-
-	private boolean isIssue;
-
-	private boolean isDecision;
-
-	private boolean isAlternative;
-
-	private boolean isPro;
-
-	private boolean isCon;
 
 	private boolean isTagged;
 
@@ -36,11 +27,18 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 	private boolean isTaggedManually;
 
 	private boolean isTaggedFineGrained;
+	
+	private KnowledgeType knowledgeType;
+	
+	private String argument;
 
 	public DecisionKnowledgeInCommentImpl() {
 
 	}
 
+
+
+	
 
 
 	@Override
@@ -66,11 +64,6 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 		return null;
 	}
 
-	@Override
-	public <X extends RawEntity<Integer>> Class<X> getEntityType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public void init() {
@@ -93,7 +86,8 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 	@Override
 	public void setIsRelevant(boolean isRelevant) {
 		this.isRelevant = isRelevant;
-		setIsTagged(true);
+		this.setIsTagged(true);
+		
 	}
 
 	@Override
@@ -125,14 +119,13 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 	}
 
 	@Override
+	@XmlElement(name = "endSubstringCount")
 	public void setEndSubstringCount(int count) {
 		this.endSubstringCount = count;
 	}
 
 	@Override
 	public void save() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -162,82 +155,6 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 	}
 
 
-
-	@Override
-	@XmlElement(name = "isIssue")
-	public boolean getIsIssue() {
-		return isIssue;
-	}
-
-
-
-	@Override
-	public void setIsIssue(boolean isIssue) {
-		this.isIssue = isIssue;
-	}
-
-
-
-	@Override
-	@XmlElement(name = "isDecision")
-	public boolean getIsDecision() {
-		return isDecision;
-	}
-
-
-
-	@Override
-	public void setIsDecision(boolean isDecision) {
-		this.isDecision = isDecision;
-	}
-
-
-
-	@Override
-	@XmlElement(name = "isAlternative")
-	public boolean getIsAlternative() {
-		return isAlternative;
-	}
-
-
-
-	@Override
-	public void setIsAlternative(boolean isAlternative) {
-		this.isAlternative = isAlternative;
-	}
-
-
-
-	@Override
-	@XmlElement(name = "isPro")
-	public boolean getIsPro() {
-		return isPro;
-	}
-
-
-
-	@Override
-	public void setIsPro(boolean isPro) {
-		this.isPro=isPro;
-	}
-
-
-
-	@Override
-	@XmlElement(name = "isCon")
-	public boolean getIsCon() {
-		return isCon;
-	}
-
-
-
-	@Override
-	public void setIsCon(boolean isCon) {
-		this.isCon = isCon;
-	}
-
-
-
 	@Override
 	@XmlElement(name = "isaggedManually")
 	public boolean getIsTaggedManually() {
@@ -265,6 +182,62 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 	public void setIsTaggedFineGrained(boolean isTagged) {
 		this.isTaggedFineGrained = isTagged;
 	}
+
+
+
+
+
+	@Override
+	public <X extends RawEntity<Long>> Class<X> getEntityType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+
+
+
+	@Override
+	public KnowledgeType getKnowledgeType() {
+		return this.knowledgeType;
+	}
+
+
+
+
+
+
+	@Override
+	@XmlElement(name = "knowledgeType")
+	public void setKnowledgeType(KnowledgeType type) {
+		this.knowledgeType = type;
+	}
+
+
+
+
+
+
+	@Override
+	@XmlElement(name = "argument")
+	public void setArgument(String argument) {
+		this.argument = argument;		
+	}
+
+
+
+
+
+
+	@Override
+	public String getArgument() {
+		return this.argument;
+	}
+
+
+
+
 
 
 

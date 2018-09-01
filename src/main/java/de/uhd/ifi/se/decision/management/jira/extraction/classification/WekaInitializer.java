@@ -18,6 +18,17 @@ public class WekaInitializer {
 
 	private static FilteredClassifier fc;
 
+	public static List<Comment> classifySentencesBinary(List<Comment> commentsList) throws Exception {
+		init();
+
+		Instances data = createDataset(commentsList);
+		//if data is empty, all instances have already been classified and are stored in AO
+		if (!data.isEmpty()) {
+			return makePredictions(data, commentsList);
+		} else {
+			return writeDataFromActiveObjectsToSentences(commentsList);
+		}
+	}
 
 	private static List<Comment> makePredictions(Instances data, List<Comment> commentsList) {
 		List<Double> areRelevant = new ArrayList<Double>();
@@ -29,7 +40,7 @@ public class WekaInitializer {
 				areRelevant.add(n);
 			}
 		} catch (Exception e) {
-			System.err.println("Classification failed");
+			System.err.println("Binary Classification failed");
 			return commentsList;
 		}
 		// Match classification back on data
@@ -38,7 +49,7 @@ public class WekaInitializer {
 			for (Sentence sentence : comment.getSentences()) {
 				if (!sentence.isTagged()) {
 					sentence.setRelevant(areRelevant.get(i));
-					ActiveObjectsManager.updateRelevance(sentence.getActiveObjectId(),sentence.isRelevant());
+					ActiveObjectsManager.setIsRelevantIntoAo(sentence.getActiveObjectId(), sentence.isRelevant());
 					sentence.isTagged(true);
 					i++;
 				}
@@ -50,21 +61,11 @@ public class WekaInitializer {
 	private static List<Comment> writeDataFromActiveObjectsToSentences(List<Comment> commentsList) {
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
-				sentence.setRelevant(ActiveObjectsManager.getElementFromAO(sentence.getActiveObjectId()).getIsRelevant());
+				sentence.setRelevant(
+						ActiveObjectsManager.getElementFromAO(sentence.getActiveObjectId()).getIsRelevant());
 			}
 		}
 		return commentsList;
-	}
-
-	public static List<Comment> classifySentencesBinary(List<Comment> commentsList) throws Exception {
-		init();
-
-		Instances data = createDataset(commentsList);
-		if(!data.isEmpty()) {
-			return makePredictions(data,commentsList);
-		}else {
-			return writeDataFromActiveObjectsToSentences(commentsList);
-		}
 	}
 
 	private static ArrayList<String> createClassAttribute() {
@@ -99,7 +100,7 @@ public class WekaInitializer {
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
 				if (!sentence.isTagged()) {
-					data.add(createInstance(2,wekaAttributes,sentence));
+					data.add(createInstance(2, wekaAttributes, sentence));
 				}
 			}
 		}

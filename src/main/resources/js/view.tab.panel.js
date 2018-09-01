@@ -1,6 +1,6 @@
 
 function hideSelectedDecisionElements(element){
-	var decisionElements =["isIssue","isDecision","isAlternative","isPro","isCon"]
+	var decisionElements =["Issue","Decision","Alternative","Pro","Con"]
 	var sentences = document.getElementsByClassName(element.id);
 	if(element.id != "isRelevant"){
 		for (var i = sentences.length - 1; i >= 0; i--) {
@@ -52,11 +52,10 @@ function callDialog2(){
 	callDialogFromView();
 	closeDialog();
 	callDialogFromView();
-	document.getElementById("dialog-content").id = "jstree";
-	buildTreeViewer2(document.getElementById("isRelevant").checked);
+	document.getElementById("dialog-content").innerHTML = "<div id =header2> </div> <div id =jstree> </div> ";
+	document.getElementById("header2").innerHTML = "<input class=text medium-long-field id=jstree-search-input placeholder=Search decision knowledge />";
+	buildTreeViewer2(document.getElementById("Relevant").checked);
 
-
-	//fillTree();
 }
 
 function buildTreeViewer2(showRelevant) {
@@ -64,37 +63,59 @@ function buildTreeViewer2(showRelevant) {
 	getTreeViewerWithoutRootElement(showRelevant, function(core) {
 		$("#jstree").jstree({
 			"core" : core,
-			"plugins" : [ "dnd", "contextmenu", "wholerow", "sort", "search" ],
+			"plugins" : [ "dnd", "contextmenu", "wholerow", "search" ],
 			"search" : {
 				"show_only_matches" : true
 			},
 			"contextmenu" : {
-				"items" : contextMenuActions
+				"items" : contextMenuActionsForSentences
 			}
 		});
+		$("#jstree-search-input").keyup(function() {
+			var searchString = $(this).val();
+			$("#jstree").jstree(true).search(searchString);
+		});
 	});
-	addDragAndDropSupportForTreeViewer();
-	changeHoverStyle();
+	addSentenceDragAndDropSupportForTreeViewer();
+	document.getElementById("jstree").addEventListener("mousemove",bringContextMenuToFront); 
 }
 
+function bringContextMenuToFront(){
+	if(document.getElementsByClassName("vakata-context").length > 0){
+		document.getElementsByClassName("vakata-context")[0].style.zIndex = 9999;
+	}
+	
+}
 
-function fillTree(){
-	var index = 1;
-	$('#jstree').on('ready.jstree', function (e, data) {
-		do{//loop through all comments
-			comment = document.getElementById("comment"+index);
-			if(comment){
-				var sentences = comment.getElementsByClassName("sentence");
-				for (var i = sentences.length - 1; i >= 0; i--) { //loop through all sentences in comments
-					$('#jstree').jstree('create_node', $("#jstree"), { "text":sentences[i].innerHTML, "id":index+"-"+i }, "first", false, false);
-				}
-				index = index+1;
-			}
-		}while(document.getElementById("comment"+index));
+function addSentenceDragAndDropSupportForTreeViewer() {
+	$("#jstree").on('move_node.jstree', function(object, nodeInContext) {
+		var node = nodeInContext.node;
+		var parentNode = getTreeViewerNodeById(nodeInContext.parent);
+		var oldParentNode = getTreeViewerNodeById(nodeInContext.old_parent);
+
+		var nodeId = node.data.id;
+		if (oldParentNode === "#" && parentNode !== "#") {
+			createSentenceLinkToExistingElement(parentNode.data.id, nodeId);
+		}
+		if (parentNode === "#" && oldParentNode !== "#") {
+			deleteSentenceLink(oldParentNode.data.id, nodeId, function() {});
+		}
+		if (parentNode !== '#' && oldParentNode !== '#') {
+			deleteSentenceLink(oldParentNode.data.id, nodeId, function() {
+				createSentenceLinkToExistingElement(parentNode.data.id, nodeId);
+			});
+		}
 	});
 }
 
-function createNode(parent_node, new_node_id, new_node_text, position) {
-	$('#jstree').jstree('create_node', $(parent_node), { "text":new_node_text, "id":new_node_id }, position, false, false);
-
+function createSentenceLinkToExistingElement(idOfExistingElement, idOfNewElement, knowledgeTypeOfChild) {
+	switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
+			idOfNewElement) {
+		linkSentences(idOfExistingElement, idOfNewElement, linkType, function() {
+		});
+	});
 }
+
+
+
+

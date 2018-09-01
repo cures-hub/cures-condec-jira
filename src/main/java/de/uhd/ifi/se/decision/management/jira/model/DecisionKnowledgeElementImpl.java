@@ -19,7 +19,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	private long id;
 	private String summary;
 	private String description;
-	private KnowledgeType type;
+	protected KnowledgeType type;
 	private DecisionKnowledgeProject project;
 	private String key;
 

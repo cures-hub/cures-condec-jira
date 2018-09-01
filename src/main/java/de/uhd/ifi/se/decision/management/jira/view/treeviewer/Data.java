@@ -97,4 +97,12 @@ public class Data {
 	public void setNodeInfo(DecisionKnowledgeElement nodeInfo) {
 		this.nodeInfo = nodeInfo;
 	}
+
+	public String getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}
 }

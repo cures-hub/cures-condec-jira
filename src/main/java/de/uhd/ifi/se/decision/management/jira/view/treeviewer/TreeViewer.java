@@ -37,9 +37,9 @@ public class TreeViewer {
 	private Map<String, Boolean> themes;
 
 	@XmlElement
-	private Set<Data> data;
+	protected Set<Data> data;
 
-	private Graph graph;
+	protected Graph graph;
 	private List<String> ids;
 	private long index;
 
@@ -70,11 +70,11 @@ public class TreeViewer {
 
 	public TreeViewer(String issueId, boolean showRelevant) {
 		this();
-		if(issueId == null){
+		if (issueId == null) {
 			return;
 		}
 		Issue currentIssue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
-		if(currentIssue == null){
+		if (currentIssue == null) {
 			return;
 		}
 		ViewConnector vc = new ViewConnector(currentIssue, true);
@@ -82,8 +82,8 @@ public class TreeViewer {
 		Set<Data> dataSet = new HashSet<Data>();
 		for (Sentence sentence : vc.getAllSentenceInstances()) {
 			sentence.setType(KnowledgeType.OTHER);
-			if (sentence.getKnowledgeTypeEquivalent() != null) {
-				sentence.setType(sentence.getKnowledgeTypeEquivalent());
+			if (sentence.getKnowledgeType() != null) {
+				sentence.setType(sentence.getKnowledgeType());
 			}
 			if (!showRelevant && sentence.isRelevant()) {
 				dataSet.add(this.getDataStructure(sentence));
@@ -108,7 +108,7 @@ public class TreeViewer {
 		return data;
 	}
 
-	private List<Data> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
+	protected List<Data> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Data> children = new ArrayList<>();
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = this.graph
 				.getLinkedElementsAndLinks(decisionKnowledgeElement);
@@ -123,7 +123,7 @@ public class TreeViewer {
 		return children;
 	}
 
-	private Data makeIdUnique(Data data) {
+	protected Data makeIdUnique(Data data) {
 		if (!ids.contains(data.getId())) {
 			ids.add(data.getId());
 		} else {

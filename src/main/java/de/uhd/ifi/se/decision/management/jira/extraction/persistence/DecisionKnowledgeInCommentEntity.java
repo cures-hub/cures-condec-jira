@@ -1,12 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
 import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
 
-@Table("Comment")
-public interface DecisionKnowledgeInCommentEntity extends RawEntity<Integer> {
+@Table("Sentence")
+public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long> {
 
 	@AutoIncrement
 	@PrimaryKey("ID")
@@ -17,26 +18,6 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Integer> {
 	boolean getIsRelevant();
 
 	void setIsRelevant(boolean isRelevant);
-
-	boolean getIsIssue();
-
-	void setIsIssue(boolean isIssue);
-
-	boolean getIsDecision();
-
-	void setIsDecision(boolean isDecision);
-
-	boolean getIsAlternative();
-
-	void setIsAlternative(boolean isAlternative);
-
-	boolean getIsPro();
-
-	void setIsPro(boolean isPro);
-
-	boolean getIsCon();
-
-	void setIsCon(boolean isCon);
 
 	boolean getIsTagged();
 
@@ -65,5 +46,14 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Integer> {
 	int getEndSubstringCount();
 
 	void setEndSubstringCount(int count);
+	
+	KnowledgeType getKnowledgeType();
+	
+	void setKnowledgeType(KnowledgeType type);
+	
+	void setArgument(String argument);
+	
+	String getArgument();
+
 
 }
