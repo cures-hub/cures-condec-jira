@@ -85,7 +85,6 @@ public class Node {
 				this.nodeContent = ImmutableMap.of("name", "Pro-argument", "title",
 						decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
 				this.htmlClass = "pro";
-
 			}
 			break;
 		case "attack":

@@ -30,8 +30,8 @@ public class Data {
 	@XmlElement
 	private String icon;
 
-	@XmlElement
-	private Map a_attr;
+	@XmlElement(name = "a_attr")
+	private Map<String, String> tooltip;
 
 	public Data() {
 	}
@@ -41,10 +41,11 @@ public class Data {
 		this.text = decisionKnowledgeElement.getSummary();
 		this.icon = ComponentGetter.getUrlOfImageFolder() + decisionKnowledgeElement.getType().toString() + ".png";
 		this.nodeInfo = decisionKnowledgeElement;
-		if(decisionKnowledgeElement.getDescription()!=null && !decisionKnowledgeElement.getDescription().equals("")){
-		    this.a_attr = new HashMap();
-			this.a_attr.put("id", "simple-tooltip");
-            this.a_attr.put("title", decisionKnowledgeElement.getDescription());
+		if (decisionKnowledgeElement.getDescription() != null
+				&& !decisionKnowledgeElement.getDescription().equals("")) {
+			this.tooltip = new HashMap<String, String>();
+			this.tooltip.put("id", "tooltip");
+			this.tooltip.put("title", decisionKnowledgeElement.getDescription());
 		}
 	}
 
