@@ -71,11 +71,16 @@ public class ViewConnector {
 		return comments2;
 	}
 
-	public List<Sentence> getAllSentenceInstances() {
+	public List<Sentence> getAllSentenceInstances(Boolean includeQuotes) {
 		List<Sentence> sentences = new ArrayList<Sentence>();
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
-				sentences.add(sentence);
+				if(includeQuotes && sentence.getBody().contains("{quote}")) {
+					sentences.add(sentence);
+				} else if(!includeQuotes && !sentence.getBody().contains("{quote}")) {
+					sentences.add(sentence);
+				}
+				
 			}
 		}
 		return sentences;

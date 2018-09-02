@@ -270,30 +270,24 @@ public class KnowledgeRest {
 				CommentManager cm = ComponentAccessor.getCommentManager();
 				MutableComment mc = (MutableComment) cm.getCommentById(databaseEntity.getCommentId());
 				// Generate sentence data generated for classification
-				String commentBody = Comment.textRule(mc.getBody());
-
-				String sentenceToSearch = commentBody.substring(databaseEntity.getStartSubstringCount(),
+				String sentenceToSearch = Comment.textRule(mc.getBody()).substring(databaseEntity.getStartSubstringCount(),
 						databaseEntity.getEndSubstringCount());
-
-				int index = mc.getBody().trim().indexOf(sentenceToSearch.trim());
-				int whitespaces = mc.getBody().substring(0, index).length()
-						- mc.getBody().replaceAll(" ", "").substring(0, index).length();
-
-				String first = mc.getBody().substring(0, index + whitespaces);
+				int index = mc.getBody().indexOf(sentenceToSearch);
+				
+				String first = mc.getBody().substring(0, index);
 				String second = decisionKnowledgeElement.getDescription();
-				String third = mc.getBody().substring(index + whitespaces + second.length());
-
+				String third = mc.getBody().substring(index  + sentenceToSearch.length());
+				
 				mc.setBody(first + second + third);
 				cm.update(mc, true);
 			}
 
 			ActiveObjectsManager.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),
 					decisionKnowledgeElement.getType());
-			 ActiveObjectsManager.updateSentenceBody(decisionKnowledgeElement.getId(),
+			 ActiveObjectsManager.updateSentenceBody(databaseEntity.getCommentId(),decisionKnowledgeElement.getId(),
 			 decisionKnowledgeElement.getDescription());
 
 			 Response r =Response.status(Status.OK).entity(ImmutableMap.of("id", decisionKnowledgeElement.getId())).build();
-			 System.out.println(r);
 			return r;
 		} else {
 			return Response.status(Status.BAD_REQUEST)

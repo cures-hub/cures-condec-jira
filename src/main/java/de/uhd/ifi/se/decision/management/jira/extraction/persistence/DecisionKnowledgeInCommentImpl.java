@@ -28,7 +28,7 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 
 	private boolean isTaggedFineGrained;
 	
-	private KnowledgeType knowledgeType;
+	private String knowledgeType;
 	
 	private String argument;
 
@@ -199,7 +199,7 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 
 
 	@Override
-	public KnowledgeType getKnowledgeType() {
+	public String getKnowledgeType() {
 		return this.knowledgeType;
 	}
 
@@ -210,7 +210,7 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 
 	@Override
 	@XmlElement(name = "knowledgeType")
-	public void setKnowledgeType(KnowledgeType type) {
+	public void setKnowledgeType(String type) {
 		this.knowledgeType = type;
 	}
 
