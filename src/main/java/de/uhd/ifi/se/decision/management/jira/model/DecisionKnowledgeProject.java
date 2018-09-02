@@ -165,10 +165,9 @@ public interface DecisionKnowledgeProject {
 	void setKnowledgeExtractedFromIssues(boolean isKnowledgeExtractedFromIssues);
 
 	/**
-	 * Returns the Git Address for this Project
+	 * Returns the address of the git repository for this project.
 	 *
-	 * @return returns if the Address is set a String with the GitAddress else
-	 * 				a empty String will be returned.
+	 * @return git address as a String (if it is set, otherwise an empty String).
 	 */
 	String getGitAddress();
 

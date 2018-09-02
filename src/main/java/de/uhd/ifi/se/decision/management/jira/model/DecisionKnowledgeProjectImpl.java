@@ -111,8 +111,8 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	}
 
 	@Override
-	public void setWebhookData(String webhookUrl, String webhookSecret){
-		if(webhookUrl == null || webhookSecret == null){
+	public void setWebhookData(String webhookUrl, String webhookSecret) {
+		if (webhookUrl == null || webhookSecret == null) {
 			return;
 		}
 		ConfigPersistence.setWebhookUrl(projectKey, webhookUrl);
@@ -120,12 +120,12 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	}
 
 	@Override
-	public String getWebhookUrl(){
+	public String getWebhookUrl() {
 		return ConfigPersistence.getWebhookUrl(projectKey);
 	}
 
 	@Override
-	public  String getWebhookSecret(){
-		return  ConfigPersistence.getWebhookSecret(projectKey);
+	public String getWebhookSecret() {
+		return ConfigPersistence.getWebhookSecret(projectKey);
 	}
 }

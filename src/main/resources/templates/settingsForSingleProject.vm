@@ -20,9 +20,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			<script>
                 var activationToggle = document.getElementById('isActivated-toggle');
                     #if ($project.isActivated() == true)
-			activationToggle.checked = true;
+						activationToggle.checked = true;
                     #else
-			activationToggle.checked = false;
+						activationToggle.checked = false;
                     #end
                 activationToggle.addEventListener('change', function(error) {
                     this.busy = true;
@@ -40,9 +40,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			<script>
                 var strategyToggle = document.getElementById('isIssueStrategy-toggle');
                     #if ($project.isIssueStrategy() == true)
-			strategyToggle.checked = true;
+						strategyToggle.checked = true;
                     #else
-			strategyToggle.checked = false;
+						strategyToggle.checked = false;
                     #end
                 strategyToggle.addEventListener('change', function(error) {
                     this.busy = true;
@@ -77,29 +77,29 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			<div class="description">Enables or disables whether decision
 				knowledge is extracted from Git for this project.</div>
 		</div>
-        <div class="field-group">
-            <label for="git-address">Git Address</label>
-            <input id="git-address" type="text" class="text" value="$project.getGitAddress()"/>
-            <form method="GET">
-                <input type="hidden" name="projectKey" value='$projectKey'/>
-				<button id="gitSubmitButton" class="aui-button aui-button-primary">Submit</button>
-			</form>
-            <div class="description">Git Address to Extract the decisions from</div>
-			<script>
-				var gitSubmitButton = document.getElementById('gitSubmitButton');
-				gitSubmi
-				    var gitAdressInput = document.getElementById('git-address');
-                    setGitConnector( '$projectKey',gitAdressInput.value);
-                    var gitInput = document.getElementById('git-address');
-                    gitInput.value = $project.getGitAddress();
-				};
-			</script>
-        </div>
-	</form>
-    <form class="aui">
 		<div class="field-group">
-			<label for="isKnowledgeExtractedFromIssues-toggle">Extract from
-				Issue Comments?</label>
+			<label for="git-address-input-field">Git Repository</label> 
+			<input
+				id="git-address-input-field" type="text" class="text long-field"
+				value="$project.getGitAddress()" placeholder="https://github.com/cures-hub/cures-condec-jira.git"> 
+			<input type="button"
+				id="git-address-button" class="aui-button aui-button-primary"
+				value="Set Address" />
+			<script>
+				var gitSubmitButton = document.getElementById('git-address-button');
+				gitSubmitButton.addEventListener("click", function() {
+				    var gitAddress = document.getElementById('git-address-input-field').value;
+                    setGitAddress('$projectKey', gitAddress);
+				});
+			</script>
+			<div class="description">Address of the git repository where
+				decision knowledge is extracted from.</div>
+		</div>
+	</form>
+	<form class="aui">
+		<div class="field-group">
+			<label for="isKnowledgeExtractedFromIssues-toggle">Extract
+				from Issue Comments?</label>
 			<aui-toggle id="isKnowledgeExtractedFromIssues-toggle"
 				value="$projectKey" label="Extract from	Issue Comments?"></aui-toggle>
 			<script>
@@ -116,8 +116,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				});
             </script>
 			<div class="description">Enables or disables whether decision
-				knowledge is extracted from issue comments for this project.
-			</div>
+				knowledge is extracted from issue comments for this project.</div>
 		</div>
 		<h2 id="additionale-types-header">Additional Decision Knowledge
 			Types</h2>
@@ -171,10 +170,10 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				class="text long-field" id="webhook-secret" />
 			<div class="description">Key to authenticate with remote
 				server.</div>
-            <form method="GET">
-                <input type="hidden" name="projectKey" value='$projectKey'/>
-                <button id="submitWebhook" class="aui-button aui-button-primary">Submit</button>
-            </form>
+			<form method="GET">
+				<input type="hidden" name="projectKey" value='$projectKey' />
+				<button id="submitWebhook" class="aui-button aui-button-primary">Submit</button>
+			</form>
 		</div>
 		<script>
 			var webHookSubmit = document.getElementById("submitWebhook");

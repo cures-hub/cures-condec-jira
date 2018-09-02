@@ -28,9 +28,9 @@ public class ConfigPersistence {
 	}
 
 	public static boolean isIssueStrategy(String projectKey) {
-	    if(projectKey == null){
-	        return false;
-        }
+		if (projectKey == null) {
+			return false;
+		}
 		Object isIssueStrategy = transactionTemplate.execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction() {
@@ -74,9 +74,9 @@ public class ConfigPersistence {
 	}
 
 	public static boolean isKnowledgeTypeEnabled(String projectKey, String knowledgeType) {
-	    if(projectKey == null){
-	        return false;
-        }
+		if (projectKey == null) {
+			return false;
+		}
 		Object isKnowledgeTypeEnabled = transactionTemplate.execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction() {
@@ -129,18 +129,18 @@ public class ConfigPersistence {
 		settings.put(pluginStorageKey + "." + knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
-	//TODO Testing
-	public static void setGitAddress(String projectKey, String gitAddress){
-		if(projectKey == null || gitAddress == null){
+	// TODO Testing
+	public static void setGitAddress(String projectKey, String gitAddress) {
+		if (projectKey == null || gitAddress == null) {
 			return;
 		}
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey +".gitAddress", gitAddress);
+		settings.put(pluginStorageKey + ".gitAddress", gitAddress);
 	}
 
-	//TODO Testing
-	public static String getGitAddress(String projectKey){
-		if(projectKey == null){
+	// TODO Testing
+	public static String getGitAddress(String projectKey) {
+		if (projectKey == null) {
 			return "";
 		}
 		Object gitAddress = transactionTemplate.execute(new TransactionCallback<Object>() {
@@ -150,24 +150,24 @@ public class ConfigPersistence {
 				return settings.get(pluginStorageKey + ".gitAddress");
 			}
 		});
-		if(gitAddress instanceof String){
+		if (gitAddress instanceof String) {
 			return (String) gitAddress;
 		}
 		return "";
 	}
 
-	//TODO Testing
-	public static void setWebhookUrl(String projectKey, String webhookUrl){
-		if( projectKey == null || webhookUrl == null){
+	// TODO Testing
+	public static void setWebhookUrl(String projectKey, String webhookUrl) {
+		if (projectKey == null || webhookUrl == null) {
 			return;
 		}
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 		settings.put(pluginStorageKey + ".webhookUrl", webhookUrl);
 	}
 
-	//TODO Testing
-	public static String getWebhookUrl(String projectKey){
-		if(projectKey == null){
+	// TODO Testing
+	public static String getWebhookUrl(String projectKey) {
+		if (projectKey == null) {
 			return "";
 		}
 		Object webhookUrl = transactionTemplate.execute(new TransactionCallback<Object>() {
@@ -177,24 +177,24 @@ public class ConfigPersistence {
 				return settings.get(pluginStorageKey + ".webhookUrl");
 			}
 		});
-		if(webhookUrl instanceof  String){
+		if (webhookUrl instanceof String) {
 			return (String) webhookUrl;
 		}
 		return "";
 	}
 
-	//TODO Testing
-	public static void setWebhookSecret(String projectKey, String webhookSecret){
-		if(projectKey == null || webhookSecret == null){
+	// TODO Testing
+	public static void setWebhookSecret(String projectKey, String webhookSecret) {
+		if (projectKey == null || webhookSecret == null) {
 			return;
 		}
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey+ ".webhookSecret", webhookSecret);
+		settings.put(pluginStorageKey + ".webhookSecret", webhookSecret);
 	}
 
-	//TODO Testing
-	public  static String getWebhookSecret(String projectKey){
-		if(projectKey == null){
+	// TODO Testing
+	public static String getWebhookSecret(String projectKey) {
+		if (projectKey == null) {
 			return "";
 		}
 		Object webhookSecret = transactionTemplate.execute(new TransactionCallback<Object>() {
@@ -204,7 +204,7 @@ public class ConfigPersistence {
 				return settings.get(pluginStorageKey + ".webhookSecret");
 			}
 		});
-		if(webhookSecret instanceof  String){
+		if (webhookSecret instanceof String) {
 			return (String) webhookSecret;
 		}
 		return "";

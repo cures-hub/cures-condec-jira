@@ -80,7 +80,7 @@ public class TreeViewer {
 		ViewConnector vc = new ViewConnector(currentIssue, true);
 
 		Set<Data> dataSet = new HashSet<Data>();
-		for (Sentence sentence : vc.getAllSentenceInstances()) {
+		for (Sentence sentence : vc.getAllSentenceInstances(false)) {
 			sentence.setType(KnowledgeType.OTHER);
 			if (sentence.getKnowledgeType() != null) {
 				sentence.setType(sentence.getKnowledgeType());

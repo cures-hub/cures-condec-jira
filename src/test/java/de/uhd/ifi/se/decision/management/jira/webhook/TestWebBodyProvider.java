@@ -16,61 +16,61 @@ import java.io.IOException;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestWebBodyProvider extends TestSetUp{
-    private EntityManager entityManager;
+public class TestWebBodyProvider extends TestSetUp {
+	private EntityManager entityManager;
 
-    @Before
-    public void setUp() {
-        TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-                new MockDefaultUserManager());
-        initialization();
-    }
+	@Before
+	public void setUp() {
+		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
+				new MockDefaultUserManager());
+		initialization();
+	}
 
-    @Test
-    public void testGetIssueKeyNullNull() throws IOException {
-        WebBodyProvider provider = new WebBodyProvider(null,null);
-        assertEquals(0,provider.getPostMethodForIssueKey().getParameters().length,0.0);
-    }
+	@Test
+	public void testGetIssueKeyNullNull() throws IOException {
+		WebBodyProvider provider = new WebBodyProvider(null, null);
+		assertEquals(0, provider.getPostMethodForIssueKey().getParameters().length, 0.0);
+	}
 
-    @Test
-    public void testGetIssueKeyNullFilled() throws IOException {
-        WebBodyProvider provider = new WebBodyProvider(null,"TEST-14");
-        assertEquals(0,provider.getPostMethodForIssueKey().getParameters().length,0.0);
-    }
+	@Test
+	public void testGetIssueKeyNullFilled() throws IOException {
+		WebBodyProvider provider = new WebBodyProvider(null, "TEST-14");
+		assertEquals(0, provider.getPostMethodForIssueKey().getParameters().length, 0.0);
+	}
 
-    @Test
-    public void testGetIssueKeyFilledNull() throws IOException {
-        WebBodyProvider provider = new WebBodyProvider("TEST",null);
-        assertEquals(0,provider.getPostMethodForIssueKey().getParameters().length, 0.0);
-    }
+	@Test
+	public void testGetIssueKeyFilledNull() throws IOException {
+		WebBodyProvider provider = new WebBodyProvider("TEST", null);
+		assertEquals(0, provider.getPostMethodForIssueKey().getParameters().length, 0.0);
+	}
 
-    @Test
-    public void testGetIssueKeyFilledFilled() throws IOException {
-        WebBodyProvider provider = new WebBodyProvider("TEST", "TEST-14");
-        assertEquals(2,provider.getPostMethodForIssueKey().getParameters().length, 0.0);
-    }
+	@Test
+	public void testGetIssueKeyFilledFilled() throws IOException {
+		WebBodyProvider provider = new WebBodyProvider("TEST", "TEST-14");
+		assertEquals(2, provider.getPostMethodForIssueKey().getParameters().length, 0.0);
+	}
 
-    @Test
-    public void testGetGitHashNullNull() throws IOException {
-        WebBodyProvider provider = new WebBodyProvider(null,null);
-        assertEquals(0,provider.getPostMethodForGitHash().getParameters().length,0.0);
-    }
+	@Test
+	public void testGetGitHashNullNull() throws IOException {
+		WebBodyProvider provider = new WebBodyProvider(null, null);
+		assertEquals(0, provider.getPostMethodForGitHash().getParameters().length, 0.0);
+	}
 
-    @Test
-    public void testGetGitHashNullFilled() throws IOException {
-        WebBodyProvider provider = new WebBodyProvider(null,"TEST-14");
-        assertEquals(0,provider.getPostMethodForGitHash().getParameters().length,0.0);
-    }
+	@Test
+	public void testGetGitHashNullFilled() throws IOException {
+		WebBodyProvider provider = new WebBodyProvider(null, "TEST-14");
+		assertEquals(0, provider.getPostMethodForGitHash().getParameters().length, 0.0);
+	}
 
-    @Test
-    public void testGetGitHashFilledNull() throws IOException {
-        WebBodyProvider provider = new WebBodyProvider("TEST",null);
-        assertEquals(0,provider.getPostMethodForGitHash().getParameters().length, 0.0);
-    }
+	@Test
+	public void testGetGitHashFilledNull() throws IOException {
+		WebBodyProvider provider = new WebBodyProvider("TEST", null);
+		assertEquals(0, provider.getPostMethodForGitHash().getParameters().length, 0.0);
+	}
 
-    @Test
-    public void testGetGitHashFilledFilled() throws IOException {
-        WebBodyProvider provider = new WebBodyProvider("TEST", "TEST-14");
-        assertEquals(2,provider.getPostMethodForGitHash().getParameters().length, 0.0);
-    }
+	@Test
+	public void testGetGitHashFilledFilled() throws IOException {
+		WebBodyProvider provider = new WebBodyProvider("TEST", "TEST-14");
+		assertEquals(2, provider.getPostMethodForGitHash().getParameters().length, 0.0);
+	}
 }

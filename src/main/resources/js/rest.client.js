@@ -88,27 +88,31 @@ function getDecisionKnowledgeElement(id, callback) {
 }
 
 function getLinkedElements(id, callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getLinkedElements.json?projectKey="
-			+ getProjectKey() + "&id=" + id, function(error, linkedElements) {
-		if (error === null) {
-			callback(linkedElements);
-		} else {
-			showFlag("error",
-					"An error occured when receiving the linked decision knowledge elements for the selected element.");
-		}
-	});
+	getJSON(
+			AJS.contextPath() + "/rest/decisions/latest/decisions/getLinkedElements.json?projectKey=" + getProjectKey()
+					+ "&id=" + id,
+			function(error, linkedElements) {
+				if (error === null) {
+					callback(linkedElements);
+				} else {
+					showFlag("error",
+							"An error occured when receiving the linked decision knowledge elements for the selected element.");
+				}
+			});
 }
 
 function getUnlinkedElements(id, callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getUnlinkedElements.json?projectKey="
-			+ getProjectKey() + "&id=" + id, function(error, unlinkedElements) {
-		if (error === null) {
-			callback(unlinkedElements);
-		} else {
-			showFlag("error",
-					"An error occured when receiving the unlinked decision knowledge elements for the selected element.");
-		}
-	});
+	getJSON(
+			AJS.contextPath() + "/rest/decisions/latest/decisions/getUnlinkedElements.json?projectKey="
+					+ getProjectKey() + "&id=" + id,
+			function(error, unlinkedElements) {
+				if (error === null) {
+					callback(unlinkedElements);
+				} else {
+					showFlag("error",
+							"An error occured when receiving the unlinked decision knowledge elements for the selected element.");
+				}
+			});
 }
 
 function createDecisionKnowledgeElement(summary, description, type, callback) {
@@ -200,22 +204,21 @@ function deleteLink(idOfDestinationElement, idOfSourceElement, callback) {
 			});
 }
 
-
 function linkSentences(idOfDestinationElement, idOfSourceElement, linkType, callback) {
 	var jsondata = {
 		"type" : linkType,
 		"idOfSourceElement" : idOfSourceElement,
 		"idOfDestinationElement" : idOfDestinationElement
 	};
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLinkBetweenSentences.json?projectKey=" + getProjectKey(),
-			jsondata, function(error, link) {
-				if (error === null) {
-					showFlag("success", "Link has been created.");
-					callback(link);
-				} else {
-					showFlag("error", "Link could not be created.");
-				}
-			});
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLinkBetweenSentences.json?projectKey="
+			+ getProjectKey(), jsondata, function(error, link) {
+		if (error === null) {
+			showFlag("success", "Link has been created.");
+			callback(link);
+		} else {
+			showFlag("error", "Link could not be created.");
+		}
+	});
 }
 
 function deleteSentenceLink(idOfDestinationElement, idOfSourceElement, callback) {
@@ -223,54 +226,54 @@ function deleteSentenceLink(idOfDestinationElement, idOfSourceElement, callback)
 		"idOfSourceElement" : idOfSourceElement,
 		"idOfDestinationElement" : idOfDestinationElement
 	};
-	deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLinkBetweenSentences.json?projectKey=" + getProjectKey(),
-			jsondata, function(error, link) {
-				if (error === null) {
-					showFlag("success", "Link has been deleted.");
-					callback();
-				} else {
-					showFlag("error", "Link could not be deleted.");
-				}
+	deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLinkBetweenSentences.json?projectKey="
+			+ getProjectKey(), jsondata, function(error, link) {
+		if (error === null) {
+			showFlag("success", "Link has been deleted.");
+			callback();
+		} else {
+			showFlag("error", "Link could not be deleted.");
+		}
 
-			});
+	});
 }
 
 function setSentenceIrrelevant(id, callback) {
-		var jsondata = {
+	var jsondata = {
 		"id" : id,
 		"summary" : "",
 		"type" : "",
 		"projectKey" : "",
 		"description" : ""
 	};
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/setSentenceIrrelevant.json", jsondata,
-			function(error) {
-				if (error === null) {
-					showFlag("success", "Decision knowledge element has been updated.");
-					callback();
-				} else {
-					showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
-				}
-			});
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/setSentenceIrrelevant.json", jsondata, function(
+			error) {
+		if (error === null) {
+			showFlag("success", "Decision knowledge element has been updated.");
+			callback();
+		} else {
+			showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
+		}
+	});
 }
 
-function changeKnowledgeTypeOfSentence(id,type,callback) {
+function changeKnowledgeTypeOfSentence(id, type, callback) {
 	var jsondata = {
 		"id" : id,
 		"type" : type
 	};
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/changeKnowledgeTypeOfSentence.json?projectKey=" + getProjectKey(),
-			jsondata, function(error, link) {
-				if (error === null) {
-					showFlag("success", "Link has been created.");
-					callback(link);
-				} else {
-					showFlag("error", "Link could not be created.");
-				}
-			});
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/changeKnowledgeTypeOfSentence.json?projectKey="
+			+ getProjectKey(), jsondata, function(error, link) {
+		if (error === null) {
+			showFlag("success", "Link has been created.");
+			callback(link);
+		} else {
+			showFlag("error", "Link could not be created.");
+		}
+	});
 }
 
-function editSentenceBody(id,body,type,callback){
+function editSentenceBody(id, body, type, callback) {
 	var jsondata = {
 		"id" : id,
 		"summary" : "",
@@ -278,15 +281,15 @@ function editSentenceBody(id,body,type,callback){
 		"projectKey" : getProjectKey(),
 		"description" : body
 	};
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/editSentenceBody.json", jsondata,
-			function(error, id,type) {
-				if (error === null) {
-					showFlag("success", "Decision knowledge element has been updated.");
-					callback(id,type);
-				} else {
-					showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
-				}
-			});
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/editSentenceBody.json", jsondata, function(error,
+			id, type) {
+		if (error === null) {
+			showFlag("success", "Decision knowledge element has been updated.");
+			callback(id, type);
+		} else {
+			showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
+		}
+	});
 }
 
 function getTreant(elementKey, depthOfTree, callback) {
@@ -311,10 +314,10 @@ function getTreeViewer(rootElementType, callback) {
 	});
 }
 
-function getTreeViewerWithoutRootElement(showRelevant ,callback) {
+function getTreeViewerWithoutRootElement(showRelevant, callback) {
 	var issueId = AJS.$("meta[name='ajs-issue-key']").attr("content");
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer2.json?issueKey=" + issueId + "&showRelevant=" + showRelevant 
-			, function(error, core) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer2.json?issueKey=" + issueId
+			+ "&showRelevant=" + showRelevant, function(error, core) {
 		if (error === null) {
 			callback(core);
 		} else {
@@ -449,14 +452,14 @@ function getDefaultKnowledgeTypes(projectKey) {
 }
 
 function setGitAddress(projectKey, gitAddress) {
-    postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setGitAddress.json?projectKey=" + projectKey
-    + "&gitAddress=" + gitAddress, function(error, response) {
-        if (error === null) {
-            showFlag("success", "The setting  of the Git Adress  " + gitAddress + " for this project has been changed.");
-        } else {
-            showFlag("error", "The setting  of the Git Adress  " + gitAddress + " for this project could not be changed.");
-        }
-    });
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setGitAddress.json?projectKey=" + projectKey
+			+ "&gitAddress=" + gitAddress, function(error, response) {
+		if (error === null) {
+			showFlag("success", "The git address  " + gitAddress + " for this project has been set.");
+		} else {
+			showFlag("error", "The git address  " + gitAddress + " for this project could not be set.");
+		}
+	});
 }
 
 function getCommits(elementKey, callback) {
@@ -472,14 +475,14 @@ function getCommits(elementKey, callback) {
 }
 
 function setWebhookData(projectKey, webhookUrl, webhookSecret) {
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookData.json?projectKey="+projectKey
-	+ "&webhookUrl=" + webhookUrl + "&webhookSecret=" + webhookSecret, function (error, response) {
-        if (error === null) {
-            showFlag("success", "The setting  of the Webhook Data for this project has been changed.");
-        } else {
-            showFlag("error", "The setting  of the Webhook Data for this project could not be changed.");
-        }
-    });
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookData.json?projectKey=" + projectKey
+			+ "&webhookUrl=" + webhookUrl + "&webhookSecret=" + webhookSecret, function(error, response) {
+		if (error === null) {
+			showFlag("success", "The setting  of the Webhook Data for this project has been changed.");
+		} else {
+			showFlag("error", "The setting  of the Webhook Data for this project could not be changed.");
+		}
+	});
 }
 
 function getCommitsAsReturnValue(elementKey) {

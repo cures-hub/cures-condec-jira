@@ -263,25 +263,23 @@ public class ConfigRest {
 		return Response.ok(defaultKnowledgeTypes).build();
 	}
 
-	@Path("/setGitConnector")
+	@Path("/setGitAddress")
 	@POST
-	public Response setGitConnector(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey,
-			@QueryParam("gitAddress") final String gitAddress){
+	public Response setGitAddress(@Context HttpServletRequest request,
+			@QueryParam("projectKey") final String projectKey, @QueryParam("gitAddress") final String gitAddress) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if (gitAddress == null ) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "gitAddress = null"))
-					.build();
+		if (gitAddress == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "gitAddress = null")).build();
 		}
 		try {
 			ConfigPersistence.setGitAddress(projectKey, gitAddress);
-			GitConfig gitConfig = new GitConfig(projectKey ,gitAddress);
-			//TODO
+			GitConfig gitConfig = new GitConfig(projectKey, gitAddress);
+			// TODO
 			return Response.ok(Status.ACCEPTED).build();
-		}catch (Exception e) {
+		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
@@ -289,7 +287,7 @@ public class ConfigRest {
 
 	@Path("/getGitAddress")
 	@GET
-	public Response getGitAddress(@QueryParam("projectKey") final String projectKey){
+	public Response getGitAddress(@QueryParam("projectKey") final String projectKey) {
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
@@ -301,24 +299,22 @@ public class ConfigRest {
 	@Path("/setWebhookData")
 	@POST
 	public Response setWebhookData(@Context HttpServletRequest request,
-								   @QueryParam("projectKey") final  String projectKey,
-								   @QueryParam("webhookUrl") final  String webhookUrl,
-								   @QueryParam("webhookSecret") final String webhookSecret){
+			@QueryParam("projectKey") final String projectKey, @QueryParam("webhookUrl") final String webhookUrl,
+			@QueryParam("webhookSecret") final String webhookSecret) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
-		if( webhookUrl == null || webhookSecret == null){
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "webhook Data = null"))
-					.build();
+		if (webhookUrl == null || webhookSecret == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "webhook Data = null")).build();
 		}
 		try {
 			ConfigPersistence.setWebhookUrl(projectKey, webhookUrl);
 			ConfigPersistence.setWebhookSecret(projectKey, webhookSecret);
 
-			//TODO Changing default send after the connection is working like intended;
+			// TODO Changing default send after the connection is working like intended;
 			return Response.ok(Status.ACCEPTED).build();
-		}catch (Exception e){
+		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
