@@ -163,27 +163,22 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		<h2>Webhook</h2>
 		<div class="field-group">
 			<label for="webhook-url">URL</label> <input type="text"
-				class="text long-field" id="webhook-url" />
+				class="text long-field" id="webhook-url" value="$project.getWebhookUrl()" />
 			<div class="description">URL that decision knowledge is posted
 				to when updated.</div>
 			<label for="webhook-secret">Shared Secret</label> <input type="text"
-				class="text long-field" id="webhook-secret" />
+				class="text long-field" id="webhook-secret" value="$project.getWebhookSecret()" />
 			<div class="description">Key to authenticate with remote
-				server.</div>
-			<form method="GET">
-				<input type="hidden" name="projectKey" value='$projectKey' />
-				<button id="submitWebhook" class="aui-button aui-button-primary">Submit</button>
-			</form>
+				server.</div>				
+			<input type="button" id="submitWebhook" class="aui-button aui-button-primary" value="Set Webhook"/>
 		</div>
 		<script>
 			var webHookSubmit = document.getElementById("submitWebhook");
-			webHookSubmit.onclick = function() {
+			webHookSubmit.addEventListener("click", function() {
 				var urlInput = document.getElementById("webhook-url");
 				var secretInput = document.getElementById("webhook-secret");
                 setWebhookData('$projectKey', urlInput.value, secretInput.value);
-				urlInput.value = $project.getWebhookUrl();
-				secretInput.value = $project.getWebhookSecret();
-            };
+            });
 		</script>
 	</form>
 </body>

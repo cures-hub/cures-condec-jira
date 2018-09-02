@@ -478,9 +478,9 @@ function setWebhookData(projectKey, webhookUrl, webhookSecret) {
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookData.json?projectKey=" + projectKey
 			+ "&webhookUrl=" + webhookUrl + "&webhookSecret=" + webhookSecret, function(error, response) {
 		if (error === null) {
-			showFlag("success", "The setting  of the Webhook Data for this project has been changed.");
+			showFlag("success", "The webhook for this project has been set.");
 		} else {
-			showFlag("error", "The setting  of the Webhook Data for this project could not be changed.");
+			showFlag("error", "The webhook for this project has not been set.");
 		}
 	});
 }
