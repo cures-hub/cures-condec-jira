@@ -30,8 +30,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 </table>
 
 #macro ( index $array $element) #foreach($item in $array)
-#if($velocityCount == $element) $item #break #end #end #end #foreach(
-$comment in $comments )
+#if($velocityCount == $element) $item #break #end #end #end 
+
+#foreach($comment in $comments )
 <div class="comment" >
   $style
 	<a class="user-hover user-avatar" rel="admin"
@@ -45,7 +46,7 @@ $comment in $comments )
 		class="date user-tz">#index($dates,$velocityCount)</span></span>
 
 	<div class="commentBody" style="visibility: visible;">
-		<p>$comment</p>
+		<p>$comment.replaceFirst("\{quote\}","<blockquote>").replaceFirst("\{quote\}","</blockquote>")</p>
 	</div>
 </div>
 #end

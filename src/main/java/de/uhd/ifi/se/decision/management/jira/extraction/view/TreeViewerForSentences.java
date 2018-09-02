@@ -31,7 +31,7 @@ public class TreeViewerForSentences extends TreeViewer {
 		ViewConnector vc = new ViewConnector(currentIssue, true);
 
 		Set<Data> dataSet = new HashSet<Data>();
-		for (Sentence sentence : vc.getAllSentenceInstances()) {
+		for (Sentence sentence : vc.getAllSentenceInstances(false)) {
 			// Check to not display elements that are child elements for other elements
 			if (ActiveObjectsManager.getInwardLinks(sentence).size() == 0) {
 				if (!showRelevant && sentence.isRelevant()) {

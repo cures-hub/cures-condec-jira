@@ -78,11 +78,11 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		this.setEndSubstringCount(ActiveObjectsManager.getElementFromAO(aoId).getEndSubstringCount());
 		this.setArgument(ActiveObjectsManager.getElementFromAO(aoId).getArgument());
 
-		KnowledgeType kt =  ActiveObjectsManager.getElementFromAO(aoId).getKnowledgeType();
-		if(kt == null) {
+		String kt =  ActiveObjectsManager.getElementFromAO(aoId).getKnowledgeType();
+		if(kt == null || kt.equals("")) {
 			super.type = KnowledgeType.OTHER;
 		}else if(this.isTaggedFineGrained) {
-			super.type = kt;
+			super.type = KnowledgeType.getKnowledgeType(kt);
 		}
 		
 	}

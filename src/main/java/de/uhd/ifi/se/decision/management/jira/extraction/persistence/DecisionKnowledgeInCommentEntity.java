@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
 import net.java.ao.schema.PrimaryKey;
@@ -47,9 +46,9 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long> {
 
 	void setEndSubstringCount(int count);
 	
-	KnowledgeType getKnowledgeType();
+	String getKnowledgeType();
 	
-	void setKnowledgeType(KnowledgeType type);
+	void setKnowledgeType(String type);
 	
 	void setArgument(String argument);
 	
