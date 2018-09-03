@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -33,6 +32,10 @@ public class Comment {
 		this.startSubstringCount = new ArrayList<Integer>();
 		this.endSubstringCount = new ArrayList<Integer>();
 		this.sentences = new ArrayList<Sentence>();
+		this.created = new Date();
+		this.authorFullName = "";
+		this.jiraCommentId = 0;
+		this.authorId = 0;
 	}
 
 	public Comment(String comment) {
@@ -54,14 +57,6 @@ public class Comment {
 	public static String textRule(String text) {
 		return text.replace("<br>", " ").toString();
 		// .replaceAll("\\{quote\\}[^<]*\\{quote\\}", "").toString();
-	}
-
-	public static ArrayList<Comment> getCommentsFromStringList(ArrayList<String> strings) {
-		ArrayList<Comment> comments = new ArrayList<Comment>();
-		for (String body : strings) {
-			comments.add(new Comment(body));
-		}
-		return comments;
 	}
 
 	private void splitCommentIntoSentences(boolean addSentencesToAo) {
@@ -141,15 +136,6 @@ public class Comment {
 		this.sentences = sentences;
 	}
 
-	public ArrayList<Sentence> getUnTaggedSentences() {
-		ArrayList<Sentence> unlabeled = new ArrayList<Sentence>();
-		for (Sentence sentence : this.sentences) {
-			if (!sentence.isTagged()) {
-				unlabeled.add(sentence);
-			}
-		}
-		return unlabeled;
-	}
 
 	public String getTaggedBody(int index) {
 		String result = "<span id=\"comment" + index + "\">";

@@ -115,7 +115,7 @@ public class ActiveObjectsManager {
 						return databaseEntry;
 					}
 				}
-				return null;
+				return new DecisionKnowledgeInCommentImpl();
 			}
 		});
 	}
@@ -184,17 +184,17 @@ public class ActiveObjectsManager {
 			@Override
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
 				boolean deleteFlag = false;
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class)) {
-					if (databaseEntry.getCommentId() == comment.getJiraCommentId()) {
-						if (!starts.contains(databaseEntry.getStartSubstringCount())
-								|| !ends.contains(databaseEntry.getEndSubstringCount())) {
-							deleteFlag = true;
-						}
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class,
+						Query.select().where("COMMENT_ID = ?", comment.getJiraCommentId()))) {
+					if (!starts.contains(databaseEntry.getStartSubstringCount())
+							|| !ends.contains(databaseEntry.getEndSubstringCount())) {
+						deleteFlag = true;
 					}
 				}
 				// delete all here
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class)) {
-					if (databaseEntry.getCommentId() == comment.getJiraCommentId() && deleteFlag) {
+				if (deleteFlag) {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class,
+						Query.select().where("COMMENT_ID = ?", comment.getJiraCommentId()))) {
 						try {
 							databaseEntry.getEntityManager().delete(databaseEntry);
 						} catch (SQLException e) {
@@ -293,10 +293,6 @@ public class ActiveObjectsManager {
 				});
 		if (decisionKnowledgeElement != null) {
 			Sentence sentence = new Sentence(id);
-			// sentence.setType(KnowledgeType.OTHER);
-			// if (sentence.getKnowledgeTypeEquivalent() != null) {
-			// sentence.setType(sentence.getKnowledgeTypeEquivalent());
-			// }
 			return sentence;
 		}
 		return null;
@@ -380,9 +376,10 @@ public class ActiveObjectsManager {
 				}
 				for (DecisionKnowledgeInCommentEntity sentenceEntity : ao.find(DecisionKnowledgeInCommentEntity.class,
 						"COMMENT_ID = ?", commentId)) {
-					if (sentenceEntity.getStartSubstringCount() > sentenceEntity.getStartSubstringCount() && sentenceEntity.getId() != aoId
-							&& sentenceEntity.getCommentId() == commentId) {
-						sentenceEntity.setStartSubstringCount(sentenceEntity.getStartSubstringCount() + lengthDifference);
+					if (sentenceEntity.getStartSubstringCount() > sentenceEntity.getStartSubstringCount()
+							&& sentenceEntity.getId() != aoId && sentenceEntity.getCommentId() == commentId) {
+						sentenceEntity
+								.setStartSubstringCount(sentenceEntity.getStartSubstringCount() + lengthDifference);
 						sentenceEntity.setEndSubstringCount(sentenceEntity.getEndSubstringCount() + lengthDifference);
 						sentenceEntity.save();
 					}
