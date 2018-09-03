@@ -81,24 +81,28 @@ public class Comment {
 	private List<String> setupCommentSplit() {
 		String quote = "{quote}";
 		List<String> quotes = new ArrayList<String>();
-		List<Integer> indexes = new ArrayList<Integer>();
-		int i = this.body.indexOf(quote);
-		while (i >= 0) {
-			indexes.add(i);
-			i = this.body.indexOf(quote, i + 1);
-		}
-		for (int j = 0; j <= indexes.size(); j = j + 2) {
-			if (indexes.get(0) > 0 && j == 0) {
-				quotes.add(this.body.substring(0, indexes.get(j)));
+		if(this.body.contains(quote)) {
+			List<Integer> indexes = new ArrayList<Integer>();
+			int i = this.body.indexOf(quote);
+			while (i >= 0) {
+				indexes.add(i);
+				i = this.body.indexOf(quote, i + 1);
 			}
-			if (j < indexes.size() - 1) {
-				quotes.add(this.body.substring(indexes.get(j), indexes.get(j + 1) + quote.length()));
+			for (int j = 0; j <= indexes.size(); j = j + 2) {
+				if (indexes.get(0) > 0 && j == 0) {
+					quotes.add(this.body.substring(0, indexes.get(j)));
+				}
+				if (j < indexes.size() - 1) {
+					quotes.add(this.body.substring(indexes.get(j), indexes.get(j + 1) + quote.length()));
+				}
+				if (j + 2 < indexes.size()) {
+					quotes.add(this.body.substring(indexes.get(j + 1) + quote.length(), indexes.get(j + 2)));
+				} else if (j + 2 == indexes.size()) {
+					quotes.add(this.body.substring(indexes.get(j + 1) + quote.length()));
+				}
 			}
-			if (j + 2 < indexes.size()) {
-				quotes.add(this.body.substring(indexes.get(j + 1) + quote.length(), indexes.get(j + 2)));
-			} else if (j + 2 == indexes.size()) {
-				quotes.add(this.body.substring(indexes.get(j + 1) + quote.length()));
-			}
+		}else {
+			quotes.add(this.body);
 		}
 		return quotes;
 	}
