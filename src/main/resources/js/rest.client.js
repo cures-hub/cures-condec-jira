@@ -460,6 +460,7 @@ function setGitAddress(projectKey, gitAddress) {
 			showFlag("error", "The git address  " + gitAddress + " for this project could not be set.");
 		}
 	});
+	showFlag("success", "The git address  " + gitAddress + " for this project has been set.");
 }
 
 function getCommits(elementKey, callback) {
@@ -483,6 +484,7 @@ function setWebhookData(projectKey, webhookUrl, webhookSecret) {
 			showFlag("error", "The webhook for this project has not been set.");
 		}
 	});
+	showFlag("success", "The webhook for this project has been set.");
 }
 
 function getCommitsAsReturnValue(elementKey) {
