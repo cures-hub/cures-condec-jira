@@ -24,7 +24,6 @@ function buildTreant(elementKey, isInteractive) {
 			}
 		});
 	});
-	addTooltip();
 }
 
 function getDepthOfTree() {
@@ -41,6 +40,7 @@ function createTreant(treeStructure, isInteractive) {
 	if (isInteractive !== undefined && isInteractive) {
 		createContextMenuForTreantNodes();
 		addDragAndDropSupportForTreant();
+		addTooltip();
 	}
 }
 
