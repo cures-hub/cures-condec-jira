@@ -74,39 +74,49 @@ public class Comment {
 	}
 
 	private List<String> setupCommentSplit() {
-		String quote = "{quote}";
-		List<String> quotes = new ArrayList<String>();
-		if(this.body.contains(quote)) {
-			List<Integer> indexes = new ArrayList<Integer>();
-			int i = this.body.indexOf(quote);
-			while (i >= 0) {
-				indexes.add(i);
-				i = this.body.indexOf(quote, i + 1);
-			}
-			for (int j = 0; j <= indexes.size(); j = j + 2) {
-				if (indexes.get(0) > 0 && j == 0) {
-					quotes.add(this.body.substring(0, indexes.get(j)));
-				}
-				if (j < indexes.size() - 1) {
-					quotes.add(this.body.substring(indexes.get(j), indexes.get(j + 1) + quote.length()));
-				}
-				if (j + 2 < indexes.size()) {
-					quotes.add(this.body.substring(indexes.get(j + 1) + quote.length(), indexes.get(j + 2)));
-				} else if (j + 2 == indexes.size()) {
-					quotes.add(this.body.substring(indexes.get(j + 1) + quote.length()));
-				}
-			}
-		}else {
-			quotes.add(this.body);
+		String quoteString = "{quote}";
+		String codeString = "{code:";
+		List<String> slices = new ArrayList<String>();
+		if(this.body.contains(quoteString)) { 
+			slices = sliceQuotesAndCodeOutOfCommentText(quoteString,slices);
+		}if(this.body.contains(codeString)){
+			slices = sliceQuotesAndCodeOutOfCommentText(codeString,slices);
+		}else if(!this.body.contains(quoteString)){
+			slices.add(this.body);
 		}
-		return quotes;
+		return slices;
+	}
+	
+	private List<String> sliceQuotesAndCodeOutOfCommentText(String quoteString, List<String> slices) {
+		List<Integer> indexes = new ArrayList<Integer>();
+		int i = this.body.indexOf(quoteString);
+		while (i >= 0) {
+			indexes.add(i);
+			if(quoteString.equals("{code:")) {quoteString = "{code}";}
+			else if(quoteString.contains("{code}")) {quoteString = "{code:";}
+			i = this.body.indexOf(quoteString, i + 1);
+		}
+		for (int j = 0; j <= indexes.size(); j = j + 2) {
+			if (indexes.get(0) > 0 && j == 0) {
+				slices.add(this.body.substring(0, indexes.get(j)));
+			}
+			if (j < indexes.size() - 1) {
+				slices.add(this.body.substring(indexes.get(j), indexes.get(j + 1) + quoteString.length()));
+			}
+			if (j + 2 < indexes.size()) {
+				slices.add(this.body.substring(indexes.get(j + 1) + quoteString.length(), indexes.get(j + 2)));
+			} else if (j + 2 == indexes.size()) {
+				slices.add(this.body.substring(indexes.get(j + 1) + quoteString.length()));
+			}
+		}
+		return slices;
 	}
 
 	private void runBreakIterator(List<String> rawSentences) {
 		String quote = "{quote}";
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
 		for (String a : rawSentences) {
-			if (!a.contains(quote)) {
+			if (!a.contains(quote) && !a.contains("{code}")) {
 				iterator.setText(a);
 				int start = iterator.first();
 				for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
@@ -140,12 +150,12 @@ public class Comment {
 	public String getTaggedBody(int index) {
 		String result = "<span id=\"comment" + index + "\">";
 		for (Sentence sentence : this.sentences) {
-			if (sentence.isRelevant()) {
+			if (sentence.isRelevant() && !sentence.getBody().contains("{code}")) {
 				result = result + "<span class=\"sentence " + sentence.getKnowledgeTypeString() + // done
 						"\"  id  = ui" + sentence.getActiveObjectId() + ">" + sentence.getOpeningTagSpan()
 						+ "<span class = sentenceBody>" + sentence.getBody() + "</span>" + sentence.getClosingTagSpan()
 						+ "</span>";
-			} else {
+			} else if(!sentence.getBody().contains("{code}")){
 				result = result + "<span class=\"sentence \"  id  = ui" + sentence.getActiveObjectId() + ">"
 						+ sentence.getOpeningTagSpan() + "<span class = sentenceBody>" + sentence.getBody() + "</span>"
 						+ sentence.getClosingTagSpan() + "</span>";
