@@ -24,7 +24,7 @@ function buildTreant(elementKey, isInteractive) {
 			}
 		});
 	});
-	addTooltipViaClass();
+	addTooltip();
 }
 
 function getDepthOfTree() {
@@ -108,6 +108,13 @@ function allowDrop(event) {
 	event.preventDefault();
 }
 
+function addTooltip() {
+	var nodes = treantTree.tree.nodeDB.db;
+	for (i = 0; i < nodes.length; i++) {
+		AJS.$("#" + nodes[i].id).tooltip();
+	}
+}
+
 function addCommits(commits, elementArray) {
 	commits.forEach(function(commit) {
 		var message = commit.message;
@@ -154,12 +161,4 @@ function openCommitDetails(commit) {
 	var url = AJS.contextPath() + "/secure/bbb.gp.gitviewer.Commit.jspa?repoId=" + commit.repository.id + "&commitId="
 			+ commit.commitId;
 	window.open(url);
-}
-
-function addTooltipViaClass() {
-	var nodes = document.getElementsByClassName("tooltipElement");
-	for (var i=0; i<nodes.length; i++){
-		console.log("#"+nodes[i].id);
-        AJS.$("#"+nodes[i].id).tooltip();
-	}
 }

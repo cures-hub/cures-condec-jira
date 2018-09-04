@@ -18,7 +18,7 @@ function buildTreeViewer() {
 		});
 	});
 	addDragAndDropSupportForTreeViewer();
-	addTooltip();
+	AJS.$("#tooltip").tooltip();
 }
 
 function resetTreeViewer() {
@@ -65,8 +65,4 @@ function addDragAndDropSupportForTreeViewer() {
 			});
 		}
 	});
-}
-
-function addTooltip() {
-    AJS.$("#tooltip").tooltip();
 }

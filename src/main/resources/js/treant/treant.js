@@ -1937,6 +1937,10 @@
             node.href = this.link.href;
             node.target = this.link.target;
         }
+        
+        if ( this.link.title ) {
+            node.title = this.link.title;
+        }
 
         if ( $ ) {
             $( node ).data( 'treenode', this );
