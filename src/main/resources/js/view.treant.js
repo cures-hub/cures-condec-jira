@@ -24,6 +24,7 @@ function buildTreant(elementKey, isInteractive) {
 			}
 		});
 	});
+	addTooltipViaClass();
 }
 
 function getDepthOfTree() {
@@ -153,4 +154,12 @@ function openCommitDetails(commit) {
 	var url = AJS.contextPath() + "/secure/bbb.gp.gitviewer.Commit.jspa?repoId=" + commit.repository.id + "&commitId="
 			+ commit.commitId;
 	window.open(url);
+}
+
+function addTooltipViaClass() {
+	var nodes = document.getElementsByClassName("tooltipElement");
+	for (var i=0; i<nodes.length; i++){
+		console.log("#"+nodes[i].id);
+        AJS.$("#"+nodes[i].id).tooltip();
+	}
 }
