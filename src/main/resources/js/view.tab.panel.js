@@ -63,14 +63,23 @@ function buildTreeViewer2(showRelevant) {
 	getTreeViewerWithoutRootElement(showRelevant, function(core) {
 		$("#jstree").jstree({
 			"core" : core,
-			"plugins" : [ "dnd", "contextmenu", "wholerow", "search" ],
+			"plugins" : [ "dnd", "contextmenu", "wholerow", "search","sort"],
 			"search" : {
 				"show_only_matches" : true
 			},
 			"contextmenu" : {
 				"items" : contextMenuActionsForSentences
-			}
-		});
+			},
+			"sort": function(a, b) {
+		        a1 = this.get_node(a);
+		        b1 = this.get_node(b);
+		        if(a1.id > b1.id){
+		        	return 1;
+		        }else{
+		        	return -1;
+		        }
+		         } 
+			});
 		$("#jstree-search-input").keyup(function() {
 			var searchString = $(this).val();
 			$("#jstree").jstree(true).search(searchString);

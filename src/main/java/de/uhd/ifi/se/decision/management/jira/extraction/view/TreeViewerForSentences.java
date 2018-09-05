@@ -34,11 +34,13 @@ public class TreeViewerForSentences extends TreeViewer {
 		for (Sentence sentence : vc.getAllSentenceInstances(false)) {
 			// Check to not display elements that are child elements for other elements
 			if (ActiveObjectsManager.getInwardLinks(sentence).size() == 0) {
-				if (!showRelevant && sentence.isRelevant()) {
-					dataSet.add(this.getDataStructureWithSentenceGraph(sentence));
-				}
-				if (showRelevant) {
-					dataSet.add(this.getDataStructureWithSentenceGraph(sentence));
+				if(!sentence.getBody().contains("{code}") && !sentence.getBody().contains("{noformat}")) {
+					if (!showRelevant && sentence.isRelevant()) {
+						dataSet.add(this.getDataStructureWithSentenceGraph(sentence));
+					}
+					if (showRelevant) {
+						dataSet.add(this.getDataStructureWithSentenceGraph(sentence));
+					}
 				}
 			}
 		}

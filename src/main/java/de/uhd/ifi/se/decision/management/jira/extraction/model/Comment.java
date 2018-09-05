@@ -76,12 +76,15 @@ public class Comment {
 	private List<String> setupCommentSplit() {
 		String quoteString = "{quote}";
 		String codeString = "{code:";
+		String noFormatString = "{noformat}";
 		List<String> slices = new ArrayList<String>();
 		if(this.body.contains(quoteString)) { 
 			slices = sliceQuotesAndCodeOutOfCommentText(quoteString,slices);
 		}if(this.body.contains(codeString)){
 			slices = sliceQuotesAndCodeOutOfCommentText(codeString,slices);
-		}else if(!this.body.contains(quoteString)){
+		}if(this.body.contains(noFormatString)){
+			slices = sliceQuotesAndCodeOutOfCommentText(noFormatString,slices);
+		}else if(!this.body.contains(quoteString) && !this.body.contains(noFormatString)){
 			slices.add(this.body);
 		}
 		return slices;
@@ -150,12 +153,12 @@ public class Comment {
 	public String getTaggedBody(int index) {
 		String result = "<span id=\"comment" + index + "\">";
 		for (Sentence sentence : this.sentences) {
-			if (sentence.isRelevant() && !sentence.getBody().contains("{code}")) {
+			if (sentence.isRelevant() && !sentence.getBody().contains("{code}") && !sentence.getBody().contains("{noformat}")) {
 				result = result + "<span class=\"sentence " + sentence.getKnowledgeTypeString() + // done
 						"\"  id  = ui" + sentence.getActiveObjectId() + ">" + sentence.getOpeningTagSpan()
 						+ "<span class = sentenceBody>" + sentence.getBody() + "</span>" + sentence.getClosingTagSpan()
 						+ "</span>";
-			} else if(!sentence.getBody().contains("{code}")){
+			} else if(!sentence.getBody().contains("{code}")&& !sentence.getBody().contains("{noformat}")){
 				result = result + "<span class=\"sentence \"  id  = ui" + sentence.getActiveObjectId() + ">"
 						+ sentence.getOpeningTagSpan() + "<span class = sentenceBody>" + sentence.getBody() + "</span>"
 						+ sentence.getClosingTagSpan() + "</span>";
