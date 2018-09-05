@@ -69,7 +69,7 @@ public class KnowledgeRest {
 			return Response.ok(linkedDecisionKnowledgeElements).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"Linked decision knowledge elments could not be received due to a bad request (element id or project key was missing)."))
+					"Linked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
 					.build();
 		}
 	}

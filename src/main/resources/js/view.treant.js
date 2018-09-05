@@ -40,6 +40,7 @@ function createTreant(treeStructure, isInteractive) {
 	if (isInteractive !== undefined && isInteractive) {
 		createContextMenuForTreantNodes();
 		addDragAndDropSupportForTreant();
+		addTooltip();
 	}
 }
 
@@ -105,6 +106,13 @@ function drop(event, target) {
 
 function allowDrop(event) {
 	event.preventDefault();
+}
+
+function addTooltip() {
+	var nodes = treantTree.tree.nodeDB.db;
+	for (i = 0; i < nodes.length; i++) {
+		AJS.$("#" + nodes[i].id).tooltip();
+	}
 }
 
 function addCommits(commits, elementArray) {

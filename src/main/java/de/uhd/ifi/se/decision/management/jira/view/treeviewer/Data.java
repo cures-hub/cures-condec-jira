@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import com.google.common.collect.ImmutableMap;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -31,7 +33,7 @@ public class Data {
 	private String icon;
 
 	@XmlElement(name = "a_attr")
-	private Map<String, String> tooltip;
+	private Map<String, String> a_attr;
 
 	public Data() {
 	}
@@ -41,11 +43,9 @@ public class Data {
 		this.text = decisionKnowledgeElement.getSummary();
 		this.icon = ComponentGetter.getUrlOfImageFolder() + decisionKnowledgeElement.getType().toString() + ".png";
 		this.nodeInfo = decisionKnowledgeElement;
-		if (decisionKnowledgeElement.getDescription() != null
-				&& !decisionKnowledgeElement.getDescription().equals("")) {
-			this.tooltip = new HashMap<String, String>();
-			this.tooltip.put("id", "tooltip");
-			this.tooltip.put("title", decisionKnowledgeElement.getDescription());
+		if (decisionKnowledgeElement.getDescription() != null && !decisionKnowledgeElement.getDescription().equals("")
+				&& !decisionKnowledgeElement.getDescription().equals("undefined")) {
+			this.a_attr = ImmutableMap.of("title", decisionKnowledgeElement.getDescription());
 		}
 	}
 
