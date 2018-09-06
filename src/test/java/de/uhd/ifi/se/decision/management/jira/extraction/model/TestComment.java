@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.model;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 

@@ -111,7 +111,7 @@ public class TestSentenceExtractionGraph extends TestSetUp{
 
 	@Test
 	public void testSetGetProject(){
-		DecisionKnowledgeProject project = new DecisionKnowledgeProjectImpl("TEST-Set");
+		DecisionKnowledgeProject project = new DecisionKnowledgeProjectImpl("TEST-Set"); 
 		graph.setProject(project);
 		assertEquals("TEST-Set", graph.getProject().getProjectKey());
 	}

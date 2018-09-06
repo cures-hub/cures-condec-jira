@@ -156,7 +156,7 @@ public class Comment {
 	}
 
 	public void setSentences(ArrayList<Sentence> sentences) {
-		this.sentences = sentences;
+		this.sentences = sentences; 
 	}
 
 	public String getTaggedBody(int index) {
