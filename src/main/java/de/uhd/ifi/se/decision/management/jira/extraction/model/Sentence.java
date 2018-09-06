@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
@@ -30,33 +32,28 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 	private boolean isPlanText;
 
 	public Sentence() {
+		super();
+		super.type = KnowledgeType.OTHER;
 	}
 
 	public Sentence(String body, long aoId, long jiraCommentId) {
-		super();
 		this.setBody(body);
-
-		super.type = KnowledgeType.OTHER;
 		this.setValuesFromAoId(aoId);
 
 		super.setDescription(this.body);
 		super.setId(aoId);
 		super.setKey(jiraCommentId + "-" + aoId);
 		super.setSummary(body);
-		if (ComponentGetter.getProjectService() != null) {
-			super.setProject(
+		super.setProject(
 					new DecisionKnowledgeProjectImpl(ComponentGetter.getProjectService().getProjectKeyDescription()));
-		} else {
-			super.setProject(new DecisionKnowledgeProjectImpl(""));
-		}
+
 	}
 
 	public Sentence(long aoId) {
-		super();
-		super.type = KnowledgeType.OTHER;
+		this();
 		this.setValuesFromAoId(aoId);
 		this.setSuperValues(aoId);
-	}
+	} 
 
 	private void setSuperValues(long aoId) {
 		com.atlassian.jira.issue.comments.Comment c = ComponentAccessor.getCommentManager()
@@ -111,6 +108,11 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 
 	public void setBody(String body) {
 		this.body = body;
+		if(StringUtils.indexOfAny(body, new String[]{"{code}", "{quote}","{noformat}" }) > 0 ) {
+			this.isPlanText = false;
+		}else {
+			this.isPlanText = true;
+		}
 	}
 
 	public void setRelevant(Double double1) {
