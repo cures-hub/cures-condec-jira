@@ -99,23 +99,6 @@ public class WebConnector{
         this.secret = secret;
     }
 
-    public void submitTestPost(String projectKey, String gitHash){
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost(this.url);
-        httpPost.setHeader("accept", "application/json");
-        WebBodyProvider provider = new WebBodyProvider(projectKey,gitHash);
-        List<BasicNameValuePair> nvps = provider.getNvm();
-        try {
-            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
-            CloseableHttpResponse response2 = httpclient.execute(httpPost);
-            System.out.println(response2.getStatusLine());
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private boolean submitPostMethod(){
         try {
             HttpClient httpClient = new HttpClient();
