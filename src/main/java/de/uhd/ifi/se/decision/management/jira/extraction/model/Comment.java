@@ -3,8 +3,11 @@ package de.uhd.ifi.se.decision.management.jira.extraction.model;
 import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 
@@ -59,7 +62,7 @@ public class Comment {
 	}
 
 	private void splitCommentIntoSentences(boolean addSentencesToAo) {
-		List<String> rawSentences = sliceCommentsIntoTextQuotesCode();
+		List<String> rawSentences = sliceCommentRecursionCommander();
 		runBreakIterator(rawSentences);
 		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(this);
 		// Create AO entries
@@ -72,76 +75,58 @@ public class Comment {
 		}
 	}
 
-	private List<String> sliceCommentsIntoTextQuotesCode() {
-		final String[] identifiers = { "{quote}", "{code:", "{noformat}" };
-		boolean containsOtherThanPlainText = false;
-		List<String> slices = new ArrayList<String>();
-		
-		for (String identifier : identifiers) {
-			if (this.body.contains(identifier)) {
-				slices = sliceQuotesAndCodeOutOfCommentText(identifier, slices);
-				containsOtherThanPlainText = true;
-			}
-		}
-		if (!containsOtherThanPlainText) {
-			slices.add(this.body);
-		}
-		return slices;
+	private List<String> sliceCommentRecursionCommander() {
+		List<String> firstSplit = searchBetweenTagsRecursive(this.body, "{quote}", "{quote}", new ArrayList<String>());
+
+		firstSplit = searchForFurtherTags(firstSplit, "{noformat}", "{noformat}");
+		firstSplit = searchForFurtherTags(firstSplit, "{code:", "{code}");
+
+		return firstSplit;
 	}
 
-	private List<String> sliceQuotesAndCodeOutOfCommentText(String identifier, List<String> slices) {
-		List<Integer> indexes = createStartIndexofSpecialTextIdentifier(identifier);
-
-		for (int j = 0; j <= indexes.size(); j = j + 2) {
-			if (indexes.get(0) > 0 && j == 0) {// First block is usual text
-				slices = addSlice(slices, 0, indexes.get(j));
-			}
-			if (j < indexes.size() - 1) {// Block is a special sentence (quote, code,..) 
-				slices = addSlice(slices, indexes.get(j), indexes.get(j + 1) + identifier.length());
-			}
-			if (j + 2 < indexes.size()) {// Comment has two blocks of special sentences
-				slices = addSlice(slices, indexes.get(j + 1) + identifier.length(), indexes.get(j + 2));
-			}
-			if (j + 2 == indexes.size()) {// Last Sentence is usual text
-				slices = addSlice(slices, indexes.get(j + 1) + identifier.length(), -1);
+	private List<String> searchForFurtherTags(List<String> firstSplit, String openTag, String closeTag) {
+		HashMap<Integer, ArrayList<String>> newSlices = new HashMap<Integer, ArrayList<String>>();
+		for (String slice : firstSplit) {
+			ArrayList<String> slicesOfSentence = searchBetweenTagsRecursive(slice, openTag, closeTag,
+					new ArrayList<String>());
+			if (slicesOfSentence.size() > 1) {
+				newSlices.put(firstSplit.indexOf(slice), slicesOfSentence);
 			}
 		}
-		return slices;
+		for (int i = newSlices.keySet().toArray().length - 1; i >= 0; i--) {
+			int remove = (int) newSlices.keySet().toArray()[i];
+			firstSplit.remove(remove);
+			firstSplit.addAll(remove, newSlices.get(remove));
+		}
+
+		return firstSplit;
+
 	}
 
-	private List<Integer> createStartIndexofSpecialTextIdentifier(String identifier) {
-		int i = this.body.indexOf(identifier);
-		List<Integer> indexes = new ArrayList<Integer>();
-		
-		while (i >= 0) {
-			indexes.add(i);
-			identifier = switchBetweenCodeStartAndEndIdentifier(identifier);
-			i = this.body.indexOf(identifier, i + 1);
+	private ArrayList<String> searchBetweenTagsRecursive(String toSearch, String openTag, String closeTag,
+			ArrayList<String> slices) {
+		if (toSearch.startsWith(openTag)) {
+			String part = StringUtils.substringBetween(toSearch, openTag, closeTag);
+			part = openTag + part + closeTag;
+			slices.add(part);
+			toSearch = toSearch.substring(toSearch.indexOf(openTag) + part.length());
+			slices = searchBetweenTagsRecursive(toSearch, openTag, closeTag, slices);
+		} else {// Comment block has now plain text
+			if (toSearch.contains(openTag)) {// comment block has special text later
+				slices.add(toSearch.substring(0, toSearch.indexOf(openTag)));
+				slices = searchBetweenTagsRecursive(toSearch.substring(toSearch.indexOf(openTag)), openTag, closeTag,
+						slices);
+			} else {// comment block has no more special text
+				slices.add(toSearch);
+			}
 		}
-		return indexes;
-	}
 
-	private String switchBetweenCodeStartAndEndIdentifier(String identifier) {
-		if (identifier.equals("{code:")) {
-			return "{code}";
-		} else if (identifier.contains("{code}")) {
-			return "{code:";
-		}
-		return identifier;
-	}
-
-	private List<String> addSlice(List<String> slices, int i, int j) {
-		if (j < 0) {
-			slices.add(this.body.substring(i));
-		} else {
-			slices.add(this.body.substring(i, j));
-		}
 		return slices;
 	}
 
 	private void runBreakIterator(List<String> rawSentences) {
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
-		
+
 		for (String currentSentence : rawSentences) {
 			if (!currentSentence.contains("{quote}") && !currentSentence.contains("{code}")) {
 				iterator.setText(currentSentence);
