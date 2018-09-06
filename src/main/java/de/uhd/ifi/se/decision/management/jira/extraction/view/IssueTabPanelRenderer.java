@@ -73,7 +73,6 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 
 		context = addParamsToContext(context);
 
-
 		return(velocityManager.getEncodedBody("templates/", "tabPanel.vm", baseUrl, webworkEncoding, context));
 
 	}

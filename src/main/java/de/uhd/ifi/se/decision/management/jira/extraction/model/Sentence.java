@@ -1,12 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -29,13 +25,17 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 
 	private boolean isTaggedFineGrained;
 
-	private String argument="";
-	
+	private String argument = "";
+
+	private boolean isPlanText;
+
+	public Sentence() {
+	}
 
 	public Sentence(String body, long aoId, long jiraCommentId) {
 		super();
 		this.setBody(body);
-		
+
 		super.type = KnowledgeType.OTHER;
 		this.setValuesFromAoId(aoId);
 
@@ -43,10 +43,12 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		super.setId(aoId);
 		super.setKey(jiraCommentId + "-" + aoId);
 		super.setSummary(body);
-		super.setProject(
-				new DecisionKnowledgeProjectImpl(ComponentGetter.getProjectService().getProjectKeyDescription()));
-
-
+		if (ComponentGetter.getProjectService() != null) {
+			super.setProject(
+					new DecisionKnowledgeProjectImpl(ComponentGetter.getProjectService().getProjectKeyDescription()));
+		} else {
+			super.setProject(new DecisionKnowledgeProjectImpl(""));
+		}
 	}
 
 	public Sentence(long aoId) {
@@ -78,18 +80,13 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		this.setEndSubstringCount(ActiveObjectsManager.getElementFromAO(aoId).getEndSubstringCount());
 		this.setArgument(ActiveObjectsManager.getElementFromAO(aoId).getArgument());
 
-		String kt =  ActiveObjectsManager.getElementFromAO(aoId).getKnowledgeType();
-		if(kt == null || kt.equals("")) {
+		String kt = ActiveObjectsManager.getElementFromAO(aoId).getKnowledgeType();
+		if (kt == null || kt.equals("")) {
 			super.type = KnowledgeType.OTHER;
-		}else if(this.isTaggedFineGrained) {
+		} else if (this.isTaggedFineGrained) {
 			super.type = KnowledgeType.getKnowledgeType(kt);
 		}
-		
-	}
 
-	public Sentence(String body, boolean isRelevant) {
-		this.setBody(body);
-		this.setRelevant(isRelevant);
 	}
 
 	public boolean isTagged() {
@@ -123,8 +120,6 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 			setRelevant(false);
 		}
 	}
-
-
 
 	public long getActiveObjectId() {
 		return activeObjectId;
@@ -177,7 +172,7 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		this.isTaggedFineGrained = isTaggedFineGrained;
 	}
 
-	public KnowledgeType getKnowledgeType() throws NullPointerException{
+	public KnowledgeType getKnowledgeType() throws NullPointerException {
 		return super.type;
 	}
 
@@ -186,7 +181,7 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 	}
 
 	public String getArgument() {
-		if(this.argument == null) {
+		if (this.argument == null) {
 			return "";
 		}
 		return argument;
@@ -194,6 +189,14 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 
 	public void setArgument(String linkType) {
 		this.argument = linkType;
+	}
+
+	public boolean isPlanText() {
+		return isPlanText;
+	}
+
+	public void setPlanText(boolean isPlanText) {
+		this.isPlanText = isPlanText;
 	}
 
 	public void setKnowledgeType(double[] resultArray) {
@@ -223,39 +226,48 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		}
 	}
 
-	public void setKnowledgeType(String string) {
-		super.type = KnowledgeType.getKnowledgeType(string);
+	public void setKnowledgeType(String type) {
+		if (type.toLowerCase().equals("pro")) {
+			super.type = KnowledgeType.ARGUMENT;
+			this.argument = "Pro";
+		} else if (type.toLowerCase().equals("con")) {
+			super.type = KnowledgeType.ARGUMENT;
+			this.argument = "Con";
+		} else {
+			super.type = KnowledgeType.getKnowledgeType(type);
+		}
 	}
 
 	public String getKnowledgeTypeString() {
-		if(super.type == null) {
+		if (super.type == null) {
 			return "";
 		}
-		if(super.type.equals(KnowledgeType.ARGUMENT)) {
+		if (super.type.equals(KnowledgeType.ARGUMENT)) {
 			return this.argument;
 		}
 		return super.type.toString();
 	}
 
 	public String getOpeningTagSpan() {
-		if(super.type == null  || super.type == KnowledgeType.OTHER || !this.isRelevant) {
-			return "<span class =tag ></span>" ;
+		if (super.type == null || super.type == KnowledgeType.OTHER || !this.isRelevant) {
+			return "<span class =tag></span>";
 		}
 		String typeText = super.type.toString();
-		if(super.type.equals(KnowledgeType.ARGUMENT)) {
+		if (super.type.equals(KnowledgeType.ARGUMENT)) {
 			typeText = this.argument;
 		}
-		return "<span class =tag>["+typeText+"]</span>";
+		return "<span class =tag>[" + typeText + "]</span>";
 	}
-	
+
 	public String getClosingTagSpan() {
-		if(super.type == null  || super.type == KnowledgeType.OTHER || !this.isRelevant) {
-			return "<span class =tag ></span>" ;
+		if (super.type == null || super.type == KnowledgeType.OTHER || !this.isRelevant) {
+			return "<span class =tag></span>";
 		}
 		String typeText = super.type.toString();
-		if(super.type.equals(KnowledgeType.ARGUMENT)) {
+		if (super.type.equals(KnowledgeType.ARGUMENT)) {
 			typeText = this.argument;
 		}
-		return "<span class =tag>[/"+typeText+"]</span>";
+		return "<span class =tag>[/" + typeText + "]</span>";
 	}
+
 }
