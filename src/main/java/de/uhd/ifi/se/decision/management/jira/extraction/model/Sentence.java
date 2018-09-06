@@ -1,12 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -30,6 +26,8 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 	private boolean isTaggedFineGrained;
 
 	private String argument = "";
+
+	private boolean isPlanText;
 
 	public Sentence() {
 	}
@@ -193,6 +191,14 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		this.argument = linkType;
 	}
 
+	public boolean isPlanText() {
+		return isPlanText;
+	}
+
+	public void setPlanText(boolean isPlanText) {
+		this.isPlanText = isPlanText;
+	}
+
 	public void setKnowledgeType(double[] resultArray) {
 		for (int i = 0; i < resultArray.length; i++) {
 			if (resultArray[i] == 1. && i == 0) {
@@ -263,4 +269,5 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		}
 		return "<span class =tag>[/" + typeText + "]</span>";
 	}
+
 }
