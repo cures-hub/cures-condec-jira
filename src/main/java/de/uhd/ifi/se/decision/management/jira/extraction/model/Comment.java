@@ -128,7 +128,7 @@ public class Comment {
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
 
 		for (String currentSentence : rawSentences) {
-			if (!currentSentence.contains("{quote}") && !currentSentence.contains("{code}")) {
+			if (StringUtils.indexOfAny(currentSentence, new String[]{"{code}", "{quote}","{noformat}" }) == -1) {
 				iterator.setText(currentSentence);
 				int start = iterator.first();
 				for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
@@ -162,17 +162,21 @@ public class Comment {
 	public String getTaggedBody(int index) {
 		String result = "<span id=\"comment" + index + "\">";
 		for (Sentence sentence : this.sentences) {
-			if (sentence.isRelevant() && !sentence.getBody().contains("{code}")
-					&& !sentence.getBody().contains("{noformat}")) {
-				result = result + "<span class=\"sentence " + sentence.getKnowledgeTypeString() + // done
+			if (sentence.isRelevant()  && sentence.isPlanText()) {
+				result = result + "<span class=\"sentence " + sentence.getKnowledgeTypeString() + 
 						"\"  id  = ui" + sentence.getActiveObjectId() + ">" + sentence.getOpeningTagSpan()
 						+ "<span class = sentenceBody>" + sentence.getBody() + "</span>" + sentence.getClosingTagSpan()
 						+ "</span>";
-			} else if (!sentence.getBody().contains("{code}") && !sentence.getBody().contains("{noformat}")) {
-				result = result + "<span class=\"sentence \"  id  = ui" + sentence.getActiveObjectId() + ">"
+			}  
+			if(!sentence.isRelevant()  && sentence.isPlanText()){
+				result = result + "<span class=\"sentence\"  id  = ui" + sentence.getActiveObjectId() + ">"
 						+ sentence.getOpeningTagSpan() + "<span class = sentenceBody>" + sentence.getBody() + "</span>"
 						+ sentence.getClosingTagSpan() + "</span>";
 			}
+			if(!sentence.isRelevant()  && !sentence.isPlanText()){
+				result = result + sentence.getSpecialBodyWithHTMLCodes();
+			}
+			
 		}
 		return result + "</span>";
 	}

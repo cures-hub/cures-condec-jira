@@ -177,7 +177,6 @@ public class TestComment extends TestSetUp{
 	public void TestSentenceSplitWithCodeTag() {
 		Comment comment = new Comment("{code:Java} int i = 0 {code} and this is a test Sentence.");
 		assertEquals(2, comment.getSentences().size());
-		System.out.println(comment.getSentences().toString());
 		
 		comment = new Comment("{code:java} this is a code {code} and this is a test Sentence. {quote} this is a also a quote {quote} ");
 		assertEquals(3, comment.getSentences().size());
@@ -199,6 +198,14 @@ public class TestComment extends TestSetUp{
 		
 		comment = new Comment("{code:java} this is a code {code} {code:java} this is a second code right after the first one {code} {code:java} These are many codes {code}");
 		assertEquals(3, comment.getSentences().size());
+	}
+	
+	
+	@Test
+	@NonTransactional
+	public void TestTagReplacementToHTMLCode() {
+		Comment comment = new Comment("{quote} a quote {quote}");
+		assertTrue(comment.getTaggedBody(0).contains("<span id=\"comment0\">{quote} a quote {quote}</span>"));
 	}
 	
 	
