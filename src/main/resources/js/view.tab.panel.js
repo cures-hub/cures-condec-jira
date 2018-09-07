@@ -36,9 +36,6 @@ function callDialogFromView() {
 	submitButton.onclick = function() {
 		AJS.dialog2("#dialog").hide();
 	};
-
-
-
 	setUpDialog();
 	var header = document.getElementById("dialog-header");
 	header.textContent = "Edit and Link Decision Knowledge in Issue Comments";
@@ -46,7 +43,6 @@ function callDialogFromView() {
 
 
 function callDialog2(){
-
 	callDialogFromView();
 	closeDialog();
 	callDialogFromView();
@@ -57,11 +53,26 @@ function callDialog2(){
 	buildTreeViewer2(document.getElementById("Relevant").checked);
 
 }
+function includeJQ(){
+    var startingTime = new Date().getTime();
+    // Load the script
+    var script = document.createElement("SCRIPT");
+    script.src = '//code.jquery.com/jquery-3.3.1.js';
+    script.type = 'text/javascript';
+    script.onload = function() {
+    	var $ = window.jQuery;
+      $(function() {
+            buildTreeViewer2(true);
+        });
+    };
+    document.getElementsByTagName("head")[0].appendChild(script);
+}
+
 
 function buildTreeViewer2(showRelevant) {
-	resetTreeViewer();
+my_JQuery = jQuery.noConflict();
 	getTreeViewerWithoutRootElement(showRelevant, function(core) {
-		$("#jstree").jstree({
+		my_JQuery("#jstree").jstree({
 			"core" : core,
 			"plugins" : [ "dnd", "contextmenu", "wholerow", "search","sort"],
 			"search" : {
@@ -80,9 +91,9 @@ function buildTreeViewer2(showRelevant) {
 		        }
 		         } 
 			});
-		$("#jstree-search-input").keyup(function() {
-			var searchString = $(this).val();
-			$("#jstree").jstree(true).search(searchString);
+		my_JQuery("#jstree-search-input").keyup(function() {
+			var searchString = my_JQuery(this).val();
+			my_JQuery("#jstree").jstree(true).search(searchString);
 		});
 	});
 	addSentenceDragAndDropSupportForTreeViewer();
@@ -97,7 +108,8 @@ function bringContextMenuToFront(){
 }
 
 function addSentenceDragAndDropSupportForTreeViewer() {
-	$("#jstree").on('move_node.jstree', function(object, nodeInContext) {
+	var my_JQuery = jQuery.noConflict(true);
+	my_JQuery("#jstree").on('move_node.jstree', function(object, nodeInContext) {
 		var node = nodeInContext.node;
 		var parentNode = getTreeViewerNodeById(nodeInContext.parent);
 		var oldParentNode = getTreeViewerNodeById(nodeInContext.old_parent);
@@ -126,8 +138,4 @@ function createSentenceLinkToExistingElement(idOfExistingElement, idOfNewElement
 }
 
 
-function replaceQuotes(comment){
-	console.log("hier")
-	return comment.replaceFirst("\{quote\}","<blockquote>").replaceFirst("\{quote\}","</blockquote>")
-}
 
