@@ -126,5 +126,8 @@ function createSentenceLinkToExistingElement(idOfExistingElement, idOfNewElement
 }
 
 
-
+function replaceQuotes(comment){
+	console.log("hier")
+	return comment.replaceFirst("\{quote\}","<blockquote>").replaceFirst("\{quote\}","</blockquote>")
+}
 
