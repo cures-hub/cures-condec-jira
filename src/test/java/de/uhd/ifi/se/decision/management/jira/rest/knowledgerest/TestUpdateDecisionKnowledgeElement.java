@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import javax.ws.rs.core.Response;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -60,7 +61,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
                 .getEntity(), knowledgeRest.updateDecisionKnowledgeElement( request, null).getEntity());
     }
 
-    @Test
+    @Ignore
     public void testActionTypecreateReqFilledDecFilled() {
         request.setAttribute("WithFails", false);
         request.setAttribute("NoFails", true);

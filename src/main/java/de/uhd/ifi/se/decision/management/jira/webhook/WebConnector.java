@@ -5,6 +5,7 @@ import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scala.util.parsing.combinator.testing.Str;
 
 import java.io.IOException;
 
@@ -43,12 +44,7 @@ public class WebConnector{
     }
 
     public boolean sendWebHookForIssueKey(String projectKey, String issueKey) {
-        if(projectKey == null || projectKey.equals("")){
-            LOGGER.error("Could not send WebHook data because projectKey Null or empty");
-            return false;
-        }
-        if(issueKey == null || issueKey.equals("")){
-            LOGGER.error("Could not send WebHook data because issueKey Null or empty");
+        if(!checkSubmitionData(projectKey, issueKey)){
             return false;
         }
         WebBodyProvider provider = new WebBodyProvider(projectKey, issueKey);
@@ -60,12 +56,7 @@ public class WebConnector{
     //Error in line 31 in Graph
     // this.rootElement = this.project.getPersistenceStrategy().getDecisionKnowledgeElement(rootElementKey);
     public boolean sendWebHookForGitHash(String projectKey, String gitHash){
-        if(projectKey == null || projectKey.equals("")){
-            LOGGER.error("Could not send WebHook data because projectKey Null or empty");
-            return false;
-        }
-        if(gitHash == null || gitHash.equals("")){
-            LOGGER.error("Could not send WebHook data because issueKey Null or empty");
+        if(!checkSubmitionData(projectKey,gitHash)){
             return false;
         }
         WebBodyProvider provider = new WebBodyProvider(projectKey, gitHash);
@@ -92,11 +83,9 @@ public class WebConnector{
     private boolean submitPostMethod(){
         try {
             HttpClient httpClient = new HttpClient();
-            
             Header header = new Header();
             header.setName("X-Hub-Signature");
             header.setValue(this.secret);
-            postMethod.setRequestHeader(header);
             postMethod.setRequestHeader(header);
             postMethod.setURI(new HttpsURL(url));
             int respEntity = httpClient.executeMethod(postMethod);
@@ -112,6 +101,30 @@ public class WebConnector{
             e.printStackTrace();
         }
         return false;
+    }
+
+    private boolean checkSubmitionData(String projectKey, String key){
+        if(this.url==null || this.url.equals("")){
+            LOGGER.error("Could not send WebHook data because the Url is Null or empty");
+            return false;
+        }
+        if(this.secret == null || this.secret.equals("")){
+            LOGGER.error("Could not send WebHook data because Secret is Null or empty");
+            return false;
+        }
+        if(projectKey == null || projectKey.equals("")){
+            LOGGER.error("Could not send WebHook data because projectKey Null or empty");
+            return false;
+        }
+        if(projectKey == null || projectKey.equals("")){
+            LOGGER.error("Could not send WebHook data because projectKey Null or empty");
+            return false;
+        }
+        if(key == null || key.equals("")){
+            LOGGER.error("Could not send WebHook data because issueKey Null or empty");
+            return false;
+        }
+        return true;
     }
 
 }

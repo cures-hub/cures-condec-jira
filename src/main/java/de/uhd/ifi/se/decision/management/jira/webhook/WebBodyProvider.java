@@ -78,7 +78,7 @@ public class WebBodyProvider {
 			gitHashString = new JSONObject().put("hash", identifierKey).toString();
 	        JSONObject treantJSON = createTreantJsonString();
 	        NameValuePair commitPair = new NameValuePair("commit", gitHashString);
-	        NameValuePair conDeTreePair = new NameValuePair("ConDeTree",treantJSON.toString());
+	        NameValuePair conDeTreePair = new NameValuePair("ConDecTree",treantJSON.toString());
 	        NameValuePair[] bodySet = new NameValuePair[2];
 	        bodySet[0] = commitPair;
 	        bodySet[1] = conDeTreePair;
