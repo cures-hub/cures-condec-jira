@@ -22,7 +22,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestComment.AoSentenceTestDatabaseUpdater.class) 
+@Data(TestSentence.AoSentenceTestDatabaseUpdater.class) 
 public class TestSentence extends TestSetUp {
 	
 	private EntityManager entityManager;
