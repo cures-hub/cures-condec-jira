@@ -124,8 +124,9 @@ public class KnowledgeRest {
 			ApplicationUser user = getCurrentUser(request);
 			if (strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user)) {
 				//Adding Create Observer for the Webhook
+				DecisionKnowledgeElement element = strategy.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 				WebHookObserver observer = new WebHookObserver(projectKey);
-				observer.sendIssueChanges(decisionKnowledgeElement.getKey());
+				observer.sendIssueChanges(element.getKey());
 				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
 			}
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -148,8 +149,9 @@ public class KnowledgeRest {
 			boolean isDeleted = strategy.deleteDecisionKnowledgeElement(decisionKnowledgeElement, user);
 			if (isDeleted) {
 				//Adding Create Observer for the Webhook
+				DecisionKnowledgeElement element = strategy.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 				WebHookObserver observer = new WebHookObserver(projectKey);
-				observer.sendIssueChanges(decisionKnowledgeElement.getKey());
+				observer.sendIssueChanges(element.getKey());
 				return Response.status(Status.OK).entity(isDeleted).build();
 			}
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -175,8 +177,9 @@ public class KnowledgeRest {
 						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
 			}
 			//Adding Create Observer for the Webhook
+			DecisionKnowledgeElement element = strategy.getDecisionKnowledgeElement(link.getSourceElement().getId());
 			WebHookObserver observer = new WebHookObserver(projectKey);
-			observer.sendIssueChanges(link.getSourceElement().getKey());
+			observer.sendIssueChanges(element.getKey());
 			return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Creation of link failed."))
@@ -318,8 +321,9 @@ public class KnowledgeRest {
 			boolean isDeleted = strategy.deleteLink(link, user);
 			if (isDeleted) {
 				//Adding Create Observer for the Webhook
+				DecisionKnowledgeElement element = strategy.getDecisionKnowledgeElement(link.getSourceElement().getId());
 				WebHookObserver observer = new WebHookObserver(projectKey);
-				observer.sendIssueChanges(link.getSourceElement().getKey());
+				observer.sendIssueChanges(element.getKey());
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 			} else {
 				Link inverseLink = new LinkImpl(link.getDestinationElement(), link.getSourceElement());
