@@ -70,7 +70,7 @@ function includeJQ(){
 
 
 function buildTreeViewer2(showRelevant) {
-my_JQuery = jQuery.noConflict();
+my_JQuery = $;
 	getTreeViewerWithoutRootElement(showRelevant, function(core) {
 		my_JQuery("#jstree").jstree({
 			"core" : core,
@@ -108,7 +108,7 @@ function bringContextMenuToFront(){
 }
 
 function addSentenceDragAndDropSupportForTreeViewer() {
-	var my_JQuery = jQuery.noConflict(true);
+	var my_JQuery = $;// jQuery.noConflict(true);
 	my_JQuery("#jstree").on('move_node.jstree', function(object, nodeInContext) {
 		var node = nodeInContext.node;
 		var parentNode = getTreeViewerNodeById(nodeInContext.parent);

@@ -3,11 +3,11 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rest
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:classifier-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-page-resources")
 
-<script src='jquery-3.3.1.js'></script>
+<!-- <script src='jquery-3.3.1.js'></script>
 <script src = '//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.5/jstree.min.js'>
 var jq = jQuery.noConflict();
 </script>
-
+ -->
 <table>
 	<tbody>
 		<tr>
