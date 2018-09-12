@@ -146,10 +146,10 @@ public class KnowledgeRest {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
+			DecisionKnowledgeElement element = strategy.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 			boolean isDeleted = strategy.deleteDecisionKnowledgeElement(decisionKnowledgeElement, user);
 			if (isDeleted) {
 				//Adding Create Observer for the Webhook
-				DecisionKnowledgeElement element = strategy.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 				WebHookObserver observer = new WebHookObserver(projectKey);
 				observer.sendIssueChanges(element.getKey());
 				return Response.status(Status.OK).entity(isDeleted).build();
