@@ -2,43 +2,31 @@
 function hideSelectedDecisionElements(element){
 	var decisionElements =["Issue","Decision","Alternative","Pro","Con"]
 	var sentences = document.getElementsByClassName(element.id);
-	if(element.id != "isRelevant"){
-		for (var i = sentences.length - 1; i >= 0; i--) {
-			if ( element.checked) {
-				sentences[i].style.visibility = 'visible';
-			}
-			console.log(sentences.innerHTML);
-			if ( !element.checked) {
-				sentences[i].style.visibility = 'collapse';
-			}
-
-		}
-	}else if(element.id == "isRelevant"){
-
+	if(element.id != "Relevant"){
+		setVisibility(sentences,element.checked);
+	}else if(element.id == "Relevant"){
 		var sentences = document.getElementsByClassName("isNotRelevant");
-
-		for (var i = sentences.length - 1; i >= 0; i--) {
-			if (element.checked) {
-				sentences[i].style.visibility = 'visible';
-			}
-			console.log(sentences.innerHTML);
-			if ( !element.checked) {
-				sentences[i].style.visibility = 'collapse';
-			}
-		}
-
+		setVisibility(sentences,element.checked);
 	}
-
 }
+
+function setVisibility(sentences, checked){
+	for (var i = sentences.length - 1; i >= 0; i--) {
+		if (checked) {
+			sentences[i].style.visibility = 'visible';
+		}
+		if (!checked) {
+			sentences[i].style.visibility = 'collapse';
+		}
+	}
+}
+
 function callDialogFromView() {
 	var submitButton = document.getElementById("dialog-submit-button");
 	submitButton.textContent = "Save";
 	submitButton.onclick = function() {
 		AJS.dialog2("#dialog").hide();
 	};
-
-
-
 	setUpDialog();
 	var header = document.getElementById("dialog-header");
 	header.textContent = "Edit and Link Decision Knowledge in Issue Comments";
@@ -46,7 +34,6 @@ function callDialogFromView() {
 
 
 function callDialog2(){
-
 	callDialogFromView();
 	closeDialog();
 	callDialogFromView();
@@ -54,30 +41,67 @@ function callDialog2(){
 	callDialogFromView();
 	document.getElementById("dialog-content").innerHTML = "<div id =header2> </div> <div id =jstree> </div> ";
 	document.getElementById("header2").innerHTML = "<input class=text medium-long-field id=jstree-search-input placeholder=Search decision knowledge />";
+	document.getElementById("dialog").classList.remove("aui-dialog2-medium");
+	document.getElementById("dialog").classList.add("aui-dialog2-large");
 	buildTreeViewer2(document.getElementById("Relevant").checked);
 
 }
+function includeJQ(){
+    var startingTime = new Date().getTime();
+    // Load the script
+    var script = document.createElement("SCRIPT");
+    script.src = '//code.jquery.com/jquery-3.3.1.js';
+    script.type = 'text/javascript';
+    script.onload = function() {
+    	var $ = window.jQuery;
+      $(function() {
+            buildTreeViewer2(true);
+        });
+    };
+    document.getElementsByTagName("head")[0].appendChild(script);
+}
+
 
 function buildTreeViewer2(showRelevant) {
-	resetTreeViewer();
+	console.log("build Tree")
+my_JQuery = $;
 	getTreeViewerWithoutRootElement(showRelevant, function(core) {
-		$("#jstree").jstree({
+		my_JQuery("#jstree").jstree({
 			"core" : core,
-			"plugins" : [ "dnd", "contextmenu", "wholerow", "search" ],
+			"plugins" : [ "dnd", "contextmenu", "wholerow", "search","sort","state"],
 			"search" : {
 				"show_only_matches" : true
 			},
 			"contextmenu" : {
-				"items" : contextMenuActionsForSentences
-			}
-		});
-		$("#jstree-search-input").keyup(function() {
-			var searchString = $(this).val();
-			$("#jstree").jstree(true).search(searchString);
+				"items" : customContextMenu
+			},
+			"sort": sortfunction
+			});
+		my_JQuery("#jstree-search-input").keyup(function() {
+			var searchString = my_JQuery(this).val();
+			my_JQuery("#jstree").jstree(true).search(searchString);
 		});
 	});
-	addSentenceDragAndDropSupportForTreeViewer();
+	addDragAndDropSupportForTreeViewer();
 	document.getElementById("jstree").addEventListener("mousemove",bringContextMenuToFront); 
+}
+
+function sortfunction(a, b) {
+	a1 = this.get_node(a);
+	b1 = this.get_node(b);
+	if(a1.id > b1.id){
+		return 1;
+	}else{
+		return -1;
+	}
+} 
+
+function customContextMenu(node) {
+     if (node.li_attr['class'] == "sentence") {
+        return contextMenuActionsForSentences;
+    }else{
+    	return ;
+    }  
 }
 
 function bringContextMenuToFront(){
@@ -87,26 +111,6 @@ function bringContextMenuToFront(){
 	
 }
 
-function addSentenceDragAndDropSupportForTreeViewer() {
-	$("#jstree").on('move_node.jstree', function(object, nodeInContext) {
-		var node = nodeInContext.node;
-		var parentNode = getTreeViewerNodeById(nodeInContext.parent);
-		var oldParentNode = getTreeViewerNodeById(nodeInContext.old_parent);
-
-		var nodeId = node.data.id;
-		if (oldParentNode === "#" && parentNode !== "#") {
-			createSentenceLinkToExistingElement(parentNode.data.id, nodeId);
-		}
-		if (parentNode === "#" && oldParentNode !== "#") {
-			deleteSentenceLink(oldParentNode.data.id, nodeId, function() {});
-		}
-		if (parentNode !== '#' && oldParentNode !== '#') {
-			deleteSentenceLink(oldParentNode.data.id, nodeId, function() {
-				createSentenceLinkToExistingElement(parentNode.data.id, nodeId);
-			});
-		}
-	});
-}
 
 function createSentenceLinkToExistingElement(idOfExistingElement, idOfNewElement, knowledgeTypeOfChild) {
 	switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
@@ -115,7 +119,6 @@ function createSentenceLinkToExistingElement(idOfExistingElement, idOfNewElement
 		});
 	});
 }
-
 
 
 

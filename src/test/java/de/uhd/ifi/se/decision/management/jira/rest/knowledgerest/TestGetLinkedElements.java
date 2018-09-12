@@ -23,7 +23,7 @@ public class TestGetLinkedElements extends TestKnowledgeRestSetUp {
 	private EntityManager entityManager;
 	private KnowledgeRest knowledgeRest;
 
-	private final static String LINKED_ERRROR = "Linked decision knowledge elments could not be received due to a bad request (element id or project key was missing).";
+	private final static String LINKED_ERRROR = "Linked decision knowledge elements could not be received due to a bad request (element id or project key was missing).";
 
 	@Override
 	@Before

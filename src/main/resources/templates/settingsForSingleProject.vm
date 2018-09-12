@@ -90,6 +90,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				gitSubmitButton.addEventListener("click", function() {
 				    var gitAddress = document.getElementById('git-address-input-field').value;
                     setGitAddress('$projectKey', gitAddress);
+                    window.onbeforeunload = null;
 				});
 			</script>
 			<div class="description">Address of the git repository where
@@ -178,6 +179,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				var urlInput = document.getElementById("webhook-url");
 				var secretInput = document.getElementById("webhook-secret");
                 setWebhookData('$projectKey', urlInput.value, secretInput.value);
+                window.onbeforeunload = null;
             });
 		</script>
 	</form>

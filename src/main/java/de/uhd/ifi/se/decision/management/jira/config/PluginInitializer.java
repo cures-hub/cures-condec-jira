@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -7,6 +9,7 @@ import java.util.List;
 import javax.inject.Named;
 
 import com.atlassian.jira.avatar.Avatar;
+import com.atlassian.jira.exception.DataAccessException;
 import com.atlassian.jira.icon.IconType;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -83,12 +86,18 @@ public class PluginInitializer implements InitializingBean {
 		String iconUrl = getIconUrl(issueTypeName);
 		issueTypeManager.createIssueType(issueTypeName, issueTypeName + " (decision knowledge element)", iconUrl);
 
-		// Avatar tmpAvatar = AvatarImpl.createSystemAvatar(iconUrl, "image/png",
-		// IconType.ISSUE_TYPE_ICON_TYPE);
-		// Avatar issueAvatar = ComponentAccessor.getAvatarManager().create(tmpAvatar);
-		// issueTypeManager.createIssueType(issueTypeName, issueTypeName + " (decision
-		// knowledge element)",
-		// issueAvatar.getId());
+		/*InputStream inputStream = com.atlassian.core.util.ClassLoaderUtils.getResourceAsStream("images", PluginInitializer.class);
+		Avatar tmpAvatar = AvatarImpl.createCustomAvatar(issueTypeName, "image/png", "0", IconType.ISSUE_TYPE_ICON_TYPE);
+		Avatar issueAvatar = null;
+		try {
+			issueAvatar = ComponentAccessor.getAvatarManager().create(tmpAvatar, inputStream, null);
+			if(issueAvatar != null){
+				issueTypeManager.createIssueType(issueTypeName, issueTypeName,  issueAvatar.getId());
+			}
+		} catch (DataAccessException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 	}
 
 	public static String getIconUrl(String issueTypeName) {

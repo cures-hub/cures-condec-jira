@@ -32,8 +32,13 @@ import com.atlassian.jira.user.util.UserManager;
 import com.atlassian.jira.util.VelocityParamFactory;
 import com.atlassian.velocity.VelocityManager;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.mocks.*;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementEntity;
+import de.uhd.ifi.se.decision.management.jira.persistence.LinkEntity;
+import net.java.ao.EntityManager;
+import net.java.ao.test.jdbc.DatabaseUpdater;
 
 public class TestSetUp {
 	private ProjectManager projectManager;
@@ -143,4 +148,16 @@ public class TestSetUp {
 		cuuIssue.setProjectObject(condecProject);
 		((MockIssueManagerSelfImpl) issueManager).addIssue(cuuIssue);
 	}
+
+    public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater
+    {
+        @SuppressWarnings("unchecked")
+        @Override
+        public void update(EntityManager entityManager) throws Exception
+        {
+            entityManager.migrate(DecisionKnowledgeElementEntity.class);
+            entityManager.migrate(LinkEntity.class);
+            entityManager.migrate(LinkBetweenDifferentEntitiesEntity.class);
+        }
+    }
 }

@@ -160,7 +160,7 @@ function deleteDecisionKnowledgeElement(id, callback) {
 		"projectKey" : getProjectKey()
 	};
 	deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteDecisionKnowledgeElement.json", jsondata,
-			function(error, decisionKnowledgeElement) {
+			function(error, isDeleted) {
 				if (error === null) {
 					showFlag("success", "Decision knowledge element has been deleted.");
 					callback();
@@ -202,23 +202,6 @@ function deleteLink(idOfDestinationElement, idOfSourceElement, callback) {
 				}
 
 			});
-}
-
-function linkSentences(idOfDestinationElement, idOfSourceElement, linkType, callback) {
-	var jsondata = {
-		"type" : linkType,
-		"idOfSourceElement" : idOfSourceElement,
-		"idOfDestinationElement" : idOfDestinationElement
-	};
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLinkBetweenSentences.json?projectKey="
-			+ getProjectKey(), jsondata, function(error, link) {
-		if (error === null) {
-			showFlag("success", "Link has been created.");
-			callback(link);
-		} else {
-			showFlag("error", "Link could not be created.");
-		}
-	});
 }
 
 function deleteSentenceLink(idOfDestinationElement, idOfSourceElement, callback) {
@@ -265,10 +248,10 @@ function changeKnowledgeTypeOfSentence(id, type, callback) {
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/changeKnowledgeTypeOfSentence.json?projectKey="
 			+ getProjectKey(), jsondata, function(error, link) {
 		if (error === null) {
-			showFlag("success", "Link has been created.");
+			showFlag("success", "Knowledge type has been changed.");
 			callback(link);
 		} else {
-			showFlag("error", "Link could not be created.");
+			showFlag("error", "Knowledge type could not be changed.");
 		}
 	});
 }
@@ -290,6 +273,42 @@ function editSentenceBody(id, body, type, callback) {
 			showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
 		}
 	});
+}
+
+
+function deleteGenericLink(targetId,sourceId,targetType,sourceType,callback,showError){
+	var jsondata = {
+		"idOfSourceElement" : sourceType+sourceId,
+		"idOfDestinationElement" : targetType + targetId
+	};
+	deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteGenericLink.json?projectKey="
+			+ getProjectKey(), jsondata, function(error, link) {
+		if (error === null) {
+			showFlag("success", "Link has been deleted.");
+			callback();
+		} else if(showError) {
+			showFlag("error", "Link could not be deleted.");
+		}
+
+	});
+}
+
+
+function linkGenericElements(targetId, sourceId, targetType,sourceType,callback) {
+	var jsondata = {
+		"type" : "contain",
+		"idOfSourceElement" : sourceType+sourceId,
+		"idOfDestinationElement" : targetType + targetId
+	};
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createGenericLink.json?projectKey=" + getProjectKey(),
+			jsondata, function(error, link) {
+				if (error === null) {
+					showFlag("success", "Link has been created.");
+					callback(link);
+				} else {
+					showFlag("error", "Link could not be created.");
+				}
+			});
 }
 
 function getTreant(elementKey, depthOfTree, callback) {
@@ -328,9 +347,9 @@ function getTreeViewerWithoutRootElement(showRelevant, callback) {
 
 function setActivated(isActivated, projectKey) {
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setActivated.json?projectKey=" + projectKey
-			+ "&isActivated=" + isActivated, function(error, response) {
+			+ "&isActivated=" + isActivated, null, function(error, response) {
 		if (error === null) {
-			showFlag("success", "Plug-in activation for the project has been changed.");
+			showFlag("success", "Plug-in activation for the project has been set to " + isActivated + ".");
 		} else {
 			showFlag("error", "Plug-in activation for the project has not been changed.");
 		}
@@ -339,7 +358,7 @@ function setActivated(isActivated, projectKey) {
 
 function setIssueStrategy(isIssueStrategy, projectKey) {
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setIssueStrategy.json?projectKey=" + projectKey
-			+ "&isIssueStrategy=" + isIssueStrategy, function(error, response) {
+			+ "&isIssueStrategy=" + isIssueStrategy, null, function(error, response) {
 		if (error === null) {
 			showFlag("success", "Strategy has been selected.");
 		} else {
@@ -362,13 +381,15 @@ function isIssueStrategy(projectKey, callback) {
 
 function setKnowledgeExtractedFromGit(isKnowledgeExtractedFromGit, projectKey) {
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setKnowledgeExtractedFromGit.json?projectKey="
-			+ projectKey + "&isKnowledgeExtractedFromGit=" + isKnowledgeExtractedFromGit, function(error, response) {
-		if (error === null) {
-			showFlag("success", "Git connection for this project has been changed.");
-		} else {
-			showFlag("error", "Git connection for this project could not be configured.");
-		}
-	});
+			+ projectKey + "&isKnowledgeExtractedFromGit=" + isKnowledgeExtractedFromGit, null,
+			function(error, response) {
+				if (error === null) {
+					showFlag("success", "Git connection for this project has been set to "
+							+ isKnowledgeExtractedFromGit + ".");
+				} else {
+					showFlag("error", "Git connection for this project could not be configured.");
+				}
+			});
 }
 
 function isKnowledgeExtractedFromGit(projectKey, callback) {
@@ -385,10 +406,11 @@ function isKnowledgeExtractedFromGit(projectKey, callback) {
 
 function setKnowledgeExtractedFromIssues(isKnowledgeExtractedFromIssues, projectKey) {
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setKnowledgeExtractedFromIssues.json?projectKey="
-			+ projectKey + "&isKnowledgeExtractedFromIssues=" + isKnowledgeExtractedFromIssues, function(error,
+			+ projectKey + "&isKnowledgeExtractedFromIssues=" + isKnowledgeExtractedFromIssues, null, function(error,
 			response) {
 		if (error === null) {
-			showFlag("success", "Extraction from issue comments for this project has been changed.");
+			showFlag("success", "Extraction from issue comments for this project has been set to "
+					+ isKnowledgeExtractedFromIssues + ".");
 		} else {
 			showFlag("error", "Extraction from issue comments for this project could not be configured.");
 		}
@@ -410,12 +432,14 @@ function isKnowledgeExtractedFromIssues(projectKey, callback) {
 
 function setKnowledgeTypeEnabled(isKnowledgeTypeEnabled, knowledgeType, projectKey) {
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setKnowledgeTypeEnabled.json?projectKey=" + projectKey
-			+ "&knowledgeType=" + knowledgeType + "&isKnowledgeTypeEnabled=" + isKnowledgeTypeEnabled, function(error,
-			response) {
+			+ "&knowledgeType=" + knowledgeType + "&isKnowledgeTypeEnabled=" + isKnowledgeTypeEnabled, null, function(
+			error, response) {
 		if (error === null) {
-			showFlag("success", "The activation of " + knowledgeType + " for this project has been changed.");
+			showFlag("success", "The activation of the " + knowledgeType
+					+ " knowledge type for this project has been set to " + isKnowledgeTypeEnabled + ".");
 		} else {
-			showFlag("error", "The activation of " + knowledgeType + " for this project could not be changed.");
+			showFlag("error", "The activation of the " + knowledgeType
+					+ " knowledge type for this project could not be changed.");
 		}
 	});
 }
@@ -453,7 +477,7 @@ function getDefaultKnowledgeTypes(projectKey) {
 
 function setGitAddress(projectKey, gitAddress) {
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setGitAddress.json?projectKey=" + projectKey
-			+ "&gitAddress=" + gitAddress, function(error, response) {
+			+ "&gitAddress=" + gitAddress, null, function(error, response) {
 		if (error === null) {
 			showFlag("success", "The git address  " + gitAddress + " for this project has been set.");
 		} else {
@@ -476,7 +500,7 @@ function getCommits(elementKey, callback) {
 
 function setWebhookData(projectKey, webhookUrl, webhookSecret) {
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookData.json?projectKey=" + projectKey
-			+ "&webhookUrl=" + webhookUrl + "&webhookSecret=" + webhookSecret, function(error, response) {
+			+ "&webhookUrl=" + webhookUrl + "&webhookSecret=" + webhookSecret, null, function(error, response) {
 		if (error === null) {
 			showFlag("success", "The webhook for this project has been set.");
 		} else {

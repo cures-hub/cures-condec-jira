@@ -7,7 +7,6 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Rationale;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import meka.classifiers.multilabel.LC;
@@ -46,9 +45,9 @@ public class MekaInitializer {
 		wekaAttributes.add(attributeText);
 		Instances data = new Instances("sentences: -C 5 ", wekaAttributes, 1000000);
 
-		for (Comment comment : commentsList) {
+		for (Comment comment : commentsList) { 
 			for (Sentence sentence : comment.getSentences()) {
-				if (sentence.isRelevant() && !sentence.isTaggedFineGrained()) {
+				if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 					Instance newInstance = new DenseInstance(6);
 					// The value is meka internal stored in a array similar structure, so if you
 					// read the value here, you likely get an index
@@ -113,13 +112,13 @@ public class MekaInitializer {
 			int i = 0;
 			for (Comment comment : commentsList) {
 				for (Sentence sentence : comment.getSentences()) {
-					if (sentence.isRelevant() && !sentence.isTaggedFineGrained()) {
-						sentence.setKnowledgeType(results.get(i));//done
-						ActiveObjectsManager.setSentenceKnowledgeType(sentence); //done
+					if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
+						sentence.setKnowledgeType(results.get(i));
+						ActiveObjectsManager.setSentenceKnowledgeType(sentence); 
 						sentence.setTaggedFineGrained(true);
 						i++;
 					} else if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {
-						sentence.setKnowledgeType(ActiveObjectsManager.getElementFromAO(sentence.getId()).getKnowledgeType());//done
+						sentence.setKnowledgeType(ActiveObjectsManager.getElementFromAO(sentence.getId()).getKnowledgeType());
 					}
 				}
 			}
@@ -127,10 +126,18 @@ public class MekaInitializer {
 			for (Comment comment : commentsList) {
 				for (Sentence sentence : comment.getSentences()) {
 					 if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {
-						sentence.setKnowledgeType(ActiveObjectsManager.getElementFromAO(sentence.getId()).getKnowledgeType().toString());//done
+						sentence.setKnowledgeType(ActiveObjectsManager.getElementFromAO(sentence.getId()).getKnowledgeType().toString());
 					}
 				}
 			}
 		}
+	}
+	
+	/**
+	 * @param sentence Sentence to check if its qualified for classification. It is qualified if its plain text, and not yet tagged.
+	 * @return boolean identifier 
+	 */
+	private static boolean isSentenceQualifiedForFineGrainedClassification(Sentence sentence) {
+		return sentence.isRelevant() && !sentence.isTaggedFineGrained() && sentence.isPlanText();
 	}
 }

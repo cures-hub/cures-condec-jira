@@ -2,6 +2,12 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rest-client-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:classifier-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-page-resources")
+
+<!-- <script src='jquery-3.3.1.js'></script>
+<script src = '//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.5/jstree.min.js'>
+var jq = jQuery.noConflict();
+</script>
+ -->
 <table>
 	<tbody>
 		<tr>
@@ -29,25 +35,28 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 	</tbody>
 </table>
 
-#macro ( index $array $element) #foreach($item in $array)
-#if($velocityCount == $element) $item #break #end #end #end 
 
 #foreach($comment in $comments )
-<div class="comment" >
+#set($currentIndex = $velocityCount - 1)
+<div class="comment issue-data-block activity-comment twixi-block  expanded" >
   $style
-	<a class="user-hover user-avatar" rel="admin"
+	<a class="user-hover user-avatar" rel="$authorNames.get($currentIndex)"
 		id="commentauthor_10102_verbose"
-		href="/jira/secure/ViewProfile.jspa?name=admin"><span
+		href=/jira/secure/ViewProfile.jspa?name=$authorNames.get($currentIndex)><span
 		class="aui-avatar aui-avatar-xsmall"><span
 			class="aui-avatar-inner"><img
 				src="http://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&amp;s=16"
-				alt="admin"></span></span> #index($authorNames,$velocityCount)</a> - <span
+
+				alt="admin"></span></span>  $authorNames.get($currentIndex)</a> - <span
 		class="commentdate_10102_verbose subText"><span
-		class="date user-tz">#index($dates,$velocityCount)</span></span>
+		class="date user-tz">$dates.get($currentIndex)</span></span>
 
 	<div class="commentBody" style="visibility: visible;">
-		<p>$comment.replaceFirst("\{quote\}","<blockquote>").replaceFirst("\{quote\}","</blockquote>")</p>
-	</div>
+    #foreach($i in [0..10])
+       #set($comment = $comment.replaceFirst("\{quote\}","<blockquote>").replaceFirst("\{quote\}","</blockquote>"))
+    #end
+		<p>$comment</p>
+	</div> 
 </div>
 #end
 #include("templates/dialog.vm")

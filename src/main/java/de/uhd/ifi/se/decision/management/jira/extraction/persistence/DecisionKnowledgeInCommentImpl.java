@@ -27,19 +27,16 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 	private boolean isTaggedManually;
 
 	private boolean isTaggedFineGrained;
-	
+
 	private String knowledgeType;
-	
+
 	private String argument;
+
+	private String projectKey;
 
 	public DecisionKnowledgeInCommentImpl() {
 
 	}
-
-
-
-	
-
 
 	@Override
 	@XmlElement(name = "id")
@@ -49,7 +46,7 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 
 	@Override
 	public void setId(long id) {
-		this.id  =id;
+		this.id = id;
 	}
 
 	@Override
@@ -63,7 +60,6 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 	@Override
 	public void init() {
@@ -87,7 +83,7 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 	public void setIsRelevant(boolean isRelevant) {
 		this.isRelevant = isRelevant;
 		this.setIsTagged(true);
-		
+
 	}
 
 	@Override
@@ -136,7 +132,7 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 
 	@Override
 	public void setUserId(long id) {
-		 this.userId = id;
+		this.userId = id;
 
 	}
 
@@ -146,14 +142,11 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 		return isTagged;
 	}
 
-
-
 	@Override
 	public void setIsTagged(boolean isTagged) {
 		this.isTagged = isTagged;
 
 	}
-
 
 	@Override
 	@XmlElement(name = "isaggedManually")
@@ -161,14 +154,10 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 		return isTaggedManually;
 	}
 
-
-
 	@Override
 	public void setIsTaggedManually(boolean isTaggedManually) {
-		this.isTaggedManually= isTaggedManually;
+		this.isTaggedManually = isTaggedManually;
 	}
-
-
 
 	@Override
 	@XmlElement(name = "isTaggedFineGrained")
@@ -176,16 +165,10 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 		return isTaggedFineGrained;
 	}
 
-
-
 	@Override
 	public void setIsTaggedFineGrained(boolean isTagged) {
 		this.isTaggedFineGrained = isTagged;
 	}
-
-
-
-
 
 	@Override
 	public <X extends RawEntity<Long>> Class<X> getEntityType() {
@@ -193,20 +176,10 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 		return null;
 	}
 
-
-
-
-
-
 	@Override
 	public String getKnowledgeType() {
 		return this.knowledgeType;
 	}
-
-
-
-
-
 
 	@Override
 	@XmlElement(name = "knowledgeType")
@@ -214,32 +187,26 @@ public class DecisionKnowledgeInCommentImpl implements DecisionKnowledgeInCommen
 		this.knowledgeType = type;
 	}
 
-
-
-
-
-
 	@Override
 	@XmlElement(name = "argument")
 	public void setArgument(String argument) {
-		this.argument = argument;		
+		this.argument = argument;
 	}
-
-
-
-
-
 
 	@Override
 	public String getArgument() {
 		return this.argument;
 	}
 
+	@Override
+	public String getProjectKey() {
+		return this.projectKey;
+	}
 
+	@Override
+	public void setProjectKey(String key) {
+		this.projectKey = key;
 
-
-
-
-
+	}
 
 }

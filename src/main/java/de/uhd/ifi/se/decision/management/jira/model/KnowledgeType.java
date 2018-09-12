@@ -10,7 +10,7 @@ import java.util.Set;
  * Type of decision knowledge element
  */
 public enum KnowledgeType {
-	ALTERNATIVE, ASSUMPTION, ASSESSMENT, ARGUMENT, CLAIM, CONTEXT, CONSTRAINT, DECISION, GOAL, ISSUE, IMPLICATION, PROBLEM, RATIONALE, SOLUTION, OTHER, QUESTION;
+	ALTERNATIVE, ASSUMPTION, ASSESSMENT, ARGUMENT, CLAIM, CONTEXT, CONSTRAINT, DECISION, GOAL, ISSUE, IMPLICATION, PROBLEM, RATIONALE, SOLUTION, OTHER, QUESTION, TASK;
 
 	/**
 	 * Get the minimal set of decision knowledge types for the management of
@@ -63,6 +63,8 @@ public enum KnowledgeType {
 			return KnowledgeType.ARGUMENT;
 		case "assessment":
 			return KnowledgeType.ASSESSMENT;
+		case "task":
+			return KnowledgeType.TASK;
 		default:
 			return KnowledgeType.OTHER;
 		}

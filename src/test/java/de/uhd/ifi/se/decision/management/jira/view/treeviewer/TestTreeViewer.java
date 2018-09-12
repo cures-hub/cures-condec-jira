@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -25,8 +24,11 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 import net.java.ao.EntityManager;
+import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
+
+@net.java.ao.test.jdbc.Data(TestSetUp.AoSentenceTestDatabaseUpdater.class) 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestTreeViewer extends TestSetUp {
 	private EntityManager entityManager;
@@ -59,38 +61,45 @@ public class TestTreeViewer extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testIsMultiple() {
 		assertEquals(treeViewer.isMultiple(), multiple);
 	}
 
 	@Test
+	@NonTransactional
 	public void testisCheckCallBack() {
 		assertEquals(treeViewer.isCheckCallback(), checkCallback);
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetThemes() {
 		assertEquals(treeViewer.getThemes(), themes);
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetData() {
 		assertEquals(treeViewer.getData(), data);
 	}
 
 	@Test
+	@NonTransactional
 	public void testSetMultiple() {
 		treeViewer.setMultiple(true);
 		assertEquals(treeViewer.isMultiple(), true);
 	}
 
 	@Test
+	@NonTransactional
 	public void testSetCheckCallback() {
 		treeViewer.setCheckCallback(true);
 		assertEquals(treeViewer.isCheckCallback(), true);
 	}
 
 	@Test
+	@NonTransactional
 	public void testSetThemes() {
 		Map<String, Boolean> newThemes = new ConcurrentHashMap<>();
 		treeViewer.setThemes(newThemes);
@@ -98,6 +107,7 @@ public class TestTreeViewer extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testSetData() {
 		HashSet<Data> newData = new HashSet<>();
 		treeViewer.setData(newData);
@@ -105,17 +115,20 @@ public class TestTreeViewer extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetDataStructureNull() {
 		assertEquals(Data.class, treeViewer.getDataStructure(null).getClass());
 	}
 
 	 @Test (expected = NullPointerException.class)
+	 @NonTransactional
 	 public void testGetDataStructureEmpty() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
 	    System.out.println(treeViewer.getDataStructure(element));
 	 }
 
 	@Test
+	@NonTransactional
 	public void testGetDataStructureFilled() {
         DecisionKnowledgeElement element =
         abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
@@ -123,54 +136,18 @@ public class TestTreeViewer extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testEmptyConstructor() {
 		assertNotNull(new TreeViewer());
 	}
 
     @Test
+	@NonTransactional
     public void testEmptyGraphGetDataStructure() {
 	    TreeViewer tree = new TreeViewer();
 	    DecisionKnowledgeElement element =
 	    abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
 	    assertEquals("14", tree.getDataStructure(element).getId());
-	}
-
-	@Test
-	public void  testConstIssueNullShowFalse(){
-		TreeViewer tree = new TreeViewer(null, false);
-		assertEquals(0, tree.getIds().size(), 0.0);
-	}
-
-	@Test
-	public void  testConstIssueNullShowTrue(){
-		TreeViewer tree = new TreeViewer(null, true);
-		assertEquals(0, tree.getIds().size(), 0.0);
-	}
-
-	@Test
-	public void  testConstIssueWrongShowFalse(){
-		TreeViewer tree = new TreeViewer("false", false);
-		assertEquals(0, tree.getIds().size(), 0.0);
-	}
-
-	@Test
-	public void  testConstIssueWrongShowTrue(){
-		TreeViewer tree = new TreeViewer("false", true);
-		assertEquals(0, tree.getIds().size(), 0.0);
-	}
-
-	//TODO MockCommentManager needs to be implemented
-	@Ignore
-	public void  testConstIssueFilledShowFalse(){
-		TreeViewer tree = new TreeViewer("14", false);
-		assertEquals(1, tree.getIds().size(), 0.0);
-	}
-
-	//TODO MockCommentManager needs to be implemented
-	@Ignore
-	public void  testConstIssueFilledShowTrue(){
-		TreeViewer tree = new TreeViewer("14", true);
-		assertEquals(1, tree.getIds().size(), 0.0);
 	}
 
 }

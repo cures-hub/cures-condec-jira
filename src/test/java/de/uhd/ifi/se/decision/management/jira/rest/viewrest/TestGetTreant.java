@@ -14,13 +14,20 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
+import de.uhd.ifi.se.decision.management.jira.view.treant.TestTreant;
 import net.java.ao.EntityManager;
+import net.java.ao.test.jdbc.Data;
+import net.java.ao.test.jdbc.DatabaseUpdater;
+import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
+@Data(TestTreant.AoSentenceTestDatabaseUpdater.class) 
 public class TestGetTreant extends TestSetUp {
 	private EntityManager entityManager;
 
@@ -68,8 +75,20 @@ public class TestGetTreant extends TestSetUp {
     }
 
     @Test
+    @NonTransactional
     public void testElemetExistsDepthNumber(){
         assertEquals(200,viewRest.getTreant("TEST-12", "3").getStatus());
+    }
+    
+    
+	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
+        @SuppressWarnings("unchecked")
+		@Override
+        public void update(EntityManager entityManager) throws Exception
+        {
+            entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
+            entityManager.migrate(LinkBetweenDifferentEntitiesEntity.class);
+        }
     }
 
 }

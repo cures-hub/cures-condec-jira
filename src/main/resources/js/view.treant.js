@@ -3,6 +3,8 @@ var dragId;
 var oldParentId;
 var treantTree;
 
+var draggedElement;
+
 function buildTreant(elementKey, isInteractive) {
 	var depthOfTree = getDepthOfTree();
 	getTreant(elementKey, depthOfTree, function(treeStructure) {
@@ -38,16 +40,33 @@ function getDepthOfTree() {
 function createTreant(treeStructure, isInteractive) {
 	treantTree = new Treant(treeStructure);
 	if (isInteractive !== undefined && isInteractive) {
+		createContextMenuForTreantNodesThatAreSentence();
 		createContextMenuForTreantNodes();
 		addDragAndDropSupportForTreant();
+		addTooltip();
 	}
 }
 
 function createContextMenuForTreantNodes() {
 	$(function() {
-		$.contextMenu({
+			$.contextMenu({
 			selector : ".decision, .rationale, .context, .problem, .solution, .pro, .contra, .other",
 			items : contextMenuActions
+		});
+	});
+}
+
+function createContextMenuForTreantNodesThatAreSentence() {
+	var nodes = document.getElementsByClassName("node");
+	for (var i = nodes.length - 1; i >= 0; i--) {
+		if(nodes[i].getElementsByClassName("node-desc")[0].innerHTML.includes(":")){
+			nodes[i].classList.add("sentence");
+		}
+	}
+	$(function() {
+		$.contextMenu({
+			selector : ".sentence.node",
+			items : contextMenuActionsForSentencesInTreant
 		});
 	});
 }
@@ -78,6 +97,7 @@ function getCurrentRootElement() {
 
 function drag(event) {
 	dragId = event.target.id;
+	draggedElement = event.target;
 	event.dataTransfer.setData("text", dragId);
 	oldParentId = findParentId(dragId);
 }
@@ -98,13 +118,52 @@ function drop(event, target) {
 	event.preventDefault();
 	var parentId = target.id;
 	var childId = dragId;
-	deleteLink(oldParentId, childId, function() {
+	if(sentenceElementIsDropped(target,parentId,childId)){
+		deleteLink(oldParentId, childId, function() {
 		createLinkToExistingElement(parentId, childId);
 	});
+	}
+}
+
+function sentenceElementIsDropped(target,parentId,childId){
+	var sourceType = extractTypeFromHTMLElement(draggedElement);
+	var oldParentType = extractTypeFromHTMLId(findParentId(draggedElement.id));
+	var newParentType = extractTypeFromHTMLElement(target);
+	//selected element is a sentence, dropped element is an issue
+	if(draggedElement.classList.contains("sentence") && !target.classList.contains("sentence")){
+		deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,function(){
+			linkGenericElements(target.id, draggedElement.id, newParentType,sourceType,function() {updateView();});
+		});
+	}else //selected element is an issue, dropped element is an sentence
+	if(target.classList.contains("sentence") && !draggedElement.classList.contains("sentence")){
+		deleteLink(oldParentId, childId, function() {
+			linkGenericElements(target.id, draggedElement.id, newParentType,sourceType,function() {updateView();});
+		});
+	}else //selected element is a sentence, dropped element is an sentence
+	if (target.classList.contains("sentence") && draggedElement.classList.contains("sentence")){
+		deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,function(){
+			linkGenericElements(target.id, draggedElement.id, newParentType,sourceType,function() {updateView();});
+		});
+	}else //selected element is an issue, parent element is a sentence 
+	if(!draggedElement.classList.contains("sentence") && document.getElementById(findParentId(draggedElement.id)).classList.contains("sentence")){
+		deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,function(){
+			createLinkToExistingElement(parentId, childId);
+		});
+	}else {//usual link between issue and issue
+		return true;
+	}
+	return false;
 }
 
 function allowDrop(event) {
 	event.preventDefault();
+}
+
+function addTooltip() {
+	var nodes = treantTree.tree.nodeDB.db;
+	for (i = 0; i < nodes.length; i++) {
+		AJS.$("#" + nodes[i].id).tooltip();
+	}
 }
 
 function addCommits(commits, elementArray) {
@@ -153,4 +212,20 @@ function openCommitDetails(commit) {
 	var url = AJS.contextPath() + "/secure/bbb.gp.gitviewer.Commit.jspa?repoId=" + commit.repository.id + "&commitId="
 			+ commit.commitId;
 	window.open(url);
+}
+
+//differentiate between issue elements and sentence elements
+//If you have to add commits here: add a commit class to your commit objects in the method "createcontextMenuForTreant"
+function extractTypeFromHTMLElement(element){
+	if(element.classList.contains("sentence")){
+		return "s";
+	}
+	if(!element.classList.contains("sentence")){
+		return "i";
+	}
+}
+
+function extractTypeFromHTMLId(id){
+	var element = document.getElementById(id);
+	return extractTypeFromHTMLElement(element);
 }

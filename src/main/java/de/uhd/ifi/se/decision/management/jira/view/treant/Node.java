@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.treant;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -67,10 +68,16 @@ public class Node {
 		this.htmlClass = decisionKnowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
 		this.htmlId = decisionKnowledgeElement.getId();
 		DecisionKnowledgeProject project = decisionKnowledgeElement.getProject();
+		this.link = new HashMap<>();
+		if (decisionKnowledgeElement.getDescription() != null
+				&& !decisionKnowledgeElement.getDescription().equals("")) {
+			this.link.put("title", decisionKnowledgeElement.getDescription());
+		}
 		if (project.isIssueStrategy()) {
 			ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
-			this.link = ImmutableMap.of("href", applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/"
-					+ decisionKnowledgeElement.getKey(), "target", "_blank");
+			this.link.put("href", applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/"
+					+ decisionKnowledgeElement.getKey());
+			this.link.put("target", "_blank");
 		}
 		if (isCollapsed) {
 			this.collapsed = ImmutableMap.of("collapsed", isCollapsed);
