@@ -5,7 +5,6 @@ import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.util.parsing.combinator.testing.Str;
 
 import java.io.IOException;
 
@@ -83,14 +82,10 @@ public class WebConnector{
     private boolean submitPostMethod(){
         try {
             HttpClient httpClient = new HttpClient();
-            Header header = new Header();
-            header.setName("X-Hub-Signature");
-            header.setValue(this.secret);
-            postMethod.setRequestHeader(header);
             postMethod.setURI(new HttpsURL(url));
             int respEntity = httpClient.executeMethod(postMethod);
-            System.out.println(respEntity);
-            if (respEntity == 200) {
+            System.out.println(postMethod.getResponseBodyAsString());
+            if (respEntity >= 200 && respEntity < 300) {
                 return true;
             }
         } catch (HttpException e) {
