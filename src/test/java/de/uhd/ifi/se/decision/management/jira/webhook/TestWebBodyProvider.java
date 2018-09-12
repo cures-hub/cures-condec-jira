@@ -75,7 +75,7 @@ public class TestWebBodyProvider extends TestSetUp {
         assertEquals(2, provider.getPostMethodForGitHash().getParameters().length, 0.0);
     }
 
-    @Ignore
+    @Test
     public void testCreateHashedPayload() {
         WebBodyProvider provider = new WebBodyProvider("ConDecDev", "CONDEC-1234");
 

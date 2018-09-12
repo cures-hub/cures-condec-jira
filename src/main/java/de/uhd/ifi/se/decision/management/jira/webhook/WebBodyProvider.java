@@ -9,6 +9,7 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -71,7 +72,7 @@ public class WebBodyProvider {
         JSONObject treantJSON = createTreantJsonString();
         StringRequestEntity requestEntity = null;
         try {
-            requestEntity = new StringRequestEntity(treantJSON.toString(), "application/json", "UTF-8");
+            requestEntity = new StringRequestEntity(StringEscapeUtils.escapeJson(treantJSON.toString()), "application/json", "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
