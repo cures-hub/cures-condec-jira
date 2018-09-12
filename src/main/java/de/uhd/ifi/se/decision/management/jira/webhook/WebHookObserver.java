@@ -12,8 +12,10 @@ import java.util.List;
 public class WebHookObserver  {
     private String projectKey;
     private WebConnector connector;
+    private List<Long> elementIds;
 
     public WebHookObserver(String projectKey){
+        linkIds = new ArrayList<>();
         this.projectKey = projectKey;
         connector = new WebConnector(projectKey);
     }
@@ -53,6 +55,10 @@ public class WebHookObserver  {
         //TODO IsIssueStrategy?
         List<DecisionKnowledgeElement> linkedElements = strategy.getLinkedElements(element);
         for(DecisionKnowledgeElement linkedElement: linkedElements){
+            if(elementIds.contains(linkedElement.getId())){
+                return workItemList;
+            }
+            elementIds.add(linkedElement.getId());
             if(linkedElement.getType().equals(KnowledgeType.WORKITEM)){
                 workItemList.add(linkedElement);
             }
