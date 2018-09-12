@@ -29,7 +29,7 @@ public class WebHookObserver  {
         AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
         ArrayList<DecisionKnowledgeElement> workItemList = getLinkedWorkItems(decisionKnowledgeElement);
         boolean isDeleted = strategy.deleteDecisionKnowledgeElement(decisionKnowledgeElement, user);
-        if(decisionKnowledgeElement.getType().equals(KnowledgeType.WORKITEM)){
+        if(decisionKnowledgeElement.getType() == KnowledgeType.TASK){
             workItemList.remove(decisionKnowledgeElement);
         }
         if(!isDeleted){
@@ -56,10 +56,10 @@ public class WebHookObserver  {
         List<DecisionKnowledgeElement> linkedElements = strategy.getLinkedElements(element);
         for(DecisionKnowledgeElement linkedElement: linkedElements){
             if(elementIds.contains(linkedElement.getId())){
-                return workItemList;
+                continue;
             }
             elementIds.add(linkedElement.getId());
-            if(linkedElement.getType().equals(KnowledgeType.WORKITEM)){
+            if(linkedElement.getType().equals(KnowledgeType.TASK)){
                 workItemList.add(linkedElement);
             }
             workItemList.addAll(getLinkedWorkItems(linkedElement));
