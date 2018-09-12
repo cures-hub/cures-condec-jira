@@ -15,7 +15,7 @@ public class WebHookObserver  {
     private List<Long> elementIds;
 
     public WebHookObserver(String projectKey){
-        linkIds = new ArrayList<>();
+        elementIds = new ArrayList<>();
         this.projectKey = projectKey;
         connector = new WebConnector(projectKey);
     }
