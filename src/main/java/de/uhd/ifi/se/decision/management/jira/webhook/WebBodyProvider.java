@@ -72,7 +72,8 @@ public class WebBodyProvider {
         JSONObject treantJSON = createTreantJsonString();
         StringRequestEntity requestEntity = null;
         try {
-            requestEntity = new StringRequestEntity(StringEscapeUtils.escapeJson(treantJSON.toString()), "application/json", "UTF-8");
+//        	String a= StringEscapeUtils.escapeJson(treantJSON.toString());
+            requestEntity = new StringRequestEntity(treantJSON.toString(), "application/json", "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

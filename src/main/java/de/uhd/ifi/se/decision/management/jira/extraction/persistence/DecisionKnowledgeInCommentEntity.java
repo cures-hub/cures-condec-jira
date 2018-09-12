@@ -53,6 +53,10 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long> {
 	void setArgument(String argument);
 	
 	String getArgument();
+	
+	String getProjectKey();
+	
+	void setProjectKey(String key);
 
 
 }

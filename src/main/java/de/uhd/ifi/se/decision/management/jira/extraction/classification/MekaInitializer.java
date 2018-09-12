@@ -113,8 +113,8 @@ public class MekaInitializer {
 			for (Comment comment : commentsList) {
 				for (Sentence sentence : comment.getSentences()) {
 					if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
-						sentence.setKnowledgeType(results.get(i));//done
-						ActiveObjectsManager.setSentenceKnowledgeType(sentence); //done
+						sentence.setKnowledgeType(results.get(i));
+						ActiveObjectsManager.setSentenceKnowledgeType(sentence); 
 						sentence.setTaggedFineGrained(true);
 						i++;
 					} else if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {

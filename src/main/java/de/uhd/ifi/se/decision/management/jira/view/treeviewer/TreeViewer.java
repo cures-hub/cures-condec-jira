@@ -14,7 +14,9 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -54,14 +56,18 @@ public class TreeViewer {
 
 	public TreeViewer(String projectKey, KnowledgeType rootElementType) {
 		this();
-		AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
-		List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements(rootElementType);
-
-		Set<Data> dataSet = new HashSet<Data>();
-		for (DecisionKnowledgeElement element : elements) {
-			dataSet.add(this.getDataStructure(element));
+		if(rootElementType != KnowledgeType.OTHER) {
+			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+			List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements(rootElementType);
+	
+			Set<Data> dataSet = new HashSet<Data>();
+			for (DecisionKnowledgeElement element : elements) {
+				dataSet.add(this.getDataStructure(element));
+			}
+			this.data = dataSet;
+		}else {
+			
 		}
-		this.data = dataSet;
 	}
 
 	public TreeViewer(String projectKey) {
@@ -77,23 +83,11 @@ public class TreeViewer {
 		if (currentIssue == null) {
 			return;
 		}
-		ViewConnector vc = new ViewConnector(currentIssue, true);
 
 		Set<Data> dataSet = new HashSet<Data>();
-		for (Sentence sentence : vc.getAllSentenceInstances(false)) {
-			sentence.setType(KnowledgeType.OTHER);
-			if (sentence.getKnowledgeType() != null) {
-				sentence.setType(sentence.getKnowledgeType());
-			}
-			if (!showRelevant && sentence.isRelevant()) {
-				dataSet.add(this.getDataStructure(sentence));
-			}
-			if (showRelevant) {
-				dataSet.add(this.getDataStructure(sentence));
-			}
-		}
-		this.data = dataSet;
+		dataSet.add(this.getDataStructure(new DecisionKnowledgeElementImpl(currentIssue)));
 
+		this.data = dataSet;
 	}
 
 	public Data getDataStructure(DecisionKnowledgeElement decisionKnowledgeElement) {

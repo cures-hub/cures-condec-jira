@@ -28,6 +28,8 @@ public class Comment {
 	private List<Integer> startSubstringCount;
 
 	private List<Integer> endSubstringCount;
+	
+	private String projectKey;
 
 	public Comment() {
 		this.sentences = new ArrayList<Sentence>();
@@ -42,18 +44,19 @@ public class Comment {
 
 	public Comment(String comment) {
 		this();
-		this.body = Comment.textRule(comment);
-		splitCommentIntoSentences(true);
+		this.body = textRule(comment);
+		splitCommentIntoSentences(true,0);
 	}
 
 	public Comment(com.atlassian.jira.issue.comments.Comment comment) {
 		this();
-		this.body = Comment.textRule(comment.getBody());
+		this.projectKey = comment.getIssue().getProjectObject().getKey();
+		this.body = textRule(comment.getBody());
 		this.created = comment.getCreated();
 		this.authorFullName = comment.getAuthorFullName();
 		this.jiraCommentId = comment.getId();
 		this.authorId = comment.getAuthorApplicationUser().getId();
-		splitCommentIntoSentences(true);
+		splitCommentIntoSentences(true,comment.getIssue().getId());
 	}
 
 	public static String textRule(String text) {
@@ -61,17 +64,17 @@ public class Comment {
 		// .replaceAll("\\{quote\\}[^<]*\\{quote\\}", "").toString();
 	}
 
-	private void splitCommentIntoSentences(boolean addSentencesToAo) {
+	private void splitCommentIntoSentences(boolean addSentencesToAo,long issueId) {
 		List<String> rawSentences = sliceCommentRecursionCommander();
 		runBreakIterator(rawSentences);
 		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(this);
 		// Create AO entries
 		for (int i = 0; i < this.startSubstringCount.size(); i++) {
-			long aoId = ActiveObjectsManager.addElement(this.jiraCommentId, false, this.endSubstringCount.get(i),
-					this.startSubstringCount.get(i), this.authorId);
+			long aoId = ActiveObjectsManager.addNewSentenceintoAo(this.jiraCommentId, false, this.endSubstringCount.get(i),
+					this.startSubstringCount.get(i), this.authorId,issueId,projectKey);
 			this.sentences.add(
 					new Sentence(this.body.substring(this.startSubstringCount.get(i), this.endSubstringCount.get(i)),
-							aoId, jiraCommentId));
+							aoId, jiraCommentId,projectKey));
 		}
 	}
 
@@ -169,7 +172,7 @@ public class Comment {
 						+ "</span>";
 			}  
 			if(!sentence.isRelevant()  && sentence.isPlanText()){
-				result = result + "<span class=\"sentence\"  id  = ui" + sentence.getActiveObjectId() + ">"
+				result = result + "<span class=\"sentence isNotRelevant\"  id  = ui" + sentence.getActiveObjectId() + ">"
 						+ sentence.getOpeningTagSpan() + "<span class = sentenceBody>" + sentence.getBody() + "</span>"
 						+ sentence.getClosingTagSpan() + "</span>";
 			}

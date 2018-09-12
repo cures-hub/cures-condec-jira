@@ -204,23 +204,6 @@ function deleteLink(idOfDestinationElement, idOfSourceElement, callback) {
 			});
 }
 
-function linkSentences(idOfDestinationElement, idOfSourceElement, linkType, callback) {
-	var jsondata = {
-		"type" : linkType,
-		"idOfSourceElement" : idOfSourceElement,
-		"idOfDestinationElement" : idOfDestinationElement
-	};
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLinkBetweenSentences.json?projectKey="
-			+ getProjectKey(), jsondata, function(error, link) {
-		if (error === null) {
-			showFlag("success", "Link has been created.");
-			callback(link);
-		} else {
-			showFlag("error", "Link could not be created.");
-		}
-	});
-}
-
 function deleteSentenceLink(idOfDestinationElement, idOfSourceElement, callback) {
 	var jsondata = {
 		"idOfSourceElement" : idOfSourceElement,
@@ -265,10 +248,10 @@ function changeKnowledgeTypeOfSentence(id, type, callback) {
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/changeKnowledgeTypeOfSentence.json?projectKey="
 			+ getProjectKey(), jsondata, function(error, link) {
 		if (error === null) {
-			showFlag("success", "Link has been created.");
+			showFlag("success", "Knowledge type has been changed.");
 			callback(link);
 		} else {
-			showFlag("error", "Link could not be created.");
+			showFlag("error", "Knowledge type could not be changed.");
 		}
 	});
 }
@@ -290,6 +273,42 @@ function editSentenceBody(id, body, type, callback) {
 			showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
 		}
 	});
+}
+
+
+function deleteGenericLink(targetId,sourceId,targetType,sourceType,callback,showError){
+	var jsondata = {
+		"idOfSourceElement" : sourceType+sourceId,
+		"idOfDestinationElement" : targetType + targetId
+	};
+	deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteGenericLink.json?projectKey="
+			+ getProjectKey(), jsondata, function(error, link) {
+		if (error === null) {
+			showFlag("success", "Link has been deleted.");
+			callback();
+		} else if(showError) {
+			showFlag("error", "Link could not be deleted.");
+		}
+
+	});
+}
+
+
+function linkGenericElements(targetId, sourceId, targetType,sourceType,callback) {
+	var jsondata = {
+		"type" : "contain",
+		"idOfSourceElement" : sourceType+sourceId,
+		"idOfDestinationElement" : targetType + targetId
+	};
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createGenericLink.json?projectKey=" + getProjectKey(),
+			jsondata, function(error, link) {
+				if (error === null) {
+					showFlag("success", "Link has been created.");
+					callback(link);
+				} else {
+					showFlag("error", "Link could not be created.");
+				}
+			});
 }
 
 function getTreant(elementKey, depthOfTree, callback) {

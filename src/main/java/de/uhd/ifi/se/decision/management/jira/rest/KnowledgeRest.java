@@ -23,6 +23,8 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLinkImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -185,25 +187,6 @@ public class KnowledgeRest {
 		}
 	}
 
-	@Path("/createLinkBetweenSentences")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createLinkBetweenSentences(@QueryParam("projectKey") String projectKey,
-			@Context HttpServletRequest request, Link link) {
-		if (projectKey != null && request != null && link != null) {
-			ApplicationUser user = getCurrentUser(request);
-			long linkId = ActiveObjectsManager.insertLink(link, user);
-			if (linkId == 0) {
-				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
-			}
-			return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
-		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Creation of link failed."))
-					.build();
-		}
-	}
-
 	@Path("/changeKnowledgeTypeOfSentence")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -222,30 +205,7 @@ public class KnowledgeRest {
 				.build();
 	}
 
-	@Path("/deleteLinkBetweenSentences")
-	@DELETE
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response deleteLinkBetweenSentences(@QueryParam("projectKey") String projectKey,
-			@Context HttpServletRequest request, Link link) {
-		if (projectKey != null && request != null && link != null) {
-			boolean isDeleted = ActiveObjectsManager.deleteLinkBetweenSentences(link);
-			if (isDeleted) {
-				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
-			} else {
-				Link inverseLink = new LinkImpl(link.getDestinationElement(), link.getSourceElement());
-				isDeleted = ActiveObjectsManager.deleteLinkBetweenSentences(inverseLink);
-				if (isDeleted) {
-					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
-				} else {
-					return Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
-				}
-			}
-		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
-					.build();
-		}
-	}
+	
 
 	@Path("/setSentenceIrrelevant")
 	@POST
@@ -338,6 +298,52 @@ public class KnowledgeRest {
 					.build();
 		}
 	}
+	
+	@Path("/deleteGenericLink")
+	@DELETE
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response deleteGenericLink(@QueryParam("projectKey") String projectKey,
+			@Context HttpServletRequest request, GenericLinkImpl link) {
+		System.out.println(link.toString());
+		if (projectKey != null && request != null && link != null ) {
+			boolean isDeleted = ActiveObjectsManager.deleteGenericLink(link);
+			if (isDeleted) {
+				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
+			} else {
+				GenericLink inverseLink = new GenericLinkImpl(link.getIdOfSourceElement(), link.getIdOfDestinationElement());
+				isDeleted = ActiveObjectsManager.deleteGenericLink(inverseLink);
+				if (isDeleted) {
+					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
+				} else {
+					return Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
+				}
+			}
+		} else {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
+					.build();
+		}
+	}
+	
+	@Path("/createGenericLink")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response createGenericLink(@QueryParam("projectKey") String projectKey,
+			@Context HttpServletRequest request, GenericLink link) {
+		if (projectKey != null && request != null && link != null) {
+			ApplicationUser user = getCurrentUser(request);
+			long linkId = ActiveObjectsManager.insertGenericLink(link, user);
+			if (linkId == 0) {
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
+			}
+			return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
+		} else {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Creation of link failed."))
+					.build();
+		}
+	}
+
 
 	private ApplicationUser getCurrentUser(HttpServletRequest request) {
 		com.atlassian.jira.user.util.UserManager jiraUserManager = ComponentAccessor.getUserManager();

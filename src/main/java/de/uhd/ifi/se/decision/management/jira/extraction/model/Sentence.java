@@ -31,16 +31,20 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 	private String argument = "";
 
 	private boolean isPlanText;
+	
+	private String projectKey;
 
 	public Sentence() {
 		super();
 		super.type = KnowledgeType.OTHER;
 	}
 
-	public Sentence(String body, long aoId, long jiraCommentId) {
+	public Sentence(String body, long aoId, long jiraCommentId, String projectKey) {
+		this();
 		this.setBody(body);
 		this.setValuesFromAoId(aoId);
-
+		this.projectKey = projectKey;
+		
 		super.setDescription(this.body);
 		super.setId(aoId);
 		super.setKey(jiraCommentId + "-" + aoId);
@@ -48,6 +52,7 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		if (ComponentGetter.getProjectService() != null) {
 			super.setProject(
 					new DecisionKnowledgeProjectImpl(ComponentGetter.getProjectService().getProjectKeyDescription()));
+			this.projectKey = ComponentGetter.getProjectService().getProjectKeyDescription();
 		} else {
 			super.setProject(new DecisionKnowledgeProjectImpl(""));
 		}
@@ -63,12 +68,13 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 	private void setSuperValues(long aoId) {
 		com.atlassian.jira.issue.comments.Comment c = ComponentAccessor.getCommentManager()
 				.getCommentById(ActiveObjectsManager.getElementFromAO(aoId).getCommentId());
+		
 		super.setDescription((String) c.getBody().subSequence(startSubstringCount, endSubstringCount));
 		super.setSummary(super.getDescription());
 		this.setBody(super.getDescription());
 		super.setProject(
 				new DecisionKnowledgeProjectImpl(ComponentGetter.getProjectService().getProjectKeyDescription()));
-		super.setKey(c.getIssue().getId() + "-" + aoId);
+		super.setKey(c.getIssue().getKey() + ": " + aoId);
 		super.setId(aoId);
 	}
  
@@ -82,6 +88,7 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		this.setStartSubstringCount(aoElement.getStartSubstringCount());
 		this.setEndSubstringCount(aoElement.getEndSubstringCount());
 		this.setArgument(aoElement.getArgument());
+		this.setProjectKey(aoElement.getProjectKey());
 
 		String kt = ActiveObjectsManager.getElementFromAO(aoId).getKnowledgeType();
 		if (kt == null || kt.equals("")) {
@@ -270,17 +277,6 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		}
 		return "<span class =tag>[/" + typeText + "]</span>";
 	}
-
-	private String getBodyForQuoteSentence() {
-		String bodyToReturnWithHTMLTags= this.body;
-		while(bodyToReturnWithHTMLTags.contains("{quote}")){
-			bodyToReturnWithHTMLTags.replaceFirst("{quote}","<blockquote>").replace("{quote}","</blockquote>");
-			System.out.println(bodyToReturnWithHTMLTags);
-		}
-		
-		
-		return bodyToReturnWithHTMLTags;
-	}
 	
 	/**
 	 * Returns html class codes for non plain text sentences
@@ -299,6 +295,14 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		}
 		return "<div class=\"preformatted panel\" style=\"border-width: 1px;\"><div class=\"preformattedContent panelContent\">"
 		+"<pre> "+ this.getBody().replace("\"","\\\"").replaceAll("&","&amp").replaceAll("<", "&lt").replaceAll(">", "&gt")+ "</pre></div></div>";
+	}
+
+	public String getProjectKey() {
+		return projectKey;
+	}
+
+	public void setProjectKey(String projectKey) {
+		this.projectKey = projectKey;
 	}
 
 }

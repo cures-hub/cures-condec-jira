@@ -19,8 +19,11 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.persistence.IssueStrategy;
 import net.java.ao.EntityManager;
+import net.java.ao.test.jdbc.Data;
+import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
+@Data(TestSetUp.AoSentenceTestDatabaseUpdater.class) 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestGraph extends TestSetUp {
 
@@ -62,12 +65,14 @@ public class TestGraph extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetLinkedElementsEmpty() {
 		DecisionKnowledgeElement emptyElement = new DecisionKnowledgeElementImpl();
 		assertEquals(0, graph.getLinkedElements(emptyElement).size());
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetLinkedElementsFilled() {
 		IssueStrategy issueStrategy = new IssueStrategy("TEST");
 		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
@@ -111,6 +116,7 @@ public class TestGraph extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetLinkedElementsAndLinksEmpty() {
 		DecisionKnowledgeElement emptyElement = new DecisionKnowledgeElementImpl();
 		assertEquals(0, graph.getLinkedElements(emptyElement).size());
