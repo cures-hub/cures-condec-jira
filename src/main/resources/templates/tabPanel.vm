@@ -2,6 +2,12 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rest-client-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:classifier-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-page-resources")
+
+<!-- <script src='jquery-3.3.1.js'></script>
+<script src = '//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.5/jstree.min.js'>
+var jq = jQuery.noConflict();
+</script>
+ -->
 <table>
 	<tbody>
 		<tr>
@@ -32,7 +38,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 
 #foreach($comment in $comments )
 #set($currentIndex = $velocityCount - 1)
-<div class="comment" >
+<div class="comment issue-data-block activity-comment twixi-block  expanded" >
   $style
 	<a class="user-hover user-avatar" rel="$authorNames.get($currentIndex)"
 		id="commentauthor_10102_verbose"
@@ -46,7 +52,11 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 		class="date user-tz">$dates.get($currentIndex)</span></span>
 
 	<div class="commentBody" style="visibility: visible;">
-		<p>$comment.replaceFirst("\{quote\}","<blockquote>").replaceFirst("\{quote\}","</blockquote>")</p>
-	</div>
+    #foreach($i in [0..10])
+       #set($comment = $comment.replaceFirst("\{quote\}","<blockquote>").replaceFirst("\{quote\}","</blockquote>"))
+    #end
+		<p>$comment</p>
+	</div> 
 </div>
 #end
+#include("templates/dialog.vm")

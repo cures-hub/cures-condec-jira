@@ -32,6 +32,7 @@ import com.atlassian.jira.user.util.UserManager;
 import com.atlassian.jira.util.VelocityParamFactory;
 import com.atlassian.velocity.VelocityManager;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.mocks.*;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementEntity;
@@ -156,6 +157,7 @@ public class TestSetUp {
         {
             entityManager.migrate(DecisionKnowledgeElementEntity.class);
             entityManager.migrate(LinkEntity.class);
+            entityManager.migrate(LinkBetweenDifferentEntitiesEntity.class);
         }
     }
 }

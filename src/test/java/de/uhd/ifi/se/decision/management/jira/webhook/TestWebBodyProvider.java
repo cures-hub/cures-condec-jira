@@ -6,6 +6,8 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import net.java.ao.EntityManager;
+import net.java.ao.test.jdbc.Data;
+import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -16,6 +18,7 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
+@Data(TestSetUp.AoSentenceTestDatabaseUpdater.class)
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestWebBodyProvider extends TestSetUp {
     private EntityManager entityManager;
@@ -70,6 +73,7 @@ public class TestWebBodyProvider extends TestSetUp {
     }
 
     @Test
+    @NonTransactional
     public void testGetGitHashFilledFilled() throws IOException {
         WebBodyProvider provider = new WebBodyProvider("TEST", "TEST-14");
         assertEquals(2, provider.getPostMethodForGitHash().getParameters().length, 0.0);

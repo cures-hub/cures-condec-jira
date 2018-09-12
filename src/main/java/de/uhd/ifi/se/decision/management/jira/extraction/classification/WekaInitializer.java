@@ -18,7 +18,7 @@ public class WekaInitializer {
 
 	private static FilteredClassifier fc;
 
-	public static List<Comment> classifySentencesBinary(List<Comment> commentsList) throws Exception {
+	public static List<Comment> classifySentencesBinary(List<Comment> commentsList) throws Exception { 
 		init();
 
 		Instances data = createDataset(commentsList);
@@ -47,7 +47,7 @@ public class WekaInitializer {
 		int i = 0;
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
-				if (!sentence.isTagged()) {
+				if (isSentenceQualifiedForBinaryClassification(sentence)) {
 					sentence.setRelevant(areRelevant.get(i));
 					ActiveObjectsManager.setIsRelevantIntoAo(sentence.getActiveObjectId(), sentence.isRelevant());
 					sentence.isTagged(true);
@@ -99,7 +99,7 @@ public class WekaInitializer {
 		data.setClassIndex(data.numAttributes() - 1);
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
-				if (!sentence.isTagged()) {
+				if (isSentenceQualifiedForBinaryClassification(sentence)) {
 					data.add(createInstance(2, wekaAttributes, sentence));
 				}
 			}
@@ -112,7 +112,15 @@ public class WekaInitializer {
 		String path = ComponentGetter.getUrlOfClassifierFolder() + "fc.model";
 		InputStream is = new URL(path).openStream();
 		fc = (FilteredClassifier) weka.core.SerializationHelper.read(is);
-
+	}
+	
+	
+	/**
+	 * @param sentence Sentence to check if its qualified for classification. It is qualified if its plain text, and not yet tagged.
+	 * @return boolean identifier 
+	 */
+	private static boolean isSentenceQualifiedForBinaryClassification(Sentence sentence) {
+		return !sentence.isTagged() && sentence.isPlanText();
 	}
 
 }

@@ -313,9 +313,14 @@ function resetDialog() {
 
 var contextMenuActionsForSentences = {
 	"edit" : contextMenuEditSentenceAction,
-	"deleteLink" : contextMenuDeleteSentenceLinkAction,
+	//"deleteLink" : contextMenuDeleteSentenceLinkAction,
 	"delete" : contextMenuDeleteSentenceAction,
 	"changeKt": changeKnowledgeTypeAction
+};
+
+var contextMenuActionsForSentencesInTreant = {
+	"edit" : contextMenuEditSentenceAction,
+	"delete" : contextMenuDeleteSentenceAction
 };
 
 var changeKnowledgeTypeAction = {
@@ -359,15 +364,22 @@ var changeKnowledgeTypeAction = {
 
 function changeKtTo(id,position,type){
 	changeKnowledgeTypeOfSentence(id,type, function() {
-		getTreeViewerWithoutRootElement(document.getElementById("Relevant").checked, function(core) {
-			var indexOfNode = getArrayId(core.data,getSelectedTreeViewerNodeId(position));
-			var url = getIconUrl(core,indexOfNode,type);
-			 $("#jstree").jstree(true).set_icon(getSelectedTreeViewerNode(position),url);
-		});
-		var idOfUiElement = "ui"+id;
-		replaceTagsFromContent(idOfUiElement,type);
-		document.getElementById(idOfUiElement).classList.remove("Decision","Issue","Alternative","Pro","Con");
-		document.getElementById(idOfUiElement).classList.add(type);
+		if(!(document.getElementById("Relevant") == null)){
+			resetTreeViewer();
+			buildTreeViewer2(document.getElementById("Relevant").checked);
+			// getTreeViewerWithoutRootElement(document.getElementById("Relevant").checked, function(core) {
+			// 	var indexOfNode = getArrayId(core.data,getSelectedTreeViewerNodeId(position));
+			// 	var url = getIconUrl(core,indexOfNode,type);
+			// 	 $("#jstree").jstree(true).set_icon(getSelectedTreeViewerNode(position),url);
+			// });
+			var idOfUiElement = "ui"+id;
+			replaceTagsFromContent(idOfUiElement,type);
+			document.getElementById(idOfUiElement).classList.remove("Decision","Issue","Alternative","Pro","Con");
+			document.getElementById(idOfUiElement).classList.add(type);
+		}else{
+			updateView();
+			
+		}
 	});
 }
 
@@ -405,12 +417,16 @@ var contextMenuDeleteSentenceLinkAction = {
 		var node = getSelectedTreeViewerNode(position);
 		var id = node.id;
 		var parentId = node.parent;
-		deleteSentenceLink(parentId, id,function(core){buildTreeViewer2(document.getElementById("Relevant").checked);});
+
+		var nodeType = (node.li_attr['class'] == "sentence") ? "s" : "i";
+			
+		deleteGenericLink(parentId,node.id,"i",nodeType,refreshTreeViewer,false);
+		deleteGenericLink(parentId,node.id,"s",nodeType,refreshTreeViewer,false);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
 		var parentId = findParentId(id);
-		deleteSentenceLink(parentId, id,function(core){buildTreeViewer2(document.getElementById("Relevant").checked);});
+		deleteGenericLink(parentId, id,function(core){updateView();});
 	}
 };
 
@@ -425,26 +441,22 @@ var contextMenuDeleteSentenceAction = {
 		var id = node.id;
 		setSentenceIrrelevant(id,function(core,node){
 			$("#jstree").jstree(true).set_icon($('#jstree').jstree(true).get_node(id),"https://player.fm/static/images/128pixel.png");
-			document.getElementById("ui"+id).getElementsByClassName("tag")[0].textContent="";
-			document.getElementById("ui"+id).getElementsByClassName("tag")[1].textContent="";
-			document.getElementById("ui"+id).classList.remove("Decision","Issue","Alternative","Pro","Con");
+			if(!(document.getElementById("Relevant") == null)){
+				document.getElementById("ui"+id).getElementsByClassName("tag")[0].textContent="";
+				document.getElementById("ui"+id).getElementsByClassName("tag")[1].textContent="";
+				document.getElementById("ui"+id).classList.remove("Decision","Issue","Alternative","Pro","Con");
+			}else{
+				refreshTreeViewer();
+			}
 		})
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
 		setSentenceIrrelevant(id,function(core,options,id){
-			var node = getSelectedTreeViewerNode(id);
-			$("#jstree").jstree(true).set_icon(node,"https://player.fm/static/images/128pixel.png");
-			document.getElementById("ui"+id).getElementsByClassName("tag")[0].textContent="";
-			document.getElementById("ui"+id).getElementsByClassName("tag")[1].textContent="";
-			document.getElementById("ui"+id).classList.remove("Decision","Issue","Alternative","Pro","Con");
-
-
+			refreshTreeViewer();
 		})
 	}
 };
-
-
 
 var contextMenuEditSentenceAction = {
 	// label for Tree Viewer, name for Treant context menu
@@ -453,26 +465,40 @@ var contextMenuEditSentenceAction = {
 	"action" : function(position) {
 		var id = getSelectedTreeViewerNodeId(position);
 		var node = getSelectedTreeViewerNode(position);
-		setUpDialogForEditSentenceAction(node);
+		setUpDialogForEditSentenceAction(id,node.data.summary,node.data.type);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		var node = getSelectedTreeViewerNode(position);
-		setUpDialogForEditSentenceAction(node);
+		var nodes = document.getElementById("treant-container").getElementsByClassName("sentence");
+		var node = getNodeWithId(nodes,id);
+		var description = node.getElementsByClassName("node-title")[0].innerHTML;
+
+		var	type = "Other";
+		if(node.getElementsByClassName("node-name").length >0){
+			type = node.getElementsByClassName("node-name")[0].innerHTML
+		}
+		setUpDialogForEditSentenceAction(id,description,type);
 	}
 };
 
-function setUpDialogForEditSentenceAction(node) {
-	setUpDialog();
-	setHeaderText(editKnowledgeElementText);
-	setUpEditSentenceDialog(node);
-
+function getNodeWithId(nodes,id) {
+	for (var i = nodes.length - 1; i >= 0; i--) {
+		if(nodes[i].id == id){
+			return nodes[i]
+		}
+	}
 }
 
-function setUpEditSentenceDialog(node) {
-	var description = node.data.summary;
-	var type = node.data.type;
-	var id = node.id;
+function setUpDialogForEditSentenceAction(id,description,type) {
+	setUpDialog();
+	setHeaderText(editKnowledgeElementText);
+	setUpEditSentenceDialogView(description,type);
+	setUpEditSentenceDialog(id,description,type);
+}
+
+
+function setUpEditSentenceDialogView(description,type){
+	document.getElementById("dialog").style.zIndex = 9999;
 	document.getElementById("dialog-content").insertAdjacentHTML(
 			"afterBegin",
 			"<form class='aui'>"
@@ -483,17 +509,23 @@ function setUpEditSentenceDialog(node) {
 					+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
 					+ "</form>");
 
-	var knowledgeTypesWithIrrelevant = extendedKnowledgeTypes;
-	knowledgeTypesWithIrrelevant.push("Other");
+	var knowledgeTypesWithIrrelevant = Array.from(extendedKnowledgeTypes);
+	if(!knowledgeTypesWithIrrelevant.includes("Other")){
+		knowledgeTypesWithIrrelevant.push("Other");
+	}
 	
 	for (var index = 0; index < knowledgeTypesWithIrrelevant.length; index++) {
 		var isSelected = "";
-		if (isKnowledgeTypeLocatedAtIndex(type, index)) {
+		if (type.toLowerCase() === knowledgeTypesWithIrrelevant[index].toLowerCase()) {
 			isSelected = "selected ";
 		}
 		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
 				+ knowledgeTypesWithIrrelevant[index] + "'>" + knowledgeTypesWithIrrelevant[index] + "</option>");
 	}
+}
+
+function setUpEditSentenceDialog(id,description,type) {
+	
 
 	var submitButton = document.getElementById("dialog-submit-button");
 	submitButton.textContent = createKnowledgeElementText;
@@ -501,16 +533,31 @@ function setUpEditSentenceDialog(node) {
 		var description = document.getElementById("form-input-description").value;
 		var type = $("select[name='form-select-type']").val();
 		editSentenceBody(id,description,type,function(){
-			var idOfUiElement = "ui"+id;
-			replaceTagsFromContent(idOfUiElement,type);
+			if(!(document.getElementById("Relevant") == null)){
+				var idOfUiElement = "ui"+id;
+				replaceTagsFromContent(idOfUiElement,type);
 
-			document.getElementById(idOfUiElement).classList.remove("Decision","Issue","Alternative","Pro","Con");
-			document.getElementById(idOfUiElement).classList.add(type);
-			document.getElementById(idOfUiElement).getElementsByClassName("sentenceBody")[0].textContent=description;
+				document.getElementById(idOfUiElement).classList.remove("Decision","Issue","Alternative","Pro","Con");
+				document.getElementById(idOfUiElement).classList.add(type);
+				document.getElementById(idOfUiElement).getElementsByClassName("sentenceBody")[0].textContent=description;
+				closeDialog();
+			}else{
+				closeDialog();
+				updateView();
+			}
 
-			closeDialog();
 			//callDialog2();
 		});
 	};
 	AJS.$("#form-select-type").auiSelect2();
+}
+
+function refreshTreeViewer(){
+	if(!(document.getElementById("Relevant") == null)){
+		resetTreeViewer();
+		buildTreeViewer2(document.getElementById("Relevant").checked);
+	}else{
+		closeDialog();
+		updateView();
+	}
 }

@@ -59,13 +59,11 @@ public class Treant {
 		} else {
 			node = new Node(element, isCollapsed);
 		}
-
 		List<Node> nodes = new ArrayList<Node>();
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
 			nodes.add(createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth, currentDepth + 1));
 		}
 		node.setChildren(nodes);
-
 		return node;
 	}
 

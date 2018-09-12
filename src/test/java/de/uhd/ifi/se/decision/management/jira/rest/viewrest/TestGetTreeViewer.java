@@ -24,8 +24,11 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import net.java.ao.EntityManager;
+import net.java.ao.test.jdbc.Data;
+import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
+@Data(TestSetUp.AoSentenceTestDatabaseUpdater.class) 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestGetTreeViewer extends TestSetUp {
 	private EntityManager entityManager;
@@ -54,6 +57,7 @@ public class TestGetTreeViewer extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testProjectKeyExistentKnowledgeTypeNull() throws GenericEntityException {
 		assertEquals(200, viewRest.getTreeViewer("TEST", null).getStatus());
 	}
@@ -64,6 +68,7 @@ public class TestGetTreeViewer extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testProjectKeyExistentKnowledgeTypeFilled() throws GenericEntityException {
 		assertEquals(200, viewRest.getTreeViewer("TEST", "Issue").getStatus());
 	}

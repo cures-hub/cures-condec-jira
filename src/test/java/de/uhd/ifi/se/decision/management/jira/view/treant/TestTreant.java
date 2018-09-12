@@ -11,6 +11,9 @@ import com.atlassian.activeobjects.test.TestActiveObjects;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -20,9 +23,13 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 import net.java.ao.EntityManager;
+import net.java.ao.test.jdbc.Data;
+import net.java.ao.test.jdbc.DatabaseUpdater;
+import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
+@Data(TestTreant.AoSentenceTestDatabaseUpdater.class) 
 public class TestTreant extends TestSetUp {
 	private EntityManager entityManager;
 	private Chart chart;
@@ -68,6 +75,7 @@ public class TestTreant extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testConstructor() {
 		this.treant = new Treant("TEST", "14", 3);
 		assertNotNull(this.treant);
@@ -85,6 +93,7 @@ public class TestTreant extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testCreateNodeStructureFilledNullZeroZero() {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
 		assertEquals(Node.class, treant.createNodeStructure(element, null, 0, 0).getClass());
@@ -102,12 +111,14 @@ public class TestTreant extends TestSetUp {
 	}
 
 	@Test
+	@NonTransactional
 	public void testCreateNodeStructureFilledNullFilledFilled() {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
 		assertEquals(Node.class, treant.createNodeStructure(element, null, 4, 0).getClass());
 	}
 
 	@Test
+	@NonTransactional
 	public void testCreateNodeStructureFilledFilledFilledFilled() {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
 		Link link = new LinkImpl();
@@ -119,4 +130,15 @@ public class TestTreant extends TestSetUp {
 		link.setId((long) 23);
 		assertEquals(Node.class, treant.createNodeStructure(element, link, 4, 0).getClass());
 	}
+	
+	
+	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
+        @SuppressWarnings("unchecked")
+		@Override
+        public void update(EntityManager entityManager) throws Exception
+        {
+            entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
+            entityManager.migrate(LinkBetweenDifferentEntitiesEntity.class);
+        }
+    }
 }
