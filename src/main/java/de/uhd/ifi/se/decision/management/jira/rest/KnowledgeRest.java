@@ -101,7 +101,7 @@ public class KnowledgeRest {
 			decisionKnowledgeElement = strategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
 			//Adding Create Observer for the Webhook
 			WebHookObserver observer = new WebHookObserver(projectKey);
-			observer.sendIssueChanges(decisionKnowledgeElement.getKey());
+			observer.sendIssueChanges(decisionKnowledgeElement);
 			if (decisionKnowledgeElement != null) {
 				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
 			}
@@ -126,7 +126,7 @@ public class KnowledgeRest {
 				//Adding Create Observer for the Webhook
 				DecisionKnowledgeElement element = strategy.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 				WebHookObserver observer = new WebHookObserver(projectKey);
-				observer.sendIssueChanges(element.getKey());
+				observer.sendIssueChanges(element);
 				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
 			}
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -147,11 +147,9 @@ public class KnowledgeRest {
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			DecisionKnowledgeElement element = strategy.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
-			boolean isDeleted = strategy.deleteDecisionKnowledgeElement(decisionKnowledgeElement, user);
-			if (isDeleted) {
-				//Adding Create Observer for the Webhook
-				WebHookObserver observer = new WebHookObserver(projectKey);
-				observer.sendIssueChanges(element.getKey());
+			WebHookObserver observer = new WebHookObserver(projectKey);
+			Boolean isDeleted = observer.sendIssueDeleteChanges(user, decisionKnowledgeElement);
+			if(isDeleted){
 				return Response.status(Status.OK).entity(isDeleted).build();
 			}
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -179,7 +177,7 @@ public class KnowledgeRest {
 			//Adding Create Observer for the Webhook
 			DecisionKnowledgeElement element = strategy.getDecisionKnowledgeElement(link.getSourceElement().getId());
 			WebHookObserver observer = new WebHookObserver(projectKey);
-			observer.sendIssueChanges(element.getKey());
+			observer.sendIssueChanges(element);
 			return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Creation of link failed."))
@@ -323,7 +321,7 @@ public class KnowledgeRest {
 				//Adding Create Observer for the Webhook
 				DecisionKnowledgeElement element = strategy.getDecisionKnowledgeElement(link.getSourceElement().getId());
 				WebHookObserver observer = new WebHookObserver(projectKey);
-				observer.sendIssueChanges(element.getKey());
+				observer.sendIssueChanges(element);
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 			} else {
 				Link inverseLink = new LinkImpl(link.getDestinationElement(), link.getSourceElement());
