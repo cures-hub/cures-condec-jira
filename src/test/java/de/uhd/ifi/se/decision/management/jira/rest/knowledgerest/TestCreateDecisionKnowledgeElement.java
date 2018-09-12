@@ -7,7 +7,7 @@ import javax.ws.rs.core.Response.Status;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplateWebhook;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplateWebHook;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Ignore;
@@ -51,7 +51,7 @@ public class TestCreateDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
 	public void testRequestFilledElementFilled() {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
-		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
+		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebHook());
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement).getStatus());
 	}
