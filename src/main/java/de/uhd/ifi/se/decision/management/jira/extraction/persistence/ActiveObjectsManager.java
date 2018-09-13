@@ -317,7 +317,6 @@ public class ActiveObjectsManager {
 	}
 
 	public static List<Sentence> getAllSentencesByJiraCommentId(long commentId) {
-		// commentId = 10000;
 		List<Sentence> sentences = new ArrayList<Sentence>();
 		init();
 		DecisionKnowledgeInCommentEntity[] sentencesinAo = ao.find(DecisionKnowledgeInCommentEntity.class,
@@ -376,15 +375,4 @@ public class ActiveObjectsManager {
 			}
 		});
 	}
-
-	public static boolean sentenceIsChildAnywhereElse(Sentence sentence, Issue currentIssue) {
-		List<GenericLink> links = getGenericLinksForElement("s" + sentence.getId(), false);
-		for (GenericLink link : links) {
-			if (link.getElement("s" + sentence.getId()).getId() != currentIssue.getId()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 }
