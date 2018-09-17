@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -11,12 +12,10 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
-import de.uhd.ifi.se.decision.management.jira.view.treant.Chart;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 
 /**
@@ -49,16 +48,16 @@ public class WebhookContentProvider {
 		if (project == null || elementKey == null) {
 			return postMethod;
 		}
-		JSONObject treantJSON = createTreantJsonString();
+		String treantJSON = createTreantJsonString();
 		try {
-			StringRequestEntity requestEntity = new StringRequestEntity(treantJSON.toString(), "application/json", "UTF-8");
+			StringRequestEntity requestEntity = new StringRequestEntity(treantJSON, "application/json", "UTF-8");
 			postMethod.setRequestEntity(requestEntity);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		Header header = new Header();
 		header.setName("X-Hub-Signature");
-		header.setValue("sha256=" + createHashedPayload(treantJSON.toString(), project.getWebhookSecret()));
+		header.setValue("sha256=" + createHashedPayload(treantJSON, project.getWebhookSecret()));
 		postMethod.setRequestHeader(header);
 		return postMethod;
 	}
@@ -71,33 +70,19 @@ public class WebhookContentProvider {
 	 * @return JSON object containing the following String: { "issueKey": "string",
 	 *         " ConDecTree": {TreantJS JSON config and data} }
 	 */
-	private JSONObject createTreantJsonString() {
+	private String createTreantJsonString() {
 		Treant treant = new Treant(project.getProjectKey(), elementKey, 4);
-		Chart chart = treant.getChart();
-		JSONObject jsonObject = new JSONObject();
+		String payload = "";
+		ObjectMapper mapper = new ObjectMapper();
+		//mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
 		try {
-			jsonObject.put("container", chart.getContainer());
-			jsonObject.put("connectors", new JSONObject().put("type", "straight"));
-			jsonObject.put("rootOrientation", chart.getRootOrientation());
-			jsonObject.put("levelSeparation", chart.getLevelSeparation());
-			jsonObject.put("siblingSeparation", chart.getSiblingSeparation());
-			jsonObject.put("subTreeSeparation", chart.getSubTreeSeparation());
-			jsonObject.put("node", new JSONObject().put("collapsable", "true"));
-
-			JSONObject nodeStructure = new JSONObject();
-			nodeStructure.put("text", new JSONObject(treant.getNodeStructure().getNodeContent()));
-			nodeStructure.put("children", treant.getNodeStructure().getChildren());
-
-			JSONObject treantJSON = new JSONObject();
-			treantJSON.put("chart", jsonObject);
-			treantJSON.put("nodeStructure", nodeStructure);
-			String payload = "{\"issueKey\": \"" + this.elementKey + "\", \"ConDecTree\": " + treantJSON.toString()
-					+ "}";
-			jsonObject = new JSONObject(payload);
-		} catch (JSONException e) {
+			String treantAsJson = mapper.writeValueAsString(treant);
+			payload = "{\"issueKey\": \"" + this.elementKey + "\", \"ConDecTree\": " + treantAsJson + "}";
+			System.out.println(payload);
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return jsonObject;
+		return payload;
 	}
 
 	public static String createHashedPayload(String data, String key) {
