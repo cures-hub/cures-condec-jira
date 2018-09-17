@@ -73,8 +73,6 @@
 		<resource type="download" name="fc.model" location="/classifier/fc.model" />
 		<resource type="download" name="br.model" location="/classifier/br.model" />
 		<resource type="download" name="view.tab.panel.js" location="/js/view.tab.panel.js" />
-		<resource type="download" name="jquery.js" location="/js/jquery/jquery.js" />
-		
 		<resource type="download" name="view.tree.viewer.js" location="/js/view.tree.viewer.js" />
 		<resource type="download" name="view.context.menu.js" location="/js/view.context.menu.js" />
 <!-- 		<dependency>com.atlassian.plugins.jquery:jquery</dependency> -->

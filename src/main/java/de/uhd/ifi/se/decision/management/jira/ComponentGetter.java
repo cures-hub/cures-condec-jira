@@ -12,7 +12,6 @@ import com.atlassian.jira.bc.project.ProjectService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.config.properties.ApplicationProperties;
-import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
@@ -23,7 +22,6 @@ import com.atlassian.templaterenderer.TemplateRenderer;
  * @description Provides access to JIRA components. Automatically initialized.
  */
 @Named("ComponentUtil")
-@Scanned
 public class ComponentGetter {
 	private static final String PLUGIN_STORAGE_KEY = "de.uhd.ifi.se.decision.management.jira";
 

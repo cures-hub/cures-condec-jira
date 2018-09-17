@@ -78,13 +78,7 @@
 			<groupId>com.atlassian.plugin</groupId>
 			<artifactId>atlassian-spring-scanner-annotation</artifactId>
 			<version>${atlassian.spring.scanner.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.atlassian.plugin</groupId>
-			<artifactId>atlassian-spring-scanner-runtime</artifactId>
-			<version>${atlassian.spring.scanner.version}</version>
-			<scope>runtime</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.inject</groupId>
@@ -95,7 +89,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>2.5.6</version>
+			<version>5.0.9.RELEASE</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- REST -->
@@ -288,7 +282,7 @@
 		<amps.version>6.3.6</amps.version>
 		<ao.version>1.5.0</ao.version>
 		<plugin.testrunner.version>1.2.3</plugin.testrunner.version>
-		<atlassian.spring.scanner.version>1.2.13</atlassian.spring.scanner.version>
+		<atlassian.spring.scanner.version>2.1.7</atlassian.spring.scanner.version>
 		<!-- This key is also used in atlassian-plugin.xml -->
 		<atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

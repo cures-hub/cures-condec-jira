@@ -8,14 +8,18 @@ import java.util.List;
 
 import javax.inject.Named;
 
-import com.atlassian.jira.avatar.Avatar;
-import com.atlassian.jira.exception.DataAccessException;
-import com.atlassian.jira.icon.IconType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
+import com.atlassian.core.util.ClassLoaderUtils;
+import com.atlassian.jira.avatar.Avatar;
+import com.atlassian.jira.avatar.AvatarImpl;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
+import com.atlassian.jira.exception.DataAccessException;
+import com.atlassian.jira.icon.IconType;
 import com.atlassian.jira.issue.IssueFieldConstants;
 import com.atlassian.jira.issue.fields.config.FieldConfigScheme;
 import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
@@ -29,13 +33,12 @@ import com.atlassian.jira.project.Project;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-import com.atlassian.jira.avatar.AvatarImpl;
-
 /**
  * Handles plug-in initialization
  */
 @Named("PluginInitializer")
 public class PluginInitializer implements InitializingBean {
+	private static final Logger LOGGER = LoggerFactory.getLogger(PluginInitializer.class);
 
 	@Override
 	public void afterPropertiesSet() {
@@ -71,8 +74,6 @@ public class PluginInitializer implements InitializingBean {
 		return existingIssueTypeNames;
 	}
 
-	// TODO Replace deprecated createIssueType method
-	@SuppressWarnings("deprecation")
 	public static void createIssueType(String issueTypeName) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
 		Collection<IssueType> types = issueTypeManager.getIssueTypes();
@@ -83,25 +84,32 @@ public class PluginInitializer implements InitializingBean {
 				}
 			}
 		}
-		String iconUrl = getIconUrl(issueTypeName);
-		issueTypeManager.createIssueType(issueTypeName, issueTypeName + " (decision knowledge element)", iconUrl);
 
-		/*InputStream inputStream = com.atlassian.core.util.ClassLoaderUtils.getResourceAsStream("images", PluginInitializer.class);
-		Avatar tmpAvatar = AvatarImpl.createCustomAvatar(issueTypeName, "image/png", "0", IconType.ISSUE_TYPE_ICON_TYPE);
+		String issueTypeFileName = getFileName(issueTypeName);
+
+		InputStream inputStream = ClassLoaderUtils.getResourceAsStream("images/" + issueTypeFileName,
+				PluginInitializer.class);
+		Avatar tmpAvatar = AvatarImpl.createCustomAvatar(issueTypeFileName, "image/png", "0",
+				IconType.ISSUE_TYPE_ICON_TYPE);
 		Avatar issueAvatar = null;
+
 		try {
 			issueAvatar = ComponentAccessor.getAvatarManager().create(tmpAvatar, inputStream, null);
-			if(issueAvatar != null){
-				issueTypeManager.createIssueType(issueTypeName, issueTypeName,  issueAvatar.getId());
+			if (issueAvatar != null) {
+				issueTypeManager.createIssueType(issueTypeName, issueTypeName, issueAvatar.getId());
 			}
 		} catch (DataAccessException | IOException e) {
-			// TODO Auto-generated catch block
+			LOGGER.error("Issue type " + issueTypeName + " could not be created.");
 			e.printStackTrace();
-		}*/
+		}
+	}
+
+	public static String getFileName(String issueTypeName) {
+		return issueTypeName.toLowerCase() + ".png";
 	}
 
 	public static String getIconUrl(String issueTypeName) {
-		return ComponentGetter.getUrlOfImageFolder() + issueTypeName.toLowerCase() + ".png";
+		return ComponentGetter.getUrlOfImageFolder() + getFileName(issueTypeName);
 	}
 
 	public static void addIssueTypeToScheme(String issueTypeName, String projectKey) {

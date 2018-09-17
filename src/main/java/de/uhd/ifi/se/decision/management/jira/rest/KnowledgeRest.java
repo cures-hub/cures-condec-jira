@@ -32,7 +32,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
-import de.uhd.ifi.se.decision.management.jira.webhook.WebHookObserver;
+import de.uhd.ifi.se.decision.management.jira.webhook.WebhookObserver;
 
 /**
  * REST resource: Enables creation, editing and deletion of decision knowledge
@@ -101,10 +101,9 @@ public class KnowledgeRest {
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			decisionKnowledgeElement = strategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
-			//Adding Create Observer for the Webhook
-			WebHookObserver observer = new WebHookObserver(projectKey);
-			observer.sendIssueChanges(decisionKnowledgeElement);
 			if (decisionKnowledgeElement != null) {
+				WebhookObserver observer = new WebhookObserver(projectKey);
+				observer.sendElementChanges(decisionKnowledgeElement);
 				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
 			}
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -125,10 +124,8 @@ public class KnowledgeRest {
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			if (strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user)) {
-				//Adding Create Observer for the Webhook
-				DecisionKnowledgeElement element = strategy.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
-				WebHookObserver observer = new WebHookObserver(projectKey);
-				observer.sendIssueChanges(element);
+				WebhookObserver observer = new WebhookObserver(projectKey);
+				observer.sendElementChanges(decisionKnowledgeElement);
 				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
 			}
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -148,10 +145,10 @@ public class KnowledgeRest {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
-			DecisionKnowledgeElement element = strategy.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
-			WebHookObserver observer = new WebHookObserver(projectKey);
-			Boolean isDeleted = observer.sendIssueDeleteChanges(user, decisionKnowledgeElement);
-			if(isDeleted){
+			boolean isDeleted = strategy.deleteDecisionKnowledgeElement(decisionKnowledgeElement, user);
+			if (isDeleted) {
+				WebhookObserver observer = new WebhookObserver(projectKey);
+				observer.sendElementChanges(decisionKnowledgeElement, isDeleted);
 				return Response.status(Status.OK).entity(isDeleted).build();
 			}
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -176,10 +173,9 @@ public class KnowledgeRest {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
 			}
-			//Adding Create Observer for the Webhook
 			DecisionKnowledgeElement element = strategy.getDecisionKnowledgeElement(link.getSourceElement().getId());
-			WebHookObserver observer = new WebHookObserver(projectKey);
-			observer.sendIssueChanges(element);
+			WebhookObserver observer = new WebhookObserver(projectKey);
+			observer.sendElementChanges(element);
 			return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Creation of link failed."))
@@ -204,8 +200,6 @@ public class KnowledgeRest {
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Update of element failed."))
 				.build();
 	}
-
-	
 
 	@Path("/setSentenceIrrelevant")
 	@POST
@@ -243,24 +237,25 @@ public class KnowledgeRest {
 				CommentManager cm = ComponentAccessor.getCommentManager();
 				MutableComment mc = (MutableComment) cm.getCommentById(databaseEntity.getCommentId());
 				// Generate sentence data generated for classification
-				String sentenceToSearch = Comment.textRule(mc.getBody()).substring(databaseEntity.getStartSubstringCount(),
-						databaseEntity.getEndSubstringCount());
+				String sentenceToSearch = Comment.textRule(mc.getBody())
+						.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount());
 				int index = mc.getBody().indexOf(sentenceToSearch);
-				
+
 				String first = mc.getBody().substring(0, index);
 				String second = decisionKnowledgeElement.getDescription();
-				String third = mc.getBody().substring(index  + sentenceToSearch.length());
-				
+				String third = mc.getBody().substring(index + sentenceToSearch.length());
+
 				mc.setBody(first + second + third);
 				cm.update(mc, true);
 			}
 
 			ActiveObjectsManager.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),
 					decisionKnowledgeElement.getType());
-			 ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(),decisionKnowledgeElement.getId(),
-			 decisionKnowledgeElement.getDescription());
+			ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(), decisionKnowledgeElement.getId(),
+					decisionKnowledgeElement.getDescription());
 
-			 Response r =Response.status(Status.OK).entity(ImmutableMap.of("id", decisionKnowledgeElement.getId())).build();
+			Response r = Response.status(Status.OK).entity(ImmutableMap.of("id", decisionKnowledgeElement.getId()))
+					.build();
 			return r;
 		} else {
 			return Response.status(Status.BAD_REQUEST)
@@ -278,10 +273,10 @@ public class KnowledgeRest {
 			ApplicationUser user = getCurrentUser(request);
 			boolean isDeleted = strategy.deleteLink(link, user);
 			if (isDeleted) {
-				//Adding Create Observer for the Webhook
-				DecisionKnowledgeElement element = strategy.getDecisionKnowledgeElement(link.getSourceElement().getId());
-				WebHookObserver observer = new WebHookObserver(projectKey);
-				observer.sendIssueChanges(element);
+				DecisionKnowledgeElement element = strategy
+						.getDecisionKnowledgeElement(link.getSourceElement().getId());
+				WebhookObserver observer = new WebhookObserver(projectKey);
+				observer.sendElementChanges(element);
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 			} else {
 				Link inverseLink = new LinkImpl(link.getDestinationElement(), link.getSourceElement());
@@ -298,19 +293,20 @@ public class KnowledgeRest {
 					.build();
 		}
 	}
-	
+
 	@Path("/deleteGenericLink")
 	@DELETE
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response deleteGenericLink(@QueryParam("projectKey") String projectKey,
-			@Context HttpServletRequest request, GenericLinkImpl link) {
+	public Response deleteGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
+			GenericLinkImpl link) {
 		System.out.println(link.toString());
-		if (projectKey != null && request != null && link != null ) {
+		if (projectKey != null && request != null && link != null) {
 			boolean isDeleted = ActiveObjectsManager.deleteGenericLink(link);
 			if (isDeleted) {
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 			} else {
-				GenericLink inverseLink = new GenericLinkImpl(link.getIdOfSourceElement(), link.getIdOfDestinationElement());
+				GenericLink inverseLink = new GenericLinkImpl(link.getIdOfSourceElement(),
+						link.getIdOfDestinationElement());
 				isDeleted = ActiveObjectsManager.deleteGenericLink(inverseLink);
 				if (isDeleted) {
 					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
@@ -324,12 +320,12 @@ public class KnowledgeRest {
 					.build();
 		}
 	}
-	
+
 	@Path("/createGenericLink")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createGenericLink(@QueryParam("projectKey") String projectKey,
-			@Context HttpServletRequest request, GenericLink link) {
+	public Response createGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
+			GenericLink link) {
 		if (projectKey != null && request != null && link != null) {
 			ApplicationUser user = getCurrentUser(request);
 			long linkId = ActiveObjectsManager.insertGenericLink(link, user);
@@ -343,7 +339,6 @@ public class KnowledgeRest {
 					.build();
 		}
 	}
-
 
 	private ApplicationUser getCurrentUser(HttpServletRequest request) {
 		com.atlassian.jira.user.util.UserManager jiraUserManager = ComponentAccessor.getUserManager();
