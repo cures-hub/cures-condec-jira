@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import com.atlassian.activeobjects.external.ActiveObjects;
-import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
@@ -24,36 +23,40 @@ public class ActiveObjectsManager {
 			ao = ComponentGetter.getActiveObjects();
 		}
 	}
+	
+	public static long addNewSentenceintoAo(Comment comment, long issueId, int index) {
+		return addNewSentenceintoAo(comment.getJiraCommentId(), false, comment.getEndSubstringCount().get(index),
+				comment.getStartSubstringCount().get(index), comment.getAuthorId(),issueId,comment.getProjectKey());
+	}
 
 	public static long addNewSentenceintoAo(long commentId, boolean isRelevant, int endSubStringCount,
 			int startSubstringCount, long userId, long issueId, String projectKey) {
 		init();
-		if (!checkElementExistingInAO(commentId, endSubStringCount, startSubstringCount, userId)) {
-			DecisionKnowledgeInCommentEntity newElement = ao
-					.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-						@Override
-						public DecisionKnowledgeInCommentEntity doInTransaction() {
-							DecisionKnowledgeInCommentEntity todo = ao.create(DecisionKnowledgeInCommentEntity.class); // (2)
-							todo.setCommentId(commentId);
-							todo.setEndSubstringCount(endSubStringCount);
-							todo.setStartSubstringCount(startSubstringCount);
-							todo.setUserId(userId);
-							todo.setIsTagged(false);
-							todo.setIsTaggedFineGrained(false);
-							todo.setIsTaggedManually(false);
-							todo.setProjectKey(projectKey);
-							todo.save();
-							return todo;
-						}
-					});
-			addNewSentenceLink(issueId, newElement.getId());
-			return newElement.getId();
-		} else {
-			return getElementFromAO(commentId, endSubStringCount, startSubstringCount, userId).getId();
+		if (checkElementExistingInAO(commentId, endSubStringCount, startSubstringCount, userId,projectKey)) {
+			return getElementFromAO(commentId, endSubStringCount, startSubstringCount, userId,projectKey).getId();
 		}
+		DecisionKnowledgeInCommentEntity newElement = ao
+				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+					@Override
+					public DecisionKnowledgeInCommentEntity doInTransaction() {
+						DecisionKnowledgeInCommentEntity todo = ao.create(DecisionKnowledgeInCommentEntity.class); // (2)
+						todo.setCommentId(commentId);
+						todo.setEndSubstringCount(endSubStringCount);
+						todo.setStartSubstringCount(startSubstringCount);
+						todo.setUserId(userId);
+						todo.setIsTagged(false);
+						todo.setIsTaggedFineGrained(false);
+						todo.setIsTaggedManually(false);
+						todo.setProjectKey(projectKey);
+						todo.save();
+						return todo;
+					}
+				});
+		addNewLinkSentenceIssue(issueId, newElement.getId());
+		return newElement.getId();
 	}
 
-	private static void addNewSentenceLink(long issueId, long sentenceAoId) {
+	private static void addNewLinkSentenceIssue(long issueId, long sentenceAoId) {
 		ao.executeInTransaction(new TransactionCallback<LinkBetweenDifferentEntitiesEntity>() {
 			@Override
 			public LinkBetweenDifferentEntitiesEntity doInTransaction() {
@@ -68,10 +71,10 @@ public class ActiveObjectsManager {
 	}
 
 	public static boolean checkElementExistingInAO(long commentId, int endSubtringCount, int startSubstringCount,
-			long userId) {
+			long userId, String projectKey) {
 		init();
 		DecisionKnowledgeInCommentEntity databaseEntry = getElementFromAO(commentId, endSubtringCount,
-				startSubstringCount, userId);
+				startSubstringCount, userId,projectKey);
 		if (databaseEntry != null) {
 			return true;
 		} else {
@@ -101,14 +104,14 @@ public class ActiveObjectsManager {
 	}
 
 	public static DecisionKnowledgeInCommentEntity getElementFromAO(long commentId, int endSubtringCount,
-			int startSubstringCount, long userId) {
+			int startSubstringCount, long userId, String projectKey) {
 		init();
 		DecisionKnowledgeInCommentEntity element = ao
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 					@Override
 					public DecisionKnowledgeInCommentEntity doInTransaction() {
 						for (DecisionKnowledgeInCommentEntity databaseEntry : ao
-								.find(DecisionKnowledgeInCommentEntity.class)) {
+								.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?",projectKey))) {
 							if (equalsDatabase(databaseEntry, commentId, endSubtringCount, startSubstringCount,
 									userId)) {
 								return databaseEntry;
@@ -288,7 +291,7 @@ public class ActiveObjectsManager {
 		});
 	}
 
-	public static boolean updateSentenceBody(long commentId, long aoId, String description) {
+	public static boolean updateSentenceBodyWhenCommentChanged(long commentId, long aoId, String description) { 
 		init();
 		return ao.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
