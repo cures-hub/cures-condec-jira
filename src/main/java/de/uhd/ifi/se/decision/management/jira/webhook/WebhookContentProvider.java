@@ -52,15 +52,6 @@ public class WebBodyProvider {
         return postMethod;
     }
 
-    public PostMethod getPostMethodForGitHash() {
-        if (project == null || identifierKey == null) {
-            return new PostMethod();
-        }
-        treant = new Treant(project.getProjectKey(), identifierKey, 4);
-        project = new DecisionKnowledgeProjectImpl(project.getProjectKey());
-        creatJsonStringForGitHash();
-        return postMethod;
-    }
 
     /**
      * {
@@ -84,29 +75,6 @@ public class WebBodyProvider {
         postMethod.setRequestHeader(header);
     }
 
-    /**
-     * {
-     * "commit": {
-     * "hash": "string"
-     * },
-     * "ConDecTree": {TreantJS JSON Config/Data}
-     * }
-     */
-    private void creatJsonStringForGitHash() {
-        String gitHashString;
-        try {
-            gitHashString = new JSONObject().put("hash", identifierKey).toString();
-            JSONObject treantJSON = createTreantJsonString();
-            NameValuePair commitPair = new NameValuePair("commit", gitHashString);
-            NameValuePair conDeTreePair = new NameValuePair("ConDecTree", treantJSON.toString());
-            NameValuePair[] bodySet = new NameValuePair[2];
-            bodySet[0] = commitPair;
-            bodySet[1] = conDeTreePair;
-            postMethod.setRequestBody(bodySet);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 
     private JSONObject createTreantJsonString() {
         Chart chart = this.treant.getChart();

@@ -51,17 +51,6 @@ public class WebConnector{
         return submitPostMethod();
     }
 
-    //TODO Needs some kind of getGitHash function in the persistence strategy
-    //Error in line 31 in Graph
-    // this.rootElement = this.project.getPersistenceStrategy().getDecisionKnowledgeElement(rootElementKey);
-    public boolean sendWebHookForGitHash(String projectKey, String gitHash){
-        if(!checkSubmitionData(projectKey,gitHash)){
-            return false;
-        }
-        WebBodyProvider provider = new WebBodyProvider(projectKey, gitHash);
-        postMethod = provider.getPostMethodForGitHash();
-        return submitPostMethod();
-    }
 
     public String getUrl() {
         return url;
