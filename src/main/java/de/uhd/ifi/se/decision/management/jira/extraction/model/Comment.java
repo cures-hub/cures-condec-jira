@@ -240,4 +240,13 @@ public class Comment {
 		this.endSubstringCount = endSubstringCount;
 	}
 
+	public String getProjectKey() {
+		return projectKey;
+	}
+
+	public void setProjectKey(String projectKey) {
+		this.projectKey = projectKey;
+	}
+
+
 }
