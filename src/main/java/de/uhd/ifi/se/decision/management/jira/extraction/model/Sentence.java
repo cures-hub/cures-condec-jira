@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
+import java.beans.PropertyChangeListener;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -9,8 +11,10 @@ import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKno
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import net.java.ao.EntityManager;
+import net.java.ao.RawEntity;
 
-public class Sentence extends DecisionKnowledgeElementImpl {
+public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKnowledgeInCommentEntity{
 
 	private boolean isTagged;
 
@@ -30,9 +34,11 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 
 	private String argument = "";
 
-	private boolean isPlanText;
+	private boolean isPlainText;
 	
 	private String projectKey;
+	
+	private long commentId;
 
 	public Sentence() {
 		super();
@@ -48,6 +54,7 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		super.setDescription(this.body);
 		super.setId(aoId);
 		super.setKey(jiraCommentId + "-" + aoId);
+		this.setCommentId(jiraCommentId);
 		super.setSummary(body);
 		if (ComponentGetter.getProjectService() != null) {
 			super.setProject(
@@ -80,17 +87,17 @@ public class Sentence extends DecisionKnowledgeElementImpl {
  
 	private void setValuesFromAoId(long aoId) {
 		this.setActiveObjectId(aoId);
-		this.isTagged(ActiveObjectsManager.checkCommentExistingInAO(aoId, true));
+		this.setIsTagged(ActiveObjectsManager.checkCommentExistingInAO(aoId, true));
 		DecisionKnowledgeInCommentEntity aoElement = ActiveObjectsManager.getElementFromAO(aoId);
-		this.setRelevant(aoElement.getIsRelevant());
-		this.setTaggedFineGrained(aoElement.getIsTaggedFineGrained());
-		this.setTaggedManually(aoElement.getIsTaggedManually());
+		this.setIsRelevant(aoElement.isRelevant());
+		this.setIsTaggedFineGrained(aoElement.isTaggedFineGrained());
+		this.setIsTaggedManually(aoElement.isTaggedManually());
 		this.setStartSubstringCount(aoElement.getStartSubstringCount());
 		this.setEndSubstringCount(aoElement.getEndSubstringCount());
 		this.setArgument(aoElement.getArgument());
 		this.setProjectKey(aoElement.getProjectKey());
 
-		String kt = ActiveObjectsManager.getElementFromAO(aoId).getKnowledgeType();
+		String kt = ActiveObjectsManager.getElementFromAO(aoId).getKnowledgeTypeString();
 		if (kt == null || kt.equals("")) {
 			super.type = KnowledgeType.OTHER;
 		} else if (this.isTaggedFineGrained) {
@@ -98,12 +105,14 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		}
 
 	}
-
+	
+	@Override
 	public boolean isTagged() {
 		return isTagged;
 	}
 
-	public void isTagged(boolean isTagged) {
+	@Override
+	public void setIsTagged(boolean isTagged) {
 		this.isTagged = isTagged;
 	}
 
@@ -111,7 +120,8 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		return isRelevant;
 	}
 
-	public void setRelevant(boolean isRelevant) {
+	@Override
+	public void setIsRelevant(boolean isRelevant) {
 		this.isRelevant = isRelevant;
 	}
 
@@ -122,17 +132,17 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 	public void setBody(String body) {
 		this.body = body;
 		if(StringUtils.indexOfAny(body, new String[]{"{code}", "{quote}","{noformat}" }) >= 0 ) {
-			this.isPlanText = false;
+			this.isPlainText = false;
 		}else {
-			this.isPlanText = true;
+			this.isPlainText = true;
 		}
 	}
 
 	public void setRelevant(Double double1) {
 		if (double1 == 1.) {
-			setRelevant(true);
+			setIsRelevant(true);
 		} else {
-			setRelevant(false);
+			setIsRelevant(false);
 		}
 	}
 
@@ -164,19 +174,22 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 		this.endSubstringCount = endSubstringCount;
 	}
 
+	@Override
 	public boolean isTaggedManually() {
 		return isTaggedManually;
 	}
 
-	public void setTaggedManually(boolean isTaggedManually) {
+	@Override
+	public void setIsTaggedManually(boolean isTaggedManually) {
 		this.isTaggedManually = isTaggedManually;
 	}
 
 	public boolean isTaggedFineGrained() {
 		return isTaggedFineGrained;
 	}
-
-	public void setTaggedFineGrained(boolean isTaggedFineGrained) {
+	
+	@Override
+	public void setIsTaggedFineGrained(boolean isTaggedFineGrained) {
 		this.isTaggedFineGrained = isTaggedFineGrained;
 	}
 
@@ -200,11 +213,11 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 	}
 
 	public boolean isPlanText() {
-		return isPlanText;
+		return isPlainText;
 	}
 
 	public void setPlanText(boolean isPlanText) {
-		this.isPlanText = isPlanText;
+		this.isPlainText = isPlanText;
 	}
 
 	public void setKnowledgeType(double[] resultArray) {
@@ -233,8 +246,9 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 			}
 		}
 	}
-
-	public void setKnowledgeType(String type) {
+	
+	@Override
+	public void setKnowledgeTypeString(String type) {
 		if (type.toLowerCase().equals("pro")) {
 			super.type = KnowledgeType.ARGUMENT;
 			this.argument = "Pro";
@@ -245,7 +259,8 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 			super.type = KnowledgeType.getKnowledgeType(type);
 		}
 	}
-
+	
+	@Override
 	public String getKnowledgeTypeString() {
 		if (super.type == null) {
 			return "";
@@ -303,6 +318,65 @@ public class Sentence extends DecisionKnowledgeElementImpl {
 
 	public void setProjectKey(String projectKey) {
 		this.projectKey = projectKey;
+	}
+
+	@Override
+	public void addPropertyChangeListener(PropertyChangeListener arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public EntityManager getEntityManager() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <X extends RawEntity<Long>> Class<X> getEntityType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removePropertyChangeListener(PropertyChangeListener arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void save() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public long getCommentId() {
+		return this.commentId;
+	}
+
+	@Override
+	public void setCommentId(long id) {
+		this.commentId = id;
+	}
+
+	@Override
+	public long getUserId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setUserId(long id) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

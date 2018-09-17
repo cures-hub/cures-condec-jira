@@ -14,21 +14,21 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long> {
 
 	void setId(long id);
 
-	boolean getIsRelevant();
+	boolean isRelevant();
 
 	void setIsRelevant(boolean isRelevant);
 
-	boolean getIsTagged();
+	boolean isTagged();
 
 	void setIsTagged(boolean isTagged);
 
-	boolean getIsTaggedManually();
+	boolean isTaggedManually();
 
 	void setIsTaggedManually(boolean isTaggedManually);
 
-	boolean getIsTaggedFineGrained();
+	boolean isTaggedFineGrained();
 
-	void setIsTaggedFineGrained(boolean isTagged);
+	void setIsTaggedFineGrained(boolean isTaggedFineGrained);
 
 	long getCommentId();
 
@@ -46,9 +46,9 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long> {
 
 	void setEndSubstringCount(int count);
 	
-	String getKnowledgeType();
+	String getKnowledgeTypeString();
 	
-	void setKnowledgeType(String type);
+	void setKnowledgeTypeString(String type);
 	
 	void setArgument(String argument);
 	

@@ -98,7 +98,7 @@ public class ActiveObjectsManager {
 					}
 				});
 		if (getIsTagged && dbEntry != null) {
-			return dbEntry.getIsTagged();
+			return dbEntry.isTagged();
 		}
 		return (dbEntry != null);
 	}
@@ -118,7 +118,7 @@ public class ActiveObjectsManager {
 							}
 						}
 						return null;
-					}
+					} 
 				});
 		return element;
 
@@ -131,10 +131,10 @@ public class ActiveObjectsManager {
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
 				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (databaseEntry.getId() == aoId) {
-						return databaseEntry;
+						return databaseEntry; 
 					}
 				}
-				return new DecisionKnowledgeInCommentImpl();
+				return new Sentence();
 			}
 		});
 	}
@@ -156,7 +156,7 @@ public class ActiveObjectsManager {
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
 				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (databaseEntry.getId() == sentence.getActiveObjectId()) {
-						databaseEntry.setKnowledgeType(sentence.getKnowledgeType().toString());
+						databaseEntry.setKnowledgeTypeString(sentence.getKnowledgeType().toString());
 						databaseEntry.setIsTaggedFineGrained(true);
 						databaseEntry.setArgument(sentence.getArgument());
 						databaseEntry.save();
@@ -177,7 +177,7 @@ public class ActiveObjectsManager {
 				for (DecisionKnowledgeInCommentEntity sentenceEntity : ao
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
-						sentenceEntity.setKnowledgeType(knowledgeType.toString());
+						sentenceEntity.setKnowledgeTypeString(knowledgeType.toString());
 						if (knowledgeType != KnowledgeType.OTHER) {
 							sentenceEntity.setIsRelevant(true);
 						}
@@ -281,7 +281,7 @@ public class ActiveObjectsManager {
 					if (sentenceEntity.getId() == id) {
 						sentenceEntity.setIsRelevant(false);
 						sentenceEntity.setIsTaggedManually(isTaggedManually);
-						sentenceEntity.setKnowledgeType(KnowledgeType.OTHER.toString());
+						sentenceEntity.setKnowledgeTypeString(KnowledgeType.OTHER.toString());
 						sentenceEntity.save();
 						return true;
 					}

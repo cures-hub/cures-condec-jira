@@ -50,7 +50,7 @@ public class WekaInitializer {
 				if (isSentenceQualifiedForBinaryClassification(sentence)) {
 					sentence.setRelevant(areRelevant.get(i));
 					ActiveObjectsManager.setIsRelevantIntoAo(sentence.getActiveObjectId(), sentence.isRelevant());
-					sentence.isTagged(true);
+					sentence.setIsTagged(true);
 					i++;
 				}
 			}
@@ -61,8 +61,8 @@ public class WekaInitializer {
 	private static List<Comment> writeDataFromActiveObjectsToSentences(List<Comment> commentsList) {
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
-				sentence.setRelevant(
-						ActiveObjectsManager.getElementFromAO(sentence.getActiveObjectId()).getIsRelevant());
+				sentence.setIsRelevant(
+						ActiveObjectsManager.getElementFromAO(sentence.getActiveObjectId()).isRelevant());
 			}
 		}
 		return commentsList;

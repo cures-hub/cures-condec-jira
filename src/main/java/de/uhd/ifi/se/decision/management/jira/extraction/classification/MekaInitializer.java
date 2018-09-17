@@ -115,10 +115,10 @@ public class MekaInitializer {
 					if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 						sentence.setKnowledgeType(results.get(i));
 						ActiveObjectsManager.setSentenceKnowledgeType(sentence); 
-						sentence.setTaggedFineGrained(true);
+						sentence.setIsTaggedFineGrained(true); 
 						i++;
 					} else if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {
-						sentence.setKnowledgeType(ActiveObjectsManager.getElementFromAO(sentence.getId()).getKnowledgeType());
+						sentence.setKnowledgeTypeString(ActiveObjectsManager.getElementFromAO(sentence.getId()).getKnowledgeTypeString());
 					}
 				}
 			}
@@ -126,7 +126,7 @@ public class MekaInitializer {
 			for (Comment comment : commentsList) {
 				for (Sentence sentence : comment.getSentences()) {
 					 if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {
-						sentence.setKnowledgeType(ActiveObjectsManager.getElementFromAO(sentence.getId()).getKnowledgeType().toString());
+						sentence.setKnowledgeTypeString(ActiveObjectsManager.getElementFromAO(sentence.getId()).getKnowledgeTypeString());
 					}
 				}
 			}

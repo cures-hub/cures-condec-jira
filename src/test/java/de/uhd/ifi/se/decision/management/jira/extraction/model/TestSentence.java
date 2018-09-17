@@ -106,13 +106,13 @@ public class TestSentence extends TestSetUp {
 	@NonTransactional
 	public void testSetKnowledgeTypeString() {
 		Sentence sentence = new Sentence();
-		sentence.setKnowledgeType(KnowledgeType.ALTERNATIVE.toString());
-		assertEquals(KnowledgeType.ALTERNATIVE,sentence.getKnowledgeType());
-		sentence.setKnowledgeType("pro");
-		assertEquals(KnowledgeType.ARGUMENT,sentence.getKnowledgeType());
+		sentence.setKnowledgeTypeString(KnowledgeType.ALTERNATIVE.toString());
+		assertEquals(KnowledgeType.ALTERNATIVE.toString(),sentence.getKnowledgeTypeString());
+		sentence.setKnowledgeTypeString("pro");
+		assertEquals("Pro",sentence.getKnowledgeTypeString());
 		assertEquals("pro",sentence.getArgument().toLowerCase());
-		sentence.setKnowledgeType("con");
-		assertEquals(KnowledgeType.ARGUMENT,sentence.getKnowledgeType());
+		sentence.setKnowledgeTypeString("con");
+		assertEquals("Con",sentence.getKnowledgeTypeString());
 		assertEquals("con",sentence.getArgument().toLowerCase());
 	}	
 	
@@ -122,7 +122,7 @@ public class TestSentence extends TestSetUp {
 		Sentence sentence = new Sentence();
 		assertEquals("<span class =tag></span>", sentence.getOpeningTagSpan());
 		sentence.setKnowledgeType(KnowledgeType.ARGUMENT);
-		sentence.setRelevant(true);
+		sentence.setIsRelevant(true);
 		sentence.setArgument("Pro");
 		assertEquals("<span class =tag>[Pro]</span>", sentence.getOpeningTagSpan());
 	}	
@@ -133,7 +133,7 @@ public class TestSentence extends TestSetUp {
 		Sentence sentence = new Sentence();
 		assertEquals("<span class =tag></span>", sentence.getClosingTagSpan());
 		sentence.setKnowledgeType(KnowledgeType.ARGUMENT);
-		sentence.setRelevant(true);
+		sentence.setIsRelevant(true);
 		sentence.setArgument("Pro");
 		assertEquals("<span class =tag>[/Pro]</span>", sentence.getClosingTagSpan());
 	}	
