@@ -14,16 +14,14 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import de.uhd.ifi.se.decision.management.jira.config.GitConfig;
-import de.uhd.ifi.se.decision.management.jira.webhook.WebConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.config.GitConfig;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
@@ -32,7 +30,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
  * REST resource for plug-in configuration
  */
 @Path("/config")
-@Scanned
 public class ConfigRest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigRest.class);
 

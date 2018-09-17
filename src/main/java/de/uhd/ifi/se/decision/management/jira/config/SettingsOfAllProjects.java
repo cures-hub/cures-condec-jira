@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.Project;
-import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.user.UserManager;
@@ -21,7 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl
  * Renders the administration page to change the plug-in configuration of all
  * projects
  */
-@Scanned
 public class SettingsOfAllProjects extends AbstractSettingsServlet {
 
 	private static final long serialVersionUID = 4640871992639394730L;
