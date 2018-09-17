@@ -5,7 +5,6 @@ import java.util.Set;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
-import de.uhd.ifi.se.decision.management.jira.webhook.WebConnector;
 
 /**
  * Model class for a project and its configuration

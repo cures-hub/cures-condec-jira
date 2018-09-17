@@ -8,107 +8,86 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class WebConnector{
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebConnector.class);
-    private String url;
-    private String secret;
-    private PostMethod postMethod;
+public class WebhookConnector {
+	private static final Logger LOGGER = LoggerFactory.getLogger(WebhookConnector.class);
+	private String url;
+	private String secret;
 
-    public WebConnector(String projectKey){
-        if(projectKey != null){
-            this.url = ConfigPersistence.getWebhookUrl(projectKey);
-            this.secret = ConfigPersistence.getWebhookSecret(projectKey);
-        }
-        if(url == null) {
-            url = "";
-            LOGGER.error("Webhook could not be created because Webhook Url is null");
-        }
-        if(secret == null){
-            secret = "";
-            LOGGER.error("Webhook could not be created because Webhook Secret is null");
-        }
-    }
+	public WebhookConnector(String webhookUrl, String webhookSecret) {
+		if (webhookUrl == null) {
+			webhookUrl = "";
+			LOGGER.error("Webhook could not be created because the URL is not provided.");
+		}
+		if (webhookSecret == null) {
+			webhookSecret = "";
+			LOGGER.error("Webhook could not be created because the secret is not provided.");
+		}
+		this.url = webhookUrl;
+		this.secret = webhookSecret;
+	}
 
-    public WebConnector(String webhookUrl, String webhookSecret){
-        if(webhookUrl == null) {
-            webhookUrl = "";
-            LOGGER.error("Webhook could not be created because Webhook Url is null");
-        }
-        if( webhookSecret == null){
-            webhookSecret = "";
-            LOGGER.error("Webhook could not be created because Webhook Secret is null");
-        }
-        this.url = webhookUrl;
-        this.secret = webhookSecret;
-    }
+	public WebhookConnector(String projectKey) {
+		this(ConfigPersistence.getWebhookUrl(projectKey), ConfigPersistence.getWebhookSecret(projectKey));
+	}
 
-    public boolean sendWebHookForIssueKey(String projectKey, String issueKey) {
-        if(!checkSubmitionData(projectKey, issueKey)){
-            return false;
-        }
-        WebBodyProvider provider = new WebBodyProvider(projectKey, issueKey);
-        postMethod = provider.getPostMethodForIssueKey();
-        return submitPostMethod();
-    }
+	public boolean postKnowledge(String projectKey, String changedElementKey) {
+		if (!checkIfDataIsValid(projectKey, changedElementKey)) {
+			return false;
+		}
+		WebhookContentProvider provider = new WebhookContentProvider(projectKey, changedElementKey);
+		PostMethod postMethod = provider.createWebhookContentForChangedElement();
+		boolean isSubmitted = submitPostMethod(postMethod);
+		return isSubmitted;
+	}
 
+	private boolean checkIfDataIsValid(String projectKey, String changedElementkey) {
+		if (this.url == null || this.url.equals("")) {
+			LOGGER.error("Could not send WebHook data because the Url is Null or empty");
+			return false;
+		}
+		if (this.secret == null || this.secret.equals("")) {
+			LOGGER.error("Could not send WebHook data because Secret is Null or empty");
+			return false;
+		}
+		if (projectKey == null || projectKey.equals("")) {
+			LOGGER.error("Could not send WebHook data because projectKey Null or empty");
+			return false;
+		}
+		if (changedElementkey == null || changedElementkey.equals("")) {
+			LOGGER.error("Could not send WebHook data because issueKey Null or empty");
+			return false;
+		}
+		return true;
+	}
 
-    public String getUrl() {
-        return url;
-    }
+	private boolean submitPostMethod(PostMethod postMethod) {
+		try {
+			HttpClient httpClient = new HttpClient();
+			postMethod.setURI(new HttpsURL(url));
+			int respEntity = httpClient.executeMethod(postMethod);
+			if (respEntity >= 200 && respEntity < 300) {
+				return true;
+			}
+		} catch (IOException e) {
+			LOGGER.error("Could not send webhook data because of " + e.getMessage());
+			e.printStackTrace();
+		}
+		return false;
+	}
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+	public String getUrl() {
+		return url;
+	}
 
-    public String getSecret() {
-        return secret;
-    }
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
-    public void setSecret(String secret) {
-        this.secret = secret;
-    }
+	public String getSecret() {
+		return secret;
+	}
 
-    private boolean submitPostMethod(){
-        try {
-            HttpClient httpClient = new HttpClient();
-            postMethod.setURI(new HttpsURL(url));
-            int respEntity = httpClient.executeMethod(postMethod);
-            System.out.println(postMethod.getResponseBodyAsString());
-            if (respEntity >= 200 && respEntity < 300) {
-                return true;
-            }
-        } catch (HttpException e) {
-            LOGGER.error("Could not send WebHook data because of "+ e.getMessage());
-            e.printStackTrace();
-        } catch (IOException e) {
-            LOGGER.error("Could not send WebHook data because of "+ e.getMessage());
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    private boolean checkSubmitionData(String projectKey, String key){
-        if(this.url==null || this.url.equals("")){
-            LOGGER.error("Could not send WebHook data because the Url is Null or empty");
-            return false;
-        }
-        if(this.secret == null || this.secret.equals("")){
-            LOGGER.error("Could not send WebHook data because Secret is Null or empty");
-            return false;
-        }
-        if(projectKey == null || projectKey.equals("")){
-            LOGGER.error("Could not send WebHook data because projectKey Null or empty");
-            return false;
-        }
-        if(projectKey == null || projectKey.equals("")){
-            LOGGER.error("Could not send WebHook data because projectKey Null or empty");
-            return false;
-        }
-        if(key == null || key.equals("")){
-            LOGGER.error("Could not send WebHook data because issueKey Null or empty");
-            return false;
-        }
-        return true;
-    }
-
+	public void setSecret(String secret) {
+		this.secret = secret;
+	}
 }

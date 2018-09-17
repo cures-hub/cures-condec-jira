@@ -1,69 +1,57 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
-import com.atlassian.jira.user.ApplicationUser;
+import java.util.ArrayList;
+import java.util.List;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 
-import java.util.ArrayList;
-import java.util.List;
+public class WebhookObserver {
+	private String projectKey;
+	private WebhookConnector connector;
+	private List<Long> elementIds;
 
-public class WebHookObserver  {
-    private String projectKey;
-    private WebConnector connector;
-    private List<Long> elementIds;
+	public WebhookObserver(String projectKey) {
+		this.elementIds = new ArrayList<Long>();
+		this.projectKey = projectKey;
+		this.connector = new WebhookConnector(projectKey);
+	}
 
-    public WebHookObserver(String projectKey){
-        elementIds = new ArrayList<>();
-        this.projectKey = projectKey;
-        connector = new WebConnector(projectKey);
-    }
+	public boolean sendElementChanges(DecisionKnowledgeElement decisionKnowledgeElement, boolean isDeleted) {
+		ArrayList<DecisionKnowledgeElement> workItems = getWebhookRootElements(decisionKnowledgeElement);
+		if (isDeleted && decisionKnowledgeElement.getType() == KnowledgeType.TASK) {
+			workItems.remove(decisionKnowledgeElement);
+		}
+		boolean submitted = true;
+		for (DecisionKnowledgeElement workItem : workItems) {
+			if (!connector.postKnowledge(projectKey, workItem.getKey())) {
+				submitted = false;
+			}
+		}
+		return submitted;
+	}
 
-    public boolean sendIssueChanges(DecisionKnowledgeElement decisionKnowledgeElement){
-        ArrayList<DecisionKnowledgeElement> workItemList = getLinkedWorkItems(decisionKnowledgeElement);
-        return submitChangesWorkItems(workItemList);
-    }
+	public boolean sendElementChanges(DecisionKnowledgeElement decisionKnowledgeElement) {
+		return sendElementChanges(decisionKnowledgeElement, false);
+	}
 
-    public boolean sendIssueDeleteChanges(ApplicationUser user, DecisionKnowledgeElement decisionKnowledgeElement){
-        AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
-        ArrayList<DecisionKnowledgeElement> workItemList = getLinkedWorkItems(decisionKnowledgeElement);
-        boolean isDeleted = strategy.deleteDecisionKnowledgeElement(decisionKnowledgeElement, user);
-        if(decisionKnowledgeElement.getType() == KnowledgeType.TASK){
-            workItemList.remove(decisionKnowledgeElement);
-        }
-        if(!isDeleted){
-            return false;
-        }
-        return submitChangesWorkItems(workItemList);
-    }
+	private ArrayList<DecisionKnowledgeElement> getWebhookRootElements(DecisionKnowledgeElement element) {
+		ArrayList<DecisionKnowledgeElement> webhookRootElements = new ArrayList<DecisionKnowledgeElement>();
 
-    private boolean submitChangesWorkItems(List<DecisionKnowledgeElement> workItemList){
-        boolean submitted = true;
-        for(DecisionKnowledgeElement workItem : workItemList){
-            if(!connector.sendWebHookForIssueKey(projectKey,workItem.getKey())){
-                submitted = false;
-            }
-        }
-        return submitted;
-    }
-
-    private ArrayList<DecisionKnowledgeElement> getLinkedWorkItems(DecisionKnowledgeElement element){
-        ArrayList<DecisionKnowledgeElement> workItemList = new ArrayList<>();
-
-        AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
-        //TODO IsIssueStrategy?
-        List<DecisionKnowledgeElement> linkedElements = strategy.getLinkedElements(element);
-        for(DecisionKnowledgeElement linkedElement: linkedElements){
-            if(elementIds.contains(linkedElement.getId())){
-                continue;
-            }
-            elementIds.add(linkedElement.getId());
-            if(linkedElement.getType().equals(KnowledgeType.TASK)){
-                workItemList.add(linkedElement);
-            }
-            workItemList.addAll(getLinkedWorkItems(linkedElement));
-        }
-        return workItemList;
-    }
+		AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+		List<DecisionKnowledgeElement> linkedElements = strategy.getLinkedElements(element);
+		for (DecisionKnowledgeElement linkedElement : linkedElements) {
+			if (elementIds.contains(linkedElement.getId())) {
+				continue;
+			}
+			elementIds.add(linkedElement.getId());
+			if (linkedElement.getType().equals(KnowledgeType.TASK)) {
+				webhookRootElements.add(linkedElement);
+			}
+			webhookRootElements.addAll(getWebhookRootElements(linkedElement));
+		}
+		return webhookRootElements;
+	}
 }

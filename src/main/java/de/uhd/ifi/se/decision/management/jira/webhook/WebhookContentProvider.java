@@ -1,133 +1,129 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
-import de.uhd.ifi.se.decision.management.jira.view.treant.Chart;
-import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Formatter;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
+import de.uhd.ifi.se.decision.management.jira.view.treant.Chart;
+import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
+
 /**
- * Creates the Body for the Webhook.
+ * Creates the content submitted by the webhook. The content consists of a key
+ * value pair. The key is either an issue id or a commit SHA id. The value is
+ * the Treant JSON String.
  */
-public class WebBodyProvider {
+public class WebhookContentProvider {
 
-    private PostMethod postMethod;
-    private Treant treant;
-    private DecisionKnowledgeProject project;
-    private String secret;
-    private String identifierKey;
+	private DecisionKnowledgeProject project;
+	private String elementKey;
 
-    public WebBodyProvider(String projectKey, String identifierKey) {
-        postMethod = new PostMethod();
-        if (projectKey == null || identifierKey == null) {
-            return;
-        }
-        this.identifierKey = identifierKey;
-        this.secret = ConfigPersistence.getWebhookSecret(projectKey);
-        project = new DecisionKnowledgeProjectImpl(projectKey);
+	public WebhookContentProvider(String projectKey, String elementKey) {
+		if (projectKey == null || elementKey == null) {
+			return;
+		}
+		this.elementKey = elementKey;
+		this.project = new DecisionKnowledgeProjectImpl(projectKey);
+	}
 
-    }
+	/**
+	 * Create post method for webhook
+	 * 
+	 * @param elementKey
+	 *            key of the changed element.
+	 * @return post method ready to be posted
+	 */
+	public PostMethod createWebhookContentForChangedElement() {
+		PostMethod postMethod = new PostMethod();
+		if (project == null || elementKey == null) {
+			return postMethod;
+		}
+		JSONObject treantJSON = createTreantJsonString();
+		try {
+			StringRequestEntity requestEntity = new StringRequestEntity(treantJSON.toString(), "application/json", "UTF-8");
+			postMethod.setRequestEntity(requestEntity);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		Header header = new Header();
+		header.setName("X-Hub-Signature");
+		header.setValue("sha256=" + createHashedPayload(treantJSON.toString(), project.getWebhookSecret()));
+		postMethod.setRequestHeader(header);
+		return postMethod;
+	}
 
-    public PostMethod getPostMethodForIssueKey() {
-        if (project == null || identifierKey == null) {
-            return new PostMethod();
-        }
-        treant = new Treant(project.getProjectKey(), identifierKey, 4);
-        project = new DecisionKnowledgeProjectImpl(project.getProjectKey());
-        createJsonStringForIssueKey();
-        return postMethod;
-    }
+	/**
+	 * Creates the Treant JSON data transmitted via webhook
+	 * 
+	 * @param elementKey
+	 *            key of the changed element.
+	 * @return JSON object containing the following String: { "issueKey": "string",
+	 *         " ConDecTree": {TreantJS JSON config and data} }
+	 */
+	private JSONObject createTreantJsonString() {
+		Treant treant = new Treant(project.getProjectKey(), elementKey, 4);
+		Chart chart = treant.getChart();
+		JSONObject jsonObject = new JSONObject();
+		try {
+			jsonObject.put("container", chart.getContainer());
+			jsonObject.put("connectors", new JSONObject().put("type", "straight"));
+			jsonObject.put("rootOrientation", chart.getRootOrientation());
+			jsonObject.put("levelSeparation", chart.getLevelSeparation());
+			jsonObject.put("siblingSeparation", chart.getSiblingSeparation());
+			jsonObject.put("subTreeSeparation", chart.getSubTreeSeparation());
+			jsonObject.put("node", new JSONObject().put("collapsable", "true"));
 
+			JSONObject nodeStructure = new JSONObject();
+			nodeStructure.put("text", new JSONObject(treant.getNodeStructure().getNodeContent()));
+			nodeStructure.put("children", treant.getNodeStructure().getChildren());
 
-    /**
-     * {
-     * "issueKey": "string",
-     * " ConDecTree": { ..TreantJS JSON Config.. }
-     * }
-     */
-    private void createJsonStringForIssueKey()  {
-        JSONObject treantJSON = createTreantJsonString();
-        StringRequestEntity requestEntity = null;
-        try {
-//        	String a= StringEscapeUtils.escapeJson(treantJSON.toString());
-            requestEntity = new StringRequestEntity(treantJSON.toString(), "application/json", "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        postMethod.setRequestEntity(requestEntity);
-        Header header = new Header();
-        header.setName("X-Hub-Signature");
-        header.setValue("sha256=" + createHashedPayload(treantJSON.toString(), project.getWebhookSecret()));
-        postMethod.setRequestHeader(header);
-    }
+			JSONObject treantJSON = new JSONObject();
+			treantJSON.put("chart", jsonObject);
+			treantJSON.put("nodeStructure", nodeStructure);
+			String payload = "{\"issueKey\": \"" + this.elementKey + "\", \"ConDecTree\": " + treantJSON.toString()
+					+ "}";
+			jsonObject = new JSONObject(payload);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return jsonObject;
+	}
 
+	public static String createHashedPayload(String data, String key) {
+		final String hashingAlgorithm = "HMACSHA256";
+		SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), hashingAlgorithm);
+		Mac mac = null;
+		try {
+			mac = Mac.getInstance(hashingAlgorithm);
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		try {
+			mac.init(secretKeySpec);
+		} catch (InvalidKeyException e) {
+			e.printStackTrace();
+		}
+		return toHexString(mac.doFinal(data.getBytes()));
+	}
 
-    private JSONObject createTreantJsonString() {
-        Chart chart = this.treant.getChart();
-        JSONObject chartJSON = new JSONObject();
-        try {
-            chartJSON.put("container", chart.getContainer());
-            chartJSON.put("connectors", new JSONObject().put("type", "straight"));
-            chartJSON.put("rootOrientation", chart.getRootOrientation());
-            chartJSON.put("levelSeparation", chart.getLevelSeparation());
-            chartJSON.put("siblingSeparation", chart.getSiblingSeparation());
-            chartJSON.put("subTreeSeparation", chart.getSubTreeSeparation());
-            chartJSON.put("node", new JSONObject().put("collapsable", "true"));
-
-            JSONObject nodeStructure = new JSONObject();
-            nodeStructure.put("text", new JSONObject(treant.getNodeStructure().getNodeContent()));
-            nodeStructure.put("children", treant.getNodeStructure().getChildren());
-
-            JSONObject treantJSON = new JSONObject();
-            treantJSON.put("chart", chartJSON);
-            treantJSON.put("nodeStructure", nodeStructure);
-            String payload = "{\"issueKey\": \"" + this.identifierKey + "\", \"ConDecTree\": " + treantJSON.toString() + "}";
-            JSONObject JSONPayload = new JSONObject(payload);
-            return JSONPayload;
-            //return treantJSON;
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return chartJSON;
-    }
-
-    public static String createHashedPayload(String data, String key) {
-        final String algo = "HMACSHA256";
-        SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), algo);
-        Mac mac = null;
-        try {
-            mac = Mac.getInstance(algo);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        try {
-            mac.init(secretKeySpec);
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        }
-        return toHexString(mac.doFinal(data.getBytes()));
-    }
-
-    private static String toHexString(byte[] bytes) {
-        Formatter formatter = new Formatter();
-        for (byte b : bytes) {
-            formatter.format("%02x", b);
-        }
-        return formatter.toString();
-    }
+	private static String toHexString(byte[] bytes) {
+		Formatter formatter = new Formatter();
+		for (byte b : bytes) {
+			formatter.format("%02x", b);
+		}
+		String formattedString = formatter.toString();
+		formatter.close();
+		return formattedString;
+	}
 }
