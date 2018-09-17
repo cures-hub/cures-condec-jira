@@ -17,18 +17,26 @@ public class ViewConnector {
 
 	private List<Comment> commentsList;
 
-	public ViewConnector(Issue issue, boolean callFromRest) {
-		this.setCurrentIssue(issue);
-		CommentManager cm = ComponentAccessor.getCommentManager();
-		this.commentsList = new ArrayList<Comment>();
+	private CommentManager commentManager;
 
-		for (com.atlassian.jira.issue.comments.Comment comment : cm.getComments(issue)) {
-			commentsList.add(new Comment(comment));
+	public ViewConnector(Issue issue) {
+		if(issue !=  null) {
+			this.setCurrentIssue(issue);
+			commentManager = ComponentAccessor.getCommentManager();
+			this.commentsList = new ArrayList<Comment>();
 		}
-		if (!callFromRest) {
+	}
+
+	public ViewConnector(Issue issue, boolean startClassification) {
+		this(issue);
+		if(issue != null) {
+			for (com.atlassian.jira.issue.comments.Comment comment : commentManager.getComments(issue)) {
+				commentsList.add(new Comment(comment));
+			}
+		}
+		if (!startClassification) {
 			this.startClassification();
 		}
-
 	}
 
 	public void startClassification() {
@@ -75,12 +83,12 @@ public class ViewConnector {
 		List<Sentence> sentences = new ArrayList<Sentence>();
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
-				if(includeQuotes && sentence.getBody().contains("{quote}")) {
+				if (includeQuotes && sentence.getBody().contains("{quote}")) {
 					sentences.add(sentence);
-				} else if(!includeQuotes && !sentence.getBody().contains("{quote}")) {
+				} else if (!includeQuotes && !sentence.getBody().contains("{quote}")) {
 					sentences.add(sentence);
 				}
-				
+
 			}
 		}
 		return sentences;
@@ -120,20 +128,14 @@ public class ViewConnector {
 
 	public String getSentenceStyles() {
 		String style = "<style>";
-		style +=".Issue {" + 
-				"    background-color: #F2F5A9;} ";
-		style +=".Alternative {" + 
-				"    background-color: #f1ccf9;} ";
-		style +=".Decision {" + 
-				"    background-color: #c5f2f9;} ";
-		style +=".Pro {" + 
-				"    background-color: #b9f7c0;} ";
-		style +=".Con {" + 
-				"    background-color: #ffdeb5;} ";
-		style +=".tag {" + 
-				"    background-color: #ffffff;} ";
-		style +="</style>";
-		
+		style += ".Issue {" + "    background-color: #F2F5A9;} ";
+		style += ".Alternative {" + "    background-color: #f1ccf9;} ";
+		style += ".Decision {" + "    background-color: #c5f2f9;} ";
+		style += ".Pro {" + "    background-color: #b9f7c0;} ";
+		style += ".Con {" + "    background-color: #ffdeb5;} ";
+		style += ".tag {" + "    background-color: #ffffff;} ";
+		style += "</style>";
+
 		return style;
 	}
 
