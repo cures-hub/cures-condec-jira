@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.connector;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -32,6 +33,7 @@ public class TestViewConnector extends TestSetUp {
 	}
 	
 	@Test
+	@Ignore
 	public void testConstructor() {
 		ViewConnector vc = new ViewConnector(null, false);
 		assertNotNull(vc);

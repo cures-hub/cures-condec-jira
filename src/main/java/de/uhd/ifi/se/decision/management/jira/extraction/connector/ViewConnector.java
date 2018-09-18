@@ -6,8 +6,8 @@ import java.util.List;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.CommentManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.classification.MekaInitializer;
-import de.uhd.ifi.se.decision.management.jira.extraction.classification.WekaInitializer;
+
+import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationManagerForCommentSentences;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 
@@ -27,29 +27,22 @@ public class ViewConnector {
 		}
 	}
 
-	public ViewConnector(Issue issue, boolean startClassification) {
+	public ViewConnector(Issue issue, boolean doNotClassify) {
 		this(issue);
 		if(issue != null) {
 			for (com.atlassian.jira.issue.comments.Comment comment : commentManager.getComments(issue)) {
 				commentsList.add(new Comment(comment));
 			}
 		}
-		if (!startClassification) {
+		if (!doNotClassify) {
 			this.startClassification();
 		}
 	}
 
 	public void startClassification() {
-		try {
-			this.commentsList = WekaInitializer.classifySentencesBinary(commentsList);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		try {
-			MekaInitializer.classifySentencesFineGrained(this.commentsList);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		ClassificationManagerForCommentSentences classifier = new ClassificationManagerForCommentSentences();
+		this.commentsList = classifier.classifySentenceBinary(commentsList);
+		this.commentsList = classifier.classifySentenceFineGrained(commentsList);	
 	}
 
 	public Issue getCurrentIssue() {
