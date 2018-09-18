@@ -23,7 +23,7 @@ public class Treant {
 	@XmlElement
 	private Chart chart;
 
-	@XmlElement(name = "nodeStructure")
+	@XmlElement
 	private Node nodeStructure;
 
 	private Graph graph;

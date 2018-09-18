@@ -48,41 +48,47 @@ public class WebhookContentProvider {
 		if (project == null || elementKey == null) {
 			return postMethod;
 		}
-		String treantJSON = createTreantJsonString();
+		String payload = createPayload();
 		try {
-			StringRequestEntity requestEntity = new StringRequestEntity(treantJSON, "application/json", "UTF-8");
+			StringRequestEntity requestEntity = new StringRequestEntity(payload, "application/json", "UTF-8");
 			postMethod.setRequestEntity(requestEntity);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		Header header = new Header();
 		header.setName("X-Hub-Signature");
-		header.setValue("sha256=" + createHashedPayload(treantJSON, project.getWebhookSecret()));
+		header.setValue("sha256=" + createHashedPayload(payload, project.getWebhookSecret()));
 		postMethod.setRequestHeader(header);
 		return postMethod;
 	}
 
 	/**
-	 * Creates the Treant JSON data transmitted via webhook
+	 * Creates the key value JSON String transmitted via webhook
 	 * 
-	 * @param elementKey
-	 *            key of the changed element.
-	 * @return JSON object containing the following String: { "issueKey": "string",
-	 *         " ConDecTree": {TreantJS JSON config and data} }
+	 * @return JSON String with the following pattern: { "issueKey": {String},
+	 *         "ConDecTree": {TreantJS JSON config and data} }
+	 */
+	private String createPayload() {
+		String treantAsJson = createTreantJsonString();
+		String payload = "{\"issueKey\": \"" + this.elementKey + "\", \"ConDecTree\": " + treantAsJson + "}";
+		return payload;
+	}
+
+	/**
+	 * Creates the Treant JSON String (value transmitted via webhook)
+	 * 
+	 * @return TreantJS JSON String including config and data
 	 */
 	private String createTreantJsonString() {
 		Treant treant = new Treant(project.getProjectKey(), elementKey, 4);
-		String payload = "";
-		ObjectMapper mapper = new ObjectMapper();
-		//mapper.setAnnotationIntrospector(new JaxbAnnotationIntrospector());
+		ObjectMapper objectMapper = new ObjectMapper();
+		String treantAsJson = "";
 		try {
-			String treantAsJson = mapper.writeValueAsString(treant);
-			payload = "{\"issueKey\": \"" + this.elementKey + "\", \"ConDecTree\": " + treantAsJson + "}";
-			System.out.println(payload);
+			treantAsJson = objectMapper.writeValueAsString(treant);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return payload;
+		return treantAsJson;
 	}
 
 	public static String createHashedPayload(String data, String key) {
