@@ -46,6 +46,10 @@ public class ViewRest {
 	@GET
 	public Response getTreeViewer2(@QueryParam("issueKey") String issueKey,
 			@QueryParam("showRelevant") boolean showRelevant) {
+		if(!issueKey.contains("-")) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Issue Key is not valid.")).build();
+		}
 		String projectKey = issueKey.substring(0, issueKey.indexOf("-"));
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {

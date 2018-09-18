@@ -335,6 +335,9 @@ function getTreeViewer(rootElementType, callback) {
 
 function getTreeViewerWithoutRootElement(showRelevant, callback) {
 	var issueId = AJS.$("meta[name='ajs-issue-key']").attr("content");
+	if(issueId === undefined){
+		issueId = getIssueKey();
+	}
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer2.json?issueKey=" + issueId
 			+ "&showRelevant=" + showRelevant, function(error, core) {
 		if (error === null) {
