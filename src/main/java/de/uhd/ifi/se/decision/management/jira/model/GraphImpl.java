@@ -61,7 +61,7 @@ public class GraphImpl implements Graph {
 		if (element == null) {
 			return linkedElementsAndLinks;
 		}
-
+ 
 		String preIndex = getIdentifier(element);
 		List<GenericLink> list = ActiveObjectsManager.getGenericLinksForElement(preIndex + element.getId(),false);
 		for (GenericLink currentGenericLink : list) {

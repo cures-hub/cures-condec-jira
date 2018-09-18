@@ -80,7 +80,7 @@ public class TreeViewer {
 			return;
 		}
 		Issue currentIssue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
-		if (currentIssue == null) {
+		if (currentIssue == null) { 
 			return;
 		}
 

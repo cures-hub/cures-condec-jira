@@ -47,8 +47,8 @@ public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKn
 
 	public Sentence(String body, long aoId, long jiraCommentId, String projectKey) {
 		this();
-		this.setBody(body);
 		this.setValuesFromAoId(aoId);
+		this.setBody(body);
 		this.projectKey = projectKey;
 		
 		super.setDescription(this.body);
@@ -97,10 +97,10 @@ public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKn
 		this.setArgument(aoElement.getArgument());
 		this.setProjectKey(aoElement.getProjectKey());
 
-		String kt = ActiveObjectsManager.getElementFromAO(aoId).getKnowledgeTypeString();
+		String kt = aoElement.getKnowledgeTypeString();
 		if (kt == null || kt.equals("")) {
 			super.type = KnowledgeType.OTHER;
-		} else if (this.isTaggedFineGrained) {
+		} else {
 			super.type = KnowledgeType.getKnowledgeType(kt);
 		}
 
@@ -131,10 +131,18 @@ public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKn
 
 	public void setBody(String body) {
 		this.body = body;
-		if(StringUtils.indexOfAny(body, new String[]{"{code}", "{quote}","{noformat}" }) >= 0 ) {
+		if(StringUtils.indexOfAny(body, CommentSplitter.excludedTagList) >= 0 ) {
 			this.isPlainText = false;
 		}else {
 			this.isPlainText = true;
+		}
+		if(this.body.contains("[issue]")) {
+			this.setKnowledgeType(KnowledgeType.ISSUE);
+			this.setIsRelevant(true);
+			this.setIsTagged(true);
+			this.setIsTaggedManually(true);
+			this.setIsTaggedFineGrained(true);
+			ActiveObjectsManager.updateSentenceElement(this);
 		}
 	}
 
@@ -184,6 +192,7 @@ public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKn
 		this.isTaggedManually = isTaggedManually;
 	}
 
+	@Override
 	public boolean isTaggedFineGrained() {
 		return isTaggedFineGrained;
 	}
@@ -305,9 +314,11 @@ public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKn
 	}
 
 	public String getSpecialBodyWithHTMLCodes() {
+		//quotes are replaced on js side
 		if(this.body.contains("{quote}")) {
-			return this.body;//getBodyForQuoteSentence();
-		}
+			return this.body;
+		}		
+		//code and noformats need to be escaped in a special way
 		return "<div class=\"preformatted panel\" style=\"border-width: 1px;\"><div class=\"preformattedContent panelContent\">"
 		+"<pre> "+ this.getBody().replace("\"","\\\"").replaceAll("&","&amp").replaceAll("<", "&lt").replaceAll(">", "&gt")+ "</pre></div></div>";
 	}
