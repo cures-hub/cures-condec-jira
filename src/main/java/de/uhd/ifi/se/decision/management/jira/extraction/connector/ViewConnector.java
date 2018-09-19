@@ -72,29 +72,7 @@ public class ViewConnector {
 		return comments2;
 	}
 
-	public List<Sentence> getAllSentenceInstances(Boolean includeQuotes) {
-		List<Sentence> sentences = new ArrayList<Sentence>();
-		for (Comment comment : commentsList) {
-			for (Sentence sentence : comment.getSentences()) {
-				if (includeQuotes && sentence.getBody().contains("{quote}")) {
-					sentences.add(sentence);
-				} else if (!includeQuotes && !sentence.getBody().contains("{quote}")) {
-					sentences.add(sentence);
-				}
-
-			}
-		}
-		return sentences;
-	}
-
-	public List<String> getAllCommentsBody() {
-		List<String> comments = new ArrayList<String>();
-		for (Comment c : commentsList) {
-			comments.add("<p>" + c.getBody() + "</p>");
-		}
-		return comments;
-	}
-
+	
 	public List<Long> getAllCommentsIDs() {
 		List<Long> comments = new ArrayList<Long>();
 		for (Comment c : commentsList) {

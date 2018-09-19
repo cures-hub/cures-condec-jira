@@ -55,7 +55,7 @@ public class DecisionKnowledgeClassifier {
 			}
 		} catch (Exception e) {
 			System.err.println("Binary Classification failed");
-			return null;
+			return new ArrayList<Double>();
 		}
 
 		return areRelevant;
@@ -68,7 +68,6 @@ public class DecisionKnowledgeClassifier {
 		// Create and use Filter
 		Filter stwv;
 		try {
-
 			structure.setClassIndex(5);
 			stwv = getSTWV(structure);
 			stwv.setInputFormat(structure);

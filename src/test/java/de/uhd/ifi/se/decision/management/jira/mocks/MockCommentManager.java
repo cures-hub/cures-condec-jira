@@ -10,6 +10,8 @@ import org.ofbiz.core.entity.GenericValue;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class MockCommentManager implements CommentManager {
+	
+	private List<Comment> comments;
+	
     @Override
     public List<Comment> getCommentsForUser(Issue issue, ApplicationUser applicationUser) {
         return null;
@@ -45,12 +50,17 @@ public class MockCommentManager implements CommentManager {
 
     @Override
     public List<Comment> getComments(Issue issue) {
-        return null;
+        return this.comments;
     }
 
     @Override
     public Comment create(Issue issue, ApplicationUser applicationUser, String s, boolean b) {
-        return null;
+    	if(this.comments == null) {
+    		this.comments = new ArrayList<Comment>();
+    	}
+    	Comment c = new MockComment(issue,applicationUser,s);
+    	this.comments.add(c);
+        return c;
     }
 
     @Override
