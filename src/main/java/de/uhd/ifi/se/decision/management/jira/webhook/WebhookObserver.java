@@ -7,8 +7,11 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WebhookObserver {
+	private static final Logger LOGGER = LoggerFactory.getLogger(WebhookObserver.class);
 	private String projectKey;
 	private WebhookConnector connector;
 	private List<Long> elementIds;
@@ -20,6 +23,10 @@ public class WebhookObserver {
 	}
 
 	public boolean sendElementChanges(DecisionKnowledgeElement decisionKnowledgeElement, boolean isDeleted) {
+		if(decisionKnowledgeElement == null){
+			LOGGER.error("Webhook could not be created because the Element is null");
+			return false;
+		}
 		ArrayList<DecisionKnowledgeElement> workItems = getWebhookRootElements(decisionKnowledgeElement);
 		if (isDeleted && decisionKnowledgeElement.getType() == KnowledgeType.TASK) {
 			workItems.remove(decisionKnowledgeElement);
