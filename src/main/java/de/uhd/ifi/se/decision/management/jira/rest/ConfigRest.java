@@ -44,7 +44,7 @@ public class ConfigRest {
 	@Path("/setActivated")
 	@POST
 	public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivated") String isActivatedString) {
+			@QueryParam("isActivatedString") String isActivatedString) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -314,6 +314,27 @@ public class ConfigRest {
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
+		}
+	}
+
+	@Path("/setWebhookEnabled")
+	@POST
+	public Response setWebhookEnabled(@Context HttpServletRequest request, @QueryParam("projectKey") final String projectKey,
+									  @QueryParam("isActivatedString") final String isActivatedString){
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if(isActivatedString == null){
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Webhook Activation bookean = null")).build();
+		}
+		try {
+			boolean isActivated = Boolean.valueOf(isActivatedString);
+			ConfigPersistence.setWebhookEnable(projectKey,isActivated);
+			return  Response.ok(Status.ACCEPTED).build();
+		} catch (Exception e){
+			LOGGER.error(e.getMessage());
+			return  Response.status(Status.CONFLICT).build();
 		}
 	}
 

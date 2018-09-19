@@ -509,6 +509,17 @@ function setWebhookData(projectKey, webhookUrl, webhookSecret) {
 	});
 }
 
+function setWebhookEnabled(projectKey, isActivated) {
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookEnabled.json?projectKey=" + projectKey
+			+ "&isActivated=" + isActivated , null, function(error, response) {
+		if (error === null) {
+			showFlag("success", "The webhook is activated for this project has been set.");
+		} else {
+			showFlag("error", "The webhook activation this project has not been set.");
+		}
+	});
+}
+
 function getCommitsAsReturnValue(elementKey) {
 	var commitData = getResponseAsReturnValue(AJS.contextPath() + "/rest/gitplugin/latest/issues/" + elementKey
 			+ "/commits");

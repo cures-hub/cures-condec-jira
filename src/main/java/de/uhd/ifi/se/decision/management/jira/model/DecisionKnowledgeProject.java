@@ -172,6 +172,18 @@ public interface DecisionKnowledgeProject {
 	String getGitAddress();
 
 	/**
+	 * Set the boolean if the Webhook functionality should be enable or not.
+	 *
+	 * @param isWebhookEnabled
+	 */
+	void setWebhookEnable(boolean isWebhookEnabled);
+
+	/**
+	 * Returns if the Webhook functionlity is enabled.
+	 * @return true if the Webhook is enabled else false.
+	 */
+	boolean isWebhookEnabled();
+	/**
 	 * Set the Url where the Data should be send and also set the Secret for th
 	 * submission.
 	 *

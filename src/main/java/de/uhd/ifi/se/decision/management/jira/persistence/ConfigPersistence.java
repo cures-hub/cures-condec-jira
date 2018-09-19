@@ -209,4 +209,27 @@ public class ConfigPersistence {
 		}
 		return "";
 	}
+
+	//TODO Testing
+	public static void setWebhookEnable(String projectKey, boolean isActivated){
+		if(projectKey == null){
+			return;
+		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey + ".isWebhook", Boolean.toString(isActivated));
+	}
+
+	public static boolean isWebhookEnabled(String projectKey){
+		if (projectKey == null) {
+			return false;
+		}
+		Object isWebhookEnable= transactionTemplate.execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction() {
+				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+				return settings.get(pluginStorageKey + ".isWebhook");
+			}
+		});
+		return isWebhookEnable instanceof String && "true".equals(isWebhookEnable);
+	}
 }
