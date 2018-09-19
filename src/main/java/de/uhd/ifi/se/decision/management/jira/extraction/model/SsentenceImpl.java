@@ -1,13 +1,19 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
 import java.beans.PropertyChangeListener;
+import java.io.EOFException;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
+
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager2;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DdecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.EntityManager;
 import net.java.ao.RawEntity;
@@ -17,8 +23,6 @@ public class SsentenceImpl extends DecisionKnowledgeElementImpl implements Ssent
 	private boolean isTagged;
 
 	private boolean isRelevant;
-
-	private String body;
 
 	private int startSubstringCount;
 
@@ -48,6 +52,7 @@ public class SsentenceImpl extends DecisionKnowledgeElementImpl implements Ssent
 	public SsentenceImpl(long id) {
 		this();
 		super.setId(id);
+		retrieveAttributesFromActievObjects();
 		retrieveBodyFromJiraComment();//TODO: Maybe remove this, needs to be tested
 	}
 
@@ -240,7 +245,7 @@ public class SsentenceImpl extends DecisionKnowledgeElementImpl implements Ssent
 		} else {
 			this.isPlainText = true;
 		}
-		if (this.body.contains("[issue]")) {
+		if (super.getSummary().contains("[issue]")) {
 			this.setKnowledgeTypeString(KnowledgeType.ISSUE.toString());
 			this.setRelevant(true);
 			this.setTagged(true);
@@ -259,13 +264,31 @@ public class SsentenceImpl extends DecisionKnowledgeElementImpl implements Ssent
 	}
 	
 	private void retrieveBodyFromJiraComment() {
-		// TODO Auto-generated method stub
-		
+		String text = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getBody();
+		text = text.substring(this.startSubstringCount, this.endSubstringCount);
+		this.setBody(text);
 	}
 	
 
 	private void retrieveAttributesFromActievObjects() {
-		ActiveObjectsManager2.getElementFromAO(super.getId());
+		DdecisionKnowledgeInCommentEntity aoElement = ActiveObjectsManager2.getElementFromAO(super.getId());
+		this.setEndSubstringCount(aoElement.getEndSubstringCount());
+		this.setStartSubstringCount(aoElement.getStartSubstringCount());
+		this.setUserId(aoElement.getUserId());
+		this.setTagged(aoElement.isTagged());
+		this.setTaggedFineGrained(aoElement.isTaggedFineGrained());
+		this.setTaggedManually(aoElement.isTaggedFineGrained());
+		this.setProjectKey(aoElement.getProjectKey());
+		this.setArgument(aoElement.getArgument());
+		this.setCommentId(aoElement.getCommentId());
+		super.setProject(
+				new DecisionKnowledgeProjectImpl(ComponentGetter.getProjectService().getProjectKeyDescription()));
+		String kt = aoElement.getKnowledgeTypeString();
+		if (kt == null || kt.equals("")) {
+			super.type = KnowledgeType.OTHER;
+		} else {
+			super.type = KnowledgeType.getKnowledgeType(kt);
+		}
 		
 	}
 

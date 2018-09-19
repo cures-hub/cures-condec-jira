@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Ssentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager2;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -47,14 +48,14 @@ public class ClassificationManagerForCommentSentences {
 		int i = 0;
 
 		for (Comment comment : commentsList) {
-			for (Sentence sentence : comment.getSentences()) {
+			for (Ssentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 					sentence.setKnowledgeType(classificationResult.get(i));
-					ActiveObjectsManager.setSentenceKnowledgeType(sentence);
+					ActiveObjectsManager2.setSentenceKnowledgeType(sentence);
 					
-					sentence.setIsTaggedFineGrained(true);
+					sentence.setTaggedFineGrained(true);
 					i++;
-				} else if (sentence.isRelevant() && sentence.isTaggedFineGrained() && sentence.isPlanText()) {
+				} else if (sentence.isRelevant() && sentence.isTaggedFineGrained() && sentence.isPlainText()) {
 					sentence.setKnowledgeTypeString(
 							ActiveObjectsManager.getElementFromAO(sentence.getId()).getKnowledgeTypeString());
 				}
@@ -66,7 +67,7 @@ public class ClassificationManagerForCommentSentences {
 
 	private List<Comment> loadSentencesFineGrainedKnowledgeTypesFromActiveObjects(List<Comment> commentsList) {
 		for (Comment comment : commentsList) {
-			for (Sentence sentence : comment.getSentences()) {
+			for (Ssentence sentence : comment.getSentences()) {
 				if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {
 					sentence.setKnowledgeTypeString(
 							ActiveObjectsManager.getElementFromAO(sentence.getId()).getKnowledgeTypeString());
@@ -80,11 +81,11 @@ public class ClassificationManagerForCommentSentences {
 			List<Comment> commentsList) {
 		int i = 0;
 		for (Comment comment : commentsList) {
-			for (Sentence sentence : comment.getSentences()) {
+			for (Ssentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForBinaryClassification(sentence)) {
 					sentence.setRelevant(classificationResult.get(i));
-					ActiveObjectsManager.setIsRelevantIntoAo(sentence.getActiveObjectId(), sentence.isRelevant());
-					sentence.setIsTagged(true);
+					ActiveObjectsManager.setIsRelevantIntoAo(sentence.getId(), sentence.isRelevant());
+					sentence.setTagged(true);
 					i++;
 				}
 			}
@@ -94,9 +95,9 @@ public class ClassificationManagerForCommentSentences {
 
 	public List<Comment> writeDataFromActiveObjectsToSentences(List<Comment> commentsList) {
 		for (Comment comment : commentsList) {
-			for (Sentence sentence : comment.getSentences()) {
-				sentence.setIsRelevant(
-						ActiveObjectsManager.getElementFromAO(sentence.getActiveObjectId()).isRelevant());
+			for (Ssentence sentence : comment.getSentences()) {
+				sentence.setRelevant(
+						ActiveObjectsManager.getElementFromAO(sentence.getId()).isRelevant());
 			}
 		}
 		return commentsList;
@@ -119,7 +120,7 @@ public class ClassificationManagerForCommentSentences {
 		return wekaAttributes;
 	}
 
-	private DenseInstance createInstance(int size, ArrayList<Attribute> wekaAttributes, Sentence sentence) {
+	private DenseInstance createInstance(int size, ArrayList<Attribute> wekaAttributes, Ssentence sentence) {
 		DenseInstance newInstance = new DenseInstance(size);
 		newInstance.setValue(wekaAttributes.get(0), sentence.getBody());
 		return newInstance;
@@ -131,7 +132,7 @@ public class ClassificationManagerForCommentSentences {
 
 		data.setClassIndex(data.numAttributes() - 1);
 		for (Comment comment : commentsList) {
-			for (Sentence sentence : comment.getSentences()) {
+			for (Ssentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForBinaryClassification(sentence)) {
 					data.add(createInstance(2, wekaAttributes, sentence));
 				}
@@ -156,7 +157,7 @@ public class ClassificationManagerForCommentSentences {
 		Instances data = new Instances("sentences: -C 5 ", wekaAttributes, 1000000);
 
 		for (Comment comment : commentsList) {
-			for (Sentence sentence : comment.getSentences()) {
+			for (Ssentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 					Instance newInstance = new DenseInstance(6);
 					newInstance.setValue(attributeText, sentence.getBody());
@@ -173,12 +174,12 @@ public class ClassificationManagerForCommentSentences {
 	 *            qualified if its plain text, and not yet tagged.
 	 * @return boolean identifier
 	 */
-	private static boolean isSentenceQualifiedForBinaryClassification(Sentence sentence) {
-		return !sentence.isTagged() && sentence.isPlanText();
+	private static boolean isSentenceQualifiedForBinaryClassification(Ssentence sentence) {
+		return !sentence.isTagged() && sentence.isPlainText();
 	}
 
-	private static boolean isSentenceQualifiedForFineGrainedClassification(Sentence sentence) {
-		return sentence.isRelevant() && !sentence.isTaggedFineGrained() && sentence.isPlanText();
+	private static boolean isSentenceQualifiedForFineGrainedClassification(Ssentence sentence) {
+		return sentence.isRelevant() && !sentence.isTaggedFineGrained() && sentence.isPlainText();
 	}
 
 	public DecisionKnowledgeClassifier getClassifier() {

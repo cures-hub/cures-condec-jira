@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjec
 
 public class Comment {
 
-	private List<Sentence> sentences;
+	private List<Ssentence> sentences;
 
 	private String body = "";
 
@@ -30,8 +30,7 @@ public class Comment {
 	private CommentSplitter splitter;
 
 	public Comment() {
-		this.sentences = new ArrayList<Sentence>();
-		this.sentences = new ArrayList<Sentence>();
+		this.sentences = new ArrayList<Ssentence>();
 		this.created = new Date();
 		this.authorFullName = "";
 		this.jiraCommentId = 0;
@@ -63,23 +62,15 @@ public class Comment {
 	private void splitCommentIntoSentences(boolean addSentencesToAo, long issueId) {
 		List<String> rawSentences = this.splitter.sliceCommentRecursionCommander(this.body);
 		runBreakIterator(rawSentences);
-		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(this);
+		ActiveObjectsManager2.checkIfCommentBodyHasChangedOutsideOfPlugin(this);
 		// Create AO entries
 		for (int i = 0; i < this.splitter.getStartSubstringCount().size(); i++) {
-			long aoId = ActiveObjectsManager.addNewSentenceintoAo(this.jiraCommentId, false,
-					this.splitter.getEndSubstringCount().get(i), this.splitter.getStartSubstringCount().get(i),
+			int startIndex = this.splitter.getStartSubstringCount().get(i);
+			int endIndex = this.splitter.getEndSubstringCount().get(i);
+			long aoId2 = ActiveObjectsManager2.addNewSentenceintoAo(this.jiraCommentId, endIndex, startIndex,
 					this.authorId, issueId, projectKey);
-			this.sentences.add(new Sentence(this.body.substring(this.splitter.getStartSubstringCount().get(i),
-					this.splitter.getEndSubstringCount().get(i)), aoId, jiraCommentId, projectKey));
-		
-			long aoId2 = ActiveObjectsManager2.addNewSentenceintoAo(this.jiraCommentId, 
-					this.splitter.getEndSubstringCount().get(i), this.splitter.getStartSubstringCount().get(i),
-					this.authorId, issueId, projectKey);
-//			this.sentences.add(new Sentence(this.body.substring(this.splitter.getStartSubstringCount().get(i),
-//					this.splitter.getEndSubstringCount().get(i)), aoId, jiraCommentId, projectKey));
-//		
-		
-		
+			this.sentences.add(new SsentenceImpl(this.body.substring(startIndex, endIndex), aoId2));
+
 		}
 	}
 
@@ -105,37 +96,19 @@ public class Comment {
 		}
 	}
 
-	public List<Sentence> getSentences() {
+	public List<Ssentence> getSentences() {
 		return sentences;
 	}
 
-	public void setSentences(ArrayList<Sentence> sentences) {
+	public void setSentences(ArrayList<Ssentence> sentences) {
 		this.sentences = sentences;
 	}
 
 	public String getTaggedBody(int index) {
+		HTMLCodeGeneratorForSentences hTMLGen = new HTMLCodeGeneratorForSentences();
 		String result = "<span id=\"comment" + index + "\">";
-		for (Sentence sentence : this.sentences) {
-			if (sentence.isRelevant() && sentence.isPlanText()) {
-				result = result + "<span class=\"sentence " + sentence.getKnowledgeTypeString() + "\"  id  = ui"
-						+ sentence.getActiveObjectId() + ">" + sentence.getOpeningTagSpan()
-						+ "<span class = sentenceBody>" + sentence.getBody() + "</span>" + sentence.getClosingTagSpan()
-						+ "</span>";
-			}else 
-			if (!sentence.isRelevant() && sentence.isPlanText()) {
-				result = result + "<span class=\"sentence isNotRelevant\"  id  = ui" + sentence.getActiveObjectId()
-						+ ">" + sentence.getOpeningTagSpan() + "<span class = sentenceBody>" + sentence.getBody()
-						+ "</span>" + sentence.getClosingTagSpan() + "</span>";
-			}else
-			if (!sentence.isRelevant() && !sentence.isPlanText()) {
-				result = result + sentence.getSpecialBodyWithHTMLCodes();
-			}else {
-				result = result + "<span class=\"sentence " + sentence.getKnowledgeTypeString() + "\"  id  = ui"
-						+ sentence.getActiveObjectId() + ">" + sentence.getOpeningTagSpan()
-						+ "<span class = sentenceBody>" + sentence.getBody().substring(0+"[issue]".length(), sentence.getBody().length()-"[/issue]".length()) + "</span>" + sentence.getClosingTagSpan()
-						+ "</span>";
-			}
-
+		for (Ssentence sentence : this.sentences) {
+			result += hTMLGen.getCodedElement(sentence);
 		}
 		return result + "</span>";
 	}

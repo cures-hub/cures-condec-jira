@@ -79,7 +79,7 @@ public class GenericLinkImpl implements GenericLink {
 			Sentence sentence = null;
 			if(this.getIdOfSourceElement().equals(elementNOTToGet)) {
 				if(this.getIdOfDestinationElement().startsWith("s")) {
-					return new Sentence(Integer.parseInt(this.getIdOfDestinationElement().substring(1)));
+					return new SsentenceImpl(Integer.parseInt(this.getIdOfDestinationElement().substring(1)));
 				}else {
 					Issue issue = ComponentAccessor.getIssueManager().getIssueObject((long)Integer.parseInt(this.getIdOfDestinationElement().substring(1)));
 					return new DecisionKnowledgeElementImpl(issue);
@@ -87,7 +87,7 @@ public class GenericLinkImpl implements GenericLink {
 			}
 			if(this.getIdOfDestinationElement().equals(elementNOTToGet)) {
 				if(this.getIdOfSourceElement().startsWith("s")) {
-					return new Sentence(Integer.parseInt(this.getIdOfSourceElement().substring(1)));
+					return new SsentenceImpl(Integer.parseInt(this.getIdOfSourceElement().substring(1)));
 				}else {
 					long id = (long)Integer.parseInt(idOfSourceElement.substring(1));
 					Issue issue = ComponentAccessor.getIssueManager().getIssueObject(id);
@@ -99,7 +99,7 @@ public class GenericLinkImpl implements GenericLink {
 		if(elementNOTToGet.startsWith("i")) {
 			if(this.getIdOfSourceElement().equals(elementNOTToGet)) {
 				if(this.getIdOfDestinationElement().startsWith("s")) {
-					return new Sentence(Integer.parseInt(this.getIdOfDestinationElement().substring(1)));
+					return new SsentenceImpl(Integer.parseInt(this.getIdOfDestinationElement().substring(1)));
 				}else {
 					Issue issue = ComponentAccessor.getIssueManager().getIssueObject((long)Integer.parseInt(elementNOTToGet.substring(1)));
 					return new DecisionKnowledgeElementImpl(issue);
@@ -107,7 +107,7 @@ public class GenericLinkImpl implements GenericLink {
 			}
 			if(this.getIdOfDestinationElement().equals(elementNOTToGet)) {
 				if(this.getIdOfSourceElement().startsWith("s")) {
-					return new Sentence(Integer.parseInt(this.getIdOfSourceElement().substring(1)));
+					return new SsentenceImpl(Integer.parseInt(this.getIdOfSourceElement().substring(1)));
 				}else {
 					long id = (long)Integer.parseInt(idOfSourceElement.substring(1));
 					Issue issue = ComponentAccessor.getIssueManager().getIssueObject(id);

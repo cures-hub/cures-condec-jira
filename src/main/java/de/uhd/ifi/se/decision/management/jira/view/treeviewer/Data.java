@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Ssentence;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
@@ -50,7 +51,7 @@ public class Data {
 				&& !decisionKnowledgeElement.getDescription().equals("undefined")) {
 			this.a_attr = ImmutableMap.of("title", decisionKnowledgeElement.getDescription());
 		}
-		if(decisionKnowledgeElement instanceof Sentence) {
+		if(decisionKnowledgeElement instanceof Ssentence) {
 			this.li_attr = ImmutableMap.of("class","sentence");
 		}
 	}

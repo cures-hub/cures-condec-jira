@@ -56,6 +56,9 @@ public interface Ssentence extends DecisionKnowledgeElement{
 	void setProjectKey(String key);
 	
 	@Ignore
+	boolean isPlainText();
+	
+	@Ignore
 	String getBody();
 	
 	@Ignore 

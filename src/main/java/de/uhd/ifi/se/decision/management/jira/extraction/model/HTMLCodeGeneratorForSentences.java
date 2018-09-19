@@ -3,12 +3,33 @@ package de.uhd.ifi.se.decision.management.jira.extraction.model;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class HTMLCodeGeneratorForSentences {
-	
+
 	private Ssentence sentence;
-	
-	public HTMLCodeGeneratorForSentences(Ssentence sentence) {
-		this.sentence = sentence;		
+
+	public String getCodedElement(Ssentence sentence) {
+		this.sentence = sentence;
+
+		if (sentence.isRelevant() && sentence.isPlainText()) {
+			return "<span class=\"sentence " + sentence.getKnowledgeTypeString() + "\"  id  = ui" + sentence.getId()
+					+ ">" + this.getOpeningTagSpan() + "<span class = sentenceBody>" + sentence.getBody() + "</span>"
+					+ this.getClosingTagSpan() + "</span>";
+		}
+		if (!sentence.isRelevant() && sentence.isPlainText()) {
+			return "<span class=\"sentence isNotRelevant\"  id  = ui" + sentence.getId() + ">"
+					+ this.getOpeningTagSpan() + "<span class = sentenceBody>" + sentence.getBody() + "</span>"
+					+ this.getClosingTagSpan() + "</span>";
+		}
+		if (!sentence.isRelevant() && !sentence.isPlainText()) {
+			return this.getSpecialBodyWithHTMLCodes();
+		}
+		return "<span class=\"sentence " + sentence.getKnowledgeTypeString() + "\"  id  = ui" + sentence.getId() + ">"
+				+ this.getOpeningTagSpan() + "<span class = sentenceBody>"
+				+ sentence.getBody().substring(0 + "[issue]".length(),
+						sentence.getBody().length() - "[/issue]".length())
+				+ "</span>" + this.getClosingTagSpan() + "</span>";
+
 	}
+
 	public String getOpeningTagSpan() {
 		if (sentence.getType() == null || sentence.getType() == KnowledgeType.OTHER || !sentence.isRelevant()) {
 			return "<span class =tag></span>";

@@ -4,11 +4,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import com.atlassian.activeobjects.external.ActiveObjects;
-import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Ssentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.SsentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
@@ -177,15 +177,15 @@ public class ActiveObjectsManager2 {
 		return false;
 	}
 
-	public static void setSentenceKnowledgeType(Sentence sentence) {
+	public static void setSentenceKnowledgeType(Ssentence sentence) {
 		init();
-		ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+		ao.executeInTransaction(new TransactionCallback<DdecisionKnowledgeInCommentEntity>() {
 			@Override
-			public DecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class)) {
-					if (databaseEntry.getId() == sentence.getActiveObjectId()) {
-						databaseEntry.setKnowledgeTypeString(sentence.getKnowledgeType().toString());
-						databaseEntry.setIsTaggedFineGrained(true);
+			public DdecisionKnowledgeInCommentEntity doInTransaction() {
+				for (DdecisionKnowledgeInCommentEntity databaseEntry : ao.find(DdecisionKnowledgeInCommentEntity.class)) {
+					if (databaseEntry.getId() == sentence.getId()) {
+						databaseEntry.setKnowledgeTypeString(sentence.getKnowledgeTypeString());
+						databaseEntry.setTaggedFineGrained(true);
 						databaseEntry.setArgument(sentence.getArgument());
 						databaseEntry.save();
 						return databaseEntry;
@@ -249,24 +249,26 @@ public class ActiveObjectsManager2 {
 		final List<Integer> starts = comment.getStartSubstringCount();
 		final List<Integer> ends = comment.getEndSubstringCount();
 
-		ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+		ao.executeInTransaction(new TransactionCallback<DdecisionKnowledgeInCommentEntity>() {
 			@Override
-			public DecisionKnowledgeInCommentEntity doInTransaction() {
+			public DdecisionKnowledgeInCommentEntity doInTransaction() {
 				boolean deleteFlag = false;
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class,
+				for (DdecisionKnowledgeInCommentEntity databaseEntry : ao.find(DdecisionKnowledgeInCommentEntity.class,
 						Query.select().where("COMMENT_ID = ?", comment.getJiraCommentId()))) {
-					if (!starts.contains(databaseEntry.getStartSubstringCount())
-							|| !ends.contains(databaseEntry.getEndSubstringCount())) {
+					if (databaseEntry.getProjectKey().equals(comment.getProjectKey()) && ( !starts.contains(databaseEntry.getStartSubstringCount())
+							|| !ends.contains(databaseEntry.getEndSubstringCount()))) {
 						deleteFlag = true;
 					}
 				}
 				// delete all here
 				if (deleteFlag) {
-					for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(
-							DecisionKnowledgeInCommentEntity.class,
+					for (DdecisionKnowledgeInCommentEntity databaseEntry : ao.find(
+							DdecisionKnowledgeInCommentEntity.class,
 							Query.select().where("COMMENT_ID = ?", comment.getJiraCommentId()))) {
 						try {
-							databaseEntry.getEntityManager().delete(databaseEntry);
+							if(databaseEntry.getProjectKey().equals(comment.getProjectKey())) {
+								databaseEntry.getEntityManager().delete(databaseEntry);
+							}
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}
