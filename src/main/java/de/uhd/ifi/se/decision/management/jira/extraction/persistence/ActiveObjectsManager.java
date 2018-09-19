@@ -404,4 +404,46 @@ public class ActiveObjectsManager {
 		});
 	}
 
+	public static void clearSentenceDatabaseForProject(String projectKey) {
+		init();
+		ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+			@Override
+			public DecisionKnowledgeInCommentEntity doInTransaction() {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class,
+						Query.select().where("PROJECT_KEY = ?", projectKey))) {
+					deleteLinksIfExisting("s" + databaseEntry.getId());
+					try {
+						databaseEntry.getEntityManager().delete(databaseEntry);
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+				return null;
+			}
+		});
+
+	}
+
+	private static void deleteLinksIfExisting(String string) {
+		init();
+		ao.executeInTransaction(new TransactionCallback<LinkBetweenDifferentEntitiesEntity>() {
+			@Override
+			public LinkBetweenDifferentEntitiesEntity doInTransaction() {
+				LinkBetweenDifferentEntitiesEntity[] linkElements = ao.find(LinkBetweenDifferentEntitiesEntity.class);
+				for (LinkBetweenDifferentEntitiesEntity linkElement : linkElements) {
+					if (linkElement.getIdOfDestinationElement().equals(string) ||  linkElement.getIdOfSourceElement().equals(string)) {
+						try {
+							linkElement.getEntityManager().delete(linkElement);
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+					}
+					
+				}
+				return null;
+			}
+		});
+		
+	}
+
 }

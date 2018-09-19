@@ -517,3 +517,14 @@ function getCommitsAsReturnValue(elementKey) {
 			+ "/commits");
 	return commitData.commits;
 }
+
+function clearSentenceDatabase(projectKey){
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/clearSentenceDatabase.json?projectKey=" + projectKey
+			, null, function(error, response) {
+		if (error === null) {
+			showFlag("success", "The Sentence database has been cleared.");
+		} else {
+			showFlag("error", "The Sentence database has not been cleared.");
+		}
+	});
+}
