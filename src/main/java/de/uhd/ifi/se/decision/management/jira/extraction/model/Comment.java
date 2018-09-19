@@ -9,6 +9,7 @@ import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager2;
 
 public class Comment {
 
@@ -70,6 +71,15 @@ public class Comment {
 					this.authorId, issueId, projectKey);
 			this.sentences.add(new Sentence(this.body.substring(this.splitter.getStartSubstringCount().get(i),
 					this.splitter.getEndSubstringCount().get(i)), aoId, jiraCommentId, projectKey));
+		
+			long aoId2 = ActiveObjectsManager2.addNewSentenceintoAo(this.jiraCommentId, 
+					this.splitter.getEndSubstringCount().get(i), this.splitter.getStartSubstringCount().get(i),
+					this.authorId, issueId, projectKey);
+//			this.sentences.add(new Sentence(this.body.substring(this.splitter.getStartSubstringCount().get(i),
+//					this.splitter.getEndSubstringCount().get(i)), aoId, jiraCommentId, projectKey));
+//		
+		
+		
 		}
 	}
 

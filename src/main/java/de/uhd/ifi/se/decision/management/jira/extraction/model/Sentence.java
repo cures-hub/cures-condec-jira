@@ -14,15 +14,13 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.EntityManager;
 import net.java.ao.RawEntity;
 
-public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKnowledgeInCommentEntity{
+public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKnowledgeInCommentEntity {
 
 	private boolean isTagged;
 
 	private boolean isRelevant;
 
 	private String body = "";
-
-	private long activeObjectId;
 
 	private int startSubstringCount;
 
@@ -35,9 +33,9 @@ public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKn
 	private String argument = "";
 
 	private boolean isPlainText;
-	
+
 	private String projectKey;
-	
+
 	private long commentId;
 
 	public Sentence() {
@@ -50,8 +48,8 @@ public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKn
 		this.setValuesFromAoId(aoId);
 		this.setBody(body);
 		this.projectKey = projectKey;
-		
-		super.setDescription(this.body);
+
+		super.setDescription(this.body);			//-
 		super.setId(aoId);
 		super.setKey(jiraCommentId + "-" + aoId);
 		this.setCommentId(jiraCommentId);
@@ -70,12 +68,12 @@ public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKn
 		this();
 		this.setValuesFromAoId(aoId);
 		this.setSuperValues(aoId);
-	} 
+	}
 
 	private void setSuperValues(long aoId) {
 		com.atlassian.jira.issue.comments.Comment c = ComponentAccessor.getCommentManager()
 				.getCommentById(ActiveObjectsManager.getElementFromAO(aoId).getCommentId());
-		
+
 		super.setDescription((String) c.getBody().subSequence(startSubstringCount, endSubstringCount));
 		super.setSummary(super.getDescription());
 		this.setBody(super.getDescription());
@@ -84,7 +82,7 @@ public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKn
 		super.setKey(c.getIssue().getKey() + ": " + aoId);
 		super.setId(aoId);
 	}
- 
+
 	private void setValuesFromAoId(long aoId) {
 		this.setActiveObjectId(aoId);
 		this.setIsTagged(ActiveObjectsManager.checkCommentExistingInAO(aoId, true));
@@ -105,7 +103,7 @@ public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKn
 		}
 
 	}
-	
+
 	@Override
 	public boolean isTagged() {
 		return isTagged;
@@ -131,12 +129,12 @@ public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKn
 
 	public void setBody(String body) {
 		this.body = body;
-		if(StringUtils.indexOfAny(body, CommentSplitter.excludedTagList) >= 0 ) {
+		if (StringUtils.indexOfAny(body, CommentSplitter.excludedTagList) >= 0) {
 			this.isPlainText = false;
-		}else {
+		} else {
 			this.isPlainText = true;
 		}
-		if(this.body.contains("[issue]")) {
+		if (this.body.contains("[issue]")) {
 			this.setKnowledgeType(KnowledgeType.ISSUE);
 			this.setIsRelevant(true);
 			this.setIsTagged(true);
@@ -155,11 +153,11 @@ public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKn
 	}
 
 	public long getActiveObjectId() {
-		return activeObjectId;
+		return super.getId();
 	}
 
 	public void setActiveObjectId(long activeObjectId) {
-		this.activeObjectId = activeObjectId;
+		super.setId(activeObjectId);
 	}
 
 	public String toString() {
@@ -196,7 +194,7 @@ public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKn
 	public boolean isTaggedFineGrained() {
 		return isTaggedFineGrained;
 	}
-	
+
 	@Override
 	public void setIsTaggedFineGrained(boolean isTaggedFineGrained) {
 		this.isTaggedFineGrained = isTaggedFineGrained;
@@ -255,7 +253,7 @@ public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKn
 			}
 		}
 	}
-	
+
 	@Override
 	public void setKnowledgeTypeString(String type) {
 		if (type.toLowerCase().equals("pro")) {
@@ -268,7 +266,7 @@ public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKn
 			super.type = KnowledgeType.getKnowledgeType(type);
 		}
 	}
-	
+
 	@Override
 	public String getKnowledgeTypeString() {
 		if (super.type == null) {
@@ -301,26 +299,17 @@ public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKn
 		}
 		return "<span class =tag>[/" + typeText + "]</span>";
 	}
-	
-	/**
-	 * Returns html class codes for non plain text sentences
-	 * @return class identifier if this sentence is a code, quote or noformat
-	 */
-	public String getSpecialClass() {
-		if(this.body.contains("{code:")) {
-			return " preformattedContent panelContent";
-		}
-		return "";
-	}
 
 	public String getSpecialBodyWithHTMLCodes() {
-		//quotes are replaced on js side
-		if(this.body.contains("{quote}")) {
+		// quotes are replaced on js side
+		if (this.body.contains("{quote}")) {
 			return this.body;
-		}		
-		//code and noformats need to be escaped in a special way
+		}
+		// code and noformats need to be escaped in a special way
 		return "<div class=\"preformatted panel\" style=\"border-width: 1px;\"><div class=\"preformattedContent panelContent\">"
-		+"<pre> "+ this.getBody().replace("\"","\\\"").replaceAll("&","&amp").replaceAll("<", "&lt").replaceAll(">", "&gt")+ "</pre></div></div>";
+				+ "<pre> " + this.getBody().replace("\"", "\\\"").replaceAll("&", "&amp").replaceAll("<", "&lt")
+						.replaceAll(">", "&gt")
+				+ "</pre></div></div>";
 	}
 
 	public String getProjectKey() {
@@ -334,7 +323,7 @@ public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKn
 	@Override
 	public void addPropertyChangeListener(PropertyChangeListener arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -352,21 +341,20 @@ public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKn
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void removePropertyChangeListener(PropertyChangeListener arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void save() {
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 	@Override
 	public long getCommentId() {
@@ -387,7 +375,7 @@ public class Sentence extends DecisionKnowledgeElementImpl implements DecisionKn
 	@Override
 	public void setUserId(long id) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

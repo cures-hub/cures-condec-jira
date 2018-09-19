@@ -51,6 +51,7 @@ public class ClassificationManagerForCommentSentences {
 				if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 					sentence.setKnowledgeType(classificationResult.get(i));
 					ActiveObjectsManager.setSentenceKnowledgeType(sentence);
+					
 					sentence.setIsTaggedFineGrained(true);
 					i++;
 				} else if (sentence.isRelevant() && sentence.isTaggedFineGrained() && sentence.isPlanText()) {

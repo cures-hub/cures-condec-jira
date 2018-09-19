@@ -10,6 +10,7 @@ import com.atlassian.activeobjects.test.TestActiveObjects;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DdecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
@@ -218,6 +219,7 @@ public class TestComment extends TestSetUp{
         public void update(EntityManager entityManager) throws Exception
         {
             entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
+            entityManager.migrate(DdecisionKnowledgeInCommentEntity.class);
             entityManager.migrate(LinkBetweenDifferentEntitiesEntity.class);
         }
     }
