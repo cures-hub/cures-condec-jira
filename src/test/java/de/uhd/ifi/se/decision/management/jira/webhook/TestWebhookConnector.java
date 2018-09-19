@@ -5,6 +5,8 @@ import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import org.junit.Before;
@@ -13,160 +15,147 @@ import org.junit.runner.RunWith;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestWebhookConnector extends TestSetUp {
-	private EntityManager entityManager;
-	private WebhookConnector connectorHook;
+    private EntityManager entityManager;
+    private WebhookConnector connectorHook;
+    private DecisionKnowledgeElement element;
 
-	@Before
-	public void setUp() {
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockDefaultUserManager());
-		initialization();
-		connectorHook = new WebhookConnector (
-				"https://cuu-staging.ase.in.tum.de/api/v1/projects/ConDecDev/integrations/conDec",
-				"03f90207-73bc-44d9-9848-d3f1f8c8254e");
-	}
-
-	@Test
-	public void testSetGetUrl() {
-		connectorHook.setUrl("Test-New");
-		assertEquals("Test-New", connectorHook.getUrl());
-	}
-
-	@Test
-	public void testSetGetSecret() {
-		connectorHook.setSecret("Test-New");
-		assertEquals("Test-New", connectorHook.getSecret());
-	}
-
-	@Test
-	public void testConstNullNull() {
-		WebhookConnector connector = new WebhookConnector(null, null);
-		assertEquals("", connector.getUrl());
-		assertEquals("", connector.getSecret());
-	}
-
-	@Test
-    public void testConstNullFilled() {
-		WebhookConnector connector = new WebhookConnector(null, "test");
-		assertEquals("", connector.getUrl());
-		assertEquals("test", connector.getSecret());
-	}
-
-	@Test
-	public void testConstFilledNull() {
-		WebhookConnector connector = new WebhookConnector("test", null);
-		assertEquals("test", connector.getUrl());
-		assertEquals("", connector.getSecret());
-	}
-
-	@Test
-	public void testConstFilledFilled() {
-		WebhookConnector connector = new WebhookConnector("test", "test");
-		assertEquals("test", connector.getUrl());
-		assertEquals("test", connector.getSecret());
-	}
-
-	@Test
-	public void testConstNull() {
-		WebhookConnector connector = new WebhookConnector(null);
-		assertEquals("", connector.getUrl());
-		assertEquals("", connector.getSecret());
-	}
-
-	@Test
-	public void testConstFilledWrong() {
-		WebhookConnector connector = new WebhookConnector("NoTest");
-		assertEquals("true", connector.getUrl());
-		assertEquals("true", connector.getSecret());
-	}
-
-	@Test
-	public void testConstFilled() {
-		WebhookConnector connector = new WebhookConnector("TEST");
-		assertEquals("true", connector.getUrl());
-		assertEquals("true", connector.getSecret());
-	}
-
-	@Test
-	public void testSendWebHookForIssueKeyNullNull() {
-		assertFalse(connectorHook.postKnowledge(null, null));
-	}
-
-	@Test
-	public void testSendWebHookForIssueKeyNullEmpty() {
-		assertFalse(connectorHook.postKnowledge(null, ""));
-	}
-
-	@Test
-	public void testSendWebHookForIssueKeyEmptyNull() {
-    	assertFalse(connectorHook.postKnowledge("", null));
-	}
-
-	@Test
-	public void testSendWebHookForIssueKeyEmptyEmpty() {
-		assertFalse(connectorHook.postKnowledge("", ""));
-	}
-
-	@Test
-	public void testSendWebHookForIssueKeyNullFilled() {
-		assertFalse(connectorHook.postKnowledge(null, "TEST-12"));
-	}
-
-	@Test
-	public void testSendWebHookForIssueKeyEmptyFilled() {
-		assertFalse(connectorHook.postKnowledge("", "TEST-12"));
-	}
-
-    @Test
-    public void testSendWebHookForIssueKeyFilledNull() {
-		assertFalse(connectorHook.postKnowledge("TEST", null));
-	}
-
-	@Test
-	public void testSendWebHookForIssueKeyFilledEmpty() {
-		assertFalse(connectorHook.postKnowledge("TEST", ""));
-	}
-
-	@Test
-	public void testSendWebHookForGitHashNullNull() {
-		assertFalse(connectorHook.postKnowledge(null, null));
-	}
-
-	@Test
-	public void testSendWebHookForGitHashNullEmpty() {
-		assertFalse(connectorHook.postKnowledge(null, ""));
-	}
-
-	@Test
-	public void testSendWebHookForGitHashEmptyNull() {
-		assertFalse(connectorHook.postKnowledge("", null));
+    @Before
+    public void setUp() {
+        TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
+                new MockDefaultUserManager());
+        initialization();
+        connectorHook = new WebhookConnector("ConDec",
+                "https://cuu-staging.ase.in.tum.de/api/v1/projects/ConDecDev/integrations/conDec",
+                "03f90207-73bc-44d9-9848-d3f1f8c8254e");
+        element = new DecisionKnowledgeElementImpl();
+        element.setProject("TEST");
+        element.setType("TASK");
+        element.setId(1);
+        element.setDescription("Test description");
+        element.setKey("TEST-1");
+        element.setSummary("Test summary");
     }
 
-	@Test
-	public void testSendWebHookForGitHashEmptyEmpty() {
-		assertFalse(connectorHook.postKnowledge("", ""));
-	}
+    @Test
+    public void testSetGetUrl() {
+        connectorHook.setUrl("Test-New");
+        assertEquals("Test-New", connectorHook.getUrl());
+    }
 
-	@Test
-	public void testSendWebHookForGitHashNullFilled() {
-		assertFalse(connectorHook.postKnowledge(null, "TEST-12"));
-	}
+    @Test
+    public void testSetGetSecret() {
+        connectorHook.setSecret("Test-New");
+        assertEquals("Test-New", connectorHook.getSecret());
+    }
 
-	@Test
-	public void testSendWebHookForGitHashEmptyFilled() {
-		assertFalse(connectorHook.postKnowledge("", "TEST-12"));
-	}
+    @Test
+    public void testConstNullNullNull() {
+        WebhookConnector connector = new WebhookConnector(null, null, null);
+        assertEquals("", connector.getUrl());
+        assertEquals("", connector.getSecret());
+    }
 
-	@Test
-    public void testSendWebHookForGitHashFilledNull() {
-		assertFalse(connectorHook.postKnowledge("TEST", null));
-	}
+    @Test
+    public void testConstNullNullFilled() {
+        WebhookConnector connector = new WebhookConnector(null, null, "test");
+        assertEquals("", connector.getUrl());
+        assertEquals("test", connector.getSecret());
+    }
 
-	@Test
-	public void testSendWebHookForGitHashFilledEmpty() {
-		assertFalse(connectorHook.postKnowledge("TEST", ""));
-	}
+    @Test
+    public void testConstNullFilledNull() {
+        WebhookConnector connector = new WebhookConnector(null, "test", null);
+        assertEquals("test", connector.getUrl());
+        assertEquals("", connector.getSecret());
+    }
+
+    @Test
+    public void testConstFilledNullNull() {
+        WebhookConnector connector = new WebhookConnector("TEST", null, null);
+        assertEquals("", connector.getUrl());
+        assertEquals("", connector.getSecret());
+    }
+
+    @Test
+    public void testConstFilledNullFilled() {
+        WebhookConnector connector = new WebhookConnector("TEST", null, "test");
+        assertEquals("", connector.getUrl());
+        assertEquals("test", connector.getSecret());
+    }
+
+    @Test
+    public void testConstFilledFilledNull() {
+        WebhookConnector connector = new WebhookConnector("TEST", "test", null);
+        assertEquals("test", connector.getUrl());
+        assertEquals("", connector.getSecret());
+    }
+
+    @Test
+    public void testConstFilledFilledFilled() {
+        WebhookConnector connector = new WebhookConnector("TEST", "test", "test");
+        assertEquals("test", connector.getUrl());
+        assertEquals("test", connector.getSecret());
+    }
+
+    @Test
+    public void testConstNullFilledFilled() {
+        WebhookConnector connector = new WebhookConnector(null, "test", "test");
+        assertEquals("test", connector.getUrl());
+        assertEquals("test", connector.getSecret());
+    }
+
+    @Test
+    public void testConstNull() {
+        WebhookConnector connector = new WebhookConnector(null);
+        assertEquals("", connector.getUrl());
+        assertEquals("", connector.getSecret());
+    }
+
+    @Test
+    public void testConstFilledWrong() {
+        WebhookConnector connector = new WebhookConnector("NoTest");
+        assertEquals("true", connector.getUrl());
+        assertEquals("true", connector.getSecret());
+    }
+
+    @Test
+    public void testConstFilled() {
+        WebhookConnector connector = new WebhookConnector("TEST");
+        assertEquals("true", connector.getUrl());
+        assertEquals("true", connector.getSecret());
+    }
+
+    @Test
+    public void testSendChangesNullFalse() {
+        assertFalse(connectorHook.sendElementChanges(null, false));
+    }
+
+    @Test
+    public void testSendChangesNullTrue() {
+        assertFalse(connectorHook.sendElementChanges(null, true));
+    }
+
+    @Test
+    public void testSendChangesFilledFalse() {
+        assertTrue(connectorHook.sendElementChanges(element, false));
+    }
+
+    @Test
+    public void testSendChangesFilledTrue() {
+        assertTrue(connectorHook.sendElementChanges(element, true));
+    }
+
+    @Test
+    public void testSendChangesNull() {
+        assertFalse(connectorHook.sendElementChanges(null));
+    }
+
+    @Test
+    public void testSendChangesFilled() {
+        assertTrue(connectorHook.sendElementChanges(element));
+    }
 }
