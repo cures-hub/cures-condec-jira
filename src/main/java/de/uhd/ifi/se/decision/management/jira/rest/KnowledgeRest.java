@@ -103,7 +103,7 @@ public class KnowledgeRest {
 			ApplicationUser user = getCurrentUser(request);
 			decisionKnowledgeElement = strategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
 			if (decisionKnowledgeElement != null) {
-				if(ConfigPersistence.isWebhookEnabled(projectKey)) {
+				if (ConfigPersistence.isWebhookEnabled(projectKey)) {
 					WebhookConnector connector = new WebhookConnector(projectKey);
 					connector.sendElementChanges(decisionKnowledgeElement);
 				}
@@ -127,7 +127,7 @@ public class KnowledgeRest {
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
 			if (strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user)) {
-				if(ConfigPersistence.isWebhookEnabled(projectKey)) {
+				if (ConfigPersistence.isWebhookEnabled(projectKey)) {
 					WebhookConnector connector = new WebhookConnector(projectKey);
 					connector.sendElementChanges(decisionKnowledgeElement);
 				}
@@ -152,7 +152,7 @@ public class KnowledgeRest {
 			ApplicationUser user = getCurrentUser(request);
 			boolean isDeleted = strategy.deleteDecisionKnowledgeElement(decisionKnowledgeElement, user);
 			if (isDeleted) {
-				if(ConfigPersistence.isWebhookEnabled(projectKey)) {
+				if (ConfigPersistence.isWebhookEnabled(projectKey)) {
 					WebhookConnector connector = new WebhookConnector(projectKey);
 					connector.sendElementChanges(decisionKnowledgeElement, isDeleted);
 				}
@@ -181,7 +181,7 @@ public class KnowledgeRest {
 						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
 			}
 			DecisionKnowledgeElement element = strategy.getDecisionKnowledgeElement(link.getSourceElement().getId());
-			if(ConfigPersistence.isWebhookEnabled(projectKey)) {
+			if (ConfigPersistence.isWebhookEnabled(projectKey)) {
 				WebhookConnector connector = new WebhookConnector(projectKey);
 				connector.sendElementChanges(element);
 			}
@@ -284,7 +284,7 @@ public class KnowledgeRest {
 			if (isDeleted) {
 				DecisionKnowledgeElement element = strategy
 						.getDecisionKnowledgeElement(link.getSourceElement().getId());
-				if(ConfigPersistence.isWebhookEnabled(projectKey)) {
+				if (ConfigPersistence.isWebhookEnabled(projectKey)) {
 					WebhookConnector connector = new WebhookConnector(projectKey);
 					connector.sendElementChanges(element);
 				}

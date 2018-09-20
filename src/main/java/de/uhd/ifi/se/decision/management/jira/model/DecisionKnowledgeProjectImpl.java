@@ -110,10 +110,9 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	}
 
 	@Override
-	public void setWebhookEnable(boolean isWebhookEnabled) {
-		ConfigPersistence.setWebhookEnable(projectKey, isWebhookEnabled);
+	public void setWebhookEnabled(boolean isWebhookEnabled) {
+		ConfigPersistence.setWebhookEnabled(projectKey, isWebhookEnabled);
 	}
-
 
 	@Override
 	public boolean isWebhookEnabled() {

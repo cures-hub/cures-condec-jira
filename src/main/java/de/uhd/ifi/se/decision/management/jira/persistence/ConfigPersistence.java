@@ -210,26 +210,26 @@ public class ConfigPersistence {
 		return "";
 	}
 
-	//TODO Testing
-	public static void setWebhookEnable(String projectKey, boolean isActivated){
-		if(projectKey == null){
+	// TODO Testing
+	public static void setWebhookEnabled(String projectKey, boolean isActivated) {
+		if (projectKey == null) {
 			return;
 		}
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey + ".isWebhook", Boolean.toString(isActivated));
+		settings.put(pluginStorageKey + ".isWebhookEnabled", Boolean.toString(isActivated));
 	}
 
-	public static boolean isWebhookEnabled(String projectKey){
+	public static boolean isWebhookEnabled(String projectKey) {
 		if (projectKey == null) {
 			return false;
 		}
-		Object isWebhookEnable= transactionTemplate.execute(new TransactionCallback<Object>() {
+		Object isWebhookEnabled = transactionTemplate.execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction() {
 				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-				return settings.get(pluginStorageKey + ".isWebhook");
+				return settings.get(pluginStorageKey + ".isWebhookEnabled");
 			}
 		});
-		return isWebhookEnable instanceof String && "true".equals(isWebhookEnable);
+		return isWebhookEnabled instanceof String && "true".equals(isWebhookEnabled);
 	}
 }

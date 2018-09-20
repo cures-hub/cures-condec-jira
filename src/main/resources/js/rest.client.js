@@ -275,10 +275,9 @@ function editSentenceBody(id, body, type, callback) {
 	});
 }
 
-
-function deleteGenericLink(targetId,sourceId,targetType,sourceType,callback,showError){
+function deleteGenericLink(targetId, sourceId, targetType, sourceType, callback, showError) {
 	var jsondata = {
-		"idOfSourceElement" : sourceType+sourceId,
+		"idOfSourceElement" : sourceType + sourceId,
 		"idOfDestinationElement" : targetType + targetId
 	};
 	deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteGenericLink.json?projectKey="
@@ -286,29 +285,28 @@ function deleteGenericLink(targetId,sourceId,targetType,sourceType,callback,show
 		if (error === null) {
 			showFlag("success", "Link has been deleted.");
 			callback();
-		} else if(showError) {
+		} else if (showError) {
 			showFlag("error", "Link could not be deleted.");
 		}
 
 	});
 }
 
-
-function linkGenericElements(targetId, sourceId, targetType,sourceType,callback) {
+function linkGenericElements(targetId, sourceId, targetType, sourceType, callback) {
 	var jsondata = {
 		"type" : "contain",
-		"idOfSourceElement" : sourceType+sourceId,
+		"idOfSourceElement" : sourceType + sourceId,
 		"idOfDestinationElement" : targetType + targetId
 	};
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createGenericLink.json?projectKey=" + getProjectKey(),
-			jsondata, function(error, link) {
-				if (error === null) {
-					showFlag("success", "Link has been created.");
-					callback(link);
-				} else {
-					showFlag("error", "Link could not be created.");
-				}
-			});
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createGenericLink.json?projectKey="
+			+ getProjectKey(), jsondata, function(error, link) {
+		if (error === null) {
+			showFlag("success", "Link has been created.");
+			callback(link);
+		} else {
+			showFlag("error", "Link could not be created.");
+		}
+	});
 }
 
 function getTreant(elementKey, depthOfTree, callback) {
@@ -511,11 +509,11 @@ function setWebhookData(projectKey, webhookUrl, webhookSecret) {
 
 function setWebhookEnabled(isActivated, projectKey) {
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookEnabled.json?projectKey=" + projectKey
-			+ "&isActivated=" + isActivated , null, function(error, response) {
+			+ "&isActivated=" + isActivated, null, function(error, response) {
 		if (error === null) {
-			showFlag("success", "The webhook is activated for this project has been set.");
+			showFlag("success", "The webhook activation for this project has been changed.");
 		} else {
-			showFlag("error", "The webhook activation this project has not been set.");
+			showFlag("error", "The webhook activation for this project could not be changed.");
 		}
 	});
 }

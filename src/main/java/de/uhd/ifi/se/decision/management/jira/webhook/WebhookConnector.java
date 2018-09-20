@@ -22,8 +22,8 @@ public class WebhookConnector {
 	private List<Long> elementIds;
 
 	public WebhookConnector(String projectKey, String webhookUrl, String webhookSecret) {
-		if(projectKey == null) {
-			LOGGER.error("Webhook could not be created because the Project Key is null");
+		if (projectKey == null) {
+			LOGGER.error("Webhook could not be created because the project key is not provided.");
 			projectKey = "";
 		}
 		if (webhookUrl == null) {
@@ -40,11 +40,11 @@ public class WebhookConnector {
 	}
 
 	public WebhookConnector(String projectKey) {
-		this(projectKey,ConfigPersistence.getWebhookUrl(projectKey), ConfigPersistence.getWebhookSecret(projectKey));
+		this(projectKey, ConfigPersistence.getWebhookUrl(projectKey), ConfigPersistence.getWebhookSecret(projectKey));
 	}
 
 	public boolean sendElementChanges(DecisionKnowledgeElement decisionKnowledgeElement, boolean isDeleted) {
-		if(decisionKnowledgeElement == null){
+		if (decisionKnowledgeElement == null) {
 			LOGGER.error("Webhook could not be created because the Element is null");
 			return false;
 		}
@@ -82,6 +82,7 @@ public class WebhookConnector {
 		}
 		return webhookRootElements;
 	}
+
 	private boolean postKnowledge(String projectKey, String changedElementKey) {
 		if (!checkIfDataIsValid(projectKey, changedElementKey)) {
 			return false;

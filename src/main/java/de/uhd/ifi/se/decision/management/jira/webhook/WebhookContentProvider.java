@@ -20,8 +20,7 @@ import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 
 /**
  * Creates the content submitted by the webhook. The content consists of a key
- * value pair. The key is either an issue id or a commit SHA id. The value is
- * the Treant JSON String.
+ * value pair. The key is an issue id. The value is the Treant JSON String.
  */
 public class WebhookContentProvider {
 
@@ -39,8 +38,6 @@ public class WebhookContentProvider {
 	/**
 	 * Create post method for webhook
 	 * 
-	 * @param elementKey
-	 *            key of the changed element.
 	 * @return post method ready to be posted
 	 */
 	public PostMethod createWebhookContentForChangedElement() {
