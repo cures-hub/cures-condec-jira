@@ -320,7 +320,7 @@ public class ConfigRest {
 	@Path("/setWebhookEnabled")
 	@POST
 	public Response setWebhookEnabled(@Context HttpServletRequest request, @QueryParam("projectKey") final String projectKey,
-									  @QueryParam("isActivatedString") final String isActivatedString){
+									  @QueryParam("isActivated") final String isActivatedString){
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;

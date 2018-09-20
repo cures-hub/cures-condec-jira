@@ -509,7 +509,7 @@ function setWebhookData(projectKey, webhookUrl, webhookSecret) {
 	});
 }
 
-function setWebhookEnabled(projectKey, isActivated) {
+function setWebhookEnabled(isActivated, projectKey) {
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookEnabled.json?projectKey=" + projectKey
 			+ "&isActivated=" + isActivated , null, function(error, response) {
 		if (error === null) {
