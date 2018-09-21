@@ -31,16 +31,18 @@ public class Comment {
 	public Comment() {
 		this.sentences = new ArrayList<Sentence>();
 		this.created = new Date();
-		this.authorFullName = "";
+		this.authorFullName = " ";
 		this.jiraCommentId = 0;
 		this.authorId = 0;
 		this.splitter = new CommentSplitter();
+		this.projectKey=" ";
 	}
 
 	public Comment(String comment) {
 		this();
 		this.body = textRule(comment);
 		splitCommentIntoSentences(true, 0);
+		
 	}
 
 	public Comment(com.atlassian.jira.issue.comments.Comment comment) {
@@ -67,7 +69,7 @@ public class Comment {
 			int startIndex = this.splitter.getStartSubstringCount().get(i);
 			int endIndex = this.splitter.getEndSubstringCount().get(i);
 			long aoId2 = ActiveObjectsManager.addNewSentenceintoAo(this.jiraCommentId, endIndex, startIndex,
-					this.authorId, issueId, projectKey);
+					this.authorId, issueId, this.projectKey);
 			this.sentences.add(new SentenceImpl(this.body.substring(startIndex, endIndex), aoId2));
 
 		}

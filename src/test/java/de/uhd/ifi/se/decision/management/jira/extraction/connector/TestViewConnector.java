@@ -64,7 +64,6 @@ public class TestViewConnector extends TestSetUp {
 		// Get the last comment entered in on the issue to a String
 		String comment = "This is a testentence without any purpose. We expect this to be irrelevant. I got a problem in this class. The previous sentence should be much more relevant";
 		commentManager.create(issue, currentUser, comment, true);
-		
 	}
 
 	@Test

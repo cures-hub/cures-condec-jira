@@ -39,7 +39,7 @@ public class MockCommentManager implements CommentManager {
 
     @Override
     public Comment getLastComment(Issue issue) {
-        return null;
+        return this.comments.get(0);
     }
 
     @Nonnull
@@ -130,7 +130,7 @@ public class MockCommentManager implements CommentManager {
 
     @Override
     public Comment getCommentById(Long aLong) {
-        return null;
+        return this.comments.get(0);
     }
 
     @Override

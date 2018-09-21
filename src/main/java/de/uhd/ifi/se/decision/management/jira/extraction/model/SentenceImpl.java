@@ -52,7 +52,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	public SentenceImpl(String body, long id) {
-		this(id);
+		super.setId(id);
 		this.setBody(body);
 		retrieveAttributesFromActievObjects();
 	}
@@ -277,7 +277,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.setArgument(aoElement.getArgument());
 		this.setCommentId(aoElement.getCommentId());
 		super.setProject(
-				new DecisionKnowledgeProjectImpl(ComponentGetter.getProjectService().getProjectKeyDescription()));
+				new DecisionKnowledgeProjectImpl(getProjectDescription()));
 		String kt = aoElement.getKnowledgeTypeString();
 		if (kt == null || kt.equals("")) {
 			super.type = KnowledgeType.OTHER;
@@ -285,6 +285,14 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 			super.type = KnowledgeType.getKnowledgeType(kt);
 		}
 		
+	}
+
+	private String getProjectDescription() {
+		if(ComponentGetter.getProjectService() != null) {
+			return ComponentGetter.getProjectService().getProjectKeyDescription();
+		}else {
+			return "TEST";
+		}
 	}
 
 	@Override
