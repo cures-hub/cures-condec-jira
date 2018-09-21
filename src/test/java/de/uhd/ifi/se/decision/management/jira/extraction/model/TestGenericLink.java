@@ -16,14 +16,17 @@ import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.issuetype.MockIssueType;
+import com.atlassian.jira.mock.MockIssueManager;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.EntityManager;
@@ -45,7 +48,7 @@ public class TestGenericLink extends TestSetUp{
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockDefaultUserManager());
-
+ 
 		createLocalIssue();
 		addCommentsToIssue("this is a testSentence. This a second one. And a third one");
 		
@@ -53,12 +56,13 @@ public class TestGenericLink extends TestSetUp{
 
 	private void createLocalIssue() {
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
-		issue = new MockIssue(30, "TEST-" + 30);
+		issue = new MockIssue(2, "TEST-" + 2);
 		((MockIssue) issue).setProjectId(project.getId());
 		issue.setProjectObject(project);
 		IssueType issueType = new MockIssueType(1, KnowledgeType.DECISION.toString().toLowerCase(Locale.ENGLISH));
 		issue.setIssueType(issueType);
 		issue.setSummary("Test");
+		((MockIssueManagerSelfImpl) ComponentAccessor.getIssueManager()).addIssue(issue);
 	}
 	
 	private void addCommentsToIssue(String comment) {

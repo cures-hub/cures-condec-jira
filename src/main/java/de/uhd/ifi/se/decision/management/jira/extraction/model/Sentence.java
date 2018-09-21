@@ -55,6 +55,10 @@ public interface Sentence extends DecisionKnowledgeElement{
 	
 	void setProjectKey(String key);
 	
+	void setIssueId(long issueid);
+	
+	long getIssueId();
+	
 	@Ignore
 	boolean isPlainText();
 	

@@ -8,6 +8,7 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 
 public class Comment {
@@ -38,13 +39,6 @@ public class Comment {
 		this.projectKey=" ";
 	}
 
-	public Comment(String comment) {
-		this();
-		this.body = textRule(comment);
-		splitCommentIntoSentences(true, 0);
-		
-	}
-
 	public Comment(com.atlassian.jira.issue.comments.Comment comment) {
 		this();
 		this.projectKey = comment.getIssue().getProjectObject().getKey();
@@ -60,7 +54,7 @@ public class Comment {
 		return text.replace("<br>", " ").toString();
 	}
 
-	private void splitCommentIntoSentences(boolean addSentencesToAo, long issueId) {
+	private void splitCommentIntoSentences(boolean addSentencesToAo, Long issueId) {
 		List<String> rawSentences = this.splitter.sliceCommentRecursionCommander(this.body);
 		runBreakIterator(rawSentences);
 		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(this);

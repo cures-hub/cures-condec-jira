@@ -66,4 +66,5 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long>, Sente
 	@Ignore
 	List<Link> getInwardLinks();
 
+
 }

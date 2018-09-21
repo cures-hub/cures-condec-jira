@@ -4,6 +4,9 @@ import java.beans.PropertyChangeListener;
 import org.apache.commons.lang3.StringUtils;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.IssueManager;
+import com.atlassian.jira.issue.MutableIssue;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
@@ -38,6 +41,8 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	private long userId;
 
 	private String knowledgeTypeString;
+
+	private long issueId;
 
 	public SentenceImpl() {
 		super();
@@ -276,6 +281,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.setProjectKey(aoElement.getProjectKey());
 		this.setArgument(aoElement.getArgument());
 		this.setCommentId(aoElement.getCommentId());
+		this.setIssueId(aoElement.getIssueId());
 		super.setProject(
 				new DecisionKnowledgeProjectImpl(getProjectDescription()));
 		String kt = aoElement.getKnowledgeTypeString();
@@ -284,7 +290,10 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		} else {
 			super.type = KnowledgeType.getKnowledgeType(kt);
 		}
-		
+		IssueManager im = ComponentAccessor.getIssueManager();
+		MutableIssue mi = im.getIssueObject(this.getIssueId());
+		super.setKey(mi.getKey()+":"+this.getId());
+		this.setIssueId(aoElement.getIssueId());
 	}
 
 	private String getProjectDescription() {
@@ -329,6 +338,17 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	public void save() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void setIssueId(long issueId) {
+		this.issueId = issueId;
+		
+	}
+
+	@Override
+	public long getIssueId() {
+		return this.issueId;
 	}
 
 

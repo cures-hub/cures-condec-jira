@@ -51,6 +51,7 @@ public class ActiveObjectsManager {
 						todo.setTaggedFineGrained(false);
 						todo.setTaggedManually(false);
 						todo.setProjectKey(projectKey);
+						todo.setIssueId(issueId);
 						todo.save();
 						return todo;
 					}
