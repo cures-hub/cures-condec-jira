@@ -19,12 +19,8 @@ public class DecisionKnowledgeClassifier {
 
 	private FilteredClassifier binaryClassifier;
 
-
-
 	private LC fineGrainedClassifier;
 
-	
-	
 	public DecisionKnowledgeClassifier() {
 		String pathFineGrained = ComponentGetter.getUrlOfClassifierFolder() + "br.model";
 		String path = ComponentGetter.getUrlOfClassifierFolder() + "fc.model";
@@ -85,7 +81,7 @@ public class DecisionKnowledgeClassifier {
 			System.err.println(e.getStackTrace() + "Fine grained Classification failed");
 			return null;
 		}
-	
+
 		return results;
 
 	}
@@ -107,12 +103,11 @@ public class DecisionKnowledgeClassifier {
 		t.setOptions(options);
 		return t;
 	}
-	
-	
+
 	public void setFineGrainedClassifier(LC fineGrainedClassifier) {
 		this.fineGrainedClassifier = fineGrainedClassifier;
 	}
-	
+
 	public void setBinaryClassifier(FilteredClassifier binaryClassifier) {
 		this.binaryClassifier = binaryClassifier;
 	}

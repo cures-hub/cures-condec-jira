@@ -16,7 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.EntityManager;
 import net.java.ao.RawEntity;
 
-public class SentenceImpl extends DecisionKnowledgeElementImpl implements Sentence,DecisionKnowledgeInCommentEntity {
+public class SentenceImpl extends DecisionKnowledgeElementImpl implements Sentence, DecisionKnowledgeInCommentEntity {
 
 	private boolean isTagged;
 
@@ -48,12 +48,12 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		super();
 		super.type = KnowledgeType.OTHER;
 	}
-	
+
 	public SentenceImpl(long id) {
 		this();
 		super.setId(id);
 		retrieveAttributesFromActievObjects();
-		retrieveBodyFromJiraComment();//TODO: Maybe remove this, needs to be tested
+		retrieveBodyFromJiraComment();// TODO: Maybe remove this, needs to be tested
 	}
 
 	public SentenceImpl(String body, long id) {
@@ -262,13 +262,12 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	public void setPlainText(boolean isPlainText) {
 		this.isPlainText = isPlainText;
 	}
-	
+
 	private void retrieveBodyFromJiraComment() {
 		String text = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getBody();
 		text = text.substring(this.startSubstringCount, this.endSubstringCount);
 		this.setBody(text);
 	}
-	
 
 	private void retrieveAttributesFromActievObjects() {
 		DecisionKnowledgeInCommentEntity aoElement = ActiveObjectsManager.getElementFromAO(super.getId());
@@ -282,8 +281,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.setArgument(aoElement.getArgument());
 		this.setCommentId(aoElement.getCommentId());
 		this.setIssueId(aoElement.getIssueId());
-		super.setProject(
-				new DecisionKnowledgeProjectImpl(getProjectDescription()));
+		super.setProject(new DecisionKnowledgeProjectImpl(getProjectDescription()));
 		String kt = aoElement.getKnowledgeTypeString();
 		if (kt == null || kt.equals("")) {
 			super.type = KnowledgeType.OTHER;
@@ -292,14 +290,14 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		}
 		IssueManager im = ComponentAccessor.getIssueManager();
 		MutableIssue mi = im.getIssueObject(this.getIssueId());
-		super.setKey(mi.getKey()+":"+this.getId());
+		super.setKey(mi.getKey() + ":" + this.getId());
 		this.setIssueId(aoElement.getIssueId());
 	}
 
 	private String getProjectDescription() {
-		if(ComponentGetter.getProjectService() != null) {
+		if (ComponentGetter.getProjectService() != null) {
 			return ComponentGetter.getProjectService().getProjectKeyDescription();
-		}else {
+		} else {
 			return "TEST";
 		}
 	}
@@ -307,7 +305,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	@Override
 	public void addPropertyChangeListener(PropertyChangeListener arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -325,31 +323,30 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void removePropertyChangeListener(PropertyChangeListener arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void save() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setIssueId(long issueId) {
 		this.issueId = issueId;
-		
+
 	}
 
 	@Override
 	public long getIssueId() {
 		return this.issueId;
 	}
-
 
 }

@@ -29,9 +29,9 @@ import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestComment.AoSentenceTestDatabaseUpdater.class) 
-public class TestHTMLCodeGenerator extends TestSetUp{
-	
+@Data(TestComment.AoSentenceTestDatabaseUpdater.class)
+public class TestHTMLCodeGenerator extends TestSetUp {
+
 	private EntityManager entityManager;
 
 	private MutableIssue issue;
@@ -43,7 +43,7 @@ public class TestHTMLCodeGenerator extends TestSetUp{
 				new MockDefaultUserManager());
 
 		createLocalIssue();
-		
+
 	}
 
 	private void createLocalIssue() {
@@ -55,7 +55,7 @@ public class TestHTMLCodeGenerator extends TestSetUp{
 		issue.setIssueType(issueType);
 		issue.setSummary("Test");
 	}
-	
+
 	private void addCommentsToIssue(String comment) {
 		// Get the current logged in user
 		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUser("NoFails");
@@ -64,8 +64,7 @@ public class TestHTMLCodeGenerator extends TestSetUp{
 		// Get the last comment entered in on the issue to a String
 		commentManager.create(issue, currentUser, comment, true);
 	}
-	
-	
+
 	@Test
 	@NonTransactional
 	public void testSimpleOutput() {
@@ -74,7 +73,7 @@ public class TestHTMLCodeGenerator extends TestSetUp{
 		Comment c = new Comment(ComponentAccessor.getCommentManager().getLastComment(issue));
 		assertTrue(html.getCodedElement(c.getSentences().get(0)).length() > 0);
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testRelevantOutput() {
@@ -85,7 +84,7 @@ public class TestHTMLCodeGenerator extends TestSetUp{
 		s.setRelevant(true);
 		assertTrue(html.getCodedElement(s).length() > 0);
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testCodeTextOutput() {
@@ -96,7 +95,7 @@ public class TestHTMLCodeGenerator extends TestSetUp{
 		s.setRelevant(false);
 		assertTrue(html.getCodedElement(s).length() > 0);
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testQuoteTextOutput() {
@@ -107,7 +106,7 @@ public class TestHTMLCodeGenerator extends TestSetUp{
 		s.setRelevant(false);
 		assertTrue(html.getCodedElement(s).length() > 0);
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testHandCodedTextOutput() {
@@ -117,8 +116,7 @@ public class TestHTMLCodeGenerator extends TestSetUp{
 		Sentence s = c.getSentences().get(0);
 		assertTrue(html.getCodedElement(s).length() > 0);
 	}
-	
-	
+
 	@Test
 	@NonTransactional
 	public void testRelevantOutputWithKnowledgeType() {
@@ -130,7 +128,7 @@ public class TestHTMLCodeGenerator extends TestSetUp{
 		s.setType(KnowledgeType.ISSUE);
 		assertTrue(html.getCodedElement(s).length() > 0);
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testRelevantOutputWithKnowledgeTypeArgument() {

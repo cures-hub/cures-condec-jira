@@ -20,11 +20,10 @@ import net.java.ao.test.jdbc.DatabaseUpdater;
 import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestSentence.AoSentenceTestDatabaseUpdater.class) 
+@Data(TestSentence.AoSentenceTestDatabaseUpdater.class)
 public class TestSentence extends TestSetUp {
-	
+
 	private EntityManager entityManager;
 
 	@Before
@@ -40,104 +39,104 @@ public class TestSentence extends TestSetUp {
 		Sentence sentence = new SentenceImpl();
 		assertNotNull(sentence);
 		sentence.setType(KnowledgeType.ALTERNATIVE);
-		assertEquals(KnowledgeType.ALTERNATIVE,sentence.getType());
+		assertEquals(KnowledgeType.ALTERNATIVE, sentence.getType());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testSetKnowledgeTypeDoubleAlternative() {
 		Sentence sentence = new SentenceImpl();
-		double[] classification = {1.0, 0.0 , 0.0, 0.0, 0.0};
+		double[] classification = { 1.0, 0.0, 0.0, 0.0, 0.0 };
 		sentence.setKnowledgeType(classification);
-		assertEquals(KnowledgeType.ALTERNATIVE,sentence.getType());
-	}	
+		assertEquals(KnowledgeType.ALTERNATIVE, sentence.getType());
+	}
 
 	@Test
 	@NonTransactional
 	public void testSetKnowledgeTypeDoubleArgumentPro() {
 		Sentence sentence = new SentenceImpl();
-		double[] classification = {.0, 1.0 , 0.0, 0.0, 0.0};
+		double[] classification = { .0, 1.0, 0.0, 0.0, 0.0 };
 		sentence.setKnowledgeType(classification);
-		assertEquals(KnowledgeType.ARGUMENT,sentence.getType());
+		assertEquals(KnowledgeType.ARGUMENT, sentence.getType());
 		assertEquals("pro", sentence.getArgument().toLowerCase());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testSetKnowledgeTypeDoubleArgumentCon() {
 		Sentence sentence = new SentenceImpl();
-		double[] classification = {.0, .0 , 1.0, 0.0, 0.0};
+		double[] classification = { .0, .0, 1.0, 0.0, 0.0 };
 		sentence.setKnowledgeType(classification);
-		assertEquals(KnowledgeType.ARGUMENT,sentence.getType());
+		assertEquals(KnowledgeType.ARGUMENT, sentence.getType());
 		assertEquals("con", sentence.getArgument().toLowerCase());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testSetKnowledgeTypeDoubleDecision() {
 		Sentence sentence = new SentenceImpl();
-		double[] classification = {.0, 0.0 , 0.0, 1.0, 0.0};
+		double[] classification = { .0, 0.0, 0.0, 1.0, 0.0 };
 		sentence.setKnowledgeType(classification);
-		assertEquals(KnowledgeType.DECISION,sentence.getType());
-	}	
-	
+		assertEquals(KnowledgeType.DECISION, sentence.getType());
+	}
+
 	@Test
 	@NonTransactional
 	public void testSetKnowledgeTypeDoubleIssue() {
 		Sentence sentence = new SentenceImpl();
-		double[] classification = {.0, 0.0 , 0.0, .0, 1.0};
+		double[] classification = { .0, 0.0, 0.0, .0, 1.0 };
 		sentence.setKnowledgeType(classification);
-		assertEquals(KnowledgeType.ISSUE,sentence.getType());
-	}	
-	
+		assertEquals(KnowledgeType.ISSUE, sentence.getType());
+	}
+
 	@Test
 	@Ignore
-	@NonTransactional //TODO: Findout how to initialize project impl
+	@NonTransactional // TODO: Findout how to initialize project impl
 	public void testGetKnowledgeTypeToString() {
 		Sentence sentence = new SentenceImpl();
-		assertEquals("",sentence.getKnowledgeTypeString());
+		assertEquals("", sentence.getKnowledgeTypeString());
 		sentence.setType(KnowledgeType.ALTERNATIVE);
-		assertEquals("Alternative",sentence.getKnowledgeTypeString());
+		assertEquals("Alternative", sentence.getKnowledgeTypeString());
 		sentence.setType(KnowledgeType.ARGUMENT);
-		assertEquals("",sentence.getKnowledgeTypeString());
-	}	
-	
+		assertEquals("", sentence.getKnowledgeTypeString());
+	}
+
 	@Test
 	@NonTransactional
 	public void testSetKnowledgeTypeString() {
 		Sentence sentence = new SentenceImpl();
 		sentence.setKnowledgeTypeString(KnowledgeType.ALTERNATIVE.toString());
-		assertEquals(KnowledgeType.ALTERNATIVE.toString(),sentence.getKnowledgeTypeString());
+		assertEquals(KnowledgeType.ALTERNATIVE.toString(), sentence.getKnowledgeTypeString());
 		sentence.setKnowledgeTypeString("pro");
-		assertEquals("Pro",sentence.getKnowledgeTypeString());
-		assertEquals("pro",sentence.getArgument().toLowerCase());
+		assertEquals("Pro", sentence.getKnowledgeTypeString());
+		assertEquals("pro", sentence.getArgument().toLowerCase());
 		sentence.setKnowledgeTypeString("con");
-		assertEquals("Con",sentence.getKnowledgeTypeString());
-		assertEquals("con",sentence.getArgument().toLowerCase());
-	}	
-	
-//	@Test
-//	@NonTransactional
-//	public void testGetOpeningTagSpan() {
-//		Sentence sentence = new SentenceImpl();
-//		assertEquals("<span class =tag></span>", sentence.getOpeningTagSpan());
-//		sentence.setType(KnowledgeType.ARGUMENT);
-//		sentence.setRelevant(true);
-//		sentence.setArgument("Pro");
-//		assertEquals("<span class =tag>[Pro]</span>", sentence.getOpeningTagSpan());
-//	}	
-//	
-//	@Test
-//	@NonTransactional
-//	public void testGetClosingTagSpan() {
-//		Sentence sentence = new SentenceImpl();
-//		assertEquals("<span class =tag></span>", sentence.getClosingTagSpan());
-//		sentence.setType(KnowledgeType.ARGUMENT);
-//		sentence.setIsRelevant(true);
-//		sentence.setArgument("Pro");
-//		assertEquals("<span class =tag>[/Pro]</span>", sentence.getClosingTagSpan());
-//	}	
-//	
+		assertEquals("Con", sentence.getKnowledgeTypeString());
+		assertEquals("con", sentence.getArgument().toLowerCase());
+	}
+
+	// @Test
+	// @NonTransactional
+	// public void testGetOpeningTagSpan() {
+	// Sentence sentence = new SentenceImpl();
+	// assertEquals("<span class =tag></span>", sentence.getOpeningTagSpan());
+	// sentence.setType(KnowledgeType.ARGUMENT);
+	// sentence.setRelevant(true);
+	// sentence.setArgument("Pro");
+	// assertEquals("<span class =tag>[Pro]</span>", sentence.getOpeningTagSpan());
+	// }
+	//
+	// @Test
+	// @NonTransactional
+	// public void testGetClosingTagSpan() {
+	// Sentence sentence = new SentenceImpl();
+	// assertEquals("<span class =tag></span>", sentence.getClosingTagSpan());
+	// sentence.setType(KnowledgeType.ARGUMENT);
+	// sentence.setIsRelevant(true);
+	// sentence.setArgument("Pro");
+	// assertEquals("<span class =tag>[/Pro]</span>", sentence.getClosingTagSpan());
+	// }
+	//
 	@Test
 	@NonTransactional
 	public void testSetRelevantWithDouble() {
@@ -146,31 +145,21 @@ public class TestSentence extends TestSetUp {
 		assertTrue(sentence.isRelevant());
 		sentence.setRelevant(.0);
 		assertFalse(sentence.isRelevant());
-	}	
-	
+	}
+
 	@Test
 	@NonTransactional
 	public void testToString() {
 		Sentence sentence = new SentenceImpl();
 		assertNotNull(sentence.toString());
-	}	
-	
-	
-	
-	
-	
-	
-	
-	
+	}
 
-	
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater // (2)
-    {
-        @SuppressWarnings("unchecked")
+	{
+		@SuppressWarnings("unchecked")
 		@Override
-        public void update(EntityManager entityManager) throws Exception
-        {
-            entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
-        }
-    }
+		public void update(EntityManager entityManager) throws Exception {
+			entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
+		}
+	}
 }

@@ -19,7 +19,7 @@ public class ViewConnector {
 	private CommentManager commentManager;
 
 	public ViewConnector(Issue issue) {
-		if(issue !=  null) {
+		if (issue != null) {
 			this.setCurrentIssue(issue);
 			commentManager = ComponentAccessor.getCommentManager();
 			this.commentsList = new ArrayList<Comment>();
@@ -28,7 +28,7 @@ public class ViewConnector {
 
 	public ViewConnector(Issue issue, boolean doNotClassify) {
 		this(issue);
-		if(issue != null) {
+		if (issue != null) {
 			for (com.atlassian.jira.issue.comments.Comment comment : commentManager.getComments(issue)) {
 				commentsList.add(new Comment(comment));
 			}
@@ -41,7 +41,7 @@ public class ViewConnector {
 	public void startClassification() {
 		ClassificationManagerForCommentSentences classifier = new ClassificationManagerForCommentSentences();
 		this.commentsList = classifier.classifySentenceBinary(commentsList);
-		this.commentsList = classifier.classifySentenceFineGrained(commentsList);	
+		this.commentsList = classifier.classifySentenceFineGrained(commentsList);
 	}
 
 	public Issue getCurrentIssue() {
@@ -71,7 +71,6 @@ public class ViewConnector {
 		return comments2;
 	}
 
-	
 	public List<Long> getAllCommentsIDs() {
 		List<Long> comments = new ArrayList<Long>();
 		for (Comment c : commentsList) {

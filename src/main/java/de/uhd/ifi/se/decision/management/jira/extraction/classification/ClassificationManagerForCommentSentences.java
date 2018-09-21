@@ -51,7 +51,7 @@ public class ClassificationManagerForCommentSentences {
 				if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 					sentence.setKnowledgeType(classificationResult.get(i));
 					ActiveObjectsManager.setSentenceKnowledgeType(sentence);
-					 
+
 					sentence.setTaggedFineGrained(true);
 					i++;
 				} else if (sentence.isRelevant() && sentence.isTaggedFineGrained() && sentence.isPlainText()) {
@@ -95,8 +95,7 @@ public class ClassificationManagerForCommentSentences {
 	public List<Comment> writeDataFromActiveObjectsToSentences(List<Comment> commentsList) {
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
-				sentence.setRelevant(
-						ActiveObjectsManager.getElementFromAO(sentence.getId()).isRelevant());
+				sentence.setRelevant(ActiveObjectsManager.getElementFromAO(sentence.getId()).isRelevant());
 			}
 		}
 		return commentsList;
@@ -143,7 +142,7 @@ public class ClassificationManagerForCommentSentences {
 	private Instances createDatasetForfineGrainedClassification(List<Comment> commentsList) {
 		ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
 
-		// Declare Class value with {0,1} as possible values 
+		// Declare Class value with {0,1} as possible values
 		for (int i = 0; i < knowledgeTypes.length; i++) {
 			wekaAttributes.add(new Attribute(knowledgeTypes[i], createClassAttributeList(), i));
 		}

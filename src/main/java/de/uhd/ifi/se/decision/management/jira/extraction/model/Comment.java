@@ -8,7 +8,6 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 
 public class Comment {
@@ -36,7 +35,7 @@ public class Comment {
 		this.jiraCommentId = 0;
 		this.authorId = 0;
 		this.splitter = new CommentSplitter();
-		this.projectKey=" ";
+		this.projectKey = " ";
 	}
 
 	public Comment(com.atlassian.jira.issue.comments.Comment comment) {
