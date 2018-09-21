@@ -9,7 +9,7 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.SsentenceImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLinkImpl;
@@ -162,7 +162,7 @@ public class ActiveObjectsManager {
 						return databaseEntry;
 					}
 				}
-				return new SsentenceImpl();
+				return new SentenceImpl();
 			}
 		});
 	}
@@ -383,7 +383,7 @@ public class ActiveObjectsManager {
 		DecisionKnowledgeInCommentEntity[] sentencesinAo = ao.find(DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("COMMENT_ID = ?", commentId));
 		for (DecisionKnowledgeInCommentEntity currentAoSentence : sentencesinAo) {
-			sentences.add(new SsentenceImpl(currentAoSentence.getId()));
+			sentences.add(new SentenceImpl(currentAoSentence.getId()));
 		}
 		return sentences;
 	}

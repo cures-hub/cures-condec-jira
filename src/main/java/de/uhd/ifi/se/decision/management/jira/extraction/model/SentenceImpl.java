@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.EntityManager;
 import net.java.ao.RawEntity;
 
-public class SsentenceImpl extends DecisionKnowledgeElementImpl implements Sentence,DdecisionKnowledgeInCommentEntity {
+public class SentenceImpl extends DecisionKnowledgeElementImpl implements Sentence,DdecisionKnowledgeInCommentEntity {
 
 	private boolean isTagged;
 
@@ -39,19 +39,19 @@ public class SsentenceImpl extends DecisionKnowledgeElementImpl implements Sente
 
 	private String knowledgeTypeString;
 
-	public SsentenceImpl() {
+	public SentenceImpl() {
 		super();
 		super.type = KnowledgeType.OTHER;
 	}
 	
-	public SsentenceImpl(long id) {
+	public SentenceImpl(long id) {
 		this();
 		super.setId(id);
 		retrieveAttributesFromActievObjects();
 		retrieveBodyFromJiraComment();//TODO: Maybe remove this, needs to be tested
 	}
 
-	public SsentenceImpl(String body, long id) {
+	public SentenceImpl(String body, long id) {
 		this(id);
 		this.setBody(body);
 		retrieveAttributesFromActievObjects();

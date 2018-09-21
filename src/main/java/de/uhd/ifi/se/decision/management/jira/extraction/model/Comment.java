@@ -68,7 +68,7 @@ public class Comment {
 			int endIndex = this.splitter.getEndSubstringCount().get(i);
 			long aoId2 = ActiveObjectsManager.addNewSentenceintoAo(this.jiraCommentId, endIndex, startIndex,
 					this.authorId, issueId, projectKey);
-			this.sentences.add(new SsentenceImpl(this.body.substring(startIndex, endIndex), aoId2));
+			this.sentences.add(new SentenceImpl(this.body.substring(startIndex, endIndex), aoId2));
 
 		}
 	}
