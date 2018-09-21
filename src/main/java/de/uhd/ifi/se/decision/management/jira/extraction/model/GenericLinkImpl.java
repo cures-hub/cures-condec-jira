@@ -76,7 +76,7 @@ public class GenericLinkImpl implements GenericLink {
 	@Override
 	public DecisionKnowledgeElement getElement(String elementNOTToGet) {
 		if(elementNOTToGet.startsWith("s")) { 
-			Sentence sentence = null;
+			Ssentence sentence = null;
 			if(this.getIdOfSourceElement().equals(elementNOTToGet)) {
 				if(this.getIdOfDestinationElement().startsWith("s")) {
 					return new SsentenceImpl(Integer.parseInt(this.getIdOfDestinationElement().substring(1)));

@@ -9,7 +9,6 @@ import com.atlassian.jira.issue.comments.CommentManager;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationManagerForCommentSentences;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 
 public class ViewConnector {
 

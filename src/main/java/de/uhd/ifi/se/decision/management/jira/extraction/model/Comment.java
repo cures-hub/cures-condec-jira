@@ -8,7 +8,6 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager2;
 
 public class Comment {

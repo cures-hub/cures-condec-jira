@@ -1,15 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
 import java.beans.PropertyChangeListener;
-import java.io.EOFException;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager2;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DdecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
