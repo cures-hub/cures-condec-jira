@@ -26,7 +26,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLinkImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DdecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -230,7 +229,7 @@ public class KnowledgeRest {
 		if (decisionKnowledgeElement != null && request != null) {
 
 			// Get corresponding element from ao database
-			DdecisionKnowledgeInCommentEntity databaseEntity = ActiveObjectsManager
+			DecisionKnowledgeInCommentEntity databaseEntity = ActiveObjectsManager
 					.getElementFromAO(decisionKnowledgeElement.getId());
 			if ((databaseEntity.getEndSubstringCount()
 					- databaseEntity.getStartSubstringCount()) != decisionKnowledgeElement.getDescription().length()) {

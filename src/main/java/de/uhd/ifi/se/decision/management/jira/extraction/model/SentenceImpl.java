@@ -6,14 +6,14 @@ import org.apache.commons.lang3.StringUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DdecisionKnowledgeInCommentEntity;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.EntityManager;
 import net.java.ao.RawEntity;
 
-public class SentenceImpl extends DecisionKnowledgeElementImpl implements Sentence,DdecisionKnowledgeInCommentEntity {
+public class SentenceImpl extends DecisionKnowledgeElementImpl implements Sentence,DecisionKnowledgeInCommentEntity {
 
 	private boolean isTagged;
 
@@ -266,7 +266,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	
 
 	private void retrieveAttributesFromActievObjects() {
-		DdecisionKnowledgeInCommentEntity aoElement = ActiveObjectsManager.getElementFromAO(super.getId());
+		DecisionKnowledgeInCommentEntity aoElement = ActiveObjectsManager.getElementFromAO(super.getId());
 		this.setEndSubstringCount(aoElement.getEndSubstringCount());
 		this.setStartSubstringCount(aoElement.getStartSubstringCount());
 		this.setUserId(aoElement.getUserId());

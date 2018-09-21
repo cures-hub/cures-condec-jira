@@ -38,11 +38,11 @@ public class ActiveObjectsManager {
 		if (checkElementExistingInAO(commentId, endSubStringCount, startSubstringCount, userId, projectKey)) {
 			return getElementFromAO(commentId, endSubStringCount, startSubstringCount, userId, projectKey).getId();
 		}
-		DdecisionKnowledgeInCommentEntity newElement = ao
-				.executeInTransaction(new TransactionCallback<DdecisionKnowledgeInCommentEntity>() {
+		DecisionKnowledgeInCommentEntity newElement = ao
+				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 					@Override
-					public DdecisionKnowledgeInCommentEntity doInTransaction() {
-						DdecisionKnowledgeInCommentEntity todo = ao.create(DdecisionKnowledgeInCommentEntity.class); // (2)
+					public DecisionKnowledgeInCommentEntity doInTransaction() {
+						DecisionKnowledgeInCommentEntity todo = ao.create(DecisionKnowledgeInCommentEntity.class); // (2)
 						todo.setCommentId(commentId);
 						todo.setEndSubstringCount(endSubStringCount);
 						todo.setStartSubstringCount(startSubstringCount);
@@ -76,7 +76,7 @@ public class ActiveObjectsManager {
 	public static boolean checkElementExistingInAO(long commentId, int endSubtringCount, int startSubstringCount,
 			long userId, String projectKey) {
 		init();
-		DdecisionKnowledgeInCommentEntity databaseEntry = getElementFromAO(commentId, endSubtringCount,
+		DecisionKnowledgeInCommentEntity databaseEntry = getElementFromAO(commentId, endSubtringCount,
 				startSubstringCount, userId, projectKey);
 		if (databaseEntry != null) {
 			return true;
@@ -85,36 +85,36 @@ public class ActiveObjectsManager {
 		}
 	}
 
-	public static boolean checkCommentExistingInAO(long sentenceAoId, boolean getIsTagged) {
+//	public static boolean checkCommentExistingInAO(long sentenceAoId, boolean getIsTagged) {
+//		init();
+//		DecisionKnowledgeInCommentEntity dbEntry = ao
+//				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+//					@Override
+//					public DecisionKnowledgeInCommentEntity doInTransaction() {
+//						for (DecisionKnowledgeInCommentEntity databaseEntry : ao
+//								.find(DecisionKnowledgeInCommentEntity.class)) {
+//							if (databaseEntry.getId() == sentenceAoId) {
+//								return databaseEntry;
+//							}
+//						}
+//						return null;
+//					}
+//				});
+//		if (getIsTagged && dbEntry != null) {
+//			return dbEntry.isTagged();
+//		}
+//		return (dbEntry != null);
+//	}
+
+	public static DecisionKnowledgeInCommentEntity getElementFromAO(long commentId, int endSubtringCount,
+			int startSubstringCount, long userId, String projectKey) {
 		init();
-		DecisionKnowledgeInCommentEntity dbEntry = ao
+		DecisionKnowledgeInCommentEntity element = ao
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 					@Override
 					public DecisionKnowledgeInCommentEntity doInTransaction() {
-						for (DecisionKnowledgeInCommentEntity databaseEntry : ao
-								.find(DecisionKnowledgeInCommentEntity.class)) {
-							if (databaseEntry.getId() == sentenceAoId) {
-								return databaseEntry;
-							}
-						}
-						return null;
-					}
-				});
-		if (getIsTagged && dbEntry != null) {
-			return dbEntry.isTagged();
-		}
-		return (dbEntry != null);
-	}
-
-	public static DdecisionKnowledgeInCommentEntity getElementFromAO(long commentId, int endSubtringCount,
-			int startSubstringCount, long userId, String projectKey) {
-		init();
-		DdecisionKnowledgeInCommentEntity element = ao
-				.executeInTransaction(new TransactionCallback<DdecisionKnowledgeInCommentEntity>() {
-					@Override
-					public DdecisionKnowledgeInCommentEntity doInTransaction() {
-						for (DdecisionKnowledgeInCommentEntity databaseEntry : ao.find(
-								DdecisionKnowledgeInCommentEntity.class,
+						for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(
+								DecisionKnowledgeInCommentEntity.class,
 								Query.select().where("PROJECT_KEY = ?", projectKey))) {
 							if (equalsDatabase(databaseEntry, commentId, endSubtringCount, startSubstringCount,
 									userId)) {
@@ -128,36 +128,36 @@ public class ActiveObjectsManager {
 
 	}
 
-	public static void updateSentenceElement(Sentence sentence) {
+//	public static void updateSentenceElement(Sentence sentence) {
+//		init();
+//		ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+//			@Override
+//			public DecisionKnowledgeInCommentEntity doInTransaction() {
+//				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class,
+//						Query.select().where("PROJECT_KEY = ?", sentence.getProjectKey()))) {
+//					if (databaseEntry.getId() == sentence.getId()) {
+//						databaseEntry.setArgument(sentence.getArgument());
+//						databaseEntry.setEndSubstringCount(sentence.getEndSubstringCount());
+//						databaseEntry.setIsRelevant(sentence.isRelevant());
+//						databaseEntry.setIsTagged(sentence.isTagged());
+//						databaseEntry.setIsTaggedFineGrained(sentence.isTaggedFineGrained());
+//						databaseEntry.setIsTaggedManually(sentence.isTaggedManually());
+//						databaseEntry.setKnowledgeTypeString(sentence.getKnowledgeTypeString());
+//						databaseEntry.setStartSubstringCount(sentence.getStartSubstringCount());
+//					}
+//				}
+//				return null;
+//			}
+//		});
+//
+//	}
+
+	public static DecisionKnowledgeInCommentEntity getElementFromAO(long aoId) {
 		init();
-		ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+		return ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 			@Override
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class,
-						Query.select().where("PROJECT_KEY = ?", sentence.getProjectKey()))) {
-					if (databaseEntry.getId() == sentence.getId()) {
-						databaseEntry.setArgument(sentence.getArgument());
-						databaseEntry.setEndSubstringCount(sentence.getEndSubstringCount());
-						databaseEntry.setIsRelevant(sentence.isRelevant());
-						databaseEntry.setIsTagged(sentence.isTagged());
-						databaseEntry.setIsTaggedFineGrained(sentence.isTaggedFineGrained());
-						databaseEntry.setIsTaggedManually(sentence.isTaggedManually());
-						databaseEntry.setKnowledgeTypeString(sentence.getKnowledgeTypeString());
-						databaseEntry.setStartSubstringCount(sentence.getStartSubstringCount());
-					}
-				}
-				return null;
-			}
-		});
-
-	}
-
-	public static DdecisionKnowledgeInCommentEntity getElementFromAO(long aoId) {
-		init();
-		return ao.executeInTransaction(new TransactionCallback<DdecisionKnowledgeInCommentEntity>() {
-			@Override
-			public DdecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DdecisionKnowledgeInCommentEntity databaseEntry : ao.find(DdecisionKnowledgeInCommentEntity.class)) {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (databaseEntry.getId() == aoId) {
 						return databaseEntry;
 					}
@@ -167,7 +167,7 @@ public class ActiveObjectsManager {
 		});
 	}
 
-	private static boolean equalsDatabase(DdecisionKnowledgeInCommentEntity databaseEntry, long commentId,
+	private static boolean equalsDatabase(DecisionKnowledgeInCommentEntity databaseEntry, long commentId,
 			int endSubtringCount, int startSubstringCount, long userId) {
 		if (databaseEntry.getCommentId() == commentId && databaseEntry.getEndSubstringCount() == endSubtringCount
 				&& databaseEntry.getStartSubstringCount() == startSubstringCount
@@ -179,10 +179,10 @@ public class ActiveObjectsManager {
 
 	public static void setSentenceKnowledgeType(Sentence sentence) {
 		init();
-		ao.executeInTransaction(new TransactionCallback<DdecisionKnowledgeInCommentEntity>() {
+		ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 			@Override
-			public DdecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DdecisionKnowledgeInCommentEntity databaseEntry : ao.find(DdecisionKnowledgeInCommentEntity.class)) {
+			public DecisionKnowledgeInCommentEntity doInTransaction() {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (databaseEntry.getId() == sentence.getId()) {
 						databaseEntry.setKnowledgeTypeString(sentence.getKnowledgeTypeString());
 						databaseEntry.setTaggedFineGrained(true);
@@ -202,8 +202,8 @@ public class ActiveObjectsManager {
 		return ao.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction() {
-				for (DdecisionKnowledgeInCommentEntity sentenceEntity : ao
-						.find(DdecisionKnowledgeInCommentEntity.class)) {
+				for (DecisionKnowledgeInCommentEntity sentenceEntity : ao
+						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
 						sentenceEntity.setKnowledgeTypeString(knowledgeType.toString());
 						if (knowledgeType != KnowledgeType.OTHER) {
@@ -221,12 +221,12 @@ public class ActiveObjectsManager {
 
 	public static boolean setIsRelevantIntoAo(long activeObjectId, boolean isRelevant) {
 		init();
-		DdecisionKnowledgeInCommentEntity databaseEntry = ao
-				.executeInTransaction(new TransactionCallback<DdecisionKnowledgeInCommentEntity>() {
+		DecisionKnowledgeInCommentEntity databaseEntry = ao
+				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 					@Override
-					public DdecisionKnowledgeInCommentEntity doInTransaction() {
-						for (DdecisionKnowledgeInCommentEntity databaseEntry : ao
-								.find(DdecisionKnowledgeInCommentEntity.class)) {
+					public DecisionKnowledgeInCommentEntity doInTransaction() {
+						for (DecisionKnowledgeInCommentEntity databaseEntry : ao
+								.find(DecisionKnowledgeInCommentEntity.class)) {
 							if (databaseEntry.getId() == activeObjectId) {
 								databaseEntry.setRelevant(isRelevant);
 								// If relevant is true or false, it's tagged, so set it on true
@@ -249,11 +249,11 @@ public class ActiveObjectsManager {
 		final List<Integer> starts = comment.getStartSubstringCount();
 		final List<Integer> ends = comment.getEndSubstringCount();
 
-		ao.executeInTransaction(new TransactionCallback<DdecisionKnowledgeInCommentEntity>() {
+		ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 			@Override
-			public DdecisionKnowledgeInCommentEntity doInTransaction() {
+			public DecisionKnowledgeInCommentEntity doInTransaction() {
 				boolean deleteFlag = false;
-				for (DdecisionKnowledgeInCommentEntity databaseEntry : ao.find(DdecisionKnowledgeInCommentEntity.class,
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class,
 						Query.select().where("COMMENT_ID = ?", comment.getJiraCommentId()))) {
 					if (databaseEntry.getProjectKey().equals(comment.getProjectKey()) && ( !starts.contains(databaseEntry.getStartSubstringCount())
 							|| !ends.contains(databaseEntry.getEndSubstringCount()))) {
@@ -262,8 +262,8 @@ public class ActiveObjectsManager {
 				}
 				// delete all here
 				if (deleteFlag) {
-					for (DdecisionKnowledgeInCommentEntity databaseEntry : ao.find(
-							DdecisionKnowledgeInCommentEntity.class,
+					for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(
+							DecisionKnowledgeInCommentEntity.class,
 							Query.select().where("COMMENT_ID = ?", comment.getJiraCommentId()))) {
 						try {
 							if(databaseEntry.getProjectKey().equals(comment.getProjectKey())) {
@@ -334,8 +334,8 @@ public class ActiveObjectsManager {
 		return ao.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction() {
-				for (DdecisionKnowledgeInCommentEntity sentenceEntity : ao
-						.find(DdecisionKnowledgeInCommentEntity.class)) {
+				for (DecisionKnowledgeInCommentEntity sentenceEntity : ao
+						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
 						sentenceEntity.setRelevant(false);
 						sentenceEntity.setTaggedManually(isTaggedManually);
@@ -355,14 +355,14 @@ public class ActiveObjectsManager {
 			@Override
 			public Boolean doInTransaction() {
 				int lengthDifference = 0; //TODO: Add project ID
-				for (DdecisionKnowledgeInCommentEntity sentenceEntity : ao.find(DdecisionKnowledgeInCommentEntity.class,
+				for (DecisionKnowledgeInCommentEntity sentenceEntity : ao.find(DecisionKnowledgeInCommentEntity.class,
 						"ID = ?", aoId)) {
 					int oldLength = sentenceEntity.getEndSubstringCount() - sentenceEntity.getStartSubstringCount();
 					lengthDifference = (oldLength - description.length()) * -1;
 					sentenceEntity.setEndSubstringCount(sentenceEntity.getEndSubstringCount() + lengthDifference);
 					sentenceEntity.save();
 				}
-				for (DdecisionKnowledgeInCommentEntity sentenceEntity : ao.find(DdecisionKnowledgeInCommentEntity.class,
+				for (DecisionKnowledgeInCommentEntity sentenceEntity : ao.find(DecisionKnowledgeInCommentEntity.class,
 						"COMMENT_ID = ?", commentId)) {
 					if (sentenceEntity.getStartSubstringCount() > sentenceEntity.getStartSubstringCount()
 							&& sentenceEntity.getId() != aoId && sentenceEntity.getCommentId() == commentId) {
@@ -377,16 +377,16 @@ public class ActiveObjectsManager {
 		});
 	}
 
-	public static List<Sentence> getAllSentencesByJiraCommentId(long commentId) {
-		List<Sentence> sentences = new ArrayList<Sentence>();
-		init();
-		DecisionKnowledgeInCommentEntity[] sentencesinAo = ao.find(DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("COMMENT_ID = ?", commentId));
-		for (DecisionKnowledgeInCommentEntity currentAoSentence : sentencesinAo) {
-			sentences.add(new SentenceImpl(currentAoSentence.getId()));
-		}
-		return sentences;
-	}
+//	public static List<Sentence> getAllSentencesByJiraCommentId(long commentId) {
+//		List<Sentence> sentences = new ArrayList<Sentence>();
+//		init();
+//		DecisionKnowledgeInCommentEntity[] sentencesinAo = ao.find(DecisionKnowledgeInCommentEntity.class,
+//				Query.select().where("COMMENT_ID = ?", commentId));
+//		for (DecisionKnowledgeInCommentEntity currentAoSentence : sentencesinAo) {
+//			sentences.add(new SentenceImpl(currentAoSentence.getId()));
+//		}
+//		return sentences;
+//	}
 
 	public static List<GenericLink> getGenericLinksForElement(String targetId, boolean getOnlyOutwardLink) {
 		init();
@@ -411,10 +411,10 @@ public class ActiveObjectsManager {
 	
 	public static void clearSentenceDatabaseForProject(String projectKey) {
 		init();
-		ao.executeInTransaction(new TransactionCallback<DdecisionKnowledgeInCommentEntity>() {
+		ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 			@Override
-			public DdecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DdecisionKnowledgeInCommentEntity databaseEntry : ao.find(DdecisionKnowledgeInCommentEntity.class,
+			public DecisionKnowledgeInCommentEntity doInTransaction() {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class,
 						Query.select().where("PROJECT_KEY = ?", projectKey))) {
 					deleteLinksIfExisting("s" + databaseEntry.getId());
 					try {
