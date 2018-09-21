@@ -5,7 +5,7 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Ssentence;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager2;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -50,13 +50,13 @@ public class ClassificationManagerForCommentSentences {
 			for (Ssentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 					sentence.setKnowledgeType(classificationResult.get(i));
-					ActiveObjectsManager2.setSentenceKnowledgeType(sentence);
+					ActiveObjectsManager.setSentenceKnowledgeType(sentence);
 					 
 					sentence.setTaggedFineGrained(true);
 					i++;
 				} else if (sentence.isRelevant() && sentence.isTaggedFineGrained() && sentence.isPlainText()) {
 					sentence.setKnowledgeTypeString(
-							ActiveObjectsManager2.getElementFromAO(sentence.getId()).getKnowledgeTypeString());
+							ActiveObjectsManager.getElementFromAO(sentence.getId()).getKnowledgeTypeString());
 				}
 			}
 		}
@@ -69,7 +69,7 @@ public class ClassificationManagerForCommentSentences {
 			for (Ssentence sentence : comment.getSentences()) {
 				if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {
 					sentence.setKnowledgeTypeString(
-							ActiveObjectsManager2.getElementFromAO(sentence.getId()).getKnowledgeTypeString());
+							ActiveObjectsManager.getElementFromAO(sentence.getId()).getKnowledgeTypeString());
 				}
 			}
 		}
@@ -83,7 +83,7 @@ public class ClassificationManagerForCommentSentences {
 			for (Ssentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForBinaryClassification(sentence)) {
 					sentence.setRelevant(classificationResult.get(i));
-					ActiveObjectsManager2.setIsRelevantIntoAo(sentence.getId(), sentence.isRelevant());
+					ActiveObjectsManager.setIsRelevantIntoAo(sentence.getId(), sentence.isRelevant());
 					sentence.setTagged(true);
 					i++;
 				}
@@ -96,7 +96,7 @@ public class ClassificationManagerForCommentSentences {
 		for (Comment comment : commentsList) {
 			for (Ssentence sentence : comment.getSentences()) {
 				sentence.setRelevant(
-						ActiveObjectsManager2.getElementFromAO(sentence.getId()).isRelevant());
+						ActiveObjectsManager.getElementFromAO(sentence.getId()).isRelevant());
 			}
 		}
 		return commentsList;

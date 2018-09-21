@@ -25,7 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLinkImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager2;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DdecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -190,7 +190,7 @@ public class KnowledgeRest {
 	public Response changeKnowledgeTypeOfSentence(@QueryParam("projectKey") String projectKey,
 			@Context HttpServletRequest request, DecisionKnowledgeElement newElement) {
 		if (projectKey != null && request != null && newElement != null) {
-			Boolean result = ActiveObjectsManager2.updateKnowledgeTypeOfSentence(newElement.getId(),
+			Boolean result = ActiveObjectsManager.updateKnowledgeTypeOfSentence(newElement.getId(),
 					newElement.getType());
 			if (!result) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -208,7 +208,7 @@ public class KnowledgeRest {
 	public Response setSentenceIrrelevant(@Context HttpServletRequest request,
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement.getId() > 0) {
-			boolean isDeleted = ActiveObjectsManager2.setSentenceIrrelevant(decisionKnowledgeElement.getId(), true);
+			boolean isDeleted = ActiveObjectsManager.setSentenceIrrelevant(decisionKnowledgeElement.getId(), true);
 			if (isDeleted) {
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 			} else {
@@ -230,7 +230,7 @@ public class KnowledgeRest {
 		if (decisionKnowledgeElement != null && request != null) {
 
 			// Get corresponding element from ao database
-			DdecisionKnowledgeInCommentEntity databaseEntity = ActiveObjectsManager2
+			DdecisionKnowledgeInCommentEntity databaseEntity = ActiveObjectsManager
 					.getElementFromAO(decisionKnowledgeElement.getId());
 			if ((databaseEntity.getEndSubstringCount()
 					- databaseEntity.getStartSubstringCount()) != decisionKnowledgeElement.getDescription().length()) {
@@ -250,9 +250,9 @@ public class KnowledgeRest {
 				cm.update(mc, true);
 			}
 
-			ActiveObjectsManager2.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),
+			ActiveObjectsManager.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),
 					decisionKnowledgeElement.getType());
-			ActiveObjectsManager2.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(), decisionKnowledgeElement.getId(),
+			ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(), decisionKnowledgeElement.getId(),
 					decisionKnowledgeElement.getDescription());
 
 			Response r = Response.status(Status.OK).entity(ImmutableMap.of("id", decisionKnowledgeElement.getId()))
@@ -302,13 +302,13 @@ public class KnowledgeRest {
 			GenericLinkImpl link) {
 		System.out.println(link.toString());
 		if (projectKey != null && request != null && link != null) {
-			boolean isDeleted = ActiveObjectsManager2.deleteGenericLink(link);
+			boolean isDeleted = ActiveObjectsManager.deleteGenericLink(link);
 			if (isDeleted) {
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 			} else {
 				GenericLink inverseLink = new GenericLinkImpl(link.getIdOfSourceElement(),
 						link.getIdOfDestinationElement());
-				isDeleted = ActiveObjectsManager2.deleteGenericLink(inverseLink);
+				isDeleted = ActiveObjectsManager.deleteGenericLink(inverseLink);
 				if (isDeleted) {
 					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 				} else {
@@ -329,7 +329,7 @@ public class KnowledgeRest {
 			GenericLink link) {
 		if (projectKey != null && request != null && link != null) {
 			ApplicationUser user = getCurrentUser(request);
-			long linkId = ActiveObjectsManager2.insertGenericLink(link, user);
+			long linkId = ActiveObjectsManager.insertGenericLink(link, user);
 			if (linkId == 0) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();

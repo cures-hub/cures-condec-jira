@@ -15,7 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLinkImpl;
 import net.java.ao.Query;
 
-public class ActiveObjectsManager2 {
+public class ActiveObjectsManager {
 
 	private static ActiveObjects ao;
 

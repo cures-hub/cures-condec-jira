@@ -8,7 +8,7 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager2;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 
 public class Comment {
 
@@ -61,12 +61,12 @@ public class Comment {
 	private void splitCommentIntoSentences(boolean addSentencesToAo, long issueId) {
 		List<String> rawSentences = this.splitter.sliceCommentRecursionCommander(this.body);
 		runBreakIterator(rawSentences);
-		ActiveObjectsManager2.checkIfCommentBodyHasChangedOutsideOfPlugin(this);
+		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(this);
 		// Create AO entries
 		for (int i = 0; i < this.splitter.getStartSubstringCount().size(); i++) {
 			int startIndex = this.splitter.getStartSubstringCount().get(i);
 			int endIndex = this.splitter.getEndSubstringCount().get(i);
-			long aoId2 = ActiveObjectsManager2.addNewSentenceintoAo(this.jiraCommentId, endIndex, startIndex,
+			long aoId2 = ActiveObjectsManager.addNewSentenceintoAo(this.jiraCommentId, endIndex, startIndex,
 					this.authorId, issueId, projectKey);
 			this.sentences.add(new SsentenceImpl(this.body.substring(startIndex, endIndex), aoId2));
 

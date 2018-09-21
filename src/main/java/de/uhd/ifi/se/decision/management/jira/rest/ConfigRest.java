@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.GitConfig;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager2;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
@@ -327,7 +327,7 @@ public class ConfigRest {
 			return isValidDataResponse;
 		}
 		try {
-			ActiveObjectsManager2.clearSentenceDatabaseForProject(projectKey);
+			ActiveObjectsManager.clearSentenceDatabaseForProject(projectKey);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
