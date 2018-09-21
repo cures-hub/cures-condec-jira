@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Ssentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -47,7 +47,7 @@ public class ClassificationManagerForCommentSentences {
 		int i = 0;
 
 		for (Comment comment : commentsList) {
-			for (Ssentence sentence : comment.getSentences()) {
+			for (Sentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 					sentence.setKnowledgeType(classificationResult.get(i));
 					ActiveObjectsManager.setSentenceKnowledgeType(sentence);
@@ -66,7 +66,7 @@ public class ClassificationManagerForCommentSentences {
 
 	private List<Comment> loadSentencesFineGrainedKnowledgeTypesFromActiveObjects(List<Comment> commentsList) {
 		for (Comment comment : commentsList) {
-			for (Ssentence sentence : comment.getSentences()) {
+			for (Sentence sentence : comment.getSentences()) {
 				if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {
 					sentence.setKnowledgeTypeString(
 							ActiveObjectsManager.getElementFromAO(sentence.getId()).getKnowledgeTypeString());
@@ -80,7 +80,7 @@ public class ClassificationManagerForCommentSentences {
 			List<Comment> commentsList) {
 		int i = 0;
 		for (Comment comment : commentsList) {
-			for (Ssentence sentence : comment.getSentences()) {
+			for (Sentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForBinaryClassification(sentence)) {
 					sentence.setRelevant(classificationResult.get(i));
 					ActiveObjectsManager.setIsRelevantIntoAo(sentence.getId(), sentence.isRelevant());
@@ -94,7 +94,7 @@ public class ClassificationManagerForCommentSentences {
 
 	public List<Comment> writeDataFromActiveObjectsToSentences(List<Comment> commentsList) {
 		for (Comment comment : commentsList) {
-			for (Ssentence sentence : comment.getSentences()) {
+			for (Sentence sentence : comment.getSentences()) {
 				sentence.setRelevant(
 						ActiveObjectsManager.getElementFromAO(sentence.getId()).isRelevant());
 			}
@@ -119,7 +119,7 @@ public class ClassificationManagerForCommentSentences {
 		return wekaAttributes;
 	}
 
-	private DenseInstance createInstance(int size, ArrayList<Attribute> wekaAttributes, Ssentence sentence) {
+	private DenseInstance createInstance(int size, ArrayList<Attribute> wekaAttributes, Sentence sentence) {
 		DenseInstance newInstance = new DenseInstance(size);
 		newInstance.setValue(wekaAttributes.get(0), sentence.getBody());
 		return newInstance;
@@ -131,7 +131,7 @@ public class ClassificationManagerForCommentSentences {
 
 		data.setClassIndex(data.numAttributes() - 1);
 		for (Comment comment : commentsList) {
-			for (Ssentence sentence : comment.getSentences()) {
+			for (Sentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForBinaryClassification(sentence)) {
 					data.add(createInstance(2, wekaAttributes, sentence));
 				}
@@ -156,7 +156,7 @@ public class ClassificationManagerForCommentSentences {
 		Instances data = new Instances("sentences: -C 5 ", wekaAttributes, 1000000);
 
 		for (Comment comment : commentsList) {
-			for (Ssentence sentence : comment.getSentences()) {
+			for (Sentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 					Instance newInstance = new DenseInstance(6);
 					newInstance.setValue(attributeText, sentence.getBody());
@@ -173,11 +173,11 @@ public class ClassificationManagerForCommentSentences {
 	 *            qualified if its plain text, and not yet tagged.
 	 * @return boolean identifier
 	 */
-	private static boolean isSentenceQualifiedForBinaryClassification(Ssentence sentence) {
+	private static boolean isSentenceQualifiedForBinaryClassification(Sentence sentence) {
 		return !sentence.isTagged() && sentence.isPlainText();
 	}
 
-	private static boolean isSentenceQualifiedForFineGrainedClassification(Ssentence sentence) {
+	private static boolean isSentenceQualifiedForFineGrainedClassification(Sentence sentence) {
 		return sentence.isRelevant() && !sentence.isTaggedFineGrained() && sentence.isPlainText();
 	}
 

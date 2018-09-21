@@ -8,7 +8,7 @@ import java.util.Map;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Ssentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 
 /**
@@ -91,7 +91,7 @@ public class GraphImpl implements Graph {
 	}
 
 	private String getIdentifier(DecisionKnowledgeElement element) {
-		if (element instanceof Ssentence) {
+		if (element instanceof Sentence) {
 			return "s";
 		} else {
 			return "i";

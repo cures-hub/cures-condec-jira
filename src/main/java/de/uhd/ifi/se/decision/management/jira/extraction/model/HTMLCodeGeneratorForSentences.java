@@ -4,9 +4,9 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class HTMLCodeGeneratorForSentences {
 
-	private Ssentence sentence;
+	private Sentence sentence;
 
-	public String getCodedElement(Ssentence sentence) {
+	public String getCodedElement(Sentence sentence) {
 		this.sentence = sentence;
 
 		if (sentence.isRelevant() && sentence.isPlainText()) {

@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.model;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import net.java.ao.schema.Ignore;
 
-public interface Ssentence extends DecisionKnowledgeElement{
+public interface Sentence extends DecisionKnowledgeElement{
 
 	boolean isRelevant();
 

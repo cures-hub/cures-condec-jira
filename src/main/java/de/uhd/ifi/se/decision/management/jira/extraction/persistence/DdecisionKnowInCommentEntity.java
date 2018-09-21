@@ -2,7 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
 
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Ssentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -14,7 +14,7 @@ import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
 
 @Table("Ssentence")
-public interface DdecisionKnowInCommentEntity extends RawEntity<Long>, Ssentence{
+public interface DdecisionKnowInCommentEntity extends RawEntity<Long>, Sentence{
 	
 	@AutoIncrement
 	@PrimaryKey("ID")

@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.EntityManager;
 import net.java.ao.RawEntity;
 
-public class SsentenceImpl extends DecisionKnowledgeElementImpl implements Ssentence,DdecisionKnowledgeInCommentEntity {
+public class SsentenceImpl extends DecisionKnowledgeElementImpl implements Sentence,DdecisionKnowledgeInCommentEntity {
 
 	private boolean isTagged;
 

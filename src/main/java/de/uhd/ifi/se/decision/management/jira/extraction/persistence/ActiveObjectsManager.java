@@ -8,7 +8,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Ssentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.SsentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
@@ -128,7 +128,7 @@ public class ActiveObjectsManager {
 
 	}
 
-	public static void updateSentenceElement(Ssentence sentence) {
+	public static void updateSentenceElement(Sentence sentence) {
 		init();
 		ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 			@Override
@@ -177,7 +177,7 @@ public class ActiveObjectsManager {
 		return false;
 	}
 
-	public static void setSentenceKnowledgeType(Ssentence sentence) {
+	public static void setSentenceKnowledgeType(Sentence sentence) {
 		init();
 		ao.executeInTransaction(new TransactionCallback<DdecisionKnowledgeInCommentEntity>() {
 			@Override
@@ -377,8 +377,8 @@ public class ActiveObjectsManager {
 		});
 	}
 
-	public static List<Ssentence> getAllSentencesByJiraCommentId(long commentId) {
-		List<Ssentence> sentences = new ArrayList<Ssentence>();
+	public static List<Sentence> getAllSentencesByJiraCommentId(long commentId) {
+		List<Sentence> sentences = new ArrayList<Sentence>();
 		init();
 		DecisionKnowledgeInCommentEntity[] sentencesinAo = ao.find(DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("COMMENT_ID = ?", commentId));

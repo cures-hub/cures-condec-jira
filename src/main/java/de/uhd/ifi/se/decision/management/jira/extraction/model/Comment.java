@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjec
 
 public class Comment {
 
-	private List<Ssentence> sentences;
+	private List<Sentence> sentences;
 
 	private String body = "";
 
@@ -29,7 +29,7 @@ public class Comment {
 	private CommentSplitter splitter;
 
 	public Comment() {
-		this.sentences = new ArrayList<Ssentence>();
+		this.sentences = new ArrayList<Sentence>();
 		this.created = new Date();
 		this.authorFullName = "";
 		this.jiraCommentId = 0;
@@ -95,18 +95,18 @@ public class Comment {
 		}
 	}
 
-	public List<Ssentence> getSentences() {
+	public List<Sentence> getSentences() {
 		return sentences;
 	}
 
-	public void setSentences(ArrayList<Ssentence> sentences) {
+	public void setSentences(ArrayList<Sentence> sentences) {
 		this.sentences = sentences;
 	}
 
 	public String getTaggedBody(int index) {
 		HTMLCodeGeneratorForSentences hTMLGen = new HTMLCodeGeneratorForSentences();
 		String result = "<span id=\"comment" + index + "\">";
-		for (Ssentence sentence : this.sentences) {
+		for (Sentence sentence : this.sentences) {
 			result += hTMLGen.getCodedElement(sentence);
 		}
 		return result + "</span>";
