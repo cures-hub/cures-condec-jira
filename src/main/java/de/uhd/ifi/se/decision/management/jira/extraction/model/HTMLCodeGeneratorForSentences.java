@@ -24,8 +24,8 @@ public class HTMLCodeGeneratorForSentences {
 		}
 		return "<span class=\"sentence " + sentence.getKnowledgeTypeString() + "\"  id  = ui" + sentence.getId() + ">"
 				+ this.getOpeningTagSpan() + "<span class = sentenceBody>"
-				+ sentence.getBody().substring(0 + getTagLength(true),
-						sentence.getBody().length() - getTagLength(false))
+				+ sentence.getBody()//.substring(0 + getTagLength(true),
+					//	sentence.getBody().length() - getTagLength(false))
 				+ "</span>" + this.getClosingTagSpan() + "</span>";
 
 	}

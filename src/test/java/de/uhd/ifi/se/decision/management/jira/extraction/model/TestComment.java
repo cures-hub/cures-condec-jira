@@ -276,8 +276,8 @@ public class TestComment extends TestSetUp {
 	
 	@Test
 	@NonTransactional
-	public void TestManuallyTagging() {
-		Comment comment = getComment("[pro]this is a manual pro tagged sentence [/pro]");
+	public void TestManuallyTaggingPro() {
+		Comment comment = getComment("[Pro]this is a manual pro tagged sentence [/Pro]");
 		//test the result in splits, fails when checked with equals
 		assertTrue(comment.getTaggedBody(0).contains("<span id=\"comment0\">"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Pro\"  id  = ui1>"));
@@ -287,6 +287,38 @@ public class TestComment extends TestSetUp {
 		assertTrue(comment.getTaggedBody(0).contains("this is a manual pro tagged sentence "));
 		//important that the tag is not inside the text area
 		assertTrue(comment.getTaggedBody(0).contains("</span><span class =tag>[/Pro]</span>"));
+		assertTrue(comment.getTaggedBody(0).contains("</span></span>"));		
+	}
+	
+	@Test
+	@NonTransactional
+	public void TestManuallyTaggingDecision() {
+		Comment comment = getComment("[Decision]this is a manual pro tagged sentence [/Decision]");
+		//test the result in splits, fails when checked with equals
+		assertTrue(comment.getTaggedBody(0).contains("<span id=\"comment0\">"));
+		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Decision\"  id  = ui1>"));
+		//important that the tag is not inside the text area
+		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[Decision]</span>")); 
+		assertTrue(comment.getTaggedBody(0).contains("<span class = sentenceBody>"));
+		assertTrue(comment.getTaggedBody(0).contains("this is a manual pro tagged sentence "));
+		//important that the tag is not inside the text area
+		assertTrue(comment.getTaggedBody(0).contains("</span><span class =tag>[/Decision]</span>"));
+		assertTrue(comment.getTaggedBody(0).contains("</span></span>"));		
+	}
+	
+	@Test
+	@NonTransactional
+	public void TestManuallyTaggingIssue() {
+		Comment comment = getComment("[Issue]this is a manual pro tagged sentence [/Issue]");
+		//test the result in splits, fails when checked with equals
+		assertTrue(comment.getTaggedBody(0).contains("<span id=\"comment0\">"));
+		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Issue\"  id  = ui1>"));
+		//important that the tag is not inside the text area
+		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[Issue]</span>")); 
+		assertTrue(comment.getTaggedBody(0).contains("<span class = sentenceBody>"));
+		assertTrue(comment.getTaggedBody(0).contains("this is a manual pro tagged sentence "));
+		//important that the tag is not inside the text area
+		assertTrue(comment.getTaggedBody(0).contains("</span><span class =tag>[/Issue]</span>"));
 		assertTrue(comment.getTaggedBody(0).contains("</span></span>"));		
 	}
 	

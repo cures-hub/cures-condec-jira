@@ -345,21 +345,23 @@ public class ActiveObjectsManager {
 			@Override
 			public Boolean doInTransaction() {
 				int lengthDifference = 0; // TODO: Add project ID
+				int oldStart = 0;
 				for (DecisionKnowledgeInCommentEntity sentenceEntity : ao.find(DecisionKnowledgeInCommentEntity.class,
 						"ID = ?", aoId)) {
 					int oldLength = sentenceEntity.getEndSubstringCount() - sentenceEntity.getStartSubstringCount();
 					lengthDifference = (oldLength - description.length()) * -1;
 					sentenceEntity.setEndSubstringCount(sentenceEntity.getEndSubstringCount() + lengthDifference);
 					sentenceEntity.save();
+					oldStart = sentenceEntity.getStartSubstringCount();
 				}
-				for (DecisionKnowledgeInCommentEntity sentenceEntity : ao.find(DecisionKnowledgeInCommentEntity.class,
+				for (DecisionKnowledgeInCommentEntity otherSentenceInComment : ao.find(DecisionKnowledgeInCommentEntity.class,
 						"COMMENT_ID = ?", commentId)) {
-					if (sentenceEntity.getStartSubstringCount() > sentenceEntity.getStartSubstringCount()
-							&& sentenceEntity.getId() != aoId && sentenceEntity.getCommentId() == commentId) {
-						sentenceEntity
-								.setStartSubstringCount(sentenceEntity.getStartSubstringCount() + lengthDifference);
-						sentenceEntity.setEndSubstringCount(sentenceEntity.getEndSubstringCount() + lengthDifference);
-						sentenceEntity.save();
+					if (otherSentenceInComment.getStartSubstringCount() > oldStart
+							&& otherSentenceInComment.getId() != aoId && otherSentenceInComment.getCommentId() == commentId) {
+						otherSentenceInComment
+								.setStartSubstringCount(otherSentenceInComment.getStartSubstringCount() + lengthDifference);
+						otherSentenceInComment.setEndSubstringCount(otherSentenceInComment.getEndSubstringCount() + lengthDifference);
+						otherSentenceInComment.save();
 					}
 				}
 				return true;

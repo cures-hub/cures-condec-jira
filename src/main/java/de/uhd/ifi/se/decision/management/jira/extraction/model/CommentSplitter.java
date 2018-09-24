@@ -16,8 +16,8 @@ public class CommentSplitter {
 
 	public static final String[] excludedTagList = new String[] { "{code}", "{quote}", "{noformat}", "[issue]" };
 
-	public static final String[] excludedRationaleList = new String[] { "[issue]", "[decision]", "[alternative]", "[pro]",
-			"[con]" };
+	public static final String[] excludedRationaleList = new String[] { "[Issue]", "[Decision]", "[Alternative]", "[Pro]",
+			"[Con]" };
 
 	public CommentSplitter() {
 		this.setStartSubstringCount(new ArrayList<Integer>());
@@ -29,8 +29,10 @@ public class CommentSplitter {
 
 		firstSplit = searchForFurtherTags(firstSplit, "{noformat}", "{noformat}");
 		firstSplit = searchForFurtherTags(firstSplit, "{code:", "{code}");
-		firstSplit = searchForFurtherTags(firstSplit, "[issue]", "[/issue]");
-		firstSplit = searchForFurtherTags(firstSplit, "[pro]", "[/pro]");
+		for (int i = 0; i < excludedRationaleList.length; i++) {
+			String tag = excludedRationaleList[i];
+			firstSplit = searchForFurtherTags(firstSplit, tag, tag.replace("[", "[/"));
+		}
 
 		return firstSplit;
 	}
@@ -97,22 +99,22 @@ public class CommentSplitter {
 	}
 
 	public static String getKnowledgeTypeFromManuallIssueTag(String body) {
-		if(body.toLowerCase().contains("[issue]")) {
+		if(body.contains("[Issue]")) {
 			return KnowledgeType.ISSUE.toString();
 		}
-		if(body.toLowerCase().contains("[alternative]")) {
+		if(body.contains("[Alternative]")) {
 			return KnowledgeType.ALTERNATIVE.toString();
 		}
-		if(body.toLowerCase().contains("[decision]")) {
+		if(body.contains("[Decision]")) {
 			return KnowledgeType.DECISION.toString();
 		}
-		if(body.toLowerCase().contains("[pro]")) {
+		if(body.contains("[Pro]")) {
 			return"pro";
 		}
-		if(body.toLowerCase().contains("[con]")) {
+		if(body.contains("[Con]")) {
 			return "con";
 		}
-		return KnowledgeType.OTHER.toString();
+		return "";
 	}
 
 }

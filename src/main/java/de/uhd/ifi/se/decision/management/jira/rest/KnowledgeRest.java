@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLinkImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
@@ -249,19 +250,21 @@ public class KnowledgeRest {
 				String sentenceToSearch = Comment.textRule(mc.getBody())
 						.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount());
 				int index = mc.getBody().indexOf(sentenceToSearch);
-
+				
+				String tag = "["+CommentSplitter.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch)+"]";
 				String first = mc.getBody().substring(0, index);
-				String second = decisionKnowledgeElement.getDescription();
+				String second = tag + decisionKnowledgeElement.getDescription()+ tag.replace("[","[/");
 				String third = mc.getBody().substring(index + sentenceToSearch.length());
 
 				mc.setBody(first + second + third);
 				cm.update(mc, true);
+				ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(), decisionKnowledgeElement.getId(),
+						second);
 			}
 
 			ActiveObjectsManager.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),
 					decisionKnowledgeElement.getType());
-			ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(), decisionKnowledgeElement.getId(),
-					decisionKnowledgeElement.getDescription());
+			
 
 			Response r = Response.status(Status.OK).entity(ImmutableMap.of("id", decisionKnowledgeElement.getId()))
 					.build();

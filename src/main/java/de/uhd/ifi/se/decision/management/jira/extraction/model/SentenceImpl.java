@@ -245,13 +245,21 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		} else {
 			this.isPlainText = true;
 		}
-		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.excludedRationaleList) >= 0) {
+		if (StringUtils.indexOfAny(body, CommentSplitter.excludedRationaleList) >= 0) {
 			this.setKnowledgeTypeString(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body));
 			setManuallyTagged();
+			stripTagsFromBody();
 		}
 	}
 
 
+
+	private void stripTagsFromBody() {
+		int tagLength = 2+ CommentSplitter.getKnowledgeTypeFromManuallIssueTag(this.getBody()).length();
+		super.setDescription(this.getBody().substring(tagLength, this.getBody().length()-(1+tagLength)));
+		super.setSummary(super.getDescription());
+		
+	}
 
 	private void setManuallyTagged() {
 		this.setPlainText(false);
