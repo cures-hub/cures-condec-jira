@@ -14,7 +14,7 @@ import weka.core.Instances;
 public class ClassificationManagerForCommentSentences {
 
 	private DecisionKnowledgeClassifier classifier;
-
+	//TODO: Update knowledge types if classifer changes
 	private String[] knowledgeTypes = { "isAlternative", "isPro", "isCon", "isDecision", "isIssue" };
 
 	public ClassificationManagerForCommentSentences() {
@@ -51,9 +51,10 @@ public class ClassificationManagerForCommentSentences {
 				if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 					sentence.setKnowledgeType(classificationResult.get(i));
 					ActiveObjectsManager.setSentenceKnowledgeType(sentence);
-					sentence.setIsTaggedFineGrained(true);
+
+					sentence.setTaggedFineGrained(true);
 					i++;
-				} else if (sentence.isRelevant() && sentence.isTaggedFineGrained() && sentence.isPlanText()) {
+				} else if (sentence.isRelevant() && sentence.isTaggedFineGrained() && sentence.isPlainText()) {
 					sentence.setKnowledgeTypeString(
 							ActiveObjectsManager.getElementFromAO(sentence.getId()).getKnowledgeTypeString());
 				}
@@ -82,8 +83,8 @@ public class ClassificationManagerForCommentSentences {
 			for (Sentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForBinaryClassification(sentence)) {
 					sentence.setRelevant(classificationResult.get(i));
-					ActiveObjectsManager.setIsRelevantIntoAo(sentence.getActiveObjectId(), sentence.isRelevant());
-					sentence.setIsTagged(true);
+					ActiveObjectsManager.setIsRelevantIntoAo(sentence.getId(), sentence.isRelevant());
+					sentence.setTagged(true);
 					i++;
 				}
 			}
@@ -94,8 +95,7 @@ public class ClassificationManagerForCommentSentences {
 	public List<Comment> writeDataFromActiveObjectsToSentences(List<Comment> commentsList) {
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
-				sentence.setIsRelevant(
-						ActiveObjectsManager.getElementFromAO(sentence.getActiveObjectId()).isRelevant());
+				sentence.setRelevant(ActiveObjectsManager.getElementFromAO(sentence.getId()).isRelevant());
 			}
 		}
 		return commentsList;
@@ -142,7 +142,7 @@ public class ClassificationManagerForCommentSentences {
 	private Instances createDatasetForfineGrainedClassification(List<Comment> commentsList) {
 		ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
 
-		// Declare Class value with {0,1} as possible values 
+		// Declare Class value with {0,1} as possible values
 		for (int i = 0; i < knowledgeTypes.length; i++) {
 			wekaAttributes.add(new Attribute(knowledgeTypes[i], createClassAttributeList(), i));
 		}
@@ -173,11 +173,11 @@ public class ClassificationManagerForCommentSentences {
 	 * @return boolean identifier
 	 */
 	private static boolean isSentenceQualifiedForBinaryClassification(Sentence sentence) {
-		return !sentence.isTagged() && sentence.isPlanText();
+		return !sentence.isTagged() && sentence.isPlainText();
 	}
 
 	private static boolean isSentenceQualifiedForFineGrainedClassification(Sentence sentence) {
-		return sentence.isRelevant() && !sentence.isTaggedFineGrained() && sentence.isPlanText();
+		return sentence.isRelevant() && !sentence.isTaggedFineGrained() && sentence.isPlainText();
 	}
 
 	public DecisionKnowledgeClassifier getClassifier() {

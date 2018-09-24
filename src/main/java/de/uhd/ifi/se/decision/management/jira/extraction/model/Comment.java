@@ -30,18 +30,12 @@ public class Comment {
 
 	public Comment() {
 		this.sentences = new ArrayList<Sentence>();
-		this.sentences = new ArrayList<Sentence>();
 		this.created = new Date();
-		this.authorFullName = "";
+		this.authorFullName = " ";
 		this.jiraCommentId = 0;
 		this.authorId = 0;
 		this.splitter = new CommentSplitter();
-	}
-
-	public Comment(String comment) {
-		this();
-		this.body = textRule(comment);
-		splitCommentIntoSentences(true, 0);
+		this.projectKey = " ";
 	}
 
 	public Comment(com.atlassian.jira.issue.comments.Comment comment) {
@@ -59,17 +53,18 @@ public class Comment {
 		return text.replace("<br>", " ").toString();
 	}
 
-	private void splitCommentIntoSentences(boolean addSentencesToAo, long issueId) {
+	private void splitCommentIntoSentences(boolean addSentencesToAo, Long issueId) {
 		List<String> rawSentences = this.splitter.sliceCommentRecursionCommander(this.body);
 		runBreakIterator(rawSentences);
 		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(this);
 		// Create AO entries
 		for (int i = 0; i < this.splitter.getStartSubstringCount().size(); i++) {
-			long aoId = ActiveObjectsManager.addNewSentenceintoAo(this.jiraCommentId, false,
-					this.splitter.getEndSubstringCount().get(i), this.splitter.getStartSubstringCount().get(i),
-					this.authorId, issueId, projectKey);
-			this.sentences.add(new Sentence(this.body.substring(this.splitter.getStartSubstringCount().get(i),
-					this.splitter.getEndSubstringCount().get(i)), aoId, jiraCommentId, projectKey));
+			int startIndex = this.splitter.getStartSubstringCount().get(i);
+			int endIndex = this.splitter.getEndSubstringCount().get(i);
+			long aoId2 = ActiveObjectsManager.addNewSentenceintoAo(this.jiraCommentId, endIndex, startIndex,
+					this.authorId, issueId, this.projectKey);
+			this.sentences.add(new SentenceImpl(this.body.substring(startIndex, endIndex), aoId2));
+
 		}
 	}
 
@@ -104,28 +99,10 @@ public class Comment {
 	}
 
 	public String getTaggedBody(int index) {
+		HTMLCodeGeneratorForSentences hTMLGen = new HTMLCodeGeneratorForSentences();
 		String result = "<span id=\"comment" + index + "\">";
 		for (Sentence sentence : this.sentences) {
-			if (sentence.isRelevant() && sentence.isPlanText()) {
-				result = result + "<span class=\"sentence " + sentence.getKnowledgeTypeString() + "\"  id  = ui"
-						+ sentence.getActiveObjectId() + ">" + sentence.getOpeningTagSpan()
-						+ "<span class = sentenceBody>" + sentence.getBody() + "</span>" + sentence.getClosingTagSpan()
-						+ "</span>";
-			}else 
-			if (!sentence.isRelevant() && sentence.isPlanText()) {
-				result = result + "<span class=\"sentence isNotRelevant\"  id  = ui" + sentence.getActiveObjectId()
-						+ ">" + sentence.getOpeningTagSpan() + "<span class = sentenceBody>" + sentence.getBody()
-						+ "</span>" + sentence.getClosingTagSpan() + "</span>";
-			}else
-			if (!sentence.isRelevant() && !sentence.isPlanText()) {
-				result = result + sentence.getSpecialBodyWithHTMLCodes();
-			}else {
-				result = result + "<span class=\"sentence " + sentence.getKnowledgeTypeString() + "\"  id  = ui"
-						+ sentence.getActiveObjectId() + ">" + sentence.getOpeningTagSpan()
-						+ "<span class = sentenceBody>" + sentence.getBody().substring(0+"[issue]".length(), sentence.getBody().length()-"[/issue]".length()) + "</span>" + sentence.getClosingTagSpan()
-						+ "</span>";
-			}
-
+			result += hTMLGen.getCodedElement(sentence);
 		}
 		return result + "</span>";
 	}

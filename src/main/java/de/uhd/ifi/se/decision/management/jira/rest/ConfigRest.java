@@ -21,7 +21,6 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.config.GitConfig;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -45,7 +44,7 @@ public class ConfigRest {
 	@Path("/setActivated")
 	@POST
 	public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivated") String isActivatedString) {
+			@QueryParam("isActivatedString") String isActivatedString) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -274,8 +273,7 @@ public class ConfigRest {
 		}
 		try {
 			ConfigPersistence.setGitAddress(projectKey, gitAddress);
-			GitConfig gitConfig = new GitConfig(projectKey, gitAddress);
-			// TODO
+			// TODO GitConfig gitConfig = new GitConfig(projectKey, gitAddress);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -292,6 +290,29 @@ public class ConfigRest {
 		}
 		String gitAddress = ConfigPersistence.getGitAddress(projectKey);
 		return Response.ok(gitAddress).build();
+	}
+
+	@Path("/setWebhookEnabled")
+	@POST
+	public Response setWebhookEnabled(@Context HttpServletRequest request,
+			@QueryParam("projectKey") final String projectKey,
+			@QueryParam("isActivated") final String isActivatedString) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if (isActivatedString == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Webhook Activation bookean = null")).build();
+		}
+		try {
+			boolean isActivated = Boolean.valueOf(isActivatedString);
+			ConfigPersistence.setWebhookEnabled(projectKey, isActivated);
+			return Response.ok(Status.ACCEPTED).build();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
 	}
 
 	@Path("/setWebhookData")

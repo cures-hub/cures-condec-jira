@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLinkImpl;
 
 public class GenericLinkManager {
-	
+
 	private static ActiveObjects ao;
 
 	public static void init() {
@@ -20,7 +20,7 @@ public class GenericLinkManager {
 			ao = ComponentGetter.getActiveObjects();
 		}
 	}
-	
+
 	public static List<GenericLink> getGenericLinksForElement(String targetId, boolean getOnlyOutwardLink) {
 		init();
 		List<GenericLink> links = new ArrayList<GenericLink>();
@@ -50,7 +50,9 @@ public class GenericLinkManager {
 				for (LinkBetweenDifferentEntitiesEntity linkEntity : ao
 						.find(LinkBetweenDifferentEntitiesEntity.class)) {
 					if (linkEntity.getIdOfSourceElement() == link.getIdOfSourceElement()
-							&& linkEntity.getIdOfDestinationElement() == link.getIdOfDestinationElement()// Check inverse link
+							&& linkEntity.getIdOfDestinationElement() == link.getIdOfDestinationElement()// Check
+																											// inverse
+																											// link
 							|| linkEntity.getIdOfDestinationElement() == link.getIdOfSourceElement()
 									&& linkEntity.getIdOfSourceElement() == link.getIdOfDestinationElement()) {
 						return linkEntity.getId();

@@ -11,8 +11,8 @@ public class CommentSplitter {
 	private List<Integer> startSubstringCount;
 
 	private List<Integer> endSubstringCount;
-	
-	public static String[] excludedTagList = new String[] { "{code}", "{quote}", "{noformat}","[issue]" };
+
+	public static String[] excludedTagList = new String[] { "{code}", "{quote}", "{noformat}", "[issue]" };
 
 	public CommentSplitter() {
 		this.setStartSubstringCount(new ArrayList<Integer>());
@@ -25,7 +25,6 @@ public class CommentSplitter {
 		firstSplit = searchForFurtherTags(firstSplit, "{noformat}", "{noformat}");
 		firstSplit = searchForFurtherTags(firstSplit, "{code:", "{code}");
 		firstSplit = searchForFurtherTags(firstSplit, "[issue]", "[/issue]");
-		
 
 		return firstSplit;
 	}

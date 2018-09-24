@@ -165,30 +165,51 @@ public interface DecisionKnowledgeProject {
 	void setKnowledgeExtractedFromIssues(boolean isKnowledgeExtractedFromIssues);
 
 	/**
-	 * Returns the address of the git repository for this project.
+	 * Return the address of the git repository for this project.
 	 *
 	 * @return git address as a String (if it is set, otherwise an empty String).
 	 */
 	String getGitAddress();
 
 	/**
-	 * Set the Url where the Data should be send and also set the Secret for th
-	 * submission.
+	 * Set whether the webhook is enabled for this project.
 	 *
-	 * @param webhookData
+	 * @param isWebhookEnabled
+	 *            true if the webhook is enabled for this project.
+	 */
+	void setWebhookEnabled(boolean isWebhookEnabled);
+
+	/**
+	 * Return whether the webhook is enabled for this project.
+	 * 
+	 * @return true if the webhook is enabled for this project.
+	 */
+	boolean isWebhookEnabled();
+
+	/**
+	 * Set the URL where the decision knowledge should be sent and the secret key
+	 * for the submission.
+	 *
+	 * @param webhookUrl
+	 *            URL of the webhook
 	 * @param webhookSecret
+	 *            secret key
 	 */
 	void setWebhookData(String webhookUrl, String webhookSecret);
 
 	/**
+	 * Return the webhook URL where the decision knowledge is sent to if the webhook
+	 * is enabled.
 	 *
-	 * @return returns the Webhook Url where the data should be send to.
+	 * @return webhook URL where the decision knowledge is sent to if the webhook is
+	 *         enabled.
 	 */
 	String getWebhookUrl();
 
 	/**
+	 * Return the webhook secret key.
 	 *
-	 * @return returns the Secret for the submission of the data.
+	 * @return secret key for the submission of the decision knowledge via webhook.
 	 */
 	String getWebhookSecret();
 }
