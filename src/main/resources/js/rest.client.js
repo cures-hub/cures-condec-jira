@@ -333,6 +333,9 @@ function getTreeViewer(rootElementType, callback) {
 
 function getTreeViewerWithoutRootElement(showRelevant, callback) {
 	var issueId = AJS.$("meta[name='ajs-issue-key']").attr("content");
+	if(issueId === undefined){
+		issueId = getIssueKey();
+	}
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer2.json?issueKey=" + issueId
 			+ "&showRelevant=" + showRelevant, function(error, core) {
 		if (error === null) {
@@ -522,4 +525,15 @@ function getCommitsAsReturnValue(elementKey) {
 	var commitData = getResponseAsReturnValue(AJS.contextPath() + "/rest/gitplugin/latest/issues/" + elementKey
 			+ "/commits");
 	return commitData.commits;
+}
+
+function clearSentenceDatabase(projectKey){
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/clearSentenceDatabase.json?projectKey=" + projectKey
+			, null, function(error, response) {
+		if (error === null) {
+			showFlag("success", "The Sentence database has been cleared.");
+		} else {
+			showFlag("error", "The Sentence database has not been cleared.");
+		}
+	});
 }
