@@ -288,10 +288,10 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		} else {
 			super.type = KnowledgeType.getKnowledgeType(kt);
 		}
+		this.setIssueId(aoElement.getIssueId());
 		IssueManager im = ComponentAccessor.getIssueManager();
 		MutableIssue mi = im.getIssueObject(this.getIssueId());
 		super.setKey(mi.getKey() + ":" + this.getId());
-		this.setIssueId(aoElement.getIssueId());
 	}
 
 	private String getProjectDescription() {

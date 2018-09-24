@@ -76,11 +76,6 @@ public class TestClassificationManagerForCommentSentences extends TestSetUp {
 	}
 
 	private void fillCommentList() {
-		// list.add(new Comment("This is a testcomment"));
-		// list.add(new Comment("This is a testcomment with a larger sentence"));
-		// list.add(new Comment("This is a testcomment LIKE THE FIRST ONE"));
-		// list.add(new Comment("This is a testcomment with a larger sentence and
-		// without capslock"));
 		list.add(new Comment(ComponentAccessor.getCommentManager().getLastComment(issue)));
 
 	}
@@ -90,8 +85,7 @@ public class TestClassificationManagerForCommentSentences extends TestSetUp {
 	public void testBinaryClassification() throws Exception {
 		fillCommentList();
 
-		FilteredClassifier binaryClassifier = (FilteredClassifier) weka.core.SerializationHelper
-				.read(System.getProperty("user.dir") + "\\src\\main\\resources\\classifier\\fc.model");
+		FilteredClassifier binaryClassifier = new BinaryClassifierMock();
 		classifier.getClassifier().setBinaryClassifier(binaryClassifier);
 
 		list = classifier.classifySentenceBinary(list);
@@ -103,17 +97,14 @@ public class TestClassificationManagerForCommentSentences extends TestSetUp {
 	@NonTransactional
 	public void testFineGrainedClassification() throws Exception {
 		fillCommentList();
-		FilteredClassifier binaryClassifier = (FilteredClassifier) weka.core.SerializationHelper
-				.read(System.getProperty("user.dir") + "\\src\\main\\resources\\classifier\\fc.model");
+		FilteredClassifier binaryClassifier = new BinaryClassifierMock();
 		classifier.getClassifier().setBinaryClassifier(binaryClassifier);
 
-		LC lc = (LC) weka.core.SerializationHelper
-				.read(System.getProperty("user.dir") + "\\src\\main\\resources\\classifier\\br.model");
+		LC lc = new FineGrainedClassifierMock(5);
 		classifier.getClassifier().setFineGrainedClassifier(lc);
 
 		list = classifier.classifySentenceBinary(list);
-		// list = classifier.classifySentenceFineGrained(list);
-		// TODO: Fine grained filter does not run in test mode
+
 		assertNotNull(list.get(0).getSentences().get(0).isRelevant());
 		assertTrue(list.get(0).getSentences().get(0).isTagged());
 	}

@@ -64,7 +64,6 @@ public class GenericLinkImpl implements GenericLink {
 	@Override
 	public void setIdOfDestinationElement(String idOfDestinationElement) {
 		this.idOfDestinationElement = idOfDestinationElement;
-
 	}
 
 	public String toString() {
@@ -121,7 +120,7 @@ public class GenericLinkImpl implements GenericLink {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getBothElements() {
+	public List<DecisionKnowledgeElement> getBothElements() throws NullPointerException {
 		List<DecisionKnowledgeElement> bothLinkSides = new ArrayList<>();
 		bothLinkSides.add(this.getElement(this.idOfSourceElement));
 		bothLinkSides.add(this.getElement(this.idOfDestinationElement));

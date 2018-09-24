@@ -14,7 +14,7 @@ import weka.core.Instances;
 public class ClassificationManagerForCommentSentences {
 
 	private DecisionKnowledgeClassifier classifier;
-
+	//TODO: Update knowledge types if classifer changes
 	private String[] knowledgeTypes = { "isAlternative", "isPro", "isCon", "isDecision", "isIssue" };
 
 	public ClassificationManagerForCommentSentences() {
