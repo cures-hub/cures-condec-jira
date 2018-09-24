@@ -51,7 +51,7 @@ public class Data {
 			this.a_attr = ImmutableMap.of("title", decisionKnowledgeElement.getDescription());
 		}
 		if(decisionKnowledgeElement instanceof Sentence) {
-			this.li_attr = ImmutableMap.of("class","sentence");
+			this.li_attr = ImmutableMap.of("class","sentence","sid","s"+decisionKnowledgeElement.getId());
 		}
 	}
 

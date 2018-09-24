@@ -28,6 +28,8 @@ public class Comment {
 
 	private CommentSplitter splitter;
 
+	private Long issueId;
+
 	public Comment() {
 		this.sentences = new ArrayList<Sentence>();
 		this.created = new Date();
@@ -46,14 +48,15 @@ public class Comment {
 		this.authorFullName = comment.getAuthorFullName();
 		this.jiraCommentId = comment.getId();
 		this.authorId = comment.getAuthorApplicationUser().getId();
-		splitCommentIntoSentences(true, comment.getIssue().getId());
+		this.setIssueId(comment.getIssue().getId());
+		splitCommentIntoSentences(true);
 	}
 
 	public static String textRule(String text) {
 		return text.replace("<br>", " ").toString();
 	}
 
-	private void splitCommentIntoSentences(boolean addSentencesToAo, Long issueId) {
+	private void splitCommentIntoSentences(boolean addSentencesToAo) {
 		List<String> rawSentences = this.splitter.sliceCommentRecursionCommander(this.body);
 		runBreakIterator(rawSentences);
 		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(this);
@@ -62,7 +65,7 @@ public class Comment {
 			int startIndex = this.splitter.getStartSubstringCount().get(i);
 			int endIndex = this.splitter.getEndSubstringCount().get(i);
 			long aoId2 = ActiveObjectsManager.addNewSentenceintoAo(this.jiraCommentId, endIndex, startIndex,
-					this.authorId, issueId, this.projectKey);
+					this.authorId, this.issueId, this.projectKey);
 			this.sentences.add(new SentenceImpl(this.body.substring(startIndex, endIndex), aoId2));
 
 		}
@@ -161,6 +164,14 @@ public class Comment {
 
 	public void setProjectKey(String projectKey) {
 		this.projectKey = projectKey;
+	}
+
+	public Long getIssueId() {
+		return issueId;
+	}
+
+	public void setIssueId(Long issueId) {
+		this.issueId = issueId;
 	}
 
 }

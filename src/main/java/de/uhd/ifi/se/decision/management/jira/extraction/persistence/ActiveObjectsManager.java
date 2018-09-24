@@ -276,6 +276,15 @@ public class ActiveObjectsManager {
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}
+						for (LinkBetweenDifferentEntitiesEntity link : ao.find(LinkBetweenDifferentEntitiesEntity.class)) {
+							if(link.getIdOfDestinationElement().equals("i" + comment.getIssueId()) || link.getIdOfSourceElement().equals("i" + comment.getIssueId())) {
+								try {
+									link.getEntityManager().delete(link);
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
+							}
+						}
 					}
 				}
 				return null;
