@@ -84,28 +84,29 @@ public class ActiveObjectsManager {
 		}
 	}
 
-	// public static boolean checkCommentExistingInAO(long sentenceAoId, boolean
-	// getIsTagged) {
-	// init();
-	// DecisionKnowledgeInCommentEntity dbEntry = ao
-	// .executeInTransaction(new
-	// TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-	// @Override
-	// public DecisionKnowledgeInCommentEntity doInTransaction() {
-	// for (DecisionKnowledgeInCommentEntity databaseEntry : ao
-	// .find(DecisionKnowledgeInCommentEntity.class)) {
-	// if (databaseEntry.getId() == sentenceAoId) {
-	// return databaseEntry;
-	// }
-	// }
-	// return null;
-	// }
-	// });
-	// if (getIsTagged && dbEntry != null) {
-	// return dbEntry.isTagged();
-	// }
-	// return (dbEntry != null);
-	// }
+	public static void updateSentenceElement(Sentence sentence) {
+		init();
+		ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+			@Override
+			public DecisionKnowledgeInCommentEntity doInTransaction() {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class,
+						Query.select().where("PROJECT_KEY = ?", sentence.getProjectKey()))) {
+					if (databaseEntry.getId() == sentence.getId()) {
+						databaseEntry.setArgument(sentence.getArgument());
+						databaseEntry.setEndSubstringCount(sentence.getEndSubstringCount());
+						databaseEntry.setRelevant(sentence.isRelevant());
+						databaseEntry.setTagged(sentence.isTagged());
+						databaseEntry.setTaggedFineGrained(sentence.isTaggedFineGrained());
+						databaseEntry.setTaggedManually(sentence.isTaggedManually());
+						databaseEntry.setKnowledgeTypeString(sentence.getKnowledgeTypeString());
+						databaseEntry.setStartSubstringCount(sentence.getStartSubstringCount());
+						databaseEntry.save();
+					}
+				}
+				return null;
+			}
+		});
+	}
 
 	public static DecisionKnowledgeInCommentEntity getElementFromAO(long commentId, int endSubtringCount,
 			int startSubstringCount, long userId, String projectKey) {
@@ -128,32 +129,6 @@ public class ActiveObjectsManager {
 		return element;
 
 	}
-
-	// public static void updateSentenceElement(Sentence sentence) {
-	// init();
-	// ao.executeInTransaction(new
-	// TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-	// @Override
-	// public DecisionKnowledgeInCommentEntity doInTransaction() {
-	// for (DecisionKnowledgeInCommentEntity databaseEntry :
-	// ao.find(DecisionKnowledgeInCommentEntity.class,
-	// Query.select().where("PROJECT_KEY = ?", sentence.getProjectKey()))) {
-	// if (databaseEntry.getId() == sentence.getId()) {
-	// databaseEntry.setArgument(sentence.getArgument());
-	// databaseEntry.setEndSubstringCount(sentence.getEndSubstringCount());
-	// databaseEntry.setIsRelevant(sentence.isRelevant());
-	// databaseEntry.setIsTagged(sentence.isTagged());
-	// databaseEntry.setIsTaggedFineGrained(sentence.isTaggedFineGrained());
-	// databaseEntry.setIsTaggedManually(sentence.isTaggedManually());
-	// databaseEntry.setKnowledgeTypeString(sentence.getKnowledgeTypeString());
-	// databaseEntry.setStartSubstringCount(sentence.getStartSubstringCount());
-	// }
-	// }
-	// return null;
-	// }
-	// });
-	//
-	// }
 
 	public static DecisionKnowledgeInCommentEntity getElementFromAO(long aoId) {
 		init();
@@ -276,8 +251,10 @@ public class ActiveObjectsManager {
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}
-						for (LinkBetweenDifferentEntitiesEntity link : ao.find(LinkBetweenDifferentEntitiesEntity.class)) {
-							if(link.getIdOfDestinationElement().equals("i" + comment.getIssueId()) || link.getIdOfSourceElement().equals("i" + comment.getIssueId())) {
+						for (LinkBetweenDifferentEntitiesEntity link : ao
+								.find(LinkBetweenDifferentEntitiesEntity.class)) {
+							if (link.getIdOfDestinationElement().equals("i" + comment.getIssueId())
+									|| link.getIdOfSourceElement().equals("i" + comment.getIssueId())) {
 								try {
 									link.getEntityManager().delete(link);
 								} catch (SQLException e) {

@@ -6,13 +6,18 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+
 public class CommentSplitter {
 
 	private List<Integer> startSubstringCount;
 
 	private List<Integer> endSubstringCount;
 
-	public static String[] excludedTagList = new String[] { "{code}", "{quote}", "{noformat}", "[issue]" };
+	public static final String[] excludedTagList = new String[] { "{code}", "{quote}", "{noformat}", "[issue]" };
+
+	public static final String[] excludedRationaleList = new String[] { "[issue]", "[decision]", "[alternative]", "[pro]",
+			"[con]" };
 
 	public CommentSplitter() {
 		this.setStartSubstringCount(new ArrayList<Integer>());
@@ -25,6 +30,7 @@ public class CommentSplitter {
 		firstSplit = searchForFurtherTags(firstSplit, "{noformat}", "{noformat}");
 		firstSplit = searchForFurtherTags(firstSplit, "{code:", "{code}");
 		firstSplit = searchForFurtherTags(firstSplit, "[issue]", "[/issue]");
+		firstSplit = searchForFurtherTags(firstSplit, "[pro]", "[/pro]");
 
 		return firstSplit;
 	}
@@ -88,6 +94,25 @@ public class CommentSplitter {
 	public void addSentenceIndex(int startIndex, int endIndex) {
 		this.startSubstringCount.add(startIndex);
 		this.endSubstringCount.add(endIndex);
+	}
+
+	public static String getKnowledgeTypeFromManuallIssueTag(String body) {
+		if(body.toLowerCase().contains("[issue]")) {
+			return KnowledgeType.ISSUE.toString();
+		}
+		if(body.toLowerCase().contains("[alternative]")) {
+			return KnowledgeType.ALTERNATIVE.toString();
+		}
+		if(body.toLowerCase().contains("[decision]")) {
+			return KnowledgeType.DECISION.toString();
+		}
+		if(body.toLowerCase().contains("[pro]")) {
+			return"pro";
+		}
+		if(body.toLowerCase().contains("[con]")) {
+			return "con";
+		}
+		return KnowledgeType.OTHER.toString();
 	}
 
 }

@@ -58,8 +58,8 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	public SentenceImpl(String body, long id) {
 		super.setId(id);
-		this.setBody(body);
 		retrieveAttributesFromActievObjects();
+		this.setBody(body);
 	}
 
 	@Override
@@ -240,19 +240,26 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	private void checkForPlainText(String body) {
-		if (StringUtils.indexOfAny(body, CommentSplitter.excludedTagList) >= 0) {
+		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.excludedTagList) >= 0) {
 			this.isPlainText = false;
 		} else {
 			this.isPlainText = true;
 		}
-		if (super.getSummary().contains("[issue]")) {
-			this.setKnowledgeTypeString(KnowledgeType.ISSUE.toString());
-			this.setRelevant(true);
-			this.setTagged(true);
-			this.setTaggedManually(true);
-			this.setTaggedFineGrained(true);
-			// ActiveObjectsManager.updateSentenceElement(this); //TODO: Update this.
+		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.excludedRationaleList) >= 0) {
+			this.setKnowledgeTypeString(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body));
+			setManuallyTagged();
 		}
+	}
+
+
+
+	private void setManuallyTagged() {
+		this.setPlainText(false);
+		this.setRelevant(true);
+		this.setTagged(true);
+		this.setTaggedManually(true);
+		this.setTaggedFineGrained(true);
+		ActiveObjectsManager.updateSentenceElement(this);
 	}
 
 	public boolean isPlainText() {

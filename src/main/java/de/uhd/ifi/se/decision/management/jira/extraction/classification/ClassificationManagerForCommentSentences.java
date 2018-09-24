@@ -15,7 +15,7 @@ public class ClassificationManagerForCommentSentences {
 
 	private DecisionKnowledgeClassifier classifier;
 	//TODO: Update knowledge types if classifer changes
-	private String[] knowledgeTypes = { "isAlternative", "isPro", "isCon", "isDecision", "isIssue" };
+	private final String[] knowledgeTypes = { "isAlternative", "isPro", "isCon", "isDecision", "isIssue" };
 
 	public ClassificationManagerForCommentSentences() {
 		classifier = new DecisionKnowledgeClassifier();
@@ -177,7 +177,7 @@ public class ClassificationManagerForCommentSentences {
 	}
 
 	private static boolean isSentenceQualifiedForFineGrainedClassification(Sentence sentence) {
-		return sentence.isRelevant() && !sentence.isTaggedFineGrained() && sentence.isPlainText();
+		return sentence.isRelevant() && !sentence.isTaggedFineGrained() && sentence.isPlainText() && !sentence.isTaggedManually();
 	}
 
 	public DecisionKnowledgeClassifier getClassifier() {

@@ -272,6 +272,25 @@ public class TestComment extends TestSetUp {
 		Comment comment = getComment("{quote} a quote {quote}");
 		assertTrue(comment.getTaggedBody(0).contains("<span id=\"comment0\">{quote} a quote {quote}</span>"));
 	}
+	
+	
+	@Test
+	@NonTransactional
+	public void TestManuallyTagging() {
+		Comment comment = getComment("[pro]this is a manual pro tagged sentence [/pro]");
+		//test the result in splits, fails when checked with equals
+		assertTrue(comment.getTaggedBody(0).contains("<span id=\"comment0\">"));
+		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Pro\"  id  = ui1>"));
+		//important that the tag is not inside the text area
+		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[Pro]</span>")); 
+		assertTrue(comment.getTaggedBody(0).contains("<span class = sentenceBody>"));
+		assertTrue(comment.getTaggedBody(0).contains("this is a manual pro tagged sentence "));
+		//important that the tag is not inside the text area
+		assertTrue(comment.getTaggedBody(0).contains("</span><span class =tag>[/Pro]</span>"));
+		assertTrue(comment.getTaggedBody(0).contains("</span></span>"));		
+	}
+	
+	
 
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
 		@SuppressWarnings("unchecked")
