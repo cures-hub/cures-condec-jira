@@ -200,6 +200,18 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                 window.onbeforeunload = null;
             });
 		</script>
+		<h2>Decision Extraction from Issue Comments - Settings</h2>
+		<div class="field-group">
+			<input type="button" class="aui-button" id="clearSentenceDatabase" value="Clear Sentence Database" />
+			<div class="description">Deleta all metadata to sentences in comments, includes all links from and to sentences</div>		
+			<script>
+			var clearSentenceDatabaseButton = document.getElementById("clearSentenceDatabase");
+			clearSentenceDatabaseButton.addEventListener("click", function() {
+                clearSentenceDatabase('$projectKey');
+                window.onbeforeunload = null;
+            });
+		</script>	
+		</div>
 	</form>
 </body>
 </html>

@@ -1,62 +1,70 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
 
+import java.util.List;
+
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
+import net.java.ao.schema.Ignore;
 import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
 
-@Table("Sentence")
-public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long> {
-
+@Table("Ssentence")
+public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long>, Sentence{
+	
 	@AutoIncrement
 	@PrimaryKey("ID")
 	long getId();
 
 	void setId(long id);
 
-	boolean getIsRelevant();
+	@Ignore
+	String getSummary();
 
-	void setIsRelevant(boolean isRelevant);
+	@Ignore
+	void setSummary(String summary);
 
-	boolean getIsTagged();
+	@Ignore
+	String getDescription();
 
-	void setIsTagged(boolean isTagged);
+	@Ignore
+	void setDescription(String description);
 
-	boolean getIsTaggedManually();
+	KnowledgeType getType();
 
-	void setIsTaggedManually(boolean isTaggedManually);
+	@Ignore
+	void setType(KnowledgeType type);
 
-	boolean getIsTaggedFineGrained();
+	@Ignore
+	void setType(String type);
 
-	void setIsTaggedFineGrained(boolean isTagged);
+	@Ignore
+	DecisionKnowledgeProject getProject();
 
-	long getCommentId();
+	@Ignore
+	void setProject(DecisionKnowledgeProject project);
 
-    void setCommentId(long id);
+	@Ignore
+	void setProject(String projectKey);
 
-	long getUserId();
+	@Ignore
+	String getKey();
 
-	void setUserId(long id);
+	@Ignore
+	void setKey(String key);
 
-	int getStartSubstringCount();
+	@Ignore
+	List<DecisionKnowledgeElement> getLinkedElements();
 
-	void setStartSubstringCount(int count);
+	@Ignore
+	List<Link> getOutwardLinks();
 
-	int getEndSubstringCount();
-
-	void setEndSubstringCount(int count);
-	
-	String getKnowledgeType();
-	
-	void setKnowledgeType(String type);
-	
-	void setArgument(String argument);
-	
-	String getArgument();
-	
-	String getProjectKey();
-	
-	void setProjectKey(String key);
+	@Ignore
+	List<Link> getInwardLinks();
 
 
 }

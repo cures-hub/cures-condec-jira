@@ -22,6 +22,7 @@ import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
@@ -331,6 +332,23 @@ public class ConfigRest {
 			ConfigPersistence.setWebhookSecret(projectKey, webhookSecret);
 
 			// TODO Changing default send after the connection is working like intended;
+			return Response.ok(Status.ACCEPTED).build();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
+	}
+
+	@Path("/clearSentenceDatabase")
+	@POST
+	public Response clearSentenceDatabase(@Context HttpServletRequest request,
+			@QueryParam("projectKey") final String projectKey) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		try {
+			ActiveObjectsManager.clearSentenceDatabaseForProject(projectKey);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());

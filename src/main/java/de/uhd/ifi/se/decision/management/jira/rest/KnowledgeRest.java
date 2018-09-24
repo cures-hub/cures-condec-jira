@@ -260,7 +260,7 @@ public class KnowledgeRest {
 
 			ActiveObjectsManager.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),
 					decisionKnowledgeElement.getType());
-			ActiveObjectsManager.updateSentenceBody(databaseEntity.getCommentId(), decisionKnowledgeElement.getId(),
+			ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(), decisionKnowledgeElement.getId(),
 					decisionKnowledgeElement.getDescription());
 
 			Response r = Response.status(Status.OK).entity(ImmutableMap.of("id", decisionKnowledgeElement.getId()))
