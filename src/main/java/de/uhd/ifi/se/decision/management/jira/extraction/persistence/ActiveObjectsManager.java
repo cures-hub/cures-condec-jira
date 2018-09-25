@@ -369,18 +369,6 @@ public class ActiveObjectsManager {
 		});
 	}
 
-	// public static List<Sentence> getAllSentencesByJiraCommentId(long commentId) {
-	// List<Sentence> sentences = new ArrayList<Sentence>();
-	// init();
-	// DecisionKnowledgeInCommentEntity[] sentencesinAo =
-	// ao.find(DecisionKnowledgeInCommentEntity.class,
-	// Query.select().where("COMMENT_ID = ?", commentId));
-	// for (DecisionKnowledgeInCommentEntity currentAoSentence : sentencesinAo) {
-	// sentences.add(new SentenceImpl(currentAoSentence.getId()));
-	// }
-	// return sentences;
-	// }
-
 	public static List<GenericLink> getGenericLinksForElement(String targetId, boolean getOnlyOutwardLink) {
 		init();
 		List<GenericLink> links = new ArrayList<GenericLink>();

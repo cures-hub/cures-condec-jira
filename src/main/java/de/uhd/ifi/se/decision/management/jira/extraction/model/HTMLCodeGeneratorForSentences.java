@@ -23,22 +23,9 @@ public class HTMLCodeGeneratorForSentences {
 			return this.getSpecialBodyWithHTMLCodes();
 		}
 		return "<span class=\"sentence " + sentence.getKnowledgeTypeString() + "\"  id  = ui" + sentence.getId() + ">"
-				+ this.getOpeningTagSpan() + "<span class = sentenceBody>"
-				+ sentence.getBody()//.substring(0 + getTagLength(true),
-					//	sentence.getBody().length() - getTagLength(false))
-				+ "</span>" + this.getClosingTagSpan() + "</span>";
+				+ this.getOpeningTagSpan() + "<span class = sentenceBody>" + sentence.getBody() + "</span>"
+				+ this.getClosingTagSpan() + "</span>";
 
-	}
-
-	private int getTagLength(boolean b) {
-		int i = 0;
-		String tag = CommentSplitter.getKnowledgeTypeFromManuallIssueTag(this.sentence.getBody());
-		if(b) {
-			return tag.length()+2;
-		}else {
-			return tag.length()+3;
-		}
-		
 	}
 
 	public String getOpeningTagSpan() {

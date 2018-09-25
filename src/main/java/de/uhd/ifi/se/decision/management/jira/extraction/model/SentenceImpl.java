@@ -252,13 +252,11 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		}
 	}
 
-
-
 	private void stripTagsFromBody() {
-		int tagLength = 2+ CommentSplitter.getKnowledgeTypeFromManuallIssueTag(this.getBody()).length();
-		super.setDescription(this.getBody().substring(tagLength, this.getBody().length()-(1+tagLength)));
+		int tagLength = 2 + CommentSplitter.getKnowledgeTypeFromManuallIssueTag(this.getBody()).length();
+		super.setDescription(this.getBody().substring(tagLength, this.getBody().length() - (1 + tagLength)));
 		super.setSummary(super.getDescription());
-		
+
 	}
 
 	private void setManuallyTagged() {

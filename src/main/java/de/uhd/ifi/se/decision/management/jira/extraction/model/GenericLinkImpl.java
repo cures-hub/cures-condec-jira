@@ -71,51 +71,44 @@ public class GenericLinkImpl implements GenericLink {
 	}
 
 	@Override
-	public DecisionKnowledgeElement getElement(String elementNOTToGet) {
-		if (elementNOTToGet.startsWith("s")) {
-			Sentence sentence = null;
-			if (this.getIdOfSourceElement().equals(elementNOTToGet)) {
+	public DecisionKnowledgeElement getElement(String oppositeElementId) {
+		if (oppositeElementId.startsWith("s")) {
+			if (this.getIdOfSourceElement().equals(oppositeElementId)) {
 				if (this.getIdOfDestinationElement().startsWith("s")) {
-					return new SentenceImpl(Integer.parseInt(this.getIdOfDestinationElement().substring(1)));
+					return new SentenceImpl(getDesitantionIdAsLong());
+				} else {
+					Issue issue = ComponentAccessor.getIssueManager().getIssueObject(getDesitantionIdAsLong());
+					return new DecisionKnowledgeElementImpl(issue);
+				}
+			}
+			if (this.getIdOfDestinationElement().equals(oppositeElementId)) {
+				if (this.getIdOfSourceElement().startsWith("s")) {
+					return new SentenceImpl(getSourceIdAsLong());
+				} else {
+					Issue issue = ComponentAccessor.getIssueManager().getIssueObject(getSourceIdAsLong());
+					return new DecisionKnowledgeElementImpl(issue);
+				}
+			}
+		}
+		if (oppositeElementId.startsWith("i")) {
+			if (this.getIdOfSourceElement().equals(oppositeElementId)) {
+				if (this.getIdOfDestinationElement().startsWith("s")) {
+					return new SentenceImpl(getDesitantionIdAsLong());
 				} else {
 					Issue issue = ComponentAccessor.getIssueManager()
-							.getIssueObject((long) Integer.parseInt(this.getIdOfDestinationElement().substring(1)));
+							.getIssueObject((long) Integer.parseInt(oppositeElementId.substring(1)));
 					return new DecisionKnowledgeElementImpl(issue);
 				}
 			}
-			if (this.getIdOfDestinationElement().equals(elementNOTToGet)) {
+			if (this.getIdOfDestinationElement().equals(oppositeElementId)) {
 				if (this.getIdOfSourceElement().startsWith("s")) {
-					return new SentenceImpl(Integer.parseInt(this.getIdOfSourceElement().substring(1)));
+					return new SentenceImpl(getSourceIdAsLong());
 				} else {
-					long id = (long) Integer.parseInt(idOfSourceElement.substring(1));
-					Issue issue = ComponentAccessor.getIssueManager().getIssueObject(id);
+					Issue issue = ComponentAccessor.getIssueManager().getIssueObject(getSourceIdAsLong());
 					return new DecisionKnowledgeElementImpl(issue);
 				}
 			}
-			return sentence;
 		}
-		if (elementNOTToGet.startsWith("i")) {
-			if (this.getIdOfSourceElement().equals(elementNOTToGet)) {
-				if (this.getIdOfDestinationElement().startsWith("s")) {
-					return new SentenceImpl(Integer.parseInt(this.getIdOfDestinationElement().substring(1)));
-				} else {
-					Issue issue = ComponentAccessor.getIssueManager()
-							.getIssueObject((long) Integer.parseInt(elementNOTToGet.substring(1)));
-					return new DecisionKnowledgeElementImpl(issue);
-				}
-			}
-			if (this.getIdOfDestinationElement().equals(elementNOTToGet)) {
-				if (this.getIdOfSourceElement().startsWith("s")) {
-					return new SentenceImpl(Integer.parseInt(this.getIdOfSourceElement().substring(1)));
-				} else {
-					long id = (long) Integer.parseInt(idOfSourceElement.substring(1));
-					Issue issue = ComponentAccessor.getIssueManager().getIssueObject(id);
-					return new DecisionKnowledgeElementImpl(issue);
-				}
-			}
-
-		}
-
 		return null;
 	}
 
@@ -125,6 +118,14 @@ public class GenericLinkImpl implements GenericLink {
 		bothLinkSides.add(this.getElement(this.idOfSourceElement));
 		bothLinkSides.add(this.getElement(this.idOfDestinationElement));
 		return bothLinkSides;
+	}
+
+	private long getDesitantionIdAsLong() {
+		return (long) Integer.parseInt(this.getIdOfDestinationElement().substring(1));
+	}
+
+	private long getSourceIdAsLong() {
+		return (long) Integer.parseInt(this.getIdOfSourceElement().substring(1));
 	}
 
 }
