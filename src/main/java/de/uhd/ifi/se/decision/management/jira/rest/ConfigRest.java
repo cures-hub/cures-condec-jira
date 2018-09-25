@@ -330,8 +330,26 @@ public class ConfigRest {
 		try {
 			ConfigPersistence.setWebhookUrl(projectKey, webhookUrl);
 			ConfigPersistence.setWebhookSecret(projectKey, webhookSecret);
+			return Response.ok(Status.ACCEPTED).build();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
+	}
 
-			// TODO Changing default send after the connection is working like intended;
+	@Path("/setWebhookType")
+	@POST
+	public Response setWebhookType(@Context HttpServletRequest request,
+								   @QueryParam("projectKey") final String projectKey, @QueryParam("webhookType") final String webhookType){
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if(webhookType == null){
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "webhook Type = null")).build();
+		}
+		try {
+			ConfigPersistence.setWebhookType(projectKey, webhookType);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());

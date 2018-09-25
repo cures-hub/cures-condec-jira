@@ -232,4 +232,13 @@ public class ConfigPersistence {
 		});
 		return isWebhookEnabled instanceof String && "true".equals(isWebhookEnabled);
 	}
+
+	//TODO Testing
+	public static void setWebhookType(String projectKey, String webhookType){
+		if(projectKey == null || webhookType == null){
+			return;
+		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey + ".webhookType", webhookType);
+	}
 }

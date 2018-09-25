@@ -207,8 +207,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
             document.getElementById("webhookDescripiton").insertAdjacentHTML('afterend', html);
 
             var webhookDrop = document.getElementById('webhookType');
-            webhookDrop.addEventListener('change', function (e) {
-				
+            webhookDrop.addEventListener('click', function (e) {
+                var selectedType = e.target.innerText;
+                setWebhookType(selectedType, '$projectKey');
             });
 
 			var webHookSubmit = document.getElementById('isWebhookEnabled-toggle')
