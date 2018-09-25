@@ -20,8 +20,9 @@ public class WebhookConnector {
 	private String secret;
 	private String projectKey;
 	private List<Long> elementIds;
+	private String rootType;
 
-	public WebhookConnector(String projectKey, String webhookUrl, String webhookSecret) {
+	public WebhookConnector(String projectKey, String webhookUrl, String webhookSecret, String rootType) {
 		if (projectKey == null) {
 			LOGGER.error("Webhook could not be created because the project key is not provided.");
 			projectKey = "";
@@ -34,13 +35,18 @@ public class WebhookConnector {
 			webhookSecret = "";
 			LOGGER.error("Webhook could not be created because the secret is not provided.");
 		}
+		if(rootType == null){
+			rootType = "WorkItem";
+		}
 		this.projectKey = projectKey;
 		this.url = webhookUrl;
 		this.secret = webhookSecret;
+		this.rootType = rootType;
 	}
 
 	public WebhookConnector(String projectKey) {
-		this(projectKey, ConfigPersistence.getWebhookUrl(projectKey), ConfigPersistence.getWebhookSecret(projectKey));
+		this(projectKey, ConfigPersistence.getWebhookUrl(projectKey), ConfigPersistence.getWebhookSecret(projectKey),
+				ConfigPersistence.getWebhookType(projectKey));
 	}
 
 	public boolean sendElementChanges(DecisionKnowledgeElement decisionKnowledgeElement, boolean isDeleted) {
@@ -49,7 +55,7 @@ public class WebhookConnector {
 			return false;
 		}
 		ArrayList<DecisionKnowledgeElement> workItems = getWebhookRootElements(decisionKnowledgeElement);
-		if (isDeleted && decisionKnowledgeElement.getType() == KnowledgeType.TASK) {
+		if (isDeleted && decisionKnowledgeElement.getType().toString().equals(rootType)) {
 			workItems.remove(decisionKnowledgeElement);
 		}
 		boolean submitted = true;
@@ -75,7 +81,7 @@ public class WebhookConnector {
 				continue;
 			}
 			elementIds.add(linkedElement.getId());
-			if (linkedElement.getType().equals(KnowledgeType.TASK)) {
+			if (linkedElement.getType().toString().equals(rootType)) {
 				webhookRootElements.add(linkedElement);
 			}
 			webhookRootElements.addAll(getWebhookRootElements(linkedElement));

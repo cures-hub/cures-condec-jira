@@ -219,6 +219,7 @@ public class ConfigPersistence {
 		settings.put(pluginStorageKey + ".isWebhookEnabled", Boolean.toString(isActivated));
 	}
 
+	//TODO Testing
 	public static boolean isWebhookEnabled(String projectKey) {
 		if (projectKey == null) {
 			return false;
@@ -241,4 +242,19 @@ public class ConfigPersistence {
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 		settings.put(pluginStorageKey + ".webhookType", webhookType);
 	}
+
+	//TODO Testing
+    public static String getWebhookType(String projectKey){
+        Object webhookType = transactionTemplate.execute(new TransactionCallback<Object>() {
+            @Override
+            public Object doInTransaction() {
+                PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+                return settings.get(pluginStorageKey + ".webhookType");
+            }
+        });
+        if(webhookType instanceof String){
+            return (String)webhookType;
+        }
+        return "";
+    }
 }
