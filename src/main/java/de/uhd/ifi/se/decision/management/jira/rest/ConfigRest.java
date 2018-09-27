@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -14,6 +15,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.IssueTypeManager;
+import com.atlassian.jira.issue.issuetype.IssueType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -372,6 +376,22 @@ public class ConfigRest {
 			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
+	}
+
+	@Path("/getProjectIssueTypes")
+	@GET
+	public Response getProjectIssueTypes(@QueryParam("projectKey") final String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
+		Collection<IssueType> types = issueTypeManager.getIssueTypes();
+		Collection<String> typeNames = new ArrayList<>();
+		for( IssueType type: types){
+			typeNames.add(type.getName());
+		}
+		return Response.ok(typeNames).build();
 	}
 
 	private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {

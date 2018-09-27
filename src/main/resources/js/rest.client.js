@@ -548,3 +548,14 @@ function clearSentenceDatabase(projectKey){
 		}
 	});
 }
+
+function getProjectIssueTypes(projectKey, callback) {
+    getJSON(AJS.contextPath() + "/rest/decisions/latest/config/getProjectIssueTypes.json?projectKey="
+		+ projectKey, function(error, issueTypes) {
+        if (error === null) {
+            callback(issueTypes);
+        } else {
+            showFlag("error", "Tree viewer data could not be received. Error-Code: " + error);
+        }
+    });
+}
