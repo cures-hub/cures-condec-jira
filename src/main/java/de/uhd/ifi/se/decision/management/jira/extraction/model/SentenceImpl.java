@@ -283,6 +283,8 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		String text = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getBody();
 		if(this.endSubstringCount < text.length()) {
 			text = text.substring(this.startSubstringCount, this.endSubstringCount);
+		} else if(this.endSubstringCount == text.length()) {
+			text = text.substring(this.startSubstringCount);
 		}
 		this.setBody(text);
 	}
