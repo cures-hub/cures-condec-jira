@@ -270,7 +270,9 @@ public class TestComment extends TestSetUp {
 	@NonTransactional
 	public void TestTagReplacementToHTMLCode() {
 		Comment comment = getComment("{quote} a quote {quote}");
-		assertTrue(comment.getTaggedBody(0).contains("<span id=\"comment0\">{quote} a quote {quote}</span>"));
+		System.out.println(comment.getTaggedBody(0));
+		//{quote} is replaced on js side
+		assertTrue(comment.getTaggedBody(0).contains("{quote} a quote {quote}"));
 	}
 	
 	

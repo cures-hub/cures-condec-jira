@@ -51,6 +51,7 @@ public class ActiveObjectsManager {
 						todo.setProjectKey(projectKey);
 						todo.setIssueId(issueId);
 						todo.save();
+						System.out.println(todo.getId() + " Hinzugefügt");
 						return todo;
 					}
 				});
@@ -186,6 +187,8 @@ public class ActiveObjectsManager {
 						sentenceEntity.setKnowledgeTypeString(knowledgeType.toString());
 						if (knowledgeType != KnowledgeType.OTHER) {
 							sentenceEntity.setRelevant(true);
+							sentenceEntity.setTaggedManually(true);
+							sentenceEntity.setTaggedFineGrained(true);
 						}
 						sentenceEntity.save();
 						return true;

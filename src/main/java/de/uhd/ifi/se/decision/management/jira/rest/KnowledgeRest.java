@@ -251,7 +251,7 @@ public class KnowledgeRest {
 						.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount());
 				int index = mc.getBody().indexOf(sentenceToSearch);
 				
-				String tag = "["+CommentSplitter.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch)+"]";
+				String tag = "["+CommentSplitter.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch,databaseEntity.getProjectKey())+"]";
 				String first = mc.getBody().substring(0, index);
 				String second = tag + decisionKnowledgeElement.getDescription()+ tag.replace("[","[/");
 				String third = mc.getBody().substring(index + sentenceToSearch.length());

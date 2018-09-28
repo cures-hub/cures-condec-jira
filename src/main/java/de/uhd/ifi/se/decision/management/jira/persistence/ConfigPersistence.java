@@ -232,4 +232,23 @@ public class ConfigPersistence {
 		});
 		return isWebhookEnabled instanceof String && "true".equals(isWebhookEnabled);
 	}
+
+	public static boolean isIconParsingEnabled(String projectKey) {
+		Object isIconParsingEnabled = transactionTemplate.execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction() {
+				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+				return settings.get(pluginStorageKey + ".isIconParsing");
+			}
+		});
+		return isIconParsingEnabled instanceof String && "true".equals(isIconParsingEnabled);
+	}
+	
+	public static void setIconParsing(String projectKey, boolean isIconParsing) {
+		if (projectKey == null) {
+			return;
+		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey + ".isIconParsing", Boolean.toString(isIconParsing));
+	}
 }

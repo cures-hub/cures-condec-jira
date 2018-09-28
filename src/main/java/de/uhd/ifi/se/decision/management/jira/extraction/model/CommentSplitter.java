@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
 public class CommentSplitter {
 
@@ -16,8 +17,10 @@ public class CommentSplitter {
 
 	public static final String[] excludedTagList = new String[] { "{code}", "{quote}", "{noformat}", "[issue]" };
 
-	public static final String[] excludedRationaleList = new String[] { "[Issue]", "[Decision]", "[Alternative]", "[Pro]",
-			"[Con]" };
+	public static final String[] manualRationaleTagList = new String[] { "[Issue]", "[Decision]", "[Alternative]",
+			"[Pro]", "[Con]" };
+
+	public static final String[] manualRationalIconList = new String[] { "(!)", "(/)", "(?)", "(y)", "(n)" };
 
 	public CommentSplitter() {
 		this.setStartSubstringCount(new ArrayList<Integer>());
@@ -29,10 +32,11 @@ public class CommentSplitter {
 
 		firstSplit = searchForFurtherTags(firstSplit, "{noformat}", "{noformat}");
 		firstSplit = searchForFurtherTags(firstSplit, "{code:", "{code}");
-		for (int i = 0; i < excludedRationaleList.length; i++) {
-			String tag = excludedRationaleList[i];
+		for (int i = 0; i < manualRationaleTagList.length; i++) {
+			String tag = manualRationaleTagList[i];
 			firstSplit = searchForFurtherTags(firstSplit, tag, tag.replace("[", "[/"));
 		}
+		firstSplit = searchForFurtherTags(firstSplit, "(y)", ".");
 
 		return firstSplit;
 	}
@@ -58,13 +62,17 @@ public class CommentSplitter {
 
 	private ArrayList<String> searchBetweenTagsRecursive(String toSearch, String openTag, String closeTag,
 			ArrayList<String> slices) {
+		//Icon is used to identify a sentence or a closing tag is forgotten
+		if (toSearch.contains(openTag) && !toSearch.contains(closeTag)) {
+			return slices;
+		}//Open and close tags are existent
 		if (toSearch.startsWith(openTag)) {
 			String part = StringUtils.substringBetween(toSearch, openTag, closeTag);
 			part = openTag + part + closeTag;
 			slices.add(part);
 			toSearch = toSearch.substring(toSearch.indexOf(openTag) + part.length());
 			slices = searchBetweenTagsRecursive(toSearch, openTag, closeTag, slices);
-		} else {// Comment block has now plain text
+		} else {// currently plain text
 			if (toSearch.contains(openTag)) {// comment block has special text later
 				slices.add(toSearch.substring(0, toSearch.indexOf(openTag)));
 				slices = searchBetweenTagsRecursive(toSearch.substring(toSearch.indexOf(openTag)), openTag, closeTag,
@@ -73,7 +81,6 @@ public class CommentSplitter {
 				slices.add(toSearch);
 			}
 		}
-
 		return slices;
 	}
 
@@ -98,20 +105,21 @@ public class CommentSplitter {
 		this.endSubstringCount.add(endIndex);
 	}
 
-	public static String getKnowledgeTypeFromManuallIssueTag(String body) {
-		if(body.contains("[Issue]")) {
+	public static String getKnowledgeTypeFromManuallIssueTag(String body, String projectKey) {
+		boolean checkIcons = ConfigPersistence.isIconParsingEnabled(projectKey);
+		if (body.contains("[Issue]") || (checkIcons && body.contains("(!)"))) {
 			return KnowledgeType.ISSUE.toString();
 		}
-		if(body.contains("[Alternative]")) {
+		if (body.contains("[Alternative]") || (checkIcons && body.contains("(?)"))) {
 			return KnowledgeType.ALTERNATIVE.toString();
 		}
-		if(body.contains("[Decision]")) {
+		if (body.contains("[Decision]") || (checkIcons && body.contains("(/)"))) {
 			return KnowledgeType.DECISION.toString();
 		}
-		if(body.contains("[Pro]")) {
-			return"pro";
+		if (body.contains("[Pro]") || (checkIcons && body.contains("y)"))) {
+			return "pro";
 		}
-		if(body.contains("[Con]")) {
+		if (body.contains("[Con]") || (checkIcons && body.contains("(n)"))) {
 			return "con";
 		}
 		return "";
