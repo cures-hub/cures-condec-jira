@@ -34,7 +34,7 @@ public class Data {
 
 	@XmlElement(name = "a_attr")
 	private Map<String, String> a_attr;
-	
+
 	@XmlElement(name = "li_attr")
 	private Map<String, String> li_attr;
 
@@ -50,8 +50,9 @@ public class Data {
 				&& !decisionKnowledgeElement.getDescription().equals("undefined")) {
 			this.a_attr = ImmutableMap.of("title", decisionKnowledgeElement.getDescription());
 		}
-		if(decisionKnowledgeElement instanceof Sentence) {
-			this.li_attr = ImmutableMap.of("class","sentence","sid","s"+decisionKnowledgeElement.getId());
+		if (decisionKnowledgeElement instanceof Sentence) {
+			this.li_attr = ImmutableMap.of("class", "sentence", "sid", "s" + decisionKnowledgeElement.getId());
+			checkTypeOfArgumentForSentenceEntity((Sentence) decisionKnowledgeElement);
 		}
 	}
 
@@ -70,6 +71,15 @@ public class Data {
 			break;
 		default:
 			break;
+		}
+	}
+
+	private void checkTypeOfArgumentForSentenceEntity(Sentence decisionKnowledgeElement) {
+		if (((Sentence) decisionKnowledgeElement).getArgument().toLowerCase().equals("pro")) {
+			this.icon = ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
+		}
+		if (((Sentence) decisionKnowledgeElement).getArgument().toLowerCase().equals("con")) {
+			this.icon = ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
 		}
 	}
 

@@ -403,9 +403,13 @@ function getIconUrl(core,indexOfNode,type){
 }
 
 function replaceTagsFromContent(idOfUiElement,type){
-	document.getElementById(idOfUiElement).getElementsByClassName("tag")[0].textContent = "["+type+"]";
-	document.getElementById(idOfUiElement).getElementsByClassName("tag")[1].textContent = "[/"+type+"]";
-
+	if(!type.toLowerCase().includes("other")){
+		document.getElementById(idOfUiElement).getElementsByClassName("tag")[0].textContent = "["+type+"]";
+		document.getElementById(idOfUiElement).getElementsByClassName("tag")[1].textContent = "[/"+type+"]";
+	}else{
+		document.getElementById(idOfUiElement).getElementsByClassName("tag")[0].textContent = "";
+		document.getElementById(idOfUiElement).getElementsByClassName("tag")[1].textContent = "";
+	}
 }
 
 
@@ -519,6 +523,9 @@ function setUpEditSentenceDialogView(description,type){
 		if (type.toLowerCase() === knowledgeTypesWithIrrelevant[index].toLowerCase()) {
 			isSelected = "selected ";
 		}
+		if(type.toLowerCase() === "argument" && knowledgeTypesWithIrrelevant[index].toLowerCase().includes("pro")){
+			isSelected = "selected ";
+		}
 		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
 				+ knowledgeTypesWithIrrelevant[index] + "'>" + knowledgeTypesWithIrrelevant[index] + "</option>");
 	}
@@ -531,7 +538,7 @@ function setUpEditSentenceDialog(id,description,type) {
 	submitButton.textContent = createKnowledgeElementText;
 	submitButton.onclick = function() {
 		var description = document.getElementById("form-input-description").value;
-		var type = $("select[name='form-select-type']").val();
+		var type = $("select[name='form-select-type']").val().split("-")[0];
 		editSentenceBody(id,description,type,function(){
 			if(!(document.getElementById("Relevant") == null)){
 				var idOfUiElement = "ui"+id;

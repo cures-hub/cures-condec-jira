@@ -51,7 +51,6 @@ public class ActiveObjectsManager {
 						todo.setProjectKey(projectKey);
 						todo.setIssueId(issueId);
 						todo.save();
-						System.out.println(todo.getId() + " Hinzugefügt");
 						return todo;
 					}
 				});

@@ -14,6 +14,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
@@ -251,7 +254,10 @@ public class KnowledgeRest {
 						.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount());
 				int index = mc.getBody().indexOf(sentenceToSearch);
 				
-				String tag = "["+CommentSplitter.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch,databaseEntity.getProjectKey())+"]";
+				String tag = "";
+				if(databaseEntity.isTaggedManually()) {
+					tag ="["+WordUtils.capitalize(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch,databaseEntity.getProjectKey()))+"]";
+				}
 				String first = mc.getBody().substring(0, index);
 				String second = tag + decisionKnowledgeElement.getDescription()+ tag.replace("[","[/");
 				String third = mc.getBody().substring(index + sentenceToSearch.length());

@@ -75,11 +75,9 @@ public class GraphImpl implements Graph {
 							linkBetweenSentenceAndOtherElement);
 				}
 			}catch(NullPointerException e) {
-				//One end of the linked elements is outdated, link will be deleted
-				ActiveObjectsManager.deleteGenericLink(currentGenericLink);
+				//Link in the wrong direction
 			}
 		}
-
 		return linkedElementsAndLinks;
 	}
 
