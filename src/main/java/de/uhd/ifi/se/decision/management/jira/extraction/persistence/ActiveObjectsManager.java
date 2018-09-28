@@ -189,6 +189,10 @@ public class ActiveObjectsManager {
 							sentenceEntity.setTaggedManually(true);
 							sentenceEntity.setTaggedFineGrained(true);
 						}
+						if (!sentenceEntity.getKnowledgeTypeString().equals("Pro")
+								&& !sentenceEntity.getKnowledgeTypeString().equals("Con")) {
+							sentenceEntity.setArgument("");
+						}
 						sentenceEntity.save();
 						return true;
 					}
@@ -332,6 +336,7 @@ public class ActiveObjectsManager {
 						sentenceEntity.setRelevant(false);
 						sentenceEntity.setTaggedManually(isTaggedManually);
 						sentenceEntity.setKnowledgeTypeString(KnowledgeType.OTHER.toString());
+						sentenceEntity.setArgument("");
 						sentenceEntity.save();
 						return true;
 					}
@@ -356,13 +361,15 @@ public class ActiveObjectsManager {
 					sentenceEntity.save();
 					oldStart = sentenceEntity.getStartSubstringCount();
 				}
-				for (DecisionKnowledgeInCommentEntity otherSentenceInComment : ao.find(DecisionKnowledgeInCommentEntity.class,
-						"COMMENT_ID = ?", commentId)) {
+				for (DecisionKnowledgeInCommentEntity otherSentenceInComment : ao
+						.find(DecisionKnowledgeInCommentEntity.class, "COMMENT_ID = ?", commentId)) {
 					if (otherSentenceInComment.getStartSubstringCount() > oldStart
-							&& otherSentenceInComment.getId() != aoId && otherSentenceInComment.getCommentId() == commentId) {
+							&& otherSentenceInComment.getId() != aoId
+							&& otherSentenceInComment.getCommentId() == commentId) {
+						otherSentenceInComment.setStartSubstringCount(
+								otherSentenceInComment.getStartSubstringCount() + lengthDifference);
 						otherSentenceInComment
-								.setStartSubstringCount(otherSentenceInComment.getStartSubstringCount() + lengthDifference);
-						otherSentenceInComment.setEndSubstringCount(otherSentenceInComment.getEndSubstringCount() + lengthDifference);
+								.setEndSubstringCount(otherSentenceInComment.getEndSubstringCount() + lengthDifference);
 						otherSentenceInComment.save();
 					}
 				}
