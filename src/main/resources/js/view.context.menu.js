@@ -374,7 +374,7 @@ function changeKtTo(id,position,type){
 			// });
 			var idOfUiElement = "ui"+id;
 			replaceTagsFromContent(idOfUiElement,type);
-			document.getElementById(idOfUiElement).classList.remove("Decision","Issue","Alternative","Pro","Con");
+			document.getElementById(idOfUiElement).classList.remove("Decision","Issue","Alternative","Pro","Con","isNotRelevant");
 			document.getElementById(idOfUiElement).classList.add(type);
 		}else{
 			updateView();

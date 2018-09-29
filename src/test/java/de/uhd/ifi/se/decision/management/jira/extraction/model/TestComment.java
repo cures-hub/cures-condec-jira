@@ -265,6 +265,65 @@ public class TestComment extends TestSetUp {
 				"{code:java} this is a code {code} {code:java} this is a second code right after the first one {code} {code:java} These are many codes {code}");
 		assertEquals(3, comment.getSentences().size());
 	}
+	
+	@Test
+	@NonTransactional
+	public void TestPropertiesOfCodeElementedText() {
+		Comment comment = getComment("{code:Java} int i = 0 {code} and this is a test Sentence.");
+		assertEquals(2, comment.getSentences().size());
+		assertEquals(false, comment.getSentences().get(0).isRelevant());
+		assertEquals(false, comment.getSentences().get(0).isPlainText());
+		assertEquals(false, comment.getSentences().get(0).isTagged());
+		assertEquals(false, comment.getSentences().get(0).isTaggedManually());
+	}
+	
+	@Test
+	@NonTransactional
+	public void TestPropertiesOfNoFormatElementedText() {
+		Comment comment = getComment("{noformat} int i = 0 {noformat} and this is a test Sentence.");
+		assertEquals(2, comment.getSentences().size());
+		assertEquals(false, comment.getSentences().get(0).isRelevant());
+		assertEquals(false, comment.getSentences().get(0).isPlainText());
+		assertEquals(false, comment.getSentences().get(0).isTagged());
+		assertEquals(false, comment.getSentences().get(0).isTaggedManually());
+	}
+	
+	@Test
+	@NonTransactional
+	public void TestPropertiesOfQuotedElementedText() {
+		Comment comment = getComment("{quote} int i = 0 {quote} and this is a test Sentence.");
+		assertEquals(2, comment.getSentences().size());
+		assertEquals(false, comment.getSentences().get(0).isRelevant());
+		assertEquals(false, comment.getSentences().get(0).isPlainText());
+		assertEquals(false, comment.getSentences().get(0).isTagged());
+		assertEquals(false, comment.getSentences().get(0).isTaggedManually());
+	}
+	
+	@Test
+	@NonTransactional
+	public void TestPropertiesOfTaggedElementedText() {
+		Comment comment = getComment("[Alternative] this is a manually created alternative [/Alternative] and this is a test Sentence.");
+		assertEquals(2, comment.getSentences().size());
+		assertEquals(true, comment.getSentences().get(0).isRelevant());
+		assertEquals(false, comment.getSentences().get(0).isPlainText());
+		assertEquals(true, comment.getSentences().get(0).isTagged());
+		assertEquals(true, comment.getSentences().get(0).isTaggedManually());
+	}
+	
+	@Test
+	@NonTransactional
+	public void TestPropertiesOfIconElementedText() {
+		Comment comment = getComment("(y) this is a icon pro text.  and this is a test Sentence.");
+		assertEquals(2, comment.getSentences().size());
+		assertEquals(true, comment.getSentences().get(0).isRelevant());
+		assertEquals(false, comment.getSentences().get(0).isPlainText());
+		assertEquals(true, comment.getSentences().get(0).isTagged());
+		assertEquals(true, comment.getSentences().get(0).isTaggedManually());
+		assertEquals(KnowledgeType.ARGUMENT, comment.getSentences().get(0).getType());
+	}
+	
+	
+	
 
 	@Test
 	@NonTransactional
@@ -322,6 +381,34 @@ public class TestComment extends TestSetUp {
 		//important that the tag is not inside the text area
 		assertTrue(comment.getTaggedBody(0).contains("</span><span class =tag>[/Issue]</span>"));
 		assertTrue(comment.getTaggedBody(0).contains("</span></span>"));		
+	}
+	
+	
+	@Test
+	@NonTransactional
+	public void TestManuallyTaggingIssueWithIcon() {
+		Comment comment = getComment("(y)this is a manual pro tagged sentence.");
+		assertTrue(comment.getTaggedBody(0).contains("<span id=\"comment0\">"));
+		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Pro\"  id  = ui1>"));
+		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[Pro]</span>"));
+		assertTrue(comment.getTaggedBody(0).contains("<span class = sentenceBody>this is a manual pro tagged sentence.</span>"));
+		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[/Pro]</span></span></span>"));
+	}
+	
+	@Test
+	@NonTransactional
+	public void TestManuallyTaggingIssueWithIconAndPlainText() {
+		Comment comment = getComment("(y)this is a manual pro tagged pro sentence. This is simple plain text");
+		assertTrue(comment.getTaggedBody(0).contains("<span id=\"comment0\">"));
+		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Pro\"  id  = ui1>"));
+		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[Pro]</span>"));
+		assertTrue(comment.getTaggedBody(0).contains("<span class = sentenceBody>this is a manual pro tagged pro sentence.</span>"));
+		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[/Pro]</span></span>"));
+		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence isNotRelevant\"  id  = ui2>"));
+		assertTrue(comment.getTaggedBody(0).contains("<span class =tag></span>"));
+		assertTrue(comment.getTaggedBody(0).contains("<span class = sentenceBody> This is simple plain text</span>"));
+		assertTrue(comment.getTaggedBody(0).contains("<span class =tag></span>"));
+		assertTrue(comment.getTaggedBody(0).contains("</span></span>"));
 	}
 	
 	

@@ -200,10 +200,10 @@ public class KnowledgeRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response changeKnowledgeTypeOfSentence(@QueryParam("projectKey") String projectKey,
-			@Context HttpServletRequest request, DecisionKnowledgeElement newElement) {
+			@Context HttpServletRequest request, DecisionKnowledgeElement newElement, @QueryParam("argument") String argument) {
 		if (projectKey != null && request != null && newElement != null) {
 			Boolean result = ActiveObjectsManager.updateKnowledgeTypeOfSentence(newElement.getId(),
-					newElement.getType());
+					newElement.getType(),argument);
 			if (!result) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Update of element failed.")).build();
@@ -238,7 +238,7 @@ public class KnowledgeRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response editSentenceBody(@Context HttpServletRequest request,
-			DecisionKnowledgeElement decisionKnowledgeElement) {
+			DecisionKnowledgeElement decisionKnowledgeElement, @QueryParam("argument") String argument) {
 		if (decisionKnowledgeElement != null && request != null) {
 
 			// Get corresponding element from ao database
@@ -269,7 +269,7 @@ public class KnowledgeRest {
 			}
 
 			ActiveObjectsManager.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),
-					decisionKnowledgeElement.getType());
+					decisionKnowledgeElement.getType(),argument);
 			
 
 			Response r = Response.status(Status.OK).entity(ImmutableMap.of("id", decisionKnowledgeElement.getId()))

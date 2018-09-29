@@ -245,8 +245,12 @@ function changeKnowledgeTypeOfSentence(id, type, callback) {
 		"id" : id,
 		"type" : type
 	};
+	var argument = type;
+	if(type.includes("Pro") || type.includes("Con")){
+		argument = type;
+	}
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/changeKnowledgeTypeOfSentence.json?projectKey="
-			+ getProjectKey(), jsondata, function(error, link) {
+			+ getProjectKey() +  "&argument="+argument, jsondata , function(error, link) {
 		if (error === null) {
 			showFlag("success", "Knowledge type has been changed.");
 			callback(link);
@@ -264,7 +268,7 @@ function editSentenceBody(id, body, type, callback) {
 		"projectKey" : getProjectKey(),
 		"description" : body
 	};
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/editSentenceBody.json", jsondata, function(error,
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/editSentenceBody.json?argument="+type, jsondata, function(error,
 			id, type) {
 		if (error === null) {
 			showFlag("success", "Decision knowledge element has been updated.");
@@ -534,6 +538,17 @@ function clearSentenceDatabase(projectKey){
 			showFlag("success", "The Sentence database has been cleared.");
 		} else {
 			showFlag("error", "The Sentence database has not been cleared.");
+		}
+	});
+}
+
+function classifyWholeProject(projectKey){
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/classifyWholeProject.json?projectKey=" + projectKey
+			, null, function(error, response) {
+		if (error === null) {
+			showFlag("success", "All sentences in this project have been classified.");
+		} else {
+			showFlag("error", "The classification process failed");
 		}
 	});
 }

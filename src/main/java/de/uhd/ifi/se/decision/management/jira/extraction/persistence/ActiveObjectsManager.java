@@ -51,6 +51,7 @@ public class ActiveObjectsManager {
 						todo.setProjectKey(projectKey);
 						todo.setIssueId(issueId);
 						todo.save();
+						//System.out.println("added: " + todo.getId());
 						return todo;
 					}
 				});
@@ -175,7 +176,7 @@ public class ActiveObjectsManager {
 
 	}
 
-	public static Boolean updateKnowledgeTypeOfSentence(long id, KnowledgeType knowledgeType) {
+	public static Boolean updateKnowledgeTypeOfSentence(long id, KnowledgeType knowledgeType, String argument) {
 		init();
 		return ao.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
@@ -188,6 +189,9 @@ public class ActiveObjectsManager {
 							sentenceEntity.setRelevant(true);
 							sentenceEntity.setTaggedManually(true);
 							sentenceEntity.setTaggedFineGrained(true);
+						}else {//Knowledgetype is an Argument
+							sentenceEntity.setKnowledgeTypeString(argument);
+							sentenceEntity.setArgument(argument);
 						}
 						if (!sentenceEntity.getKnowledgeTypeString().equals("Pro")
 								&& !sentenceEntity.getKnowledgeTypeString().equals("Con")) {

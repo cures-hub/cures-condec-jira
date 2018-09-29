@@ -241,6 +241,9 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	private void checkForPlainText(String body) {
 		this.isPlainText = true;
+		if (StringUtils.indexOfAny(body, CommentSplitter.excludedTagList) >= 0) {
+			this.isPlainText = false;
+		}
 		if (StringUtils.indexOfAny(body, CommentSplitter.manualRationaleTagList) >= 0
 				|| (ConfigPersistence.isIconParsingEnabled(projectKey)
 						&& StringUtils.indexOfAny(body, CommentSplitter.manualRationalIconList) >= 0)) {

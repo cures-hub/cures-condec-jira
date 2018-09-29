@@ -17,11 +17,22 @@ import javax.ws.rs.core.Response.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.bc.issue.search.SearchService;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.search.SearchException;
+import com.atlassian.jira.issue.search.SearchResults;
+import com.atlassian.jira.jql.builder.JqlClauseBuilder;
+import com.atlassian.jira.jql.builder.JqlQueryBuilder;
+import com.atlassian.jira.project.Project;
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
+import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
@@ -355,7 +366,35 @@ public class ConfigRest {
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
-	
+
+	@Path("/classifyWholeProject")
+	@POST
+	public Response classifyWholeProject(@Context HttpServletRequest request,
+			@QueryParam("projectKey") final String projectKey) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		try {
+			ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
+			JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
+			SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
+
+			com.atlassian.query.Query query = jqlClauseBuilder.project(projectKey).buildQuery();
+			com.atlassian.jira.issue.search.SearchResults searchResults = null;
+
+			searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
+			for (Issue issue : searchResults.getIssues()) {
+				new ViewConnector(issue, false);
+			}
+
+			return Response.ok(Status.ACCEPTED).build();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
+	}
+
 	@Path("/setIconParsing")
 	@POST
 	public Response setIconParsing(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
@@ -377,7 +416,7 @@ public class ConfigRest {
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
-	
+
 	@Path("/isIconParsing")
 	@GET
 	public Response isIconParsing(@QueryParam("projectKey") final String projectKey) {
