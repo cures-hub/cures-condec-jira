@@ -1,8 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.IssueTypeManager;
+import com.atlassian.jira.issue.issuetype.IssueType;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
@@ -110,6 +114,16 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	}
 
 	@Override
+	public void setWebhookEnabled(boolean isWebhookEnabled) {
+		ConfigPersistence.setWebhookEnabled(projectKey, isWebhookEnabled);
+	}
+
+	@Override
+	public boolean isWebhookEnabled() {
+		return ConfigPersistence.isWebhookEnabled(projectKey);
+	}
+
+	@Override
 	public void setWebhookData(String webhookUrl, String webhookSecret) {
 		if (webhookUrl == null || webhookSecret == null) {
 			return;
@@ -126,5 +140,10 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	@Override
 	public String getWebhookSecret() {
 		return ConfigPersistence.getWebhookSecret(projectKey);
+	}
+
+	@Override
+	public String getWebhookRootType() {
+		return ConfigPersistence.getWebhookType(projectKey);
 	}
 }

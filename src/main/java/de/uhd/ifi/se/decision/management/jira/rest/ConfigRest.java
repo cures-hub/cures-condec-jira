@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -14,6 +15,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.IssueTypeManager;
+import com.atlassian.jira.issue.issuetype.IssueType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,8 +25,8 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.config.GitConfig;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
@@ -44,7 +48,7 @@ public class ConfigRest {
 	@Path("/setActivated")
 	@POST
 	public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivated") String isActivatedString) {
+			@QueryParam("isActivatedString") String isActivatedString) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -273,8 +277,7 @@ public class ConfigRest {
 		}
 		try {
 			ConfigPersistence.setGitAddress(projectKey, gitAddress);
-			GitConfig gitConfig = new GitConfig(projectKey, gitAddress);
-			// TODO
+			// TODO GitConfig gitConfig = new GitConfig(projectKey, gitAddress);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -293,6 +296,29 @@ public class ConfigRest {
 		return Response.ok(gitAddress).build();
 	}
 
+	@Path("/setWebhookEnabled")
+	@POST
+	public Response setWebhookEnabled(@Context HttpServletRequest request,
+			@QueryParam("projectKey") final String projectKey,
+			@QueryParam("isActivated") final String isActivatedString) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if (isActivatedString == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Webhook Activation bookean = null")).build();
+		}
+		try {
+			boolean isActivated = Boolean.valueOf(isActivatedString);
+			ConfigPersistence.setWebhookEnabled(projectKey, isActivated);
+			return Response.ok(Status.ACCEPTED).build();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
+	}
+
 	@Path("/setWebhookData")
 	@POST
 	public Response setWebhookData(@Context HttpServletRequest request,
@@ -308,13 +334,64 @@ public class ConfigRest {
 		try {
 			ConfigPersistence.setWebhookUrl(projectKey, webhookUrl);
 			ConfigPersistence.setWebhookSecret(projectKey, webhookSecret);
-
-			// TODO Changing default send after the connection is working like intended;
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
+	}
+
+	@Path("/setWebhookType")
+	@POST
+	public Response setWebhookType(@Context HttpServletRequest request,
+								   @QueryParam("projectKey") final String projectKey, @QueryParam("webhookType") final String webhookType){
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if(webhookType == null){
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "webhook Type = null")).build();
+		}
+		try {
+			ConfigPersistence.setWebhookType(projectKey, webhookType);
+			return Response.ok(Status.ACCEPTED).build();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
+	}
+
+	@Path("/clearSentenceDatabase")
+	@POST
+	public Response clearSentenceDatabase(@Context HttpServletRequest request,
+			@QueryParam("projectKey") final String projectKey) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		try {
+			ActiveObjectsManager.clearSentenceDatabaseForProject(projectKey);
+			return Response.ok(Status.ACCEPTED).build();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
+	}
+
+	@Path("/getProjectIssueTypes")
+	@GET
+	public Response getProjectIssueTypes(@QueryParam("projectKey") final String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
+		Collection<IssueType> types = issueTypeManager.getIssueTypes();
+		Collection<String> typeNames = new ArrayList<>();
+		for( IssueType type: types){
+			typeNames.add(type.getName());
+		}
+		return Response.ok(typeNames).build();
 	}
 
 	private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {

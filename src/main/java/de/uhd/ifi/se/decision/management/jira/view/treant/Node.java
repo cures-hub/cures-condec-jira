@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.config.properties.ApplicationProperties;
@@ -22,6 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  */
 public class Node {
 	@XmlElement(name = "text")
+	@JsonProperty("text")
 	private Map<String, String> nodeContent;
 
 	@XmlElement
@@ -31,12 +34,15 @@ public class Node {
 	private Map<String, String> link;
 
 	@XmlElement(name = "HTMLclass")
+	@JsonProperty("HTMLclass")
 	private String htmlClass;
 
 	@XmlElement(name = "HTMLid")
+	@JsonProperty("HTMLid")
 	private long htmlId;
 
 	@XmlElement(name = "innerHTML")
+	@JsonProperty("innerHTML")
 	private String innerHTML;
 
 	@XmlElement

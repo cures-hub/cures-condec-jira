@@ -10,23 +10,21 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 
 public class GenericLinkImpl implements GenericLink {
-	
+
 	private long id;
 	private String idOfSourceElement;
 	private String idOfDestinationElement;
 	private String type;
-	
-	
+
 	public GenericLinkImpl() {
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public GenericLinkImpl(String idOfDestinationElement, String idOfSourceElement) {
 		this();
-		this.idOfDestinationElement=idOfDestinationElement;
+		this.idOfDestinationElement = idOfDestinationElement;
 		this.idOfSourceElement = idOfSourceElement;
 	}
-
 
 	@Override
 	public long getId() {
@@ -35,7 +33,7 @@ public class GenericLinkImpl implements GenericLink {
 
 	@Override
 	public void setId(long id) {
-		this.id=id;
+		this.id = id;
 	}
 
 	@Override
@@ -52,10 +50,10 @@ public class GenericLinkImpl implements GenericLink {
 	public String getIdOfSourceElement() {
 		return this.idOfSourceElement;
 	}
-	
+
 	@Override
 	public void setIdOfSourceElement(String idOfSourceElement) {
-	this.idOfSourceElement = idOfSourceElement;
+		this.idOfSourceElement = idOfSourceElement;
 	}
 
 	@Override
@@ -66,62 +64,63 @@ public class GenericLinkImpl implements GenericLink {
 	@Override
 	public void setIdOfDestinationElement(String idOfDestinationElement) {
 		this.idOfDestinationElement = idOfDestinationElement;
-		
 	}
-	
+
 	public String toString() {
 		return this.idOfSourceElement + " to " + this.idOfDestinationElement;
 	}
 
 	@Override
 	public DecisionKnowledgeElement getElement(String elementNOTToGet) {
-		if(elementNOTToGet.startsWith("s")) {
+		if (elementNOTToGet.startsWith("s")) {
 			Sentence sentence = null;
-			if(this.getIdOfSourceElement().equals(elementNOTToGet)) {
-				if(this.getIdOfDestinationElement().startsWith("s")) {
-					return new Sentence(Integer.parseInt(this.getIdOfDestinationElement().substring(1)));
-				}else {
-					Issue issue = ComponentAccessor.getIssueManager().getIssueObject((long)Integer.parseInt(this.getIdOfDestinationElement().substring(1)));
+			if (this.getIdOfSourceElement().equals(elementNOTToGet)) {
+				if (this.getIdOfDestinationElement().startsWith("s")) {
+					return new SentenceImpl(Integer.parseInt(this.getIdOfDestinationElement().substring(1)));
+				} else {
+					Issue issue = ComponentAccessor.getIssueManager()
+							.getIssueObject((long) Integer.parseInt(this.getIdOfDestinationElement().substring(1)));
 					return new DecisionKnowledgeElementImpl(issue);
 				}
 			}
-			if(this.getIdOfDestinationElement().equals(elementNOTToGet)) {
-				if(this.getIdOfSourceElement().startsWith("s")) {
-					return new Sentence(Integer.parseInt(this.getIdOfSourceElement().substring(1)));
-				}else {
-					long id = (long)Integer.parseInt(idOfSourceElement.substring(1));
+			if (this.getIdOfDestinationElement().equals(elementNOTToGet)) {
+				if (this.getIdOfSourceElement().startsWith("s")) {
+					return new SentenceImpl(Integer.parseInt(this.getIdOfSourceElement().substring(1)));
+				} else {
+					long id = (long) Integer.parseInt(idOfSourceElement.substring(1));
 					Issue issue = ComponentAccessor.getIssueManager().getIssueObject(id);
 					return new DecisionKnowledgeElementImpl(issue);
 				}
 			}
 			return sentence;
 		}
-		if(elementNOTToGet.startsWith("i")) {
-			if(this.getIdOfSourceElement().equals(elementNOTToGet)) {
-				if(this.getIdOfDestinationElement().startsWith("s")) {
-					return new Sentence(Integer.parseInt(this.getIdOfDestinationElement().substring(1)));
-				}else {
-					Issue issue = ComponentAccessor.getIssueManager().getIssueObject((long)Integer.parseInt(elementNOTToGet.substring(1)));
+		if (elementNOTToGet.startsWith("i")) {
+			if (this.getIdOfSourceElement().equals(elementNOTToGet)) {
+				if (this.getIdOfDestinationElement().startsWith("s")) {
+					return new SentenceImpl(Integer.parseInt(this.getIdOfDestinationElement().substring(1)));
+				} else {
+					Issue issue = ComponentAccessor.getIssueManager()
+							.getIssueObject((long) Integer.parseInt(elementNOTToGet.substring(1)));
 					return new DecisionKnowledgeElementImpl(issue);
 				}
 			}
-			if(this.getIdOfDestinationElement().equals(elementNOTToGet)) {
-				if(this.getIdOfSourceElement().startsWith("s")) {
-					return new Sentence(Integer.parseInt(this.getIdOfSourceElement().substring(1)));
-				}else {
-					long id = (long)Integer.parseInt(idOfSourceElement.substring(1));
+			if (this.getIdOfDestinationElement().equals(elementNOTToGet)) {
+				if (this.getIdOfSourceElement().startsWith("s")) {
+					return new SentenceImpl(Integer.parseInt(this.getIdOfSourceElement().substring(1)));
+				} else {
+					long id = (long) Integer.parseInt(idOfSourceElement.substring(1));
 					Issue issue = ComponentAccessor.getIssueManager().getIssueObject(id);
 					return new DecisionKnowledgeElementImpl(issue);
 				}
 			}
-			
+
 		}
-		
+
 		return null;
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getBothElements() {
+	public List<DecisionKnowledgeElement> getBothElements() throws NullPointerException {
 		List<DecisionKnowledgeElement> bothLinkSides = new ArrayList<>();
 		bothLinkSides.add(this.getElement(this.idOfSourceElement));
 		bothLinkSides.add(this.getElement(this.idOfDestinationElement));

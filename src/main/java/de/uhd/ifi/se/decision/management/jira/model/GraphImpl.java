@@ -61,17 +61,22 @@ public class GraphImpl implements Graph {
 		if (element == null) {
 			return linkedElementsAndLinks;
 		}
-
+ 
 		String preIndex = getIdentifier(element);
 		List<GenericLink> list = ActiveObjectsManager.getGenericLinksForElement(preIndex + element.getId(),false);
 		for (GenericLink currentGenericLink : list) {
-			Link linkBetweenSentenceAndOtherElement = new LinkImpl(currentGenericLink.getBothElements().get(0),
-					currentGenericLink.getBothElements().get(1));
-			linkBetweenSentenceAndOtherElement.setType("contain");
-			if (!linkListContainsLink(linkBetweenSentenceAndOtherElement) ) {
-				sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
-				linkedElementsAndLinks.put(currentGenericLink.getElement(preIndex + element.getId()),
-						linkBetweenSentenceAndOtherElement);
+			try {
+				Link linkBetweenSentenceAndOtherElement = new LinkImpl(currentGenericLink.getBothElements().get(0),
+						currentGenericLink.getBothElements().get(1));
+				linkBetweenSentenceAndOtherElement.setType("contain");
+				if (!linkListContainsLink(linkBetweenSentenceAndOtherElement) ) {
+					sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
+					linkedElementsAndLinks.put(currentGenericLink.getElement(preIndex + element.getId()),
+							linkBetweenSentenceAndOtherElement);
+				}
+			}catch(NullPointerException e) {
+				//One end of the linked elements is outdated, link will be deleted
+				ActiveObjectsManager.deleteGenericLink(currentGenericLink);
 			}
 		}
 

@@ -275,10 +275,9 @@ function editSentenceBody(id, body, type, callback) {
 	});
 }
 
-
-function deleteGenericLink(targetId,sourceId,targetType,sourceType,callback,showError){
+function deleteGenericLink(targetId, sourceId, targetType, sourceType, callback, showError) {
 	var jsondata = {
-		"idOfSourceElement" : sourceType+sourceId,
+		"idOfSourceElement" : sourceType + sourceId,
 		"idOfDestinationElement" : targetType + targetId
 	};
 	deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteGenericLink.json?projectKey="
@@ -286,29 +285,28 @@ function deleteGenericLink(targetId,sourceId,targetType,sourceType,callback,show
 		if (error === null) {
 			showFlag("success", "Link has been deleted.");
 			callback();
-		} else if(showError) {
+		} else if (showError) {
 			showFlag("error", "Link could not be deleted.");
 		}
 
 	});
 }
 
-
-function linkGenericElements(targetId, sourceId, targetType,sourceType,callback) {
+function linkGenericElements(targetId, sourceId, targetType, sourceType, callback) {
 	var jsondata = {
 		"type" : "contain",
-		"idOfSourceElement" : sourceType+sourceId,
+		"idOfSourceElement" : sourceType + sourceId,
 		"idOfDestinationElement" : targetType + targetId
 	};
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createGenericLink.json?projectKey=" + getProjectKey(),
-			jsondata, function(error, link) {
-				if (error === null) {
-					showFlag("success", "Link has been created.");
-					callback(link);
-				} else {
-					showFlag("error", "Link could not be created.");
-				}
-			});
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createGenericLink.json?projectKey="
+			+ getProjectKey(), jsondata, function(error, link) {
+		if (error === null) {
+			showFlag("success", "Link has been created.");
+			callback(link);
+		} else {
+			showFlag("error", "Link could not be created.");
+		}
+	});
 }
 
 function getTreant(elementKey, depthOfTree, callback) {
@@ -335,6 +333,9 @@ function getTreeViewer(rootElementType, callback) {
 
 function getTreeViewerWithoutRootElement(showRelevant, callback) {
 	var issueId = AJS.$("meta[name='ajs-issue-key']").attr("content");
+	if(issueId === undefined){
+		issueId = getIssueKey();
+	}
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer2.json?issueKey=" + issueId
 			+ "&showRelevant=" + showRelevant, function(error, core) {
 		if (error === null) {
@@ -509,8 +510,52 @@ function setWebhookData(projectKey, webhookUrl, webhookSecret) {
 	});
 }
 
+function setWebhookEnabled(isActivated, projectKey) {
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookEnabled.json?projectKey=" + projectKey
+			+ "&isActivated=" + isActivated, null, function(error, response) {
+		if (error === null) {
+			showFlag("success", "The webhook activation for this project has been changed.");
+		} else {
+			showFlag("error", "The webhook activation for this project could not be changed.");
+		}
+	});
+}
+
+function setWebhookType(webhookType, projectKey) {
+    postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookType.json?projectKey=" + projectKey
+			+ "&webhookType="+webhookType, null , function(error, response) {
+        if (error === null) {
+            showFlag("success", "The webhook Type has changed for this project");
+        } else {
+            showFlag("error", "The webhook Type has not been changed for this project");
+        }
+    });
+}
+
 function getCommitsAsReturnValue(elementKey) {
 	var commitData = getResponseAsReturnValue(AJS.contextPath() + "/rest/gitplugin/latest/issues/" + elementKey
 			+ "/commits");
 	return commitData.commits;
+}
+
+function clearSentenceDatabase(projectKey){
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/clearSentenceDatabase.json?projectKey=" + projectKey
+			, null, function(error, response) {
+		if (error === null) {
+			showFlag("success", "The Sentence database has been cleared.");
+		} else {
+			showFlag("error", "The Sentence database has not been cleared.");
+		}
+	});
+}
+
+function getProjectIssueTypes(projectKey, callback) {
+    getJSON(AJS.contextPath() + "/rest/decisions/latest/config/getProjectIssueTypes.json?projectKey="
+		+ projectKey, function(error, issueTypes) {
+        if (error === null) {
+            callback(issueTypes);
+        } else {
+            showFlag("error", "Tree viewer data could not be received. Error-Code: " + error);
+        }
+    });
 }
