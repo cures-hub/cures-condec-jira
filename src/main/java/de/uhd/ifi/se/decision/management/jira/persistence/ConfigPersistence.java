@@ -219,6 +219,7 @@ public class ConfigPersistence {
 		settings.put(pluginStorageKey + ".isWebhookEnabled", Boolean.toString(isActivated));
 	}
 
+	// TODO Testing
 	public static boolean isWebhookEnabled(String projectKey) {
 		if (projectKey == null) {
 			return false;
@@ -243,12 +244,36 @@ public class ConfigPersistence {
 		});
 		return isIconParsingEnabled instanceof String && "true".equals(isIconParsingEnabled);
 	}
-	
+
 	public static void setIconParsing(String projectKey, boolean isIconParsing) {
 		if (projectKey == null) {
 			return;
 		}
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 		settings.put(pluginStorageKey + ".isIconParsing", Boolean.toString(isIconParsing));
+	}
+
+	// TODO Testing
+	public static void setWebhookType(String projectKey, String webhookType) {
+		if (projectKey == null || webhookType == null) {
+			return;
+		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey + ".webhookType", webhookType);
+	}
+
+	// TODO Testing
+	public static String getWebhookType(String projectKey) {
+		Object webhookType = transactionTemplate.execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction() {
+				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+				return settings.get(pluginStorageKey + ".webhookType");
+			}
+		});
+		if (webhookType instanceof String) {
+			return (String) webhookType;
+		}
+		return "";
 	}
 }

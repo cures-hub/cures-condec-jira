@@ -212,4 +212,11 @@ public interface DecisionKnowledgeProject {
 	 * @return secret key for the submission of the decision knowledge via webhook.
 	 */
 	String getWebhookSecret();
+
+	/**
+	 * Return the webhook root Type.
+	 *
+	 * @return the webhook root Type of the returned treant json.
+	 */
+	String getWebhookRootType();
 }

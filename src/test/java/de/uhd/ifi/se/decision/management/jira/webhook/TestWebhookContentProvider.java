@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 @Data(TestSetUp.AoSentenceTestDatabaseUpdater.class)
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestWebhookConentProvider extends TestSetUp {
+public class TestWebhookContentProvider extends TestSetUp {
     private EntityManager entityManager;
 
     @Before
