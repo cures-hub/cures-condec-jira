@@ -14,6 +14,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
@@ -22,7 +25,8 @@ import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.CommentImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLinkImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
@@ -196,10 +200,10 @@ public class KnowledgeRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response changeKnowledgeTypeOfSentence(@QueryParam("projectKey") String projectKey,
-			@Context HttpServletRequest request, DecisionKnowledgeElement newElement) {
+			@Context HttpServletRequest request, DecisionKnowledgeElement newElement, @QueryParam("argument") String argument) {
 		if (projectKey != null && request != null && newElement != null) {
 			Boolean result = ActiveObjectsManager.updateKnowledgeTypeOfSentence(newElement.getId(),
-					newElement.getType());
+					newElement.getType(),argument);
 			if (!result) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Update of element failed.")).build();
@@ -234,7 +238,7 @@ public class KnowledgeRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response editSentenceBody(@Context HttpServletRequest request,
-			DecisionKnowledgeElement decisionKnowledgeElement) {
+			DecisionKnowledgeElement decisionKnowledgeElement, @QueryParam("argument") String argument) {
 		if (decisionKnowledgeElement != null && request != null) {
 
 			// Get corresponding element from ao database
@@ -246,22 +250,27 @@ public class KnowledgeRest {
 				CommentManager cm = ComponentAccessor.getCommentManager();
 				MutableComment mc = (MutableComment) cm.getCommentById(databaseEntity.getCommentId());
 				// Generate sentence data generated for classification
-				String sentenceToSearch = Comment.textRule(mc.getBody())
+				String sentenceToSearch = CommentImpl.textRule(mc.getBody())
 						.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount());
 				int index = mc.getBody().indexOf(sentenceToSearch);
-
+				
+				String tag = "";
+				if(databaseEntity.isTaggedManually()) {
+					tag ="["+WordUtils.capitalize(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch,databaseEntity.getProjectKey()))+"]";
+				}
 				String first = mc.getBody().substring(0, index);
-				String second = decisionKnowledgeElement.getDescription();
+				String second = tag + decisionKnowledgeElement.getDescription()+ tag.replace("[","[/");
 				String third = mc.getBody().substring(index + sentenceToSearch.length());
 
 				mc.setBody(first + second + third);
 				cm.update(mc, true);
+				ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(), decisionKnowledgeElement.getId(),
+						second);
 			}
 
 			ActiveObjectsManager.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),
-					decisionKnowledgeElement.getType());
-			ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(), decisionKnowledgeElement.getId(),
-					decisionKnowledgeElement.getDescription());
+					decisionKnowledgeElement.getType(),argument);
+			
 
 			Response r = Response.status(Status.OK).entity(ImmutableMap.of("id", decisionKnowledgeElement.getId()))
 					.build();

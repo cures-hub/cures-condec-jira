@@ -1,18 +1,20 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
 import java.beans.PropertyChangeListener;
+import java.util.Date;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 import net.java.ao.EntityManager;
 import net.java.ao.RawEntity;
 
@@ -43,6 +45,8 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	private String knowledgeTypeString;
 
 	private long issueId;
+	
+	private Date created;
 
 	public SentenceImpl() {
 		super();
@@ -58,8 +62,8 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	public SentenceImpl(String body, long id) {
 		super.setId(id);
-		this.setBody(body);
 		retrieveAttributesFromActievObjects();
+		this.setBody(body);
 	}
 
 	@Override
@@ -179,30 +183,23 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	public void setKnowledgeType(double[] prediction) {
-		for (int i = 0; i < prediction.length; i++) {
-			if (prediction[i] == 1. && i == 0) {
+			if (prediction[0] == 1. ) {
 				super.type = KnowledgeType.ALTERNATIVE;
-				break;
 			}
-			if (prediction[i] == 1. && i == 1) {
+			if (prediction[1] == 1.) {
 				super.type = KnowledgeType.ARGUMENT;
 				this.argument = "Pro";
-				break;
 			}
-			if (prediction[i] == 1. && i == 2) {
+			if (prediction[2] == 1.) {
 				super.type = KnowledgeType.ARGUMENT;
 				this.argument = "Con";
-				break;
 			}
-			if (prediction[i] == 1. && i == 3) {
+			if (prediction[3] == 1. ) {
 				super.type = KnowledgeType.DECISION;
-				break;
 			}
-			if (prediction[i] == 1. && i == 4) {
+			if (prediction[4] == 1. ) {
 				super.type = KnowledgeType.ISSUE;
-				break;
 			}
-		}
 		this.setKnowledgeTypeString(super.type.toString());
 	}
 
@@ -240,19 +237,38 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	private void checkForPlainText(String body) {
+		this.isPlainText = true;
 		if (StringUtils.indexOfAny(body, CommentSplitter.excludedTagList) >= 0) {
 			this.isPlainText = false;
-		} else {
-			this.isPlainText = true;
 		}
-		if (super.getSummary().contains("[issue]")) {
-			this.setKnowledgeTypeString(KnowledgeType.ISSUE.toString());
-			this.setRelevant(true);
-			this.setTagged(true);
-			this.setTaggedManually(true);
-			this.setTaggedFineGrained(true);
-			// ActiveObjectsManager.updateSentenceElement(this); //TODO: Update this.
+		if (StringUtils.indexOfAny(body, CommentSplitter.manualRationaleTagList) >= 0
+				|| (ConfigPersistence.isIconParsingEnabled(projectKey)
+						&& StringUtils.indexOfAny(body, CommentSplitter.manualRationalIconList) >= 0)) {
+			this.setKnowledgeTypeString(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey));
+			setManuallyTagged();
+			stripTagsFromBody(body);
 		}
+	}
+
+	private void stripTagsFromBody(String body) {
+		if (StringUtils.indexOfAny(body, CommentSplitter.manualRationaleTagList) >= 0) {
+			int tagLength = 2 + CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey).length();
+			super.setDescription(body.substring(tagLength, body.length() - (1 + tagLength)));
+			super.setSummary(super.getDescription());
+		} else { // Icon case TODO: add full icon support
+			super.setDescription(body.substring(3));
+			super.setSummary(super.getDescription());
+		}
+
+	}
+
+	private void setManuallyTagged() {
+		this.setPlainText(false);
+		this.setRelevant(true);
+		this.setTagged(true);
+		this.setTaggedManually(true);
+		this.setTaggedFineGrained(true);
+		ActiveObjectsManager.updateSentenceElement(this);
 	}
 
 	public boolean isPlainText() {
@@ -265,8 +281,13 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	private void retrieveBodyFromJiraComment() {
 		String text = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getBody();
-		text = text.substring(this.startSubstringCount, this.endSubstringCount);
+		if(this.endSubstringCount < text.length()) {
+			text = text.substring(this.startSubstringCount, this.endSubstringCount);
+		} else if(this.endSubstringCount == text.length()) {
+			text = text.substring(this.startSubstringCount);
+		}
 		this.setBody(text);
+		this.created = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getCreated();
 	}
 
 	private void retrieveAttributesFromActievObjects() {
@@ -288,7 +309,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		} else {
 			super.type = KnowledgeType.getKnowledgeType(kt);
 		}
-		this.setIssueId(aoElement.getIssueId());
 		IssueManager im = ComponentAccessor.getIssueManager();
 		MutableIssue mi = im.getIssueObject(this.getIssueId());
 		super.setKey(mi.getKey() + ":" + this.getId());
@@ -347,6 +367,16 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	@Override
 	public long getIssueId() {
 		return this.issueId;
+	}
+
+	@Override
+	public Date getCreated() {
+		return this.created;
+	}
+
+	@Override
+	public void setCreated(Date date) {
+		this.created = date;
 	}
 
 }

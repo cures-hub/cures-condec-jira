@@ -212,6 +212,41 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
             });
 		</script>	
 		</div>
+		<div class="field-group">
+			<input type="button" class="aui-button" id="classifyAllIssuesInProject" value="Classify all Comments" />
+			<div class="description">Classify Decision Knowledge for all Comments in Issues for this project</div>		
+			<div id="some-id" class="aui-progress-indicator">
+			    <span class="aui-progress-indicator-value"></span>
+			</div>
+			<script>
+			var clearSentenceDatabaseButton = document.getElementById("classifyAllIssuesInProject");
+			clearSentenceDatabaseButton.addEventListener("click", function() {
+				AJS.progressBars.setIndeterminate("#some-id");
+                classifyWholeProject('$projectKey');
+                window.onbeforeunload = null;
+            });
+		</script>	
+		</div>
+		<div class="field-group">
+			<label for="iconParsing-toggle">Use icon labels</label>
+			<aui-toggle id="iconParsing-toggle" value="$projectKey"
+				label="Use icon labels"></aui-toggle>
+			<script>
+                var activationToggle = document.getElementById('iconParsing-toggle');
+                #if ($project.isIconParsing() == true)
+						activationToggle.checked = true;
+                    #else
+						activationToggle.checked = false;
+                    #end
+                    console.log(activationToggle.checked );
+                activationToggle.addEventListener('change', function(error) {
+                    this.busy = true;
+                    setIconParsing(this.value, this.checked);
+                    this.busy = false;
+                });
+            </script>
+			<div class="description">Enables or disables the parsing for icons to tag decision knowledge <br> WARNING: Use with caution. Sentences will not be labeled / classified correctly if a decision knowledge icon is used for other things then decision knowledge labels. </div>
+		</div>
 	</form>
 </body>
 </html>

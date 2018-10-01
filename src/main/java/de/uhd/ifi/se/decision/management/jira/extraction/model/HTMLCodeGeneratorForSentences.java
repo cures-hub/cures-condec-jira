@@ -23,10 +23,8 @@ public class HTMLCodeGeneratorForSentences {
 			return this.getSpecialBodyWithHTMLCodes();
 		}
 		return "<span class=\"sentence " + sentence.getKnowledgeTypeString() + "\"  id  = ui" + sentence.getId() + ">"
-				+ this.getOpeningTagSpan() + "<span class = sentenceBody>"
-				+ sentence.getBody().substring(0 + "[issue]".length(),
-						sentence.getBody().length() - "[/issue]".length())
-				+ "</span>" + this.getClosingTagSpan() + "</span>";
+				+ this.getOpeningTagSpan() + "<span class = sentenceBody>" + sentence.getBody() + "</span>"
+				+ this.getClosingTagSpan() + "</span>";
 
 	}
 

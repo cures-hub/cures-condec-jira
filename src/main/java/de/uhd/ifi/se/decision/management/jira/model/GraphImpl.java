@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
@@ -57,11 +58,10 @@ public class GraphImpl implements Graph {
 
 	private Map<DecisionKnowledgeElement, Link> getAllLinkedSentences(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
-
+		
 		if (element == null) {
 			return linkedElementsAndLinks;
 		}
- 
 		String preIndex = getIdentifier(element);
 		List<GenericLink> list = ActiveObjectsManager.getGenericLinksForElement(preIndex + element.getId(),false);
 		for (GenericLink currentGenericLink : list) {
@@ -75,11 +75,9 @@ public class GraphImpl implements Graph {
 							linkBetweenSentenceAndOtherElement);
 				}
 			}catch(NullPointerException e) {
-				//One end of the linked elements is outdated, link will be deleted
-				ActiveObjectsManager.deleteGenericLink(currentGenericLink);
+				//Link in the wrong direction
 			}
 		}
-
 		return linkedElementsAndLinks;
 	}
 

@@ -7,7 +7,7 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -25,7 +25,7 @@ public class ActiveObjectsManager {
 		}
 	}
 
-	public static long addNewSentenceintoAo(Comment comment, long issueId, int index) {
+	public static long addNewSentenceintoAo(CommentImpl comment, long issueId, int index) {
 		return addNewSentenceintoAo(comment.getJiraCommentId(), comment.getEndSubstringCount().get(index),
 				comment.getStartSubstringCount().get(index), comment.getAuthorId(), issueId, comment.getProjectKey());
 	}
@@ -51,6 +51,7 @@ public class ActiveObjectsManager {
 						todo.setProjectKey(projectKey);
 						todo.setIssueId(issueId);
 						todo.save();
+						//System.out.println("added: " + todo.getId());
 						return todo;
 					}
 				});
@@ -84,28 +85,29 @@ public class ActiveObjectsManager {
 		}
 	}
 
-	// public static boolean checkCommentExistingInAO(long sentenceAoId, boolean
-	// getIsTagged) {
-	// init();
-	// DecisionKnowledgeInCommentEntity dbEntry = ao
-	// .executeInTransaction(new
-	// TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-	// @Override
-	// public DecisionKnowledgeInCommentEntity doInTransaction() {
-	// for (DecisionKnowledgeInCommentEntity databaseEntry : ao
-	// .find(DecisionKnowledgeInCommentEntity.class)) {
-	// if (databaseEntry.getId() == sentenceAoId) {
-	// return databaseEntry;
-	// }
-	// }
-	// return null;
-	// }
-	// });
-	// if (getIsTagged && dbEntry != null) {
-	// return dbEntry.isTagged();
-	// }
-	// return (dbEntry != null);
-	// }
+	public static void updateSentenceElement(Sentence sentence) {
+		init();
+		ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+			@Override
+			public DecisionKnowledgeInCommentEntity doInTransaction() {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class,
+						Query.select().where("PROJECT_KEY = ?", sentence.getProjectKey()))) {
+					if (databaseEntry.getId() == sentence.getId()) {
+						databaseEntry.setArgument(sentence.getArgument());
+						databaseEntry.setEndSubstringCount(sentence.getEndSubstringCount());
+						databaseEntry.setRelevant(sentence.isRelevant());
+						databaseEntry.setTagged(sentence.isTagged());
+						databaseEntry.setTaggedFineGrained(sentence.isTaggedFineGrained());
+						databaseEntry.setTaggedManually(sentence.isTaggedManually());
+						databaseEntry.setKnowledgeTypeString(sentence.getKnowledgeTypeString());
+						databaseEntry.setStartSubstringCount(sentence.getStartSubstringCount());
+						databaseEntry.save();
+					}
+				}
+				return null;
+			}
+		});
+	}
 
 	public static DecisionKnowledgeInCommentEntity getElementFromAO(long commentId, int endSubtringCount,
 			int startSubstringCount, long userId, String projectKey) {
@@ -128,32 +130,6 @@ public class ActiveObjectsManager {
 		return element;
 
 	}
-
-	// public static void updateSentenceElement(Sentence sentence) {
-	// init();
-	// ao.executeInTransaction(new
-	// TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-	// @Override
-	// public DecisionKnowledgeInCommentEntity doInTransaction() {
-	// for (DecisionKnowledgeInCommentEntity databaseEntry :
-	// ao.find(DecisionKnowledgeInCommentEntity.class,
-	// Query.select().where("PROJECT_KEY = ?", sentence.getProjectKey()))) {
-	// if (databaseEntry.getId() == sentence.getId()) {
-	// databaseEntry.setArgument(sentence.getArgument());
-	// databaseEntry.setEndSubstringCount(sentence.getEndSubstringCount());
-	// databaseEntry.setIsRelevant(sentence.isRelevant());
-	// databaseEntry.setIsTagged(sentence.isTagged());
-	// databaseEntry.setIsTaggedFineGrained(sentence.isTaggedFineGrained());
-	// databaseEntry.setIsTaggedManually(sentence.isTaggedManually());
-	// databaseEntry.setKnowledgeTypeString(sentence.getKnowledgeTypeString());
-	// databaseEntry.setStartSubstringCount(sentence.getStartSubstringCount());
-	// }
-	// }
-	// return null;
-	// }
-	// });
-	//
-	// }
 
 	public static DecisionKnowledgeInCommentEntity getElementFromAO(long aoId) {
 		init();
@@ -200,7 +176,7 @@ public class ActiveObjectsManager {
 
 	}
 
-	public static Boolean updateKnowledgeTypeOfSentence(long id, KnowledgeType knowledgeType) {
+	public static Boolean updateKnowledgeTypeOfSentence(long id, KnowledgeType knowledgeType, String argument) {
 		init();
 		return ao.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
@@ -211,6 +187,15 @@ public class ActiveObjectsManager {
 						sentenceEntity.setKnowledgeTypeString(knowledgeType.toString());
 						if (knowledgeType != KnowledgeType.OTHER) {
 							sentenceEntity.setRelevant(true);
+							sentenceEntity.setTaggedManually(true);
+							sentenceEntity.setTaggedFineGrained(true);
+						}else {//Knowledgetype is an Argument
+							sentenceEntity.setKnowledgeTypeString(argument);
+							sentenceEntity.setArgument(argument);
+						}
+						if (!sentenceEntity.getKnowledgeTypeString().equals("Pro")
+								&& !sentenceEntity.getKnowledgeTypeString().equals("Con")) {
+							sentenceEntity.setArgument("");
 						}
 						sentenceEntity.save();
 						return true;
@@ -247,7 +232,7 @@ public class ActiveObjectsManager {
 		return true;
 	}
 
-	public static void checkIfCommentBodyHasChangedOutsideOfPlugin(Comment comment) {
+	public static void checkIfCommentBodyHasChangedOutsideOfPlugin(CommentImpl comment) {
 		init();
 		final List<Integer> starts = comment.getStartSubstringCount();
 		final List<Integer> ends = comment.getEndSubstringCount();
@@ -275,6 +260,17 @@ public class ActiveObjectsManager {
 							}
 						} catch (SQLException e) {
 							e.printStackTrace();
+						}
+						for (LinkBetweenDifferentEntitiesEntity link : ao
+								.find(LinkBetweenDifferentEntitiesEntity.class)) {
+							if (link.getIdOfDestinationElement().equals("i" + comment.getIssueId())
+									|| link.getIdOfSourceElement().equals("i" + comment.getIssueId())) {
+								try {
+									link.getEntityManager().delete(link);
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
+							}
 						}
 					}
 				}
@@ -344,6 +340,7 @@ public class ActiveObjectsManager {
 						sentenceEntity.setRelevant(false);
 						sentenceEntity.setTaggedManually(isTaggedManually);
 						sentenceEntity.setKnowledgeTypeString(KnowledgeType.OTHER.toString());
+						sentenceEntity.setArgument("");
 						sentenceEntity.save();
 						return true;
 					}
@@ -359,39 +356,31 @@ public class ActiveObjectsManager {
 			@Override
 			public Boolean doInTransaction() {
 				int lengthDifference = 0; // TODO: Add project ID
+				int oldStart = 0;
 				for (DecisionKnowledgeInCommentEntity sentenceEntity : ao.find(DecisionKnowledgeInCommentEntity.class,
 						"ID = ?", aoId)) {
 					int oldLength = sentenceEntity.getEndSubstringCount() - sentenceEntity.getStartSubstringCount();
 					lengthDifference = (oldLength - description.length()) * -1;
 					sentenceEntity.setEndSubstringCount(sentenceEntity.getEndSubstringCount() + lengthDifference);
 					sentenceEntity.save();
+					oldStart = sentenceEntity.getStartSubstringCount();
 				}
-				for (DecisionKnowledgeInCommentEntity sentenceEntity : ao.find(DecisionKnowledgeInCommentEntity.class,
-						"COMMENT_ID = ?", commentId)) {
-					if (sentenceEntity.getStartSubstringCount() > sentenceEntity.getStartSubstringCount()
-							&& sentenceEntity.getId() != aoId && sentenceEntity.getCommentId() == commentId) {
-						sentenceEntity
-								.setStartSubstringCount(sentenceEntity.getStartSubstringCount() + lengthDifference);
-						sentenceEntity.setEndSubstringCount(sentenceEntity.getEndSubstringCount() + lengthDifference);
-						sentenceEntity.save();
+				for (DecisionKnowledgeInCommentEntity otherSentenceInComment : ao
+						.find(DecisionKnowledgeInCommentEntity.class, "COMMENT_ID = ?", commentId)) {
+					if (otherSentenceInComment.getStartSubstringCount() > oldStart
+							&& otherSentenceInComment.getId() != aoId
+							&& otherSentenceInComment.getCommentId() == commentId) {
+						otherSentenceInComment.setStartSubstringCount(
+								otherSentenceInComment.getStartSubstringCount() + lengthDifference);
+						otherSentenceInComment
+								.setEndSubstringCount(otherSentenceInComment.getEndSubstringCount() + lengthDifference);
+						otherSentenceInComment.save();
 					}
 				}
 				return true;
 			}
 		});
 	}
-
-	// public static List<Sentence> getAllSentencesByJiraCommentId(long commentId) {
-	// List<Sentence> sentences = new ArrayList<Sentence>();
-	// init();
-	// DecisionKnowledgeInCommentEntity[] sentencesinAo =
-	// ao.find(DecisionKnowledgeInCommentEntity.class,
-	// Query.select().where("COMMENT_ID = ?", commentId));
-	// for (DecisionKnowledgeInCommentEntity currentAoSentence : sentencesinAo) {
-	// sentences.add(new SentenceImpl(currentAoSentence.getId()));
-	// }
-	// return sentences;
-	// }
 
 	public static List<GenericLink> getGenericLinksForElement(String targetId, boolean getOnlyOutwardLink) {
 		init();
