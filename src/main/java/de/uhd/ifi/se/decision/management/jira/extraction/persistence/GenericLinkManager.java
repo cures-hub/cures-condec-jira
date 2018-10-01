@@ -9,7 +9,7 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLinkImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
 
 public class GenericLinkManager {
 

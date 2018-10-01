@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.model;
+package de.uhd.ifi.se.decision.management.jira.extraction.model.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +15,7 @@ public class CommentSplitter {
 
 	private List<Integer> endSubstringCount;
 
-	public static final String[] excludedTagList = new String[] { "{code}", "{quote}", "{noformat}", "[issue]" };
+	public static final String[] excludedTagList = new String[] { "{code}", "{quote}", "{noformat}","{panel}" };
 
 	public static final String[] manualRationaleTagList = new String[] { "[Issue]", "[Decision]", "[Alternative]",
 			"[Pro]", "[Con]" };
@@ -27,16 +27,21 @@ public class CommentSplitter {
 		this.setEndSubstringCount(new ArrayList<Integer>());
 	}
 
-	public List<String> sliceCommentRecursionCommander(String body) {
+	public List<String> sliceCommentRecursionCommander(String body, String projectKey) {
 		List<String> firstSplit = searchBetweenTagsRecursive(body, "{quote}", "{quote}", new ArrayList<String>());
 
 		firstSplit = searchForFurtherTags(firstSplit, "{noformat}", "{noformat}");
+		firstSplit = searchForFurtherTags(firstSplit, "{panel:", "{panel}");
 		firstSplit = searchForFurtherTags(firstSplit, "{code:", "{code}");
 		for (int i = 0; i < manualRationaleTagList.length; i++) {
 			String tag = manualRationaleTagList[i];
 			firstSplit = searchForFurtherTags(firstSplit, tag, tag.replace("[", "[/"));
 		}
-		firstSplit = searchForFurtherTags(firstSplit, "(y)", ".");
+		if(ConfigPersistence.isIconParsingEnabled(projectKey)) {
+			for (int i = 0; i < manualRationalIconList.length; i++) {
+				firstSplit = searchForFurtherTags(firstSplit, manualRationalIconList[i], ".");
+			}
+		}
 
 		return firstSplit;
 	}

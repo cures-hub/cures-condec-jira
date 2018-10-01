@@ -1,5 +1,6 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.model;
+package de.uhd.ifi.se.decision.management.jira.extraction.model.util;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public class HTMLCodeGeneratorForSentences {

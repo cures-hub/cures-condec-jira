@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.model;
+package de.uhd.ifi.se.decision.management.jira.extraction.model.impl;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;
@@ -8,6 +8,10 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.util.HTMLCodeGeneratorForSentences;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 
 public class CommentImpl implements Comment{
@@ -57,7 +61,7 @@ public class CommentImpl implements Comment{
 	}
 
 	private void splitCommentIntoSentences(boolean addSentencesToAo) {
-		List<String> rawSentences = this.splitter.sliceCommentRecursionCommander(this.body);
+		List<String> rawSentences = this.splitter.sliceCommentRecursionCommander(this.body,this.projectKey);
 		runBreakIterator(rawSentences);
 		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(this);
 		// Create AO entries
