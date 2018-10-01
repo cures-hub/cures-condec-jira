@@ -25,10 +25,10 @@ import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.CommentImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLinkImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;

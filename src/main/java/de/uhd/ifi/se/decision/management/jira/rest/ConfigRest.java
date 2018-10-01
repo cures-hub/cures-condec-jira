@@ -420,8 +420,8 @@ public class ConfigRest {
 	@Path("/setIconParsing")
 	@POST
 	public Response setIconParsing(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivated") String isActivatedString) {
-		System.out.println(isActivatedString);
+			@QueryParam("isActivatedString") String isActivatedString) {
+  		System.out.println(isActivatedString);
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;

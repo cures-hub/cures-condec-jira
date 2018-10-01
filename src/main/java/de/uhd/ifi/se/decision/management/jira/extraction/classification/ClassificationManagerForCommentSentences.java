@@ -3,8 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.model.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
