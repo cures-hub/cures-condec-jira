@@ -166,10 +166,10 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	@Override
 	public void setKnowledgeTypeString(String type) {
-		if (type.toLowerCase().equals("pro")) {
+		if (type.equalsIgnoreCase("pro")) {
 			super.type = KnowledgeType.ARGUMENT;
 			this.argument = "Pro";
-		} else if (type.toLowerCase().equals("con")) {
+		} else if (type.equalsIgnoreCase("con")) {
 			super.type = KnowledgeType.ARGUMENT;
 			this.argument = "Con";
 		} else {
@@ -179,27 +179,24 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	public void setKnowledgeType(double[] prediction) {
+		KnowledgeType[] types = {
+				KnowledgeType.ALTERNATIVE,
+				KnowledgeType.ARGUMENT,
+				KnowledgeType.ARGUMENT,
+				KnowledgeType.DECISION,
+				KnowledgeType.ISSUE
+		};
+		String[] argumnetes = {
+				"",
+				"Pro",
+				"Con",
+				"",
+				"",
+		};
 		for (int i = 0; i < prediction.length; i++) {
-			if (prediction[i] == 1. && i == 0) {
-				super.type = KnowledgeType.ALTERNATIVE;
-				break;
-			}
-			if (prediction[i] == 1. && i == 1) {
-				super.type = KnowledgeType.ARGUMENT;
-				this.argument = "Pro";
-				break;
-			}
-			if (prediction[i] == 1. && i == 2) {
-				super.type = KnowledgeType.ARGUMENT;
-				this.argument = "Con";
-				break;
-			}
-			if (prediction[i] == 1. && i == 3) {
-				super.type = KnowledgeType.DECISION;
-				break;
-			}
-			if (prediction[i] == 1. && i == 4) {
-				super.type = KnowledgeType.ISSUE;
+			if (prediction[i] == 1. && i<types.length) {
+				super.type = types[i];
+				this.argument = argumnetes[i];
 				break;
 			}
 		}

@@ -24,15 +24,16 @@ public class ClassificationManagerForCommentSentences {
 	public List<Comment> classifySentenceBinary(List<Comment> commentsList) {
 		Instances data = createDatasetForBinaryClassification(commentsList);
 
+		List<Comment> classifiedComments;
 		List<Double> classificationResult;
 		if (!data.isEmpty()) {
 			classificationResult = classifier.makeBinaryPredictions(data);
-			commentsList = matchBinaryClassificationBackOnData(classificationResult, commentsList);
+			classifiedComments = matchBinaryClassificationBackOnData(classificationResult, commentsList);
 		} else {
-			commentsList = writeDataFromActiveObjectsToSentences(commentsList);
+			classifiedComments = writeDataFromActiveObjectsToSentences(commentsList);
 		}
 
-		return commentsList;
+		return classifiedComments;
 	}
 
 	public List<Comment> classifySentenceFineGrained(List<Comment> commentsList) {
