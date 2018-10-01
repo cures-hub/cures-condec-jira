@@ -188,13 +188,13 @@ public class ActiveObjectsManager {
 					if (sentenceEntity.getId() == id) {
 						sentenceEntity.setKnowledgeTypeString(knowledgeType.toString());
 						if (knowledgeType != KnowledgeType.OTHER) {
-							sentenceEntity.setRelevant(true);
-							sentenceEntity.setTaggedManually(true);
-							sentenceEntity.setTaggedFineGrained(true);
 						} else {// Knowledgetype is an Argument
 							sentenceEntity.setKnowledgeTypeString(argument);
 							sentenceEntity.setArgument(argument);
 						}
+						sentenceEntity.setRelevant(true);
+						sentenceEntity.setTaggedManually(true);
+						sentenceEntity.setTaggedFineGrained(true);
 						if (!sentenceEntity.getKnowledgeTypeString().equals("Pro")
 								&& !sentenceEntity.getKnowledgeTypeString().equals("Con")) {
 							sentenceEntity.setArgument("");

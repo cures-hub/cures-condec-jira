@@ -258,6 +258,9 @@ public class KnowledgeRest {
 				if(databaseEntity.isTaggedManually()) {
 					tag ="["+WordUtils.capitalize(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch,databaseEntity.getProjectKey()))+"]";
 				}
+				if(tag.length()<=3) {
+					tag="";
+				}
 				String first = mc.getBody().substring(0, index);
 				String second = tag + decisionKnowledgeElement.getDescription()+ tag.replace("[","[/");
 				String third = mc.getBody().substring(index + sentenceToSearch.length());
