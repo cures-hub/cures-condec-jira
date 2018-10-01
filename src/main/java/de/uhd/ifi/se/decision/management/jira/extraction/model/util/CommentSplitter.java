@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.util.Arrays;
+
+import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
@@ -21,6 +24,8 @@ public class CommentSplitter {
 			"[Pro]", "[Con]" };
 
 	public static final String[] manualRationalIconList = new String[] { "(!)", "(/)", "(?)", "(y)", "(n)" };
+	
+	public static final String[] allExcluded = (String[]) ArrayUtils.addAll(excludedTagList, manualRationaleTagList);
 
 	public CommentSplitter() {
 		this.setStartSubstringCount(new ArrayList<Integer>());

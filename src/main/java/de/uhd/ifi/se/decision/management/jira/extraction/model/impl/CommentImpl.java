@@ -80,7 +80,7 @@ public class CommentImpl implements Comment{
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
 
 		for (String currentSentence : rawSentences) {
-			if (StringUtils.indexOfAny(currentSentence, CommentSplitter.excludedTagList) == -1) {
+			if (StringUtils.indexOfAny(currentSentence, CommentSplitter.allExcluded) == -1) {
 				iterator.setText(currentSentence);
 				int start = iterator.first();
 				for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
