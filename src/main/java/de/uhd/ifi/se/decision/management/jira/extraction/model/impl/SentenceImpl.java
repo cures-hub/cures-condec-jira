@@ -161,7 +161,10 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	@Override
 	public String getKnowledgeTypeString() {
-		if (super.type == null) {
+		if (super.type == null ) {
+			return "";
+		}
+		if(this.knowledgeTypeString == null) {
 			return "";
 		}
 		if (super.type.equals(KnowledgeType.ARGUMENT)) {

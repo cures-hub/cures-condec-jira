@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.user.ApplicationUser;
@@ -11,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import net.java.ao.Query;
@@ -51,7 +53,7 @@ public class ActiveObjectsManager {
 						todo.setProjectKey(projectKey);
 						todo.setIssueId(issueId);
 						todo.save();
-						//System.out.println("added: " + todo.getId());
+						// System.out.println("added: " + todo.getId());
 						return todo;
 					}
 				});
@@ -189,7 +191,7 @@ public class ActiveObjectsManager {
 							sentenceEntity.setRelevant(true);
 							sentenceEntity.setTaggedManually(true);
 							sentenceEntity.setTaggedFineGrained(true);
-						}else {//Knowledgetype is an Argument
+						} else {// Knowledgetype is an Argument
 							sentenceEntity.setKnowledgeTypeString(argument);
 							sentenceEntity.setArgument(argument);
 						}
@@ -444,6 +446,29 @@ public class ActiveObjectsManager {
 			}
 		});
 
+	}
+
+	public static List<DecisionKnowledgeElement> getAllElementsFromAoByType(String projectKey,
+			KnowledgeType rootElementType) {
+		init();
+		List<DecisionKnowledgeElement> list = new ArrayList<>();
+		ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+			@Override
+			public DecisionKnowledgeInCommentEntity doInTransaction() {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class,
+						Query.select().where("PROJECT_KEY = ?", projectKey))) {
+					if (databaseEntry.getKnowledgeTypeString() != null) {
+						if (databaseEntry.getKnowledgeTypeString().equals(rootElementType.toString())
+								|| (databaseEntry.getKnowledgeTypeString().length() == 3 // meats its eather Pro or con
+										&& rootElementType.equals(KnowledgeType.ARGUMENT))) {
+							list.add(new SentenceImpl(databaseEntry.getId()));
+						}
+					}
+				}
+				return null;
+			}
+		});
+		return list;
 	}
 
 }

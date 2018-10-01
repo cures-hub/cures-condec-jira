@@ -12,6 +12,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
@@ -56,6 +57,7 @@ public class TreeViewer {
 		if(rootElementType != KnowledgeType.OTHER) {
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements(rootElementType);
+			elements.addAll(ActiveObjectsManager.getAllElementsFromAoByType(projectKey,rootElementType));
 	
 			Set<Data> dataSet = new HashSet<Data>();
 			for (DecisionKnowledgeElement element : elements) {
