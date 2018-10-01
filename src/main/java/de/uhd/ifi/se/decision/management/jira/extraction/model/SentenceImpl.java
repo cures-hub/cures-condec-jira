@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
 import java.beans.PropertyChangeListener;
+import java.util.Date;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -43,6 +45,8 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	private String knowledgeTypeString;
 
 	private long issueId;
+	
+	private Date created;
 
 	public SentenceImpl() {
 		super();
@@ -179,30 +183,23 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	public void setKnowledgeType(double[] prediction) {
-		for (int i = 0; i < prediction.length; i++) {
-			if (prediction[i] == 1. && i == 0) {
+			if (prediction[0] == 1. ) {
 				super.type = KnowledgeType.ALTERNATIVE;
-				break;
 			}
-			if (prediction[i] == 1. && i == 1) {
+			if (prediction[1] == 1.) {
 				super.type = KnowledgeType.ARGUMENT;
 				this.argument = "Pro";
-				break;
 			}
-			if (prediction[i] == 1. && i == 2) {
+			if (prediction[2] == 1.) {
 				super.type = KnowledgeType.ARGUMENT;
 				this.argument = "Con";
-				break;
 			}
-			if (prediction[i] == 1. && i == 3) {
+			if (prediction[3] == 1. ) {
 				super.type = KnowledgeType.DECISION;
-				break;
 			}
-			if (prediction[i] == 1. && i == 4) {
+			if (prediction[4] == 1. ) {
 				super.type = KnowledgeType.ISSUE;
-				break;
 			}
-		}
 		this.setKnowledgeTypeString(super.type.toString());
 	}
 
@@ -290,6 +287,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 			text = text.substring(this.startSubstringCount);
 		}
 		this.setBody(text);
+		this.created = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getCreated();
 	}
 
 	private void retrieveAttributesFromActievObjects() {
@@ -369,6 +367,16 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	@Override
 	public long getIssueId() {
 		return this.issueId;
+	}
+
+	@Override
+	public Date getCreated() {
+		return this.created;
+	}
+
+	@Override
+	public void setCreated(Date date) {
+		this.created = date;
 	}
 
 }

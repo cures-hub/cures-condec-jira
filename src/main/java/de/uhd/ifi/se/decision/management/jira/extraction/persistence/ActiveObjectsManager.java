@@ -7,7 +7,7 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -25,7 +25,7 @@ public class ActiveObjectsManager {
 		}
 	}
 
-	public static long addNewSentenceintoAo(Comment comment, long issueId, int index) {
+	public static long addNewSentenceintoAo(CommentImpl comment, long issueId, int index) {
 		return addNewSentenceintoAo(comment.getJiraCommentId(), comment.getEndSubstringCount().get(index),
 				comment.getStartSubstringCount().get(index), comment.getAuthorId(), issueId, comment.getProjectKey());
 	}
@@ -232,7 +232,7 @@ public class ActiveObjectsManager {
 		return true;
 	}
 
-	public static void checkIfCommentBodyHasChangedOutsideOfPlugin(Comment comment) {
+	public static void checkIfCommentBodyHasChangedOutsideOfPlugin(CommentImpl comment) {
 		init();
 		final List<Integer> starts = comment.getStartSubstringCount();
 		final List<Integer> ends = comment.getEndSubstringCount();

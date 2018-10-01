@@ -8,13 +8,13 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.CommentManager;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationManagerForCommentSentences;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.CommentImpl;
 
 public class ViewConnector {
 
 	private Issue currentIssue;
 
-	private List<Comment> commentsList;
+	private List<CommentImpl> commentsList;
 
 	private CommentManager commentManager;
 
@@ -22,7 +22,7 @@ public class ViewConnector {
 		if (issue != null) {
 			this.setCurrentIssue(issue);
 			commentManager = ComponentAccessor.getCommentManager();
-			this.commentsList = new ArrayList<Comment>();
+			this.commentsList = new ArrayList<CommentImpl>();
 		}
 	}
 
@@ -30,7 +30,7 @@ public class ViewConnector {
 		this(issue);
 		if (issue != null) {
 			for (com.atlassian.jira.issue.comments.Comment comment : commentManager.getComments(issue)) {
-				commentsList.add(new Comment(comment));
+				commentsList.add(new CommentImpl(comment));
 			}
 		}
 		if (!doNotClassify) {
@@ -57,7 +57,7 @@ public class ViewConnector {
 	public List<String> getAllTaggedComments() {
 		List<String> comments1 = new ArrayList<String>();
 		int index = 0;
-		for (Comment c : commentsList) {
+		for (CommentImpl c : commentsList) {
 			index++;
 			comments1.add(c.getTaggedBody(index));
 		}
@@ -73,7 +73,7 @@ public class ViewConnector {
 
 	public List<Long> getAllCommentsIDs() {
 		List<Long> comments = new ArrayList<Long>();
-		for (Comment c : commentsList) {
+		for (CommentImpl c : commentsList) {
 			comments.add(c.getJiraCommentId());
 		}
 		return comments;
@@ -81,7 +81,7 @@ public class ViewConnector {
 
 	public List<String> getAllCommentsAuthorNames() {
 		List<String> authorName = new ArrayList<String>();
-		for (Comment c : commentsList) {
+		for (CommentImpl c : commentsList) {
 			authorName.add(c.getAuthorFullName());
 		}
 		return authorName;
@@ -89,7 +89,7 @@ public class ViewConnector {
 
 	public List<String> getAllCommentsDates() {
 		List<String> commentDate = new ArrayList<String>();
-		for (Comment c : commentsList) {
+		for (CommentImpl c : commentsList) {
 			commentDate.add(c.getCreated().toString().replace("CEST", ""));
 		}
 		return commentDate;

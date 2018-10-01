@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
+import java.util.Date;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import net.java.ao.schema.Ignore;
 
@@ -67,6 +69,12 @@ public interface Sentence extends DecisionKnowledgeElement{
 	
 	@Ignore 
 	void setBody(String body);
+	
+	@Ignore
+	Date getCreated();
+	
+	@Ignore 
+	void setCreated(Date date);
 	
 
 }

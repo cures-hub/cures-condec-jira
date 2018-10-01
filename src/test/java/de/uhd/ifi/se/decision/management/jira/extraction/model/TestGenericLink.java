@@ -75,7 +75,7 @@ public class TestGenericLink extends TestSetUp {
 
 		GenericLinkImpl link = new GenericLinkImpl();
 		link.setIdOfDestinationElement("i" + issue.getId());
-		Comment c = new Comment(ComponentAccessor.getCommentManager().getLastComment(issue));
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence s = c.getSentences().get(0);
 		link.setIdOfSourceElement("s" + s.getId());
 
@@ -91,7 +91,7 @@ public class TestGenericLink extends TestSetUp {
 
 		GenericLinkImpl link = new GenericLinkImpl();
 		link.setIdOfSourceElement("i" + issue.getId());
-		Comment c = new Comment(ComponentAccessor.getCommentManager().getLastComment(issue));
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence s = c.getSentences().get(0);
 		link.setIdOfDestinationElement("s" + s.getId());
 
@@ -107,7 +107,7 @@ public class TestGenericLink extends TestSetUp {
 
 		GenericLinkImpl link = new GenericLinkImpl();
 
-		Comment c = new Comment(ComponentAccessor.getCommentManager().getLastComment(issue));
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence s = c.getSentences().get(0);
 		Sentence s1 = c.getSentences().get(1);
 

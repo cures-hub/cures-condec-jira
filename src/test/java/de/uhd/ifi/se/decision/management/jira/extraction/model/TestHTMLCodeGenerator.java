@@ -70,7 +70,7 @@ public class TestHTMLCodeGenerator extends TestSetUp {
 	public void testSimpleOutput() {
 		HTMLCodeGeneratorForSentences html = new HTMLCodeGeneratorForSentences();
 		addCommentsToIssue("This is a testsentence");
-		Comment c = new Comment(ComponentAccessor.getCommentManager().getLastComment(issue));
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		assertTrue(html.getCodedElement(c.getSentences().get(0)).length() > 0);
 	}
 
@@ -79,7 +79,7 @@ public class TestHTMLCodeGenerator extends TestSetUp {
 	public void testRelevantOutput() {
 		HTMLCodeGeneratorForSentences html = new HTMLCodeGeneratorForSentences();
 		addCommentsToIssue("+1 I like this idea");
-		Comment c = new Comment(ComponentAccessor.getCommentManager().getLastComment(issue));
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence s = c.getSentences().get(0);
 		s.setRelevant(true);
 		assertTrue(html.getCodedElement(s).length() > 0);
@@ -90,7 +90,7 @@ public class TestHTMLCodeGenerator extends TestSetUp {
 	public void testCodeTextOutput() {
 		HTMLCodeGeneratorForSentences html = new HTMLCodeGeneratorForSentences();
 		addCommentsToIssue("{code:java} int i = 0; {code}");
-		Comment c = new Comment(ComponentAccessor.getCommentManager().getLastComment(issue));
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence s = c.getSentences().get(0);
 		s.setRelevant(false);
 		assertTrue(html.getCodedElement(s).length() > 0);
@@ -101,7 +101,7 @@ public class TestHTMLCodeGenerator extends TestSetUp {
 	public void testQuoteTextOutput() {
 		HTMLCodeGeneratorForSentences html = new HTMLCodeGeneratorForSentences();
 		addCommentsToIssue("{quote} int i = 0; {quote}");
-		Comment c = new Comment(ComponentAccessor.getCommentManager().getLastComment(issue));
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence s = c.getSentences().get(0);
 		s.setRelevant(false);
 		assertTrue(html.getCodedElement(s).length() > 0);
@@ -112,7 +112,7 @@ public class TestHTMLCodeGenerator extends TestSetUp {
 	public void testHandCodedTextOutput() {
 		HTMLCodeGeneratorForSentences html = new HTMLCodeGeneratorForSentences();
 		addCommentsToIssue("[issue] this is a isue[/issue]");
-		Comment c = new Comment(ComponentAccessor.getCommentManager().getLastComment(issue));
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence s = c.getSentences().get(0);
 		assertTrue(html.getCodedElement(s).length() > 0);
 	}
@@ -122,7 +122,7 @@ public class TestHTMLCodeGenerator extends TestSetUp {
 	public void testRelevantOutputWithKnowledgeType() {
 		HTMLCodeGeneratorForSentences html = new HTMLCodeGeneratorForSentences();
 		addCommentsToIssue("+1 I like this idea");
-		Comment c = new Comment(ComponentAccessor.getCommentManager().getLastComment(issue));
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence s = c.getSentences().get(0);
 		s.setRelevant(true);
 		s.setType(KnowledgeType.ISSUE);
@@ -134,7 +134,7 @@ public class TestHTMLCodeGenerator extends TestSetUp {
 	public void testRelevantOutputWithKnowledgeTypeArgument() {
 		HTMLCodeGeneratorForSentences html = new HTMLCodeGeneratorForSentences();
 		addCommentsToIssue("+1 I like this idea");
-		Comment c = new Comment(ComponentAccessor.getCommentManager().getLastComment(issue));
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence s = c.getSentences().get(0);
 		s.setRelevant(true);
 		s.setType(KnowledgeType.ARGUMENT);

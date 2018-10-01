@@ -25,7 +25,7 @@ import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLinkImpl;
@@ -250,7 +250,7 @@ public class KnowledgeRest {
 				CommentManager cm = ComponentAccessor.getCommentManager();
 				MutableComment mc = (MutableComment) cm.getCommentById(databaseEntity.getCommentId());
 				// Generate sentence data generated for classification
-				String sentenceToSearch = Comment.textRule(mc.getBody())
+				String sentenceToSearch = CommentImpl.textRule(mc.getBody())
 						.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount());
 				int index = mc.getBody().indexOf(sentenceToSearch);
 				
