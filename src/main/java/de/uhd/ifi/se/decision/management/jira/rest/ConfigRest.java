@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -14,6 +15,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.IssueTypeManager;
+import com.atlassian.jira.issue.issuetype.IssueType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -341,8 +345,26 @@ public class ConfigRest {
 		try {
 			ConfigPersistence.setWebhookUrl(projectKey, webhookUrl);
 			ConfigPersistence.setWebhookSecret(projectKey, webhookSecret);
+			return Response.ok(Status.ACCEPTED).build();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
+	}
 
-			// TODO Changing default send after the connection is working like intended;
+	@Path("/setWebhookType")
+	@POST
+	public Response setWebhookType(@Context HttpServletRequest request,
+			@QueryParam("projectKey") final String projectKey, @QueryParam("webhookType") final String webhookType) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if (webhookType == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "webhook Type = null")).build();
+		}
+		try {
+			ConfigPersistence.setWebhookType(projectKey, webhookType);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -424,8 +446,24 @@ public class ConfigRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		Boolean isKnowledgeExtractedFromGit = ConfigPersistence.isIconParsingEnabled(projectKey);
-		return Response.ok(isKnowledgeExtractedFromGit).build();
+		boolean isIconParsing = ConfigPersistence.isIconParsingEnabled(projectKey);
+		return Response.ok(isIconParsing).build();
+	}
+
+	@Path("/getProjectIssueTypes")
+	@GET
+	public Response getProjectIssueTypes(@QueryParam("projectKey") final String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
+		Collection<IssueType> types = issueTypeManager.getIssueTypes();
+		Collection<String> typeNames = new ArrayList<>();
+		for (IssueType type : types) {
+			typeNames.add(type.getName());
+		}
+		return Response.ok(typeNames).build();
 	}
 
 	private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {

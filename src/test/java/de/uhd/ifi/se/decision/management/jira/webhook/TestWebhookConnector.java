@@ -30,7 +30,7 @@ public class TestWebhookConnector extends TestSetUp {
         initialization();
         connectorHook = new WebhookConnector("ConDec",
                 "https://cuu-staging.ase.in.tum.de/api/v1/projects/ConDecDev/integrations/conDec",
-                "03f90207-73bc-44d9-9848-d3f1f8c8254e");
+                "03f90207-73bc-44d9-9848-d3f1f8c8254e",null);
         element = new DecisionKnowledgeElementImpl();
         element.setProject("TEST");
         element.setType("TASK");
@@ -54,56 +54,56 @@ public class TestWebhookConnector extends TestSetUp {
 
     @Test
     public void testConstNullNullNull() {
-        WebhookConnector connector = new WebhookConnector(null, null, null);
+        WebhookConnector connector = new WebhookConnector(null, null, null,null);
         assertEquals("", connector.getUrl());
         assertEquals("", connector.getSecret());
     }
 
     @Test
     public void testConstNullNullFilled() {
-        WebhookConnector connector = new WebhookConnector(null, null, "test");
+        WebhookConnector connector = new WebhookConnector(null, null, "test", null);
         assertEquals("", connector.getUrl());
         assertEquals("test", connector.getSecret());
     }
 
     @Test
     public void testConstNullFilledNull() {
-        WebhookConnector connector = new WebhookConnector(null, "test", null);
+        WebhookConnector connector = new WebhookConnector(null, "test", null, null);
         assertEquals("test", connector.getUrl());
         assertEquals("", connector.getSecret());
     }
 
     @Test
     public void testConstFilledNullNull() {
-        WebhookConnector connector = new WebhookConnector("TEST", null, null);
+        WebhookConnector connector = new WebhookConnector("TEST", null, null, null);
         assertEquals("", connector.getUrl());
         assertEquals("", connector.getSecret());
     }
 
     @Test
     public void testConstFilledNullFilled() {
-        WebhookConnector connector = new WebhookConnector("TEST", null, "test");
+        WebhookConnector connector = new WebhookConnector("TEST", null, "test", null);
         assertEquals("", connector.getUrl());
         assertEquals("test", connector.getSecret());
     }
 
     @Test
     public void testConstFilledFilledNull() {
-        WebhookConnector connector = new WebhookConnector("TEST", "test", null);
+        WebhookConnector connector = new WebhookConnector("TEST", "test", null, null);
         assertEquals("test", connector.getUrl());
         assertEquals("", connector.getSecret());
     }
 
     @Test
     public void testConstFilledFilledFilled() {
-        WebhookConnector connector = new WebhookConnector("TEST", "test", "test");
+        WebhookConnector connector = new WebhookConnector("TEST", "test", "test", null);
         assertEquals("test", connector.getUrl());
         assertEquals("test", connector.getSecret());
     }
 
     @Test
     public void testConstNullFilledFilled() {
-        WebhookConnector connector = new WebhookConnector(null, "test", "test");
+        WebhookConnector connector = new WebhookConnector(null, "test", "test", null);
         assertEquals("test", connector.getUrl());
         assertEquals("test", connector.getSecret());
     }
