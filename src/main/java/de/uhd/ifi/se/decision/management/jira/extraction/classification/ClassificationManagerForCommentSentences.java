@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
@@ -21,7 +22,7 @@ public class ClassificationManagerForCommentSentences {
 		classifier = new DecisionKnowledgeClassifier();
 	}
 
-	public List<CommentImpl> classifySentenceBinary(List<CommentImpl> commentsList) {
+	public List<Comment> classifySentenceBinary(List<Comment> commentsList) {
 		Instances data = createDatasetForBinaryClassification(commentsList);
 
 		List<Double> classificationResult;
@@ -35,7 +36,7 @@ public class ClassificationManagerForCommentSentences {
 		return commentsList;
 	}
 
-	public List<CommentImpl> classifySentenceFineGrained(List<CommentImpl> commentsList) {
+	public List<Comment> classifySentenceFineGrained(List<Comment> commentsList) {
 		Instances data = createDatasetForfineGrainedClassification(commentsList);
 
 		if (data.isEmpty()) {
@@ -46,7 +47,7 @@ public class ClassificationManagerForCommentSentences {
 		// Write classification results back to sentence objects
 		int i = 0;
 
-		for (CommentImpl comment : commentsList) {
+		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 					sentence.setKnowledgeType(classificationResult.get(i));
@@ -64,8 +65,8 @@ public class ClassificationManagerForCommentSentences {
 		return commentsList;
 	}
 
-	private List<CommentImpl> loadSentencesFineGrainedKnowledgeTypesFromActiveObjects(List<CommentImpl> commentsList) {
-		for (CommentImpl comment : commentsList) {
+	private List<Comment> loadSentencesFineGrainedKnowledgeTypesFromActiveObjects(List<Comment> commentsList) {
+		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
 				if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {
 					sentence.setKnowledgeTypeString(
@@ -76,10 +77,10 @@ public class ClassificationManagerForCommentSentences {
 		return commentsList;
 	}
 
-	private List<CommentImpl> matchBinaryClassificationBackOnData(List<Double> classificationResult,
-			List<CommentImpl> commentsList) {
+	private List<Comment> matchBinaryClassificationBackOnData(List<Double> classificationResult,
+			List<Comment> commentsList) {
 		int i = 0;
-		for (CommentImpl comment : commentsList) {
+		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForBinaryClassification(sentence)) {
 					sentence.setRelevant(classificationResult.get(i));
@@ -92,8 +93,8 @@ public class ClassificationManagerForCommentSentences {
 		return commentsList;
 	}
 
-	public List<CommentImpl> writeDataFromActiveObjectsToSentences(List<CommentImpl> commentsList) {
-		for (CommentImpl comment : commentsList) {
+	public List<Comment> writeDataFromActiveObjectsToSentences(List<Comment> commentsList) {
+		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
 				sentence.setRelevant(ActiveObjectsManager.getElementFromAO(sentence.getId()).isRelevant());
 			}
@@ -124,12 +125,12 @@ public class ClassificationManagerForCommentSentences {
 		return newInstance;
 	}
 
-	private Instances createDatasetForBinaryClassification(List<CommentImpl> commentsList) {
+	private Instances createDatasetForBinaryClassification(List<Comment> commentsList) {
 		ArrayList<Attribute> wekaAttributes = createBinaryAttributes();
 		Instances data = new Instances("sentences", wekaAttributes, 1000000);
 
 		data.setClassIndex(data.numAttributes() - 1);
-		for (CommentImpl comment : commentsList) {
+		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForBinaryClassification(sentence)) {
 					data.add(createInstance(2, wekaAttributes, sentence));
@@ -139,7 +140,7 @@ public class ClassificationManagerForCommentSentences {
 		return data;
 	}
 
-	private Instances createDatasetForfineGrainedClassification(List<CommentImpl> commentsList) {
+	private Instances createDatasetForfineGrainedClassification(List<Comment> commentsList) {
 		ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
 
 		// Declare Class value with {0,1} as possible values
@@ -154,7 +155,7 @@ public class ClassificationManagerForCommentSentences {
 		wekaAttributes.add(attributeText);
 		Instances data = new Instances("sentences: -C 5 ", wekaAttributes, 1000000);
 
-		for (CommentImpl comment : commentsList) {
+		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 					Instance newInstance = new DenseInstance(6);
