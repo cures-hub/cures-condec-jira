@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.user.ApplicationUser;

@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
@@ -71,7 +70,7 @@ public class GraphImpl implements Graph {
 				linkBetweenSentenceAndOtherElement.setType("contain");
 				if (!linkListContainsLink(linkBetweenSentenceAndOtherElement) ) {
 					sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
-					linkedElementsAndLinks.put(currentGenericLink.getElement(preIndex + element.getId()),
+					linkedElementsAndLinks.put(currentGenericLink.getOpposite(preIndex + element.getId()),
 							linkBetweenSentenceAndOtherElement);
 				}
 			}catch(NullPointerException e) {

@@ -33,7 +33,7 @@ import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestComment.AoSentenceTestDatabaseUpdater.class)
+@net.java.ao.test.jdbc.Data(TestSetUp.AoSentenceTestDatabaseUpdater.class) 
 public class TestGenericLink extends TestSetUp {
 
 	private EntityManager entityManager;
@@ -83,8 +83,8 @@ public class TestGenericLink extends TestSetUp {
 
 		ActiveObjectsManager.insertGenericLink(link, null);
 
-		assertNotNull(link.getElement("s" + s.getId()));
-		assertNotNull(link.getElement("i" + issue.getId()));
+		assertNotNull(link.getOpposite("s" + s.getId()));
+		assertNotNull(link.getOpposite("i" + issue.getId()));
 	}
 
 	@Test
@@ -99,8 +99,8 @@ public class TestGenericLink extends TestSetUp {
 
 		ActiveObjectsManager.insertGenericLink(link, null);
 
-		assertNotNull(link.getElement("s" + s.getId()));
-		assertNotNull(link.getElement("i" + issue.getId()));
+		assertNotNull(link.getOpposite("s" + s.getId()));
+		assertNotNull(link.getOpposite("i" + issue.getId()));
 	}
 
 	@Test
@@ -118,8 +118,8 @@ public class TestGenericLink extends TestSetUp {
 
 		ActiveObjectsManager.insertGenericLink(link, null);
 
-		assertNotNull(link.getElement("s" + s.getId()));
-		assertNotNull(link.getElement("s" + s1.getId()));
+		assertNotNull(link.getOpposite("s" + s.getId()));
+		assertNotNull(link.getOpposite("s" + s1.getId()));
 	}
 
 	@Test
@@ -132,8 +132,8 @@ public class TestGenericLink extends TestSetUp {
 		link.setIdOfDestinationElement("i" + issue.getId());
 		ActiveObjectsManager.insertGenericLink(link, null);
 
-		assertNotNull(link.getElement("i" + issue.getId()));
-		assertNotNull(link.getElement("i" + issue.getId()));
+		assertNotNull(link.getOpposite("i" + issue.getId()));
+		assertNotNull(link.getOpposite("i" + issue.getId()));
 	}
 
 	@Test

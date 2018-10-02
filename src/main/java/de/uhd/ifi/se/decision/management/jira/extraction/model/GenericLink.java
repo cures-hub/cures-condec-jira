@@ -30,7 +30,7 @@ public interface GenericLink {
 	
 	void setIdOfDestinationElement(String idOfDestinationElement);
 
-	DecisionKnowledgeElement getElement(String elementNOTToGet);
+	DecisionKnowledgeElement getOpposite(String id);
 
 	List<DecisionKnowledgeElement> getBothElements();
 

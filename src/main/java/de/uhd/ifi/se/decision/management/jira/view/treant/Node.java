@@ -14,6 +14,7 @@ import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -88,6 +89,15 @@ public class Node {
 		if (isCollapsed) {
 			this.collapsed = ImmutableMap.of("collapsed", isCollapsed);
 		}
+		if(decisionKnowledgeElement instanceof Sentence) {
+			if(((Sentence) decisionKnowledgeElement).getArgument().length() == 3) { // Length == 3 means eather pro or con
+				if(((Sentence) decisionKnowledgeElement).getArgument().toLowerCase().equals("pro")) {
+					makeArgument("Pro-argument","pro",decisionKnowledgeElement);
+				}else {
+					makeArgument("Con-argument","contra",decisionKnowledgeElement);
+				}
+			}
+		}
 	}
 
 	public Node(DecisionKnowledgeElement decisionKnowledgeElement, Link link, boolean isCollapsed) {
@@ -95,21 +105,24 @@ public class Node {
 		switch (link.getType()) {
 		case "support":
 			if (decisionKnowledgeElement.getId() == link.getSourceElement().getId()) {
-				this.nodeContent = ImmutableMap.of("name", "Pro-argument", "title",
-						decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
-				this.htmlClass = "pro";
+				makeArgument("Pro-argument","pro",decisionKnowledgeElement);
 			}
 			break;
 		case "attack":
 			if (decisionKnowledgeElement.getId() == link.getSourceElement().getId()) {
-				this.nodeContent = ImmutableMap.of("name", "Con-argument", "title",
-						decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
-				this.htmlClass = "contra";
+				makeArgument("Con-argument","contra",decisionKnowledgeElement);
 			}
 			break;
 		default:
 			break;
 		}
+	}
+
+	private void makeArgument(String string, String string2, DecisionKnowledgeElement decisionKnowledgeElement) {
+		this.nodeContent = ImmutableMap.of("name", string, "title",
+				decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
+		this.htmlClass = string2;
+		
 	}
 
 	public Map<String, String> getNodeContent() {
