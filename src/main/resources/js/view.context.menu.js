@@ -403,7 +403,7 @@ function getIconUrl(core,indexOfNode,type){
 }
 
 function replaceTagsFromContent(idOfUiElement,type){
-	if(!type.toLowerCase().includes("other")){
+	if(!type.toLowerCase().includes("other") && type.length >1){
 		document.getElementById(idOfUiElement).getElementsByClassName("tag")[0].textContent = "["+type+"]";
 		document.getElementById(idOfUiElement).getElementsByClassName("tag")[1].textContent = "[/"+type+"]";
 	}else{

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
@@ -15,6 +17,8 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.util.HTMLCodeGene
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 
 public class CommentImpl implements Comment{
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(CommentImpl.class);
 
 	private List<Sentence> sentences;
 
@@ -54,6 +58,7 @@ public class CommentImpl implements Comment{
 		this.authorId = comment.getAuthorApplicationUser().getId();
 		this.setIssueId(comment.getIssue().getId());
 		splitCommentIntoSentences(true);
+		LOGGER.debug("Comment "+this.jiraCommentId + " succesfully created");
 	}
 
 	public static String textRule(String text) {

@@ -2,7 +2,12 @@ package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
@@ -11,13 +16,19 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import net.java.ao.Query;
 
 public class ActiveObjectsManager {
 
 	private static ActiveObjects ao;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectsManager.class);
+
+	private static int deleteSentenceCounter = 0;
 
 	public static void init() {
 		if (ao == null) {
@@ -34,7 +45,10 @@ public class ActiveObjectsManager {
 			long issueId, String projectKey) {
 		init();
 		if (checkElementExistingInAO(commentId, endSubStringCount, startSubstringCount, userId, projectKey)) {
-			return getElementFromAO(commentId, endSubStringCount, startSubstringCount, userId, projectKey).getId();
+			Sentence existingElement = getElementFromAO(commentId, endSubStringCount, startSubstringCount, userId,
+					projectKey);
+			checkIfSentenceHasAValidLink(existingElement.getId(), issueId);
+			return existingElement.getId();
 		}
 		DecisionKnowledgeInCommentEntity newElement = ao
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
@@ -51,12 +65,20 @@ public class ActiveObjectsManager {
 						todo.setProjectKey(projectKey);
 						todo.setIssueId(issueId);
 						todo.save();
-						//System.out.println("added: " + todo.getId());
 						return todo;
 					}
 				});
 		addNewLinkSentenceIssue(issueId, newElement.getId());
+		LOGGER.debug("Sentenceobject in database " + newElement.getId() + " sucessfully created");
 		return newElement.getId();
+	}
+
+	private static void checkIfSentenceHasAValidLink(long sentenceId, long issueId) {
+		List<GenericLink> links = getGenericLinksForElement("s" + sentenceId, false);
+		if (links == null || links.size() == 0) {
+			addNewLinkSentenceIssue(issueId, sentenceId);
+		}
+
 	}
 
 	private static void addNewLinkSentenceIssue(long issueId, long sentenceAoId) {
@@ -118,11 +140,10 @@ public class ActiveObjectsManager {
 					public DecisionKnowledgeInCommentEntity doInTransaction() {
 						for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(
 								DecisionKnowledgeInCommentEntity.class,
-								Query.select().where("PROJECT_KEY = ?", projectKey))) {
-							if (equalsDatabase(databaseEntry, commentId, endSubtringCount, startSubstringCount,
-									userId)) {
-								return databaseEntry;
-							}
+								Query.select().where(
+										"PROJECT_KEY = ? AND COMMENT_ID = ? AND END_SUBSTRING_COUNT = ? AND START_SUBSTRING_COUNT = ?",
+										projectKey, commentId, endSubtringCount, startSubstringCount))) {
+							return databaseEntry;
 						}
 						return null;
 					}
@@ -144,16 +165,6 @@ public class ActiveObjectsManager {
 				return new SentenceImpl();
 			}
 		});
-	}
-
-	private static boolean equalsDatabase(DecisionKnowledgeInCommentEntity databaseEntry, long commentId,
-			int endSubtringCount, int startSubstringCount, long userId) {
-		if (databaseEntry.getCommentId() == commentId && databaseEntry.getEndSubstringCount() == endSubtringCount
-				&& databaseEntry.getStartSubstringCount() == startSubstringCount
-				&& databaseEntry.getUserId() == userId) {
-			return true;
-		}
-		return false;
 	}
 
 	public static void setSentenceKnowledgeType(Sentence sentence) {
@@ -186,13 +197,13 @@ public class ActiveObjectsManager {
 					if (sentenceEntity.getId() == id) {
 						sentenceEntity.setKnowledgeTypeString(knowledgeType.toString());
 						if (knowledgeType != KnowledgeType.OTHER) {
-							sentenceEntity.setRelevant(true);
-							sentenceEntity.setTaggedManually(true);
-							sentenceEntity.setTaggedFineGrained(true);
-						}else {//Knowledgetype is an Argument
+						} else {// Knowledgetype is an Argument
 							sentenceEntity.setKnowledgeTypeString(argument);
 							sentenceEntity.setArgument(argument);
 						}
+						sentenceEntity.setRelevant(true);
+						sentenceEntity.setTaggedManually(true);
+						sentenceEntity.setTaggedFineGrained(true);
 						if (!sentenceEntity.getKnowledgeTypeString().equals("Pro")
 								&& !sentenceEntity.getKnowledgeTypeString().equals("Con")) {
 							sentenceEntity.setArgument("");
@@ -382,6 +393,16 @@ public class ActiveObjectsManager {
 		});
 	}
 
+	/**
+	 * Gets the generic links for element.
+	 *
+	 * @param targetId
+	 *            the target id with identifier. Example: "i1234" for Issue, "s1337"
+	 *            for sentence. "1337" will not work
+	 * @param getOnlyOutwardLink
+	 *            if false, checks both directions
+	 * @return the generic links for element
+	 */
 	public static List<GenericLink> getGenericLinksForElement(String targetId, boolean getOnlyOutwardLink) {
 		init();
 		List<GenericLink> links = new ArrayList<GenericLink>();
@@ -423,15 +444,15 @@ public class ActiveObjectsManager {
 
 	}
 
-	private static void deleteLinksIfExisting(String string) {
+	private static void deleteLinksIfExisting(String id) {
 		init();
 		ao.executeInTransaction(new TransactionCallback<LinkBetweenDifferentEntitiesEntity>() {
 			@Override
 			public LinkBetweenDifferentEntitiesEntity doInTransaction() {
 				LinkBetweenDifferentEntitiesEntity[] linkElements = ao.find(LinkBetweenDifferentEntitiesEntity.class);
 				for (LinkBetweenDifferentEntitiesEntity linkElement : linkElements) {
-					if (linkElement.getIdOfDestinationElement().equals(string)
-							|| linkElement.getIdOfSourceElement().equals(string)) {
+					if (linkElement.getIdOfDestinationElement().equals(id)
+							|| linkElement.getIdOfSourceElement().equals(id)) {
 						try {
 							linkElement.getEntityManager().delete(linkElement);
 						} catch (SQLException e) {
@@ -444,6 +465,78 @@ public class ActiveObjectsManager {
 			}
 		});
 
+	}
+
+	public static List<DecisionKnowledgeElement> getAllElementsFromAoByType(String projectKey,
+			KnowledgeType rootElementType) {
+		init();
+		List<DecisionKnowledgeElement> list = new ArrayList<>();
+		ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+			@Override
+			public DecisionKnowledgeInCommentEntity doInTransaction() {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class,
+						Query.select().where("PROJECT_KEY = ?", projectKey))) {
+					if (databaseEntry.getKnowledgeTypeString() != null) {
+						if (databaseEntry.getKnowledgeTypeString().equals(rootElementType.toString())
+								|| (databaseEntry.getKnowledgeTypeString().length() == 3 // meats its eather Pro or con
+										&& rootElementType.equals(KnowledgeType.ARGUMENT))) {
+							list.add(new SentenceImpl(databaseEntry.getId()));
+						}
+					}
+				}
+				return null;
+			}
+		});
+		return list;
+	}
+
+	/**
+	 * Check sentence AO for duplicates. In some cases it can happen that sentences
+	 * are inserted twice into the AO table. This functions checks all entry for one
+	 * comment if there are duplicates. If one duplicate is found, its deleted.
+	 *
+	 * @param comment
+	 *            the comment
+	 */
+	public static void checkSentenceAOForDuplicates(Comment comment) {
+		init();
+		List<Integer> sentenceList = new ArrayList<>();
+		List<Long> deleteList = new ArrayList<>();
+
+		ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+			@Override
+			public DecisionKnowledgeInCommentEntity doInTransaction() {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class,
+						Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ?", comment.getProjectKey(),
+								comment.getJiraCommentId()))) {
+					if (databaseEntry != null) {
+						sentenceList.add(databaseEntry.getStartSubstringCount());
+					}
+				}
+				if (sentenceList.size() != comment.getSentences().size()) {
+					for (Sentence sentence : comment.getSentences()) {
+						int occurrences = Collections.frequency(sentenceList, sentence.getStartSubstringCount());
+						if (occurrences > 1) {
+							deleteList.add(sentence.getId());
+						}
+					}
+					for (long idToDelete : deleteList) {
+						for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(
+								DecisionKnowledgeInCommentEntity.class, Query.select().where("ID = ?", idToDelete))) {
+							try {
+								if (deleteSentenceCounter % 2 == 1) {
+									databaseEntry.getEntityManager().delete(databaseEntry);
+								}
+								deleteSentenceCounter++;
+							} catch (SQLException e) {// element not deleted
+								LOGGER.error("Deletion of duplicate sentence failed due to SQL Exception");
+							}
+						}
+					}
+				}
+				return null;
+			}
+		});
 	}
 
 }

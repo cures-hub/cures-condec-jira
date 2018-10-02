@@ -22,6 +22,7 @@ import java.util.Locale;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
@@ -39,7 +40,7 @@ import weka.classifiers.meta.FilteredClassifier;
 public class TestClassificationManagerForCommentSentences extends TestSetUp {
 
 	private EntityManager entityManager;
-	private List<CommentImpl> list = new ArrayList<CommentImpl>();
+	private List<Comment> list = new ArrayList<Comment>();
 	private ClassificationManagerForCommentSentences classifier;
 
 	private MutableIssue issue;

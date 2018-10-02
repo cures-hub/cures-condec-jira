@@ -7,6 +7,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 
@@ -18,7 +19,7 @@ public class GenericLinkImpl implements GenericLink {
 	private String type;
 
 	public GenericLinkImpl() {
-		// TODO Auto-generated constructor stub
+		this.type = "";
 	}
 
 	public GenericLinkImpl(String idOfDestinationElement, String idOfSourceElement) {
@@ -72,7 +73,7 @@ public class GenericLinkImpl implements GenericLink {
 	}
 
 	@Override
-	public DecisionKnowledgeElement getElement(String oppositeElementId) {
+	public DecisionKnowledgeElement getOpposite(String oppositeElementId) {
 		if (oppositeElementId.startsWith("s")) {
 			if (this.getIdOfSourceElement().equals(oppositeElementId)) {
 				if (this.getIdOfDestinationElement().startsWith("s")) {
@@ -116,8 +117,8 @@ public class GenericLinkImpl implements GenericLink {
 	@Override
 	public List<DecisionKnowledgeElement> getBothElements() throws NullPointerException {
 		List<DecisionKnowledgeElement> bothLinkSides = new ArrayList<>();
-		bothLinkSides.add(this.getElement(this.idOfSourceElement));
-		bothLinkSides.add(this.getElement(this.idOfDestinationElement));
+		bothLinkSides.add(this.getOpposite(this.idOfSourceElement));
+		bothLinkSides.add(this.getOpposite(this.idOfDestinationElement));
 		return bothLinkSides;
 	}
 

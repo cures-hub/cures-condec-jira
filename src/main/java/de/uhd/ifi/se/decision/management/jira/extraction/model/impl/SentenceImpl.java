@@ -47,7 +47,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	private String knowledgeTypeString;
 
 	private long issueId;
-	
+
 	private Date created;
 
 	public SentenceImpl() {
@@ -164,6 +164,9 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		if (super.type == null) {
 			return "";
 		}
+		if (this.knowledgeTypeString == null) {
+			return "";
+		}
 		if (super.type.equals(KnowledgeType.ARGUMENT)) {
 			return this.argument;
 		}
@@ -185,23 +188,19 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	public void setKnowledgeType(double[] prediction) {
-			if (prediction[0] == 1. ) {
-				super.type = KnowledgeType.ALTERNATIVE;
-			}
-			if (prediction[1] == 1.) {
-				super.type = KnowledgeType.ARGUMENT;
-				this.argument = "Pro";
-			}
-			if (prediction[2] == 1.) {
-				super.type = KnowledgeType.ARGUMENT;
-				this.argument = "Con";
-			}
-			if (prediction[3] == 1. ) {
-				super.type = KnowledgeType.DECISION;
-			}
-			if (prediction[4] == 1. ) {
-				super.type = KnowledgeType.ISSUE;
-			}
+		if (prediction[0] == 1.) {
+			super.type = KnowledgeType.ALTERNATIVE;
+		} else if (prediction[3] == 1.) {
+			super.type = KnowledgeType.DECISION;
+		} else if (prediction[4] == 1.) {
+			super.type = KnowledgeType.ISSUE;
+		} else if (prediction[1] == 1.) {
+			super.type = KnowledgeType.ARGUMENT;
+			this.argument = "Pro";
+		} else if (prediction[2] == 1.) {
+			super.type = KnowledgeType.ARGUMENT;
+			this.argument = "Con";
+		}
 		this.setKnowledgeTypeString(super.type.toString());
 	}
 
@@ -283,9 +282,9 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	private void retrieveBodyFromJiraComment() {
 		String text = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getBody();
-		if(this.endSubstringCount < text.length()) {
+		if (this.endSubstringCount < text.length()) {
 			text = text.substring(this.startSubstringCount, this.endSubstringCount);
-		} else if(this.endSubstringCount == text.length()) {
+		} else if (this.endSubstringCount == text.length()) {
 			text = text.substring(this.startSubstringCount);
 		}
 		this.setBody(text);
