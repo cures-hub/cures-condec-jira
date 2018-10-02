@@ -526,8 +526,8 @@ public class ActiveObjectsManager {
 							try {
 								if (deleteSentenceCounter % 2 == 1) {
 									databaseEntry.getEntityManager().delete(databaseEntry);
-									deleteSentenceCounter++;
 								}
+								deleteSentenceCounter++;
 							} catch (SQLException e) {// element not deleted
 								LOGGER.error("Deletion of duplicate sentence failed due to SQL Exception");
 							}
