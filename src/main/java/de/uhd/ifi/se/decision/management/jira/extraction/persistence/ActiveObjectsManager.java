@@ -35,7 +35,9 @@ public class ActiveObjectsManager {
 			long issueId, String projectKey) {
 		init();
 		if (checkElementExistingInAO(commentId, endSubStringCount, startSubstringCount, userId, projectKey)) {
-			return getElementFromAO(commentId, endSubStringCount, startSubstringCount, userId, projectKey).getId();
+			Sentence existingElement = getElementFromAO(commentId, endSubStringCount, startSubstringCount, userId, projectKey);
+			checkIfSentenceHasAValidLink(existingElement.getId(),issueId);
+			return existingElement.getId();
 		}
 		DecisionKnowledgeInCommentEntity newElement = ao
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
@@ -58,6 +60,14 @@ public class ActiveObjectsManager {
 				});
 		addNewLinkSentenceIssue(issueId, newElement.getId());
 		return newElement.getId();
+	}
+
+	private static void checkIfSentenceHasAValidLink(long sentenceId, long issueId) {
+		List<GenericLink> links = getGenericLinksForElement("s"+sentenceId, false);
+		if(links == null || links.size() == 0) {
+			addNewLinkSentenceIssue(issueId, sentenceId);
+		}
+		
 	}
 
 	private static void addNewLinkSentenceIssue(long issueId, long sentenceAoId) {
@@ -119,11 +129,10 @@ public class ActiveObjectsManager {
 					public DecisionKnowledgeInCommentEntity doInTransaction() {
 						for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(
 								DecisionKnowledgeInCommentEntity.class,
-								Query.select().where("PROJECT_KEY = ?", projectKey))) {
-							if (equalsDatabase(databaseEntry, commentId, endSubtringCount, startSubstringCount,
-									userId)) {
-								return databaseEntry;
-							}
+								Query.select().where(
+										"PROJECT_KEY = ? AND COMMENT_ID = ? AND END_SUBSTRING_COUNT = ? AND START_SUBSTRING_COUNT = ?",
+										projectKey, commentId, endSubtringCount, startSubstringCount))) {
+							return databaseEntry;
 						}
 						return null;
 					}
@@ -383,6 +392,13 @@ public class ActiveObjectsManager {
 		});
 	}
 
+	/**
+	 * Gets the generic links for element.
+	 *
+	 * @param targetId the target id with identifier. Example: "i1234" for Issue, "s1337" for sentence. "1337" will not work
+	 * @param getOnlyOutwardLink if false, checks both directions
+	 * @return the generic links for element
+	 */
 	public static List<GenericLink> getGenericLinksForElement(String targetId, boolean getOnlyOutwardLink) {
 		init();
 		List<GenericLink> links = new ArrayList<GenericLink>();
@@ -424,15 +440,15 @@ public class ActiveObjectsManager {
 
 	}
 
-	private static void deleteLinksIfExisting(String string) {
+	private static void deleteLinksIfExisting(String id) {
 		init();
 		ao.executeInTransaction(new TransactionCallback<LinkBetweenDifferentEntitiesEntity>() {
 			@Override
 			public LinkBetweenDifferentEntitiesEntity doInTransaction() {
 				LinkBetweenDifferentEntitiesEntity[] linkElements = ao.find(LinkBetweenDifferentEntitiesEntity.class);
 				for (LinkBetweenDifferentEntitiesEntity linkElement : linkElements) {
-					if (linkElement.getIdOfDestinationElement().equals(string)
-							|| linkElement.getIdOfSourceElement().equals(string)) {
+					if (linkElement.getIdOfDestinationElement().equals(id)
+							|| linkElement.getIdOfSourceElement().equals(id)) {
 						try {
 							linkElement.getEntityManager().delete(linkElement);
 						} catch (SQLException e) {
