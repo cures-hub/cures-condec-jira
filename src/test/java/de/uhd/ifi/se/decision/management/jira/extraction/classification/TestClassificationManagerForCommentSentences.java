@@ -41,7 +41,7 @@ public class TestClassificationManagerForCommentSentences extends TestSetUp {
 
 	private EntityManager entityManager;
 	private List<Comment> list = new ArrayList<Comment>();
-	private ClassificationManagerForCommentSentences classifier;
+	private ClassificationManagerForCommentSentences classificationManager;
 
 	private MutableIssue issue;
 
@@ -50,7 +50,7 @@ public class TestClassificationManagerForCommentSentences extends TestSetUp {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockDefaultUserManager());
-		classifier = new ClassificationManagerForCommentSentences();
+		classificationManager = new ClassificationManagerForCommentSentences();
 		createLocalIssue();
 		addCommentsToIssue();
 	}
@@ -87,9 +87,9 @@ public class TestClassificationManagerForCommentSentences extends TestSetUp {
 		fillCommentList();
 
 		FilteredClassifier binaryClassifier = new BinaryClassifierMock();
-		classifier.getClassifier().setBinaryClassifier(binaryClassifier);
+		classificationManager.getClassifier().setBinaryClassifier(binaryClassifier);
 
-		list = classifier.classifySentenceBinary(list);
+		list = classificationManager.classifySentenceBinary(list);
 		assertNotNull(list.get(0).getSentences().get(0).isRelevant());
 		assertTrue(list.get(0).getSentences().get(0).isTagged());
 	}
@@ -99,12 +99,12 @@ public class TestClassificationManagerForCommentSentences extends TestSetUp {
 	public void testFineGrainedClassification() throws Exception {
 		fillCommentList();
 		FilteredClassifier binaryClassifier = new BinaryClassifierMock();
-		classifier.getClassifier().setBinaryClassifier(binaryClassifier);
+		classificationManager.getClassifier().setBinaryClassifier(binaryClassifier);
 
 		LC lc = new FineGrainedClassifierMock(5);
-		classifier.getClassifier().setFineGrainedClassifier(lc);
+		classificationManager.getClassifier().setFineGrainedClassifier(lc);
 
-		list = classifier.classifySentenceBinary(list);
+		list = classificationManager.classifySentenceBinary(list);
 
 		assertNotNull(list.get(0).getSentences().get(0).isRelevant());
 		assertTrue(list.get(0).getSentences().get(0).isTagged());
