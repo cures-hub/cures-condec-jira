@@ -175,10 +175,10 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	@Override
 	public void setKnowledgeTypeString(String type) {
-		if (type.toLowerCase().equals("pro")) {
+		if (type.equalsIgnoreCase("pro")) {
 			super.type = KnowledgeType.ARGUMENT;
 			this.argument = "Pro";
-		} else if (type.toLowerCase().equals("con")) {
+		} else if (type.equalsIgnoreCase("con")) {
 			super.type = KnowledgeType.ARGUMENT;
 			this.argument = "Con";
 		} else {

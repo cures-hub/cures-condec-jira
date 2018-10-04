@@ -89,7 +89,7 @@ public class CommentImpl implements Comment{
 				iterator.setText(currentSentence);
 				int start = iterator.first();
 				for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
-					if (end - start > 1) {
+					if (end - start > 1 && currentSentence.substring(start, end).trim().length() > 0) {
 						int startOfSentence = this.body.indexOf(currentSentence.substring(start, end));
 						int endOfSentence = currentSentence.substring(start, end).length() + startOfSentence;
 						this.splitter.addSentenceIndex(startOfSentence, endOfSentence);
