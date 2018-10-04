@@ -38,6 +38,7 @@ public class WebhookConnector {
 		if(rootType == null){
 			rootType = "WorkItem";
 		}
+		this.elementIds = new ArrayList<>();
 		this.projectKey = projectKey;
 		this.url = webhookUrl;
 		this.secret = webhookSecret;

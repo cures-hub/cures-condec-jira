@@ -200,10 +200,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                         "<aui-section id=\"webhookType\" label=\"Webhook Root Type\">";
                 for(i in issueTypes){
                     if(issueTypes[i].localeCompare("$project.getWebhookRootType()") == 0){
-                        console.log("checked");
                         html += "<aui-item-radio interactive checked>"+ issueTypes[i] +"</aui-item-radio>";
                     } else {
-                        console.log("unchecked");
                         html += "<aui-item-radio interactive>"+ issueTypes[i] +"</aui-item-radio>";
                     }
                 }
