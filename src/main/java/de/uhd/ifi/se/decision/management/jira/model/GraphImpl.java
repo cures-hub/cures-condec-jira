@@ -64,18 +64,21 @@ public class GraphImpl implements Graph {
 		// If uncommented: This will remove all children of sentences in the Treeviewer
 		// on Decision KnowledgePage. This will increase the performance significantly.
 		// Full DK is loaded on button klick in Treant
-		 if(element instanceof Sentence && !((Sentence)element).isRelevant()) {
-		 return linkedElementsAndLinks;
-		 }
+//		 if(element instanceof Sentence && !((Sentence)element).isRelevant()) {
+//			 return linkedElementsAndLinks;
+//		 }
 		String preIndex = getIdentifier(element);
 		List<GenericLink> list = ActiveObjectsManager.getGenericLinksForElement(preIndex + element.getId(), false);
+
 		for (GenericLink currentGenericLink : list) {
 			try {
+				
 				DecisionKnowledgeElement source = currentGenericLink.getBothElements().get(0);
 				DecisionKnowledgeElement target = currentGenericLink.getBothElements().get(1);
 				if(!source.getProject().getProjectKey().equals(target.getProject().getProjectKey())) {
 					continue;
 				}
+				
 				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source,target);
 				linkBetweenSentenceAndOtherElement.setType("contain");
 				if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
@@ -85,6 +88,7 @@ public class GraphImpl implements Graph {
 				}
 			} catch (NullPointerException e) {
 				// Link in the wrong direction
+				continue;
 			}
 		}
 		return linkedElementsAndLinks;

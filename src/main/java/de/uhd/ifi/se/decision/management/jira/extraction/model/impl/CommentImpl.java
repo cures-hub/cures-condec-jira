@@ -7,18 +7,13 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.HTMLCodeGeneratorForSentences;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 
-public class CommentImpl implements Comment{
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(CommentImpl.class);
+public class CommentImpl implements Comment {
 
 	private List<Sentence> sentences;
 
@@ -58,7 +53,6 @@ public class CommentImpl implements Comment{
 		this.authorId = comment.getAuthorApplicationUser().getId();
 		this.setIssueId(comment.getIssue().getId());
 		splitCommentIntoSentences(true);
-		LOGGER.debug("Comment "+this.jiraCommentId + " succesfully created");
 	}
 
 	public static String textRule(String text) {
@@ -66,7 +60,7 @@ public class CommentImpl implements Comment{
 	}
 
 	private void splitCommentIntoSentences(boolean addSentencesToAo) {
-		List<String> rawSentences = this.splitter.sliceCommentRecursionCommander(this.body,this.projectKey);
+		List<String> rawSentences = this.splitter.sliceCommentRecursionCommander(this.body, this.projectKey);
 		runBreakIterator(rawSentences);
 		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(this);
 		// Create AO entries

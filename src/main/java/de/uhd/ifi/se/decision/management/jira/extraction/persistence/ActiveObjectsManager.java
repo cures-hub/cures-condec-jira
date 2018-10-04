@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
@@ -25,8 +22,6 @@ import net.java.ao.Query;
 public class ActiveObjectsManager {
 
 	private static ActiveObjects ao;
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectsManager.class);
 
 	private static int deleteSentenceCounter = 0;
 
@@ -69,7 +64,6 @@ public class ActiveObjectsManager {
 					}
 				});
 		addNewLinkSentenceIssue(issueId, newElement.getId());
-		LOGGER.debug("Sentenceobject in database " + newElement.getId() + " sucessfully created");
 		return newElement.getId();
 	}
 
@@ -411,12 +405,16 @@ public class ActiveObjectsManager {
 			public LinkBetweenDifferentEntitiesEntity doInTransaction() {
 				LinkBetweenDifferentEntitiesEntity[] linkElements = ao.find(LinkBetweenDifferentEntitiesEntity.class);
 				for (LinkBetweenDifferentEntitiesEntity linkElement : linkElements) {
-					if (linkElement.getIdOfDestinationElement().equals(targetId)) {
-						links.add(new GenericLinkImpl(targetId, linkElement.getIdOfSourceElement()));
+					GenericLink link = new GenericLinkImpl(linkElement.getIdOfDestinationElement(),
+							linkElement.getIdOfSourceElement());
+					// if(link.isValid()) { @issue: Function is very slow. @alternative: run this as a service
+					if (!getOnlyOutwardLink && linkElement.getIdOfDestinationElement().equals(targetId)) {
+						links.add(link);
 					}
-					if (!getOnlyOutwardLink && linkElement.getIdOfSourceElement().equals(targetId)) {
-						links.add(new GenericLinkImpl(targetId, linkElement.getIdOfDestinationElement()));
+					if (linkElement.getIdOfSourceElement().equals(targetId)) {
+						links.add(link);
 					}
+
 				}
 				return null;
 			}
@@ -529,7 +527,6 @@ public class ActiveObjectsManager {
 								}
 								deleteSentenceCounter++;
 							} catch (SQLException e) {// element not deleted
-								LOGGER.error("Deletion of duplicate sentence failed due to SQL Exception");
 							}
 						}
 					}

@@ -5,10 +5,12 @@ import static org.junit.Assert.*;
 import java.util.Locale;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
+import com.atlassian.activeobjects.tx.Transactional;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -20,6 +22,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
@@ -137,7 +140,13 @@ public class TestComment extends TestSetUp {
 				"{quote} this is a quote {quote} and this is a test Sentence. {quote} this is a second quote {quote} ");
 		assertEquals(3, comment.getSentences().size());
 
-		comment = getComment(
+	
+	}
+	
+	@Test
+	@NonTransactional
+	public void TestSentenceSplitWithDifferentQuotes2() {
+		CommentImpl comment =  getComment(
 				"{quote} this is a quote {quote} and this is a test Sentence. {quote} this is a second quote {quote} and a Sentence at the back");
 		assertEquals(4, comment.getSentences().size());
 
@@ -148,6 +157,7 @@ public class TestComment extends TestSetUp {
 		comment = getComment(
 				"{quote} this is a quote {quote} {quote} this is a second quote right after the first one {quote} {quote} These are many quotes {quote}");
 		assertEquals(3, comment.getSentences().size());
+		
 	}
 
 	@Test
@@ -160,7 +170,11 @@ public class TestComment extends TestSetUp {
 				"{noformat} this is a noformat {noformat} and this is a test Sentence. {noformat} this is a second noformat {noformat} ");
 		assertEquals(3, comment.getSentences().size());
 
-		comment = getComment(
+	}
+	@Test
+	@NonTransactional
+	public void TestSentenceSplitWithNoformats2() {
+		CommentImpl comment = getComment(
 				"{noformat} this is a noformat {noformat} and this is a test Sentence. {noformat} this is a second noformat {noformat} and a Sentence at the back");
 		assertEquals(4, comment.getSentences().size());
 
