@@ -44,16 +44,18 @@ function callDialog2(){
 	document.getElementById("dialog").classList.remove("aui-dialog2-medium");
 	document.getElementById("dialog").classList.add("aui-dialog2-large");
 	buildTreeViewer2(document.getElementById("Relevant").checked);
-
 }
+
 function includeJQ(){
     var startingTime = new Date().getTime();
     // Load the script
     var script = document.createElement("SCRIPT");
-    script.src = '//code.jquery.com/jquery-3.3.1.js';
+    script.src = '//code.jquery.com/jquery-1.9.1.js';
     script.type = 'text/javascript';
     script.onload = function() {
     	var $ = window.jQuery;
+    	window.$ = window.jQuery; 
+    	console.log($.fn.jquery)
       $(function() {
             buildTreeViewer2(true);
         });
@@ -64,9 +66,10 @@ function includeJQ(){
 
 function buildTreeViewer2(showRelevant) {
 	console.log("build Tree")
-my_JQuery = $;
+	console.log(jQuery.fn.jquery);
+
 	getTreeViewerWithoutRootElement(showRelevant, function(core) {
-		my_JQuery("#jstree").jstree({
+		$("#jstree").jstree({
 			"core" : core,
 			"plugins" : [ "dnd", "contextmenu", "wholerow", "search","sort","state"],
 			"search" : {
@@ -77,9 +80,9 @@ my_JQuery = $;
 			},
 			"sort": sortfunction
 			});
-		my_JQuery("#jstree-search-input").keyup(function() {
-			var searchString = my_JQuery(this).val();
-			my_JQuery("#jstree").jstree(true).search(searchString);
+		$("#jstree-search-input").keyup(function() {
+			var searchString = $(this).val();
+			$("#jstree").jstree(true).search(searchString);
 		});
 	});
 	addDragAndDropSupportForTreeViewer();
