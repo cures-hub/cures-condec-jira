@@ -421,6 +421,29 @@ public class ActiveObjectsManager {
 		});
 		return links;
 	}
+	
+	
+	public static void  clearInValidLinks() {
+		init();
+		ao.executeInTransaction(new TransactionCallback<LinkBetweenDifferentEntitiesEntity>() {
+			@Override
+			public LinkBetweenDifferentEntitiesEntity doInTransaction() {
+				LinkBetweenDifferentEntitiesEntity[] linkElements = ao.find(LinkBetweenDifferentEntitiesEntity.class);
+				for (LinkBetweenDifferentEntitiesEntity linkElement : linkElements) {
+					GenericLink link = new GenericLinkImpl(linkElement.getIdOfDestinationElement(),
+							linkElement.getIdOfSourceElement());
+					if(!link.isValid()) {
+						try {
+							linkElement.getEntityManager().delete(linkElement);
+						} catch (SQLException e) {
+						}
+					}
+				}
+				return null;
+			}
+		});
+	}
+	
 
 	public static void clearSentenceDatabaseForProject(String projectKey) {
 		init();
