@@ -214,9 +214,10 @@ public interface DecisionKnowledgeProject {
 	String getWebhookSecret();
 
 	/**
-	 * Return the webhook root Type.
+	 * Return the type of the root element of the sent decision knowledge tree via
+	 * webhook.
 	 *
-	 * @return the webhook root Type of the returned treant json.
+	 * @return type of webhook root element.
 	 */
 	String getWebhookRootType();
 }

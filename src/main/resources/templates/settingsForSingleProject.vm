@@ -161,69 +161,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
             });
 		}
 		</script>
-		<h2>Webhook</h2>
-		<div class="field-group">
-            <label for="isWebhookEnabled-toggle">Webhook Activated?</label>
-            <aui-toggle id="isWebhookEnabled-toggle"
-                        value="$projectKey" label="Webhook Activated?"></aui-toggle>
-            <div id="webhookDescripiton" class="description">Activates or deactivates the webhook for this project. If the webhook is activated,
-            		it is triggered whenever a decision knowledge element or a link between elements is changed. 
-            		Then, a key value JSON string is sent to the URL. 
-            		The key is the key of the root element and the value is the Treant JSON string.</div>
-            <div class="description">You can select what Type of Issue should be send a Root Element if the webhook is activated.</div>
-			<label for="webhook-url">URL</label> <input type="text"
-				class="text long-field" id="webhook-url" value="$project.getWebhookUrl()" />
-			<div class="description">URL that decision knowledge is posted
-				to when updated.</div>
-			<label for="webhook-secret">Shared Secret</label> <input type="text"
-				class="text long-field" id="webhook-secret" value="$project.getWebhookSecret()" />
-			<div class="description">Key to authenticate with remote
-				server.</div>				
-			<input type="button" id="submitWebhook" class="aui-button aui-button-primary" value="Set Webhook URL and Secret" />
-		</div>
-		<script>
-			var webhookToggle = document.getElementById('isWebhookEnabled-toggle');
-            if ($project.isWebhookEnabled() == true) {
-                webhookToggle.checked = true;
-            } else {
-                webhookToggle.checked = false;
-            };
-            webhookToggle.addEventListener('change', function(error) {
-                this.busy = true;
-                setWebhookEnabled(this.checked, this.value);
-                this.busy = false;
-            });
-
-            getProjectIssueTypes("$projectKey", function (issueTypes) {
-                html = "<button class=\"aui-button aui-dropdown2-trigger\" aria-controls=\"webhook-rootType\">Webhook Type</button>" +
-                        "<aui-dropdown-menu id=\"webhook-rootType\">" +
-                        "<aui-section id=\"webhookType\" label=\"Webhook Root Type\">";
-                for(i in issueTypes){
-                    if(issueTypes[i].localeCompare("$project.getWebhookRootType()") == 0){
-                        html += "<aui-item-radio interactive checked>"+ issueTypes[i] +"</aui-item-radio>";
-                    } else {
-                        html += "<aui-item-radio interactive>"+ issueTypes[i] +"</aui-item-radio>";
-                    }
-                }
-                html += "</aui-section>" +
-                        "</aui-dropdown-menu>";
-                document.getElementById("webhookDescripiton").insertAdjacentHTML('afterend', html);
-            });
-
-            var webhookDrop = document.getElementById('webhookType');
-            webhookDrop.addEventListener('click', function (e) {
-                var selectedType = e.target.innerText;
-                setWebhookType(selectedType, '$projectKey');
-            });
-
-			var webHookSubmit = document.getElementById('isWebhookEnabled-toggle')
-			webHookSubmit.addEventListener("click", function() {
-				var urlInput = document.getElementById("webhook-url");
-				var secretInput = document.getElementById("webhook-secret");
-                setWebhookData('$projectKey', urlInput.value, secretInput.value);
-                window.onbeforeunload = null;
-            });
-		</script>
+		
 		<h2>Decision Extraction from Issue Comments - Settings</h2>
 		<div class="field-group">
 			<input type="button" class="aui-button" id="clearSentenceDatabase" value="Clear Sentence Database" />
@@ -270,7 +208,69 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                 });
             </script>
 			<div class="description">Enables or disables the parsing for icons to tag decision knowledge <br> WARNING: Use with caution. Sentences will not be labeled / classified correctly if a decision knowledge icon is used for other things then decision knowledge labels. </div>
+		</div>		
+		
+		<h2>Webhook</h2>
+		<div class="field-group">
+            <label for="isWebhookEnabled-toggle">Webhook Activated?</label>
+            <aui-toggle id="isWebhookEnabled-toggle"
+                        value="$projectKey" label="Webhook Activated?"></aui-toggle>
+            <div class="description">Activates or deactivates the webhook for this project. If the webhook is activated,
+            		it is triggered whenever a decision knowledge element or a link between elements is changed. 
+            		Then, a key value JSON string is sent to the URL. 
+            		The key is the key of the root element and the value is the Treant JSON string.</div>
+        </div>
+        <div class="field-group">
+			<label for="webhook-type">Root Element Type:</label>
+			<select id="webook-type" name="webhook-type" class="select medium-field" 
+					onchange="setWebhookType(this.options[this.selectedIndex].value, '$projectKey')"></select>
+			#foreach ($issueType in $issueTypes) 
+				<script>
+					var isSelected = "";
+					if ('$issueType'.localeCompare('$project.getWebhookRootType()') == 0) {
+						isSelected = "selected ";
+					}
+					$("select[name='webhook-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
+						+ '$issueType' + "'>" + '$issueType' + "</option>");
+				</script>	
+			#end
+            <div class="description">Selects the issue type of the root element (key) of the webhook data.</div>
+        </div>
+        <div class="field-group">
+			<label for="webhook-url">URL</label> <input type="text"
+				class="text long-field" id="webhook-url" value="$project.getWebhookUrl()" />
+			<div class="description">URL that decision knowledge is posted
+				to when updated.</div>
 		</div>
+		<div class="field-group">
+			<label for="webhook-secret">Shared Secret</label> <input type="text"
+				class="text long-field" id="webhook-secret" value="$project.getWebhookSecret()" />
+			<div class="description">Key to authenticate with remote
+				server.</div>				
+			<input type="button" id="submitWebhook" class="aui-button aui-button-primary" value="Set Webhook URL and Secret" />
+		</div>
+
+		<script>
+			var webhookToggle = document.getElementById('isWebhookEnabled-toggle');
+            if ($project.isWebhookEnabled() == true) {
+                webhookToggle.checked = true;
+            } else {
+                webhookToggle.checked = false;
+            };
+            webhookToggle.addEventListener('change', function(error) {
+                this.busy = true;
+                setWebhookEnabled(this.checked, this.value);
+                this.busy = false;
+            });                    
+
+			var webHookSubmit = document.getElementById('submitWebhook');
+			webHookSubmit.addEventListener("click", function() {
+				var urlInput = document.getElementById("webhook-url");
+				var secretInput = document.getElementById("webhook-secret");
+                setWebhookData('$projectKey', urlInput.value, secretInput.value);
+                window.onbeforeunload = null;
+            });
+		</script>
 	</form>
 </body>
 </html>
