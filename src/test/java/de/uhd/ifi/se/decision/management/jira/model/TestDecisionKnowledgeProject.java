@@ -15,7 +15,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * Test class for a JIRA project with the configuration settings used in this plug-in
+ * Test class for a JIRA project with the configuration settings used in this
+ * plug-in
  */
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestDecisionKnowledgeProject extends TestSetUp {
@@ -83,58 +84,58 @@ public class TestDecisionKnowledgeProject extends TestSetUp {
 	}
 
 	@Test
-	public void testGetKnowledgeTypes(){
-		assertEquals(17,project.getKnowledgeTypes().size(), 0.0);
+	public void testGetKnowledgeTypes() {
+		assertEquals(16, project.getKnowledgeTypes().size(), 0.0);
 	}
 
 	@Test
-	public void testSetIsKnowledgeExtractedFromGit(){
+	public void testSetIsKnowledgeExtractedFromGit() {
 		project.setKnowledgeExtractedFromGit(true);
 		assertTrue(project.isKnowledgeExtractedFromGit());
 	}
 
 	@Test
-	public void testSetIsKnowledgeExtrectedFromIssues(){
+	public void testSetIsKnowledgeExtractedFromIssues() {
 		project.setKnowledgeExtractedFromIssues(true);
 		assertTrue(project.isKnowledgeExtractedFromIssues());
 	}
 
 	@Test
-	public void testGetGitAddress(){
+	public void testGetGitAddress() {
 		assertEquals("true", project.getGitAddress());
 	}
 
 	@Test
-	public void  testSetWebhookDataNullNull(){
+	public void testSetWebhookDataNullNull() {
 		project.setWebhookData(null, null);
 		assertTrue(true);
 	}
 
 	@Test
-	public void  testSetWebhookDataNullFilled(){
+	public void testSetWebhookDataNullFilled() {
 		project.setWebhookData(null, "TEST-Sec");
 		assertTrue(true);
 	}
 
 	@Test
-	public void  testSetWebhookDataFilledNull(){
+	public void testSetWebhookDataFilledNull() {
 		project.setWebhookData("TEST", null);
 		assertTrue(true);
 	}
 
 	@Test
-	public void  testSetWebhookDataFilledFilled(){
+	public void testSetWebhookDataFilledFilled() {
 		project.setWebhookData("TEST", "TEST-Sec");
 		assertTrue(true);
 	}
 
 	@Test
-	public void testGetWebhookUrl(){
+	public void testGetWebhookUrl() {
 		assertEquals("true", project.getWebhookUrl());
 	}
 
 	@Test
-	public void testGetWebhookSecret(){
+	public void testGetWebhookSecret() {
 		assertEquals("true", project.getWebhookSecret());
 	}
 }

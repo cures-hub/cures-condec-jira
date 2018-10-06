@@ -246,11 +246,11 @@ function changeKnowledgeTypeOfSentence(id, type, callback) {
 		"type" : type
 	};
 	var argument = type;
-	if(type.includes("Pro") || type.includes("Con")){
+	if (type.includes("Pro") || type.includes("Con")) {
 		argument = type;
 	}
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/changeKnowledgeTypeOfSentence.json?projectKey="
-			+ getProjectKey() +  "&argument="+argument, jsondata , function(error, link) {
+			+ getProjectKey() + "&argument=" + argument, jsondata, function(error, link) {
 		if (error === null) {
 			showFlag("success", "Knowledge type has been changed.");
 			callback(link);
@@ -268,15 +268,15 @@ function editSentenceBody(id, body, type, callback) {
 		"projectKey" : getProjectKey(),
 		"description" : body
 	};
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/editSentenceBody.json?argument="+type, jsondata, function(error,
-			id, type) {
-		if (error === null) {
-			showFlag("success", "Decision knowledge element has been updated.");
-			callback(id, type);
-		} else {
-			showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
-		}
-	});
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/editSentenceBody.json?argument=" + type, jsondata,
+			function(error, id, type) {
+				if (error === null) {
+					showFlag("success", "Decision knowledge element has been updated.");
+					callback(id, type);
+				} else {
+					showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
+				}
+			});
 }
 
 function deleteGenericLink(targetId, sourceId, targetType, sourceType, callback, showError) {
@@ -337,7 +337,7 @@ function getTreeViewer(rootElementType, callback) {
 
 function getTreeViewerWithoutRootElement(showRelevant, callback) {
 	var issueId = AJS.$("meta[name='ajs-issue-key']").attr("content");
-	if(issueId === undefined){
+	if (issueId === undefined) {
 		issueId = getIssueKey();
 	}
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer2.json?issueKey=" + issueId
@@ -525,15 +525,26 @@ function setWebhookEnabled(isActivated, projectKey) {
 	});
 }
 
+function getProjectIssueTypes(projectKey, callback) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/getProjectIssueTypes.json?projectKey=" + projectKey,
+			function(error, issueTypes) {
+				if (error === null) {
+					callback(issueTypes);
+				} else {
+					showFlag("error", "Issue types of project could not be received. Error-Code: " + error);
+				}
+			});
+}
+
 function setWebhookType(webhookType, projectKey) {
-    postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookType.json?projectKey=" + projectKey
-			+ "&webhookType="+webhookType, null , function(error, response) {
-        if (error === null) {
-            showFlag("success", "The webhook Type has changed for this project");
-        } else {
-            showFlag("error", "The webhook Type has not been changed for this project");
-        }
-    });
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookType.json?projectKey=" + projectKey
+			+ "&webhookType=" + webhookType, null, function(error, response) {
+		if (error === null) {
+			showFlag("success", "The webhook root element type was changed for this project.");
+		} else {
+			showFlag("error", "The webhook root element type could not been changed for this project.");
+		}
+	});
 }
 
 function getCommitsAsReturnValue(elementKey) {
@@ -542,29 +553,29 @@ function getCommitsAsReturnValue(elementKey) {
 	return commitData.commits;
 }
 
-function clearSentenceDatabase(projectKey){
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/clearSentenceDatabase.json?projectKey=" + projectKey
-			, null, function(error, response) {
-		if (error === null) {
-			showFlag("success", "The Sentence database has been cleared.");
-		} else {
-			showFlag("error", "The Sentence database has not been cleared.");
-		}
-	});
+function clearSentenceDatabase(projectKey) {
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/clearSentenceDatabase.json?projectKey=" + projectKey,
+			null, function(error, response) {
+				if (error === null) {
+					showFlag("success", "The Sentence database has been cleared.");
+				} else {
+					showFlag("error", "The Sentence database has not been cleared.");
+				}
+			});
 }
 
-function classifyWholeProject(projectKey){
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/classifyWholeProject.json?projectKey=" + projectKey
-			, null, function(error, response) {
-		if (error === null) {
-			showFlag("success", "All sentences in this project have been classified.");
-		} else {
-			showFlag("error", "The classification process failed");
-		}
-	});
+function classifyWholeProject(projectKey) {
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/classifyWholeProject.json?projectKey=" + projectKey,
+			null, function(error, response) {
+				if (error === null) {
+					showFlag("success", "All sentences in this project have been classified.");
+				} else {
+					showFlag("error", "The classification process failed");
+				}
+			});
 }
 
-function setIconParsing(projectKey,isActivated) {
+function setIconParsing(projectKey, isActivated) {
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setIconParsing.json?projectKey=" + projectKey
 			+ "&isActivatedString=" + isActivated, null, function(error, response) {
 		if (error === null) {
@@ -576,24 +587,13 @@ function setIconParsing(projectKey,isActivated) {
 }
 
 function isIconParsing(projectKey, callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isIconParsing.json?projectKey=" + getProjectKey(),
+	getJSON(
+			AJS.contextPath() + "/rest/decisions/latest/config/isIconParsing.json?projectKey=" + getProjectKey(),
 			function(error, isIconParsingBoolean) {
 				if (error === null) {
 					callback(isIconParsingBoolean);
 				} else {
-					showFlag("error", "Icon boolean value for the project could not be received. Error-Code: "
-							+ error);
+					showFlag("error", "Icon boolean value for the project could not be received. Error-Code: " + error);
 				}
 			});
-}
-
-function getProjectIssueTypes(projectKey, callback) {
-    getJSON(AJS.contextPath() + "/rest/decisions/latest/config/getProjectIssueTypes.json?projectKey="
-		+ projectKey, function(error, issueTypes) {
-        if (error === null) {
-            callback(issueTypes);
-        } else {
-            showFlag("error", "Tree viewer data could not be received. Error-Code: " + error);
-        }
-    });
 }
