@@ -54,18 +54,23 @@ public class TreeViewer {
 
 	public TreeViewer(String projectKey, KnowledgeType rootElementType) {
 		this();
-		if(rootElementType != KnowledgeType.OTHER) {
+		if (rootElementType != KnowledgeType.OTHER) {
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements(rootElementType);
-			elements.addAll(ActiveObjectsManager.getAllElementsFromAoByType(projectKey,rootElementType));
-	
+
 			Set<Data> dataSet = new HashSet<Data>();
 			for (DecisionKnowledgeElement element : elements) {
 				dataSet.add(this.getDataStructure(element));
 			}
+			for (DecisionKnowledgeElement sentenceElement : ActiveObjectsManager.getAllElementsFromAoByType(projectKey,
+					rootElementType)) {
+				Data data = new Data(sentenceElement);
+				data = this.makeIdUnique(data);
+				dataSet.add(data);
+			}
 			this.data = dataSet;
-		}else {
-			
+		} else {
+
 		}
 	}
 
@@ -79,13 +84,13 @@ public class TreeViewer {
 			return;
 		}
 		Issue currentIssue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
-		if (currentIssue == null) { 
+		if (currentIssue == null) {
 			return;
 		}
 
 		Set<Data> dataSet = new HashSet<Data>();
-		dataSet.add(this.getDataStructure(new DecisionKnowledgeElementImpl(currentIssue)));
 
+		dataSet.add(this.getDataStructure(new DecisionKnowledgeElementImpl(currentIssue)));
 		this.data = dataSet;
 	}
 
@@ -108,10 +113,13 @@ public class TreeViewer {
 
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
 			Data dataChild = new Data(childAndLink.getKey(), childAndLink.getValue());
-			dataChild = this.makeIdUnique(dataChild);
-			List<Data> childrenOfElement = this.getChildren(childAndLink.getKey());
-			dataChild.setChildren(childrenOfElement);
-			children.add(dataChild);
+			if (dataChild.getNode().getProject().getProjectKey()
+					.equals(decisionKnowledgeElement.getProject().getProjectKey())) {
+				dataChild = this.makeIdUnique(dataChild);
+				List<Data> childrenOfElement = this.getChildren(childAndLink.getKey());
+				dataChild.setChildren(childrenOfElement);
+				children.add(dataChild);
+			}
 		}
 		return children;
 	}

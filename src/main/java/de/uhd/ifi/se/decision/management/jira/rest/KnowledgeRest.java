@@ -14,7 +14,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
 import com.atlassian.jira.component.ComponentAccessor;

@@ -5,7 +5,6 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -15,18 +14,17 @@ import weka.core.Instances;
 public class ClassificationManagerForCommentSentences {
 
 	private DecisionKnowledgeClassifier classifier;
-	//TODO: Update knowledge types if classifer changes
+	// TODO: Update knowledge types if classifer changes
 	private final String[] knowledgeTypes = { "isAlternative", "isPro", "isCon", "isDecision", "isIssue" };
-
-	public ClassificationManagerForCommentSentences() {
-		classifier = new DecisionKnowledgeClassifier();
-	}
 
 	public List<Comment> classifySentenceBinary(List<Comment> commentsList) {
 		Instances data = createDatasetForBinaryClassification(commentsList);
 
 		List<Double> classificationResult;
 		if (!data.isEmpty()) {
+			if (this.classifier == null) {
+				this.classifier = new DecisionKnowledgeClassifier();
+			}
 			classificationResult = classifier.makeBinaryPredictions(data);
 			commentsList = matchBinaryClassificationBackOnData(classificationResult, commentsList);
 		} else {
@@ -42,7 +40,10 @@ public class ClassificationManagerForCommentSentences {
 		if (data.isEmpty()) {
 			return loadSentencesFineGrainedKnowledgeTypesFromActiveObjects(commentsList);
 		}
-		List<double[]> classificationResult = classifier.classifySentencesFineGrained(data);
+		if (this.classifier == null) {
+			this.classifier = new DecisionKnowledgeClassifier();
+		}
+		List<double[]> classificationResult = this.classifier.classifySentencesFineGrained(data);
 
 		// Write classification results back to sentence objects
 		int i = 0;
@@ -178,11 +179,15 @@ public class ClassificationManagerForCommentSentences {
 	}
 
 	private static boolean isSentenceQualifiedForFineGrainedClassification(Sentence sentence) {
-		return sentence.isRelevant() && !sentence.isTaggedFineGrained() && sentence.isPlainText() && !sentence.isTaggedManually();
+		return sentence.isRelevant() && !sentence.isTaggedFineGrained() && sentence.isPlainText()
+				&& !sentence.isTaggedManually();
 	}
 
 	public DecisionKnowledgeClassifier getClassifier() {
-		return classifier;
+		if (this.classifier == null) {
+			this.classifier = new DecisionKnowledgeClassifier();
+		}
+		return this.classifier;
 	}
 
 }

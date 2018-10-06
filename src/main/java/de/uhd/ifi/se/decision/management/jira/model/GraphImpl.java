@@ -34,8 +34,8 @@ public class GraphImpl implements Graph {
 
 	public GraphImpl(String projectKey, String rootElementKey) {
 		this(projectKey);
-		//Support element keys that represent sentences in comments
-		if(rootElementKey.contains(":")) {
+		// Support element keys that represent sentences in comments
+		if (rootElementKey.contains(":")) {
 			rootElementKey = rootElementKey.substring(0, rootElementKey.indexOf(":"));
 		}
 		this.rootElement = this.project.getPersistenceStrategy().getDecisionKnowledgeElement(rootElementKey);
@@ -57,24 +57,38 @@ public class GraphImpl implements Graph {
 
 	private Map<DecisionKnowledgeElement, Link> getAllLinkedSentences(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
-		
+
 		if (element == null) {
 			return linkedElementsAndLinks;
 		}
+		// If uncommented: This will remove all children of sentences in the Treeviewer
+		// on Decision KnowledgePage. This will increase the performance significantly.
+		// Full DK is loaded on button klick in Treant
+//		 if(element instanceof Sentence && !((Sentence)element).isRelevant()) {
+//			 return linkedElementsAndLinks;
+//		 }
 		String preIndex = getIdentifier(element);
-		List<GenericLink> list = ActiveObjectsManager.getGenericLinksForElement(preIndex + element.getId(),false);
+		List<GenericLink> list = ActiveObjectsManager.getGenericLinksForElement(preIndex + element.getId(), false);
+
 		for (GenericLink currentGenericLink : list) {
 			try {
-				Link linkBetweenSentenceAndOtherElement = new LinkImpl(currentGenericLink.getBothElements().get(0),
-						currentGenericLink.getBothElements().get(1));
+				
+				DecisionKnowledgeElement source = currentGenericLink.getBothElements().get(0);
+				DecisionKnowledgeElement target = currentGenericLink.getBothElements().get(1);
+				if(!source.getProject().getProjectKey().equals(target.getProject().getProjectKey())) {
+					continue;
+				}
+				
+				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source,target);
 				linkBetweenSentenceAndOtherElement.setType("contain");
-				if (!linkListContainsLink(linkBetweenSentenceAndOtherElement) ) {
+				if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
 					sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
 					linkedElementsAndLinks.put(currentGenericLink.getOpposite(preIndex + element.getId()),
 							linkBetweenSentenceAndOtherElement);
 				}
-			}catch(NullPointerException e) {
-				//Link in the wrong direction
+			} catch (NullPointerException e) {
+				// Link in the wrong direction
+				continue;
 			}
 		}
 		return linkedElementsAndLinks;

@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.util.Arrays;
-
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -20,7 +18,7 @@ public class CommentSplitter {
 
 	public static final String[] excludedTagList = new String[] { "{code}", "{quote}", "{noformat}","{panel}" };
 
-	public static final String[] manualRationaleTagList = new String[] { "[Issue]", "[Decision]", "[Alternative]",
+	public static final String[] manualRationaleTagList = new String[] { "[Issue]","[issue]", "[Decision]", "[Alternative]",
 			"[Pro]", "[Con]" };
 
 	public static final String[] manualRationalIconList = new String[] { "(!)", "(/)", "(?)", "(y)", "(n)" };
@@ -35,6 +33,7 @@ public class CommentSplitter {
 	public List<String> sliceCommentRecursionCommander(String body, String projectKey) {
 		List<String> firstSplit = searchBetweenTagsRecursive(body, "{quote}", "{quote}", new ArrayList<String>());
 
+		
 		firstSplit = searchForFurtherTags(firstSplit, "{noformat}", "{noformat}");
 		firstSplit = searchForFurtherTags(firstSplit, "{panel:", "{panel}");
 		firstSplit = searchForFurtherTags(firstSplit, "{code:", "{code}");
@@ -117,22 +116,22 @@ public class CommentSplitter {
 
 	public static String getKnowledgeTypeFromManuallIssueTag(String body, String projectKey) {
 		boolean checkIcons = ConfigPersistence.isIconParsingEnabled(projectKey);
-		if (body.contains("[Issue]") || (checkIcons && body.contains("(!)"))) {
+		if (body.toLowerCase().contains("[issue]") || (checkIcons && body.contains("(!)"))) {
 			return KnowledgeType.ISSUE.toString();
 		}
-		if (body.contains("[Alternative]") || (checkIcons && body.contains("(?)"))) {
+		if (body.toLowerCase().contains("[alternative]") || (checkIcons && body.contains("(?)"))) {
 			return KnowledgeType.ALTERNATIVE.toString();
 		}
-		if (body.contains("[Decision]") || (checkIcons && body.contains("(/)"))) {
+		if (body.toLowerCase().contains("[decision]") || (checkIcons && body.contains("(/)"))) {
 			return KnowledgeType.DECISION.toString();
 		}
-		if (body.contains("[Pro]") || (checkIcons && body.contains("y)"))) {
+		if (body.toLowerCase().contains("[pro]") || (checkIcons && body.contains("y)"))) {
 			return "pro";
 		}
-		if (body.contains("[Con]") || (checkIcons && body.contains("(n)"))) {
+		if (body.toLowerCase().contains("[con]") || (checkIcons && body.contains("(n)"))) {
 			return "con";
 		}
-		return "";
+		return KnowledgeType.OTHER.toString();
 	}
 
 }

@@ -5,9 +5,9 @@ import java.util.List;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
-
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 
@@ -20,6 +20,12 @@ public class GenericLinkImpl implements GenericLink {
 
 	public GenericLinkImpl() {
 		this.type = "";
+	}
+
+	public GenericLinkImpl(LinkBetweenDifferentEntitiesEntity aoElement) {
+		this();
+		this.idOfDestinationElement = aoElement.getIdOfDestinationElement();
+		this.idOfSourceElement = aoElement.getIdOfSourceElement();
 	}
 
 	public GenericLinkImpl(String idOfDestinationElement, String idOfSourceElement) {
@@ -73,39 +79,43 @@ public class GenericLinkImpl implements GenericLink {
 	}
 
 	@Override
-	public DecisionKnowledgeElement getOpposite(String oppositeElementId) {
-		if (oppositeElementId.startsWith("s")) {
-			if (this.getIdOfSourceElement().equals(oppositeElementId)) {
+	public DecisionKnowledgeElement getOpposite(String currentElementId) {
+		if (currentElementId.startsWith("s")) {
+			if (this.getIdOfSourceElement().equals(currentElementId)) {
 				if (this.getIdOfDestinationElement().startsWith("s")) {
 					return new SentenceImpl(getDesitantionIdAsLong());
-				} else {
+				}
+				if (this.getIdOfDestinationElement().startsWith("i")) {
 					Issue issue = ComponentAccessor.getIssueManager().getIssueObject(getDesitantionIdAsLong());
 					return new DecisionKnowledgeElementImpl(issue);
 				}
 			}
-			if (this.getIdOfDestinationElement().equals(oppositeElementId)) {
+			if (this.getIdOfDestinationElement().equals(currentElementId)) {
 				if (this.getIdOfSourceElement().startsWith("s")) {
 					return new SentenceImpl(getSourceIdAsLong());
-				} else {
+				}
+				if (this.getIdOfSourceElement().startsWith("i")) {
 					Issue issue = ComponentAccessor.getIssueManager().getIssueObject(getSourceIdAsLong());
 					return new DecisionKnowledgeElementImpl(issue);
 				}
 			}
 		}
-		if (oppositeElementId.startsWith("i")) {
-			if (this.getIdOfSourceElement().equals(oppositeElementId)) {
+		if (currentElementId.startsWith("i")) {
+			if (this.getIdOfSourceElement().equals(currentElementId)) {
 				if (this.getIdOfDestinationElement().startsWith("s")) {
 					return new SentenceImpl(getDesitantionIdAsLong());
-				} else {
+				} 
+				if (this.getIdOfDestinationElement().startsWith("i")) {
 					Issue issue = ComponentAccessor.getIssueManager()
-							.getIssueObject((long) Integer.parseInt(oppositeElementId.substring(1)));
+							.getIssueObject((long) Integer.parseInt(currentElementId.substring(1)));
 					return new DecisionKnowledgeElementImpl(issue);
 				}
 			}
-			if (this.getIdOfDestinationElement().equals(oppositeElementId)) {
+			if (this.getIdOfDestinationElement().equals(currentElementId)) {
 				if (this.getIdOfSourceElement().startsWith("s")) {
 					return new SentenceImpl(getSourceIdAsLong());
-				} else {
+				} 
+				if (this.getIdOfSourceElement().startsWith("i")) {
 					Issue issue = ComponentAccessor.getIssueManager().getIssueObject(getSourceIdAsLong());
 					return new DecisionKnowledgeElementImpl(issue);
 				}
@@ -128,6 +138,24 @@ public class GenericLinkImpl implements GenericLink {
 
 	private long getSourceIdAsLong() {
 		return (long) Integer.parseInt(this.getIdOfSourceElement().substring(1));
+	}
+
+	@Override
+	public boolean isValid() {
+		DecisionKnowledgeElement source;
+		DecisionKnowledgeElement target;
+		try {
+			source = this.getBothElements().get(0);
+			target = this.getBothElements().get(1);
+		} catch (NullPointerException e) {
+			return false;
+		}
+		if (source instanceof Sentence) {
+			if (!((Sentence) source).getProjectKey().equals(target.getProject().getProjectKey())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

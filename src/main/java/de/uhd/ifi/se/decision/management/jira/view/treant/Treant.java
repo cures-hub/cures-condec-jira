@@ -61,7 +61,10 @@ public class Treant {
 		}
 		List<Node> nodes = new ArrayList<Node>();
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-			nodes.add(createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth, currentDepth + 1));
+			Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth, currentDepth + 1);
+			if(newChildNode.getNodeContent().get("desc").startsWith(element.getProject().getProjectKey())) {
+				nodes.add(newChildNode);
+			}
 		}
 		node.setChildren(nodes);
 		return node;

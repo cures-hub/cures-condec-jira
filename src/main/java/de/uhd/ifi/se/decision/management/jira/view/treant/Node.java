@@ -81,22 +81,20 @@ public class Node {
 			this.link.put("title", decisionKnowledgeElement.getDescription());
 		}
 		if (project.isIssueStrategy()) {
-			ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
-			this.link.put("href", applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/"
-					+ decisionKnowledgeElement.getKey());
-			this.link.put("target", "_blank");
+			makeLinkToElement(decisionKnowledgeElement.getKey());
 		}
 		if (isCollapsed) {
 			this.collapsed = ImmutableMap.of("collapsed", isCollapsed);
 		}
-		if(decisionKnowledgeElement instanceof Sentence) {
-			if(((Sentence) decisionKnowledgeElement).getArgument().length() == 3) { // Length == 3 means eather pro or con
-				if(((Sentence) decisionKnowledgeElement).getArgument().toLowerCase().equals("pro")) {
-					makeArgument("Pro-argument","pro",decisionKnowledgeElement);
-				}else {
-					makeArgument("Con-argument","contra",decisionKnowledgeElement);
+		if (decisionKnowledgeElement instanceof Sentence) {
+			if (((Sentence) decisionKnowledgeElement).getArgument().length() == 3) { // Length == 3 means pro or con
+				if (((Sentence) decisionKnowledgeElement).getArgument().toLowerCase().equals("pro")) {
+					makeArgument("Pro-argument", "pro", decisionKnowledgeElement);
+				} else {
+					makeArgument("Con-argument", "contra", decisionKnowledgeElement);
 				}
 			}
+			makeLinkToElement(decisionKnowledgeElement.getKey().split(":")[0]);
 		}
 	}
 
@@ -105,12 +103,12 @@ public class Node {
 		switch (link.getType()) {
 		case "support":
 			if (decisionKnowledgeElement.getId() == link.getSourceElement().getId()) {
-				makeArgument("Pro-argument","pro",decisionKnowledgeElement);
+				makeArgument("Pro-argument", "pro", decisionKnowledgeElement);
 			}
 			break;
 		case "attack":
 			if (decisionKnowledgeElement.getId() == link.getSourceElement().getId()) {
-				makeArgument("Con-argument","contra",decisionKnowledgeElement);
+				makeArgument("Con-argument", "contra", decisionKnowledgeElement);
 			}
 			break;
 		default:
@@ -119,10 +117,15 @@ public class Node {
 	}
 
 	private void makeArgument(String string, String string2, DecisionKnowledgeElement decisionKnowledgeElement) {
-		this.nodeContent = ImmutableMap.of("name", string, "title",
-				decisionKnowledgeElement.getSummary(), "desc", decisionKnowledgeElement.getKey());
+		this.nodeContent = ImmutableMap.of("name", string, "title", decisionKnowledgeElement.getSummary(), "desc",
+				decisionKnowledgeElement.getKey());
 		this.htmlClass = string2;
-		
+	}
+
+	private void makeLinkToElement(String key) {
+		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
+		this.link.put("href", applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/" + key);
+		this.link.put("target", "_blank");
 	}
 
 	public Map<String, String> getNodeContent() {

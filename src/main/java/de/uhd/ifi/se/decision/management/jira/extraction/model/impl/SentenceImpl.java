@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
@@ -175,10 +174,10 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	@Override
 	public void setKnowledgeTypeString(String type) {
-		if (type.toLowerCase().equals("pro")) {
+		if (type.equalsIgnoreCase("pro")) {
 			super.type = KnowledgeType.ARGUMENT;
 			this.argument = "Pro";
-		} else if (type.toLowerCase().equals("con")) {
+		} else if (type.equalsIgnoreCase("con")) {
 			super.type = KnowledgeType.ARGUMENT;
 			this.argument = "Con";
 		} else {
@@ -303,7 +302,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.setArgument(aoElement.getArgument());
 		this.setCommentId(aoElement.getCommentId());
 		this.setIssueId(aoElement.getIssueId());
-		super.setProject(new DecisionKnowledgeProjectImpl(getProjectDescription()));
+		super.setProject(new DecisionKnowledgeProjectImpl(aoElement.getProjectKey()));
 		String kt = aoElement.getKnowledgeTypeString();
 		if (kt == null || kt.equals("")) {
 			super.type = KnowledgeType.OTHER;
@@ -313,14 +312,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		IssueManager im = ComponentAccessor.getIssueManager();
 		MutableIssue mi = im.getIssueObject(this.getIssueId());
 		super.setKey(mi.getKey() + ":" + this.getId());
-	}
-
-	private String getProjectDescription() {
-		if (ComponentGetter.getProjectService() != null) {
-			return ComponentGetter.getProjectService().getProjectKeyDescription();
-		} else {
-			return "TEST";
-		}
 	}
 
 	@Override
