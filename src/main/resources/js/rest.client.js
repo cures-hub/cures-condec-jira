@@ -22,6 +22,14 @@ function getResponseAsReturnValue(url) {
 	return JSON.parse(xhr.response);
 }
 
+function postWithResponseAsReturnValue(url) {
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", url, false);
+	xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+	xhr.send();
+	return JSON.parse(xhr.response);
+}
+
 function postJSON(url, data, callback) {
 	var xhr = new XMLHttpRequest();
 	xhr.open("POST", url, true);
@@ -565,14 +573,14 @@ function clearSentenceDatabase(projectKey) {
 }
 
 function classifyWholeProject(projectKey) {
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/classifyWholeProject.json?projectKey=" + projectKey,
-			null, function(error, response) {
-				if (error === null) {
-					showFlag("success", "All sentences in this project have been classified.");
-				} else {
-					showFlag("error", "The classification process failed.");
-				}
-			});
+	var isSucceeded = postWithResponseAsReturnValue(AJS.contextPath()
+			+ "/rest/decisions/latest/config/classifyWholeProject.json?projectKey=" + projectKey);
+	if (isSucceeded) {
+		showFlag("success", "The whole project has been classified.");
+		return 1.0;
+	}
+	showFlag("error", "The Sentence database has not been cleared.");
+	return 0.0;
 }
 
 function setIconParsing(projectKey, isActivated) {
