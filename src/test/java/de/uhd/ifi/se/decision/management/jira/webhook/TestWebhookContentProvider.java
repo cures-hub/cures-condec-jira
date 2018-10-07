@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.webhook;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
@@ -18,7 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
-import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @Data(TestSetUp.AoSentenceTestDatabaseUpdater.class)
@@ -34,54 +32,54 @@ public class TestWebhookContentProvider extends TestSetUp {
 	}
 
 	@Test
-	public void testGetIssueKeyNullNull() throws IOException {
+	public void testGetIssueKeyNullNull() {
 		WebhookContentProvider provider = new WebhookContentProvider(null, null);
-		assertNull(provider.createWebhookContentForChangedElement().getRequestEntity());
+		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
-	public void testGetIssueKeyNullFilled() throws IOException {
+	public void testGetIssueKeyNullFilled() {
 		WebhookContentProvider provider = new WebhookContentProvider(null, "TEST-14");
-		assertNull(provider.createWebhookContentForChangedElement().getRequestEntity());
+		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
-	@Test
-	public void testGetIssueKeyFilledNull() throws IOException {
-		WebhookContentProvider provider = new WebhookContentProvider("TEST", null);
-		assertNull(provider.createWebhookContentForChangedElement().getRequestEntity());
-	}
+//	@Test
+//	public void testGetIssueKeyFilledNull() throws IOException {
+//		WebhookContentProvider provider = new WebhookContentProvider("TEST", null);
+//		assertNull(provider.createPostMethod().getRequestEntity());
+//	}
 
-	@Test
-	@NonTransactional
-	public void testGetIssueKeyFilledFilled() throws IOException {
-		WebhookContentProvider provider = new WebhookContentProvider("TEST", "TEST-14");
-		assertTrue(provider.createWebhookContentForChangedElement().getRequestEntity().getContentLength() > 0);
-	}
+//	@Test
+//	@NonTransactional
+//	public void testGetIssueKeyFilledFilled() throws IOException {
+//		WebhookContentProvider provider = new WebhookContentProvider("TEST", "TEST-14");
+//		assertTrue(provider.createPostMethod().getRequestEntity().getContentLength() > 0);
+//	}
 
 	@Test
 	public void testGetGitHashNullNull() throws IOException {
 		WebhookContentProvider provider = new WebhookContentProvider(null, null);
-		assertNull(provider.createWebhookContentForChangedElement().getRequestEntity());
+		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
 	public void testGetGitHashNullFilled() throws IOException {
 		WebhookContentProvider provider = new WebhookContentProvider(null, "TEST-14");
-		assertNull(provider.createWebhookContentForChangedElement().getRequestEntity());
+		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
-	@Test
-	public void testGetGitHashFilledNull() throws IOException {
-		WebhookContentProvider provider = new WebhookContentProvider("TEST", null);
-		assertNull(provider.createWebhookContentForChangedElement().getRequestEntity());
-	}
+//	@Test
+//	public void testGetGitHashFilledNull() throws IOException {
+//		WebhookContentProvider provider = new WebhookContentProvider("TEST", null);
+//		assertNull(provider.createPostMethod().getRequestEntity());
+//	}
 
-	@Test
-	@NonTransactional
-	public void testGetGitHashFilledFilled() throws IOException {
-		WebhookContentProvider provider = new WebhookContentProvider("TEST", "TEST-14");
-		assertTrue(provider.createWebhookContentForChangedElement().getRequestEntity().getContentLength() > 0);
-	}
+//	@Test
+//	@NonTransactional
+//	public void testGetGitHashFilledFilled() throws IOException {
+//		WebhookContentProvider provider = new WebhookContentProvider("TEST", "TEST-14");
+//		assertTrue(provider.createPostMethod().getRequestEntity().getContentLength() > 0);
+//	}
 
 	@Test
 	public void testCreateHashedPayload() {

@@ -27,10 +27,10 @@ public class WebhookConnector {
 		this.projectKey = projectKey;
 		this.url = webhookUrl;
 		this.secret = webhookSecret;
-
-		this.rootType = rootType;
 		if (rootType == null) {
-			this.rootType = "WorkItem";
+			this.rootType = "Task";
+		} else {
+			this.rootType = rootType;
 		}
 		this.elementIds = new ArrayList<Long>();
 	}
@@ -41,34 +41,35 @@ public class WebhookConnector {
 	}
 
 	public boolean sendElementChanges(DecisionKnowledgeElement changedElement) {
+		boolean isSubmitted = false;
 		if (!checkIfDataIsValid(changedElement)) {
-			return false;
+			return isSubmitted;
 		}
 		List<DecisionKnowledgeElement> rootElements = getWebhookRootElements(changedElement);
-		boolean submitted = postKnowledgeTrees(rootElements);
-		return submitted;
+		isSubmitted = postKnowledgeTrees(rootElements);
+		return isSubmitted;
 	}
 
 	public boolean deleteElement(DecisionKnowledgeElement changedElement) {
+		boolean isDeleted = false;
 		if (!checkIfDataIsValid(changedElement)) {
-			return false;
+			return isDeleted;
 		}
 		List<DecisionKnowledgeElement> rootElements = getWebhookRootElements(changedElement);
 		if (changedElement.getType().toString().equals(rootType)) {
 			rootElements.remove(changedElement);
 		}
-		boolean submitted = postKnowledgeTrees(rootElements);
-		return submitted;
+		isDeleted = postKnowledgeTrees(rootElements);
+		return isDeleted;
 	}
 
 	private boolean postKnowledgeTrees(List<DecisionKnowledgeElement> rootElements) {
-		boolean submitted = true;
 		for (DecisionKnowledgeElement rootElement : rootElements) {
-			if (postKnowledgeTree(rootElement)) {
-				submitted = false;
+			if (!postKnowledgeTree(rootElement)) {
+				return false;
 			}
 		}
-		return submitted;
+		return true;
 	}
 
 	private List<DecisionKnowledgeElement> getWebhookRootElements(DecisionKnowledgeElement element) {
@@ -90,8 +91,8 @@ public class WebhookConnector {
 	}
 
 	private boolean postKnowledgeTree(DecisionKnowledgeElement rootElement) {
-		WebhookContentProvider provider = new WebhookContentProvider(projectKey, rootElement.getKey());
-		PostMethod postMethod = provider.createWebhookContentForChangedElement();
+		WebhookContentProvider provider = new WebhookContentProvider(rootElement.getKey(), secret);
+		PostMethod postMethod = provider.createPostMethod();
 		try {
 			HttpClient httpClient = new HttpClient();
 			postMethod.setURI(new HttpsURL(url));
@@ -132,10 +133,6 @@ public class WebhookConnector {
 
 	public void setUrl(String url) {
 		this.url = url;
-	}
-
-	public String getSecret() {
-		return secret;
 	}
 
 	public void setSecret(String secret) {

@@ -14,8 +14,6 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 
 /**
@@ -24,28 +22,25 @@ import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
  */
 public class WebhookContentProvider {
 
-	private DecisionKnowledgeProject project;
-	private String elementKey;
+	private String rootElementKey;
+	private String secret;
 
-	public WebhookContentProvider(String projectKey, String elementKey) {
-		if (projectKey == null || elementKey == null) {
-			return;
-		}
-		this.elementKey = elementKey;
-		this.project = new DecisionKnowledgeProjectImpl(projectKey);
+	public WebhookContentProvider(String elementKey, String secret) {
+		this.rootElementKey = elementKey;
+		this.secret = secret;
 	}
 
 	/**
-	 * Create post method for webhook
+	 * Creates post method for a single tree of decision knowledge.
 	 * 
 	 * @return post method ready to be posted
 	 */
-	public PostMethod createWebhookContentForChangedElement() {
+	public PostMethod createPostMethod() {
 		PostMethod postMethod = new PostMethod();
-		if (project == null || elementKey == null) {
+		if (rootElementKey == null || secret == null) {
 			return postMethod;
 		}
-		String payload = createPayload();
+		String payload = createWebhookData();
 		try {
 			StringRequestEntity requestEntity = new StringRequestEntity(payload, "application/json", "UTF-8");
 			postMethod.setRequestEntity(requestEntity);
@@ -54,30 +49,29 @@ public class WebhookContentProvider {
 		}
 		Header header = new Header();
 		header.setName("X-Hub-Signature");
-		header.setValue("sha256=" + createHashedPayload(payload, project.getWebhookSecret()));
+		header.setValue("sha256=" + createHashedPayload(payload, secret));
 		postMethod.setRequestHeader(header);
 		return postMethod;
 	}
 
 	/**
-	 * Creates the key value JSON String transmitted via webhook
+	 * Creates the key value JSON String transmitted via webhook.
 	 * 
 	 * @return JSON String with the following pattern: { "issueKey": {String},
 	 *         "ConDecTree": {TreantJS JSON config and data} }
 	 */
-	private String createPayload() {
+	private String createWebhookData() {
 		String treantAsJson = createTreantJsonString();
-		String payload = "{\"issueKey\": \"" + this.elementKey + "\", \"ConDecTree\": " + treantAsJson + "}";
-		return payload;
+		return "{\"issueKey\": \"" + this.rootElementKey + "\", \"ConDecTree\": " + treantAsJson + "}";
 	}
 
 	/**
-	 * Creates the Treant JSON String (value transmitted via webhook)
+	 * Creates the Treant JSON String (value transmitted via webhook).
 	 * 
 	 * @return TreantJS JSON String including config and data
 	 */
 	private String createTreantJsonString() {
-		Treant treant = new Treant(project.getProjectKey(), elementKey, 4);
+		Treant treant = new Treant(secret, rootElementKey, 4);
 		ObjectMapper objectMapper = new ObjectMapper();
 		String treantAsJson = "";
 		try {
@@ -88,6 +82,16 @@ public class WebhookContentProvider {
 		return treantAsJson;
 	}
 
+	/**
+	 * Hashes the treant data.
+	 * 
+	 * @param data
+	 *            String to be hashed
+	 * @param key
+	 *            secret key
+	 * 
+	 * @return hexadecimal String
+	 */
 	public static String createHashedPayload(String data, String key) {
 		final String hashingAlgorithm = "HMACSHA256";
 		SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), hashingAlgorithm);
@@ -105,6 +109,14 @@ public class WebhookContentProvider {
 		return toHexString(mac.doFinal(data.getBytes()));
 	}
 
+	/**
+	 * Converts an array of bytes to a hexadecimal String.
+	 * 
+	 * @param bytes
+	 *            array of bytes
+	 * 
+	 * @return hexadecimal String
+	 */
 	private static String toHexString(byte[] bytes) {
 		Formatter formatter = new Formatter();
 		for (byte b : bytes) {

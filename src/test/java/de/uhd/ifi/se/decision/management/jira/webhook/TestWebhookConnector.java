@@ -46,11 +46,11 @@ public class TestWebhookConnector extends TestSetUp {
 		assertEquals("Test-New", webhookConnector.getUrl());
 	}
 
-	@Test
-	public void testSetGetSecret() {
-		webhookConnector.setSecret("Test-New");
-		assertEquals("Test-New", webhookConnector.getSecret());
-	}
+//	@Test
+//	public void testSetGetSecret() {
+//		webhookConnector.setSecret("Test-New");
+//		assertEquals("Test-New", webhookConnector.getSecret());
+//	}
 
 	// @Test
 	// public void testConstNullNullNull() {
@@ -100,14 +100,12 @@ public class TestWebhookConnector extends TestSetUp {
 	public void testConstFilledFilledFilled() {
 		WebhookConnector connector = new WebhookConnector("TEST", "test", "test", null);
 		assertEquals("test", connector.getUrl());
-		assertEquals("test", connector.getSecret());
 	}
 
 	@Test
 	public void testConstNullFilledFilled() {
 		WebhookConnector connector = new WebhookConnector(null, "test", "test", null);
 		assertEquals("test", connector.getUrl());
-		assertEquals("test", connector.getSecret());
 	}
 
 	// @Test
@@ -121,14 +119,12 @@ public class TestWebhookConnector extends TestSetUp {
 	public void testConstFilledWrong() {
 		WebhookConnector connector = new WebhookConnector("NoTest");
 		assertEquals("true", connector.getUrl());
-		assertEquals("true", connector.getSecret());
 	}
 
 	@Test
 	public void testConstFilled() {
 		WebhookConnector connector = new WebhookConnector("TEST");
 		assertEquals("true", connector.getUrl());
-		assertEquals("true", connector.getSecret());
 	}
 
 	@Test
