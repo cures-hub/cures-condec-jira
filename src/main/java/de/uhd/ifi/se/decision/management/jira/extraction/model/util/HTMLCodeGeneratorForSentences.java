@@ -9,6 +9,7 @@ public class HTMLCodeGeneratorForSentences {
 
 	public String getCodedElement(Sentence sentence) {
 		this.sentence = sentence;
+		this.sentence.setBody(this.sentence.getBody().replaceAll("\r\n", "<br>"));
 
 		if (sentence.isRelevant() && sentence.isPlainText()) {
 			return "<span class=\"sentence " + sentence.getKnowledgeTypeString() + "\"  id  = ui" + sentence.getId()

@@ -238,15 +238,15 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	private void checkForPlainText(String body) {
 		this.isPlainText = true;
-		if (StringUtils.indexOfAny(body, CommentSplitter.excludedTagList) >= 0) {
+		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.excludedTagList) >= 0) {
 			this.isPlainText = false;
 		}
-		if (StringUtils.indexOfAny(body, CommentSplitter.manualRationaleTagList) >= 0
+		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.manualRationaleTagList) >= 0
 				|| (ConfigPersistence.isIconParsingEnabled(projectKey)
 						&& StringUtils.indexOfAny(body, CommentSplitter.manualRationalIconList) >= 0)) {
 			this.setKnowledgeTypeString(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey));
 			setManuallyTagged();
-			stripTagsFromBody(body);
+			stripTagsFromBody(body.toLowerCase());
 		}
 	}
 
@@ -255,7 +255,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 			int tagLength = 2 + CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey).length();
 			super.setDescription(body.substring(tagLength, body.length() - (1 + tagLength)));
 			super.setSummary(super.getDescription());
-		} else { // Icon case TODO: add full icon support
+		} else { 
 			super.setDescription(body.substring(3));
 			super.setSummary(super.getDescription());
 		}

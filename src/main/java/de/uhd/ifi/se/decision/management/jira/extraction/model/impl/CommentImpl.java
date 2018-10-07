@@ -46,17 +46,13 @@ public class CommentImpl implements Comment {
 	public CommentImpl(com.atlassian.jira.issue.comments.Comment comment) {
 		this();
 		this.projectKey = comment.getIssue().getProjectObject().getKey();
-		this.body = textRule(comment.getBody());
+		this.body = comment.getBody();
 		this.created = comment.getCreated();
 		this.authorFullName = comment.getAuthorFullName();
 		this.jiraCommentId = comment.getId();
 		this.authorId = comment.getAuthorApplicationUser().getId();
 		this.setIssueId(comment.getIssue().getId());
 		splitCommentIntoSentences(true);
-	}
-
-	public static String textRule(String text) {
-		return text.replace("<br>", " ").toString();
 	}
 
 	private void splitCommentIntoSentences(boolean addSentencesToAo) {
@@ -84,13 +80,13 @@ public class CommentImpl implements Comment {
 				int start = iterator.first();
 				for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
 					if (end - start > 1 && currentSentence.substring(start, end).trim().length() > 0) {
-						int startOfSentence = this.body.indexOf(currentSentence.substring(start, end));
+						int startOfSentence = this.body.toLowerCase().indexOf(currentSentence.toLowerCase().substring(start, end));
 						int endOfSentence = currentSentence.substring(start, end).length() + startOfSentence;
 						this.splitter.addSentenceIndex(startOfSentence, endOfSentence);
 					}
 				}
 			} else {
-				int start1 = this.body.indexOf(currentSentence);
+				int start1 = this.body.toLowerCase().indexOf(currentSentence.toLowerCase());
 				int end1 = currentSentence.length() + start1;
 				this.splitter.addSentenceIndex(start1, end1);
 			}

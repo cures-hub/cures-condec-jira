@@ -18,8 +18,8 @@ public class CommentSplitter {
 
 	public static final String[] excludedTagList = new String[] { "{code}", "{quote}", "{noformat}","{panel}" };
 
-	public static final String[] manualRationaleTagList = new String[] { "[Issue]","[issue]", "[Decision]", "[Alternative]",
-			"[Pro]", "[Con]" };
+	public static final String[] manualRationaleTagList = new String[] { "[issue]", "[decision]", "[alternative]",
+			"[pro]", "[con]" };
 
 	public static final String[] manualRationalIconList = new String[] { "(!)", "(/)", "(?)", "(y)", "(n)" };
 	
@@ -53,7 +53,7 @@ public class CommentSplitter {
 	private List<String> searchForFurtherTags(List<String> firstSplit, String openTag, String closeTag) {
 		HashMap<Integer, ArrayList<String>> newSlices = new HashMap<Integer, ArrayList<String>>();
 		for (String slice : firstSplit) {
-			ArrayList<String> slicesOfSentence = searchBetweenTagsRecursive(slice, openTag, closeTag,
+			ArrayList<String> slicesOfSentence = searchBetweenTagsRecursive(slice.toLowerCase(), openTag.toLowerCase(), closeTag.toLowerCase(),
 					new ArrayList<String>());
 			if (slicesOfSentence.size() > 1) {
 				newSlices.put(firstSplit.indexOf(slice), slicesOfSentence);

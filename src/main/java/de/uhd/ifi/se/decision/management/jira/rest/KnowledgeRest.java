@@ -249,7 +249,7 @@ public class KnowledgeRest {
 				CommentManager cm = ComponentAccessor.getCommentManager();
 				MutableComment mc = (MutableComment) cm.getCommentById(databaseEntity.getCommentId());
 				// Generate sentence data generated for classification
-				String sentenceToSearch = CommentImpl.textRule(mc.getBody())
+				String sentenceToSearch = mc.getBody()
 						.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount());
 				int index = mc.getBody().indexOf(sentenceToSearch);
 				
