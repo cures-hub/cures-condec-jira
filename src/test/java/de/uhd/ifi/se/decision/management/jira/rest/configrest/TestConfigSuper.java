@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.config;
+package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;

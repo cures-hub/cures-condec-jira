@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.config;
+package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;

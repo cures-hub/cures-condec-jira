@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.config;
+package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import org.junit.Test;
