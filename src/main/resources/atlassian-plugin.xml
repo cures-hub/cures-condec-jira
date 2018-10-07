@@ -46,7 +46,8 @@
 		<!-- style sheets -->
 		<resource type="download" name="treant.css" location="/css/treant.css" />
 		<resource type="download" name="condec.css" location="/css/condec.css" />
-		<resource type="download" name="jquery.contextMenu.css" location="/css/jquery.contextMenu.css" />
+		<resource type="download" name="jquery.contextMenu.css"
+			location="/css/jquery.contextMenu.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
 		<!-- look and feel like JIRA -->
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
@@ -76,7 +77,7 @@
 		<resource type="download" name="view.tab.panel.js" location="/js/view.tab.panel.js" />
 		<resource type="download" name="view.tree.viewer.js" location="/js/view.tree.viewer.js" />
 		<resource type="download" name="view.context.menu.js" location="/js/view.context.menu.js" />
-<!-- 		<dependency>com.atlassian.plugins.jquery:jquery</dependency> -->
+		<!-- <dependency>com.atlassian.plugins.jquery:jquery</dependency> -->
 	</web-resource>
 
 	<web-resource key="rest-client-resources" name="ConDec Rest Client Resources">
@@ -102,7 +103,8 @@
 		<resource type="download" name="view.treant.js" location="/js/view.treant.js" />
 	</web-resource>
 
-	<web-resource key="decision-knowledge-page-resources" name="ConDec Decision Knowledge Page Resources">
+	<web-resource key="decision-knowledge-page-resources"
+		name="ConDec Decision Knowledge Page Resources">
 		<description>
 			Provides the Java Script files for the separate decision knowledge page of this
 			plug-in.
@@ -110,16 +112,19 @@
 		<!-- jquery -->
 		<resource type="download" name="jquery.js" location="/js/jquery/jquery.js" />
 		<!-- jquery.contextMenu -->
-		<resource type="download" name="jquery.contextMenu.js" location="/js/jquery/jquery.contextMenu.js" />
+		<resource type="download" name="jquery.contextMenu.js"
+			location="/js/jquery/jquery.contextMenu.js" />
 		<!-- jstree -->
 		<resource type="download" name="jstree.js" location="/js/jstree/jstree.js" />
 		<!-- ConDec java script files -->
-		<resource type="download" name="view.decision.knowledge.page.js" location="/js/view.decision.knowledge.page.js" />
+		<resource type="download" name="view.decision.knowledge.page.js"
+			location="/js/view.decision.knowledge.page.js" />
 		<resource type="download" name="view.tree.viewer.js" location="/js/view.tree.viewer.js" />
 		<resource type="download" name="view.context.menu.js" location="/js/view.context.menu.js" />
 	</web-resource>
 
-	<web-resource key="issue-module-resources" name="ConDec Java Script Resources for the Issue Module">
+	<web-resource key="issue-module-resources"
+		name="ConDec Java Script Resources for the Issue Module">
 		<description>
 			Provides the Java Script file used in the issue module.
 		</description>
@@ -141,36 +146,37 @@
 			<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition">
 				<param name="projectKey" value="$pathEncodedProjectKey" />
 			</condition>
-			<!-- TODO needs to be added in the link path -->
-			<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition">
-				<param name="selectedIssueKey" value="$selectedIssueKey"/>
-			</condition>
 		</conditions>
 	</web-item>
 	<web-panel name="ConDec Plug-in Page" key="decisions-page" location="decisions-page"
 		weight="1000">
 		<description>
-			Provides the plug-in page that developers use to manage decision knowledge.
-		</description>
+			Provides the page that developers use to manage decision knowledge.</description>
 		<resource name="view" type="velocity" location="templates/decisionKnowledgePage.vm" />
 	</web-panel>
+	<servlet name="Servlet for Decision Knowledge Page" key="servlet-for-decisions-page"
+		class="de.uhd.ifi.se.decision.management.jira.view.DecisionKnowledgePageServlet">
+		<description>Provides the page that developers use to manage decision knowledge.</description>
+		<url-pattern>/decisions-page</url-pattern>
+	</servlet>
 
 	<!-- REST API -->
-	<rest name="Decision Knowledge REST" key="decision-knowledge-rest" path="/decisions" version="1.0">
+	<rest name="Decision Knowledge REST" key="decision-knowledge-rest" path="/decisions"
+		version="1.0">
 		<description>
 			Provides REST resources to manage decision knowledge.
 		</description>
 	</rest>
 
 	<!-- Global Settings -->
-	<web-section key="condec-admin-section" name="Web Section for ConDec Plug-in Administration"
-		location="admin_plugins_menu">
+	<web-section key="condec-admin-section"
+		name="Web Section for ConDec Plug-in Administration" location="admin_plugins_menu">
 		<description>
 			Adds a section to the add-ons menu.
 		</description>
 	</web-section>
-	<web-section key="condec-admin-section-label" name="Web Section Label for ConDec Plug-in Administration"
-		location="condec-admin-section">
+	<web-section key="condec-admin-section-label"
+		name="Web Section Label for ConDec Plug-in Administration" location="condec-admin-section">
 		<label>Decision Knowledge</label>
 		<description>
 			Adds the "Decisions" label to the ConDec section in the add-ons menu.
@@ -184,28 +190,31 @@
 		</description>
 		<link>/plugins/servlet/condec/globalsettings</link>
 	</web-item>
-	<servlet key="servlet-for-settings-of-all-projects" name="Servlet for Settings of All Projects"
+	<servlet key="servlet-for-settings-of-all-projects"
+		name="Servlet for Settings of All Projects"
 		class="de.uhd.ifi.se.decision.management.jira.config.SettingsOfAllProjects">
 		<description>Provides the administration page.</description>
 		<url-pattern>/condec/globalsettings</url-pattern>
 	</servlet>
 
 	<!-- Project Settings -->
-	<web-section key="decisions-tabs-section" name="Web Section for ConDec Plug-in in Project Settings"
-		location="atl.jira.proj.config">
+	<web-section key="decisions-tabs-section"
+		name="Web Section for ConDec Plug-in in Project Settings" location="atl.jira.proj.config">
 		<label>Decision Knowledge</label>
 		<description>
 			Adds the "Decisions" label to the project settings menu.
 		</description>
 	</web-section>
-	<web-item key="condec-project-settings-menu-item" name="Menu Item for ConDec Plug-in Project Settings"
+	<web-item key="condec-project-settings-menu-item"
+		name="Menu Item for ConDec Plug-in Project Settings"
 		section="atl.jira.proj.config/decisions-tabs-section" weight="15">
 		<description>Adds the "ConDec Settings" menu item that links to the project settings.
 		</description>
 		<label>ConDec Project Settings</label>
 		<link linkId="condec-project-settings-menu-item">/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded</link>
 	</web-item>
-	<servlet key="servlet-for-settings-of-single-project" name="Servlet for Settings of Single Project"
+	<servlet key="servlet-for-settings-of-single-project"
+		name="Servlet for Settings of Single Project"
 		class="de.uhd.ifi.se.decision.management.jira.config.SettingsOfSingleProject">
 		<description>Provides the project settings page for the project administrators.</description>
 		<url-pattern>/condec/settings</url-pattern>
@@ -227,24 +236,26 @@
 		<entity>
 			de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity
 		</entity>
-			<entity>
+		<entity>
 			de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity
 		</entity>
 
 	</ao>
 
 	<!-- Decision Knowledge Issue Module -->
-	<web-panel key="condec-issue-module" name="Decision Knowledge Issue Module" location="atl.jira.view.issue.left.context"
-		weight="200">
+	<web-panel key="condec-issue-module" name="Decision Knowledge Issue Module"
+		location="atl.jira.view.issue.left.context" weight="200">
 		<description>Decision Knowledge related to a JIRA Issue</description>
 		<label>Decision Knowledge</label>
 		<resource type="velocity" name="view" location="templates/issueModule.vm" />
-		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationConditionForIssueModule" />
+		<condition
+			class="de.uhd.ifi.se.decision.management.jira.config.ActivationConditionForIssueModule" />
 		<supports-ajax-load>true</supports-ajax-load>
 	</web-panel>
 
 	<!-- Decision Knowledge Extraction Tab Panel -->
-	<issue-tabpanel key="condec-tab-panel" name="Decision Knowledge Extraction Tab Panel"
+	<issue-tabpanel key="condec-tab-panel"
+		name="Decision Knowledge Extraction Tab Panel"
 		class="de.uhd.ifi.se.decision.management.jira.extraction.view.IssueTabPanelRenderer">
 		<description>Extraction of Decision Knowledge from Issue Comments</description>
 		<label>Decision Knowledge Extraction</label>
