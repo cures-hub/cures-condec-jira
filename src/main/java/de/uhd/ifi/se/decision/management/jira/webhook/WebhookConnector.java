@@ -1,18 +1,19 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
-import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
-import org.apache.commons.httpclient.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpsURL;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 
 public class WebhookConnector {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebhookConnector.class);
@@ -23,25 +24,25 @@ public class WebhookConnector {
 	private String rootType;
 
 	public WebhookConnector(String projectKey, String webhookUrl, String webhookSecret, String rootType) {
-		if (projectKey == null) {
-			LOGGER.error("Webhook could not be created because the project key is not provided.");
-			projectKey = "";
-		}
-		if (webhookUrl == null) {
-			webhookUrl = "";
-			LOGGER.error("Webhook could not be created because the URL is not provided.");
-		}
-		if (webhookSecret == null) {
-			webhookSecret = "";
-			LOGGER.error("Webhook could not be created because the secret is not provided.");
-		}
-		if(rootType == null){
-			rootType = "WorkItem";
-		}
-		this.elementIds = new ArrayList<>();
 		this.projectKey = projectKey;
 		this.url = webhookUrl;
 		this.secret = webhookSecret;
+		if (projectKey == null) {
+			LOGGER.error("Webhook could not be created because the project key is not provided.");
+			this.projectKey = "";
+		}
+		if (webhookUrl == null) {
+			this.url = "";
+			LOGGER.error("Webhook could not be created because the URL is not provided.");
+		}
+		if (webhookSecret == null) {
+			this.secret = "";
+			LOGGER.error("Webhook could not be created because the secret is not provided.");
+		}
+		if (rootType == null) {
+			rootType = "WorkItem";
+		}
+		this.elementIds = new ArrayList<>();		
 		this.rootType = rootType;
 	}
 

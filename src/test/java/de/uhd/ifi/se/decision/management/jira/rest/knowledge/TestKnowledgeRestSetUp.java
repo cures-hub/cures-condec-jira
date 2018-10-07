@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.knowledgerest;
+package de.uhd.ifi.se.decision.management.jira.rest.knowledge;
 
 import javax.servlet.http.HttpServletRequest;
 
