@@ -27,23 +27,12 @@ public class WebhookConnector {
 		this.projectKey = projectKey;
 		this.url = webhookUrl;
 		this.secret = webhookSecret;
-		if (projectKey == null) {
-			LOGGER.error("Webhook could not be created because the project key is not provided.");
-			this.projectKey = "";
-		}
-		if (webhookUrl == null) {
-			this.url = "";
-			LOGGER.error("Webhook could not be created because the URL is not provided.");
-		}
-		if (webhookSecret == null) {
-			this.secret = "";
-			LOGGER.error("Webhook could not be created because the secret is not provided.");
-		}
-		if (rootType == null) {
-			rootType = "WorkItem";
-		}
-		this.elementIds = new ArrayList<>();		
+
 		this.rootType = rootType;
+		if (rootType == null) {
+			this.rootType = "WorkItem";
+		}
+		this.elementIds = new ArrayList<Long>();
 	}
 
 	public WebhookConnector(String projectKey) {
@@ -51,30 +40,39 @@ public class WebhookConnector {
 				ConfigPersistence.getWebhookType(projectKey));
 	}
 
-	public boolean sendElementChanges(DecisionKnowledgeElement decisionKnowledgeElement, boolean isDeleted) {
-		if (decisionKnowledgeElement == null) {
-			LOGGER.error("Webhook could not be created because the Element is null");
+	public boolean sendElementChanges(DecisionKnowledgeElement changedElement) {
+		if (!checkIfDataIsValid(changedElement)) {
 			return false;
 		}
-		ArrayList<DecisionKnowledgeElement> workItems = getWebhookRootElements(decisionKnowledgeElement);
-		if (isDeleted && decisionKnowledgeElement.getType().toString().equals(rootType)) {
-			workItems.remove(decisionKnowledgeElement);
+		List<DecisionKnowledgeElement> rootElements = getWebhookRootElements(changedElement);
+		boolean submitted = postKnowledgeTrees(rootElements);
+		return submitted;
+	}
+
+	public boolean deleteElement(DecisionKnowledgeElement changedElement) {
+		if (!checkIfDataIsValid(changedElement)) {
+			return false;
 		}
+		List<DecisionKnowledgeElement> rootElements = getWebhookRootElements(changedElement);
+		if (changedElement.getType().toString().equals(rootType)) {
+			rootElements.remove(changedElement);
+		}
+		boolean submitted = postKnowledgeTrees(rootElements);
+		return submitted;
+	}
+
+	private boolean postKnowledgeTrees(List<DecisionKnowledgeElement> rootElements) {
 		boolean submitted = true;
-		for (DecisionKnowledgeElement workItem : workItems) {
-			if (postKnowledge(projectKey, workItem.getKey())) {
+		for (DecisionKnowledgeElement rootElement : rootElements) {
+			if (postKnowledgeTree(rootElement)) {
 				submitted = false;
 			}
 		}
 		return submitted;
 	}
 
-	public boolean sendElementChanges(DecisionKnowledgeElement decisionKnowledgeElement) {
-		return sendElementChanges(decisionKnowledgeElement, false);
-	}
-
-	private ArrayList<DecisionKnowledgeElement> getWebhookRootElements(DecisionKnowledgeElement element) {
-		ArrayList<DecisionKnowledgeElement> webhookRootElements = new ArrayList<DecisionKnowledgeElement>();
+	private List<DecisionKnowledgeElement> getWebhookRootElements(DecisionKnowledgeElement element) {
+		List<DecisionKnowledgeElement> webhookRootElements = new ArrayList<DecisionKnowledgeElement>();
 
 		AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 		List<DecisionKnowledgeElement> linkedElements = strategy.getLinkedElements(element);
@@ -91,42 +89,14 @@ public class WebhookConnector {
 		return webhookRootElements;
 	}
 
-	private boolean postKnowledge(String projectKey, String changedElementKey) {
-		if (!checkIfDataIsValid(projectKey, changedElementKey)) {
-			return false;
-		}
-		WebhookContentProvider provider = new WebhookContentProvider(projectKey, changedElementKey);
+	private boolean postKnowledgeTree(DecisionKnowledgeElement rootElement) {
+		WebhookContentProvider provider = new WebhookContentProvider(projectKey, rootElement.getKey());
 		PostMethod postMethod = provider.createWebhookContentForChangedElement();
-		boolean isSubmitted = submitPostMethod(postMethod);
-		return isSubmitted;
-	}
-
-	private boolean checkIfDataIsValid(String projectKey, String changedElementkey) {
-		if (this.url == null || this.url.equals("")) {
-			LOGGER.error("Could not send WebHook data because the Url is Null or empty");
-			return false;
-		}
-		if (this.secret == null || this.secret.equals("")) {
-			LOGGER.error("Could not send WebHook data because Secret is Null or empty");
-			return false;
-		}
-		if (projectKey == null || projectKey.equals("")) {
-			LOGGER.error("Could not send WebHook data because projectKey Null or empty");
-			return false;
-		}
-		if (changedElementkey == null || changedElementkey.equals("")) {
-			LOGGER.error("Could not send WebHook data because issueKey Null or empty");
-			return false;
-		}
-		return true;
-	}
-
-	private boolean submitPostMethod(PostMethod postMethod) {
 		try {
 			HttpClient httpClient = new HttpClient();
 			postMethod.setURI(new HttpsURL(url));
-			int respEntity = httpClient.executeMethod(postMethod);
-			if (respEntity >= 200 && respEntity < 300) {
+			int httpResponse = httpClient.executeMethod(postMethod);
+			if (httpResponse >= 200 && httpResponse < 300) {
 				return true;
 			}
 		} catch (IOException e) {
@@ -134,6 +104,26 @@ public class WebhookConnector {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	private boolean checkIfDataIsValid(DecisionKnowledgeElement changedElement) {
+		if (this.url == null || this.url.equals("")) {
+			LOGGER.error("Could not trigger webhook data because the url is missing.");
+			return false;
+		}
+		if (this.secret == null || this.secret.equals("")) {
+			LOGGER.error("Could not trigger webhook data because the secret is missing.");
+			return false;
+		}
+		if (projectKey == null || projectKey.equals("")) {
+			LOGGER.error("Could not trigger webhook data because the project key is missing.");
+			return false;
+		}
+		if (changedElement == null) {
+			LOGGER.error("Could not trigger webhook data because the changed element is null.");
+			return false;
+		}
+		return true;
 	}
 
 	public String getUrl() {

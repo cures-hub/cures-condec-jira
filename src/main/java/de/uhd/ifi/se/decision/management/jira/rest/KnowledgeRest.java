@@ -157,7 +157,7 @@ public class KnowledgeRest {
 			if (isDeleted) {
 				if (ConfigPersistence.isWebhookEnabled(projectKey)) {
 					WebhookConnector connector = new WebhookConnector(projectKey);
-					connector.sendElementChanges(decisionKnowledgeElement, isDeleted);
+					connector.deleteElement(decisionKnowledgeElement);
 				}
 				return Response.status(Status.OK).entity(isDeleted).build();
 			}

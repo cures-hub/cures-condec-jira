@@ -19,7 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 
 /**
- * Creates the content submitted by the webhook. The content consists of a key
+ * Creates the content submitted via the webhook. The content consists of a key
  * value pair. The key is an issue id. The value is the Treant JSON String.
  */
 public class WebhookContentProvider {
