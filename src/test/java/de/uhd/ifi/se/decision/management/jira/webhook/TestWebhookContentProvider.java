@@ -1,6 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -33,26 +33,32 @@ public class TestWebhookContentProvider extends TestSetUp {
 	}
 
 	@Test
-	public void testCreatePostMethodForMissingProjectKeyAndMissingSecret() {
+	public void testCreatePostMethodForMissingProjectKeyAndMissingElementKeyAndMissingSecret() {
 		WebhookContentProvider provider = new WebhookContentProvider(null, null, null);
 		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
-	public void testCreatePostMethodForMissingProjectKeyAndProvidedSecret() {
+	public void testCreatePostMethodForMissingProjectKeyAndMissingElementKeyAndProvidedSecret() {
 		WebhookContentProvider provider = new WebhookContentProvider(null, null, "1234IamASecretKey");
 		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
-	public void testCreatePostMethodForProvidedProjectKeyAndMissingSecret() {
-		WebhookContentProvider provider = new WebhookContentProvider(null, "TEST-1", null);
+	public void testCreatePostMethodForMissingProjectKeyAndProvidedElementKeyAndMissingSecret() {
+		WebhookContentProvider provider = new WebhookContentProvider(null, "TEST-14", null);
 		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
-    @NonTransactional
-	public void testCreatePostMethodForProvidedProjectKeyAndProvidedSecret() {
+	public void testCreatePostMethodForProvidedProjectKeyAndMissingElementKeyAndMissingSecret() {
+		WebhookContentProvider provider = new WebhookContentProvider("TEST", null, null);
+		assertNull(provider.createPostMethod().getRequestEntity());
+	}
+
+	@Test
+	@NonTransactional
+	public void testCreatePostMethodForProvidedProjectKeyAndProvidedElementKeyAndProvidedSecret() {
 		WebhookContentProvider provider = new WebhookContentProvider("TEST", "TEST-14", "1234IamASecretKey");
 		assertNotNull(provider.createPostMethod().getRequestEntity());
 	}
@@ -67,5 +73,15 @@ public class TestWebhookContentProvider extends TestSetUp {
 						+ "\"rootOrientation\":\"NORTH\",\"siblingSeparation\":30,\"levelSeparation\":30,"
 						+ "\"subTreeSeparation\":30}}}", "03f90207-73bc-44d9-9848-d3f1f8c8254e"),
 				"e7f0bb82f13286d1afea8cb59f07af829177e2bac8a7af4e883a074851152717");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testCreateHashedPayloadEmptyKey() {
+		WebhookContentProvider.createHashedPayload("{\"issueKey\": \"CONDEC-1234\", \"ConDecTree\": "
+				+ "{\"nodeStructure\":{\"children\":[],\"text\":{\"title\":\"Test Send\","
+				+ "\"desc\":\"CONDEC-1234\"}},\"chart\":{\"container\":\"#treant-container\","
+				+ "\"node\":{\"collapsable\":\"true\"},\"connectors\":{\"type\":\"straight\"},"
+				+ "\"rootOrientation\":\"NORTH\",\"siblingSeparation\":30,\"levelSeparation\":30,"
+				+ "\"subTreeSeparation\":30}}}", "");
 	}
 }

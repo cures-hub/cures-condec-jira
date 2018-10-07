@@ -27,7 +27,7 @@ public class WebhookContentProvider {
 	private String secret;
 
 	public WebhookContentProvider(String projectKey, String elementKey, String secret) {
-		this.setProjectKey(projectKey);
+		this.projectKey = projectKey;
 		this.rootElementKey = elementKey;
 		this.secret = secret;
 	}
@@ -39,7 +39,7 @@ public class WebhookContentProvider {
 	 */
 	public PostMethod createPostMethod() {
 		PostMethod postMethod = new PostMethod();
-		if (rootElementKey == null || secret == null) {
+		if (projectKey == null || rootElementKey == null || secret == null) {
 			return postMethod;
 		}
 		String webhookData = createWebhookData();
@@ -85,7 +85,8 @@ public class WebhookContentProvider {
 	}
 
 	/**
-	 * Converts the webhook data String to a hexadecimal String using the secret key.
+	 * Converts the webhook data String to a hexadecimal String using the secret
+	 * key.
 	 * 
 	 * @param data
 	 *            String to be hashed
@@ -127,13 +128,5 @@ public class WebhookContentProvider {
 		String formattedString = formatter.toString();
 		formatter.close();
 		return formattedString;
-	}
-
-	public String getProjectKey() {
-		return projectKey;
-	}
-
-	public void setProjectKey(String projectKey) {
-		this.projectKey = projectKey;
 	}
 }

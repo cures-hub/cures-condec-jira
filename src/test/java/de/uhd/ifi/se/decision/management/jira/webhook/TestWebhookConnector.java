@@ -1,6 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import com.atlassian.activeobjects.test.TestActiveObjects;
+
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
@@ -9,13 +18,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestWebhookConnector extends TestSetUp {
@@ -41,90 +43,42 @@ public class TestWebhookConnector extends TestSetUp {
 	}
 
 	@Test
-	public void testSetGetUrl() {
-		webhookConnector.setUrl("Test-New");
-		assertEquals("Test-New", webhookConnector.getUrl());
-	}
-
-//	@Test
-//	public void testSetGetSecret() {
-//		webhookConnector.setSecret("Test-New");
-//		assertEquals("Test-New", webhookConnector.getSecret());
-//	}
-
-	// @Test
-	// public void testConstNullNullNull() {
-	// WebhookConnector connector = new WebhookConnector(null, null, null, null);
-	// assertEquals("", connector.getUrl());
-	// assertEquals("", connector.getSecret());
-	// }
-
-	// @Test
-	// public void testConstNullNullFilled() {
-	// WebhookConnector connector = new WebhookConnector(null, null, "test", null);
-	// assertEquals("", connector.getUrl());
-	// assertEquals("test", connector.getSecret());
-	// }
-
-	// @Test
-	// public void testConstNullFilledNull() {
-	// WebhookConnector connector = new WebhookConnector(null, "test", null, null);
-	// assertEquals("test", connector.getUrl());
-	// assertEquals("", connector.getSecret());
-	// }
-
-	// @Test
-	// public void testConstFilledNullNull() {
-	// WebhookConnector connector = new WebhookConnector("TEST", null, null, null);
-	// assertEquals("", connector.getUrl());
-	// assertEquals("", connector.getSecret());
-	// }
-
-	// @Test
-	// public void testConstFilledNullFilled() {
-	// WebhookConnector connector = new WebhookConnector("TEST", null, "test",
-	// null);
-	// assertEquals("", connector.getUrl());
-	// assertEquals("test", connector.getSecret());
-	// }
-
-	// @Test
-	// public void testConstFilledFilledNull() {
-	// WebhookConnector connector = new WebhookConnector("TEST", "test", null,
-	// null);
-	// assertEquals("test", connector.getUrl());
-	// assertEquals("", connector.getSecret());
-	// }
-
-	@Test
-	public void testConstFilledFilledFilled() {
-		WebhookConnector connector = new WebhookConnector("TEST", "test", "test", null);
-		assertEquals("test", connector.getUrl());
+	public void testConstructorMissingProjectKeyMissingUrlMissingSecretMissingRootType() {
+		WebhookConnector connector = new WebhookConnector(null, null, null, null);
+		assertFalse(connector.sendElementChanges(null));
 	}
 
 	@Test
-	public void testConstNullFilledFilled() {
-		WebhookConnector connector = new WebhookConnector(null, "test", "test", null);
-		assertEquals("test", connector.getUrl());
+	public void testConstructorMissingProjectKeyMissingUrlProvidedSecretMissingRootType() {
+		WebhookConnector connector = new WebhookConnector(null, null, "1234IamASecretKey", null);
+		assertFalse(connector.sendElementChanges(null));
 	}
 
-	// @Test
-	// public void testConstNull() {
-	// WebhookConnector connector = new WebhookConnector(null);
-	// assertEquals("", connector.getUrl());
-	// assertEquals("", connector.getSecret());
-	// }
+	@Test
+	public void testConstructorMissingProjectKeyProvidedUrlMissingSecretMissingRootType() {
+		WebhookConnector connector = new WebhookConnector(null, "https://ThisIsTheURL", null, null);
+		assertEquals("https://ThisIsTheURL", connector.getUrl());
+		assertFalse(connector.sendElementChanges(null));
+	}
 
 	@Test
-	public void testConstFilledWrong() {
+	public void testConstructorProvidedProjectKeyMissingUrlMissingSecretMissingRootType() {
+		WebhookConnector connector = new WebhookConnector("TEST", null, null, null);
+		assertFalse(connector.sendElementChanges(null));
+	}
+
+	@Test
+	public void testConstructorWrongProjectKey() {
 		WebhookConnector connector = new WebhookConnector("NoTest");
 		assertEquals("true", connector.getUrl());
+		assertFalse(connector.sendElementChanges(null));
 	}
 
 	@Test
-	public void testConstFilled() {
+	public void testConstructorCorrectProjectKey() {
 		WebhookConnector connector = new WebhookConnector("TEST");
 		assertEquals("true", connector.getUrl());
+		assertFalse(connector.sendElementChanges(null));
 	}
 
 	@Test
@@ -143,7 +97,19 @@ public class TestWebhookConnector extends TestSetUp {
 	}
 
 	@Test
-	public void testDeleteElementWorks() {
+	public void testDeleteRootElementInTreeWorks() {
 		assertTrue(webhookConnector.deleteElement(element));
+	}
+
+	@Test
+	public void testDeleteOtherElementInTreeWorks() {
+		element.setType("DESCRIPTION");
+		assertTrue(webhookConnector.deleteElement(element));
+	}
+
+	@Test
+	public void testSetGetUrl() {
+		webhookConnector.setUrl("https://ThisIsTheURL");
+		assertEquals("https://ThisIsTheURL", webhookConnector.getUrl());
 	}
 }

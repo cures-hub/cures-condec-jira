@@ -111,11 +111,11 @@ public class WebhookConnector {
 	}
 
 	private boolean checkIfDataIsValid(DecisionKnowledgeElement changedElement) {
-		if (this.url == null || this.url.equals("")) {
+		if (url == null || url.equals("")) {
 			LOGGER.error("Could not trigger webhook data because the url is missing.");
 			return false;
 		}
-		if (this.secret == null || this.secret.equals("")) {
+		if (secret == null || secret.equals("")) {
 			LOGGER.error("Could not trigger webhook data because the secret is missing.");
 			return false;
 		}
@@ -136,9 +136,5 @@ public class WebhookConnector {
 
 	public void setUrl(String url) {
 		this.url = url;
-	}
-
-	public void setSecret(String secret) {
-		this.secret = secret;
 	}
 }
