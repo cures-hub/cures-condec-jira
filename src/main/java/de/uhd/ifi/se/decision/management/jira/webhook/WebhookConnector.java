@@ -15,6 +15,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStr
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 
+/**
+ * Webhook class that posts changed decision knowledge to a given URL.
+ */
 public class WebhookConnector {
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebhookConnector.class);
 	private String url;

@@ -40,16 +40,16 @@ public class WebhookContentProvider {
 		if (rootElementKey == null || secret == null) {
 			return postMethod;
 		}
-		String payload = createWebhookData();
+		String webhookData = createWebhookData();
 		try {
-			StringRequestEntity requestEntity = new StringRequestEntity(payload, "application/json", "UTF-8");
+			StringRequestEntity requestEntity = new StringRequestEntity(webhookData, "application/json", "UTF-8");
 			postMethod.setRequestEntity(requestEntity);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		Header header = new Header();
 		header.setName("X-Hub-Signature");
-		header.setValue("sha256=" + createHashedPayload(payload, secret));
+		header.setValue("sha256=" + createHashedPayload(webhookData, secret));
 		postMethod.setRequestHeader(header);
 		return postMethod;
 	}
@@ -83,7 +83,7 @@ public class WebhookContentProvider {
 	}
 
 	/**
-	 * Hashes the treant data.
+	 * Converts the webhook data String to a hexadecimal String using the secret key.
 	 * 
 	 * @param data
 	 *            String to be hashed

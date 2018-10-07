@@ -1,9 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-
-import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,11 +16,13 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
+import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @Data(TestSetUp.AoSentenceTestDatabaseUpdater.class)
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestWebhookContentProvider extends TestSetUp {
+
 	private EntityManager entityManager;
 
 	@Before
@@ -32,54 +33,29 @@ public class TestWebhookContentProvider extends TestSetUp {
 	}
 
 	@Test
-	public void testGetIssueKeyNullNull() {
+	public void testCreatePostMethodForMissingProjectKeyAndMissingSecret() {
 		WebhookContentProvider provider = new WebhookContentProvider(null, null);
 		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
-	public void testGetIssueKeyNullFilled() {
-		WebhookContentProvider provider = new WebhookContentProvider(null, "TEST-14");
-		assertNull(provider.createPostMethod().getRequestEntity());
-	}
-
-//	@Test
-//	public void testGetIssueKeyFilledNull() throws IOException {
-//		WebhookContentProvider provider = new WebhookContentProvider("TEST", null);
-//		assertNull(provider.createPostMethod().getRequestEntity());
-//	}
-
-//	@Test
-//	@NonTransactional
-//	public void testGetIssueKeyFilledFilled() throws IOException {
-//		WebhookContentProvider provider = new WebhookContentProvider("TEST", "TEST-14");
-//		assertTrue(provider.createPostMethod().getRequestEntity().getContentLength() > 0);
-//	}
-
-	@Test
-	public void testGetGitHashNullNull() throws IOException {
-		WebhookContentProvider provider = new WebhookContentProvider(null, null);
+	public void testCreatePostMethodForMissingProjectKeyAndProvidedSecret() {
+		WebhookContentProvider provider = new WebhookContentProvider(null, "1234IamASecretKey");
 		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
-	public void testGetGitHashNullFilled() throws IOException {
-		WebhookContentProvider provider = new WebhookContentProvider(null, "TEST-14");
+	public void testCreatePostMethodForProvidedProjectKeyAndMissingSecret() {
+		WebhookContentProvider provider = new WebhookContentProvider("TEST-1", null);
 		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
-//	@Test
-//	public void testGetGitHashFilledNull() throws IOException {
-//		WebhookContentProvider provider = new WebhookContentProvider("TEST", null);
-//		assertNull(provider.createPostMethod().getRequestEntity());
-//	}
-
-//	@Test
-//	@NonTransactional
-//	public void testGetGitHashFilledFilled() throws IOException {
-//		WebhookContentProvider provider = new WebhookContentProvider("TEST", "TEST-14");
-//		assertTrue(provider.createPostMethod().getRequestEntity().getContentLength() > 0);
-//	}
+	@Test
+    @NonTransactional
+	public void testCreatePostMethodForProvidedProjectKeyAndProvidedSecret() {
+		WebhookContentProvider provider = new WebhookContentProvider("TEST-14", "1234IamASecretKey");
+		assertNotNull(provider.createPostMethod().getRequestEntity());
+	}
 
 	@Test
 	public void testCreateHashedPayload() {
