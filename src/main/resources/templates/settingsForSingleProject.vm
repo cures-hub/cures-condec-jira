@@ -241,13 +241,13 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		<div class="field-group">
 			<input type="button" class="aui-button" id="classifyAllIssuesInProject" value="Classify all Comments" />
 			<div class="description">Classify Decision Knowledge for all Comments in Issues for this project</div>		
-			<div id="some-id" class="aui-progress-indicator">
+			<!-- <div id="some-id" class="aui-progress-indicator">
 			    <span class="aui-progress-indicator-value"></span>
-			</div>
+			</div> -->
 			<script>
 			var clearSentenceDatabaseButton = document.getElementById("classifyAllIssuesInProject");
 			clearSentenceDatabaseButton.addEventListener("click", function() {
-				AJS.progressBars.setIndeterminate("#some-id");
+				// AJS.progressBars.setIndeterminate("#some-id");
                 classifyWholeProject('$projectKey');
                 window.onbeforeunload = null;
             });
