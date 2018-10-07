@@ -579,7 +579,7 @@ function classifyWholeProject(projectKey) {
 		showFlag("success", "The whole project has been classified.");
 		return 1.0;
 	}
-	showFlag("error", "The Sentence database has not been cleared.");
+	showFlag("error", "The classification process failed.");
 	return 0.0;
 }
 
