@@ -22,10 +22,12 @@ import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
  */
 public class WebhookContentProvider {
 
+	private String projectKey;
 	private String rootElementKey;
 	private String secret;
 
-	public WebhookContentProvider(String elementKey, String secret) {
+	public WebhookContentProvider(String projectKey, String elementKey, String secret) {
+		this.setProjectKey(projectKey);
 		this.rootElementKey = elementKey;
 		this.secret = secret;
 	}
@@ -71,7 +73,7 @@ public class WebhookContentProvider {
 	 * @return TreantJS JSON String including config and data
 	 */
 	private String createTreantJsonString() {
-		Treant treant = new Treant(secret, rootElementKey, 4);
+		Treant treant = new Treant(projectKey, rootElementKey, 4);
 		ObjectMapper objectMapper = new ObjectMapper();
 		String treantAsJson = "";
 		try {
@@ -125,5 +127,13 @@ public class WebhookContentProvider {
 		String formattedString = formatter.toString();
 		formatter.close();
 		return formattedString;
+	}
+
+	public String getProjectKey() {
+		return projectKey;
+	}
+
+	public void setProjectKey(String projectKey) {
+		this.projectKey = projectKey;
 	}
 }

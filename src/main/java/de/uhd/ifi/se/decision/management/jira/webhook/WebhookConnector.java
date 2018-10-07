@@ -94,7 +94,7 @@ public class WebhookConnector {
 	}
 
 	private boolean postKnowledgeTree(DecisionKnowledgeElement rootElement) {
-		WebhookContentProvider provider = new WebhookContentProvider(rootElement.getKey(), secret);
+		WebhookContentProvider provider = new WebhookContentProvider(projectKey, rootElement.getKey(), secret);
 		PostMethod postMethod = provider.createPostMethod();
 		try {
 			HttpClient httpClient = new HttpClient();

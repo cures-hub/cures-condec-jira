@@ -34,26 +34,26 @@ public class TestWebhookContentProvider extends TestSetUp {
 
 	@Test
 	public void testCreatePostMethodForMissingProjectKeyAndMissingSecret() {
-		WebhookContentProvider provider = new WebhookContentProvider(null, null);
+		WebhookContentProvider provider = new WebhookContentProvider(null, null, null);
 		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
 	public void testCreatePostMethodForMissingProjectKeyAndProvidedSecret() {
-		WebhookContentProvider provider = new WebhookContentProvider(null, "1234IamASecretKey");
+		WebhookContentProvider provider = new WebhookContentProvider(null, null, "1234IamASecretKey");
 		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
 	public void testCreatePostMethodForProvidedProjectKeyAndMissingSecret() {
-		WebhookContentProvider provider = new WebhookContentProvider("TEST-1", null);
+		WebhookContentProvider provider = new WebhookContentProvider(null, "TEST-1", null);
 		assertNull(provider.createPostMethod().getRequestEntity());
 	}
 
 	@Test
     @NonTransactional
 	public void testCreatePostMethodForProvidedProjectKeyAndProvidedSecret() {
-		WebhookContentProvider provider = new WebhookContentProvider("TEST-14", "1234IamASecretKey");
+		WebhookContentProvider provider = new WebhookContentProvider("TEST", "TEST-14", "1234IamASecretKey");
 		assertNotNull(provider.createPostMethod().getRequestEntity());
 	}
 
