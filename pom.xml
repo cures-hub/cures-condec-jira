@@ -198,6 +198,18 @@
 			<artifactId>meka</artifactId>
 			<version>1.9.2</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.axis/axis -->
+		<dependency>
+		    <groupId>org.apache.axis</groupId>
+		    <artifactId>axis</artifactId>
+		    <version>1.4</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.jfree/jfreechart -->
+		<dependency>
+		    <groupId>org.jfree</groupId>
+		    <artifactId>jfreechart</artifactId>
+		    <version>1.0.14</version>
+		</dependency>
 		<!-- Git -->
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>

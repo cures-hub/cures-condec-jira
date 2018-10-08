@@ -1,0 +1,12 @@
+<div style="padding: 5px">
+    <!-- Display the report configuration -->
+    <h4 id="creation-report-parameters">
+        $i18n.getText('report.issuecreation.project'): $projectName 
+    </h4>
+    <br />
+
+
+    <img src="data:image/jpg;base64,${nrOfCommentsPerIssue}" alt="nrOfCommentsPerIssue"/>
+    <img src="data:image/jpg;base64,${nrOfCommitsPerIssue}" alt="nrOfCommitsPerIssue"/>
+    <img src="data:image/jpg;base64,${decKnowElement}" alt="decKnowElement"/>
+</div>

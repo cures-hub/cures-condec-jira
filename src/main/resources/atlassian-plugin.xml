@@ -253,4 +253,36 @@
 		<supports-ajax-load>true</supports-ajax-load>
 	</issue-tabpanel>
 
+
+ <resource type="i18n" name="i18n" location="jira-report-plugin"/>
+    <!-- add our web resources -->
+    <web-resource key="jira-report-plugin-resources" name="jira-report-plugin Web Resources">
+        <dependency>com.atlassian.auiplugin:ajs</dependency>
+        <resource type="download" name="jira-report-plugin.css" location="/css/jira-report-plugin.css"/>
+        <resource type="download" name="jira-report-plugin.js" location="/js/jira-report-plugin.js"/>
+        <resource type="download" name="images/" location="/images"/>
+        <context>jira-report-plugin</context>
+    </web-resource>
+    
+    <report name="Creation Report" i18n-name-key="creation-report.name" key="creation-report"
+            class="de.uhd.ifi.se.decision.management.jira.extraction.view.reports.CreationReport">
+        <description key="creation-report.description">The Creation Report Plugin</description>
+        <resource name="view" type="velocity" location="/templates/reports/creation-report/view.vm"/>
+        <resource name="i18n" type="i18n" location="CreationReport"/>
+        <label key="creation-report.label"/>
+        <properties>
+            <property>
+                <key>projectid</key>
+                <name>report.issuecreation.projectid.name</name>
+                <description>report.issuecreation.projectid.description</description>
+                <type>filterprojectpicker</type>
+            </property>
+           
+        </properties>
+    </report>
+
+
+
+
+
 </atlassian-plugin>
