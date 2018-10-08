@@ -4,6 +4,7 @@ import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -21,6 +22,7 @@ import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
+@net.java.ao.test.jdbc.Data(TestSetUp.AoSentenceTestDatabaseUpdater.class)
 public class TestWebhookConnector extends TestSetUp {
 	private EntityManager entityManager;
 	private WebhookConnector webhookConnector;
@@ -39,7 +41,7 @@ public class TestWebhookConnector extends TestSetUp {
 		element.setType("TASK");
 		element.setId(1);
 		element.setDescription("Test description");
-		element.setKey("TEST-1");
+		element.setKey("TEST-14");
 		element.setSummary("Test summary");
 	}
 
@@ -92,7 +94,8 @@ public class TestWebhookConnector extends TestSetUp {
 		assertFalse(webhookConnector.deleteElement(null));
 	}
 
-	@Ignore
+	@Test
+	@NonTransactional
 	public void testSendElementChangesWorks() {
 		assertTrue(webhookConnector.sendElementChanges(element));
 	}
