@@ -56,71 +56,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				the issue strategy, you need to associate the project with the
 				decision knowledge issue type scheme.</div>
 		</div>
-		<div class="field-group">
-			<label for="isKnowledgeExtractedFromGit-toggle">Extract from
-				Git?</label>
-			<aui-toggle id="isKnowledgeExtractedFromGit-toggle"
-				value="$projectKey" label="Extract from	Git?"></aui-toggle>
-			<script>
-				var gitToggle = document.getElementById('isKnowledgeExtractedFromGit-toggle');
-					if ($project.isKnowledgeExtractedFromGit() == true) {
-						gitToggle.checked = true;
-					} else {
-						gitToggle.checked = false;
-					};
-				gitToggle.addEventListener('change', function(error) {
-					this.busy = true;
-					setKnowledgeExtractedFromGit(this.checked, this.value);
-					this.busy = false;
-				});
-            </script>
-			<div class="description">Enables or disables whether decision
-				knowledge is extracted from Git for this project.</div>
-		</div>
-		<div class="field-group">
-			<label for="git-address-input-field">Git Repository</label> 
-			<input
-				id="git-address-input-field" type="text" class="text long-field"
-				value="$project.getGitAddress()" placeholder="https://github.com/cures-hub/cures-condec-jira.git"> 
-			<input type="button"
-				id="git-address-button" class="aui-button aui-button-primary"
-				value="Set Address" />
-			<script>
-				var gitSubmitButton = document.getElementById('git-address-button');
-				gitSubmitButton.addEventListener("click", function() {
-				    var gitAddress = document.getElementById('git-address-input-field').value;
-                    setGitAddress('$projectKey', gitAddress);
-                    window.onbeforeunload = null;
-				});
-			</script>
-			<div class="description">Address of the git repository where
-				decision knowledge is extracted from.</div>
-		</div>
-	</form>
-	<form class="aui">
-		<div class="field-group">
-			<label for="isKnowledgeExtractedFromIssues-toggle">Extract
-				from Issue Comments?</label>
-			<aui-toggle id="isKnowledgeExtractedFromIssues-toggle"
-				value="$projectKey" label="Extract from	Issue Comments?"></aui-toggle>
-			<script>
-				var issueToggle = document.getElementById('isKnowledgeExtractedFromIssues-toggle');
-					if ($project.isKnowledgeExtractedFromIssues() == true) {
-						issueToggle.checked = true;
-					} else {
-						issueToggle.checked = false;
-					};
-				issueToggle.addEventListener('change', function(error) {
-					this.busy = true;
-					setKnowledgeExtractedFromIssues(this.checked, this.value);
-					this.busy = false;
-				});
-            </script>
-			<div class="description">Enables or disables whether decision
-				knowledge is extracted from issue comments for this project.</div>
-		</div>
-		<h2 id="additionale-types-header">Additional Decision Knowledge
-			Types</h2>
+
+		<h2 id="additionale-types-header">Additional Decision Knowledge	Types</h2>
 		<script>
 		html = "<p id='additionale-types-text'> The default decision knowledge types are:";
 		for (i in defaultKnowledgeTypes) {
@@ -161,100 +98,31 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
             });
 		}
 		</script>
-		<h2>Webhook</h2>
+		
+		<h2>Decision Knowledge Extraction from Issue Comments</h2>
 		<div class="field-group">
-            <label for="isWebhookEnabled-toggle">Webhook Activated?</label>
-            <aui-toggle id="isWebhookEnabled-toggle"
-                        value="$projectKey" label="Webhook Activated?"></aui-toggle>
-            <div id="webhookDescripiton" class="description">Activates or deactivates the webhook for this project. If the webhook is activated,
-            		it is triggered whenever a decision knowledge element or a link between elements is changed. 
-            		Then, a key value JSON string is sent to the URL. 
-            		The key is the key of the root element and the value is the Treant JSON string.</div>
-            <div class="description">You can select what Type of Issue should be send a Root Element if the webhook is activated.</div>
-			<label for="webhook-url">URL</label> <input type="text"
-				class="text long-field" id="webhook-url" value="$project.getWebhookUrl()" />
-			<div class="description">URL that decision knowledge is posted
-				to when updated.</div>
-			<label for="webhook-secret">Shared Secret</label> <input type="text"
-				class="text long-field" id="webhook-secret" value="$project.getWebhookSecret()" />
-			<div class="description">Key to authenticate with remote
-				server.</div>				
-			<input type="button" id="submitWebhook" class="aui-button aui-button-primary" value="Set Webhook URL and Secret" />
-		</div>
-		<script>
-			var webhookToggle = document.getElementById('isWebhookEnabled-toggle');
-            if ($project.isWebhookEnabled() == true) {
-                webhookToggle.checked = true;
-            } else {
-                webhookToggle.checked = false;
-            };
-            webhookToggle.addEventListener('change', function(error) {
-                this.busy = true;
-                setWebhookEnabled(this.checked, this.value);
-                this.busy = false;
-            });
-
-            getProjectIssueTypes("$projectKey", function (issueTypes) {
-                html = "<button class=\"aui-button aui-dropdown2-trigger\" aria-controls=\"webhook-rootType\">Webhook Type</button>" +
-                        "<aui-dropdown-menu id=\"webhook-rootType\">" +
-                        "<aui-section id=\"webhookType\" label=\"Webhook Root Type\">";
-                for(i in issueTypes){
-                    if(issueTypes[i].localeCompare("$project.getWebhookRootType()") == 0){
-                        console.log("checked");
-                        html += "<aui-item-radio interactive checked>"+ issueTypes[i] +"</aui-item-radio>";
-                    } else {
-                        console.log("unchecked");
-                        html += "<aui-item-radio interactive>"+ issueTypes[i] +"</aui-item-radio>";
-                    }
-                }
-                html += "</aui-section>" +
-                        "</aui-dropdown-menu>";
-                document.getElementById("webhookDescripiton").insertAdjacentHTML('afterend', html);
-            });
-
-            var webhookDrop = document.getElementById('webhookType');
-            webhookDrop.addEventListener('click', function (e) {
-                var selectedType = e.target.innerText;
-                setWebhookType(selectedType, '$projectKey');
-            });
-
-			var webHookSubmit = document.getElementById('isWebhookEnabled-toggle')
-			webHookSubmit.addEventListener("click", function() {
-				var urlInput = document.getElementById("webhook-url");
-				var secretInput = document.getElementById("webhook-secret");
-                setWebhookData('$projectKey', urlInput.value, secretInput.value);
-                window.onbeforeunload = null;
-            });
-		</script>
-		<h2>Decision Extraction from Issue Comments - Settings</h2>
-		<div class="field-group">
-			<input type="button" class="aui-button" id="clearSentenceDatabase" value="Clear Sentence Database" />
-			<div class="description">Deleta all metadata to sentences in comments, includes all links from and to sentences</div>		
+			<label for="isKnowledgeExtractedFromIssues-toggle">Extract
+				from Issue Comments?</label>
+			<aui-toggle id="isKnowledgeExtractedFromIssues-toggle"
+				value="$projectKey" label="Extract from	Issue Comments?"></aui-toggle>
 			<script>
-			var clearSentenceDatabaseButton = document.getElementById("clearSentenceDatabase");
-			clearSentenceDatabaseButton.addEventListener("click", function() {
-                clearSentenceDatabase('$projectKey');
-                window.onbeforeunload = null;
-            });
-		</script>	
+				var issueToggle = document.getElementById('isKnowledgeExtractedFromIssues-toggle');
+					if ($project.isKnowledgeExtractedFromIssues() == true) {
+						issueToggle.checked = true;
+					} else {
+						issueToggle.checked = false;
+					};
+				issueToggle.addEventListener('change', function(error) {
+					this.busy = true;
+					setKnowledgeExtractedFromIssues(this.checked, this.value);
+					this.busy = false;
+				});
+            </script>
+			<div class="description">Enables or disables whether decision
+				knowledge is extracted from issue comments for this project.</div>
 		</div>
 		<div class="field-group">
-			<input type="button" class="aui-button" id="classifyAllIssuesInProject" value="Classify all Comments" />
-			<div class="description">Classify Decision Knowledge for all Comments in Issues for this project</div>		
-			<!-- <div id="some-id" class="aui-progress-indicator">
-			    <span class="aui-progress-indicator-value"></span>
-			</div> -->
-			<script>
-			var clearSentenceDatabaseButton = document.getElementById("classifyAllIssuesInProject");
-			clearSentenceDatabaseButton.addEventListener("click", function() {
-				// AJS.progressBars.setIndeterminate("#some-id");
-                classifyWholeProject('$projectKey');
-                window.onbeforeunload = null;
-            });
-		</script>	
-		</div>
-		<div class="field-group">
-			<label for="iconParsing-toggle">Use icon labels</label>
+			<label for="iconParsing-toggle">Use Icons as Tags?</label>
 			<aui-toggle id="iconParsing-toggle" value="$projectKey"
 				label="Use icon labels"></aui-toggle>
 			<script>
@@ -271,8 +139,144 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                     this.busy = false;
                 });
             </script>
-			<div class="description">Enables or disables the parsing for icons to tag decision knowledge <br> WARNING: Use with caution. Sentences will not be labeled / classified correctly if a decision knowledge icon is used for other things then decision knowledge labels. </div>
+			<div class="description">Enables or disables to use icons for tagging decision knowledge. <br/> WARNING: Use with caution. Sentences will not be labelled/classified correctly if a decision knowledge icon is used for other things than as a decision knowledge tag. </div>
+		</div>		
+		<div class="field-group">
+			<label for="clearSentenceDatabase">Delete Manual Tags and Links?</label>
+			<input type="button" class="aui-button" id="clearSentenceDatabase" value="Clear Sentence Database" />
+			<div class="description">Deletes all metadata (manual provided tags) of sentences in issue comments including all links from and to sentences.</div>		
+			<script>
+				var clearSentenceDatabaseButton = document.getElementById("clearSentenceDatabase");
+				clearSentenceDatabaseButton.addEventListener("click", function() {
+					if (confirm('WARNING: Are you sure you want to delete the sentence database? This deletes all the manual tagging and linking of decision knowledge in issue comments!')) {
+    					clearSentenceDatabase('$projectKey');
+					}                
+            	});
+			</script>	
 		</div>
+		<div class="field-group">
+			<label for="classifyAllIssuesInProject">Suggest Tags for Whole Project?</label>
+			<input type="button" class="aui-button" id="classifyAllIssuesInProject" value="Classify all Comments" />
+			<div class="description">Classifies decision knowledge for all issue comments for this project.</div>	
+			<div id="progress-bar" class="aui-progress-indicator">
+			    <span class="aui-progress-indicator-value"></span>
+			</div>		
+			<script>
+				AJS.progressBars.update("#progress-bar", 0.0);
+				var classifyAllIssuesInProjectButton = document.getElementById("classifyAllIssuesInProject");
+				classifyAllIssuesInProjectButton.addEventListener("click", function() {
+					if (confirm('Are you sure you want to classify all issue comments? This might take some time if the project is big.')) {
+						AJS.progressBars.setIndeterminate("#progress-bar");
+                		var isSucceeded = classifyWholeProject('$projectKey'); 
+                		AJS.progressBars.update("#progress-bar", isSucceeded);               		
+                	}
+            	});
+			</script>	
+		</div>
+		
+		<h2>Decision Knowledge Extraction from Git</h2>
+		<div class="field-group">
+			<label for="isKnowledgeExtractedFromGit-toggle">Extract from
+				Git?</label>
+			<aui-toggle id="isKnowledgeExtractedFromGit-toggle"
+				value="$projectKey" label="Extract from	Git?"></aui-toggle>
+			<script>
+				var gitToggle = document.getElementById('isKnowledgeExtractedFromGit-toggle');
+					if ($project.isKnowledgeExtractedFromGit() == true) {
+						gitToggle.checked = true;
+					} else {
+						gitToggle.checked = false;
+					};
+				gitToggle.addEventListener('change', function(error) {
+					this.busy = true;
+					setKnowledgeExtractedFromGit(this.checked, this.value);
+					this.busy = false;
+				});
+            </script>
+			<div class="description">Enables or disables whether decision
+				knowledge is extracted from Git for this project.</div>
+		</div>
+		<div class="field-group">
+			<label for="git-address-input-field">Git Repository</label> 
+			<input
+				id="git-address-input-field" type="text" class="text long-field"
+				value="$project.getGitAddress()" placeholder="https://github.com/cures-hub/cures-condec-jira.git"> 
+			<input type="button"
+				id="git-address-button" class="aui-button aui-button-primary"
+				value="Set Address" />
+			<script>
+				var gitSubmitButton = document.getElementById('git-address-button');
+				gitSubmitButton.addEventListener("click", function() {
+				    var gitAddress = document.getElementById('git-address-input-field').value;
+                    setGitAddress('$projectKey', gitAddress);
+                    window.onbeforeunload = null;
+				});
+			</script>
+			<div class="description">Address of the git repository where
+				decision knowledge is extracted from.</div>
+		</div>
+		
+		<h2>Webhook</h2>
+		<div class="field-group">
+            <label for="isWebhookEnabled-toggle">Webhook Activated?</label>
+            <aui-toggle id="isWebhookEnabled-toggle"
+                        value="$projectKey" label="Webhook Activated?"></aui-toggle>
+            <div class="description">Activates or deactivates the webhook for this project. If the webhook is activated,
+            		it is triggered whenever a decision knowledge element or a link between elements is changed. 
+            		Then, a key value JSON string is sent to the URL. 
+            		The key is the key of the root element and the value is the Treant JSON string.</div>
+        </div>
+        <div class="field-group">
+			<label for="webhook-type">Root Element Type:</label>
+			<select id="webook-type" name="webhook-type" class="select medium-field" 
+					onchange="setWebhookType(this.options[this.selectedIndex].value, '$projectKey')"></select>
+			#foreach ($issueType in $issueTypes) 
+				<script>
+					var isSelected = "";
+					if ('$issueType'.localeCompare('$project.getWebhookRootType()') == 0) {
+						isSelected = "selected ";
+					}
+					$("select[name='webhook-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
+						+ '$issueType' + "'>" + '$issueType' + "</option>");
+				</script>	
+			#end
+            <div class="description">Selects the issue type of the root element (key) of the webhook data.</div>
+        </div>
+        <div class="field-group">
+			<label for="webhook-url">URL</label> <input type="text"
+				class="text long-field" id="webhook-url" value="$project.getWebhookUrl()" />
+			<div class="description">URL that decision knowledge is posted
+				to when updated.</div>
+		</div>
+		<div class="field-group">
+			<label for="webhook-secret">Shared Secret</label> <input type="text"
+				class="text long-field" id="webhook-secret" value="$project.getWebhookSecret()" />
+			<div class="description">Key to authenticate with remote
+				server.</div>				
+			<input type="button" id="submitWebhook" class="aui-button aui-button-primary" value="Set Webhook URL and Secret" />
+		</div>
+
+		<script>
+			var webhookToggle = document.getElementById('isWebhookEnabled-toggle');
+            if ($project.isWebhookEnabled() == true) {
+                webhookToggle.checked = true;
+            } else {
+                webhookToggle.checked = false;
+            };
+            webhookToggle.addEventListener('change', function(error) {
+                this.busy = true;
+                setWebhookEnabled(this.checked, this.value);
+                this.busy = false;
+            });                    
+
+			var webHookSubmit = document.getElementById('submitWebhook');
+			webHookSubmit.addEventListener("click", function() {
+				var urlInput = document.getElementById("webhook-url");
+				var secretInput = document.getElementById("webhook-secret");
+                setWebhookData('$projectKey', urlInput.value, secretInput.value);
+                window.onbeforeunload = null;
+            });
+		</script>
 	</form>
 </body>
 </html>

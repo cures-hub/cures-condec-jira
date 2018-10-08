@@ -157,7 +157,7 @@ public class KnowledgeRest {
 			if (isDeleted) {
 				if (ConfigPersistence.isWebhookEnabled(projectKey)) {
 					WebhookConnector connector = new WebhookConnector(projectKey);
-					connector.sendElementChanges(decisionKnowledgeElement, isDeleted);
+					connector.deleteElement(decisionKnowledgeElement);
 				}
 				return Response.status(Status.OK).entity(isDeleted).build();
 			}
@@ -199,10 +199,11 @@ public class KnowledgeRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response changeKnowledgeTypeOfSentence(@QueryParam("projectKey") String projectKey,
-			@Context HttpServletRequest request, DecisionKnowledgeElement newElement, @QueryParam("argument") String argument) {
+			@Context HttpServletRequest request, DecisionKnowledgeElement newElement,
+			@QueryParam("argument") String argument) {
 		if (projectKey != null && request != null && newElement != null) {
 			Boolean result = ActiveObjectsManager.updateKnowledgeTypeOfSentence(newElement.getId(),
-					newElement.getType(),argument);
+					newElement.getType(), argument);
 			if (!result) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Update of element failed.")).build();
@@ -252,27 +253,28 @@ public class KnowledgeRest {
 				String sentenceToSearch = mc.getBody()
 						.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount());
 				int index = mc.getBody().indexOf(sentenceToSearch);
-				
+
 				String tag = "";
-				if(databaseEntity.isTaggedManually()) {
-					tag ="["+WordUtils.capitalize(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch,databaseEntity.getProjectKey()))+"]";
+				if (databaseEntity.isTaggedManually()) {
+					tag = "[" + WordUtils.capitalize(CommentSplitter
+							.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch, databaseEntity.getProjectKey()))
+							+ "]";
 				}
-				if(tag.length()<=3) {
-					tag="";
+				if (tag.length() <= 3) {
+					tag = "";
 				}
 				String first = mc.getBody().substring(0, index);
-				String second = tag + decisionKnowledgeElement.getDescription()+ tag.replace("[","[/");
+				String second = tag + decisionKnowledgeElement.getDescription() + tag.replace("[", "[/");
 				String third = mc.getBody().substring(index + sentenceToSearch.length());
 
 				mc.setBody(first + second + third);
 				cm.update(mc, true);
-				ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(), decisionKnowledgeElement.getId(),
-						second);
+				ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(),
+						decisionKnowledgeElement.getId(), second);
 			}
 
 			ActiveObjectsManager.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),
-					decisionKnowledgeElement.getType(),argument);
-			
+					decisionKnowledgeElement.getType(), argument);
 
 			Response r = Response.status(Status.OK).entity(ImmutableMap.of("id", decisionKnowledgeElement.getId()))
 					.build();

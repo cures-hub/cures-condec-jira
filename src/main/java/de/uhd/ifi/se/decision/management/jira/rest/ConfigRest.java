@@ -15,14 +15,14 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.IssueTypeManager;
-import com.atlassian.jira.issue.issuetype.IssueType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.bc.issue.search.SearchService;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.jql.builder.JqlClauseBuilder;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
@@ -55,7 +55,7 @@ public class ConfigRest {
 	@Path("/setActivated")
 	@POST
 	public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivatedString") String isActivatedString) {
+			@QueryParam("isActivated") String isActivatedString) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -406,10 +406,10 @@ public class ConfigRest {
 				new ViewConnector(issue, false);
 			}
 
-			return Response.ok(Status.ACCEPTED).build();
+			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
-			return Response.status(Status.CONFLICT).build();
+			return Response.status(Status.CONFLICT).entity(ImmutableMap.of("isSucceeded", false)).build();
 		}
 	}
 
@@ -417,7 +417,7 @@ public class ConfigRest {
 	@POST
 	public Response setIconParsing(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("isActivatedString") String isActivatedString) {
-  		System.out.println(isActivatedString);
+		System.out.println(isActivatedString);
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
