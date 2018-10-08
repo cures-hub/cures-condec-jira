@@ -10,6 +10,7 @@ import org.codehaus.jackson.annotate.JsonAutoDetect;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
+import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
 
 /**
  * Model class for a graph of decision knowledge elements
@@ -76,6 +77,9 @@ public class GraphImpl implements Graph {
 				DecisionKnowledgeElement source = currentGenericLink.getBothElements().get(0);
 				DecisionKnowledgeElement target = currentGenericLink.getBothElements().get(1);
 				if(!source.getProject().getProjectKey().equals(target.getProject().getProjectKey())) {
+					continue;
+				}
+				if(!TreeViewer.isCalledFromIssueTabPanel && (source instanceof Sentence ) && !((Sentence) source).isRelevant()) {
 					continue;
 				}
 				

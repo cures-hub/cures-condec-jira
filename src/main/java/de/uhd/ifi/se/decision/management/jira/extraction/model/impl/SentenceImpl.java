@@ -296,6 +296,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.setStartSubstringCount(aoElement.getStartSubstringCount());
 		this.setUserId(aoElement.getUserId());
 		this.setTagged(aoElement.isTagged());
+		this.setRelevant(aoElement.isRelevant());
 		this.setTaggedFineGrained(aoElement.isTaggedFineGrained());
 		this.setTaggedManually(aoElement.isTaggedFineGrained());
 		this.setProjectKey(aoElement.getProjectKey());
