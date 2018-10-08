@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uhd.ifi.se.decision.management.jira.model.*;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -15,10 +16,6 @@ import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
  * Model class for Treant node
@@ -81,7 +78,7 @@ public class Node {
 			this.link.put("title", decisionKnowledgeElement.getDescription());
 		}
 		if (project.isIssueStrategy()) {
-			makeLinkToElement(decisionKnowledgeElement.getKey());
+			makeLinkToElement(decisionKnowledgeElement);
 		}
 		if (isCollapsed) {
 			this.collapsed = ImmutableMap.of("collapsed", isCollapsed);
@@ -94,7 +91,9 @@ public class Node {
 					makeArgument("Con-argument", "contra", decisionKnowledgeElement);
 				}
 			}
-			makeLinkToElement(decisionKnowledgeElement.getKey().split(":")[0]);
+			DecisionKnowledgeElement cutSentence = decisionKnowledgeElement;
+			cutSentence.setKey(decisionKnowledgeElement.getKey().split(":")[0]);
+			makeLinkToElement(decisionKnowledgeElement);
 		}
 	}
 
@@ -122,9 +121,11 @@ public class Node {
 		this.htmlClass = string2;
 	}
 
-	private void makeLinkToElement(String key) {
+	private void makeLinkToElement(DecisionKnowledgeElement element) {
 		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
-		this.link.put("href", applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/" + key);
+		this.link.put("href", applicationProperties.getString(APKeys.JIRA_BASEURL) + "/plugins/servlet/decisions-page?" +
+				"projectKey=" + element.getProject().getProjectKey()
+				+"&issueKey=" + element.getId());
 		this.link.put("target", "_blank");
 	}
 

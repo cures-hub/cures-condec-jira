@@ -34,6 +34,12 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 </div>
 <script>
 	initializeDecisionKnowledgePage();
+    var url  = new URL(document.URL);
+    issueKey = url.searchParams.get("issueKey");
+    if(issueKey != null){
+        console.log(issueKey)
+        console.log($('#jstree').jstree(true).select_node(issueKey));
+    }
 </script>
 #include("templates/dialog.vm")
 </body>
