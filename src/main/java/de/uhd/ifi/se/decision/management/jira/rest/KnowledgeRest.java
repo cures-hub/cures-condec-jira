@@ -151,15 +151,14 @@ public class KnowledgeRest {
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
-			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
-			boolean isDeleted = strategy.deleteDecisionKnowledgeElement(decisionKnowledgeElement, user);
-			if (isDeleted) {
-				if (ConfigPersistence.isWebhookEnabled(projectKey)) {
-					WebhookConnector connector = new WebhookConnector(projectKey);
-					connector.deleteElement(decisionKnowledgeElement);
-				}
-				return Response.status(Status.OK).entity(isDeleted).build();
+			boolean isDeleted = false;
+			if (ConfigPersistence.isWebhookEnabled(projectKey)) {
+				WebhookConnector connector = new WebhookConnector(projectKey);
+				isDeleted = connector.deleteElement(decisionKnowledgeElement, user);
+			}
+			if(isDeleted){
+				return Response.status(Status.OK).entity(true).build();
 			}
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();

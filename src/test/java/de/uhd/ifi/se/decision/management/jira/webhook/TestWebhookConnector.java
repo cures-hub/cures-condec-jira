@@ -4,6 +4,8 @@ import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.user.MockApplicationUser;
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -27,6 +29,7 @@ public class TestWebhookConnector extends TestSetUp {
 	private EntityManager entityManager;
 	private WebhookConnector webhookConnector;
 	private DecisionKnowledgeElement element;
+	private ApplicationUser user;
 
 	@Before
 	public void setUp() {
@@ -39,10 +42,11 @@ public class TestWebhookConnector extends TestSetUp {
 		element = new DecisionKnowledgeElementImpl();
 		element.setProject("TEST");
 		element.setType("TASK");
-		element.setId(1);
+		element.setId(14);
 		element.setDescription("Test description");
 		element.setKey("TEST-14");
 		element.setSummary("Test summary");
+		user = new MockApplicationUser("SysAdmin");
 	}
 
 	@Test
@@ -91,7 +95,7 @@ public class TestWebhookConnector extends TestSetUp {
 
 	@Test
 	public void testDeleteElementFails() {
-		assertFalse(webhookConnector.deleteElement(null));
+		assertFalse(webhookConnector.deleteElement(null, user));
 	}
 
 	@Test
@@ -102,13 +106,13 @@ public class TestWebhookConnector extends TestSetUp {
 
 	@Test
 	public void testDeleteRootElementInTreeWorks() {
-		assertTrue(webhookConnector.deleteElement(element));
+		assertTrue(webhookConnector.deleteElement(element, user));
 	}
 
 	@Test
 	public void testDeleteOtherElementInTreeWorks() {
 		element.setType("DESCRIPTION");
-		assertTrue(webhookConnector.deleteElement(element));
+		assertTrue(webhookConnector.deleteElement(element, user));
 	}
 
 	@Test

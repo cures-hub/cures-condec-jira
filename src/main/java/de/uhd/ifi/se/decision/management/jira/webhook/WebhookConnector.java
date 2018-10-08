@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.atlassian.jira.user.ApplicationUser;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpsURL;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -53,16 +54,21 @@ public class WebhookConnector {
 		return isSubmitted;
 	}
 
-	public boolean deleteElement(DecisionKnowledgeElement changedElement) {
-		boolean isDeleted = false;
+	public boolean deleteElement(DecisionKnowledgeElement changedElement, ApplicationUser user) {
 		if (!checkIfDataIsValid(changedElement)) {
-			return isDeleted;
+			return false;
 		}
+        AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+		changedElement = strategy.getDecisionKnowledgeElement(changedElement.getId());
 		List<DecisionKnowledgeElement> rootElements = getWebhookRootElements(changedElement);
 		if (changedElement.getType().toString().equals(rootType)) {
 			rootElements.remove(changedElement);
 		}
-		isDeleted = postKnowledgeTrees(rootElements);
+
+		boolean isDeleted = strategy.deleteDecisionKnowledgeElement(changedElement, user);
+		if(isDeleted) {
+			isDeleted = postKnowledgeTrees(rootElements);
+		}
 		return isDeleted;
 	}
 

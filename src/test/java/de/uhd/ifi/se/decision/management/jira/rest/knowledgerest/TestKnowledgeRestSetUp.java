@@ -34,7 +34,7 @@ public class TestKnowledgeRestSetUp extends TestSetUp {
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
 		decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);
-		decisionKnowledgeElement.setId(1);
+		decisionKnowledgeElement.setId(3);
 		decisionKnowledgeElement.setProject("TEST");
 		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 		request = new MockHttpServletRequest();
