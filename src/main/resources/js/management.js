@@ -84,7 +84,11 @@ function createDecisionKnowledgeElementAsChild(summary, description, type, idOfE
 function getProjectKey() {
 	var projectKey;
 	try {
-		projectKey = JIRA.API.Projects.getCurrentProjectKey();
+		var url  = new URL(document.URL);
+		projectKey = url.searchParams.get("projectKey");
+		if(projectKey == undefined){
+			projectKey = JIRA.API.Projects.getCurrentProjectKey();
+		}
 	} catch (error) {
 		console.log(error);
 	}
