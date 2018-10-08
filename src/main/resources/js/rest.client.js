@@ -570,7 +570,7 @@ function classifyWholeProject(projectKey) {
 				if (error === null) {
 					showFlag("success", "All sentences in this project have been classified.");
 				} else {
-					showFlag("error", "The classification process failed");
+					showFlag("error", "The classification process failed.");
 				}
 			});
 }
