@@ -69,7 +69,7 @@ function buildTreeViewer2(showRelevant) {
 	console.log(jQuery.fn.jquery);
 
 	getTreeViewerWithoutRootElement(showRelevant, function(core) {
-		$("#jstree").jstree({
+		jQueryConDec("#jstree").jstree({
 			"core" : core,
 			"plugins" : [ "dnd", "contextmenu", "wholerow", "search","sort","state"],
 			"search" : {
@@ -82,7 +82,7 @@ function buildTreeViewer2(showRelevant) {
 			});
 		$("#jstree-search-input").keyup(function() {
 			var searchString = $(this).val();
-			$("#jstree").jstree(true).search(searchString);
+			jQueryConDec("#jstree").jstree(true).search(searchString);
 		});
 	});
 	addDragAndDropSupportForTreeViewer();

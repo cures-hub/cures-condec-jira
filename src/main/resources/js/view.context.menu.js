@@ -20,7 +20,7 @@ var contextMenuCreateAction = {
 
 function getSelectedTreeViewerNode(position) {
 	var selector = position.reference.prevObject.selector;
-	return $("#jstree").jstree(true).get_node(selector);
+	return jQueryConDec("#jstree").jstree(true).get_node(selector);
 }
 
 function getSelectedTreeViewerNodeId(node) {
@@ -370,7 +370,7 @@ function changeKtTo(id,position,type){
 			// getTreeViewerWithoutRootElement(document.getElementById("Relevant").checked, function(core) {
 			// 	var indexOfNode = getArrayId(core.data,getSelectedTreeViewerNodeId(position));
 			// 	var url = getIconUrl(core,indexOfNode,type);
-			// 	 $("#jstree").jstree(true).set_icon(getSelectedTreeViewerNode(position),url);
+			// 	 jQueryConDec("#jstree").jstree(true).set_icon(getSelectedTreeViewerNode(position),url);
 			// });
 			var idOfUiElement = "ui"+id;
 			replaceTagsFromContent(idOfUiElement,type);
@@ -444,7 +444,7 @@ var contextMenuDeleteSentenceAction = {
 		var node = getSelectedTreeViewerNode(position);
 		var id = node.id;
 		setSentenceIrrelevant(id,function(core,node){
-			$("#jstree").jstree(true).set_icon($('#jstree').jstree(true).get_node(id),"https://player.fm/static/images/128pixel.png");
+			jQueryConDec("#jstree").jstree(true).set_icon(jQueryConDec("#jstree").jstree(true).get_node(id),"https://player.fm/static/images/128pixel.png");
 			if(!(document.getElementById("Relevant") == null)){
 				document.getElementById("ui"+id).getElementsByClassName("tag")[0].textContent="";
 				document.getElementById("ui"+id).getElementsByClassName("tag")[1].textContent="";

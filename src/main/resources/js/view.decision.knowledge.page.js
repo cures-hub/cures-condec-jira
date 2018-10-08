@@ -43,7 +43,7 @@ function updateView(nodeId) {
 	} else {
 		selectNodeInTreeViewer(nodeId);
 	}
-	$('#jstree').on("select_node.jstree", function(error, tree) {
+	jQueryConDec("#jstree").on("select_node.jstree", function(error, tree) {
 		var node = tree.node.data;
 		buildTreant(node.key, true);
 	});
