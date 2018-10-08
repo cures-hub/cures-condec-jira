@@ -25,7 +25,6 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
@@ -104,13 +103,13 @@ public class KnowledgeRest {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
-			decisionKnowledgeElement = strategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
-			if (decisionKnowledgeElement != null) {
+			DecisionKnowledgeElement decisionKnowledgeElementWithId = strategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
+			if (decisionKnowledgeElementWithId != null) {
 				if (ConfigPersistence.isWebhookEnabled(projectKey)) {
 					WebhookConnector connector = new WebhookConnector(projectKey);
-					connector.sendElementChanges(decisionKnowledgeElement);
+					connector.sendElementChanges(decisionKnowledgeElementWithId);
 				}
-				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
+				return Response.status(Status.OK).entity(decisionKnowledgeElementWithId).build();
 			}
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
@@ -151,15 +150,18 @@ public class KnowledgeRest {
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
-			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
-			boolean isDeleted = strategy.deleteDecisionKnowledgeElement(decisionKnowledgeElement, user);
+			boolean isDeleted = false;
+			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+			DecisionKnowledgeElement elementToBeDeletedWithLinks = strategy.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
+			if (ConfigPersistence.isWebhookEnabled(projectKey)) {
+				WebhookConnector webhookConnector = new WebhookConnector(projectKey);
+				isDeleted = webhookConnector.deleteElement(elementToBeDeletedWithLinks, user);
+			} else {
+				isDeleted = strategy.deleteDecisionKnowledgeElement(elementToBeDeletedWithLinks, user);
+			}
 			if (isDeleted) {
-				if (ConfigPersistence.isWebhookEnabled(projectKey)) {
-					WebhookConnector connector = new WebhookConnector(projectKey);
-					connector.deleteElement(decisionKnowledgeElement);
-				}
-				return Response.status(Status.OK).entity(isDeleted).build();
+				return Response.status(Status.OK).entity(true).build();
 			}
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
@@ -250,8 +252,8 @@ public class KnowledgeRest {
 				CommentManager cm = ComponentAccessor.getCommentManager();
 				MutableComment mc = (MutableComment) cm.getCommentById(databaseEntity.getCommentId());
 				// Generate sentence data generated for classification
-				String sentenceToSearch = mc.getBody()
-						.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount());
+				String sentenceToSearch = mc.getBody().substring(databaseEntity.getStartSubstringCount(),
+						databaseEntity.getEndSubstringCount());
 				int index = mc.getBody().indexOf(sentenceToSearch);
 
 				String tag = "";
