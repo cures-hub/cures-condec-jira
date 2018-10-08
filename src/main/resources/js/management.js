@@ -25,7 +25,7 @@ function createLinkToExistingElement(idOfExistingElement, idOfNewElement, knowle
 	switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
 			idOfNewElement) {
 		linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
-			updateView();
+			updateDecisionKnowledgeViewupdateIssueModuleView(); // TODO: is this the correct function or should it be rather updateIssueModuleView?
 		});
 	});
 }
@@ -54,12 +54,12 @@ function updateDecisionKnowledgeElementAsChild(childId, summary, description, ty
 				switchLinkTypes(type, parentId, childId, function(linkType, parentId, childId) {
 					deleteLink(parentId, childId, function() {
 						linkElements(parentId, childId, linkType, function() {
-							updateView();
+							updateDecisionKnowledgeViewupdateIssueModuleView(); // TODO: is this the correct function or should it be rather updateIssueModuleView?
 						});
 					});
 				});
 			} else {
-				updateView();
+				updateDecisionKnowledgeViewupdateIssueModuleView(); // TODO: is this the correct function or should it be rather updateIssueModuleView?
 			}
 		});
 	});
@@ -81,7 +81,7 @@ function createDecisionKnowledgeElementAsChild(summary, description, type, idOfE
 		switchLinkTypes(type, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
 				idOfNewElement) {
 			linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
-				updateView();
+				updateDecisionKnowledgeViewupdateIssueModuleView(); // TODO: is this the correct function or should it be rather updateIssueModuleView?
 			});
 		});
 	});

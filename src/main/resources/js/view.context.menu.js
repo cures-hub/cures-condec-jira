@@ -262,7 +262,7 @@ function setUpDialogForDeleteAction(id) {
 	submitButton.textContent = deleteKnowledgeElementText;
 	submitButton.onclick = function() {
 		deleteDecisionKnowledgeElement(id, function() {
-			updateView();
+			updateDecisionKnowledgeViewupdateIssueModuleView(); // TODO: is this the correct function or should it be rather updateIssueModuleView?
 		});
 		closeDialog();
 	};
@@ -297,7 +297,7 @@ function setUpDialogForDeleteLinkAction(id, parentId) {
 	submitButton.textContent = deleteLinkToParentText;
 	submitButton.onclick = function() {
 		deleteLink(parentId, id, function() {
-			updateView();
+			updateDecisionKnowledgeViewupdateIssueModuleView(); // TODO: is this the correct function or should it be rather updateIssueModuleView?
 		});
 		closeDialog();
 	};
@@ -388,7 +388,7 @@ function changeKtTo(id,position,type){
 			document.getElementById(idOfUiElement).classList.remove("Decision","Issue","Alternative","Pro","Con","isNotRelevant");
 			document.getElementById(idOfUiElement).classList.add(type);
 		}else{
-			updateView();
+			updateIssueModuleView();
 			
 		}
 	});
@@ -441,7 +441,9 @@ var contextMenuDeleteSentenceLinkAction = {
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
 		var parentId = findParentId(id);
-		deleteGenericLink(parentId, id,function(core){updateView();});
+        // TODO: is updateDecisionKnowledgeViewupdateIssueModuleView the correct function or should it be rather updateIssueModuleView?
+		deleteGenericLink(parentId, id,function(core){updateDecisionKnowledgeViewupdateIssueModuleView();});
+
 	}
 };
 
@@ -561,7 +563,7 @@ function setUpEditSentenceDialog(id,description,type) {
 				closeDialog();
 			}else{
 				closeDialog();
-				updateView();
+				updateDecisionKnowledgeViewupdateIssueModuleView(); // TODO: is this the correct function or should it be rather updateIssueModuleView?
 			}
 
 			//callDialog2();
@@ -577,6 +579,6 @@ function refreshTreeViewer(){
 		buildTreeViewer2(document.getElementById("Relevant").checked);
 	}else{
 		closeDialog();
-		updateView();
+		updateDecisionKnowledgeViewupdateIssueModuleView(); // TODO: is this the correct function or should it be rather updateIssueModuleView?
 	}
 }

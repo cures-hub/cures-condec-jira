@@ -138,17 +138,20 @@ function sentenceElementIsDropped(target,parentId,childId){
 	//selected element is a sentence, dropped element is an issue
 	if(draggedElement.classList.contains("sentence") && !target.classList.contains("sentence")){
 		deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,function(){
-			linkGenericElements(target.id, draggedElement.id, newParentType,sourceType,function() {updateView();});
+			// TODO: is updateIssueModuleView the correct function or should it be rather updateDecisionKnowledgeView?
+			linkGenericElements(target.id, draggedElement.id, newParentType,sourceType,function() {updateIssueModuleView();});
 		});
 	}else //selected element is an issue, dropped element is an sentence
 	if(target.classList.contains("sentence") && !draggedElement.classList.contains("sentence")){
 		deleteLink(oldParentId, childId, function() {
-			linkGenericElements(target.id, draggedElement.id, newParentType,sourceType,function() {updateView();});
+			// TODO: is updateIssueModuleView the correct function or should it be rather updateDecisionKnowledgeView?
+			linkGenericElements(target.id, draggedElement.id, newParentType,sourceType,function() {updateIssueModuleView();});
 		});
 	}else //selected element is a sentence, dropped element is an sentence
 	if (target.classList.contains("sentence") && draggedElement.classList.contains("sentence")){
 		deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,function(){
-			linkGenericElements(target.id, draggedElement.id, newParentType,sourceType,function() {updateView();});
+			// TODO: is updateIssueModuleView the correct function or should it be rather updateDecisionKnowledgeView?
+			linkGenericElements(target.id, draggedElement.id, newParentType,sourceType,function() {updateIssueModuleView();});
 		});
 	}else //selected element is an issue, parent element is a sentence 
 	if(!draggedElement.classList.contains("sentence") && document.getElementById(findParentId(draggedElement.id)).classList.contains("sentence")){

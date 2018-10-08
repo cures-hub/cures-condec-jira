@@ -16,7 +16,7 @@ function initializeDecisionKnowledgePage() {
 		var type = $("select[name='select-root-element-type']").val();
 		elementInputField.value = "";
 		createDecisionKnowledgeElement(summary, "", type, function(id) {
-			updateView(id);
+			updateDecisionKnowledgeView(id);
 		});
 	});
 
@@ -25,17 +25,17 @@ function initializeDecisionKnowledgePage() {
 		var depthOfTreeWarningLabel = document.getElementById("depth-of-tree-warning");
 		if (this.value > 0) {
 			depthOfTreeWarningLabel.style.visibility = "hidden";
-			updateView();
+			updateDecisionKnowledgeView();
 		} else {
 			depthOfTreeWarningLabel.style.visibility = "visible";
 		}
 	});
 
-	updateView();
+	updateDecisionKnowledgeView();
 }
 
-function updateView(nodeId) {
-    console.log("view.decision.knowledge.page updateView")
+function updateDecisionKnowledgeView(nodeId) {
+    console.log("view.decision.knowledge.page updateDecisionKnowledgeView")
 	buildTreeViewer();
 	if (nodeId === undefined) {
 		var rootElement = getCurrentRootElement();
