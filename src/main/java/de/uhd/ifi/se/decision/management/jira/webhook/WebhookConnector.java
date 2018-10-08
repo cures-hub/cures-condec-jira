@@ -54,19 +54,19 @@ public class WebhookConnector {
 		return isSubmitted;
 	}
 
-	public boolean deleteElement(DecisionKnowledgeElement changedElement, ApplicationUser user) {
-		if (!checkIfDataIsValid(changedElement)) {
+	public boolean deleteElement(DecisionKnowledgeElement elementToBeDeleted, ApplicationUser user) {
+		if (!checkIfDataIsValid(elementToBeDeleted)) {
 			return false;
 		}
-        AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
-		changedElement = strategy.getDecisionKnowledgeElement(changedElement.getId());
-		List<DecisionKnowledgeElement> rootElements = getWebhookRootElements(changedElement);
-		if (changedElement.getType().toString().equals(rootType)) {
-			rootElements.remove(changedElement);
+
+		List<DecisionKnowledgeElement> rootElements = getWebhookRootElements(elementToBeDeleted);
+		if (elementToBeDeleted.getType().toString().equals(rootType)) {
+			rootElements.remove(elementToBeDeleted);
 		}
 
-		boolean isDeleted = strategy.deleteDecisionKnowledgeElement(changedElement, user);
-		if(isDeleted) {
+		AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+		boolean isDeleted = strategy.deleteDecisionKnowledgeElement(elementToBeDeleted, user);
+		if (isDeleted) {
 			isDeleted = postKnowledgeTrees(rootElements);
 		}
 		return isDeleted;
