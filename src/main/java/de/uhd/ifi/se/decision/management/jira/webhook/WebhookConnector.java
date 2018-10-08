@@ -80,6 +80,7 @@ public class WebhookConnector {
 
 		AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 		List<DecisionKnowledgeElement> linkedElements = strategy.getLinkedElements(element);
+		linkedElements.add(element);
 		for (DecisionKnowledgeElement linkedElement : linkedElements) {
 			if (elementIds.contains(linkedElement.getId())) {
 				continue;
@@ -101,6 +102,7 @@ public class WebhookConnector {
 			postMethod.setURI(new HttpsURL(url));
 			int httpResponse = httpClient.executeMethod(postMethod);
 			if (httpResponse >= 200 && httpResponse < 300) {
+				LOGGER.info("Http response code: " + httpResponse);
 				return true;
 			}
 		} catch (IOException e) {
