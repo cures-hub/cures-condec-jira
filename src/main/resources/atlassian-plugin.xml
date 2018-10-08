@@ -102,13 +102,19 @@
 		<resource type="download" name="view.treant.js" location="/js/view.treant.js" />
 	</web-resource>
 
+	<web-resource key="decision-knowledge-page-jquery" name="ConDec Decision Knowledge jQuery version">
+	<description>
+		Provides the specific jQuery 1.9.1 for the plug-in.
+	</description>
+	<!-- jquery 1.9.1 -->
+	<resource type="download" name="jquery.js" location="/js/jquery/jquery.js" />
+	</web-resource>
+
 	<web-resource key="decision-knowledge-page-resources" name="ConDec Decision Knowledge Page Resources">
 		<description>
 			Provides the Java Script files for the separate decision knowledge page of this
 			plug-in.
 		</description>
-		<!-- jquery -->
-		<resource type="download" name="jquery.js" location="/js/jquery/jquery.js" />
 		<!-- jquery.contextMenu -->
 		<resource type="download" name="jquery.contextMenu.js" location="/js/jquery/jquery.contextMenu.js" />
 		<!-- jstree -->

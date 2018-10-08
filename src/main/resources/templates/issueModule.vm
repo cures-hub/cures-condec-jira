@@ -1,4 +1,5 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-page-jquery")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rest-client-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:issue-module-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:treant-resources")

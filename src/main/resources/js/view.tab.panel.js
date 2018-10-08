@@ -1,5 +1,6 @@
 
 function hideSelectedDecisionElements(element){
+    console.log("view.tab.panel.js hideSelectedDecisionElements")
 	var decisionElements =["Issue","Decision","Alternative","Pro","Con"]
 	var sentences = document.getElementsByClassName(element.id);
 	if(element.id != "Relevant"){
@@ -22,6 +23,7 @@ function setVisibility(sentences, checked){
 }
 
 function callDialogFromView() {
+    console.log("view.tab.panel.js callDialogFromView")
 	var submitButton = document.getElementById("dialog-submit-button");
 	submitButton.textContent = "Save";
 	submitButton.onclick = function() {
@@ -34,6 +36,7 @@ function callDialogFromView() {
 
 
 function callDialog2(){
+    console.log("view.tab.panel.js callDialog2")
 	callDialogFromView();
 	closeDialog();
 	callDialogFromView();
@@ -65,8 +68,7 @@ function includeJQ(){
 
 
 function buildTreeViewer2(showRelevant) {
-	console.log("build Tree")
-	console.log(jQuery.fn.jquery);
+    console.log("view.tab.panel.js buildTreeViewer2")
 
 	getTreeViewerWithoutRootElement(showRelevant, function(core) {
 		jQueryConDec("#jstree").jstree({
@@ -116,6 +118,7 @@ function bringContextMenuToFront(){
 
 
 function createSentenceLinkToExistingElement(idOfExistingElement, idOfNewElement, knowledgeTypeOfChild) {
+    console.log("view.tab.panel.js createSentenceLinkToExistingElement")
 	switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
 			idOfNewElement) {
 		linkSentences(idOfExistingElement, idOfNewElement, linkType, function() {

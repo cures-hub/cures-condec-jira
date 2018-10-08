@@ -1,4 +1,5 @@
 function buildTreeViewer() {
+    console.log("view.tree.viewer.js buildTreeViewer")
 	resetTreeViewer();
 	var rootElementType = $("select[name='select-root-element-type']").val();
 	getTreeViewer(rootElementType, function(core) {
@@ -29,6 +30,7 @@ function customMenu(node) {
 }
 
 function resetTreeViewer() {
+    console.log("view.tree.viewer.js resetTreeViewer")
 	var treeViewer = jQueryConDec("#jstree").jstree(true);
 	if (treeViewer) {
 		treeViewer.destroy();
@@ -43,6 +45,7 @@ function getTreeViewerNodeById(nodeId) {
 }
 
 function selectNodeInTreeViewer(nodeId) {
+    console.log("view.tree.viewer.js selectNodeInTreeViewer")
 	jQueryConDec("#jstree").on("ready.jstree", function() {
 		var treeViewer = jQueryConDec("#jstree").jstree(true);
 		if (treeViewer) {
@@ -52,6 +55,7 @@ function selectNodeInTreeViewer(nodeId) {
 }
 
 function addDragAndDropSupportForTreeViewer() {
+    console.log("view.tree.viewer.js addDragAndDropSupportForTreeViewer")
 	jQueryConDec("#jstree").on('move_node.jstree', function(object, nodeInContext) {
 		var node = nodeInContext.node;
 		var parentNode = getTreeViewerNodeById(nodeInContext.parent);
