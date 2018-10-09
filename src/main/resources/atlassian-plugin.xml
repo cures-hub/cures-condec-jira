@@ -104,7 +104,7 @@
 
 	<web-resource key="decision-knowledge-page-jquery" name="ConDec Decision Knowledge jQuery version">
 	<description>
-		Provides the specific jQuery 1.9.1 for the plug-in.
+		Provides the specific jQuery 1.9.1 with Sizzle (required by jstree) for the plug-in.
 	</description>
 	<!-- jquery 1.9.1 -->
 	<resource type="download" name="jquery.js" location="/js/jquery/jquery.js" />

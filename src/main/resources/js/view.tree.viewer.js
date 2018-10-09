@@ -1,5 +1,5 @@
 function buildTreeViewer() {
-    console.log("view.tree.viewer.js buildTreeViewer")
+    console.log("view.tree.viewer.js buildTreeViewer");
 	resetTreeViewer();
 	var rootElementType = $("select[name='select-root-element-type']").val();
 	getTreeViewer(rootElementType, function(core) {
@@ -22,6 +22,7 @@ function buildTreeViewer() {
 }
 
 function customMenu(node) {
+    console.log("view.tree.viewer.js customMenu(node)");
      if (node.li_attr['class'] == "sentence") {
         return contextMenuActionsForSentences;
     }else{
@@ -30,7 +31,7 @@ function customMenu(node) {
 }
 
 function resetTreeViewer() {
-    console.log("view.tree.viewer.js resetTreeViewer")
+    console.log("view.tree.viewer.js resetTreeViewer");
 	var treeViewer = jQueryConDec("#jstree").jstree(true);
 	if (treeViewer) {
 		treeViewer.destroy();
@@ -38,6 +39,7 @@ function resetTreeViewer() {
 }
 
 function getTreeViewerNodeById(nodeId) {
+    console.log("view.tree.viewer.js getTreeViewerNodeById(nodeId)");
 	if (nodeId === "#") {
 		return nodeId;
 	}
@@ -45,7 +47,7 @@ function getTreeViewerNodeById(nodeId) {
 }
 
 function selectNodeInTreeViewer(nodeId) {
-    console.log("view.tree.viewer.js selectNodeInTreeViewer")
+    console.log("view.tree.viewer.js selectNodeInTreeViewer");
 	jQueryConDec("#jstree").on("ready.jstree", function() {
 		var treeViewer = jQueryConDec("#jstree").jstree(true);
 		if (treeViewer) {
@@ -55,7 +57,7 @@ function selectNodeInTreeViewer(nodeId) {
 }
 
 function addDragAndDropSupportForTreeViewer() {
-    console.log("view.tree.viewer.js addDragAndDropSupportForTreeViewer")
+    console.log("view.tree.viewer.js addDragAndDropSupportForTreeViewer");
 	jQueryConDec("#jstree").on('move_node.jstree', function(object, nodeInContext) {
 		var node = nodeInContext.node;
 		var parentNode = getTreeViewerNodeById(nodeInContext.parent);

@@ -6,7 +6,7 @@ var treantTree;
 var draggedElement;
 
 function buildTreant(elementKey, isInteractive) {
-    console.log("view.treant.js buildTreant")
+    console.log("view.treant.js buildTreant");
 	var depthOfTree = getDepthOfTree();
 	getTreant(elementKey, depthOfTree, function(treeStructure) {
 		document.getElementById("treant-container").innerHTML = "";
@@ -30,7 +30,7 @@ function buildTreant(elementKey, isInteractive) {
 }
 
 function getDepthOfTree() {
-    console.log("view.treant.js getDepthOfTree")
+    console.log("view.treant.js getDepthOfTree");
 	var depthOfTreeInput = document.getElementById("depth-of-tree-input");
 	var depthOfTree = 4;
 	if (depthOfTreeInput !== null) {
@@ -40,7 +40,7 @@ function getDepthOfTree() {
 }
 
 function createTreant(treeStructure, isInteractive) {
-    console.log("view.treant.js createTreant")
+    console.log("view.treant.js createTreant");
 	treantTree = new Treant(treeStructure);
 	if (isInteractive !== undefined && isInteractive) {
 		createContextMenuForTreantNodesThatAreSentence();
@@ -75,7 +75,7 @@ function createContextMenuForTreantNodesThatAreSentence() {
 }
 
 function addDragAndDropSupportForTreant() {
-    console.log("view.treant.js addDragAndDropSupportForTreant")
+    console.log("view.treant.js addDragAndDropSupportForTreant");
 	var treantNodes = document.getElementsByClassName("node");
 	var i;
 	for (i = 0; i < treantNodes.length; i++) {
@@ -94,7 +94,7 @@ function addDragAndDropSupportForTreant() {
 }
 
 function getCurrentRootElement() {
-    console.log("view.treant.js getCurrentRootElement")
+    console.log("view.treant.js getCurrentRootElement");
 	if (treantTree) {
 		return treantTree.tree.initJsonConfig.graph.rootElement;
 	}
@@ -131,7 +131,7 @@ function drop(event, target) {
 }
 
 function sentenceElementIsDropped(target,parentId,childId){
-    console.log("view.treant.js sentenceElementIsDropped")
+    console.log("view.treant.js sentenceElementIsDropped");
 	var sourceType = extractTypeFromHTMLElement(draggedElement);
 	var oldParentType = extractTypeFromHTMLId(findParentId(draggedElement.id));
 	var newParentType = extractTypeFromHTMLElement(target);
@@ -169,7 +169,7 @@ function allowDrop(event) {
 }
 
 function addTooltip() {
-    console.log("view.treant.js addTooltip")
+    console.log("view.treant.js addTooltip");
 	var nodes = treantTree.tree.nodeDB.db;
 	for (i = 0; i < nodes.length; i++) {
 		AJS.$("#" + nodes[i].id).tooltip();
@@ -177,7 +177,7 @@ function addTooltip() {
 }
 
 function addCommits(commits, elementArray) {
-    console.log("view.treant.js addCommits")
+    console.log("view.treant.js addCommits");
 	commits.forEach(function(commit) {
 		var message = commit.message;
 
@@ -220,7 +220,7 @@ function addCommits(commits, elementArray) {
 }
 
 function openCommitDetails(commit) {
-    console.log("view.treant.js openCommitDetails")
+    console.log("view.treant.js openCommitDetails");
 	var url = AJS.contextPath() + "/secure/bbb.gp.gitviewer.Commit.jspa?repoId=" + commit.repository.id + "&commitId="
 			+ commit.commitId;
 	window.open(url);
@@ -229,7 +229,7 @@ function openCommitDetails(commit) {
 //differentiate between issue elements and sentence elements
 //If you have to add commits here: add a commit class to your commit objects in the method "createcontextMenuForTreant"
 function extractTypeFromHTMLElement(element){
-    console.log("view.treant.js extractTypeFromHTMLElement")
+    console.log("view.treant.js extractTypeFromHTMLElement");
 	if(element.classList.contains("sentence")){
 		return "s";
 	}
@@ -239,7 +239,7 @@ function extractTypeFromHTMLElement(element){
 }
 
 function extractTypeFromHTMLId(id){
-    console.log("view.treant.js extractTypeFromHTMLId")
+    console.log("view.treant.js extractTypeFromHTMLId");
 	var element = document.getElementById(id);
 	return extractTypeFromHTMLElement(element);
 }

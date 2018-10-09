@@ -1,5 +1,5 @@
 function initializeDecisionKnowledgePage() {
-    console.log("view.decision.knowledge.page initializeDecisionKnowledgePage")
+    console.log("view.decision.knowledge.page initializeDecisionKnowledgePage");
 	for (var index = 0; index < knowledgeTypes.length; index++) {
 		var isSelected = "";
 		if (knowledgeTypes[index] === "Decision") {
@@ -35,7 +35,7 @@ function initializeDecisionKnowledgePage() {
 }
 
 function updateDecisionKnowledgeView(nodeId) {
-    console.log("view.decision.knowledge.page updateDecisionKnowledgeView")
+    console.log("view.decision.knowledge.page updateDecisionKnowledgeView");
 	buildTreeViewer();
 	if (nodeId === undefined) {
 		var rootElement = getCurrentRootElement();

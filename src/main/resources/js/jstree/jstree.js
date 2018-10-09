@@ -10,26 +10,26 @@
 	}
 	else {
         // TODO: remove DEBUG lines
-        console.log("jstree.js init")
-        console.log("$ ver")
-        console.log($.fn.jquery)
-        console.log("jQueryConDec ver")
-        console.log(jQueryConDec.fn.jquery)
+        console.log("jstree.js init");
+        console.log("$ ver");
+        console.log($.fn.jquery);
+        console.log("jQueryConDec ver");
+        console.log(jQueryConDec.fn.jquery);
 		factory(jQueryConDec);
 	}
 }(function ($, undefined) {
 
     // TODO: remove DEBUG lines
-    console.log("factory function init")
+    console.log("factory function init");
     
-    console.log("factory $ ver")
-    console.log($.fn.jquery)
+    console.log("factory $ ver");
+    console.log($.fn.jquery);
     
-    console.log("window.$ ver")
-    console.log(window.$.fn.jquery)
+    console.log("window.$ ver");
+    console.log(window.$.fn.jquery);
     
-    console.log("window jQueryConDec ver")
-    console.log(window.jQueryConDec.fn.jquery)
+    console.log("window jQueryConDec ver");
+    console.log(window.jQueryConDec.fn.jquery);
         
 	"use strict";
 /*!

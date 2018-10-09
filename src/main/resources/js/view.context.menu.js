@@ -19,24 +19,24 @@ var contextMenuCreateAction = {
 };
 
 function getSelectedTreeViewerNode(position) {
-    console.log("view.context.menu.js getSelectedTreeViewerNode")
+    console.log("view.context.menu.js getSelectedTreeViewerNode");
 	var selector = position.reference.prevObject.selector;
 	return jQueryConDec("#jstree").jstree(true).get_node(selector);
 }
 
 function getSelectedTreeViewerNodeId(node) {
-    console.log("view.context.menu.js getSelectedTreeViewerNodeId")
+    console.log("view.context.menu.js getSelectedTreeViewerNodeId");
 	return getSelectedTreeViewerNode(node).data.id;
 }
 
 function getSelectedTreantNodeId(options) {
-    console.log("view.context.menu.js getSelectedTreantNodeId")
+    console.log("view.context.menu.js getSelectedTreantNodeId");
 	var context = options.$trigger.context;
 	return context.id;
 }
 
 function setUpDialogForCreateAction(id) {
-    console.log("view.context.menu.js setUpDialogForCreateAction")
+    console.log("view.context.menu.js setUpDialogForCreateAction");
 	setUpDialog();
 	setHeaderText(createKnowledgeElementText);
 	setUpCreateOrEditDialog("", "", "Alternative");
@@ -87,7 +87,7 @@ function setHeaderText(headerText) {
 }
 
 function setUpCreateOrEditDialog(summary, description, knowledgeType) {
-    console.log("view.context.menu.js setUpCreateOrEditDialog")
+    console.log("view.context.menu.js setUpCreateOrEditDialog");
 	document.getElementById("dialog-content").insertAdjacentHTML(
 			"afterBegin",
 			"<form class='aui'><div class='field-group'><label for='form-input-summary'>Summary:</label>"
@@ -112,7 +112,7 @@ function setUpCreateOrEditDialog(summary, description, knowledgeType) {
 }
 
 function isKnowledgeTypeLocatedAtIndex(knowledgeType, index) {
-    console.log("view.context.menu.js isKnowledgeTypeLocatedAtIndex")
+    console.log("view.context.menu.js isKnowledgeTypeLocatedAtIndex");
 	return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase();
 }
 
@@ -131,7 +131,7 @@ var contextMenuLinkAction = {
 };
 
 function setUpDialogForLinkAction(id) {
-    console.log("view.context.menu.js setUpDialogForLinkAction")
+    console.log("view.context.menu.js setUpDialogForLinkAction");
 	setUpDialog();
 	setHeaderText(linkKnowledgeElementText);
 
@@ -166,7 +166,7 @@ function setUpDialogForLinkAction(id) {
 }
 
 function addFormForArguments() {
-    console.log("view.context.menu.js addFormForArguments")
+    console.log("view.context.menu.js addFormForArguments");
 	var childId = $("select[name='form-select-component']").val();
 	var argumentFieldGroup = document.getElementById("argument-field-group");
 	argumentFieldGroup.innerHTML = "";
@@ -199,7 +199,7 @@ var contextMenuEditAction = {
 };
 
 function setUpDialogForEditAction(id, type) {
-    console.log("view.context.menu.js setUpDialogForEditAction")
+    console.log("view.context.menu.js setUpDialogForEditAction");
 	setUpDialog();
 	setHeaderText(editKnowledgeElementText);
 	getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
@@ -251,7 +251,7 @@ var contextMenuDeleteAction = {
 };
 
 function setUpDialogForDeleteAction(id) {
-    console.log("view.context.menu.js setUpDialogForDeleteAction")
+    console.log("view.context.menu.js setUpDialogForDeleteAction");
 	setUpDialog();
 	setHeaderText(deleteKnowledgeElementText);
 
@@ -286,7 +286,7 @@ var contextMenuDeleteLinkAction = {
 };
 
 function setUpDialogForDeleteLinkAction(id, parentId) {
-    console.log("view.context.menu.js setUpDialogForDeleteLinkAction")
+    console.log("view.context.menu.js setUpDialogForDeleteLinkAction");
 	setUpDialog();
 	setHeaderText(deleteLinkToParentText);
 
@@ -573,7 +573,7 @@ function setUpEditSentenceDialog(id,description,type) {
 }
 
 function refreshTreeViewer(){
-    console.log("view.context.menu.js refreshTreeViewer")
+    console.log("view.context.menu.js refreshTreeViewer");
 	if(!(document.getElementById("Relevant") == null)){
 		resetTreeViewer();
 		buildTreeViewer2(document.getElementById("Relevant").checked);
