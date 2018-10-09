@@ -329,17 +329,7 @@ function resetDialog() {
 	}
 }
 
-var contextMenuActionsForSentences = {
-	"edit" : contextMenuEditSentenceAction,
-	// "deleteLink" : contextMenuDeleteSentenceLinkAction,
-	"delete" : contextMenuDeleteSentenceAction,
-	"changeKt" : changeKnowledgeTypeAction
-};
 
-var contextMenuActionsForSentencesInTreant = {
-	"edit" : contextMenuEditSentenceAction,
-	"delete" : contextMenuDeleteSentenceAction
-};
 
 var changeKnowledgeTypeAction = {
 	// label for Tree Viewer, name for Treant context menu
@@ -593,3 +583,15 @@ function refreshTreeViewer() {
 		updateView();
 	}
 }
+
+var contextMenuActionsForSentences = {
+	"edit" : contextMenuEditSentenceAction,
+	// "deleteLink" : contextMenuDeleteSentenceLinkAction,
+	"delete" : contextMenuDeleteSentenceAction,
+	"changeKt" : changeKnowledgeTypeAction
+};
+
+var contextMenuActionsForSentencesInTreant = {
+	"edit" : contextMenuEditSentenceAction,
+	"delete" : contextMenuDeleteSentenceAction
+};
