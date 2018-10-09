@@ -38,11 +38,12 @@ public class Plotter {
 		return dataset;
 	}
 
-	public static BufferedImage getPieChart(String string, Map<String, Integer> dkeCount) {
+	public static BufferedImage getPieChart(String string, Map<String, Integer> dkeCount,boolean showTooltips) {
 		JFreeChart chart = ChartFactory.createPieChart(string, // chart title
 				createDataset(dkeCount), // data
 				true, // include legend
-				true, false);
+				showTooltips, 
+				false);
 
 		PiePlot plot = (PiePlot) chart.getPlot();
 		plot.setLabelFont(new Font("SansSerif", Font.PLAIN, 12));

@@ -16,8 +16,11 @@ import com.atlassian.jira.web.action.ProjectActionSupport;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.view.reports.plotlib.Plotter;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 import org.apache.axis.utils.ByteArrayOutputStream;
@@ -45,33 +48,95 @@ public class CreationReport extends AbstractReport {
 		this.searchProvider = searchProvider;
 		this.projectManager = projectManager;
 	}
-	
+
 	public String generateReportHtml(ProjectActionSupport action, Map params) throws Exception {
 
 		byte[] nrOfCommentsPerIssue = getNumberOfCommentsPerIssue(action.getLoggedInUser(), projectId);
 		byte[] nrOfCommitsPerIssue = getNumberOfCommitsPerIssue(action.getLoggedInUser(), projectId);
-		byte[] decKnowElement = getDecKnowElementsPerIssue(action.getLoggedInUser(), projectId);
+		byte[] decKnowElement = createImageForDecKnowElementPerIssue(
+				getDecKnowElementsPerIssue(action.getLoggedInUser(), projectId));
+		byte[] linkStats = createImageForAlternativeDecisionPerIssue(
+				getAlternativeDecisionPerIssue(action.getLoggedInUser(), projectId));
 
 		Map<String, Object> velocityParams = new HashMap<>();
 
-		// velocityParams.put("projectName",
-		// projectManager.getProjectObj(projectId).getName());
 		velocityParams.put("nrOfCommentsPerIssue", new String(nrOfCommentsPerIssue));
 		velocityParams.put("nrOfCommitsPerIssue", new String(nrOfCommitsPerIssue));
 		velocityParams.put("decKnowElement", new String(decKnowElement));
+		velocityParams.put("linkStats", new String(linkStats));
 
 		return descriptor.getHtml("view", velocityParams);
 	}
 
-	private byte[] getDecKnowElementsPerIssue(ApplicationUser loggedInUser, Long projectId2) throws SearchException {
+	private Map<String, Integer> getAlternativeDecisionPerIssue(ApplicationUser loggedInUser, Long projectId2)
+			throws SearchException {
+		int all = 0;
+		int noDec = 0;
+		int noAlt = 0;
+		int none = 0;
+		List<DecisionKnowledgeElement> listOfIssues = ActiveObjectsManager
+				.getAllElementsFromAoByType(projectManager.getProjectObj(projectId).getKey(), KnowledgeType.ISSUE);
+
+		for (DecisionKnowledgeElement issue : listOfIssues) {
+			List<GenericLink> links = ActiveObjectsManager.getGenericLinksForElement("s" + issue.getId(), false);
+			boolean hasAlternative = false;
+			boolean hasDecision = false;
+
+			for (GenericLink link : links) {
+				DecisionKnowledgeElement dke = link.getOpposite("s" + issue.getId());
+				if (dke instanceof Sentence) {
+					switch (dke.getType()) {
+					case ALTERNATIVE:
+						hasAlternative = true;
+						break;
+					case DECISION:
+						hasDecision = true;
+						break;
+					default:
+						;
+					}
+				}
+			}
+			if (hasAlternative && hasDecision) {
+				all++;
+			}
+			if (hasAlternative && !hasDecision) {
+				noDec++;
+			}
+			if (!hasAlternative && hasDecision) {
+				noAlt++;
+			}
+			if (!hasAlternative && !hasDecision) {
+				none++;
+			}
+		}
+		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
+		dkeCount.put("Has Alternative & Decision", all);
+		dkeCount.put("Has Alternative but no Decision", noDec);
+		dkeCount.put("Has Decision but no Alternative", noAlt);
+		dkeCount.put("Has neither Decision Alternative", none);
+
+		return dkeCount;
+	}
+
+	private byte[] createImageForAlternativeDecisionPerIssue(Map<String, Integer> map) {
+		BufferedImage image = Plotter.getPieChart("Linked Elements to Issue", map, true);
+		return createEncodedByteArray(image);
+	}
+
+	private Map<String, Integer> getDecKnowElementsPerIssue(ApplicationUser loggedInUser, Long projectId2)
+			throws SearchException {
 		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
 
-		for(KnowledgeType type: KnowledgeType.getDefaulTypes()) {
-		dkeCount.put(type.toString(),
-				ActiveObjectsManager.getAllElementsFromAoByType(projectManager.getProjectObj(projectId).getKey(),
-						type).size());
+		for (KnowledgeType type : KnowledgeType.getDefaulTypes()) {
+			dkeCount.put(type.toString(), ActiveObjectsManager
+					.getAllElementsFromAoByType(projectManager.getProjectObj(projectId).getKey(), type).size());
 		}
-		BufferedImage image = Plotter.getPieChart("Number of KnowledgeTypes per Issue", dkeCount);
+		return dkeCount;
+	}
+
+	private byte[] createImageForDecKnowElementPerIssue(Map<String, Integer> map) {
+		BufferedImage image = Plotter.getPieChart("Number of KnowledgeTypes per Issue", map, true);
 		return createEncodedByteArray(image);
 	}
 
@@ -128,4 +193,5 @@ public class CreationReport extends AbstractReport {
 	public void validate(ProjectActionSupport action, Map params) {
 		projectId = ParameterUtils.getLongParam(params, "selectedProjectId");
 	}
+
 }

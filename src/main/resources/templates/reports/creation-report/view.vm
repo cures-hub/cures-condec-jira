@@ -9,4 +9,7 @@
     <img src="data:image/jpg;base64,${nrOfCommentsPerIssue}" alt="nrOfCommentsPerIssue"/>
     <img src="data:image/jpg;base64,${nrOfCommitsPerIssue}" alt="nrOfCommitsPerIssue"/>
     <img src="data:image/jpg;base64,${decKnowElement}" alt="decKnowElement"/>
+  	<img src="data:image/jpg;base64,${linkStats}" alt="linkStats"/>
+
+
 </div>
