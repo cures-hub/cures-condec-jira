@@ -109,7 +109,13 @@ public class WebhookContentProvider {
 		} catch (InvalidKeyException e) {
 			e.printStackTrace();
 		}
-		return toHexString(mac.doFinal(data.getBytes()));
+		String hexString = "";
+		try {
+			hexString = toHexString(mac.doFinal(data.getBytes("UTF-8")));
+		} catch (IllegalStateException | UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return hexString;
 	}
 
 	/**

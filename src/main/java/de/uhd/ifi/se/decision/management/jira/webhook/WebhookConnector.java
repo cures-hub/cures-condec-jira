@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.atlassian.jira.user.ApplicationUser;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpsURL;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -53,16 +54,21 @@ public class WebhookConnector {
 		return isSubmitted;
 	}
 
-	public boolean deleteElement(DecisionKnowledgeElement changedElement) {
-		boolean isDeleted = false;
-		if (!checkIfDataIsValid(changedElement)) {
-			return isDeleted;
+	public boolean deleteElement(DecisionKnowledgeElement elementToBeDeleted, ApplicationUser user) {
+		if (!checkIfDataIsValid(elementToBeDeleted)) {
+			return false;
 		}
-		List<DecisionKnowledgeElement> rootElements = getWebhookRootElements(changedElement);
-		if (changedElement.getType().toString().equals(rootType)) {
-			rootElements.remove(changedElement);
+
+		List<DecisionKnowledgeElement> rootElements = getWebhookRootElements(elementToBeDeleted);
+		if (elementToBeDeleted.getType().toString().equals(rootType)) {
+			rootElements.remove(elementToBeDeleted);
 		}
-		isDeleted = postKnowledgeTrees(rootElements);
+
+		AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+		boolean isDeleted = strategy.deleteDecisionKnowledgeElement(elementToBeDeleted, user);
+		if (isDeleted) {
+			isDeleted = postKnowledgeTrees(rootElements);
+		}
 		return isDeleted;
 	}
 
@@ -80,6 +86,7 @@ public class WebhookConnector {
 
 		AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 		List<DecisionKnowledgeElement> linkedElements = strategy.getLinkedElements(element);
+		linkedElements.add(element);
 		for (DecisionKnowledgeElement linkedElement : linkedElements) {
 			if (elementIds.contains(linkedElement.getId())) {
 				continue;
@@ -101,6 +108,7 @@ public class WebhookConnector {
 			postMethod.setURI(new HttpsURL(url));
 			int httpResponse = httpClient.executeMethod(postMethod);
 			if (httpResponse >= 200 && httpResponse < 300) {
+				LOGGER.info("Http response code: " + httpResponse);
 				return true;
 			}
 		} catch (IOException e) {

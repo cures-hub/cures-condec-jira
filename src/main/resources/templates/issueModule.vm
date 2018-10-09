@@ -1,7 +1,7 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rest-client-resources")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:issue-module-resources")
-$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:treant-resources")
 <div id="treant-container">
 	<p>No Element has been selected</p>
 </div>
