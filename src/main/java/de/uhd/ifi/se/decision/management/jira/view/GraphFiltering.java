@@ -67,6 +67,90 @@ public class GraphFiltering {
 		return croppedQuery;
 	}
 
+	private String queryFromFilterId(long id) {
+		String returnQuery;
+		if (id <= 0) {
+			switch ((int) id) {
+				case 0: // Any other than the preset Filters
+					returnQuery = "type != null";
+					break;
+				case -1: // My open issues
+					returnQuery = "assignee = currentUser() AND resolution = Unresolved";
+					break;
+				case -2: // Reported by me
+					returnQuery = "reporter = currentUser()";
+					break;
+				case -3: // Viewed recently
+					returnQuery = "issuekey IN issueHistory()";
+					break;
+				case -4: // All issues
+					returnQuery = "type != null";
+					break;
+				case -5: // Open issues
+					returnQuery = "resolution = Unresolved";
+					break;
+				case -6: // Created recently
+					returnQuery = "created >= -1w";
+					break;
+				case -7: // Resolved recently
+					returnQuery = "resolutiondate >= -1w";
+					break;
+				case -8: // Updated recently
+					returnQuery = "updated >= -1w";
+					break;
+				case -9: // Done issues
+					returnQuery = "statusCategory = Done";
+					break;
+				default:
+					returnQuery =  "type != null";
+					break;
+			}
+			returnQuery = "Project = " + projectKey + " AND " + returnQuery;
+		} else {
+			SearchRequestManager srm = ComponentAccessor.getComponentOfType(SearchRequestManager.class);
+			SearchRequest filter = srm.getSharedEntity(id);
+			returnQuery = filter.getQuery().getQueryString();
+		}
+		return returnQuery;
+	}
+
+	private String queryFromFilterString(String filterQuery) {
+		String returnQuery;
+		switch (filterQuery) {
+			case "myopenissues": // My open issues
+				returnQuery = "assignee = currentUser() AND resolution = Unresolved";
+				break;
+			case "reportedbyme": // Reported by me
+				returnQuery = "reporter = currentUser()";
+				break;
+			case "recentlyviewed": // Viewed recently
+				returnQuery = "issuekey IN issueHistory()";
+				break;
+			case "allissues": // All issues
+				returnQuery = "type != null";
+				break;
+			case "allopenissues": // Open issues
+				returnQuery = "resolution = Unresolved";
+				break;
+			case "addedrecently": // Created recently
+				returnQuery = "created >= -1w";
+				break;
+			case "updatedrecently": // Updated recently
+				returnQuery = "updated >= -1w";
+				break;
+			case "resolvedrecently": // Resolved recently
+				returnQuery = "resolutiondate >= -1w";
+				break;
+			case "doneissues": // Done issues
+				returnQuery = "statusCategory = Done";
+				break;
+			default:
+				returnQuery =  "type != null";
+				break;
+		}
+		return returnQuery;
+	}
+
 	public void produceResultsFromQuery() {
 		String filteredQuery = cropQuery();
 		String finalQuery = "";
@@ -82,78 +166,9 @@ public class GraphFiltering {
 				//n.printStackTrace();
 			}
 			if (filterIsNumberCoded) {
-				if (filterId <= 0) {
-					switch ((int) filterId) {
-						case 0: // Any other than the preset Filters
-							finalQuery = "type != null";
-							break;
-						case -1: // My open issues
-							finalQuery = "assignee = currentUser() AND resolution = Unresolved";
-							break;
-						case -2: // Reported by me
-							finalQuery = "reporter = currentUser()";
-							break;
-						case -3: // Viewed recently
-							finalQuery = "issuekey IN issueHistory()";
-							break;
-						case -4: // All issues
-							finalQuery = "type != null";
-							break;
-						case -5: // Open issues
-							finalQuery = "resolution = Unresolved";
-							break;
-						case -6: // Created recently
-							finalQuery = "created >= -1w";
-							break;
-						case -7: // Resolved recently
-							finalQuery = "resolutiondate >= -1w";
-							break;
-						case -8: // Updated recently
-							finalQuery = "updated >= -1w";
-							break;
-						case -9: // Done issues
-							finalQuery = "statusCategory = Done";
-							break;
-					}
-					finalQuery = "Project = " + projectKey + " AND " + finalQuery;
-				} else {
-					SearchRequestManager srm = ComponentAccessor.getComponentOfType(SearchRequestManager.class);
-					SearchRequest filter = srm.getSharedEntity(filterId);
-					finalQuery = filter.getQuery().getQueryString();
-				}
+				finalQuery = queryFromFilterId(filterId);
 			} else {
-				switch (filteredQuery) {
-					case "myopenissues": // My open issues
-						finalQuery = "assignee = currentUser() AND resolution = Unresolved";
-						break;
-					case "reportedbyme": // Reported by me
-						finalQuery = "reporter = currentUser()";
-						break;
-					case "recentlyviewed": // Viewed recently
-						finalQuery = "issuekey IN issueHistory()";
-						break;
-					case "allissues": // All issues
-						finalQuery = "type != null";
-						break;
-					case "allopenissues": // Open issues
-						finalQuery = "resolution = Unresolved";
-						break;
-					case "addedrecently": // Created recently
-						finalQuery = "created >= -1w";
-						break;
-					case "updatedrecently": // Updated recently
-						finalQuery = "updated >= -1w";
-						break;
-					case "resolvedrecently": // Resolved recently
-						finalQuery = "resolutiondate >= -1w";
-						break;
-					case "doneissues": // Done issues
-						finalQuery = "statusCategory = Done";
-						break;
-					default:
-						this.query =  "type != null";
-						break;
-				}
+				finalQuery = queryFromFilterString(filteredQuery);
 			}
 		} else if (queryIsJQL) {
 			finalQuery = cropQuery();
@@ -161,7 +176,7 @@ public class GraphFiltering {
 			finalQuery = "type = null";
 		}
 
-		System.out.println("Final Query: " + finalQuery);
+		//System.out.println("Final Query: " + finalQuery);
 		final SearchService.ParseResult parseResult =
 				ComponentAccessor.getComponentOfType(SearchService.class).parseQuery(this.user, finalQuery);
 
@@ -175,7 +190,7 @@ public class GraphFiltering {
 					long todaysDate = new Date().getTime();
 					System.out.println("Todays Date: " + todaysDate);
 				}
-				System.out.println("Clause: " + clause);
+				//System.out.println("Clause: " + clause);
 			}
 			try {
 				final SearchResults results = ComponentAccessor.getComponentOfType(SearchService.class).search(

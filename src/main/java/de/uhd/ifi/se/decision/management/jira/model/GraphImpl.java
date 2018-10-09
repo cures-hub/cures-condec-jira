@@ -67,7 +67,7 @@ public class GraphImpl implements Graph {
 			linkedElementsAndLinks.putAll(this.getElementsLinkedWithInwardLinksFiltered(element));
 			linkedElementsAndLinks.putAll(this.getElementsLinkedWithOutwardLinksFiltered(element));
 			if (isFilteredByTime) {
-				//inkedElementsAndLinks.putAll(this.getAllLinkedSentencesFiltered(element));
+				linkedElementsAndLinks.putAll(this.getAllLinkedSentencesFiltered(element));
 			} else {
 				linkedElementsAndLinks.putAll(this.getAllLinkedSentences(element));
 			}
@@ -99,6 +99,45 @@ public class GraphImpl implements Graph {
 					continue;
 				}
 				
+				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source,target);
+				linkBetweenSentenceAndOtherElement.setType("contain");
+				if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
+					sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
+					linkedElementsAndLinks.put(currentGenericLink.getOpposite(preIndex + element.getId()),
+							linkBetweenSentenceAndOtherElement);
+				}
+			} catch (NullPointerException e) {
+				// Link in the wrong direction
+				continue;
+			}
+		}
+		return linkedElementsAndLinks;
+	}
+
+	private Map<DecisionKnowledgeElement, Link> getAllLinkedSentencesFiltered(DecisionKnowledgeElement element) {
+		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
+
+		if (element == null) {
+			return linkedElementsAndLinks;
+		}
+		// If uncommented: This will remove all children of sentences in the Treeviewer
+		// on Decision KnowledgePage. This will increase the performance significantly.
+		// Full DK is loaded on button klick in Treant
+//		 if(element instanceof Sentence && !((Sentence)element).isRelevant()) {
+//			 return linkedElementsAndLinks;
+//		 }
+		String preIndex = getIdentifier(element);
+		List<GenericLink> list = ActiveObjectsManager.getGenericLinksForElement(preIndex + element.getId(), false);
+
+		for (GenericLink currentGenericLink : list) {
+			try {
+
+				DecisionKnowledgeElement source = currentGenericLink.getBothElements().get(0);
+				DecisionKnowledgeElement target = currentGenericLink.getBothElements().get(1);
+				if(!source.getProject().getProjectKey().equals(target.getProject().getProjectKey())) {
+					continue;
+				}
+
 				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source,target);
 				linkBetweenSentenceAndOtherElement.setType("contain");
 				if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
@@ -183,6 +222,7 @@ public class GraphImpl implements Graph {
 
 		return linkedElementsAndLinks;
 	}
+
 	private Map<DecisionKnowledgeElement, Link> getElementsLinkedWithInwardLinksFiltered(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
@@ -293,7 +333,6 @@ public class GraphImpl implements Graph {
 		}
 		return transitiveLinkedNodes;
 	}
-
 
 	@Override
 	public DecisionKnowledgeElement getRootElement() {

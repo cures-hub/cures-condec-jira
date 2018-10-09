@@ -134,7 +134,7 @@ function remove(array, item) {
 }
 
 function getURLsSearch() {
-    var search = window.location.search.toString()
+    var search = window.location.search.toString();
     search = search.toString().replace("&","§");
-    return search
+    return search;
 }
