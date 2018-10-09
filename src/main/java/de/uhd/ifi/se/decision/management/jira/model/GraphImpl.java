@@ -20,6 +20,8 @@ public class GraphImpl implements Graph {
 	private DecisionKnowledgeElement rootElement;
 	private List<Long> linkIds;
 	private DecisionKnowledgeProject project;
+	private List<DecisionKnowledgeElement> filteredElements;
+	private boolean isFilteredByTime;
 	private static List<Link> sentenceLinkAlreadyVisited;
 
 	public GraphImpl() {
@@ -46,12 +48,30 @@ public class GraphImpl implements Graph {
 		this.rootElement = rootElement;
 	}
 
+	public GraphImpl(String projectKey, String rootElementKey, List<DecisionKnowledgeElement> filteredElements, boolean filteredByTime) {
+		this(projectKey);
+		this.rootElement = this.project.getPersistenceStrategy().getDecisionKnowledgeElement(rootElementKey);
+		this.filteredElements = filteredElements;
+		this.isFilteredByTime = filteredByTime;
+	}
+
 	@Override
 	public Map<DecisionKnowledgeElement, Link> getLinkedElementsAndLinks(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
-		linkedElementsAndLinks.putAll(this.getElementsLinkedWithOutwardLinks(element));
-		linkedElementsAndLinks.putAll(this.getElementsLinkedWithInwardLinks(element));
-		linkedElementsAndLinks.putAll(this.getAllLinkedSentences(element));
+
+		if (this.filteredElements == null) {
+			linkedElementsAndLinks.putAll(this.getElementsLinkedWithOutwardLinks(element));
+			linkedElementsAndLinks.putAll(this.getElementsLinkedWithInwardLinks(element));
+			linkedElementsAndLinks.putAll(this.getAllLinkedSentences(element));
+		} else {
+			linkedElementsAndLinks.putAll(this.getElementsLinkedWithInwardLinksFiltered(element));
+			linkedElementsAndLinks.putAll(this.getElementsLinkedWithOutwardLinksFiltered(element));
+			if (isFilteredByTime) {
+				//inkedElementsAndLinks.putAll(this.getAllLinkedSentencesFiltered(element));
+			} else {
+				linkedElementsAndLinks.putAll(this.getAllLinkedSentences(element));
+			}
+		}
 		return linkedElementsAndLinks;
 	}
 
@@ -163,6 +183,117 @@ public class GraphImpl implements Graph {
 
 		return linkedElementsAndLinks;
 	}
+	private Map<DecisionKnowledgeElement, Link> getElementsLinkedWithInwardLinksFiltered(DecisionKnowledgeElement element) {
+		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
+
+		if (element == null) {
+			return linkedElementsAndLinks;
+		}
+
+		List<Link> inwardLinks = this.project.getPersistenceStrategy().getInwardLinks(element);
+		for (Link link : inwardLinks) {
+			if (!linkIds.contains(link.getId())) {
+				DecisionKnowledgeElement inwardElement = link.getSourceElement();
+				if (inwardElement != null) {
+					if (this.filteredElements.contains(inwardElement)) {
+						linkIds.add(link.getId());
+						linkedElementsAndLinks.put(inwardElement, link);
+					} else {
+						linkIds.add(link.getId());
+						List<DecisionKnowledgeElement> transitiveLinkedElements = getInwardTransitiveLinkedNodes(inwardElement);
+						for (DecisionKnowledgeElement element1 : transitiveLinkedElements) {
+							Link transitiveLink = new LinkImpl(element, element1);
+							transitiveLink.setType(link.getType());
+							linkIds.add(transitiveLink.getId());
+							linkedElementsAndLinks.put(element1, transitiveLink);
+						}
+					}
+				}
+			}
+		}
+
+		return linkedElementsAndLinks;
+	}
+
+	private List<DecisionKnowledgeElement> getInwardTransitiveLinkedNodes(DecisionKnowledgeElement element) {
+		List<DecisionKnowledgeElement> transitiveLinkedNodes = new ArrayList<>();
+		List<Link> inwardLinks = this.project.getPersistenceStrategy().getInwardLinks(element);
+		for (Link link : inwardLinks) {
+			if (!linkIds.contains(link.getId())) {
+				boolean isFiltered = true;
+				int count = 0;
+				DecisionKnowledgeElement currentElement = link.getSourceElement();
+				while (isFiltered && (count < 10)) {
+					if (this.filteredElements.contains(currentElement)) {
+						if (!currentElement.getType().equals(KnowledgeType.ARGUMENT)) {
+							transitiveLinkedNodes.add(currentElement);
+						}
+						isFiltered = false;
+					} else {
+						transitiveLinkedNodes.addAll(getInwardTransitiveLinkedNodes(currentElement));
+						count++;
+					}
+				}
+			}
+		}
+		return transitiveLinkedNodes;
+	}
+
+	private Map<DecisionKnowledgeElement, Link> getElementsLinkedWithOutwardLinksFiltered(DecisionKnowledgeElement element) {
+		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
+
+		if (element == null) {
+			return linkedElementsAndLinks;
+		}
+
+		List<Link> outwardLinks = this.project.getPersistenceStrategy().getOutwardLinks(element);
+		for (Link link : outwardLinks) {
+			if (!linkIds.contains(link.getId())) {
+				DecisionKnowledgeElement outwardElement = link.getDestinationElement();
+				if (outwardElement != null) {
+					if (this.filteredElements.contains(outwardElement)) {
+						linkIds.add(link.getId());
+						linkedElementsAndLinks.put(outwardElement, link);
+					} else {
+						linkIds.add(link.getId());
+						List<DecisionKnowledgeElement> transitiveLinkedElements = getOutwardTransitiveLinkedNodes(outwardElement);
+						for (DecisionKnowledgeElement element1 : transitiveLinkedElements) {
+							Link transitiveLink = new LinkImpl(element1, element);
+							transitiveLink.setType(link.getType());
+							linkIds.add(transitiveLink.getId());
+							linkedElementsAndLinks.put(element1, transitiveLink);
+						}
+					}
+				}
+			}
+		}
+		return linkedElementsAndLinks;
+	}
+
+	private List<DecisionKnowledgeElement> getOutwardTransitiveLinkedNodes(DecisionKnowledgeElement element) {
+		List<DecisionKnowledgeElement> transitiveLinkedNodes = new ArrayList<>();
+		List<Link> outwardLinks = this.project.getPersistenceStrategy().getOutwardLinks(element);
+		for (Link link : outwardLinks) {
+			if (!linkIds.contains(link.getId())) {
+				boolean isFiltered = true;
+				int count = 0;
+				DecisionKnowledgeElement currentElement = link.getDestinationElement();
+				while (isFiltered && (count < 10)) {
+					if (this.filteredElements.contains(currentElement)) {
+						if (!currentElement.getType().equals(KnowledgeType.ARGUMENT)) {
+							transitiveLinkedNodes.add(currentElement);
+						}
+						isFiltered = false;
+					} else {
+						transitiveLinkedNodes.addAll(getOutwardTransitiveLinkedNodes(currentElement));
+						count++;
+					}
+				}
+			}
+		}
+		return transitiveLinkedNodes;
+	}
+
 
 	@Override
 	public DecisionKnowledgeElement getRootElement() {

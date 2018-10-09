@@ -38,6 +38,14 @@ public class Treant {
 		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
 	}
 
+	public Treant(String projectKey, String elementKey, int depth, List<DecisionKnowledgeElement> filteredElements, boolean isFilteredByCreationDate) {
+		this.graph = new GraphImpl(projectKey, elementKey, filteredElements, isFilteredByCreationDate);
+		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
+		this.setChart(new Chart());
+		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
+	}
+
+
 	public Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth) {
 		if (element == null || element.getProject().getProjectKey() == null) {
 			return new Node();

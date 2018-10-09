@@ -5,6 +5,7 @@ function fillIssueModule() {
 
 function updateView() {
     console.log("view.issue.module updateView");
+    var search = getURLsSearch();
     var issueKey = getIssueKey();
-    buildTreant(issueKey, false);
+    buildTreantFiltered(issueKey, false, search);
 }

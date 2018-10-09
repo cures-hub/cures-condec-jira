@@ -29,6 +29,30 @@ function buildTreant(elementKey, isInteractive) {
 	});
 }
 
+function buildTreantFiltered(elementKey, isInteractive, searchTerm) {
+    var depthOfTree = getDepthOfTree();
+    getTreantFiltered(elementKey, depthOfTree, searchTerm, function(treeStructure) {
+        document.getElementById("treant-container").innerHTML = "";
+
+        isKnowledgeExtractedFromGit(getProjectKey(), function(isKnowledgeExtractedFromGit) {
+            if (isKnowledgeExtractedFromGit) {
+                getCommits(elementKey,
+                    function(commits) {
+                        if (commits.length > 0) {
+                            treeStructure.nodeStructure.children = addCommits(commits,
+                                treeStructure.nodeStructure.children);
+                        }
+                        // console.log(treeStructure);
+                        createTreant(treeStructure, isInteractive);
+                    });
+            } else {
+                createTreant(treeStructure, isInteractive);
+            }
+        });
+    });
+}
+
+
 function getDepthOfTree() {
 	console.log("view.treant.js getDepthOfTree");
 	var depthOfTreeInput = document.getElementById("depth-of-tree-input");

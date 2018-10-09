@@ -343,6 +343,17 @@ function getTreeViewer(rootElementType, callback) {
 	});
 }
 
+function getTreantFiltered(elementKey, depthOfTree, searchTerm, callback) {
+    getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreantFiltered.json?&elementKey=" + elementKey
+        + "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm, function(error, treant) {
+        if (error === null) {
+            callback(treant);
+        } else {
+            showFlag("error", "Filtered Treant data could not be received. Error-Code: " + error);
+        }
+    });
+}
+
 function getTreeViewerWithoutRootElement(showRelevant, callback) {
 	var issueId = AJS.$("meta[name='ajs-issue-key']").attr("content");
 	if (issueId === undefined) {

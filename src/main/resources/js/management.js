@@ -132,3 +132,9 @@ function remove(array, item) {
 		}
 	}
 }
+
+function getURLsSearch() {
+    var search = window.location.search.toString()
+    search = search.toString().replace("&","§");
+    return search
+}

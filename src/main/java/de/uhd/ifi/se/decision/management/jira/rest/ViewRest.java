@@ -1,13 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.sal.api.user.UserManager;
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,10 +20,15 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
+
 
 /**
  * REST resource for view
@@ -91,6 +100,56 @@ public class ViewRest {
 		return Response.ok(treant).build();
 	}
 
+	@Path("/getTreantFiltered")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getTreant(@QueryParam("elementKey") String elementKey,
+							  @QueryParam("depthOfTree") String depthOfTree,
+							  @QueryParam("searchTerm") String searchTerm,
+							  @Context HttpServletRequest request) {
+
+		if (elementKey == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build();
+		}
+		String projectKey = getProjectKey(elementKey);
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		int depth = 4; // default value
+		try {
+			depth = Integer.parseInt(depthOfTree);
+		} catch (NumberFormatException e) {
+			LOGGER.error("Depth of tree could not be parsed, the default value of 4 is used.");
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Treant cannot be shown since depth of Tree is NaN")).build();
+		}
+		ApplicationUser user = getCurrentUser(request);
+		boolean isFilteredByCreationDate;
+		GraphFiltering filter = new GraphFiltering(projectKey, searchTerm,user);
+		filter.produceResultsFromQuery();
+		isFilteredByCreationDate = filter.isQueryContainsCreationDate();
+		List<DecisionKnowledgeElement> filteredElements = filter.getQueryResults();
+		Treant treantFiltered = new Treant(projectKey, elementKey, depth, filteredElements,isFilteredByCreationDate);
+		return Response.ok(treantFiltered).build();
+	}
+
+
+	@Path("/getQuery")
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getQuery(@QueryParam("projectKey") String projectKey, @QueryParam("URISearch") String URISearch,  @Context HttpServletRequest request) {
+		ApplicationUser user = getCurrentUser(request);
+
+		GraphFiltering filter = new GraphFiltering(projectKey, URISearch,user);
+		filter.produceResultsFromQuery();
+
+		List<DecisionKnowledgeElement> filteredElements = filter.getQueryResults();
+
+		return Response.ok(filteredElements).build();
+	}
+
 	private String getProjectKey(String elementKey) {
 		return elementKey.split("-")[0];
 	}
@@ -113,4 +172,12 @@ public class ViewRest {
 				ImmutableMap.of("error", "Decision knowledge elements cannot be shown since project key is invalid."))
 				.build();
 	}
+
+	private ApplicationUser getCurrentUser(HttpServletRequest request) {
+		com.atlassian.jira.user.util.UserManager jiraUserManager = ComponentAccessor.getUserManager();
+		UserManager userManager = ComponentGetter.getUserManager();
+		String userName = userManager.getRemoteUsername(request);
+		return jiraUserManager.getUserByName(userName);
+	}
+
 }
