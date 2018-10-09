@@ -6,7 +6,7 @@ var treantTree;
 var draggedElement;
 
 function buildTreant(elementKey, isInteractive) {
-    console.log("view.treant.js buildTreant");
+	console.log("view.treant.js buildTreant");
 	var depthOfTree = getDepthOfTree();
 	getTreant(elementKey, depthOfTree, function(treeStructure) {
 		document.getElementById("treant-container").innerHTML = "";
@@ -30,7 +30,7 @@ function buildTreant(elementKey, isInteractive) {
 }
 
 function getDepthOfTree() {
-    console.log("view.treant.js getDepthOfTree");
+	console.log("view.treant.js getDepthOfTree");
 	var depthOfTreeInput = document.getElementById("depth-of-tree-input");
 	var depthOfTree = 4;
 	if (depthOfTreeInput !== null) {
@@ -40,10 +40,10 @@ function getDepthOfTree() {
 }
 
 function createTreant(treeStructure, isInteractive) {
-    console.log("view.treant.js createTreant");
+	console.log("view.treant.js createTreant");
 	treantTree = new Treant(treeStructure);
 	if (isInteractive !== undefined && isInteractive) {
-		createContextMenuForTreantNodesThatAreSentence();
+		//createContextMenuForTreantNodesThatAreSentence();
 		createContextMenuForTreantNodes();
 		addDragAndDropSupportForTreant();
 		addTooltip();
@@ -52,7 +52,7 @@ function createTreant(treeStructure, isInteractive) {
 
 function createContextMenuForTreantNodes() {
 	jQueryConDec(function() {
-			jQueryConDec.contextMenu({
+		jQueryConDec.contextMenu({
 			selector : ".decision, .rationale, .context, .problem, .solution, .pro, .contra, .other",
 			items : contextMenuActions
 		});
@@ -62,7 +62,7 @@ function createContextMenuForTreantNodes() {
 function createContextMenuForTreantNodesThatAreSentence() {
 	var nodes = document.getElementsByClassName("node");
 	for (var i = nodes.length - 1; i >= 0; i--) {
-		if(nodes[i].getElementsByClassName("node-desc")[0].innerHTML.includes(":")){
+		if (nodes[i].getElementsByClassName("node-desc")[0].innerHTML.includes(":")) {
 			nodes[i].classList.add("sentence");
 		}
 	}
@@ -75,7 +75,7 @@ function createContextMenuForTreantNodesThatAreSentence() {
 }
 
 function addDragAndDropSupportForTreant() {
-    console.log("view.treant.js addDragAndDropSupportForTreant");
+	console.log("view.treant.js addDragAndDropSupportForTreant");
 	var treantNodes = document.getElementsByClassName("node");
 	var i;
 	for (i = 0; i < treantNodes.length; i++) {
@@ -94,7 +94,7 @@ function addDragAndDropSupportForTreant() {
 }
 
 function getCurrentRootElement() {
-    console.log("view.treant.js getCurrentRootElement");
+	console.log("view.treant.js getCurrentRootElement");
 	if (treantTree) {
 		return treantTree.tree.initJsonConfig.graph.rootElement;
 	}
@@ -123,42 +123,46 @@ function drop(event, target) {
 	event.preventDefault();
 	var parentId = target.id;
 	var childId = dragId;
-	if(sentenceElementIsDropped(target,parentId,childId)){
+	if (sentenceElementIsDropped(target, parentId, childId)) {
 		deleteLink(oldParentId, childId, function() {
-		createLinkToExistingElement(parentId, childId);
-	});
+			createLinkToExistingElement(parentId, childId);
+		});
 	}
 }
 
-function sentenceElementIsDropped(target,parentId,childId){
-    console.log("view.treant.js sentenceElementIsDropped");
+function sentenceElementIsDropped(target, parentId, childId) {
+	console.log("view.treant.js sentenceElementIsDropped");
 	var sourceType = extractTypeFromHTMLElement(draggedElement);
 	var oldParentType = extractTypeFromHTMLId(findParentId(draggedElement.id));
 	var newParentType = extractTypeFromHTMLElement(target);
-	//selected element is a sentence, dropped element is an issue
-	if(draggedElement.classList.contains("sentence") && !target.classList.contains("sentence")){
-		deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,function(){
-			// TODO: is updateIssueModuleView the correct function or should it be rather updateDecisionKnowledgeView?
-			linkGenericElements(target.id, draggedElement.id, newParentType,sourceType,function() {updateIssueModuleView();});
+	// selected element is a sentence, dropped element is an issue
+	if (draggedElement.classList.contains("sentence") && !target.classList.contains("sentence")) {
+		deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType, function() {
+			linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
+				updateView();
+			});
 		});
-	}else //selected element is an issue, dropped element is an sentence
-	if(target.classList.contains("sentence") && !draggedElement.classList.contains("sentence")){
+	} else // selected element is an issue, dropped element is an sentence
+	if (target.classList.contains("sentence") && !draggedElement.classList.contains("sentence")) {
 		deleteLink(oldParentId, childId, function() {
-			// TODO: is updateIssueModuleView the correct function or should it be rather updateDecisionKnowledgeView?
-			linkGenericElements(target.id, draggedElement.id, newParentType,sourceType,function() {updateIssueModuleView();});
+			linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
+				updateView();
+			});
 		});
-	}else //selected element is a sentence, dropped element is an sentence
-	if (target.classList.contains("sentence") && draggedElement.classList.contains("sentence")){
-		deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,function(){
-			// TODO: is updateIssueModuleView the correct function or should it be rather updateDecisionKnowledgeView?
-			linkGenericElements(target.id, draggedElement.id, newParentType,sourceType,function() {updateIssueModuleView();});
+	} else // selected element is a sentence, dropped element is an sentence
+	if (target.classList.contains("sentence") && draggedElement.classList.contains("sentence")) {
+		deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType, function() {
+			linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
+				updateView();
+			});
 		});
-	}else //selected element is an issue, parent element is a sentence 
-	if(!draggedElement.classList.contains("sentence") && document.getElementById(findParentId(draggedElement.id)).classList.contains("sentence")){
-		deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,function(){
+	} else // selected element is an issue, parent element is a sentence
+	if (!draggedElement.classList.contains("sentence")
+			&& document.getElementById(findParentId(draggedElement.id)).classList.contains("sentence")) {
+		deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType, function() {
 			createLinkToExistingElement(parentId, childId);
 		});
-	}else {//usual link between issue and issue
+	} else {// usual link between issue and issue
 		return true;
 	}
 	return false;
@@ -169,7 +173,7 @@ function allowDrop(event) {
 }
 
 function addTooltip() {
-    console.log("view.treant.js addTooltip");
+	console.log("view.treant.js addTooltip");
 	var nodes = treantTree.tree.nodeDB.db;
 	for (i = 0; i < nodes.length; i++) {
 		AJS.$("#" + nodes[i].id).tooltip();
@@ -177,7 +181,7 @@ function addTooltip() {
 }
 
 function addCommits(commits, elementArray) {
-    console.log("view.treant.js addCommits");
+	console.log("view.treant.js addCommits");
 	commits.forEach(function(commit) {
 		var message = commit.message;
 
@@ -220,26 +224,27 @@ function addCommits(commits, elementArray) {
 }
 
 function openCommitDetails(commit) {
-    console.log("view.treant.js openCommitDetails");
+	console.log("view.treant.js openCommitDetails");
 	var url = AJS.contextPath() + "/secure/bbb.gp.gitviewer.Commit.jspa?repoId=" + commit.repository.id + "&commitId="
 			+ commit.commitId;
 	window.open(url);
 }
 
-//differentiate between issue elements and sentence elements
-//If you have to add commits here: add a commit class to your commit objects in the method "createcontextMenuForTreant"
-function extractTypeFromHTMLElement(element){
-    console.log("view.treant.js extractTypeFromHTMLElement");
-	if(element.classList.contains("sentence")){
+// differentiate between issue elements and sentence elements
+// If you have to add commits here: add a commit class to your commit objects in
+// the method "createcontextMenuForTreant"
+function extractTypeFromHTMLElement(element) {
+	console.log("view.treant.js extractTypeFromHTMLElement");
+	if (element.classList.contains("sentence")) {
 		return "s";
 	}
-	if(!element.classList.contains("sentence")){
+	if (!element.classList.contains("sentence")) {
 		return "i";
 	}
 }
 
-function extractTypeFromHTMLId(id){
-    console.log("view.treant.js extractTypeFromHTMLId");
+function extractTypeFromHTMLId(id) {
+	console.log("view.treant.js extractTypeFromHTMLId");
 	var element = document.getElementById(id);
 	return extractTypeFromHTMLElement(element);
 }
