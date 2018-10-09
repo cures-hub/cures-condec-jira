@@ -14,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -25,6 +26,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
@@ -103,7 +105,8 @@ public class KnowledgeRest {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = getCurrentUser(request);
-			DecisionKnowledgeElement decisionKnowledgeElementWithId = strategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
+			DecisionKnowledgeElement decisionKnowledgeElementWithId = strategy
+					.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
 			if (decisionKnowledgeElementWithId != null) {
 				if (ConfigPersistence.isWebhookEnabled(projectKey)) {
 					WebhookConnector connector = new WebhookConnector(projectKey);
@@ -153,7 +156,8 @@ public class KnowledgeRest {
 			ApplicationUser user = getCurrentUser(request);
 			boolean isDeleted = false;
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
-			DecisionKnowledgeElement elementToBeDeletedWithLinks = strategy.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
+			DecisionKnowledgeElement elementToBeDeletedWithLinks = strategy
+					.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 			if (ConfigPersistence.isWebhookEnabled(projectKey)) {
 				WebhookConnector webhookConnector = new WebhookConnector(projectKey);
 				isDeleted = webhookConnector.deleteElement(elementToBeDeletedWithLinks, user);
@@ -252,18 +256,19 @@ public class KnowledgeRest {
 				CommentManager cm = ComponentAccessor.getCommentManager();
 				MutableComment mc = (MutableComment) cm.getCommentById(databaseEntity.getCommentId());
 				// Generate sentence data generated for classification
-				String sentenceToSearch = mc.getBody().substring(databaseEntity.getStartSubstringCount(),
-						databaseEntity.getEndSubstringCount());
+				String sentenceToSearch = CommentImpl.textRule(mc.getBody()
+						.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount()));
 				int index = mc.getBody().indexOf(sentenceToSearch);
 
 				String tag = "";
-				if (databaseEntity.isTaggedManually()) {
-					tag = "[" + WordUtils.capitalize(CommentSplitter
-							.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch, databaseEntity.getProjectKey()))
+				if (databaseEntity.isTaggedManually()
+						&& StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) < 0) {
+					tag = "["
+							+ WordUtils.capitalize(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch,
+									databaseEntity.getProjectKey(), false))
 							+ "]";
-				}
-				if (tag.length() <= 3) {
-					tag = "";
+				} else if (StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) >= 0) {
+					index = index + 3; // add icon to text.
 				}
 				String first = mc.getBody().substring(0, index);
 				String second = tag + decisionKnowledgeElement.getDescription() + tag.replace("[", "[/");

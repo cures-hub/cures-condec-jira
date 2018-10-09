@@ -43,7 +43,7 @@ public class CommentSplitter {
 		}
 		if(ConfigPersistence.isIconParsingEnabled(projectKey)) {
 			for (int i = 0; i < manualRationalIconList.length; i++) {
-				firstSplit = searchForFurtherTags(firstSplit, manualRationalIconList[i], ".");
+				firstSplit = searchForFurtherTags(firstSplit, manualRationalIconList[i], System.getProperty("line.separator"));
 			}
 		}
 
@@ -114,8 +114,8 @@ public class CommentSplitter {
 		this.endSubstringCount.add(endIndex);
 	}
 
-	public static String getKnowledgeTypeFromManuallIssueTag(String body, String projectKey) {
-		boolean checkIcons = ConfigPersistence.isIconParsingEnabled(projectKey);
+	public static String getKnowledgeTypeFromManuallIssueTag(String body, String projectKey, boolean lookOutForIcons) {
+		boolean checkIcons = lookOutForIcons && ConfigPersistence.isIconParsingEnabled(projectKey);
 		if (body.toLowerCase().contains("[issue]") || (checkIcons && body.contains("(!)"))) {
 			return KnowledgeType.ISSUE.toString();
 		}

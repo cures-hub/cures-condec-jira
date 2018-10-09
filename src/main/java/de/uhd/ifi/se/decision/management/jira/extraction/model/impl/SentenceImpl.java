@@ -244,7 +244,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.manualRationaleTagList) >= 0
 				|| (ConfigPersistence.isIconParsingEnabled(projectKey)
 						&& StringUtils.indexOfAny(body, CommentSplitter.manualRationalIconList) >= 0)) {
-			this.setKnowledgeTypeString(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey));
+			this.setKnowledgeTypeString(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey,true));
 			setManuallyTagged();
 			stripTagsFromBody(body.toLowerCase());
 		}
@@ -252,7 +252,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	private void stripTagsFromBody(String body) {
 		if (StringUtils.indexOfAny(body, CommentSplitter.manualRationaleTagList) >= 0) {
-			int tagLength = 2 + CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey).length();
+			int tagLength = 2 + CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey,true).length();
 			super.setDescription(body.substring(tagLength, body.length() - (1 + tagLength)));
 			super.setSummary(super.getDescription());
 		} else { 

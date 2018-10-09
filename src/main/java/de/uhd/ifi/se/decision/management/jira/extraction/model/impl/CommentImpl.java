@@ -70,7 +70,7 @@ public class CommentImpl implements Comment {
 			this.sentences.add(sentence);
 		}
 	}
-
+	
 	private void runBreakIterator(List<String> rawSentences) {
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
 
@@ -91,6 +91,10 @@ public class CommentImpl implements Comment {
 				this.splitter.addSentenceIndex(start1, end1);
 			}
 		}
+	}
+	
+	public static String textRule(String text) {
+		return text.replaceAll("\r\n", "");
 	}
 
 	public List<Sentence> getSentences() {
