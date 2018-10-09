@@ -6,5 +6,5 @@ function fillIssueModule() {
 function updateView() {
     console.log("view.issue.module updateView");
     var issueKey = getIssueKey();
-    buildTreant(issueKey, false);
+    buildTreant(issueKey, true);
 }
