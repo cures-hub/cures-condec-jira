@@ -90,7 +90,6 @@ function bringContextMenuToFront() {
 	if (document.getElementsByClassName("vakata-context").length > 0) {
 		document.getElementsByClassName("vakata-context")[0].style.zIndex = 9999;
 	}
-
 }
 
 function createSentenceLinkToExistingElement(idOfExistingElement, idOfNewElement, knowledgeTypeOfChild) {
