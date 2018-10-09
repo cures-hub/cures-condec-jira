@@ -19,20 +19,24 @@ var contextMenuCreateAction = {
 };
 
 function getSelectedTreeViewerNode(position) {
+    console.log("view.context.menu.js getSelectedTreeViewerNode");
 	var selector = position.reference.prevObject.selector;
-	return $("#jstree").jstree(true).get_node(selector);
+	return jQueryConDec("#jstree").jstree(true).get_node(selector);
 }
 
 function getSelectedTreeViewerNodeId(node) {
+    console.log("view.context.menu.js getSelectedTreeViewerNodeId");
 	return getSelectedTreeViewerNode(node).data.id;
 }
 
 function getSelectedTreantNodeId(options) {
+    console.log("view.context.menu.js getSelectedTreantNodeId");
 	var context = options.$trigger.context;
 	return context.id;
 }
 
 function setUpDialogForCreateAction(id) {
+    console.log("view.context.menu.js setUpDialogForCreateAction");
 	setUpDialog();
 	setHeaderText(createKnowledgeElementText);
 	setUpCreateOrEditDialog("", "", "Alternative");
@@ -83,6 +87,7 @@ function setHeaderText(headerText) {
 }
 
 function setUpCreateOrEditDialog(summary, description, knowledgeType) {
+    console.log("view.context.menu.js setUpCreateOrEditDialog");
 	document.getElementById("dialog-content").insertAdjacentHTML(
 			"afterBegin",
 			"<form class='aui'><div class='field-group'><label for='form-input-summary'>Summary:</label>"
@@ -107,6 +112,7 @@ function setUpCreateOrEditDialog(summary, description, knowledgeType) {
 }
 
 function isKnowledgeTypeLocatedAtIndex(knowledgeType, index) {
+    console.log("view.context.menu.js isKnowledgeTypeLocatedAtIndex");
 	return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase();
 }
 
@@ -125,6 +131,7 @@ var contextMenuLinkAction = {
 };
 
 function setUpDialogForLinkAction(id) {
+    console.log("view.context.menu.js setUpDialogForLinkAction");
 	setUpDialog();
 	setHeaderText(linkKnowledgeElementText);
 
@@ -159,6 +166,7 @@ function setUpDialogForLinkAction(id) {
 }
 
 function addFormForArguments() {
+    console.log("view.context.menu.js addFormForArguments");
 	var childId = $("select[name='form-select-component']").val();
 	var argumentFieldGroup = document.getElementById("argument-field-group");
 	argumentFieldGroup.innerHTML = "";
@@ -191,6 +199,7 @@ var contextMenuEditAction = {
 };
 
 function setUpDialogForEditAction(id, type) {
+    console.log("view.context.menu.js setUpDialogForEditAction");
 	setUpDialog();
 	setHeaderText(editKnowledgeElementText);
 	getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
@@ -242,6 +251,7 @@ var contextMenuDeleteAction = {
 };
 
 function setUpDialogForDeleteAction(id) {
+    console.log("view.context.menu.js setUpDialogForDeleteAction");
 	setUpDialog();
 	setHeaderText(deleteKnowledgeElementText);
 
@@ -252,7 +262,7 @@ function setUpDialogForDeleteAction(id) {
 	submitButton.textContent = deleteKnowledgeElementText;
 	submitButton.onclick = function() {
 		deleteDecisionKnowledgeElement(id, function() {
-			updateView();
+			updateDecisionKnowledgeViewupdateIssueModuleView(); // TODO: is this the correct function or should it be rather updateIssueModuleView?
 		});
 		closeDialog();
 	};
@@ -276,6 +286,7 @@ var contextMenuDeleteLinkAction = {
 };
 
 function setUpDialogForDeleteLinkAction(id, parentId) {
+    console.log("view.context.menu.js setUpDialogForDeleteLinkAction");
 	setUpDialog();
 	setHeaderText(deleteLinkToParentText);
 
@@ -286,7 +297,7 @@ function setUpDialogForDeleteLinkAction(id, parentId) {
 	submitButton.textContent = deleteLinkToParentText;
 	submitButton.onclick = function() {
 		deleteLink(parentId, id, function() {
-			updateView();
+			updateDecisionKnowledgeViewupdateIssueModuleView(); // TODO: is this the correct function or should it be rather updateIssueModuleView?
 		});
 		closeDialog();
 	};
@@ -370,14 +381,14 @@ function changeKtTo(id,position,type){
 			// getTreeViewerWithoutRootElement(document.getElementById("Relevant").checked, function(core) {
 			// 	var indexOfNode = getArrayId(core.data,getSelectedTreeViewerNodeId(position));
 			// 	var url = getIconUrl(core,indexOfNode,type);
-			// 	 $("#jstree").jstree(true).set_icon(getSelectedTreeViewerNode(position),url);
+			// 	 jQueryConDec("#jstree").jstree(true).set_icon(getSelectedTreeViewerNode(position),url);
 			// });
 			var idOfUiElement = "ui"+id;
 			replaceTagsFromContent(idOfUiElement,type);
 			document.getElementById(idOfUiElement).classList.remove("Decision","Issue","Alternative","Pro","Con","isNotRelevant");
 			document.getElementById(idOfUiElement).classList.add(type);
 		}else{
-			updateView();
+			updateIssueModuleView();
 			
 		}
 	});
@@ -430,7 +441,9 @@ var contextMenuDeleteSentenceLinkAction = {
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
 		var parentId = findParentId(id);
-		deleteGenericLink(parentId, id,function(core){updateView();});
+        // TODO: is updateDecisionKnowledgeViewupdateIssueModuleView the correct function or should it be rather updateIssueModuleView?
+		deleteGenericLink(parentId, id,function(core){updateDecisionKnowledgeViewupdateIssueModuleView();});
+
 	}
 };
 
@@ -444,7 +457,7 @@ var contextMenuDeleteSentenceAction = {
 		var node = getSelectedTreeViewerNode(position);
 		var id = node.id;
 		setSentenceIrrelevant(id,function(core,node){
-			$("#jstree").jstree(true).set_icon($('#jstree').jstree(true).get_node(id),"https://player.fm/static/images/128pixel.png");
+			jQueryConDec("#jstree").jstree(true).set_icon(jQueryConDec("#jstree").jstree(true).get_node(id),"https://player.fm/static/images/128pixel.png");
 			if(!(document.getElementById("Relevant") == null)){
 				document.getElementById("ui"+id).getElementsByClassName("tag")[0].textContent="";
 				document.getElementById("ui"+id).getElementsByClassName("tag")[1].textContent="";
@@ -550,7 +563,7 @@ function setUpEditSentenceDialog(id,description,type) {
 				closeDialog();
 			}else{
 				closeDialog();
-				updateView();
+				updateDecisionKnowledgeViewupdateIssueModuleView(); // TODO: is this the correct function or should it be rather updateIssueModuleView?
 			}
 
 			//callDialog2();
@@ -560,11 +573,12 @@ function setUpEditSentenceDialog(id,description,type) {
 }
 
 function refreshTreeViewer(){
+    console.log("view.context.menu.js refreshTreeViewer");
 	if(!(document.getElementById("Relevant") == null)){
 		resetTreeViewer();
 		buildTreeViewer2(document.getElementById("Relevant").checked);
 	}else{
 		closeDialog();
-		updateView();
+		updateDecisionKnowledgeViewupdateIssueModuleView(); // TODO: is this the correct function or should it be rather updateIssueModuleView?
 	}
 }

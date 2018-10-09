@@ -1,8 +1,9 @@
 function buildTreeViewer() {
+    console.log("view.tree.viewer.js buildTreeViewer");
 	resetTreeViewer();
 	var rootElementType = $("select[name='select-root-element-type']").val();
 	getTreeViewer(rootElementType, function(core) {
-		$("#jstree").jstree({
+		jQueryConDec("#jstree").jstree({
 			"core" : core,
 			"plugins" : [ "dnd", "contextmenu", "wholerow", "sort", "search","state" ],
 			"search" : {
@@ -14,13 +15,14 @@ function buildTreeViewer() {
 		});
 		$("#jstree-search-input").keyup(function() {
 			var searchString = $(this).val();
-			$("#jstree").jstree(true).search(searchString);
+			jQueryConDec("#jstree").jstree(true).search(searchString);
 		});
 	});
 	addDragAndDropSupportForTreeViewer();
 }
 
 function customMenu(node) {
+    console.log("view.tree.viewer.js customMenu(node)");
      if (node.li_attr['class'] == "sentence") {
         return contextMenuActionsForSentences;
     }else{
@@ -29,22 +31,25 @@ function customMenu(node) {
 }
 
 function resetTreeViewer() {
-	var treeViewer = $("#jstree").jstree(true);
+    console.log("view.tree.viewer.js resetTreeViewer");
+	var treeViewer = jQueryConDec("#jstree").jstree(true);
 	if (treeViewer) {
 		treeViewer.destroy();
 	}
 }
 
 function getTreeViewerNodeById(nodeId) {
+    console.log("view.tree.viewer.js getTreeViewerNodeById(nodeId)");
 	if (nodeId === "#") {
 		return nodeId;
 	}
-	return $("#jstree").jstree(true).get_node(nodeId);
+	return jQueryConDec("#jstree").jstree(true).get_node(nodeId);
 }
 
 function selectNodeInTreeViewer(nodeId) {
-	$("#jstree").on("ready.jstree", function() {
-		var treeViewer = $("#jstree").jstree(true);
+    console.log("view.tree.viewer.js selectNodeInTreeViewer");
+	jQueryConDec("#jstree").on("ready.jstree", function() {
+		var treeViewer = jQueryConDec("#jstree").jstree(true);
 		if (treeViewer) {
 			treeViewer.select_node(nodeId);
 		}
@@ -52,7 +57,8 @@ function selectNodeInTreeViewer(nodeId) {
 }
 
 function addDragAndDropSupportForTreeViewer() {
-	$("#jstree").on('move_node.jstree', function(object, nodeInContext) {
+    console.log("view.tree.viewer.js addDragAndDropSupportForTreeViewer");
+	jQueryConDec("#jstree").on('move_node.jstree', function(object, nodeInContext) {
 		var node = nodeInContext.node;
 		var parentNode = getTreeViewerNodeById(nodeInContext.parent);
 		var oldParentNode = getTreeViewerNodeById(nodeInContext.old_parent);

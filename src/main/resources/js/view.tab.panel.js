@@ -1,5 +1,6 @@
 
 function hideSelectedDecisionElements(element){
+    console.log("view.tab.panel.js hideSelectedDecisionElements");
 	var decisionElements =["Issue","Decision","Alternative","Pro","Con"]
 	var sentences = document.getElementsByClassName(element.id);
 	if(element.id != "Relevant"){
@@ -22,6 +23,7 @@ function setVisibility(sentences, checked){
 }
 
 function callDialogFromView() {
+    console.log("view.tab.panel.js callDialogFromView");
 	var submitButton = document.getElementById("dialog-submit-button");
 	submitButton.textContent = "Save";
 	submitButton.onclick = function() {
@@ -34,6 +36,12 @@ function callDialogFromView() {
 
 
 function callDialog2(){
+    console.log("view.tab.panel.js callDialog2");
+    /* TODO:
+       What is the intention of the below 4 lines?
+       Should the thread wait until callDialogFromView is done?
+       If yes, it can be done better than below.
+    */
 	callDialogFromView();
 	closeDialog();
 	callDialogFromView();
@@ -47,6 +55,7 @@ function callDialog2(){
 }
 
 function includeJQ(){
+    console.log("view.tab.panel.js includeJQ");
     var startingTime = new Date().getTime();
     // Load the script
     var script = document.createElement("SCRIPT");
@@ -55,8 +64,9 @@ function includeJQ(){
     script.onload = function() {
     	var $ = window.jQuery;
     	window.$ = window.jQuery; 
-    	console.log($.fn.jquery)
+    	console.log($.fn.jquery);
       $(function() {
+            console.log("view.tab.panel.js includeJQ onload");
             buildTreeViewer2(true);
         });
     };
@@ -65,11 +75,10 @@ function includeJQ(){
 
 
 function buildTreeViewer2(showRelevant) {
-	console.log("build Tree")
-	console.log(jQuery.fn.jquery);
+    console.log("view.tab.panel.js buildTreeViewer2");
 
 	getTreeViewerWithoutRootElement(showRelevant, function(core) {
-		$("#jstree").jstree({
+		jQueryConDec("#jstree").jstree({
 			"core" : core,
 			"plugins" : [ "dnd", "contextmenu", "wholerow", "search","sort","state"],
 			"search" : {
@@ -82,7 +91,7 @@ function buildTreeViewer2(showRelevant) {
 			});
 		$("#jstree-search-input").keyup(function() {
 			var searchString = $(this).val();
-			$("#jstree").jstree(true).search(searchString);
+			jQueryConDec("#jstree").jstree(true).search(searchString);
 		});
 	});
 	addDragAndDropSupportForTreeViewer();
@@ -100,6 +109,7 @@ function sortfunction(a, b) {
 } 
 
 function customContextMenu(node) {
+     console.log("view.tab.panel.js customContextMenu");
      if (node.li_attr['class'] == "sentence") {
         return contextMenuActionsForSentences;
     }else{
@@ -116,6 +126,7 @@ function bringContextMenuToFront(){
 
 
 function createSentenceLinkToExistingElement(idOfExistingElement, idOfNewElement, knowledgeTypeOfChild) {
+    console.log("view.tab.panel.js createSentenceLinkToExistingElement");
 	switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
 			idOfNewElement) {
 		linkSentences(idOfExistingElement, idOfNewElement, linkType, function() {

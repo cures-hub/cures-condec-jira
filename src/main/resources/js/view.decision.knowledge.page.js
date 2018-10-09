@@ -1,4 +1,5 @@
 function initializeDecisionKnowledgePage() {
+    console.log("view.decision.knowledge.page initializeDecisionKnowledgePage");
 	for (var index = 0; index < knowledgeTypes.length; index++) {
 		var isSelected = "";
 		if (knowledgeTypes[index] === "Decision") {
@@ -15,7 +16,7 @@ function initializeDecisionKnowledgePage() {
 		var type = $("select[name='select-root-element-type']").val();
 		elementInputField.value = "";
 		createDecisionKnowledgeElement(summary, "", type, function(id) {
-			updateView(id);
+			updateDecisionKnowledgeView(id);
 		});
 	});
 
@@ -24,16 +25,17 @@ function initializeDecisionKnowledgePage() {
 		var depthOfTreeWarningLabel = document.getElementById("depth-of-tree-warning");
 		if (this.value > 0) {
 			depthOfTreeWarningLabel.style.visibility = "hidden";
-			updateView();
+			updateDecisionKnowledgeView();
 		} else {
 			depthOfTreeWarningLabel.style.visibility = "visible";
 		}
 	});
 
-	updateView();
+	updateDecisionKnowledgeView();
 }
 
-function updateView(nodeId) {
+function updateDecisionKnowledgeView(nodeId) {
+    console.log("view.decision.knowledge.page updateDecisionKnowledgeView");
 	buildTreeViewer();
 	if (nodeId === undefined) {
 		var rootElement = getCurrentRootElement();
@@ -43,7 +45,7 @@ function updateView(nodeId) {
 	} else {
 		selectNodeInTreeViewer(nodeId);
 	}
-	$('#jstree').on("select_node.jstree", function(error, tree) {
+	jQueryConDec("#jstree").on("select_node.jstree", function(error, tree) {
 		var node = tree.node.data;
 		buildTreant(node.key, true);
 	});

@@ -12,6 +12,7 @@ var defaultKnowledgeTypes = getDefaultKnowledgeTypes(getProjectKey());
 var extendedKnowledgeTypes = replaceArgumentWithLinkTypes(knowledgeTypes);
 
 function replaceArgumentWithLinkTypes(knowledgeTypes) {
+    console.log("management.js replaceArgumentWithLinkTypes");
 	var extendedKnowledgeTypes = getKnowledgeTypes(getProjectKey());
 	remove(extendedKnowledgeTypes, "Argument");
 	extendedKnowledgeTypes.push("Pro-argument");
@@ -20,15 +21,17 @@ function replaceArgumentWithLinkTypes(knowledgeTypes) {
 }
 
 function createLinkToExistingElement(idOfExistingElement, idOfNewElement, knowledgeTypeOfChild) {
+    console.log("management.js createLinkToExistingElement");
 	switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
 			idOfNewElement) {
 		linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
-			updateView();
+			updateDecisionKnowledgeViewupdateIssueModuleView(); // TODO: is this the correct function or should it be rather updateIssueModuleView?
 		});
 	});
 }
 
 function switchLinkTypes(type, idOfExistingElement, idOfNewElement, linkTypeFunction) {
+    console.log("management.js switchLinkTypes");
 	switch (type) {
 	case "Pro-argument":
 		linkTypeFunction("support", idOfExistingElement, idOfNewElement);
@@ -42,6 +45,7 @@ function switchLinkTypes(type, idOfExistingElement, idOfNewElement, linkTypeFunc
 }
 
 function updateDecisionKnowledgeElementAsChild(childId, summary, description, type) {
+    console.log("management.js updateDecisionKnowledgeElementAsChild");
 	var simpleType = getSimpleType(type);
 	updateDecisionKnowledgeElement(childId, summary, description, simpleType, function() {
 		getDecisionKnowledgeElement(childId, function(decisionKnowledgeElement) {
@@ -50,18 +54,19 @@ function updateDecisionKnowledgeElementAsChild(childId, summary, description, ty
 				switchLinkTypes(type, parentId, childId, function(linkType, parentId, childId) {
 					deleteLink(parentId, childId, function() {
 						linkElements(parentId, childId, linkType, function() {
-							updateView();
+							updateDecisionKnowledgeViewupdateIssueModuleView(); // TODO: is this the correct function or should it be rather updateIssueModuleView?
 						});
 					});
 				});
 			} else {
-				updateView();
+				updateDecisionKnowledgeViewupdateIssueModuleView(); // TODO: is this the correct function or should it be rather updateIssueModuleView?
 			}
 		});
 	});
 }
 
 function getSimpleType(type) {
+    console.log("management.js getSimpleType");
 	var simpleType = type;
 	if (type === "Pro-argument" || type === "Con-argument") {
 		simpleType = "Argument";
@@ -70,18 +75,20 @@ function getSimpleType(type) {
 }
 
 function createDecisionKnowledgeElementAsChild(summary, description, type, idOfExistingElement) {
+    console.log("management.js createDecisionKnowledgeElementAsChild");
 	var simpleType = getSimpleType(type);
 	createDecisionKnowledgeElement(summary, description, simpleType, function(idOfNewElement) {
 		switchLinkTypes(type, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
 				idOfNewElement) {
 			linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
-				updateView();
+				updateDecisionKnowledgeViewupdateIssueModuleView(); // TODO: is this the correct function or should it be rather updateIssueModuleView?
 			});
 		});
 	});
 }
 
 function getProjectKey() {
+    console.log("management.js getProjectKey");
 	var projectKey;
 	try {
 		projectKey = JIRA.API.Projects.getCurrentProjectKey();
