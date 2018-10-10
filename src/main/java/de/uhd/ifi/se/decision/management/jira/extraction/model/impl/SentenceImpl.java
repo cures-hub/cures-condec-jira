@@ -371,5 +371,10 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	public void setCreated(Date date) {
 		this.created = date;
 	}
+	
+	public void setType(KnowledgeType type) {
+		super.setType(type);
+		this.setKnowledgeTypeString(type.toString());
+	}
 
 }

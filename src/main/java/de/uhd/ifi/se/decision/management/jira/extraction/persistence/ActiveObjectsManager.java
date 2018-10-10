@@ -31,7 +31,7 @@ public class ActiveObjectsManager {
 		}
 	}
 
-	public static long addNewSentenceintoAo(CommentImpl comment, long issueId, int index) {
+	public static long addNewSentenceintoAo(Comment comment, long issueId, int index) {
 		return addNewSentenceintoAo(comment.getJiraCommentId(), comment.getEndSubstringCount().get(index),
 				comment.getStartSubstringCount().get(index), comment.getAuthorId(), issueId, comment.getProjectKey());
 	}
@@ -189,11 +189,12 @@ public class ActiveObjectsManager {
 				for (DecisionKnowledgeInCommentEntity sentenceEntity : ao
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
-						sentenceEntity.setKnowledgeTypeString(knowledgeType.toString());
-						if (knowledgeType != KnowledgeType.OTHER) {
-						} else {// Knowledgetype is an Argument
+						// Knowledgetype is an Argument
+						if(knowledgeType.equals(KnowledgeType.OTHER) || knowledgeType.equals(KnowledgeType.ARGUMENT)) {
 							sentenceEntity.setKnowledgeTypeString(argument);
 							sentenceEntity.setArgument(argument);
+						}else {
+							sentenceEntity.setKnowledgeTypeString(knowledgeType.toString());
 						}
 						sentenceEntity.setRelevant(true);
 						sentenceEntity.setTaggedManually(true);
@@ -237,7 +238,7 @@ public class ActiveObjectsManager {
 		return true;
 	}
 
-	public static void checkIfCommentBodyHasChangedOutsideOfPlugin(CommentImpl comment) {
+	public static void checkIfCommentBodyHasChangedOutsideOfPlugin(Comment comment) {
 		init();
 		final List<Integer> starts = comment.getStartSubstringCount();
 		final List<Integer> ends = comment.getEndSubstringCount();
