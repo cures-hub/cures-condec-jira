@@ -37,7 +37,6 @@ function getSelectedTreantNodeId(options) {
 
 function setUpDialogForCreateAction(id) {
 	console.log("view.context.menu.js setUpDialogForCreateAction");
-	setUpDialog();
 	setHeaderText(createKnowledgeElementText);
 	setUpCreateOrEditDialog("", "", "Alternative");
 
@@ -67,18 +66,19 @@ function setUpDialogForCreateAction(id) {
 			};
 		}
 	});
+
+	setUpDialog();
 }
 
 function setUpDialog() {
-	resetDialog();
+	document.getElementById("dialog-cancel-button").addEventListener("click", function() {
+		closeDialog();
+	});
 	AJS.dialog2("#dialog").show();
-	AJS.dialog2("#dialog").on("show", function() {
-		resetDialog();
-	});
-	AJS.$(document).on("click", "#dialog-cancel-button", function(e) {
-		e.preventDefault();
-		AJS.dialog2("#dialog").hide();
-	});
+	AJS.dialog2("#dialog").hide();
+	AJS.dialog2("#dialog").show();
+	AJS.dialog2("#dialog").hide();
+	AJS.dialog2("#dialog").show();
 }
 
 function setHeaderText(headerText) {
@@ -313,25 +313,23 @@ var contextMenuActions = {
 
 function closeDialog() {
 	AJS.dialog2("#dialog").hide();
+	resetDialog();
 }
 
 function resetDialog() {
 	document.getElementById("dialog-header").innerHTML = "";
 	document.getElementById("dialog-content").innerHTML = "";
 	document.getElementById("dialog-extension-button").style.visibility = "hidden";
+	var dialog = document.getElementById("dialog");
+	if (dialog.classList.contains("aui-dialog2-large")) {
+		dialog.classList.remove("aui-dialog2-large");
+	}
+	if (!dialog.classList.contains("aui-dialog2-medium")) {
+		dialog.classList.add("aui-dialog2-medium");
+	}
 }
 
-var contextMenuActionsForSentences = {
-	"edit" : contextMenuEditSentenceAction,
-	//"deleteLink" : contextMenuDeleteSentenceLinkAction,
-	"delete" : contextMenuDeleteSentenceAction,
-	"changeKt" : changeKnowledgeTypeAction
-};
 
-var contextMenuActionsForSentencesInTreant = {
-	"edit" : contextMenuEditSentenceAction,
-	"delete" : contextMenuDeleteSentenceAction
-};
 
 var changeKnowledgeTypeAction = {
 	// label for Tree Viewer, name for Treant context menu
@@ -374,13 +372,15 @@ var changeKnowledgeTypeAction = {
 
 function changeKtTo(id, position, type) {
 	changeKnowledgeTypeOfSentence(id, type, function() {
-		if (!(document.getElementById("Relevant") == null)) {
+		if (document.getElementById("Relevant") !== null) {
 			resetTreeViewer();
 			buildTreeViewer2(document.getElementById("Relevant").checked);
-			// getTreeViewerWithoutRootElement(document.getElementById("Relevant").checked, function(core) {
-			// 	var indexOfNode = getArrayId(core.data,getSelectedTreeViewerNodeId(position));
-			// 	var url = getIconUrl(core,indexOfNode,type);
-			// 	 jQueryConDec("#jstree").jstree(true).set_icon(getSelectedTreeViewerNode(position),url);
+			// getTreeViewerWithoutRootElement(document.getElementById("Relevant").checked,
+			// function(core) {
+			// var indexOfNode =
+			// getArrayId(core.data,getSelectedTreeViewerNodeId(position));
+			// var url = getIconUrl(core,indexOfNode,type);
+			// jQueryConDec("#jstree").jstree(true).set_icon(getSelectedTreeViewerNode(position),url);
 			// });
 			var idOfUiElement = "ui" + id;
 			replaceTagsFromContent(idOfUiElement, type);
@@ -396,7 +396,7 @@ function changeKtTo(id, position, type) {
 
 function getArrayId(array, id) {
 	for (var i = array.length - 1; i >= 0; i--) {
-		if (array[i].id == id) {
+		if (array[i].id === id) {
 			return i;
 		}
 	}
@@ -432,7 +432,7 @@ var contextMenuDeleteSentenceLinkAction = {
 		var id = node.id;
 		var parentId = node.parent;
 
-		var nodeType = (node.li_attr['class'] == "sentence") ? "s" : "i";
+		var nodeType = (node.li_attr['class'] === "sentence") ? "s" : "i";
 
 		deleteGenericLink(parentId, node.id, "i", nodeType, refreshTreeViewer, false);
 		deleteGenericLink(parentId, node.id, "s", nodeType, refreshTreeViewer, false);
@@ -470,7 +470,7 @@ var contextMenuDeleteSentenceAction = {
 		var id = getSelectedTreantNodeId(options);
 		setSentenceIrrelevant(id, function(core, options, id) {
 			refreshTreeViewer();
-		})
+		});
 	}
 };
 
@@ -491,7 +491,7 @@ var contextMenuEditSentenceAction = {
 
 		var type = "Other";
 		if (node.getElementsByClassName("node-name").length > 0) {
-			type = node.getElementsByClassName("node-name")[0].innerHTML
+			type = node.getElementsByClassName("node-name")[0].innerHTML;
 		}
 		setUpDialogForEditSentenceAction(id, description, type);
 	}
@@ -499,8 +499,8 @@ var contextMenuEditSentenceAction = {
 
 function getNodeWithId(nodes, id) {
 	for (var i = nodes.length - 1; i >= 0; i--) {
-		if (nodes[i].id == id) {
-			return nodes[i]
+		if (nodes[i].id === id) {
+			return nodes[i];
 		}
 	}
 }
@@ -567,7 +567,7 @@ function setUpEditSentenceDialog(id, description, type) {
 						updateView();
 					}
 
-					//callDialog2();
+					// callDialog2();
 				});
 	};
 	AJS.$("#form-select-type").auiSelect2();
@@ -575,7 +575,7 @@ function setUpEditSentenceDialog(id, description, type) {
 
 function refreshTreeViewer() {
 	console.log("view.context.menu.js refreshTreeViewer");
-	if (!(document.getElementById("Relevant") == null)) {
+	if (document.getElementById("Relevant") !== null) {
 		resetTreeViewer();
 		buildTreeViewer2(document.getElementById("Relevant").checked);
 	} else {
@@ -583,3 +583,15 @@ function refreshTreeViewer() {
 		updateView();
 	}
 }
+
+var contextMenuActionsForSentences = {
+	"edit" : contextMenuEditSentenceAction,
+	// "deleteLink" : contextMenuDeleteSentenceLinkAction,
+	"delete" : contextMenuDeleteSentenceAction,
+	"changeKt" : changeKnowledgeTypeAction
+};
+
+var contextMenuActionsForSentencesInTreant = {
+	"edit" : contextMenuEditSentenceAction,
+	"delete" : contextMenuDeleteSentenceAction
+};
