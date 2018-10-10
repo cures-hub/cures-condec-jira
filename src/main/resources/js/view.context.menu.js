@@ -19,21 +19,24 @@ var contextMenuCreateAction = {
 };
 
 function getSelectedTreeViewerNode(position) {
+	console.log("view.context.menu.js getSelectedTreeViewerNode");
 	var selector = position.reference.prevObject.selector;
-	return $("#jstree").jstree(true).get_node(selector);
+	return jQueryConDec("#jstree").jstree(true).get_node(selector);
 }
 
 function getSelectedTreeViewerNodeId(node) {
+	console.log("view.context.menu.js getSelectedTreeViewerNodeId");
 	return getSelectedTreeViewerNode(node).data.id;
 }
 
 function getSelectedTreantNodeId(options) {
+	console.log("view.context.menu.js getSelectedTreantNodeId");
 	var context = options.$trigger.context;
 	return context.id;
 }
 
 function setUpDialogForCreateAction(id) {
-	setUpDialog();
+	console.log("view.context.menu.js setUpDialogForCreateAction");
 	setHeaderText(createKnowledgeElementText);
 	setUpCreateOrEditDialog("", "", "Alternative");
 
@@ -63,18 +66,19 @@ function setUpDialogForCreateAction(id) {
 			};
 		}
 	});
+
+	setUpDialog();
 }
 
 function setUpDialog() {
-	resetDialog();
+	document.getElementById("dialog-cancel-button").addEventListener("click", function() {
+		closeDialog();
+	});
 	AJS.dialog2("#dialog").show();
-	AJS.dialog2("#dialog").on("show", function() {
-		resetDialog();
-	});
-	AJS.$(document).on("click", "#dialog-cancel-button", function(e) {
-		e.preventDefault();
-		AJS.dialog2("#dialog").hide();
-	});
+	AJS.dialog2("#dialog").hide();
+	AJS.dialog2("#dialog").show();
+	AJS.dialog2("#dialog").hide();
+	AJS.dialog2("#dialog").show();
 }
 
 function setHeaderText(headerText) {
@@ -83,6 +87,7 @@ function setHeaderText(headerText) {
 }
 
 function setUpCreateOrEditDialog(summary, description, knowledgeType) {
+	console.log("view.context.menu.js setUpCreateOrEditDialog");
 	document.getElementById("dialog-content").insertAdjacentHTML(
 			"afterBegin",
 			"<form class='aui'><div class='field-group'><label for='form-input-summary'>Summary:</label>"
@@ -107,6 +112,7 @@ function setUpCreateOrEditDialog(summary, description, knowledgeType) {
 }
 
 function isKnowledgeTypeLocatedAtIndex(knowledgeType, index) {
+	console.log("view.context.menu.js isKnowledgeTypeLocatedAtIndex");
 	return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase();
 }
 
@@ -125,6 +131,8 @@ var contextMenuLinkAction = {
 };
 
 function setUpDialogForLinkAction(id) {
+	console.log("view.context.menu.js setUpDialogForLinkAction");
+	console.log(id);
 	setUpDialog();
 	setHeaderText(linkKnowledgeElementText);
 
@@ -138,9 +146,8 @@ function setUpDialogForLinkAction(id) {
 				+ "<select id='form-select-component' name='form-select-component' "
 				+ "onchange='addFormForArguments()' class='select full-width-field'/>";
 		for (var index = 0; index < unlinkedElements.length; index++) {
-			insertString += "<option value='" + unlinkedElements[index].id + "'>"
-					+ unlinkedElements[index].type + ' / ' + unlinkedElements[index].summary
-					+ "</option>";
+			insertString += "<option value='" + unlinkedElements[index].id + "'>" + unlinkedElements[index].type
+					+ ' / ' + unlinkedElements[index].summary + "</option>";
 		}
 		var selectFieldGroup = document.getElementById("select-field-group");
 		selectFieldGroup.insertAdjacentHTML("afterBegin", insertString);
@@ -159,6 +166,7 @@ function setUpDialogForLinkAction(id) {
 }
 
 function addFormForArguments() {
+	console.log("view.context.menu.js addFormForArguments");
 	var childId = $("select[name='form-select-component']").val();
 	var argumentFieldGroup = document.getElementById("argument-field-group");
 	argumentFieldGroup.innerHTML = "";
@@ -191,6 +199,7 @@ var contextMenuEditAction = {
 };
 
 function setUpDialogForEditAction(id, type) {
+	console.log("view.context.menu.js setUpDialogForEditAction");
 	setUpDialog();
 	setHeaderText(editKnowledgeElementText);
 	getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
@@ -242,6 +251,7 @@ var contextMenuDeleteAction = {
 };
 
 function setUpDialogForDeleteAction(id) {
+	console.log("view.context.menu.js setUpDialogForDeleteAction");
 	setUpDialog();
 	setHeaderText(deleteKnowledgeElementText);
 
@@ -276,6 +286,7 @@ var contextMenuDeleteLinkAction = {
 };
 
 function setUpDialogForDeleteLinkAction(id, parentId) {
+	console.log("view.context.menu.js setUpDialogForDeleteLinkAction");
 	setUpDialog();
 	setHeaderText(deleteLinkToParentText);
 
@@ -302,112 +313,115 @@ var contextMenuActions = {
 
 function closeDialog() {
 	AJS.dialog2("#dialog").hide();
+	resetDialog();
 }
 
 function resetDialog() {
 	document.getElementById("dialog-header").innerHTML = "";
 	document.getElementById("dialog-content").innerHTML = "";
 	document.getElementById("dialog-extension-button").style.visibility = "hidden";
+	var dialog = document.getElementById("dialog");
+	if (dialog.classList.contains("aui-dialog2-large")) {
+		dialog.classList.remove("aui-dialog2-large");
+	}
+	if (!dialog.classList.contains("aui-dialog2-medium")) {
+		dialog.classList.add("aui-dialog2-medium");
+	}
 }
 
 
-var contextMenuActionsForSentences = {
-	"edit" : contextMenuEditSentenceAction,
-	//"deleteLink" : contextMenuDeleteSentenceLinkAction,
-	"delete" : contextMenuDeleteSentenceAction,
-	"changeKt": changeKnowledgeTypeAction
-};
-
-var contextMenuActionsForSentencesInTreant = {
-	"edit" : contextMenuEditSentenceAction,
-	"delete" : contextMenuDeleteSentenceAction
-};
 
 var changeKnowledgeTypeAction = {
 	// label for Tree Viewer, name for Treant context menu
 	"label" : "Change Knowledge Type",
 	"name" : "Change Knowledge Type",
-	"submenu" :{
-                'Issue': {
-                    'label' : 'Issue',
-                    "action" : function(position) {
-						changeKtTo(getSelectedTreeViewerNodeId(position),position,"Issue");
-					},
-                },
-                'Decision': {
-                    'label' : 'Decision',
-                    "action" : function(position) {
-						changeKtTo(getSelectedTreeViewerNodeId(position),position,"Decision");
-					},
-                },
-                'Alternative': {
-                    'label' : 'Alternative',
-                    "action" : function(position) {
-						changeKtTo(getSelectedTreeViewerNodeId(position),position,"Alternative");
-					},
-                },
-                'Pro': {
-                    'label' : 'Pro',
-                    "action" : function(position) {
-						changeKtTo(getSelectedTreeViewerNodeId(position),position,"Pro");
-					},
-                },
-                'Con': {
-                    'label' : 'Con',
-                    "action" : function(position) {
-						changeKtTo(getSelectedTreeViewerNodeId(position),position,"Con");
-					},
-                },
+	"submenu" : {
+		'Issue' : {
+			'label' : 'Issue',
+			"action" : function(position) {
+				changeKtTo(getSelectedTreeViewerNodeId(position), position, "Issue");
+			},
+		},
+		'Decision' : {
+			'label' : 'Decision',
+			"action" : function(position) {
+				changeKtTo(getSelectedTreeViewerNodeId(position), position, "Decision");
+			},
+		},
+		'Alternative' : {
+			'label' : 'Alternative',
+			"action" : function(position) {
+				changeKtTo(getSelectedTreeViewerNodeId(position), position, "Alternative");
+			},
+		},
+		'Pro' : {
+			'label' : 'Pro',
+			"action" : function(position) {
+				changeKtTo(getSelectedTreeViewerNodeId(position), position, "Pro");
+			},
+		},
+		'Con' : {
+			'label' : 'Con',
+			"action" : function(position) {
+				changeKtTo(getSelectedTreeViewerNodeId(position), position, "Con");
+			},
+		},
 
-            }
+	}
 };
 
-function changeKtTo(id,position,type){
-	changeKnowledgeTypeOfSentence(id,type, function() {
-		if(!(document.getElementById("Relevant") == null)){
+function changeKtTo(id, position, type) {
+	changeKnowledgeTypeOfSentence(id, type, function() {
+		if (!(document.getElementById("Relevant") == null)) {
 			resetTreeViewer();
 			buildTreeViewer2(document.getElementById("Relevant").checked);
-			// getTreeViewerWithoutRootElement(document.getElementById("Relevant").checked, function(core) {
-			// 	var indexOfNode = getArrayId(core.data,getSelectedTreeViewerNodeId(position));
-			// 	var url = getIconUrl(core,indexOfNode,type);
-			// 	 $("#jstree").jstree(true).set_icon(getSelectedTreeViewerNode(position),url);
+			// getTreeViewerWithoutRootElement(document.getElementById("Relevant").checked,
+			// function(core) {
+			// var indexOfNode =
+			// getArrayId(core.data,getSelectedTreeViewerNodeId(position));
+			// var url = getIconUrl(core,indexOfNode,type);
+			// jQueryConDec("#jstree").jstree(true).set_icon(getSelectedTreeViewerNode(position),url);
 			// });
-			var idOfUiElement = "ui"+id;
-			replaceTagsFromContent(idOfUiElement,type);
-			document.getElementById(idOfUiElement).classList.remove("Decision","Issue","Alternative","Pro","Con");
+			var idOfUiElement = "ui" + id;
+			replaceTagsFromContent(idOfUiElement, type);
+			document.getElementById(idOfUiElement).classList.remove("Decision", "Issue", "Alternative", "Pro", "Con",
+					"isNotRelevant");
 			document.getElementById(idOfUiElement).classList.add(type);
-		}else{
-			updateView();
-			
+		} else {
+			updateIssueModuleView();
+
 		}
 	});
 }
 
-function getArrayId(array,id){
+function getArrayId(array, id) {
 	for (var i = array.length - 1; i >= 0; i--) {
-		if(array[i].id == id){
+		if (array[i].id == id) {
 			return i;
 		}
 	}
 }
 
-function getIconUrl(core,indexOfNode,type){
+function getIconUrl(core, indexOfNode, type) {
 	var url = core.data[indexOfNode].icon;
-	if(type.includes("Pro")){
-		url = url.replace("Other","argument_pro");
+	if (type.includes("Pro")) {
+		url = url.replace("Other", "argument_pro");
 	}
-	if(type.includes("Con")){
-		url = url.replace("Other","argument_con");
+	if (type.includes("Con")) {
+		url = url.replace("Other", "argument_con");
 	}
 	return url;
 }
 
-function replaceTagsFromContent(idOfUiElement,type){
-	document.getElementById(idOfUiElement).getElementsByClassName("tag")[0].textContent = "["+type+"]";
-	document.getElementById(idOfUiElement).getElementsByClassName("tag")[1].textContent = "[/"+type+"]";
-
+function replaceTagsFromContent(idOfUiElement, type) {
+	if (!type.toLowerCase().includes("other") && type.length > 1) {
+		document.getElementById(idOfUiElement).getElementsByClassName("tag")[0].textContent = "[" + type + "]";
+		document.getElementById(idOfUiElement).getElementsByClassName("tag")[1].textContent = "[/" + type + "]";
+	} else {
+		document.getElementById(idOfUiElement).getElementsByClassName("tag")[0].textContent = "";
+		document.getElementById(idOfUiElement).getElementsByClassName("tag")[1].textContent = "";
+	}
 }
-
 
 var contextMenuDeleteSentenceLinkAction = {
 	// label for Tree Viewer, name for Treant context menu
@@ -419,18 +433,19 @@ var contextMenuDeleteSentenceLinkAction = {
 		var parentId = node.parent;
 
 		var nodeType = (node.li_attr['class'] == "sentence") ? "s" : "i";
-			
-		deleteGenericLink(parentId,node.id,"i",nodeType,refreshTreeViewer,false);
-		deleteGenericLink(parentId,node.id,"s",nodeType,refreshTreeViewer,false);
+
+		deleteGenericLink(parentId, node.id, "i", nodeType, refreshTreeViewer, false);
+		deleteGenericLink(parentId, node.id, "s", nodeType, refreshTreeViewer, false);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
 		var parentId = findParentId(id);
-		deleteGenericLink(parentId, id,function(core){updateView();});
+		deleteGenericLink(parentId, id, function(core) {
+			updateView();
+		});
+
 	}
 };
-
-
 
 var contextMenuDeleteSentenceAction = {
 	// label for Tree Viewer, name for Treant context menu
@@ -439,20 +454,21 @@ var contextMenuDeleteSentenceAction = {
 	"action" : function(position) {
 		var node = getSelectedTreeViewerNode(position);
 		var id = node.id;
-		setSentenceIrrelevant(id,function(core,node){
-			$("#jstree").jstree(true).set_icon($('#jstree').jstree(true).get_node(id),"https://player.fm/static/images/128pixel.png");
-			if(!(document.getElementById("Relevant") == null)){
-				document.getElementById("ui"+id).getElementsByClassName("tag")[0].textContent="";
-				document.getElementById("ui"+id).getElementsByClassName("tag")[1].textContent="";
-				document.getElementById("ui"+id).classList.remove("Decision","Issue","Alternative","Pro","Con");
-			}else{
+		setSentenceIrrelevant(id, function(core, node) {
+			jQueryConDec("#jstree").jstree(true).set_icon(jQueryConDec("#jstree").jstree(true).get_node(id),
+					"https://player.fm/static/images/128pixel.png");
+			if (!(document.getElementById("Relevant") == null)) {
+				document.getElementById("ui" + id).getElementsByClassName("tag")[0].textContent = "";
+				document.getElementById("ui" + id).getElementsByClassName("tag")[1].textContent = "";
+				document.getElementById("ui" + id).classList.remove("Decision", "Issue", "Alternative", "Pro", "Con");
+			} else {
 				refreshTreeViewer();
 			}
 		})
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		setSentenceIrrelevant(id,function(core,options,id){
+		setSentenceIrrelevant(id, function(core, options, id) {
 			refreshTreeViewer();
 		})
 	}
@@ -465,44 +481,42 @@ var contextMenuEditSentenceAction = {
 	"action" : function(position) {
 		var id = getSelectedTreeViewerNodeId(position);
 		var node = getSelectedTreeViewerNode(position);
-		setUpDialogForEditSentenceAction(id,node.data.summary,node.data.type);
+		setUpDialogForEditSentenceAction(id, node.data.summary, node.data.type);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
 		var nodes = document.getElementById("treant-container").getElementsByClassName("sentence");
-		var node = getNodeWithId(nodes,id);
+		var node = getNodeWithId(nodes, id);
 		var description = node.getElementsByClassName("node-title")[0].innerHTML;
 
-		var	type = "Other";
-		if(node.getElementsByClassName("node-name").length >0){
+		var type = "Other";
+		if (node.getElementsByClassName("node-name").length > 0) {
 			type = node.getElementsByClassName("node-name")[0].innerHTML
 		}
-		setUpDialogForEditSentenceAction(id,description,type);
+		setUpDialogForEditSentenceAction(id, description, type);
 	}
 };
 
-function getNodeWithId(nodes,id) {
+function getNodeWithId(nodes, id) {
 	for (var i = nodes.length - 1; i >= 0; i--) {
-		if(nodes[i].id == id){
+		if (nodes[i].id == id) {
 			return nodes[i]
 		}
 	}
 }
 
-function setUpDialogForEditSentenceAction(id,description,type) {
+function setUpDialogForEditSentenceAction(id, description, type) {
 	setUpDialog();
 	setHeaderText(editKnowledgeElementText);
-	setUpEditSentenceDialogView(description,type);
-	setUpEditSentenceDialog(id,description,type);
+	setUpEditSentenceDialogView(description, type);
+	setUpEditSentenceDialog(id, description, type);
 }
 
-
-function setUpEditSentenceDialogView(description,type){
+function setUpEditSentenceDialogView(description, type) {
 	document.getElementById("dialog").style.zIndex = 9999;
 	document.getElementById("dialog-content").insertAdjacentHTML(
 			"afterBegin",
-			"<form class='aui'>"
-					+ "<div class='field-group'><label for='form-input-description'>Sentence:</label>"
+			"<form class='aui'>" + "<div class='field-group'><label for='form-input-description'>Sentence:</label>"
 					+ "<textarea id='form-input-description' placeholder='Description' value='" + description
 					+ "' class='textarea full-width-field'>" + description + "</textarea></div>"
 					+ "<div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
@@ -510,13 +524,16 @@ function setUpEditSentenceDialogView(description,type){
 					+ "</form>");
 
 	var knowledgeTypesWithIrrelevant = Array.from(extendedKnowledgeTypes);
-	if(!knowledgeTypesWithIrrelevant.includes("Other")){
+	if (!knowledgeTypesWithIrrelevant.includes("Other")) {
 		knowledgeTypesWithIrrelevant.push("Other");
 	}
-	
+
 	for (var index = 0; index < knowledgeTypesWithIrrelevant.length; index++) {
 		var isSelected = "";
 		if (type.toLowerCase() === knowledgeTypesWithIrrelevant[index].toLowerCase()) {
+			isSelected = "selected ";
+		}
+		if (type.toLowerCase() === "argument" && knowledgeTypesWithIrrelevant[index].toLowerCase().includes("pro")) {
 			isSelected = "selected ";
 		}
 		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
@@ -524,40 +541,57 @@ function setUpEditSentenceDialogView(description,type){
 	}
 }
 
-function setUpEditSentenceDialog(id,description,type) {
-	
+function setUpEditSentenceDialog(id, description, type) {
 
 	var submitButton = document.getElementById("dialog-submit-button");
 	submitButton.textContent = createKnowledgeElementText;
 	submitButton.onclick = function() {
 		var description = document.getElementById("form-input-description").value;
-		var type = $("select[name='form-select-type']").val();
-		editSentenceBody(id,description,type,function(){
-			if(!(document.getElementById("Relevant") == null)){
-				var idOfUiElement = "ui"+id;
-				replaceTagsFromContent(idOfUiElement,type);
+		var type = $("select[name='form-select-type']").val().split("-")[0];
+		editSentenceBody(
+				id,
+				description,
+				type,
+				function() {
+					if (!(document.getElementById("Relevant") == null)) {
+						var idOfUiElement = "ui" + id;
+						replaceTagsFromContent(idOfUiElement, type);
 
-				document.getElementById(idOfUiElement).classList.remove("Decision","Issue","Alternative","Pro","Con");
-				document.getElementById(idOfUiElement).classList.add(type);
-				document.getElementById(idOfUiElement).getElementsByClassName("sentenceBody")[0].textContent=description;
-				closeDialog();
-			}else{
-				closeDialog();
-				updateView();
-			}
+						document.getElementById(idOfUiElement).classList.remove("Decision", "Issue", "Alternative",
+								"Pro", "Con");
+						document.getElementById(idOfUiElement).classList.add(type);
+						document.getElementById(idOfUiElement).getElementsByClassName("sentenceBody")[0].textContent = description;
+						closeDialog();
+					} else {
+						closeDialog();
+						updateView();
+					}
 
-			//callDialog2();
-		});
+					// callDialog2();
+				});
 	};
 	AJS.$("#form-select-type").auiSelect2();
 }
 
-function refreshTreeViewer(){
-	if(!(document.getElementById("Relevant") == null)){
+function refreshTreeViewer() {
+	console.log("view.context.menu.js refreshTreeViewer");
+	if (!(document.getElementById("Relevant") == null)) {
 		resetTreeViewer();
 		buildTreeViewer2(document.getElementById("Relevant").checked);
-	}else{
+	} else {
 		closeDialog();
 		updateView();
 	}
 }
+
+var contextMenuActionsForSentences = {
+	"edit" : contextMenuEditSentenceAction,
+	// "deleteLink" : contextMenuDeleteSentenceLinkAction,
+	"delete" : contextMenuDeleteSentenceAction,
+	"changeKt" : changeKnowledgeTypeAction
+};
+
+var contextMenuActionsForSentencesInTreant = {
+	"edit" : contextMenuEditSentenceAction,
+	"delete" : contextMenuDeleteSentenceAction
+};

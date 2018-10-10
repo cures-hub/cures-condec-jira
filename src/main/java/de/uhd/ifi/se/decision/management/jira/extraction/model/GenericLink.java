@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import net.java.ao.schema.Ignore;
 
 /**
  * Interface for links between knowledge elements. The links are directed, i.e.,
@@ -29,9 +31,12 @@ public interface GenericLink {
 	
 	void setIdOfDestinationElement(String idOfDestinationElement);
 
-	DecisionKnowledgeElement getElement(String elementNOTToGet);
+	DecisionKnowledgeElement getOpposite(String id);
 
 	List<DecisionKnowledgeElement> getBothElements();
+	
+	@Ignore
+	boolean isValid();
 
 
 	

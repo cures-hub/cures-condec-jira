@@ -1,16 +1,16 @@
-
-function hideSelectedDecisionElements(element){
-	var decisionElements =["Issue","Decision","Alternative","Pro","Con"]
+function hideSelectedDecisionElements(element) {
+	console.log("view.tab.panel.js hideSelectedDecisionElements");
+	var decisionElements = [ "Issue", "Decision", "Alternative", "Pro", "Con" ]
 	var sentences = document.getElementsByClassName(element.id);
-	if(element.id != "Relevant"){
-		setVisibility(sentences,element.checked);
-	}else if(element.id == "Relevant"){
+	if (element.id != "Relevant") {
+		setVisibility(sentences, element.checked);
+	} else if (element.id == "Relevant") {
 		var sentences = document.getElementsByClassName("isNotRelevant");
-		setVisibility(sentences,element.checked);
+		setVisibility(sentences, element.checked);
 	}
 }
 
-function setVisibility(sentences, checked){
+function setVisibility(sentences, checked) {
 	for (var i = sentences.length - 1; i >= 0; i--) {
 		if (checked) {
 			sentences[i].style.visibility = 'visible';
@@ -22,6 +22,7 @@ function setVisibility(sentences, checked){
 }
 
 function callDialogFromView() {
+	console.log("view.tab.panel.js callDialogFromView");
 	var submitButton = document.getElementById("dialog-submit-button");
 	submitButton.textContent = "Save";
 	submitButton.onclick = function() {
@@ -32,93 +33,70 @@ function callDialogFromView() {
 	header.textContent = "Edit and Link Decision Knowledge in Issue Comments";
 }
 
-
-function callDialog2(){
-	callDialogFromView();
-	closeDialog();
-	callDialogFromView();
-	closeDialog();
+function callDialog2() {
+	console.log("view.tab.panel.js callDialog2");
 	callDialogFromView();
 	document.getElementById("dialog-content").innerHTML = "<div id =header2> </div> <div id =jstree> </div> ";
 	document.getElementById("header2").innerHTML = "<input class=text medium-long-field id=jstree-search-input placeholder=Search decision knowledge />";
 	document.getElementById("dialog").classList.remove("aui-dialog2-medium");
 	document.getElementById("dialog").classList.add("aui-dialog2-large");
 	buildTreeViewer2(document.getElementById("Relevant").checked);
-
 }
-function includeJQ(){
-    var startingTime = new Date().getTime();
-    // Load the script
-    var script = document.createElement("SCRIPT");
-    script.src = '//code.jquery.com/jquery-3.3.1.js';
-    script.type = 'text/javascript';
-    script.onload = function() {
-    	var $ = window.jQuery;
-      $(function() {
-            buildTreeViewer2(true);
-        });
-    };
-    document.getElementsByTagName("head")[0].appendChild(script);
-}
-
 
 function buildTreeViewer2(showRelevant) {
-	console.log("build Tree")
-my_JQuery = $;
+	console.log("view.tab.panel.js buildTreeViewer2");
+
 	getTreeViewerWithoutRootElement(showRelevant, function(core) {
-		my_JQuery("#jstree").jstree({
+		jQueryConDec("#jstree").jstree({
 			"core" : core,
-			"plugins" : [ "dnd", "contextmenu", "wholerow", "search","sort","state"],
+			"plugins" : [ "dnd", "contextmenu", "wholerow", "search", "sort", "state" ],
 			"search" : {
 				"show_only_matches" : true
 			},
 			"contextmenu" : {
 				"items" : customContextMenu
 			},
-			"sort": sortfunction
-			});
-		my_JQuery("#jstree-search-input").keyup(function() {
-			var searchString = my_JQuery(this).val();
-			my_JQuery("#jstree").jstree(true).search(searchString);
+			"sort" : sortfunction
+		});
+		$("#jstree-search-input").keyup(function() {
+			var searchString = $(this).val();
+			jQueryConDec("#jstree").jstree(true).search(searchString);
 		});
 	});
 	addDragAndDropSupportForTreeViewer();
-	document.getElementById("jstree").addEventListener("mousemove",bringContextMenuToFront); 
+	document.getElementById("jstree").addEventListener("mousemove", bringContextMenuToFront);
 }
 
 function sortfunction(a, b) {
 	a1 = this.get_node(a);
 	b1 = this.get_node(b);
-	if(a1.id > b1.id){
+	if (a1.id > b1.id) {
 		return 1;
-	}else{
+	} else {
 		return -1;
 	}
-} 
+}
 
 function customContextMenu(node) {
-     if (node.li_attr['class'] == "sentence") {
-        return contextMenuActionsForSentences;
-    }else{
-    	return ;
-    }  
+	console.log("view.tab.panel.js customContextMenu");
+	if (node.li_attr['class'] == "sentence") {
+		return contextMenuActionsForSentences;
+	} else {
+		return;
+	}
 }
 
-function bringContextMenuToFront(){
-	if(document.getElementsByClassName("vakata-context").length > 0){
+function bringContextMenuToFront() {
+	if (document.getElementsByClassName("vakata-context").length > 0) {
 		document.getElementsByClassName("vakata-context")[0].style.zIndex = 9999;
 	}
-	
 }
 
-
 function createSentenceLinkToExistingElement(idOfExistingElement, idOfNewElement, knowledgeTypeOfChild) {
+	console.log("view.tab.panel.js createSentenceLinkToExistingElement");
 	switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
 			idOfNewElement) {
 		linkSentences(idOfExistingElement, idOfNewElement, linkType, function() {
 		});
 	});
 }
-
-
-

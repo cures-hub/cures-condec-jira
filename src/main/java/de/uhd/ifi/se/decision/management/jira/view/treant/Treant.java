@@ -23,7 +23,7 @@ public class Treant {
 	@XmlElement
 	private Chart chart;
 
-	@XmlElement(name = "nodeStructure")
+	@XmlElement
 	private Node nodeStructure;
 
 	private Graph graph;
@@ -37,6 +37,14 @@ public class Treant {
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
 	}
+
+	public Treant(String projectKey, String elementKey, int depth, List<DecisionKnowledgeElement> filteredElements, boolean isFilteredByCreationDate) {
+		this.graph = new GraphImpl(projectKey, elementKey, filteredElements, isFilteredByCreationDate);
+		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
+		this.setChart(new Chart());
+		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
+	}
+
 
 	public Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth) {
 		if (element == null || element.getProject().getProjectKey() == null) {
@@ -61,7 +69,10 @@ public class Treant {
 		}
 		List<Node> nodes = new ArrayList<Node>();
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-			nodes.add(createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth, currentDepth + 1));
+			Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth, currentDepth + 1);
+			if(newChildNode.getNodeContent().get("desc").startsWith(element.getProject().getProjectKey())) {
+				nodes.add(newChildNode);
+			}
 		}
 		node.setChildren(nodes);
 		return node;

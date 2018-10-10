@@ -1,8 +1,11 @@
 function fillIssueModule() {
-	updateView();
+    console.log("view.issue.module fillIssueModule");
+    updateView();
 }
 
 function updateView() {
-	var issueKey = getIssueKey();
-	buildTreant(issueKey, false);
+    console.log("view.issue.module updateView");
+    var search = getURLsSearch();
+    var issueKey = getIssueKey();
+    buildTreantFiltered(issueKey, true, search);
 }

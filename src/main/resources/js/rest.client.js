@@ -22,6 +22,14 @@ function getResponseAsReturnValue(url) {
 	return JSON.parse(xhr.response);
 }
 
+function postWithResponseAsReturnValue(url) {
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", url, false);
+	xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+	xhr.send();
+	return JSON.parse(xhr.response);
+}
+
 function postJSON(url, data, callback) {
 	var xhr = new XMLHttpRequest();
 	xhr.open("POST", url, true);
@@ -245,8 +253,12 @@ function changeKnowledgeTypeOfSentence(id, type, callback) {
 		"id" : id,
 		"type" : type
 	};
+	var argument = type;
+	if (type.includes("Pro") || type.includes("Con")) {
+		argument = type;
+	}
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/changeKnowledgeTypeOfSentence.json?projectKey="
-			+ getProjectKey(), jsondata, function(error, link) {
+			+ getProjectKey() + "&argument=" + argument, jsondata, function(error, link) {
 		if (error === null) {
 			showFlag("success", "Knowledge type has been changed.");
 			callback(link);
@@ -264,21 +276,20 @@ function editSentenceBody(id, body, type, callback) {
 		"projectKey" : getProjectKey(),
 		"description" : body
 	};
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/editSentenceBody.json", jsondata, function(error,
-			id, type) {
-		if (error === null) {
-			showFlag("success", "Decision knowledge element has been updated.");
-			callback(id, type);
-		} else {
-			showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
-		}
-	});
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/editSentenceBody.json?argument=" + type, jsondata,
+			function(error, id, type) {
+				if (error === null) {
+					showFlag("success", "Decision knowledge element has been updated.");
+					callback(id, type);
+				} else {
+					showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
+				}
+			});
 }
 
-
-function deleteGenericLink(targetId,sourceId,targetType,sourceType,callback,showError){
+function deleteGenericLink(targetId, sourceId, targetType, sourceType, callback, showError) {
 	var jsondata = {
-		"idOfSourceElement" : sourceType+sourceId,
+		"idOfSourceElement" : sourceType + sourceId,
 		"idOfDestinationElement" : targetType + targetId
 	};
 	deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteGenericLink.json?projectKey="
@@ -286,29 +297,28 @@ function deleteGenericLink(targetId,sourceId,targetType,sourceType,callback,show
 		if (error === null) {
 			showFlag("success", "Link has been deleted.");
 			callback();
-		} else if(showError) {
+		} else if (showError) {
 			showFlag("error", "Link could not be deleted.");
 		}
 
 	});
 }
 
-
-function linkGenericElements(targetId, sourceId, targetType,sourceType,callback) {
+function linkGenericElements(targetId, sourceId, targetType, sourceType, callback) {
 	var jsondata = {
 		"type" : "contain",
-		"idOfSourceElement" : sourceType+sourceId,
+		"idOfSourceElement" : sourceType + sourceId,
 		"idOfDestinationElement" : targetType + targetId
 	};
-	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createGenericLink.json?projectKey=" + getProjectKey(),
-			jsondata, function(error, link) {
-				if (error === null) {
-					showFlag("success", "Link has been created.");
-					callback(link);
-				} else {
-					showFlag("error", "Link could not be created.");
-				}
-			});
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createGenericLink.json?projectKey="
+			+ getProjectKey(), jsondata, function(error, link) {
+		if (error === null) {
+			showFlag("success", "Link has been created.");
+			callback(link);
+		} else {
+			showFlag("error", "Link could not be created.");
+		}
+	});
 }
 
 function getTreant(elementKey, depthOfTree, callback) {
@@ -333,8 +343,22 @@ function getTreeViewer(rootElementType, callback) {
 	});
 }
 
+function getTreantFiltered(elementKey, depthOfTree, searchTerm, callback) {
+    getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreantFiltered.json?&elementKey=" + elementKey
+        + "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm, function(error, treant) {
+        if (error === null) {
+            callback(treant);
+        } else {
+            showFlag("error", "Filtered Treant data could not be received. Error-Code: " + error);
+        }
+    });
+}
+
 function getTreeViewerWithoutRootElement(showRelevant, callback) {
 	var issueId = AJS.$("meta[name='ajs-issue-key']").attr("content");
+	if (issueId === undefined) {
+		issueId = getIssueKey();
+	}
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer2.json?issueKey=" + issueId
 			+ "&showRelevant=" + showRelevant, function(error, core) {
 		if (error === null) {
@@ -509,8 +533,86 @@ function setWebhookData(projectKey, webhookUrl, webhookSecret) {
 	});
 }
 
+function setWebhookEnabled(isActivated, projectKey) {
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookEnabled.json?projectKey=" + projectKey
+			+ "&isActivated=" + isActivated, null, function(error, response) {
+		if (error === null) {
+			showFlag("success", "The webhook activation for this project has been changed.");
+		} else {
+			showFlag("error", "The webhook activation for this project could not be changed.");
+		}
+	});
+}
+
+function getProjectIssueTypes(projectKey, callback) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/getProjectIssueTypes.json?projectKey=" + projectKey,
+			function(error, issueTypes) {
+				if (error === null) {
+					callback(issueTypes);
+				} else {
+					showFlag("error", "Issue types of project could not be received. Error-Code: " + error);
+				}
+			});
+}
+
+function setWebhookType(webhookType, projectKey) {
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookType.json?projectKey=" + projectKey
+			+ "&webhookType=" + webhookType, null, function(error, response) {
+		if (error === null) {
+			showFlag("success", "The webhook root element type was changed for this project.");
+		} else {
+			showFlag("error", "The webhook root element type could not been changed for this project.");
+		}
+	});
+}
+
 function getCommitsAsReturnValue(elementKey) {
 	var commitData = getResponseAsReturnValue(AJS.contextPath() + "/rest/gitplugin/latest/issues/" + elementKey
 			+ "/commits");
 	return commitData.commits;
+}
+
+function clearSentenceDatabase(projectKey) {
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/clearSentenceDatabase.json?projectKey=" + projectKey,
+			null, function(error, response) {
+				if (error === null) {
+					showFlag("success", "The Sentence database has been cleared.");
+				} else {
+					showFlag("error", "The Sentence database has not been cleared.");
+				}
+			});
+}
+
+function classifyWholeProject(projectKey) {
+	var isSucceeded = postWithResponseAsReturnValue(AJS.contextPath()
+			+ "/rest/decisions/latest/config/classifyWholeProject.json?projectKey=" + projectKey);
+	if (isSucceeded) {
+		showFlag("success", "The whole project has been classified.");
+		return 1.0;
+	}
+	showFlag("error", "The classification process failed.");
+	return 0.0;
+}
+
+function setIconParsing(projectKey, isActivated) {
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setIconParsing.json?projectKey=" + projectKey
+			+ "&isActivatedString=" + isActivated, null, function(error, response) {
+		if (error === null) {
+			showFlag("success", "Plug-in activation for the project has been set to " + isActivated + ".");
+		} else {
+			showFlag("error", "Plug-in activation for the project has not been changed.");
+		}
+	});
+}
+
+function isIconParsing(projectKey, callback) {
+	getJSON(
+			AJS.contextPath() + "/rest/decisions/latest/config/isIconParsing.json?projectKey=" + getProjectKey(),
+			function(error, isIconParsingBoolean) {
+				if (error === null) {
+					callback(isIconParsingBoolean);
+				} else {
+					showFlag("error", "Icon boolean value for the project could not be received. Error-Code: " + error);
+				}
+			});
 }

@@ -53,7 +53,8 @@ public class MockAvatarManager implements AvatarManager {
 	@Override
 	public Avatar create(Avatar avatar, InputStream inputStream, Selection selection)
 			throws DataAccessException, IOException {
-		return null;
+		return AvatarImpl.createCustomAvatar("decision", "image/png", "0",
+				IconType.ISSUE_TYPE_ICON_TYPE);
 	}
 
 	@Nonnull

@@ -12,8 +12,6 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
@@ -56,17 +54,21 @@ public class TreeViewer {
 
 	public TreeViewer(String projectKey, KnowledgeType rootElementType) {
 		this();
-		if(rootElementType != KnowledgeType.OTHER) {
+		if (rootElementType != KnowledgeType.OTHER) {
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements(rootElementType);
-	
+
 			Set<Data> dataSet = new HashSet<Data>();
 			for (DecisionKnowledgeElement element : elements) {
 				dataSet.add(this.getDataStructure(element));
 			}
+			for (DecisionKnowledgeElement sentenceElement : ActiveObjectsManager.getAllElementsFromAoByType(projectKey,
+					rootElementType)) {
+				dataSet.add(this.makeIdUnique(new Data(sentenceElement)));
+			}
 			this.data = dataSet;
-		}else {
-			
+		} else {
+
 		}
 	}
 
@@ -85,8 +87,8 @@ public class TreeViewer {
 		}
 
 		Set<Data> dataSet = new HashSet<Data>();
-		dataSet.add(this.getDataStructure(new DecisionKnowledgeElementImpl(currentIssue)));
 
+		dataSet.add(this.getDataStructure(new DecisionKnowledgeElementImpl(currentIssue)));
 		this.data = dataSet;
 	}
 
@@ -109,10 +111,13 @@ public class TreeViewer {
 
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
 			Data dataChild = new Data(childAndLink.getKey(), childAndLink.getValue());
-			dataChild = this.makeIdUnique(dataChild);
-			List<Data> childrenOfElement = this.getChildren(childAndLink.getKey());
-			dataChild.setChildren(childrenOfElement);
-			children.add(dataChild);
+			if (dataChild.getNode().getProject().getProjectKey()
+					.equals(decisionKnowledgeElement.getProject().getProjectKey())) {
+				dataChild = this.makeIdUnique(dataChild);
+				List<Data> childrenOfElement = this.getChildren(childAndLink.getKey());
+				dataChild.setChildren(childrenOfElement);
+				children.add(dataChild);
+			}
 		}
 		return children;
 	}

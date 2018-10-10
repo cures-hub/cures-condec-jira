@@ -1,6 +1,6 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rest-client-resources")
-$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:treant-resources")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-page-resources")
 <form class="aui">
     <input class="text medium-long-field" id="jstree-search-input"
@@ -25,7 +25,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
     </div>
     <div id="treant-container" class="right"></div>
 </div>
-<div class="aui-group">
     <div><a href="#" aria-haspopup="true"
             class="toolbar-trigger aui-button aui-style-default aui-dropdown2-trigger aui-alignment-target aui-alignment-abutted aui-alignment-abutted-left aui-alignment-element-attached-top aui-alignment-element-attached-left aui-alignment-target-attached-bottom aui-alignment-target-attached-left aui-alignment-out-of-bounds aui-alignment-out-of-bounds-bottom"
             resolved="" aria-controls="opsbar-operations_more_drop" aria-expanded="false"><span class="dropdown-text">Upload/Download</span></a>

@@ -6,10 +6,11 @@ import java.util.List;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.CommentManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.classification.MekaInitializer;
-import de.uhd.ifi.se.decision.management.jira.extraction.classification.WekaInitializer;
+
+import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationManagerForCommentSentences;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 
 public class ViewConnector {
 
@@ -17,31 +18,34 @@ public class ViewConnector {
 
 	private List<Comment> commentsList;
 
-	public ViewConnector(Issue issue, boolean callFromRest) {
-		this.setCurrentIssue(issue);
-		CommentManager cm = ComponentAccessor.getCommentManager();
-		this.commentsList = new ArrayList<Comment>();
+	private CommentManager commentManager;
 
-		for (com.atlassian.jira.issue.comments.Comment comment : cm.getComments(issue)) {
-			commentsList.add(new Comment(comment));
+	public ViewConnector(Issue issue) {
+		if (issue != null) {
+			this.setCurrentIssue(issue);
+			commentManager = ComponentAccessor.getCommentManager();
+			this.commentsList = new ArrayList<Comment>();
 		}
-		if (!callFromRest) {
+	}
+
+	public ViewConnector(Issue issue, boolean doNotClassify) {
+		this(issue);
+		if (issue != null) {
+			for (com.atlassian.jira.issue.comments.Comment comment : commentManager.getComments(issue)) {
+				Comment comment2 = new CommentImpl(comment);
+				commentsList.add(comment2);
+				ActiveObjectsManager.checkSentenceAOForDuplicates(comment2);
+			}
+		}
+		if (!doNotClassify) {
 			this.startClassification();
 		}
-
 	}
 
 	public void startClassification() {
-		try {
-			this.commentsList = WekaInitializer.classifySentencesBinary(commentsList);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		try {
-			MekaInitializer.classifySentencesFineGrained(this.commentsList);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		ClassificationManagerForCommentSentences classifier = new ClassificationManagerForCommentSentences();
+		this.commentsList = classifier.classifySentenceBinary(commentsList);
+		this.commentsList = classifier.classifySentenceFineGrained(commentsList);
 	}
 
 	public Issue getCurrentIssue() {
@@ -71,29 +75,6 @@ public class ViewConnector {
 		return comments2;
 	}
 
-	public List<Sentence> getAllSentenceInstances(Boolean includeQuotes) {
-		List<Sentence> sentences = new ArrayList<Sentence>();
-		for (Comment comment : commentsList) {
-			for (Sentence sentence : comment.getSentences()) {
-				if(includeQuotes && sentence.getBody().contains("{quote}")) {
-					sentences.add(sentence);
-				} else if(!includeQuotes && !sentence.getBody().contains("{quote}")) {
-					sentences.add(sentence);
-				}
-				
-			}
-		}
-		return sentences;
-	}
-
-	public List<String> getAllCommentsBody() {
-		List<String> comments = new ArrayList<String>();
-		for (Comment c : commentsList) {
-			comments.add("<p>" + c.getBody() + "</p>");
-		}
-		return comments;
-	}
-
 	public List<Long> getAllCommentsIDs() {
 		List<Long> comments = new ArrayList<Long>();
 		for (Comment c : commentsList) {
@@ -120,20 +101,14 @@ public class ViewConnector {
 
 	public String getSentenceStyles() {
 		String style = "<style>";
-		style +=".Issue {" + 
-				"    background-color: #F2F5A9;} ";
-		style +=".Alternative {" + 
-				"    background-color: #f1ccf9;} ";
-		style +=".Decision {" + 
-				"    background-color: #c5f2f9;} ";
-		style +=".Pro {" + 
-				"    background-color: #b9f7c0;} ";
-		style +=".Con {" + 
-				"    background-color: #ffdeb5;} ";
-		style +=".tag {" + 
-				"    background-color: #ffffff;} ";
-		style +="</style>";
-		
+		style += ".Issue {" + "    background-color: #F2F5A9;} ";
+		style += ".Alternative {" + "    background-color: #f1ccf9;} ";
+		style += ".Decision {" + "    background-color: #c5f2f9;} ";
+		style += ".Pro {" + "    background-color: #b9f7c0;} ";
+		style += ".Con {" + "    background-color: #ffdeb5;} ";
+		style += ".tag {" + "    background-color: #ffffff;} ";
+		style += "</style>";
+
 		return style;
 	}
 
