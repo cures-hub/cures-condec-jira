@@ -42,7 +42,7 @@ import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 
 public class TestSetUp {
-	private ProjectManager projectManager;
+	protected ProjectManager projectManager;
 	private IssueManager issueManager;
 	private ConstantsManager constantsManager;
 
@@ -57,7 +57,7 @@ public class TestSetUp {
 			e.printStackTrace();
 		}
 		IssueService issueService = new MockIssueService();
-
+ 
 		UserManager userManager = new MockUserManager();
 		ApplicationUser user = new MockApplicationUser("NoFails");
 		ApplicationUser user2 = new MockApplicationUser("WithFails");

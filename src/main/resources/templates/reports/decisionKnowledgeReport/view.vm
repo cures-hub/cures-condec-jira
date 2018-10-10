@@ -1,0 +1,30 @@
+<div style="padding: 5px">
+    <!-- Display the report configuration -->
+    <h4 id="creation-report-parameters">
+        $i18n.getText('report.issuecreation.project'): $projectName 
+    </h4>
+    <br />
+
+    <img src="data:image/jpg;base64,${imgCommentsPerIssue}" alt="No data available"/>
+    <img src="data:image/jpg;base64,${imgCommitsPerIssue}" alt="No data available"/>
+    <img src="data:image/jpg;base64,${imgKnowledgeTypesPerIssue}" alt="No data available"/>
+  	<img src="data:image/jpg;base64,${imgLinksToIssue}" alt="No data available"/>
+  	<img src="data:image/jpg;base64,${imgAlternativeWoArgument}" alt="No data available"/>
+  	<img src="data:image/jpg;base64,${imgLinkDistance}" alt="No data available"/>
+
+
+
+  	 <details>
+  		<summary>CSV Content</summary>
+  		<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
+  			<pre> 
+  				$numCommentsPerIssue
+  				$numCommitsPerIssue
+  				$numKnowledgeTypesPerIssue
+  				$numLinksToIssue
+  				$numAlternativeWoArgument
+  				$numLinkDistance
+		</pre> 
+		</div></div>
+  	</details>
+</div>

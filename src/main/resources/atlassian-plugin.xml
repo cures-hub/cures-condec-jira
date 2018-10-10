@@ -264,20 +264,39 @@
         <context>jira-report-plugin</context>
     </web-resource>
     
-    <report name="Creation Report" i18n-name-key="creation-report.name" key="creation-report"
-            class="de.uhd.ifi.se.decision.management.jira.extraction.view.reports.CreationReport">
-        <description key="creation-report.description">The Creation Report Plugin</description>
+    <report name="Decision Knowledge Report" i18n-name-key="creation-report.name" key="creation-report"
+            class="de.uhd.ifi.se.decision.management.jira.extraction.view.reports.DecisionKnowledgeReport">
+        <description key="creation-report.description">Generate statistics from Decision Knowledge in this project.</description>
         <resource name="view" type="velocity" location="/templates/reports/creation-report/view.vm"/>
         <resource name="i18n" type="i18n" location="CreationReport"/>
         <label key="creation-report.label"/>
         <properties>
             <property>
                 <key>projectid</key>
-                <name>report.issuecreation.projectid.name</name>
-                <description>report.issuecreation.projectid.description</description>
+                <name>Projekt</name>
+                <description>Select the project to display report on.</description>
                 <type>filterprojectpicker</type>
             </property>
-           
+            <property>
+              <key>rootType</key>
+		        <name>Decision Knowledge Root Type</name>
+		        <description>Select the Decision Knowledge Type as Root Type</description>
+		        <type>select</type>
+		       <values>
+				    <value>
+				        <key>Issue</key>
+				        <value>Issue</value>
+				    </value>
+				    <value>
+				        <key>Alternative</key>
+				        <value>Alternative</value>
+				    </value>
+				     <value>
+				        <key>Decision</key>
+				        <value>Decision</value>
+				    </value>
+				</values>
+		    </property>
         </properties>
     </report>
 

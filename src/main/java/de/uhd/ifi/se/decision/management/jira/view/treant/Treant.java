@@ -27,6 +27,8 @@ public class Treant {
 	private Node nodeStructure;
 
 	private Graph graph;
+	/**Counts absolute tree depth to ease calculation of link distance */
+	private int realDepth;
 
 	public Treant() {
 	}
@@ -34,6 +36,7 @@ public class Treant {
 	public Treant(String projectKey, String elementKey, int depth) {
 		this.graph = new GraphImpl(projectKey, elementKey);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
+		this.setRealDepth(0);
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
 	}
@@ -67,6 +70,9 @@ public class Treant {
 			}
 		}
 		node.setChildren(nodes);
+		if(this.realDepth<currentDepth) {
+			this.realDepth = currentDepth;
+		}
 		return node;
 	}
 
@@ -84,5 +90,13 @@ public class Treant {
 
 	public void setNodeStructure(Node nodeStructure) {
 		this.nodeStructure = nodeStructure;
+	}
+
+	public int getRealDepth() {
+		return realDepth;
+	}
+
+	public void setRealDepth(int realDepth) {
+		this.realDepth = realDepth;
 	}
 }
