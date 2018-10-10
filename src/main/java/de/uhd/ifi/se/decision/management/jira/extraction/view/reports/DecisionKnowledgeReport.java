@@ -38,8 +38,7 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 public class DecisionKnowledgeReport extends AbstractReport {
-	@JiraImport
-	private final SearchProvider searchProvider;
+
 	@JiraImport
 	private final ProjectManager projectManager;
 
@@ -47,9 +46,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 	private KnowledgeType rootType;
 
-	public DecisionKnowledgeReport(SearchProvider searchProvider, ProjectManager projectManager,
-			@JiraImport DateTimeFormatterFactory dateTimeFormatterFactory) {
-		this.searchProvider = searchProvider;
+	public DecisionKnowledgeReport(ProjectManager projectManager) {
 		this.projectManager = projectManager;
 	} 
 
@@ -74,8 +71,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				buildVelocityString("Number of Commits per JIRA Issue", numCommitsPerIssue));
 
 		//Get associated Knowledge Types in Sentences per Issue
-		Map<String, Integer> numKnowledgeTypesPerIssue = getDecKnowElementsPerIssue(action.getLoggedInUser(),
-				projectId);
+		Map<String, Integer> numKnowledgeTypesPerIssue = getDecKnowElementsPerIssue(projectId);
 		byte[] imgKnowledgeTypesPerIssue = createPieChartImage(numKnowledgeTypesPerIssue,
 				"Number of KnowledgeTypes per JIRA Issue");
 		velocityParams.put("imgKnowledgeTypesPerIssue", new String(imgKnowledgeTypesPerIssue));
@@ -83,20 +79,20 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				buildVelocityString("Number of KnowledgeTypes per JIRA Issue", numKnowledgeTypesPerIssue));
 		
 		//Get types of decisions and alternatives linkes to Issue (e.g. has decision but no alternative)
-		Map<String, Integer> numLinksToIssue = getAlternativeDecisionPerIssue(action.getLoggedInUser(), projectId);
+		Map<String, Integer> numLinksToIssue = getAlternativeDecisionPerIssue( projectId);
 		byte[] imgLinksToIssue = createPieChartImage(numLinksToIssue, "Linked Elements to Issue");
 		velocityParams.put("imgLinksToIssue", new String(imgLinksToIssue));
 		velocityParams.put("numLinksToIssue", buildVelocityString("Linked Elements to Issue", numLinksToIssue));
 
 		//Get Number of Alternatives With Arguments
-		Map<String, Integer> numAlternativeWoArgument = getAlternativeArguments(action.getLoggedInUser(), projectId);
+		Map<String, Integer> numAlternativeWoArgument = getAlternativeArguments(projectId);
 		byte[] imgAlternativeWoArgument = createPieChartImage(numAlternativeWoArgument, "Alternatives with Arguments");
 		velocityParams.put("imgAlternativeWoArgument", new String(imgAlternativeWoArgument));
 		velocityParams.put("numAlternativeWoArgument",
 				buildVelocityString("Alternatives with Arguments", numAlternativeWoArgument));
 
 		//Get Link Distance
-		List<Integer> numLinkDistance = getLinkDistance(action.getLoggedInUser(), projectId);
+		List<Integer> numLinkDistance = getLinkDistance(projectId);
 		byte[] imgLinkDistance = createBoxPlot(numLinkDistance, this.rootType + " Link Distance",
 				"Link distance from " + this.rootType);
 		velocityParams.put("imgLinkDistance", new String(imgLinkDistance));
@@ -105,7 +101,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return descriptor.getHtml("view", velocityParams);
 	}
 
-	private List<Integer> getLinkDistance(ApplicationUser loggedInUser, Long projectId2) throws GenericEntityException {
+	private List<Integer> getLinkDistance(Long projectId2) throws GenericEntityException {
 		List<Integer> linkDistances = new ArrayList<>();
 
 		List<DecisionKnowledgeElement> listOfIssues = ActiveObjectsManager
@@ -120,7 +116,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return linkDistances;
 	}
 
-	private Map<String, Integer> getAlternativeArguments(ApplicationUser loggedInUser, Long projectId2) {
+	private Map<String, Integer> getAlternativeArguments(Long projectId2) {
 		int alternativesHaveArgument = 0;
 		int alternativesHaveNoArgument = 0;
 
@@ -133,10 +129,9 @@ public class DecisionKnowledgeReport extends AbstractReport {
 			boolean hasArgument = false;
 			for (GenericLink link : links) {
 				DecisionKnowledgeElement dke = link.getOpposite("s" + currentAlternative.getId());
-				if (dke instanceof Sentence) {
-					if (((Sentence) dke).getArgument().equalsIgnoreCase("Pro")) {
+				if (dke instanceof Sentence && ((Sentence) dke).getArgument().equalsIgnoreCase("Pro")) {
 						hasArgument = true;
-					}
+					
 				}
 			}
 			if (hasArgument) {
@@ -152,7 +147,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return dkeCount;
 	}
 
-	private Map<String, Integer> getAlternativeDecisionPerIssue(ApplicationUser loggedInUser, Long projectId2)
+	private Map<String, Integer> getAlternativeDecisionPerIssue(Long projectId2)
 			throws SearchException {
 		Integer[] statistics = new Integer[4];
 		Arrays.fill(statistics,0);
@@ -192,7 +187,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return dkeCount;
 	}
 
-	private Map<String, Integer> getDecKnowElementsPerIssue(ApplicationUser loggedInUser, Long projectId2)
+	private Map<String, Integer> getDecKnowElementsPerIssue(Long projectId2)
 			throws SearchException {
 		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
 
@@ -261,7 +256,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	private String buildVelocityString(String name, Map<String, Integer> knowledgeTypesPerIssue) {
 		String result = name + ";";
 		for (String key : knowledgeTypesPerIssue.keySet()) {
-			result += key.toString() + ": " + knowledgeTypesPerIssue.get(key).toString() + ";";
+			result += key + ": " + knowledgeTypesPerIssue.get(key).toString() + ";";
 		}
 		return result;
 	}
@@ -279,6 +274,5 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	public void validate(ProjectActionSupport action, Map params) {
 		projectId = ParameterUtils.getLongParam(params, "selectedProjectId");
 		this.rootType = KnowledgeType.getKnowledgeType(ParameterUtils.getStringParam(params, "rootType"));
-		;
 	}
 }
