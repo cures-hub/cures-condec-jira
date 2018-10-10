@@ -64,9 +64,7 @@ public class TreeViewer {
 			}
 			for (DecisionKnowledgeElement sentenceElement : ActiveObjectsManager.getAllElementsFromAoByType(projectKey,
 					rootElementType)) {
-				Data data = new Data(sentenceElement);
-				data = this.makeIdUnique(data);
-				dataSet.add(data);
+				dataSet.add(this.makeIdUnique(new Data(sentenceElement)));
 			}
 			this.data = dataSet;
 		} else {

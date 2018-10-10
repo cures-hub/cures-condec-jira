@@ -65,21 +65,6 @@
 		<dependency>com.atlassian.auiplugin:aui-tooltips</dependency>
 	</web-resource>
 
-	<web-resource key="classifier-resources" name="Resources for Decision Extraction">
-		<description>
-			Provides the resources needed for extraction of decision knowledge from issue
-			comments such as the model files for Weka and Meka classifiers.
-		</description>
-		<context>jira.view.issue</context>
-		<context>atl.general</context>
-		<resource type="download" name="fc.model" location="/classifier/fc.model" />
-		<resource type="download" name="br.model" location="/classifier/br.model" />
-		<resource type="download" name="view.tab.panel.js" location="/js/view.tab.panel.js" />
-		<resource type="download" name="view.tree.viewer.js" location="/js/view.tree.viewer.js" />
-		<resource type="download" name="view.context.menu.js" location="/js/view.context.menu.js" />
-		<!-- <dependency>com.atlassian.plugins.jquery:jquery</dependency> -->
-	</web-resource>
-
 	<web-resource key="rest-client-resources" name="ConDec Rest Client Resources">
 		<description>
 			Provides the Java Script REST Client for the REST API used in this plug-in.
@@ -91,16 +76,26 @@
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-create-issue</dependency>
 	</web-resource>
 
-	<web-resource key="treant-resources" name="Treant.js Resources">
+	<web-resource key="decision-knowledge-management-resources"
+		name="ConDec Decision Knowledge Management Resources">
 		<description>
-			Provides the Treant Java Script visualization framework.
+			Provides the Java Script files for the management of decision knowledge.
 		</description>
-		<context>jira.view.issue</context>
-		<context>atl.general</context>
+		<!-- jquery 1.9.1 for the plug-in (required by jstree) with Sizzle -->
+		<resource type="download" name="jquery.js" location="/js/jquery/jquery.js" />
+		<!-- jquery.contextMenu -->
+		<resource type="download" name="jquery.contextMenu.js"
+			location="/js/jquery/jquery.contextMenu.js" />
+		<!-- jstree -->
+		<resource type="download" name="jstree.js" location="/js/jstree/jstree.js" />
+		<!-- treant -->
 		<resource type="download" name="Treant.js" location="/js/treant/treant.js" />
 		<resource type="download" name="raphael.js" location="/js/treant/raphael.js" />
-		<resource type="download" name="jquery.easing.js" location="/js/jquery/jquery.easing.js" />
+		<resource type="download" name="jquery.easing.js" location="/js/jquery/jquery.easing.js" />		
+		<!-- ConDec java script files -->
+		<resource type="download" name="view.context.menu.js" location="/js/view.context.menu.js" />
 		<resource type="download" name="view.treant.js" location="/js/view.treant.js" />
+		<resource type="download" name="view.tree.viewer.js" location="/js/view.tree.viewer.js" />
 	</web-resource>
 
 	<web-resource key="decision-knowledge-page-resources"
@@ -109,18 +104,8 @@
 			Provides the Java Script files for the separate decision knowledge page of this
 			plug-in.
 		</description>
-		<!-- jquery -->
-		<resource type="download" name="jquery.js" location="/js/jquery/jquery.js" />
-		<!-- jquery.contextMenu -->
-		<resource type="download" name="jquery.contextMenu.js"
-			location="/js/jquery/jquery.contextMenu.js" />
-		<!-- jstree -->
-		<resource type="download" name="jstree.js" location="/js/jstree/jstree.js" />
-		<!-- ConDec java script files -->
 		<resource type="download" name="view.decision.knowledge.page.js"
 			location="/js/view.decision.knowledge.page.js" />
-		<resource type="download" name="view.tree.viewer.js" location="/js/view.tree.viewer.js" />
-		<resource type="download" name="view.context.menu.js" location="/js/view.context.menu.js" />
 	</web-resource>
 
 	<web-resource key="issue-module-resources"
@@ -129,8 +114,18 @@
 			Provides the Java Script file used in the issue module.
 		</description>
 		<context>jira.view.issue</context>
-		<!-- ConDec java script files -->
 		<resource type="download" name="view.issue.module.js" location="/js/view.issue.module.js" />
+	</web-resource>
+	
+	<web-resource key="classifier-resources" name="Resources for Decision Extraction">
+		<description>
+			Provides the resources needed for extraction of decision knowledge from issue
+			comments such as the model files for Weka and Meka classifiers.
+		</description>
+		<context>jira.view.issue</context>
+		<resource type="download" name="fc.model" location="/classifier/fc.model" />
+		<resource type="download" name="br.model" location="/classifier/br.model" />
+		<resource type="download" name="view.tab.panel.js" location="/js/view.tab.panel.js" />
 	</web-resource>
 
 	<!-- Decision Knowledge Page -->

@@ -406,10 +406,10 @@ public class ConfigRest {
 				new ViewConnector(issue, false);
 			}
 
-			return Response.ok(Status.ACCEPTED).build();
+			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
-			return Response.status(Status.CONFLICT).build();
+			return Response.status(Status.CONFLICT).entity(ImmutableMap.of("isSucceeded", false)).build();
 		}
 	}
 
