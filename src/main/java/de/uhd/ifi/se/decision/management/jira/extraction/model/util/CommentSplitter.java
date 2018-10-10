@@ -46,7 +46,6 @@ public class CommentSplitter {
 				firstSplit = searchForFurtherTags(firstSplit, manualRationalIconList[i], System.getProperty("line.separator"));
 			}
 		}
-
 		return firstSplit;
 	}
 
@@ -75,7 +74,7 @@ public class CommentSplitter {
 		if (toSearch.contains(openTag) && !toSearch.contains(closeTag)) {
 			return slices;
 		}//Open and close tags are existent
-		if (toSearch.startsWith(openTag)) {
+		if (toSearch.startsWith(openTag) && toSearch.contains(closeTag)) {
 			String part = StringUtils.substringBetween(toSearch, openTag, closeTag);
 			part = openTag + part + closeTag;
 			slices.add(part);
@@ -133,5 +132,14 @@ public class CommentSplitter {
 		}
 		return KnowledgeType.OTHER.toString();
 	}
-
+	
+	public static boolean containsOpenAndCloseTags(String body) {
+		for (int i = 0; i < manualRationaleTagList.length; i++) {
+			String tag = manualRationaleTagList[i].toLowerCase();
+			if(body.toLowerCase().contains(tag) && body.toLowerCase().contains(tag.replace("[", "[/"))) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

@@ -426,8 +426,35 @@ public class TestComment extends TestSetUp {
 		assertTrue(comment.getTaggedBody(0).contains("</span></span>"));
 	}
 	
+	@Test
+	@NonTransactional
+	public void TestManuallyTaggingWithOnlyOpenTag() {
+		CommentImpl comment = getComment("[Alternative] This is a testsentence");
+		assertTrue(comment.getTaggedBody(0).trim().equalsIgnoreCase("<span id=\"comment0\"><span class=\"sentence isNotRelevant\"  id  = ui1><span class =tag></span><span class = sentenceBody>[Alternative] This is a testsentence</span><span class =tag></span></span></span>\r\n".trim()));
+	}
 	
+	@Test
+	@NonTransactional
+	public void TestManuallyTaggingWithWrongTagMix() {
+		CommentImpl comment = getComment("[Alternative] This is a testsentence[/Issue]");
+		assertTrue(comment.getTaggedBody(0).trim().equalsIgnoreCase("<span id=\"comment0\"><span class=\"sentence isNotRelevant\"  id  = ui1><span class =tag></span><span class = sentenceBody>[Alternative] This is a testsentence[/Issue]</span><span class =tag></span></span></span>\r\n".trim()));
+	}
+	
+	
+	
+	@Test
+	@NonTransactional
+	public void TestManuallyTaggingWithIconsAndTags() {
+		CommentImpl comment = getComment(
+				"(y) I like this idea \r\n mid sentence without sense [Con] But the other one not [/Con]");
+		assertTrue(comment.getTaggedBody(0).trim().equalsIgnoreCase(
+				"<span id=\"comment0\"><span class=\"sentence Pro\"  id  = ui1><span class =tag>[Pro]</span><span class = sentenceBody> i like this idea </span><span class =tag>[/Pro]</span></span><span class=\"sentence isNotRelevant\"  id  = ui2><span class =tag></span><span class = sentenceBody> mid sentence without sense </span><span class =tag></span></span><span class=\"sentence Con\"  id  = ui3><span class =tag>[Con]</span><span class = sentenceBody> but the other one not </span><span class =tag>[/Con]</span></span></span>\r\n"
+						.trim()));
 
+	}
+	
+	
+	
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
 		@SuppressWarnings("unchecked")
 		@Override
