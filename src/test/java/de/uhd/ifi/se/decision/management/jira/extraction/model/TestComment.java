@@ -413,11 +413,11 @@ public class TestComment extends TestSetUp {
 	@Test
 	@NonTransactional
 	public void TestManuallyTaggingIssueWithIconAndPlainText() {
-		CommentImpl comment = getComment("(y)this is a manual pro tagged pro sentence. This is simple plain text");
+		CommentImpl comment = getComment("(y)this is a manual pro tagged pro sentence. \r\n This is simple plain text");
 		assertTrue(comment.getTaggedBody(0).contains("<span id=\"comment0\">"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Pro\"  id  = ui1>"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[Pro]</span>"));
-		assertTrue(comment.getTaggedBody(0).contains("<span class = sentenceBody>this is a manual pro tagged pro sentence.</span>"));
+		assertTrue(comment.getTaggedBody(0).contains("<span class = sentenceBody>this is a manual pro tagged pro sentence. </span>"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[/Pro]</span></span>"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence isNotRelevant\"  id  = ui2>"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class =tag></span>"));
