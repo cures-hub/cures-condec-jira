@@ -7,5 +7,5 @@ function updateView() {
     console.log("view.issue.module updateView");
     var search = getURLsSearch();
     var issueKey = getIssueKey();
-    buildTreantFiltered(issueKey, false, search);
+    buildTreantFiltered(issueKey, true, search);
 }

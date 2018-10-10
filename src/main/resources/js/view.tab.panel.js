@@ -35,15 +35,6 @@ function callDialogFromView() {
 
 function callDialog2() {
 	console.log("view.tab.panel.js callDialog2");
-	/* TODO:
-	   What is the intention of the below 4 lines?
-	   Should the thread wait until callDialogFromView is done?
-	   If yes, it can be done better than below.
-	 */
-	callDialogFromView();
-	closeDialog();
-	callDialogFromView();
-	closeDialog();
 	callDialogFromView();
 	document.getElementById("dialog-content").innerHTML = "<div id =header2> </div> <div id =jstree> </div> ";
 	document.getElementById("header2").innerHTML = "<input class=text medium-long-field id=jstree-search-input placeholder=Search decision knowledge />";
@@ -99,7 +90,6 @@ function bringContextMenuToFront() {
 	if (document.getElementsByClassName("vakata-context").length > 0) {
 		document.getElementsByClassName("vakata-context")[0].style.zIndex = 9999;
 	}
-
 }
 
 function createSentenceLinkToExistingElement(idOfExistingElement, idOfNewElement, knowledgeTypeOfChild) {

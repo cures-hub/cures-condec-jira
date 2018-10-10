@@ -25,7 +25,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 	</div>
     <div id="treant-container" class="right"></div>
 </div>
+#include("templates/dialog.vm")
 <script>
 	initializeDecisionKnowledgePage();
 </script>
-#include("templates/dialog.vm")

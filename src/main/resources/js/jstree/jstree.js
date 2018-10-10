@@ -12,7 +12,7 @@
         // TODO: remove DEBUG lines
         console.log("jstree.js init");
         console.log("$ ver");
-        console.log($.fn.jquery);
+        //console.log($.fn.jquery); // $ is not found because we add <context>jira.view.issue</context> in the atlassian-plugin.xml
         console.log("jQueryConDec ver");
         console.log(jQueryConDec.fn.jquery);
 		factory(jQueryConDec);
@@ -26,7 +26,7 @@
     console.log($.fn.jquery);
     
     console.log("window.$ ver");
-    console.log(window.$.fn.jquery);
+    //console.log(window.$.fn.jquery); // $ is not found because we add <context>jira.view.issue</context> in the atlassian-plugin.xml
     
     console.log("window jQueryConDec ver");
     console.log(window.jQueryConDec.fn.jquery);
