@@ -2,10 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.extraction.view.reports;
 
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.datetime.DateTimeFormatterFactory;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.search.SearchException;
-import com.atlassian.jira.issue.search.SearchProvider;
 import com.atlassian.jira.jql.builder.JqlClauseBuilder;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.plugin.report.impl.AbstractReport;
@@ -53,10 +51,10 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	public String generateReportHtml(ProjectActionSupport action, Map params) throws Exception {
 
 		Map<String, Object> velocityParams = new HashMap<>();
-		velocityParams.put("projectName", action.getProjectManager().getProjectObj(projectId).getName());
+		velocityParams.put("projectName", action.getProjectManager().getProjectObj(this.projectId).getName());
 		
 		//get Number of Comments per Issue
-		List<Integer> numCommentsPerIssue = getNumberOfCommentsPerIssue(action.getLoggedInUser(), projectId);
+		List<Integer> numCommentsPerIssue = getNumberOfCommentsPerIssue(action.getLoggedInUser());
 		byte[] imgCommentsPerIssue = createBoxPlot(numCommentsPerIssue, "Number of Comments per JIRA Issue",
 				"#Comments");
 		velocityParams.put("imgCommentsPerIssue", new String(imgCommentsPerIssue));
@@ -64,14 +62,14 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				buildVelocityString("Number of Comments per JIRA Issue", numCommentsPerIssue));
 
 		//get Number of commits per Issue TODO:Access commit DB
-		List<Integer> numCommitsPerIssue = getNumberOfCommitsPerIssue(action.getLoggedInUser(), projectId);
+		List<Integer> numCommitsPerIssue = getNumberOfCommitsPerIssue(action.getLoggedInUser());
 		byte[] imgCommitsPerIssue = createBoxPlot(numCommitsPerIssue, "Number of Commits per JIRA Issue", "#Commits");
 		velocityParams.put("imgCommitsPerIssue", new String(imgCommitsPerIssue));
 		velocityParams.put("numCommitsPerIssue",
 				buildVelocityString("Number of Commits per JIRA Issue", numCommitsPerIssue));
 
 		//Get associated Knowledge Types in Sentences per Issue
-		Map<String, Integer> numKnowledgeTypesPerIssue = getDecKnowElementsPerIssue(projectId);
+		Map<String, Integer> numKnowledgeTypesPerIssue = getDecKnowElementsPerIssue();
 		byte[] imgKnowledgeTypesPerIssue = createPieChartImage(numKnowledgeTypesPerIssue,
 				"Number of KnowledgeTypes per JIRA Issue");
 		velocityParams.put("imgKnowledgeTypesPerIssue", new String(imgKnowledgeTypesPerIssue));
@@ -79,20 +77,20 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				buildVelocityString("Number of KnowledgeTypes per JIRA Issue", numKnowledgeTypesPerIssue));
 		
 		//Get types of decisions and alternatives linkes to Issue (e.g. has decision but no alternative)
-		Map<String, Integer> numLinksToIssue = getAlternativeDecisionPerIssue( projectId);
+		Map<String, Integer> numLinksToIssue = getAlternativeDecisionPerIssue();
 		byte[] imgLinksToIssue = createPieChartImage(numLinksToIssue, "Linked Elements to Issue");
 		velocityParams.put("imgLinksToIssue", new String(imgLinksToIssue));
 		velocityParams.put("numLinksToIssue", buildVelocityString("Linked Elements to Issue", numLinksToIssue));
 
 		//Get Number of Alternatives With Arguments
-		Map<String, Integer> numAlternativeWoArgument = getAlternativeArguments(projectId);
+		Map<String, Integer> numAlternativeWoArgument = getAlternativeArguments();
 		byte[] imgAlternativeWoArgument = createPieChartImage(numAlternativeWoArgument, "Alternatives with Arguments");
 		velocityParams.put("imgAlternativeWoArgument", new String(imgAlternativeWoArgument));
 		velocityParams.put("numAlternativeWoArgument",
 				buildVelocityString("Alternatives with Arguments", numAlternativeWoArgument));
 
 		//Get Link Distance
-		List<Integer> numLinkDistance = getLinkDistance(projectId);
+		List<Integer> numLinkDistance = getLinkDistance();
 		byte[] imgLinkDistance = createBoxPlot(numLinkDistance, this.rootType + " Link Distance",
 				"Link distance from " + this.rootType);
 		velocityParams.put("imgLinkDistance", new String(imgLinkDistance));
@@ -101,11 +99,11 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return descriptor.getHtml("view", velocityParams);
 	}
 
-	private List<Integer> getLinkDistance(Long projectId2) throws GenericEntityException {
+	private List<Integer> getLinkDistance() throws GenericEntityException {
 		List<Integer> linkDistances = new ArrayList<>();
 
 		List<DecisionKnowledgeElement> listOfIssues = ActiveObjectsManager
-				.getAllElementsFromAoByType(projectManager.getProjectObj(projectId).getKey(), this.rootType);
+				.getAllElementsFromAoByType(projectManager.getProjectObj(this.projectId).getKey(), this.rootType);
 
 		for (DecisionKnowledgeElement currentAlternative : listOfIssues) {
 			Treant treant = new Treant(currentAlternative.getProject().getProjectKey(), currentAlternative.getKey(),
@@ -116,12 +114,12 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return linkDistances;
 	}
 
-	private Map<String, Integer> getAlternativeArguments(Long projectId2) {
+	private Map<String, Integer> getAlternativeArguments() {
 		int alternativesHaveArgument = 0;
 		int alternativesHaveNoArgument = 0;
 
 		List<DecisionKnowledgeElement> listOfIssues = ActiveObjectsManager.getAllElementsFromAoByType(
-				projectManager.getProjectObj(projectId).getKey(), KnowledgeType.ALTERNATIVE);
+				projectManager.getProjectObj(this.projectId).getKey(), KnowledgeType.ALTERNATIVE);
 
 		for (DecisionKnowledgeElement currentAlternative : listOfIssues) {
 			List<GenericLink> links = ActiveObjectsManager.getGenericLinksForElement("s" + currentAlternative.getId(),
@@ -147,12 +145,12 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return dkeCount;
 	}
 
-	private Map<String, Integer> getAlternativeDecisionPerIssue(Long projectId2)
+	private Map<String, Integer> getAlternativeDecisionPerIssue()
 			throws SearchException {
 		Integer[] statistics = new Integer[4];
 		Arrays.fill(statistics,0);
 		List<DecisionKnowledgeElement> listOfIssues = ActiveObjectsManager
-				.getAllElementsFromAoByType(projectManager.getProjectObj(projectId).getKey(), KnowledgeType.ISSUE);
+				.getAllElementsFromAoByType(projectManager.getProjectObj(this.projectId).getKey(), KnowledgeType.ISSUE);
 
 		for (DecisionKnowledgeElement issue : listOfIssues) {
 			List<GenericLink> links = ActiveObjectsManager.getGenericLinksForElement("s" + issue.getId(), false);
@@ -187,23 +185,23 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return dkeCount;
 	}
 
-	private Map<String, Integer> getDecKnowElementsPerIssue(Long projectId2)
+	private Map<String, Integer> getDecKnowElementsPerIssue()
 			throws SearchException {
 		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
 
 		for (KnowledgeType type : KnowledgeType.getDefaulTypes()) {
 			dkeCount.put(type.toString(), ActiveObjectsManager
-					.getAllElementsFromAoByType(projectManager.getProjectObj(projectId).getKey(), type).size());
+					.getAllElementsFromAoByType(projectManager.getProjectObj(this.projectId).getKey(), type).size());
 		}
 		return dkeCount;
 	}
 
-	private List<Integer> getNumberOfCommitsPerIssue(ApplicationUser loggedInUser, Long projectId2)
+	private List<Integer> getNumberOfCommitsPerIssue(ApplicationUser loggedInUser)
 			throws SearchException {
 		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
 		SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
 
-		com.atlassian.query.Query query = jqlClauseBuilder.project(projectId2).buildQuery();
+		com.atlassian.query.Query query = jqlClauseBuilder.project(this.projectId).buildQuery();
 		com.atlassian.jira.issue.search.SearchResults searchResults = null;
 
 		searchResults = searchService.search(loggedInUser, query, PagerFilter.getUnlimitedFilter());
@@ -215,12 +213,12 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return commentList;
 	}
 
-	private List<Integer> getNumberOfCommentsPerIssue(ApplicationUser user, Long projectId) throws SearchException {
+	private List<Integer> getNumberOfCommentsPerIssue(ApplicationUser user) throws SearchException {
 //		user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
 		SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
  
-		com.atlassian.query.Query query = jqlClauseBuilder.project(projectId).buildQuery();
+		com.atlassian.query.Query query = jqlClauseBuilder.project(this.projectId).buildQuery();
 		com.atlassian.jira.issue.search.SearchResults searchResults = null;
 
 		searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
@@ -272,7 +270,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	}
 
 	public void validate(ProjectActionSupport action, Map params) {
-		projectId = ParameterUtils.getLongParam(params, "selectedProjectId");
+		this.projectId = ParameterUtils.getLongParam(params, "selectedProjectId");
 		this.rootType = KnowledgeType.getKnowledgeType(ParameterUtils.getStringParam(params, "rootType"));
 	}
 }

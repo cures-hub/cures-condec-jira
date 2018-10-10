@@ -264,12 +264,12 @@
         <context>jira-report-plugin</context>
     </web-resource>
     
-    <report name="Decision Knowledge Report" i18n-name-key="creation-report.name" key="creation-report"
+    <report name="Decision Knowledge Report" i18n-name-key="Decision Knowledge Report" key="creation-report"
             class="de.uhd.ifi.se.decision.management.jira.extraction.view.reports.DecisionKnowledgeReport">
-        <description key="creation-report.description">Generate statistics from Decision Knowledge in this project.</description>
-        <resource name="view" type="velocity" location="/templates/reports/creation-report/view.vm"/>
+        <description>Generate statistics from Decision Knowledge in this project.</description>
+        <resource name="view" type="velocity" location="/templates/reports/decisionKnowledgeReport/view.vm"/>
         <resource name="i18n" type="i18n" location="CreationReport"/>
-        <label key="creation-report.label"/>
+        <label key="Decision Knowledge Report"/>
         <properties>
             <property>
                 <key>projectid</key>
@@ -280,7 +280,7 @@
             <property>
               <key>rootType</key>
 		        <name>Decision Knowledge Root Type</name>
-		        <description>Select the Decision Knowledge Type as Root Type</description>
+		        <description>Select the Decision Knowledge Type as root type</description>
 		        <type>select</type>
 		       <values>
 				    <value>

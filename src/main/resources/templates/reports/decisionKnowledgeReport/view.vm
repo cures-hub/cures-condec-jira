@@ -1,7 +1,7 @@
 <div style="padding: 5px">
     <!-- Display the report configuration -->
     <h4 id="creation-report-parameters">
-        $i18n.getText('report.issuecreation.project'): $projectName 
+        Project: $projectName 
     </h4>
     <br />
 
