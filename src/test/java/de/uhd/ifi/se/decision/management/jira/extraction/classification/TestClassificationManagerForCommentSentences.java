@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Locale;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
@@ -37,7 +37,7 @@ import weka.classifiers.meta.FilteredClassifier;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestComment.AoSentenceTestDatabaseUpdater.class)
-public class TestClassificationManagerForCommentSentences extends TestSetUp {
+public class TestClassificationManagerForCommentSentences extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
 	private List<Comment> list = new ArrayList<Comment>();

@@ -5,9 +5,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 
-public class TestStrategyProvider extends TestSetUp {
+public class TestStrategyProvider extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
