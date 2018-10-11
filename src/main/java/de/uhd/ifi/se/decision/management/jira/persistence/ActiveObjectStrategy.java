@@ -14,6 +14,8 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
@@ -73,23 +75,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 
 	@Override
 	public boolean deleteLink(Link link, ApplicationUser user) {
-		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Boolean>() {
-			@Override
-			public Boolean doInTransaction() {
-				for (LinkBetweenDifferentEntitiesEntity linkEntity : ACTIVE_OBJECTS.find(LinkBetweenDifferentEntitiesEntity.class)) {
-					if (linkEntity.getIdOfDestinationElement().substring(1).equals(link.getDestinationElement().getId()+"")
-							&& linkEntity.getIdOfSourceElement().substring(1).equals(link.getSourceElement().getId()+"")) {
-						try {
-							linkEntity.getEntityManager().delete(linkEntity);
-							return true;
-						} catch (SQLException e) {
-							LOGGER.error("Link could not be deleted.");
-						}
-					}
-				}
-				return false;
-			}
-		});
+		return GenericLinkManager.deleteGenericLink("a"+link.getSourceElement().getId(), "a"+link.getDestinationElement().getId());
 	}
 
 	@Override
@@ -214,7 +200,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 		for (LinkBetweenDifferentEntitiesEntity link : links) {
 			Link inwardLink = new LinkImpl(link);
 			inwardLink.setDestinationElement(element);
-			inwardLink.setSourceElement(this.getDecisionKnowledgeElement((long) Integer.parseInt(link.getIdOfSourceElement().substring(1))));
+			long elementId = (long) Integer.parseInt(link.getIdOfSourceElement().substring(1));
+			inwardLink.setSourceElement(this.getDecisionKnowledgeElement(elementId));
 			inwardLinks.add(inwardLink);
 		}
 		return inwardLinks;
@@ -228,7 +215,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 		for (LinkBetweenDifferentEntitiesEntity link : links) {
 			Link outwardLink = new LinkImpl(link);
 			outwardLink.setSourceElement(element);
-			outwardLink.setDestinationElement(this.getDecisionKnowledgeElement((long) Integer.parseInt(link.getIdOfDestinationElement().substring(1))));
+			long elementId = (long) Integer.parseInt(link.getIdOfDestinationElement().substring(1));
+			outwardLink.setDestinationElement(this.getDecisionKnowledgeElement(elementId));
 			outwardLinks.add(outwardLink);
 		}
 		return outwardLinks;
@@ -282,7 +270,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 				if (sourceElements.length == 1) {
 					sourceElement = sourceElements[0];
 				}
-
+				
 				DecisionKnowledgeElementEntity destinationElement = null;
 				DecisionKnowledgeElementEntity[] destinationElements = ACTIVE_OBJECTS.find(
 						DecisionKnowledgeElementEntity.class,
@@ -296,12 +284,9 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 				}
 
 				// elements exist
-				final LinkBetweenDifferentEntitiesEntity linkEntity = ACTIVE_OBJECTS.create(LinkBetweenDifferentEntitiesEntity.class);
-				linkEntity.setIdOfSourceElement("a"+link.getSourceElement().getId());
-				linkEntity.setIdOfDestinationElement("a"+link.getDestinationElement().getId());
-				linkEntity.setType(link.getType());
-				linkEntity.save();
-				return linkEntity.getId();
+				GenericLink newLink = new GenericLinkImpl("a"+link.getDestinationElement().getId(),"a"+link.getSourceElement().getId());
+				newLink.setType(link.getType());
+				return GenericLinkManager.insertGenericLink(newLink, user);
 			}
 		});
 	}

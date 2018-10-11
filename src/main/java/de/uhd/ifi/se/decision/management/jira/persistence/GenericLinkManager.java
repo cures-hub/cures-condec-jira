@@ -26,13 +26,18 @@ public class GenericLinkManager {
 
 	public static boolean deleteGenericLink(GenericLink link) {
 		init();
+		return deleteGenericLink(link.getIdOfSourceElement(), link.getIdOfDestinationElement());
+	}
+	
+	public static boolean deleteGenericLink(String source, String target) {
+		init();
 		return ao.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction() {
 				for (LinkBetweenDifferentEntitiesEntity linkEntity : ao
 						.find(LinkBetweenDifferentEntitiesEntity.class)) {
-					if (link.getIdOfDestinationElement().equals(linkEntity.getIdOfDestinationElement())
-							&& link.getIdOfSourceElement().equals(linkEntity.getIdOfSourceElement())) {
+					if (linkEntity.getIdOfDestinationElement().equals(target)
+							&& linkEntity.getIdOfSourceElement().equals(source)) {
 						try {
 							linkEntity.getEntityManager().delete(linkEntity);
 							return true;
@@ -45,6 +50,8 @@ public class GenericLinkManager {
 			}
 		});
 	}
+	
+	
 
 	public static long insertGenericLink(GenericLink link, ApplicationUser user) {
 		init();
