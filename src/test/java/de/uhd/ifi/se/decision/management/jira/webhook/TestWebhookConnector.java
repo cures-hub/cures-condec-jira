@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.user.MockApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
@@ -17,13 +19,17 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import net.java.ao.EntityManager;
+import net.java.ao.test.jdbc.Data;
+import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
+@Data(TestSetUp.AoSentenceTestDatabaseUpdater.class)
 public class TestWebhookConnector extends TestSetUp {
 	private EntityManager entityManager;
 	private WebhookConnector webhookConnector;
 	private DecisionKnowledgeElement element;
+	private ApplicationUser user;
 
 	@Before
 	public void setUp() {
@@ -36,10 +42,11 @@ public class TestWebhookConnector extends TestSetUp {
 		element = new DecisionKnowledgeElementImpl();
 		element.setProject("TEST");
 		element.setType("TASK");
-		element.setId(1);
+		element.setId(14);
 		element.setDescription("Test description");
-		element.setKey("TEST-1");
+		element.setKey("TEST-14");
 		element.setSummary("Test summary");
+		user = new MockApplicationUser("SysAdmin");
 	}
 
 	@Test
@@ -88,23 +95,24 @@ public class TestWebhookConnector extends TestSetUp {
 
 	@Test
 	public void testDeleteElementFails() {
-		assertFalse(webhookConnector.deleteElement(null));
+		assertFalse(webhookConnector.deleteElement(null, user));
 	}
 
 	@Test
+	@NonTransactional
 	public void testSendElementChangesWorks() {
 		assertTrue(webhookConnector.sendElementChanges(element));
 	}
 
 	@Test
 	public void testDeleteRootElementInTreeWorks() {
-		assertTrue(webhookConnector.deleteElement(element));
+		assertTrue(webhookConnector.deleteElement(element, user));
 	}
 
 	@Test
 	public void testDeleteOtherElementInTreeWorks() {
 		element.setType("DESCRIPTION");
-		assertTrue(webhookConnector.deleteElement(element));
+		assertTrue(webhookConnector.deleteElement(element, user));
 	}
 
 	@Test

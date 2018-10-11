@@ -1,8 +1,10 @@
 function fillIssueModule() {
-	updateView();
+    console.log("view.issue.module fillIssueModule");
+    updateView();
 }
 
 function updateView() {
-	var issueKey = getIssueKey();
-	buildTreant(issueKey, false);
+    console.log("view.issue.module updateView");
+    var issueKey = getIssueKey();
+    buildTreant(issueKey, true);
 }

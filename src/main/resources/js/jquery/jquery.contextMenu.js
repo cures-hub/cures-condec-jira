@@ -26,7 +26,7 @@
         factory(require('jquery'));
     } else {
         // Browser globals.
-        factory(jQuery);
+        factory(jQueryConDec);
     }
 })(function ($) {
 
