@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +22,16 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(ActiveObjectStrategyTestSetUp.AoSentenceTestDatabaseUpdater.class)
 public class TestInsertDecisionKnowledgeElement extends ActiveObjectStrategyTestSetUp {
+
+    private DecisionKnowledgeElement dec;
+
+    @Before
+    public void setUp(){
+        intizialisation();
+        dec = new DecisionKnowledgeElementImpl();
+        dec.setProject("TEST");
+        dec.setType(KnowledgeType.SOLUTION);
+    }
 
 	@Test(expected = NullPointerException.class)
     @NonTransactional
@@ -38,10 +49,6 @@ public class TestInsertDecisionKnowledgeElement extends ActiveObjectStrategyTest
 	@Test
     @NonTransactional
 	public void testRepresFilledUserNoFails() {
-		DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
-		dec.setProject("TEST");
-		dec.setType(KnowledgeType.SOLUTION);
-		ApplicationUser user = new MockApplicationUser("NoFails");
 		assertNotNull(aoStrategy.insertDecisionKnowledgeElement(dec, user));
 	}
 

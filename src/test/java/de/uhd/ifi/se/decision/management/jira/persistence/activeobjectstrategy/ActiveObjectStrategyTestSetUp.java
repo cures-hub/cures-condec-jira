@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectstrategy;
 
 import com.atlassian.jira.project.ProjectManager;
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.user.MockApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementEntity;
@@ -21,13 +23,15 @@ public class ActiveObjectStrategyTestSetUp {
 
 	private ProjectManager projectManager;
 	protected EntityManager entityManager;
+	protected ApplicationUser user;
 	protected ActiveObjectStrategy aoStrategy;
 
-	@Before
-	public void setUp() {
+
+	public void intizialisation() {
 		ActiveObjects ao = new TestActiveObjects(entityManager);
 		TestComponentGetter.init(ao, new MockTransactionTemplate(), new MockDefaultUserManager());
 		aoStrategy = new ActiveObjectStrategy("TEST");
+		user = new MockApplicationUser("NoFails");
 	}
 
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater
