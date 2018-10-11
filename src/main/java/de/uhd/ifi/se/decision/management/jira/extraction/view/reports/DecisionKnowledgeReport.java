@@ -262,7 +262,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
 
 		com.atlassian.query.Query query = jqlClauseBuilder.project(this.projectId).buildQuery();
-		com.atlassian.jira.issue.search.SearchResults searchResults = null;
+		SearchResults searchResults = null;
 
 		searchResults = searchService.search(loggedInUser, query, PagerFilter.getUnlimitedFilter());
 

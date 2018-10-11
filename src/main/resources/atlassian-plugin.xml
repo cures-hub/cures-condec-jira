@@ -281,7 +281,7 @@
             <property>
                 <key>projectid</key>
                 <name>Projekt</name>
-                <description>Select the project to display report on.</description>
+                <description>Select the project to display report on</description>
                 <type>filterprojectpicker</type>
             </property>
             <property>
