@@ -22,11 +22,11 @@ import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -81,7 +81,7 @@ public class TestGenericLink extends TestSetUp {
 		Sentence s = c.getSentences().get(0);
 		link.setIdOfSourceElement("s" + s.getId());
 
-		ActiveObjectsManager.insertGenericLink(link, null);
+		GenericLinkManager.insertGenericLink(link, null);
 
 		assertNotNull(link.getOpposite("s" + s.getId()));
 		assertNotNull(link.getOpposite("i" + issue.getId()));
@@ -97,7 +97,7 @@ public class TestGenericLink extends TestSetUp {
 		Sentence s = c.getSentences().get(0);
 		link.setIdOfDestinationElement("s" + s.getId());
 
-		ActiveObjectsManager.insertGenericLink(link, null);
+		GenericLinkManager.insertGenericLink(link, null);
 
 		assertNotNull(link.getOpposite("s" + s.getId()));
 		assertNotNull(link.getOpposite("i" + issue.getId()));
@@ -116,7 +116,7 @@ public class TestGenericLink extends TestSetUp {
 		link.setIdOfSourceElement("s" + s1.getId());
 		link.setIdOfDestinationElement("s" + s.getId());
 
-		ActiveObjectsManager.insertGenericLink(link, null);
+		GenericLinkManager.insertGenericLink(link, null);
 
 		assertNotNull(link.getOpposite("s" + s.getId()));
 		assertNotNull(link.getOpposite("s" + s1.getId()));
@@ -130,7 +130,7 @@ public class TestGenericLink extends TestSetUp {
 
 		link.setIdOfSourceElement("i" + issue.getId());
 		link.setIdOfDestinationElement("i" + issue.getId());
-		ActiveObjectsManager.insertGenericLink(link, null);
+		GenericLinkManager.insertGenericLink(link, null);
 
 		assertNotNull(link.getOpposite("i" + issue.getId()));
 		assertNotNull(link.getOpposite("i" + issue.getId()));
@@ -144,7 +144,7 @@ public class TestGenericLink extends TestSetUp {
 
 		link.setIdOfSourceElement("i" + issue.getId());
 		link.setIdOfDestinationElement("i" + issue.getId());
-		ActiveObjectsManager.insertGenericLink(link, null);
+		GenericLinkManager.insertGenericLink(link, null);
 
 		assertTrue(link.getBothElements().size() == 2);
 		assertNotNull(link.getBothElements().get(0));

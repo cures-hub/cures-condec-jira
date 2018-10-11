@@ -9,7 +9,7 @@ import org.codehaus.jackson.annotate.JsonAutoDetect;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 
 /**
  * Model class for a graph of decision knowledge elements
@@ -68,7 +68,7 @@ public class GraphImpl implements Graph {
 //			 return linkedElementsAndLinks;
 //		 }
 		String preIndex = getIdentifier(element);
-		List<GenericLink> list = ActiveObjectsManager.getGenericLinksForElement(preIndex + element.getId(), false);
+		List<GenericLink> list = GenericLinkManager.getGenericLinksForElement(preIndex + element.getId(), false);
 
 		for (GenericLink currentGenericLink : list) {
 			try {
