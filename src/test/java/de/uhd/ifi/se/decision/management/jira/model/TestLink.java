@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import com.atlassian.jira.issue.link.IssueLink;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLink;
 import de.uhd.ifi.se.decision.management.jira.persistence.LinkEntity;
 
@@ -99,7 +100,7 @@ public class TestLink {
 
 	@Test
 	public void testConstructorLinkEntity() {
-		LinkEntity linkEntity = mock(LinkEntity.class);
+		LinkBetweenDifferentEntitiesEntity linkEntity = mock(LinkBetweenDifferentEntitiesEntity.class);
 		Link link = new LinkImpl(linkEntity);
 		assertNotNull(link);
 	}

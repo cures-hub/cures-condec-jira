@@ -143,7 +143,6 @@ public class GenericLinkManager {
 						try {
 							linkElement.getEntityManager().delete(linkElement);
 						} catch (SQLException e) {
-							e.printStackTrace();
 						}
 					}
 				}
