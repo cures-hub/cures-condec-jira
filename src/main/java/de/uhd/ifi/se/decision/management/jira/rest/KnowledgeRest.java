@@ -36,6 +36,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
@@ -332,13 +333,13 @@ public class KnowledgeRest {
 			GenericLinkImpl link) {
 		System.out.println(link.toString());
 		if (projectKey != null && request != null && link != null) {
-			boolean isDeleted = ActiveObjectsManager.deleteGenericLink(link);
+			boolean isDeleted = GenericLinkManager.deleteGenericLink(link);
 			if (isDeleted) {
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 			} else {
 				GenericLink inverseLink = new GenericLinkImpl(link.getIdOfSourceElement(),
 						link.getIdOfDestinationElement());
-				isDeleted = ActiveObjectsManager.deleteGenericLink(inverseLink);
+				isDeleted = GenericLinkManager.deleteGenericLink(inverseLink);
 				if (isDeleted) {
 					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 				} else {
@@ -359,7 +360,7 @@ public class KnowledgeRest {
 			GenericLink link) {
 		if (projectKey != null && request != null && link != null) {
 			ApplicationUser user = getCurrentUser(request);
-			long linkId = ActiveObjectsManager.insertGenericLink(link, user);
+			long linkId = GenericLinkManager.insertGenericLink(link, user);
 			if (linkId == 0) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
