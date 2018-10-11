@@ -1,18 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectstrategy;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
-import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.user.MockApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
