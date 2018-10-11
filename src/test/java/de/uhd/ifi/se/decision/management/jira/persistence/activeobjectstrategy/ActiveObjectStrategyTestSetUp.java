@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectstrategy;
 
-import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
@@ -8,7 +7,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetween
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementEntity;
 import de.uhd.ifi.se.decision.management.jira.persistence.LinkEntity;
 import net.java.ao.test.jdbc.DatabaseUpdater;
-import org.junit.Before;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.activeobjects.test.TestActiveObjects;
@@ -21,7 +19,6 @@ import net.java.ao.EntityManager;
 
 public class ActiveObjectStrategyTestSetUp {
 
-	private ProjectManager projectManager;
 	protected EntityManager entityManager;
 	protected ApplicationUser user;
 	protected ActiveObjectStrategy aoStrategy;
