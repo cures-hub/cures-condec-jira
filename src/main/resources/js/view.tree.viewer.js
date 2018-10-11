@@ -83,7 +83,7 @@ function addDragAndDropSupportForTreeViewer() {
 
 			if (oldParentNode === "#" && parentNode !== "#") {
 				linkGenericElements(parentNode.data.id, nodeId, targetType, "s", function() {
-					refreshTreeViewer()
+					refreshTreeViewer();
 				});
 			}
 			if (parentNode === "#" && oldParentNode !== "#") {
@@ -93,7 +93,7 @@ function addDragAndDropSupportForTreeViewer() {
 				});
 			}
 			if (parentNode !== '#' && oldParentNode !== '#') {
-				targetTypeOld = (oldParentNode.li_attr['class'] == "sentence") ? "s" : "i";
+				targetTypeOld = (oldParentNode.li_attr['class'] === "sentence") ? "s" : "i";
 				var nodeType = (node.li_attr['class'] === "sentence") ? "s" : "i";
 				if (nodeType == "i" && targetTypeOld == "i") {
 					linkGenericElements(parentNode.data.id, nodeId, targetType, nodeType, function() {

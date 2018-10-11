@@ -24,7 +24,7 @@ public class GraphImpl implements Graph {
 
 	public GraphImpl() {
 		linkIds = new ArrayList<>();
-		sentenceLinkAlreadyVisited = new ArrayList<>();
+		GraphImpl.sentenceLinkAlreadyVisited = new ArrayList<>();
 	}
 
 	public GraphImpl(String projectKey) {
@@ -82,7 +82,7 @@ public class GraphImpl implements Graph {
 				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source,target);
 				linkBetweenSentenceAndOtherElement.setType("contain");
 				if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
-					sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
+					GraphImpl.sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
 					linkedElementsAndLinks.put(currentGenericLink.getOpposite(preIndex + element.getId()),
 							linkBetweenSentenceAndOtherElement);
 				}
@@ -95,7 +95,7 @@ public class GraphImpl implements Graph {
 	}
 
 	private boolean linkListContainsLink(Link link2) {
-		for (Link link : sentenceLinkAlreadyVisited) {
+		for (Link link : GraphImpl.sentenceLinkAlreadyVisited) {
 			if (link.getDestinationElement().getId() == link2.getDestinationElement().getId()
 					&& link.getSourceElement().getId() == link2.getSourceElement().getId()
 					|| link.getSourceElement().getId() == link2.getDestinationElement().getId()

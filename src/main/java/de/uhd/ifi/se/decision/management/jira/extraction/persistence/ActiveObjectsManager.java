@@ -94,11 +94,7 @@ public class ActiveObjectsManager {
 		init();
 		DecisionKnowledgeInCommentEntity databaseEntry = getElementFromAO(commentId, endSubtringCount,
 				startSubstringCount, userId, projectKey);
-		if (databaseEntry != null) {
-			return true;
-		} else {
-			return false;
-		}
+		return databaseEntry != null; 
 	}
 
 	public static void updateSentenceElement(Sentence sentence) {
