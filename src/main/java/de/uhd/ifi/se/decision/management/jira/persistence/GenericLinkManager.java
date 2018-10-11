@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 
 public class GenericLinkManager {
 
@@ -149,6 +150,11 @@ public class GenericLinkManager {
 				return null;
 			}
 		});
+	}
+
+	public static DecisionKnowledgeElement getIssueFromAOTable(long dkeId) {
+		ActiveObjectStrategy aos = new ActiveObjectStrategy("");
+		return aos.getDecisionKnowledgeElement(dkeId);		
 	}
 
 }

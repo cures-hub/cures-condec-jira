@@ -10,6 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 
 public class GenericLinkImpl implements GenericLink {
 
@@ -80,46 +81,25 @@ public class GenericLinkImpl implements GenericLink {
 
 	@Override
 	public DecisionKnowledgeElement getOpposite(String currentElementId) {
-		if (currentElementId.startsWith("s")) {
-			if (this.getIdOfSourceElement().equals(currentElementId)) {
-				if (this.getIdOfDestinationElement().startsWith("s")) {
-					return new SentenceImpl(getDesitantionIdAsLong());
-				}
-				if (this.getIdOfDestinationElement().startsWith("i")) {
-					Issue issue = ComponentAccessor.getIssueManager().getIssueObject(getDesitantionIdAsLong());
-					return new DecisionKnowledgeElementImpl(issue);
-				}
-			}
-			if (this.getIdOfDestinationElement().equals(currentElementId)) {
-				if (this.getIdOfSourceElement().startsWith("s")) {
-					return new SentenceImpl(getSourceIdAsLong());
-				}
-				if (this.getIdOfSourceElement().startsWith("i")) {
-					Issue issue = ComponentAccessor.getIssueManager().getIssueObject(getSourceIdAsLong());
-					return new DecisionKnowledgeElementImpl(issue);
-				}
-			}
+		if (this.getIdOfSourceElement().equals(currentElementId)) {
+			return handleOppositeLink(this.getIdOfDestinationElement());
 		}
-		if (currentElementId.startsWith("i")) {
-			if (this.getIdOfSourceElement().equals(currentElementId)) {
-				if (this.getIdOfDestinationElement().startsWith("s")) {
-					return new SentenceImpl(getDesitantionIdAsLong());
-				} 
-				if (this.getIdOfDestinationElement().startsWith("i")) {
-					Issue issue = ComponentAccessor.getIssueManager()
-							.getIssueObject((long) Integer.parseInt(currentElementId.substring(1)));
-					return new DecisionKnowledgeElementImpl(issue);
-				}
-			}
-			if (this.getIdOfDestinationElement().equals(currentElementId)) {
-				if (this.getIdOfSourceElement().startsWith("s")) {
-					return new SentenceImpl(getSourceIdAsLong());
-				} 
-				if (this.getIdOfSourceElement().startsWith("i")) {
-					Issue issue = ComponentAccessor.getIssueManager().getIssueObject(getSourceIdAsLong());
-					return new DecisionKnowledgeElementImpl(issue);
-				}
-			}
+		if (this.getIdOfDestinationElement().equals(currentElementId)) {
+			return handleOppositeLink(this.getIdOfSourceElement());
+		}
+		return null;
+	}
+
+	private DecisionKnowledgeElement handleOppositeLink(String oppositeId) {
+		if (oppositeId.startsWith("s")) {
+			return new SentenceImpl(cutId(oppositeId));
+		}
+		if (oppositeId.startsWith("i")) {
+			Issue issue = ComponentAccessor.getIssueManager().getIssueObject(cutId(oppositeId));
+			return new DecisionKnowledgeElementImpl(issue);
+		}
+		if (oppositeId.startsWith("a")) {
+			return GenericLinkManager.getIssueFromAOTable(cutId(oppositeId));
 		}
 		return null;
 	}
@@ -132,12 +112,8 @@ public class GenericLinkImpl implements GenericLink {
 		return bothLinkSides;
 	}
 
-	private long getDesitantionIdAsLong() {
-		return (long) Integer.parseInt(this.getIdOfDestinationElement().substring(1));
-	}
-
-	private long getSourceIdAsLong() {
-		return (long) Integer.parseInt(this.getIdOfSourceElement().substring(1));
+	private long cutId(String id) {
+		return (long) Integer.parseInt(id.substring(1));
 	}
 
 	@Override
