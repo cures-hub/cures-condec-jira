@@ -9,7 +9,6 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -30,7 +29,7 @@ public class ActiveObjectsManager {
 		}
 	}
 
-	public static long addNewSentenceintoAo(CommentImpl comment, long issueId, int index) {
+	public static long addNewSentenceintoAo(Comment comment, long issueId, int index) {
 		return addNewSentenceintoAo(comment.getJiraCommentId(), comment.getEndSubstringCount().get(index),
 				comment.getStartSubstringCount().get(index), comment.getAuthorId(), issueId, comment.getProjectKey());
 	}
@@ -48,7 +47,8 @@ public class ActiveObjectsManager {
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 					@Override
 					public DecisionKnowledgeInCommentEntity doInTransaction() {
-						DecisionKnowledgeInCommentEntity todo = ActiveObjects.create(DecisionKnowledgeInCommentEntity.class); // (2)
+						DecisionKnowledgeInCommentEntity todo = ActiveObjects
+								.create(DecisionKnowledgeInCommentEntity.class); // (2)
 						todo.setCommentId(commentId);
 						todo.setEndSubstringCount(endSubStringCount);
 						todo.setStartSubstringCount(startSubstringCount);
@@ -78,7 +78,8 @@ public class ActiveObjectsManager {
 		ActiveObjects.executeInTransaction(new TransactionCallback<LinkBetweenDifferentEntitiesEntity>() {
 			@Override
 			public LinkBetweenDifferentEntitiesEntity doInTransaction() {
-				LinkBetweenDifferentEntitiesEntity newGenericLink = ActiveObjects.create(LinkBetweenDifferentEntitiesEntity.class); // (2)
+				LinkBetweenDifferentEntitiesEntity newGenericLink = ActiveObjects
+						.create(LinkBetweenDifferentEntitiesEntity.class); // (2)
 				newGenericLink.setIdOfDestinationElement("s" + sentenceAoId);
 				newGenericLink.setIdOfSourceElement("i" + issueId);
 				newGenericLink.setType("contain");
@@ -105,7 +106,8 @@ public class ActiveObjectsManager {
 		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 			@Override
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
+						DecisionKnowledgeInCommentEntity.class,
 						Query.select().where("PROJECT_KEY = ?", sentence.getProjectKey()))) {
 					if (databaseEntry.getId() == sentence.getId()) {
 						databaseEntry.setArgument(sentence.getArgument());
@@ -150,7 +152,8 @@ public class ActiveObjectsManager {
 		return ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 			@Override
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class)) {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects
+						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (databaseEntry.getId() == aoId) {
 						return databaseEntry;
 					}
@@ -165,7 +168,8 @@ public class ActiveObjectsManager {
 		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 			@Override
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class)) {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects
+						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (databaseEntry.getId() == sentence.getId()) {
 						databaseEntry.setKnowledgeTypeString(sentence.getKnowledgeTypeString());
 						databaseEntry.setTaggedFineGrained(true);
@@ -188,11 +192,12 @@ public class ActiveObjectsManager {
 				for (DecisionKnowledgeInCommentEntity sentenceEntity : ActiveObjects
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
-						sentenceEntity.setKnowledgeTypeString(knowledgeType.toString());
-						if (knowledgeType != KnowledgeType.OTHER) {
-						} else {// Knowledgetype is an Argument
+						// Knowledgetype is an Argument
+						if(knowledgeType.equals(KnowledgeType.OTHER) || knowledgeType.equals(KnowledgeType.ARGUMENT)) {
 							sentenceEntity.setKnowledgeTypeString(argument);
 							sentenceEntity.setArgument(argument);
+						}else {
+							sentenceEntity.setKnowledgeTypeString(knowledgeType.toString());
 						}
 						sentenceEntity.setRelevant(true);
 						sentenceEntity.setTaggedManually(true);
@@ -236,7 +241,7 @@ public class ActiveObjectsManager {
 		return true;
 	}
 
-	public static void checkIfCommentBodyHasChangedOutsideOfPlugin(CommentImpl comment) {
+	public static void checkIfCommentBodyHasChangedOutsideOfPlugin(Comment comment) {
 		init();
 		final List<Integer> starts = comment.getStartSubstringCount();
 		final List<Integer> ends = comment.getEndSubstringCount();
@@ -245,7 +250,8 @@ public class ActiveObjectsManager {
 			@Override
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
 				boolean deleteFlag = false;
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
+						DecisionKnowledgeInCommentEntity.class,
 						Query.select().where("COMMENT_ID = ?", comment.getJiraCommentId()))) {
 					if (databaseEntry.getProjectKey().equals(comment.getProjectKey())
 							&& (!starts.contains(databaseEntry.getStartSubstringCount())
@@ -311,8 +317,8 @@ public class ActiveObjectsManager {
 			public Boolean doInTransaction() {
 				int lengthDifference = 0; // TODO: Add project ID
 				int oldStart = 0;
-				for (DecisionKnowledgeInCommentEntity sentenceEntity : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
-						"ID = ?", aoId)) {
+				for (DecisionKnowledgeInCommentEntity sentenceEntity : ActiveObjects
+						.find(DecisionKnowledgeInCommentEntity.class, "ID = ?", aoId)) {
 					int oldLength = sentenceEntity.getEndSubstringCount() - sentenceEntity.getStartSubstringCount();
 					lengthDifference = (oldLength - description.length()) * -1;
 					sentenceEntity.setEndSubstringCount(sentenceEntity.getEndSubstringCount() + lengthDifference);
@@ -341,8 +347,8 @@ public class ActiveObjectsManager {
 		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 			@Override
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
-						Query.select().where("PROJECT_KEY = ?", projectKey))) {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
+						DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
 					GenericLinkManager.deleteLinksForElementIfExisting("s" + databaseEntry.getId());
 					try {
 						databaseEntry.getEntityManager().delete(databaseEntry);
@@ -363,8 +369,8 @@ public class ActiveObjectsManager {
 		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 			@Override
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
-						Query.select().where("PROJECT_KEY = ?", projectKey))) {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
+						DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
 					if (databaseEntry.getKnowledgeTypeString() != null) {
 						if (databaseEntry.getKnowledgeTypeString().equals(rootElementType.toString())
 								|| (databaseEntry.getKnowledgeTypeString().length() == 3 // meats its eather Pro or con
@@ -395,7 +401,8 @@ public class ActiveObjectsManager {
 		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 			@Override
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
+						DecisionKnowledgeInCommentEntity.class,
 						Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ?", comment.getProjectKey(),
 								comment.getJiraCommentId()))) {
 					if (databaseEntry != null) {
