@@ -18,25 +18,22 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ActiveObjectStrategy;
 import net.java.ao.EntityManager;
 
 public class ActiveObjectStrategyTestSetUp {
-
+	
 	protected EntityManager entityManager;
 	protected ApplicationUser user;
 	protected ActiveObjectStrategy aoStrategy;
 
-
-	public void intizialisation() {
-		ActiveObjects ao = new TestActiveObjects(entityManager);
-		TestComponentGetter.init(ao, new MockTransactionTemplate(), new MockDefaultUserManager());
+	public void initialisation() {
+		ActiveObjects activeObjects = new TestActiveObjects(entityManager);
+		TestComponentGetter.init(activeObjects, new MockTransactionTemplate(), new MockDefaultUserManager());
 		aoStrategy = new ActiveObjectStrategy("TEST");
 		user = new MockApplicationUser("NoFails");
 	}
 
-	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater
-	{
+	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
 		@SuppressWarnings("unchecked")
 		@Override
-		public void update(EntityManager entityManager) throws Exception
-		{
+		public void update(EntityManager entityManager) throws Exception {
 			entityManager.migrate(DecisionKnowledgeElementEntity.class);
 			entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
 			entityManager.migrate(LinkEntity.class);

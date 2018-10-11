@@ -21,7 +21,7 @@ public class TestGetDecisionKnowledgeElementId extends ActiveObjectStrategyTestS
 
     @Before
     public void setUp(){
-        intizialisation();
+        initialisation();
         DecisionKnowledgeElement insertElement = new DecisionKnowledgeElementImpl();
         insertElement.setId(13);
         insertElement.setProject("TEST");

@@ -16,33 +16,32 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 @Data(ActiveObjectStrategyTestSetUp.AoSentenceTestDatabaseUpdater.class)
 public class TestInsertDecisionKnowledgeElement extends ActiveObjectStrategyTestSetUp {
 
-    private DecisionKnowledgeElement dec;
+	private DecisionKnowledgeElement element;
 
-    @Before
-    public void setUp(){
-        intizialisation();
-        dec = new DecisionKnowledgeElementImpl();
-        dec.setProject("TEST");
-        dec.setType(KnowledgeType.SOLUTION);
-    }
+	@Before
+	public void setUp() {
+		initialisation();
+		element = new DecisionKnowledgeElementImpl();
+		element.setProject("TEST");
+		element.setType(KnowledgeType.SOLUTION);
+	}
 
 	@Test(expected = NullPointerException.class)
-    @NonTransactional
+	@NonTransactional
 	public void testElementNullUserNull() {
 		aoStrategy.insertDecisionKnowledgeElement(null, null);
 	}
 
 	@Test(expected = NullPointerException.class)
-    @NonTransactional
+	@NonTransactional
 	public void testElementEmptyUserNull() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
 		aoStrategy.insertDecisionKnowledgeElement(element, null);
 	}
 
 	@Test
-    @NonTransactional
+	@NonTransactional
 	public void testRepresFilledUserNoFails() {
-		assertNotNull(aoStrategy.insertDecisionKnowledgeElement(dec, user));
+		assertNotNull(aoStrategy.insertDecisionKnowledgeElement(element, user));
 	}
-
 }

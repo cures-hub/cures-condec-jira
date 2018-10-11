@@ -16,23 +16,23 @@ import static org.junit.Assert.assertNotNull;
 @Data(ActiveObjectStrategyTestSetUp.AoSentenceTestDatabaseUpdater.class)
 public class TestGetDecisionKnowledgeElements extends ActiveObjectStrategyTestSetUp {
 
-    @Before
-    public void setUp(){
-        intizialisation();
-        DecisionKnowledgeElement insertElement = new DecisionKnowledgeElementImpl();
-        insertElement.setKey("TEST-13");
-        insertElement.setProject("TEST");
-        insertElement.setType(KnowledgeType.DECISION);
+	@Before
+	public void setUp() {
+		initialisation();
+		DecisionKnowledgeElement insertElement = new DecisionKnowledgeElementImpl();
+		insertElement.setKey("TEST-13");
+		insertElement.setProject("TEST");
+		insertElement.setType(KnowledgeType.DECISION);
 
-        aoStrategy.insertDecisionKnowledgeElement(insertElement, user);
+		aoStrategy.insertDecisionKnowledgeElement(insertElement, user);
 
-        insertElement.setKey("TEST-14");
-        aoStrategy.insertDecisionKnowledgeElement(insertElement, user);
-    }
+		insertElement.setKey("TEST-14");
+		aoStrategy.insertDecisionKnowledgeElement(insertElement, user);
+	}
 
-    @Test
-    @NonTransactional
-    public void testFunction(){
-        assertNotNull(aoStrategy.getDecisionKnowledgeElements());
-    }
+	@Test
+	@NonTransactional
+	public void testFunction() {
+		assertNotNull(aoStrategy.getDecisionKnowledgeElements());
+	}
 }

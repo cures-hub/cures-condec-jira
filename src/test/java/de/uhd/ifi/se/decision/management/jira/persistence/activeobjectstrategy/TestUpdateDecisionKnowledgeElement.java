@@ -17,53 +17,53 @@ import static org.junit.Assert.assertTrue;
 @Data(ActiveObjectStrategyTestSetUp.AoSentenceTestDatabaseUpdater.class)
 public class TestUpdateDecisionKnowledgeElement extends ActiveObjectStrategyTestSetUp {
 
-    private DecisionKnowledgeElement element;
+	private DecisionKnowledgeElement element;
 
-    @Before
-    public void setUp(){
-        intizialisation();
-        element = new DecisionKnowledgeElementImpl();
-        element.setId(13);
-        element.setKey("TEST-13");
-        element.setType(KnowledgeType.SOLUTION);
-        element.setProject("TEST");
-        element.setDescription("Old");
-        aoStrategy.insertDecisionKnowledgeElement(element,user);
-        element.setDescription("New");
-    }
+	@Before
+	public void setUp() {
+		initialisation();
+		element = new DecisionKnowledgeElementImpl();
+		element.setId(13);
+		element.setKey("TEST-13");
+		element.setType(KnowledgeType.SOLUTION);
+		element.setProject("TEST");
+		element.setDescription("Old");
+		aoStrategy.insertDecisionKnowledgeElement(element, user);
+		element.setDescription("New");
+	}
 
-    @Test (expected = NullPointerException.class)
-    @NonTransactional
-    public void testElementNullUserNull(){
-        aoStrategy.updateDecisionKnowledgeElement(null, null);
-    }
+	@Test(expected = NullPointerException.class)
+	@NonTransactional
+	public void testElementNullUserNull() {
+		aoStrategy.updateDecisionKnowledgeElement(null, null);
+	}
 
-    @Test (expected = NullPointerException.class)
-    @NonTransactional
-    public void testElementNullUserFilled(){
-        aoStrategy.updateDecisionKnowledgeElement(null, user);
-    }
+	@Test(expected = NullPointerException.class)
+	@NonTransactional
+	public void testElementNullUserFilled() {
+		aoStrategy.updateDecisionKnowledgeElement(null, user);
+	}
 
-    @Test
-    @NonTransactional
-    public void testElementFilledUserNull(){
-        assertTrue(aoStrategy.updateDecisionKnowledgeElement(element, null));
-    }
+	@Test
+	@NonTransactional
+	public void testElementFilledUserNull() {
+		assertTrue(aoStrategy.updateDecisionKnowledgeElement(element, null));
+	}
 
-    @Test
-    @NonTransactional
-    public void testElementFilledUserFilledNotInTable(){
-        DecisionKnowledgeElement notInTableElement = new DecisionKnowledgeElementImpl();
-        notInTableElement.setProject("TESTNOT");
-        notInTableElement.setType(KnowledgeType.SOLUTION);
-        notInTableElement.setKey("TESTNOT-12");
-        notInTableElement.setId(12);
-        assertFalse(aoStrategy.updateDecisionKnowledgeElement(notInTableElement, user));
-    }
+	@Test
+	@NonTransactional
+	public void testElementFilledUserFilledNotInTable() {
+		DecisionKnowledgeElement notInTableElement = new DecisionKnowledgeElementImpl();
+		notInTableElement.setProject("TESTNOT");
+		notInTableElement.setType(KnowledgeType.SOLUTION);
+		notInTableElement.setKey("TESTNOT-12");
+		notInTableElement.setId(12);
+		assertFalse(aoStrategy.updateDecisionKnowledgeElement(notInTableElement, user));
+	}
 
-    @Test
-    @NonTransactional
-    public void testElementFilledUserFilledInTable(){
-        assertTrue(aoStrategy.updateDecisionKnowledgeElement(element, user));
-    }
+	@Test
+	@NonTransactional
+	public void testElementFilledUserFilledInTable() {
+		assertTrue(aoStrategy.updateDecisionKnowledgeElement(element, user));
+	}
 }

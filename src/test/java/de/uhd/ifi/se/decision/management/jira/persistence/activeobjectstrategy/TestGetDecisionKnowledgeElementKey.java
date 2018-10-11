@@ -13,45 +13,43 @@ import org.junit.runner.RunWith;
 import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 
-
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(ActiveObjectStrategyTestSetUp.AoSentenceTestDatabaseUpdater.class)
 public class TestGetDecisionKnowledgeElementKey extends ActiveObjectStrategyTestSetUp {
 
-    private DecisionKnowledgeElement element;
+	private DecisionKnowledgeElement element;
 
-    @Before
-    public void setUp(){
-        intizialisation();
-        DecisionKnowledgeElement insertElement = new DecisionKnowledgeElementImpl();
-        insertElement.setKey("TEST-13");
-        insertElement.setProject("TEST");
-        insertElement.setType(KnowledgeType.DECISION);
-        element = aoStrategy.insertDecisionKnowledgeElement(insertElement, user);
-    }
+	@Before
+	public void setUp() {
+		initialisation();
+		DecisionKnowledgeElement insertElement = new DecisionKnowledgeElementImpl();
+		insertElement.setKey("TEST-13");
+		insertElement.setProject("TEST");
+		insertElement.setType(KnowledgeType.DECISION);
+		element = aoStrategy.insertDecisionKnowledgeElement(insertElement, user);
+	}
 
-    @Test (expected = NullPointerException.class)
-    @NonTransactional
-    public void testKeyNull(){
-        aoStrategy.getDecisionKnowledgeElement(null);
-    }
+	@Test(expected = NullPointerException.class)
+	@NonTransactional
+	public void testKeyNull() {
+		aoStrategy.getDecisionKnowledgeElement(null);
+	}
 
-    @Test
-    @NonTransactional
-    public void testKeyEmpty(){
-        assertNull(aoStrategy.getDecisionKnowledgeElement(""));
-    }
+	@Test
+	@NonTransactional
+	public void testKeyEmpty() {
+		assertNull(aoStrategy.getDecisionKnowledgeElement(""));
+	}
 
-    @Test
-    @NonTransactional
-    public void testKeyFilledNotInTable(){
-        assertNull(aoStrategy.getDecisionKnowledgeElement("TEST-123124"));
-    }
+	@Test
+	@NonTransactional
+	public void testKeyFilledNotInTable() {
+		assertNull(aoStrategy.getDecisionKnowledgeElement("TEST-123124"));
+	}
 
-    @Test
-    @NonTransactional
-    public void testKeyFilledInTable(){
-        assertNotNull(aoStrategy.getDecisionKnowledgeElement(element.getKey()));
-    }
+	@Test
+	@NonTransactional
+	public void testKeyFilledInTable() {
+		assertNotNull(aoStrategy.getDecisionKnowledgeElement(element.getKey()));
+	}
 }
-
