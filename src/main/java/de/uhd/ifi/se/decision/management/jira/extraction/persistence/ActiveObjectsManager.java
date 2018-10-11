@@ -193,10 +193,10 @@ public class ActiveObjectsManager {
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
 						// Knowledgetype is an Argument
-						if(knowledgeType.equals(KnowledgeType.OTHER) || knowledgeType.equals(KnowledgeType.ARGUMENT)) {
+						if (knowledgeType.equals(KnowledgeType.OTHER) || knowledgeType.equals(KnowledgeType.ARGUMENT)) {
 							sentenceEntity.setKnowledgeTypeString(argument);
 							sentenceEntity.setArgument(argument);
-						}else {
+						} else {
 							sentenceEntity.setKnowledgeTypeString(knowledgeType.toString());
 						}
 						sentenceEntity.setRelevant(true);
@@ -371,12 +371,10 @@ public class ActiveObjectsManager {
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
 				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
 						DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
-					if (databaseEntry.getKnowledgeTypeString() != null) {
-						if (databaseEntry.getKnowledgeTypeString().equals(rootElementType.toString())
-								|| (databaseEntry.getKnowledgeTypeString().length() == 3 // meats its eather Pro or con
-										&& rootElementType.equals(KnowledgeType.ARGUMENT))) {
-							list.add(new SentenceImpl(databaseEntry.getId()));
-						}
+					if (databaseEntry.getKnowledgeTypeString().equals(rootElementType.toString())
+							|| (databaseEntry.getKnowledgeTypeString().length() == 3 // its either Pro or con
+									&& rootElementType.equals(KnowledgeType.ARGUMENT))) {
+						list.add(new SentenceImpl(databaseEntry.getId()));
 					}
 				}
 				return null;

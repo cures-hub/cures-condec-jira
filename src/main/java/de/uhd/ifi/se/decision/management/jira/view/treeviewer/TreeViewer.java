@@ -87,7 +87,7 @@ public class TreeViewer {
 	 */
 	public TreeViewer(String issueId, boolean isCalledFromTabPanel) {
 		this();
-		isCalledFromIssueTabPanel = true;
+		TreeViewer.isCalledFromIssueTabPanel = true;
 		if (issueId == null) {
 			return;
 		}
