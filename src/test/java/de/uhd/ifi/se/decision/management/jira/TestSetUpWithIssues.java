@@ -41,7 +41,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.LinkEntity;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 
-public class TestSetUp {
+public class TestSetUpWithIssues {
 	private ProjectManager projectManager;
 	private IssueManager issueManager;
 	private ConstantsManager constantsManager;

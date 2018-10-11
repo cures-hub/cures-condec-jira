@@ -2,10 +2,9 @@ package de.uhd.ifi.se.decision.management.jira.config;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.plugin.webfragment.model.JiraHelper;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockJiraHelper;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
@@ -18,7 +17,7 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestActivationConditionForIssueModule extends TestSetUp {
+public class TestActivationConditionForIssueModule extends TestSetUpWithIssues {
     private EntityManager entityManager;
     private ActivationConditionForIssueModule condition;
 

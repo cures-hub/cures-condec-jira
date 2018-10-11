@@ -1,19 +1,25 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectstrategy;
 
+import com.atlassian.jira.project.ProjectManager;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementEntity;
+import de.uhd.ifi.se.decision.management.jira.persistence.LinkEntity;
+import net.java.ao.test.jdbc.DatabaseUpdater;
 import org.junit.Before;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.persistence.ActiveObjectStrategy;
 import net.java.ao.EntityManager;
 
-public class ActiveObjectStrategyTestSetUp extends TestSetUp {
+public class ActiveObjectStrategyTestSetUp {
 
+	private ProjectManager projectManager;
 	protected EntityManager entityManager;
 	protected ActiveObjectStrategy aoStrategy;
 
@@ -21,7 +27,19 @@ public class ActiveObjectStrategyTestSetUp extends TestSetUp {
 	public void setUp() {
 		ActiveObjects ao = new TestActiveObjects(entityManager);
 		TestComponentGetter.init(ao, new MockTransactionTemplate(), new MockDefaultUserManager());
-		initialization();
 		aoStrategy = new ActiveObjectStrategy("TEST");
+	}
+
+	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater
+	{
+		@SuppressWarnings("unchecked")
+		@Override
+		public void update(EntityManager entityManager) throws Exception
+		{
+			entityManager.migrate(DecisionKnowledgeElementEntity.class);
+			entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
+			entityManager.migrate(LinkEntity.class);
+			entityManager.migrate(LinkBetweenDifferentEntitiesEntity.class);
+		}
 	}
 }

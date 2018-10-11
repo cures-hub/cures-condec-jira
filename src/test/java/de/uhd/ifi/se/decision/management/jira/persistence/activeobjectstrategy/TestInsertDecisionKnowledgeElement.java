@@ -3,6 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectstrategy;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
+import net.java.ao.test.jdbc.Data;
+import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,23 +19,24 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
+@Data(ActiveObjectStrategyTestSetUp.AoSentenceTestDatabaseUpdater.class)
 public class TestInsertDecisionKnowledgeElement extends ActiveObjectStrategyTestSetUp {
 
-	@Ignore
 	@Test(expected = NullPointerException.class)
+    @NonTransactional
 	public void testElementNullUserNull() {
 		aoStrategy.insertDecisionKnowledgeElement(null, null);
 	}
 
-	@Ignore
 	@Test(expected = NullPointerException.class)
+    @NonTransactional
 	public void testElementEmptyUserNull() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
 		aoStrategy.insertDecisionKnowledgeElement(element, null);
 	}
 
-	// TODO Fixing the Test Problems (Closed Connection)
-	@Ignore
+	@Test
+    @NonTransactional
 	public void testRepresFilledUserNoFails() {
 		DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
 		dec.setProject("TEST");
@@ -41,13 +45,4 @@ public class TestInsertDecisionKnowledgeElement extends ActiveObjectStrategyTest
 		assertNotNull(aoStrategy.insertDecisionKnowledgeElement(dec, user));
 	}
 
-	// TODO Fixing the Test Problems (Closed Connection)
-	@Ignore
-	public void testRepresFilledUserWithFails() {
-		DecisionKnowledgeElementImpl dec = new DecisionKnowledgeElementImpl();
-		dec.setProject("TEST");
-		dec.setType(KnowledgeType.SOLUTION);
-		ApplicationUser user = new MockApplicationUser("WithFails");
-		assertNull(aoStrategy.insertDecisionKnowledgeElement(dec, user));
-	}
 }
