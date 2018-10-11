@@ -37,7 +37,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetween
 import de.uhd.ifi.se.decision.management.jira.mocks.*;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementEntity;
-import de.uhd.ifi.se.decision.management.jira.persistence.LinkEntity;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 
@@ -158,7 +157,6 @@ public class TestSetUpWithIssues {
         {
         	entityManager.migrate(DecisionKnowledgeElementEntity.class);
         	entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
-            entityManager.migrate(LinkEntity.class);
             entityManager.migrate(LinkBetweenDifferentEntitiesEntity.class);
         }
     }
