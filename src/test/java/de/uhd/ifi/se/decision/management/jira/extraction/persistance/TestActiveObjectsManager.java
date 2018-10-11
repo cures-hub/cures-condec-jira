@@ -84,7 +84,7 @@ public class TestActiveObjectsManager extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void TestElementExistingInAo() {
+	public void testElementExistingInAo() {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 		assertNotNull(ActiveObjectsManager.getElementFromAO(id));
@@ -92,7 +92,7 @@ public class TestActiveObjectsManager extends TestSetUp {
 	
 	@Test
 	@NonTransactional
-	public void TestElementInsertedTwice() {
+	public void testElementInsertedTwice() {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 		long id2 = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
@@ -102,7 +102,7 @@ public class TestActiveObjectsManager extends TestSetUp {
 	
 	@Test
 	@NonTransactional
-	public void TestUpdateSentenceElement() {
+	public void testUpdateSentenceElement() {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 		Sentence sentence = comment.getSentences().get(0);
@@ -114,7 +114,7 @@ public class TestActiveObjectsManager extends TestSetUp {
 	
 	@Test
 	@NonTransactional
-	public void TestUpdateKnowledgeType() {
+	public void testUpdateKnowledgeType() {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 		Sentence sentence = comment.getSentences().get(0);
@@ -126,7 +126,7 @@ public class TestActiveObjectsManager extends TestSetUp {
 	
 	@Test
 	@NonTransactional
-	public void TestUpdateKnowledgeType2() {
+	public void testUpdateKnowledgeType2() {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 		Sentence sentence = comment.getSentences().get(0);
@@ -138,7 +138,7 @@ public class TestActiveObjectsManager extends TestSetUp {
 	
 	@Test
 	@NonTransactional
-	public void TestUpdateKnowledgeType3() {
+	public void testUpdateKnowledgeType3() {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 		
@@ -149,7 +149,7 @@ public class TestActiveObjectsManager extends TestSetUp {
 	
 	@Test
 	@NonTransactional
-	public void TestUpdateKnowledgeType3WithArgument() {
+	public void testUpdateKnowledgeType3WithArgument() {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 		
@@ -161,7 +161,7 @@ public class TestActiveObjectsManager extends TestSetUp {
 	
 	@Test
 	@NonTransactional
-	public void TestSetRelevantIntoAO() {
+	public void testSetRelevantIntoAO() {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 		
@@ -171,12 +171,12 @@ public class TestActiveObjectsManager extends TestSetUp {
 		
 		ActiveObjectsManager.setIsRelevantIntoAo(id, false);
 		element = ActiveObjectsManager.getElementFromAO(id);
-		assertTrue(!element.isRelevant());
+		assertFalse(element.isRelevant());
 	}
 	
 	@Test
 	@NonTransactional
-	public void TestSetRelevantIntoAOForNonExistingElement() {
+	public void testSetRelevantIntoAOForNonExistingElement() {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 		
@@ -186,7 +186,7 @@ public class TestActiveObjectsManager extends TestSetUp {
 
 	@Test
 	@NonTransactional
-	public void TestCommentHasChanged() {
+	public void testCommentHasChanged() {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 		
@@ -203,7 +203,7 @@ public class TestActiveObjectsManager extends TestSetUp {
 	
 	@Test
 	@NonTransactional
-	public void TestSetSentenceIrrlevant() {
+	public void testSetSentenceIrrlevant() {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 		
@@ -222,7 +222,7 @@ public class TestActiveObjectsManager extends TestSetUp {
 	
 	@Test
 	@NonTransactional
-	public void TestUpdateSentenceBodyWhenCommentChanged() {
+	public void testUpdateSentenceBodyWhenCommentChanged() {
 		Comment comment = getComment("First sentences of two. Sencond sentences of two.");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 		long id2 = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);

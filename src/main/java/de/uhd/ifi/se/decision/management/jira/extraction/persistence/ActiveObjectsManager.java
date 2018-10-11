@@ -10,7 +10,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -190,10 +189,10 @@ public class ActiveObjectsManager {
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
 						// Knowledgetype is an Argument
-						if(knowledgeType.equals(KnowledgeType.OTHER) || knowledgeType.equals(KnowledgeType.ARGUMENT)) {
+						if (knowledgeType.equals(KnowledgeType.OTHER) || knowledgeType.equals(KnowledgeType.ARGUMENT)) {
 							sentenceEntity.setKnowledgeTypeString(argument);
 							sentenceEntity.setArgument(argument);
-						}else {
+						} else {
 							sentenceEntity.setKnowledgeTypeString(knowledgeType.toString());
 						}
 						sentenceEntity.setRelevant(true);
@@ -232,10 +231,7 @@ public class ActiveObjectsManager {
 						return null;
 					}
 				});
-		if (databaseEntry == null) {
-			return false;
-		}
-		return true;
+		return databaseEntry != null;
 	}
 
 	public static void checkIfCommentBodyHasChangedOutsideOfPlugin(Comment comment) {
@@ -408,7 +404,8 @@ public class ActiveObjectsManager {
 				for (LinkBetweenDifferentEntitiesEntity linkElement : linkElements) {
 					GenericLink link = new GenericLinkImpl(linkElement.getIdOfDestinationElement(),
 							linkElement.getIdOfSourceElement());
-					// if(link.isValid()) { @issue: Function is very slow. @alternative: run this as a service
+					// if(link.isValid()) { @issue: Function is very slow. @alternative: run this as
+					// a service
 					if (!getOnlyOutwardLink && linkElement.getIdOfDestinationElement().equals(targetId)) {
 						links.add(link);
 					}
@@ -422,9 +419,8 @@ public class ActiveObjectsManager {
 		});
 		return links;
 	}
-	
-	
-	public static void  clearInValidLinks() {
+
+	public static void clearInValidLinks() {
 		init();
 		ao.executeInTransaction(new TransactionCallback<LinkBetweenDifferentEntitiesEntity>() {
 			@Override
@@ -433,7 +429,7 @@ public class ActiveObjectsManager {
 				for (LinkBetweenDifferentEntitiesEntity linkElement : linkElements) {
 					GenericLink link = new GenericLinkImpl(linkElement.getIdOfDestinationElement(),
 							linkElement.getIdOfSourceElement());
-					if(!link.isValid()) {
+					if (!link.isValid()) {
 						try {
 							linkElement.getEntityManager().delete(linkElement);
 						} catch (SQLException e) {
@@ -444,7 +440,6 @@ public class ActiveObjectsManager {
 			}
 		});
 	}
-	
 
 	public static void clearSentenceDatabaseForProject(String projectKey) {
 		init();
@@ -498,12 +493,11 @@ public class ActiveObjectsManager {
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
 				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class,
 						Query.select().where("PROJECT_KEY = ?", projectKey))) {
-					if (databaseEntry.getKnowledgeTypeString() != null) {
-						if (databaseEntry.getKnowledgeTypeString().equals(rootElementType.toString())
-								|| (databaseEntry.getKnowledgeTypeString().length() == 3 // meats its eather Pro or con
-										&& rootElementType.equals(KnowledgeType.ARGUMENT))) {
-							list.add(new SentenceImpl(databaseEntry.getId()));
-						}
+					if (databaseEntry.getKnowledgeTypeString() != null
+							&& databaseEntry.getKnowledgeTypeString().equals(rootElementType.toString())
+							|| (databaseEntry.getKnowledgeTypeString().length() == 3 // means its either Pro or con
+									&& rootElementType.equals(KnowledgeType.ARGUMENT))) {
+						list.add(new SentenceImpl(databaseEntry.getId()));
 					}
 				}
 				return null;

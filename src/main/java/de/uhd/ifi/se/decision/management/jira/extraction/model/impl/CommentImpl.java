@@ -52,10 +52,10 @@ public class CommentImpl implements Comment {
 		this.jiraCommentId = comment.getId();
 		this.authorId = comment.getAuthorApplicationUser().getId();
 		this.setIssueId(comment.getIssue().getId());
-		splitCommentIntoSentences(true);
+		splitCommentIntoSentences();
 	}
 
-	private void splitCommentIntoSentences(boolean addSentencesToAo) {
+	private void splitCommentIntoSentences() {
 		List<String> rawSentences = this.splitter.sliceCommentRecursionCommander(this.body, this.projectKey);
 		runBreakIterator(rawSentences);
 		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(this);
