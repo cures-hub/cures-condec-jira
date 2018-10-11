@@ -64,7 +64,7 @@ function addDragAndDropSupportForTreeViewer() {
 		var oldParentNode = getTreeViewerNodeById(nodeInContext.old_parent);
 		var nodeId = node.data.id;
 
-		if (!node.li_attr['class'] == "sentence") {
+		if (!node.li_attr['class'] === "sentence") {
 			if (oldParentNode === "#" && parentNode !== "#") {
 				createLinkToExistingElement(parentNode.data.id, nodeId);
 			}
@@ -79,22 +79,22 @@ function addDragAndDropSupportForTreeViewer() {
 				});
 			}
 		} else {
-			var targetType = (parentNode.li_attr['class'] == "sentence") ? "s" : "i";
+			var targetType = (parentNode.li_attr['class'] === "sentence") ? "s" : "i";
 
 			if (oldParentNode === "#" && parentNode !== "#") {
 				linkGenericElements(parentNode.data.id, nodeId, targetType, "s", function() {
-					refreshTreeViewer()
+					refreshTreeViewer();
 				});
 			}
 			if (parentNode === "#" && oldParentNode !== "#") {
-				var targetTypeOld = (oldParentNode.li_attr['class'] == "sentence") ? "s" : "i";
+				targetTypeOld = (oldParentNode.li_attr['class'] === "sentence") ? "s" : "i";
 				deleteGenericLink(oldParentNode.data.id, nodeId, targetTypeOld, "s", function() {
 					refreshTreeViewer()
 				});
 			}
 			if (parentNode !== '#' && oldParentNode !== '#') {
-				var targetTypeOld = (oldParentNode.li_attr['class'] == "sentence") ? "s" : "i";
-				var nodeType = (node.li_attr['class'] == "sentence") ? "s" : "i";
+				targetTypeOld = (oldParentNode.li_attr['class'] === "sentence") ? "s" : "i";
+				var nodeType = (node.li_attr['class'] === "sentence") ? "s" : "i";
 				if (nodeType == "i" && targetTypeOld == "i") {
 					linkGenericElements(parentNode.data.id, nodeId, targetType, nodeType, function() {
 						refreshTreeViewer()

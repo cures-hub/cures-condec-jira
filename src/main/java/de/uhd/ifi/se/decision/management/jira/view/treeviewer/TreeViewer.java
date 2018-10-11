@@ -43,6 +43,9 @@ public class TreeViewer {
 	private List<String> ids;
 	private long index;
 
+	/** Effects (if true) that irrelevant sentences are added to Graph. */
+	public static boolean isCalledFromIssueTabPanel = false;
+
 	public TreeViewer() {
 		this.multiple = false;
 		this.checkCallback = true;
@@ -76,8 +79,15 @@ public class TreeViewer {
 		this(projectKey, KnowledgeType.DECISION);
 	}
 
-	public TreeViewer(String issueId, boolean showRelevant) {
+	/**
+	 * Constructor for DecXtract TreeViewer in IssueTabPanel.
+	 *
+	 * @param issueId the issue id
+	 * @param isCalledFromTabPanel the show relevant (deprecated) currently used to distinguish between Constructors
+	 */
+	public TreeViewer(String issueId, boolean isCalledFromTabPanel) {
 		this();
+		TreeViewer.isCalledFromIssueTabPanel = true;
 		if (issueId == null) {
 			return;
 		}

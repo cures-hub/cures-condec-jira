@@ -126,12 +126,10 @@ public class GenericLinkImpl implements GenericLink {
 		} catch (NullPointerException e) {
 			return false;
 		}
-		if (source instanceof Sentence) {
-			if (!((Sentence) source).getProjectKey().equals(target.getProject().getProjectKey())) {
-				return false;
-			}
-		}
-		return true;
+		//I don't like this, I'd rather do an if, but codacy cries in this case.
+		//This checks if both ends are in the same project.
+		return !(source instanceof Sentence
+				&& (!((Sentence) source).getProjectKey().equals(target.getProject().getProjectKey())));
 	}
 
 }
