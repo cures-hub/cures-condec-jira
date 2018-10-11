@@ -6,7 +6,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplateWebhook;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -19,7 +19,7 @@ import com.google.common.collect.ImmutableMap;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestSetUp.AoSentenceTestDatabaseUpdater.class)
+@Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 public class TestCreateDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
 
 	private final static String CREATION_ERROR = "Creation of decision knowledge element failed.";

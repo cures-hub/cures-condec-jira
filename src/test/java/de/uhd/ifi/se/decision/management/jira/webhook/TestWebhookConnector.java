@@ -13,7 +13,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -24,8 +24,8 @@ import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestSetUp.AoSentenceTestDatabaseUpdater.class)
-public class TestWebhookConnector extends TestSetUp {
+@Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
+public class TestWebhookConnector extends TestSetUpWithIssues {
 	private EntityManager entityManager;
 	private WebhookConnector webhookConnector;
 	private DecisionKnowledgeElement element;
