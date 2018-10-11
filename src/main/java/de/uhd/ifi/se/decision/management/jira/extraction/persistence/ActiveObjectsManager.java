@@ -161,6 +161,22 @@ public class ActiveObjectsManager {
 		});
 	}
 
+	public static List<DecisionKnowledgeElement> getElementsForIssue(long issueId, String projectKey) {
+		init();
+		List<DecisionKnowledgeElement> elements = new ArrayList<>();
+		ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+			@Override
+			public DecisionKnowledgeInCommentEntity doInTransaction() {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ao.find(DecisionKnowledgeInCommentEntity.class,
+						Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ?", projectKey, issueId))) {
+					elements.add(databaseEntry);
+				}
+				return new SentenceImpl();
+			}
+		});
+		return elements;
+	}
+
 	public static void setSentenceKnowledgeType(Sentence sentence) {
 		init();
 		ao.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
@@ -407,7 +423,8 @@ public class ActiveObjectsManager {
 				for (LinkBetweenDifferentEntitiesEntity linkElement : linkElements) {
 					GenericLink link = new GenericLinkImpl(linkElement.getIdOfDestinationElement(),
 							linkElement.getIdOfSourceElement());
-					// if(link.isValid()) { @issue: Function is very slow. @alternative: run this as a service
+					// if(link.isValid()) { @issue: Function is very slow. @alternative: run this as
+					// a service
 					if (!getOnlyOutwardLink && linkElement.getIdOfDestinationElement().equals(targetId)) {
 						links.add(link);
 					}
@@ -421,9 +438,8 @@ public class ActiveObjectsManager {
 		});
 		return links;
 	}
-	
-	
-	public static void  clearInValidLinks() {
+
+	public static void clearInValidLinks() {
 		init();
 		ao.executeInTransaction(new TransactionCallback<LinkBetweenDifferentEntitiesEntity>() {
 			@Override
@@ -432,7 +448,7 @@ public class ActiveObjectsManager {
 				for (LinkBetweenDifferentEntitiesEntity linkElement : linkElements) {
 					GenericLink link = new GenericLinkImpl(linkElement.getIdOfDestinationElement(),
 							linkElement.getIdOfSourceElement());
-					if(!link.isValid()) {
+					if (!link.isValid()) {
 						try {
 							linkElement.getEntityManager().delete(linkElement);
 						} catch (SQLException e) {
@@ -443,7 +459,6 @@ public class ActiveObjectsManager {
 			}
 		});
 	}
-	
 
 	public static void clearSentenceDatabaseForProject(String projectKey) {
 		init();

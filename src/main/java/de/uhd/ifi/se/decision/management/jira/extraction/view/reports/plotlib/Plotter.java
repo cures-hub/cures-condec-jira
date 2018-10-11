@@ -51,6 +51,7 @@ public class Plotter {
 		plot.setCircular(false);
 		plot.setLabelGap(0.02);
 		chart.setBackgroundPaint(Color.white);
+		chart.getPlot().setBackgroundPaint( Color.white );
 
 		return chart.createBufferedImage(400, 400,BufferedImage.TYPE_INT_RGB,null);
 	}

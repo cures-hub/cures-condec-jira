@@ -5,11 +5,17 @@
     </h4>
     <br />
 
+    <hr>
     <img src="data:image/jpg;base64,${imgCommentsPerIssue}" alt="No data available"/>
     <img src="data:image/jpg;base64,${imgCommitsPerIssue}" alt="No data available"/>
+    <img src="data:image/jpg;base64,${imgSentencePerIssue}" alt="No data available"/>
+    <img src="data:image/jpg;base64,${imgRelevantSentences}" alt="No data available"/>
+    <hr>
     <img src="data:image/jpg;base64,${imgKnowledgeTypesPerIssue}" alt="No data available"/>
   	<img src="data:image/jpg;base64,${imgLinksToIssue}" alt="No data available"/>
   	<img src="data:image/jpg;base64,${imgAlternativeWoArgument}" alt="No data available"/>
+
+    <hr>
   	<img src="data:image/jpg;base64,${imgLinkDistance}" alt="No data available"/>
 
 
@@ -20,6 +26,8 @@
   			<pre> 
   				$numCommentsPerIssue
   				$numCommitsPerIssue
+          $numSentencePerIssue
+          $numRelevantSentences
   				$numKnowledgeTypesPerIssue
   				$numLinksToIssue
   				$numAlternativeWoArgument
