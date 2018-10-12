@@ -85,7 +85,7 @@ public class Node {
 		}
 		if (decisionKnowledgeElement instanceof Sentence) {
 			if (((Sentence) decisionKnowledgeElement).getArgument().length() == 3) { // Length == 3 means pro or con
-				if (((Sentence) decisionKnowledgeElement).getArgument().toLowerCase().equals("pro")) {
+				if (((Sentence) decisionKnowledgeElement).getArgument().equalsIgnoreCase("pro")) {
 					makeArgument("Pro-argument", "pro", decisionKnowledgeElement);
 				} else {
 					makeArgument("Con-argument", "contra", decisionKnowledgeElement);

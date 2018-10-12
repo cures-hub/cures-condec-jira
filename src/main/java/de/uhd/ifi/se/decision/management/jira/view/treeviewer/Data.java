@@ -75,10 +75,10 @@ public class Data {
 	}
 
 	private void checkTypeOfArgumentForSentenceEntity(Sentence decisionKnowledgeElement) {
-		if (((Sentence) decisionKnowledgeElement).getArgument().toLowerCase().equals("pro")) {
+		if (((Sentence) decisionKnowledgeElement).getArgument().equalsIgnoreCase("pro")) {
 			this.icon = ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
 		}
-		if (((Sentence) decisionKnowledgeElement).getArgument().toLowerCase().equals("con")) {
+		if (((Sentence) decisionKnowledgeElement).getArgument().equalsIgnoreCase("con")) {
 			this.icon = ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
 		}
 	}

@@ -5,7 +5,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLink;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.LinkEntity;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 
 /**
  * Model class for links between decision knowledge elements
@@ -45,7 +45,7 @@ public class LinkImpl implements Link {
 		}
 	}
 
-	public LinkImpl(LinkEntity link) {
+	public LinkImpl(LinkBetweenDifferentEntitiesEntity link) {
 		this();
 		this.id = link.getId();
 		this.type = link.getType();
