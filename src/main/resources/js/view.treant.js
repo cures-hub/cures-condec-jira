@@ -43,7 +43,7 @@ function createTreant(treeStructure, isInteractive) {
 	console.log("view.treant.js createTreant");
 	treantTree = new Treant(treeStructure);
 	if (isInteractive !== undefined && isInteractive) {
-		//createContextMenuForTreantNodesThatAreSentence();
+		createContextMenuForTreantNodesThatAreSentence();
 		createContextMenuForTreantNodes();
 		addDragAndDropSupportForTreant();
 		addTooltip();

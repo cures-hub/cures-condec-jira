@@ -43,7 +43,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	private long userId;
 
-	private String knowledgeTypeString;
+	private String knowledgeTypeString = "";
 
 	private long issueId;
 
