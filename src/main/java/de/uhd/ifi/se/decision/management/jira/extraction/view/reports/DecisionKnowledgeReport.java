@@ -18,23 +18,16 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.view.reports.plotlib.Plotter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
-import org.apache.axis.utils.ByteArrayOutputStream;
-import org.apache.commons.codec.binary.Base64;
 import org.ofbiz.core.entity.GenericEntityException;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.imageio.ImageIO;
 
 public class DecisionKnowledgeReport extends AbstractReport {
 
@@ -53,68 +46,43 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 		Map<String, Object> velocityParams = new HashMap<>();
 		velocityParams.put("projectName", action.getProjectManager().getProjectObj(this.projectId).getName());
-
-		// get Number of Comments per Issue
+		
 		List<Integer> numCommentsPerIssue = getNumberOfCommentsPerIssue(action.getLoggedInUser());
-		byte[] imgCommentsPerIssue = createBoxPlot(numCommentsPerIssue, "Number of Comments per JIRA Issue",
-				"#Comments");
-		velocityParams.put("imgCommentsPerIssue", new String(imgCommentsPerIssue));
-		velocityParams.put("numCommentsPerIssue",
-				buildVelocityString("Number of Comments per JIRA Issue", numCommentsPerIssue));
+		velocityParams.put("numCommentsPerIssue",numCommentsPerIssue);
 
 		// get Number of Sentence per Issue
 		List<Integer> numSentencePerIssue = getNumberOfSentencePerIssue(action.getLoggedInUser());
-		byte[] imgSentencePerIssue = createBoxPlot(numSentencePerIssue, "Number of Sentences per JIRA Issue",
-				"#Sentences");
-		velocityParams.put("imgSentencePerIssue", new String(imgSentencePerIssue));
-		velocityParams.put("numSentencePerIssue",
-				buildVelocityString("Number of Sentences per JIRA Issue", numSentencePerIssue));
+		velocityParams.put("numSentencePerIssue",numSentencePerIssue);
 
 		// get Number of relevant Sentences per Issue
 		Map<String, Integer> numRelevantSentences = getNumberOfRelevantSentences(action.getLoggedInUser());
-		byte[] imgRelevantSentences = createPieChartImage(numRelevantSentences, "Relevant Sentences");
-		velocityParams.put("imgRelevantSentences", new String(imgRelevantSentences));
-		velocityParams.put("numRelevantSentences",
-				buildVelocityString("Relevant Sentences", numRelevantSentences));
+		velocityParams.put("numRelevantSentences", numRelevantSentences);
+		velocityParams.put("map",Map.class);
 
 		// get Number of commits per Issue TODO:Access commit DB
 		List<Integer> numCommitsPerIssue = getNumberOfCommitsPerIssue(action.getLoggedInUser());
-		byte[] imgCommitsPerIssue = createBoxPlot(numCommitsPerIssue, "Number of Commits per JIRA Issue", "#Commits");
-		velocityParams.put("imgCommitsPerIssue", new String(imgCommitsPerIssue));
-		velocityParams.put("numCommitsPerIssue",
-				buildVelocityString("Number of Commits per JIRA Issue", numCommitsPerIssue));
+		velocityParams.put("numCommitsPerIssue",numCommitsPerIssue);
 
 		// Get associated Knowledge Types in Sentences per Issue
 		Map<String, Integer> numKnowledgeTypesPerIssue = getDecKnowElementsPerIssue();
-		byte[] imgKnowledgeTypesPerIssue = createPieChartImage(numKnowledgeTypesPerIssue,
-				"KnowledgeTypes per JIRA Issue");
-		velocityParams.put("imgKnowledgeTypesPerIssue", new String(imgKnowledgeTypesPerIssue));
-		velocityParams.put("numKnowledgeTypesPerIssue",
-				buildVelocityString("Knowledge Types per JIRA Issue", numKnowledgeTypesPerIssue));
+		velocityParams.put("numKnowledgeTypesPerIssue", numKnowledgeTypesPerIssue);
 
 		// Get types of decisions and alternatives linkes to Issue (e.g. has decision
 		// but no alternative)
 		Map<String, Integer> numLinksToIssue = getAlternativeDecisionPerIssue();
-		byte[] imgLinksToIssue = createPieChartImage(numLinksToIssue, "Linked Elements to Issue");
-		velocityParams.put("imgLinksToIssue", new String(imgLinksToIssue));
-		velocityParams.put("numLinksToIssue", buildVelocityString("Linked Elements to Issue", numLinksToIssue));
+		velocityParams.put("numLinksToIssue", numLinksToIssue);
 
 		// Get Number of Alternatives With Arguments
 		Map<String, Integer> numAlternativeWoArgument = getAlternativeArguments();
-		byte[] imgAlternativeWoArgument = createPieChartImage(numAlternativeWoArgument, "Alternatives with Arguments");
-		velocityParams.put("imgAlternativeWoArgument", new String(imgAlternativeWoArgument));
-		velocityParams.put("numAlternativeWoArgument",
-				buildVelocityString("Alternatives with Arguments", numAlternativeWoArgument));
+		velocityParams.put("numAlternativeWoArgument",numAlternativeWoArgument);
 
 		// Get Link Distance
 		List<Integer> numLinkDistance = getLinkDistance();
-		byte[] imgLinkDistance = createBoxPlot(numLinkDistance, this.rootType + " Link Distance",
-				"Link distance from " + this.rootType);
-		velocityParams.put("imgLinkDistance", new String(imgLinkDistance));
-		velocityParams.put("numLinkDistance", buildVelocityString(this.rootType + " Link Distance", numLinkDistance));
+		velocityParams.put("numLinkDistance",  numLinkDistance);
 
 		return descriptor.getHtml("view", velocityParams);
 	}
+
 
 	private Map<String, Integer> getNumberOfRelevantSentences(ApplicationUser loggedInUser) {
 		Map<String, Integer> result = new HashMap<>();
@@ -239,10 +207,10 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		}
 		// Hashmaps as counter suck
 		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
-		dkeCount.put("Has Alternative & Decision", statistics[0]);
-		dkeCount.put("Has Alternative but no Decision", statistics[1]);
-		dkeCount.put("Has Decision but no Alternative", statistics[2]);
-		dkeCount.put("Has no Decision & Alternative", statistics[3]);
+		dkeCount.put("Has Alt and Dec", statistics[0]);
+		dkeCount.put("Has Alt but no Dec", statistics[1]);
+		dkeCount.put("Has Dec but no Alt", statistics[2]);
+		dkeCount.put("Has no Dec and Alt", statistics[3]);
 
 		return dkeCount;
 	}
@@ -289,45 +257,6 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		com.atlassian.query.Query query = jqlClauseBuilder.project(this.projectId).buildQuery();
 
 		return searchService.search(user, query, PagerFilter.getUnlimitedFilter());
-	}
-
-	private byte[] createEncodedByteArray(RenderedImage bimage) {
-		ByteArrayOutputStream bOut = new ByteArrayOutputStream();
-		try {
-			ImageIO.write(bimage, "JPG", bOut);
-		} catch (IOException e) {
-			return null;
-		}
-		// Encode data using BASE64
-		byte[] bytesEncoded = Base64.encodeBase64(bOut.toByteArray());
-
-		return bytesEncoded;
-	}
-
-	private String buildVelocityString(String name, List<Integer> list) {
-		String result = name + ";";
-		for (Integer i : list) {
-			result += i + ";";
-		}
-		return result;
-	}
-
-	private String buildVelocityString(String name, Map<String, Integer> knowledgeTypesPerIssue) {
-		String result = name + ";";
-		for (String key : knowledgeTypesPerIssue.keySet()) {
-			result += key + ": " + knowledgeTypesPerIssue.get(key).toString() + ";";
-		}
-		return result;
-	}
-
-	private byte[] createPieChartImage(Map<String, Integer> map, String title) {
-		BufferedImage image = Plotter.getPieChart(title, map, true);
-		return createEncodedByteArray(image);
-	}
-
-	private byte[] createBoxPlot(List<Integer> list, String title, String yaxis) {
-		BufferedImage image = Plotter.getBoxPlot(title, yaxis, list);
-		return createEncodedByteArray(image);
 	}
 
 	public void validate(ProjectActionSupport action, Map params) {

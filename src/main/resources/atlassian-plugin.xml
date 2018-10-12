@@ -267,6 +267,9 @@
         <dependency>com.atlassian.auiplugin:ajs</dependency>
         <resource type="download" name="jira-report-plugin.css" location="/css/jira-report-plugin.css"/>
         <resource type="download" name="jira-report-plugin.js" location="/js/jira-report-plugin.js"/>
+        <resource type="download" name="echarts.js" location="/js/echart/echarts.js" />
+        <resource type="download" name="dataTool.js" location="/js/echart/dataTool.js" />
+		<resource type="download" name="view.report.js" location="/js/view.report.js" />
         <resource type="download" name="images/" location="/images"/>
         <context>jira-report-plugin</context>
     </web-resource>
