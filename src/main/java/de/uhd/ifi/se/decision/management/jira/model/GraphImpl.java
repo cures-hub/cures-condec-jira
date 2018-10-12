@@ -9,7 +9,7 @@ import org.codehaus.jackson.annotate.JsonAutoDetect;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 
 /**
  * Model class for a graph of decision knowledge elements
@@ -26,7 +26,7 @@ public class GraphImpl implements Graph {
 
 	public GraphImpl() {
 		linkIds = new ArrayList<>();
-		sentenceLinkAlreadyVisited = new ArrayList<>();
+		GraphImpl.sentenceLinkAlreadyVisited = new ArrayList<>();
 	}
 
 	public GraphImpl(String projectKey) {
@@ -88,7 +88,7 @@ public class GraphImpl implements Graph {
 //			 return linkedElementsAndLinks;
 //		 }
 		String preIndex = getIdentifier(element);
-		List<GenericLink> list = ActiveObjectsManager.getGenericLinksForElement(preIndex + element.getId(), false);
+		List<GenericLink> list = GenericLinkManager.getGenericLinksForElement(preIndex + element.getId(), false);
 
 		for (GenericLink currentGenericLink : list) {
 			try {
@@ -102,7 +102,7 @@ public class GraphImpl implements Graph {
 				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source,target);
 				linkBetweenSentenceAndOtherElement.setType("contain");
 				if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
-					sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
+					GraphImpl.sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
 					linkedElementsAndLinks.put(currentGenericLink.getOpposite(preIndex + element.getId()),
 							linkBetweenSentenceAndOtherElement);
 				}
@@ -154,7 +154,7 @@ public class GraphImpl implements Graph {
 	}
 
 	private boolean linkListContainsLink(Link link2) {
-		for (Link link : sentenceLinkAlreadyVisited) {
+		for (Link link : GraphImpl.sentenceLinkAlreadyVisited) {
 			if (link.getDestinationElement().getId() == link2.getDestinationElement().getId()
 					&& link.getSourceElement().getId() == link2.getSourceElement().getId()
 					|| link.getSourceElement().getId() == link2.getDestinationElement().getId()

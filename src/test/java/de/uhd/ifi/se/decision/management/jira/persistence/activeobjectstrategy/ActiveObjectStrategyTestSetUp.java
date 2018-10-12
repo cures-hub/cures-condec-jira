@@ -5,7 +5,6 @@ import com.atlassian.jira.user.MockApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementEntity;
-import de.uhd.ifi.se.decision.management.jira.persistence.LinkEntity;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
@@ -36,7 +35,6 @@ public class ActiveObjectStrategyTestSetUp {
 		public void update(EntityManager entityManager) throws Exception {
 			entityManager.migrate(DecisionKnowledgeElementEntity.class);
 			entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
-			entityManager.migrate(LinkEntity.class);
 			entityManager.migrate(LinkBetweenDifferentEntitiesEntity.class);
 		}
 	}

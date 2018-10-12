@@ -21,6 +21,7 @@ import com.atlassian.jira.project.ProjectManager;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
 
@@ -48,7 +49,7 @@ public class ViewRest {
 			rootElementType = "decision";
 		}
 
-		ActiveObjectsManager.clearInValidLinks();
+		GenericLinkManager.clearInValidLinks();
 		TreeViewer treeViewer = new TreeViewer(projectKey, KnowledgeType.getKnowledgeType(rootElementType));
 		return Response.ok(treeViewer).build();
 	}
@@ -67,7 +68,7 @@ public class ViewRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 
-		ActiveObjectsManager.clearInValidLinks();
+		GenericLinkManager.clearInValidLinks();
 		TreeViewer treeViewer = new TreeViewer(issueKey, showRelevant);
 		return Response.ok(treeViewer).build();
 	}
