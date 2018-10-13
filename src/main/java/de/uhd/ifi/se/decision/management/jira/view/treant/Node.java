@@ -125,7 +125,7 @@ public class Node {
 		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
 		this.link.put("href", applicationProperties.getString(APKeys.JIRA_BASEURL) + "/plugins/servlet/decisions-page?" +
 				"projectKey=" + element.getProject().getProjectKey()
-				+"&issueKey=" + element.getId());
+				+"&elementKey=" + element.getKey());
 		this.link.put("target", "_blank");
 	}
 

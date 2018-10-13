@@ -92,7 +92,7 @@ function getProjectKey() {
 	var projectKey;
 	try {
 		var url  = new URL(document.URL);
-		projectKey = url.searchParams.get("projectKey");
+		var projectKey = url.searchParams.get("projectKey");
 		if(projectKey == undefined){
 			projectKey = JIRA.API.Projects.getCurrentProjectKey();
 		}

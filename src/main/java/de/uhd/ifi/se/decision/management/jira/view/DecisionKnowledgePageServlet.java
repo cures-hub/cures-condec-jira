@@ -13,6 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
+import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
+
 public class DecisionKnowledgePageServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 5841622939653557805L;
@@ -31,9 +35,18 @@ public class DecisionKnowledgePageServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=utf-8");
-		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
+		
 		String projectKey = request.getParameter("projectKey");
+		String elementKey = request.getParameter("elementKey");
+		
+		AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+		DecisionKnowledgeElement element = strategy.getDecisionKnowledgeElement(elementKey);
+		
+		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
 		velocityParameters.put("projectKey", projectKey);
+		velocityParameters.put("elementKey", elementKey);
+		velocityParameters.put("elementId", element.getId());
+		
 		templateRenderer.render("templates/decisionKnowledgePage.vm", velocityParameters, response.getWriter());
 	}
 }
