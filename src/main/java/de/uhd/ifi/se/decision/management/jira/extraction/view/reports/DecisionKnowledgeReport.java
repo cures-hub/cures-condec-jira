@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.view.reports;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,11 +17,15 @@ import com.atlassian.jira.jql.builder.JqlClauseBuilder;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.plugin.report.impl.AbstractReport;
 import com.atlassian.jira.project.ProjectManager;
+import com.atlassian.jira.rest.client.api.JiraRestClient;
+import com.atlassian.jira.rest.client.api.JiraRestClientFactory;
+import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ParameterUtils;
 import com.atlassian.jira.web.action.ProjectActionSupport;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
@@ -27,6 +33,10 @@ import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjec
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.rest.oauth.Command;
+import de.uhd.ifi.se.decision.management.jira.rest.oauth.JiraOAuthClient;
+import de.uhd.ifi.se.decision.management.jira.rest.oauth.OAuthClient;
+import de.uhd.ifi.se.decision.management.jira.rest.oauth.PropertiesClient;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 
 public class DecisionKnowledgeReport extends AbstractReport {
@@ -45,11 +55,12 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	}
 
 	public String generateReportHtml(ProjectActionSupport action, Map params) throws Exception {
-
 		Map<String, Object> velocityParams = createValues(action);
-
+		makeTheRestCall();
 		return descriptor.getHtml("view", velocityParams);
 	}
+
+	
 
 	public Map<String, Object> createValues(ProjectActionSupport action) {
 		Map<String, Object> velocityParams = new HashMap<>();
@@ -299,4 +310,43 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		this.projectId = ParameterUtils.getLongParam(params, "selectedProjectId");
 		this.rootType = KnowledgeType.getKnowledgeType(ParameterUtils.getStringParam(params, "rootType"));
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+
+	private void makeTheRestCall() throws Exception {
+		  PropertiesClient propertiesClient = new PropertiesClient();
+	        JiraOAuthClient jiraOAuthClient = new JiraOAuthClient(propertiesClient);
+	        
+	        
+	       String s1 =  "requestToken";
+	        List<String> s2 = new ArrayList<String>();
+	        
+	        
+//	        s2.add("http://cures.ifi.uni-heidelberg.de:8080/");
+	        s2.add("accessToken");
+//	        s2.add("http://cures.ifi.uni-heidelberg.de:8080/)
+//	        s2.add("http://cures.ifi.uni-heidelberg.de:8080/rest/gitplugin/1.0/issues/LUCENE-7264/commits");
+	        
+//	        List<String> argumentsWithoutFirst = Arrays.asList(args).subList(1, args.length);
+
+	        new OAuthClient(propertiesClient, jiraOAuthClient).execute(Command.fromString(s1), s2);
+	}
+	
+	
+	
+	
+	
 }
