@@ -1,5 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.view.reports;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -22,13 +28,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
-import org.ofbiz.core.entity.GenericEntityException;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class DecisionKnowledgeReport extends AbstractReport {
 
@@ -52,7 +51,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return descriptor.getHtml("view", velocityParams);
 	}
 
-	public Map<String, Object> createValues(ProjectActionSupport action) throws SearchException, GenericEntityException {
+	public Map<String, Object> createValues(ProjectActionSupport action) {
 		Map<String, Object> velocityParams = new HashMap<>();
 		velocityParams.put("projectName", action.getProjectManager().getProjectObj(this.projectId).getName());
 
@@ -88,7 +87,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		// Get Link Distance
 		List<Integer> numLinkDistance = getLinkDistance();
 		velocityParams.put("numLinkDistance", numLinkDistance);
-		
+
 		return velocityParams;
 	}
 
@@ -96,12 +95,11 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		Map<String, Integer> result = new HashMap<>();
 		int isRelevant = 0;
 		int isNotRelevant = 0;
-		SearchResults projectIssues = null;
-		try {
-			projectIssues = getIssuesForThisProject(loggedInUser);
-		} catch (SearchException e) {
+		SearchResults projectIssues = getIssuesForThisProject(loggedInUser);
+		if (projectIssues == null || projectIssues.getIssues().size() == 0) {
 			return result;
 		}
+
 		String projectKey = ComponentAccessor.getProjectManager().getProjectObj(this.projectId).getKey();
 		for (Issue currentIssue : projectIssues.getIssues()) {
 			List<DecisionKnowledgeElement> elements = ActiveObjectsManager.getElementsForIssue(currentIssue.getId(),
@@ -123,10 +121,8 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	private List<Integer> getNumberOfSentencePerIssue(ApplicationUser loggedInUser) {
 		List<Integer> result = new ArrayList<>();
 
-		SearchResults projectIssues = null;
-		try {
-			projectIssues = getIssuesForThisProject(loggedInUser);
-		} catch (SearchException e) {
+		SearchResults projectIssues = getIssuesForThisProject(loggedInUser);
+		if (projectIssues == null || projectIssues.getIssues().size() == 0) {
 			return result;
 		}
 		String projectKey = ComponentAccessor.getProjectManager().getProjectObj(this.projectId).getKey();
@@ -138,7 +134,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return result;
 	}
 
-	private List<Integer> getLinkDistance() throws GenericEntityException {
+	private List<Integer> getLinkDistance() {
 		List<Integer> linkDistances = new ArrayList<>();
 
 		List<DecisionKnowledgeElement> listOfIssues = ActiveObjectsManager
@@ -183,7 +179,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return dkeCount;
 	}
 
-	private Map<String, Integer> getAlternativeDecisionPerIssue() throws SearchException {
+	private Map<String, Integer> getAlternativeDecisionPerIssue() {
 		Integer[] statistics = new Integer[4];
 		Arrays.fill(statistics, 0);
 		List<DecisionKnowledgeElement> listOfIssues = ActiveObjectsManager
@@ -222,23 +218,28 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return dkeCount;
 	}
 
-	private Map<String, Integer> getDecKnowElementsPerIssue() throws SearchException {
+	private Map<String, Integer> getDecKnowElementsPerIssue() {
 		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
 
 		for (KnowledgeType type : KnowledgeType.getDefaulTypes()) {
 			String projectKey = projectManager.getProjectObj(this.projectId).getKey();
-			dkeCount.put(type.toString(), ActiveObjectsManager
-					.getAllElementsFromAoByType(projectKey, type).size());
+			dkeCount.put(type.toString(), ActiveObjectsManager.getAllElementsFromAoByType(projectKey, type).size());
 		}
 		return dkeCount;
 	}
 
-	private List<Integer> getNumberOfCommitsPerIssue(ApplicationUser loggedInUser) throws SearchException {
+	private List<Integer> getNumberOfCommitsPerIssue(ApplicationUser loggedInUser) {
 		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
 
 		com.atlassian.query.Query query = jqlClauseBuilder.project(this.projectId).buildQuery();
 
-		 SearchResults searchResults = getSearchService().search(loggedInUser, query, PagerFilter.getUnlimitedFilter());
+		SearchResults searchResults = null;
+		try {// Will be replaced by commit getting engine
+			searchResults = getSearchService().search(loggedInUser, query, PagerFilter.getUnlimitedFilter());
+		} catch (SearchException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		List<Integer> commentList = new ArrayList<>();
 		for (Issue issue : searchResults.getIssues()) {
@@ -253,14 +254,17 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return commentList;
 	}
 
-	private List<Integer> getNumberOfCommentsPerIssue(ApplicationUser user) throws SearchException {
+	private List<Integer> getNumberOfCommentsPerIssue(ApplicationUser user) {
+		List<Integer> commentList = new ArrayList<>();
 		SearchResults searchResults = getIssuesForThisProject(user);
-		List<Integer> commentList = new ArrayList<>();
+		if (searchResults == null || searchResults.getIssues().size() == 0) {
+			return commentList;
+		}
 		for (Issue issue : searchResults.getIssues()) {
 			int size = 0;
 			try {
 				size = ComponentAccessor.getCommentManager().getComments(issue).size();
-			} catch (NullPointerException e) {// ISsue does not exist
+			} catch (NullPointerException e) {// Issue does not exist
 				commentList.add(size);
 			}
 			commentList.add(size);
@@ -268,12 +272,16 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return commentList;
 	}
 
-	private SearchResults getIssuesForThisProject(ApplicationUser user) throws SearchException {
-		// user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
+	private SearchResults getIssuesForThisProject(ApplicationUser user) {
 		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
 		com.atlassian.query.Query query = jqlClauseBuilder.project(this.projectId).buildQuery();
-
-		return getSearchService().search(user, query, PagerFilter.getUnlimitedFilter());
+		SearchResults searchResult;
+		try {
+			searchResult = getSearchService().search(user, query, PagerFilter.getUnlimitedFilter());
+		} catch (SearchException e) {
+			return null;
+		}
+		return searchResult;
 	}
 
 	public SearchService getSearchService() {

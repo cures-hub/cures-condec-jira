@@ -17,7 +17,7 @@
 		    entry["value"] = dataMap.get(key);
 		    entry["name"] = key;
 		    data.push(entry);
-		    list = list + " " + key +": "+ dataMap.get(key) + "; "
+		    list = list + " " + key +": "+ dataMap.get(key) + "; ";
         }
         myChart.setOption(getOptionsForPieChart(title,subtitle,Array.from(dataMap.keys()),data));
         document.getElementById(id).setAttribute("list",list);
