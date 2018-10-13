@@ -52,6 +52,13 @@ public class TestDecisionKnowledgeReport extends TestSetUp {
 		//Need to do further mocking for JQL questioning
 		assertNotNull(dkr);
 		
+		try {
+			assertNotNull(dkr.generateReportHtml(pas, params));
+		} catch (Exception e) {
+			e.printStackTrace();
+			assertTrue(false);
+		}
+		
 	}
 	
 	

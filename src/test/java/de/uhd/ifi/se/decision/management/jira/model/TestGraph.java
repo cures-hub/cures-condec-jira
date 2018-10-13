@@ -14,7 +14,7 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.persistence.IssueStrategy;
@@ -23,9 +23,9 @@ import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-@Data(TestSetUp.AoSentenceTestDatabaseUpdater.class) 
+@Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestGraph extends TestSetUp {
+public class TestGraph extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
 	private Graph graph;

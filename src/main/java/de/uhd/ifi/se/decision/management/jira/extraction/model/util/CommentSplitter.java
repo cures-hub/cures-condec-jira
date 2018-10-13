@@ -43,10 +43,9 @@ public class CommentSplitter {
 		}
 		if(ConfigPersistence.isIconParsingEnabled(projectKey)) {
 			for (int i = 0; i < manualRationalIconList.length; i++) {
-				firstSplit = searchForFurtherTags(firstSplit, manualRationalIconList[i], ".");
+				firstSplit = searchForFurtherTags(firstSplit, manualRationalIconList[i], System.getProperty("line.separator"));
 			}
 		}
-
 		return firstSplit;
 	}
 
@@ -75,7 +74,7 @@ public class CommentSplitter {
 		if (toSearch.contains(openTag) && !toSearch.contains(closeTag)) {
 			return slices;
 		}//Open and close tags are existent
-		if (toSearch.startsWith(openTag)) {
+		if (toSearch.startsWith(openTag) && toSearch.contains(closeTag)) {
 			String part = StringUtils.substringBetween(toSearch, openTag, closeTag);
 			part = openTag + part + closeTag;
 			slices.add(part);
@@ -114,8 +113,8 @@ public class CommentSplitter {
 		this.endSubstringCount.add(endIndex);
 	}
 
-	public static String getKnowledgeTypeFromManuallIssueTag(String body, String projectKey) {
-		boolean checkIcons = ConfigPersistence.isIconParsingEnabled(projectKey);
+	public static String getKnowledgeTypeFromManuallIssueTag(String body, String projectKey, boolean lookOutForIcons) {
+		boolean checkIcons = lookOutForIcons && ConfigPersistence.isIconParsingEnabled(projectKey);
 		if (body.toLowerCase().contains("[issue]") || (checkIcons && body.contains("(!)"))) {
 			return KnowledgeType.ISSUE.toString();
 		}
@@ -133,5 +132,14 @@ public class CommentSplitter {
 		}
 		return KnowledgeType.OTHER.toString();
 	}
-
+	
+	public static boolean containsOpenAndCloseTags(String body) {
+		for (int i = 0; i < manualRationaleTagList.length; i++) {
+			String tag = manualRationaleTagList[i].toLowerCase();
+			if(body.toLowerCase().contains(tag) && body.toLowerCase().contains(tag.replace("[", "[/"))) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

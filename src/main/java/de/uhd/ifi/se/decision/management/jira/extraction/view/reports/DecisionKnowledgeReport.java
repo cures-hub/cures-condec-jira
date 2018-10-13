@@ -46,22 +46,22 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 		Map<String, Object> velocityParams = new HashMap<>();
 		velocityParams.put("projectName", action.getProjectManager().getProjectObj(this.projectId).getName());
-		
+
 		List<Integer> numCommentsPerIssue = getNumberOfCommentsPerIssue(action.getLoggedInUser());
-		velocityParams.put("numCommentsPerIssue",numCommentsPerIssue);
+		velocityParams.put("numCommentsPerIssue", numCommentsPerIssue);
 
 		// get Number of Sentence per Issue
 		List<Integer> numSentencePerIssue = getNumberOfSentencePerIssue(action.getLoggedInUser());
-		velocityParams.put("numSentencePerIssue",numSentencePerIssue);
+		velocityParams.put("numSentencePerIssue", numSentencePerIssue);
 
 		// get Number of relevant Sentences per Issue
 		Map<String, Integer> numRelevantSentences = getNumberOfRelevantSentences(action.getLoggedInUser());
 		velocityParams.put("numRelevantSentences", numRelevantSentences);
-		velocityParams.put("map",Map.class);
+		velocityParams.put("map", Map.class);
 
 		// get Number of commits per Issue TODO:Access commit DB
 		List<Integer> numCommitsPerIssue = getNumberOfCommitsPerIssue(action.getLoggedInUser());
-		velocityParams.put("numCommitsPerIssue",numCommitsPerIssue);
+		velocityParams.put("numCommitsPerIssue", numCommitsPerIssue);
 
 		// Get associated Knowledge Types in Sentences per Issue
 		Map<String, Integer> numKnowledgeTypesPerIssue = getDecKnowElementsPerIssue();
@@ -74,15 +74,14 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 		// Get Number of Alternatives With Arguments
 		Map<String, Integer> numAlternativeWoArgument = getAlternativeArguments();
-		velocityParams.put("numAlternativeWoArgument",numAlternativeWoArgument);
+		velocityParams.put("numAlternativeWoArgument", numAlternativeWoArgument);
 
 		// Get Link Distance
 		List<Integer> numLinkDistance = getLinkDistance();
-		velocityParams.put("numLinkDistance",  numLinkDistance);
+		velocityParams.put("numLinkDistance", numLinkDistance);
 
 		return descriptor.getHtml("view", velocityParams);
 	}
-
 
 	private Map<String, Integer> getNumberOfRelevantSentences(ApplicationUser loggedInUser) {
 		Map<String, Integer> result = new HashMap<>();
@@ -160,7 +159,6 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				DecisionKnowledgeElement dke = link.getOpposite("s" + currentAlternative.getId());
 				if (dke instanceof Sentence && ((Sentence) dke).getArgument().equalsIgnoreCase("Pro")) {
 					hasArgument = true;
-
 				}
 			}
 			if (hasArgument) {

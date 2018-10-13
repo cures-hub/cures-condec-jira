@@ -464,7 +464,7 @@ var contextMenuDeleteSentenceAction = {
 			} else {
 				refreshTreeViewer();
 			}
-		})
+		});
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);

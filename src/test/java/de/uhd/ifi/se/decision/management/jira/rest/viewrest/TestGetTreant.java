@@ -13,7 +13,7 @@ import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
@@ -28,7 +28,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestTreant.AoSentenceTestDatabaseUpdater.class) 
-public class TestGetTreant extends TestSetUp {
+public class TestGetTreant extends TestSetUpWithIssues {
 	private EntityManager entityManager;
 
 	private ViewRest viewRest;
