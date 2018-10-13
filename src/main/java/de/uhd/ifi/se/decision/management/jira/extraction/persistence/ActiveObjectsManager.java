@@ -337,6 +337,22 @@ public class ActiveObjectsManager {
 			}
 		});
 	}
+	
+	public static List<DecisionKnowledgeElement> getElementsForIssue(long issueId, String projectKey) {
+		init();
+		List<DecisionKnowledgeElement> elements = new ArrayList<>();
+		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+			@Override
+			public DecisionKnowledgeInCommentEntity doInTransaction() {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
+						Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ?", projectKey, issueId))) {
+					elements.add(databaseEntry);
+				}
+				return new SentenceImpl();
+			}
+		});
+		return elements;
+	}
 
 	public static void clearSentenceDatabaseForProject(String projectKey) {
 		init();
