@@ -1,9 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,7 +10,6 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.project.Project;
@@ -79,8 +76,9 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 
 	@Override
 	protected Map<String, Object> getVelocityParameters(HttpServletRequest request) {
+		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
 		if (request == null) {
-			return new ConcurrentHashMap<String, Object>();
+			return velocityParameters;
 		}
 		String projectKey = request.getParameter("projectKey");
 		DecisionKnowledgeProject decisionKnowledgeProject = new DecisionKnowledgeProjectImpl(projectKey);
@@ -92,8 +90,6 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		for (IssueType type : types) {
 			issueTypes.add(type.getName());
 		}
-
-		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
 		velocityParameters.put("projectKey", projectKey);
 		velocityParameters.put("project", decisionKnowledgeProject);
 		velocityParameters.put("issueTypes", issueTypes);

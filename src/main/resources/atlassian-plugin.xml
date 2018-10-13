@@ -142,19 +142,19 @@
 			<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition">
 				<param name="projectKey" value="$pathEncodedProjectKey" />
 			</condition>
-			<!-- TODO needs to be added in the link path -->
-			<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition">
-				<param name="selectedIssueKey" value="$selectedIssueKey" />
-			</condition>
 		</conditions>
 	</web-item>
 	<web-panel name="ConDec Plug-in Page" key="decisions-page" location="decisions-page"
 		weight="1000">
 		<description>
-			Provides the plug-in page that developers use to manage decision knowledge.
-		</description>
+			Provides the page that developers use to manage decision knowledge.</description>
 		<resource name="view" type="velocity" location="templates/decisionKnowledgePage.vm" />
 	</web-panel>
+	<servlet name="Servlet for Decision Knowledge Page" key="servlet-for-decisions-page"
+		class="de.uhd.ifi.se.decision.management.jira.view.DecisionKnowledgePageServlet">
+		<description>Provides the page that developers use to manage decision knowledge.</description>
+		<url-pattern>/decisions-page</url-pattern>
+	</servlet>
 
 	<!-- REST API -->
 	<rest name="Decision Knowledge REST" key="decision-knowledge-rest" path="/decisions"

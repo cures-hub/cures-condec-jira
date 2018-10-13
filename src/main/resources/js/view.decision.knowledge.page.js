@@ -1,4 +1,4 @@
-function initializeDecisionKnowledgePage() {
+function initializeDecisionKnowledgePage(nodeId) {
     console.log("view.decision.knowledge.page initializeDecisionKnowledgePage");
 	for (var index = 0; index < knowledgeTypes.length; index++) {
 		var isSelected = "";
@@ -31,7 +31,7 @@ function initializeDecisionKnowledgePage() {
 		}
 	});
 
-	updateView();
+	updateView(nodeId);
 }
 
 function updateView(nodeId) {

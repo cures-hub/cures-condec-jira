@@ -44,11 +44,11 @@ public class SettingsOfAllProjects extends AbstractSettingsServlet {
 
 	@Override
 	protected Map<String, Object> getVelocityParameters(HttpServletRequest request) {
-		if(request == null){
-			return  new ConcurrentHashMap<>();
+		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
+		if (request == null) {
+			return velocityParameters;
 		}
 		Map<String, DecisionKnowledgeProject> configMap = getProjectsMap();
-		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
 		velocityParameters.put("requestUrl", request.getRequestURL());
 		velocityParameters.put("projectsMap", configMap);
 		return velocityParameters;

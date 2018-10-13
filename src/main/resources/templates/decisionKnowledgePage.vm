@@ -1,7 +1,14 @@
+<html>
+<head>
+<title>Decision Knowledge</title>
+<meta name="decorator" content="atl.general"/>
+<meta name="projectKey" content="$projectKey" />
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rest-client-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-page-resources")
+</head>
+<body>
 <form class="aui">
 	<input class="text medium-long-field" id="jstree-search-input"
 		placeholder="Search decision knowledge" />
@@ -27,5 +34,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 </div>
 #include("templates/dialog.vm")
 <script>
-	initializeDecisionKnowledgePage();
+	initializeDecisionKnowledgePage('$elementId');
 </script>
+</body>
+</html>
