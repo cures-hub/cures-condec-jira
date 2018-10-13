@@ -94,7 +94,7 @@ public class ActiveObjectsManager {
 		init();
 		DecisionKnowledgeInCommentEntity databaseEntry = getElementFromAO(commentId, endSubtringCount,
 				startSubstringCount, userId, projectKey);
-		return databaseEntry != null; 
+		return databaseEntry != null;
 	}
 
 	public static void updateSentenceElement(Sentence sentence) {
@@ -367,9 +367,10 @@ public class ActiveObjectsManager {
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
 				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
 						DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
-					if (databaseEntry.getKnowledgeTypeString().equals(rootElementType.toString())
+					if (databaseEntry.getKnowledgeTypeString() != null &&
+							( databaseEntry.getKnowledgeTypeString().equals(rootElementType.toString())
 							|| (databaseEntry.getKnowledgeTypeString().length() == 3 // its either Pro or con
-									&& rootElementType.equals(KnowledgeType.ARGUMENT))) {
+									&& rootElementType.equals(KnowledgeType.ARGUMENT)))) {
 						list.add(new SentenceImpl(databaseEntry.getId()));
 					}
 				}
