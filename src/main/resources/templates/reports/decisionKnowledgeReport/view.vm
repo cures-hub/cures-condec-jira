@@ -17,31 +17,12 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 
 
       <hr>
-       <div id="relevantSentences" style="width:500px; height:400px; display:inline-block;"></div>
-      <div id="knowledgeTypeDist" style="width:500px; height:400px; display:inline-block;"></div>
-      <div id="decisionIssues" style="width:500px; height:400px; display:inline-block;"></div>
-      <div id="altWithArguments" style="width:500px; height:400px; display:inline-block;"></div>
+       <div id="relevantSentences" style="width:500px; height:400px; display:inline-block;"  onclick="copyToClipboard(this)"></div>
+      <div id="knowledgeTypeDist" style="width:500px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
+      <div id="decisionIssues" style="width:500px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
+      <div id="altWithArguments" style="width:500px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
 
   </div>  
-
-<!-- 
-  	 <details>
-  		<summary>CSV Content</summary>
-  		<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
-  			<pre> 
-  				$numCommentsPerIssue
-  				$numCommitsPerIssue
-          $numSentencePerIssue
-          $numRelevantSentences
-  				$numKnowledgeTypesPerIssue
-  				$numLinksToIssue
-  				$numAlternativeWoArgument
-  				$numLinkDistance
-		</pre> 
-		</div></div>
-  	</details> -->
-
-      <div id="main" style="width:600px; height:400px;"></div>
     <script type="text/javascript">
       initializeDivWithBoxPlot('CommentsPerIssue',$numCommentsPerIssue,"Comments/Issue","Comments per Issue");
       initializeDivWithBoxPlot('CommitsPerIssue',$numCommitsPerIssue,"Commits/Issue","Commits per Issue");

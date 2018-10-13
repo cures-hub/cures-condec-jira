@@ -9,6 +9,7 @@
  function initializeDivWithPieChart(id,title,subtitle,dataMap){
         var myChart = echarts.init(document.getElementById(id));
         var data = [];
+        var list = "";
 
         for (var i = Array.from(dataMap.keys()).length - 1; i >= 0; i--) {
         	var key = Array.from(dataMap.keys())[i];
@@ -16,8 +17,10 @@
 		    entry["value"] = dataMap.get(key);
 		    entry["name"] = key;
 		    data.push(entry);
+		    list = list + " " + key +": "+ dataMap.get(key) + "; "
         }
         myChart.setOption(getOptionsForPieChart(title,subtitle,Array.from(dataMap.keys()),data));
+        document.getElementById(id).setAttribute("list",list);
 }
 
 function getData(p1){
