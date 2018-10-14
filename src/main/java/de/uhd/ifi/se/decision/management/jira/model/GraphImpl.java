@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
@@ -23,10 +24,13 @@ public class GraphImpl implements Graph {
 	private List<DecisionKnowledgeElement> filteredElements;
 	private boolean isFilteredByTime;
 	private static List<Link> sentenceLinkAlreadyVisited;
+	private long startTime;
+	private long endTime;
 
 	public GraphImpl() {
 		linkIds = new ArrayList<>();
 		sentenceLinkAlreadyVisited = new ArrayList<>();
+		filteredElements = null;
 	}
 
 	public GraphImpl(String projectKey) {
@@ -48,11 +52,15 @@ public class GraphImpl implements Graph {
 		this.rootElement = rootElement;
 	}
 
-	public GraphImpl(String projectKey, String rootElementKey, List<DecisionKnowledgeElement> filteredElements, boolean filteredByTime) {
+	public GraphImpl(String projectKey, String rootElementKey, GraphFiltering filter) {
 		this(projectKey);
 		this.rootElement = this.project.getPersistenceStrategy().getDecisionKnowledgeElement(rootElementKey);
-		this.filteredElements = filteredElements;
-		this.isFilteredByTime = filteredByTime;
+		if (filter != null) {
+			this.filteredElements = filter.getQueryResults();
+			this.isFilteredByTime = filter.isQueryContainsCreationDate();
+			this.startTime = filter.getStartDate();
+			this.endTime = filter.getEndDate();
+		}
 	}
 
 	@Override
@@ -137,14 +145,38 @@ public class GraphImpl implements Graph {
 				if(!source.getProject().getProjectKey().equals(target.getProject().getProjectKey())) {
 					continue;
 				}
-
 				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source,target);
 				linkBetweenSentenceAndOtherElement.setType("contain");
-				if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
-					sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
-					linkedElementsAndLinks.put(currentGenericLink.getOpposite(preIndex + element.getId()),
-							linkBetweenSentenceAndOtherElement);
+				if (startTime < 0) {
+					if (((Sentence)source).getCreated().getTime()<this.endTime) {
+						DecisionKnowledgeElement toLink = currentGenericLink.getOpposite(preIndex + element.getId());
+						if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
+							sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
+							linkedElementsAndLinks.put(toLink,
+									linkBetweenSentenceAndOtherElement);
+						}
+					}
+				} else if (endTime < 0) {
+					if (((Sentence)source).getCreated().getTime()>this.startTime){
+						DecisionKnowledgeElement toLink = currentGenericLink.getOpposite(preIndex + element.getId());
+						if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
+							sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
+							linkedElementsAndLinks.put(toLink,
+									linkBetweenSentenceAndOtherElement);
+						}
+					}
+				} else {
+					if ((((Sentence)source).getCreated().getTime()<this.endTime) && (((Sentence)source).getCreated().getTime()>this.startTime)) {
+						DecisionKnowledgeElement toLink = currentGenericLink.getOpposite(preIndex + element.getId());
+						if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
+							sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
+							linkedElementsAndLinks.put(toLink,
+									linkBetweenSentenceAndOtherElement);
+						}
+					}
 				}
+
+
 			} catch (NullPointerException e) {
 				// Link in the wrong direction
 				continue;

@@ -9,10 +9,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 
 /**
  * Creates Treant content
@@ -38,13 +40,29 @@ public class Treant {
 		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
 	}
 
-	public Treant(String projectKey, String elementKey, int depth, List<DecisionKnowledgeElement> filteredElements, boolean isFilteredByCreationDate) {
-		this.graph = new GraphImpl(projectKey, elementKey, filteredElements, isFilteredByCreationDate);
+//	public Treant(String projectKey, String elementKey, int depth, List<DecisionKnowledgeElement> filteredElements, boolean isFilteredByCreationDate) {
+//		this.graph = new GraphImpl(projectKey, elementKey, filteredElements, isFilteredByCreationDate);
+//		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
+//		this.setChart(new Chart());
+//		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
+//	}
+
+	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user) {
+		List<DecisionKnowledgeElement> filteredElements = null;
+		boolean isFilteredByCreationDate = false;
+		GraphFiltering filter = null;
+		if (!((query == null)||(query.equals(""))||(query.equals("?jql="))||(query.equals("?filter=")))) {
+			filter = new GraphFiltering(projectKey,query,user);
+			filter.produceResultsFromQuery();
+			isFilteredByCreationDate = filter.isQueryContainsCreationDate();
+			filteredElements = filter.getQueryResults();
+		}
+
+		this.graph = new GraphImpl(projectKey, elementKey, filter);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
 	}
-
 
 	public Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth) {
 		if (element == null || element.getProject().getProjectKey() == null) {

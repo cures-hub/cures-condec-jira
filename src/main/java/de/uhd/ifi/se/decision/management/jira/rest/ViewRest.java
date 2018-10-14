@@ -125,12 +125,7 @@ public class ViewRest {
 					.entity(ImmutableMap.of("error", "Treant cannot be shown since depth of Tree is NaN")).build();
 		}
 		ApplicationUser user = getCurrentUser(request);
-		boolean isFilteredByCreationDate;
-		GraphFiltering filter = new GraphFiltering(projectKey, searchTerm,user);
-		filter.produceResultsFromQuery();
-		isFilteredByCreationDate = filter.isQueryContainsCreationDate();
-		List<DecisionKnowledgeElement> filteredElements = filter.getQueryResults();
-		Treant treantFiltered = new Treant(projectKey, elementKey, depth, filteredElements,isFilteredByCreationDate);
+		Treant treantFiltered = new Treant(projectKey, elementKey, depth, searchTerm, user);
 		return Response.ok(treantFiltered).build();
 	}
 
