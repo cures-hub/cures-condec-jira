@@ -50,3 +50,7 @@ function updateView(nodeId) {
 		buildTreant(node.key, true);
 	});
 }
+
+function setAsRootElement(nodeId) {
+	updateView(nodeId);
+}

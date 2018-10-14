@@ -1,3 +1,4 @@
+var makeRootText = "Set as Root"
 var createKnowledgeElementText = "Add Element";
 var linkKnowledgeElementText = "Link Existing Element";
 var deleteLinkToParentText = "Delete Link to Parent";
@@ -303,7 +304,25 @@ function setUpDialogForDeleteLinkAction(id, parentId) {
 	};
 }
 
+var contextMenuSetAsRootAction = {
+	// label for Tree Viewer, name for Treant context menu
+	"name" : makeRootText,
+	"callback" : function(key, options) {
+		var id = getSelectedTreantNodeId(options);
+		setAsRootElement(id);
+	}
+};
+
 var contextMenuActions = {
+	"create" : contextMenuCreateAction,
+	"edit" : contextMenuEditAction,
+	"link" : contextMenuLinkAction,
+	"deleteLink" : contextMenuDeleteLinkAction,
+	"delete" : contextMenuDeleteAction
+};
+
+var contextMenuActionsTreant = {
+	"asRoot" : contextMenuSetAsRootAction,
 	"create" : contextMenuCreateAction,
 	"edit" : contextMenuEditAction,
 	"link" : contextMenuLinkAction,
@@ -328,8 +347,6 @@ function resetDialog() {
 		dialog.classList.add("aui-dialog2-medium");
 	}
 }
-
-
 
 var changeKnowledgeTypeAction = {
 	// label for Tree Viewer, name for Treant context menu

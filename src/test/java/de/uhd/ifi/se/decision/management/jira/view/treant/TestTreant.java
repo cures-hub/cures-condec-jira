@@ -28,7 +28,7 @@ import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestTreant.AoSentenceTestDatabaseUpdater.class) 
+@Data(TestTreant.AoSentenceTestDatabaseUpdater.class)
 public class TestTreant extends TestSetUpWithIssues {
 	private EntityManager entityManager;
 	private Chart chart;
@@ -82,38 +82,38 @@ public class TestTreant extends TestSetUpWithIssues {
 
 	@Test
 	public void testCreateNodeStructureNullNullZeroZero() {
-		assertEquals(Node.class, treant.createNodeStructure(null, null, 0, 0, false).getClass());
+		assertEquals(Node.class, treant.createNodeStructure(null, null, 0, 0).getClass());
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void testCreateNodeStructureEmptyNullZeroZero() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		assertEquals(Node.class, treant.createNodeStructure(element, null, 0, 0, false).getClass());
+		assertEquals(Node.class, treant.createNodeStructure(element, null, 0, 0).getClass());
 	}
 
 	@Test
 	@NonTransactional
 	public void testCreateNodeStructureFilledNullZeroZero() {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
-		assertEquals(Node.class, treant.createNodeStructure(element, null, 0, 0, false).getClass());
+		assertEquals(Node.class, treant.createNodeStructure(element, null, 0, 0).getClass());
 	}
 
 	@Test
 	public void testCreateNodeStructureNullNullFilledFilled() {
-		assertEquals(Node.class, treant.createNodeStructure(null, null, 4, 0, false).getClass());
+		assertEquals(Node.class, treant.createNodeStructure(null, null, 4, 0).getClass());
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void testCreateNodeStructureEmptyNullFilledFilled() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		assertEquals(Node.class, treant.createNodeStructure(element, null, 4, 0, false).getClass());
+		assertEquals(Node.class, treant.createNodeStructure(element, null, 4, 0).getClass());
 	}
 
 	@Test
 	@NonTransactional
 	public void testCreateNodeStructureFilledNullFilledFilled() {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
-		assertEquals(Node.class, treant.createNodeStructure(element, null, 4, 0, false).getClass());
+		assertEquals(Node.class, treant.createNodeStructure(element, null, 4, 0).getClass());
 	}
 
 	@Test
@@ -127,17 +127,15 @@ public class TestTreant extends TestSetUpWithIssues {
 		link.setDestinationElement(persistenceStrategy.getDecisionKnowledgeElement(14));
 		link.setSourceElement(persistenceStrategy.getDecisionKnowledgeElement(10));
 		link.setId((long) 23);
-		assertEquals(Node.class, treant.createNodeStructure(element, link, 4, 0, false).getClass());
+		assertEquals(Node.class, treant.createNodeStructure(element, link, 4, 0).getClass());
 	}
-	
-	
+
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
-        @SuppressWarnings("unchecked")
+		@SuppressWarnings("unchecked")
 		@Override
-        public void update(EntityManager entityManager) throws Exception
-        {
-            entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
-            entityManager.migrate(LinkBetweenDifferentEntitiesEntity.class);
-        }
-    }
+		public void update(EntityManager entityManager) throws Exception {
+			entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
+			entityManager.migrate(LinkBetweenDifferentEntitiesEntity.class);
+		}
+	}
 }
