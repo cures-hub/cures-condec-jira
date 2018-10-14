@@ -28,7 +28,7 @@ import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestTreant.AoSentenceTestDatabaseUpdater.class) 
+@Data(TestTreant.AoSentenceTestDatabaseUpdater.class)
 public class TestTreant extends TestSetUpWithIssues {
 	private EntityManager entityManager;
 	private Chart chart;
@@ -129,15 +129,13 @@ public class TestTreant extends TestSetUpWithIssues {
 		link.setId((long) 23);
 		assertEquals(Node.class, treant.createNodeStructure(element, link, 4, 0).getClass());
 	}
-	
-	
+
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
-        @SuppressWarnings("unchecked")
+		@SuppressWarnings("unchecked")
 		@Override
-        public void update(EntityManager entityManager) throws Exception
-        {
-            entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
-            entityManager.migrate(LinkBetweenDifferentEntitiesEntity.class);
-        }
-    }
+		public void update(EntityManager entityManager) throws Exception {
+			entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
+			entityManager.migrate(LinkBetweenDifferentEntitiesEntity.class);
+		}
+	}
 }
