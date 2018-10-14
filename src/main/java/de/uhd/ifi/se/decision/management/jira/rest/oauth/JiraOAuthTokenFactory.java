@@ -17,7 +17,6 @@ public class JiraOAuthTokenFactory {
 
     public JiraOAuthTokenFactory(String jiraBaseUrl) {
         this.accessTokenUrl = jiraBaseUrl + "/plugins/servlet/oauth/access-token";
-        ;
         requestTokenUrl = jiraBaseUrl + "/plugins/servlet/oauth/request-token";
     }
 

@@ -226,19 +226,16 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response setSentenceIrrelevant(@Context HttpServletRequest request,
 			DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (request != null && decisionKnowledgeElement != null) {
-			if (decisionKnowledgeElement.getId() > 0) {
-				boolean isDeleted = ActiveObjectsManager.setSentenceIrrelevant(decisionKnowledgeElement.getId(), true);
-				if (isDeleted) {
-					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
-				} else {
-					return Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
-				}
-			} 
+		if (request != null && decisionKnowledgeElement != null && decisionKnowledgeElement.getId() >0) {
+			boolean isDeleted = ActiveObjectsManager.setSentenceIrrelevant(decisionKnowledgeElement.getId(), true);
+			if (isDeleted) {
+				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
+			} else {
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
+			}
 		}
-		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
-				.build();
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
 	}
 
 	@Path("/editSentenceBody")
@@ -257,26 +254,26 @@ public class KnowledgeRest {
 				CommentManager cm = ComponentAccessor.getCommentManager();
 				MutableComment mc = (MutableComment) cm.getCommentById(databaseEntity.getCommentId());
 				// Generate sentence data generated for classification
-				if(mc.getBody().length()>= databaseEntity.getEndSubstringCount()) {
+				if (mc.getBody().length() >= databaseEntity.getEndSubstringCount()) {
 					String sentenceToSearch = CommentImpl.textRule(mc.getBody()
 							.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount()));
 					int index = mc.getBody().indexOf(sentenceToSearch);
-					
-					String newType = CommentSplitter.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch,databaseEntity.getProjectKey(), false);
+
+					String newType = CommentSplitter.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch,
+							databaseEntity.getProjectKey(), false);
 					String tag = "";
 					if (databaseEntity.isTaggedManually()
-							&& StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) < 0 && !newType.equalsIgnoreCase("other")) {
-						tag = "["
-								+ WordUtils.capitalize(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch,
-										databaseEntity.getProjectKey(), false))
-								+ "]";
+							&& StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) < 0
+							&& !newType.equalsIgnoreCase("other")) {
+						tag = "[" + WordUtils.capitalize(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(
+								sentenceToSearch, databaseEntity.getProjectKey(), false)) + "]";
 					} else if (StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) >= 0) {
 						index = index + 3; // add icon to text.
 					}
 					String first = mc.getBody().substring(0, index);
 					String second = tag + decisionKnowledgeElement.getDescription() + tag.replace("[", "[/");
 					String third = mc.getBody().substring(index + sentenceToSearch.length());
-	
+
 					mc.setBody(first + second + third);
 					cm.update(mc, true);
 					ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(),
