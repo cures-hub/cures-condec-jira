@@ -16,3 +16,12 @@ function setAsRootElement(id) {
 		window.open(baseUrl + "/browse/" + key, '_self');
 	});	
 }
+
+var contextMenuActionsTreant = {
+		"asRoot" : contextMenuSetAsRootAction,
+		"create" : contextMenuCreateAction,
+		"edit" : contextMenuEditAction,
+		"link" : contextMenuLinkAction,
+		"deleteLink" : contextMenuDeleteLinkAction,
+		"delete" : contextMenuDeleteAction
+	};

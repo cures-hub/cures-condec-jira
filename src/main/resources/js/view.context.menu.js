@@ -1,4 +1,5 @@
-var makeRootText = "Set as Root"
+var makeRootText = "Set as Root";
+var openIssueText = "Open JIRA Issue";
 var createKnowledgeElementText = "Add Element";
 var linkKnowledgeElementText = "Link Existing Element";
 var deleteLinkToParentText = "Delete Link to Parent";
@@ -313,16 +314,16 @@ var contextMenuSetAsRootAction = {
 	}
 };
 
-var contextMenuActions = {
-	"create" : contextMenuCreateAction,
-	"edit" : contextMenuEditAction,
-	"link" : contextMenuLinkAction,
-	"deleteLink" : contextMenuDeleteLinkAction,
-	"delete" : contextMenuDeleteAction
+var contextMenuOpenJiraIssueAction = {
+	// label for Tree Viewer, name for Treant context menu
+	"name" : openIssueText,
+	"callback" : function(key, options) {
+		var id = getSelectedTreantNodeId(options);
+		openIssue(id);
+	}
 };
 
-var contextMenuActionsTreant = {
-	"asRoot" : contextMenuSetAsRootAction,
+var contextMenuActions = {
 	"create" : contextMenuCreateAction,
 	"edit" : contextMenuEditAction,
 	"link" : contextMenuLinkAction,
