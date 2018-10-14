@@ -116,28 +116,6 @@ public class TestSentence extends TestSetUpWithIssues {
 		assertEquals("con", sentence.getArgument().toLowerCase());
 	}
 
-	// @Test
-	// @NonTransactional
-	// public void testGetOpeningTagSpan() {
-	// Sentence sentence = new SentenceImpl();
-	// assertEquals("<span class =tag></span>", sentence.getOpeningTagSpan());
-	// sentence.setType(KnowledgeType.ARGUMENT);
-	// sentence.setRelevant(true);
-	// sentence.setArgument("Pro");
-	// assertEquals("<span class =tag>[Pro]</span>", sentence.getOpeningTagSpan());
-	// }
-	//
-	// @Test
-	// @NonTransactional
-	// public void testGetClosingTagSpan() {
-	// Sentence sentence = new SentenceImpl();
-	// assertEquals("<span class =tag></span>", sentence.getClosingTagSpan());
-	// sentence.setType(KnowledgeType.ARGUMENT);
-	// sentence.setIsRelevant(true);
-	// sentence.setArgument("Pro");
-	// assertEquals("<span class =tag>[/Pro]</span>", sentence.getClosingTagSpan());
-	// }
-	//
 	@Test
 	@NonTransactional
 	public void testSetRelevantWithDouble() {

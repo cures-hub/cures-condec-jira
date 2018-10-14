@@ -110,6 +110,13 @@
 			<artifactId>gson</artifactId>
 			<version>2.2.2-atlassian-1</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.api-client/google-api-client -->
+		<dependency>
+		    <groupId>com.google.api-client</groupId>
+		    <artifactId>google-api-client</artifactId>
+		    <version>1.13.1-beta</version>
+		</dependency>
+
 		<!-- Logger -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -198,6 +205,18 @@
 			<artifactId>meka</artifactId>
 			<version>1.9.2</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.axis/axis -->
+		<dependency>
+		    <groupId>org.apache.axis</groupId>
+		    <artifactId>axis</artifactId>
+		    <version>1.4</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.jfree/jfreechart -->
+		<dependency>
+		    <groupId>org.jfree</groupId>
+		    <artifactId>jfreechart</artifactId>
+		    <version>1.0.14</version>
+		</dependency>
 		<!-- Git -->
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
@@ -214,7 +233,7 @@
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20180130</version>
+			<version>20180813</version>
 		</dependency>
 	</dependencies>
 	<build>

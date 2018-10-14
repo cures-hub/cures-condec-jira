@@ -23,16 +23,15 @@ public class GenericLinkImpl implements GenericLink {
 		this.type = "";
 	}
 
-	public GenericLinkImpl(LinkBetweenDifferentEntitiesEntity aoElement) {
-		this();
-		this.idOfDestinationElement = aoElement.getIdOfDestinationElement();
-		this.idOfSourceElement = aoElement.getIdOfSourceElement();
-	}
-
 	public GenericLinkImpl(String idOfDestinationElement, String idOfSourceElement) {
 		this();
 		this.idOfDestinationElement = idOfDestinationElement;
 		this.idOfSourceElement = idOfSourceElement;
+	}
+	
+	public GenericLinkImpl(String idOfDestinationElement, String idOfSourceElement, String type) {
+		this( idOfDestinationElement,idOfSourceElement);
+		setType(type);
 	}
 
 	@Override

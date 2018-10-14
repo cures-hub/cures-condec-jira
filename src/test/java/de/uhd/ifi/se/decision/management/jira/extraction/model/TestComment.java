@@ -70,7 +70,7 @@ public class TestComment extends TestSetUpWithIssues {
 
 	}
 
-	private CommentImpl getComment(String text) {
+	public CommentImpl getComment(String text) {
 		createLocalIssue();
 
 		addCommentsToIssue(text);

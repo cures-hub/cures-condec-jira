@@ -28,15 +28,23 @@ public class Treant {
 	private Node nodeStructure;
 
 	private Graph graph;
+	private int absolutDepth;
+	private boolean isHyperlinked;
 
 	public Treant() {
 	}
 
-	public Treant(String projectKey, String elementKey, int depth) {
+	public Treant(String projectKey, String elementKey, int depth, boolean isHyperlinked) {
 		this.graph = new GraphImpl(projectKey, elementKey);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
+		this.setAbsoluteDepth(0);
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
+		this.setHyperlinked(isHyperlinked);
+	}
+
+	public Treant(String projectKey, String elementKey, int depth) {
+		this(projectKey, elementKey, depth, false);
 	}
 
 	public Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth) {
@@ -56,9 +64,9 @@ public class Treant {
 
 		Node node;
 		if (link != null) {
-			node = new Node(element, link, isCollapsed);
+			node = new Node(element, link, isCollapsed, isHyperlinked);
 		} else {
-			node = new Node(element, isCollapsed);
+			node = new Node(element, isCollapsed, isHyperlinked);
 		}
 		List<Node> nodes = new ArrayList<Node>();
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
@@ -70,6 +78,9 @@ public class Treant {
 			}
 		}
 		node.setChildren(nodes);
+		if (this.absolutDepth < currentDepth) {
+			this.absolutDepth = currentDepth;
+		}
 		return node;
 	}
 
@@ -87,5 +98,21 @@ public class Treant {
 
 	public void setNodeStructure(Node nodeStructure) {
 		this.nodeStructure = nodeStructure;
+	}
+
+	public int getAbsoluteDepth() {
+		return absolutDepth;
+	}
+
+	public void setAbsoluteDepth(int absoluteDepth) {
+		this.absolutDepth = absoluteDepth;
+	}
+
+	public boolean isHyperlinked() {
+		return isHyperlinked;
+	}
+
+	public void setHyperlinked(boolean isHyperlinked) {
+		this.isHyperlinked = isHyperlinked;
 	}
 }

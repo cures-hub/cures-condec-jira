@@ -54,7 +54,7 @@ function createContextMenuForTreantNodes() {
 	jQueryConDec(function() {
 		jQueryConDec.contextMenu({
 			selector : ".decision, .rationale, .context, .problem, .solution, .pro, .contra, .other",
-			items : contextMenuActions
+			items : contextMenuActionsTreant
 		});
 	});
 }
