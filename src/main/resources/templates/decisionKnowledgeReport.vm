@@ -1,0 +1,63 @@
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:report-resources")
+
+<div style="padding: 5px">
+    <!-- Display the report configuration -->
+    <h4 id="decision-knowledge-report-parameters">
+        Project: $projectName 
+    </h4>
+    <br />
+
+    <hr>
+    <div style="text-align:center;">
+      <div id="CommentsPerIssue" style="width:200px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
+      <div id="CommitsPerIssue" style="width:200px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
+      <div id="SentencePerIssue" style="width:200px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
+      <div id="LinkDistance" style="width:200px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
+
+
+      <hr>
+       <div id="relevantSentences" style="width:500px; height:400px; display:inline-block;"  onclick="copyToClipboard(this)"></div>
+      <div id="knowledgeTypeDist" style="width:500px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
+      <div id="decisionIssues" style="width:500px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
+      <div id="altWithArguments" style="width:500px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
+
+  </div>  
+    <script type="text/javascript">
+      initializeDivWithBoxPlot('CommentsPerIssue',$numCommentsPerIssue,"Comments/Issue","Comments per Issue");
+      initializeDivWithBoxPlot('CommitsPerIssue',$numCommitsPerIssue,"Commits/Issue","Commits per Issue");
+      initializeDivWithBoxPlot('SentencePerIssue',$numSentencePerIssue,"Sentence/Issue","Setences per Issue");
+      initializeDivWithBoxPlot('LinkDistance',$numLinkDistance,"Link distance","Link distance");
+      
+      var map = new Map();
+      #foreach ($item in $numRelevantSentences.keySet())
+        map.set("$item", $numRelevantSentences.get("$item"));
+      #end
+      initializeDivWithPieChart("relevantSentences","Relevance of Sentences","",map);
+
+      map = new Map();
+      #foreach ($item in $numKnowledgeTypesPerIssue.keySet())
+        map.set("$item", $numKnowledgeTypesPerIssue.get("$item"));
+      #end
+      initializeDivWithPieChart("knowledgeTypeDist","Knowledge Types","",map);
+
+      map = new Map();
+      #foreach ($item in $numLinksToIssue.keySet())
+        map.set("$item", $numLinksToIssue.get("$item"));
+      #end
+      initializeDivWithPieChart("decisionIssues","Links between Knowledge Types","",map);
+
+      map = new Map();
+      #foreach ($item in $numAlternativeWoArgument.keySet())
+        map.set("$item", $numAlternativeWoArgument.get("$item"));
+      #end
+      initializeDivWithPieChart("altWithArguments","Arguments for Alterantives","",map);
+
+
+      function copyToClipboard(parent){
+          var copyText = document.getElementById(parent.id).getAttribute("list");
+          prompt("Data Points:",copyText);
+      }
+      
+    </script>
+</div>
