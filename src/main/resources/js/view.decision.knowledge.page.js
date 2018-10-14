@@ -50,3 +50,26 @@ function updateView(nodeId) {
 		buildTreant(node.key, true);
 	});
 }
+
+function setAsRootElement(nodeId) {
+	updateView(nodeId);
+}
+
+function openIssue(nodeId) {
+	// only allow this in case the selected node is a JIRA issue, for sentences map to JIRA issue
+	getDecisionKnowledgeElement(nodeId, function(decisionKnowledgeElement) {
+		var baseUrl = AJS.params.baseURL;
+		var key = decisionKnowledgeElement.key;
+		window.open(baseUrl + "/browse/" + key, '_blank');
+	});	
+}
+
+var contextMenuActionsTreant = {
+		"asRoot" : contextMenuSetAsRootAction,
+		"create" : contextMenuCreateAction,
+		"edit" : contextMenuEditAction,
+		"link" : contextMenuLinkAction,
+		"deleteLink" : contextMenuDeleteLinkAction,
+		"delete" : contextMenuDeleteAction,
+		"openIssue" : contextMenuOpenJiraIssueAction
+	};

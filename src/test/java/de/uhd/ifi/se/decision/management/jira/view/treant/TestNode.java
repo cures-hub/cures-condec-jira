@@ -28,6 +28,7 @@ public class TestNode {
 	private String innerHTML;
 	private List<Node> children;
 	private boolean isCollapsed;
+	private boolean isHyperlinked;
 
 	private Node node;
 
@@ -59,11 +60,12 @@ public class TestNode {
 		element.setSummary("TESTfwf");
 
 		isCollapsed = false;
+		isHyperlinked = true;
 	}
 
 	@Test
 	public void testConstructor() {
-		this.node = new Node(element, isCollapsed);
+		this.node = new Node(element, isCollapsed, isHyperlinked);
 		assertNotNull(node);
 	}
 
@@ -71,7 +73,7 @@ public class TestNode {
 	public void testElementLinkEmptyConstructor() {
 		Link link = new LinkImpl();
 		link.setType("Test");
-		Node newNode = new Node(element, link, isCollapsed);
+		Node newNode = new Node(element, link, isCollapsed, isHyperlinked);
 		assertNotNull(newNode);
 	}
 
@@ -79,7 +81,7 @@ public class TestNode {
 	public void testElementLinkSupportConstructor() {
 		Link link = new LinkImpl();
 		link.setType("support");
-		Node newNode = new Node(element, link, isCollapsed);
+		Node newNode = new Node(element, link, isCollapsed, isHyperlinked);
 		assertNotNull(newNode);
 	}
 
@@ -87,7 +89,7 @@ public class TestNode {
 	public void testElementLinkAttackConstructor() {
 		Link link = new LinkImpl();
 		link.setType("attack");
-		Node newNode = new Node(element, link, isCollapsed);
+		Node newNode = new Node(element, link, isCollapsed, isHyperlinked);
 		assertNotNull(newNode);
 	}
 
