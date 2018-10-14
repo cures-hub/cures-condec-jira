@@ -226,19 +226,19 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response setSentenceIrrelevant(@Context HttpServletRequest request,
 			DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (decisionKnowledgeElement.getId() > 0) {
-			boolean isDeleted = ActiveObjectsManager.setSentenceIrrelevant(decisionKnowledgeElement.getId(), true);
-			if (isDeleted) {
-				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
-			} else {
-				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
-
-			}
-		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
-					.build();
+		if (request != null && decisionKnowledgeElement != null) {
+			if (decisionKnowledgeElement.getId() > 0) {
+				boolean isDeleted = ActiveObjectsManager.setSentenceIrrelevant(decisionKnowledgeElement.getId(), true);
+				if (isDeleted) {
+					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
+				} else {
+					return Response.status(Status.INTERNAL_SERVER_ERROR)
+							.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
+				}
+			} 
 		}
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
+				.build();
 	}
 
 	@Path("/editSentenceBody")
@@ -253,7 +253,7 @@ public class KnowledgeRest {
 					.getElementFromAO(decisionKnowledgeElement.getId());
 			if ((databaseEntity.getEndSubstringCount()
 					- databaseEntity.getStartSubstringCount()) != decisionKnowledgeElement.getDescription().length()) {
-				// Get JIRA Comment instance
+				// Get JIRA Comment instance - Casting fails in unittesting with Mock
 				CommentManager cm = ComponentAccessor.getCommentManager();
 				MutableComment mc = (MutableComment) cm.getCommentById(databaseEntity.getCommentId());
 				// Generate sentence data generated for classification
@@ -331,7 +331,6 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response deleteGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			GenericLinkImpl link) {
-		System.out.println(link.toString());
 		if (projectKey != null && request != null && link != null) {
 			boolean isDeleted = GenericLinkManager.deleteGenericLink(link);
 			if (isDeleted) {
