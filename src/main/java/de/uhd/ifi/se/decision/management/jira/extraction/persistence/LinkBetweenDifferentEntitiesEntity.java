@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
 
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
-import net.java.ao.schema.Ignore;
 import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
 

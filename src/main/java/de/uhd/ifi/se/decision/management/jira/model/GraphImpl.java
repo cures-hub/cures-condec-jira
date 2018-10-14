@@ -5,11 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 
 /**
  * Model class for a graph of decision knowledge elements
@@ -23,6 +24,8 @@ public class GraphImpl implements Graph {
 	private List<DecisionKnowledgeElement> filteredElements;
 	private boolean isFilteredByTime;
 	private static List<Link> sentenceLinkAlreadyVisited;
+	private long startTime;
+	private long endTime;
 
 	public GraphImpl() {
 		linkIds = new ArrayList<>();
@@ -48,11 +51,15 @@ public class GraphImpl implements Graph {
 		this.rootElement = rootElement;
 	}
 
-	public GraphImpl(String projectKey, String rootElementKey, List<DecisionKnowledgeElement> filteredElements, boolean filteredByTime) {
+	public GraphImpl(String projectKey, String rootElementKey, GraphFiltering filter) {
 		this(projectKey);
 		this.rootElement = this.project.getPersistenceStrategy().getDecisionKnowledgeElement(rootElementKey);
-		this.filteredElements = filteredElements;
-		this.isFilteredByTime = filteredByTime;
+		if (filter != null) {
+			this.filteredElements = filter.getQueryResults();
+			this.isFilteredByTime = filter.isQueryContainsCreationDate();
+			this.startTime = filter.getStartDate();
+			this.endTime = filter.getEndDate();
+		}
 	}
 
 	@Override
@@ -88,21 +95,21 @@ public class GraphImpl implements Graph {
 //			 return linkedElementsAndLinks;
 //		 }
 		String preIndex = getIdentifier(element);
-		List<GenericLink> list = ActiveObjectsManager.getGenericLinksForElement(preIndex + element.getId(), false);
+		List<GenericLink> list = GenericLinkManager.getGenericLinksForElement(preIndex + element.getId(), false);
 
 		for (GenericLink currentGenericLink : list) {
 			try {
-				
+
 				DecisionKnowledgeElement source = currentGenericLink.getBothElements().get(0);
 				DecisionKnowledgeElement target = currentGenericLink.getBothElements().get(1);
-				if(!source.getProject().getProjectKey().equals(target.getProject().getProjectKey())) {
+				if (!source.getProject().getProjectKey().equals(target.getProject().getProjectKey())) {
 					continue;
 				}
-				
-				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source,target);
+
+				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source, target);
 				linkBetweenSentenceAndOtherElement.setType("contain");
 				if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
-					sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
+					GraphImpl.sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
 					linkedElementsAndLinks.put(currentGenericLink.getOpposite(preIndex + element.getId()),
 							linkBetweenSentenceAndOtherElement);
 				}
@@ -120,31 +127,49 @@ public class GraphImpl implements Graph {
 		if (element == null) {
 			return linkedElementsAndLinks;
 		}
-		// If uncommented: This will remove all children of sentences in the Treeviewer
-		// on Decision KnowledgePage. This will increase the performance significantly.
-		// Full DK is loaded on button klick in Treant
-//		 if(element instanceof Sentence && !((Sentence)element).isRelevant()) {
-//			 return linkedElementsAndLinks;
-//		 }
 		String preIndex = getIdentifier(element);
-		List<GenericLink> list = ActiveObjectsManager.getGenericLinksForElement(preIndex + element.getId(), false);
+		List<GenericLink> list = GenericLinkManager.getGenericLinksForElement(preIndex + element.getId(), false);
 
 		for (GenericLink currentGenericLink : list) {
 			try {
 
 				DecisionKnowledgeElement source = currentGenericLink.getBothElements().get(0);
 				DecisionKnowledgeElement target = currentGenericLink.getBothElements().get(1);
-				if(!source.getProject().getProjectKey().equals(target.getProject().getProjectKey())) {
+				if (!source.getProject().getProjectKey().equals(target.getProject().getProjectKey())) {
 					continue;
 				}
-
-				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source,target);
+				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source, target);
 				linkBetweenSentenceAndOtherElement.setType("contain");
-				if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
-					sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
-					linkedElementsAndLinks.put(currentGenericLink.getOpposite(preIndex + element.getId()),
-							linkBetweenSentenceAndOtherElement);
+				if (startTime < 0) {
+					if (((Sentence) source).getCreated().getTime() < this.endTime) {
+						DecisionKnowledgeElement toLink = currentGenericLink.getOpposite(preIndex + element.getId());
+						if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
+							sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
+							linkedElementsAndLinks.put(toLink,
+									linkBetweenSentenceAndOtherElement);
+						}
+					}
+				} else if (endTime < 0) {
+					if (((Sentence) source).getCreated().getTime() > this.startTime) {
+						DecisionKnowledgeElement toLink = currentGenericLink.getOpposite(preIndex + element.getId());
+						if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
+							sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
+							linkedElementsAndLinks.put(toLink,
+									linkBetweenSentenceAndOtherElement);
+						}
+					}
+				} else {
+					if ((((Sentence) source).getCreated().getTime() < this.endTime) && (((Sentence) source).getCreated().getTime() > this.startTime)) {
+						DecisionKnowledgeElement toLink = currentGenericLink.getOpposite(preIndex + element.getId());
+						if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
+							sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
+							linkedElementsAndLinks.put(toLink,
+									linkBetweenSentenceAndOtherElement);
+						}
+					}
 				}
+
+
 			} catch (NullPointerException e) {
 				// Link in the wrong direction
 				continue;
@@ -154,11 +179,11 @@ public class GraphImpl implements Graph {
 	}
 
 	private boolean linkListContainsLink(Link link2) {
-		for (Link link : sentenceLinkAlreadyVisited) {
+		for (Link link : GraphImpl.sentenceLinkAlreadyVisited) {
 			if (link.getDestinationElement().getId() == link2.getDestinationElement().getId()
 					&& link.getSourceElement().getId() == link2.getSourceElement().getId()
 					|| link.getSourceElement().getId() == link2.getDestinationElement().getId()
-							&& link.getSourceElement().getId() == link2.getDestinationElement().getId()) {
+					&& link.getSourceElement().getId() == link2.getDestinationElement().getId()) {
 				return true;
 			}
 		}

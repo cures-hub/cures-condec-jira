@@ -118,7 +118,8 @@
 		<resource type="download" name="view.issue.module.js" location="/js/view.issue.module.js" />
 	</web-resource>
 
-	<web-resource key="classifier-resources" name="Resources for Decision Extraction">
+	<web-resource key="classifier-resources"
+		name="Resources for Decision Knowledge Extraction">
 		<description>
 			Provides the resources needed for extraction of decision knowledge from issue
 			comments such as the model files for Weka and Meka classifiers.
@@ -127,6 +128,17 @@
 		<resource type="download" name="fc.model" location="/classifier/fc.model" />
 		<resource type="download" name="br.model" location="/classifier/br.model" />
 		<resource type="download" name="view.tab.panel.js" location="/js/view.tab.panel.js" />
+	</web-resource>
+
+	<web-resource key="report-resources" name="Resources for Decision Knowledge Report">
+		<description>
+			Provides the resources needed for creating reports about the documented decision
+			knowledge in the project.
+		</description>
+		<context>jira-report-plugin</context>
+		<resource type="download" name="echarts.js" location="/js/echart/echarts.js" />
+		<resource type="download" name="dataTool.js" location="/js/echart/dataTool.js" />
+		<resource type="download" name="view.report.js" location="/js/view.report.js" />
 	</web-resource>
 
 	<!-- Decision Knowledge Page -->
@@ -226,16 +238,11 @@
 			de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementEntity
 		</entity>
 		<entity>
-			de.uhd.ifi.se.decision.management.jira.persistence.LinkEntity
-		</entity>
-
-		<entity>
 			de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity
 		</entity>
 		<entity>
 			de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity
 		</entity>
-
 	</ao>
 
 	<!-- Decision Knowledge Issue Module -->
@@ -260,19 +267,39 @@
 		<supports-ajax-load>true</supports-ajax-load>
 	</issue-tabpanel>
 
-	<web-item key="my_links_link2"
-			  name="Link on My Links Main Section"
-			  section="operations-operations"
-			 >
-		<label>Download as Table</label>
-		<link linkId="downloadAsTable"/>
-	</web-item>
-	<web-item key="my_links_link1"
-			  name="Link on My Links Main Section"
-			  section="operations-operations"
-			 >
-		<label>Download as Tree</label>
-		<link linkId="downloadAsTree"/>
-	</web-item>
-
+	<!-- Decision Knowledge Report -->
+	<report name="Decision Knowledge Report" key="decision-knowledge-report"
+		class="de.uhd.ifi.se.decision.management.jira.extraction.view.DecisionKnowledgeReport">
+		<description>Generates statistics about decision knowledge in the project.</description>
+		<resource name="view" type="velocity" location="/templates/decisionKnowledgeReport.vm" />
+		<label key="Decision Knowledge Report" />
+		<properties>
+			<property>
+				<key>projectId</key>
+				<name>Project</name>
+				<description>Selected project to display the report for.</description>
+				<type>filterprojectpicker</type>
+			</property>
+			<property>
+				<key>rootType</key>
+				<name>Decision Knowledge Root Type</name>
+				<description>Please select the decision knowledge type to be used as root type.</description>
+				<type>select</type>
+				<values>
+					<value>
+						<key>Issue</key>
+						<value>Issue</value>
+					</value>
+					<value>
+						<key>Alternative</key>
+						<value>Alternative</value>
+					</value>
+					<value>
+						<key>Decision</key>
+						<value>Decision</value>
+					</value>
+				</values>
+			</property>
+		</properties>
+	</report>
 </atlassian-plugin>

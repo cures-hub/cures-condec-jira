@@ -12,11 +12,16 @@ import com.atlassian.jira.issue.search.SearchRequest;
 import com.atlassian.jira.issue.search.SearchRequestManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class GraphFiltering {
+	private static final Logger LOGGER = LoggerFactory.getLogger(GraphFiltering.class);
+
 	private String query;
 	private String projectKey;
 	private boolean queryIsJQL;
@@ -49,7 +54,6 @@ public class GraphFiltering {
 
 	private String cropQuery() {
 		String croppedQuery = "";
-		System.out.println(this.query);
 		String[] split = this.query.split("§");
 		if (split.length > 1) {
 			this.query = "?" + split[1];
@@ -102,7 +106,7 @@ public class GraphFiltering {
 					returnQuery = "statusCategory = Done";
 					break;
 				default:
-					returnQuery =  "type != null";
+					returnQuery = "type != null";
 					break;
 			}
 			returnQuery = "Project = " + projectKey + " AND " + returnQuery;
@@ -145,10 +149,119 @@ public class GraphFiltering {
 				returnQuery = "statusCategory = Done";
 				break;
 			default:
-				returnQuery =  "type != null";
+				returnQuery = "type != null";
 				break;
 		}
 		return returnQuery;
+	}
+
+	private void findDatesInQuery(List<Clause> clauses) {
+		for (Clause clause : clauses) {
+			if (clause.getName().equals("created")) {
+				this.queryContainsCreationDate = true;
+				long todaysDate = new Date().getTime();
+				String time = clause.toString().substring(13, clause.toString().length() - 2);
+				if (clause.toString().contains(" <= ")) {
+					this.endDate = findEndtime(todaysDate, time);
+				} else if (clause.toString().contains(" >= ")) {
+					this.startDate = findStarttime(todaysDate, time);
+				}
+			}
+		}
+	}
+
+	private void findDatesInQuery(String query) {
+		if (query.contains("created")) {
+			this.queryContainsCreationDate = true;
+			long todaysDate = new Date().getTime();
+			String time = query.substring(11, query.length());
+			if (query.contains(" <= ")) {
+				this.endDate = findEndtime(todaysDate, time);
+			} else if (query.contains(" >= ")) {
+				this.startDate = findStarttime(todaysDate, time);
+			}
+		}
+
+	}
+
+	private long findStarttime(long currentDate, String time) {
+		long startTime = 0;
+		if (time.matches("(\\d\\d\\d\\d-\\d\\d-\\d\\d)")) {
+			String[] split = time.split("-");
+			try {
+				int year = Integer.parseInt(split[0]);
+				int month = Integer.parseInt(split[1]);
+				int day = Integer.parseInt(split[2]);
+				Date queryStartDate = new Date(year - 1900, month - 1, day);
+				startTime = queryStartDate.getTime();
+			} catch (NumberFormatException e) {
+				LOGGER.error("The Date is not in Format yyyy-mm-dd");
+			}
+		} else if (time.matches("(\\-\\d+(.))")) {
+			long factor = 0;
+			char factorLetter = time.charAt(time.length() - 1);
+			factor = getTimeFactor(factorLetter);
+			long queryTime = currentDate + 1;
+			String queryTimeString = time.replaceAll("\\D+", "");
+			try {
+				queryTime = Long.parseLong(queryTimeString);
+			} catch (NumberFormatException e) {
+				LOGGER.error("No valid time given");
+			}
+			startTime = currentDate - (queryTime * factor);
+		}
+		return startTime;
+	}
+
+	private long findEndtime(long currentDate, String time) {
+		long endTime = 0;
+		if (time.matches("(\\d\\d\\d\\d-\\d\\d-\\d\\d)")) {
+			String[] split = time.split("-");
+			try {
+				int year = Integer.parseInt(split[0]);
+				int month = Integer.parseInt(split[1]);
+				int day = Integer.parseInt(split[2]);
+				Date queryEndDate = new Date(year - 1900, month - 1, day + 1);
+				endTime = queryEndDate.getTime();
+			} catch (NumberFormatException e) {
+				LOGGER.error("The Date is not in Format yyyy-mm-dd");
+			}
+		} else if (time.matches("(\\-\\d+(.))")) {
+			long factor;
+			char factorLetter = time.charAt(time.length() - 1);
+			factor = getTimeFactor(factorLetter);
+			long queryTime = currentDate + 1;
+			String queryTimeString = time.replaceAll("\\D+", "");
+			try {
+				queryTime = Long.parseLong(queryTimeString);
+			} catch (NumberFormatException e) {
+				LOGGER.error("No valid time given");
+			}
+			endTime = currentDate - (queryTime * factor);
+		}
+		return endTime;
+	}
+
+	private long getTimeFactor(char factorAsALetter) {
+		long factor;
+		switch (factorAsALetter) {
+			case 'm':
+				factor = 60000;
+				break;
+			case 'h':
+				factor = 3600000;
+				break;
+			case 'd':
+				factor = 86400000;
+				break;
+			case 'w':
+				factor = 604800000;
+				break;
+			default:
+				factor = 1;
+				break;
+		}
+		return factor;
 	}
 
 	public void produceResultsFromQuery() {
@@ -176,7 +289,6 @@ public class GraphFiltering {
 			finalQuery = "type = null";
 		}
 
-		//System.out.println("Final Query: " + finalQuery);
 		final SearchService.ParseResult parseResult =
 				ComponentAccessor.getComponentOfType(SearchService.class).parseQuery(this.user, finalQuery);
 
@@ -184,13 +296,10 @@ public class GraphFiltering {
 
 		{
 			List<Clause> clauses = parseResult.getQuery().getWhereClause().getClauses();
-			for (Clause clause : clauses) {
-				if (clause.getName().equals("created")) {
-					this.queryContainsCreationDate = true;
-					long todaysDate = new Date().getTime();
-					System.out.println("Todays Date: " + todaysDate);
-				}
-				//System.out.println("Clause: " + clause);
+			if (!clauses.isEmpty()) {
+				findDatesInQuery(clauses);
+			} else {
+				findDatesInQuery(finalQuery);
 			}
 			try {
 				final SearchResults results = ComponentAccessor.getComponentOfType(SearchService.class).search(
@@ -201,7 +310,7 @@ public class GraphFiltering {
 				e.printStackTrace();
 			}
 		} else {
-			System.err.println(parseResult.getErrors().toString());
+			LOGGER.error(parseResult.getErrors().toString());
 		}
 		if (resultingIssues != null) {
 			for (Issue issue : resultingIssues) {
@@ -227,31 +336,19 @@ public class GraphFiltering {
 		this.user = user;
 	}
 
-	public boolean isQueryIsJQL() {
-		return queryIsJQL;
-	}
-
-	public void setQueryIsJQL(boolean queryIsJQL) {
-		this.queryIsJQL = queryIsJQL;
-	}
-
-	public boolean isQueryIsFilter() {
-		return queryIsFilter;
-	}
-
-	public void setQueryIsFilter(boolean queryIsFilter) {
-		this.queryIsFilter = queryIsFilter;
-	}
-
 	public List<DecisionKnowledgeElement> getQueryResults() {
 		return queryResults;
 	}
 
-	public void setQueryResults(List<DecisionKnowledgeElement> queryResults) {
-		this.queryResults = queryResults;
-	}
-
 	public boolean isQueryContainsCreationDate() {
 		return queryContainsCreationDate;
+	}
+
+	public long getStartDate() {
+		return startDate;
+	}
+
+	public long getEndDate() {
+		return endDate;
 	}
 }

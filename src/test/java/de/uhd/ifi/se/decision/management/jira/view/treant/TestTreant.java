@@ -10,8 +10,7 @@ import org.junit.runner.RunWith;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
+import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
@@ -29,8 +28,8 @@ import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestTreant.AoSentenceTestDatabaseUpdater.class) 
-public class TestTreant extends TestSetUp {
+@Data(TestTreant.AoSentenceTestDatabaseUpdater.class)
+public class TestTreant extends TestSetUpWithIssues {
 	private EntityManager entityManager;
 	private Chart chart;
 	private Node nodeStructure;
@@ -130,15 +129,13 @@ public class TestTreant extends TestSetUp {
 		link.setId((long) 23);
 		assertEquals(Node.class, treant.createNodeStructure(element, link, 4, 0).getClass());
 	}
-	
-	
+
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
-        @SuppressWarnings("unchecked")
+		@SuppressWarnings("unchecked")
 		@Override
-        public void update(EntityManager entityManager) throws Exception
-        {
-            entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
-            entityManager.migrate(LinkBetweenDifferentEntitiesEntity.class);
-        }
-    }
+		public void update(EntityManager entityManager) throws Exception {
+			entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
+			entityManager.migrate(LinkBetweenDifferentEntitiesEntity.class);
+		}
+	}
 }

@@ -67,7 +67,7 @@ function createTreant(treeStructure, isInteractive) {
 	console.log("view.treant.js createTreant");
 	treantTree = new Treant(treeStructure);
 	if (isInteractive !== undefined && isInteractive) {
-		//createContextMenuForTreantNodesThatAreSentence();
+		createContextMenuForTreantNodesThatAreSentence();
 		createContextMenuForTreantNodes();
 		addDragAndDropSupportForTreant();
 		addTooltip();
@@ -78,7 +78,7 @@ function createContextMenuForTreantNodes() {
 	jQueryConDec(function() {
 		jQueryConDec.contextMenu({
 			selector : ".decision, .rationale, .context, .problem, .solution, .pro, .contra, .other",
-			items : contextMenuActions
+			items : contextMenuActionsTreant
 		});
 	});
 }
