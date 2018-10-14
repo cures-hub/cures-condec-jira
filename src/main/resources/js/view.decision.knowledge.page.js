@@ -29,42 +29,6 @@ function initializeDecisionKnowledgePage() {
             depthOfTreeWarningLabel.style.visibility = "visible";
         }
     });
-    //Add Event Listeners handlers for import end export Tree Buttons
-    var downloadElementButton = document.getElementById("download-decisions-button");
-    downloadElementButton.addEventListener("click", function () {
-        console.log("projectId",getProjectKey());
-        getLinkedElements(10209,function(response){
-            console.log("linkedToIt",response)
-            download("myJson",JSON.stringify(response));
-
-            function download(filename, text) {
-                console.log("filename",filename)
-
-                var element = document.createElement('a');
-                element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-                element.setAttribute('download', filename);
-
-                element.style.display = 'none';
-                document.body.appendChild(element);
-
-                element.click();
-
-                document.body.removeChild(element);
-            }
-        });
-
-
-
-    });
-    var uploadElementButton = document.getElementById("upload-decisions-button");
-    var uploadField= document.getElementById("file-upload-field")
-    uploadElementButton.addEventListener("click", function () {
-        $(uploadField).trigger("click")
-        getDecisionKnowledgeElement(10209,function(response){
-            console.log("myresponse",response)
-        });
-
-    });
 }
 function updateView(nodeId) {
     console.log("view.decision.knowledge.page updateView");
