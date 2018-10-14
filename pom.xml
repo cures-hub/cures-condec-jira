@@ -114,9 +114,14 @@
 		<dependency>
 		    <groupId>com.google.api-client</groupId>
 		    <artifactId>google-api-client</artifactId>
-		    <version>1.13.1-beta</version>
+		    <version>1.14.1-beta</version>
 		</dependency>
-
+		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+		<dependency>
+		    <groupId>com.google.guava</groupId>
+		    <artifactId>guava</artifactId>
+		    <version>12.0.1</version>
+		</dependency>
 		<!-- Logger -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
