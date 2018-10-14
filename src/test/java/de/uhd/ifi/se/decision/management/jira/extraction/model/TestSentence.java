@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
@@ -23,7 +23,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestSentence.AoSentenceTestDatabaseUpdater.class)
-public class TestSentence extends TestSetUp {
+public class TestSentence extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
 

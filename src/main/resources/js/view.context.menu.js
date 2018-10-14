@@ -372,7 +372,7 @@ var changeKnowledgeTypeAction = {
 
 function changeKtTo(id, position, type) {
 	changeKnowledgeTypeOfSentence(id, type, function() {
-		if (!(document.getElementById("Relevant") == null)) {
+		if (document.getElementById("Relevant") !== null) {
 			resetTreeViewer();
 			buildTreeViewer2(document.getElementById("Relevant").checked);
 			// getTreeViewerWithoutRootElement(document.getElementById("Relevant").checked,
@@ -396,7 +396,7 @@ function changeKtTo(id, position, type) {
 
 function getArrayId(array, id) {
 	for (var i = array.length - 1; i >= 0; i--) {
-		if (array[i].id == id) {
+		if (array[i].id === id) {
 			return i;
 		}
 	}
@@ -432,7 +432,7 @@ var contextMenuDeleteSentenceLinkAction = {
 		var id = node.id;
 		var parentId = node.parent;
 
-		var nodeType = (node.li_attr['class'] == "sentence") ? "s" : "i";
+		var nodeType = (node.li_attr['class'] === "sentence") ? "s" : "i";
 
 		deleteGenericLink(parentId, node.id, "i", nodeType, refreshTreeViewer, false);
 		deleteGenericLink(parentId, node.id, "s", nodeType, refreshTreeViewer, false);
@@ -464,13 +464,13 @@ var contextMenuDeleteSentenceAction = {
 			} else {
 				refreshTreeViewer();
 			}
-		})
+		});
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
 		setSentenceIrrelevant(id, function(core, options, id) {
 			refreshTreeViewer();
-		})
+		});
 	}
 };
 
@@ -491,7 +491,7 @@ var contextMenuEditSentenceAction = {
 
 		var type = "Other";
 		if (node.getElementsByClassName("node-name").length > 0) {
-			type = node.getElementsByClassName("node-name")[0].innerHTML
+			type = node.getElementsByClassName("node-name")[0].innerHTML;
 		}
 		setUpDialogForEditSentenceAction(id, description, type);
 	}
@@ -499,8 +499,8 @@ var contextMenuEditSentenceAction = {
 
 function getNodeWithId(nodes, id) {
 	for (var i = nodes.length - 1; i >= 0; i--) {
-		if (nodes[i].id == id) {
-			return nodes[i]
+		if (nodes[i].id === id) {
+			return nodes[i];
 		}
 	}
 }
@@ -575,7 +575,7 @@ function setUpEditSentenceDialog(id, description, type) {
 
 function refreshTreeViewer() {
 	console.log("view.context.menu.js refreshTreeViewer");
-	if (!(document.getElementById("Relevant") == null)) {
+	if (document.getElementById("Relevant") !== null) {
 		resetTreeViewer();
 		buildTreeViewer2(document.getElementById("Relevant").checked);
 	} else {

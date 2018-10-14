@@ -16,7 +16,7 @@ import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.project.ProjectManager;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockAvatarManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkTypeManager;
@@ -24,7 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeManager;
 
-public class TestPluginInitializer extends TestSetUp {
+public class TestPluginInitializer extends TestSetUpWithIssues {
 
 	private PluginInitializer pluginInitializer;
 

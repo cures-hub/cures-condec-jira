@@ -1,11 +1,11 @@
 function buildTreeViewer() {
-    console.log("view.tree.viewer.js buildTreeViewer");
+	console.log("view.tree.viewer.js buildTreeViewer");
 	resetTreeViewer();
 	var rootElementType = $("select[name='select-root-element-type']").val();
 	getTreeViewer(rootElementType, function(core) {
 		jQueryConDec("#jstree").jstree({
 			"core" : core,
-			"plugins" : [ "dnd", "contextmenu", "wholerow", "sort", "search","state" ],
+			"plugins" : [ "dnd", "contextmenu", "wholerow", "sort", "search", "state" ],
 			"search" : {
 				"show_only_matches" : true
 			},
@@ -22,16 +22,16 @@ function buildTreeViewer() {
 }
 
 function customMenu(node) {
-    console.log("view.tree.viewer.js customMenu(node)");
-     if (node.li_attr['class'] == "sentence") {
-        return contextMenuActionsForSentences;
-    }else{
-    	return contextMenuActions;
-    }  
+	console.log("view.tree.viewer.js customMenu(node)");
+	if (node.li_attr['class'] == "sentence") {
+		return contextMenuActionsForSentences;
+	} else {
+		return contextMenuActions;
+	}
 }
 
 function resetTreeViewer() {
-    console.log("view.tree.viewer.js resetTreeViewer");
+	console.log("view.tree.viewer.js resetTreeViewer");
 	var treeViewer = jQueryConDec("#jstree").jstree(true);
 	if (treeViewer) {
 		treeViewer.destroy();
@@ -39,7 +39,7 @@ function resetTreeViewer() {
 }
 
 function getTreeViewerNodeById(nodeId) {
-    console.log("view.tree.viewer.js getTreeViewerNodeById(nodeId)");
+	console.log("view.tree.viewer.js getTreeViewerNodeById(nodeId)");
 	if (nodeId === "#") {
 		return nodeId;
 	}
@@ -47,7 +47,7 @@ function getTreeViewerNodeById(nodeId) {
 }
 
 function selectNodeInTreeViewer(nodeId) {
-    console.log("view.tree.viewer.js selectNodeInTreeViewer");
+	console.log("view.tree.viewer.js selectNodeInTreeViewer");
 	jQueryConDec("#jstree").on("ready.jstree", function() {
 		var treeViewer = jQueryConDec("#jstree").jstree(true);
 		if (treeViewer) {
@@ -57,14 +57,14 @@ function selectNodeInTreeViewer(nodeId) {
 }
 
 function addDragAndDropSupportForTreeViewer() {
-    console.log("view.tree.viewer.js addDragAndDropSupportForTreeViewer");
+	console.log("view.tree.viewer.js addDragAndDropSupportForTreeViewer");
 	jQueryConDec("#jstree").on('move_node.jstree', function(object, nodeInContext) {
 		var node = nodeInContext.node;
 		var parentNode = getTreeViewerNodeById(nodeInContext.parent);
 		var oldParentNode = getTreeViewerNodeById(nodeInContext.old_parent);
 		var nodeId = node.data.id;
 
-		if(!node.li_attr['class'] == "sentence"){
+		if (!node.li_attr['class'] === "sentence") {
 			if (oldParentNode === "#" && parentNode !== "#") {
 				createLinkToExistingElement(parentNode.data.id, nodeId);
 			}
@@ -78,26 +78,30 @@ function addDragAndDropSupportForTreeViewer() {
 					createLinkToExistingElement(parentNode.data.id, nodeId);
 				});
 			}
-		}else{
-			var targetType = (parentNode.li_attr['class'] == "sentence") ? "s" : "i";
-			
+		} else {
+			var targetType = (parentNode.li_attr['class'] === "sentence") ? "s" : "i";
+
 			if (oldParentNode === "#" && parentNode !== "#") {
-				linkGenericElements(parentNode.data.id,nodeId,targetType,"s",function(){refreshTreeViewer()});
+				linkGenericElements(parentNode.data.id, nodeId, targetType, "s", function() {
+					refreshTreeViewer();
+				});
 			}
 			if (parentNode === "#" && oldParentNode !== "#") {
-				var targetTypeOld = (oldParentNode.li_attr['class'] == "sentence") ? "s" : "i";
-				deleteGenericLink(oldParentNode.data.id,nodeId,targetTypeOld,"s",function(){refreshTreeViewer()});
+				targetTypeOld = (oldParentNode.li_attr['class'] === "sentence") ? "s" : "i";
+				deleteGenericLink(oldParentNode.data.id, nodeId, targetTypeOld, "s", function() {
+					refreshTreeViewer()
+				});
 			}
 			if (parentNode !== '#' && oldParentNode !== '#') {
-				var targetTypeOld = (oldParentNode.li_attr['class'] == "sentence") ? "s" : "i";
-				var nodeType = (node.li_attr['class'] == "sentence") ? "s" : "i";
-				if(nodeType == "i" && targetTypeOld == "i"){
-					linkGenericElements(parentNode.data.id,nodeId,targetType,nodeType,function(){
+				targetTypeOld = (oldParentNode.li_attr['class'] === "sentence") ? "s" : "i";
+				var nodeType = (node.li_attr['class'] === "sentence") ? "s" : "i";
+				if (nodeType == "i" && targetTypeOld == "i") {
+					linkGenericElements(parentNode.data.id, nodeId, targetType, nodeType, function() {
 						refreshTreeViewer()
 					});
-				}else{
-					deleteGenericLink(oldParentNode.data.id,nodeId,targetTypeOld,nodeType,function(){
-						linkGenericElements(parentNode.data.id,nodeId,targetType,nodeType,function(){
+				} else {
+					deleteGenericLink(oldParentNode.data.id, nodeId, targetTypeOld, nodeType, function() {
+						linkGenericElements(parentNode.data.id, nodeId, targetType, nodeType, function() {
 							refreshTreeViewer()
 						});
 					});
@@ -105,6 +109,5 @@ function addDragAndDropSupportForTreeViewer() {
 			}
 		}
 
-		
 	});
 }

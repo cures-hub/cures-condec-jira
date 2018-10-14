@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction;
+package de.uhd.ifi.se.decision.management.jira.extraction.view;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -17,7 +17,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.TestSetUp;
+import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.view.IssueTabPanelRenderer;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
@@ -25,7 +25,7 @@ import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestIssueTabPanelRenderer extends TestSetUp {
+public class TestIssueTabPanelRenderer extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
 	private IssueTabPanelRenderer renderer;

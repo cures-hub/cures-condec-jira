@@ -65,7 +65,7 @@ public class DecisionKnowledgeClassifier {
 		Filter stwv;
 		try {
 			structure.setClassIndex(5);
-			stwv = getSTWV(structure);
+			stwv = getSTWV();
 			stwv.setInputFormat(structure);
 			structure = Filter.useFilter(structure, stwv);
 			structure.setClassIndex(5);
@@ -86,7 +86,7 @@ public class DecisionKnowledgeClassifier {
 
 	}
 
-	private StringToWordVector getSTWV(Instances structure) throws Exception {
+	private StringToWordVector getSTWV() throws Exception {
 		StringToWordVector stwv = new StringToWordVector();
 		stwv.setLowerCaseTokens(true);
 		stwv.setIDFTransform(true);

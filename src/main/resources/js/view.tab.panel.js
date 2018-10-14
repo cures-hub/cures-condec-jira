@@ -1,11 +1,11 @@
 function hideSelectedDecisionElements(element) {
 	console.log("view.tab.panel.js hideSelectedDecisionElements");
-	var decisionElements = [ "Issue", "Decision", "Alternative", "Pro", "Con" ]
+	var decisionElements = [ "Issue", "Decision", "Alternative", "Pro", "Con" ];
 	var sentences = document.getElementsByClassName(element.id);
-	if (element.id != "Relevant") {
+	if (element.id !== "Relevant") {
 		setVisibility(sentences, element.checked);
-	} else if (element.id == "Relevant") {
-		var sentences = document.getElementsByClassName("isNotRelevant");
+	} else if (element.id === "Relevant") {
+		sentences = document.getElementsByClassName("isNotRelevant");
 		setVisibility(sentences, element.checked);
 	}
 }
@@ -79,7 +79,7 @@ function sortfunction(a, b) {
 
 function customContextMenu(node) {
 	console.log("view.tab.panel.js customContextMenu");
-	if (node.li_attr['class'] == "sentence") {
+	if (node.li_attr['class'] === "sentence") {
 		return contextMenuActionsForSentences;
 	} else {
 		return;

@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.atlassian.jira.user.ApplicationUser;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
@@ -29,6 +30,8 @@ public class Treant {
 	private Node nodeStructure;
 
 	private Graph graph;
+	/**Counts absolute tree depth to ease calculation of link distance */
+	private int realDepth;
 
 	public Treant() {
 	}
@@ -36,6 +39,7 @@ public class Treant {
 	public Treant(String projectKey, String elementKey, int depth) {
 		this.graph = new GraphImpl(projectKey, elementKey);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
+		this.setRealDepth(0);
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
 	}
@@ -87,12 +91,17 @@ public class Treant {
 		}
 		List<Node> nodes = new ArrayList<Node>();
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-			Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth, currentDepth + 1);
-			if(newChildNode.getNodeContent().get("desc").startsWith(element.getProject().getProjectKey())) {
+			if ((childAndLink.getKey() instanceof Sentence && ((Sentence) childAndLink.getKey()).isRelevant())
+					|| !(childAndLink.getKey() instanceof Sentence)) {
+				Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
+						currentDepth + 1);
 				nodes.add(newChildNode);
 			}
 		}
 		node.setChildren(nodes);
+		if(this.realDepth<currentDepth) {
+			this.realDepth = currentDepth;
+		}
 		return node;
 	}
 
@@ -110,5 +119,13 @@ public class Treant {
 
 	public void setNodeStructure(Node nodeStructure) {
 		this.nodeStructure = nodeStructure;
+	}
+
+	public int getRealDepth() {
+		return realDepth;
+	}
+
+	public void setRealDepth(int realDepth) {
+		this.realDepth = realDepth;
 	}
 }
