@@ -82,38 +82,38 @@ public class TestTreant extends TestSetUpWithIssues {
 
 	@Test
 	public void testCreateNodeStructureNullNullZeroZero() {
-		assertEquals(Node.class, treant.createNodeStructure(null, null, 0, 0).getClass());
+		assertEquals(Node.class, treant.createNodeStructure(null, null, 0, 0, false).getClass());
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void testCreateNodeStructureEmptyNullZeroZero() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		assertEquals(Node.class, treant.createNodeStructure(element, null, 0, 0).getClass());
+		assertEquals(Node.class, treant.createNodeStructure(element, null, 0, 0, false).getClass());
 	}
 
 	@Test
 	@NonTransactional
 	public void testCreateNodeStructureFilledNullZeroZero() {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
-		assertEquals(Node.class, treant.createNodeStructure(element, null, 0, 0).getClass());
+		assertEquals(Node.class, treant.createNodeStructure(element, null, 0, 0, false).getClass());
 	}
 
 	@Test
 	public void testCreateNodeStructureNullNullFilledFilled() {
-		assertEquals(Node.class, treant.createNodeStructure(null, null, 4, 0).getClass());
+		assertEquals(Node.class, treant.createNodeStructure(null, null, 4, 0, false).getClass());
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void testCreateNodeStructureEmptyNullFilledFilled() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		assertEquals(Node.class, treant.createNodeStructure(element, null, 4, 0).getClass());
+		assertEquals(Node.class, treant.createNodeStructure(element, null, 4, 0, false).getClass());
 	}
 
 	@Test
 	@NonTransactional
 	public void testCreateNodeStructureFilledNullFilledFilled() {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
-		assertEquals(Node.class, treant.createNodeStructure(element, null, 4, 0).getClass());
+		assertEquals(Node.class, treant.createNodeStructure(element, null, 4, 0, false).getClass());
 	}
 
 	@Test
@@ -127,7 +127,7 @@ public class TestTreant extends TestSetUpWithIssues {
 		link.setDestinationElement(persistenceStrategy.getDecisionKnowledgeElement(14));
 		link.setSourceElement(persistenceStrategy.getDecisionKnowledgeElement(10));
 		link.setId((long) 23);
-		assertEquals(Node.class, treant.createNodeStructure(element, link, 4, 0).getClass());
+		assertEquals(Node.class, treant.createNodeStructure(element, link, 4, 0, false).getClass());
 	}
 	
 	

@@ -28,21 +28,26 @@ public class Treant {
 	private Node nodeStructure;
 
 	private Graph graph;
-	/**Counts absolute tree depth to ease calculation of link distance */
+	/** Counts absolute tree depth to ease calculation of link distance */
 	private int realDepth;
 
 	public Treant() {
 	}
 
-	public Treant(String projectKey, String elementKey, int depth) {
+	public Treant(String projectKey, String elementKey, int depth, boolean isHyperlinked) {
 		this.graph = new GraphImpl(projectKey, elementKey);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
 		this.setRealDepth(0);
 		this.setChart(new Chart());
-		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
+		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1, isHyperlinked));
 	}
 
-	public Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth) {
+	public Treant(String projectKey, String elementKey, int depth) {
+		this(projectKey, elementKey, depth, false);
+	}
+
+	public Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth,
+			boolean isHyperlinked) {
 		if (element == null || element.getProject().getProjectKey() == null) {
 			return new Node();
 		}
@@ -59,21 +64,21 @@ public class Treant {
 
 		Node node;
 		if (link != null) {
-			node = new Node(element, link, isCollapsed);
+			node = new Node(element, link, isCollapsed, isHyperlinked);
 		} else {
-			node = new Node(element, isCollapsed);
+			node = new Node(element, isCollapsed, isHyperlinked);
 		}
 		List<Node> nodes = new ArrayList<Node>();
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
 			if ((childAndLink.getKey() instanceof Sentence && ((Sentence) childAndLink.getKey()).isRelevant())
 					|| !(childAndLink.getKey() instanceof Sentence)) {
 				Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
-						currentDepth + 1);
+						currentDepth + 1, isHyperlinked);
 				nodes.add(newChildNode);
 			}
 		}
 		node.setChildren(nodes);
-		if(this.realDepth<currentDepth) {
+		if (this.realDepth < currentDepth) {
 			this.realDepth = currentDepth;
 		}
 		return node;
