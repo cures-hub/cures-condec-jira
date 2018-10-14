@@ -27,8 +27,6 @@ import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
 
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
-
 
 /**
  * REST resource for view

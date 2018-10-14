@@ -259,6 +259,7 @@ public class GraphFiltering {
 				break;
 			default:
 				factor = 1;
+				break;
 		}
 		return factor;
 	}

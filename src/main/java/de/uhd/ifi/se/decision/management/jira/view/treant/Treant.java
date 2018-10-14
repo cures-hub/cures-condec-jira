@@ -52,14 +52,10 @@ public class Treant {
 //	}
 
 	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user) {
-		List<DecisionKnowledgeElement> filteredElements = null;
-		boolean isFilteredByCreationDate = false;
 		GraphFiltering filter = null;
 		if (!((query == null)||(query.equals(""))||(query.equals("?jql="))||(query.equals("?filter=")))) {
 			filter = new GraphFiltering(projectKey,query,user);
 			filter.produceResultsFromQuery();
-			isFilteredByCreationDate = filter.isQueryContainsCreationDate();
-			filteredElements = filter.getQueryResults();
 		}
 
 		this.graph = new GraphImpl(projectKey, elementKey, filter);
