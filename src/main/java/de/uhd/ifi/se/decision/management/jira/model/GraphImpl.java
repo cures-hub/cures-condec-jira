@@ -99,14 +99,14 @@ public class GraphImpl implements Graph {
 
 		for (GenericLink currentGenericLink : list) {
 			try {
-				
+
 				DecisionKnowledgeElement source = currentGenericLink.getBothElements().get(0);
 				DecisionKnowledgeElement target = currentGenericLink.getBothElements().get(1);
-				if(!source.getProject().getProjectKey().equals(target.getProject().getProjectKey())) {
+				if (!source.getProject().getProjectKey().equals(target.getProject().getProjectKey())) {
 					continue;
 				}
-				
-				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source,target);
+
+				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source, target);
 				linkBetweenSentenceAndOtherElement.setType("contain");
 				if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
 					GraphImpl.sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
@@ -127,27 +127,21 @@ public class GraphImpl implements Graph {
 		if (element == null) {
 			return linkedElementsAndLinks;
 		}
-		// If uncommented: This will remove all children of sentences in the Treeviewer
-		// on Decision KnowledgePage. This will increase the performance significantly.
-		// Full DK is loaded on button klick in Treant
-//		 if(element instanceof Sentence && !((Sentence)element).isRelevant()) {
-//			 return linkedElementsAndLinks;
-//		 }
 		String preIndex = getIdentifier(element);
-		List<GenericLink> list = ActiveObjectsManager.getGenericLinksForElement(preIndex + element.getId(), false);
+		List<GenericLink> list = GenericLinkManager.getGenericLinksForElement(preIndex + element.getId(), false);
 
 		for (GenericLink currentGenericLink : list) {
 			try {
 
 				DecisionKnowledgeElement source = currentGenericLink.getBothElements().get(0);
 				DecisionKnowledgeElement target = currentGenericLink.getBothElements().get(1);
-				if(!source.getProject().getProjectKey().equals(target.getProject().getProjectKey())) {
+				if (!source.getProject().getProjectKey().equals(target.getProject().getProjectKey())) {
 					continue;
 				}
-				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source,target);
+				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source, target);
 				linkBetweenSentenceAndOtherElement.setType("contain");
 				if (startTime < 0) {
-					if (((Sentence)source).getCreated().getTime()<this.endTime) {
+					if (((Sentence) source).getCreated().getTime() < this.endTime) {
 						DecisionKnowledgeElement toLink = currentGenericLink.getOpposite(preIndex + element.getId());
 						if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
 							sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
@@ -156,7 +150,7 @@ public class GraphImpl implements Graph {
 						}
 					}
 				} else if (endTime < 0) {
-					if (((Sentence)source).getCreated().getTime()>this.startTime){
+					if (((Sentence) source).getCreated().getTime() > this.startTime) {
 						DecisionKnowledgeElement toLink = currentGenericLink.getOpposite(preIndex + element.getId());
 						if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
 							sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
@@ -165,7 +159,7 @@ public class GraphImpl implements Graph {
 						}
 					}
 				} else {
-					if ((((Sentence)source).getCreated().getTime()<this.endTime) && (((Sentence)source).getCreated().getTime()>this.startTime)) {
+					if ((((Sentence) source).getCreated().getTime() < this.endTime) && (((Sentence) source).getCreated().getTime() > this.startTime)) {
 						DecisionKnowledgeElement toLink = currentGenericLink.getOpposite(preIndex + element.getId());
 						if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
 							sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
@@ -189,7 +183,7 @@ public class GraphImpl implements Graph {
 			if (link.getDestinationElement().getId() == link2.getDestinationElement().getId()
 					&& link.getSourceElement().getId() == link2.getSourceElement().getId()
 					|| link.getSourceElement().getId() == link2.getDestinationElement().getId()
-							&& link.getSourceElement().getId() == link2.getDestinationElement().getId()) {
+					&& link.getSourceElement().getId() == link2.getDestinationElement().getId()) {
 				return true;
 			}
 		}

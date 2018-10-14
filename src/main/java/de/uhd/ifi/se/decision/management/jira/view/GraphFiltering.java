@@ -106,7 +106,7 @@ public class GraphFiltering {
 					returnQuery = "statusCategory = Done";
 					break;
 				default:
-					returnQuery =  "type != null";
+					returnQuery = "type != null";
 					break;
 			}
 			returnQuery = "Project = " + projectKey + " AND " + returnQuery;
@@ -149,18 +149,18 @@ public class GraphFiltering {
 				returnQuery = "statusCategory = Done";
 				break;
 			default:
-				returnQuery =  "type != null";
+				returnQuery = "type != null";
 				break;
 		}
 		return returnQuery;
 	}
 
-	private void findDatesInQuery(List<Clause> clauses ){
+	private void findDatesInQuery(List<Clause> clauses) {
 		for (Clause clause : clauses) {
 			if (clause.getName().equals("created")) {
 				this.queryContainsCreationDate = true;
 				long todaysDate = new Date().getTime();
-				String time = clause.toString().substring(13,clause.toString().length()-2);
+				String time = clause.toString().substring(13, clause.toString().length() - 2);
 				if (clause.toString().contains(" <= ")) {
 					this.endDate = findEndtime(todaysDate, time);
 				} else if (clause.toString().contains(" >= ")) {
@@ -168,6 +168,20 @@ public class GraphFiltering {
 				}
 			}
 		}
+	}
+
+	private void findDatesInQuery(String query) {
+		if (query.contains("created")) {
+			this.queryContainsCreationDate = true;
+			long todaysDate = new Date().getTime();
+			String time = query.substring(11, query.length());
+			if (query.contains(" <= ")) {
+				this.endDate = findEndtime(todaysDate, time);
+			} else if (query.contains(" >= ")) {
+				this.startDate = findStarttime(todaysDate, time);
+			}
+		}
+
 	}
 
 	private long findStarttime(long currentDate, String time) {
@@ -178,23 +192,23 @@ public class GraphFiltering {
 				int year = Integer.parseInt(split[0]);
 				int month = Integer.parseInt(split[1]);
 				int day = Integer.parseInt(split[2]);
-				Date queryStartDate = new Date(year-1900, month-1, day);
+				Date queryStartDate = new Date(year - 1900, month - 1, day);
 				startTime = queryStartDate.getTime();
 			} catch (NumberFormatException e) {
 				LOGGER.error("The Date is not in Format yyyy-mm-dd");
 			}
-		} else if (time.matches("(\\-\\d+(.))")){
-			long factor= 0 ;
-			char factorLetter = time.charAt(time.length()-1);
+		} else if (time.matches("(\\-\\d+(.))")) {
+			long factor = 0;
+			char factorLetter = time.charAt(time.length() - 1);
 			factor = getTimeFactor(factorLetter);
 			long queryTime = currentDate + 1;
-			String queryTimeString = time.replaceAll("\\D+","");
+			String queryTimeString = time.replaceAll("\\D+", "");
 			try {
 				queryTime = Long.parseLong(queryTimeString);
 			} catch (NumberFormatException e) {
 				LOGGER.error("No valid time given");
 			}
-			startTime = currentDate-(queryTime*factor);
+			startTime = currentDate - (queryTime * factor);
 		}
 		return startTime;
 	}
@@ -207,23 +221,23 @@ public class GraphFiltering {
 				int year = Integer.parseInt(split[0]);
 				int month = Integer.parseInt(split[1]);
 				int day = Integer.parseInt(split[2]);
-				Date queryEndDate = new Date(year-1900, month-1, day+1);
+				Date queryEndDate = new Date(year - 1900, month - 1, day + 1);
 				endTime = queryEndDate.getTime();
 			} catch (NumberFormatException e) {
 				LOGGER.error("The Date is not in Format yyyy-mm-dd");
 			}
-		} else if (time.matches("(\\-\\d+(.))")){
+		} else if (time.matches("(\\-\\d+(.))")) {
 			long factor;
-			char factorLetter = time.charAt(time.length()-1);
+			char factorLetter = time.charAt(time.length() - 1);
 			factor = getTimeFactor(factorLetter);
 			long queryTime = currentDate + 1;
-			String queryTimeString = time.replaceAll("\\D+","");
+			String queryTimeString = time.replaceAll("\\D+", "");
 			try {
 				queryTime = Long.parseLong(queryTimeString);
 			} catch (NumberFormatException e) {
 				LOGGER.error("No valid time given");
 			}
-			endTime = currentDate-(queryTime*factor);
+			endTime = currentDate - (queryTime * factor);
 		}
 		return endTime;
 	}
@@ -281,7 +295,11 @@ public class GraphFiltering {
 
 		{
 			List<Clause> clauses = parseResult.getQuery().getWhereClause().getClauses();
-			findDatesInQuery(clauses);
+			if (!clauses.isEmpty()) {
+				findDatesInQuery(clauses);
+			} else {
+				findDatesInQuery(finalQuery);
+			}
 			try {
 				final SearchResults results = ComponentAccessor.getComponentOfType(SearchService.class).search(
 						this.user, parseResult.getQuery(), PagerFilter.getUnlimitedFilter());
