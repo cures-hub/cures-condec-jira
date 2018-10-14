@@ -5,7 +5,23 @@ function fillIssueModule() {
 
 function updateView() {
     console.log("view.issue.module updateView");
-    var search = getURLsSearch();
     var issueKey = getIssueKey();
-    buildTreantFiltered(issueKey, true, search);
+    buildTreant(issueKey, true);
 }
+
+function setAsRootElement(id) {	
+	getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
+		var baseUrl = AJS.params.baseURL;
+		var key = decisionKnowledgeElement.key;
+		window.open(baseUrl + "/browse/" + key, '_self');
+	});	
+}
+
+var contextMenuActionsTreant = {
+		"asRoot" : contextMenuSetAsRootAction,
+		"create" : contextMenuCreateAction,
+		"edit" : contextMenuEditAction,
+		"link" : contextMenuLinkAction,
+		"deleteLink" : contextMenuDeleteLinkAction,
+		"delete" : contextMenuDeleteAction
+	};

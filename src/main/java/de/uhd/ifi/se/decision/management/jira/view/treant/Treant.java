@@ -30,18 +30,23 @@ public class Treant {
 	private Node nodeStructure;
 
 	private Graph graph;
-	/**Counts absolute tree depth to ease calculation of link distance */
-	private int realDepth;
+	private int absolutDepth;
+	private boolean isHyperlinked;
 
 	public Treant() {
 	}
 
-	public Treant(String projectKey, String elementKey, int depth) {
+	public Treant(String projectKey, String elementKey, int depth, boolean isHyperlinked) {
 		this.graph = new GraphImpl(projectKey, elementKey);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
-		this.setRealDepth(0);
+		this.setAbsoluteDepth(0);
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
+		this.setHyperlinked(isHyperlinked);
+	}
+
+	public Treant(String projectKey, String elementKey, int depth) {
+		this(projectKey, elementKey, depth, false);
 	}
 
 //	public Treant(String projectKey, String elementKey, int depth, List<DecisionKnowledgeElement> filteredElements, boolean isFilteredByCreationDate) {
@@ -81,9 +86,9 @@ public class Treant {
 
 		Node node;
 		if (link != null) {
-			node = new Node(element, link, isCollapsed);
+			node = new Node(element, link, isCollapsed, isHyperlinked);
 		} else {
-			node = new Node(element, isCollapsed);
+			node = new Node(element, isCollapsed, isHyperlinked);
 		}
 		List<Node> nodes = new ArrayList<Node>();
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
@@ -95,8 +100,8 @@ public class Treant {
 			}
 		}
 		node.setChildren(nodes);
-		if(this.realDepth<currentDepth) {
-			this.realDepth = currentDepth;
+		if (this.absolutDepth < currentDepth) {
+			this.absolutDepth = currentDepth;
 		}
 		return node;
 	}
@@ -117,11 +122,19 @@ public class Treant {
 		this.nodeStructure = nodeStructure;
 	}
 
-	public int getRealDepth() {
-		return realDepth;
+	public int getAbsoluteDepth() {
+		return absolutDepth;
 	}
 
-	public void setRealDepth(int realDepth) {
-		this.realDepth = realDepth;
+	public void setAbsoluteDepth(int absoluteDepth) {
+		this.absolutDepth = absoluteDepth;
+	}
+
+	public boolean isHyperlinked() {
+		return isHyperlinked;
+	}
+
+	public void setHyperlinked(boolean isHyperlinked) {
+		this.isHyperlinked = isHyperlinked;
 	}
 }
