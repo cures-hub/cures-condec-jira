@@ -22,6 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
@@ -70,6 +71,25 @@ public class TestGenericLink extends TestSetUpWithIssues {
 		commentManager.create(issue, currentUser, comment, true);
 	}
 
+	@Test
+	@NonTransactional
+	public void testSecondConstructor() {
+		GenericLinkImpl link = new GenericLinkImpl("i1337","i1338");
+		assertTrue(link.getIdOfDestinationElement().equals("i1337"));
+		assertTrue(link.getIdOfSourceElement().equals("i1338"));
+	}
+	
+	@Test
+	@NonTransactional
+	public void testThirdConstructor() {
+		GenericLinkImpl link = new GenericLinkImpl("i1337","i1338","contain");
+		assertTrue(link.getIdOfDestinationElement().equals("i1337"));
+		assertTrue(link.getIdOfSourceElement().equals("i1338"));
+		assertTrue(link.getType().equals("contain"));
+		
+	}
+	
+	
 	@Test
 	@NonTransactional
 	public void testSimpleLink() {
@@ -149,5 +169,47 @@ public class TestGenericLink extends TestSetUpWithIssues {
 		assertNotNull(link.getBothElements().get(0));
 		assertNotNull(link.getBothElements().get(1));
 	}
+	
+	
+
+	@Test
+	@NonTransactional
+	public void testIsValidWithValidLink() {
+
+		GenericLinkImpl link = new GenericLinkImpl();
+
+		link.setIdOfSourceElement("i" + issue.getId());
+		link.setIdOfDestinationElement("i" + issue.getId());
+		GenericLinkManager.insertGenericLink(link, null);
+
+		assertTrue(link.isValid());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testIsValidWithInValidLink() {
+
+		GenericLinkImpl link = new GenericLinkImpl();
+
+		link.setIdOfSourceElement("i" + 1233);
+		link.setIdOfDestinationElement("i" + 13423);
+		GenericLinkManager.insertGenericLink(link, null);
+
+		assertFalse(link.isValid());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testToStringToBeatCodeCoverage() {
+
+		GenericLinkImpl link = new GenericLinkImpl();
+
+		link.setIdOfSourceElement("i" + 1233);
+		link.setIdOfDestinationElement("i" + 13423);
+		
+		assertTrue(link.toString().equals("i1233 to i13423"));
+	}
+
+	
 
 }
