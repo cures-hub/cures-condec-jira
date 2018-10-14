@@ -257,28 +257,31 @@ public class KnowledgeRest {
 				CommentManager cm = ComponentAccessor.getCommentManager();
 				MutableComment mc = (MutableComment) cm.getCommentById(databaseEntity.getCommentId());
 				// Generate sentence data generated for classification
-				String sentenceToSearch = CommentImpl.textRule(mc.getBody()
-						.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount()));
-				int index = mc.getBody().indexOf(sentenceToSearch);
-
-				String tag = "";
-				if (databaseEntity.isTaggedManually()
-						&& StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) < 0) {
-					tag = "["
-							+ WordUtils.capitalize(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch,
-									databaseEntity.getProjectKey(), false))
-							+ "]";
-				} else if (StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) >= 0) {
-					index = index + 3; // add icon to text.
+				if(mc.getBody().length()>= databaseEntity.getEndSubstringCount()) {
+					String sentenceToSearch = CommentImpl.textRule(mc.getBody()
+							.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount()));
+					int index = mc.getBody().indexOf(sentenceToSearch);
+					
+					String newType = CommentSplitter.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch,databaseEntity.getProjectKey(), false);
+					String tag = "";
+					if (databaseEntity.isTaggedManually()
+							&& StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) < 0 && !newType.equalsIgnoreCase("other")) {
+						tag = "["
+								+ WordUtils.capitalize(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch,
+										databaseEntity.getProjectKey(), false))
+								+ "]";
+					} else if (StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) >= 0) {
+						index = index + 3; // add icon to text.
+					}
+					String first = mc.getBody().substring(0, index);
+					String second = tag + decisionKnowledgeElement.getDescription() + tag.replace("[", "[/");
+					String third = mc.getBody().substring(index + sentenceToSearch.length());
+	
+					mc.setBody(first + second + third);
+					cm.update(mc, true);
+					ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(),
+							decisionKnowledgeElement.getId(), second);
 				}
-				String first = mc.getBody().substring(0, index);
-				String second = tag + decisionKnowledgeElement.getDescription() + tag.replace("[", "[/");
-				String third = mc.getBody().substring(index + sentenceToSearch.length());
-
-				mc.setBody(first + second + third);
-				cm.update(mc, true);
-				ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(),
-						decisionKnowledgeElement.getId(), second);
 			}
 
 			ActiveObjectsManager.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),
