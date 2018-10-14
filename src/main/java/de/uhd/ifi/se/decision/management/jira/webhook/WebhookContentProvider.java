@@ -73,7 +73,7 @@ public class WebhookContentProvider {
 	 * @return TreantJS JSON String including config and data
 	 */
 	private String createTreantJsonString() {
-		Treant treant = new Treant(projectKey, rootElementKey, 4);
+		Treant treant = new Treant(projectKey, rootElementKey, 4, true);
 		ObjectMapper objectMapper = new ObjectMapper();
 		String treantAsJson = "";
 		try {

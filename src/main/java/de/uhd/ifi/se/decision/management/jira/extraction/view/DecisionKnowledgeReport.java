@@ -149,7 +149,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		for (DecisionKnowledgeElement currentAlternative : listOfIssues) {
 			Treant treant = new Treant(currentAlternative.getProject().getProjectKey(), currentAlternative.getKey(),
 					100);
-			linkDistances.add(treant.getRealDepth());
+			linkDistances.add(treant.getAbsoluteDepth());
 		}
 
 		return linkDistances;

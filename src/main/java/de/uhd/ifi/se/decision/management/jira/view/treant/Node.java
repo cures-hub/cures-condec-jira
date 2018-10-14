@@ -62,7 +62,7 @@ public class Node {
 		// this.connectors.put("style", connectorStyle);
 	}
 
-	public Node(DecisionKnowledgeElement decisionKnowledgeElement, boolean isCollapsed) {
+	public Node(DecisionKnowledgeElement decisionKnowledgeElement, boolean isCollapsed, boolean isHyperlinked) {
 		this();
 		KnowledgeType type = decisionKnowledgeElement.getType();
 		if (type == KnowledgeType.OTHER) {
@@ -75,12 +75,12 @@ public class Node {
 		this.htmlClass = decisionKnowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
 		this.htmlId = decisionKnowledgeElement.getId();
 		DecisionKnowledgeProject project = decisionKnowledgeElement.getProject();
-		this.link = new HashMap<>();
+		this.link = new HashMap<String, String>();
 		if (decisionKnowledgeElement.getDescription() != null
 				&& !decisionKnowledgeElement.getDescription().equals("")) {
 			this.link.put("title", decisionKnowledgeElement.getDescription());
 		}
-		if (project.isIssueStrategy()) {
+		if (project.isIssueStrategy() && isHyperlinked) {
 			makeLinkToElement(decisionKnowledgeElement.getKey());
 		}
 		if (isCollapsed) {
@@ -94,12 +94,15 @@ public class Node {
 					makeArgument("Con-argument", "contra", decisionKnowledgeElement);
 				}
 			}
-			makeLinkToElement(decisionKnowledgeElement.getKey().split(":")[0]);
+			if (isHyperlinked) {
+				makeLinkToElement(decisionKnowledgeElement.getKey().split(":")[0]);
+			}
 		}
 	}
 
-	public Node(DecisionKnowledgeElement decisionKnowledgeElement, Link link, boolean isCollapsed) {
-		this(decisionKnowledgeElement, isCollapsed);
+	public Node(DecisionKnowledgeElement decisionKnowledgeElement, Link link, boolean isCollapsed,
+			boolean isHyperlinked) {
+		this(decisionKnowledgeElement, isCollapsed, isHyperlinked);
 		switch (link.getType()) {
 		case "support":
 			if (decisionKnowledgeElement.getId() == link.getSourceElement().getId()) {
@@ -116,10 +119,10 @@ public class Node {
 		}
 	}
 
-	private void makeArgument(String string, String string2, DecisionKnowledgeElement decisionKnowledgeElement) {
-		this.nodeContent = ImmutableMap.of("name", string, "title", decisionKnowledgeElement.getSummary(), "desc",
+	private void makeArgument(String nodeTitle, String htmlClass, DecisionKnowledgeElement decisionKnowledgeElement) {
+		this.nodeContent = ImmutableMap.of("name", nodeTitle, "title", decisionKnowledgeElement.getSummary(), "desc",
 				decisionKnowledgeElement.getKey());
-		this.htmlClass = string2;
+		this.htmlClass = htmlClass;
 	}
 
 	private void makeLinkToElement(String key) {
