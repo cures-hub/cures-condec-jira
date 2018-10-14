@@ -80,7 +80,9 @@ public class MockSearchService implements SearchService{
 	@Override
 	public SearchResults search(ApplicationUser arg0, Query arg1, PagerFilter arg2) throws SearchException {
 		List<Issue> issueList = new ArrayList<Issue>();
-		issueList.add(new MockIssue(1337));
+		MockIssue i = new MockIssue(1337);
+		i.setKey("Test-1337");
+		issueList.add(i);
 		return new SearchResults(issueList, arg2);
 	}
 

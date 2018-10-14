@@ -168,7 +168,7 @@ public class OAuthClient {
 		try {
 			r = request.execute();
 		} catch (Exception e) {
-			LOGGER.debug("Error while executing request:\n"+e.getMessage().substring(0, e.getMessage().indexOf("stacktrace")-2)+"}");
+			LOGGER.debug("Error while executing request:\n");
 		}
 		return r;
 	}

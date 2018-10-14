@@ -300,6 +300,9 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	}
 
 	private void request(String issueKey) {
+		if(issueKey == null) {
+			return;
+		}
 		PropertiesClient propertiesClient = null;
 		JiraOAuthClient jiraOAuthClient = null;
 

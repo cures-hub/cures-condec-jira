@@ -52,7 +52,6 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 	}
 
 	@Test
-	@Ignore
 	@NonTransactional
 	public void testCreation() {
 		assertNotNull(this.report);
