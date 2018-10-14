@@ -30,9 +30,9 @@ public class PropertiesClient {
     private final static Map<String, String> DEFAULT_PROPERTY_VALUES = ImmutableMap.<String, String>builder()
             .put(JIRA_HOME, "http://cures.ifi.uni-heidelberg.de:8080")
             .put(CONSUMER_KEY, "OauthKey")
-//            .put(REQUEST_TOKEN,"AUJmP3i9fY8cqW2SDMb5F8jfLGZnmVey")
-//            .put(SECRET,"TbB2ZD")
-//            .put(ACCESS_TOKEN,"p2d0VpiBSMRhQdAgu0ZOnerlzBKffpJ3")
+            .put(REQUEST_TOKEN,"Pif7GoyebDlkLEARnph3odJFZLYudOUI")
+            .put(SECRET,"1pHLL6")
+            .put(ACCESS_TOKEN,"e3pmmt9quyTnCvRB7N0RquU7BTWM4gz1")
             .put(PRIVATE_KEY, "MIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBAMhmjkK9MsLveS9o0wzT/rLLefFuGz1pvmFikI9cBWRx8dawXSSnIItEtPO6yJjqK+ZiLKrd3WvMwSd45yggjeiNKe2jRhGia/QgJePDC/+09Z9iWOhwPA/Eci+E4cwD/JGtjS0Gg6U8qCQc3wlZX6/z5g/+3paEgHV+FOelQSztAgMBAAECgYEAsOkQR0x8xmffpIG2ZsmzPCWytfaMp491GMWJdnU28XBBnVQ+NcAwU6HI2K0Yrx1yucQLSJ/p+2NbVLw/3EW433NTgQPTxM/xrjIlvtZQDdgttEEmczfsVzD3tgvj9TvqDKngKQH0o9rUjDC4rI4f766gL7142Qb5elqMkJZrg0UCQQD9336IqPXV0WHxMR2el89MmclMtrek15LraDCnxbpb3rxajB4pGr5h9q8eOAU4ANPnIXCG6vYyU8x/l7lnydG3AkEAyhRfwK8UW58tOyoiJe2FuOXEFJYPeUPGM6JLalwfZFuDYpW3TQhg+mrpVPNyCAgaL4V97NzSoMH1LTzp1hnmewJBAOZBPlJUbCNxtJM9KNAegDXJhXm+fvFTVD2OUhLYkx2f9tVpIDHHv8S6KDoQNSuGFKsc+SJlGMasml1fDxnDQiECQQCdy5EFnfEwpjgklf76TOH5gnk9dfv5PiH72cQ39l2Q+SC8D5qFrYBEqs0ux7aIbQM9jmjJV5mlbC8uNv2FcM4XAkA1jdGDbtkKY0NKvjU3G0VhG1PTrCDSu7FRHb4/kMjfLPVlTaioKOp654ZiWPimVHnlTy0kqZ+ratK8qtuiucNs") 
             		            .build();
 
