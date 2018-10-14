@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.view.reports;
+package de.uhd.ifi.se.decision.management.jira.extraction.view;
 
 import static org.junit.Assert.*;
 
