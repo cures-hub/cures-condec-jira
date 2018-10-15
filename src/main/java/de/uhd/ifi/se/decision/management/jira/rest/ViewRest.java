@@ -71,33 +71,6 @@ public class ViewRest {
 		return Response.ok(treeViewer).build();
 	}
 
-//	@Path("/getTreant")
-//	@GET
-//	@Produces({ MediaType.APPLICATION_JSON })
-//	public Response getTreant(@QueryParam("elementKey") String elementKey,
-//			@QueryParam("depthOfTree") String depthOfTree) {
-//
-//		if (elementKey == null) {
-//			return Response.status(Status.BAD_REQUEST)
-//					.entity(ImmutableMap.of("error", "Treant cannot be shown since element key is invalid.")).build();
-//		}
-//		String projectKey = getProjectKey(elementKey);
-//		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-//		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-//			return checkIfProjectKeyIsValidResponse;
-//		}
-//		int depth = 4; // default value
-//		try {
-//			depth = Integer.parseInt(depthOfTree);
-//		} catch (NumberFormatException e) {
-//			LOGGER.error("Depth of tree could not be parsed, the default value of 4 is used.");
-//			return Response.status(Status.BAD_REQUEST)
-//					.entity(ImmutableMap.of("error", "Treant cannot be shown since depth of Tree is NaN")).build();
-//		}
-//		Treant treant = new Treant(projectKey, elementKey, depth);
-//		return Response.ok(treant).build();
-//	}
-
 	@Path("/getTreant")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })

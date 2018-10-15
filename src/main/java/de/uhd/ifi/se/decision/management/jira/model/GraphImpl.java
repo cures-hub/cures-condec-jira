@@ -30,6 +30,7 @@ public class GraphImpl implements Graph {
 	public GraphImpl() {
 		linkIds = new ArrayList<>();
 		sentenceLinkAlreadyVisited = new ArrayList<>();
+		isFilteredByTime = false;
 	}
 
 	public GraphImpl(String projectKey) {
@@ -73,53 +74,10 @@ public class GraphImpl implements Graph {
 		} else {
 			linkedElementsAndLinks.putAll(this.getElementsLinkedWithInwardLinksFiltered(element));
 			linkedElementsAndLinks.putAll(this.getElementsLinkedWithOutwardLinksFiltered(element));
-//			if (isFilteredByTime) {
-//				linkedElementsAndLinks.putAll(this.getAllLinkedSentencesFiltered(element));
-//			} else {
-				linkedElementsAndLinks.putAll(this.getAllLinkedSentences(element));
-		//	}
+			linkedElementsAndLinks.putAll(this.getAllLinkedSentences(element));
 		}
 		return linkedElementsAndLinks;
 	}
-
-//	private Map<DecisionKnowledgeElement, Link> getAllLinkedSentences(DecisionKnowledgeElement element) {
-//		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
-//
-//		if (element == null) {
-//			return linkedElementsAndLinks;
-//		}
-//		// If uncommented: This will remove all children of sentences in the Treeviewer
-//		// on Decision KnowledgePage. This will increase the performance significantly.
-//		// Full DK is loaded on button klick in Treant
-////		 if(element instanceof Sentence && !((Sentence)element).isRelevant()) {
-////			 return linkedElementsAndLinks;
-////		 }
-//		String preIndex = getIdentifier(element);
-//		List<GenericLink> list = GenericLinkManager.getGenericLinksForElement(preIndex + element.getId(), false);
-//
-//		for (GenericLink currentGenericLink : list) {
-//			try {
-//
-//				DecisionKnowledgeElement source = currentGenericLink.getBothElements().get(0);
-//				DecisionKnowledgeElement target = currentGenericLink.getBothElements().get(1);
-//				if (!source.getProject().getProjectKey().equals(target.getProject().getProjectKey())) {
-//					continue;
-//				}
-//
-//				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source, target);
-//				linkBetweenSentenceAndOtherElement.setType("contain");
-//				if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
-//					GraphImpl.sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
-//					linkedElementsAndLinks.put(currentGenericLink.getOpposite(preIndex + element.getId()),
-//							linkBetweenSentenceAndOtherElement);
-//				}
-//			} catch (NullPointerException e) {
-//				// Link in the wrong direction
-//				continue;
-//			}
-//		}
-//		return linkedElementsAndLinks;
-//	}
 
 	private Map<DecisionKnowledgeElement, Link> getAllLinkedSentences(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
