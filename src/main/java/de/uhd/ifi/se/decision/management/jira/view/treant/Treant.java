@@ -62,7 +62,6 @@ public class Treant {
 			filter = new GraphFiltering(projectKey,query,user);
 			filter.produceResultsFromQuery();
 		}
-
 		this.graph = new GraphImpl(projectKey, elementKey, filter);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
 		this.setChart(new Chart());

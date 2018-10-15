@@ -5,33 +5,9 @@ var treantTree;
 
 var draggedElement;
 
-function buildTreant(elementKey, isInteractive) {
-	console.log("view.treant.js buildTreant");
-	var depthOfTree = getDepthOfTree();
-	getTreant(elementKey, depthOfTree, function(treeStructure) {
-		document.getElementById("treant-container").innerHTML = "";
-
-		isKnowledgeExtractedFromGit(getProjectKey(), function(isKnowledgeExtractedFromGit) {
-			if (isKnowledgeExtractedFromGit) {
-				getCommits(elementKey,
-						function(commits) {
-							if (commits.length > 0) {
-								treeStructure.nodeStructure.children = addCommits(commits,
-										treeStructure.nodeStructure.children);
-							}
-							// console.log(treeStructure);
-							createTreant(treeStructure, isInteractive);
-						});
-			} else {
-				createTreant(treeStructure, isInteractive);
-			}
-		});
-	});
-}
-
-function buildTreantFiltered(elementKey, isInteractive, searchTerm) {
+function buildTreant(elementKey, isInteractive, searchTerm) {
     var depthOfTree = getDepthOfTree();
-    getTreantFiltered(elementKey, depthOfTree, searchTerm, function(treeStructure) {
+    getTreant(elementKey, depthOfTree, searchTerm, function(treeStructure) {
         document.getElementById("treant-container").innerHTML = "";
 
         isKnowledgeExtractedFromGit(getProjectKey(), function(isKnowledgeExtractedFromGit) {

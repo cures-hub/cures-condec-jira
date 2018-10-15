@@ -6,7 +6,8 @@ function fillIssueModule() {
 function updateView() {
     console.log("view.issue.module updateView");
     var issueKey = getIssueKey();
-    buildTreant(issueKey, true);
+    var search = getURLsSearch();
+    buildTreant(issueKey, true, search);
 }
 
 function setAsRootElement(id) {	

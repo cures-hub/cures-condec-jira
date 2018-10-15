@@ -320,17 +320,17 @@ function linkGenericElements(targetId, sourceId, targetType, sourceType, callbac
 		}
 	});
 }
-
-function getTreant(elementKey, depthOfTree, callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?&elementKey=" + elementKey
-			+ "&depthOfTree=" + depthOfTree, function(error, treant) {
-		if (error === null) {
-			callback(treant);
-		} else {
-			showFlag("error", "Treant data could not be received. Error-Code: " + error);
-		}
-	});
-}
+//
+// function getTreant(elementKey, depthOfTree, callback) {
+// 	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?&elementKey=" + elementKey
+// 			+ "&depthOfTree=" + depthOfTree, function(error, treant) {
+// 		if (error === null) {
+// 			callback(treant);
+// 		} else {
+// 			showFlag("error", "Treant data could not be received. Error-Code: " + error);
+// 		}
+// 	});
+// }
 
 function getTreeViewer(rootElementType, callback) {
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer.json?projectKey=" + getProjectKey()
@@ -343,8 +343,8 @@ function getTreeViewer(rootElementType, callback) {
 	});
 }
 
-function getTreantFiltered(elementKey, depthOfTree, searchTerm, callback) {
-    getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreantFiltered.json?&elementKey=" + elementKey
+function getTreant(elementKey, depthOfTree, searchTerm, callback) {
+    getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?&elementKey=" + elementKey
         + "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm, function(error, treant) {
         if (error === null) {
             callback(treant);
