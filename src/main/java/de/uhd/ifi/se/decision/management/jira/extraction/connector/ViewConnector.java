@@ -42,7 +42,7 @@ public class ViewConnector {
 		}
 	}
 
-	public void startClassification() {
+	private void startClassification() {
 		ClassificationManagerForCommentSentences classifier = new ClassificationManagerForCommentSentences();
 		this.commentsList = classifier.classifySentenceBinary(commentsList);
 		this.commentsList = classifier.classifySentenceFineGrained(commentsList);
