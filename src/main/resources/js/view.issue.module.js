@@ -27,8 +27,8 @@ var contextMenuActionsTreant = {
 		"delete" : contextMenuDeleteAction
 	};
 
-function downloadJsonAsTable() {
-    console.log("downloadME");
+function downloadMyJsonAsTable(){
+  console.log("downloadME");
     //get jql from url
     var userInputJql = window.location.search;
     var baseLink = window.location.origin + "/jira/browse/";
@@ -45,6 +45,7 @@ function downloadJsonAsTable() {
         }
     });
 }
+
 
 function downloadJsonAsTree() {
     //get jql from url

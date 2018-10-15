@@ -12,7 +12,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:issu
         e.preventDefault();
         e.stopPropagation();
         console.log("clickOnTable")
-        downloadJsonAsTable();
+        downloadMyJsonAsTable();
 
         return false;
     });
