@@ -35,7 +35,7 @@ function downloadMyJsonAsTable(){
     console.log("projectId", getProjectKey());
     var elementsWithLinkArray = [];
     getElementsByQuery(userInputJql, function (response) {
-        console.log("byQuery", response)
+        console.log("byQuery", response);
         if (response) {
             response.map(function (el) {
                 el["link"] = baseLink + el["key"];
@@ -54,10 +54,10 @@ function downloadJsonAsTree() {
     console.log("projectId", getProjectKey());
 
     getElementsByQuery(userInputJql, function (response) {
-        console.log("byQuery", response)
-        var elementsWithLinkArray = [];
+        console.log("byQuery", response);
+        let elementsWithLinkArray = [];
         if (response) {
-            var myPromise = new Promise(function (resolve, reject) {
+            let myPromise = new Promise(function (resolve, reject) {
                 response.map(function (topNode,i,arr) {
                     //make new request foreach
 
@@ -80,7 +80,7 @@ function downloadJsonAsTree() {
 
                             // });
                         // }
-                        elementsWithLinkArray.push(myNode)
+                        elementsWithLinkArray.push(myNode);
                         if (arr.length - 1 === i) {
                             // last one
                             resolve();
@@ -90,7 +90,7 @@ function downloadJsonAsTree() {
                 });
 
             });
-            console.log("complete Child Tree", elementsWithLinkArray)
+            console.log("complete Child Tree", elementsWithLinkArray);
             myPromise.then(function () {
                 download("jsonAsTree", JSON.stringify(elementsWithLinkArray));
             })
@@ -154,9 +154,9 @@ function handleParentObject(oParent) {
 }
 
 function download(filename, text) {
-    console.log("filename", filename)
+    console.log("filename", filename);
 
-    var element = document.createElement('a');
+    const element = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
     element.setAttribute('download', filename);
 
