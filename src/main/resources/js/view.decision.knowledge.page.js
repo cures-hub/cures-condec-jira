@@ -52,7 +52,7 @@ function updateView(nodeId) {
 }
 
 function setAsRootElement(nodeId) {
-	updateView(nodeId);
+	selectNodeInTreeViewer(nodeId);
 }
 
 function openIssue(nodeId) {

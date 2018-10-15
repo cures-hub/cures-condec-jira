@@ -110,6 +110,18 @@
 			<artifactId>gson</artifactId>
 			<version>2.2.2-atlassian-1</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.api-client/google-api-client -->
+		<dependency>
+		    <groupId>com.google.api-client</groupId>
+		    <artifactId>google-api-client</artifactId>
+		    <version>1.14.1-beta</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+		<dependency>
+		    <groupId>com.google.guava</groupId>
+		    <artifactId>guava</artifactId>
+		    <version>12.0.1</version>
+		</dependency>
 		<!-- Logger -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -226,7 +238,7 @@
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20180130</version>
+			<version>20180813</version>
 		</dependency>
 	</dependencies>
 	<build>

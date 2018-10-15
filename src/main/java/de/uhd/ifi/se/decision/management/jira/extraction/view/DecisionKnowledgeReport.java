@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -20,13 +21,16 @@ import com.atlassian.jira.util.ParameterUtils;
 import com.atlassian.jira.web.action.ProjectActionSupport;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
-
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.rest.oauth.Command;
+import de.uhd.ifi.se.decision.management.jira.rest.oauth.JiraOAuthClient;
+import de.uhd.ifi.se.decision.management.jira.rest.oauth.OAuthClient;
+import de.uhd.ifi.se.decision.management.jira.rest.oauth.PropertiesClient;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 
 public class DecisionKnowledgeReport extends AbstractReport {
@@ -40,14 +44,14 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 	private SearchService searchService;
 
+	public static org.json.JSONObject restResponse;
+
 	public DecisionKnowledgeReport(ProjectManager projectManager) {
 		this.projectManager = projectManager;
 	}
 
 	public String generateReportHtml(ProjectActionSupport action, Map params) throws Exception {
-
 		Map<String, Object> velocityParams = createValues(action);
-
 		return descriptor.getHtml("view", velocityParams);
 	}
 
@@ -129,7 +133,9 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		for (Issue currentIssue : projectIssues.getIssues()) {
 			List<DecisionKnowledgeElement> elements = ActiveObjectsManager.getElementsForIssue(currentIssue.getId(),
 					projectKey);
-			result.add(elements.size());
+			if (elements.size() > 0) {
+				result.add(elements.size());
+			}
 		}
 		return result;
 	}
@@ -229,28 +235,21 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	}
 
 	private List<Integer> getNumberOfCommitsPerIssue(ApplicationUser loggedInUser) {
-		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
-
-		com.atlassian.query.Query query = jqlClauseBuilder.project(this.projectId).buildQuery();
-
-		SearchResults searchResults = null;
-		try {// Will be replaced by commit getting engine
-			searchResults = getSearchService().search(loggedInUser, query, PagerFilter.getUnlimitedFilter());
-		} catch (SearchException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
 		List<Integer> commentList = new ArrayList<>();
-		for (Issue issue : searchResults.getIssues()) {
-			int size = 0;
-			try {
-				size = ComponentAccessor.getCommentManager().getComments(issue).size();
-			} catch (NullPointerException e) {// ISsue does not exist
-				commentList.add(size);
+
+		SearchResults issues = getIssuesForThisProject(loggedInUser);
+		for (Issue issue : issues.getIssues()) {
+			request(issue.getKey());
+			if (restResponse != null) {
+				try {
+					JSONArray result = (JSONArray) restResponse.get("commits");
+					commentList.add(result.length());
+				} catch (Exception e) {
+					commentList.add(0);
+				}
 			}
-			commentList.add(size);
 		}
+
 		return commentList;
 	}
 
@@ -299,4 +298,25 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		this.projectId = ParameterUtils.getLongParam(params, "selectedProjectId");
 		this.rootType = KnowledgeType.getKnowledgeType(ParameterUtils.getStringParam(params, "rootType"));
 	}
+
+	private void request(String issueKey) {
+		if(issueKey == null) {
+			return;
+		}
+		PropertiesClient propertiesClient = null;
+		JiraOAuthClient jiraOAuthClient = null;
+
+		List<String> s2 = new ArrayList<String>();
+		try {
+			propertiesClient = new PropertiesClient();
+			jiraOAuthClient = new JiraOAuthClient(propertiesClient);
+		} catch (Exception e) {//Element not existing
+			return;
+		}
+
+		s2.add("http://cures.ifi.uni-heidelberg.de:8080/rest/gitplugin/1.0/issues/" + issueKey + "/commits");
+		new OAuthClient(propertiesClient, jiraOAuthClient).execute(Command.fromString("request"), s2);
+
+	}
+
 }
