@@ -1,9 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.rest.viewrest;
 import static org.junit.Assert.assertEquals;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +33,8 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 public class TestGetTreant extends TestSetUpWithIssues {
 	private EntityManager entityManager;
 
+	protected HttpServletRequest request;
+
 	private ViewRest viewRest;
 
     private static final String INVALID_PROJECTKEY = "Decision knowledge elements cannot be shown since project key is invalid.";
@@ -43,13 +47,14 @@ public class TestGetTreant extends TestSetUpWithIssues {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockDefaultUserManager());
+		request = new MockHttpServletRequest();
 	}
 
 	@Test
     public void testElementKeyNullDepthNull(){
         assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR)
                 .entity(ImmutableMap.of("error", INVALID_ELEMETNS))
-                .build().getEntity(), viewRest.getTreant(null,null).getEntity());
+                .build().getEntity(), viewRest.getTreant(null,null,"",null).getEntity());
     }
 
 
@@ -57,27 +62,29 @@ public class TestGetTreant extends TestSetUpWithIssues {
 	public void testElementNotExistsDepthNull() throws GenericEntityException {
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error", INVALID_PROJECTKEY))
-				.build().getEntity(), viewRest.getTreant("NotTEST", null).getEntity());
+				.build().getEntity(), viewRest.getTreant("NotTEST", null,"",null).getEntity());
 	}
 
 	@Test
 	public void testElementNotExistsDepthFilled() throws GenericEntityException {
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error", INVALID_PROJECTKEY))
-				.build().getEntity(), viewRest.getTreant("NotTEST", "3").getEntity());
+				.build().getEntity(), viewRest.getTreant("NotTEST", "3","",null).getEntity());
 	}
 
 	@Test
     public void testElementExistsDepthNaN(){
         assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR)
                 .entity(ImmutableMap.of("error", INVALID_DEPTH))
-                .build().getEntity(),viewRest.getTreant("TEST-12","test").getEntity());
+                .build().getEntity(),viewRest.getTreant("TEST-12","test","", null).getEntity());
     }
 
     @Test
     @NonTransactional
     public void testElemetExistsDepthNumber(){
-        assertEquals(200,viewRest.getTreant("TEST-12", "3").getStatus());
+		request.setAttribute("WithFails", false);
+		request.setAttribute("NoFails", true);
+        assertEquals(200,viewRest.getTreant("TEST-12", "3", "", request).getStatus());
     }
     
     
