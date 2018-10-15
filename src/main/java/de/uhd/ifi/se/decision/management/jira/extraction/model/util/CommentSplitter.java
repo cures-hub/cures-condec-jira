@@ -23,7 +23,7 @@ public class CommentSplitter {
 
 	public static final String[] manualRationalIconList = new String[] { "(!)", "(/)", "(?)", "(y)", "(n)" };
 	
-	public static final String[] allExcluded = (String[]) ArrayUtils.addAll(excludedTagList, manualRationaleTagList);
+	public static final String[] allExcluded = (String[]) ArrayUtils.addAll(ArrayUtils.addAll(excludedTagList, manualRationaleTagList),manualRationalIconList);
 
 	public CommentSplitter() {
 		this.setStartSubstringCount(new ArrayList<Integer>());
@@ -33,7 +33,6 @@ public class CommentSplitter {
 	public List<String> sliceCommentRecursionCommander(String body, String projectKey) {
 		List<String> firstSplit = searchBetweenTagsRecursive(body, "{quote}", "{quote}", new ArrayList<String>());
 
-		
 		firstSplit = searchForFurtherTags(firstSplit, "{noformat}", "{noformat}");
 		firstSplit = searchForFurtherTags(firstSplit, "{panel:", "{panel}");
 		firstSplit = searchForFurtherTags(firstSplit, "{code:", "{code}");

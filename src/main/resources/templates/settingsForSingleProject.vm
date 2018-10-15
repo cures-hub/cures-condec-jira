@@ -328,7 +328,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                     this.busy = true;
                     document.getElementById("requestToken").value = result["result"];
                    	var url =  jiraBaseUrl.value +	"/plugins/servlet/oauth/authorize?oauth_token="+result["result"];
-                   	Window.open(url,'_top');
                    	prompt("Please visit url, approve and copy secret",url);
                     this.busy = false;
                 });

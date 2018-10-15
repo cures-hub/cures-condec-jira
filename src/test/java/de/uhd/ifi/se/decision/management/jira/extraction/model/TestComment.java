@@ -325,7 +325,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testPropertiesOfIconElementedText() {
-		CommentImpl comment = getComment("(y) this is a icon pro text.  and this is a test Sentence.");
+		CommentImpl comment = getComment("(y) this is a icon pro text. \r\n and this is a test Sentence.");
 		assertEquals(2, comment.getSentences().size());
 		assertEquals(true, comment.getSentences().get(0).isRelevant());
 		assertEquals(false, comment.getSentences().get(0).isPlainText());

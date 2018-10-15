@@ -256,7 +256,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 			super.setDescription(body.substring(tagLength, body.length() - (1 + tagLength)));
 			super.setSummary(super.getDescription());
 		} else { 
-			super.setDescription(body.substring(3));
+			super.setDescription(body.replaceAll("\\(.*?\\)", ""));
 			super.setSummary(super.getDescription());
 		}
 	}
