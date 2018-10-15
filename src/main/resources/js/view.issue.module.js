@@ -55,9 +55,9 @@ function downloadJsonAsTree() {
 
     getElementsByQuery(userInputJql, function (response) {
         console.log("byQuery", response);
-        let elementsWithLinkArray = [];
+        var elementsWithLinkArray = [];
         if (response) {
-            let myPromise = new Promise(function (resolve, reject) {
+            var myPromise = new Promise(function (resolve, reject) {
                 response.map(function (topNode,i,arr) {
                     //make new request foreach
 
@@ -85,9 +85,9 @@ function downloadJsonAsTree() {
                             // last one
                             resolve();
                         }
-                    });
+                    })
 
-                });
+                })
 
             });
             console.log("complete Child Tree", elementsWithLinkArray);
@@ -156,7 +156,7 @@ function handleParentObject(oParent) {
 function download(filename, text) {
     console.log("filename", filename);
 
-    const element = document.createElement('a');
+    var element = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
     element.setAttribute('download', filename);
 
