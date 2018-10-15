@@ -27,10 +27,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjec
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.rest.oauth.Command;
-import de.uhd.ifi.se.decision.management.jira.rest.oauth.JiraOAuthClient;
-import de.uhd.ifi.se.decision.management.jira.rest.oauth.OAuthClient;
-import de.uhd.ifi.se.decision.management.jira.rest.oauth.PropertiesClient;
+import de.uhd.ifi.se.decision.management.jira.rest.AuthenticationRest;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 
 public class DecisionKnowledgeReport extends AbstractReport {
@@ -300,22 +297,13 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	}
 
 	private void request(String issueKey) {
-		if(issueKey == null) {
+		if (issueKey == null) {
 			return;
 		}
-		PropertiesClient propertiesClient = null;
-		JiraOAuthClient jiraOAuthClient = null;
-
-		List<String> s2 = new ArrayList<String>();
-		try {
-			propertiesClient = new PropertiesClient();
-			jiraOAuthClient = new JiraOAuthClient(propertiesClient);
-		} catch (Exception e) {//Element not existing
-			return;
-		}
-
-		s2.add("http://cures.ifi.uni-heidelberg.de:8080/rest/gitplugin/1.0/issues/" + issueKey + "/commits");
-		new OAuthClient(propertiesClient, jiraOAuthClient).execute(Command.fromString("request"), s2);
+		String projectKey = ComponentAccessor.getProjectManager().getProjectObj(this.projectId).getKey();
+		AuthenticationRest ar = new AuthenticationRest();
+		ar.startRequest("http://cures.ifi.uni-heidelberg.de:8080/rest/gitplugin/1.0/issues/" + issueKey + "/commits",
+				projectKey);
 
 	}
 

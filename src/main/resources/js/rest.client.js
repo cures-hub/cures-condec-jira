@@ -605,3 +605,29 @@ function isIconParsing(projectKey, callback) {
 				}
 			});
 }
+
+function getRequestToken(projectKey,baseURL,privateKey,consumerKey,callback){
+	getJSON(
+			AJS.contextPath() + "/rest/decisions/latest/auth/getRequestToken.json?projectKey="+projectKey+"&baseURL=" + baseURL+ "&privateKey="+privateKey+"&consumerKey="+consumerKey,
+			function(error, result) {
+				if (error === null) {
+					callback(result);
+				} else {
+					showFlag("error", "Icon boolean value for the project could not be received. Error-Code: " + error);
+				}
+			});
+}
+
+function getAccessToken(projectKey,baseURL,privateKey,consumerKey,requestToken,secret,callback){
+	getJSON(
+			AJS.contextPath() + "/rest/decisions/latest/auth/getAccessToken.json?projectKey="+projectKey+"&baseURL=" + baseURL+ "&privateKey="
+			+privateKey+"&consumerKey="+consumerKey+"&requestToken="+requestToken+"&secret="+secret,
+			function(error, result) {
+				if (error === null) {
+					callback(result);
+				} else {
+					showFlag("error", "Icon boolean value for the project could not be received. Error-Code: " + error);
+				}
+			});
+}
+

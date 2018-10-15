@@ -275,7 +275,7 @@
 		<label key="Decision Knowledge Report" />
 		<properties>
 			<property>
-				<key>projectId</key>
+				<key>selectedProjectId</key>
 				<name>Project</name>
 				<description>Selected project to display the report for.</description>
 				<type>filterprojectpicker</type>

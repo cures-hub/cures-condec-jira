@@ -277,6 +277,83 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                 window.onbeforeunload = null;
             });
 		</script>
+
+		<h2>Git Integration Authentication</h2>
+		 <div class="field-group">
+			<label for="jiraHome">Jira Home</label> <input type="text"
+				class="text long-field" id="jiraHome" value=$jiraHomeForGitAuthentication />
+			<div class="description">JIRA Home link</div>
+		</div>
+
+        <div class="field-group">
+			<label for="privateKey">Private Key</label> <input type="text"
+				class="text long-field" id="privateKey" value=$privateKeyForGitAuthentication />
+			<div class="description">Private key that matches the public key in Application links</div>
+		</div>
+        <div class="field-group">
+			<label for="consumerKey">Consumer Key</label> <input type="text"
+				class="text long-field" id="consumerKey" value=$consumerKeyForGitAuthentication />
+			<div class="description">Consumer key that matches the consumer key in Application links</div>
+			<input type="button" id="requestRequestToken" class="aui-button aui-button-primary" value="Request Request Token" />
+		</div>
+		
+		<div class="field-group">
+			<label for="requestToken">Request Token</label> <input type="text"
+				class="text long-field" id="requestToken" value=$requestTokenForGitAuthentication />
+			<div class="description">The Request token</div>
+		</div>
+		<div class="field-group">
+			<label for="gitIntegration-secret">Secret</label> <input type="text"
+				class="text long-field" id="gitIntegration-secret" value=$secretForGitAuthentication>
+			<div class="description">TheSecret</div>
+			<input type="button" id="requestAccessToken" class="aui-button aui-button-primary" value="Request Access Token" />
+		</div>
+
+		
+		<div class="field-group">
+			<label for="accessToken">Access Token</label> <input type="text"
+				class="text long-field" id="accessToken" value=$accessTokenForGitAuthentication />
+			<div class="description">The received access token</div>
+		</div>
+
+		
+		<script>
+			var requestTokenButton = document.getElementById('requestRequestToken');
+			requestTokenButton.addEventListener("click", function() {
+				var jiraBaseUrl = document.getElementById("jiraHome");
+				var jiraPrivateKey = document.getElementById("privateKey");
+				var consumerKey = document.getElementById("consumerKey");
+				var projectKey = getProjectKey();
+                getRequestToken(projectKey,jiraBaseUrl.value, jiraPrivateKey.value, consumerKey.value,function(result) {
+                    this.busy = true;
+                    document.getElementById("requestToken").value = result["result"];
+                   	var url =  jiraBaseUrl.value +	"/plugins/servlet/oauth/authorize?oauth_token="+result["result"];
+                   	Window.open(url,'_top');
+                   	prompt("Please visit url, approve and copy secret",url);
+                    this.busy = false;
+                });
+                window.onbeforeunload = null;
+            });
+
+            var accessTokenButton = document.getElementById('requestAccessToken');
+			accessTokenButton.addEventListener("click", function() {
+				var jiraBaseUrl = document.getElementById("jiraHome");
+				var jiraPrivateKey = document.getElementById("privateKey");
+				var consumerKey = document.getElementById("consumerKey");
+				var requestToken = document.getElementById("requestToken");
+				var projectKey = getProjectKey();
+				var secret = document.getElementById("gitIntegration-secret");
+
+                getAccessToken(projectKey,jiraBaseUrl.value, jiraPrivateKey.value, consumerKey.value,requestToken.value,secret.value, function(result){
+                	this.busy = true;
+                	console.log(result);
+                	document.getElementById("accessToken").value = result["result"];
+                	this.busy = false;
+                });
+                window.onbeforeunload = null;
+            });
+			
+		</script>
 	</form>
 </body>
 </html>

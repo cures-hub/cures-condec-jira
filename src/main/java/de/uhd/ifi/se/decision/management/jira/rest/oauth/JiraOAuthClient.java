@@ -4,9 +4,14 @@ import com.google.api.client.auth.oauth.OAuthAuthorizeTemporaryTokenUrl;
 import com.google.api.client.auth.oauth.OAuthCredentialsResponse;
 import com.google.api.client.auth.oauth.OAuthParameters;
 
+import de.uhd.ifi.se.decision.management.jira.rest.AuthenticationRest;
+
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static de.uhd.ifi.se.decision.management.jira.rest.oauth.PropertiesClient.JIRA_HOME;
 
@@ -15,6 +20,8 @@ public class JiraOAuthClient {
     public final String jiraBaseUrl;
     private final JiraOAuthTokenFactory oAuthGetAccessTokenFactory;
     private final String authorizationUrl;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(JiraOAuthClient.class);
 
     public JiraOAuthClient(PropertiesClient propertiesClient) throws Exception {
         jiraBaseUrl = propertiesClient.getPropertiesOrDefaults().get(JIRA_HOME);
@@ -36,12 +43,12 @@ public class JiraOAuthClient {
         JiraOAuthGetTemporaryToken temporaryToken = oAuthGetAccessTokenFactory.getTemporaryToken(consumerKey, privateKey);
         OAuthCredentialsResponse response = temporaryToken.execute();
 
-        System.out.println("Token:\t\t\t" + response.token);
-        System.out.println("Token secret:\t" + response.tokenSecret);
+        LOGGER.debug("Token:\t\t\t" + response.token);
+        LOGGER.debug("Token secret:\t" + response.tokenSecret);
 
         OAuthAuthorizeTemporaryTokenUrl authorizationURL = new OAuthAuthorizeTemporaryTokenUrl(authorizationUrl);
         authorizationURL.temporaryToken = response.token;
-        System.out.println("Retrieve request token. Go to " + authorizationURL.toString() + " to authorize it.");
+        LOGGER.debug("Retrieve request token. Go to " + authorizationURL.toString() + " to authorize it.");
 
         return response.token;
     }
@@ -62,7 +69,7 @@ public class JiraOAuthClient {
         JiraOAuthGetAccessToken oAuthAccessToken = oAuthGetAccessTokenFactory.getJiraOAuthGetAccessToken(tmpToken, secret, consumerKey, privateKey);
         OAuthCredentialsResponse response = oAuthAccessToken.execute();
 
-        System.out.println("Access token:\t\t\t" + response.token);
+        LOGGER.debug("Access token:\t\t\t" + response.token);
         return response.token;
     }
 

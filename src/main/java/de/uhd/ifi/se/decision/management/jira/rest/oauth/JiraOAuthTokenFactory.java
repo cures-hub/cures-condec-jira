@@ -58,6 +58,7 @@ public class JiraOAuthTokenFactory {
     public JiraOAuthGetTemporaryToken getTemporaryToken(String consumerKey, String privateKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
         JiraOAuthGetTemporaryToken oAuthGetTemporaryToken = new JiraOAuthGetTemporaryToken(requestTokenUrl);
         oAuthGetTemporaryToken.consumerKey = consumerKey;
+        privateKey = privateKey.replaceFirst(" ", "+");
         oAuthGetTemporaryToken.signer = getOAuthRsaSigner(privateKey);
         oAuthGetTemporaryToken.transport = new ApacheHttpTransport();
         oAuthGetTemporaryToken.callback = "oob";
