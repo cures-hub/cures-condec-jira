@@ -320,17 +320,17 @@ function linkGenericElements(targetId, sourceId, targetType, sourceType, callbac
 		}
 	});
 }
-
-function getTreant(elementKey, depthOfTree, callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?&elementKey=" + elementKey
-			+ "&depthOfTree=" + depthOfTree, function(error, treant) {
-		if (error === null) {
-			callback(treant);
-		} else {
-			showFlag("error", "Treant data could not be received. Error-Code: " + error);
-		}
-	});
-}
+//
+// function getTreant(elementKey, depthOfTree, callback) {
+// 	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?&elementKey=" + elementKey
+// 			+ "&depthOfTree=" + depthOfTree, function(error, treant) {
+// 		if (error === null) {
+// 			callback(treant);
+// 		} else {
+// 			showFlag("error", "Treant data could not be received. Error-Code: " + error);
+// 		}
+// 	});
+// }
 
 function getTreeViewer(rootElementType, callback) {
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer.json?projectKey=" + getProjectKey()
@@ -341,6 +341,17 @@ function getTreeViewer(rootElementType, callback) {
 			showFlag("error", "Tree viewer data could not be received. Error-Code: " + error);
 		}
 	});
+}
+
+function getTreant(elementKey, depthOfTree, searchTerm, callback) {
+    getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?&elementKey=" + elementKey
+        + "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm, function(error, treant) {
+        if (error === null) {
+            callback(treant);
+        } else {
+            showFlag("error", "Filtered Treant data could not be received. Error-Code: " + error);
+        }
+    });
 }
 
 function getTreeViewerWithoutRootElement(showRelevant, callback) {
@@ -595,15 +606,15 @@ function setIconParsing(projectKey, isActivated) {
 }
 
 function isIconParsing(projectKey, callback) {
-	getJSON(
-			AJS.contextPath() + "/rest/decisions/latest/config/isIconParsing.json?projectKey=" + getProjectKey(),
-			function(error, isIconParsingBoolean) {
-				if (error === null) {
-					callback(isIconParsingBoolean);
-				} else {
-					showFlag("error", "Icon boolean value for the project could not be received. Error-Code: " + error);
-				}
-			});
+    getJSON(
+        AJS.contextPath() + "/rest/decisions/latest/config/isIconParsing.json?projectKey=" + getProjectKey(),
+        function (error, isIconParsingBoolean) {
+            if (error === null) {
+                callback(isIconParsingBoolean);
+            } else {
+                showFlag("error", "Icon boolean value for the project could not be received. Error-Code: " + error);
+            }
+        });
 }
 
 function getRequestToken(projectKey,baseURL,privateKey,consumerKey,callback){
@@ -631,3 +642,16 @@ function getAccessToken(projectKey,baseURL,privateKey,consumerKey,requestToken,s
 			});
 }
 
+function getElementsByQuery(sQuery, callback) {
+    getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getQuery.json?&projectKey=" + getProjectKey()
+        +"&URISearch="+sQuery, function (error, json) {
+    	console.log("getElement",sQuery)
+    	console.log("getElement error",error)
+    	console.log("getElement json",json)
+        if (error === null) {
+            callback(json);
+        } else {
+            showFlag("error", "Filtered Treant data could not be received. Error-Code: " + error);
+        }
+    });
+}
