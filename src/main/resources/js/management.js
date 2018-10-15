@@ -125,6 +125,7 @@ function showFlag(type, message) {
 	});
 }
 
+/* TODO refactor name or extend array prototype or wehere use replace with arrow function... */
 function remove(array, item) {
 	for (var i = array.length; i--;) {
 		if (array[i] === item) {
