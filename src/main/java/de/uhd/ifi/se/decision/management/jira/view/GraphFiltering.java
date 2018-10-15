@@ -44,14 +44,6 @@ public class GraphFiltering {
 		this.endDate = -1;
 	}
 
-	public void checkQueryType() {
-		if (this.query.indexOf("jql") == 1) {
-			this.queryIsJQL = true;
-		} else if (this.query.indexOf("filter") == 1) {
-			this.queryIsFilter = true;
-		}
-	}
-
 	private String cropQuery() {
 		String croppedQuery = "";
 		String[] split = this.query.split("§");

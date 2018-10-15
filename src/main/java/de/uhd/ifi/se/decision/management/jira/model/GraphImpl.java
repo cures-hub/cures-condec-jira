@@ -54,6 +54,9 @@ public class GraphImpl implements Graph {
 
 	public GraphImpl(String projectKey, String rootElementKey, GraphFiltering filter) {
 		this(projectKey);
+		if (rootElementKey.contains(":")) {
+			rootElementKey = rootElementKey.substring(0, rootElementKey.indexOf(":"));
+		}
 		this.rootElement = this.project.getPersistenceStrategy().getDecisionKnowledgeElement(rootElementKey);
 		if (filter != null) {
 			this.filteredElements = filter.getQueryResults();
