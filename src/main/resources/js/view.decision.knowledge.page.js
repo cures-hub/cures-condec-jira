@@ -47,7 +47,7 @@ function updateView(nodeId) {
 	}
 	jQueryConDec("#jstree").on("select_node.jstree", function(error, tree) {
 		var node = tree.node.data;
-		buildTreant(node.key, true);
+		buildTreant(node.key, true,"");
 	});
 }
 
