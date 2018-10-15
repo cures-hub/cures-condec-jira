@@ -606,13 +606,26 @@ function setIconParsing(projectKey, isActivated) {
 }
 
 function isIconParsing(projectKey, callback) {
-	getJSON(
-			AJS.contextPath() + "/rest/decisions/latest/config/isIconParsing.json?projectKey=" + getProjectKey(),
-			function(error, isIconParsingBoolean) {
-				if (error === null) {
-					callback(isIconParsingBoolean);
-				} else {
-					showFlag("error", "Icon boolean value for the project could not be received. Error-Code: " + error);
-				}
-			});
+    getJSON(
+        AJS.contextPath() + "/rest/decisions/latest/config/isIconParsing.json?projectKey=" + getProjectKey(),
+        function (error, isIconParsingBoolean) {
+            if (error === null) {
+                callback(isIconParsingBoolean);
+            } else {
+                showFlag("error", "Icon boolean value for the project could not be received. Error-Code: " + error);
+            }
+        });
+}
+function getElementsByQuery(sQuery, callback) {
+    getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getQuery.json?&projectKey=" + getProjectKey()
+        +"&URISearch="+sQuery, function (error, json) {
+    	console.log("getElement",sQuery)
+    	console.log("getElement error",error)
+    	console.log("getElement json",json)
+        if (error === null) {
+            callback(json);
+        } else {
+            showFlag("error", "Filtered Treant data could not be received. Error-Code: " + error);
+        }
+    });
 }
