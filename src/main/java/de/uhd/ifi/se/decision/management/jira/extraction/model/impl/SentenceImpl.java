@@ -246,7 +246,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 						&& StringUtils.indexOfAny(body, CommentSplitter.manualRationalIconList) >= 0)) {
 			this.setKnowledgeTypeString(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey,true));
 			setManuallyTagged();
-			stripTagsFromBody(body.toLowerCase());
+			stripTagsFromBody(body);
 		}
 	}
 

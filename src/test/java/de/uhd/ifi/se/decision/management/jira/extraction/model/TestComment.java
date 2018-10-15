@@ -443,8 +443,9 @@ public class TestComment extends TestSetUpWithIssues {
 	public void testManuallyTaggingWithIconsAndTags() {
 		CommentImpl comment = getComment(
 				"(y) I like this idea \r\n mid sentence without sense [Con] But the other one not [/Con]");
+		System.out.println(comment.getTaggedBody(0));
 		assertTrue(comment.getTaggedBody(0).trim().equalsIgnoreCase(
-				"<span id=\"comment0\"><span class=\"sentence Pro\"  id  = ui1><span class =tag>[Pro]</span><span class = sentenceBody> i like this idea </span><span class =tag>[/Pro]</span></span><span class=\"sentence isNotRelevant\"  id  = ui2><span class =tag></span><span class = sentenceBody> mid sentence without sense </span><span class =tag></span></span><span class=\"sentence Con\"  id  = ui3><span class =tag>[Con]</span><span class = sentenceBody> but the other one not </span><span class =tag>[/Con]</span></span></span>\r\n"
+				"<span id=\"comment0\"><span class=\"sentence Pro\"  id  = ui1><span class =tag>[Pro]</span><span class = sentenceBody> I like this idea </span><span class =tag>[/Pro]</span></span><span class=\"sentence isNotRelevant\"  id  = ui2><span class =tag></span><span class = sentenceBody> mid sentence without sense </span><span class =tag></span></span><span class=\"sentence Con\"  id  = ui3><span class =tag>[Con]</span><span class = sentenceBody>[Con] But the other one not [/Con]</span><span class =tag>[/Con]</span></span></span>\r\n"
 						.trim()));
 
 	}
