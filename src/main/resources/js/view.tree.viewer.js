@@ -65,9 +65,10 @@ function getTreeViewerNodeById(nodeId) {
 */
 function selectNodeInTreeViewer(nodeId) {
 	console.log("view.tree.viewer.js selectNodeInTreeViewer");
-	jQueryConDec("#jstree").on("ready.jstree", function() {
+	jQueryConDec(document).ready(function() {
 		var treeViewer = jQueryConDec("#jstree").jstree(true);
 		if (treeViewer) {
+		    treeViewer.deselect_all(true);
 			treeViewer.select_node(nodeId);
 		}
 	});

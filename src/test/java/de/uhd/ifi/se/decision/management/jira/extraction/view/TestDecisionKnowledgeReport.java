@@ -1,13 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.view;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertNotNull;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.ProjectManager;
@@ -33,7 +33,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 	private EntityManager entityManager;
 
 	private DecisionKnowledgeReport report;
-
+	
 	@Before
 	public void setUp() {
 		initialization();
@@ -56,6 +56,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		assertNotNull(this.report);
 		assertNotNull(this.report.createValues(new MockProjectActionSupport()));
 	}
+
 
 	private class MockProjectActionSupport extends ProjectActionSupport {
 
