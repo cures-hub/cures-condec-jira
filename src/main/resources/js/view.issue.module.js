@@ -93,7 +93,7 @@ function downloadJsonAsTree() {
             console.log("complete Child Tree", elementsWithLinkArray);
             myPromise.then(function () {
                 download("jsonAsTree", JSON.stringify(elementsWithLinkArray));
-            })
+            });
         }
 
 
