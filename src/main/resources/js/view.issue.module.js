@@ -85,7 +85,7 @@ function downloadJsonAsTree() {
                             // last one
                             resolve();
                         }
-                    })
+                    });
 
                 })
 
