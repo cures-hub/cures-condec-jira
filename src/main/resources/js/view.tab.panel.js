@@ -1,5 +1,27 @@
-function hideSelectedDecisionElements(element) {
-	console.log("view.tab.panel.js hideSelectedDecisionElements");
+/*
+ This tab view controller does:
+ * toggle sentence types
+
+ Requires
+ * rest.client.js
+ 
+ Required by
+ * view.context.menu.js
+ * tabPanel.vm 
+ 
+ Referenced in HTML by
+ * tabPanel.vm 
+*/
+(function (global, restClient, i18n) {
+    var restClient = restClient
+    var i18n = i18n
+    
+    var ConDecIssueTab = function ConDecIssueTab() {
+    };
+    
+/* triggered by onchange event in tabPanel.vm */
+function toggleSelectedDecisionElements(element) {
+	console.log("view.tab.panel.js toggleSelectedDecisionElements");
 	var decisionElements = [ "Issue", "Decision", "Alternative", "Pro", "Con" ];
 	var sentences = document.getElementsByClassName(element.id);
 	if (element.id !== "Relevant") {
@@ -10,6 +32,7 @@ function hideSelectedDecisionElements(element) {
 	}
 }
 
+/* called by toggleSelectedDecisionElements */
 function setVisibility(sentences, checked) {
 	for (var i = sentences.length - 1; i >= 0; i--) {
 		if (checked) {
@@ -21,32 +44,58 @@ function setVisibility(sentences, checked) {
 	}
 }
 
+/* called by callDialog */
 function callDialogFromView() {
 	console.log("view.tab.panel.js callDialogFromView");
+    var textheader="Edit and Link Decision Knowledge in Issue Comments";
+    var textSaveButton = "Save";
+    
 	var submitButton = document.getElementById("dialog-submit-button");
-	submitButton.textContent = "Save";
+    if (submitButton)  {
+        console.log("view.tab.panel.js submit found") 
+        console.log(submitButton)
+    }
+	submitButton.textContent = textSaveButton;
 	submitButton.onclick = function() {
+        console.log("view.tab.panel.js submitButton.onclick");
+        console.log
 		AJS.dialog2("#dialog").hide();
 	};
 	setUpDialog();
 	var header = document.getElementById("dialog-header");
-	header.textContent = "Edit and Link Decision Knowledge in Issue Comments";
+    if (header) console.log("view.tab.panel.js header found") 
+	header.textContent = textheader;
+    console.log(textheader) 
+	console.log("view.tab.panel.js callDialogFromView END");
 }
 
-function callDialog2() {
-	console.log("view.tab.panel.js callDialog2");
+/* Triggered by tabPanel.vm */
+function callDialog() {
+	console.log("view.tab.panel.js callDialog");
 	callDialogFromView();
 	document.getElementById("dialog-content").innerHTML = "<div id =header2> </div> <div id =jstree> </div> ";
 	document.getElementById("header2").innerHTML = "<input class=text medium-long-field id=jstree-search-input placeholder=Search decision knowledge />";
 	document.getElementById("dialog").classList.remove("aui-dialog2-medium");
 	document.getElementById("dialog").classList.add("aui-dialog2-large");
-	buildTreeViewer2(document.getElementById("Relevant").checked);
+	buildTreeViewer(document.getElementById("Relevant").checked);
 }
 
-function buildTreeViewer2(showRelevant) {
-	console.log("view.tab.panel.js buildTreeViewer2");
+/*
+ TODO: Exhibit to view.content.menu.js
+ 
+ called by
+ * view.tab.panel.js
+    lines: 43
+ * view.context.menu.js
+    lines: 414,617
+*/
+function buildTreeViewer(showRelevant) {
+	console.log("view.tab.panel.js buildTreeViewer");
 
-	getTreeViewerWithoutRootElement(showRelevant, function(core) {
+    // rest.client.js::getTreeViewerWithoutRootElement
+	restClient.getTreeViewerWithoutRootElement(showRelevant, function(core) {
+        console.log("view.tab.panel.js getTreeViewerWithoutRootElement callback")
+        console.log(core)
 		jQueryConDec("#jstree").jstree({
 			"core" : core,
 			"plugins" : [ "dnd", "contextmenu", "wholerow", "search", "sort", "state" ],
@@ -62,11 +111,12 @@ function buildTreeViewer2(showRelevant) {
 			var searchString = $(this).val();
 			jQueryConDec("#jstree").jstree(true).search(searchString);
 		});
+        addDragAndDropSupportForTreeViewer();
+        document.getElementById("jstree").addEventListener("mousemove", bringContextMenuToFront);
 	});
-	addDragAndDropSupportForTreeViewer();
-	document.getElementById("jstree").addEventListener("mousemove", bringContextMenuToFront);
 }
 
+/* used by buildTreeViewer2 */
 function sortfunction(a, b) {
 	a1 = this.get_node(a);
 	b1 = this.get_node(b);
@@ -77,6 +127,7 @@ function sortfunction(a, b) {
 	}
 }
 
+/* used by buildTreeViewer2 */
 function customContextMenu(node) {
 	console.log("view.tab.panel.js customContextMenu");
 	if (node.li_attr['class'] === "sentence") {
@@ -86,12 +137,14 @@ function customContextMenu(node) {
 	}
 }
 
+/* used by buildTreeViewer2 */
 function bringContextMenuToFront() {
 	if (document.getElementsByClassName("vakata-context").length > 0) {
 		document.getElementsByClassName("vakata-context")[0].style.zIndex = 9999;
 	}
 }
 
+/* TODO: check is it not used ? */
 function createSentenceLinkToExistingElement(idOfExistingElement, idOfNewElement, knowledgeTypeOfChild) {
 	console.log("view.tab.panel.js createSentenceLinkToExistingElement");
 	switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
@@ -100,3 +153,16 @@ function createSentenceLinkToExistingElement(idOfExistingElement, idOfNewElement
 		});
 	});
 }
+
+// Expose methods:
+
+// for tabPanel.vm
+ConDecIssueTab.prototype.callDialog = callDialog
+// for tabPanel.vm
+ConDecIssueTab.prototype.toggleSelectedDecisionElements = toggleSelectedDecisionElements
+// for view.context.menu.js
+ConDecIssueTab.prototype.buildTreeViewer = buildTreeViewer
+    
+// initialize ConDecIssueTab
+global.conDecIssueTab= new ConDecIssueTab();
+})(window,window,null); //TODO: replace 2nd param with rest client object 

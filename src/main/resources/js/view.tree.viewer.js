@@ -1,3 +1,7 @@
+/**
+ called by
+ * view.decision.knowledge.page.js
+*/
 function buildTreeViewer() {
 	console.log("view.tree.viewer.js buildTreeViewer");
 	resetTreeViewer();
@@ -21,6 +25,9 @@ function buildTreeViewer() {
 	addDragAndDropSupportForTreeViewer();
 }
 
+/**
+ local usage only
+*/
 function customMenu(node) {
 	console.log("view.tree.viewer.js customMenu(node)");
 	if (node.li_attr['class'] == "sentence") {
@@ -30,6 +37,11 @@ function customMenu(node) {
 	}
 }
 
+/**
+ called by
+ * view.context.menu.js
+ * locally
+*/
 function resetTreeViewer() {
 	console.log("view.tree.viewer.js resetTreeViewer");
 	var treeViewer = jQueryConDec("#jstree").jstree(true);
@@ -37,7 +49,9 @@ function resetTreeViewer() {
 		treeViewer.destroy();
 	}
 }
-
+/**
+ local usage only
+*/
 function getTreeViewerNodeById(nodeId) {
 	console.log("view.tree.viewer.js getTreeViewerNodeById(nodeId)");
 	if (nodeId === "#") {
@@ -45,7 +59,10 @@ function getTreeViewerNodeById(nodeId) {
 	}
 	return jQueryConDec("#jstree").jstree(true).get_node(nodeId);
 }
-
+/**
+ called by 
+ * view.decision.knowledge.js
+*/
 function selectNodeInTreeViewer(nodeId) {
 	console.log("view.tree.viewer.js selectNodeInTreeViewer");
 	jQueryConDec("#jstree").on("ready.jstree", function() {
@@ -55,7 +72,11 @@ function selectNodeInTreeViewer(nodeId) {
 		}
 	});
 }
-
+/**
+ called by 
+ * view.tab.panel.js
+ * locally
+*/ 
 function addDragAndDropSupportForTreeViewer() {
 	console.log("view.tree.viewer.js addDragAndDropSupportForTreeViewer");
 	jQueryConDec("#jstree").on('move_node.jstree', function(object, nodeInContext) {
