@@ -267,6 +267,14 @@
 		<supports-ajax-load>true</supports-ajax-load>
 	</issue-tabpanel>
 
+	<web-item key="my_links_link2"
+			  name="Link on My Links Main Section"
+			  section="operations-operations"
+			 >
+		<label>Download as Table</label>
+		<link linkId="downloadAsTable"/>
+	</web-item>
+
 	<!-- Decision Knowledge Report -->
 	<report name="Decision Knowledge Report" key="decision-knowledge-report"
 		class="de.uhd.ifi.se.decision.management.jira.extraction.view.DecisionKnowledgeReport">
