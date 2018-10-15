@@ -253,7 +253,7 @@ function changeKnowledgeTypeOfSentence(id, type, callback) {
 		"id" : id,
 		"type" : type
 	};
-	var argument = type;
+	var argument = "";//Important to be empty!
 	if (type.includes("Pro") || type.includes("Con")) {
 		argument = type;
 	}
