@@ -41,10 +41,8 @@ public class GraphImpl implements Graph {
 	public GraphImpl(String projectKey, String rootElementKey) {
 		this(projectKey);
 		// Support element keys that represent sentences in comments
-		if (rootElementKey.contains(":")) {
-			rootElementKey = rootElementKey.substring(0, rootElementKey.indexOf(":"));
-		}
-		this.rootElement = this.project.getPersistenceStrategy().getDecisionKnowledgeElement(rootElementKey);
+		String cleanRootElementKey = getRootElementKeyWithoutDoubleDot(rootElementKey);
+		this.rootElement = this.project.getPersistenceStrategy().getDecisionKnowledgeElement(cleanRootElementKey);
 	}
 
 	public GraphImpl(DecisionKnowledgeElement rootElement) {
@@ -54,10 +52,8 @@ public class GraphImpl implements Graph {
 
 	public GraphImpl(String projectKey, String rootElementKey, GraphFiltering filter) {
 		this(projectKey);
-		if (rootElementKey.contains(":")) {
-			rootElementKey = rootElementKey.substring(0, rootElementKey.indexOf(":"));
-		}
-		this.rootElement = this.project.getPersistenceStrategy().getDecisionKnowledgeElement(rootElementKey);
+		String cleanRootElementKey = getRootElementKeyWithoutDoubleDot(rootElementKey);
+		this.rootElement = this.project.getPersistenceStrategy().getDecisionKnowledgeElement(cleanRootElementKey);
 		if (filter != null) {
 			this.filteredElements = filter.getQueryResults();
 			this.isFilteredByTime = filter.isQueryContainsCreationDate();
@@ -80,6 +76,16 @@ public class GraphImpl implements Graph {
 			linkedElementsAndLinks.putAll(this.getAllLinkedSentences(element));
 		}
 		return linkedElementsAndLinks;
+	}
+
+	private String getRootElementKeyWithoutDoubleDot(String rootElementKey){
+		String returnedRootElementKey;
+		if (rootElementKey.contains(":")) {
+			returnedRootElementKey = rootElementKey.substring(0, rootElementKey.indexOf(":"));
+		} else {
+			returnedRootElementKey = rootElementKey;
+		}
+		return returnedRootElementKey;
 	}
 
 	private Map<DecisionKnowledgeElement, Link> getAllLinkedSentences(DecisionKnowledgeElement element) {
