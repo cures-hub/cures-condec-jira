@@ -7,5 +7,24 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:issu
 </div>
 #include("templates/dialog.vm")
 <script>
+
+    AJS.$(document).off().on("click","#downloadAsTable",function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("clickOnTable")
+        downloadJsonAsTable();
+
+        return false;
+    });
+    AJS.$(document).on("click","#downloadAsTree",function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("clickOnTree")
+
+        downloadJsonAsTree();
+
+        return false;
+    });
+
 	fillIssueModule();
 </script>
