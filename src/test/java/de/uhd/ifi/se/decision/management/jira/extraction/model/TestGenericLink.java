@@ -72,6 +72,25 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 	@Test
 	@NonTransactional
+	public void testSecondConstructor() {
+		GenericLinkImpl link = new GenericLinkImpl("i1337","i1338");
+		assertTrue(link.getIdOfDestinationElement().equals("i1337"));
+		assertTrue(link.getIdOfSourceElement().equals("i1338"));
+	}
+	
+	@Test
+	@NonTransactional
+	public void testThirdConstructor() {
+		GenericLinkImpl link = new GenericLinkImpl("i1337","i1338","contain");
+		assertTrue(link.getIdOfDestinationElement().equals("i1337"));
+		assertTrue(link.getIdOfSourceElement().equals("i1338"));
+		assertTrue(link.getType().equals("contain"));
+		
+	}
+	
+	
+	@Test
+	@NonTransactional
 	public void testSimpleLink() {
 
 		GenericLinkImpl link = new GenericLinkImpl();
@@ -149,5 +168,47 @@ public class TestGenericLink extends TestSetUpWithIssues {
 		assertNotNull(link.getBothElements().get(0));
 		assertNotNull(link.getBothElements().get(1));
 	}
+	
+	
+
+	@Test
+	@NonTransactional
+	public void testIsValidWithValidLink() {
+
+		GenericLinkImpl link = new GenericLinkImpl();
+
+		link.setIdOfSourceElement("i" + issue.getId());
+		link.setIdOfDestinationElement("i" + issue.getId());
+		GenericLinkManager.insertGenericLink(link, null);
+
+		assertTrue(link.isValid());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testIsValidWithInValidLink() {
+
+		GenericLinkImpl link = new GenericLinkImpl();
+
+		link.setIdOfSourceElement("i" + 1233);
+		link.setIdOfDestinationElement("i" + 13423);
+		GenericLinkManager.insertGenericLink(link, null);
+
+		assertFalse(link.isValid());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testToStringToBeatCodeCoverage() {
+
+		GenericLinkImpl link = new GenericLinkImpl();
+
+		link.setIdOfSourceElement("i" + 1233);
+		link.setIdOfDestinationElement("i" + 13423);
+		
+		assertTrue(link.toString().equals("i1233 to i13423"));
+	}
+
+	
 
 }
