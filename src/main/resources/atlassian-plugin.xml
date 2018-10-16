@@ -267,11 +267,11 @@
 		<supports-ajax-load>true</supports-ajax-load>
 	</issue-tabpanel>
 
-	<web-item key="my_links_link2"
-			  name="Link on My Links Main Section"
-			  section="operations-operations"
-			 >
-		<label>Download as Table</label>
+	<!-- Decision Knowledge Export Functions -->
+	<web-item key="export-as-table-item"
+			  name="Menu Item for Decision Knowledge Export as Table"
+			  section="operations-operations">
+		<label>Export as Table</label>
 		<link linkId="downloadAsTable"/>
 	</web-item>
 
