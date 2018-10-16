@@ -104,7 +104,6 @@ public class GraphImpl implements Graph {
 				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source, target);
 				linkBetweenSentenceAndOtherElement.setType("contain");
 				if (isFilteredByTime) {
-					System.out.println("Is Filtered: " + isFilteredByTime + "; Starttime: " + startTime + "; Endtime: " + endTime);
 					if (startTime <= 0) {
 						if (((Sentence) source).getCreated().getTime() < this.endTime) {
 							DecisionKnowledgeElement toLink = currentGenericLink.getOpposite(preIndex + element.getId());
@@ -251,21 +250,21 @@ public class GraphImpl implements Graph {
 						linkedElementsAndLinks.put(inwardElement, link);
 					} else {
 						linkIds.add(link.getId());
-						List<DecisionKnowledgeElement> transitiveLinkedElements = getInwardTransitiveLinkedNodes(inwardElement);
-						for (DecisionKnowledgeElement element1 : transitiveLinkedElements) {
-							Link transitiveLink = new LinkImpl(element, element1);
-							transitiveLink.setType(link.getType());
-							linkIds.add(transitiveLink.getId());
-							linkedElementsAndLinks.put(element1, transitiveLink);
-						}
-						Map<DecisionKnowledgeElement,Link> sentencesLinkedToFilteredElement = getAllLinkedSentences(inwardElement);
-						Set<DecisionKnowledgeElement> sentences = sentencesLinkedToFilteredElement.keySet();
-						for (DecisionKnowledgeElement sentence : sentences) {
-							Link transitiveLink = new LinkImpl(element,sentence);
-							transitiveLink.setType("contains");
-							linkIds.add(transitiveLink.getId());
-							linkedElementsAndLinks.put(sentence,transitiveLink);
-						}
+//						List<DecisionKnowledgeElement> transitiveLinkedElements = getInwardTransitiveLinkedNodes(inwardElement);
+//						for (DecisionKnowledgeElement element1 : transitiveLinkedElements) {
+//							Link transitiveLink = new LinkImpl(element, element1);
+//							transitiveLink.setType(link.getType());
+//							linkIds.add(transitiveLink.getId());
+//							linkedElementsAndLinks.put(element1, transitiveLink);
+//						}
+//						Map<DecisionKnowledgeElement,Link> sentencesLinkedToFilteredElement = getAllLinkedSentences(inwardElement);
+//						Set<DecisionKnowledgeElement> sentences = sentencesLinkedToFilteredElement.keySet();
+//						for (DecisionKnowledgeElement sentence : sentences) {
+//							Link transitiveLink = new LinkImpl(element,sentence);
+//							transitiveLink.setType("contains");
+//							linkIds.add(transitiveLink.getId());
+//							linkedElementsAndLinks.put(sentence,transitiveLink);
+//						}
 					}
 				}
 			}
@@ -315,21 +314,21 @@ public class GraphImpl implements Graph {
 						linkedElementsAndLinks.put(outwardElement, link);
 					} else {
 						linkIds.add(link.getId());
-						List<DecisionKnowledgeElement> transitiveLinkedElements = getOutwardTransitiveLinkedNodes(outwardElement);
-						for (DecisionKnowledgeElement element1 : transitiveLinkedElements) {
-							Link transitiveLink = new LinkImpl(element1, element);
-							transitiveLink.setType(link.getType());
-							linkIds.add(transitiveLink.getId());
-							linkedElementsAndLinks.put(element1, transitiveLink);
-						}
-						Map<DecisionKnowledgeElement,Link> sentencesLinkedToFilteredElement = getAllLinkedSentences(outwardElement);
-						Set<DecisionKnowledgeElement> sentences = sentencesLinkedToFilteredElement.keySet();
-						for (DecisionKnowledgeElement sentence : sentences) {
-							Link transitiveLink = new LinkImpl(element,sentence);
-							transitiveLink.setType("contains");
-							linkIds.add(transitiveLink.getId());
-							linkedElementsAndLinks.put(sentence,transitiveLink);
-						}
+//						List<DecisionKnowledgeElement> transitiveLinkedElements = getOutwardTransitiveLinkedNodes(outwardElement);
+//						for (DecisionKnowledgeElement element1 : transitiveLinkedElements) {
+//							Link transitiveLink = new LinkImpl(element1, element);
+//							transitiveLink.setType(link.getType());
+//							linkIds.add(transitiveLink.getId());
+//							linkedElementsAndLinks.put(element1, transitiveLink);
+//						}
+//						Map<DecisionKnowledgeElement,Link> sentencesLinkedToFilteredElement = getAllLinkedSentences(outwardElement);
+//						Set<DecisionKnowledgeElement> sentences = sentencesLinkedToFilteredElement.keySet();
+//						for (DecisionKnowledgeElement sentence : sentences) {
+//							Link transitiveLink = new LinkImpl(element,sentence);
+//							transitiveLink.setType("contains");
+//							linkIds.add(transitiveLink.getId());
+//							linkedElementsAndLinks.put(sentence,transitiveLink);
+//						}
 					}
 				}
 			}
@@ -380,4 +379,5 @@ public class GraphImpl implements Graph {
 	public void setProject(DecisionKnowledgeProject project) {
 		this.project = project;
 	}
+
 }

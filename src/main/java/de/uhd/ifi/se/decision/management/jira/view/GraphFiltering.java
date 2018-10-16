@@ -209,7 +209,6 @@ public class GraphFiltering {
 
 	private long findEndtime(long currentDate, String time) {
 		long endTime = 0;
-		System.out.println(time);
 		if (time.matches("(\\d\\d\\d\\d-\\d\\d-\\d\\d)")) {
 			String[] split = time.split("-");
 			try {
@@ -222,18 +221,14 @@ public class GraphFiltering {
 				LOGGER.error("The Date is not in Format yyyy-mm-dd");
 			}
 		} else if (time.matches("-\\d+(.)+")) {
-			System.out.println("Time detected");
 			long factor;
 			String clearedTime = time.replaceAll("\\s(.)+","");
 			char factorLetter = clearedTime.charAt(clearedTime.length() - 1);
-			System.out.println(factorLetter);
 			factor = getTimeFactor(factorLetter);
-			System.out.println(factor);
 			long queryTime = currentDate + 1;
 			String queryTimeString = time.replaceAll("\\D+", "");
 			try {
 				queryTime = Long.parseLong(queryTimeString);
-				System.out.println(queryTime);
 			} catch (NumberFormatException e) {
 				LOGGER.error("No valid time given");
 			}
