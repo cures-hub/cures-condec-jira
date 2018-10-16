@@ -11,15 +11,15 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:issu
     AJS.$(document).off().on("click","#downloadAsTable",function(e){
         e.preventDefault();
         e.stopPropagation();
-        console.log("clickOnTable")
-        downloadJsonAsTable();
+        console.log("clickOnTable");
+        downloadMyJsonAsTable();
 
         return false;
     });
     AJS.$(document).on("click","#downloadAsTree",function(e){
         e.preventDefault();
         e.stopPropagation();
-        console.log("clickOnTree")
+        console.log("clickOnTree");
 
         downloadJsonAsTree();
 
