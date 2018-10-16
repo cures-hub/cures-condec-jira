@@ -1,9 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+
+import static org.junit.Assert.*;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -208,4 +208,82 @@ public class TestConfigPersistence extends TestSetUpWithIssues {
 	public void testSetKnowledgeTypeEnabledKeyFilledTypeFilledEnabledTrue(){
 		ConfigPersistence.setKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString(), true);
 	}
+	
+	@Test
+	public void testSetIconParsingTrue() {
+		ConfigPersistence.setIconParsing("TEST", true);
+	}	
+	
+	@Test
+	public void testSetIconParsingFalse() {
+		ConfigPersistence.setIconParsing("TEST", false);
+	}
+	
+	
+	@Test
+	public void testIsIconParsingTrue() {
+		assertNotNull(ConfigPersistence.isIconParsingEnabled("TEST"));
+	}
+	
+	@Test
+	public void testSetAccessToken() {
+		ConfigPersistence.setAccessToken("new Token");
+	}
+	
+	@Test
+	public void testGetAccessToken() {
+		assertNotNull(ConfigPersistence.getAccessToken());
+	}	
+
+	@Test
+	public void testSetRequestToken() {
+		ConfigPersistence.setRequestToken("new Token");
+	}
+	
+	@Test
+	public void testGetRequestToken() {
+		assertNotNull(ConfigPersistence.getRequestToken());
+	}
+
+	@Test
+	public void testSetOauthJiraHome() {
+		ConfigPersistence.setOauthJiraHome("new Token");
+	}
+	
+	@Test
+	public void testGetOauthJiraHome() {
+		assertNotNull(ConfigPersistence.getOauthJiraHome());
+	}
+
+	@Test
+	public void testSetPrivateKey() {
+		ConfigPersistence.setPrivateKey("new Token");
+	}
+	
+	@Test
+	public void testGetPrivateKey() {
+		assertNotNull(ConfigPersistence.getPrivateKey());
+	}
+
+	@Test
+	public void testSetConsumerKey() {
+		ConfigPersistence.setConsumerKey("new Token");
+	}
+	
+	@Test
+	public void testGetConsumerKey() {
+		assertNotNull(ConfigPersistence.getConsumerKey());
+	}
+	
+	@Test
+	public void testSetSecretForOAuth() {
+		ConfigPersistence.setSecretForOAuth("new Token");
+	}
+	
+	@Test
+	public void testGetSecretForOAuth() {
+		assertNotNull(ConfigPersistence.getSecretForOAuth());
+	}
+	
+	
 }

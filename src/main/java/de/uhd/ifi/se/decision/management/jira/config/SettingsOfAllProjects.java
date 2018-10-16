@@ -15,6 +15,7 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
 /**
  * Renders the administration page to change the plug-in configuration of all
@@ -51,6 +52,14 @@ public class SettingsOfAllProjects extends AbstractSettingsServlet {
 		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
 		velocityParameters.put("requestUrl", request.getRequestURL());
 		velocityParameters.put("projectsMap", configMap);
+		
+		velocityParameters.put("jiraHomeForGitAuthentication", ConfigPersistence.getOauthJiraHome());
+		velocityParameters.put("requestTokenForGitAuthentication", ConfigPersistence.getRequestToken());
+		velocityParameters.put("privateKeyForGitAuthentication", ConfigPersistence.getPrivateKey());
+		velocityParameters.put("consumerKeyForGitAuthentication", ConfigPersistence.getConsumerKey());
+		velocityParameters.put("secretForGitAuthentication", ConfigPersistence.getSecretForOAuth());
+		velocityParameters.put("accessTokenForGitAuthentication", ConfigPersistence.getAccessToken());
+		
 		return velocityParameters;
 	}
 
