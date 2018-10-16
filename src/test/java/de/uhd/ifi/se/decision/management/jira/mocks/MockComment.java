@@ -15,18 +15,23 @@ public class MockComment implements Comment{
 	
 	private Issue issue;
 	
+	private Long issueID;
+	
 	private ApplicationUser user;
 	
 	public MockComment(Issue issue) {
+		super();
 		this.body = "This is a comment for test purposes";
 		this.author = "Marc";
 		this.issue = issue;
 	}
 
 	public MockComment(Issue issue2, ApplicationUser applicationUser, String s) {
+		super();
 		this.issue = issue2;
 		this.user = applicationUser;
 		this.body = s;
+		this.issueID = issue2.getId();
 	}
 
 	@Override
@@ -128,6 +133,14 @@ public class MockComment implements Comment{
 	public Date getUpdated() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public long getIssueID() {
+		return issueID;
+	}
+
+	public void setIssueID(long issueID) {
+		this.issueID = issueID;
 	}
 
 }

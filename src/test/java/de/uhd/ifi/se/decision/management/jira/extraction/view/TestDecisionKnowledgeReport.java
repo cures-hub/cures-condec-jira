@@ -61,7 +61,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		assertNotNull(this.report.createValues(new MockProjectActionSupport()));
 	}
 	
-	@Test (expected = NullPointerException.class)
+	@Test (expected = Exception.class)
 	@NonTransactional
 	public void testWithObjects() {
 		TestComment tc = new TestComment();
