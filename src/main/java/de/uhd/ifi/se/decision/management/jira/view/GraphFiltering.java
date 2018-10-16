@@ -31,6 +31,7 @@ public class GraphFiltering {
 	private List<DecisionKnowledgeElement> queryResults;
 	private long startDate;
 	private long endDate;
+	private SearchService searchService;
 
 	public GraphFiltering(String projectKey, String query, ApplicationUser user) {
 		this.query = query;
@@ -189,9 +190,10 @@ public class GraphFiltering {
 			} catch (NumberFormatException e) {
 				LOGGER.error("The Date is not in Format yyyy-mm-dd");
 			}
-		} else if (time.matches("(\\-\\d+(.))")) {
+		} else if (time.matches("(-\\d+(.))")) {
 			long factor = 0;
-			char factorLetter = time.charAt(time.length() - 1);
+			String clearedTime = time.replaceAll("\\s(.)+","");
+			char factorLetter = clearedTime.charAt(clearedTime.length() - 1);
 			factor = getTimeFactor(factorLetter);
 			long queryTime = currentDate + 1;
 			String queryTimeString = time.replaceAll("\\D+", "");
@@ -207,6 +209,7 @@ public class GraphFiltering {
 
 	private long findEndtime(long currentDate, String time) {
 		long endTime = 0;
+		System.out.println(time);
 		if (time.matches("(\\d\\d\\d\\d-\\d\\d-\\d\\d)")) {
 			String[] split = time.split("-");
 			try {
@@ -218,14 +221,19 @@ public class GraphFiltering {
 			} catch (NumberFormatException e) {
 				LOGGER.error("The Date is not in Format yyyy-mm-dd");
 			}
-		} else if (time.matches("(\\-\\d+(.))")) {
+		} else if (time.matches("-\\d+(.)+")) {
+			System.out.println("Time detected");
 			long factor;
-			char factorLetter = time.charAt(time.length() - 1);
+			String clearedTime = time.replaceAll("\\s(.)+","");
+			char factorLetter = clearedTime.charAt(clearedTime.length() - 1);
+			System.out.println(factorLetter);
 			factor = getTimeFactor(factorLetter);
+			System.out.println(factor);
 			long queryTime = currentDate + 1;
 			String queryTimeString = time.replaceAll("\\D+", "");
 			try {
 				queryTime = Long.parseLong(queryTimeString);
+				System.out.println(queryTime);
 			} catch (NumberFormatException e) {
 				LOGGER.error("No valid time given");
 			}
@@ -282,7 +290,7 @@ public class GraphFiltering {
 		}
 
 		final SearchService.ParseResult parseResult =
-				ComponentAccessor.getComponentOfType(SearchService.class).parseQuery(this.user, finalQuery);
+				getSearchService().parseQuery(this.user, finalQuery);
 
 		if (parseResult.isValid())
 
@@ -294,7 +302,7 @@ public class GraphFiltering {
 				findDatesInQuery(finalQuery);
 			}
 			try {
-				final SearchResults results = ComponentAccessor.getComponentOfType(SearchService.class).search(
+				final SearchResults results = getSearchService().search(
 						this.user, parseResult.getQuery(), PagerFilter.getUnlimitedFilter());
 				resultingIssues = results.getIssues();
 
@@ -342,5 +350,16 @@ public class GraphFiltering {
 
 	public long getEndDate() {
 		return endDate;
+	}
+
+	public SearchService getSearchService() {
+		if (this.searchService == null) {
+			return searchService = ComponentAccessor.getComponentOfType(SearchService.class);
+		}
+		return this.searchService;
+	}
+
+	public void setSearchService(SearchService searchService) {
+		this.searchService = searchService;
 	}
 }
