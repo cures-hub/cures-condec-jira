@@ -34,10 +34,12 @@ public class OAuthClient {
 
 	private final PropertiesClient propertiesClient;
 	private final JiraOAuthClient jiraOAuthClient;
+	private JSONObject result;
 
 	public OAuthClient(PropertiesClient propertiesClient, JiraOAuthClient jiraOAuthClient) {
 		this.propertiesClient = propertiesClient;
 		this.jiraOAuthClient = jiraOAuthClient;
+		this.setResult(new JSONObject());
 
 		actionHandlers = ImmutableMap.<Command, Function<List<String>, Optional<Exception>>>builder()
 				.put(Command.REQUEST_TOKEN, this::handleGetRequestTokenAction)
@@ -147,8 +149,9 @@ public class OAuthClient {
 			response.getContent().close();
 			JSONObject jsonObj = new JSONObject(result);
 			DecisionKnowledgeReport.restResponse = jsonObj;
+			this.result = jsonObj;
 		} catch (Exception e) {
-			LOGGER.debug("Error while reading response:\n"+e.getMessage());
+			LOGGER.debug("Error while reading response:\n" + e.getMessage());
 		}
 	}
 
@@ -171,5 +174,13 @@ public class OAuthClient {
 			LOGGER.debug("Error while executing request:\n");
 		}
 		return r;
+	}
+
+	public JSONObject getResult() {
+		return result;
+	}
+
+	public void setResult(JSONObject result) {
+		this.result = result;
 	}
 }

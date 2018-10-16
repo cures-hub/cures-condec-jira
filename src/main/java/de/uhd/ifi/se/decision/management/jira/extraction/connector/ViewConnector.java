@@ -30,7 +30,7 @@ public class ViewConnector {
 
 	public ViewConnector(Issue issue, boolean doNotClassify) {
 		this(issue);
-		if (issue != null) {
+		if (issue != null && commentManager.getComments(issue) != null) {
 			for (com.atlassian.jira.issue.comments.Comment comment : commentManager.getComments(issue)) {
 				Comment comment2 = new CommentImpl(comment);
 				commentsList.add(comment2);
@@ -42,7 +42,7 @@ public class ViewConnector {
 		}
 	}
 
-	public void startClassification() {
+	private void startClassification() {
 		ClassificationManagerForCommentSentences classifier = new ClassificationManagerForCommentSentences();
 		this.commentsList = classifier.classifySentenceBinary(commentsList);
 		this.commentsList = classifier.classifySentenceFineGrained(commentsList);
@@ -60,6 +60,9 @@ public class ViewConnector {
 	// index for spanning index classes in html over single comments
 	public List<String> getAllTaggedComments() {
 		List<String> comments1 = new ArrayList<String>();
+		if(commentsList == null || commentsList.size() == 0) {
+			return comments1;
+		}
 		int index = 0;
 		for (Comment c : commentsList) {
 			index++;

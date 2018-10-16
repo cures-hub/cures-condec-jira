@@ -27,6 +27,7 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
 /**
  * Renders the administration page to change the plug-in configuration of a
@@ -99,6 +100,15 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("issueTypes", issueTypes);
 		velocityParameters.put("imageFolderUrl", ComponentGetter.getUrlOfImageFolder());
 		velocityParameters.put("requestUrl", request.getRequestURL());
+
+		velocityParameters.put("jiraHomeForGitAuthentication", ConfigPersistence.getOauthJiraHome(projectKey));
+		velocityParameters.put("requestTokenForGitAuthentication", ConfigPersistence.getRequestToken(projectKey));
+		velocityParameters.put("privateKeyForGitAuthentication", ConfigPersistence.getPrivateKey(projectKey));
+		velocityParameters.put("consumerKeyForGitAuthentication", ConfigPersistence.getConsumerKey(projectKey));
+		velocityParameters.put("secretForGitAuthentication", ConfigPersistence.getSecretForOAuth(projectKey));
+		velocityParameters.put("accessTokenForGitAuthentication", ConfigPersistence.getAccessToken(projectKey));
+		
+		
 		return velocityParameters;
 	}
 }

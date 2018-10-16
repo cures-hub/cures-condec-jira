@@ -252,6 +252,141 @@ public class ConfigPersistence {
 		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 		settings.put(pluginStorageKey + ".isIconParsing", Boolean.toString(isIconParsing));
 	}
+	
+	public static void setRequestToken(String projectKey, String requestToken) {
+		if (projectKey == null) {
+			return;
+		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey + ".requestToken",requestToken);
+	}
+	
+	
+	public static void setOauthJiraHome(String projectKey, String oauthJiraHome) {
+		if (projectKey == null) {
+			return;
+		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey + ".oauthJiraHome",oauthJiraHome);
+	}
+	
+	public static String getOauthJiraHome(String projectKey) {
+		Object oauthJiraHome = transactionTemplate.execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction() {
+				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+				return settings.get(pluginStorageKey + ".oauthJiraHome");
+			}
+		});
+		if(oauthJiraHome == null) {
+			return "";
+		}
+		return oauthJiraHome.toString();
+	}
+	
+	
+	public static String getRequestToken(String projectKey) {
+		Object requestToken = transactionTemplate.execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction() {
+				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+				return settings.get(pluginStorageKey + ".requestToken");
+			}
+		});
+		if(requestToken == null) {
+			return "";
+		}
+		return requestToken.toString();
+	}
+	
+	public static void setPrivateKey(String projectKey, String privateKey) {
+		if (projectKey == null) {
+			return;
+		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey + ".privateKey",privateKey);
+	}
+	
+	public static String getPrivateKey(String projectKey) {
+		Object privateKey = transactionTemplate.execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction() {
+				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+				return settings.get(pluginStorageKey + ".privateKey");
+			}
+		});
+		if(privateKey ==  null) {
+			return "";
+		}
+		return privateKey.toString();
+	}
+	
+	public static String getConsumerKey(String projectKey) {
+		Object consumerKey = transactionTemplate.execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction() {
+				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+				return settings.get(pluginStorageKey + ".consumerKey");
+			}
+		});
+		if(consumerKey == null) {
+			return "";
+		}
+		return consumerKey.toString();
+	}
+	
+	public static void setConsumerKey(String projectKey, String consumerKey) {
+		if (projectKey == null) {
+			return;
+		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey + ".consumerKey",consumerKey);
+	}
+	
+	public static void setSecretForOAuth(String projectKey, String gitAuthSecret) {
+		if (projectKey == null) {
+			return;
+		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey + ".gitAuthSecret",gitAuthSecret);
+	}
+	
+	public static String getSecretForOAuth(String projectKey) {
+		Object gitAuthSecret = transactionTemplate.execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction() {
+				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+				return settings.get(pluginStorageKey + ".gitAuthSecret");
+			}
+		});
+		if(gitAuthSecret == null) {
+			return "";
+		}
+		return gitAuthSecret.toString();
+	}
+	
+	public static void setAccessToken(String projectKey, String accessToken) {
+		if (projectKey == null) {
+			return;
+		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey + ".accessToken",accessToken);
+	}
+	
+	public static String getAccessToken(String projectKey) {
+		Object accessToken = transactionTemplate.execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction() {
+				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+				return settings.get(pluginStorageKey + ".accessToken");
+			}
+		});
+		if(accessToken == null) {
+			return "";
+		}
+		return accessToken.toString();
+	}
+	
 
 	// TODO Testing
 	public static void setWebhookType(String projectKey, String webhookType) {
@@ -276,4 +411,8 @@ public class ConfigPersistence {
 		}
 		return "";
 	}
+
+	
+
+	
 }

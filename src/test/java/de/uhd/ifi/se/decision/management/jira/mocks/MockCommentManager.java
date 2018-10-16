@@ -59,6 +59,7 @@ public class MockCommentManager implements CommentManager {
     		this.comments = new ArrayList<Comment>();
     	}
     	Comment c = new MockComment(issue,applicationUser,s);
+    	
     	this.comments.add(c);
         return c;
     }
