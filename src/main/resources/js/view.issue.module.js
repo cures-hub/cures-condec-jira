@@ -64,7 +64,7 @@ function callGetElementsByQueryAndDownload(jql, baseLink){
                 el["link"] = baseLink + el["key"];
                 elementsWithLinkArray.push(el);
             });
-            download("jsonAsTable", JSON.stringify(elementsWithLinkArray));
+            download("issueJson", JSON.stringify(elementsWithLinkArray));
         }
     });
 }
@@ -81,7 +81,7 @@ console.log("downloadClickedElements");
             }
         }else{
           var projectKey= getProjectKey();
-           issueKey= sPathName.split("/jira/projects/"+ projectKey +"/issues/")
+           issueKey= sPathName.split("/jira/projects/"+ projectKey +"/issues/")[1];
          }
             if(issueKey){
               var issueJql="?jql=issue="+ issueKey
@@ -97,8 +97,8 @@ console.log("downloadClickedElements");
                               res.map(function(element){
                                 element["link"] = baseLink + element["key"];
                                 elementsWithLinkArray.push(element);
-                              })
-                                download("jsonAsTable", JSON.stringify(elementsWithLinkArray));
+                              });
+                                download("jsonWithLinked", JSON.stringify(elementsWithLinkArray));
                               }
                               })
                           });
