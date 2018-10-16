@@ -37,40 +37,38 @@ public class TestAuthenticationRest extends TestSetUpWithIssues {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockDefaultUserManager());
-		
-		authenticationRest = new AuthenticationRest("TEST");
+
+		authenticationRest = new AuthenticationRest();
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
 		decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);
 		decisionKnowledgeElement.setId(3);
 		decisionKnowledgeElement.setProject("TEST");
 		decisionKnowledgeElement.setType(KnowledgeType.ISSUE);
-		
-		
-		
+
 	}
 
 	@Test
 	public void testConfigPersistanceProperties() {
-		ConfigPersistence.setAccessToken("TEST", "token");
-		assertNotNull(ConfigPersistence.getAccessToken("TEST"));
-		
-		ConfigPersistence.setOauthJiraHome("TEST", "token");
-		assertNotNull(ConfigPersistence.getOauthJiraHome("TEST"));
-		
-		ConfigPersistence.setConsumerKey("TEST", "token");
-		assertNotNull(ConfigPersistence.getConsumerKey("TEST"));
-		
-		ConfigPersistence.setRequestToken("TEST", "token");
-		assertNotNull(ConfigPersistence.getRequestToken("TEST"));
-		
-		ConfigPersistence.setSecretForOAuth("TEST", "token");
-		assertNotNull(ConfigPersistence.getSecretForOAuth("TEST"));
+		ConfigPersistence.setAccessToken("token");
+		assertNotNull(ConfigPersistence.getAccessToken());
+
+		ConfigPersistence.setOauthJiraHome("token");
+		assertNotNull(ConfigPersistence.getOauthJiraHome());
+
+		ConfigPersistence.setConsumerKey("token");
+		assertNotNull(ConfigPersistence.getConsumerKey());
+
+		ConfigPersistence.setRequestToken("token");
+		assertNotNull(ConfigPersistence.getRequestToken());
+
+		ConfigPersistence.setSecretForOAuth("token");
+		assertNotNull(ConfigPersistence.getSecretForOAuth());
 	}
-	
+
 	@Test
 	public void testAuthenticationInValidConsumerKey() {
-		String response = this.authenticationRest.retrieveRequestToken("aasf", privateKey, "TEST");
+		String response = this.authenticationRest.retrieveRequestToken("aasf", privateKey);
 		assertNotNull(response);
 		assertTrue(response.length() == 0);
 	}
@@ -78,7 +76,7 @@ public class TestAuthenticationRest extends TestSetUpWithIssues {
 	@Test
 	@Ignore
 	public void testAuthenticationValid() {
-		String response = this.authenticationRest.retrieveRequestToken(consumerKey, privateKey, "TEST");
+		String response = this.authenticationRest.retrieveRequestToken(consumerKey, privateKey);
 		assertNotNull(response);
 		assertTrue(response.length() > 0);
 	}
@@ -86,8 +84,7 @@ public class TestAuthenticationRest extends TestSetUpWithIssues {
 	@Test
 	public void testGetAccessTokenInvalid() {
 		String response = "1337";
-		String result = this.authenticationRest.retrieveAccessToken(response, "T3f777", consumerKey, privateKey,
-				"TEST");
+		String result = this.authenticationRest.retrieveAccessToken(response, "T3f777", consumerKey, privateKey);
 		assertTrue(result.length() == 0);
 	}
 
@@ -95,9 +92,7 @@ public class TestAuthenticationRest extends TestSetUpWithIssues {
 	@Ignore // Needs user interaction in browser. May mock this.
 	public void testGetAccessToken() {
 		String response = "GGDQuyv3sFfFRr7FjJm1NYRKgodBIy0k";
-		String result = this.authenticationRest.retrieveAccessToken(response, "T3f777", consumerKey, privateKey,
-				"TEST");
-		System.out.println(result); // s4vAMMhhV4FSagXm8cMjIWCiNWhOJhhW
+		String result = this.authenticationRest.retrieveAccessToken(response, "T3f777", consumerKey, privateKey);
 		assertNotNull(result);
 		assertTrue(result.length() > 0);
 	}
@@ -105,10 +100,8 @@ public class TestAuthenticationRest extends TestSetUpWithIssues {
 	@Test
 	@Ignore
 	public void testStartRequestWithInvalidCall() {
-		String result = this.authenticationRest.startRequest(
-				"guugle.com", "TEST");
+		String result = this.authenticationRest.startRequest("guugle.com");
 		assertNotNull(result);
 	}
-	
 
 }

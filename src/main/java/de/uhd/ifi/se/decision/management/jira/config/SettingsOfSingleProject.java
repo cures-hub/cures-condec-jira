@@ -1,9 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,7 +10,6 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.project.Project;
@@ -27,7 +24,6 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
 /**
  * Renders the administration page to change the plug-in configuration of a
@@ -100,14 +96,6 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("issueTypes", issueTypes);
 		velocityParameters.put("imageFolderUrl", ComponentGetter.getUrlOfImageFolder());
 		velocityParameters.put("requestUrl", request.getRequestURL());
-
-		velocityParameters.put("jiraHomeForGitAuthentication", ConfigPersistence.getOauthJiraHome(projectKey));
-		velocityParameters.put("requestTokenForGitAuthentication", ConfigPersistence.getRequestToken(projectKey));
-		velocityParameters.put("privateKeyForGitAuthentication", ConfigPersistence.getPrivateKey(projectKey));
-		velocityParameters.put("consumerKeyForGitAuthentication", ConfigPersistence.getConsumerKey(projectKey));
-		velocityParameters.put("secretForGitAuthentication", ConfigPersistence.getSecretForOAuth(projectKey));
-		velocityParameters.put("accessTokenForGitAuthentication", ConfigPersistence.getAccessToken(projectKey));
-		
 		
 		return velocityParameters;
 	}

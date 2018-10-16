@@ -1,11 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.rest.oauth;
 
 
-import com.atlassian.jira.component.ComponentAccessor;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
 import java.io.Closeable;
@@ -36,19 +34,19 @@ public class PropertiesClient {
     private final String fileUrl;
     private final String propFileName = "config.properties";
 
-    public PropertiesClient(String projectKey) throws Exception {
+    public PropertiesClient() throws Exception {
         fileUrl = "./" + propFileName;
-        initAuthPropertysFromConfigPersistance(projectKey);
+        initAuthPropertysFromConfigPersistance();
     }
     
-    private void  initAuthPropertysFromConfigPersistance(String projectKey) {
+    private void  initAuthPropertysFromConfigPersistance() {
     	PropertiesClient.DEFAULT_PROPERTY_VALUES = ImmutableMap.<String, String>builder()
-                .put(JIRA_HOME, ConfigPersistence.getOauthJiraHome(projectKey))
-                .put(CONSUMER_KEY, ConfigPersistence.getConsumerKey(projectKey))
-                .put(REQUEST_TOKEN,ConfigPersistence.getRequestToken(projectKey))
-                .put(SECRET,ConfigPersistence.getSecretForOAuth(projectKey))
-                .put(ACCESS_TOKEN,ConfigPersistence.getAccessToken(projectKey))
-                .put(PRIVATE_KEY, ConfigPersistence.getPrivateKey(projectKey)).build();
+                .put(JIRA_HOME, ConfigPersistence.getOauthJiraHome())
+                .put(CONSUMER_KEY, ConfigPersistence.getConsumerKey())
+                .put(REQUEST_TOKEN,ConfigPersistence.getRequestToken())
+                .put(SECRET,ConfigPersistence.getSecretForOAuth())
+                .put(ACCESS_TOKEN,ConfigPersistence.getAccessToken())
+                .put(PRIVATE_KEY, ConfigPersistence.getPrivateKey()).build();
     	
     }
 
