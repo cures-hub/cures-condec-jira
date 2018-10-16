@@ -67,6 +67,7 @@ public class TestViewConnector extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@NonTransactional
 	public void testConstructor() {
 		ViewConnector vc = new ViewConnector(issue);
 		assertNotNull(vc);
