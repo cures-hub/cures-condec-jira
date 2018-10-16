@@ -3,7 +3,10 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.exception.CreateException;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockSearchService;
+import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +33,7 @@ public class TestGraph extends TestSetUpWithIssues {
 	private EntityManager entityManager;
 	private Graph graph;
 	private DecisionKnowledgeElement element;
+	private GraphFiltering filter;
 
 	@Before
 	public void setUp() throws CreateException {
@@ -39,6 +43,8 @@ public class TestGraph extends TestSetUpWithIssues {
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
 		element.setProject(new DecisionKnowledgeProjectImpl("Test"));
 		graph = new GraphImpl(element.getProject().getProjectKey(), element.getKey());
+		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		filter = new GraphFiltering(element.getProject().getProjectKey(),"",user);
 	}
 
 	@Test
@@ -58,6 +64,15 @@ public class TestGraph extends TestSetUpWithIssues {
 		Graph graphRoot = new GraphImpl(element);
 		assertNotNull(graphRoot);
 	}
+
+	@Test
+	public void testFilterConstructor() {
+		SearchService searchService = new MockSearchService();
+		filter.setSearchService(searchService);
+		Graph graphRoot = new GraphImpl(element.getProject().getProjectKey(),element.getKey(),filter);
+		assertNotNull(graphRoot);
+	}
+
 
 	@Test
 	public void testGetLinkedElementsNull() {
