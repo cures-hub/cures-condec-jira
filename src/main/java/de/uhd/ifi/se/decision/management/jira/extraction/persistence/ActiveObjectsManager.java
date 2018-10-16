@@ -201,6 +201,9 @@ public class ActiveObjectsManager {
 						if (!sentenceEntity.getKnowledgeTypeString().equals("Pro")
 								&& !sentenceEntity.getKnowledgeTypeString().equals("Con")) {
 							sentenceEntity.setArgument("");
+							if(knowledgeType.equals(KnowledgeType.OTHER)){
+								sentenceEntity.setRelevant(false);
+							}
 						}
 						sentenceEntity.save();
 						return true;

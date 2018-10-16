@@ -226,19 +226,16 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response setSentenceIrrelevant(@Context HttpServletRequest request,
 			DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (decisionKnowledgeElement.getId() > 0) {
+		if (request != null && decisionKnowledgeElement != null && decisionKnowledgeElement.getId() >0) {
 			boolean isDeleted = ActiveObjectsManager.setSentenceIrrelevant(decisionKnowledgeElement.getId(), true);
 			if (isDeleted) {
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 			} else {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
-
 			}
-		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
-					.build();
 		}
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
 	}
 
 	@Path("/editSentenceBody")
@@ -253,32 +250,35 @@ public class KnowledgeRest {
 					.getElementFromAO(decisionKnowledgeElement.getId());
 			if ((databaseEntity.getEndSubstringCount()
 					- databaseEntity.getStartSubstringCount()) != decisionKnowledgeElement.getDescription().length()) {
-				// Get JIRA Comment instance
+				// Get JIRA Comment instance - Casting fails in unittesting with Mock
 				CommentManager cm = ComponentAccessor.getCommentManager();
 				MutableComment mc = (MutableComment) cm.getCommentById(databaseEntity.getCommentId());
 				// Generate sentence data generated for classification
-				String sentenceToSearch = CommentImpl.textRule(mc.getBody()
-						.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount()));
-				int index = mc.getBody().indexOf(sentenceToSearch);
+				if (mc.getBody().length() >= databaseEntity.getEndSubstringCount()) {
+					String sentenceToSearch = CommentImpl.textRule(mc.getBody()
+							.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount()));
+					int index = mc.getBody().indexOf(sentenceToSearch);
 
-				String tag = "";
-				if (databaseEntity.isTaggedManually()
-						&& StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) < 0) {
-					tag = "["
-							+ WordUtils.capitalize(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch,
-									databaseEntity.getProjectKey(), false))
-							+ "]";
-				} else if (StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) >= 0) {
-					index = index + 3; // add icon to text.
+					String newType = CommentSplitter.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch,
+							databaseEntity.getProjectKey(), false);
+					String tag = "";
+					if (databaseEntity.isTaggedManually()
+							&& StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) < 0
+							&& !newType.equalsIgnoreCase("other")) {
+						tag = "[" + WordUtils.capitalize(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(
+								sentenceToSearch, databaseEntity.getProjectKey(), false)) + "]";
+					} else if (StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) >= 0) {
+						index = index + 3; // add icon to text.
+					}
+					String first = mc.getBody().substring(0, index);
+					String second = tag + decisionKnowledgeElement.getDescription() + tag.replace("[", "[/");
+					String third = mc.getBody().substring(index + sentenceToSearch.length());
+
+					mc.setBody(first + second + third);
+					cm.update(mc, true);
+					ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(),
+							decisionKnowledgeElement.getId(), second);
 				}
-				String first = mc.getBody().substring(0, index);
-				String second = tag + decisionKnowledgeElement.getDescription() + tag.replace("[", "[/");
-				String third = mc.getBody().substring(index + sentenceToSearch.length());
-
-				mc.setBody(first + second + third);
-				cm.update(mc, true);
-				ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(),
-						decisionKnowledgeElement.getId(), second);
 			}
 
 			ActiveObjectsManager.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),
@@ -316,8 +316,7 @@ public class KnowledgeRest {
 				if (isDeleted) {
 					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 				} else {
-					return Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
+					return deleteGenericLink(projectKey, request, new GenericLinkImpl("i"+link.getSourceElement().getId(),"s"+ link.getDestinationElement().getId()));
 				}
 			}
 		} else {
@@ -331,7 +330,6 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response deleteGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			GenericLinkImpl link) {
-		System.out.println(link.toString());
 		if (projectKey != null && request != null && link != null) {
 			boolean isDeleted = GenericLinkManager.deleteGenericLink(link);
 			if (isDeleted) {

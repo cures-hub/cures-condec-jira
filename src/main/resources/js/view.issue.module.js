@@ -40,7 +40,6 @@ function downloadMyJsonAsTable(){
          myJql=userInputJql.split("?filter=")[1]
          }
     if(myJql){
-    console.log("projectId", getProjectKey());
    callGetElementsByQueryAndDownload(userInputJql, baseLink);
     }
     //get selected issue
@@ -55,10 +54,11 @@ function downloadMyJsonAsTable(){
             }
         }
     }
-}
+	}
 function callGetElementsByQueryAndDownload(jql, baseLink){
  var elementsWithLinkArray = [];
     getElementsByQuery(jql, function (response) {
+        console.log("byQuery", response);
         if (response) {
             response.map(function (el) {
                 el["link"] = baseLink + el["key"];
@@ -115,7 +115,7 @@ function downloadJsonAsTree() {
     console.log("projectId", getProjectKey());
 
     getElementsByQuery(userInputJql, function (response) {
-        console.log("byQuery", response)
+        console.log("byQuery", response);
         var elementsWithLinkArray = [];
         if (response) {
             var myPromise = new Promise(function (resolve, reject) {
@@ -141,20 +141,20 @@ function downloadJsonAsTree() {
 
                             // });
                         // }
-                        elementsWithLinkArray.push(myNode)
+                        elementsWithLinkArray.push(myNode);
                         if (arr.length - 1 === i) {
                             // last one
                             resolve();
                         }
                     });
 
-                });
+                })
 
             });
-            console.log("complete Child Tree", elementsWithLinkArray)
+            console.log("complete Child Tree", elementsWithLinkArray);
             myPromise.then(function () {
                 download("jsonAsTree", JSON.stringify(elementsWithLinkArray));
-            })
+            });
         }
 
 
@@ -215,7 +215,7 @@ function handleParentObject(oParent) {
 }
 
 function download(filename, text) {
-    console.log("filename", filename)
+    console.log("filename", filename);
 
     var element = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));

@@ -7,7 +7,6 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -23,16 +22,15 @@ public class GenericLinkImpl implements GenericLink {
 		this.type = "";
 	}
 
-	public GenericLinkImpl(LinkBetweenDifferentEntitiesEntity aoElement) {
-		this();
-		this.idOfDestinationElement = aoElement.getIdOfDestinationElement();
-		this.idOfSourceElement = aoElement.getIdOfSourceElement();
-	}
-
 	public GenericLinkImpl(String idOfDestinationElement, String idOfSourceElement) {
 		this();
 		this.idOfDestinationElement = idOfDestinationElement;
 		this.idOfSourceElement = idOfSourceElement;
+	}
+	
+	public GenericLinkImpl(String idOfDestinationElement, String idOfSourceElement, String type) {
+		this( idOfDestinationElement,idOfSourceElement);
+		setType(type);
 	}
 
 	@Override

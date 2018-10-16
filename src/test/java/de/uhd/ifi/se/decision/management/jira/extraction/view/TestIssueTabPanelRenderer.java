@@ -2,9 +2,11 @@ package de.uhd.ifi.se.decision.management.jira.extraction.view;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -18,13 +20,14 @@ import com.atlassian.jira.user.MockApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.extraction.view.IssueTabPanelRenderer;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import net.java.ao.EntityManager;
+import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
+@Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 public class TestIssueTabPanelRenderer extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
@@ -54,7 +57,8 @@ public class TestIssueTabPanelRenderer extends TestSetUpWithIssues {
 		ApplicationUser user = new MockApplicationUser("NoFails");
 		assertEquals(0, renderer.getActions(null, user).size(), 0.0);
 	}
-
+	
+	@Ignore
 	@Test(expected = NullPointerException.class)
 	public void testGetActionsFilledFilledTemplateNotProvided() {
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
@@ -91,4 +95,16 @@ public class TestIssueTabPanelRenderer extends TestSetUpWithIssues {
 		ApplicationUser user = new MockApplicationUser("NoFails");
 		assertTrue(renderer.showPanel(issue, user));
 	}
+	
+	@Test
+	public void testGetActionsFilledFilledWithoutComment() {
+		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
+		Issue issue = new MockIssue();
+		((MockIssue) issue).setProjectObject(project);
+		((MockIssue) issue).setKey("TEST-1");
+		ApplicationUser user = new MockApplicationUser("NoFails");
+		assertNotNull(renderer.getActions(issue, user));
+	}
+	
+
 }
