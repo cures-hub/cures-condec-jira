@@ -272,7 +272,15 @@
 			  section="operations-operations"
 			 >
 		<label>Download as Table</label>
-		<link linkId="downloadAsTable"/>
+		<link linkId="downloadAsSomeTable"/>
+	</web-item>
+
+	<web-item key="downloadLinkedElements"
+			  name="Link to download all linked elments"
+			  section="operations-operations"
+			 >
+		<label>Download linked Elements</label>
+		<link linkId="downloadLinkedElements"/>
 	</web-item>
 
 	<!-- Decision Knowledge Report -->

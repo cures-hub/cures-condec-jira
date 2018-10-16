@@ -28,14 +28,37 @@ var contextMenuActionsTreant = {
 	};
 
 function downloadMyJsonAsTable(){
-  console.log("downloadME");
     //get jql from url
     var userInputJql = window.location.search;
     var baseLink = window.location.origin + "/jira/browse/";
+    //check if jql is empty or non existent
+    var myJql;
+    if(userInputJql && userInputJql.indexOf("?jql=")>-1){
+         myJql =userInputJql.split("?jql=")[1];
+         }
+    if(userInputJql && userInputJql.indexOf("?filter=")>-1){
+         myJql=userInputJql.split("?filter=")[1]
+         }
+    if(myJql){
     console.log("projectId", getProjectKey());
-    var elementsWithLinkArray = [];
-    getElementsByQuery(userInputJql, function (response) {
-        console.log("byQuery", response)
+   callGetElementsByQueryAndDownload(userInputJql, baseLink);
+    }
+    //get selected issue
+    else{
+        var sPathName= window.location.pathname;
+        var issueKey;
+        if(sPathName && sPathName.indexOf("/jira/browse/")>-1){
+        issueKey= sPathName.split("/jira/browse/")[1];
+            if(issueKey){
+              var issueJql="?jql=issue="+ issueKey
+              callGetElementsByQueryAndDownload(issueJql, baseLink)
+            }
+        }
+    }
+}
+function callGetElementsByQueryAndDownload(jql, baseLink){
+ var elementsWithLinkArray = [];
+    getElementsByQuery(jql, function (response) {
         if (response) {
             response.map(function (el) {
                 el["link"] = baseLink + el["key"];
@@ -46,6 +69,44 @@ function downloadMyJsonAsTable(){
     });
 }
 
+function downloadMyLinkedElements(){
+console.log("downloadClickedElements");
+    var baseLink = window.location.origin + "/jira/browse/";
+    var sPathName= window.location.pathname;
+    var issueKey;
+        if(sPathName && sPathName.indexOf("/jira/browse/")>-1){
+          issueKey= sPathName.split("/jira/browse/")[1];
+            if(issueKey.indexOf("?")>-1){
+             issueKey=issueKey.split("?")[0];
+            }
+        }else{
+          var projectKey= getProjectKey();
+           issueKey= sPathName.split("/jira/projects/"+ projectKey +"/issues/")
+         }
+            if(issueKey){
+              var issueJql="?jql=issue="+ issueKey
+
+               var elementsWithLinkArray = [];
+                  getElementsByQuery(issueJql, function (response) {
+                      if (response) {
+                          response.map(function (el) {
+                              el["link"] = baseLink + el["key"];
+                              elementsWithLinkArray.push(el);
+                              getLinkedElements(el["id"],function(res){
+                              if(res){
+                              res.map(function(element){
+                                element["link"] = baseLink + element["key"];
+                                elementsWithLinkArray.push(element);
+                              })
+                                download("jsonAsTable", JSON.stringify(elementsWithLinkArray));
+                              }
+                              })
+                          });
+                      }
+                  });
+            }
+
+}
 
 function downloadJsonAsTree() {
     //get jql from url

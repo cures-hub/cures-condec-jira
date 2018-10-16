@@ -8,20 +8,20 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:issu
 #include("templates/dialog.vm")
 <script>
 
-    AJS.$(document).off().on("click","#downloadAsTable",function(e){
+    AJS.$(document).on("click","#downloadAsSomeTable",function(e){
         e.preventDefault();
         e.stopPropagation();
         console.log("clickOnTable")
+
         downloadMyJsonAsTable();
 
         return false;
     });
-    AJS.$(document).on("click","#downloadAsTree",function(e){
+    AJS.$(document).off().on("click","#downloadLinkedElements",function(e){
         e.preventDefault();
         e.stopPropagation();
-        console.log("clickOnTree")
-
-        downloadJsonAsTree();
+        console.log("click")
+        downloadMyLinkedElements();
 
         return false;
     });
