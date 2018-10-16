@@ -432,8 +432,11 @@ public class ActiveObjectsManager {
 							( databaseEntry.getKnowledgeTypeString().equals(rootElementType.toString())
 							|| (databaseEntry.getKnowledgeTypeString().length() == 3 // its either Pro or con
 									&& rootElementType.equals(KnowledgeType.ARGUMENT)))) {
-						//TODO: Write sentence constructor for db Element
-						list.add(new SentenceImpl(databaseEntry.getId()));
+						try {
+							list.add(new SentenceImpl(databaseEntry.getId()));
+						}catch(NullPointerException e) {
+							continue;
+						}
 					}
 				}
 				return null;
