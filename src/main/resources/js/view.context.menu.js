@@ -1,3 +1,27 @@
+// TODO create closure/object
+/**
+* This module is responsible for:
+* + showing a context menu upon left mouse click
+* ++ on a sentence or on an issue element
+* + building the context menu
+* ++ setUpDialogForCreateAction
+* ++ setUpDialogForLinkAction
+* ++ setUpDialogForEditAction
+* ++ setUpDialogForDeleteAction
+* ++ setUpDialogForDeleteLinkAction
+* ++ setUpDialogForEditSentenceAction
+
+* + opening a dialog
+* + pre-filling the dialog depending on action and element
+* + setting the click event for closing the dialog (too many times)
+*
+*
+*/
+
+// closure locals
+var conDecDialogCancelButtonOnClickSet = false;
+
+/* TODO replace labels with a i18n resource */
 var makeRootText = "Set as Root";
 var openIssueText = "Open JIRA Issue";
 var createKnowledgeElementText = "Add Element";
@@ -72,18 +96,25 @@ function setUpDialogForCreateAction(id) {
 	setUpDialog();
 }
 
+/*
+    attaches cancel button handler
+    shows(creates) the dialog
+    TODO: attach should be moved out from this function
+    TODO: rename to maybe showDialog()
+*/
 function setUpDialog() {
-	document.getElementById("dialog-cancel-button").addEventListener("click", function() {
-		closeDialog();
-	});
+	console.log("view.context.menu.js setUpDialog");
 	AJS.dialog2("#dialog").show();
-	AJS.dialog2("#dialog").hide();
-	AJS.dialog2("#dialog").show();
-	AJS.dialog2("#dialog").hide();
-	AJS.dialog2("#dialog").show();
+    if (!conDecDialogCancelButtonOnClickSet) {
+        document.getElementById("dialog-cancel-button").addEventListener("click", function() {
+            closeDialog();
+        });
+        conDecDialogCancelButtonOnClickSet = true;
+    }
 }
 
 function setHeaderText(headerText) {
+	console.log("view.context.menu.js headerText");
 	var header = document.getElementById("dialog-header");
 	header.textContent = headerText;
 }
@@ -323,6 +354,7 @@ var contextMenuOpenJiraIssueAction = {
 	}
 };
 
+/* used by view.tree.viewer.js */
 var contextMenuActions = {
 	"create" : contextMenuCreateAction,
 	"edit" : contextMenuEditAction,
@@ -388,18 +420,12 @@ var changeKnowledgeTypeAction = {
 	}
 };
 
+/* TODO: refactor name. "changeKnowledgeTypetTo" ? */ 
 function changeKtTo(id, position, type) {
 	changeKnowledgeTypeOfSentence(id, type, function() {
 		if (document.getElementById("Relevant") !== null) {
 			resetTreeViewer();
-			buildTreeViewer2(document.getElementById("Relevant").checked);
-			// getTreeViewerWithoutRootElement(document.getElementById("Relevant").checked,
-			// function(core) {
-			// var indexOfNode =
-			// getArrayId(core.data,getSelectedTreeViewerNodeId(position));
-			// var url = getIconUrl(core,indexOfNode,type);
-			// jQueryConDec("#jstree").jstree(true).set_icon(getSelectedTreeViewerNode(position),url);
-			// });
+			conDecIssueTab.buildTreeViewer(document.getElementById("Relevant").checked);
 			var idOfUiElement = "ui" + id;
 			replaceTagsFromContent(idOfUiElement, type);
 			document.getElementById(idOfUiElement).classList.remove("Decision", "Issue", "Alternative", "Pro", "Con",
@@ -407,11 +433,11 @@ function changeKtTo(id, position, type) {
 			document.getElementById(idOfUiElement).classList.add(type);
 		} else {
 			updateIssueModuleView();
-
 		}
 	});
 }
 
+// TODO: replace with shorter arrow function?
 function getArrayId(array, id) {
 	for (var i = array.length - 1; i >= 0; i--) {
 		if (array[i].id === id) {
@@ -431,6 +457,7 @@ function getIconUrl(core, indexOfNode, type) {
 	return url;
 }
 
+// local usage only
 function replaceTagsFromContent(idOfUiElement, type) {
 	if (!type.toLowerCase().includes("other") && type.length > 1) {
 		document.getElementById(idOfUiElement).getElementsByClassName("tag")[0].textContent = "[" + type + "]";
@@ -441,6 +468,7 @@ function replaceTagsFromContent(idOfUiElement, type) {
 	}
 }
 
+// local usage only 
 var contextMenuDeleteSentenceLinkAction = {
 	// label for Tree Viewer, name for Treant context menu
 	"label" : "Delete link to parent",
@@ -465,6 +493,7 @@ var contextMenuDeleteSentenceLinkAction = {
 	}
 };
 
+// local usage only
 var contextMenuDeleteSentenceAction = {
 	// label for Tree Viewer, name for Treant context menu
 	"label" : "Irrelevant",
@@ -492,6 +521,7 @@ var contextMenuDeleteSentenceAction = {
 	}
 };
 
+// local usage only
 var contextMenuEditSentenceAction = {
 	// label for Tree Viewer, name for Treant context menu
 	"label" : editKnowledgeElementText,
@@ -515,6 +545,10 @@ var contextMenuEditSentenceAction = {
 	}
 };
 
+//local usage only
+/**
+ returns a node with given id from a node list
+*/
 function getNodeWithId(nodes, id) {
 	for (var i = nodes.length - 1; i >= 0; i--) {
 		if (nodes[i].id === id) {
@@ -523,13 +557,19 @@ function getNodeWithId(nodes, id) {
 	}
 }
 
+/**
+ fills HTML of dialog with contents
+*/
 function setUpDialogForEditSentenceAction(id, description, type) {
 	setUpDialog();
 	setHeaderText(editKnowledgeElementText);
 	setUpEditSentenceDialogView(description, type);
-	setUpEditSentenceDialog(id, description, type);
+	setUpEditSentenceDialog(id, description, type); // TODO: refactor function name, too similar to above code line
 }
 
+/**
+ fills HTML view-protion of dialog with contents
+*/
 function setUpEditSentenceDialogView(description, type) {
 	document.getElementById("dialog").style.zIndex = 9999;
 	document.getElementById("dialog-content").insertAdjacentHTML(
@@ -559,6 +599,9 @@ function setUpEditSentenceDialogView(description, type) {
 	}
 }
 
+/**
+ sets-up submit button
+*/
 function setUpEditSentenceDialog(id, description, type) {
 
 	var submitButton = document.getElementById("dialog-submit-button");
@@ -591,11 +634,15 @@ function setUpEditSentenceDialog(id, description, type) {
 	AJS.$("#form-select-type").auiSelect2();
 }
 
+/**
+ local
+ resets tree viewer and builds it again
+*/
 function refreshTreeViewer() {
 	console.log("view.context.menu.js refreshTreeViewer");
 	if (document.getElementById("Relevant") !== null) {
 		resetTreeViewer();
-		buildTreeViewer2(document.getElementById("Relevant").checked);
+		conDecIssueTab.buildTreeViewer(document.getElementById("Relevant").checked);
 	} else {
 		closeDialog();
 		updateView();
