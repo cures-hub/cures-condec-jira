@@ -14,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -367,6 +368,27 @@ public class KnowledgeRest {
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Creation of link failed."))
 					.build();
+		}
+	}
+
+	@Path("getAllElementsMatchingQuery")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON})
+	public Response getAllElementsMatchingQuery(@QueryParam("projectKey") String projectKey,
+												@QueryParam("query") String query, @Context HttpServletRequest request) {
+		if (projectKey != null && query != null && request != null) {
+			ApplicationUser user = getCurrentUser(request);
+			GraphFiltering filter = new GraphFiltering(projectKey, query, user);
+			filter.produceResultsFromQuery();
+			List<DecisionKnowledgeElement> queryResult = filter.getAllElementsMatchingQuery();
+			if (queryResult == null) {
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(ImmutableMap.of("error", "Getting Elements matching the query failed")).build();
+			}
+			return  Response.ok(queryResult).build();
+		} else {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"Getting Elements matching the query failed")).build();
 		}
 	}
 

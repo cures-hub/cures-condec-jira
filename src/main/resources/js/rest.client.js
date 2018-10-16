@@ -320,17 +320,6 @@ function linkGenericElements(targetId, sourceId, targetType, sourceType, callbac
 		}
 	});
 }
-//
-// function getTreant(elementKey, depthOfTree, callback) {
-// 	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?&elementKey=" + elementKey
-// 			+ "&depthOfTree=" + depthOfTree, function(error, treant) {
-// 		if (error === null) {
-// 			callback(treant);
-// 		} else {
-// 			showFlag("error", "Treant data could not be received. Error-Code: " + error);
-// 		}
-// 	});
-// }
 
 function getTreeViewer(rootElementType, callback) {
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer.json?projectKey=" + getProjectKey()
@@ -654,4 +643,15 @@ function getElementsByQuery(sQuery, callback) {
             showFlag("error", "Filtered Treant data could not be received. Error-Code: " + error);
         }
     });
+}
+
+function getAllElementsMatchingQuery(query, callback) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?projectKey="
+		+ getProjectKey() + "&query=" + query, function(error,result) {
+		if (error === null) {
+			callback(result);
+		} else {
+			showFlag("error", "Elements for given Query could not be received" + error)
+		}
+	})
 }
