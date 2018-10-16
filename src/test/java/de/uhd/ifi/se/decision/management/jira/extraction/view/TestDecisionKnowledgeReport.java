@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -56,15 +55,13 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 	}
 
 	@Test
-	@Ignore
 	@NonTransactional
 	public void testCreation() {
 		assertNotNull(this.report);
 		assertNotNull(this.report.createValues(new MockProjectActionSupport()));
 	}
 	
-	@Test (expected = NullPointerException.class)
-	@Ignore
+	@Test (expected = Exception.class)
 	@NonTransactional
 	public void testWithObjects() {
 		TestComment tc = new TestComment();

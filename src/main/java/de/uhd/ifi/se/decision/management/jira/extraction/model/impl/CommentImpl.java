@@ -41,6 +41,7 @@ public class CommentImpl implements Comment {
 		this.authorId = 0;
 		this.splitter = new CommentSplitter();
 		this.projectKey = " ";
+		this.issueId = 0L;
 	}
 
 	public CommentImpl(com.atlassian.jira.issue.comments.Comment comment) {

@@ -311,7 +311,9 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		}
 		IssueManager im = ComponentAccessor.getIssueManager();
 		MutableIssue mi = im.getIssueObject(this.getIssueId());
-		super.setKey(mi.getKey() + ":" + this.getId());
+		if(mi != null) {
+			super.setKey(mi.getKey() + ":" + this.getId());
+		}
 	}
 
 	@Override

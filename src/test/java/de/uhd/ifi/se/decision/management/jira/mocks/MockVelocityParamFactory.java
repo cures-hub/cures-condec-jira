@@ -20,11 +20,14 @@ public class MockVelocityParamFactory implements VelocityParamFactory {
 
     @Override
     public Map<String, Object> getDefaultVelocityParams() {
-        return null;
+    	 return new HashMap<String, Object>();
     }
 
     @Override
     public Map<String, Object> getDefaultVelocityParams(Map<String, Object> map) {
-        return null;
+    	if(map != null) {
+    		return map;
+    	}
+        return new HashMap<String, Object>();
     }
 }
