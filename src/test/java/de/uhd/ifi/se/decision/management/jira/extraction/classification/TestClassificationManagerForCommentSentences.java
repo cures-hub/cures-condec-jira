@@ -51,8 +51,14 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockDefaultUserManager());
 		classificationManager = new ClassificationManagerForCommentSentences();
+		FilteredClassifier binaryClassifier = new BinaryClassifierMock();
+		classificationManager.getClassifier().setBinaryClassifier(binaryClassifier);
+		LC lc = new FineGrainedClassifierMock(5);
+		classificationManager.getClassifier().setFineGrainedClassifier(lc);
+		
 		createLocalIssue();
 		addCommentsToIssue();
+		fillCommentList();
 	}
 
 	private void addCommentsToIssue() {
@@ -84,11 +90,6 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 	@Test
 	@NonTransactional
 	public void testBinaryClassification() throws Exception {
-		fillCommentList();
-
-		FilteredClassifier binaryClassifier = new BinaryClassifierMock();
-		classificationManager.getClassifier().setBinaryClassifier(binaryClassifier);
-
 		list = classificationManager.classifySentenceBinary(list);
 		assertNotNull(list.get(0).getSentences().get(0).isRelevant());
 		assertTrue(list.get(0).getSentences().get(0).isTagged());
@@ -97,16 +98,33 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 	@Test
 	@NonTransactional
 	public void testFineGrainedClassification() throws Exception {
-		fillCommentList();
-		FilteredClassifier binaryClassifier = new BinaryClassifierMock();
-		classificationManager.getClassifier().setBinaryClassifier(binaryClassifier);
-
-		LC lc = new FineGrainedClassifierMock(5);
-		classificationManager.getClassifier().setFineGrainedClassifier(lc);
-
 		list = classificationManager.classifySentenceBinary(list);
+		list = classificationManager.classifySentenceFineGrained(list);
 
 		assertNotNull(list.get(0).getSentences().get(0).isRelevant());
 		assertTrue(list.get(0).getSentences().get(0).isTagged());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testFineGrainedClassificationWithValidData() throws Exception {
+		list.get(0).getSentences().get(0).setRelevant(true);
+		list = classificationManager.classifySentenceFineGrained(list);
+
+		assertNotNull(list.get(0).getSentences().get(0).isRelevant());
+		assertTrue(list.get(0).getSentences().get(0).isTaggedFineGrained());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testFineGrainedClassificationWithValidDataInAO() throws Exception {
+		list.get(0).getSentences().get(0).setRelevant(true);
+		list.get(0).getSentences().get(0).setTaggedFineGrained(true);
+		list.get(0).getSentences().get(0).setBody("[issue]nonplaintext[/issue]");
+		
+		list = classificationManager.classifySentenceFineGrained(list);
+
+		assertNotNull(list.get(0).getSentences().get(0).isRelevant());
+		assertTrue(list.get(0).getSentences().get(0).isTaggedFineGrained());
 	}
 }

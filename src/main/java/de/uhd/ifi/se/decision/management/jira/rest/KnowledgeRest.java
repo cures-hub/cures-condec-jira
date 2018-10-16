@@ -316,8 +316,7 @@ public class KnowledgeRest {
 				if (isDeleted) {
 					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 				} else {
-					return Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
+					return deleteGenericLink(projectKey, request, new GenericLinkImpl("i"+link.getSourceElement().getId(),"s"+ link.getDestinationElement().getId()));
 				}
 			}
 		} else {

@@ -246,7 +246,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 						&& StringUtils.indexOfAny(body, CommentSplitter.manualRationalIconList) >= 0)) {
 			this.setKnowledgeTypeString(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey,true));
 			setManuallyTagged();
-			stripTagsFromBody(body.toLowerCase());
+			stripTagsFromBody(body);
 		}
 	}
 
@@ -256,7 +256,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 			super.setDescription(body.substring(tagLength, body.length() - (1 + tagLength)));
 			super.setSummary(super.getDescription());
 		} else { 
-			super.setDescription(body.substring(3));
+			super.setDescription(body.replaceAll("\\(.*?\\)", ""));
 			super.setSummary(super.getDescription());
 		}
 	}
