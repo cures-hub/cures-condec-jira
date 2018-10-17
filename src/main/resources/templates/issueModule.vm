@@ -6,22 +6,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:issu
 	<p>No Element has been selected</p>
 </div>
 #include("templates/dialog.vm")
-<script>
-
-    $(document).ready(function() {
-        console.log("issueSiteInit");
-        $("#downloadLinkedElements").click(function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            downloadMyLinkedElements();
-        });
-        $("#downloadAllAsTable").click(function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            downloadMyJsonAsTable();
-        });
-    });
-    
+<script>    
 	fillIssueModule();
-
 </script>

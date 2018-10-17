@@ -271,12 +271,7 @@
 	<web-item key="export-as-table-item"
 		name="Menu Item for Decision Knowledge Export as Table" section="operations-operations">
 		<label>Export as Table</label>
-		<link linkId="downloadAllAsTable" />
-	</web-item>
-	<web-item key="export-linked-elements-item"
-		name="Menu Item for Export of all Linked Elments as Table" section="operations-operations">
-		<label>Download linked Elements</label>
-		<link linkId="downloadLinkedElements" />
+		<link linkId="export-as-table-link" />
 	</web-item>
 
 	<!-- Decision Knowledge Report -->
