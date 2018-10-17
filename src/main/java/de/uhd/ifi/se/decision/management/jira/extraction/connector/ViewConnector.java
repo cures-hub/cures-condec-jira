@@ -26,7 +26,6 @@ public class ViewConnector {
 			this.setCurrentIssue(issue);
 			commentManager = ComponentAccessor.getCommentManager();
 			this.commentsList = new ArrayList<Comment>();
-			GenericLinkManager.clearInValidLinks();
 		}
 	}
 

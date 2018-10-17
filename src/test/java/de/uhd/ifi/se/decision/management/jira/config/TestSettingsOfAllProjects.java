@@ -167,6 +167,6 @@ public class TestSettingsOfAllProjects extends TestSetUpWithIssues {
 		Project project = new MockProject(1, "TEST");
 		((MockProject) project).setKey("TEST");
 		((MockProjectManager) projectManager).addProject(project);
-		assertEquals(2, servlet.getVelocityParameters(request).size());
+		assertEquals(8, servlet.getVelocityParameters(request).size());
 	}
 }

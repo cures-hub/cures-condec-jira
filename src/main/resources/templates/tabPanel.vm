@@ -7,25 +7,25 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:clas
 	<tbody>
 		<tr>
 			<td><input type="checkbox" id="Issue" name="feature"
-				value="scales" onchange='hideSelectedDecisionElements(this);' checked /> <label
+				value="scales" onchange='conDecIssueTab.toggleSelectedDecisionElements(this);' checked /> <label
 				for="Issue">Issue</label></td>
 			<td><input type="checkbox" id="Decision" name="feature"
-				value="scales" onchange='hideSelectedDecisionElements(this);' checked /> <label
+				value="scales" onchange='conDecIssueTab.toggleSelectedDecisionElements(this);' checked /> <label
 				for="Decision">Decision</label></td>
 			<td><input type="checkbox" id="Alternative" name="feature"
-				value="scales" onchange='hideSelectedDecisionElements(this);' checked /> <label
+				value="scales" onchange='conDecIssueTab.toggleSelectedDecisionElements(this);' checked /> <label
 				for="Alternative">Alternative</label></td>
 			<td><input type="checkbox" id="Pro" name="feature"
-				value="scales" onchange='hideSelectedDecisionElements(this);' checked /> <label
+				value="scales" onchange='conDecIssueTab.toggleSelectedDecisionElements(this);' checked /> <label
 				for="Pro">Pro</label></td>
 			<td><input type="checkbox" id="Con" name="feature"
-				value="scales" onchange='hideSelectedDecisionElements(this);' checked /> <label
+				value="scales" onchange='conDecIssueTab.toggleSelectedDecisionElements(this);' checked /> <label
 				for="Con">Con</label></td>
 			<td><input type="checkbox" id="Relevant" name="feature"
-				value="scales" onchange='hideSelectedDecisionElements(this);' checked /> <label
+				value="scales" onchange='conDecIssueTab.toggleSelectedDecisionElements(this);' checked /> <label
 				for="Relevant">Relevant</label></td>
 			<td><button id="link-button" class="aui-button aui-button-link"
-					onclick="callDialog2()">Link and Edit</button></td>
+					onclick="conDecIssueTab.callDialog()">Link and Edit</button></td>
 		</tr>
 	</tbody>
 </table>
@@ -54,4 +54,3 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:clas
 	</div> 
 </div>
 #end
-#include("templates/dialog.vm")

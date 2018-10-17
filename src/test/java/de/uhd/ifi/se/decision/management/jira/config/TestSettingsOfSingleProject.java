@@ -115,6 +115,6 @@ public class TestSettingsOfSingleProject extends TestSetUpWithIssues {
 	@Test
 	public void testGetVelocityParametersFilled() {
 		request.setAttribute("projectKey", "TEST");
-		assertEquals(11, servlet.getVelocityParameters(request).size());
+		assertEquals(5, servlet.getVelocityParameters(request).size());
 	}
 }
