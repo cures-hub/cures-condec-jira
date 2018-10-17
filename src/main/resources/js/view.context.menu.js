@@ -524,8 +524,8 @@ var contextMenuDeleteSentenceAction = {
 // local usage only
 var contextMenuEditSentenceAction = {
 	// label for Tree Viewer, name for Treant context menu
-	"label" : editKnowledgeElementText,
-	"name" : editKnowledgeElementText,
+	"label" : "Edit Sentence",
+	"name" : "Edit Sentence",
 	"action" : function(position) {
 		var id = getSelectedTreeViewerNodeId(position);
 		var node = getSelectedTreeViewerNode(position);
@@ -564,13 +564,17 @@ function setUpDialogForEditSentenceAction(id, description, type) {
 	setUpDialog();
 	setHeaderText(editKnowledgeElementText);
 	setUpEditSentenceDialogView(description, type);
-	setUpEditSentenceDialog(id, description, type); // TODO: refactor function name, too similar to above code line
+	setUpEditSentenceDialogContext(id, description, type); 
 }
 
 /**
  fills HTML view-protion of dialog with contents
 */
 function setUpEditSentenceDialogView(description, type) {
+
+	document.getElementById("dialog-content").innerHTML="";
+	document.getElementById("dialog").classList.remove("aui-dialog2-large");
+    document.getElementById("dialog").classList.add("aui-dialog2-medium");
 	document.getElementById("dialog").style.zIndex = 9999;
 	document.getElementById("dialog-content").insertAdjacentHTML(
 			"afterBegin",
@@ -602,10 +606,10 @@ function setUpEditSentenceDialogView(description, type) {
 /**
  sets-up submit button
 */
-function setUpEditSentenceDialog(id, description, type) {
+function setUpEditSentenceDialogContext(id, description, type) {
 
 	var submitButton = document.getElementById("dialog-submit-button");
-	submitButton.textContent = createKnowledgeElementText;
+	submitButton.textContent = "Change";
 	submitButton.onclick = function() {
 		var description = document.getElementById("form-input-description").value;
 		var type = $("select[name='form-select-type']").val().split("-")[0];
@@ -628,7 +632,7 @@ function setUpEditSentenceDialog(id, description, type) {
 						updateView();
 					}
 
-					// callDialog2();
+					 callDialog();
 				});
 	};
 	AJS.$("#form-select-type").auiSelect2();

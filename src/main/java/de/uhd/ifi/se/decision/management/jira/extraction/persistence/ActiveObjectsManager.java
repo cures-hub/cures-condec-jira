@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
@@ -356,7 +357,13 @@ public class ActiveObjectsManager {
 		});
 		return elements;
 	}
-
+/**
+ * Deletes all sentences in ao tables for this project and all links to and from sentences.
+ * Currently not used. 
+ * Useful for developing and system testing.
+ * @param projectKey the project to clear
+ */
+	@Deprecated
 	public static void clearSentenceDatabaseForProject(String projectKey) {
 		init();
 		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
@@ -374,8 +381,43 @@ public class ActiveObjectsManager {
 				return null;
 			}
 		});
-
 	}
+	
+	public static void cleanSentenceDatabaseForProject(String projectKey) {
+		init();
+		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+			@Override
+			public DecisionKnowledgeInCommentEntity doInTransaction() {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
+						DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
+					GenericLinkManager.deleteLinksForElementIfExisting("s" + databaseEntry.getId());
+					Sentence sentence;
+					try {
+						sentence = new SentenceImpl(databaseEntry); // Fast method, but may some values are null
+					} catch (NullPointerException e) {
+						sentence = new SentenceImpl(databaseEntry.getId());
+					}
+					boolean deleteFlag = false;
+					try {//Check if comment is existing and still long enough
+						com.atlassian.jira.issue.comments.Comment c = ComponentAccessor.getCommentManager().getCommentById(sentence.getCommentId());
+						if(c.getBody().trim().length() <1) {
+							deleteFlag = true;
+						}
+					}catch(Exception e) {
+						deleteFlag = true;
+					}
+					if(deleteFlag) {
+						try {
+							databaseEntry.getEntityManager().delete(databaseEntry);
+						} catch (SQLException e1) {}//deletion failed.
+					}
+				}
+				return null;
+			}
+		});
+		
+	}
+
 
 	public static List<DecisionKnowledgeElement> getAllElementsFromAoByType(String projectKey,
 			KnowledgeType rootElementType) {
@@ -390,7 +432,11 @@ public class ActiveObjectsManager {
 							( databaseEntry.getKnowledgeTypeString().equals(rootElementType.toString())
 							|| (databaseEntry.getKnowledgeTypeString().length() == 3 // its either Pro or con
 									&& rootElementType.equals(KnowledgeType.ARGUMENT)))) {
-						list.add(new SentenceImpl(databaseEntry.getId()));
+						try {
+							list.add(new SentenceImpl(databaseEntry.getId()));
+						}catch(NullPointerException e) {
+							continue;
+						}
 					}
 				}
 				return null;
@@ -448,4 +494,5 @@ public class ActiveObjectsManager {
 		});
 	}
 
+	
 }

@@ -51,12 +51,16 @@
         console.log("view.tab.panel.js callDialogFromView");
 
         var textheader="Edit and Link Decision Knowledge in Issue Comments";
-        var textSaveButton = "Save";
+        var textSaveButton = "Done";
         
         var submitButton = document.getElementById("dialog-submit-button");
         submitButton.textContent = textSaveButton;
         submitButton.onclick = function() {
             console.log("view.tab.panel.js submitButton.onclick");
+            AJS.dialog2("#dialog").hide();
+        };
+        document.getElementsByClassName("aui-dialog2-header-close")[0].onclick =  function() {
+            console.log("view.tab.panel.js close.onclick");
             AJS.dialog2("#dialog").hide();
         };
         setUpDialog();
@@ -73,6 +77,9 @@
         document.getElementById("header2").innerHTML = "<input class=text medium-long-field id=jstree-search-input placeholder=Search decision knowledge />";
         document.getElementById("dialog").classList.remove("aui-dialog2-medium");
         document.getElementById("dialog").classList.add("aui-dialog2-large");
+        $("#dialog-extension-button").remove();
+        $("#dialog-cancel-button").remove();
+
         buildTreeViewer(document.getElementById("Relevant").checked);
     }
 
