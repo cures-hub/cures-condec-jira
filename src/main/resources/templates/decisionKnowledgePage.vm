@@ -25,31 +25,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
     </div>
     <div id="treant-container" class="right"></div>
 </div>
-    <div><a href="#" aria-haspopup="true"
-            class="toolbar-trigger aui-button aui-style-default aui-dropdown2-trigger aui-alignment-target aui-alignment-abutted aui-alignment-abutted-left aui-alignment-element-attached-top aui-alignment-element-attached-left aui-alignment-target-attached-bottom aui-alignment-target-attached-left aui-alignment-out-of-bounds aui-alignment-out-of-bounds-bottom"
-            resolved="" aria-controls="opsbar-operations_more_drop" aria-expanded="false"><span class="dropdown-text">Upload/Download</span></a>
-        <div id="opsbar-operations_more_drop"
-             class="aui-style-default aui-dropdown2 aui-layer aui-alignment-element aui-alignment-side-bottom aui-alignment-snap-left aui-alignment-abutted aui-alignment-abutted-left aui-alignment-element-attached-top aui-alignment-element-attached-left aui-alignment-target-attached-bottom aui-alignment-target-attached-left aui-alignment-out-of-bounds aui-alignment-out-of-bounds-bottom"
-             resolved="" aria-hidden="true" data-aui-alignment="bottom auto" data-aui-alignment-static="true"
-             style="z-index: auto; top: 0px; left: 0px; position: absolute; transform: translateX(875px) translateY(235px) translateZ(0px);">
-            <div class="aui-dropdown2-section">
-                <ul>
-                    <li class="aui-list-item"><a title="Upload All Decisions" id="download-decisions-button"
-                                                 tabindex="-1"><span class="trigger-label">Download All Decisions</span></a>
-                    </li>
-                </ul>
-            </div>
-            <div class="aui-dropdown2-section">
-                <ul>
-                    <li class="aui-list-item">
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 <script>
     initializeDecisionKnowledgePage();
 </script>

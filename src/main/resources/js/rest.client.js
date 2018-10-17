@@ -630,21 +630,7 @@ function getAccessToken(projectKey, baseURL, privateKey, consumerKey, requestTok
 	});
 }
 
-function getElementsByQuery(sQuery, callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElements.json?&projectKey=" + getProjectKey()
-			+ "&URISearch=" + sQuery, function(error, json) {
-		console.log("getElement", sQuery);
-		console.log("getElement error", error);
-		console.log("getElement json", json);
-		if (error === null) {
-			callback(json);
-		} else {
-			showFlag("error", "Filtered elements could not be received. Error-Code: " + error);
-		}
-	});
-}
-
-function getAllElementsMatchingQuery(query, callback) {
+function getElementsByQuery(query, callback) {
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?projectKey="
 			+ getProjectKey() + "&query=" + query, function(error, result) {
 		if (error === null) {
