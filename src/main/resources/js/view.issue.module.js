@@ -29,7 +29,7 @@ var contextMenuActionsTreant = {
 
 function downloadMyJsonAsTable() {
 	//get jql from url
-	var userInputJql = window.location.search;
+	var userInputJql = getURLsSearch();
 	var baseLink = window.location.origin + "/jira/browse/";
 	//check if jql is empty or non existent
 	var myJql;
@@ -49,8 +49,8 @@ function downloadMyJsonAsTable() {
 		if (sPathName && sPathName.indexOf("/jira/browse/") > -1) {
 			issueKey = sPathName.split("/jira/browse/")[1];
 			if (issueKey) {
-				var issueJql = "?jql=issue=" + issueKey
-				callGetElementsByQueryAndDownload(issueJql, baseLink)
+				var issueJql = "?jql=issue=" + issueKey;
+				callGetElementsByQueryAndDownload(issueJql, baseLink);
 			}
 		}
 	}
