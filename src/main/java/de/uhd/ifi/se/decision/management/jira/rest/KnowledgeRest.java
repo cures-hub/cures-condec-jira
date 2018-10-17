@@ -386,7 +386,6 @@ public class KnowledgeRest {
 			List<DecisionKnowledgeElement> queryResult = filter.getAllElementsMatchingQuery();
 			if (queryResult == null) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
-
 						.entity(ImmutableMap.of("error", "Getting elements matching the query failed.")).build();
 			}
 			return Response.ok(queryResult).build();

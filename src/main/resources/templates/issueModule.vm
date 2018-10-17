@@ -15,14 +15,13 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:issu
             e.stopPropagation();
             downloadMyLinkedElements();
         });
-        $("#downloadAsSomeTable").click(function (e) {
+        $("#downloadAllAsTable").click(function (e) {
             e.preventDefault();
             e.stopPropagation();
             downloadMyJsonAsTable();
         });
     });
-
-
+    
 	fillIssueModule();
 
 </script>

@@ -269,18 +269,14 @@
 
 	<!-- Decision Knowledge Export Functions -->
 	<web-item key="export-as-table-item"
-			  name="Menu Item for Decision Knowledge Export as Table"
-			  section="operations-operations">
+		name="Menu Item for Decision Knowledge Export as Table" section="operations-operations">
 		<label>Export as Table</label>
-		<link linkId="downloadAsSomeTable"/>
+		<link linkId="downloadAllAsTable" />
 	</web-item>
-
-	<web-item key="downloadLinkedElements"
-			  name="Link to download all linked elments"
-			  section="operations-operations"
-			 >
+	<web-item key="export-linked-elements-item"
+		name="Menu Item for Export of all Linked Elments as Table" section="operations-operations">
 		<label>Download linked Elements</label>
-		<link linkId="downloadLinkedElements"/>
+		<link linkId="downloadLinkedElements" />
 	</web-item>
 
 	<!-- Decision Knowledge Report -->
