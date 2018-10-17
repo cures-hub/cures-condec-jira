@@ -29,6 +29,7 @@ public class AuthenticationRest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationRest.class);
 	private JiraOAuthClient jiraOAuthClient;
 	private PropertiesClient propertiesClient;
+	private boolean invalidCredentials;
 
 	// Constructor without arguments needs to be here to create a rest interface.
 	// Otherwise Bean Exception
@@ -37,10 +38,17 @@ public class AuthenticationRest {
 	}
 
 	private void checkInit() {
+
 		try {
 			this.propertiesClient = new PropertiesClient();
 			this.jiraOAuthClient = new JiraOAuthClient(propertiesClient);
 		} catch (Exception e) {
+		}
+
+		if (this.propertiesClient.getPropertiesOrDefaults().get("access_token").trim().length() <= 1) {
+			this.invalidCredentials = true;
+		} else {
+			this.invalidCredentials = false;
 		}
 	}
 
@@ -71,12 +79,17 @@ public class AuthenticationRest {
 			LOGGER.debug("Credentials invalid");
 			return "";
 		}
+		if (invalidCredentials) {
+			LOGGER.debug("Credentials invalid");
+			return "";
+		}
 		List<String> s2 = new ArrayList<String>();
 		s2.add(urlToCall);
-		OAuthClient oac = new OAuthClient(propertiesClient, jiraOAuthClient);
+		OAuthClient oac = null;
 		try {
+			oac = new OAuthClient(propertiesClient, jiraOAuthClient);
 			oac.execute(Command.fromString("request"), s2);
-		} catch (NullPointerException e) {
+		} catch (Exception e) {
 			LOGGER.debug("Bad request");
 			return "";
 		}

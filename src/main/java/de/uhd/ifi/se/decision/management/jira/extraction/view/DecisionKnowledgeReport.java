@@ -389,11 +389,12 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		if (issueKey == null) {
 			return;
 		}
-		String projectKey = ComponentAccessor.getProjectManager().getProjectObj(this.projectId).getKey();
-		AuthenticationRest ar = new AuthenticationRest();
-		ar.startRequest("http://cures.ifi.uni-heidelberg.de:8080/rest/gitplugin/1.0/issues/" + issueKey + "/commits",
-				projectKey);
-
+		try {
+			AuthenticationRest ar = new AuthenticationRest();
+			ar.startRequest("http://cures.ifi.uni-heidelberg.de:8080/rest/gitplugin/1.0/issues/" + issueKey + "/commits");
+		}catch(Exception e) {
+			
+		}
 	}
 
 }
