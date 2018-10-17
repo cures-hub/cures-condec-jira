@@ -253,7 +253,7 @@ function changeKnowledgeTypeOfSentence(id, type, callback) {
 		"id" : id,
 		"type" : type
 	};
-	var argument = "";//Important to be empty!
+	var argument = "";// Important to be empty!
 	if (type.includes("Pro") || type.includes("Con")) {
 		argument = type;
 	}
@@ -333,14 +333,14 @@ function getTreeViewer(rootElementType, callback) {
 }
 
 function getTreant(elementKey, depthOfTree, searchTerm, callback) {
-    getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?&elementKey=" + elementKey
-        + "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm, function(error, treant) {
-        if (error === null) {
-            callback(treant);
-        } else {
-            showFlag("error", "Filtered Treant data could not be received. Error-Code: " + error);
-        }
-    });
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?&elementKey=" + elementKey
+			+ "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm, function(error, treant) {
+		if (error === null) {
+			callback(treant);
+		} else {
+			showFlag("error", "Filtered Treant data could not be received. Error-Code: " + error);
+		}
+	});
 }
 
 function getTreeViewerWithoutRootElement(showRelevant, callback) {
@@ -595,63 +595,62 @@ function setIconParsing(projectKey, isActivated) {
 }
 
 function isIconParsing(projectKey, callback) {
-    getJSON(
-        AJS.contextPath() + "/rest/decisions/latest/config/isIconParsing.json?projectKey=" + getProjectKey(),
-        function (error, isIconParsingBoolean) {
-            if (error === null) {
-                callback(isIconParsingBoolean);
-            } else {
-                showFlag("error", "Icon boolean value for the project could not be received. Error-Code: " + error);
-            }
-        });
-}
-
-function getRequestToken(projectKey,baseURL,privateKey,consumerKey,callback){
 	getJSON(
-			AJS.contextPath() + "/rest/decisions/latest/auth/getRequestToken.json?projectKey="+projectKey+"&baseURL=" + baseURL+ "&privateKey="+privateKey+"&consumerKey="+consumerKey,
-			function(error, result) {
+			AJS.contextPath() + "/rest/decisions/latest/config/isIconParsing.json?projectKey=" + getProjectKey(),
+			function(error, isIconParsingBoolean) {
 				if (error === null) {
-					callback(result);
+					callback(isIconParsingBoolean);
 				} else {
 					showFlag("error", "Icon boolean value for the project could not be received. Error-Code: " + error);
 				}
 			});
 }
 
-function getAccessToken(projectKey,baseURL,privateKey,consumerKey,requestToken,secret,callback){
-	getJSON(
-			AJS.contextPath() + "/rest/decisions/latest/auth/getAccessToken.json?projectKey="+projectKey+"&baseURL=" + baseURL+ "&privateKey="
-			+privateKey+"&consumerKey="+consumerKey+"&requestToken="+requestToken+"&secret="+secret,
-			function(error, result) {
-				if (error === null) {
-					callback(result);
-				} else {
-					showFlag("error", "Icon boolean value for the project could not be received. Error-Code: " + error);
-				}
-			});
+function getRequestToken(projectKey, baseURL, privateKey, consumerKey, callback) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/auth/getRequestToken.json?projectKey=" + projectKey
+			+ "&baseURL=" + baseURL + "&privateKey=" + privateKey + "&consumerKey=" + consumerKey, function(error,
+			result) {
+		if (error === null) {
+			callback(result);
+		} else {
+			showFlag("error", "Icon boolean value for the project could not be received. Error-Code: " + error);
+		}
+	});
+}
+
+function getAccessToken(projectKey, baseURL, privateKey, consumerKey, requestToken, secret, callback) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/auth/getAccessToken.json?projectKey=" + projectKey
+			+ "&baseURL=" + baseURL + "&privateKey=" + privateKey + "&consumerKey=" + consumerKey + "&requestToken="
+			+ requestToken + "&secret=" + secret, function(error, result) {
+		if (error === null) {
+			callback(result);
+		} else {
+			showFlag("error", "Icon boolean value for the project could not be received. Error-Code: " + error);
+		}
+	});
 }
 
 function getElementsByQuery(sQuery, callback) {
-    getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getQuery.json?&projectKey=" + getProjectKey()
-        +"&URISearch="+sQuery, function (error, json) {
-    	console.log("getElement",sQuery)
-    	console.log("getElement error",error)
-    	console.log("getElement json",json)
-        if (error === null) {
-            callback(json);
-        } else {
-            showFlag("error", "Filtered Treant data could not be received. Error-Code: " + error);
-        }
-    });
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElements.json?&projectKey=" + getProjectKey()
+			+ "&URISearch=" + sQuery, function(error, json) {
+		console.log("getElement", sQuery);
+		console.log("getElement error", error);
+		console.log("getElement json", json);
+		if (error === null) {
+			callback(json);
+		} else {
+			showFlag("error", "Filtered elements could not be received. Error-Code: " + error);
+		}
+	});
 }
 
 function getAllElementsMatchingQuery(query, callback) {
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?projectKey="
-		+ getProjectKey() + "&query=" + query, function(error,result) {
+			+ getProjectKey() + "&query=" + query, function(error, result) {
 		if (error === null) {
 			callback(result);
 		} else {
-			showFlag("error", "Elements for given Query could not be received" + error)
+			showFlag("error", "Elements for given query could not be received." + error);
 		}
-	})
+	});
 }

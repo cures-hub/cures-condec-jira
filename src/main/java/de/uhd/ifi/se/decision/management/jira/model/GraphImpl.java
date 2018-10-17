@@ -1,13 +1,17 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 
 /**
  * Model class for a graph of decision knowledge elements
@@ -75,7 +79,7 @@ public class GraphImpl implements Graph {
 		return linkedElementsAndLinks;
 	}
 
-	private String getRootElementKeyWithoutDoubleDot(String rootElementKey){
+	private String getRootElementKeyWithoutDoubleDot(String rootElementKey) {
 		String returnedRootElementKey;
 		if (rootElementKey.contains(":")) {
 			returnedRootElementKey = rootElementKey.substring(0, rootElementKey.indexOf(":"));
@@ -107,38 +111,39 @@ public class GraphImpl implements Graph {
 				if (isFilteredByTime) {
 					if (startTime <= 0) {
 						if (((Sentence) source).getCreated().getTime() < this.endTime) {
-							DecisionKnowledgeElement toLink = currentGenericLink.getOpposite(preIndex + element.getId());
+							DecisionKnowledgeElement toLink = currentGenericLink
+									.getOpposite(preIndex + element.getId());
 							if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
 								sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
-								linkedElementsAndLinks.put(toLink,
-										linkBetweenSentenceAndOtherElement);
+								linkedElementsAndLinks.put(toLink, linkBetweenSentenceAndOtherElement);
 							}
 						}
 					} else if (endTime <= 0) {
 						if (((Sentence) source).getCreated().getTime() > this.startTime) {
-							DecisionKnowledgeElement toLink = currentGenericLink.getOpposite(preIndex + element.getId());
+							DecisionKnowledgeElement toLink = currentGenericLink
+									.getOpposite(preIndex + element.getId());
 							if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
 								sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
-								linkedElementsAndLinks.put(toLink,
-										linkBetweenSentenceAndOtherElement);
+								linkedElementsAndLinks.put(toLink, linkBetweenSentenceAndOtherElement);
 							}
 						}
 					} else {
-						if ((((Sentence) source).getCreated().getTime() < this.endTime) && (((Sentence) source).getCreated().getTime() > this.startTime)) {
-							DecisionKnowledgeElement toLink = currentGenericLink.getOpposite(preIndex + element.getId());
+						if ((((Sentence) source).getCreated().getTime() < this.endTime)
+								&& (((Sentence) source).getCreated().getTime() > this.startTime)) {
+							DecisionKnowledgeElement toLink = currentGenericLink
+									.getOpposite(preIndex + element.getId());
 							if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
 								sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
-								linkedElementsAndLinks.put(toLink,
-										linkBetweenSentenceAndOtherElement);
+								linkedElementsAndLinks.put(toLink, linkBetweenSentenceAndOtherElement);
 							}
 						}
 					}
 				} else {
 					if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
-					GraphImpl.sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
-					linkedElementsAndLinks.put(currentGenericLink.getOpposite(preIndex + element.getId()),
-						linkBetweenSentenceAndOtherElement);
-				}
+						GraphImpl.sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
+						linkedElementsAndLinks.put(currentGenericLink.getOpposite(preIndex + element.getId()),
+								linkBetweenSentenceAndOtherElement);
+					}
 				}
 
 			} catch (NullPointerException e) {
@@ -149,9 +154,9 @@ public class GraphImpl implements Graph {
 		return linkedElementsAndLinks;
 	}
 
-	private Map<DecisionKnowledgeElement,Link> linkElementsTransitivelyOverSentences(DecisionKnowledgeElement parentElement,
-																				 DecisionKnowledgeElement filteredElement) {
-		Map<DecisionKnowledgeElement,Link> result = new HashMap<>();
+	private Map<DecisionKnowledgeElement, Link> linkElementsTransitivelyOverSentences(
+			DecisionKnowledgeElement parentElement, DecisionKnowledgeElement filteredElement) {
+		Map<DecisionKnowledgeElement, Link> result = new HashMap<>();
 		List<DecisionKnowledgeElement> elementsMatchingFilter = new ArrayList<>();
 		elementsMatchingFilter.addAll(getInwardTransitiveLinkedNodes(filteredElement));
 		elementsMatchingFilter.addAll(getOutwardTransitiveLinkedNodes(filteredElement));
@@ -169,7 +174,7 @@ public class GraphImpl implements Graph {
 			if (link.getDestinationElement().getId() == link2.getDestinationElement().getId()
 					&& link.getSourceElement().getId() == link2.getSourceElement().getId()
 					|| link.getSourceElement().getId() == link2.getDestinationElement().getId()
-					&& link.getSourceElement().getId() == link2.getDestinationElement().getId()) {
+							&& link.getSourceElement().getId() == link2.getDestinationElement().getId()) {
 				return true;
 			}
 		}
@@ -190,6 +195,12 @@ public class GraphImpl implements Graph {
 		List<DecisionKnowledgeElement> linkedElements = new ArrayList<DecisionKnowledgeElement>(
 				linkedElementsAndLinks.keySet());
 		return linkedElements;
+	}
+
+	@Override
+	public List<DecisionKnowledgeElement> getAllElements() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	private Map<DecisionKnowledgeElement, Link> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement element) {
@@ -234,7 +245,8 @@ public class GraphImpl implements Graph {
 		return linkedElementsAndLinks;
 	}
 
-	private Map<DecisionKnowledgeElement, Link> getElementsLinkedWithInwardLinksFiltered(DecisionKnowledgeElement element) {
+	private Map<DecisionKnowledgeElement, Link> getElementsLinkedWithInwardLinksFiltered(
+			DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
 		if (element == null) {
@@ -251,20 +263,22 @@ public class GraphImpl implements Graph {
 						linkedElementsAndLinks.put(inwardElement, link);
 					} else {
 						linkIds.add(link.getId());
-						List<DecisionKnowledgeElement> transitiveLinkedElements = getInwardTransitiveLinkedNodes(inwardElement);
+						List<DecisionKnowledgeElement> transitiveLinkedElements = getInwardTransitiveLinkedNodes(
+								inwardElement);
 						for (DecisionKnowledgeElement element1 : transitiveLinkedElements) {
 							Link transitiveLink = new LinkImpl(element, element1);
 							transitiveLink.setType("contains");
 							linkIds.add(transitiveLink.getId());
 							linkedElementsAndLinks.put(element1, transitiveLink);
 						}
-						Map<DecisionKnowledgeElement,Link> sentencesLinkedToFilteredElement = getAllLinkedSentences(inwardElement);
+						Map<DecisionKnowledgeElement, Link> sentencesLinkedToFilteredElement = getAllLinkedSentences(
+								inwardElement);
 						Set<DecisionKnowledgeElement> sentences = sentencesLinkedToFilteredElement.keySet();
 						for (DecisionKnowledgeElement sentence : sentences) {
-							Link transitiveLink = new LinkImpl(element,sentence);
+							Link transitiveLink = new LinkImpl(element, sentence);
 							transitiveLink.setType("contains");
 							linkIds.add(transitiveLink.getId());
-							linkedElementsAndLinks.put(sentence,transitiveLink);
+							linkedElementsAndLinks.put(sentence, transitiveLink);
 						}
 					}
 				}
@@ -298,7 +312,8 @@ public class GraphImpl implements Graph {
 		return transitiveLinkedNodes;
 	}
 
-	private Map<DecisionKnowledgeElement, Link> getElementsLinkedWithOutwardLinksFiltered(DecisionKnowledgeElement element) {
+	private Map<DecisionKnowledgeElement, Link> getElementsLinkedWithOutwardLinksFiltered(
+			DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
 		if (element == null) {
@@ -317,7 +332,8 @@ public class GraphImpl implements Graph {
 						if (!outwardElement.getType().equals(KnowledgeType.ALTERNATIVE)) {
 							linkIds.add(link.getId());
 							elementsVisitedTransitively = new ArrayList<>();
-							List<DecisionKnowledgeElement> transitiveLinkedElements = getOutwardTransitiveLinkedNodes(outwardElement);
+							List<DecisionKnowledgeElement> transitiveLinkedElements = getOutwardTransitiveLinkedNodes(
+									outwardElement);
 							if (transitiveLinkedElements != null) {
 								for (DecisionKnowledgeElement element1 : transitiveLinkedElements) {
 									Link transitiveLink = new LinkImpl(element1, element);
@@ -327,13 +343,14 @@ public class GraphImpl implements Graph {
 								}
 							}
 						}
-						Map<DecisionKnowledgeElement,Link> sentencesLinkedToFilteredElement = getAllLinkedSentences(outwardElement);
+						Map<DecisionKnowledgeElement, Link> sentencesLinkedToFilteredElement = getAllLinkedSentences(
+								outwardElement);
 						Set<DecisionKnowledgeElement> sentences = sentencesLinkedToFilteredElement.keySet();
 						for (DecisionKnowledgeElement sentence : sentences) {
-							Link transitiveLink = new LinkImpl(element,sentence);
+							Link transitiveLink = new LinkImpl(element, sentence);
 							transitiveLink.setType("contains");
 							linkIds.add(transitiveLink.getId());
-							linkedElementsAndLinks.put(sentence,transitiveLink);
+							linkedElementsAndLinks.put(sentence, transitiveLink);
 						}
 					}
 				}
@@ -390,5 +407,4 @@ public class GraphImpl implements Graph {
 	public void setProject(DecisionKnowledgeProject project) {
 		this.project = project;
 	}
-
 }
