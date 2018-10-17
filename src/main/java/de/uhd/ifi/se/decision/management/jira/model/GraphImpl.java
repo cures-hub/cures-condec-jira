@@ -23,6 +23,7 @@ public class GraphImpl implements Graph {
 	private static List<Link> sentenceLinkAlreadyVisited;
 	private long startTime;
 	private long endTime;
+	private List<DecisionKnowledgeElement> elementsVisitedTransitively;
 
 	public GraphImpl() {
 		linkIds = new ArrayList<>();
@@ -250,21 +251,21 @@ public class GraphImpl implements Graph {
 						linkedElementsAndLinks.put(inwardElement, link);
 					} else {
 						linkIds.add(link.getId());
-//						List<DecisionKnowledgeElement> transitiveLinkedElements = getInwardTransitiveLinkedNodes(inwardElement);
-//						for (DecisionKnowledgeElement element1 : transitiveLinkedElements) {
-//							Link transitiveLink = new LinkImpl(element, element1);
-//							transitiveLink.setType(link.getType());
-//							linkIds.add(transitiveLink.getId());
-//							linkedElementsAndLinks.put(element1, transitiveLink);
-//						}
-//						Map<DecisionKnowledgeElement,Link> sentencesLinkedToFilteredElement = getAllLinkedSentences(inwardElement);
-//						Set<DecisionKnowledgeElement> sentences = sentencesLinkedToFilteredElement.keySet();
-//						for (DecisionKnowledgeElement sentence : sentences) {
-//							Link transitiveLink = new LinkImpl(element,sentence);
-//							transitiveLink.setType("contains");
-//							linkIds.add(transitiveLink.getId());
-//							linkedElementsAndLinks.put(sentence,transitiveLink);
-//						}
+						List<DecisionKnowledgeElement> transitiveLinkedElements = getInwardTransitiveLinkedNodes(inwardElement);
+						for (DecisionKnowledgeElement element1 : transitiveLinkedElements) {
+							Link transitiveLink = new LinkImpl(element, element1);
+							transitiveLink.setType("contains");
+							linkIds.add(transitiveLink.getId());
+							linkedElementsAndLinks.put(element1, transitiveLink);
+						}
+						Map<DecisionKnowledgeElement,Link> sentencesLinkedToFilteredElement = getAllLinkedSentences(inwardElement);
+						Set<DecisionKnowledgeElement> sentences = sentencesLinkedToFilteredElement.keySet();
+						for (DecisionKnowledgeElement sentence : sentences) {
+							Link transitiveLink = new LinkImpl(element,sentence);
+							transitiveLink.setType("contains");
+							linkIds.add(transitiveLink.getId());
+							linkedElementsAndLinks.put(sentence,transitiveLink);
+						}
 					}
 				}
 			}
@@ -313,22 +314,27 @@ public class GraphImpl implements Graph {
 						linkIds.add(link.getId());
 						linkedElementsAndLinks.put(outwardElement, link);
 					} else {
-						linkIds.add(link.getId());
-//						List<DecisionKnowledgeElement> transitiveLinkedElements = getOutwardTransitiveLinkedNodes(outwardElement);
-//						for (DecisionKnowledgeElement element1 : transitiveLinkedElements) {
-//							Link transitiveLink = new LinkImpl(element1, element);
-//							transitiveLink.setType(link.getType());
-//							linkIds.add(transitiveLink.getId());
-//							linkedElementsAndLinks.put(element1, transitiveLink);
-//						}
-//						Map<DecisionKnowledgeElement,Link> sentencesLinkedToFilteredElement = getAllLinkedSentences(outwardElement);
-//						Set<DecisionKnowledgeElement> sentences = sentencesLinkedToFilteredElement.keySet();
-//						for (DecisionKnowledgeElement sentence : sentences) {
-//							Link transitiveLink = new LinkImpl(element,sentence);
-//							transitiveLink.setType("contains");
-//							linkIds.add(transitiveLink.getId());
-//							linkedElementsAndLinks.put(sentence,transitiveLink);
-//						}
+						if (!outwardElement.getType().equals(KnowledgeType.ALTERNATIVE)) {
+							linkIds.add(link.getId());
+							elementsVisitedTransitively = new ArrayList<>();
+							List<DecisionKnowledgeElement> transitiveLinkedElements = getOutwardTransitiveLinkedNodes(outwardElement);
+							if (transitiveLinkedElements != null) {
+								for (DecisionKnowledgeElement element1 : transitiveLinkedElements) {
+									Link transitiveLink = new LinkImpl(element1, element);
+									transitiveLink.setType("contains");
+									linkIds.add(transitiveLink.getId());
+									linkedElementsAndLinks.put(element1, transitiveLink);
+								}
+							}
+						}
+						Map<DecisionKnowledgeElement,Link> sentencesLinkedToFilteredElement = getAllLinkedSentences(outwardElement);
+						Set<DecisionKnowledgeElement> sentences = sentencesLinkedToFilteredElement.keySet();
+						for (DecisionKnowledgeElement sentence : sentences) {
+							Link transitiveLink = new LinkImpl(element,sentence);
+							transitiveLink.setType("contains");
+							linkIds.add(transitiveLink.getId());
+							linkedElementsAndLinks.put(sentence,transitiveLink);
+						}
 					}
 				}
 			}
@@ -337,27 +343,32 @@ public class GraphImpl implements Graph {
 	}
 
 	private List<DecisionKnowledgeElement> getOutwardTransitiveLinkedNodes(DecisionKnowledgeElement element) {
-		List<DecisionKnowledgeElement> transitiveLinkedNodes = new ArrayList<>();
-		List<Link> outwardLinks = this.project.getPersistenceStrategy().getOutwardLinks(element);
-		for (Link link : outwardLinks) {
-			if (!linkIds.contains(link.getId())) {
-				boolean isFiltered = true;
-				int count = 0;
-				DecisionKnowledgeElement currentElement = link.getDestinationElement();
-				while (isFiltered && (count < 10)) {
-					if (this.filteredElements.contains(currentElement)) {
-						if (!currentElement.getType().equals(KnowledgeType.ARGUMENT)) {
-							transitiveLinkedNodes.add(currentElement);
+		if (elementsVisitedTransitively.contains(element)) {
+			return null;
+		} else {
+			List<DecisionKnowledgeElement> transitiveLinkedNodes = new ArrayList<>();
+			List<Link> outwardLinks = this.project.getPersistenceStrategy().getOutwardLinks(element);
+			for (Link link : outwardLinks) {
+				if (!linkIds.contains(link.getId())) {
+					boolean isFiltered = true;
+					DecisionKnowledgeElement currentElement = link.getDestinationElement();
+					while (isFiltered) {
+						if (this.filteredElements.contains(currentElement)) {
+							if (!currentElement.getType().equals(KnowledgeType.ARGUMENT)) {
+								transitiveLinkedNodes.add(currentElement);
+							}
+							isFiltered = false;
+						} else {
+							if (getOutwardTransitiveLinkedNodes(currentElement) != null) {
+								transitiveLinkedNodes.addAll(getOutwardTransitiveLinkedNodes(currentElement));
+							}
 						}
-						isFiltered = false;
-					} else {
-						transitiveLinkedNodes.addAll(getOutwardTransitiveLinkedNodes(currentElement));
-						count++;
+						elementsVisitedTransitively.add(currentElement);
 					}
 				}
 			}
+			return transitiveLinkedNodes;
 		}
-		return transitiveLinkedNodes;
 	}
 
 	@Override
