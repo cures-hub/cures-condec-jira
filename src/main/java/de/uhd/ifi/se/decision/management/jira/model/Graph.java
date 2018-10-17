@@ -72,4 +72,12 @@ public interface Graph {
 	 *            decision knowledge project.
 	 */
 	void setProject(DecisionKnowledgeProject project);
+
+	/**
+	 * Return all decision knowledge elements within the graph as a list. The list
+	 * is not sorted.
+	 *
+	 * @see DecisionKnowledgeElement
+	 */
+	List<DecisionKnowledgeElement> getAllElements();
 }

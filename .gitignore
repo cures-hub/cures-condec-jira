@@ -2,6 +2,7 @@
 
 # Directories
 target/
+bin/
 .idea/
 .metadata/
 
@@ -11,4 +12,5 @@ target/
 .settings
 *.iml
 *.class
-/bin/
+config.properties
+
