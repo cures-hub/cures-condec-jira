@@ -154,21 +154,6 @@ public class GraphImpl implements Graph {
 		return linkedElementsAndLinks;
 	}
 
-	private Map<DecisionKnowledgeElement, Link> linkElementsTransitivelyOverSentences(
-			DecisionKnowledgeElement parentElement, DecisionKnowledgeElement filteredElement) {
-		Map<DecisionKnowledgeElement, Link> result = new HashMap<>();
-		List<DecisionKnowledgeElement> elementsMatchingFilter = new ArrayList<>();
-		elementsMatchingFilter.addAll(getInwardTransitiveLinkedNodes(filteredElement));
-		elementsMatchingFilter.addAll(getOutwardTransitiveLinkedNodes(filteredElement));
-		for (DecisionKnowledgeElement element : elementsMatchingFilter) {
-			Link transitiveLink = new LinkImpl(parentElement, element);
-			transitiveLink.setType("contains");
-			linkIds.add(transitiveLink.getId());
-			result.put(element, transitiveLink);
-		}
-		return result;
-	}
-
 	private boolean linkListContainsLink(Link link2) {
 		for (Link link : GraphImpl.sentenceLinkAlreadyVisited) {
 			if (link.getDestinationElement().getId() == link2.getDestinationElement().getId()
