@@ -13,13 +13,17 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:repo
       <div id="CommentsPerIssue" style="width:200px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
       <div id="CommitsPerIssue" style="width:200px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
       <div id="SentencePerIssue" style="width:200px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
-      <div id="LinkDistance" style="width:200px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
+      <div id="LinkDistanceIssue" style="width:200px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
+      <div id="LinkDistanceAlternative" style="width:200px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
+      <div id="LinkDistanceDecision" style="width:200px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
 
 
       <hr>
        <div id="relevantSentences" style="width:500px; height:400px; display:inline-block;"  onclick="copyToClipboard(this)"></div>
       <div id="knowledgeTypeDist" style="width:500px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
-      <div id="decisionIssues" style="width:500px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
+      <div id="issueLink" style="width:500px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
+      <div id="decisionLink" style="width:500px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
+      <div id="alternativeLink" style="width:500px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
       <div id="altWithArguments" style="width:500px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
 
   </div>  
@@ -27,7 +31,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:repo
       initializeDivWithBoxPlot('CommentsPerIssue',$numCommentsPerIssue,"Comments/Issue","Comments per Issue");
       initializeDivWithBoxPlot('CommitsPerIssue',$numCommitsPerIssue,"Commits/Issue","Commits per Issue");
       initializeDivWithBoxPlot('SentencePerIssue',$numSentencePerIssue,"Sentence/Issue","Setences per Issue");
-      initializeDivWithBoxPlot('LinkDistance',$numLinkDistance,"Link distance","Link distance");
+      initializeDivWithBoxPlot('LinkDistanceIssue',$numLinkDistanceIssue,"Link distance","Link distance\nfrom Issue");
+      initializeDivWithBoxPlot('LinkDistanceAlternative',$numLinkDistanceAlternative,"Link distance","Link distance\nfrom Alternative");
+      initializeDivWithBoxPlot('LinkDistanceDecision',$numLinkDistanceDecision,"Link distance","Link distance\nfrom Decision");
       
       var map = new Map();
       #foreach ($item in $numRelevantSentences.keySet())
@@ -45,7 +51,21 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:repo
       #foreach ($item in $numLinksToIssue.keySet())
         map.set("$item", $numLinksToIssue.get("$item"));
       #end
-      initializeDivWithPieChart("decisionIssues","Links between Knowledge Types","",map);
+      initializeDivWithPieChart("issueLink","Links to Issue","",map);
+
+      map = new Map();
+      #foreach ($item in $numLinksToDecision.keySet())
+        map.set("$item", $numLinksToDecision.get("$item"));
+      #end
+      initializeDivWithPieChart("decisionLink","Links to Decision","",map);
+      
+      map = new Map();
+      #foreach ($item in $numLinksToAlternative.keySet())
+        map.set("$item", $numLinksToAlternative.get("$item"));
+      #end
+      initializeDivWithPieChart("alternativeLink","Links to Alternative","",map);
+
+
 
       map = new Map();
       #foreach ($item in $numAlternativeWoArgument.keySet())

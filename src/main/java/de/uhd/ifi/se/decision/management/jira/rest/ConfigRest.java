@@ -36,6 +36,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 
 /**
  * REST resource for plug-in configuration
@@ -377,7 +378,10 @@ public class ConfigRest {
 			return isValidDataResponse;
 		}
 		try {
-			ActiveObjectsManager.clearSentenceDatabaseForProject(projectKey);
+//			Use link validation over deletion. Deletion is useful during development process
+//			ActiveObjectsManager.clearSentenceDatabaseForProject(projectKey);
+			GenericLinkManager.clearInValidLinks();
+			ActiveObjectsManager.cleanSentenceDatabaseForProject(projectKey);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());

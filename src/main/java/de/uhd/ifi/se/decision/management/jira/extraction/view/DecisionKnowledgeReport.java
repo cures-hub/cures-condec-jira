@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
+
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -21,15 +22,18 @@ import com.atlassian.jira.util.ParameterUtils;
 import com.atlassian.jira.web.action.ProjectActionSupport;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
+
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.Graph;
+import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.rest.AuthenticationRest;
-import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
+import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
 
 public class DecisionKnowledgeReport extends AbstractReport {
 
@@ -38,9 +42,9 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 	private Long projectId;
 
-	private KnowledgeType rootType;
-
 	private SearchService searchService;
+
+	private int absolutDepth;
 
 	public static org.json.JSONObject restResponse;
 
@@ -69,7 +73,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		velocityParams.put("numRelevantSentences", numRelevantSentences);
 		velocityParams.put("map", Map.class);
 
-		// get Number of commits per Issue TODO:Access commit DB
+		// get Number of commits per Issue 
 		List<Integer> numCommitsPerIssue = getNumberOfCommitsPerIssue(action.getLoggedInUser());
 		velocityParams.put("numCommitsPerIssue", numCommitsPerIssue);
 
@@ -79,16 +83,18 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 		// Get types of decisions and alternatives linkes to Issue (e.g. has decision
 		// but no alternative)
-		Map<String, Integer> numLinksToIssue = getAlternativeDecisionPerIssue();
-		velocityParams.put("numLinksToIssue", numLinksToIssue);
+		velocityParams.put("numLinksToIssue", getLinkToOtherElement(KnowledgeType.ISSUE,KnowledgeType.ALTERNATIVE,KnowledgeType.DECISION));
+		velocityParams.put("numLinksToDecision", getLinkToOtherElement(KnowledgeType.DECISION,KnowledgeType.ALTERNATIVE,KnowledgeType.ISSUE));
+		velocityParams.put("numLinksToAlternative", getLinkToOtherElement(KnowledgeType.ALTERNATIVE,KnowledgeType.ISSUE,KnowledgeType.DECISION));
 
 		// Get Number of Alternatives With Arguments
 		Map<String, Integer> numAlternativeWoArgument = getAlternativeArguments();
 		velocityParams.put("numAlternativeWoArgument", numAlternativeWoArgument);
 
 		// Get Link Distance
-		List<Integer> numLinkDistance = getLinkDistance();
-		velocityParams.put("numLinkDistance", numLinkDistance);
+		velocityParams.put("numLinkDistanceAlternative", getLinkDistance(KnowledgeType.ALTERNATIVE));
+		velocityParams.put("numLinkDistanceIssue", getLinkDistance(KnowledgeType.ISSUE));
+		velocityParams.put("numLinkDistanceDecision", getLinkDistance(KnowledgeType.DECISION));
 
 		return velocityParams;
 	}
@@ -138,16 +144,17 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return result;
 	}
 
-	private List<Integer> getLinkDistance() {
+	private List<Integer> getLinkDistance(KnowledgeType type) {
 		List<Integer> linkDistances = new ArrayList<>();
 
 		List<DecisionKnowledgeElement> listOfIssues = ActiveObjectsManager
-				.getAllElementsFromAoByType(projectManager.getProjectObj(this.projectId).getKey(), this.rootType);
+				.getAllElementsFromAoByType(projectManager.getProjectObj(this.projectId).getKey(), type);
 
 		for (DecisionKnowledgeElement currentAlternative : listOfIssues) {
-			Treant treant = new Treant(currentAlternative.getProject().getProjectKey(), currentAlternative.getKey(),
-					100);
-			linkDistances.add(treant.getAbsoluteDepth());
+//			Treant treant = new Treant(currentAlternative.getProject().getProjectKey(), currentAlternative.getKey(),
+//					100);
+			int depth = graphRecursionBot(currentAlternative);
+			linkDistances.add(depth);
 		}
 
 		return linkDistances;
@@ -221,6 +228,50 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 		return dkeCount;
 	}
+	
+	
+	private Map<String, Integer> getLinkToOtherElement(KnowledgeType linkFrom, KnowledgeType linkTo1, KnowledgeType linkTo2) {
+		Integer[] statistics = new Integer[4];
+		Arrays.fill(statistics, 0);
+		List<DecisionKnowledgeElement> listOfIssues = ActiveObjectsManager
+				.getAllElementsFromAoByType(projectManager.getProjectObj(this.projectId).getKey(), linkFrom);
+
+		for (DecisionKnowledgeElement issue : listOfIssues) {
+			List<GenericLink> links = GenericLinkManager.getGenericLinksForElement("s" + issue.getId(), false);
+			boolean hasAlternative = false;
+			boolean hasDecision = false;
+
+			for (GenericLink link : links) {
+				DecisionKnowledgeElement dke = link.getOpposite("s" + issue.getId());
+				if (dke instanceof Sentence && dke.getType().equals(linkTo1)) { //alt
+					hasAlternative = true;
+				} else if (dke instanceof Sentence && dke.getType().equals(linkTo2)) {//dec
+					hasDecision = true;
+				}
+			}
+			if (hasAlternative && hasDecision) {
+				statistics[0] = statistics[0] + 1;
+			} else if (hasAlternative && !hasDecision) {
+				statistics[1] = statistics[1] + 1;
+			} else if (!hasAlternative && hasDecision) {
+				statistics[2] = statistics[2] + 1;
+			} else if (!hasAlternative && !hasDecision) {
+				statistics[3] = statistics[3] + 1;
+			}
+		}
+		String id1 = linkTo1.toString().substring(0,3);
+		String id2 = linkTo2.toString().substring(0,3);
+		
+		// Hashmaps as counter suck
+		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
+		dkeCount.put("Has "+id1+ " and "+id2, statistics[0]);
+		dkeCount.put("Has "+id1+" but no "+id2, statistics[1]);
+		dkeCount.put("Has "+id1+" but no "+id2, statistics[2]);
+		dkeCount.put("Has no "+id1+" and no "+id2, statistics[3]);
+
+		return dkeCount;
+	}
+
 
 	private Map<String, Integer> getDecKnowElementsPerIssue() {
 		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
@@ -237,7 +288,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 		SearchResults issues = getIssuesForThisProject(loggedInUser);
 		for (Issue issue : issues.getIssues()) {
-			request(issue.getKey());
+			requestNumberOfGitCommits(issue.getKey());
 			if (restResponse != null) {
 				try {
 					JSONArray result = (JSONArray) restResponse.get("commits");
@@ -291,22 +342,59 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	public void setSearchService(SearchService searchService) {
 		this.searchService = searchService;
 	}
-
+	/**
+	 * Seems to be uncalled, but is called by atlassian during execution to transfer velocity variables.
+	 */
 	public void validate(ProjectActionSupport action, Map params) {
 		this.projectId = ParameterUtils.getLongParam(params, "selectedProjectId");
-		this.rootType = KnowledgeType.getKnowledgeType(ParameterUtils.getStringParam(params, "rootType"));
+	}
+	
+	
+	private int graphRecursionBot(DecisionKnowledgeElement dke) {
+		this.absolutDepth = 0;
+		Graph graph = new GraphImpl( projectManager.getProjectObj(this.projectId).getKey(), dke.getKey(), null);
+		this.createNodeStructure(dke, null, 100, 1,graph);
+		return absolutDepth;
 	}
 
-	private void request(String issueKey) {
+	private Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth,Graph graph) {
+		if (element == null || element.getProject().getProjectKey() == null || element.getType() == KnowledgeType.OTHER) {
+			return new Node();
+		}
+		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getLinkedElementsAndLinks(element);
+		Node node;
+		if (link != null) {
+			node = new Node(element, link, false, false);
+		} else {
+			node = new Node(element, false, false);
+		}
+		List<Node> nodes = new ArrayList<Node>();
+		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
+			if ((childAndLink.getKey() instanceof Sentence && ((Sentence) childAndLink.getKey()).isRelevant())
+					|| (childAndLink.getKey() instanceof DecisionKnowledgeElement)) {
+				Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
+						currentDepth + 1,graph);
+				if (this.absolutDepth < currentDepth) {
+					this.absolutDepth = currentDepth;
+				}
+				nodes.add(newChildNode);
+			}
+		}
+		node.setChildren(nodes);
+		return node;
+	}
+	
+
+	private void requestNumberOfGitCommits(String issueKey) {
 		if (issueKey == null) {
 			return;
 		}
-		String serverAdress = ConfigPersistence.getOauthJiraHome();
-		if(!serverAdress.endsWith("/")) {
-			serverAdress = serverAdress + "/";
+		try {
+			AuthenticationRest ar = new AuthenticationRest();
+			ar.startRequest("http://cures.ifi.uni-heidelberg.de:8080/rest/gitplugin/1.0/issues/" + issueKey + "/commits");
+		}catch(Exception e) {
+			
 		}
-		AuthenticationRest ar = new AuthenticationRest();
-		ar.startRequest(serverAdress+"rest/gitplugin/1.0/issues/" + issueKey + "/commits");
 	}
 
 }

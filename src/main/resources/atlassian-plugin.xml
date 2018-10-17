@@ -296,26 +296,6 @@
 				<description>Selected project to display the report for.</description>
 				<type>filterprojectpicker</type>
 			</property>
-			<property>
-				<key>rootType</key>
-				<name>Decision Knowledge Root Type</name>
-				<description>Please select the decision knowledge type to be used as root type.</description>
-				<type>select</type>
-				<values>
-					<value>
-						<key>Issue</key>
-						<value>Issue</value>
-					</value>
-					<value>
-						<key>Alternative</key>
-						<value>Alternative</value>
-					</value>
-					<value>
-						<key>Decision</key>
-						<value>Decision</value>
-					</value>
-				</values>
-			</property>
 		</properties>
 	</report>
 </atlassian-plugin>

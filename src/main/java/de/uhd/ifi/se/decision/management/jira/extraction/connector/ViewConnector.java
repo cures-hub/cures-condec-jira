@@ -11,7 +11,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.classification.Classifi
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 
 public class ViewConnector {
 

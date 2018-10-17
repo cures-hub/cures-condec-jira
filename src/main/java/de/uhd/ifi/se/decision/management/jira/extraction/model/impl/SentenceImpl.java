@@ -67,6 +67,10 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.setBody(body);
 	}
 
+	public SentenceImpl(DecisionKnowledgeInCommentEntity databaseEntry) throws NullPointerException {
+		this.insertAoValues(databaseEntry);
+	}
+
 	@Override
 	public boolean isRelevant() {
 		return this.isRelevant;
@@ -291,6 +295,9 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	private void retrieveAttributesFromActievObjects() {
 		DecisionKnowledgeInCommentEntity aoElement = ActiveObjectsManager.getElementFromAO(super.getId());
+		insertAoValues(aoElement);
+	}
+	private void insertAoValues(DecisionKnowledgeInCommentEntity aoElement) {
 		this.setEndSubstringCount(aoElement.getEndSubstringCount());
 		this.setStartSubstringCount(aoElement.getStartSubstringCount());
 		this.setUserId(aoElement.getUserId());
