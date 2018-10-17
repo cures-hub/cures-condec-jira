@@ -32,12 +32,15 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplit
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.Graph;
+import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
+import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
@@ -226,7 +229,7 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response setSentenceIrrelevant(@Context HttpServletRequest request,
 			DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (request != null && decisionKnowledgeElement != null && decisionKnowledgeElement.getId() >0) {
+		if (request != null && decisionKnowledgeElement != null && decisionKnowledgeElement.getId() > 0) {
 			boolean isDeleted = ActiveObjectsManager.setSentenceIrrelevant(decisionKnowledgeElement.getId(), true);
 			if (isDeleted) {
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
@@ -316,7 +319,8 @@ public class KnowledgeRest {
 				if (isDeleted) {
 					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 				} else {
-					return deleteGenericLink(projectKey, request, new GenericLinkImpl("i"+link.getSourceElement().getId(),"s"+ link.getDestinationElement().getId()));
+					return deleteGenericLink(projectKey, request, new GenericLinkImpl(
+							"i" + link.getSourceElement().getId(), "s" + link.getDestinationElement().getId()));
 				}
 			}
 		} else {
@@ -368,6 +372,45 @@ public class KnowledgeRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Creation of link failed."))
 					.build();
 		}
+	}
+
+	@Path("getAllElementsMatchingQuery")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getAllElementsMatchingQuery(@QueryParam("projectKey") String projectKey,
+			@QueryParam("query") String query, @Context HttpServletRequest request) {
+		if (projectKey != null && query != null && request != null) {
+			ApplicationUser user = getCurrentUser(request);
+			GraphFiltering filter = new GraphFiltering(projectKey, query, user);
+			filter.produceResultsFromQuery();
+			List<DecisionKnowledgeElement> queryResult = filter.getAllElementsMatchingQuery();
+			if (queryResult == null) {
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(ImmutableMap.of("error", "Getting elements matching the query failed.")).build();
+			}
+			return Response.ok(queryResult).build();
+		} else {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Getting elements matching the query failed.")).build();
+		}
+	}
+
+	@Path("/getAllElementsLinkedToElement")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getAllElementsLinkedToElement(@QueryParam("projectKey") String projectKey,
+			@QueryParam("elementKey") String elementKey, @QueryParam("URISearch") String uriSearch,
+			@Context HttpServletRequest request) {
+		ApplicationUser user = getCurrentUser(request);
+
+		GraphFiltering filter = new GraphFiltering(projectKey, uriSearch, user);
+		filter.produceResultsFromQuery();
+
+		Graph graph = new GraphImpl(projectKey, elementKey, filter);
+		// TODO Implement getAllElements in Graph class
+		List<DecisionKnowledgeElement> filteredElements = graph.getAllElements();
+
+		return Response.ok(filteredElements).build();
 	}
 
 	private ApplicationUser getCurrentUser(HttpServletRequest request) {

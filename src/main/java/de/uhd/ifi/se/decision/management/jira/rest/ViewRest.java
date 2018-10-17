@@ -98,21 +98,6 @@ public class ViewRest {
 		return Response.ok(treant).build();
 	}
 
-
-	@Path("/getQuery")
-	@GET
-	@Produces({MediaType.APPLICATION_JSON})
-	public Response getQuery(@QueryParam("projectKey") String projectKey, @QueryParam("URISearch") String URISearch,  @Context HttpServletRequest request) {
-		ApplicationUser user = getCurrentUser(request);
-
-		GraphFiltering filter = new GraphFiltering(projectKey, URISearch,user);
-		filter.produceResultsFromQuery();
-
-		List<DecisionKnowledgeElement> filteredElements = filter.getQueryResults();
-
-		return Response.ok(filteredElements).build();
-	}
-
 	private String getProjectKey(String elementKey) {
 		return elementKey.split("-")[0];
 	}
