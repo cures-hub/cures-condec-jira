@@ -1,9 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
@@ -69,12 +66,11 @@ public class GraphImpl implements Graph {
 		if (this.filteredElements == null) {
 			linkedElementsAndLinks.putAll(this.getElementsLinkedWithOutwardLinks(element));
 			linkedElementsAndLinks.putAll(this.getElementsLinkedWithInwardLinks(element));
-			linkedElementsAndLinks.putAll(this.getAllLinkedSentences(element));
 		} else {
 			linkedElementsAndLinks.putAll(this.getElementsLinkedWithInwardLinksFiltered(element));
 			linkedElementsAndLinks.putAll(this.getElementsLinkedWithOutwardLinksFiltered(element));
-			linkedElementsAndLinks.putAll(this.getAllLinkedSentences(element));
 		}
+		linkedElementsAndLinks.putAll(this.getAllLinkedSentences(element));
 		return linkedElementsAndLinks;
 	}
 
@@ -108,7 +104,7 @@ public class GraphImpl implements Graph {
 				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source, target);
 				linkBetweenSentenceAndOtherElement.setType("contain");
 				if (isFilteredByTime) {
-					if (startTime < 0) {
+					if (startTime <= 0) {
 						if (((Sentence) source).getCreated().getTime() < this.endTime) {
 							DecisionKnowledgeElement toLink = currentGenericLink.getOpposite(preIndex + element.getId());
 							if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
@@ -117,7 +113,7 @@ public class GraphImpl implements Graph {
 										linkBetweenSentenceAndOtherElement);
 							}
 						}
-					} else if (endTime < 0) {
+					} else if (endTime <= 0) {
 						if (((Sentence) source).getCreated().getTime() > this.startTime) {
 							DecisionKnowledgeElement toLink = currentGenericLink.getOpposite(preIndex + element.getId());
 							if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
@@ -150,6 +146,21 @@ public class GraphImpl implements Graph {
 			}
 		}
 		return linkedElementsAndLinks;
+	}
+
+	private Map<DecisionKnowledgeElement,Link> linkElementsTransitivelyOverSentences(DecisionKnowledgeElement parentElement,
+																				 DecisionKnowledgeElement filteredElement) {
+		Map<DecisionKnowledgeElement,Link> result = new HashMap<>();
+		List<DecisionKnowledgeElement> elementsMatchingFilter = new ArrayList<>();
+		elementsMatchingFilter.addAll(getInwardTransitiveLinkedNodes(filteredElement));
+		elementsMatchingFilter.addAll(getOutwardTransitiveLinkedNodes(filteredElement));
+		for (DecisionKnowledgeElement element : elementsMatchingFilter) {
+			Link transitiveLink = new LinkImpl(parentElement, element);
+			transitiveLink.setType("contains");
+			linkIds.add(transitiveLink.getId());
+			result.put(element, transitiveLink);
+		}
+		return result;
 	}
 
 	private boolean linkListContainsLink(Link link2) {
@@ -239,13 +250,21 @@ public class GraphImpl implements Graph {
 						linkedElementsAndLinks.put(inwardElement, link);
 					} else {
 						linkIds.add(link.getId());
-						List<DecisionKnowledgeElement> transitiveLinkedElements = getInwardTransitiveLinkedNodes(inwardElement);
-						for (DecisionKnowledgeElement element1 : transitiveLinkedElements) {
-							Link transitiveLink = new LinkImpl(element, element1);
-							transitiveLink.setType(link.getType());
-							linkIds.add(transitiveLink.getId());
-							linkedElementsAndLinks.put(element1, transitiveLink);
-						}
+//						List<DecisionKnowledgeElement> transitiveLinkedElements = getInwardTransitiveLinkedNodes(inwardElement);
+//						for (DecisionKnowledgeElement element1 : transitiveLinkedElements) {
+//							Link transitiveLink = new LinkImpl(element, element1);
+//							transitiveLink.setType(link.getType());
+//							linkIds.add(transitiveLink.getId());
+//							linkedElementsAndLinks.put(element1, transitiveLink);
+//						}
+//						Map<DecisionKnowledgeElement,Link> sentencesLinkedToFilteredElement = getAllLinkedSentences(inwardElement);
+//						Set<DecisionKnowledgeElement> sentences = sentencesLinkedToFilteredElement.keySet();
+//						for (DecisionKnowledgeElement sentence : sentences) {
+//							Link transitiveLink = new LinkImpl(element,sentence);
+//							transitiveLink.setType("contains");
+//							linkIds.add(transitiveLink.getId());
+//							linkedElementsAndLinks.put(sentence,transitiveLink);
+//						}
 					}
 				}
 			}
@@ -295,13 +314,21 @@ public class GraphImpl implements Graph {
 						linkedElementsAndLinks.put(outwardElement, link);
 					} else {
 						linkIds.add(link.getId());
-						List<DecisionKnowledgeElement> transitiveLinkedElements = getOutwardTransitiveLinkedNodes(outwardElement);
-						for (DecisionKnowledgeElement element1 : transitiveLinkedElements) {
-							Link transitiveLink = new LinkImpl(element1, element);
-							transitiveLink.setType(link.getType());
-							linkIds.add(transitiveLink.getId());
-							linkedElementsAndLinks.put(element1, transitiveLink);
-						}
+//						List<DecisionKnowledgeElement> transitiveLinkedElements = getOutwardTransitiveLinkedNodes(outwardElement);
+//						for (DecisionKnowledgeElement element1 : transitiveLinkedElements) {
+//							Link transitiveLink = new LinkImpl(element1, element);
+//							transitiveLink.setType(link.getType());
+//							linkIds.add(transitiveLink.getId());
+//							linkedElementsAndLinks.put(element1, transitiveLink);
+//						}
+//						Map<DecisionKnowledgeElement,Link> sentencesLinkedToFilteredElement = getAllLinkedSentences(outwardElement);
+//						Set<DecisionKnowledgeElement> sentences = sentencesLinkedToFilteredElement.keySet();
+//						for (DecisionKnowledgeElement sentence : sentences) {
+//							Link transitiveLink = new LinkImpl(element,sentence);
+//							transitiveLink.setType("contains");
+//							linkIds.add(transitiveLink.getId());
+//							linkedElementsAndLinks.put(sentence,transitiveLink);
+//						}
 					}
 				}
 			}
@@ -352,4 +379,5 @@ public class GraphImpl implements Graph {
 	public void setProject(DecisionKnowledgeProject project) {
 		this.project = project;
 	}
+
 }

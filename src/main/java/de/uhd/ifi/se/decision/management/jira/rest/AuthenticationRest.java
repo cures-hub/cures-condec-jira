@@ -33,25 +33,20 @@ public class AuthenticationRest {
 	// Constructor without arguments needs to be here to create a rest interface.
 	// Otherwise Bean Exception
 	public AuthenticationRest() {
-
+		checkInit();
 	}
 
-	public AuthenticationRest(String projectKey) {
-		this();
-		checkInit(projectKey);
-	}
-
-	private void checkInit(String projectKey) {
+	private void checkInit() {
 		try {
-			this.propertiesClient = new PropertiesClient(projectKey);
+			this.propertiesClient = new PropertiesClient();
 			this.jiraOAuthClient = new JiraOAuthClient(propertiesClient);
 		} catch (Exception e) {
 		}
 	}
 
-	public String retrieveRequestToken(String consumerKey, String privateKey, String projectKey) {
+	public String retrieveRequestToken(String consumerKey, String privateKey) {
 		try {
-			checkInit(projectKey);
+			checkInit();
 			return this.jiraOAuthClient.getAndAuthorizeTemporaryToken(consumerKey, privateKey.trim());
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException | IOException | NullPointerException e) {
 			LOGGER.debug("Bad request");
@@ -59,9 +54,8 @@ public class AuthenticationRest {
 		}
 	}
 
-	public String retrieveAccessToken(String tmpToken, String secret, String consumerKey, String privateKey,
-			String projectKey) {
-		checkInit(projectKey);
+	public String retrieveAccessToken(String tmpToken, String secret, String consumerKey, String privateKey) {
+		checkInit();
 		try {
 			return this.jiraOAuthClient.getAccessToken(tmpToken, secret, consumerKey, privateKey);
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException | IOException | NullPointerException e) {
@@ -70,13 +64,9 @@ public class AuthenticationRest {
 		}
 	}
 
-	public String startRequest(String urlToCall, String projectKey) {
-		if (projectKey == null || projectKey.equals("")) {
-			LOGGER.debug("Invalid Project key to start oauth request");
-			return "";
-		}
+	public String startRequest(String urlToCall) {
 		try {
-			checkInit(projectKey);
+			checkInit();
 		} catch (Exception e) {
 			LOGGER.debug("Credentials invalid");
 			return "";
@@ -99,12 +89,12 @@ public class AuthenticationRest {
 			@QueryParam("privateKey") String privateKey, @QueryParam("consumerKey") String consumerKey) {
 		if (baseURL != null && privateKey != null && consumerKey != null) {
 			privateKey = privateKey.replaceAll(" ", "+");
-			ConfigPersistence.setOauthJiraHome(projectKey, baseURL);
-			ConfigPersistence.setPrivateKey(projectKey, privateKey);
-			ConfigPersistence.setConsumerKey(projectKey, consumerKey);
-			String result = this.retrieveRequestToken(consumerKey, privateKey, projectKey);
+			ConfigPersistence.setOauthJiraHome(baseURL);
+			ConfigPersistence.setPrivateKey(privateKey);
+			ConfigPersistence.setConsumerKey(consumerKey);
+			String result = this.retrieveRequestToken(consumerKey, privateKey);
 
-			ConfigPersistence.setRequestToken(projectKey, result);
+			ConfigPersistence.setRequestToken(result);
 			// TODO: Tim: why do we have to use a map here
 			return Response.status(Status.OK).entity(ImmutableMap.of("result", result)).build();
 		} else {
@@ -124,15 +114,15 @@ public class AuthenticationRest {
 
 			privateKey = privateKey.replaceAll(" ", "+");
 
-			ConfigPersistence.setOauthJiraHome(projectKey, baseURL);
-			ConfigPersistence.setRequestToken(projectKey, requestToken);
-			ConfigPersistence.setPrivateKey(projectKey, privateKey);
-			ConfigPersistence.setConsumerKey(projectKey, consumerKey);
-			ConfigPersistence.setSecretForOAuth(projectKey, secret);
+			ConfigPersistence.setOauthJiraHome(baseURL);
+			ConfigPersistence.setRequestToken(requestToken);
+			ConfigPersistence.setPrivateKey(privateKey);
+			ConfigPersistence.setConsumerKey(consumerKey);
+			ConfigPersistence.setSecretForOAuth(secret);
 
-			String result = this.retrieveAccessToken(requestToken, secret, consumerKey, privateKey, projectKey);
+			String result = this.retrieveAccessToken(requestToken, secret, consumerKey, privateKey);
 
-			ConfigPersistence.setAccessToken(projectKey, result);
+			ConfigPersistence.setAccessToken(result);
 
 			// TODO: Tim: why do we have to use a map here
 			return Response.status(Status.OK).entity(ImmutableMap.of("result", result)).build();

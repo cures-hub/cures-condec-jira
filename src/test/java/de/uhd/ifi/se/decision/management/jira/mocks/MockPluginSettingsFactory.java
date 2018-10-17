@@ -12,6 +12,7 @@ public class MockPluginSettingsFactory implements PluginSettingsFactory{
 
     @Override
     public PluginSettings createGlobalSettings() {
-        return null;
+    	 PluginSettings settings = new MockPluginSettings();
+         return settings;
     }
 }

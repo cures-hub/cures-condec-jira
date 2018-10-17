@@ -1,6 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.view;
 
+import com.atlassian.jira.jql.builder.JqlClauseBuilder;
+import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.query.clause.Clause;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import com.atlassian.jira.bc.issue.search.*;
@@ -31,6 +35,7 @@ public class GraphFiltering {
 	private List<DecisionKnowledgeElement> queryResults;
 	private long startDate;
 	private long endDate;
+	private SearchService searchService;
 
 	public GraphFiltering(String projectKey, String query, ApplicationUser user) {
 		this.query = query;
@@ -189,9 +194,10 @@ public class GraphFiltering {
 			} catch (NumberFormatException e) {
 				LOGGER.error("The Date is not in Format yyyy-mm-dd");
 			}
-		} else if (time.matches("(\\-\\d+(.))")) {
+		} else if (time.matches("(-\\d+(.))")) {
 			long factor = 0;
-			char factorLetter = time.charAt(time.length() - 1);
+			String clearedTime = time.replaceAll("\\s(.)+","");
+			char factorLetter = clearedTime.charAt(clearedTime.length() - 1);
 			factor = getTimeFactor(factorLetter);
 			long queryTime = currentDate + 1;
 			String queryTimeString = time.replaceAll("\\D+", "");
@@ -218,9 +224,10 @@ public class GraphFiltering {
 			} catch (NumberFormatException e) {
 				LOGGER.error("The Date is not in Format yyyy-mm-dd");
 			}
-		} else if (time.matches("(\\-\\d+(.))")) {
+		} else if (time.matches("-\\d+(.)+")) {
 			long factor;
-			char factorLetter = time.charAt(time.length() - 1);
+			String clearedTime = time.replaceAll("\\s(.)+","");
+			char factorLetter = clearedTime.charAt(clearedTime.length() - 1);
 			factor = getTimeFactor(factorLetter);
 			long queryTime = currentDate + 1;
 			String queryTimeString = time.replaceAll("\\D+", "");
@@ -282,7 +289,7 @@ public class GraphFiltering {
 		}
 
 		final SearchService.ParseResult parseResult =
-				ComponentAccessor.getComponentOfType(SearchService.class).parseQuery(this.user, finalQuery);
+				getSearchService().parseQuery(this.user, finalQuery);
 
 		if (parseResult.isValid())
 
@@ -294,7 +301,7 @@ public class GraphFiltering {
 				findDatesInQuery(finalQuery);
 			}
 			try {
-				final SearchResults results = ComponentAccessor.getComponentOfType(SearchService.class).search(
+				final SearchResults results = getSearchService().search(
 						this.user, parseResult.getQuery(), PagerFilter.getUnlimitedFilter());
 				resultingIssues = results.getIssues();
 
@@ -310,6 +317,60 @@ public class GraphFiltering {
 			}
 		}
 
+	}
+
+	public List<DecisionKnowledgeElement> getAllElementsMatchingQuery() {
+		List<DecisionKnowledgeElement> results = new ArrayList<>();
+		results.addAll(this.getQueryResults());
+		boolean isFilteredByTime = this.isQueryContainsCreationDate();
+		long startTime = this.getStartDate();
+		long endTime = this.getEndDate();
+		SearchResults projectIssues = getIssuesForThisProject(user);
+		if (projectIssues != null) {
+			for (Issue currentIssue : projectIssues.getIssues()) {
+				List<DecisionKnowledgeElement> elements = ActiveObjectsManager.getElementsForIssue(currentIssue.getId(),
+						projectKey);
+				for (DecisionKnowledgeElement currentElement : elements) {
+					if (!results.contains(currentElement)) {
+						if (isFilteredByTime) {
+							if (startTime <= 0) {
+								if (currentElement instanceof Sentence && ((Sentence) currentElement).getCreated().getTime()
+										< endTime) {
+									results.add(currentElement);
+								}
+							} else if (endTime <= 0) {
+								if (currentElement instanceof Sentence && ((Sentence) currentElement).getCreated().getTime()
+										> startTime) {
+									results.add(currentElement);
+								}
+							} else {
+								if (currentElement instanceof Sentence && (((Sentence) currentElement).getCreated().getTime()
+										< endTime) && (((Sentence) currentElement).getCreated().getTime() > startTime)) {
+									results.add(currentElement);
+								}
+							}
+						} else {
+							if (currentElement instanceof Sentence) {
+								results.add(currentElement);
+							}
+						}
+					}
+				}
+			}
+		}
+		return results;
+	}
+
+	private SearchResults getIssuesForThisProject(ApplicationUser user) {
+		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
+		com.atlassian.query.Query query = jqlClauseBuilder.project(projectKey).buildQuery();
+		SearchResults searchResult;
+		try {
+			searchResult = getSearchService().search(user, query, PagerFilter.getUnlimitedFilter());
+		} catch (SearchException e) {
+			return null;
+		}
+		return searchResult;
 	}
 
 	public String getQuery() {
@@ -342,5 +403,16 @@ public class GraphFiltering {
 
 	public long getEndDate() {
 		return endDate;
+	}
+
+	public SearchService getSearchService() {
+		if (this.searchService == null) {
+			return searchService = ComponentAccessor.getComponentOfType(SearchService.class);
+		}
+		return this.searchService;
+	}
+
+	public void setSearchService(SearchService searchService) {
+		this.searchService = searchService;
 	}
 }

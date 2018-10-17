@@ -26,6 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.rest.AuthenticationRest;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
@@ -300,11 +301,12 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		if (issueKey == null) {
 			return;
 		}
-		String projectKey = ComponentAccessor.getProjectManager().getProjectObj(this.projectId).getKey();
+		String serverAdress = ConfigPersistence.getOauthJiraHome();
+		if(!serverAdress.endsWith("/")) {
+			serverAdress = serverAdress + "/";
+		}
 		AuthenticationRest ar = new AuthenticationRest();
-		ar.startRequest("http://cures.ifi.uni-heidelberg.de:8080/rest/gitplugin/1.0/issues/" + issueKey + "/commits",
-				projectKey);
-
+		ar.startRequest(serverAdress+"rest/gitplugin/1.0/issues/" + issueKey + "/commits");
 	}
 
 }

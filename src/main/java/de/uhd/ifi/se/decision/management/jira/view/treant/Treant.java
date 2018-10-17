@@ -49,16 +49,10 @@ public class Treant {
 		this(projectKey, elementKey, depth, false);
 	}
 
-//	public Treant(String projectKey, String elementKey, int depth, List<DecisionKnowledgeElement> filteredElements, boolean isFilteredByCreationDate) {
-//		this.graph = new GraphImpl(projectKey, elementKey, filteredElements, isFilteredByCreationDate);
-//		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
-//		this.setChart(new Chart());
-//		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
-//	}
 
 	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user) {
 		GraphFiltering filter = null;
-		if (!((query == null)||(query.equals(""))||(query.equals("?jql="))||(query.equals("?filter=")))) {
+		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
 			filter = new GraphFiltering(projectKey,query,user);
 			filter.produceResultsFromQuery();
 		}
@@ -66,6 +60,7 @@ public class Treant {
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
+		this.setHyperlinked(false);
 	}
 
 	public Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth) {
