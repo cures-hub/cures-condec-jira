@@ -16,57 +16,70 @@ public class ConfigPersistence {
 	private static TransactionTemplate transactionTemplate = ComponentGetter.getTransactionTemplate();
 	private static String pluginStorageKey = ComponentGetter.getPluginStorageKey();
 
-	public static boolean isActivated(String projectKey) {
-		Object isActivated = transactionTemplate.execute(new TransactionCallback<Object>() {
+	public static String getValue(String parameter, String projectKey, boolean isGlobalSetting) {
+		PluginSettings settings;
+		if (isGlobalSetting) {
+			settings = pluginSettingsFactory.createGlobalSettings();
+		} else {
+			if (projectKey == null) {
+				return "";
+			}
+			settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		}
+		if (parameter == null) {
+			return "";
+		}
+		Object value = transactionTemplate.execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-				return settings.get(pluginStorageKey + ".isActivated");
+				return settings.get(pluginStorageKey + "." + parameter);
 			}
 		});
-		return isActivated instanceof String && "true".equals(isActivated);
+		if (value instanceof String) {
+			return value.toString();
+		}
+		return "";
+	}
+
+	public static String getValue(String parameter) {
+		return getValue(parameter, null, true);
+	}
+
+	public static String getValue(String projectKey, String parameter) {
+		return getValue(parameter, projectKey, false);
+	}
+
+	public static void setValue(String projectKey, String parameter, String value) {
+		if (projectKey == null || value == null) {
+			return;
+		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey + "." + parameter, value);
+	}
+
+	public static void setValue(String parameter, String value) {
+		PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
+		settings.put(pluginStorageKey + "." + parameter, value);
+	}
+
+	public static boolean isActivated(String projectKey) {
+		String isActivated = getValue(projectKey, "isActivated");
+		return "true".equals(isActivated);
 	}
 
 	public static boolean isIssueStrategy(String projectKey) {
-		if (projectKey == null) {
-			return false;
-		}
-		Object isIssueStrategy = transactionTemplate.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-				return settings.get(pluginStorageKey + ".isIssueStrategy");
-			}
-		});
-		return isIssueStrategy instanceof String && "true".equals(isIssueStrategy);
+		String isIssueStrategy = getValue(projectKey, "isIssueStrategy");
+		return "true".equals(isIssueStrategy);
 	}
 
 	public static boolean isKnowledgeExtractedFromGit(String projectKey) {
-		if (projectKey == null) {
-			return false;
-		}
-		Object isKnowledgeExtractedFromGit = transactionTemplate.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-				return settings.get(pluginStorageKey + ".isKnowledgeExtractedFromGit");
-			}
-		});
-		return isKnowledgeExtractedFromGit instanceof String && "true".equals(isKnowledgeExtractedFromGit);
+		String isKnowledgeExtractedFromGit = getValue(projectKey, "isKnowledgeExtractedFromGit");
+		return "true".equals(isKnowledgeExtractedFromGit);
 	}
 
 	public static boolean isKnowledgeExtractedFromIssues(String projectKey) {
-		if (projectKey == null) {
-			return false;
-		}
-		Object isKnowledgeExtractedFromIssues = transactionTemplate.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-				return settings.get(pluginStorageKey + ".isKnowledgeExtractedFromIssues");
-			}
-		});
-		return isKnowledgeExtractedFromIssues instanceof String && "true".equals(isKnowledgeExtractedFromIssues);
+		String isKnowledgeExtractedFromIssues = getValue(projectKey, "isKnowledgeExtractedFromIssues");
+		return "true".equals(isKnowledgeExtractedFromIssues);
 	}
 
 	public static boolean isKnowledgeTypeEnabled(String projectKey, KnowledgeType knowledgeType) {
@@ -74,327 +87,136 @@ public class ConfigPersistence {
 	}
 
 	public static boolean isKnowledgeTypeEnabled(String projectKey, String knowledgeType) {
-		if (projectKey == null) {
-			return false;
-		}
-		Object isKnowledgeTypeEnabled = transactionTemplate.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-				return settings.get(pluginStorageKey + "." + knowledgeType);
-			}
-		});
-		return isKnowledgeTypeEnabled instanceof String && "true".equals(isKnowledgeTypeEnabled);
+		String isKnowledgeTypeEnabled = getValue(projectKey, knowledgeType);
+		return "true".equals(isKnowledgeTypeEnabled);
 	}
 
 	public static void setActivated(String projectKey, boolean isActivated) {
-		if (projectKey == null) {
-			return;
-		}
-		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey + ".isActivated", Boolean.toString(isActivated));
+		setValue(projectKey, "isActivated", Boolean.toString(isActivated));
 	}
 
 	public static void setIssueStrategy(String projectKey, boolean isIssueStrategy) {
-		if (projectKey == null) {
-			return;
-		}
-		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey + ".isIssueStrategy", Boolean.toString(isIssueStrategy));
+		setValue(projectKey, "isIssueStrategy", Boolean.toString(isIssueStrategy));
 	}
 
-	public static void setKnowledgeExtractedFromGit(String projectKey, boolean setKnowledgeExtractedFromGit) {
-		if (projectKey == null) {
-			return;
-		}
-		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey + ".isKnowledgeExtractedFromGit", Boolean.toString(setKnowledgeExtractedFromGit));
+	public static void setKnowledgeExtractedFromGit(String projectKey, boolean isKnowledgeExtractedFromGit) {
+		setValue(projectKey, "isKnowledgeExtractedFromGit", Boolean.toString(isKnowledgeExtractedFromGit));
 	}
 
-	public static void setKnowledgeExtractedFromIssues(String projectKey, boolean setKnowledgeExtractedFromIssues) {
-		if (projectKey == null) {
-			return;
-		}
-		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey + ".isKnowledgeExtractedFromIssues",
-				Boolean.toString(setKnowledgeExtractedFromIssues));
+	public static void setKnowledgeExtractedFromIssues(String projectKey, boolean isKnowledgeExtractedFromIssues) {
+		setValue(projectKey, "isKnowledgeExtractedFromIssues", Boolean.toString(isKnowledgeExtractedFromIssues));
 	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
 			boolean isKnowledgeTypeEnabled) {
-		if (projectKey == null) {
-			return;
-		}
-		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey + "." + knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
+		setValue(projectKey, "knowledgeType", Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
 	// TODO Testing
 	public static void setGitAddress(String projectKey, String gitAddress) {
-		if (projectKey == null || gitAddress == null) {
-			return;
-		}
-		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey + ".gitAddress", gitAddress);
+		setValue(projectKey, "gitAddress", gitAddress);
 	}
 
 	// TODO Testing
 	public static String getGitAddress(String projectKey) {
-		if (projectKey == null) {
-			return "";
-		}
-		Object gitAddress = transactionTemplate.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-				return settings.get(pluginStorageKey + ".gitAddress");
-			}
-		});
-		if (gitAddress instanceof String) {
-			return (String) gitAddress;
-		}
-		return "";
+		return getValue(projectKey, "gitAddress");
 	}
 
 	// TODO Testing
 	public static void setWebhookUrl(String projectKey, String webhookUrl) {
-		if (projectKey == null || webhookUrl == null) {
-			return;
-		}
-		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey + ".webhookUrl", webhookUrl);
+		setValue(projectKey, "webhookUrl", webhookUrl);
 	}
 
 	// TODO Testing
 	public static String getWebhookUrl(String projectKey) {
-		if (projectKey == null) {
-			return "";
-		}
-		Object webhookUrl = transactionTemplate.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-				return settings.get(pluginStorageKey + ".webhookUrl");
-			}
-		});
-		if (webhookUrl instanceof String) {
-			return (String) webhookUrl;
-		}
-		return "";
+		return getValue(projectKey, "webhookUrl");
 	}
 
 	// TODO Testing
 	public static void setWebhookSecret(String projectKey, String webhookSecret) {
-		if (projectKey == null || webhookSecret == null) {
-			return;
-		}
-		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey + ".webhookSecret", webhookSecret);
+		setValue(projectKey, "webhookSecret", webhookSecret);
 	}
 
 	// TODO Testing
 	public static String getWebhookSecret(String projectKey) {
-		if (projectKey == null) {
-			return "";
-		}
-		Object webhookSecret = transactionTemplate.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-				return settings.get(pluginStorageKey + ".webhookSecret");
-			}
-		});
-		if (webhookSecret instanceof String) {
-			return (String) webhookSecret;
-		}
-		return "";
+		return getValue(projectKey, "webhookSecret");
 	}
 
 	// TODO Testing
-	public static void setWebhookEnabled(String projectKey, boolean isActivated) {
-		if (projectKey == null) {
-			return;
-		}
-		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey + ".isWebhookEnabled", Boolean.toString(isActivated));
+	public static void setWebhookEnabled(String projectKey, boolean isWebhookEnabled) {
+		setValue(projectKey, "isWebhookEnabled", Boolean.toString(isWebhookEnabled));
 	}
 
 	// TODO Testing
 	public static boolean isWebhookEnabled(String projectKey) {
-		if (projectKey == null) {
-			return false;
-		}
-		Object isWebhookEnabled = transactionTemplate.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-				return settings.get(pluginStorageKey + ".isWebhookEnabled");
-			}
-		});
-		return isWebhookEnabled instanceof String && "true".equals(isWebhookEnabled);
+		String isWebhookEnabled = getValue(projectKey, "isWebhookEnabled");
+		return "true".equals(isWebhookEnabled);
 	}
-
-	public static boolean isIconParsing(String projectKey) {
-		Object isIconParsingEnabled = transactionTemplate.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-				return settings.get(pluginStorageKey + ".isIconParsing");
-			}
-		});
-		return isIconParsingEnabled instanceof String && "true".equals(isIconParsingEnabled);
-	}
-
-	public static void setIconParsing(String projectKey, boolean isIconParsing) {
-		if (projectKey == null) {
-			return;
-		}
-		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey + ".isIconParsing", Boolean.toString(isIconParsing));
-	}
-	
-	public static void setRequestToken(String requestToken) {
-		PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-		settings.put(pluginStorageKey + ".requestToken",requestToken);
-	}
-	
-	
-
-	public static String getRequestToken() {
-		Object requestToken = transactionTemplate.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-				return settings.get(pluginStorageKey + ".requestToken");
-			}
-		});
-		if(requestToken == null) {
-			return "";
-		}
-		return requestToken.toString();
-	}
-	
-	public static void setOauthJiraHome(String oauthJiraHome) {
-		PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-		settings.put(pluginStorageKey + ".oauthJiraHome",oauthJiraHome);
-	}
-	
-	public static String getOauthJiraHome() {
-		Object oauthJiraHome = transactionTemplate.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-				return settings.get(pluginStorageKey + ".oauthJiraHome");
-			}
-		});
-		if(oauthJiraHome == null) {
-			return ""; 
-		}
-		return oauthJiraHome.toString();
-	}
-
-	public static void setPrivateKey(String privateKey) {
-		PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-		settings.put(pluginStorageKey + ".privateKey",privateKey);
-	}
-	
-	public static String getPrivateKey() {
-		Object privateKey = transactionTemplate.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-				return settings.get(pluginStorageKey + ".privateKey");
-			}
-		});
-		if(privateKey ==  null) {
-			return "";
-		}
-		return privateKey.toString();
-	}
-	
-	public static String getConsumerKey( ) {
-		Object consumerKey = transactionTemplate.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-				return settings.get(pluginStorageKey + ".consumerKey");
-			}
-		});
-		if(consumerKey == null) {
-			return "";
-		}
-		return consumerKey.toString();
-	}
-	
-	public static void setConsumerKey(String consumerKey) {
-		PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-		settings.put(pluginStorageKey + ".consumerKey",consumerKey);
-	}
-	
-	public static void setSecretForOAuth(String gitAuthSecret) {
-		PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-		settings.put(pluginStorageKey + ".gitAuthSecret",gitAuthSecret);
-	}
-	
-	public static String getSecretForOAuth() {
-		Object gitAuthSecret = transactionTemplate.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-				return settings.get(pluginStorageKey + ".gitAuthSecret");
-			}
-		});
-		if(gitAuthSecret == null) {
-			return "";
-		}
-		return gitAuthSecret.toString();
-	}
-	
-	public static void setAccessToken(String accessToken) {
-		PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-		settings.put(pluginStorageKey + ".accessToken",accessToken);
-	}
-	
-	public static String getAccessToken() {
-		Object accessToken = transactionTemplate.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-				return settings.get(pluginStorageKey + ".accessToken");
-			}
-		});
-		if(accessToken == null) {
-			return "";
-		}
-		return accessToken.toString();
-	}
-	
 
 	// TODO Testing
 	public static void setWebhookType(String projectKey, String webhookType) {
-		if (projectKey == null || webhookType == null) {
-			return;
-		}
-		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey + ".webhookType", webhookType);
+		setValue(projectKey, "webhookType", webhookType);
 	}
 
 	// TODO Testing
 	public static String getWebhookType(String projectKey) {
-		Object webhookType = transactionTemplate.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction() {
-				PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-				return settings.get(pluginStorageKey + ".webhookType");
-			}
-		});
-		if (webhookType instanceof String) {
-			return (String) webhookType;
-		}
-		return "";
+		return getValue(projectKey, "webhookType");
 	}
 
-	
+	public static boolean isIconParsing(String projectKey) {
+		String isIconParsing = getValue(projectKey, "isIconParsing");
+		return "true".equals(isIconParsing);
+	}
 
-	
+	public static void setIconParsing(String projectKey, boolean isIconParsing) {
+		setValue(projectKey, "isIconParsing", Boolean.toString(isIconParsing));
+	}
+
+	public static void setRequestToken(String requestToken) {
+		setValue("requestToken", requestToken);
+	}
+
+	public static String getRequestToken() {
+		return getValue("requestToken");
+	}
+
+	public static void setOauthJiraHome(String oauthJiraHome) {
+		setValue("oauthJiraHome", oauthJiraHome);
+	}
+
+	public static String getOauthJiraHome() {
+		return getValue("oauthJiraHome");
+	}
+
+	public static void setPrivateKey(String privateKey) {
+		setValue("privateKey", privateKey);
+	}
+
+	public static String getPrivateKey() {
+		return getValue("privateKey");
+	}
+
+	public static String getConsumerKey() {
+		return getValue("consumerKey");
+	}
+
+	public static void setConsumerKey(String consumerKey) {
+		setValue("consumerKey", consumerKey);
+	}
+
+	public static void setSecretForOAuth(String gitAuthSecret) {
+		setValue("gitAuthSecret", gitAuthSecret);
+	}
+
+	public static String getSecretForOAuth() {
+		return getValue("gitAuthSecret");
+	}
+
+	public static void setAccessToken(String accessToken) {
+		setValue("accessToken", accessToken);
+	}
+
+	public static String getAccessToken() {
+		return getValue("accessToken");
+	}
 }
