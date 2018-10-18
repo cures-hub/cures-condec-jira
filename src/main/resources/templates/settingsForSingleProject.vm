@@ -126,14 +126,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			<aui-toggle id="iconParsing-toggle" value="$projectKey"
 				label="Use icon labels"></aui-toggle>
 			<script>
-                var activationToggle = document.getElementById('iconParsing-toggle');
-                #if ($project.isIconParsing() == true)
-						activationToggle.checked = true;
-                    #else
-						activationToggle.checked = false;
-                    #end
-                    console.log(activationToggle.checked );
-                activationToggle.addEventListener('change', function(error) {
+                var sentenceIconToggle = document.getElementById('iconParsing-toggle');
+                sentenceIconToggle.checked = $iconToggle
+                sentenceIconToggle.addEventListener('change', function(error) {
                     this.busy = true;
                     setIconParsing(this.value, this.checked);
                     this.busy = false;

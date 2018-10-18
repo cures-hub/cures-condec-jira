@@ -446,7 +446,7 @@ public class ConfigRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		boolean isIconParsing = ConfigPersistence.isIconParsingEnabled(projectKey);
+		boolean isIconParsing = ConfigPersistence.isIconParsing(projectKey);
 		return Response.ok(isIconParsing).build();
 	}
 

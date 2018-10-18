@@ -40,7 +40,7 @@ public class CommentSplitter {
 			String tag = manualRationaleTagList[i];
 			firstSplit = searchForFurtherTags(firstSplit, tag, tag.replace("[", "[/"));
 		}
-		if(ConfigPersistence.isIconParsingEnabled(projectKey)) {
+		if(ConfigPersistence.isIconParsing(projectKey)) {
 			for (int i = 0; i < manualRationalIconList.length; i++) {
 				firstSplit = searchForFurtherTags(firstSplit, manualRationalIconList[i], System.getProperty("line.separator"));
 			}
@@ -113,7 +113,7 @@ public class CommentSplitter {
 	}
 
 	public static String getKnowledgeTypeFromManuallIssueTag(String body, String projectKey, boolean lookOutForIcons) {
-		boolean checkIcons = lookOutForIcons && ConfigPersistence.isIconParsingEnabled(projectKey);
+		boolean checkIcons = lookOutForIcons && ConfigPersistence.isIconParsing(projectKey);
 		if (body.toLowerCase().contains("[issue]") || (checkIcons && body.contains("(!)"))) {
 			return KnowledgeType.ISSUE.toString();
 		}

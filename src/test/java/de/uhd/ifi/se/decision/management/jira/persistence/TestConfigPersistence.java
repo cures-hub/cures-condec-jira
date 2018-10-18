@@ -222,7 +222,7 @@ public class TestConfigPersistence extends TestSetUpWithIssues {
 	
 	@Test
 	public void testIsIconParsingTrue() {
-		assertNotNull(ConfigPersistence.isIconParsingEnabled("TEST"));
+		assertNotNull(ConfigPersistence.isIconParsing("TEST"));
 	}
 	
 	@Test

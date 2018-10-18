@@ -234,7 +234,7 @@ public class ConfigPersistence {
 		return isWebhookEnabled instanceof String && "true".equals(isWebhookEnabled);
 	}
 
-	public static boolean isIconParsingEnabled(String projectKey) {
+	public static boolean isIconParsing(String projectKey) {
 		Object isIconParsingEnabled = transactionTemplate.execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction() {
