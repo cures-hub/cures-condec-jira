@@ -58,7 +58,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this();
 		super.setId(id);
 		retrieveAttributesFromActievObjects();
-		retrieveBodyFromJiraComment();// TODO: Maybe remove this, needs to be tested
+		retrieveBodyFromJiraComment();
 	}
 
 	public SentenceImpl(String body, long id) {
@@ -315,6 +315,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 			super.type = KnowledgeType.OTHER;
 		} else {
 			super.type = KnowledgeType.getKnowledgeType(kt);
+			this.setKnowledgeTypeString(kt);
 		}
 		IssueManager im = ComponentAccessor.getIssueManager();
 		MutableIssue mi = im.getIssueObject(this.getIssueId());

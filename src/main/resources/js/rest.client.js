@@ -430,6 +430,20 @@ function setKnowledgeExtractedFromIssues(isKnowledgeExtractedFromIssues, project
 	});
 }
 
+function setUseClassiferForIssueComments(isClassifierUsedForIssues, projectKey) {
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setUseClassiferForIssueComments.json?projectKey="
+			+ projectKey + "&isClassifierUsedForIssues=" + isClassifierUsedForIssues, null, function(error,
+			response) {
+		if (error === null) {
+			showFlag("success", "Usage of classification for Decision Knowledge in Issue Comments has been set to "
+					+ isClassifierUsedForIssues + ".");
+		} else {
+			showFlag("error", "Usage of classification for Decision Knowledge in Issue Comments could not be configured.");
+		}
+	});
+}
+
+
 function isKnowledgeExtractedFromIssues(projectKey, callback) {
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isKnowledgeExtractedFromIssues.json?projectKey="
 			+ projectKey, function(error, isKnowledgeExtractedFromIssues) {
