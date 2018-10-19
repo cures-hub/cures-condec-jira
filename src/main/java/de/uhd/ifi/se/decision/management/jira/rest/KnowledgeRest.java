@@ -414,6 +414,10 @@ public class KnowledgeRest {
 		return Response.ok(filteredElements).build();
 	}
 
+	private String getProjectKey(String elementKey) {
+		return elementKey.split("-")[0];
+	}
+
 	private ApplicationUser getCurrentUser(HttpServletRequest request) {
 		com.atlassian.jira.user.util.UserManager jiraUserManager = ComponentAccessor.getUserManager();
 		UserManager userManager = ComponentGetter.getUserManager();
