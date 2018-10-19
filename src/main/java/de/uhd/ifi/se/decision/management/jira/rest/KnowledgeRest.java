@@ -398,9 +398,10 @@ public class KnowledgeRest {
 	@Path("/getAllElementsLinkedToElement")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getAllElementsLinkedToElement(@QueryParam("projectKey") String projectKey,
-			@QueryParam("elementKey") String elementKey, @QueryParam("URISearch") String uriSearch,
-			@Context HttpServletRequest request) {
+	public Response getAllElementsLinkedToElement(@QueryParam("elementKey") String elementKey,
+												  @QueryParam("URISearch") String uriSearch,
+												  @Context HttpServletRequest request) {
+		String projectKey = getProjectKey(elementKey);
 		ApplicationUser user = getCurrentUser(request);
 
 		GraphFiltering filter = new GraphFiltering(projectKey, uriSearch, user);
