@@ -1,8 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -13,8 +13,9 @@ import com.atlassian.activeobjects.test.TestActiveObjects;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
@@ -26,7 +27,7 @@ public class TestConfigPersistence extends TestSetUpWithIssues {
 	public void setUp() {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockDefaultUserManager());
+				new MockUserManager());
 	}
 
 	// IsIssueStrategy
@@ -125,121 +126,120 @@ public class TestConfigPersistence extends TestSetUpWithIssues {
 		ConfigPersistence.setKnowledgeExtractedFromGit("TEST", true);
 	}
 
-	//IsKnowledgeExtractedFromIssues
+	// IsKnowledgeExtractedFromIssues
 	@Test
-	public void testIsKnowledgeExtractedIssuesKeyNull(){
+	public void testIsKnowledgeExtractedIssuesKeyNull() {
 		assertFalse(ConfigPersistence.isKnowledgeExtractedFromIssues(null));
 	}
 
 	@Test
-	public void testIsKnowledgeExtractedIssuesKeyFilled(){
+	public void testIsKnowledgeExtractedIssuesKeyFilled() {
 		assertTrue(ConfigPersistence.isKnowledgeExtractedFromIssues("TEST"));
 	}
 
-	//isKnowledgeTypeEnabled
+	// isKnowledgeTypeEnabled
 	@Test
-	public void testIsKnowledgeTypeEnabledKeyNullTypeFilled(){
+	public void testIsKnowledgeTypeEnabledKeyNullTypeFilled() {
 		assertFalse(ConfigPersistence.isKnowledgeTypeEnabled(null, KnowledgeType.SOLUTION.toString()));
 	}
 
 	@Test
-	public void testIsKnowledgeTypeEnabledKeyFilledTypeFilled(){
+	public void testIsKnowledgeTypeEnabledKeyFilledTypeFilled() {
 		assertTrue(ConfigPersistence.isKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString()));
 	}
 
-	//setKnowledgeExtractedFromIssues
+	// setKnowledgeExtractedFromIssues
 	@Test
-	public void testSetKnowledgeExtractedFromIssuesKeyNullIssueTrue(){
-		ConfigPersistence.setKnowledgeExtractedFromIssues(null,true);
+	public void testSetKnowledgeExtractedFromIssuesKeyNullIssueTrue() {
+		ConfigPersistence.setKnowledgeExtractedFromIssues(null, true);
 	}
 
 	@Test
-	public void  testSetKnowledgeExtractedFromIssuesKeyNullIssueFalse(){
-		ConfigPersistence.setKnowledgeExtractedFromIssues(null,false);
+	public void testSetKnowledgeExtractedFromIssuesKeyNullIssueFalse() {
+		ConfigPersistence.setKnowledgeExtractedFromIssues(null, false);
 	}
 
 	@Test
-	public void testSetKnowledgeExtractedFromIssuesKeyFilledIssueTrue(){
+	public void testSetKnowledgeExtractedFromIssuesKeyFilledIssueTrue() {
 		ConfigPersistence.setKnowledgeExtractedFromIssues("TEST", true);
 	}
 
 	@Test
-	public void testSetKnowledgeExtractedFromIssuesKeyFilledIssueFalse(){
+	public void testSetKnowledgeExtractedFromIssuesKeyFilledIssueFalse() {
 		ConfigPersistence.setKnowledgeExtractedFromIssues("TEST", false);
 	}
 
-	//setKnowledgeTypeEnabled
+	// setKnowledgeTypeEnabled
 	@Test
-	public void testSetKnowledgeTypeEnabledKeyNullTypeNullEnabledFalse(){
+	public void testSetKnowledgeTypeEnabledKeyNullTypeNullEnabledFalse() {
 		ConfigPersistence.setKnowledgeTypeEnabled(null, null, false);
 	}
 
 	@Test
-	public void testSetKnowledgeTypeEnabledKeyNullTypeNullEnabledTrue(){
+	public void testSetKnowledgeTypeEnabledKeyNullTypeNullEnabledTrue() {
 		ConfigPersistence.setKnowledgeTypeEnabled(null, null, true);
 	}
 
 	@Test
-	public void testSetKnowledgeTypeEnabledKeyNullTypeFilledEnabledFalse(){
+	public void testSetKnowledgeTypeEnabledKeyNullTypeFilledEnabledFalse() {
 		ConfigPersistence.setKnowledgeTypeEnabled(null, KnowledgeType.SOLUTION.toString(), false);
 	}
 
 	@Test
-	public void testSetKnowledgeTypeEnabledKeyNullTypeFilledEnabledTrue(){
+	public void testSetKnowledgeTypeEnabledKeyNullTypeFilledEnabledTrue() {
 		ConfigPersistence.setKnowledgeTypeEnabled(null, KnowledgeType.SOLUTION.toString(), true);
 	}
 
 	@Test
-	public void testSetKnowledgeTypeEnabledKeyFilledTypeNullEnabledFalse(){
+	public void testSetKnowledgeTypeEnabledKeyFilledTypeNullEnabledFalse() {
 		ConfigPersistence.setKnowledgeTypeEnabled("TEST", null, false);
 	}
 
 	@Test
-	public void testSetKnowledgeTypeEnabledKeyFilledTypeNullEnabledTrue(){
+	public void testSetKnowledgeTypeEnabledKeyFilledTypeNullEnabledTrue() {
 		ConfigPersistence.setKnowledgeTypeEnabled("TEST", null, true);
 	}
 
 	@Test
-	public void testSetKnowledgeTypeEnabledKeyFilledTypeFilledEnabledFalse(){
+	public void testSetKnowledgeTypeEnabledKeyFilledTypeFilledEnabledFalse() {
 		ConfigPersistence.setKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString(), false);
 	}
 
 	@Test
-	public void testSetKnowledgeTypeEnabledKeyFilledTypeFilledEnabledTrue(){
+	public void testSetKnowledgeTypeEnabledKeyFilledTypeFilledEnabledTrue() {
 		ConfigPersistence.setKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString(), true);
 	}
-	
+
 	@Test
 	public void testSetIconParsingTrue() {
 		ConfigPersistence.setIconParsing("TEST", true);
-	}	
-	
+	}
+
 	@Test
 	public void testSetIconParsingFalse() {
 		ConfigPersistence.setIconParsing("TEST", false);
 	}
-	
-	
+
 	@Test
 	public void testIsIconParsingTrue() {
 		assertNotNull(ConfigPersistence.isIconParsing("TEST"));
 	}
-	
+
 	@Test
 	public void testSetAccessToken() {
 		ConfigPersistence.setAccessToken("new Token");
 	}
-	
+
 	@Test
 	public void testGetAccessToken() {
 		assertNotNull(ConfigPersistence.getAccessToken());
-	}	
+	}
 
 	@Test
 	public void testSetRequestToken() {
 		ConfigPersistence.setRequestToken("new Token");
 	}
-	
+
 	@Test
 	public void testGetRequestToken() {
 		assertNotNull(ConfigPersistence.getRequestToken());
@@ -249,7 +249,7 @@ public class TestConfigPersistence extends TestSetUpWithIssues {
 	public void testSetOauthJiraHome() {
 		ConfigPersistence.setOauthJiraHome("new Token");
 	}
-	
+
 	@Test
 	public void testGetOauthJiraHome() {
 		assertNotNull(ConfigPersistence.getOauthJiraHome());
@@ -259,7 +259,7 @@ public class TestConfigPersistence extends TestSetUpWithIssues {
 	public void testSetPrivateKey() {
 		ConfigPersistence.setPrivateKey("new Token");
 	}
-	
+
 	@Test
 	public void testGetPrivateKey() {
 		assertNotNull(ConfigPersistence.getPrivateKey());
@@ -269,21 +269,20 @@ public class TestConfigPersistence extends TestSetUpWithIssues {
 	public void testSetConsumerKey() {
 		ConfigPersistence.setConsumerKey("new Token");
 	}
-	
+
 	@Test
 	public void testGetConsumerKey() {
 		assertNotNull(ConfigPersistence.getConsumerKey());
 	}
-	
+
 	@Test
 	public void testSetSecretForOAuth() {
 		ConfigPersistence.setSecretForOAuth("new Token");
 	}
-	
+
 	@Test
 	public void testGetSecretForOAuth() {
 		assertNotNull(ConfigPersistence.getSecretForOAuth());
 	}
-	
-	
+
 }

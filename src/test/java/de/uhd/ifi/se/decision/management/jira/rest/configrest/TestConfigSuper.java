@@ -12,8 +12,8 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import net.java.ao.EntityManager;
 
@@ -29,10 +29,10 @@ public class TestConfigSuper extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
-		UserManager userManager = new MockDefaultUserManager();
+		UserManager userManager = new MockUserManager();
 		confRest = new ConfigRest(userManager);
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockDefaultUserManager());
+				new MockUserManager());
 
 		request = new MockHttpServletRequest();
 		request.setAttribute("WithFails", false);

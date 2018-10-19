@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
 
@@ -22,9 +24,9 @@ import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import net.java.ao.EntityManager;
@@ -32,7 +34,7 @@ import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@net.java.ao.test.jdbc.Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class) 
+@net.java.ao.test.jdbc.Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 public class TestGenericLink extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
@@ -43,7 +45,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	public void setUp() {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockDefaultUserManager());
+				new MockUserManager());
 
 		createLocalIssue();
 		addCommentsToIssue("this is a testSentence. This a second one. And a third one");
@@ -73,22 +75,21 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSecondConstructor() {
-		GenericLinkImpl link = new GenericLinkImpl("i1337","i1338");
+		GenericLinkImpl link = new GenericLinkImpl("i1337", "i1338");
 		assertTrue(link.getIdOfDestinationElement().equals("i1337"));
 		assertTrue(link.getIdOfSourceElement().equals("i1338"));
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testThirdConstructor() {
-		GenericLinkImpl link = new GenericLinkImpl("i1337","i1338","contain");
+		GenericLinkImpl link = new GenericLinkImpl("i1337", "i1338", "contain");
 		assertTrue(link.getIdOfDestinationElement().equals("i1337"));
 		assertTrue(link.getIdOfSourceElement().equals("i1338"));
 		assertTrue(link.getType().equals("contain"));
-		
+
 	}
-	
-	
+
 	@Test
 	@NonTransactional
 	public void testSimpleLink() {
@@ -168,8 +169,6 @@ public class TestGenericLink extends TestSetUpWithIssues {
 		assertNotNull(link.getBothElements().get(0));
 		assertNotNull(link.getBothElements().get(1));
 	}
-	
-	
 
 	@Test
 	@NonTransactional
@@ -183,7 +182,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 		assertTrue(link.isValid());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testIsValidWithInValidLink() {
@@ -196,7 +195,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 		assertFalse(link.isValid());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testToStringToBeatCodeCoverage() {
@@ -205,10 +204,8 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 		link.setIdOfSourceElement("i" + 1233);
 		link.setIdOfDestinationElement("i" + 13423);
-		
+
 		assertTrue(link.toString().equals("i1233 to i13423"));
 	}
-
-	
 
 }

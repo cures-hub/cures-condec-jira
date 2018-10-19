@@ -3,15 +3,22 @@ package de.uhd.ifi.se.decision.management.jira.view;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import javax.ejb.CreateException;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockSearchService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
@@ -19,17 +26,10 @@ import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import sun.awt.AWTAccessor;
-
-import javax.ejb.CreateException;
 
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestGraphFiltering extends  TestSetUpWithIssues{
+public class TestGraphFiltering extends TestSetUpWithIssues {
 	private EntityManager entityManager;
 	private GraphFiltering graphFiltering;
 	private DecisionKnowledgeElement element;
@@ -39,7 +39,7 @@ public class TestGraphFiltering extends  TestSetUpWithIssues{
 	public void setUp() throws CreateException {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockDefaultUserManager());
+				new MockUserManager());
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
 		element.setProject(new DecisionKnowledgeProjectImpl("Test"));
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
@@ -49,8 +49,8 @@ public class TestGraphFiltering extends  TestSetUpWithIssues{
 
 	@Test
 	public void testConstructor() {
-		GraphFiltering filter = new GraphFiltering(element.getProject().getProjectKey(),"?jql= Project = "
-				+ element.getProject().getProjectKey() + " AND type!=null",user);
+		GraphFiltering filter = new GraphFiltering(element.getProject().getProjectKey(),
+				"?jql= Project = " + element.getProject().getProjectKey() + " AND type!=null", user);
 		assertNotNull(filter);
 	}
 
@@ -58,7 +58,7 @@ public class TestGraphFiltering extends  TestSetUpWithIssues{
 	@NonTransactional
 	public void testSetQuery() {
 		graphFiltering.setQuery("?jql= type!=null");
-		assertEquals("?jql= type!=null",graphFiltering.getQuery());
+		assertEquals("?jql= type!=null", graphFiltering.getQuery());
 	}
 
 	@Test

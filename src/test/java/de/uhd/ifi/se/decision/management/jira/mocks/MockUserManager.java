@@ -8,7 +8,7 @@ import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.sal.api.user.UserProfile;
 import com.atlassian.sal.api.user.UserResolutionException;
 
-public class MockDefaultUserManager implements UserManager {
+public class MockUserManager implements UserManager {
 
 	@Override
 	public boolean authenticate(String arg0, String arg1) {
@@ -21,12 +21,18 @@ public class MockDefaultUserManager implements UserManager {
 	}
 
 	@Override
-	public String getRemoteUsername(HttpServletRequest arg0) {
-		if((boolean)arg0.getAttribute("WithFails")) {
+	public String getRemoteUsername(HttpServletRequest request) {
+		if (request.getAttribute("WithFails") != null && (boolean) request.getAttribute("WithFails")) {
 			return "WithFails";
 		}
-		if((boolean)arg0.getAttribute("NoFails")) {
+		if (request.getAttribute("NoFails") != null && (boolean) request.getAttribute("NoFails")) {
 			return "NoFails";
+		}
+		if (request.getAttribute("NoSysAdmin") != null && (boolean) request.getAttribute("NoSysAdmin")) {
+			return "NoSysAdmin";
+		}
+		if (request.getAttribute("SysAdmin") != null && (boolean) request.getAttribute("SysAdmin")) {
+			return "SysAdmin";
 		}
 		return null;
 	}
@@ -42,9 +48,9 @@ public class MockDefaultUserManager implements UserManager {
 	}
 
 	@Override
-	public boolean isSystemAdmin(String arg) {
-        return "NoFails".equals(arg);
-    }
+	public boolean isSystemAdmin(String username) {
+		return "SysAdmin".equals(username) || "NoFails".equals(username);
+	}
 
 	@Override
 	public boolean isUserInGroup(String arg0, String arg1) {
@@ -55,5 +61,4 @@ public class MockDefaultUserManager implements UserManager {
 	public Principal resolve(String arg0) throws UserResolutionException {
 		return null;
 	}
-
 }

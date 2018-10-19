@@ -30,11 +30,10 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockAdminUserManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockLoginUriProvider;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTemplateRenderer;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
@@ -52,12 +51,12 @@ public class TestSettingsOfAllProjects extends TestSetUpWithIssues {
 	public void setUp() {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockDefaultUserManager());
+				new MockUserManager());
 		request = new MockHttpServletRequest();
 		response = new MockHttpServletResponse();
 		LoginUriProvider login = new MockLoginUriProvider();
 		TemplateRenderer renderer = new MockTemplateRenderer();
-		UserManager userManager = new MockAdminUserManager();
+		UserManager userManager = new MockUserManager();
 		servlet = new SettingsOfAllProjects(userManager, login, renderer);
 
 		projectManager = new MockProjectManager();

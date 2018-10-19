@@ -16,8 +16,8 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import net.java.ao.EntityManager;
@@ -37,7 +37,7 @@ public class TestCreateLink extends TestSetUpWithIssues {
 		knowledgeRest = new KnowledgeRest();
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockDefaultUserManager());
+				new MockUserManager());
 
 		request = new MockHttpServletRequest();
 		request.setAttribute("WithFails", false);
@@ -50,10 +50,11 @@ public class TestCreateLink extends TestSetUpWithIssues {
 	}
 
 	// TODO Why does the following test case fail?
-//	@Test
-//	public void testProjectKeyFilledRequestFilledLinkIdFilled() {
-//		assertEquals(Status.OK.getStatusCode(), knowledgeRest.createLink("TEST", request, link).getStatus());
-//	}
+	// @Test
+	// public void testProjectKeyFilledRequestFilledLinkIdFilled() {
+	// assertEquals(Status.OK.getStatusCode(), knowledgeRest.createLink("TEST",
+	// request, link).getStatus());
+	// }
 
 	@Test
 	public void testProjectKeyNullRequestNullLinkNull() {
