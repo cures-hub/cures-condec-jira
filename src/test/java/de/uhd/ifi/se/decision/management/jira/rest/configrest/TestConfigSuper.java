@@ -36,7 +36,9 @@ public class TestConfigSuper extends TestSetUpWithIssues {
 
 		request = new MockHttpServletRequest();
 		request.setAttribute("WithFails", false);
-		request.setAttribute("NoFails", true);
+		request.setAttribute("NoFails", false);
+		request.setAttribute("NoSysAdmin", false);
+		request.setAttribute("SysAdmin", true);
 	}
 
 	protected Response getBadRequestResponse(String errorMessage) {

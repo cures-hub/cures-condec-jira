@@ -113,6 +113,7 @@ public class TestSetKnowledgeExtractedFormIssues extends TestConfigSuper {
     public void testUserNull() {
         request.setAttribute("WithFails", false);
         request.setAttribute("NoFails", false);
+        request.setAttribute("SysAdmin", false);
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
                 confRest.setKnowledgeExtractedFromIssues(request, "NotTEST", "false").getStatus());
     }

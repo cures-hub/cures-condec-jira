@@ -31,6 +31,7 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.config.AuthorizationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
@@ -471,26 +472,32 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build();
 		}
 
-		Response userResponse = checkIfUserIsAuthorized(request);
-		if (userResponse.getStatus() != Status.OK.getStatusCode()) {
-			return userResponse;
-		}
-
 		Response projectResponse = checkIfProjectKeyIsValid(projectKey);
 		if (projectResponse.getStatus() != Status.OK.getStatusCode()) {
 			return projectResponse;
+		}
+		
+		Response userResponse = checkIfUserIsAuthorized(request, projectKey);
+		if (userResponse.getStatus() != Status.OK.getStatusCode()) {
+			return userResponse;
 		}
 
 		return Response.status(Status.OK).build();
 	}
 
-	private Response checkIfUserIsAuthorized(HttpServletRequest request) {
+	private Response checkIfUserIsAuthorized(HttpServletRequest request, String projectKey) {
 		String username = userManager.getRemoteUsername(request);
-		if (username == null || !userManager.isSystemAdmin(username)) {
-			LOGGER.warn("Unauthorized user (name:{}) tried to change configuration.", username);
-			return Response.status(Status.UNAUTHORIZED).build();
+		boolean isProjectAdmin = AuthorizationManager.isProjectAdmin(username, projectKey);
+		if (isProjectAdmin) {
+			return Response.status(Status.OK).build();
 		}
-		return Response.status(Status.OK).build();
+		LOGGER.warn("Unauthorized user (name:{}) tried to change configuration.", username);
+		return Response.status(Status.UNAUTHORIZED).entity(ImmutableMap.of("error", "Authorization failed.")).build();
+//		if (username == null || !userManager.isSystemAdmin(username)) {
+//			LOGGER.warn("Unauthorized user (name:{}) tried to change configuration.", username);
+//			return Response.status(Status.UNAUTHORIZED).build();
+//		}
+//		return Response.status(Status.OK).build();
 	}
 
 	private Response checkIfProjectKeyIsValid(String projectKey) {

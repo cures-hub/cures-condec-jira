@@ -4,6 +4,7 @@ import java.security.Principal;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.sal.api.user.UserProfile;
 import com.atlassian.sal.api.user.UserResolutionException;
@@ -43,8 +44,8 @@ public class MockUserManager implements UserManager {
 	}
 
 	@Override
-	public boolean isAdmin(String arg0) {
-		return false;
+	public boolean isAdmin(String username) {
+		return isSystemAdmin(username);
 	}
 
 	@Override
@@ -60,5 +61,9 @@ public class MockUserManager implements UserManager {
 	@Override
 	public Principal resolve(String arg0) throws UserResolutionException {
 		return null;
+	}
+	
+	public ApplicationUser getUserByName(String username) {
+		return null;		
 	}
 }

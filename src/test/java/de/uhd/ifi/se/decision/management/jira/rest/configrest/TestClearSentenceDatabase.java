@@ -41,6 +41,7 @@ public class TestClearSentenceDatabase extends TestConfigSuper{
     public void testSetActivatedUserNull() {
         request.setAttribute("WithFails", false);
         request.setAttribute("NoFails", false);
+        request.setAttribute("SysAdmin", false);
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
                 confRest.setActivated(request, "NotTEST", "false").getStatus());
     }
