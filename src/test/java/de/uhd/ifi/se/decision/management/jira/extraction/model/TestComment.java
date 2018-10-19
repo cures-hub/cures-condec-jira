@@ -454,7 +454,10 @@ public class TestComment extends TestSetUpWithIssues {
 	public void testUpperLowerCaseTagging() {
 		CommentImpl comment = getComment(
 				"[Con] But the other one not [/Con]");
-		System.out.println(comment.getTaggedBody(0));
+		CommentImpl comment1 = getComment(
+				"[con] But the other one not [/con]");
+		assertEquals(comment.getTaggedBody(0), comment1.getTaggedBody(0));
+	
 	}
 	
 	
