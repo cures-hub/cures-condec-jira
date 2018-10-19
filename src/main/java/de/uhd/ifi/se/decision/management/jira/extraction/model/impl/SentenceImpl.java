@@ -255,7 +255,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	private void stripTagsFromBody(String body) {
-		if (StringUtils.indexOfAny(body, CommentSplitter.manualRationaleTagList) >= 0) {
+		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.manualRationaleTagList) >= 0) {
 			int tagLength = 2 + CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey,true).length();
 			super.setDescription(body.substring(tagLength, body.length() - (1 + tagLength)));
 			super.setSummary(super.getDescription());
