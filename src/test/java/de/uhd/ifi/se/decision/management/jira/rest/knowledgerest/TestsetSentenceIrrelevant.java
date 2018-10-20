@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -23,10 +22,9 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
-public class TestsetSentenceIrrelevant extends TestKnowledgeRestSetUp{
-	
+public class TestsetSentenceIrrelevant extends TestKnowledgeRestSetUp {
+
 	private final static String CREATION_ERROR = "Deletion of link failed.";
-	
 
 	@Test
 	@NonTransactional
@@ -34,7 +32,7 @@ public class TestsetSentenceIrrelevant extends TestKnowledgeRestSetUp{
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), knowledgeRest.setSentenceIrrelevant(null, null).getEntity());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testRequestNullElementFilled() {
@@ -44,7 +42,7 @@ public class TestsetSentenceIrrelevant extends TestKnowledgeRestSetUp{
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), knowledgeRest.setSentenceIrrelevant(null, decisionKnowledgeElement).getEntity());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementNull() {
@@ -53,7 +51,7 @@ public class TestsetSentenceIrrelevant extends TestKnowledgeRestSetUp{
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), knowledgeRest.setSentenceIrrelevant(request, null).getEntity());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilled() {
@@ -67,17 +65,14 @@ public class TestsetSentenceIrrelevant extends TestKnowledgeRestSetUp{
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.setSentenceIrrelevant(request, decisionKnowledgeElement).getStatus());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testRequestF€illedElementFilledButNotExisting() {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
-		assertEquals(500,
-				knowledgeRest.setSentenceIrrelevant(request, decisionKnowledgeElement).getStatus());
+		assertEquals(500, knowledgeRest.setSentenceIrrelevant(request, decisionKnowledgeElement).getStatus());
 	}
-	
-
 
 }

@@ -1,12 +1,16 @@
 package de.uhd.ifi.se.decision.management.jira.rest.configrest;
 
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+import static org.junit.Assert.assertEquals;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.core.Response;
+import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
-import static org.junit.Assert.assertEquals;
+import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestSetWebhookData extends TestConfigSuper {
@@ -83,27 +87,39 @@ public class TestSetWebhookData extends TestConfigSuper {
 				confRest.setWebhookData(request, null, "TEST", "TEST").getStatus());
 	}
 
-//	@Test
-//	public void testReqFilledProFilledAdrNullSecNull() {
-//		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-//				confRest.setWebhookData(request, "TEST", null, null).getStatus());
-//	}
-//
-//	@Test
-//	public void testReqFilledProFilledAdrNullSecFilled() {
-//		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-//				confRest.setWebhookData(request, "TEST", null, "TEST").getStatus());
-//	}
-//
-//	@Test
-//	public void testReqFilledProFilledAdrFilledSecNull() {
-//		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-//				confRest.setWebhookData(request, "TEST", "TEST", null).getStatus());
-//	}
-//
-//	@Test
-//	public void testReqFilledProFilledAdrFilledSecFilled() {
-//		assertEquals(Response.Status.OK.getStatusCode(),
-//				confRest.setWebhookData(request, "TEST", "TEST", "TEST").getStatus());
-//	}
+	@Test
+	public void testReqFilledProFilledAdrNullSecNull() {
+		HttpServletRequest request = new MockHttpServletRequest();
+		request.setAttribute("SysAdmin", true);
+		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
+				confRest.setWebhookData(request, "TEST", null, null).getStatus());
+	}
+
+	@Test
+	public void testReqFilledProFilledAdrNullSecFilled() {
+		HttpServletRequest request = new MockHttpServletRequest();
+		request.setAttribute("SysAdmin", true);
+		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
+				confRest.setWebhookData(request, "TEST", null, "TEST").getStatus());
+	}
+
+	@Test
+	public void testReqFilledProFilledAdrFilledSecNull() {
+		HttpServletRequest request = new MockHttpServletRequest();
+		request.setAttribute("SysAdmin", true);
+		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
+		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
+				confRest.setWebhookData(request, "TEST", "TEST", null).getStatus());
+	}
+
+	@Test
+	public void testReqFilledProFilledAdrFilledSecFilled() {
+		HttpServletRequest request = new MockHttpServletRequest();
+		request.setAttribute("SysAdmin", true);
+		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
+		assertEquals(Response.Status.OK.getStatusCode(),
+				confRest.setWebhookData(request, "TEST", "TEST", "TEST").getStatus());
+	}
 }

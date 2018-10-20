@@ -5,6 +5,9 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import static org.junit.Assert.assertEquals;
@@ -106,6 +109,7 @@ public class TestSetKnowledgeTypeEnabled extends TestConfigSuper {
 
 	@Test
 	public void testUserUnauthorized() {
+		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("WithFails", true);
 		request.setAttribute("NoFails", false);
 		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
@@ -114,6 +118,7 @@ public class TestSetKnowledgeTypeEnabled extends TestConfigSuper {
 
 	@Test
 	public void testUserNull() {
+		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", false);
 		request.setAttribute("SysAdmin", false);

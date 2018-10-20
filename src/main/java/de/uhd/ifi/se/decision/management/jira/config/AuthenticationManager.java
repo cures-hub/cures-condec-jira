@@ -42,6 +42,9 @@ public class AuthenticationManager {
 			return false;
 		}
 		ApplicationUser user = getUser(username);
+		if(user == null) {
+			return false;
+		}
 		Collection<ProjectRole> roles = getRolesInProject(projectKey, user);
 		for (ProjectRole role : roles) {
 			if (role.getName().equalsIgnoreCase("Administrators")) {
@@ -77,7 +80,13 @@ public class AuthenticationManager {
 	}
 
 	public static ApplicationUser getUser(String username) {
-		return ComponentAccessor.getUserManager().getUserByName(username);
+		try {
+			ApplicationUser user = ComponentAccessor.getUserManager().getUserByName(username);
+			return user;
+		} catch(NullPointerException e) {
+			LOGGER.error("Application user could not be retrieved.");
+		}		
+		return null;
 	}
 
 	public static ApplicationUser getUser(HttpServletRequest request) {
