@@ -15,7 +15,6 @@ import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.project.Project;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.auth.LoginUriProvider;
-import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
@@ -33,16 +32,14 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 	private static final String TEMPLATEPATH = "templates/settingsForSingleProject.vm";
 
 	@Inject
-	public SettingsOfSingleProject(@ComponentImport UserManager userManager,
-			@ComponentImport LoginUriProvider loginUriProvider, @ComponentImport TemplateRenderer renderer) {
-		super(userManager, loginUriProvider, renderer);
+	public SettingsOfSingleProject(@ComponentImport LoginUriProvider loginUriProvider,
+			@ComponentImport TemplateRenderer renderer) {
+		super(loginUriProvider, renderer);
 	}
 
 	@Override
 	public boolean isValidUser(HttpServletRequest request) {
-		String projectKey = request.getParameter("projectKey");
-		String username = userManager.getRemoteUsername(request);
-		return AuthenticationManager.isProjectAdmin(username, projectKey);
+		return AuthenticationManager.isProjectAdmin(request);
 	}
 
 	@Override

@@ -25,7 +25,6 @@ import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.sal.api.auth.LoginUriProvider;
-import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
@@ -56,8 +55,7 @@ public class TestSettingsOfAllProjects extends TestSetUpWithIssues {
 		response = new MockHttpServletResponse();
 		LoginUriProvider login = new MockLoginUriProvider();
 		TemplateRenderer renderer = new MockTemplateRenderer();
-		UserManager userManager = new MockUserManager();
-		servlet = new SettingsOfAllProjects(userManager, login, renderer);
+		servlet = new SettingsOfAllProjects(login, renderer);
 
 		projectManager = new MockProjectManager();
 		new MockComponentWorker().init().addMock(ProjectManager.class, projectManager);
@@ -65,17 +63,17 @@ public class TestSettingsOfAllProjects extends TestSetUpWithIssues {
 
 	@Test
 	public void testDoGetNullNull() throws IOException {
-		servlet.doGet(null,null);
+		servlet.doGet(null, null);
 	}
 
 	@Test
 	public void testDoGetNullFilled() throws IOException {
-		servlet.doGet(null,response);
+		servlet.doGet(null, response);
 	}
 
 	@Test
 	public void testDoGetFilledNull() throws IOException {
-		servlet.doGet(request,null);
+		servlet.doGet(request, null);
 	}
 
 	@Test
@@ -152,17 +150,17 @@ public class TestSettingsOfAllProjects extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testGetTemplatePath(){
+	public void testGetTemplatePath() {
 		assertEquals("templates/settingsForAllProjects.vm", servlet.getTemplatePath());
 	}
 
 	@Test
-	public void testGetVerlocityParametersNull(){
+	public void testGetVerlocityParametersNull() {
 		assertEquals(0, servlet.getVelocityParameters(null).size());
 	}
 
 	@Test
-	public void testGetVelocityParametersFilled(){
+	public void testGetVelocityParametersFilled() {
 		Project project = new MockProject(1, "TEST");
 		((MockProject) project).setKey("TEST");
 		((MockProjectManager) projectManager).addProject(project);

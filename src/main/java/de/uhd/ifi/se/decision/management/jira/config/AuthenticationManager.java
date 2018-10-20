@@ -41,7 +41,18 @@ public class AuthenticationManager {
 		}
 		return false;
 	}
+
+	public static boolean isProjectAdmin(HttpServletRequest request) {
+		String projectKey = request.getParameter("projectKey");
+		String username = getUsername(request);
+		return AuthenticationManager.isProjectAdmin(username, projectKey);
+	}
 	
+	public static boolean isSystemAdmin(HttpServletRequest request) {
+		String username = getUsername(request);
+		return username != null && ComponentGetter.getUserManager().isSystemAdmin(username);
+	}
+
 	public static ApplicationUser getUser(String username) {
 		return ComponentAccessor.getUserManager().getUserByName(username);
 	}

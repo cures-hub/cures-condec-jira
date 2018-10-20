@@ -10,7 +10,6 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.Project;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.auth.LoginUriProvider;
-import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -27,15 +26,14 @@ public class SettingsOfAllProjects extends AbstractSettingsServlet {
 	private static final String TEMPLATEPATH = "templates/settingsForAllProjects.vm";
 
 	@Inject
-	public SettingsOfAllProjects(@ComponentImport UserManager userManager,
-			@ComponentImport LoginUriProvider loginUriProvider, @ComponentImport TemplateRenderer renderer) {
-		super(userManager, loginUriProvider, renderer);
+	public SettingsOfAllProjects(@ComponentImport LoginUriProvider loginUriProvider,
+			@ComponentImport TemplateRenderer renderer) {
+		super(loginUriProvider, renderer);
 	}
 
 	@Override
 	protected boolean isValidUser(HttpServletRequest request) {
-		String username = userManager.getRemoteUsername(request);
-		return username != null && userManager.isSystemAdmin(username);
+		return AuthenticationManager.isSystemAdmin(request);
 	}
 
 	@Override
@@ -45,21 +43,21 @@ public class SettingsOfAllProjects extends AbstractSettingsServlet {
 
 	@Override
 	protected Map<String, Object> getVelocityParameters(HttpServletRequest request) {
-		if(request == null){
-			return  new ConcurrentHashMap<>();
+		if (request == null) {
+			return new ConcurrentHashMap<>();
 		}
 		Map<String, DecisionKnowledgeProject> configMap = getProjectsMap();
 		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
 		velocityParameters.put("requestUrl", request.getRequestURL());
 		velocityParameters.put("projectsMap", configMap);
-		
+
 		velocityParameters.put("jiraHomeForGitAuthentication", ConfigPersistence.getOauthJiraHome());
 		velocityParameters.put("requestTokenForGitAuthentication", ConfigPersistence.getRequestToken());
 		velocityParameters.put("privateKeyForGitAuthentication", ConfigPersistence.getPrivateKey());
 		velocityParameters.put("consumerKeyForGitAuthentication", ConfigPersistence.getConsumerKey());
 		velocityParameters.put("secretForGitAuthentication", ConfigPersistence.getSecretForOAuth());
 		velocityParameters.put("accessTokenForGitAuthentication", ConfigPersistence.getAccessToken());
-		
+
 		return velocityParameters;
 	}
 
