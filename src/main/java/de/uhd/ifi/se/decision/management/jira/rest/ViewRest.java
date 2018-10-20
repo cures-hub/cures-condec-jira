@@ -1,31 +1,28 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.sal.api.user.UserManager;
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
+import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
-
-import java.util.List;
-
 
 /**
  * REST resource for view
@@ -54,9 +51,9 @@ public class ViewRest {
 	@GET
 	public Response getTreeViewer2(@QueryParam("issueKey") String issueKey,
 			@QueryParam("showRelevant") boolean showRelevant) {
-		if(!issueKey.contains("-")) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Issue Key is not valid.")).build();
+		if (!issueKey.contains("-")) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Issue Key is not valid."))
+					.build();
 		}
 		String projectKey = issueKey.substring(0, issueKey.indexOf("-"));
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
@@ -72,9 +69,8 @@ public class ViewRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getTreant(@QueryParam("elementKey") String elementKey,
-							  @QueryParam("depthOfTree") String depthOfTree,
-							  @QueryParam("searchTerm") String searchTerm,
-							  @Context HttpServletRequest request) {
+			@QueryParam("depthOfTree") String depthOfTree, @QueryParam("searchTerm") String searchTerm,
+			@Context HttpServletRequest request) {
 
 		if (elementKey == null) {
 			return Response.status(Status.BAD_REQUEST)
@@ -93,7 +89,7 @@ public class ViewRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Treant cannot be shown since depth of Tree is NaN")).build();
 		}
-		ApplicationUser user = getCurrentUser(request);
+		ApplicationUser user = AuthenticationManager.getUser(request);
 		Treant treant = new Treant(projectKey, elementKey, depth, searchTerm, user);
 		return Response.ok(treant).build();
 	}
@@ -120,12 +116,4 @@ public class ViewRest {
 				ImmutableMap.of("error", "Decision knowledge elements cannot be shown since project key is invalid."))
 				.build();
 	}
-
-	private ApplicationUser getCurrentUser(HttpServletRequest request) {
-		com.atlassian.jira.user.util.UserManager jiraUserManager = ComponentAccessor.getUserManager();
-		UserManager userManager = ComponentGetter.getUserManager();
-		String userName = userManager.getRemoteUsername(request);
-		return jiraUserManager.getUserByName(userName);
-	}
-
 }

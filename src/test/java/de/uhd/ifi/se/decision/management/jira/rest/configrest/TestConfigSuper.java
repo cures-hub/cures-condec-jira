@@ -29,8 +29,7 @@ public class TestConfigSuper extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
-		UserManager userManager = new MockUserManager();
-		confRest = new ConfigRest(userManager);
+		confRest = new ConfigRest();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
 
