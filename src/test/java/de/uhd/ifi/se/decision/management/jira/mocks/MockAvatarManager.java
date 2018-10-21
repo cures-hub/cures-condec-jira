@@ -1,6 +1,19 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
-import com.atlassian.jira.avatar.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.atlassian.jira.avatar.Avatar;
+import com.atlassian.jira.avatar.AvatarFormatPolicy;
+import com.atlassian.jira.avatar.AvatarImageDataProvider;
+import com.atlassian.jira.avatar.AvatarImpl;
+import com.atlassian.jira.avatar.AvatarManager;
+import com.atlassian.jira.avatar.Selection;
 import com.atlassian.jira.exception.DataAccessException;
 import com.atlassian.jira.icon.IconOwningObjectId;
 import com.atlassian.jira.icon.IconType;
@@ -9,13 +22,6 @@ import com.atlassian.jira.mock.MockAvatar;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.Consumer;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
 
 public class MockAvatarManager implements AvatarManager {
 	@Override
@@ -53,8 +59,7 @@ public class MockAvatarManager implements AvatarManager {
 	@Override
 	public Avatar create(Avatar avatar, InputStream inputStream, Selection selection)
 			throws DataAccessException, IOException {
-		return AvatarImpl.createCustomAvatar("decision", "image/png", "0",
-				IconType.ISSUE_TYPE_ICON_TYPE);
+		return AvatarImpl.createCustomAvatar("decision", "image/png", "0", IconType.ISSUE_TYPE_ICON_TYPE);
 	}
 
 	@Nonnull

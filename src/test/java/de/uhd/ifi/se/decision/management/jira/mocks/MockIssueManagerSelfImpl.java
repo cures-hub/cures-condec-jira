@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.mocks;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 import org.ofbiz.core.entity.GenericEntityException;
 
 import com.atlassian.jira.issue.Issue;
@@ -40,8 +39,8 @@ public class MockIssueManagerSelfImpl extends com.atlassian.jira.mock.MockIssueM
 		if ("30".equals(key)) {
 			return this.getIssueObject((long) 30);
 		}
-		if("CONDEC-1234".equals(key)){
-			Issue issue = this.getIssueObject((long)1234);
+		if ("CONDEC-1234".equals(key)) {
+			Issue issue = this.getIssueObject((long) 1234);
 			return (MutableIssue) issue;
 		}
 		for (int i = 2; i <= 16; i++) {
@@ -57,11 +56,11 @@ public class MockIssueManagerSelfImpl extends com.atlassian.jira.mock.MockIssueM
 	}
 
 	@Override
-	public MutableIssue getIssueObject(String key){
-		if("false".equals(key)){
+	public MutableIssue getIssueObject(String key) {
+		if ("false".equals(key)) {
 			return null;
 		}
-		Issue issue = this.getIssueObject((long)14);
+		Issue issue = this.getIssueObject((long) 14);
 		return (MutableIssue) issue;
 	}
 }
