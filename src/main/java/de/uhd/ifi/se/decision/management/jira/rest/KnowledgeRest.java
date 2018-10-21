@@ -48,7 +48,7 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
  */
 @Path("/decisions")
 public class KnowledgeRest {
-	
+
 	@Path("/getDecisionKnowledgeElement")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -398,9 +398,9 @@ public class KnowledgeRest {
 	@Path("/getAllElementsLinkedToElement")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getAllElementsLinkedToElement(@QueryParam("projectKey") String projectKey,
-			@QueryParam("elementKey") String elementKey, @QueryParam("URISearch") String uriSearch,
-			@Context HttpServletRequest request) {
+	public Response getAllElementsLinkedToElement(@QueryParam("elementKey") String elementKey,
+			@QueryParam("URISearch") String uriSearch, @Context HttpServletRequest request) {
+		String projectKey = getProjectKey(elementKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
 		GraphFiltering filter = new GraphFiltering(projectKey, uriSearch, user);
@@ -413,4 +413,7 @@ public class KnowledgeRest {
 		return Response.ok(filteredElements).build();
 	}
 
+	private String getProjectKey(String elementKey) {
+		return elementKey.split("-")[0];
+	}
 }

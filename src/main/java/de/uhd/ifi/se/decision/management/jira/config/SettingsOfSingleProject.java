@@ -71,6 +71,8 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("requestUrl", request.getRequestURL());
 		velocityParameters.put("iconToggle", ConfigPersistence.isIconParsing(projectKey));
 
+		velocityParameters.put("isClassifierUsedForIssueComments", ConfigPersistence.isUseClassiferForIssueComments(projectKey));
+
 		return velocityParameters;
 	}
 }

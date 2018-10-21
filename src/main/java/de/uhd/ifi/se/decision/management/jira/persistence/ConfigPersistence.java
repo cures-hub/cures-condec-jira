@@ -219,4 +219,12 @@ public class ConfigPersistence {
 	public static String getAccessToken() {
 		return getValue("accessToken");
 	}
+
+	public static void setUseClassiferForIssueComments(String projectKey, boolean isActivated) {
+		setValue(projectKey, "setClassiferForIssueComments", Boolean.toString(isActivated));
+	}
+	
+	public static boolean isUseClassiferForIssueComments(String projectKey) {
+		return getValue(projectKey, "setClassiferForIssueComments").equals("true");
+	}
 }

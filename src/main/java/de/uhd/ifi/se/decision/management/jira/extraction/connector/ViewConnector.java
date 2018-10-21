@@ -11,6 +11,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.classification.Classifi
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
 public class ViewConnector {
 
@@ -37,7 +38,7 @@ public class ViewConnector {
 				ActiveObjectsManager.checkSentenceAOForDuplicates(comment2);
 			}
 		}
-		if (!doNotClassify) {
+		if (!doNotClassify && ConfigPersistence.isUseClassiferForIssueComments(issue.getProjectObject().getKey())) {
 			this.startClassification();
 		}
 	}

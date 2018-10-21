@@ -122,6 +122,22 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				knowledge is extracted from issue comments for this project.</div>
 		</div>
 		<div class="field-group">
+			<label for="isClassifierUsed-toggle">Use Classifier to identify Decision Knowledge?</label>
+			<aui-toggle id="isClassifierUsed-toggle"
+				value="$projectKey" label="Use Classifier to Identify Decision Knowledge?"></aui-toggle>
+			<script>
+				var isClassifierUsedToggle = document.getElementById('isClassifierUsed-toggle');
+					isClassifierUsedToggle.checked = $isClassifierUsedForIssueComments
+				isClassifierUsedToggle.addEventListener('change', function(error) {
+					this.busy = true;
+					setUseClassiferForIssueComments(this.checked, this.value);
+					this.busy = false;
+				});
+            </script>
+			<div class="description">Enables or disables whether decision
+				knowledge is extracted classified from issue comments for this project.</div>
+		</div>
+		<div class="field-group">
 			<label for="iconParsing-toggle">Use Icons as Tags?</label>
 			<aui-toggle id="iconParsing-toggle" value="$projectKey"
 				label="Use icon labels"></aui-toggle>

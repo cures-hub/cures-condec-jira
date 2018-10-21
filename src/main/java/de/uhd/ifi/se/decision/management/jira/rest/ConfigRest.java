@@ -429,6 +429,30 @@ public class ConfigRest {
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
+	
+	@Path("/setUseClassiferForIssueComments")
+	@POST
+	public Response setUseClassiferForIssueComments(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			@QueryParam("isClassifierUsedForIssues") String isActivatedString) {
+		System.out.println(isActivatedString);
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if (isActivatedString == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "isActivated = null")).build();
+		}
+		try {
+			boolean isActivated = Boolean.valueOf(isActivatedString);
+			ConfigPersistence.setUseClassiferForIssueComments(projectKey, isActivated);
+			return Response.ok(Status.ACCEPTED).build();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
+	}
+	
+	
 
 	@Path("/isIconParsing")
 	@GET
