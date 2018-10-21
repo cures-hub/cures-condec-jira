@@ -110,6 +110,7 @@ public class TestSetIssueStrategy extends TestConfigSuper{
     public void testdoPutUserNull() {
         request.setAttribute("WithFails", false);
         request.setAttribute("NoFails", false);
+        request.setAttribute("SysAdmin", false);
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
                 confRest.setIssueStrategy(request, "NotTEST", "false").getStatus());
     }

@@ -14,9 +14,8 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.MessageSet;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
-import com.atlassian.query.clause.MultiClause;
 
-public class MockSearchService implements SearchService{
+public class MockSearchService implements SearchService {
 
 	@Override
 	public boolean doesQueryFitFilterForm(ApplicationUser arg0, Query arg1) {

@@ -7,13 +7,12 @@ import org.junit.Before;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
-import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import net.java.ao.EntityManager;
 
@@ -29,14 +28,15 @@ public class TestConfigSuper extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
-		UserManager userManager = new MockDefaultUserManager();
-		confRest = new ConfigRest(userManager);
+		confRest = new ConfigRest();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockDefaultUserManager());
+				new MockUserManager());
 
 		request = new MockHttpServletRequest();
 		request.setAttribute("WithFails", false);
-		request.setAttribute("NoFails", true);
+		request.setAttribute("NoFails", false);
+		request.setAttribute("NoSysAdmin", false);
+		request.setAttribute("SysAdmin", true);
 	}
 
 	protected Response getBadRequestResponse(String errorMessage) {

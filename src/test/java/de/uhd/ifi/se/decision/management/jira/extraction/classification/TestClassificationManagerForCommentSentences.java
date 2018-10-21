@@ -1,5 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,19 +21,13 @@ import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import meka.classifiers.multilabel.LC;
 import net.java.ao.EntityManager;
@@ -49,13 +50,13 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 	public void setUp() {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockDefaultUserManager());
+				new MockUserManager());
 		classificationManager = new ClassificationManagerForCommentSentences();
 		FilteredClassifier binaryClassifier = new BinaryClassifierMock();
 		classificationManager.getClassifier().setBinaryClassifier(binaryClassifier);
 		LC lc = new FineGrainedClassifierMock(5);
 		classificationManager.getClassifier().setFineGrainedClassifier(lc);
-		
+
 		createLocalIssue();
 		addCommentsToIssue();
 		fillCommentList();
@@ -104,7 +105,7 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 		assertNotNull(list.get(0).getSentences().get(0).isRelevant());
 		assertTrue(list.get(0).getSentences().get(0).isTagged());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testFineGrainedClassificationWithValidData() throws Exception {
@@ -114,14 +115,14 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 		assertNotNull(list.get(0).getSentences().get(0).isRelevant());
 		assertTrue(list.get(0).getSentences().get(0).isTaggedFineGrained());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testFineGrainedClassificationWithValidDataInAO() throws Exception {
 		list.get(0).getSentences().get(0).setRelevant(true);
 		list.get(0).getSentences().get(0).setTaggedFineGrained(true);
 		list.get(0).getSentences().get(0).setBody("[issue]nonplaintext[/issue]");
-		
+
 		list = classificationManager.classifySentenceFineGrained(list);
 
 		assertNotNull(list.get(0).getSentences().get(0).isRelevant());

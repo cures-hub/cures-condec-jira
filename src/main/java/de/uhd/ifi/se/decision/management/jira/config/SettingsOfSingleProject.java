@@ -13,12 +13,8 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.project.Project;
-import com.atlassian.jira.security.roles.ProjectRole;
-import com.atlassian.jira.security.roles.ProjectRoleManager;
-import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.auth.LoginUriProvider;
-import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
@@ -36,38 +32,14 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 	private static final String TEMPLATEPATH = "templates/settingsForSingleProject.vm";
 
 	@Inject
-	public SettingsOfSingleProject(@ComponentImport UserManager userManager,
-			@ComponentImport LoginUriProvider loginUriProvider, @ComponentImport TemplateRenderer renderer) {
-		super(userManager, loginUriProvider, renderer);
+	public SettingsOfSingleProject(@ComponentImport LoginUriProvider loginUriProvider,
+			@ComponentImport TemplateRenderer renderer) {
+		super(loginUriProvider, renderer);
 	}
 
 	@Override
-	protected boolean isValidUser(HttpServletRequest request) {
-		String projectKey = request.getParameter("projectKey");
-		String username = userManager.getRemoteUsername(request);
-		return isProjectAdmin(username, projectKey);
-	}
-
-	private boolean isProjectAdmin(String username, String projectKey) {
-		if (username == null || projectKey == null) {
-			LOGGER.error("Username or project key in SettingsOfSingleProject is null.");
-			return false;
-		}
-		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName(username);
-		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
-
-		ProjectRoleManager projectRoleManager = ComponentAccessor.getComponent(ProjectRoleManager.class);
-		Collection<ProjectRole> roles = projectRoleManager.getProjectRoles(user, project);
-		if (roles == null) {
-			LOGGER.error("User roles are not set correctly.");
-			return false;
-		}
-		for (ProjectRole role : roles) {
-			if (role.getName().equalsIgnoreCase("Administrators")) {
-				return true;
-			}
-		}
-		return false;
+	public boolean isValidUser(HttpServletRequest request) {
+		return AuthenticationManager.isProjectAdmin(request);
 	}
 
 	@Override
@@ -98,9 +70,9 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("imageFolderUrl", ComponentGetter.getUrlOfImageFolder());
 		velocityParameters.put("requestUrl", request.getRequestURL());
 		velocityParameters.put("iconToggle", ConfigPersistence.isIconParsing(projectKey));
+
 		velocityParameters.put("isClassifierUsedForIssueComments", ConfigPersistence.isUseClassiferForIssueComments(projectKey));
-		
-		
+
 		return velocityParameters;
 	}
 }

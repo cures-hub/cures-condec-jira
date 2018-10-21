@@ -25,16 +25,14 @@ import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.sal.api.auth.LoginUriProvider;
-import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockAdminUserManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockLoginUriProvider;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTemplateRenderer;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
@@ -52,13 +50,12 @@ public class TestSettingsOfAllProjects extends TestSetUpWithIssues {
 	public void setUp() {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockDefaultUserManager());
+				new MockUserManager());
 		request = new MockHttpServletRequest();
 		response = new MockHttpServletResponse();
 		LoginUriProvider login = new MockLoginUriProvider();
 		TemplateRenderer renderer = new MockTemplateRenderer();
-		UserManager userManager = new MockAdminUserManager();
-		servlet = new SettingsOfAllProjects(userManager, login, renderer);
+		servlet = new SettingsOfAllProjects(login, renderer);
 
 		projectManager = new MockProjectManager();
 		new MockComponentWorker().init().addMock(ProjectManager.class, projectManager);
@@ -66,17 +63,17 @@ public class TestSettingsOfAllProjects extends TestSetUpWithIssues {
 
 	@Test
 	public void testDoGetNullNull() throws IOException {
-		servlet.doGet(null,null);
+		servlet.doGet(null, null);
 	}
 
 	@Test
 	public void testDoGetNullFilled() throws IOException {
-		servlet.doGet(null,response);
+		servlet.doGet(null, response);
 	}
 
 	@Test
 	public void testDoGetFilledNull() throws IOException {
-		servlet.doGet(request,null);
+		servlet.doGet(request, null);
 	}
 
 	@Test
@@ -153,17 +150,17 @@ public class TestSettingsOfAllProjects extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testGetTemplatePath(){
+	public void testGetTemplatePath() {
 		assertEquals("templates/settingsForAllProjects.vm", servlet.getTemplatePath());
 	}
 
 	@Test
-	public void testGetVerlocityParametersNull(){
+	public void testGetVerlocityParametersNull() {
 		assertEquals(0, servlet.getVelocityParameters(null).size());
 	}
 
 	@Test
-	public void testGetVelocityParametersFilled(){
+	public void testGetVelocityParametersFilled() {
 		Project project = new MockProject(1, "TEST");
 		((MockProject) project).setKey("TEST");
 		((MockProjectManager) projectManager).addProject(project);

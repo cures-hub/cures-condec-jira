@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
 
@@ -22,8 +24,8 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
@@ -44,7 +46,7 @@ public class TestComment extends TestSetUpWithIssues {
 	public void setUp() {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockDefaultUserManager());
+				new MockUserManager());
 		createLocalIssue();
 	}
 
@@ -137,13 +139,12 @@ public class TestComment extends TestSetUpWithIssues {
 				"{quote} this is a quote {quote} and this is a test Sentence. {quote} this is a second quote {quote} ");
 		assertEquals(3, comment.getSentences().size());
 
-	
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithDifferentQuotes2() {
-		CommentImpl comment =  getComment(
+		CommentImpl comment = getComment(
 				"{quote} this is a quote {quote} and this is a test Sentence. {quote} this is a second quote {quote} and a Sentence at the back");
 		assertEquals(4, comment.getSentences().size());
 
@@ -154,7 +155,7 @@ public class TestComment extends TestSetUpWithIssues {
 		comment = getComment(
 				"{quote} this is a quote {quote} {quote} this is a second quote right after the first one {quote} {quote} These are many quotes {quote}");
 		assertEquals(3, comment.getSentences().size());
-		
+
 	}
 
 	@Test
@@ -168,6 +169,7 @@ public class TestComment extends TestSetUpWithIssues {
 		assertEquals(3, comment.getSentences().size());
 
 	}
+
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithNoformats2() {
@@ -277,7 +279,7 @@ public class TestComment extends TestSetUpWithIssues {
 				"{code:java} this is a code {code} {code:java} this is a second code right after the first one {code} {code:java} These are many codes {code}");
 		assertEquals(3, comment.getSentences().size());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testPropertiesOfCodeElementedText() {
@@ -288,7 +290,7 @@ public class TestComment extends TestSetUpWithIssues {
 		assertEquals(false, comment.getSentences().get(0).isTagged());
 		assertEquals(false, comment.getSentences().get(0).isTaggedManually());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testPropertiesOfNoFormatElementedText() {
@@ -299,7 +301,7 @@ public class TestComment extends TestSetUpWithIssues {
 		assertEquals(false, comment.getSentences().get(0).isTagged());
 		assertEquals(false, comment.getSentences().get(0).isTaggedManually());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testPropertiesOfQuotedElementedText() {
@@ -310,18 +312,19 @@ public class TestComment extends TestSetUpWithIssues {
 		assertEquals(false, comment.getSentences().get(0).isTagged());
 		assertEquals(false, comment.getSentences().get(0).isTaggedManually());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testPropertiesOfTaggedElementedText() {
-		CommentImpl comment = getComment("[Alternative] this is a manually created alternative [/Alternative] and this is a test Sentence.");
+		CommentImpl comment = getComment(
+				"[Alternative] this is a manually created alternative [/Alternative] and this is a test Sentence.");
 		assertEquals(2, comment.getSentences().size());
 		assertEquals(true, comment.getSentences().get(0).isRelevant());
 		assertEquals(false, comment.getSentences().get(0).isPlainText());
 		assertEquals(true, comment.getSentences().get(0).isTagged());
 		assertEquals(true, comment.getSentences().get(0).isTaggedManually());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testPropertiesOfIconElementedText() {
@@ -333,68 +336,63 @@ public class TestComment extends TestSetUpWithIssues {
 		assertEquals(true, comment.getSentences().get(0).isTaggedManually());
 		assertEquals(KnowledgeType.ARGUMENT, comment.getSentences().get(0).getType());
 	}
-	
-	
-	
 
 	@Test
 	@NonTransactional
 	public void testTagReplacementToHTMLCode() {
 		CommentImpl comment = getComment("{quote} a quote {quote}");
-		//{quote} is replaced on js side
+		// {quote} is replaced on js side
 		assertTrue(comment.getTaggedBody(0).contains("{quote} a quote {quote}"));
 	}
-	
-	
+
 	@Test
 	@NonTransactional
 	public void testManuallyTaggingPro() {
 		CommentImpl comment = getComment("[Pro]this is a manual pro tagged sentence [/Pro]");
-		//test the result in splits, fails when checked with equals
+		// test the result in splits, fails when checked with equals
 		assertTrue(comment.getTaggedBody(0).contains("<span id=\"comment0\">"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Pro\"  id  = ui1>"));
-		//important that the tag is not inside the text area
-		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[Pro]</span>")); 
+		// important that the tag is not inside the text area
+		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[Pro]</span>"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class = sentenceBody>"));
 		assertTrue(comment.getTaggedBody(0).contains("this is a manual pro tagged sentence "));
-		//important that the tag is not inside the text area
+		// important that the tag is not inside the text area
 		assertTrue(comment.getTaggedBody(0).contains("</span><span class =tag>[/Pro]</span>"));
-		assertTrue(comment.getTaggedBody(0).contains("</span></span>"));		
+		assertTrue(comment.getTaggedBody(0).contains("</span></span>"));
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testManuallyTaggingDecision() {
 		CommentImpl comment = getComment("[Decision]this is a manual pro tagged sentence [/Decision]");
-		//test the result in splits, fails when checked with equals
+		// test the result in splits, fails when checked with equals
 		assertTrue(comment.getTaggedBody(0).contains("<span id=\"comment0\">"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Decision\"  id  = ui1>"));
-		//important that the tag is not inside the text area
-		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[Decision]</span>")); 
+		// important that the tag is not inside the text area
+		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[Decision]</span>"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class = sentenceBody>"));
 		assertTrue(comment.getTaggedBody(0).contains("this is a manual pro tagged sentence "));
-		//important that the tag is not inside the text area
+		// important that the tag is not inside the text area
 		assertTrue(comment.getTaggedBody(0).contains("</span><span class =tag>[/Decision]</span>"));
-		assertTrue(comment.getTaggedBody(0).contains("</span></span>"));		
+		assertTrue(comment.getTaggedBody(0).contains("</span></span>"));
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testManuallyTaggingIssue() {
 		CommentImpl comment = getComment("[Issue]this is a manual pro tagged sentence [/Issue]");
-		//test the result in splits, fails when checked with equals
+		// test the result in splits, fails when checked with equals
 		assertTrue(comment.getTaggedBody(0).contains("<span id=\"comment0\">"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Issue\"  id  = ui1>"));
-		//important that the tag is not inside the text area
-		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[Issue]</span>")); 
+		// important that the tag is not inside the text area
+		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[Issue]</span>"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class = sentenceBody>"));
 		assertTrue(comment.getTaggedBody(0).contains("this is a manual pro tagged sentence "));
-		//important that the tag is not inside the text area
+		// important that the tag is not inside the text area
 		assertTrue(comment.getTaggedBody(0).contains("</span><span class =tag>[/Issue]</span>"));
-		assertTrue(comment.getTaggedBody(0).contains("</span></span>"));		
+		assertTrue(comment.getTaggedBody(0).contains("</span></span>"));
 	}
-	
-	
+
 	@Test
 	@NonTransactional
 	public void testManuallyTaggingIssueWithIcon() {
@@ -402,10 +400,11 @@ public class TestComment extends TestSetUpWithIssues {
 		assertTrue(comment.getTaggedBody(0).contains("<span id=\"comment0\">"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Pro\"  id  = ui1>"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[Pro]</span>"));
-		assertTrue(comment.getTaggedBody(0).contains("<span class = sentenceBody>this is a manual pro tagged sentence.</span>"));
+		assertTrue(comment.getTaggedBody(0)
+				.contains("<span class = sentenceBody>this is a manual pro tagged sentence.</span>"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[/Pro]</span></span></span>"));
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testManuallyTaggingIssueWithIconAndPlainText() {
@@ -413,7 +412,8 @@ public class TestComment extends TestSetUpWithIssues {
 		assertTrue(comment.getTaggedBody(0).contains("<span id=\"comment0\">"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Pro\"  id  = ui1>"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[Pro]</span>"));
-		assertTrue(comment.getTaggedBody(0).contains("<span class = sentenceBody>this is a manual pro tagged pro sentence. </span>"));
+		assertTrue(comment.getTaggedBody(0)
+				.contains("<span class = sentenceBody>this is a manual pro tagged pro sentence. </span>"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[/Pro]</span></span>"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence isNotRelevant\"  id  = ui2>"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class =tag></span>"));
@@ -421,23 +421,25 @@ public class TestComment extends TestSetUpWithIssues {
 		assertTrue(comment.getTaggedBody(0).contains("<span class =tag></span>"));
 		assertTrue(comment.getTaggedBody(0).contains("</span></span>"));
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testManuallyTaggingWithOnlyOpenTag() {
 		CommentImpl comment = getComment("[Alternative] This is a testsentence");
-		assertTrue(comment.getTaggedBody(0).trim().equalsIgnoreCase("<span id=\"comment0\"><span class=\"sentence isNotRelevant\"  id  = ui1><span class =tag></span><span class = sentenceBody>[Alternative] This is a testsentence</span><span class =tag></span></span></span>\r\n".trim()));
+		assertTrue(comment.getTaggedBody(0).trim().equalsIgnoreCase(
+				"<span id=\"comment0\"><span class=\"sentence isNotRelevant\"  id  = ui1><span class =tag></span><span class = sentenceBody>[Alternative] This is a testsentence</span><span class =tag></span></span></span>\r\n"
+						.trim()));
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testManuallyTaggingWithWrongTagMix() {
 		CommentImpl comment = getComment("[Alternative] This is a testsentence[/Issue]");
-		assertTrue(comment.getTaggedBody(0).trim().equalsIgnoreCase("<span id=\"comment0\"><span class=\"sentence isNotRelevant\"  id  = ui1><span class =tag></span><span class = sentenceBody>[Alternative] This is a testsentence[/Issue]</span><span class =tag></span></span></span>\r\n".trim()));
+		assertTrue(comment.getTaggedBody(0).trim().equalsIgnoreCase(
+				"<span id=\"comment0\"><span class=\"sentence isNotRelevant\"  id  = ui1><span class =tag></span><span class = sentenceBody>[Alternative] This is a testsentence[/Issue]</span><span class =tag></span></span></span>\r\n"
+						.trim()));
 	}
-	
-	
-	
+
 	@Test
 	@NonTransactional
 	public void testManuallyTaggingWithIconsAndTags() {
@@ -448,20 +450,16 @@ public class TestComment extends TestSetUpWithIssues {
 						.trim()));
 
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testUpperLowerCaseTagging() {
-		CommentImpl comment = getComment(
-				"[Con] But the other one not [/Con]");
-		CommentImpl comment1 = getComment(
-				"[con] But the other one not [/con]");
+		CommentImpl comment = getComment("[Con] But the other one not [/Con]");
+		CommentImpl comment1 = getComment("[con] But the other one not [/con]");
 		assertEquals(comment.getTaggedBody(0), comment1.getTaggedBody(0));
-	
+
 	}
-	
-	
-	
+
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
 		@SuppressWarnings("unchecked")
 		@Override

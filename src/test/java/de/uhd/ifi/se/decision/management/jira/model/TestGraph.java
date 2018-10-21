@@ -3,16 +3,14 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import com.atlassian.jira.bc.issue.search.SearchService;
-import com.atlassian.jira.exception.CreateException;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockSearchService;
-import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
+import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
@@ -20,9 +18,11 @@ import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockSearchService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.IssueStrategy;
+import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -41,12 +41,12 @@ public class TestGraph extends TestSetUpWithIssues {
 	public void setUp() throws CreateException {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockDefaultUserManager());
+				new MockUserManager());
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
 		element.setProject(new DecisionKnowledgeProjectImpl("Test"));
 		graph = new GraphImpl(element.getProject().getProjectKey(), element.getKey());
 		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
-		filter = new GraphFiltering(element.getProject().getProjectKey(),"",user);
+		filter = new GraphFiltering(element.getProject().getProjectKey(), "", user);
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class TestGraph extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testRootElementConstructor(){
+	public void testRootElementConstructor() {
 		Graph graphRoot = new GraphImpl(element);
 		assertNotNull(graphRoot);
 	}
@@ -71,10 +71,9 @@ public class TestGraph extends TestSetUpWithIssues {
 	public void testFilterConstructor() {
 		SearchService searchService = new MockSearchService();
 		filter.setSearchService(searchService);
-		Graph graphRoot = new GraphImpl(element.getProject().getProjectKey(),element.getKey(),filter);
+		Graph graphRoot = new GraphImpl(element.getProject().getProjectKey(), element.getKey(), filter);
 		assertNotNull(graphRoot);
 	}
-
 
 	@Test
 	public void testGetLinkedElementsNull() {
@@ -128,7 +127,7 @@ public class TestGraph extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testGetLinkedElementsAndLinksNull(){
+	public void testGetLinkedElementsAndLinksNull() {
 		assertEquals(0, graph.getLinkedElementsAndLinks(null).size());
 	}
 
@@ -149,12 +148,12 @@ public class TestGraph extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testSetGetProject(){
+	public void testSetGetProject() {
 		DecisionKnowledgeProject project = new DecisionKnowledgeProjectImpl("TEST-Set");
 		graph.setProject(project);
 		assertEquals("TEST-Set", graph.getProject().getProjectKey());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testGraphWithSentences() {

@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.auth.LoginUriProvider;
-import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 /**
@@ -26,17 +25,14 @@ public abstract class AbstractSettingsServlet extends HttpServlet {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractSettingsServlet.class);
 
 	@ComponentImport
-	protected UserManager userManager;
-	@ComponentImport
 	protected LoginUriProvider loginUriProvider;
 	@ComponentImport
 	protected TemplateRenderer templateRenderer;
 
 	@Inject
-	public AbstractSettingsServlet(@ComponentImport UserManager userManager, @ComponentImport LoginUriProvider loginUriProvider,
-								   @ComponentImport TemplateRenderer renderer) {
+	public AbstractSettingsServlet(@ComponentImport LoginUriProvider loginUriProvider,
+			@ComponentImport TemplateRenderer renderer) {
 		super();
-		this.userManager = userManager;
 		this.loginUriProvider = loginUriProvider;
 		this.templateRenderer = renderer;
 	}
@@ -71,7 +67,7 @@ public abstract class AbstractSettingsServlet extends HttpServlet {
 	private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		response.sendRedirect(loginUriProvider.getLoginUri(getUri(request)).toASCIIString());
 		LOGGER.info("User with name('{}') tried to change the project settings and wsa redirected to login.",
-				userManager.getRemoteUsername(request));
+				AuthenticationManager.getUsername(request));
 	}
 
 	private URI getUri(HttpServletRequest request) {
