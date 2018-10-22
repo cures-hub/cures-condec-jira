@@ -19,8 +19,8 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.oauth.AuthenticationRest;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
-import de.uhd.ifi.se.decision.management.jira.rest.AuthenticationRest;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest;
+package de.uhd.ifi.se.decision.management.jira.oauth;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;

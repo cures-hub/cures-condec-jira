@@ -31,8 +31,8 @@ import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.oauth.AuthenticationRest;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.rest.AuthenticationRest;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
 
 public class DecisionKnowledgeReport extends AbstractReport {

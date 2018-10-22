@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.oauth;
+package de.uhd.ifi.se.decision.management.jira.oauth;
 
 import static de.uhd.ifi.se.decision.management.jira.rest.oauth.PropertiesClient.ACCESS_TOKEN;
 import static de.uhd.ifi.se.decision.management.jira.rest.oauth.PropertiesClient.CONSUMER_KEY;
