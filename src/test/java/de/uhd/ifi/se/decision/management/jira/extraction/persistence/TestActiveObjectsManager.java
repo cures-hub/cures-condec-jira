@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
 
@@ -22,10 +24,8 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
@@ -33,7 +33,7 @@ import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class) 
+@Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 public class TestActiveObjectsManager extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
@@ -45,7 +45,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	public void setUp() {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockDefaultUserManager());
+				new MockUserManager());
 		createLocalIssue();
 	}
 
@@ -85,7 +85,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 		assertNotNull(ActiveObjectsManager.getElementFromAO(id));
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testElementInsertedTwice() {
@@ -93,9 +93,9 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 		long id2 = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 		assertNotNull(ActiveObjectsManager.getElementFromAO(id));
-		assertTrue(id==id2);
+		assertTrue(id == id2);
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testUpdateSentenceElement() {
@@ -107,7 +107,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		DecisionKnowledgeInCommentEntity element = ActiveObjectsManager.getElementFromAO(id);
 		assertTrue(element.getKnowledgeTypeString().equalsIgnoreCase("ALTERNATIVE"));
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testUpdateKnowledgeType() {
@@ -119,7 +119,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		DecisionKnowledgeInCommentEntity element = ActiveObjectsManager.getElementFromAO(id);
 		assertTrue(element.getKnowledgeTypeString().equalsIgnoreCase("ALTERNATIVE"));
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testUpdateKnowledgeType2() {
@@ -131,53 +131,53 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		DecisionKnowledgeInCommentEntity element = ActiveObjectsManager.getElementFromAO(id);
 		assertTrue(element.getKnowledgeTypeString().equalsIgnoreCase("ALTERNATIVE"));
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testUpdateKnowledgeType3() {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
-		
-		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id,KnowledgeType.ALTERNATIVE,"");
+
+		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE, "");
 		DecisionKnowledgeInCommentEntity element = ActiveObjectsManager.getElementFromAO(id);
 		assertTrue(element.getKnowledgeTypeString().equalsIgnoreCase("ALTERNATIVE"));
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testUpdateKnowledgeType3WithArgument() {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
-		
-		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id,KnowledgeType.ARGUMENT,"Pro");
+
+		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ARGUMENT, "Pro");
 		DecisionKnowledgeInCommentEntity element = ActiveObjectsManager.getElementFromAO(id);
 		assertTrue(element.getKnowledgeTypeString().equalsIgnoreCase("Pro"));
 		assertTrue(element.getArgument().equalsIgnoreCase("Pro"));
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testSetRelevantIntoAO() {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
-		
+
 		ActiveObjectsManager.setIsRelevantIntoAo(id, true);
 		DecisionKnowledgeInCommentEntity element = ActiveObjectsManager.getElementFromAO(id);
 		assertTrue(element.isRelevant());
-		
+
 		ActiveObjectsManager.setIsRelevantIntoAo(id, false);
 		element = ActiveObjectsManager.getElementFromAO(id);
 		assertFalse(element.isRelevant());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testSetRelevantIntoAOForNonExistingElement() {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
-		
-		assertFalse(ActiveObjectsManager.setIsRelevantIntoAo(id+2, true));
-	
+
+		assertFalse(ActiveObjectsManager.setIsRelevantIntoAo(id + 2, true));
+
 	}
 
 	@Test
@@ -185,28 +185,28 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	public void testCommentHasChanged() {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
-		
+
 		Comment comment2 = getComment("secondComment with more text");
-		
+
 		comment2.setJiraCommentId(comment.getJiraCommentId());
-		
+
 		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(comment2);
-		
+
 		DecisionKnowledgeInCommentEntity element = ActiveObjectsManager.getElementFromAO(id);
-		//Check if new SentenceInstance is returned
+		// Check if new SentenceInstance is returned
 		assertTrue(element.getEndSubstringCount() == 0);
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testSetSentenceIrrlevant() {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
-		
+
 		ActiveObjectsManager.setIsRelevantIntoAo(id, true);
 		DecisionKnowledgeInCommentEntity element = ActiveObjectsManager.getElementFromAO(id);
 		assertTrue(element.isRelevant());
-		
+
 		ActiveObjectsManager.setSentenceIrrelevant(id, true);
 		element = ActiveObjectsManager.getElementFromAO(id);
 		assertTrue(element.getArgument().equals(""));
@@ -214,23 +214,19 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		assertTrue(element.isTaggedManually());
 		assertTrue(element.getKnowledgeTypeString().equalsIgnoreCase("Other"));
 	}
-	
-	
+
 	@Test
 	@NonTransactional
 	public void testUpdateSentenceBodyWhenCommentChanged() {
 		Comment comment = getComment("First sentences of two. Sencond sentences of two.");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 		long id2 = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
-		
-		ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(comment.getJiraCommentId(), id, "secondComment with more text");
-		
+
+		ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(comment.getJiraCommentId(), id,
+				"secondComment with more text");
+
 		DecisionKnowledgeInCommentEntity element = ActiveObjectsManager.getElementFromAO(id2);
 		assertTrue(element.getEndSubstringCount() != comment.getEndSubstringCount().get(1));
 	}
-	
-	
 
-	
-	
 }

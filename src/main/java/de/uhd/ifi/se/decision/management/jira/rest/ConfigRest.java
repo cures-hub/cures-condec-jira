@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -27,10 +26,9 @@ import com.atlassian.jira.jql.builder.JqlClauseBuilder;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
-import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
-import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
@@ -44,14 +42,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 @Path("/config")
 public class ConfigRest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigRest.class);
-
-	@ComponentImport
-	private final UserManager userManager;
-
-	@Inject
-	public ConfigRest(UserManager userManager) {
-		this.userManager = userManager;
-	}
 
 	@Path("/setActivated")
 	@POST
@@ -378,8 +368,9 @@ public class ConfigRest {
 			return isValidDataResponse;
 		}
 		try {
-//			Use link validation over deletion. Deletion is useful during development process
-//			ActiveObjectsManager.clearSentenceDatabaseForProject(projectKey);
+			// Use link validation over deletion. Deletion is useful during development
+			// process
+			// ActiveObjectsManager.clearSentenceDatabaseForProject(projectKey);
 			GenericLinkManager.clearInValidLinks();
 			ActiveObjectsManager.cleanSentenceDatabaseForProject(projectKey);
 			return Response.ok(Status.ACCEPTED).build();
@@ -495,26 +486,27 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "request = null")).build();
 		}
 
-		Response userResponse = checkIfUserIsAuthorized(request);
-		if (userResponse.getStatus() != Status.OK.getStatusCode()) {
-			return userResponse;
-		}
-
 		Response projectResponse = checkIfProjectKeyIsValid(projectKey);
 		if (projectResponse.getStatus() != Status.OK.getStatusCode()) {
 			return projectResponse;
 		}
 
+		Response userResponse = checkIfUserIsAuthorized(request, projectKey);
+		if (userResponse.getStatus() != Status.OK.getStatusCode()) {
+			return userResponse;
+		}
+
 		return Response.status(Status.OK).build();
 	}
 
-	private Response checkIfUserIsAuthorized(HttpServletRequest request) {
-		String username = userManager.getRemoteUsername(request);
-		if (username == null || !userManager.isSystemAdmin(username)) {
-			LOGGER.warn("Unauthorized user (name:{}) tried to change configuration.", username);
-			return Response.status(Status.UNAUTHORIZED).build();
+	private Response checkIfUserIsAuthorized(HttpServletRequest request, String projectKey) {
+		String username = AuthenticationManager.getUsername(request);
+		boolean isProjectAdmin = AuthenticationManager.isProjectAdmin(username, projectKey);
+		if (isProjectAdmin) {
+			return Response.status(Status.OK).build();
 		}
-		return Response.status(Status.OK).build();
+		LOGGER.warn("Unauthorized user (name:{}) tried to change configuration.", username);
+		return Response.status(Status.UNAUTHORIZED).entity(ImmutableMap.of("error", "Authorization failed.")).build();
 	}
 
 	private Response checkIfProjectKeyIsValid(String projectKey) {

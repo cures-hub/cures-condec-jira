@@ -13,8 +13,8 @@ import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -44,7 +44,7 @@ public class TestTreant extends TestSetUpWithIssues {
 		this.treant.setChart(chart);
 		this.treant.setNodeStructure(nodeStructure);
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockDefaultUserManager());
+				new MockUserManager());
 		initialization();
 		persistenceStrategy = StrategyProvider.getPersistenceStrategy("TEST");
 	}

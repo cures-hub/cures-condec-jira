@@ -11,8 +11,8 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -30,7 +30,7 @@ public class TestKnowledgeRestSetUp extends TestSetUpWithIssues {
 		knowledgeRest = new KnowledgeRest();
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockDefaultUserManager());
+				new MockUserManager());
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
 		decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);

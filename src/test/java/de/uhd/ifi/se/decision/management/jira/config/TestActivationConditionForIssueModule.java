@@ -5,7 +5,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockJiraHelper;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import net.java.ao.EntityManager;
@@ -25,7 +25,7 @@ public class TestActivationConditionForIssueModule extends TestSetUpWithIssues {
     public void setUp(){
         initialization();
         TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-                new MockDefaultUserManager());
+                new MockUserManager());
         condition = new ActivationConditionForIssueModule();
     }
 

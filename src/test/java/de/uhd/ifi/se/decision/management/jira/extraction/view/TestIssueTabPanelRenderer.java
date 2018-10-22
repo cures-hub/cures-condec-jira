@@ -20,8 +20,8 @@ import com.atlassian.jira.user.MockApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
@@ -38,7 +38,7 @@ public class TestIssueTabPanelRenderer extends TestSetUpWithIssues {
 		renderer = new IssueTabPanelRenderer();
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockDefaultUserManager());
+				new MockUserManager());
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class TestIssueTabPanelRenderer extends TestSetUpWithIssues {
 		ApplicationUser user = new MockApplicationUser("NoFails");
 		assertEquals(0, renderer.getActions(null, user).size(), 0.0);
 	}
-	
+
 	@Ignore
 	@Test(expected = NullPointerException.class)
 	public void testGetActionsFilledFilledTemplateNotProvided() {
@@ -95,7 +95,7 @@ public class TestIssueTabPanelRenderer extends TestSetUpWithIssues {
 		ApplicationUser user = new MockApplicationUser("NoFails");
 		assertTrue(renderer.showPanel(issue, user));
 	}
-	
+
 	@Test
 	public void testGetActionsFilledFilledWithoutComment() {
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
@@ -105,6 +105,5 @@ public class TestIssueTabPanelRenderer extends TestSetUpWithIssues {
 		ApplicationUser user = new MockApplicationUser("NoFails");
 		assertNotNull(renderer.getActions(issue, user));
 	}
-	
 
 }

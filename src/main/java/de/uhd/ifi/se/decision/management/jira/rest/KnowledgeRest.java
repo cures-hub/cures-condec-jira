@@ -21,10 +21,9 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.sal.api.user.UserManager;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
@@ -49,6 +48,7 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
  */
 @Path("/decisions")
 public class KnowledgeRest {
+
 	@Path("/getDecisionKnowledgeElement")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -108,7 +108,7 @@ public class KnowledgeRest {
 		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
-			ApplicationUser user = getCurrentUser(request);
+			ApplicationUser user = AuthenticationManager.getUser(request);
 			DecisionKnowledgeElement decisionKnowledgeElementWithId = strategy
 					.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
 			if (decisionKnowledgeElementWithId != null) {
@@ -134,7 +134,7 @@ public class KnowledgeRest {
 		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
-			ApplicationUser user = getCurrentUser(request);
+			ApplicationUser user = AuthenticationManager.getUser(request);
 			if (strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user)) {
 				if (ConfigPersistence.isWebhookEnabled(projectKey)) {
 					WebhookConnector connector = new WebhookConnector(projectKey);
@@ -157,7 +157,7 @@ public class KnowledgeRest {
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
-			ApplicationUser user = getCurrentUser(request);
+			ApplicationUser user = AuthenticationManager.getUser(request);
 			boolean isDeleted = false;
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			DecisionKnowledgeElement elementToBeDeletedWithLinks = strategy
@@ -187,7 +187,7 @@ public class KnowledgeRest {
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
-			ApplicationUser user = getCurrentUser(request);
+			ApplicationUser user = AuthenticationManager.getUser(request);
 			long linkId = strategy.insertLink(link, user);
 			if (linkId == 0) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -303,7 +303,7 @@ public class KnowledgeRest {
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
-			ApplicationUser user = getCurrentUser(request);
+			ApplicationUser user = AuthenticationManager.getUser(request);
 			boolean isDeleted = strategy.deleteLink(link, user);
 			if (isDeleted) {
 				DecisionKnowledgeElement element = strategy
@@ -361,7 +361,7 @@ public class KnowledgeRest {
 	public Response createGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			GenericLink link) {
 		if (projectKey != null && request != null && link != null) {
-			ApplicationUser user = getCurrentUser(request);
+			ApplicationUser user = AuthenticationManager.getUser(request);
 			long linkId = GenericLinkManager.insertGenericLink(link, user);
 			if (linkId == 0) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -380,7 +380,7 @@ public class KnowledgeRest {
 	public Response getAllElementsMatchingQuery(@QueryParam("projectKey") String projectKey,
 			@QueryParam("query") String query, @Context HttpServletRequest request) {
 		if (projectKey != null && query != null && request != null) {
-			ApplicationUser user = getCurrentUser(request);
+			ApplicationUser user = AuthenticationManager.getUser(request);
 			GraphFiltering filter = new GraphFiltering(projectKey, query, user);
 			filter.produceResultsFromQuery();
 			List<DecisionKnowledgeElement> queryResult = filter.getAllElementsMatchingQuery();
@@ -398,10 +398,10 @@ public class KnowledgeRest {
 	@Path("/getAllElementsLinkedToElement")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getAllElementsLinkedToElement(@QueryParam("projectKey") String projectKey,
-			@QueryParam("elementKey") String elementKey, @QueryParam("URISearch") String uriSearch,
-			@Context HttpServletRequest request) {
-		ApplicationUser user = getCurrentUser(request);
+	public Response getAllElementsLinkedToElement(@QueryParam("elementKey") String elementKey,
+			@QueryParam("URISearch") String uriSearch, @Context HttpServletRequest request) {
+		String projectKey = getProjectKey(elementKey);
+		ApplicationUser user = AuthenticationManager.getUser(request);
 
 		GraphFiltering filter = new GraphFiltering(projectKey, uriSearch, user);
 		filter.produceResultsFromQuery();
@@ -413,10 +413,7 @@ public class KnowledgeRest {
 		return Response.ok(filteredElements).build();
 	}
 
-	private ApplicationUser getCurrentUser(HttpServletRequest request) {
-		com.atlassian.jira.user.util.UserManager jiraUserManager = ComponentAccessor.getUserManager();
-		UserManager userManager = ComponentGetter.getUserManager();
-		String userName = userManager.getRemoteUsername(request);
-		return jiraUserManager.getUserByName(userName);
+	private String getProjectKey(String elementKey) {
+		return elementKey.split("-")[0];
 	}
 }

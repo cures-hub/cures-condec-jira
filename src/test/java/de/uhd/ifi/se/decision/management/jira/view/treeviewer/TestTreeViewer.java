@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,15 +17,15 @@ import com.atlassian.activeobjects.test.TestActiveObjects;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockDefaultUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-
 
 @net.java.ao.test.jdbc.Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 @RunWith(ActiveObjectsJUnitRunner.class)
@@ -43,7 +42,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockDefaultUserManager());
+				new MockUserManager());
 		initialization();
 		multiple = false;
 		checkCallback = true;
@@ -120,19 +119,18 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		assertEquals(Data.class, treeViewer.getDataStructure(null).getClass());
 	}
 
-	 @Test (expected = NullPointerException.class)
-	 @NonTransactional
-	 public void testGetDataStructureEmpty() {
+	@Test(expected = NullPointerException.class)
+	@NonTransactional
+	public void testGetDataStructureEmpty() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-	    System.out.println(treeViewer.getDataStructure(element));
-	 }
+		System.out.println(treeViewer.getDataStructure(element));
+	}
 
 	@Test
 	@NonTransactional
 	public void testGetDataStructureFilled() {
-        DecisionKnowledgeElement element =
-        abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
-        assertEquals("14", treeViewer.getDataStructure(element).getId());
+		DecisionKnowledgeElement element = abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		assertEquals("14", treeViewer.getDataStructure(element).getId());
 	}
 
 	@Test
@@ -141,13 +139,12 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		assertNotNull(new TreeViewer());
 	}
 
-    @Test
+	@Test
 	@NonTransactional
-    public void testEmptyGraphGetDataStructure() {
-	    TreeViewer tree = new TreeViewer();
-	    DecisionKnowledgeElement element =
-	    abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
-	    assertEquals("14", tree.getDataStructure(element).getId());
+	public void testEmptyGraphGetDataStructure() {
+		TreeViewer tree = new TreeViewer();
+		DecisionKnowledgeElement element = abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		assertEquals("14", tree.getDataStructure(element).getId());
 	}
 
 }
