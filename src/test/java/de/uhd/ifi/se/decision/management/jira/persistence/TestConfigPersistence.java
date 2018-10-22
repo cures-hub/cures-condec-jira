@@ -285,5 +285,11 @@ public class TestConfigPersistence extends TestSetUpWithIssues {
 		assertNotNull(ConfigPersistence.getSecretForOAuth());
 	}
 	
+	@Test
+	public void testKnowledgeTypes() {
+		ConfigPersistence.setKnowledgeTypeEnabled("TEST", "Goal", true);
+		assertTrue(ConfigPersistence.isKnowledgeTypeEnabled("TEST", "Goal"));
+	}
+	
 	
 }

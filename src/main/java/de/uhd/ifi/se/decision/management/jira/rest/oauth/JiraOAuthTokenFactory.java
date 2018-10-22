@@ -34,7 +34,12 @@ public class JiraOAuthTokenFactory {
      * @throws InvalidKeySpecException
      */
     public JiraOAuthGetAccessToken getJiraOAuthGetAccessToken(String tmpToken, String secret, String consumerKey, String privateKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        JiraOAuthGetAccessToken accessToken = new JiraOAuthGetAccessToken(accessTokenUrl);
+    	JiraOAuthGetAccessToken accessToken;
+    	try {
+    		accessToken = new JiraOAuthGetAccessToken(accessTokenUrl);
+    	}catch(Exception e) {
+    		return null;
+    	}
         accessToken.consumerKey = consumerKey;
         accessToken.signer = getOAuthRsaSigner(privateKey);
         accessToken.transport = new ApacheHttpTransport();

@@ -86,17 +86,48 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 		list.add(new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue)));
 
 	}
-
+	
 	@Test
-	@NonTransactional
-	public void testBinaryClassification() throws Exception {
-		list = classificationManager.classifySentenceBinary(list);
-		assertNotNull(list.get(0).getSentences().get(0).isRelevant());
-		assertTrue(list.get(0).getSentences().get(0).isTagged());
+	@NonTransactional //Invalid equivalence class
+	public void testBinaryClassificationWithEmptyList() {
+		list = classificationManager.classifySentenceBinary(new ArrayList<Comment>());
+		assertTrue(list.size() == 0);
+		//important to receive no exception when list is empty
+	}
+	
+	@Test
+	@NonTransactional //Invalid equivalence class
+	public void testBinaryClassificationWithNullList() {
+		list = classificationManager.classifySentenceBinary(null);
+		assertTrue(list.size() == 0);
 	}
 
 	@Test
-	@NonTransactional
+	@NonTransactional//Valid equivalence class
+	public void testBinaryClassification() {
+		list = classificationManager.classifySentenceBinary(list);
+		assertTrue(list.size() ==1);
+		assertNotNull(list.get(0).getSentences().get(0).isRelevant());
+		assertTrue(list.get(0).getSentences().get(0).isTagged());
+	}
+	
+	@Test
+	@NonTransactional //invalid equivalence class
+	public void testFineGrainedClassificationWithNull() {
+		list = classificationManager.classifySentenceFineGrained(null);
+		assertNotNull(list);
+	}
+	
+	@Test
+	@NonTransactional //invalid equivalence class
+	public void testFineGrainedClassificationWithEmptyList() {
+		list = classificationManager.classifySentenceFineGrained(new ArrayList<Comment>());
+		assertTrue(list.size() == 0);
+	}
+	
+
+	@Test
+	@NonTransactional //valid equivalence class
 	public void testFineGrainedClassification() throws Exception {
 		list = classificationManager.classifySentenceBinary(list);
 		list = classificationManager.classifySentenceFineGrained(list);
@@ -106,7 +137,7 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 	}
 	
 	@Test
-	@NonTransactional
+	@NonTransactional//valid equivalence class
 	public void testFineGrainedClassificationWithValidData() throws Exception {
 		list.get(0).getSentences().get(0).setRelevant(true);
 		list = classificationManager.classifySentenceFineGrained(list);
@@ -116,7 +147,7 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 	}
 	
 	@Test
-	@NonTransactional
+	@NonTransactional//valid equivalence class
 	public void testFineGrainedClassificationWithValidDataInAO() throws Exception {
 		list.get(0).getSentences().get(0).setRelevant(true);
 		list.get(0).getSentences().get(0).setTaggedFineGrained(true);

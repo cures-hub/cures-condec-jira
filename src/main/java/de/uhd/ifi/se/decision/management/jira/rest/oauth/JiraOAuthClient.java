@@ -84,7 +84,10 @@ public class JiraOAuthClient {
      */
     public OAuthParameters getParameters(String tmpToken, String secret, String consumerKey, String privateKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
         JiraOAuthGetAccessToken oAuthAccessToken = oAuthGetAccessTokenFactory.getJiraOAuthGetAccessToken(tmpToken, secret, consumerKey, privateKey);
-        oAuthAccessToken.verifier = secret;
-        return oAuthAccessToken.createParameters();
+        if(oAuthAccessToken != null) {
+        	oAuthAccessToken.verifier = secret;
+        	return oAuthAccessToken.createParameters();
+        }
+        return null;
     }
 }

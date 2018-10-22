@@ -7,6 +7,9 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
@@ -19,7 +22,7 @@ public class CommentSplitter {
 	public static final String[] excludedTagList = new String[] { "{code}", "{quote}", "{noformat}","{panel}" };
 
 	public static final String[] manualRationaleTagList = new String[] { "[issue]", "[decision]", "[alternative]",
-			"[pro]", "[con]" };
+			"[pro]", "[con]", "[goal]" };
 
 	public static final String[] manualRationalIconList = new String[] { "(!)", "(/)", "(?)", "(y)", "(n)" };
 	
@@ -129,9 +132,20 @@ public class CommentSplitter {
 		if (body.toLowerCase().contains("[con]") || (checkIcons && body.contains("(n)"))) {
 			return "con";
 		}
-		return KnowledgeType.OTHER.toString();
+		return matchSelectableKnowledgeTypes(body, projectKey);
 	}
 	
+	private static String matchSelectableKnowledgeTypes(String body,String projectKey) {
+		DecisionKnowledgeProject dkp = new DecisionKnowledgeProjectImpl(projectKey);
+		System.out.println(dkp.getKnowledgeTypes());
+		for(KnowledgeType type: dkp.getKnowledgeTypes()) {
+			if(body.toLowerCase().contains("["+type.toString()+"]")) {
+				return type.toString();
+			}
+		}
+		return KnowledgeType.OTHER.toString();
+	}
+
 	public static boolean containsOpenAndCloseTags(String body) {
 		for (int i = 0; i < manualRationaleTagList.length; i++) {
 			String tag = manualRationaleTagList[i].toLowerCase();

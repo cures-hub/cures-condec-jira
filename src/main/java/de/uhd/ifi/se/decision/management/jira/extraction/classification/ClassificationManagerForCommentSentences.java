@@ -15,9 +15,13 @@ public class ClassificationManagerForCommentSentences {
 
 	private DecisionKnowledgeClassifier classifier;
 	// TODO: Update knowledge types if classifer changes
+	/** The knowledge types need to be present in the weka classifer. They do not relate to tags like [Issue]  */
 	private final String[] knowledgeTypes = { "isAlternative", "isPro", "isCon", "isDecision", "isIssue" };
 
 	public List<Comment> classifySentenceBinary(List<Comment> commentsList) {
+		if(commentsList == null) {
+			return new ArrayList<Comment>();
+		}
 		Instances data = createDatasetForBinaryClassification(commentsList);
 
 		List<Double> classificationResult;
@@ -35,6 +39,9 @@ public class ClassificationManagerForCommentSentences {
 	}
 
 	public List<Comment> classifySentenceFineGrained(List<Comment> commentsList) {
+		if(commentsList == null) {
+			return new ArrayList<Comment>();
+		}
 		Instances data = createDatasetForfineGrainedClassification(commentsList);
 
 		if (data.isEmpty()) {

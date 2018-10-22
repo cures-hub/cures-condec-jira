@@ -189,45 +189,6 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 		return dkeCount;
 	}
-
-	private Map<String, Integer> getAlternativeDecisionPerIssue() {
-		Integer[] statistics = new Integer[4];
-		Arrays.fill(statistics, 0);
-		List<DecisionKnowledgeElement> listOfIssues = ActiveObjectsManager
-				.getAllElementsFromAoByType(projectManager.getProjectObj(this.projectId).getKey(), KnowledgeType.ISSUE);
-
-		for (DecisionKnowledgeElement issue : listOfIssues) {
-			List<GenericLink> links = GenericLinkManager.getGenericLinksForElement("s" + issue.getId(), false);
-			boolean hasAlternative = false;
-			boolean hasDecision = false;
-
-			for (GenericLink link : links) {
-				DecisionKnowledgeElement dke = link.getOpposite("s" + issue.getId());
-				if (dke instanceof Sentence && dke.getType().equals(KnowledgeType.ALTERNATIVE)) {
-					hasAlternative = true;
-				} else if (dke instanceof Sentence && dke.getType().equals(KnowledgeType.DECISION)) {
-					hasDecision = true;
-				}
-			}
-			if (hasAlternative && hasDecision) {
-				statistics[0] = statistics[0] + 1;
-			} else if (hasAlternative && !hasDecision) {
-				statistics[1] = statistics[1] + 1;
-			} else if (!hasAlternative && hasDecision) {
-				statistics[2] = statistics[2] + 1;
-			} else if (!hasAlternative && !hasDecision) {
-				statistics[3] = statistics[3] + 1;
-			}
-		}
-		// Hashmaps as counter suck
-		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
-		dkeCount.put("Has Alt and Dec", statistics[0]);
-		dkeCount.put("Has Alt but no Dec", statistics[1]);
-		dkeCount.put("Has Dec but no Alt", statistics[2]);
-		dkeCount.put("Has no Dec and Alt", statistics[3]);
-
-		return dkeCount;
-	}
 	
 	
 	private Map<String, Integer> getLinkToOtherElement(KnowledgeType linkFrom, KnowledgeType linkTo1, KnowledgeType linkTo2) {
