@@ -263,38 +263,6 @@ public class ConfigRest {
 		return Response.ok(defaultKnowledgeTypes).build();
 	}
 
-	@Path("/setGitAddress")
-	@POST
-	public Response setGitAddress(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey, @QueryParam("gitAddress") final String gitAddress) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		if (gitAddress == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "gitAddress = null")).build();
-		}
-		try {
-			ConfigPersistence.setGitAddress(projectKey, gitAddress);
-			// TODO GitConfig gitConfig = new GitConfig(projectKey, gitAddress);
-			return Response.ok(Status.ACCEPTED).build();
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-			return Response.status(Status.CONFLICT).build();
-		}
-	}
-
-	@Path("/getGitAddress")
-	@GET
-	public Response getGitAddress(@QueryParam("projectKey") final String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		String gitAddress = ConfigPersistence.getGitAddress(projectKey);
-		return Response.ok(gitAddress).build();
-	}
-
 	@Path("/setWebhookEnabled")
 	@POST
 	public Response setWebhookEnabled(@Context HttpServletRequest request,

@@ -103,11 +103,6 @@ public class TestDecisionKnowledgeProject extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testGetGitAddress() {
-		assertEquals("true", project.getGitAddress());
-	}
-
-	@Test
 	public void testSetWebhookDataNullNull() {
 		project.setWebhookData(null, null);
 		assertTrue(true);
