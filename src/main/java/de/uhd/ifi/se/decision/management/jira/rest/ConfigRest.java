@@ -430,10 +430,11 @@ public class ConfigRest {
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
-	
+
 	@Path("/setUseClassiferForIssueComments")
 	@POST
-	public Response setUseClassiferForIssueComments(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+	public Response setUseClassiferForIssueComments(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey,
 			@QueryParam("isClassifierUsedForIssues") String isActivatedString) {
 		System.out.println(isActivatedString);
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
@@ -452,8 +453,6 @@ public class ConfigRest {
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
-	
-	
 
 	@Path("/isIconParsing")
 	@GET
@@ -475,13 +474,13 @@ public class ConfigRest {
 		}
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
 		Collection<IssueType> types = issueTypeManager.getIssueTypes();
-		Collection<String> typeNames = new ArrayList<>();
+		Collection<String> typeNames = new ArrayList<String>();
 		for (IssueType type : types) {
 			typeNames.add(type.getName());
 		}
 		return Response.ok(typeNames).build();
 	}
-	
+
 	@Path("/getRequestToken")
 	@GET
 	public Response getRequestToken(@QueryParam("projectKey") String projectKey, @QueryParam("baseURL") String baseURL,
@@ -492,15 +491,15 @@ public class ConfigRest {
 			ConfigPersistence.setPrivateKey(privateKey);
 			ConfigPersistence.setConsumerKey(consumerKey);
 			OAuthManager oAuthManager = new OAuthManager();
-			String result = oAuthManager.retrieveRequestToken(consumerKey, privateKey);
+			String requestToken = oAuthManager.retrieveRequestToken(consumerKey, privateKey);
 
-			ConfigPersistence.setRequestToken(result);
-			// TODO: Tim: why do we have to use a map here
-			return Response.status(Status.OK).entity(ImmutableMap.of("result", result)).build();
+			ConfigPersistence.setRequestToken(requestToken);
+			// TODO: Tim: why do we have to use a map here, Response.ok(requestToken).build() does not work, why?
+			return Response.status(Status.OK).entity(ImmutableMap.of("result", requestToken)).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error",
-							"Request could not be sent due to a bad request (element id or project key was missing)."))
+							"Request token could not be retrieved since the base URL, private key, and/or consumer key are missing."))
 					.build();
 		}
 	}
@@ -525,12 +524,12 @@ public class ConfigRest {
 
 			ConfigPersistence.setAccessToken(accessToken);
 
-			// TODO: Tim: why do we have to use a map here
+			// TODO: Tim: why do we have to use a map here, Response.ok(accessToken).build() does not work, why?
 			return Response.status(Status.OK).entity(ImmutableMap.of("result", accessToken)).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error",
-							"Request could not be sent due to a bad request (element id or project key was missing)."))
+							"Access token could not be retrieved since the base URL, private key, and/or consumer key are missing."))
 					.build();
 		}
 	}

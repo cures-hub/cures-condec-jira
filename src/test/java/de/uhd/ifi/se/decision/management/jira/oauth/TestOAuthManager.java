@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.oauthrest;
+package de.uhd.ifi.se.decision.management.jira.oauth;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -25,7 +25,7 @@ import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestAuthenticationRest extends TestSetUpWithIssues {
+public class TestOAuthManager extends TestSetUpWithIssues {
 
 	private OAuthManager authenticationRest;
 	private EntityManager entityManager;
