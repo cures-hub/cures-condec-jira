@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.oauthrest;
+package de.uhd.ifi.se.decision.management.jira.oauth;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -19,15 +19,15 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
-import de.uhd.ifi.se.decision.management.jira.rest.AuthenticationRest;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestAuthenticationRest extends TestSetUpWithIssues {
+public class TestOAuthManager extends TestSetUpWithIssues {
 
-	private AuthenticationRest authenticationRest;
+	private OAuthManager authenticationRest;
 	private EntityManager entityManager;
 	private DecisionKnowledgeElement decisionKnowledgeElement;
 
@@ -41,7 +41,7 @@ public class TestAuthenticationRest extends TestSetUpWithIssues {
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
 
-		authenticationRest = new AuthenticationRest();
+		authenticationRest = new OAuthManager();
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
 		decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);

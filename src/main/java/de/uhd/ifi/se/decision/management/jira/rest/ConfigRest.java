@@ -33,6 +33,7 @@ import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 
@@ -262,38 +263,6 @@ public class ConfigRest {
 		return Response.ok(defaultKnowledgeTypes).build();
 	}
 
-	@Path("/setGitAddress")
-	@POST
-	public Response setGitAddress(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey, @QueryParam("gitAddress") final String gitAddress) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		if (gitAddress == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "gitAddress = null")).build();
-		}
-		try {
-			ConfigPersistence.setGitAddress(projectKey, gitAddress);
-			// TODO GitConfig gitConfig = new GitConfig(projectKey, gitAddress);
-			return Response.ok(Status.ACCEPTED).build();
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-			return Response.status(Status.CONFLICT).build();
-		}
-	}
-
-	@Path("/getGitAddress")
-	@GET
-	public Response getGitAddress(@QueryParam("projectKey") final String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		String gitAddress = ConfigPersistence.getGitAddress(projectKey);
-		return Response.ok(gitAddress).build();
-	}
-
 	@Path("/setWebhookEnabled")
 	@POST
 	public Response setWebhookEnabled(@Context HttpServletRequest request,
@@ -429,10 +398,11 @@ public class ConfigRest {
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
-	
+
 	@Path("/setUseClassiferForIssueComments")
 	@POST
-	public Response setUseClassiferForIssueComments(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+	public Response setUseClassiferForIssueComments(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey,
 			@QueryParam("isClassifierUsedForIssues") String isActivatedString) {
 		System.out.println(isActivatedString);
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
@@ -451,8 +421,6 @@ public class ConfigRest {
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
-	
-	
 
 	@Path("/isIconParsing")
 	@GET
@@ -474,11 +442,64 @@ public class ConfigRest {
 		}
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
 		Collection<IssueType> types = issueTypeManager.getIssueTypes();
-		Collection<String> typeNames = new ArrayList<>();
+		Collection<String> typeNames = new ArrayList<String>();
 		for (IssueType type : types) {
 			typeNames.add(type.getName());
 		}
 		return Response.ok(typeNames).build();
+	}
+
+	@Path("/getRequestToken")
+	@GET
+	public Response getRequestToken(@QueryParam("projectKey") String projectKey, @QueryParam("baseURL") String baseURL,
+			@QueryParam("privateKey") String privateKey, @QueryParam("consumerKey") String consumerKey) {
+		if (baseURL != null && privateKey != null && consumerKey != null) {
+			privateKey = privateKey.replaceAll(" ", "+");
+			ConfigPersistence.setOauthJiraHome(baseURL);
+			ConfigPersistence.setPrivateKey(privateKey);
+			ConfigPersistence.setConsumerKey(consumerKey);
+			OAuthManager oAuthManager = new OAuthManager();
+			String requestToken = oAuthManager.retrieveRequestToken(consumerKey, privateKey);
+
+			ConfigPersistence.setRequestToken(requestToken);
+			// TODO: Tim: why do we have to use a map here, Response.ok(requestToken).build() does not work, why?
+			return Response.status(Status.OK).entity(ImmutableMap.of("result", requestToken)).build();
+		} else {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error",
+							"Request token could not be retrieved since the base URL, private key, and/or consumer key are missing."))
+					.build();
+		}
+	}
+
+	@Path("/getAccessToken")
+	@GET
+	public Response getAccessToken(@QueryParam("projectKey") String projectKey, @QueryParam("baseURL") String baseURL,
+			@QueryParam("privateKey") String privateKey, @QueryParam("consumerKey") String consumerKey,
+			@QueryParam("requestToken") String requestToken, @QueryParam("secret") String secret) {
+		if (baseURL != null && privateKey != null && consumerKey != null) {
+
+			privateKey = privateKey.replaceAll(" ", "+");
+
+			ConfigPersistence.setOauthJiraHome(baseURL);
+			ConfigPersistence.setRequestToken(requestToken);
+			ConfigPersistence.setPrivateKey(privateKey);
+			ConfigPersistence.setConsumerKey(consumerKey);
+			ConfigPersistence.setSecretForOAuth(secret);
+
+			OAuthManager oAuthManager = new OAuthManager();
+			String accessToken = oAuthManager.retrieveAccessToken(requestToken, secret, consumerKey, privateKey);
+
+			ConfigPersistence.setAccessToken(accessToken);
+
+			// TODO: Tim: why do we have to use a map here, Response.ok(accessToken).build() does not work, why?
+			return Response.status(Status.OK).entity(ImmutableMap.of("result", accessToken)).build();
+		} else {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error",
+							"Access token could not be retrieved since the base URL, private key, and/or consumer key are missing."))
+					.build();
+		}
 	}
 
 	private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {

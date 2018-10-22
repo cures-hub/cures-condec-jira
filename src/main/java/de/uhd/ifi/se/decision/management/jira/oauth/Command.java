@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.rest.oauth;
+package de.uhd.ifi.se.decision.management.jira.oauth;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;

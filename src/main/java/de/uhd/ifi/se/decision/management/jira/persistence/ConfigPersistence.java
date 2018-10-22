@@ -130,16 +130,6 @@ public class ConfigPersistence {
 	}
 
 	// TODO Testing
-	public static void setGitAddress(String projectKey, String gitAddress) {
-		setValue(projectKey, "gitAddress", gitAddress);
-	}
-
-	// TODO Testing
-	public static String getGitAddress(String projectKey) {
-		return getValue(projectKey, "gitAddress");
-	}
-
-	// TODO Testing
 	public static void setWebhookUrl(String projectKey, String webhookUrl) {
 		setValue(projectKey, "webhookUrl", webhookUrl);
 	}

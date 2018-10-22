@@ -1,6 +1,6 @@
-package de.uhd.ifi.se.decision.management.jira.rest.oauth;
+package de.uhd.ifi.se.decision.management.jira.oauth;
 
-import static de.uhd.ifi.se.decision.management.jira.rest.oauth.PropertiesClient.JIRA_HOME;
+import static de.uhd.ifi.se.decision.management.jira.oauth.PropertiesClient.JIRA_HOME;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;

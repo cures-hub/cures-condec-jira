@@ -31,8 +31,8 @@ import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.rest.AuthenticationRest;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
 
 public class DecisionKnowledgeReport extends AbstractReport {
@@ -358,7 +358,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 			return;
 		}
 		try {
-			AuthenticationRest ar = new AuthenticationRest();
+			OAuthManager ar = new OAuthManager();
 			ar.startRequest(
 					"http://cures.ifi.uni-heidelberg.de:8080/rest/gitplugin/1.0/issues/" + issueKey + "/commits");
 		} catch (Exception e) {
