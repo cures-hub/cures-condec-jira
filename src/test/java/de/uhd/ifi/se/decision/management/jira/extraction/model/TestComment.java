@@ -1,6 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
 
@@ -62,7 +64,7 @@ public class TestComment extends TestSetUpWithIssues {
 
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 		// Get the current logged in user
-		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUser("NoFails");
+		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		// Get access to the Jira comment and component manager
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
 		// Get the last comment entered in on the issue to a String

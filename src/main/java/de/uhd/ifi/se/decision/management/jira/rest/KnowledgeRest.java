@@ -43,7 +43,7 @@ import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
- * REST resource: Enables creation, editing and deletion of decision knowledge
+ * REST resource: Enables creation, editing, and deletion of decision knowledge
  * elements and their links
  */
 @Path("/decisions")

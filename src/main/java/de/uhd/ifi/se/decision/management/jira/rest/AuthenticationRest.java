@@ -23,6 +23,10 @@ import de.uhd.ifi.se.decision.management.jira.rest.oauth.JiraOAuthClient;
 import de.uhd.ifi.se.decision.management.jira.rest.oauth.OAuthClient;
 import de.uhd.ifi.se.decision.management.jira.rest.oauth.PropertiesClient;
 
+/**
+ * REST resource for OAuth configuration, e.g., to access git integration for
+ * Jira plugin
+ */
 @Path("/auth")
 public class AuthenticationRest {
 
@@ -32,13 +36,12 @@ public class AuthenticationRest {
 	private boolean invalidCredentials;
 
 	// Constructor without arguments needs to be here to create a rest interface.
-	// Otherwise Bean Exception
+	// Otherwise a bean exception is thrown.
 	public AuthenticationRest() {
 		checkInit();
 	}
 
 	private void checkInit() {
-
 		try {
 			this.propertiesClient = new PropertiesClient();
 			this.jiraOAuthClient = new JiraOAuthClient(propertiesClient);
@@ -113,7 +116,7 @@ public class AuthenticationRest {
 		} else {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error",
-							"Request could not be send due to a bad request (element id or project key was missing)."))
+							"Request could not be sent due to a bad request (element id or project key was missing)."))
 					.build();
 		}
 	}
@@ -133,16 +136,16 @@ public class AuthenticationRest {
 			ConfigPersistence.setConsumerKey(consumerKey);
 			ConfigPersistence.setSecretForOAuth(secret);
 
-			String result = this.retrieveAccessToken(requestToken, secret, consumerKey, privateKey);
+			String accessToken = this.retrieveAccessToken(requestToken, secret, consumerKey, privateKey);
 
-			ConfigPersistence.setAccessToken(result);
+			ConfigPersistence.setAccessToken(accessToken);
 
 			// TODO: Tim: why do we have to use a map here
-			return Response.status(Status.OK).entity(ImmutableMap.of("result", result)).build();
+			return Response.status(Status.OK).entity(ImmutableMap.of("result", accessToken)).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error",
-							"Request could not be send due to a bad request (element id or project key was missing)."))
+							"Request could not be sent due to a bad request (element id or project key was missing)."))
 					.build();
 		}
 	}

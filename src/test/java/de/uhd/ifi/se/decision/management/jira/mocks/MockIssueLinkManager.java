@@ -16,12 +16,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-/**
- *
- * @author Tim Kuchenbuch
- * @description rudimentary implementation. Only for Test Use
- *
- */
 public class MockIssueLinkManager implements IssueLinkManager {
 
 	@Override

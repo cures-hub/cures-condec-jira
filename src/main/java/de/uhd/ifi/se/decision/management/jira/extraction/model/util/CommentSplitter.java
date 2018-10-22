@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -19,14 +19,15 @@ public class CommentSplitter {
 
 	private List<Integer> endSubstringCount;
 
-	public static final String[] excludedTagList = new String[] { "{code}", "{quote}", "{noformat}","{panel}" };
+	public static final String[] excludedTagList = new String[] { "{code}", "{quote}", "{noformat}", "{panel}" };
 
 	public static final String[] manualRationaleTagList = new String[] { "[issue]", "[decision]", "[alternative]",
 			"[pro]", "[con]", "[goal]" };
 
 	public static final String[] manualRationalIconList = new String[] { "(!)", "(/)", "(?)", "(y)", "(n)" };
-	
-	public static final String[] allExcluded = (String[]) ArrayUtils.addAll(ArrayUtils.addAll(excludedTagList, manualRationaleTagList),manualRationalIconList);
+
+	public static final String[] allExcluded = (String[]) ArrayUtils
+			.addAll(ArrayUtils.addAll(excludedTagList, manualRationaleTagList), manualRationalIconList);
 
 	public CommentSplitter() {
 		this.setStartSubstringCount(new ArrayList<Integer>());
@@ -43,9 +44,10 @@ public class CommentSplitter {
 			String tag = manualRationaleTagList[i];
 			firstSplit = searchForFurtherTags(firstSplit, tag, tag.replace("[", "[/"));
 		}
-		if(ConfigPersistence.isIconParsing(projectKey)) {
+		if (ConfigPersistence.isIconParsing(projectKey)) {
 			for (int i = 0; i < manualRationalIconList.length; i++) {
-				firstSplit = searchForFurtherTags(firstSplit, manualRationalIconList[i], System.getProperty("line.separator"));
+				firstSplit = searchForFurtherTags(firstSplit, manualRationalIconList[i],
+						System.getProperty("line.separator"));
 			}
 		}
 		return firstSplit;
@@ -54,8 +56,8 @@ public class CommentSplitter {
 	private List<String> searchForFurtherTags(List<String> firstSplit, String openTag, String closeTag) {
 		HashMap<Integer, ArrayList<String>> newSlices = new HashMap<Integer, ArrayList<String>>();
 		for (String slice : firstSplit) {
-			ArrayList<String> slicesOfSentence = searchBetweenTagsRecursive(slice.toLowerCase(), openTag.toLowerCase(), closeTag.toLowerCase(),
-					new ArrayList<String>());
+			ArrayList<String> slicesOfSentence = searchBetweenTagsRecursive(slice.toLowerCase(), openTag.toLowerCase(),
+					closeTag.toLowerCase(), new ArrayList<String>());
 			if (slicesOfSentence.size() > 1) {
 				newSlices.put(firstSplit.indexOf(slice), slicesOfSentence);
 			}
@@ -72,10 +74,10 @@ public class CommentSplitter {
 
 	private ArrayList<String> searchBetweenTagsRecursive(String toSearch, String openTag, String closeTag,
 			ArrayList<String> slices) {
-		//Icon is used to identify a sentence or a closing tag is forgotten
+		// Icon is used to identify a sentence or a closing tag is forgotten
 		if (toSearch.contains(openTag) && !toSearch.contains(closeTag)) {
 			return slices;
-		}//Open and close tags are existent
+		} // Open and close tags are existent
 		if (toSearch.startsWith(openTag) && toSearch.contains(closeTag)) {
 			String part = StringUtils.substringBetween(toSearch, openTag, closeTag);
 			part = openTag + part + closeTag;
@@ -134,12 +136,12 @@ public class CommentSplitter {
 		}
 		return matchSelectableKnowledgeTypes(body, projectKey);
 	}
-	
-	private static String matchSelectableKnowledgeTypes(String body,String projectKey) {
+
+	private static String matchSelectableKnowledgeTypes(String body, String projectKey) {
 		DecisionKnowledgeProject dkp = new DecisionKnowledgeProjectImpl(projectKey);
 		System.out.println(dkp.getKnowledgeTypes());
-		for(KnowledgeType type: dkp.getKnowledgeTypes()) {
-			if(body.toLowerCase().contains("["+type.toString()+"]")) {
+		for (KnowledgeType type : dkp.getKnowledgeTypes()) {
+			if (body.toLowerCase().contains("[" + type.toString() + "]")) {
 				return type.toString();
 			}
 		}
@@ -149,7 +151,7 @@ public class CommentSplitter {
 	public static boolean containsOpenAndCloseTags(String body) {
 		for (int i = 0; i < manualRationaleTagList.length; i++) {
 			String tag = manualRationaleTagList[i].toLowerCase();
-			if(body.toLowerCase().contains(tag) && body.toLowerCase().contains(tag.replace("[", "[/"))) {
+			if (body.toLowerCase().contains(tag) && body.toLowerCase().contains(tag.replace("[", "[/"))) {
 				return true;
 			}
 		}

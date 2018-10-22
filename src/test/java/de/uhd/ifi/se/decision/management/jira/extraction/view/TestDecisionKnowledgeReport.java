@@ -69,7 +69,6 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		ActiveObjectsManager.updateKnowledgeTypeOfSentence(sentence2.getId(), KnowledgeType.ALTERNATIVE, "");
 
 		assertNotNull(this.report.createValues(new MockProjectActionSupport()));
-
 	}
 
 	private class MockProjectActionSupport extends ProjectActionSupport {

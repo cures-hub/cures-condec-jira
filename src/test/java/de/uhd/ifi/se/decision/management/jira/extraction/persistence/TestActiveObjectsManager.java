@@ -63,12 +63,11 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 		// Get the current logged in user
-		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUser("NoFails");
+		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		// Get access to the Jira comment and component manager
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
 		// Get the last comment entered in on the issue to a String
 		comment1 = commentManager.create(issue, currentUser, comment, true);
-
 	}
 
 	private CommentImpl getComment(String text) {
