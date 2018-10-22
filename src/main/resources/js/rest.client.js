@@ -601,9 +601,9 @@ function setIconParsing(projectKey, isActivated) {
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setIconParsing.json?projectKey=" + projectKey
 			+ "&isActivatedString=" + isActivated, null, function(error, response) {
 		if (error === null) {
-			showFlag("success", "Plug-in activation for the project has been set to " + isActivated + ".");
+			showFlag("success", "Using icons to tag issue comments has been set to " + isActivated + ".");
 		} else {
-			showFlag("error", "Plug-in activation for the project has not been changed.");
+			showFlag("error", "It could not be received wether icons can be used to tag issue comments.");
 		}
 	});
 }
@@ -615,31 +615,31 @@ function isIconParsing(projectKey, callback) {
 				if (error === null) {
 					callback(isIconParsingBoolean);
 				} else {
-					showFlag("error", "Icon boolean value for the project could not be received. Error-Code: " + error);
+					showFlag("error", "It could not be received wether icons can be used to tag issue comments. Error-Code: " + error);
 				}
 			});
 }
 
 function getRequestToken(projectKey, baseURL, privateKey, consumerKey, callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/auth/getRequestToken.json?projectKey=" + projectKey
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/getRequestToken.json?projectKey=" + projectKey
 			+ "&baseURL=" + baseURL + "&privateKey=" + privateKey + "&consumerKey=" + consumerKey, function(error,
 			result) {
 		if (error === null) {
 			callback(result);
 		} else {
-			showFlag("error", "Icon boolean value for the project could not be received. Error-Code: " + error);
+			showFlag("error", "Request token could not be received. Error-Code: " + error);
 		}
 	});
 }
 
 function getAccessToken(projectKey, baseURL, privateKey, consumerKey, requestToken, secret, callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/auth/getAccessToken.json?projectKey=" + projectKey
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/getAccessToken.json?projectKey=" + projectKey
 			+ "&baseURL=" + baseURL + "&privateKey=" + privateKey + "&consumerKey=" + consumerKey + "&requestToken="
 			+ requestToken + "&secret=" + secret, function(error, result) {
 		if (error === null) {
 			callback(result);
 		} else {
-			showFlag("error", "Icon boolean value for the project could not be received. Error-Code: " + error);
+			showFlag("error", "Access token could not be received. Error-Code: " + error);
 		}
 	});
 }

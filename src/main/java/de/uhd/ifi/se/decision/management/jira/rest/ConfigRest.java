@@ -33,6 +33,7 @@ import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 
@@ -479,6 +480,59 @@ public class ConfigRest {
 			typeNames.add(type.getName());
 		}
 		return Response.ok(typeNames).build();
+	}
+	
+	@Path("/getRequestToken")
+	@GET
+	public Response getRequestToken(@QueryParam("projectKey") String projectKey, @QueryParam("baseURL") String baseURL,
+			@QueryParam("privateKey") String privateKey, @QueryParam("consumerKey") String consumerKey) {
+		if (baseURL != null && privateKey != null && consumerKey != null) {
+			privateKey = privateKey.replaceAll(" ", "+");
+			ConfigPersistence.setOauthJiraHome(baseURL);
+			ConfigPersistence.setPrivateKey(privateKey);
+			ConfigPersistence.setConsumerKey(consumerKey);
+			OAuthManager oAuthManager = new OAuthManager();
+			String result = oAuthManager.retrieveRequestToken(consumerKey, privateKey);
+
+			ConfigPersistence.setRequestToken(result);
+			// TODO: Tim: why do we have to use a map here
+			return Response.status(Status.OK).entity(ImmutableMap.of("result", result)).build();
+		} else {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error",
+							"Request could not be sent due to a bad request (element id or project key was missing)."))
+					.build();
+		}
+	}
+
+	@Path("/getAccessToken")
+	@GET
+	public Response getAccessToken(@QueryParam("projectKey") String projectKey, @QueryParam("baseURL") String baseURL,
+			@QueryParam("privateKey") String privateKey, @QueryParam("consumerKey") String consumerKey,
+			@QueryParam("requestToken") String requestToken, @QueryParam("secret") String secret) {
+		if (baseURL != null && privateKey != null && consumerKey != null) {
+
+			privateKey = privateKey.replaceAll(" ", "+");
+
+			ConfigPersistence.setOauthJiraHome(baseURL);
+			ConfigPersistence.setRequestToken(requestToken);
+			ConfigPersistence.setPrivateKey(privateKey);
+			ConfigPersistence.setConsumerKey(consumerKey);
+			ConfigPersistence.setSecretForOAuth(secret);
+
+			OAuthManager oAuthManager = new OAuthManager();
+			String accessToken = oAuthManager.retrieveAccessToken(requestToken, secret, consumerKey, privateKey);
+
+			ConfigPersistence.setAccessToken(accessToken);
+
+			// TODO: Tim: why do we have to use a map here
+			return Response.status(Status.OK).entity(ImmutableMap.of("result", accessToken)).build();
+		} else {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error",
+							"Request could not be sent due to a bad request (element id or project key was missing)."))
+					.build();
+		}
 	}
 
 	private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {
