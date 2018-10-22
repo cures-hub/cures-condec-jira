@@ -18,26 +18,22 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
-import de.uhd.ifi.se.decision.management.jira.rest.oauth.Command;
-import de.uhd.ifi.se.decision.management.jira.rest.oauth.JiraOAuthClient;
-import de.uhd.ifi.se.decision.management.jira.rest.oauth.OAuthClient;
-import de.uhd.ifi.se.decision.management.jira.rest.oauth.PropertiesClient;
 
 /**
  * REST resource for OAuth configuration, e.g., to access git integration for
  * Jira plugin
  */
 @Path("/auth")
-public class AuthenticationRest {
+public class OAuthManager {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationRest.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(OAuthManager.class);
 	private JiraOAuthClient jiraOAuthClient;
 	private PropertiesClient propertiesClient;
 	private boolean invalidCredentials;
 
 	// Constructor without arguments needs to be here to create a rest interface.
 	// Otherwise a bean exception is thrown.
-	public AuthenticationRest() {
+	public OAuthManager() {
 		checkInit();
 	}
 

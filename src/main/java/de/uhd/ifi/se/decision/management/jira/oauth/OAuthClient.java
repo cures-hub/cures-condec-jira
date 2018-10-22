@@ -1,10 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.oauth;
 
-import static de.uhd.ifi.se.decision.management.jira.rest.oauth.PropertiesClient.ACCESS_TOKEN;
-import static de.uhd.ifi.se.decision.management.jira.rest.oauth.PropertiesClient.CONSUMER_KEY;
-import static de.uhd.ifi.se.decision.management.jira.rest.oauth.PropertiesClient.PRIVATE_KEY;
-import static de.uhd.ifi.se.decision.management.jira.rest.oauth.PropertiesClient.REQUEST_TOKEN;
-import static de.uhd.ifi.se.decision.management.jira.rest.oauth.PropertiesClient.SECRET;
+import static de.uhd.ifi.se.decision.management.jira.oauth.PropertiesClient.ACCESS_TOKEN;
+import static de.uhd.ifi.se.decision.management.jira.oauth.PropertiesClient.CONSUMER_KEY;
+import static de.uhd.ifi.se.decision.management.jira.oauth.PropertiesClient.PRIVATE_KEY;
+import static de.uhd.ifi.se.decision.management.jira.oauth.PropertiesClient.REQUEST_TOKEN;
+import static de.uhd.ifi.se.decision.management.jira.oauth.PropertiesClient.SECRET;
 
 import java.io.IOException;
 import java.util.List;
