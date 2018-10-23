@@ -270,7 +270,7 @@
 	<!-- Decision Knowledge Export Functions -->
 	<web-item key="export-as-table-item"
 		name="Menu Item for Decision Knowledge Export as Table" section="operations-operations">
-		<label>Export as Table</label>
+		<label>Export Decision Knowledge</label>
 		<link linkId="export-as-table-link" />
 	</web-item>
 
