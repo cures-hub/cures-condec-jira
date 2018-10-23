@@ -647,7 +647,7 @@ function getAccessToken(projectKey, baseURL, privateKey, consumerKey, requestTok
 function getElementsByQuery(query, callback) {
     var projectKey=getProjectKey()||"";
     postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?projectKey="
-			+ projectKey + "&query=" + query, function(error, result) {
+			+ projectKey + "&query=" + query, null, function(error, result) {
 		if (error === null) {
 			callback(result);
 		} else {
