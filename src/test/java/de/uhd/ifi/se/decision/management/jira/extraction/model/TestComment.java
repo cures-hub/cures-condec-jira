@@ -459,6 +459,15 @@ public class TestComment extends TestSetUpWithIssues {
 		assertEquals(comment.getTaggedBody(0), comment1.getTaggedBody(0));
 
 	}
+	
+	@Test
+	@NonTransactional
+	public void testRelevantCommentWithoutPlainText() {
+		CommentImpl comment = getComment("{noformat} nonplain text {noformat}");
+		comment.getSentences().get(0).setRelevant(true);
+		assertNotNull(comment.getTaggedBody(0));
+
+	}
 
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
 		@SuppressWarnings("unchecked")

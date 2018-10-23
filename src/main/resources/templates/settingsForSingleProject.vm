@@ -127,7 +127,11 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				value="$projectKey" label="Use Classifier to Identify Decision Knowledge?"></aui-toggle>
 			<script>
 				var isClassifierUsedToggle = document.getElementById('isClassifierUsed-toggle');
-					isClassifierUsedToggle.checked = $isClassifierUsedForIssueComments
+					if ($project.isClassifierUsedForIssueComments() == true) {
+						isClassifierUsedToggle.checked = true;
+					} else {
+						isClassifierUsedToggle.checked = false;
+					};
 				isClassifierUsedToggle.addEventListener('change', function(error) {
 					this.busy = true;
 					setUseClassiferForIssueComments(this.checked, this.value);
@@ -143,7 +147,11 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				label="Use icon labels"></aui-toggle>
 			<script>
                 var sentenceIconToggle = document.getElementById('iconParsing-toggle');
-                sentenceIconToggle.checked = $iconToggle
+                if ($project.isIconParsingEnabled() == true) {
+						sentenceIconToggle.checked = true;
+					} else {
+						sentenceIconToggle.checked = false;
+					};
                 sentenceIconToggle.addEventListener('change', function(error) {
                     this.busy = true;
                     setIconParsing(this.value, this.checked);
