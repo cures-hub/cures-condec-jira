@@ -225,7 +225,7 @@ public class ActiveObjectsManager {
 		CommentManager cm = ComponentAccessor.getCommentManager();
 		MutableComment mc = (MutableComment) cm.getCommentById(id);
 		String oldBody = mc.getBody();
-		oldBody = oldBody.replaceAll(oldKnowledgeType, knowledgeType.toString());
+		oldBody = oldBody.replaceAll("(?i)"+oldKnowledgeType, knowledgeType.toString());
 		mc.setBody(oldBody);
 		cm.update(mc, true);
 	}
