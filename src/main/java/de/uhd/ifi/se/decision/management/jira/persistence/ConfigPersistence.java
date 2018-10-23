@@ -126,7 +126,7 @@ public class ConfigPersistence {
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
 			boolean isKnowledgeTypeEnabled) {
-		setValue(projectKey, "knowledgeType", Boolean.toString(isKnowledgeTypeEnabled));
+		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
 	// TODO Testing

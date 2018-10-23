@@ -382,9 +382,9 @@ function setIssueStrategy(isIssueStrategy, projectKey) {
 
 function isIssueStrategy(projectKey, callback) {
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isIssueStrategy.json?projectKey=" + getProjectKey(),
-			function(error, isIssueBoolean) {
+			function(error, isIssueStrategyBoolean) {
 				if (error === null) {
-					callback(isIssueBoolean);
+					callback(isIssueStrategyBoolean);
 				} else {
 					showFlag("error", "Persistence strategy for the project could not be received. Error-Code: "
 							+ error);
@@ -645,12 +645,25 @@ function getAccessToken(projectKey, baseURL, privateKey, consumerKey, requestTok
 }
 
 function getElementsByQuery(query, callback) {
-	getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?projectKey="
-			+ getProjectKey() + "&query=" + query, function(error, result) {
+    var projectKey=getProjectKey()||"";
+    postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?projectKey="
+			+ projectKey + "&query=" + query, null, function(error, result) {
 		if (error === null) {
 			callback(result);
 		} else {
 			showFlag("error", "Elements for given query could not be received." + error);
 		}
 	});
+}
+
+function getLinkedElementsByQuery(query,issueKey, callback) {
+    getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsLinkedToElement.json?projectKey="
+        + getProjectKey() + "&URISearch=" + query+"&elementKey="+issueKey, function(error, result) {
+        if (error === null) {
+            callback(result);
+        } else {
+            showFlag("error", "Elements for given query could not be received." + error);
+        }
+    });
+
 }

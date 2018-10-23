@@ -85,12 +85,10 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		</script>
 		<script>
 		for (j in additionalKnowledgeTypes) {
-			isKnowledgeTypeEnabled(typeToggles[j].value, '$projectKey', typeToggles[j], function(isTypeEnabled, toggle) {
-			if (isTypeEnabled == true) {
-                    toggle.checked = true;
-                } else {
-                    toggle.checked = false;
-                }});
+			console.log(typeToggles[j].value);
+			isKnowledgeTypeEnabled(typeToggles[j].value, '$projectKey', typeToggles[j], function(isTypeEnabled, toggle) {				
+                toggle.checked = isTypeEnabled;
+           	});
             typeToggles[j].addEventListener('change', function(error) {
                 this.busy = true;
                 setKnowledgeTypeEnabled(this.checked, this.value, '$projectKey');
