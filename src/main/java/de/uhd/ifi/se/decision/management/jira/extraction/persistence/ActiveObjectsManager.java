@@ -7,6 +7,8 @@ import java.util.List;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.comments.CommentManager;
+import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
@@ -189,6 +191,9 @@ public class ActiveObjectsManager {
 				for (DecisionKnowledgeInCommentEntity sentenceEntity : ActiveObjects
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
+						if(sentenceEntity.isTaggedFineGrained()) {
+							updateTagsInComment(sentenceEntity.getCommentId(),knowledgeType,sentenceEntity.getKnowledgeTypeString());
+						}
 						// Knowledgetype is an Argument
 						if (knowledgeType.equals(KnowledgeType.OTHER) || knowledgeType.equals(KnowledgeType.ARGUMENT)) {
 							sentenceEntity.setKnowledgeTypeString(argument);
@@ -214,6 +219,15 @@ public class ActiveObjectsManager {
 			}
 		});
 
+	}
+
+	private static void updateTagsInComment(long id, KnowledgeType knowledgeType,String oldKnowledgeType) {
+		CommentManager cm = ComponentAccessor.getCommentManager();
+		MutableComment mc = (MutableComment) cm.getCommentById(id);
+		String oldBody = mc.getBody();
+		oldBody = oldBody.replaceAll(oldKnowledgeType, knowledgeType.toString());
+		mc.setBody(oldBody);
+		cm.update(mc, true);
 	}
 
 	public static boolean setIsRelevantIntoAo(long activeObjectId, boolean isRelevant) {

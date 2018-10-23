@@ -262,14 +262,18 @@ public class KnowledgeRest {
 							.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount()));
 					int index = mc.getBody().indexOf(sentenceToSearch);
 
-					String newType = CommentSplitter.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch,
+					String newType = CommentSplitter.getKnowledgeTypeFromManuallIssueTag(decisionKnowledgeElement.getDescription(),
 							databaseEntity.getProjectKey(), false);
 					String tag = "";
 					if (databaseEntity.isTaggedManually()
 							&& StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) < 0
-							&& !newType.equalsIgnoreCase("other")) {
-						tag = "[" + WordUtils.capitalize(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(
-								sentenceToSearch, databaseEntity.getProjectKey(), false)) + "]";
+							) {
+						if (newType.equalsIgnoreCase("other") && databaseEntity.isTaggedManually() // Allow changig of manually tagged comments
+								&& !databaseEntity.getKnowledgeTypeString()
+										.equalsIgnoreCase(decisionKnowledgeElement.getType().toString())) {
+							newType = decisionKnowledgeElement.getType().toString();
+						}
+						tag = "[" + WordUtils.capitalize(newType) + "]";
 					} else if (StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) >= 0) {
 						index = index + 3; // add icon to text.
 					}
