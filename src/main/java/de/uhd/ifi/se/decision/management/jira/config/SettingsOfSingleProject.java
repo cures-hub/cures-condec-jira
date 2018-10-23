@@ -20,7 +20,6 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
 /**
  * Renders the administration page to change the plug-in configuration of a
