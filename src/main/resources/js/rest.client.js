@@ -382,9 +382,9 @@ function setIssueStrategy(isIssueStrategy, projectKey) {
 
 function isIssueStrategy(projectKey, callback) {
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isIssueStrategy.json?projectKey=" + getProjectKey(),
-			function(error, isIssueBoolean) {
+			function(error, isIssueStrategyBoolean) {
 				if (error === null) {
-					callback(isIssueBoolean);
+					callback(isIssueStrategyBoolean);
 				} else {
 					showFlag("error", "Persistence strategy for the project could not be received. Error-Code: "
 							+ error);

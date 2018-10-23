@@ -12,7 +12,7 @@ var defaultKnowledgeTypes = getDefaultKnowledgeTypes(getProjectKey());
 var extendedKnowledgeTypes = replaceArgumentWithLinkTypes(knowledgeTypes);
 
 function replaceArgumentWithLinkTypes(knowledgeTypes) {
-    console.log("management.js replaceArgumentWithLinkTypes");
+	console.log("management.js replaceArgumentWithLinkTypes");
 	var extendedKnowledgeTypes = getKnowledgeTypes(getProjectKey());
 	remove(extendedKnowledgeTypes, "Argument");
 	extendedKnowledgeTypes.push("Pro-argument");
@@ -21,7 +21,7 @@ function replaceArgumentWithLinkTypes(knowledgeTypes) {
 }
 
 function createLinkToExistingElement(idOfExistingElement, idOfNewElement, knowledgeTypeOfChild) {
-    console.log("management.js createLinkToExistingElement");
+	console.log("management.js createLinkToExistingElement");
 	switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
 			idOfNewElement) {
 		linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
@@ -31,7 +31,7 @@ function createLinkToExistingElement(idOfExistingElement, idOfNewElement, knowle
 }
 
 function switchLinkTypes(type, idOfExistingElement, idOfNewElement, linkTypeFunction) {
-    console.log("management.js switchLinkTypes");
+	console.log("management.js switchLinkTypes");
 	switch (type) {
 	case "Pro-argument":
 		linkTypeFunction("support", idOfExistingElement, idOfNewElement);
@@ -45,7 +45,7 @@ function switchLinkTypes(type, idOfExistingElement, idOfNewElement, linkTypeFunc
 }
 
 function updateDecisionKnowledgeElementAsChild(childId, summary, description, type) {
-    console.log("management.js updateDecisionKnowledgeElementAsChild");
+	console.log("management.js updateDecisionKnowledgeElementAsChild");
 	var simpleType = getSimpleType(type);
 	updateDecisionKnowledgeElement(childId, summary, description, simpleType, function() {
 		getDecisionKnowledgeElement(childId, function(decisionKnowledgeElement) {
@@ -66,7 +66,7 @@ function updateDecisionKnowledgeElementAsChild(childId, summary, description, ty
 }
 
 function getSimpleType(type) {
-    console.log("management.js getSimpleType");
+	console.log("management.js getSimpleType");
 	var simpleType = type;
 	if (type === "Pro-argument" || type === "Con-argument") {
 		simpleType = "Argument";
@@ -75,7 +75,7 @@ function getSimpleType(type) {
 }
 
 function createDecisionKnowledgeElementAsChild(summary, description, type, idOfExistingElement) {
-    console.log("management.js createDecisionKnowledgeElementAsChild");
+	console.log("management.js createDecisionKnowledgeElementAsChild");
 	var simpleType = getSimpleType(type);
 	createDecisionKnowledgeElement(summary, description, simpleType, function(idOfNewElement) {
 		switchLinkTypes(type, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
@@ -87,13 +87,30 @@ function createDecisionKnowledgeElementAsChild(summary, description, type, idOfE
 	});
 }
 
+function getIssueKey() {
+	console.log("management.js getIssueKey");
+	var issueKey = JIRA.Issue.getIssueKey();
+	if (issueKey === null) {
+		issueKey = AJS.Meta.get("issue-key");
+	}
+	return issueKey;
+}
+
 function getProjectKey() {
-    console.log("management.js getProjectKey");
+	console.log("management.js getProjectKey");
 	var projectKey;
 	try {
 		projectKey = JIRA.API.Projects.getCurrentProjectKey();
 	} catch (error) {
 		console.log(error);
+	}
+	if (projectKey === undefined) {
+		try {
+			var issueKey = getIssueKey();
+			projectKey = issueKey.split("-")[0];
+		} catch (error) {
+			console.log(error);
+		}
 	}
 	return projectKey;
 }
@@ -108,14 +125,6 @@ function getProjectId() {
 	return projectId;
 }
 
-function getIssueKey() {
-	var issueKey = JIRA.Issue.getIssueKey();
-	if (issueKey === null) {
-		issueKey = AJS.Meta.get("issue-key");
-	}
-	return issueKey;
-}
-
 function showFlag(type, message) {
 	AJS.flag({
 		type : type,
@@ -125,7 +134,10 @@ function showFlag(type, message) {
 	});
 }
 
-/* TODO refactor name or extend array prototype or wehere use replace with arrow function... */
+/*
+ * TODO refactor name or extend array prototype or wehere use replace with arrow
+ * function...
+ */
 function remove(array, item) {
 	for (var i = array.length; i--;) {
 		if (array[i] === item) {
@@ -135,7 +147,7 @@ function remove(array, item) {
 }
 
 function getURLsSearch() {
-    var search = window.location.search.toString();
-    search = search.toString().replace("&","§");
-    return search;
+	var search = window.location.search.toString();
+	search = search.toString().replace("&", "§");
+	return search;
 }
