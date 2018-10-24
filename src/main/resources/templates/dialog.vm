@@ -22,7 +22,7 @@
     <header class="aui-dialog2-header">
         <h2 class="aui-dialog2-header-main">Export Jira Issues</h2>
         <a class="aui-dialog2-header-close">
-            <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+            <span class="aui-icon aui-icon-small aui-iconfont-close-dialog" id="closeExportDialog">Close</span>
         </a>
     </header>
     <div class="aui-dialog2-content">

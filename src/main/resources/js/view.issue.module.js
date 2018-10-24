@@ -44,7 +44,7 @@ function exportAsMyTable() {
     //get jql from url
     var myJql = getQueryFromUrl();
     console.log("query",myJql);
-    var baseLink = window.location.origin + "/jira/browse/";
+    var baseLink = window.location.origin + "/browse/";
     callGetElementsByQueryAndDownload(myJql, baseLink);
 }
 
@@ -71,7 +71,9 @@ function exportLinkedElements() {
  */
 function getQueryFromUrl() {
     var userInputJql = getURLsSearch();
-    var sPathName = window.location.pathname;
+    var baseUrl = AJS.params.baseURL;
+    var sPathName = document.location.href;
+    var sPathWithoutBaseUrl=sPathName.split(baseUrl)[1];
 
     //check if jql is empty or non existent
     var myJql = "";
@@ -81,8 +83,14 @@ function getQueryFromUrl() {
     else if (userInputJql && userInputJql.indexOf("?filter=") > -1 && userInputJql.split("?filter=")[1]) {
         myJql = userInputJql;
     }
-    else if (sPathName && sPathName.indexOf("/jira/browse/") > -1) {
-        var issueKey = sPathName.split("/jira/browse/")[1];
+    else if (sPathWithoutBaseUrl && sPathWithoutBaseUrl.indexOf("/browse/") > -1) {
+        var issueKey = sPathWithoutBaseUrl.split("/browse/")[1];
+        if(issueKey.indexOf("?jql=")){
+            issueKey=issueKey.split("?jql=")[0];
+        }
+        if(issueKey.indexOf("?filter=")){
+            issueKey=issueKey.split("?filter=")[0];
+        }
         myJql = "?jql=issue=" + issueKey;
     }
     return myJql;
