@@ -36,11 +36,9 @@ import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
-import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
  * REST resource: Enables creation, editing, and deletion of decision knowledge
@@ -112,10 +110,6 @@ public class KnowledgeRest {
 			DecisionKnowledgeElement decisionKnowledgeElementWithId = strategy
 					.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
 			if (decisionKnowledgeElementWithId != null) {
-				if (ConfigPersistence.isWebhookEnabled(projectKey)) {
-					WebhookConnector connector = new WebhookConnector(projectKey);
-					connector.sendElementChanges(decisionKnowledgeElementWithId);
-				}
 				return Response.status(Status.OK).entity(decisionKnowledgeElementWithId).build();
 			}
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -136,10 +130,6 @@ public class KnowledgeRest {
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = AuthenticationManager.getUser(request);
 			if (strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user)) {
-				if (ConfigPersistence.isWebhookEnabled(projectKey)) {
-					WebhookConnector connector = new WebhookConnector(projectKey);
-					connector.sendElementChanges(decisionKnowledgeElement);
-				}
 				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
 			}
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -162,12 +152,7 @@ public class KnowledgeRest {
 			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 			DecisionKnowledgeElement elementToBeDeletedWithLinks = strategy
 					.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
-			if (ConfigPersistence.isWebhookEnabled(projectKey)) {
-				WebhookConnector webhookConnector = new WebhookConnector(projectKey);
-				isDeleted = webhookConnector.deleteElement(elementToBeDeletedWithLinks, user);
-			} else {
-				isDeleted = strategy.deleteDecisionKnowledgeElement(elementToBeDeletedWithLinks, user);
-			}
+			isDeleted = strategy.deleteDecisionKnowledgeElement(elementToBeDeletedWithLinks, user);
 			if (isDeleted) {
 				return Response.status(Status.OK).entity(true).build();
 			}
@@ -192,11 +177,6 @@ public class KnowledgeRest {
 			if (linkId == 0) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
-			}
-			DecisionKnowledgeElement element = strategy.getDecisionKnowledgeElement(link.getSourceElement().getId());
-			if (ConfigPersistence.isWebhookEnabled(projectKey)) {
-				WebhookConnector connector = new WebhookConnector(projectKey);
-				connector.sendElementChanges(element);
 			}
 			return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
 		} else {
@@ -306,12 +286,6 @@ public class KnowledgeRest {
 			ApplicationUser user = AuthenticationManager.getUser(request);
 			boolean isDeleted = strategy.deleteLink(link, user);
 			if (isDeleted) {
-				DecisionKnowledgeElement element = strategy
-						.getDecisionKnowledgeElement(link.getSourceElement().getId());
-				if (ConfigPersistence.isWebhookEnabled(projectKey)) {
-					WebhookConnector connector = new WebhookConnector(projectKey);
-					connector.sendElementChanges(element);
-				}
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 			} else {
 				Link inverseLink = new LinkImpl(link.getDestinationElement(), link.getSourceElement());
