@@ -86,11 +86,10 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		// Get types of decisions and alternatives linkes to Issue (e.g. has decision
 		// but no alternative)
 		velocityParams.put("numLinksToIssue",
-				getLinkToOtherElement(KnowledgeType.ISSUE, KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION));
+				getLinkToOtherElement(KnowledgeType.ISSUE, KnowledgeType.DECISION));
 		velocityParams.put("numLinksToDecision",
-				getLinkToOtherElement(KnowledgeType.DECISION, KnowledgeType.ALTERNATIVE, KnowledgeType.ISSUE));
-		velocityParams.put("numLinksToAlternative",
-				getLinkToOtherElement(KnowledgeType.ALTERNATIVE, KnowledgeType.ISSUE, KnowledgeType.DECISION));
+				getLinkToOtherElement(KnowledgeType.DECISION, KnowledgeType.ISSUE));
+		
 
 		// Get Number of Alternatives With Arguments
 		Map<String, Integer> numAlternativeWoArgument = getAlternativeArguments();
@@ -196,8 +195,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return dkeCount;
 	}
 
-	private Map<String, Integer> getLinkToOtherElement(KnowledgeType linkFrom, KnowledgeType linkTo1,
-			KnowledgeType linkTo2) {
+	private Map<String, Integer> getLinkToOtherElement(KnowledgeType linkFrom, KnowledgeType linkTo1) {
 		Integer[] statistics = new Integer[4];
 		Arrays.fill(statistics, 0);
 		List<DecisionKnowledgeElement> listOfIssues = ActiveObjectsManager
@@ -205,36 +203,26 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 		for (DecisionKnowledgeElement issue : listOfIssues) {
 			List<GenericLink> links = GenericLinkManager.getGenericLinksForElement("s" + issue.getId(), false);
-			boolean hasAlternative = false;
-			boolean hasDecision = false;
+			boolean hastOtherElementLinked = false;
 
 			for (GenericLink link : links) {
 				DecisionKnowledgeElement dke = link.getOpposite("s" + issue.getId());
 				if (dke instanceof Sentence && dke.getType().equals(linkTo1)) { // alt
-					hasAlternative = true;
-				} else if (dke instanceof Sentence && dke.getType().equals(linkTo2)) {// dec
-					hasDecision = true;
+					hastOtherElementLinked = true;
 				}
 			}
-			if (hasAlternative && hasDecision) {
+			if (hastOtherElementLinked ) {
 				statistics[0] = statistics[0] + 1;
-			} else if (hasAlternative && !hasDecision) {
+			} else if (!hastOtherElementLinked) {
 				statistics[1] = statistics[1] + 1;
-			} else if (!hasAlternative && hasDecision) {
-				statistics[2] = statistics[2] + 1;
-			} else if (!hasAlternative && !hasDecision) {
-				statistics[3] = statistics[3] + 1;
 			}
 		}
 		String id1 = linkTo1.toString().substring(0, 3);
-		String id2 = linkTo2.toString().substring(0, 3);
 
 		// Hashmaps as counter suck
 		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
-		dkeCount.put("Has " + id1 + " and " + id2, statistics[0]);
-		dkeCount.put("Has " + id1 + " but no " + id2, statistics[1]);
-		dkeCount.put("Has " + id1 + " but no " + id2, statistics[2]);
-		dkeCount.put("Has no " + id1 + " and no " + id2, statistics[3]);
+		dkeCount.put("Has " +linkTo1.toString(), statistics[0]);
+		dkeCount.put("Has no " +linkTo1.toString(), statistics[1]);
 
 		return dkeCount;
 	}

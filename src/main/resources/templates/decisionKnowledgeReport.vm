@@ -23,7 +23,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:repo
       <div id="knowledgeTypeDist" style="width:500px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
       <div id="issueLink" style="width:500px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
       <div id="decisionLink" style="width:500px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
-      <div id="alternativeLink" style="width:500px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
       <div id="altWithArguments" style="width:500px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
 
   </div>  
@@ -59,12 +58,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:repo
       #end
       initializeDivWithPieChart("decisionLink","Links to Decision","",map);
       
-      map = new Map();
-      #foreach ($item in $numLinksToAlternative.keySet())
-        map.set("$item", $numLinksToAlternative.get("$item"));
-      #end
-      initializeDivWithPieChart("alternativeLink","Links to Alternative","",map);
-
 
 
       map = new Map();
