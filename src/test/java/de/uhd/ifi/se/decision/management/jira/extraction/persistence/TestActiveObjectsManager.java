@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.comments.CommentManager;
+import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.issuetype.MockIssueType;
 import com.atlassian.jira.mock.issue.MockIssue;
@@ -325,5 +326,24 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		List<DecisionKnowledgeElement> listWithObjects = ActiveObjectsManager.getAllElementsFromAoByType("TEST", KnowledgeType.OTHER);
 		assertEquals(0, listWithObjects.size());
 	}
+	
+	
+	@Test
+	@NonTransactional
+	public void testCleanSentenceDatabaseForProject() {
+		Comment comment = getComment("some sentence in front. [pro] testobject [/pro] some sentence in the back.");
+		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
+		
+		MutableComment comment2 = ComponentAccessor.getCommentManager().getMutableComment(comment.getIssueId());
+		ComponentAccessor.getCommentManager().delete(comment2);
+		
+		ActiveObjectsManager.cleanSentenceDatabaseForProject("TEST");
+		
+		DecisionKnowledgeInCommentEntity dBElement = ActiveObjectsManager.getElementFromAO(id);
+		assertNotNull(dBElement);
+		//Is unequal because new empty sentence is returned
+		assertFalse(dBElement.getId() == id);
+	}
+	
 	
 }

@@ -182,6 +182,7 @@ public class MockCommentManager implements CommentManager {
 
 	@Override
 	public ChangeItemBean delete(Comment comment) {
+		this.comments.remove(comment);
 		return null;
 	}
 

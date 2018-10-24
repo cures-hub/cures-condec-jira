@@ -435,7 +435,6 @@ public class ActiveObjectsManager {
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
 				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
 						DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
-					GenericLinkManager.deleteLinksForElementIfExisting("s" + databaseEntry.getId());
 					Sentence sentence;
 					try {
 						sentence = new SentenceImpl(databaseEntry); // Fast method, but may some values are null
@@ -443,7 +442,7 @@ public class ActiveObjectsManager {
 						sentence = new SentenceImpl(databaseEntry.getId());
 					}
 					boolean deleteFlag = false;
-					try {// Check if comment is existing and still long enough
+					try {// Check if comment is existing
 						com.atlassian.jira.issue.comments.Comment c = ComponentAccessor.getCommentManager()
 								.getCommentById(sentence.getCommentId());
 						if (c.getBody().trim().length() < 1) {
