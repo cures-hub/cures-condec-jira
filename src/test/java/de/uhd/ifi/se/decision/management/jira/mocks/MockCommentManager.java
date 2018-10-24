@@ -145,12 +145,19 @@ public class MockCommentManager implements CommentManager {
 
 	@Override
 	public MutableComment getMutableComment(Long aLong) {
-		return null;
+		return (MutableComment) this.comments.get(0);
 	}
 
 	@Override
 	public void update(Comment comment, boolean b) {
-
+		int index=0;
+		for(int i = 0; i < this.comments.size();i++) {
+			if(this.comments.get(i).getId() == comment.getId()) {
+				index = i;
+			}
+		}
+		this.comments.remove(index);
+		this.comments.add(comment);
 	}
 
 	@Override

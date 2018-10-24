@@ -435,6 +435,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testManuallyTaggingWithWrongTagMix() {
 		CommentImpl comment = getComment("[Alternative] This is a testsentence[/Issue]");
+		System.out.println(comment.getTaggedBody(0));
 		assertTrue(comment.getTaggedBody(0).trim().equalsIgnoreCase(
 				"<span id=\"comment0\"><span class=\"sentence isNotRelevant\"  id  = ui1><span class =tag></span><span class = sentenceBody>[Alternative] This is a testsentence[/Issue]</span><span class =tag></span></span></span>\r\n"
 						.trim()));
