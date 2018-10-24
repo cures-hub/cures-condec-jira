@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +47,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction() {
+			    WebhookConnector connector = new WebhookConnector(projectKey);
+                connector.sendElementChanges(decisionKnowledgeElement);
 				for (DecisionKnowledgeElementEntity databaseEntry : ACTIVE_OBJECTS
 						.find(DecisionKnowledgeElementEntity.class)) {
 					if (databaseEntry.getId() == decisionKnowledgeElement.getId()) {
@@ -247,6 +250,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 		}
 		element.setId(databaseEntry.getId());
 		element.setKey(databaseEntry.getKey());
+        WebhookConnector connector = new WebhookConnector(projectKey);
+        connector.sendElementChanges(element);
 		return element;
 	}
 
@@ -286,6 +291,9 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 				// elements exist
 				GenericLink newLink = new GenericLinkImpl("a"+link.getDestinationElement().getId(),"a"+link.getSourceElement().getId());
 				newLink.setType(link.getType());
+                WebhookConnector connector = new WebhookConnector(projectKey);
+                DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(sourceElement);
+                connector.sendElementChanges(decisionKnowledgeElement);
 				return GenericLinkManager.insertGenericLink(newLink, user);
 			}
 		});
@@ -314,6 +322,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 			LOGGER.error("Updating of decision knowledge element in database failed.");
 			return false;
 		}
+        WebhookConnector connector = new WebhookConnector(projectKey);
+        connector.sendElementChanges(element);
 		return true;
 	}
 }
