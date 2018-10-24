@@ -47,8 +47,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction() {
-			    WebhookConnector connector = new WebhookConnector(projectKey);
-                connector.sendElementChanges(decisionKnowledgeElement);
+				WebhookConnector connector = new WebhookConnector(projectKey);
+				connector.sendElementChanges(decisionKnowledgeElement);
 				for (DecisionKnowledgeElementEntity databaseEntry : ACTIVE_OBJECTS
 						.find(DecisionKnowledgeElementEntity.class)) {
 					if (databaseEntry.getId() == decisionKnowledgeElement.getId()) {
@@ -57,9 +57,11 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 						} catch (SQLException e) {
 							return false;
 						} finally {
-							for (LinkBetweenDifferentEntitiesEntity linkEntity : ACTIVE_OBJECTS.find(LinkBetweenDifferentEntitiesEntity.class)) {
-								if (linkEntity.getIdOfSourceElement().equals("a"+decisionKnowledgeElement.getId())
-										|| linkEntity.getIdOfDestinationElement().equals("a"+decisionKnowledgeElement.getId())) {
+							for (LinkBetweenDifferentEntitiesEntity linkEntity : ACTIVE_OBJECTS
+									.find(LinkBetweenDifferentEntitiesEntity.class)) {
+								if (linkEntity.getIdOfSourceElement().equals("a" + decisionKnowledgeElement.getId())
+										|| linkEntity.getIdOfDestinationElement()
+												.equals("a" + decisionKnowledgeElement.getId())) {
 									try {
 										linkEntity.getEntityManager().delete(linkEntity);
 									} catch (SQLException e) {
@@ -78,7 +80,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 
 	@Override
 	public boolean deleteLink(Link link, ApplicationUser user) {
-		return GenericLinkManager.deleteGenericLink("a"+link.getSourceElement().getId(), "a"+link.getDestinationElement().getId());
+		return GenericLinkManager.deleteGenericLink("a" + link.getSourceElement().getId(),
+				"a" + link.getDestinationElement().getId());
 	}
 
 	@Override
@@ -199,7 +202,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
 		List<Link> inwardLinks = new ArrayList<>();
 		LinkBetweenDifferentEntitiesEntity[] links = ACTIVE_OBJECTS.find(LinkBetweenDifferentEntitiesEntity.class,
-				Query.select().where("ID_OF_DESTINATION_ELEMENT = ?", "a"+element.getId()));
+				Query.select().where("ID_OF_DESTINATION_ELEMENT = ?", "a" + element.getId()));
 		for (LinkBetweenDifferentEntitiesEntity link : links) {
 			Link inwardLink = new LinkImpl(link);
 			inwardLink.setDestinationElement(element);
@@ -214,7 +217,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
 		List<Link> outwardLinks = new ArrayList<>();
 		LinkBetweenDifferentEntitiesEntity[] links = ACTIVE_OBJECTS.find(LinkBetweenDifferentEntitiesEntity.class,
-				Query.select().where("ID_OF_SOURCE_ELEMENT = ?", "a"+element.getId()));
+				Query.select().where("ID_OF_SOURCE_ELEMENT = ?", "a" + element.getId()));
 		for (LinkBetweenDifferentEntitiesEntity link : links) {
 			Link outwardLink = new LinkImpl(link);
 			outwardLink.setSourceElement(element);
@@ -250,8 +253,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 		}
 		element.setId(databaseEntry.getId());
 		element.setKey(databaseEntry.getKey());
-        WebhookConnector connector = new WebhookConnector(projectKey);
-        connector.sendElementChanges(element);
+		WebhookConnector connector = new WebhookConnector(projectKey);
+		connector.sendElementChanges(element);
 		return element;
 	}
 
@@ -260,9 +263,11 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction() {
-				for (LinkBetweenDifferentEntitiesEntity linkEntity : ACTIVE_OBJECTS.find(LinkBetweenDifferentEntitiesEntity.class)) {
-					if (linkEntity.getIdOfSourceElement().substring(1).equals(link.getSourceElement().getId()+"")
-							&& linkEntity.getIdOfDestinationElement().substring(1).equals(link.getDestinationElement().getId()+"")) {
+				for (LinkBetweenDifferentEntitiesEntity linkEntity : ACTIVE_OBJECTS
+						.find(LinkBetweenDifferentEntitiesEntity.class)) {
+					if (linkEntity.getIdOfSourceElement().substring(1).equals(link.getSourceElement().getId() + "")
+							&& linkEntity.getIdOfDestinationElement().substring(1)
+									.equals(link.getDestinationElement().getId() + "")) {
 						LOGGER.error("Link does already exist.");
 						return linkEntity.getId();
 					}
@@ -275,7 +280,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 				if (sourceElements.length == 1) {
 					sourceElement = sourceElements[0];
 				}
-				
+
 				DecisionKnowledgeElementEntity destinationElement = null;
 				DecisionKnowledgeElementEntity[] destinationElements = ACTIVE_OBJECTS.find(
 						DecisionKnowledgeElementEntity.class,
@@ -289,11 +294,12 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 				}
 
 				// elements exist
-				GenericLink newLink = new GenericLinkImpl("a"+link.getDestinationElement().getId(),"a"+link.getSourceElement().getId());
+				GenericLink newLink = new GenericLinkImpl("a" + link.getDestinationElement().getId(),
+						"a" + link.getSourceElement().getId());
 				newLink.setType(link.getType());
-                WebhookConnector connector = new WebhookConnector(projectKey);
-                DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(sourceElement);
-                connector.sendElementChanges(decisionKnowledgeElement);
+				WebhookConnector connector = new WebhookConnector(projectKey);
+				DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(sourceElement);
+				connector.sendElementChanges(decisionKnowledgeElement);
 				return GenericLinkManager.insertGenericLink(newLink, user);
 			}
 		});
@@ -322,8 +328,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 			LOGGER.error("Updating of decision knowledge element in database failed.");
 			return false;
 		}
-        WebhookConnector connector = new WebhookConnector(projectKey);
-        connector.sendElementChanges(element);
+		WebhookConnector connector = new WebhookConnector(projectKey);
+		connector.sendElementChanges(element);
 		return true;
 	}
 }
