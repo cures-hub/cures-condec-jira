@@ -192,7 +192,7 @@ public class ActiveObjectsManager {
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
 						if(sentenceEntity.isTaggedFineGrained()) {
-							updateTagsInComment(sentenceEntity.getCommentId(),knowledgeType,sentenceEntity.getKnowledgeTypeString());
+							updateTagsInComment(sentenceEntity.getCommentId(),knowledgeType,sentenceEntity.getKnowledgeTypeString(),argument);
 						}
 						// Knowledgetype is an Argument
 						if (knowledgeType.equals(KnowledgeType.OTHER) || knowledgeType.equals(KnowledgeType.ARGUMENT)) {
@@ -221,11 +221,15 @@ public class ActiveObjectsManager {
 
 	}
 
-	private static void updateTagsInComment(long id, KnowledgeType knowledgeType,String oldKnowledgeType) {
+	private static void updateTagsInComment(long id, KnowledgeType knowledgeType,String oldKnowledgeType, String argument) {
 		CommentManager cm = ComponentAccessor.getCommentManager();
 		MutableComment mc = (MutableComment) cm.getCommentById(id);
 		String oldBody = mc.getBody();
-		oldBody = oldBody.replaceAll("(?i)"+oldKnowledgeType, knowledgeType.toString());
+		if(knowledgeType.toString().equalsIgnoreCase("other")) {
+			oldBody = oldBody.replaceAll("(?i)"+oldKnowledgeType, argument);
+		}else {
+			oldBody = oldBody.replaceAll("(?i)"+oldKnowledgeType, knowledgeType.toString());
+		}
 		mc.setBody(oldBody);
 		cm.update(mc, true);
 	}

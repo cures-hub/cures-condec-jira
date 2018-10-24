@@ -6,7 +6,6 @@ import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
@@ -256,10 +255,11 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	private void stripTagsFromBody(String body) {
 		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.manualRationaleTagList) >= 0) {
-			int tagLength = 2 + CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey,true).length();
+			int tagLength = 2
+					+ CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey, true).length();
 			super.setDescription(body.substring(tagLength, body.length() - (1 + tagLength)));
 			super.setSummary(super.getDescription());
-		} else { 
+		} else {
 			super.setDescription(body.replaceAll("\\(.*?\\)", ""));
 			super.setSummary(super.getDescription());
 		}
@@ -297,6 +297,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		DecisionKnowledgeInCommentEntity aoElement = ActiveObjectsManager.getElementFromAO(super.getId());
 		insertAoValues(aoElement);
 	}
+
 	private void insertAoValues(DecisionKnowledgeInCommentEntity aoElement) {
 		this.setEndSubstringCount(aoElement.getEndSubstringCount());
 		this.setStartSubstringCount(aoElement.getStartSubstringCount());
@@ -317,10 +318,9 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 			super.type = KnowledgeType.getKnowledgeType(kt);
 			this.setKnowledgeTypeString(kt);
 		}
-		IssueManager im = ComponentAccessor.getIssueManager();
-		MutableIssue mi = im.getIssueObject(this.getIssueId());
-		if(mi != null) {
-			super.setKey(mi.getKey() + ":" + this.getId());
+		MutableIssue mutableIssue = ComponentAccessor.getIssueManager().getIssueObject(this.getIssueId());
+		if (mutableIssue != null) {
+			super.setKey(mutableIssue.getKey() + ":" + this.getId());
 		}
 	}
 
@@ -380,7 +380,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	public void setCreated(Date date) {
 		this.created = date;
 	}
-	
+
 	public void setType(KnowledgeType type) {
 		super.setType(type);
 		this.setKnowledgeTypeString(type.toString());
