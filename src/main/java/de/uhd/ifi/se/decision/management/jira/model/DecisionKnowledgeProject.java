@@ -28,8 +28,7 @@ public interface DecisionKnowledgeProject {
 	 * with settings for this plug-in, for example, whether the plug-in is activated
 	 * for the project.
 	 *
-	 * @param projectKey
-	 *            of the JIRA project.
+	 * @param projectKey of the JIRA project.
 	 */
 	void setProjectKey(String projectKey);
 
@@ -47,8 +46,7 @@ public interface DecisionKnowledgeProject {
 	 * with settings for this plug-in, for example, whether the plug-in is activated
 	 * for the project.
 	 *
-	 * @param projectName
-	 *            of the JIRA project.
+	 * @param projectName of the JIRA project.
 	 */
 	void setProjectName(String projectName);
 
@@ -62,8 +60,7 @@ public interface DecisionKnowledgeProject {
 	/**
 	 * Set whether the plug-in is activated for this project.
 	 *
-	 * @param isActivated
-	 *            true if the plug-in should be activated for this project.
+	 * @param isActivated true if the plug-in should be activated for this project.
 	 */
 	void setActivated(boolean isActivated);
 
@@ -89,10 +86,10 @@ public interface DecisionKnowledgeProject {
 	 * @see AbstractPersistenceStrategy
 	 * @see IssueStrategy
 	 * @see ActiveObjectStrategy
-	 * @param isIssueStrategy
-	 *            true if decision knowledge should be stored in JIRA issues for
-	 *            this project (issue strategy). Otherwise object relational mapping
-	 *            is used (active object strategy).
+	 * @param isIssueStrategy true if decision knowledge should be stored in JIRA
+	 *                        issues for this project (issue strategy). Otherwise
+	 *                        object relational mapping is used (active object
+	 *                        strategy).
 	 */
 	void setIssueStrategy(boolean isIssueStrategy);
 
@@ -114,8 +111,7 @@ public interface DecisionKnowledgeProject {
 	 * @see AbstractPersistenceStrategy
 	 * @see IssueStrategy
 	 * @see ActiveObjectStrategy
-	 * @param projectKey
-	 *            of the JIRA project.
+	 * @param projectKey of the JIRA project.
 	 * @return persistence strategy for decision knowledge used in this project,
 	 *         either issue strategy or active object strategy. The active object
 	 *         strategy is the default strategy.
@@ -142,9 +138,8 @@ public interface DecisionKnowledgeProject {
 	/**
 	 * Set whether decision knowledge is extracted from git commit messages.
 	 *
-	 * @param isKnowledgeExtractedFromGit
-	 *            true if decision knowledge should be extracted from git commit
-	 *            messages.
+	 * @param isKnowledgeExtractedFromGit true if decision knowledge should be
+	 *                                    extracted from git commit messages.
 	 */
 	void setKnowledgeExtractedFromGit(boolean isKnowledgeExtractedFromGit);
 
@@ -158,17 +153,15 @@ public interface DecisionKnowledgeProject {
 	/**
 	 * Set whether decision knowledge is extracted from issue comments.
 	 *
-	 * @param isKnowledgeExtractedFromIssues
-	 *            true if decision knowledge should be extracted from issue
-	 *            comments.
+	 * @param isKnowledgeExtractedFromIssues true if decision knowledge should be
+	 *                                       extracted from issue comments.
 	 */
 	void setKnowledgeExtractedFromIssues(boolean isKnowledgeExtractedFromIssues);
 
 	/**
 	 * Set whether the webhook is enabled for this project.
 	 *
-	 * @param isWebhookEnabled
-	 *            true if the webhook is enabled for this project.
+	 * @param isWebhookEnabled true if the webhook is enabled for this project.
 	 */
 	void setWebhookEnabled(boolean isWebhookEnabled);
 
@@ -183,10 +176,8 @@ public interface DecisionKnowledgeProject {
 	 * Set the URL where the decision knowledge should be sent and the secret key
 	 * for the submission.
 	 *
-	 * @param webhookUrl
-	 *            URL of the webhook
-	 * @param webhookSecret
-	 *            secret key
+	 * @param webhookUrl    URL of the webhook
+	 * @param webhookSecret secret key
 	 */
 	void setWebhookData(String webhookUrl, String webhookSecret);
 
@@ -213,4 +204,18 @@ public interface DecisionKnowledgeProject {
 	 * @return type of webhook root element.
 	 */
 	String getWebhookRootType();
+
+	/**
+	 * Checks if is icon parsing enabled.
+	 *
+	 * @return true, if is icon parsing enabled
+	 */
+	boolean isIconParsingEnabled();
+
+	/**
+	 * Checks if is classifier used for issue comments.
+	 *
+	 * @return true, if is classifier used for issue comments
+	 */
+	boolean isClassifierUsedForIssueComments();
 }

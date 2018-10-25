@@ -263,14 +263,22 @@ public class KnowledgeRest {
 							.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount()));
 					int index = mc.getBody().indexOf(sentenceToSearch);
 
-					String newType = CommentSplitter.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch,
-							databaseEntity.getProjectKey(), false);
+					String newType = CommentSplitter.getKnowledgeTypeFromManuallIssueTag(
+							decisionKnowledgeElement.getDescription(), databaseEntity.getProjectKey(), false);
 					String tag = "";
 					if (databaseEntity.isTaggedManually()
-							&& StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) < 0
-							&& !newType.equalsIgnoreCase("other")) {
-						tag = "[" + WordUtils.capitalize(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(
-								sentenceToSearch, databaseEntity.getProjectKey(), false)) + "]";
+							//Allow changing of manual tags, but no tags for icons
+							&& StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) < 0) {
+						if (newType.equalsIgnoreCase("other") && databaseEntity.isTaggedManually() 
+								&& !databaseEntity.getKnowledgeTypeString()
+										.equalsIgnoreCase(decisionKnowledgeElement.getType().toString())) {
+							if (decisionKnowledgeElement.getType().toString().equalsIgnoreCase("other")) {
+								newType = argument;
+							} else {
+								newType = decisionKnowledgeElement.getType().toString();
+							}
+						}
+						tag = "[" + WordUtils.capitalize(newType) + "]";
 					} else if (StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) >= 0) {
 						index = index + 3; // add icon to text.
 					}
