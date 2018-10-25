@@ -101,6 +101,7 @@ public class GenericLinkManager {
 				for (LinkBetweenDifferentEntitiesEntity linkElement : linkElements) {
 					GenericLink link = new GenericLinkImpl(linkElement.getIdOfDestinationElement(),
 							linkElement.getIdOfSourceElement());
+					link.setId(linkElement.getId());
 					// if(link.isValid()) { @issue: Function is very slow. @alternative: run this as
 					// a service
 					if (!getOnlyOutwardLink && linkElement.getIdOfDestinationElement().equals(targetId)) {
