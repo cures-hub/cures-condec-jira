@@ -33,6 +33,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKno
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
+import de.uhd.ifi.se.decision.management.jira.model.GraphImplFiltered;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
@@ -411,11 +412,15 @@ public class KnowledgeRest {
 		String projectKey = getProjectKey(elementKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		GraphFiltering filter = new GraphFiltering(projectKey, uriSearch, user);
-		filter.produceResultsFromQuery();
-
-		Graph graph = new GraphImpl(projectKey, elementKey, filter);
-		// TODO Implement getAllElements in Graph class
+		Graph graph;
+		if ((uriSearch.matches("\\?jql=(.)+")) || (uriSearch.matches("\\?filter=(.)+"))) {
+			GraphFiltering filter = new GraphFiltering(projectKey, uriSearch, user);
+			filter = new GraphFiltering(projectKey, uriSearch, user);
+			filter.produceResultsFromQuery();
+			graph = new GraphImplFiltered(projectKey, elementKey, filter);
+		} else {
+			graph = new GraphImpl(projectKey, elementKey);
+		}
 		List<DecisionKnowledgeElement> filteredElements = graph.getAllElements();
 
 		return Response.ok(filteredElements).build();

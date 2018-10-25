@@ -3,6 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,14 +67,6 @@ public class TestGraph extends TestSetUpWithIssues {
 	@Test
 	public void testRootElementConstructor() {
 		Graph graphRoot = new GraphImpl(element);
-		assertNotNull(graphRoot);
-	}
-
-	@Test
-	public void testFilterConstructor() {
-		SearchService searchService = new MockSearchService();
-		filter.setSearchService(searchService);
-		Graph graphRoot = new GraphImpl(element.getProject().getProjectKey(), element.getKey(), filter);
 		assertNotNull(graphRoot);
 	}
 
@@ -163,5 +158,13 @@ public class TestGraph extends TestSetUpWithIssues {
 		graph.setRootElement(element);
 		assertNotNull(graph.getLinkedElementsAndLinks(element));
 		assertEquals(element.getSummary(), graph.getRootElement().getSummary());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetAllElements() {
+		List<DecisionKnowledgeElement> allElements = new ArrayList<DecisionKnowledgeElement>();
+		allElements.add(element);
+		assertEquals(graph.getAllElements(), allElements);
 	}
 }

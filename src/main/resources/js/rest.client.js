@@ -432,17 +432,16 @@ function setKnowledgeExtractedFromIssues(isKnowledgeExtractedFromIssues, project
 
 function setUseClassiferForIssueComments(isClassifierUsedForIssues, projectKey) {
 	postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setUseClassiferForIssueComments.json?projectKey="
-			+ projectKey + "&isClassifierUsedForIssues=" + isClassifierUsedForIssues, null, function(error,
-			response) {
+			+ projectKey + "&isClassifierUsedForIssues=" + isClassifierUsedForIssues, null, function(error, response) {
 		if (error === null) {
 			showFlag("success", "Usage of classification for Decision Knowledge in Issue Comments has been set to "
 					+ isClassifierUsedForIssues + ".");
 		} else {
-			showFlag("error", "Usage of classification for Decision Knowledge in Issue Comments could not be configured.");
+			showFlag("error",
+					"Usage of classification for Decision Knowledge in Issue Comments could not be configured.");
 		}
 	});
 }
-
 
 function isKnowledgeExtractedFromIssues(projectKey, callback) {
 	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isKnowledgeExtractedFromIssues.json?projectKey="
@@ -609,13 +608,14 @@ function setIconParsing(projectKey, isActivated) {
 }
 
 function isIconParsing(projectKey, callback) {
-	getJSON(
-			AJS.contextPath() + "/rest/decisions/latest/config/isIconParsing.json?projectKey=" + getProjectKey(),
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isIconParsing.json?projectKey=" + getProjectKey(),
 			function(error, isIconParsingBoolean) {
 				if (error === null) {
 					callback(isIconParsingBoolean);
 				} else {
-					showFlag("error", "It could not be received wether icons can be used to tag issue comments. Error-Code: " + error);
+					showFlag("error",
+							"It could not be received wether icons can be used to tag issue comments. Error-Code: "
+									+ error);
 				}
 			});
 }
@@ -645,8 +645,8 @@ function getAccessToken(projectKey, baseURL, privateKey, consumerKey, requestTok
 }
 
 function getElementsByQuery(query, callback) {
-    var projectKey=getProjectKey()||"";
-    postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?projectKey="
+	var projectKey = getProjectKey() || "";
+	postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?projectKey="
 			+ projectKey + "&query=" + query, null, function(error, result) {
 		if (error === null) {
 			callback(result);
@@ -656,14 +656,13 @@ function getElementsByQuery(query, callback) {
 	});
 }
 
-function getLinkedElementsByQuery(query,issueKey, callback) {
-    getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsLinkedToElement.json?projectKey="
-        + getProjectKey() + "&URISearch=" + query+"&elementKey="+issueKey, function(error, result) {
-        if (error === null) {
-            callback(result);
-        } else {
-            showFlag("error", "Elements for given query could not be received." + error);
-        }
-    });
-
+function getLinkedElementsByQuery(query, elementKey, callback) {
+	getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsLinkedToElement.json?elementKey="
+			+ elementKey + "&URISearch=" + query, function(error, result) {
+		if (error === null) {
+			callback(result);
+		} else {
+			showFlag("error", "Linked elements for given query could not be received." + error);
+		}
+	});
 }
