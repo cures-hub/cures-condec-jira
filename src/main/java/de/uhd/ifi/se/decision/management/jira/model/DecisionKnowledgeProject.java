@@ -165,13 +165,6 @@ public interface DecisionKnowledgeProject {
 	void setKnowledgeExtractedFromIssues(boolean isKnowledgeExtractedFromIssues);
 
 	/**
-	 * Return the address of the git repository for this project.
-	 *
-	 * @return git address as a String (if it is set, otherwise an empty String).
-	 */
-	String getGitAddress();
-
-	/**
 	 * Set whether the webhook is enabled for this project.
 	 *
 	 * @param isWebhookEnabled

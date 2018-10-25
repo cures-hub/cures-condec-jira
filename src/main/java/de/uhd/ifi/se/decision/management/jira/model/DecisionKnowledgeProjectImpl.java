@@ -105,11 +105,6 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	}
 
 	@Override
-	public String getGitAddress() {
-		return ConfigPersistence.getGitAddress(projectKey);
-	}
-
-	@Override
 	public void setWebhookEnabled(boolean isWebhookEnabled) {
 		ConfigPersistence.setWebhookEnabled(projectKey, isWebhookEnabled);
 	}

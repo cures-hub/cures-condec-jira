@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -189,7 +190,11 @@ public class GraphFiltering {
 				int year = Integer.parseInt(split[0]);
 				int month = Integer.parseInt(split[1]);
 				int day = Integer.parseInt(split[2]);
-				Date queryStartDate = new Date(year - 1900, month - 1, day);
+				Calendar calendar = Calendar.getInstance();
+				calendar.set(Calendar.YEAR, year - 1900);
+				calendar.set(Calendar.MONTH, month - 1);
+				calendar.set(Calendar.DAY_OF_MONTH, day);
+				Date queryStartDate = calendar.getTime();
 				startTime = queryStartDate.getTime();
 			} catch (NumberFormatException e) {
 				LOGGER.error("The Date is not in Format yyyy-mm-dd");
@@ -219,7 +224,11 @@ public class GraphFiltering {
 				int year = Integer.parseInt(split[0]);
 				int month = Integer.parseInt(split[1]);
 				int day = Integer.parseInt(split[2]);
-				Date queryEndDate = new Date(year - 1900, month - 1, day + 1);
+				Calendar calendar = Calendar.getInstance();
+				calendar.set(Calendar.YEAR, year - 1900);
+				calendar.set(Calendar.MONTH, month - 1);
+				calendar.set(Calendar.DAY_OF_MONTH, day + 1);
+				Date queryEndDate = calendar.getTime();
 				endTime = queryEndDate.getTime();
 			} catch (NumberFormatException e) {
 				LOGGER.error("The Date is not in Format yyyy-mm-dd");

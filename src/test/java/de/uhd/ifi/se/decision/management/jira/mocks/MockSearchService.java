@@ -77,6 +77,7 @@ public class MockSearchService implements SearchService {
 		return null;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public SearchResults search(ApplicationUser arg0, Query arg1, PagerFilter arg2) throws SearchException {
 		List<Issue> issueList = new ArrayList<Issue>();
@@ -98,6 +99,7 @@ public class MockSearchService implements SearchService {
 		return 0;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public SearchResults searchOverrideSecurity(ApplicationUser arg0, Query arg1, PagerFilter arg2)
 			throws SearchException {

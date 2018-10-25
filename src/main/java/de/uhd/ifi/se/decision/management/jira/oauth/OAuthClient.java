@@ -1,4 +1,21 @@
-package de.uhd.ifi.se.decision.management.jira.rest.oauth;
+package de.uhd.ifi.se.decision.management.jira.oauth;
+
+import static de.uhd.ifi.se.decision.management.jira.oauth.PropertiesClient.ACCESS_TOKEN;
+import static de.uhd.ifi.se.decision.management.jira.oauth.PropertiesClient.CONSUMER_KEY;
+import static de.uhd.ifi.se.decision.management.jira.oauth.PropertiesClient.PRIVATE_KEY;
+import static de.uhd.ifi.se.decision.management.jira.oauth.PropertiesClient.REQUEST_TOKEN;
+import static de.uhd.ifi.se.decision.management.jira.oauth.PropertiesClient.SECRET;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Scanner;
+import java.util.function.Function;
+
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.api.client.auth.oauth.OAuthParameters;
 import com.google.api.client.http.GenericUrl;
@@ -9,22 +26,6 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.view.DecisionKnowledgeReport;
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.function.Function;
-
-import static de.uhd.ifi.se.decision.management.jira.rest.oauth.PropertiesClient.ACCESS_TOKEN;
-import static de.uhd.ifi.se.decision.management.jira.rest.oauth.PropertiesClient.CONSUMER_KEY;
-import static de.uhd.ifi.se.decision.management.jira.rest.oauth.PropertiesClient.PRIVATE_KEY;
-import static de.uhd.ifi.se.decision.management.jira.rest.oauth.PropertiesClient.REQUEST_TOKEN;
-import static de.uhd.ifi.se.decision.management.jira.rest.oauth.PropertiesClient.SECRET;
 
 public class OAuthClient {
 
@@ -143,9 +144,11 @@ public class OAuthClient {
 	private void parseResponse(HttpResponse response) throws IOException {
 
 		try {
-			Scanner s = new Scanner(response.getContent()).useDelimiter("\\A");
-			String result = s.hasNext() ? s.next() : "";
-			s.close();
+			Scanner scanner = new Scanner(response.getContent());
+			Scanner scannerWithDelimiter = scanner.useDelimiter("\\A");
+			String result = scannerWithDelimiter.hasNext() ? scannerWithDelimiter.next() : "";
+			scanner.close();
+			scannerWithDelimiter.close();
 			response.getContent().close();
 			JSONObject jsonObj = new JSONObject(result);
 			DecisionKnowledgeReport.restResponse = jsonObj;

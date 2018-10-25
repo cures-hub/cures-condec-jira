@@ -31,8 +31,8 @@ import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.rest.AuthenticationRest;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
 
 public class DecisionKnowledgeReport extends AbstractReport {
@@ -52,6 +52,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		this.projectManager = projectManager;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public String generateReportHtml(ProjectActionSupport action, Map params) throws Exception {
 		Map<String, Object> velocityParams = createValues(action);
 		return descriptor.getHtml("view", velocityParams);
@@ -73,7 +74,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		velocityParams.put("numRelevantSentences", numRelevantSentences);
 		velocityParams.put("map", Map.class);
 
-		// get Number of commits per Issue 
+		// get Number of commits per Issue
 		List<Integer> numCommitsPerIssue = getNumberOfCommitsPerIssue(action.getLoggedInUser());
 		velocityParams.put("numCommitsPerIssue", numCommitsPerIssue);
 
@@ -83,9 +84,12 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 		// Get types of decisions and alternatives linkes to Issue (e.g. has decision
 		// but no alternative)
-		velocityParams.put("numLinksToIssue", getLinkToOtherElement(KnowledgeType.ISSUE,KnowledgeType.ALTERNATIVE,KnowledgeType.DECISION));
-		velocityParams.put("numLinksToDecision", getLinkToOtherElement(KnowledgeType.DECISION,KnowledgeType.ALTERNATIVE,KnowledgeType.ISSUE));
-		velocityParams.put("numLinksToAlternative", getLinkToOtherElement(KnowledgeType.ALTERNATIVE,KnowledgeType.ISSUE,KnowledgeType.DECISION));
+		velocityParams.put("numLinksToIssue",
+				getLinkToOtherElement(KnowledgeType.ISSUE, KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION));
+		velocityParams.put("numLinksToDecision",
+				getLinkToOtherElement(KnowledgeType.DECISION, KnowledgeType.ALTERNATIVE, KnowledgeType.ISSUE));
+		velocityParams.put("numLinksToAlternative",
+				getLinkToOtherElement(KnowledgeType.ALTERNATIVE, KnowledgeType.ISSUE, KnowledgeType.DECISION));
 
 		// Get Number of Alternatives With Arguments
 		Map<String, Integer> numAlternativeWoArgument = getAlternativeArguments();
@@ -151,8 +155,9 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				.getAllElementsFromAoByType(projectManager.getProjectObj(this.projectId).getKey(), type);
 
 		for (DecisionKnowledgeElement currentAlternative : listOfIssues) {
-//			Treant treant = new Treant(currentAlternative.getProject().getProjectKey(), currentAlternative.getKey(),
-//					100);
+			// Treant treant = new Treant(currentAlternative.getProject().getProjectKey(),
+			// currentAlternative.getKey(),
+			// 100);
 			int depth = graphRecursionBot(currentAlternative);
 			linkDistances.add(depth);
 		}
@@ -190,47 +195,8 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return dkeCount;
 	}
 
-	private Map<String, Integer> getAlternativeDecisionPerIssue() {
-		Integer[] statistics = new Integer[4];
-		Arrays.fill(statistics, 0);
-		List<DecisionKnowledgeElement> listOfIssues = ActiveObjectsManager
-				.getAllElementsFromAoByType(projectManager.getProjectObj(this.projectId).getKey(), KnowledgeType.ISSUE);
-
-		for (DecisionKnowledgeElement issue : listOfIssues) {
-			List<GenericLink> links = GenericLinkManager.getGenericLinksForElement("s" + issue.getId(), false);
-			boolean hasAlternative = false;
-			boolean hasDecision = false;
-
-			for (GenericLink link : links) {
-				DecisionKnowledgeElement dke = link.getOpposite("s" + issue.getId());
-				if (dke instanceof Sentence && dke.getType().equals(KnowledgeType.ALTERNATIVE)) {
-					hasAlternative = true;
-				} else if (dke instanceof Sentence && dke.getType().equals(KnowledgeType.DECISION)) {
-					hasDecision = true;
-				}
-			}
-			if (hasAlternative && hasDecision) {
-				statistics[0] = statistics[0] + 1;
-			} else if (hasAlternative && !hasDecision) {
-				statistics[1] = statistics[1] + 1;
-			} else if (!hasAlternative && hasDecision) {
-				statistics[2] = statistics[2] + 1;
-			} else if (!hasAlternative && !hasDecision) {
-				statistics[3] = statistics[3] + 1;
-			}
-		}
-		// Hashmaps as counter suck
-		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
-		dkeCount.put("Has Alt and Dec", statistics[0]);
-		dkeCount.put("Has Alt but no Dec", statistics[1]);
-		dkeCount.put("Has Dec but no Alt", statistics[2]);
-		dkeCount.put("Has no Dec and Alt", statistics[3]);
-
-		return dkeCount;
-	}
-	
-	
-	private Map<String, Integer> getLinkToOtherElement(KnowledgeType linkFrom, KnowledgeType linkTo1, KnowledgeType linkTo2) {
+	private Map<String, Integer> getLinkToOtherElement(KnowledgeType linkFrom, KnowledgeType linkTo1,
+			KnowledgeType linkTo2) {
 		Integer[] statistics = new Integer[4];
 		Arrays.fill(statistics, 0);
 		List<DecisionKnowledgeElement> listOfIssues = ActiveObjectsManager
@@ -243,9 +209,9 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 			for (GenericLink link : links) {
 				DecisionKnowledgeElement dke = link.getOpposite("s" + issue.getId());
-				if (dke instanceof Sentence && dke.getType().equals(linkTo1)) { //alt
+				if (dke instanceof Sentence && dke.getType().equals(linkTo1)) { // alt
 					hasAlternative = true;
-				} else if (dke instanceof Sentence && dke.getType().equals(linkTo2)) {//dec
+				} else if (dke instanceof Sentence && dke.getType().equals(linkTo2)) {// dec
 					hasDecision = true;
 				}
 			}
@@ -259,19 +225,18 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				statistics[3] = statistics[3] + 1;
 			}
 		}
-		String id1 = linkTo1.toString().substring(0,3);
-		String id2 = linkTo2.toString().substring(0,3);
-		
+		String id1 = linkTo1.toString().substring(0, 3);
+		String id2 = linkTo2.toString().substring(0, 3);
+
 		// Hashmaps as counter suck
 		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
-		dkeCount.put("Has "+id1+ " and "+id2, statistics[0]);
-		dkeCount.put("Has "+id1+" but no "+id2, statistics[1]);
-		dkeCount.put("Has "+id1+" but no "+id2, statistics[2]);
-		dkeCount.put("Has no "+id1+" and no "+id2, statistics[3]);
+		dkeCount.put("Has " + id1 + " and " + id2, statistics[0]);
+		dkeCount.put("Has " + id1 + " but no " + id2, statistics[1]);
+		dkeCount.put("Has " + id1 + " but no " + id2, statistics[2]);
+		dkeCount.put("Has no " + id1 + " and no " + id2, statistics[3]);
 
 		return dkeCount;
 	}
-
 
 	private Map<String, Integer> getDecKnowElementsPerIssue() {
 		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
@@ -342,23 +307,27 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	public void setSearchService(SearchService searchService) {
 		this.searchService = searchService;
 	}
+
 	/**
-	 * Seems to be uncalled, but is called by atlassian during execution to transfer velocity variables.
+	 * Seems to be uncalled, but is called by atlassian during execution to transfer
+	 * velocity variables.
 	 */
+	@SuppressWarnings("rawtypes")
 	public void validate(ProjectActionSupport action, Map params) {
 		this.projectId = ParameterUtils.getLongParam(params, "selectedProjectId");
 	}
-	
-	
+
 	private int graphRecursionBot(DecisionKnowledgeElement dke) {
 		this.absolutDepth = 0;
-		Graph graph = new GraphImpl( projectManager.getProjectObj(this.projectId).getKey(), dke.getKey(), null);
-		this.createNodeStructure(dke, null, 100, 1,graph);
+		Graph graph = new GraphImpl(projectManager.getProjectObj(this.projectId).getKey(), dke.getKey(), null);
+		this.createNodeStructure(dke, null, 100, 1, graph);
 		return absolutDepth;
 	}
 
-	private Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth,Graph graph) {
-		if (element == null || element.getProject().getProjectKey() == null || element.getType() == KnowledgeType.OTHER) {
+	private Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth,
+			Graph graph) {
+		if (element == null || element.getProject().getProjectKey() == null
+				|| element.getType() == KnowledgeType.OTHER) {
 			return new Node();
 		}
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getLinkedElementsAndLinks(element);
@@ -373,7 +342,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 			if ((childAndLink.getKey() instanceof Sentence && ((Sentence) childAndLink.getKey()).isRelevant())
 					|| (childAndLink.getKey() instanceof DecisionKnowledgeElement)) {
 				Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
-						currentDepth + 1,graph);
+						currentDepth + 1, graph);
 				if (this.absolutDepth < currentDepth) {
 					this.absolutDepth = currentDepth;
 				}
@@ -383,17 +352,17 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		node.setChildren(nodes);
 		return node;
 	}
-	
 
 	private void requestNumberOfGitCommits(String issueKey) {
 		if (issueKey == null) {
 			return;
 		}
 		try {
-			AuthenticationRest ar = new AuthenticationRest();
-			ar.startRequest("http://cures.ifi.uni-heidelberg.de:8080/rest/gitplugin/1.0/issues/" + issueKey + "/commits");
-		}catch(Exception e) {
-			
+			OAuthManager ar = new OAuthManager();
+			ar.startRequest(
+					"http://cures.ifi.uni-heidelberg.de:8080/rest/gitplugin/1.0/issues/" + issueKey + "/commits");
+		} catch (Exception e) {
+
 		}
 	}
 

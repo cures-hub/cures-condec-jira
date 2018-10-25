@@ -85,12 +85,10 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		</script>
 		<script>
 		for (j in additionalKnowledgeTypes) {
-			isKnowledgeTypeEnabled(typeToggles[j].value, '$projectKey', typeToggles[j], function(isTypeEnabled, toggle) {
-			if (isTypeEnabled == true) {
-                    toggle.checked = true;
-                } else {
-                    toggle.checked = false;
-                }});
+			console.log(typeToggles[j].value);
+			isKnowledgeTypeEnabled(typeToggles[j].value, '$projectKey', typeToggles[j], function(isTypeEnabled, toggle) {				
+                toggle.checked = isTypeEnabled;
+           	});
             typeToggles[j].addEventListener('change', function(error) {
                 this.busy = true;
                 setKnowledgeTypeEnabled(this.checked, this.value, '$projectKey');
@@ -203,26 +201,11 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				});
             </script>
 			<div class="description">Enables or disables whether decision
-				knowledge is extracted from Git for this project.</div>
-		</div>
-		<div class="field-group">
-			<label for="git-address-input-field">Git Repository</label> 
-			<input
-				id="git-address-input-field" type="text" class="text long-field"
-				value="$project.getGitAddress()" placeholder="https://github.com/cures-hub/cures-condec-jira.git"> 
-			<input type="button"
-				id="git-address-button" class="aui-button aui-button-primary"
-				value="Set Address" />
-			<script>
-				var gitSubmitButton = document.getElementById('git-address-button');
-				gitSubmitButton.addEventListener("click", function() {
-				    var gitAddress = document.getElementById('git-address-input-field').value;
-                    setGitAddress('$projectKey', gitAddress);
-                    window.onbeforeunload = null;
-				});
-			</script>
-			<div class="description">Address of the git repository where
-				decision knowledge is extracted from.</div>
+				knowledge is extracted from Git for this project. You need to install the 
+				<a href="https://bigbrassband.com/" target="_blank">
+					Git Integration for JIRA plugin
+				</a> when enabled.
+			</div>
 		</div>
 		
 		<h2>Webhook</h2>

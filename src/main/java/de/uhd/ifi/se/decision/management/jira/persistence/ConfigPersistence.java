@@ -106,20 +106,27 @@ public class ConfigPersistence {
 	public static void setKnowledgeExtractedFromIssues(String projectKey, boolean isKnowledgeExtractedFromIssues) {
 		setValue(projectKey, "isKnowledgeExtractedFromIssues", Boolean.toString(isKnowledgeExtractedFromIssues));
 	}
+	
+	public static void setUseClassiferForIssueComments(String projectKey, boolean isActivated) {
+		setValue(projectKey, "setClassiferForIssueComments", Boolean.toString(isActivated));
+	}
+	
+	public static boolean isUseClassiferForIssueComments(String projectKey) {
+		return getValue(projectKey, "setClassiferForIssueComments").equals("true");
+	}
+	
+	public static boolean isIconParsing(String projectKey) {
+		String isIconParsing = getValue(projectKey, "isIconParsing");
+		return "true".equals(isIconParsing);
+	}
+
+	public static void setIconParsing(String projectKey, boolean isIconParsing) {
+		setValue(projectKey, "isIconParsing", Boolean.toString(isIconParsing));
+	}
 
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
 			boolean isKnowledgeTypeEnabled) {
-		setValue(projectKey, "knowledgeType", Boolean.toString(isKnowledgeTypeEnabled));
-	}
-
-	// TODO Testing
-	public static void setGitAddress(String projectKey, String gitAddress) {
-		setValue(projectKey, "gitAddress", gitAddress);
-	}
-
-	// TODO Testing
-	public static String getGitAddress(String projectKey) {
-		return getValue(projectKey, "gitAddress");
+		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
 	// TODO Testing
@@ -161,15 +168,6 @@ public class ConfigPersistence {
 	// TODO Testing
 	public static String getWebhookType(String projectKey) {
 		return getValue(projectKey, "webhookType");
-	}
-
-	public static boolean isIconParsing(String projectKey) {
-		String isIconParsing = getValue(projectKey, "isIconParsing");
-		return "true".equals(isIconParsing);
-	}
-
-	public static void setIconParsing(String projectKey, boolean isIconParsing) {
-		setValue(projectKey, "isIconParsing", Boolean.toString(isIconParsing));
 	}
 
 	public static void setRequestToken(String requestToken) {
@@ -218,13 +216,5 @@ public class ConfigPersistence {
 
 	public static String getAccessToken() {
 		return getValue("accessToken");
-	}
-
-	public static void setUseClassiferForIssueComments(String projectKey, boolean isActivated) {
-		setValue(projectKey, "setClassiferForIssueComments", Boolean.toString(isActivated));
-	}
-	
-	public static boolean isUseClassiferForIssueComments(String projectKey) {
-		return getValue(projectKey, "setClassiferForIssueComments").equals("true");
 	}
 }

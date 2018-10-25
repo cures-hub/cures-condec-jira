@@ -31,7 +31,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestTreeViewer extends TestSetUpWithIssues {
 	private EntityManager entityManager;
-	private AbstractPersistenceStrategy abstractPersistenceStrategy;
+	private AbstractPersistenceStrategy persistenceStrategy;
 
 	private boolean multiple;
 	private boolean checkCallback;
@@ -48,15 +48,14 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		checkCallback = true;
 		themes = new HashMap<>();
 		themes.put("Test", false);
-		data = new HashSet<>();
+		data = new HashSet<Data>();
 		data.add(new Data());
 		treeViewer = new TreeViewer("TEST");
 		treeViewer.setMultiple(multiple);
 		treeViewer.setCheckCallback(checkCallback);
 		treeViewer.setThemes(themes);
 		treeViewer.setData(data);
-		StrategyProvider strategyProvider = new StrategyProvider();
-		abstractPersistenceStrategy = strategyProvider.getPersistenceStrategy("TEST");
+		persistenceStrategy = StrategyProvider.getPersistenceStrategy("TEST");
 	}
 
 	@Test
@@ -108,7 +107,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSetData() {
-		HashSet<Data> newData = new HashSet<>();
+		HashSet<Data> newData = new HashSet<Data>();
 		treeViewer.setData(newData);
 		assertEquals(treeViewer.getData(), newData);
 	}
@@ -129,7 +128,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testGetDataStructureFilled() {
-		DecisionKnowledgeElement element = abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
 		assertEquals("14", treeViewer.getDataStructure(element).getId());
 	}
 
@@ -143,7 +142,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testEmptyGraphGetDataStructure() {
 		TreeViewer tree = new TreeViewer();
-		DecisionKnowledgeElement element = abstractPersistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
 		assertEquals("14", tree.getDataStructure(element).getId());
 	}
 

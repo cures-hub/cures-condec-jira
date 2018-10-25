@@ -47,7 +47,6 @@ public class DecisionKnowledgeClassifier {
 			for (int i = 0; i < data.numInstances(); i++) {
 				data.get(i).setClassMissing();
 				Double n = binaryClassifier.classifyInstance(data.get(i));
-				System.out.println("Classify Instance");
 				areRelevant.add(n);
 			}
 		} catch (Exception e) {
@@ -75,7 +74,6 @@ public class DecisionKnowledgeClassifier {
 			for (int n = 0; n < structure.size(); n++) {
 				Instance predictionInstance = structure.get(n);
 				double[] predictionResult = fineGrainedClassifier.distributionForInstance(predictionInstance);
-				System.out.println("distribution for  Instance");
 				results.add(predictionResult);
 			}
 		} catch (Exception e) {

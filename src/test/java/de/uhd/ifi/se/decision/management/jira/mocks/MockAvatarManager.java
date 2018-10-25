@@ -62,6 +62,7 @@ public class MockAvatarManager implements AvatarManager {
 		return AvatarImpl.createCustomAvatar("decision", "image/png", "0", IconType.ISSUE_TYPE_ICON_TYPE);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
 	public Avatar create(Avatar.Type type, @Nonnull String s, @Nonnull AvatarImageDataProvider avatarImageDataProvider)
@@ -97,6 +98,7 @@ public class MockAvatarManager implements AvatarManager {
 		return null;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
 	public List<Avatar> getAllSystemAvatars(Avatar.Type type) throws DataAccessException {
@@ -109,6 +111,7 @@ public class MockAvatarManager implements AvatarManager {
 		return null;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
 	public List<Avatar> getCustomAvatarsForOwner(Avatar.Type type, String s) throws DataAccessException {
@@ -126,6 +129,7 @@ public class MockAvatarManager implements AvatarManager {
 		return false;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void readAvatarData(Avatar avatar, ImageSize imageSize, Consumer<InputStream> consumer) throws IOException {
 
@@ -134,13 +138,11 @@ public class MockAvatarManager implements AvatarManager {
 	@Override
 	public void readAvatarData(@Nonnull Avatar avatar, @Nonnull Avatar.Size size,
 			@Nonnull Consumer<InputStream> consumer) throws IOException {
-
 	}
 
 	@Override
 	public void readAvatarData(@Nonnull Avatar avatar, @Nonnull Avatar.Size size,
 			@Nonnull AvatarFormatPolicy avatarFormatPolicy, @Nonnull MediaConsumer mediaConsumer) throws IOException {
-
 	}
 
 	@Nonnull
@@ -149,6 +151,7 @@ public class MockAvatarManager implements AvatarManager {
 		return null;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public Long getDefaultAvatarId(@Nonnull Avatar.Type type) {
 		return null;
@@ -174,6 +177,7 @@ public class MockAvatarManager implements AvatarManager {
 		return null;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean hasPermissionToView(ApplicationUser applicationUser, Avatar.Type type, String s) {
 		return false;
@@ -189,6 +193,7 @@ public class MockAvatarManager implements AvatarManager {
 		return false;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean hasPermissionToEdit(ApplicationUser applicationUser, Avatar.Type type, String s) {
 		return false;
