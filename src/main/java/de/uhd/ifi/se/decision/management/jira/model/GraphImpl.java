@@ -1,6 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
 import org.apache.commons.collections.IteratorUtils;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
@@ -8,7 +12,6 @@ import org.codehaus.jackson.annotate.JsonAutoDetect;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 
 /**
  * Model class for a graph of decision knowledge elements
@@ -42,7 +45,6 @@ public class GraphImpl implements Graph {
 		this(rootElement.getProject().getProjectKey());
 		this.rootElement = rootElement;
 	}
-
 
 	@Override
 	public Map<DecisionKnowledgeElement, Link> getLinkedElementsAndLinks(DecisionKnowledgeElement element) {
@@ -124,20 +126,19 @@ public class GraphImpl implements Graph {
 
 	@Override
 	public List<DecisionKnowledgeElement> getAllElements() {
-		List<DecisionKnowledgeElement> allElements = new ArrayList<>();
+		List<DecisionKnowledgeElement> allElements = new ArrayList<DecisionKnowledgeElement>();
 		allElements.add(this.getRootElement());
 		allElements.addAll(this.getLinkedElements(this.getRootElement()));
-		ListIterator<DecisionKnowledgeElement> iter =allElements.listIterator();
-		while (iter.hasNext()) {
-			List<DecisionKnowledgeElement> linkedElements = this.getLinkedElements(iter.next());
+		ListIterator<DecisionKnowledgeElement> iterator = allElements.listIterator();
+		while (iterator.hasNext()) {
+			List<DecisionKnowledgeElement> linkedElements = this.getLinkedElements(iterator.next());
 			for (DecisionKnowledgeElement element : linkedElements) {
-				if (!IteratorUtils.toList(iter).contains(element)) {
-					iter.add(element);
+				if (!IteratorUtils.toList(iterator).contains(element)) {
+					iterator.add(element);
 				}
 			}
 		}
-
-		return IteratorUtils.toList(iter);
+		return allElements;
 	}
 
 	private Map<DecisionKnowledgeElement, Link> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement element) {
@@ -181,8 +182,6 @@ public class GraphImpl implements Graph {
 
 		return linkedElementsAndLinks;
 	}
-
-
 
 	@Override
 	public DecisionKnowledgeElement getRootElement() {

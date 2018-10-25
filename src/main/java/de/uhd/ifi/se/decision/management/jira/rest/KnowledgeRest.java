@@ -14,7 +14,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import de.uhd.ifi.se.decision.management.jira.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -31,6 +30,12 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkI
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.Graph;
+import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
+import de.uhd.ifi.se.decision.management.jira.model.GraphImplFiltered;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -402,13 +407,12 @@ public class KnowledgeRest {
 		Graph graph;
 		if ((uriSearch.matches("\\?jql=(.)+")) || (uriSearch.matches("\\?filter=(.)+"))) {
 			GraphFiltering filter = new GraphFiltering(projectKey, uriSearch, user);
-			filter = new GraphFiltering(projectKey,uriSearch,user);
+			filter = new GraphFiltering(projectKey, uriSearch, user);
 			filter.produceResultsFromQuery();
-			graph = new GraphImplFiltered(projectKey,elementKey,filter);
+			graph = new GraphImplFiltered(projectKey, elementKey, filter);
 		} else {
 			graph = new GraphImpl(projectKey, elementKey);
 		}
-		// TODO Implement getAllElements in Graph class
 		List<DecisionKnowledgeElement> filteredElements = graph.getAllElements();
 
 		return Response.ok(filteredElements).build();
