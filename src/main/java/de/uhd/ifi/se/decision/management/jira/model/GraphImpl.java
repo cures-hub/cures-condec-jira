@@ -3,9 +3,11 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections.IteratorUtils;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
@@ -184,8 +186,19 @@ public class GraphImpl implements Graph {
 
 	@Override
 	public List<DecisionKnowledgeElement> getAllElements() {
-		// TODO Auto-generated method stub
-		return null;
+		List<DecisionKnowledgeElement> allElements = new ArrayList<DecisionKnowledgeElement>();
+		allElements.add(this.getRootElement());
+		allElements.addAll(this.getLinkedElements(this.getRootElement()));
+		ListIterator<DecisionKnowledgeElement> iterator = allElements.listIterator();
+		while (iterator.hasNext()) {
+			List<DecisionKnowledgeElement> linkedElements = this.getLinkedElements(iterator.next());
+			for (DecisionKnowledgeElement element : linkedElements) {
+				if (!IteratorUtils.toList(iterator).contains(element)) {
+					iterator.add(element);
+				}
+			}
+		}
+		return allElements;
 	}
 
 	private Map<DecisionKnowledgeElement, Link> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement element) {
