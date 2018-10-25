@@ -21,9 +21,6 @@
 <section id="export-dialog" class="aui-dialog2 aui-dialog2-small aui-layer" aria-hidden="true" role="dialog">
     <header class="aui-dialog2-header">
         <h2 class="aui-dialog2-header-main">Export Jira Issues</h2>
-        <a class="aui-dialog2-header-close">
-            <span class="aui-icon aui-icon-small aui-iconfont-close-dialog" id="closeExportDialog">Close</span>
-        </a>
     </header>
     <div class="aui-dialog2-content">
         <ul class="noDots listWithMargin">
@@ -31,4 +28,10 @@
             <li><Button disabled class="aui-button" onclick="exportLinkedElements()">Export Linked Elements</Button></li>
         </ul>
     </div>
+	<div class="aui-dialog2-footer">
+		<Button class="aui-button aui-button-primary" onclick="closeExportDialog()">Close</Button>
+	</div>
 </section>
+<script>
+
+</script>

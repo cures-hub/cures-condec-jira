@@ -39,6 +39,9 @@ AJS.$(document).off().on("click", "#export-as-table-link", function (e) {
     return false;
 });
 
+function closeExportDialog(){
+    AJS.dialog2("#export-dialog").hide();
+}
 
 function exportAsMyTable() {
     //get jql from url
