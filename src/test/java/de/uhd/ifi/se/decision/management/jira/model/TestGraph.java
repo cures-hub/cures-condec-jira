@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
-import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.project.Project;
@@ -21,11 +20,9 @@ import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockSearchService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.IssueStrategy;
-import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -38,7 +35,6 @@ public class TestGraph extends TestSetUpWithIssues {
 	private EntityManager entityManager;
 	private Graph graph;
 	private DecisionKnowledgeElement element;
-	private GraphFiltering filter;
 
 	@Before
 	public void setUp() throws CreateException {
@@ -48,8 +44,6 @@ public class TestGraph extends TestSetUpWithIssues {
 		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
 		element.setProject(new DecisionKnowledgeProjectImpl("Test"));
 		graph = new GraphImpl(element.getProject().getProjectKey(), element.getKey());
-		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
-		filter = new GraphFiltering(element.getProject().getProjectKey(), "", user);
 	}
 
 	@Test
