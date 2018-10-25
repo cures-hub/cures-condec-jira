@@ -21,13 +21,13 @@ import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 public class GraphImpl implements Graph {
 
 	private DecisionKnowledgeElement rootElement;
-	private static List<Long> linkIds;
 	private DecisionKnowledgeProject project;
-	private static List<Link> sentenceLinksAlreadyVisited;
+	private List<Long> linkIds;
+	private List<Long> genericLinkIds;
 
 	public GraphImpl() {
 		linkIds = new ArrayList<Long>();
-		sentenceLinksAlreadyVisited = new ArrayList<Link>();
+		genericLinkIds = new ArrayList<Long>();
 	}
 
 	public GraphImpl(String projectKey) {
@@ -42,20 +42,16 @@ public class GraphImpl implements Graph {
 
 	public GraphImpl(String projectKey, String rootElementKey) {
 		this(projectKey);
-		// Support element keys that represent decision knowledge elements documented in
-		// comments
+		// Support keys of decision knowledge elements documented in comments
 		String issueKey = getJiraIssueKey(rootElementKey);
 		this.rootElement = this.project.getPersistenceStrategy().getDecisionKnowledgeElement(issueKey);
 	}
 
 	private static String getJiraIssueKey(String rootElementKey) {
-		String issueKey;
 		if (rootElementKey.contains(":")) {
-			issueKey = rootElementKey.substring(0, rootElementKey.indexOf(":"));
-		} else {
-			issueKey = rootElementKey;
+			return rootElementKey.substring(0, rootElementKey.indexOf(":"));
 		}
-		return issueKey;
+		return rootElementKey;
 	}
 
 	@Override
@@ -123,20 +119,20 @@ public class GraphImpl implements Graph {
 		}
 
 		String prefix = getIdentifier(element);
-		List<GenericLink> list = GenericLinkManager.getGenericLinksForElement(prefix + element.getId(), false);
+		List<GenericLink> links = GenericLinkManager.getGenericLinksForElement(prefix + element.getId(), false);
 
-		for (GenericLink currentGenericLink : list) {
+		for (GenericLink currentLink : links) {
 			try {
-				DecisionKnowledgeElement source = currentGenericLink.getBothElements().get(0);
-				DecisionKnowledgeElement target = currentGenericLink.getBothElements().get(1);
+				DecisionKnowledgeElement source = currentLink.getBothElements().get(0);
+				DecisionKnowledgeElement target = currentLink.getBothElements().get(1);
 				if (!source.getProject().getProjectKey().equals(target.getProject().getProjectKey())) {
 					continue;
 				}
 				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source, target);
 				linkBetweenSentenceAndOtherElement.setType("contain");
 				if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
-					GraphImpl.sentenceLinksAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
-					linkedElementsAndLinks.put(currentGenericLink.getOpposite(prefix + element.getId()),
+					this.genericLinkIds.add(linkBetweenSentenceAndOtherElement.getId());
+					linkedElementsAndLinks.put(currentLink.getOpposite(prefix + element.getId()),
 							linkBetweenSentenceAndOtherElement);
 				}
 			} catch (NullPointerException e) {
@@ -155,12 +151,9 @@ public class GraphImpl implements Graph {
 		}
 	}
 
-	private boolean linkListContainsLink(Link link2) {
-		for (Link link : GraphImpl.sentenceLinksAlreadyVisited) {
-			if (link.getDestinationElement().getId() == link2.getDestinationElement().getId()
-					&& link.getSourceElement().getId() == link2.getSourceElement().getId()
-					|| link.getSourceElement().getId() == link2.getDestinationElement().getId()
-							&& link.getSourceElement().getId() == link2.getDestinationElement().getId()) {
+	private boolean linkListContainsLink(Link link) {
+		for (Long linkId : this.genericLinkIds) {
+			if (link.getId() == linkId) {
 				return true;
 			}
 		}
