@@ -38,8 +38,7 @@ public interface GenericLink extends Link {
 	
 	@Ignore
 	boolean isValid();
-
-
 	
-
+	@Ignore
+	boolean isInterProjectLink();
 }

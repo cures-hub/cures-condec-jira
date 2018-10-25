@@ -132,4 +132,14 @@ public class GenericLinkImpl extends LinkImpl implements GenericLink {
 				&& (!((Sentence) source).getProjectKey().equals(target.getProject().getProjectKey())));
 	}
 
+	@Override
+	public boolean isInterProjectLink() {
+		try {
+			DecisionKnowledgeElement source = this.getBothElements().get(0);
+			DecisionKnowledgeElement target = this.getBothElements().get(1);
+			return source.getProject().getProjectKey().equals(target.getProject().getProjectKey());
+		} catch (NullPointerException e) {
+			return false;
+		}
+	}
 }
