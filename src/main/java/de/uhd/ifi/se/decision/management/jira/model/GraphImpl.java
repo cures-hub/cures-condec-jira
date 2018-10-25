@@ -122,22 +122,13 @@ public class GraphImpl implements Graph {
 		List<GenericLink> links = GenericLinkManager.getGenericLinksForElement(prefix + element.getId(), false);
 
 		for (GenericLink currentLink : links) {
-			try {
-				DecisionKnowledgeElement source = currentLink.getBothElements().get(0);
-				DecisionKnowledgeElement target = currentLink.getBothElements().get(1);
-				if (!source.getProject().getProjectKey().equals(target.getProject().getProjectKey())) {
-					continue;
-				}
-				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source, target);
-				linkBetweenSentenceAndOtherElement.setType("contain");
-				if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
-					this.genericLinkIds.add(linkBetweenSentenceAndOtherElement.getId());
-					linkedElementsAndLinks.put(currentLink.getOpposite(prefix + element.getId()),
-							linkBetweenSentenceAndOtherElement);
-				}
-			} catch (NullPointerException e) {
-				// Link in the wrong direction
+			if (currentLink.isInterProjectLink()) {
 				continue;
+			}
+			currentLink.setType("contain");
+			if (!this.genericLinkIds.contains(currentLink.getId())) {
+				this.genericLinkIds.add(currentLink.getId());
+				linkedElementsAndLinks.put(currentLink.getOpposite(prefix + element.getId()), currentLink);
 			}
 		}
 		return linkedElementsAndLinks;
@@ -149,15 +140,6 @@ public class GraphImpl implements Graph {
 		} else {
 			return "i";
 		}
-	}
-
-	private boolean linkListContainsLink(Link link) {
-		for (Long linkId : this.genericLinkIds) {
-			if (link.getId() == linkId) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	@Override
