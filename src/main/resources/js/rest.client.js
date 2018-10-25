@@ -657,8 +657,8 @@ function getElementsByQuery(query, callback) {
 }
 
 function getLinkedElementsByQuery(query,issueKey, callback) {
-    getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsLinkedToElement.json?projectKey="
-        + getProjectKey() + "&URISearch=" + query+"&elementKey="+issueKey, function(error, result) {
+    getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsLinkedToElement.json?elementKey="
+        + issueKey + "&URISearch=" + query, function(error, result) {
         if (error === null) {
             callback(result);
         } else {

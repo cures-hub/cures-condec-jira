@@ -319,8 +319,8 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 	private int graphRecursionBot(DecisionKnowledgeElement dke) {
 		this.absolutDepth = 0;
-		Graph graph = new GraphImpl(projectManager.getProjectObj(this.projectId).getKey(), dke.getKey(), null);
-		this.createNodeStructure(dke, null, 100, 1, graph);
+		Graph graph = new GraphImpl( projectManager.getProjectObj(this.projectId).getKey(), dke.getKey());
+		this.createNodeStructure(dke, null, 100, 1,graph);
 		return absolutDepth;
 	}
 

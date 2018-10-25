@@ -68,14 +68,6 @@ public class TestGraph extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testFilterConstructor() {
-		SearchService searchService = new MockSearchService();
-		filter.setSearchService(searchService);
-		Graph graphRoot = new GraphImpl(element.getProject().getProjectKey(), element.getKey(), filter);
-		assertNotNull(graphRoot);
-	}
-
-	@Test
 	public void testGetLinkedElementsNull() {
 		assertEquals(0, graph.getLinkedElements(null).size());
 	}
