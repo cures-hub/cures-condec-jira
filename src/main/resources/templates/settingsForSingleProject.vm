@@ -24,10 +24,12 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                     #else
 						activationToggle.checked = false;
                     #end
-                activationToggle.addEventListener('change', function(error) {
-                    this.busy = true;
-                    setActivated(this.checked, this.value);
-                    this.busy = false;
+				$(document).ready(function () {
+                    activationToggle.addEventListener('change', function(error) {
+                        this.busy = true;
+                        setActivated(this.checked, this.value);
+                        this.busy = false;
+                    });
                 });
             </script>
 			<div class="description">Enables or disables the plug-in for
@@ -44,10 +46,12 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                     #else
 						strategyToggle.checked = false;
                     #end
-                strategyToggle.addEventListener('change', function(error) {
-                    this.busy = true;
-                    setIssueStrategy(this.checked, this.value);
-                    this.busy = false;
+                $(document).ready(function () {
+                    strategyToggle.addEventListener('change', function (error) {
+                        this.busy = true;
+                        setIssueStrategy(this.checked, this.value);
+                        this.busy = false;
+                    });
                 });
             </script>
 			<div class="description">Sets the persistence strategy for this
@@ -89,10 +93,12 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			isKnowledgeTypeEnabled(typeToggles[j].value, '$projectKey', typeToggles[j], function(isTypeEnabled, toggle) {				
                 toggle.checked = isTypeEnabled;
            	});
-            typeToggles[j].addEventListener('change', function(error) {
-                this.busy = true;
-                setKnowledgeTypeEnabled(this.checked, this.value, '$projectKey');
-                this.busy = false;
+            $(document).ready(function () {
+                typeToggles[j].addEventListener('change', function (error) {
+                    this.busy = true;
+                    setKnowledgeTypeEnabled(this.checked, this.value, '$projectKey');
+                    this.busy = false;
+                });
             });
 		}
 		</script>
@@ -110,11 +116,13 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 					} else {
 						issueToggle.checked = false;
 					};
-				issueToggle.addEventListener('change', function(error) {
-					this.busy = true;
-					setKnowledgeExtractedFromIssues(this.checked, this.value);
-					this.busy = false;
-				});
+                $(document).ready(function () {
+                    issueToggle.addEventListener('change', function (error) {
+                        this.busy = true;
+                        setKnowledgeExtractedFromIssues(this.checked, this.value);
+                        this.busy = false;
+                    });
+                });
             </script>
 			<div class="description">Enables or disables whether decision
 				knowledge is extracted from issue comments for this project.</div>
@@ -126,11 +134,14 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			<script>
 				var isClassifierUsedToggle = document.getElementById('isClassifierUsed-toggle');
 					isClassifierUsedToggle.checked = $isClassifierUsedForIssueComments
-				isClassifierUsedToggle.addEventListener('change', function(error) {
-					this.busy = true;
-					setUseClassiferForIssueComments(this.checked, this.value);
-					this.busy = false;
-				});
+
+                $(document).ready(function () {
+                    isClassifierUsedToggle.addEventListener('change', function (error) {
+                        this.busy = true;
+                        setUseClassiferForIssueComments(this.checked, this.value);
+                        this.busy = false;
+                    });
+                });
             </script>
 			<div class="description">Enables or disables whether decision
 				knowledge is extracted classified from issue comments for this project.</div>
@@ -142,10 +153,12 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			<script>
                 var sentenceIconToggle = document.getElementById('iconParsing-toggle');
                 sentenceIconToggle.checked = $iconToggle
-                sentenceIconToggle.addEventListener('change', function(error) {
-                    this.busy = true;
-                    setIconParsing(this.value, this.checked);
-                    this.busy = false;
+                $(document).ready(function () {
+                    sentenceIconToggle.addEventListener('change', function (error) {
+                        this.busy = true;
+                        setIconParsing(this.value, this.checked);
+                        this.busy = false;
+                    });
                 });
             </script>
 			<div class="description">Enables or disables to use icons for tagging decision knowledge. <br/> WARNING: Use with caution. Sentences will not be labelled/classified correctly if a decision knowledge icon is used for other things than as a decision knowledge tag. </div>
@@ -194,11 +207,13 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 					} else {
 						gitToggle.checked = false;
 					};
-				gitToggle.addEventListener('change', function(error) {
-					this.busy = true;
-					setKnowledgeExtractedFromGit(this.checked, this.value);
-					this.busy = false;
-				});
+                $(document).ready(function () {
+                    gitToggle.addEventListener('change', function (error) {
+                        this.busy = true;
+                        setKnowledgeExtractedFromGit(this.checked, this.value);
+                        this.busy = false;
+                    });
+                });
             </script>
 			<div class="description">Enables or disables whether decision
 				knowledge is extracted from Git for this project. You need to install the 
@@ -255,11 +270,13 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
             } else {
                 webhookToggle.checked = false;
             };
-            webhookToggle.addEventListener('change', function(error) {
-                this.busy = true;
-                setWebhookEnabled(this.checked, this.value);
-                this.busy = false;
-            });                    
+            $(document).ready(function () {
+                webhookToggle.addEventListener('change', function (error) {
+                    this.busy = true;
+                    setWebhookEnabled(this.checked, this.value);
+                    this.busy = false;
+                });
+            });
 
 			var webHookSubmit = document.getElementById('submitWebhook');
 			webHookSubmit.addEventListener("click", function() {
