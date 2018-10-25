@@ -6,6 +6,7 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import net.java.ao.schema.Ignore;
 
 /**
@@ -13,7 +14,7 @@ import net.java.ao.schema.Ignore;
  * they are arrows starting from a source element and ending in a destination element.
  */
 @JsonDeserialize(as = GenericLinkImpl.class)
-public interface GenericLink {
+public interface GenericLink extends Link {
 
 	long getId();
 

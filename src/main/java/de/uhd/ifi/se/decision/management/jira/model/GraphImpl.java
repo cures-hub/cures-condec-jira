@@ -128,12 +128,11 @@ public class GraphImpl implements Graph {
 				if (!source.getProject().getProjectKey().equals(target.getProject().getProjectKey())) {
 					continue;
 				}
-				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source, target);
-				linkBetweenSentenceAndOtherElement.setType("contain");
-				if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
-					this.genericLinkIds.add(linkBetweenSentenceAndOtherElement.getId());
+				currentLink.setType("contain");
+				if (!this.genericLinkIds.contains(currentLink.getId())) {
+					this.genericLinkIds.add(currentLink.getId());
 					linkedElementsAndLinks.put(currentLink.getOpposite(prefix + element.getId()),
-							linkBetweenSentenceAndOtherElement);
+							currentLink);
 				}
 			} catch (NullPointerException e) {
 				// Link in the wrong direction
@@ -149,15 +148,6 @@ public class GraphImpl implements Graph {
 		} else {
 			return "i";
 		}
-	}
-
-	private boolean linkListContainsLink(Link link) {
-		for (Long linkId : this.genericLinkIds) {
-			if (link.getId() == linkId) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	@Override

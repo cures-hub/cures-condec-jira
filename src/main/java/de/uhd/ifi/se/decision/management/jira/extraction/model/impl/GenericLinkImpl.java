@@ -5,13 +5,15 @@ import java.util.List;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+
 import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 
-public class GenericLinkImpl implements GenericLink {
+public class GenericLinkImpl extends LinkImpl implements GenericLink {
 
 	private long id;
 	private String idOfSourceElement;
@@ -27,9 +29,9 @@ public class GenericLinkImpl implements GenericLink {
 		this.idOfDestinationElement = idOfDestinationElement;
 		this.idOfSourceElement = idOfSourceElement;
 	}
-	
+
 	public GenericLinkImpl(String idOfDestinationElement, String idOfSourceElement, String type) {
-		this( idOfDestinationElement,idOfSourceElement);
+		this(idOfDestinationElement, idOfSourceElement);
 		setType(type);
 	}
 
@@ -124,8 +126,8 @@ public class GenericLinkImpl implements GenericLink {
 		} catch (NullPointerException e) {
 			return false;
 		}
-		//I don't like this, I'd rather do an if, but codacy cries in this case.
-		//This checks if both ends are in the same project.
+		// I don't like this, I'd rather do an if, but codacy cries in this case.
+		// This checks if both ends are in the same project.
 		return !(source instanceof Sentence
 				&& (!((Sentence) source).getProjectKey().equals(target.getProject().getProjectKey())));
 	}
