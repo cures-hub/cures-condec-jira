@@ -9,6 +9,9 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 
+/**
+ * Model class for a graph of decision knowledge elements that matches filter criteria
+ */
 @JsonAutoDetect
 public class GraphImplFiltered extends GraphImpl {
 	private DecisionKnowledgeElement rootElement;
