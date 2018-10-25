@@ -407,7 +407,6 @@ public class KnowledgeRest {
 		filter.produceResultsFromQuery();
 
 		Graph graph = new GraphImpl(projectKey, elementKey, filter);
-		// TODO Implement getAllElements in Graph class
 		List<DecisionKnowledgeElement> filteredElements = graph.getAllElements();
 
 		return Response.ok(filteredElements).build();

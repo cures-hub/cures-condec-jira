@@ -20,18 +20,20 @@
 
 <section id="export-dialog" class="aui-dialog2 aui-dialog2-small aui-layer" aria-hidden="true" role="dialog">
     <header class="aui-dialog2-header">
-        <h2 class="aui-dialog2-header-main">Export Jira Issues</h2>
+        <h2 class="aui-dialog2-header-main">Export Decision Knowledge</h2>
+        <a class="aui-dialog2-header-close"> <span
+			class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+		</a>
     </header>
     <div class="aui-dialog2-content">
         <ul class="noDots listWithMargin">
-            <li><Button class="aui-button" onclick="exportAsMyTable()">Export as Table</Button></li>
-            <li><Button disabled class="aui-button" onclick="exportLinkedElements()">Export Linked Elements</Button></li>
+            <li><Button class="aui-button" onclick="exportAsMyTable()">Export All Elements Matching Query</Button></li>
+            <li><Button class="aui-button" onclick="exportLinkedElements()">Export Linked Elements</Button></li>
         </ul>
     </div>
-	<div class="aui-dialog2-footer">
-		<Button class="aui-button aui-button-primary" onclick="closeExportDialog()">Close</Button>
-	</div>
+	<footer class="aui-dialog2-footer">
+		<div class="aui-dialog2-footer-actions">
+			<button id="dialog-cancel-button" class="aui-button aui-button-link" onclick="closeExportDialog()">Cancel</button>
+		</div>
+	</footer>
 </section>
-<script>
-
-</script>
