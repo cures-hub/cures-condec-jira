@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.mocks;
 import java.util.Date;
 
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.security.roles.ProjectRole;
 import com.atlassian.jira.user.ApplicationUser;
