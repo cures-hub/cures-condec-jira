@@ -23,8 +23,8 @@ public class LinkImpl implements Link {
 	private String type;
 	private DecisionKnowledgeElement sourceElement;
 	private DecisionKnowledgeElement destinationElement;
-	private String idOfSourceElement;
-	private String idOfDestinationElement;
+	private String typeOfSourceElement;
+	private String typeOfDestinationElement;
 
 	public LinkImpl() {
 		this.sourceElement = new DecisionKnowledgeElementImpl();
@@ -56,8 +56,8 @@ public class LinkImpl implements Link {
 	
     public LinkImpl(String idOfDestinationElement, String idOfSourceElement) {
     	this.type = "";
-        this.idOfDestinationElement = idOfDestinationElement;
-        this.idOfSourceElement = idOfSourceElement;
+        this.typeOfDestinationElement = idOfDestinationElement;
+        this.typeOfSourceElement = idOfSourceElement;
     }
 
     public LinkImpl(String idOfDestinationElement, String idOfSourceElement, String type) {
@@ -131,26 +131,26 @@ public class LinkImpl implements Link {
 
 	@Override
 	public String getIdOfSourceElement() {
-		return this.idOfSourceElement;
+		return this.typeOfSourceElement;
 	}
 
 	@Override
 	public void setIdOfSourceElement(String idOfSourceElement) {
-		this.idOfSourceElement = idOfSourceElement;
+		this.typeOfSourceElement = idOfSourceElement;
 	}
 
 	@Override
 	public String getIdOfDestinationElement() {
-		return this.idOfDestinationElement;
+		return this.typeOfDestinationElement;
 	}
 
 	@Override
 	public void setIdOfDestinationElement(String idOfDestinationElement) {
-		this.idOfDestinationElement = idOfDestinationElement;
+		this.typeOfDestinationElement = idOfDestinationElement;
 	}
 
 	public String toString() {
-		return this.idOfSourceElement + " to " + this.idOfDestinationElement;
+		return this.typeOfSourceElement + " to " + this.typeOfDestinationElement;
 	}
 	
 	@Override
@@ -181,8 +181,8 @@ public class LinkImpl implements Link {
 	@Override
 	public List<DecisionKnowledgeElement> getBothElements() throws NullPointerException {
 		List<DecisionKnowledgeElement> bothLinkSides = new ArrayList<>();
-		bothLinkSides.add(this.getOpposite(this.idOfSourceElement));
-		bothLinkSides.add(this.getOpposite(this.idOfDestinationElement));
+		bothLinkSides.add(this.getOpposite(this.typeOfSourceElement));
+		bothLinkSides.add(this.getOpposite(this.typeOfDestinationElement));
 		return bothLinkSides;
 	}
 

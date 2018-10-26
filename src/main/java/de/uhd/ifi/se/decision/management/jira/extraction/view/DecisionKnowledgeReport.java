@@ -212,7 +212,6 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				statistics[1] = statistics[1] + 1;
 			}
 		}
-		String id1 = linkTo1.toString().substring(0, 3);
 
 		// Hashmaps as counter suck
 		Map<String, Integer> dkeCount = new HashMap<String, Integer>();

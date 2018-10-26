@@ -20,6 +20,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	private String summary;
 	private String description;
 	protected KnowledgeType type;
+	protected DocumentationLocation documentationLocation;
 	private DecisionKnowledgeProject project;
 	private String key;
 
@@ -153,6 +154,21 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	@Override
 	public List<Link> getInwardLinks() {
 		return this.getProject().getPersistenceStrategy().getInwardLinks(this);
+	}
+
+	@Override
+	public DocumentationLocation getDocumentationLocation() {
+		return this.documentationLocation;
+	}
+
+	@Override
+	public void setDocumentationLocation(DocumentationLocation documentationLocation) {
+		this.documentationLocation = documentationLocation;
+	}
+
+	@Override
+	public void setDocumentationLocation(String documentationLocation) {
+		this.documentationLocation = DocumentationLocation.getDocumentationType(documentationLocation);
 	}
 
 	@Override
