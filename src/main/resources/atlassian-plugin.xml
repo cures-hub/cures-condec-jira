@@ -235,10 +235,10 @@
 			object relational mapping.
 		</description>
 		<entity>
-			de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementEntity
+			de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementInDatabase
 		</entity>
 		<entity>
-			de.uhd.ifi.se.decision.management.jira.persistence.LinkBetweenDifferentEntitiesEntity
+			de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase
 		</entity>
 		<entity>
 			de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity
