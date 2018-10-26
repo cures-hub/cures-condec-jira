@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -77,16 +76,16 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testSecondConstructor() {
 		Link link = new LinkImpl("i1337", "i1338");
-		assertTrue(link.getIdOfDestinationElement().equals("i1337"));
-		assertTrue(link.getIdOfSourceElement().equals("i1338"));
+		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("i1337"));
+		assertTrue(link.getIdOfSourceElementWithPrefix().equals("i1338"));
 	}
 
 	@Test
 	@NonTransactional
 	public void testThirdConstructor() {
 		Link link = new LinkImpl("i1337", "i1338", "contain");
-		assertTrue(link.getIdOfDestinationElement().equals("i1337"));
-		assertTrue(link.getIdOfSourceElement().equals("i1338"));
+		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("i1337"));
+		assertTrue(link.getIdOfSourceElementWithPrefix().equals("i1338"));
 		assertTrue(link.getType().equals("contain"));
 
 	}
@@ -186,7 +185,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 	@Test
 	@NonTransactional
-	public void testIsValidWithInValidLink() {
+	public void testIsIssueLinkWithValidLink() {
 
 		Link link = new LinkImpl();
 
@@ -194,7 +193,8 @@ public class TestGenericLink extends TestSetUpWithIssues {
 		link.setDestinationElement("i" + 13423);
 		GenericLinkManager.insertGenericLink(link, null);
 
-		assertFalse(link.isValid());
+		assertTrue(link.isValid());
+		assertTrue(GenericLinkManager.isIssueLink(link));
 	}
 
 	@Test

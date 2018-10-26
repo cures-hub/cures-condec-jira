@@ -107,6 +107,8 @@ public interface Link {
 	 */
 	DecisionKnowledgeElement getOppositeElement(String elementId);
 	
+	DecisionKnowledgeElement getOppositeElement(long elementId);
+	
 	/**
 	 * Get both elements that are linked (both sides of the link) as a list.
 	 *
@@ -136,11 +138,11 @@ public interface Link {
 	 */
 	boolean isValid();
 
-	String getIdOfSourceElement();
+	String getIdOfSourceElementWithPrefix();
 
 	void setSourceElement(String idWithPrefix);
 
-	String getIdOfDestinationElement();
+	String getIdOfDestinationElementWithPrefix();
 
-	void setDestinationElement(String idWithPrefix);
+	void setDestinationElement(String idWithPrefix);	
 }
