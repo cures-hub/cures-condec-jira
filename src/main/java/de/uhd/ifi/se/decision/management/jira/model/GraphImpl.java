@@ -119,7 +119,7 @@ public class GraphImpl implements Graph {
 		}
 
 		String prefix = getIdentifier(element);
-		List<GenericLink> links = GenericLinkManager.getGenericLinksForElement(prefix + element.getId(), false);
+		List<GenericLink> links = GenericLinkManager.getLinksForElement(prefix + element.getId(), false);
 
 		for (GenericLink currentLink : links) {
 			if (currentLink.isInterProjectLink()) {

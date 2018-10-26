@@ -91,7 +91,7 @@ public class GenericLinkManager {
 	 *            if false, checks both directions
 	 * @return the generic links for element
 	 */
-	public static List<GenericLink> getGenericLinksForElement(String targetId, boolean getOnlyOutwardLink) {
+	public static List<GenericLink> getLinksForElement(String targetId, boolean getOnlyOutwardLink) {
 		init();
 		List<GenericLink> links = new ArrayList<GenericLink>();
 		ao.executeInTransaction(new TransactionCallback<LinkBetweenDifferentEntitiesEntity>() {

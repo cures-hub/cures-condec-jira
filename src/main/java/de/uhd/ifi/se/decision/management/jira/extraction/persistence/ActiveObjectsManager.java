@@ -70,7 +70,7 @@ public class ActiveObjectsManager {
 	}
 
 	private static void checkIfSentenceHasAValidLink(long sentenceId, long issueId) {
-		List<GenericLink> links = GenericLinkManager.getGenericLinksForElement("s" + sentenceId, false);
+		List<GenericLink> links = GenericLinkManager.getLinksForElement("s" + sentenceId, false);
 		if (links == null || links.size() == 0) {
 			addNewLinkBetweenSentenceAndIssue(issueId, sentenceId);
 		}
