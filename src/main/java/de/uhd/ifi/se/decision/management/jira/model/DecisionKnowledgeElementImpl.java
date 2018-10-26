@@ -50,11 +50,13 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 		this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
 		this.project = new DecisionKnowledgeProjectImpl(issue.getProjectObject().getKey());
 		this.key = issue.getKey();
+		this.documentationLocation = DocumentationLocation.JIRAISSUE;
 	}
 
 	public DecisionKnowledgeElementImpl(DecisionKnowledgeElementEntity entity) {
 		this(entity.getId(), entity.getSummary(), entity.getDescription(), entity.getType(), entity.getProjectKey(),
 				entity.getKey());
+		this.documentationLocation = DocumentationLocation.ACTIVEOBJECT;
 	}
 
 	@Override
