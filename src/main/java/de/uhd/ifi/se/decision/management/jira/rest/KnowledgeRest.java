@@ -25,7 +25,6 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
@@ -266,9 +265,9 @@ public class KnowledgeRest {
 							decisionKnowledgeElement.getDescription(), databaseEntity.getProjectKey(), false);
 					String tag = "";
 					if (databaseEntity.isTaggedManually()
-							//Allow changing of manual tags, but no tags for icons
+							// Allow changing of manual tags, but no tags for icons
 							&& StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) < 0) {
-						if (newType.equalsIgnoreCase("other") && databaseEntity.isTaggedManually() 
+						if (newType.equalsIgnoreCase("other") && databaseEntity.isTaggedManually()
 								&& !databaseEntity.getKnowledgeTypeString()
 										.equalsIgnoreCase(decisionKnowledgeElement.getType().toString())) {
 							if (decisionKnowledgeElement.getType().toString().equalsIgnoreCase("other")) {
@@ -327,8 +326,8 @@ public class KnowledgeRest {
 				if (isDeleted) {
 					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 				} else {
-					return deleteGenericLink(projectKey, request, new GenericLinkImpl(
-							"i" + link.getSourceElement().getId(), "s" + link.getDestinationElement().getId()));
+					return deleteGenericLink(projectKey, request, new LinkImpl("i" + link.getSourceElement().getId(),
+							"s" + link.getDestinationElement().getId()));
 				}
 			}
 		} else {
@@ -347,8 +346,7 @@ public class KnowledgeRest {
 			if (isDeleted) {
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 			} else {
-				Link inverseLink = new GenericLinkImpl(link.getIdOfSourceElement(),
-						link.getIdOfDestinationElement());
+				Link inverseLink = new LinkImpl(link.getIdOfSourceElement(), link.getIdOfDestinationElement());
 				isDeleted = GenericLinkManager.deleteGenericLink(inverseLink);
 				if (isDeleted) {
 					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();

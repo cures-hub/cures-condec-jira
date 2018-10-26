@@ -13,8 +13,8 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -27,7 +27,7 @@ public class TestCreateGenericLink extends TestKnowledgeRestSetUp {
 	private final static String CREATION_ERROR = "Creation of link failed.";
 
 	private Link newGenericLink() {
-		return new GenericLinkImpl("i1337", "s1337", "contain");
+		return new LinkImpl("i1337", "s1337", "contain");
 	}
 
 	@Test

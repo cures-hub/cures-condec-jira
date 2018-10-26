@@ -9,10 +9,10 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 
 public class GenericLinkManager {
 
@@ -97,7 +97,7 @@ public class GenericLinkManager {
 			public LinkBetweenDifferentEntitiesEntity doInTransaction() {
 				LinkBetweenDifferentEntitiesEntity[] linkElements = ao.find(LinkBetweenDifferentEntitiesEntity.class);
 				for (LinkBetweenDifferentEntitiesEntity linkElement : linkElements) {
-					Link link = new GenericLinkImpl(linkElement.getIdOfDestinationElement(),
+					Link link = new LinkImpl(linkElement.getIdOfDestinationElement(),
 							linkElement.getIdOfSourceElement());
 					link.setId(linkElement.getId());
 					// if(link.isValid()) { @issue: Function is very slow. @alternative: run this as
@@ -123,7 +123,7 @@ public class GenericLinkManager {
 			public LinkBetweenDifferentEntitiesEntity doInTransaction() {
 				LinkBetweenDifferentEntitiesEntity[] linkElements = ao.find(LinkBetweenDifferentEntitiesEntity.class);
 				for (LinkBetweenDifferentEntitiesEntity linkElement : linkElements) {
-					Link link = new GenericLinkImpl(linkElement.getIdOfDestinationElement(),
+					Link link = new LinkImpl(linkElement.getIdOfDestinationElement(),
 							linkElement.getIdOfSourceElement());
 					if (!link.isValid()) {
 						try {

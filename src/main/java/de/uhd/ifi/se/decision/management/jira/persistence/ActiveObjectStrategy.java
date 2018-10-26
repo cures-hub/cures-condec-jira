@@ -14,7 +14,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
@@ -288,7 +287,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 				}
 
 				// elements exist
-				Link newLink = new GenericLinkImpl("a" + link.getDestinationElement().getId(),
+				Link newLink = new LinkImpl("a" + link.getDestinationElement().getId(),
 						"a" + link.getSourceElement().getId());
 				newLink.setType(link.getType());
 				return GenericLinkManager.insertGenericLink(newLink, user);
