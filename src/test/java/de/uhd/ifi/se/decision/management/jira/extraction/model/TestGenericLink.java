@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -75,17 +76,21 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSecondConstructor() {
-		Link link = new LinkImpl("i1337", "i1338");
-		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("i1337"));
-		assertTrue(link.getIdOfSourceElementWithPrefix().equals("i1338"));
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
+		Sentence s = c.getSentences().get(0);
+		Link link = new LinkImpl("i" + issue.getId(), "s" + s.getId());
+		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("i" + issue.getId()));
+		assertTrue(link.getIdOfSourceElementWithPrefix().equals("s" + s.getId()));
 	}
 
 	@Test
 	@NonTransactional
 	public void testThirdConstructor() {
-		Link link = new LinkImpl("i1337", "i1338", "contain");
-		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("i1337"));
-		assertTrue(link.getIdOfSourceElementWithPrefix().equals("i1338"));
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
+		Sentence s = c.getSentences().get(0);
+		Link link = new LinkImpl("i" + issue.getId(), "s" + s.getId(),"contain");
+		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("i" + issue.getId()));
+		assertTrue(link.getIdOfSourceElementWithPrefix().equals("s" + s.getId()));
 		assertTrue(link.getType().equals("contain"));
 
 	}
@@ -187,26 +192,32 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testIsIssueLinkWithValidLink() {
 
-		Link link = new LinkImpl();
 
-		link.setSourceElement("i" + 1233);
-		link.setDestinationElement("i" + 13423);
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
+		Sentence s = c.getSentences().get(0);
+		Link link = new LinkImpl("i" + issue.getId(), "s" + s.getId());
+		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("i" + issue.getId()));
+		assertTrue(link.getIdOfSourceElementWithPrefix().equals("s" + s.getId()));
+
+
 		GenericLinkManager.insertGenericLink(link, null);
 
 		assertTrue(link.isValid());
-		assertTrue(GenericLinkManager.isIssueLink(link));
+		assertFalse(GenericLinkManager.isIssueLink(link));
 	}
 
 	@Test
 	@NonTransactional
 	public void testToStringToBeatCodeCoverage() {
 
-		Link link = new LinkImpl();
 
-		link.setSourceElement("i" + 1233);
-		link.setDestinationElement("i" + 13423);
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
+		Sentence s = c.getSentences().get(0);
+		Link link = new LinkImpl("i" + issue.getId(), "s" + s.getId());
+		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("i" + issue.getId()));
+		assertTrue(link.getIdOfSourceElementWithPrefix().equals("s" + s.getId()));
 
-		assertTrue(link.toString().equals("i1233 to i13423"));
+		assertTrue(link.toString().equals("s1 to i2"));
 	}
 
 }

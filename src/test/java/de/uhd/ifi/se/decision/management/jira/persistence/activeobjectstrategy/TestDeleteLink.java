@@ -16,6 +16,7 @@ import static org.junit.Assert.assertTrue;
 public class TestDeleteLink extends ActiveObjectStrategyTestSetUp {
 
 	private Link link;
+	DecisionKnowledgeElement linkedDecisision;
 
 	@Before
 	public void setUp() {
@@ -24,14 +25,14 @@ public class TestDeleteLink extends ActiveObjectStrategyTestSetUp {
 		element.setProject("TEST");
 		element.setType(KnowledgeType.SOLUTION);
 
-		DecisionKnowledgeElement linkedDecisision = new DecisionKnowledgeElementImpl();
+		linkedDecisision = new DecisionKnowledgeElementImpl();
 		linkedDecisision.setProject("TEST");
 		linkedDecisision.setType(KnowledgeType.DECISION);
 
 		DecisionKnowledgeElement elementWithDatabaseId = aoStrategy.insertDecisionKnowledgeElement(element, user);
 		DecisionKnowledgeElement linkedDecisionWithDatabaseId = aoStrategy.insertDecisionKnowledgeElement(linkedDecisision, user);
 		link = new LinkImpl(linkedDecisionWithDatabaseId, elementWithDatabaseId);
-		aoStrategy.insertLink(link, user);
+		aoStrategy.insertLinkWithoutTransaction(link, user);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -55,7 +56,7 @@ public class TestDeleteLink extends ActiveObjectStrategyTestSetUp {
 	@Test
 	@NonTransactional
 	public void testLinkFilledUserFilledLinkNotInTable() {
-		Link emptyLink = new LinkImpl();
+		Link emptyLink = new LinkImpl(linkedDecisision,linkedDecisision);
 		assertFalse(aoStrategy.deleteLink(emptyLink, user));
 	}
 

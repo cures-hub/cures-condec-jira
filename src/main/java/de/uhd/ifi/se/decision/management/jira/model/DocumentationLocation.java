@@ -39,6 +39,8 @@ public enum DocumentationLocation {
 			return "i";
 		case JIRAISSUECOMMENT:
 			return "s";
+		case ACTIVEOBJECT:
+			return "a";
 		default:
 			return "";
 		}
@@ -47,8 +49,17 @@ public enum DocumentationLocation {
 	public static String getIdentifier(DecisionKnowledgeElement element) {
 		if (element instanceof Sentence) {
 			return "s";
-		} else {
-			return "i";
 		}
+		if (element.getDocumentationLocation() == null) {
+			return "";
+		}
+		if (element.getDocumentationLocation().equals(DocumentationLocation.ACTIVEOBJECT)) {
+			return "a";
+		} else if (element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUE)) {
+			return "i";
+		} else {
+			return "";
+		}
+
 	}
 }

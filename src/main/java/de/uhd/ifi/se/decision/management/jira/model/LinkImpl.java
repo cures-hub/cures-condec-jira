@@ -24,8 +24,6 @@ public class LinkImpl implements Link {
 	private DecisionKnowledgeElement destinationElement;
 
 	public LinkImpl() {
-		this.sourceElement = new DecisionKnowledgeElementImpl();
-		this.destinationElement = new DecisionKnowledgeElementImpl();
 	}
 
 	public LinkImpl(DecisionKnowledgeElement sourceElement, DecisionKnowledgeElement destinationElement) {
@@ -215,6 +213,6 @@ public class LinkImpl implements Link {
 	public String toString() {
 		String sourceElementIdPrefix = DocumentationLocation.getIdentifier(sourceElement);
 		String destinationElementIdPrefix = DocumentationLocation.getIdentifier(destinationElement);
-		return sourceElementIdPrefix + sourceElement.getId() + " to " + destinationElementIdPrefix + destinationElement;
+		return sourceElementIdPrefix + sourceElement.getId() + " to " + destinationElementIdPrefix + destinationElement.getId();
 	}
 }

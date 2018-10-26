@@ -30,6 +30,7 @@ import com.atlassian.jira.user.MockApplicationUser;
 import com.atlassian.jira.user.util.MockUserManager;
 import com.atlassian.jira.user.util.UserManager;
 import com.atlassian.jira.util.VelocityParamFactory;
+import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.velocity.VelocityManager;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
@@ -77,6 +78,7 @@ public class TestSetUpWithIssues {
 				.addMock(VelocityParamFactory.class, new MockVelocityParamFactory())
 				.addMock(AvatarManager.class, new MockAvatarManager()).addMock(IssueTypeManager.class, issueTypeManager)
 				.addMock(IssueTypeSchemeManager.class, new MockIssueTypeSchemeManager())
+				.addMock(PluginSettingsFactory.class, new MockPluginSettingsFactory())
 				.addMock(OptionSetManager.class, new MockOptionSetManager()).addMock(CommentManager.class, new MockCommentManager());
 
 		creatingProjectIssueStructure();

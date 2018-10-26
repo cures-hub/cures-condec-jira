@@ -16,6 +16,7 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import net.java.ao.Query;
@@ -173,6 +174,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Link> outwardLinks = this.getOutwardLinks(decisionKnowledgeElement);
 		List<DecisionKnowledgeElement> destinationElements = new ArrayList<DecisionKnowledgeElement>();
+
+		ACTIVE_OBJECTS.find(LinkInDatabase.class);
 		for (Link link : outwardLinks) {
 			destinationElements.add(new DecisionKnowledgeElementImpl(
 					ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementInDatabase>() {
@@ -247,6 +250,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 		}
 		element.setId(databaseEntry.getId());
 		element.setKey(databaseEntry.getKey());
+		element.setDocumentationLocation(DocumentationLocation.ACTIVEOBJECT);
 		return element;
 	}
 
@@ -255,43 +259,48 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction() {
-				for (LinkInDatabase linkEntity : ACTIVE_OBJECTS
-						.find(LinkInDatabase.class)) {
-					if (linkEntity.getIdOfSourceElement().substring(1).equals(link.getSourceElement().getId() + "")
-							&& linkEntity.getIdOfDestinationElement().substring(1)
-									.equals(link.getDestinationElement().getId() + "")) {
-						LOGGER.error("Link does already exist.");
-						return linkEntity.getId();
-					}
-				}
-
-				DecisionKnowledgeElementInDatabase sourceElement = null;
-				DecisionKnowledgeElementInDatabase[] sourceElements = ACTIVE_OBJECTS.find(
-						DecisionKnowledgeElementInDatabase.class,
-						Query.select().where("ID = ?", link.getSourceElement().getId()));
-				if (sourceElements.length == 1) {
-					sourceElement = sourceElements[0];
-				}
-
-				DecisionKnowledgeElementInDatabase destinationElement = null;
-				DecisionKnowledgeElementInDatabase[] destinationElements = ACTIVE_OBJECTS.find(
-						DecisionKnowledgeElementInDatabase.class,
-						Query.select().where("ID = ?", link.getDestinationElement().getId()));
-				if (destinationElements.length == 1) {
-					destinationElement = destinationElements[0];
-				}
-				if (sourceElement == null || destinationElement == null) {
-					LOGGER.error("One of the elements to be linked does not exist.");
-					return (long) 0;
-				}
-
-				// elements exist
-				Link newLink = new LinkImpl("a" + link.getDestinationElement().getId(),
-						"a" + link.getSourceElement().getId());
-				newLink.setType(link.getType());
-				return GenericLinkManager.insertGenericLink(newLink, user);
+				return insertLinkWithoutTransaction(link,user);
 			}
 		});
+	}
+
+	public long insertLinkWithoutTransaction(Link link, ApplicationUser user) {
+		for (LinkInDatabase linkEntity : ACTIVE_OBJECTS
+				.find(LinkInDatabase.class)) {
+			if (linkEntity.getIdOfSourceElement().substring(1).equals(link.getSourceElement().getId() + "")
+					&& linkEntity.getIdOfDestinationElement().substring(1)
+							.equals(link.getDestinationElement().getId() + "")) {
+				LOGGER.error("Link does already exist.");
+				return linkEntity.getId();
+			}
+		}
+
+		DecisionKnowledgeElementInDatabase sourceElement = null;
+		DecisionKnowledgeElementInDatabase[] sourceElements = ACTIVE_OBJECTS.find(
+				DecisionKnowledgeElementInDatabase.class,
+				Query.select().where("ID = ?", link.getSourceElement().getId()));
+		if (sourceElements.length == 1) {
+			sourceElement = sourceElements[0];
+		}
+
+		DecisionKnowledgeElementInDatabase destinationElement = null;
+		DecisionKnowledgeElementInDatabase[] destinationElements = ACTIVE_OBJECTS.find(
+				DecisionKnowledgeElementInDatabase.class,
+				Query.select().where("ID = ?", link.getDestinationElement().getId()));
+		if (destinationElements.length == 1) {
+			destinationElement = destinationElements[0];
+		}
+		if (sourceElement == null || destinationElement == null) {
+			LOGGER.error("One of the elements to be linked does not exist.");
+			return (long) 0;
+		}
+
+		// elements exist
+		Link newLink = new LinkImpl("a" + link.getDestinationElement().getId(),
+				"a" + link.getSourceElement().getId());
+		newLink.setType(link.getType());
+		return GenericLinkManager.insertGenericLink(newLink, user);
+		
 	}
 
 	@Override

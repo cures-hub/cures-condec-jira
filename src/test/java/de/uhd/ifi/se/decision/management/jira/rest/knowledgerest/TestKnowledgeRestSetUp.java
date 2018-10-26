@@ -11,6 +11,7 @@ import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -24,6 +25,7 @@ public class TestKnowledgeRestSetUp extends TestSetUpWithIssues {
 	protected KnowledgeRest knowledgeRest;
 	protected DecisionKnowledgeElement decisionKnowledgeElement;
 	protected HttpServletRequest request;
+	protected Sentence sentence;
 
 	@Before
 	public void setUp() {
@@ -38,5 +40,7 @@ public class TestKnowledgeRestSetUp extends TestSetUpWithIssues {
 		decisionKnowledgeElement.setProject("TEST");
 		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 		request = new MockHttpServletRequest();
+		
+
 	}
 }

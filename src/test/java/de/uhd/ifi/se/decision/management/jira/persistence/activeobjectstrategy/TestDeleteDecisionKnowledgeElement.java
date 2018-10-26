@@ -68,7 +68,7 @@ public class TestDeleteDecisionKnowledgeElement extends ActiveObjectStrategyTest
 		DecisionKnowledgeElement linkedDecisionWithDatabaseId = aoStrategy
 				.insertDecisionKnowledgeElement(linkedDecisision, user);
 		Link link = new LinkImpl(linkedDecisionWithDatabaseId, elementWithDatabaseId);
-		aoStrategy.insertLink(link, user);
+		aoStrategy.insertLinkWithoutTransaction(link, user);
 		assertTrue(aoStrategy.deleteDecisionKnowledgeElement(elementWithDatabaseId, user));
 	}
 }

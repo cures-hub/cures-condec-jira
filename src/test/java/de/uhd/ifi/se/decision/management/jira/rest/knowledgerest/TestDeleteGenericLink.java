@@ -26,14 +26,6 @@ public class TestDeleteGenericLink extends TestKnowledgeRestSetUp {
 
 	private final static String CREATION_ERROR = "Deletion of link failed.";
 
-	private Link newGenericLink() {
-		return new LinkImpl("i1337", "s1337", "contain");
-	}
-
-	private Link newGenericInverseLink() {
-		return new LinkImpl("s1337", "i1337", "contain");
-	}
-
 	@Test
 	@NonTransactional
 	public void testRequestNullElementNull() {
@@ -44,11 +36,8 @@ public class TestDeleteGenericLink extends TestKnowledgeRestSetUp {
 	@Test
 	@NonTransactional
 	public void testRequestNullElementFilled() {
-		TestComment tc = new TestComment();
-		Comment comment = tc.getComment("this is atest sentence");
-		decisionKnowledgeElement = comment.getSentences().get(0);
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.deleteGenericLink("TEST", null, newGenericLink()).getEntity());
+				.getEntity(), knowledgeRest.deleteGenericLink("TEST", null, new LinkImpl(decisionKnowledgeElement, sentence)).getEntity());
 	}
 
 	@Test
@@ -65,18 +54,24 @@ public class TestDeleteGenericLink extends TestKnowledgeRestSetUp {
 	public void testRequestFilledElementFilled() {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
-		GenericLinkManager.insertGenericLink(newGenericLink(), null);
+		
+		TestComment tc = new TestComment();
+		Comment comment = tc.getComment("this is atest sentence");
+		sentence = comment.getSentences().get(0);
+		
+		Link newLink =  new LinkImpl(decisionKnowledgeElement, sentence);
+		GenericLinkManager.insertGenericLink(newLink, null);
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.deleteGenericLink("TEST", request, newGenericLink()).getStatus());
+				knowledgeRest.deleteGenericLink("TEST", request, newLink).getStatus());
 
-		GenericLinkManager.insertGenericLink(newGenericLink(), null);
+		GenericLinkManager.insertGenericLink(newLink, null);
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.deleteGenericLink("TEST", request, newGenericInverseLink()).getStatus());
+				knowledgeRest.deleteGenericLink("TEST", request, newLink).getStatus());
 
 		assertEquals(
 				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 						.getEntity(),
-				knowledgeRest.deleteGenericLink("TEST", request, newGenericInverseLink()).getEntity());
+				knowledgeRest.deleteGenericLink("TEST", request, newLink).getEntity());
 
 	}
 
