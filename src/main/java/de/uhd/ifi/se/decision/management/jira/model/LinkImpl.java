@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.List;
+
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.issue.Issue;
@@ -107,5 +109,53 @@ public class LinkImpl implements Link {
 	@Override
 	public void setDestinationElement(DecisionKnowledgeElement destinationElement) {
 		this.destinationElement = destinationElement;
+	}
+
+	@Override
+	public String getIdOfSourceElement() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setIdOfSourceElement(String idOfSourceElement) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getIdOfDestinationElement() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setIdOfDestinationElement(String idOfDestinationElement) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public DecisionKnowledgeElement getOpposite(String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<DecisionKnowledgeElement> getBothElements() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isValid() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isInterProjectLink() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

@@ -9,7 +9,6 @@ import java.util.Map;
 import org.apache.commons.collections.IteratorUtils;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 
@@ -119,9 +118,9 @@ public class GraphImpl implements Graph {
 		}
 
 		String prefix = getIdentifier(element);
-		List<GenericLink> links = GenericLinkManager.getLinksForElement(prefix + element.getId(), false);
+		List<Link> links = GenericLinkManager.getLinksForElement(prefix + element.getId(), false);
 
-		for (GenericLink currentLink : links) {
+		for (Link currentLink : links) {
 			if (currentLink.isInterProjectLink()) {
 				continue;
 			}

@@ -24,7 +24,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
@@ -342,13 +341,13 @@ public class KnowledgeRest {
 	@DELETE
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response deleteGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
-			GenericLinkImpl link) {
+			Link link) {
 		if (projectKey != null && request != null && link != null) {
 			boolean isDeleted = GenericLinkManager.deleteGenericLink(link);
 			if (isDeleted) {
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 			} else {
-				GenericLink inverseLink = new GenericLinkImpl(link.getIdOfSourceElement(),
+				Link inverseLink = new GenericLinkImpl(link.getIdOfSourceElement(),
 						link.getIdOfDestinationElement());
 				isDeleted = GenericLinkManager.deleteGenericLink(inverseLink);
 				if (isDeleted) {
@@ -368,7 +367,7 @@ public class KnowledgeRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
-			GenericLink link) {
+			Link link) {
 		if (projectKey != null && request != null && link != null) {
 			ApplicationUser user = AuthenticationManager.getUser(request);
 			long linkId = GenericLinkManager.insertGenericLink(link, user);
