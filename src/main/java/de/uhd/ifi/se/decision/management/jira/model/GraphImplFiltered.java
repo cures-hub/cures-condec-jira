@@ -66,7 +66,7 @@ public class GraphImplFiltered extends GraphImpl {
 			return linkedElementsAndLinks;
 		}
 		String preIndex = getIdentifier(element);
-		List<GenericLink> list = GenericLinkManager.getGenericLinksForElement(preIndex + element.getId(), false);
+		List<GenericLink> list = GenericLinkManager.getLinksForElement(preIndex + element.getId(), false);
 
 		for (GenericLink currentGenericLink : list) {
 			try {
