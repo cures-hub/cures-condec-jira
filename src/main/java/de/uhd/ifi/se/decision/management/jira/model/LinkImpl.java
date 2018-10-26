@@ -135,8 +135,8 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
-	public void setIdOfSourceElement(String idOfSourceElement) {
-		this.typeOfSourceElement = idOfSourceElement;
+	public void setSourceElement(String idWithPrefix) {
+		this.typeOfSourceElement = idWithPrefix;
 	}
 
 	@Override
@@ -145,16 +145,12 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
-	public void setIdOfDestinationElement(String idOfDestinationElement) {
-		this.typeOfDestinationElement = idOfDestinationElement;
-	}
-
-	public String toString() {
-		return this.typeOfSourceElement + " to " + this.typeOfDestinationElement;
+	public void setDestinationElement(String idWithPrefix) {
+		this.typeOfDestinationElement = idWithPrefix;
 	}
 	
 	@Override
-	public DecisionKnowledgeElement getOpposite(String currentElementId) {
+	public DecisionKnowledgeElement getOppositeElement(String currentElementId) {
 		if (this.getIdOfSourceElement().equals(currentElementId)) {
 			return handleOppositeLink(this.getIdOfDestinationElement());
 		}
@@ -180,10 +176,10 @@ public class LinkImpl implements Link {
 
 	@Override
 	public List<DecisionKnowledgeElement> getBothElements() throws NullPointerException {
-		List<DecisionKnowledgeElement> bothLinkSides = new ArrayList<>();
-		bothLinkSides.add(this.getOpposite(this.typeOfSourceElement));
-		bothLinkSides.add(this.getOpposite(this.typeOfDestinationElement));
-		return bothLinkSides;
+		List<DecisionKnowledgeElement> bothElements = new ArrayList<DecisionKnowledgeElement>();
+		bothElements.add(this.getOppositeElement(this.typeOfSourceElement));
+		bothElements.add(this.getOppositeElement(this.typeOfDestinationElement));
+		return bothElements;
 	}
 
 	private long cutId(String id) {
@@ -215,5 +211,9 @@ public class LinkImpl implements Link {
 		} catch (NullPointerException e) {
 			return false;
 		}
+	}
+	
+	public String toString() {
+		return this.typeOfSourceElement + " to " + this.typeOfDestinationElement;
 	}
 }

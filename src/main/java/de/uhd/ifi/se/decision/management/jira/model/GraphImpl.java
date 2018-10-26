@@ -126,7 +126,7 @@ public class GraphImpl implements Graph {
 			currentLink.setType("contain");
 			if (!this.genericLinkIds.contains(currentLink.getId())) {
 				this.genericLinkIds.add(currentLink.getId());
-				linkedElementsAndLinks.put(currentLink.getOpposite(prefix + element.getId()), currentLink);
+				linkedElementsAndLinks.put(currentLink.getOppositeElement(prefix + element.getId()), currentLink);
 			}
 		}
 		return linkedElementsAndLinks;
