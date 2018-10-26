@@ -85,7 +85,7 @@ public class GraphImplFiltered extends GraphImpl {
 					if (filter.getStartDate() <= 0) {
 						if (((Sentence) source).getCreated().getTime() < filter.getEndDate()) {
 							DecisionKnowledgeElement toLink = currentGenericLink
-									.getOpposite(preIndex + element.getId());
+									.getOppositeElement(preIndex + element.getId());
 							if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
 								sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
 								linkedElementsAndLinks.put(toLink, linkBetweenSentenceAndOtherElement);
@@ -94,7 +94,7 @@ public class GraphImplFiltered extends GraphImpl {
 					} else if (filter.getEndDate() <= 0) {
 						if (((Sentence) source).getCreated().getTime() > filter.getStartDate()) {
 							DecisionKnowledgeElement toLink = currentGenericLink
-									.getOpposite(preIndex + element.getId());
+									.getOppositeElement(preIndex + element.getId());
 							if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
 								sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
 								linkedElementsAndLinks.put(toLink, linkBetweenSentenceAndOtherElement);
@@ -104,7 +104,7 @@ public class GraphImplFiltered extends GraphImpl {
 						if ((((Sentence) source).getCreated().getTime() < filter.getEndDate())
 								&& (((Sentence) source).getCreated().getTime() > filter.getStartDate())) {
 							DecisionKnowledgeElement toLink = currentGenericLink
-									.getOpposite(preIndex + element.getId());
+									.getOppositeElement(preIndex + element.getId());
 							if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
 								sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
 								linkedElementsAndLinks.put(toLink, linkBetweenSentenceAndOtherElement);
@@ -114,7 +114,7 @@ public class GraphImplFiltered extends GraphImpl {
 				} else {
 					if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
 						GraphImplFiltered.sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
-						linkedElementsAndLinks.put(currentGenericLink.getOpposite(preIndex + element.getId()),
+						linkedElementsAndLinks.put(currentGenericLink.getOppositeElement(preIndex + element.getId()),
 								linkBetweenSentenceAndOtherElement);
 					}
 				}

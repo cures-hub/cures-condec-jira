@@ -11,8 +11,8 @@ import com.atlassian.jira.issue.link.IssueLink;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
 
 /**
  * Model class for links between decision knowledge elements
@@ -23,8 +23,8 @@ public class LinkImpl implements Link {
 	private String type;
 	private DecisionKnowledgeElement sourceElement;
 	private DecisionKnowledgeElement destinationElement;
-	private String idOfSourceElement;
-	private String idOfDestinationElement;
+	private String typeOfSourceElement;
+	private String typeOfDestinationElement;
 
 	public LinkImpl() {
 		this.sourceElement = new DecisionKnowledgeElementImpl();
@@ -56,8 +56,8 @@ public class LinkImpl implements Link {
 	
     public LinkImpl(String idOfDestinationElement, String idOfSourceElement) {
     	this.type = "";
-        this.idOfDestinationElement = idOfDestinationElement;
-        this.idOfSourceElement = idOfSourceElement;
+        this.typeOfDestinationElement = idOfDestinationElement;
+        this.typeOfSourceElement = idOfSourceElement;
     }
 
     public LinkImpl(String idOfDestinationElement, String idOfSourceElement, String type) {
@@ -65,7 +65,7 @@ public class LinkImpl implements Link {
         setType(type);
     }
 
-	public LinkImpl(LinkBetweenDifferentEntitiesEntity link) {
+	public LinkImpl(LinkInDatabase link) {
 		this();
 		this.id = link.getId();
 		this.type = link.getType();
@@ -131,30 +131,26 @@ public class LinkImpl implements Link {
 
 	@Override
 	public String getIdOfSourceElement() {
-		return this.idOfSourceElement;
+		return this.typeOfSourceElement;
 	}
 
 	@Override
-	public void setIdOfSourceElement(String idOfSourceElement) {
-		this.idOfSourceElement = idOfSourceElement;
+	public void setSourceElement(String idWithPrefix) {
+		this.typeOfSourceElement = idWithPrefix;
 	}
 
 	@Override
 	public String getIdOfDestinationElement() {
-		return this.idOfDestinationElement;
+		return this.typeOfDestinationElement;
 	}
 
 	@Override
-	public void setIdOfDestinationElement(String idOfDestinationElement) {
-		this.idOfDestinationElement = idOfDestinationElement;
-	}
-
-	public String toString() {
-		return this.idOfSourceElement + " to " + this.idOfDestinationElement;
+	public void setDestinationElement(String idWithPrefix) {
+		this.typeOfDestinationElement = idWithPrefix;
 	}
 	
 	@Override
-	public DecisionKnowledgeElement getOpposite(String currentElementId) {
+	public DecisionKnowledgeElement getOppositeElement(String currentElementId) {
 		if (this.getIdOfSourceElement().equals(currentElementId)) {
 			return handleOppositeLink(this.getIdOfDestinationElement());
 		}
@@ -180,10 +176,10 @@ public class LinkImpl implements Link {
 
 	@Override
 	public List<DecisionKnowledgeElement> getBothElements() throws NullPointerException {
-		List<DecisionKnowledgeElement> bothLinkSides = new ArrayList<>();
-		bothLinkSides.add(this.getOpposite(this.idOfSourceElement));
-		bothLinkSides.add(this.getOpposite(this.idOfDestinationElement));
-		return bothLinkSides;
+		List<DecisionKnowledgeElement> bothElements = new ArrayList<DecisionKnowledgeElement>();
+		bothElements.add(this.getOppositeElement(this.typeOfSourceElement));
+		bothElements.add(this.getOppositeElement(this.typeOfDestinationElement));
+		return bothElements;
 	}
 
 	private long cutId(String id) {
@@ -215,5 +211,9 @@ public class LinkImpl implements Link {
 		} catch (NullPointerException e) {
 			return false;
 		}
+	}
+	
+	public String toString() {
+		return this.typeOfSourceElement + " to " + this.typeOfDestinationElement;
 	}
 }

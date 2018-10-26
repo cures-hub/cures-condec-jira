@@ -13,6 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjec
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 import net.java.ao.EntityManager;
@@ -51,23 +52,26 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	public SentenceImpl() {
 		super();
 		super.type = KnowledgeType.OTHER;
+		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
 
 	public SentenceImpl(long id) {
 		this();
 		super.setId(id);
 		retrieveAttributesFromActievObjects();
-		retrieveBodyFromJiraComment();
+		retrieveBodyFromJiraComment();		
 	}
 
 	public SentenceImpl(String body, long id) {
 		super.setId(id);
 		retrieveAttributesFromActievObjects();
 		this.setBody(body);
+		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
 
 	public SentenceImpl(DecisionKnowledgeInCommentEntity databaseEntry) throws NullPointerException {
 		this.insertAoValues(databaseEntry);
+		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
 
 	@Override

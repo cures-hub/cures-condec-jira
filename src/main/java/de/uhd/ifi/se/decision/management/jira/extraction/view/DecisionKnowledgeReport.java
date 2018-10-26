@@ -172,7 +172,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 			List<Link> links = GenericLinkManager.getLinksForElement("s" + currentAlternative.getId(), false);
 			boolean hasArgument = false;
 			for (Link link : links) {
-				DecisionKnowledgeElement dke = link.getOpposite("s" + currentAlternative.getId());
+				DecisionKnowledgeElement dke = link.getOppositeElement("s" + currentAlternative.getId());
 				if (dke instanceof Sentence && ((Sentence) dke).getArgument().equalsIgnoreCase("Pro")) {
 					hasArgument = true;
 				}
@@ -201,7 +201,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 			boolean hastOtherElementLinked = false;
 
 			for (Link link : links) {
-				DecisionKnowledgeElement dke = link.getOpposite("s" + issue.getId());
+				DecisionKnowledgeElement dke = link.getOppositeElement("s" + issue.getId());
 				if (dke instanceof Sentence && dke.getType().equals(linkTo1)) { // alt
 					hastOtherElementLinked = true;
 				}
@@ -212,7 +212,6 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				statistics[1] = statistics[1] + 1;
 			}
 		}
-		String id1 = linkTo1.toString().substring(0, 3);
 
 		// Hashmaps as counter suck
 		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
