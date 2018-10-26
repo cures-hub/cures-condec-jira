@@ -9,8 +9,6 @@ import java.util.Map;
 import org.apache.commons.collections.IteratorUtils;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 
 /**
@@ -118,28 +116,20 @@ public class GraphImpl implements Graph {
 			return linkedElementsAndLinks;
 		}
 
-		String prefix = getIdentifier(element);
-		List<GenericLink> links = GenericLinkManager.getLinksForElement(prefix + element.getId(), false);
+		String prefix = DocumentationLocation.getIdentifier(element);
+		List<Link> links = GenericLinkManager.getLinksForElement(prefix + element.getId(), false);
 
-		for (GenericLink currentLink : links) {
+		for (Link currentLink : links) {
 			if (currentLink.isInterProjectLink()) {
 				continue;
 			}
 			currentLink.setType("contain");
 			if (!this.genericLinkIds.contains(currentLink.getId())) {
 				this.genericLinkIds.add(currentLink.getId());
-				linkedElementsAndLinks.put(currentLink.getOpposite(prefix + element.getId()), currentLink);
+				linkedElementsAndLinks.put(currentLink.getOppositeElement(prefix + element.getId()), currentLink);
 			}
 		}
 		return linkedElementsAndLinks;
-	}
-
-	private String getIdentifier(DecisionKnowledgeElement element) {
-		if (element instanceof Sentence) {
-			return "s";
-		} else {
-			return "i";
-		}
 	}
 
 	@Override

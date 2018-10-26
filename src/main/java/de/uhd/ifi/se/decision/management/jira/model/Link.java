@@ -1,10 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.List;
+
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 /**
  * Interface for links between knowledge elements. The links are directed, i.e.,
- * they are arrows starting from a source element and ending in a destination element.
+ * they are arrows starting from a source element and ending in a destination
+ * element.
  */
 @JsonDeserialize(as = LinkImpl.class)
 public interface Link {
@@ -92,4 +95,52 @@ public interface Link {
 	 *            of the destination element of this link.
 	 */
 	void setDestinationElement(long id);
+
+	/**
+	 * Get the opposite element of this link.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @param elementId
+	 *            of a decision knowledge element on one side of this link.
+	 * 
+	 * @return opposite element of this link.
+	 */
+	DecisionKnowledgeElement getOppositeElement(String elementId);
+	
+	/**
+	 * Get both elements that are linked (both sides of the link) as a list.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * 
+	 * @return list of linked elements.
+	 */
+	List<DecisionKnowledgeElement> getBothElements();
+
+	/**
+	 * Determine whether the link is an intra (false) or an inter (true) project
+	 * link.
+	 *
+	 * @see DecisionKnowledgeProject
+	 * 
+	 * @return true if the link connects decision knowledge elements from two
+	 *         different projects.
+	 */
+	boolean isInterProjectLink();
+	
+	/**
+	 * Determine whether the link connects two existing decision knowledge elements.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * 
+	 * @return true if the link connects two existing decision knowledge elements.
+	 */
+	boolean isValid();
+
+	String getIdOfSourceElement();
+
+	void setSourceElement(String idWithPrefix);
+
+	String getIdOfDestinationElement();
+
+	void setDestinationElement(String idWithPrefix);
 }

@@ -10,14 +10,16 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.sal.api.transaction.TransactionCallback;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
+import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
 import net.java.ao.Query;
 
 public class ActiveObjectsManager {
@@ -70,7 +72,7 @@ public class ActiveObjectsManager {
 	}
 
 	private static void checkIfSentenceHasAValidLink(long sentenceId, long issueId) {
-		List<GenericLink> links = GenericLinkManager.getLinksForElement("s" + sentenceId, false);
+		List<Link> links = GenericLinkManager.getLinksForElement("s" + sentenceId, false);
 		if (links == null || links.size() == 0) {
 			addNewLinkBetweenSentenceAndIssue(issueId, sentenceId);
 		}
@@ -78,11 +80,11 @@ public class ActiveObjectsManager {
 	}
 
 	private static void addNewLinkBetweenSentenceAndIssue(long issueId, long sentenceAoId) {
-		ActiveObjects.executeInTransaction(new TransactionCallback<LinkBetweenDifferentEntitiesEntity>() {
+		ActiveObjects.executeInTransaction(new TransactionCallback<LinkInDatabase>() {
 			@Override
-			public LinkBetweenDifferentEntitiesEntity doInTransaction() {
-				LinkBetweenDifferentEntitiesEntity newGenericLink = ActiveObjects
-						.create(LinkBetweenDifferentEntitiesEntity.class); // (2)
+			public LinkInDatabase doInTransaction() {
+				LinkInDatabase newGenericLink = ActiveObjects
+						.create(LinkInDatabase.class); // (2)
 				newGenericLink.setIdOfDestinationElement("s" + sentenceAoId);
 				newGenericLink.setIdOfSourceElement("i" + issueId);
 				newGenericLink.setType("contain");
@@ -198,7 +200,7 @@ public class ActiveObjectsManager {
 							sentenceEntity
 									.setEndSubstringCount(sentenceEntity.getStartSubstringCount() + newTextLength);
 							updateSentenceLengthForOtherSentencesInSameComment(sentenceEntity.getCommentId(),
-									sentenceEntity.getStartSubstringCount(), newTextLength-oldTextLength,
+									sentenceEntity.getStartSubstringCount(), newTextLength - oldTextLength,
 									sentenceEntity.getId());
 							sentenceEntity.save();
 
@@ -235,23 +237,24 @@ public class ActiveObjectsManager {
 		CommentManager cm = ComponentAccessor.getCommentManager();
 		MutableComment mc = (MutableComment) cm.getMutableComment(sentenceEntity.getCommentId());
 		String oldBody = mc.getBody();
-		
-		String newBody =oldBody.substring(sentenceEntity.getStartSubstringCount(), sentenceEntity.getEndSubstringCount());
+
+		String newBody = oldBody.substring(sentenceEntity.getStartSubstringCount(),
+				sentenceEntity.getEndSubstringCount());
 		if (knowledgeType.toString().equalsIgnoreCase("other")) {
 			newBody = newBody.replaceAll("(?i)" + sentenceEntity.getKnowledgeTypeString(), argument);
 		} else {
 			newBody = newBody.replaceAll("(?i)" + sentenceEntity.getKnowledgeTypeString(), knowledgeType.toString());
 		}
-		//build body with first text and changed text
+		// build body with first text and changed text
 		int newEndSubstringCount = newBody.length();
 		newBody = oldBody.substring(0, sentenceEntity.getStartSubstringCount()) + newBody;
-		//If Changed sentence is in the middle of a sentence
-		if(oldBody.length()>sentenceEntity.getEndSubstringCount()) {
+		// If Changed sentence is in the middle of a sentence
+		if (oldBody.length() > sentenceEntity.getEndSubstringCount()) {
 			newBody = newBody + oldBody.substring(sentenceEntity.getEndSubstringCount());
 		}
 		mc.setBody(newBody);
 		cm.update(mc, true);
-		return  newEndSubstringCount;
+		return newEndSubstringCount;
 	}
 
 	public static boolean setIsRelevantIntoAo(long activeObjectId, boolean isRelevant) {
@@ -309,8 +312,8 @@ public class ActiveObjectsManager {
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}
-						for (LinkBetweenDifferentEntitiesEntity link : ActiveObjects
-								.find(LinkBetweenDifferentEntitiesEntity.class)) {
+						for (LinkInDatabase link : ActiveObjects
+								.find(LinkInDatabase.class)) {
 							if (link.getIdOfDestinationElement().equals("i" + comment.getIssueId())
 									|| link.getIdOfSourceElement().equals("i" + comment.getIssueId())) {
 								try {
