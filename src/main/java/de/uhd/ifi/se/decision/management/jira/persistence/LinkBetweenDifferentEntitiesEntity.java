@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
+package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;

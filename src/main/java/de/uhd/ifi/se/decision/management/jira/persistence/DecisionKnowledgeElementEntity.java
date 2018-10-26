@@ -11,7 +11,7 @@ import net.java.ao.schema.Table;
  * persistence strategy
  * @see DecisionKnowledgeElement
  */
-@Table("DECISION")
+@Table("Decision")
 public interface DecisionKnowledgeElementEntity extends RawEntity<Integer> {
 	@AutoIncrement
 	@PrimaryKey("ID")
