@@ -9,10 +9,10 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 
 public class GenericLinkManager {
 
@@ -24,11 +24,11 @@ public class GenericLinkManager {
 		}
 	}
 
-	public static boolean deleteGenericLink(GenericLink link) {
+	public static boolean deleteGenericLink(Link link) {
 		init();
 		return deleteGenericLink(link.getIdOfSourceElement(), link.getIdOfDestinationElement());
 	}
-	
+
 	public static boolean deleteGenericLink(String source, String target) {
 		init();
 		return ao.executeInTransaction(new TransactionCallback<Boolean>() {
@@ -50,10 +50,8 @@ public class GenericLinkManager {
 			}
 		});
 	}
-	
-	
 
-	public static long insertGenericLink(GenericLink link, ApplicationUser user) {
+	public static long insertGenericLink(Link link, ApplicationUser user) {
 		init();
 		return ao.executeInTransaction(new TransactionCallback<Long>() {
 			@Override
@@ -91,15 +89,15 @@ public class GenericLinkManager {
 	 *            if false, checks both directions
 	 * @return the generic links for element
 	 */
-	public static List<GenericLink> getLinksForElement(String targetId, boolean getOnlyOutwardLink) {
+	public static List<Link> getLinksForElement(String targetId, boolean getOnlyOutwardLink) {
 		init();
-		List<GenericLink> links = new ArrayList<GenericLink>();
+		List<Link> links = new ArrayList<Link>();
 		ao.executeInTransaction(new TransactionCallback<LinkBetweenDifferentEntitiesEntity>() {
 			@Override
 			public LinkBetweenDifferentEntitiesEntity doInTransaction() {
 				LinkBetweenDifferentEntitiesEntity[] linkElements = ao.find(LinkBetweenDifferentEntitiesEntity.class);
 				for (LinkBetweenDifferentEntitiesEntity linkElement : linkElements) {
-					GenericLink link = new GenericLinkImpl(linkElement.getIdOfDestinationElement(),
+					Link link = new LinkImpl(linkElement.getIdOfDestinationElement(),
 							linkElement.getIdOfSourceElement());
 					link.setId(linkElement.getId());
 					// if(link.isValid()) { @issue: Function is very slow. @alternative: run this as
@@ -125,7 +123,7 @@ public class GenericLinkManager {
 			public LinkBetweenDifferentEntitiesEntity doInTransaction() {
 				LinkBetweenDifferentEntitiesEntity[] linkElements = ao.find(LinkBetweenDifferentEntitiesEntity.class);
 				for (LinkBetweenDifferentEntitiesEntity linkElement : linkElements) {
-					GenericLink link = new GenericLinkImpl(linkElement.getIdOfDestinationElement(),
+					Link link = new LinkImpl(linkElement.getIdOfDestinationElement(),
 							linkElement.getIdOfSourceElement());
 					if (!link.isValid()) {
 						try {
@@ -161,7 +159,7 @@ public class GenericLinkManager {
 
 	public static DecisionKnowledgeElement getIssueFromAOTable(long dkeId) {
 		ActiveObjectStrategy aos = new ActiveObjectStrategy("");
-		return aos.getDecisionKnowledgeElement(dkeId);		
+		return aos.getDecisionKnowledgeElement(dkeId);
 	}
 
 }

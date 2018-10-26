@@ -1,16 +1,20 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 
 /**
- * Model class for a graph of decision knowledge elements that matches filter criteria
+ * Model class for a graph of decision knowledge elements that matches filter
+ * criteria
  */
 @JsonAutoDetect
 public class GraphImplFiltered extends GraphImpl {
@@ -58,7 +62,6 @@ public class GraphImplFiltered extends GraphImpl {
 		return returnedRootElementKey;
 	}
 
-
 	private Map<DecisionKnowledgeElement, Link> getAllLinkedSentences(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
@@ -66,9 +69,9 @@ public class GraphImplFiltered extends GraphImpl {
 			return linkedElementsAndLinks;
 		}
 		String preIndex = getIdentifier(element);
-		List<GenericLink> list = GenericLinkManager.getLinksForElement(preIndex + element.getId(), false);
+		List<Link> list = GenericLinkManager.getLinksForElement(preIndex + element.getId(), false);
 
-		for (GenericLink currentGenericLink : list) {
+		for (Link currentGenericLink : list) {
 			try {
 
 				DecisionKnowledgeElement source = currentGenericLink.getBothElements().get(0);
@@ -129,7 +132,7 @@ public class GraphImplFiltered extends GraphImpl {
 			if (link.getDestinationElement().getId() == link2.getDestinationElement().getId()
 					&& link.getSourceElement().getId() == link2.getSourceElement().getId()
 					|| link.getSourceElement().getId() == link2.getDestinationElement().getId()
-					&& link.getSourceElement().getId() == link2.getDestinationElement().getId()) {
+							&& link.getSourceElement().getId() == link2.getDestinationElement().getId()) {
 				return true;
 			}
 		}
@@ -256,7 +259,8 @@ public class GraphImplFiltered extends GraphImpl {
 		return linkedElementsAndLinks;
 	}
 
-	private void linkSentencesTransitively(DecisionKnowledgeElement element, Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks, Set<DecisionKnowledgeElement> sentences) {
+	private void linkSentencesTransitively(DecisionKnowledgeElement element,
+			Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks, Set<DecisionKnowledgeElement> sentences) {
 		for (DecisionKnowledgeElement sentence : sentences) {
 			Link transitiveLink = new LinkImpl(element, sentence);
 			transitiveLink.setType("contains");
@@ -276,14 +280,15 @@ public class GraphImplFiltered extends GraphImpl {
 					boolean isFiltered = true;
 					DecisionKnowledgeElement currentElement = link.getDestinationElement();
 					int count = 0;
-					while (isFiltered && count<10) {
+					while (isFiltered && count < 10) {
 						if (filter.getQueryResults().contains(currentElement)) {
 							if (!currentElement.getType().equals(KnowledgeType.ARGUMENT)) {
 								transitiveLinkedNodes.add(currentElement);
 							}
 							isFiltered = false;
 						} else {
-							List<DecisionKnowledgeElement> outwardTransitiveLinkedNodes = getOutwardTransitiveLinkedNodes(currentElement);
+							List<DecisionKnowledgeElement> outwardTransitiveLinkedNodes = getOutwardTransitiveLinkedNodes(
+									currentElement);
 							if (outwardTransitiveLinkedNodes != null) {
 								transitiveLinkedNodes.addAll(outwardTransitiveLinkedNodes);
 								count++;
