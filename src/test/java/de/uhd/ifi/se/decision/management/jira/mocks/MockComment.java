@@ -7,18 +7,18 @@ import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.security.roles.ProjectRole;
 import com.atlassian.jira.user.ApplicationUser;
 
-public class MockComment implements MutableComment{
-	
+public class MockComment implements MutableComment {
+
 	private String author;
-	
+
 	private String body;
-	
+
 	private Issue issue;
-	
+
 	private Long issueID;
-	
+
 	private ApplicationUser user;
-	
+
 	public MockComment(Issue issue) {
 		super();
 		this.body = "This is a comment for test purposes";
@@ -146,55 +146,55 @@ public class MockComment implements MutableComment{
 	@Override
 	public void setAuthor(ApplicationUser arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setAuthor(String arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setBody(String arg0) {
 		this.body = arg0;
-		
+
 	}
 
 	@Override
 	public void setCreated(Date arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setGroupLevel(String arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setRoleLevelId(Long arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setUpdateAuthor(ApplicationUser arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setUpdateAuthor(String arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setUpdated(Date arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

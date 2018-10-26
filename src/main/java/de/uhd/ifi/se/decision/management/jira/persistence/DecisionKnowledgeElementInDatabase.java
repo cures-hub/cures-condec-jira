@@ -8,11 +8,13 @@ import net.java.ao.schema.Table;
 
 /**
  * Interface for decision knowledge elements used in the active object
- * persistence strategy
+ * persistence strategy. Determines which table columns are used for object
+ * relational mapping of decision knowledge elements to the database.
+ * 
  * @see DecisionKnowledgeElement
  */
-@Table("DECISION")
-public interface DecisionKnowledgeElementEntity extends RawEntity<Integer> {
+@Table("Decision")
+public interface DecisionKnowledgeElementInDatabase extends RawEntity<Integer> {
 	@AutoIncrement
 	@PrimaryKey("ID")
 	long getId();

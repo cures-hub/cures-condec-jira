@@ -23,7 +23,6 @@ import com.atlassian.jira.web.action.ProjectActionSupport;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -170,10 +169,10 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				projectManager.getProjectObj(this.projectId).getKey(), KnowledgeType.ALTERNATIVE);
 
 		for (DecisionKnowledgeElement currentAlternative : listOfIssues) {
-			List<GenericLink> links = GenericLinkManager.getLinksForElement("s" + currentAlternative.getId(), false);
+			List<Link> links = GenericLinkManager.getLinksForElement("s" + currentAlternative.getId(), false);
 			boolean hasArgument = false;
-			for (GenericLink link : links) {
-				DecisionKnowledgeElement dke = link.getOpposite("s" + currentAlternative.getId());
+			for (Link link : links) {
+				DecisionKnowledgeElement dke = link.getOppositeElement("s" + currentAlternative.getId());
 				if (dke instanceof Sentence && ((Sentence) dke).getArgument().equalsIgnoreCase("Pro")) {
 					hasArgument = true;
 				}
@@ -198,11 +197,11 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				.getAllElementsFromAoByType(projectManager.getProjectObj(this.projectId).getKey(), linkFrom);
 
 		for (DecisionKnowledgeElement issue : listOfIssues) {
-			List<GenericLink> links = GenericLinkManager.getLinksForElement("s" + issue.getId(), false);
+			List<Link> links = GenericLinkManager.getLinksForElement("s" + issue.getId(), false);
 			boolean hastOtherElementLinked = false;
 
-			for (GenericLink link : links) {
-				DecisionKnowledgeElement dke = link.getOpposite("s" + issue.getId());
+			for (Link link : links) {
+				DecisionKnowledgeElement dke = link.getOppositeElement("s" + issue.getId());
 				if (dke instanceof Sentence && dke.getType().equals(linkTo1)) { // alt
 					hastOtherElementLinked = true;
 				}

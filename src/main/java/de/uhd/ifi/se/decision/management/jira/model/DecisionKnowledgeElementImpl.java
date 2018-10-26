@@ -9,7 +9,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.issue.Issue;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementEntity;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementInDatabase;
 
 /**
  * Model class for decision knowledge elements
@@ -20,6 +20,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	private String summary;
 	private String description;
 	protected KnowledgeType type;
+	protected DocumentationLocation documentationLocation;
 	private DecisionKnowledgeProject project;
 	private String key;
 
@@ -49,11 +50,13 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 		this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
 		this.project = new DecisionKnowledgeProjectImpl(issue.getProjectObject().getKey());
 		this.key = issue.getKey();
+		this.documentationLocation = DocumentationLocation.JIRAISSUE;
 	}
 
-	public DecisionKnowledgeElementImpl(DecisionKnowledgeElementEntity entity) {
+	public DecisionKnowledgeElementImpl(DecisionKnowledgeElementInDatabase entity) {
 		this(entity.getId(), entity.getSummary(), entity.getDescription(), entity.getType(), entity.getProjectKey(),
 				entity.getKey());
+		this.documentationLocation = DocumentationLocation.ACTIVEOBJECT;
 	}
 
 	@Override
@@ -153,6 +156,22 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	@Override
 	public List<Link> getInwardLinks() {
 		return this.getProject().getPersistenceStrategy().getInwardLinks(this);
+	}
+
+	@Override
+	public DocumentationLocation getDocumentationLocation() {
+		return this.documentationLocation;
+	}
+
+	@Override
+	public void setDocumentationLocation(DocumentationLocation documentationLocation) {
+		this.documentationLocation = documentationLocation;
+	}
+
+	@Override
+	@JsonProperty("documentationLocation")
+	public void setDocumentationLocation(String documentationLocation) {
+		this.documentationLocation = DocumentationLocation.getDocumentationType(documentationLocation);
 	}
 
 	@Override
