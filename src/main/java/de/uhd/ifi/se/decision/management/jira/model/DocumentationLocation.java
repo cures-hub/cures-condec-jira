@@ -2,6 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.Locale;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+
 /**
  * Possible documentation locations of decision knowledge
  */
@@ -28,6 +30,25 @@ public enum DocumentationLocation {
 			return DocumentationLocation.PULLREQUEST;
 		default:
 			return DocumentationLocation.UNKNOWN;
+		}
+	}
+
+	public String getIdentifier(DocumentationLocation documentationLocation) {
+		switch (documentationLocation) {
+		case JIRAISSUE:
+			return "i";
+		case JIRAISSUECOMMENT:
+			return "s";
+		default:
+			return "";
+		}
+	}
+
+	public static String getIdentifier(DecisionKnowledgeElement element) {
+		if (element instanceof Sentence) {
+			return "s";
+		} else {
+			return "i";
 		}
 	}
 }

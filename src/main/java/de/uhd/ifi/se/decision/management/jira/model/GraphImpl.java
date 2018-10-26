@@ -117,7 +117,7 @@ public class GraphImpl implements Graph {
 			return linkedElementsAndLinks;
 		}
 
-		String prefix = getIdentifier(element);
+		String prefix = DocumentationLocation.getIdentifier(element);
 		List<Link> links = GenericLinkManager.getLinksForElement(prefix + element.getId(), false);
 
 		for (Link currentLink : links) {
@@ -131,14 +131,6 @@ public class GraphImpl implements Graph {
 			}
 		}
 		return linkedElementsAndLinks;
-	}
-
-	private String getIdentifier(DecisionKnowledgeElement element) {
-		if (element instanceof Sentence) {
-			return "s";
-		} else {
-			return "i";
-		}
 	}
 
 	@Override
