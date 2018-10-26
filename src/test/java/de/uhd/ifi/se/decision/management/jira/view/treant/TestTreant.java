@@ -22,7 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
-import de.uhd.ifi.se.decision.management.jira.persistence.LinkBetweenDifferentEntitiesEntity;
+import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
@@ -152,7 +152,7 @@ public class TestTreant extends TestSetUpWithIssues {
 		@Override
 		public void update(EntityManager entityManager) throws Exception {
 			entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
-			entityManager.migrate(LinkBetweenDifferentEntitiesEntity.class);
+			entityManager.migrate(LinkInDatabase.class);
 		}
 	}
 }

@@ -26,7 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKno
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.LinkBetweenDifferentEntitiesEntity;
+import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.DatabaseUpdater;
@@ -475,7 +475,7 @@ public class TestComment extends TestSetUpWithIssues {
 		@Override
 		public void update(EntityManager entityManager) throws Exception {
 			entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
-			entityManager.migrate(LinkBetweenDifferentEntitiesEntity.class);
+			entityManager.migrate(LinkInDatabase.class);
 		}
 	}
 }

@@ -12,7 +12,7 @@ import net.java.ao.schema.Table;
  * @see DecisionKnowledgeElement
  */
 @Table("Decision")
-public interface DecisionKnowledgeElementEntity extends RawEntity<Integer> {
+public interface DecisionKnowledgeElementInDatabase extends RawEntity<Integer> {
 	@AutoIncrement
 	@PrimaryKey("ID")
 	long getId();

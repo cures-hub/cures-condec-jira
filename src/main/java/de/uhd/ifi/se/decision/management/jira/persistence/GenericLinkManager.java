@@ -33,8 +33,8 @@ public class GenericLinkManager {
 		return ao.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction() {
-				for (LinkBetweenDifferentEntitiesEntity linkEntity : ao
-						.find(LinkBetweenDifferentEntitiesEntity.class)) {
+				for (LinkInDatabase linkEntity : ao
+						.find(LinkInDatabase.class)) {
 					if (linkEntity.getIdOfDestinationElement().equals(target)
 							&& linkEntity.getIdOfSourceElement().equals(source)) {
 						try {
@@ -55,8 +55,8 @@ public class GenericLinkManager {
 		return ao.executeInTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction() {
-				for (LinkBetweenDifferentEntitiesEntity linkEntity : ao
-						.find(LinkBetweenDifferentEntitiesEntity.class)) {
+				for (LinkInDatabase linkEntity : ao
+						.find(LinkInDatabase.class)) {
 					if (linkEntity.getIdOfSourceElement() == link.getIdOfSourceElement()
 							&& linkEntity.getIdOfDestinationElement() == link.getIdOfDestinationElement()
 							|| linkEntity.getIdOfDestinationElement() == link.getIdOfSourceElement()// Check inverse
@@ -66,8 +66,8 @@ public class GenericLinkManager {
 					}
 				}
 
-				final LinkBetweenDifferentEntitiesEntity genericLink = ao
-						.create(LinkBetweenDifferentEntitiesEntity.class);
+				final LinkInDatabase genericLink = ao
+						.create(LinkInDatabase.class);
 				genericLink.setIdOfSourceElement(link.getIdOfSourceElement());
 				genericLink.setIdOfDestinationElement(link.getIdOfDestinationElement());
 				genericLink.setType(link.getType());
@@ -91,11 +91,11 @@ public class GenericLinkManager {
 	public static List<Link> getLinksForElement(String targetId, boolean getOnlyOutwardLink) {
 		init();
 		List<Link> links = new ArrayList<Link>();
-		ao.executeInTransaction(new TransactionCallback<LinkBetweenDifferentEntitiesEntity>() {
+		ao.executeInTransaction(new TransactionCallback<LinkInDatabase>() {
 			@Override
-			public LinkBetweenDifferentEntitiesEntity doInTransaction() {
-				LinkBetweenDifferentEntitiesEntity[] linkElements = ao.find(LinkBetweenDifferentEntitiesEntity.class);
-				for (LinkBetweenDifferentEntitiesEntity linkElement : linkElements) {
+			public LinkInDatabase doInTransaction() {
+				LinkInDatabase[] linkElements = ao.find(LinkInDatabase.class);
+				for (LinkInDatabase linkElement : linkElements) {
 					Link link = new LinkImpl(linkElement.getIdOfDestinationElement(),
 							linkElement.getIdOfSourceElement());
 					link.setId(linkElement.getId());
@@ -117,11 +117,11 @@ public class GenericLinkManager {
 
 	public static void clearInValidLinks() {
 		init();
-		ao.executeInTransaction(new TransactionCallback<LinkBetweenDifferentEntitiesEntity>() {
+		ao.executeInTransaction(new TransactionCallback<LinkInDatabase>() {
 			@Override
-			public LinkBetweenDifferentEntitiesEntity doInTransaction() {
-				LinkBetweenDifferentEntitiesEntity[] linkElements = ao.find(LinkBetweenDifferentEntitiesEntity.class);
-				for (LinkBetweenDifferentEntitiesEntity linkElement : linkElements) {
+			public LinkInDatabase doInTransaction() {
+				LinkInDatabase[] linkElements = ao.find(LinkInDatabase.class);
+				for (LinkInDatabase linkElement : linkElements) {
 					Link link = new LinkImpl(linkElement.getIdOfDestinationElement(),
 							linkElement.getIdOfSourceElement());
 					if (!link.isValid()) {
@@ -138,11 +138,11 @@ public class GenericLinkManager {
 
 	public static void deleteLinksForElementIfExisting(String id) {
 		init();
-		ao.executeInTransaction(new TransactionCallback<LinkBetweenDifferentEntitiesEntity>() {
+		ao.executeInTransaction(new TransactionCallback<LinkInDatabase>() {
 			@Override
-			public LinkBetweenDifferentEntitiesEntity doInTransaction() {
-				LinkBetweenDifferentEntitiesEntity[] linkElements = ao.find(LinkBetweenDifferentEntitiesEntity.class);
-				for (LinkBetweenDifferentEntitiesEntity linkElement : linkElements) {
+			public LinkInDatabase doInTransaction() {
+				LinkInDatabase[] linkElements = ao.find(LinkInDatabase.class);
+				for (LinkInDatabase linkElement : linkElements) {
 					if (linkElement.getIdOfDestinationElement().equals(id)
 							|| linkElement.getIdOfSourceElement().equals(id)) {
 						try {

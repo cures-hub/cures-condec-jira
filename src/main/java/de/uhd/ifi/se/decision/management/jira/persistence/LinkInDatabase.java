@@ -6,8 +6,8 @@ import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
 
 @Table("GenericLink")
-public interface LinkBetweenDifferentEntitiesEntity extends RawEntity<Integer> {
-	
+public interface LinkInDatabase extends RawEntity<Integer> {
+
 	@AutoIncrement
 	@PrimaryKey("ID")
 	long getId();
@@ -25,5 +25,4 @@ public interface LinkBetweenDifferentEntitiesEntity extends RawEntity<Integer> {
 	String getIdOfDestinationElement();
 
 	void setIdOfDestinationElement(String id);
-	
 }

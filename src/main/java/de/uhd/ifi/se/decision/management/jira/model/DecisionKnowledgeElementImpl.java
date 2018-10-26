@@ -9,7 +9,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.issue.Issue;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementEntity;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementInDatabase;
 
 /**
  * Model class for decision knowledge elements
@@ -53,7 +53,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 		this.documentationLocation = DocumentationLocation.JIRAISSUE;
 	}
 
-	public DecisionKnowledgeElementImpl(DecisionKnowledgeElementEntity entity) {
+	public DecisionKnowledgeElementImpl(DecisionKnowledgeElementInDatabase entity) {
 		this(entity.getId(), entity.getSummary(), entity.getDescription(), entity.getType(), entity.getProjectKey(),
 				entity.getKey());
 		this.documentationLocation = DocumentationLocation.ACTIVEOBJECT;

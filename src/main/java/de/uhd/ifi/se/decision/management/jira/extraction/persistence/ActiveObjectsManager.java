@@ -19,7 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.LinkBetweenDifferentEntitiesEntity;
+import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
 import net.java.ao.Query;
 
 public class ActiveObjectsManager {
@@ -80,11 +80,11 @@ public class ActiveObjectsManager {
 	}
 
 	private static void addNewLinkBetweenSentenceAndIssue(long issueId, long sentenceAoId) {
-		ActiveObjects.executeInTransaction(new TransactionCallback<LinkBetweenDifferentEntitiesEntity>() {
+		ActiveObjects.executeInTransaction(new TransactionCallback<LinkInDatabase>() {
 			@Override
-			public LinkBetweenDifferentEntitiesEntity doInTransaction() {
-				LinkBetweenDifferentEntitiesEntity newGenericLink = ActiveObjects
-						.create(LinkBetweenDifferentEntitiesEntity.class); // (2)
+			public LinkInDatabase doInTransaction() {
+				LinkInDatabase newGenericLink = ActiveObjects
+						.create(LinkInDatabase.class); // (2)
 				newGenericLink.setIdOfDestinationElement("s" + sentenceAoId);
 				newGenericLink.setIdOfSourceElement("i" + issueId);
 				newGenericLink.setType("contain");
@@ -312,8 +312,8 @@ public class ActiveObjectsManager {
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}
-						for (LinkBetweenDifferentEntitiesEntity link : ActiveObjects
-								.find(LinkBetweenDifferentEntitiesEntity.class)) {
+						for (LinkInDatabase link : ActiveObjects
+								.find(LinkInDatabase.class)) {
 							if (link.getIdOfDestinationElement().equals("i" + comment.getIssueId())
 									|| link.getIdOfSourceElement().equals("i" + comment.getIssueId())) {
 								try {

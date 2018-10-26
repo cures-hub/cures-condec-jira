@@ -12,7 +12,7 @@ import com.atlassian.jira.issue.link.IssueLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.LinkBetweenDifferentEntitiesEntity;
+import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
 
 /**
  * Model class for links between decision knowledge elements
@@ -65,7 +65,7 @@ public class LinkImpl implements Link {
         setType(type);
     }
 
-	public LinkImpl(LinkBetweenDifferentEntitiesEntity link) {
+	public LinkImpl(LinkInDatabase link) {
 		this();
 		this.id = link.getId();
 		this.type = link.getType();
