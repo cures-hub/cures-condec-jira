@@ -11,10 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Graph;
-import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
-import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.*;
 import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 
 /**
@@ -53,8 +50,10 @@ public class Treant {
 		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
 			filter = new GraphFiltering(projectKey,query,user);
 			filter.produceResultsFromQuery();
+			this.graph = new GraphImplFiltered(projectKey,elementKey,filter);
+		} else {
+			this.graph = new GraphImpl(projectKey, elementKey);
 		}
-		this.graph = new GraphImpl(projectKey, elementKey, filter);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));

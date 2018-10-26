@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.view.treant;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,6 +12,8 @@ import com.atlassian.activeobjects.test.TestActiveObjects;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
@@ -129,6 +132,20 @@ public class TestTreant extends TestSetUpWithIssues {
 		link.setId((long) 23);
 		assertEquals(Node.class, treant.createNodeStructure(element, link, 4, 0).getClass());
 	}
+	
+	@Test
+	@NonTransactional
+	public void testCreateNodeStructureWithSentenceInIssue() {
+		TestComment tc = new TestComment();
+		Comment comment = tc.getComment("This is a testsentence");
+		comment.getSentences().get(0).setRelevant(true);
+		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(comment.getIssueId());
+		Node nodeStructure = treant.createNodeStructure(element, null, 4, 0);
+		assertEquals(Node.class, nodeStructure.getClass());
+		assertTrue(nodeStructure.getChildren().size()>0);
+	}
+		
+	
 
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
 		@SuppressWarnings("unchecked")

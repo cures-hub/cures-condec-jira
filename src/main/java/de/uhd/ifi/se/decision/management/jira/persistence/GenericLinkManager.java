@@ -91,7 +91,7 @@ public class GenericLinkManager {
 	 *            if false, checks both directions
 	 * @return the generic links for element
 	 */
-	public static List<GenericLink> getGenericLinksForElement(String targetId, boolean getOnlyOutwardLink) {
+	public static List<GenericLink> getLinksForElement(String targetId, boolean getOnlyOutwardLink) {
 		init();
 		List<GenericLink> links = new ArrayList<GenericLink>();
 		ao.executeInTransaction(new TransactionCallback<LinkBetweenDifferentEntitiesEntity>() {
@@ -101,6 +101,7 @@ public class GenericLinkManager {
 				for (LinkBetweenDifferentEntitiesEntity linkElement : linkElements) {
 					GenericLink link = new GenericLinkImpl(linkElement.getIdOfDestinationElement(),
 							linkElement.getIdOfSourceElement());
+					link.setId(linkElement.getId());
 					// if(link.isValid()) { @issue: Function is very slow. @alternative: run this as
 					// a service
 					if (!getOnlyOutwardLink && linkElement.getIdOfDestinationElement().equals(targetId)) {
