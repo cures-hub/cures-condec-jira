@@ -144,7 +144,7 @@ function sentenceElementIsDropped(target, parentId, childId) {
 		});
 	} else // selected element is an issue, dropped element is an sentence
 	if (target.classList.contains("sentence") && !draggedElement.classList.contains("sentence")) {
-		deleteLink(oldParentId, childId, function() {
+		deleteLink("s"+oldParentId, "i"+childId, function() {
 			linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
 				updateView();
 			});
