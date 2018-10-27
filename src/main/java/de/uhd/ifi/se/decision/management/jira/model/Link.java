@@ -105,10 +105,8 @@ public interface Link {
 	 * 
 	 * @return opposite element of this link.
 	 */
-	DecisionKnowledgeElement getOppositeElement(String elementId);
-	
 	DecisionKnowledgeElement getOppositeElement(long elementId);
-	
+
 	/**
 	 * Get both elements that are linked (both sides of the link) as a list.
 	 *
@@ -128,7 +126,7 @@ public interface Link {
 	 *         different projects.
 	 */
 	boolean isInterProjectLink();
-	
+
 	/**
 	 * Determine whether the link connects two existing decision knowledge elements.
 	 *
@@ -137,6 +135,19 @@ public interface Link {
 	 * @return true if the link connects two existing decision knowledge elements.
 	 */
 	boolean isValid();
+	
+	/**
+	 * Get the opposite element of this link.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see DocumentationLocation
+	 * @param elementIdWithPrefix
+	 *            of a decision knowledge element on one side of this link including
+	 *            the prefix to express documentation location.
+	 * 
+	 * @return opposite element of this link.
+	 */
+	DecisionKnowledgeElement getOppositeElement(String elementIdWithPrefix);
 
 	String getIdOfSourceElementWithPrefix();
 
@@ -144,5 +155,5 @@ public interface Link {
 
 	String getIdOfDestinationElementWithPrefix();
 
-	void setDestinationElement(String idWithPrefix);	
+	void setDestinationElement(String idWithPrefix);
 }
