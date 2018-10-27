@@ -346,7 +346,7 @@ public class KnowledgeRest {
 			if (isDeleted) {
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 			} else {
-				Link inverseLink = new LinkImpl(link.getIdOfSourceElement(), link.getIdOfDestinationElement());
+				Link inverseLink = new LinkImpl(link.getIdOfSourceElementWithPrefix(), link.getIdOfDestinationElementWithPrefix());
 				isDeleted = GenericLinkManager.deleteGenericLink(inverseLink);
 				if (isDeleted) {
 					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();

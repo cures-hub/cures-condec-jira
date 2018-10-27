@@ -27,7 +27,7 @@ public class TestCreateGenericLink extends TestKnowledgeRestSetUp {
 	private final static String CREATION_ERROR = "Creation of link failed.";
 
 	private Link newGenericLink() {
-		return new LinkImpl("i1337", "s1337", "contain");
+		return new LinkImpl("i3", "i2", "contain");
 	}
 
 	@Test

@@ -9,7 +9,6 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLink;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
@@ -23,12 +22,8 @@ public class LinkImpl implements Link {
 	private String type;
 	private DecisionKnowledgeElement sourceElement;
 	private DecisionKnowledgeElement destinationElement;
-	private String typeOfSourceElement;
-	private String typeOfDestinationElement;
 
 	public LinkImpl() {
-		this.sourceElement = new DecisionKnowledgeElementImpl();
-		this.destinationElement = new DecisionKnowledgeElementImpl();
 	}
 
 	public LinkImpl(DecisionKnowledgeElement sourceElement, DecisionKnowledgeElement destinationElement) {
@@ -53,24 +48,24 @@ public class LinkImpl implements Link {
 			this.destinationElement = new DecisionKnowledgeElementImpl(destinationIssue);
 		}
 	}
-	
-    public LinkImpl(String idOfDestinationElement, String idOfSourceElement) {
-    	this.type = "";
-        this.typeOfDestinationElement = idOfDestinationElement;
-        this.typeOfSourceElement = idOfSourceElement;
-    }
 
-    public LinkImpl(String idOfDestinationElement, String idOfSourceElement, String type) {
-        this(idOfDestinationElement, idOfSourceElement);
-        setType(type);
-    }
+	public LinkImpl(String idOfDestinationElementWithPrefix, String idOfSourceElementWithPrefix) {
+		this.type = "";
+		this.setDestinationElement(idOfDestinationElementWithPrefix);
+		this.setSourceElement(idOfSourceElementWithPrefix);
+	}
+
+	public LinkImpl(String idOfDestinationElementWithPrefix, String idOfSourceElementWithPrefix, String type) {
+		this(idOfDestinationElementWithPrefix, idOfSourceElementWithPrefix);
+		setType(type);
+	}
 
 	public LinkImpl(LinkInDatabase link) {
 		this();
 		this.id = link.getId();
 		this.type = link.getType();
 	}
-	
+
 	@Override
 	public long getId() {
 		return id;
@@ -92,7 +87,6 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
-	@JsonProperty("idOfSourceElement")
 	public void setSourceElement(long id) {
 		if (this.sourceElement == null) {
 			this.sourceElement = new DecisionKnowledgeElementImpl();
@@ -111,7 +105,6 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
-	@JsonProperty("idOfDestinationElement")
 	public void setDestinationElement(long id) {
 		if (this.destinationElement == null) {
 			this.destinationElement = new DecisionKnowledgeElementImpl();
@@ -130,90 +123,104 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
-	public String getIdOfSourceElement() {
-		return this.typeOfSourceElement;
+	public String getIdOfSourceElementWithPrefix() {
+		String idPrefix = DocumentationLocation.getIdentifier(sourceElement);
+		return idPrefix + this.sourceElement.getId();
 	}
 
 	@Override
+	@JsonProperty("idOfSourceElement")
 	public void setSourceElement(String idWithPrefix) {
-		this.typeOfSourceElement = idWithPrefix;
+		if(Character.isDigit(idWithPrefix.charAt(0))) {
+			setSourceElement(Long.parseLong(idWithPrefix));
+			return;
+		}
+		if (this.sourceElement == null) {
+			this.sourceElement = instantiateElement(idWithPrefix);
+		}
+		long id = GenericLinkManager.getId(idWithPrefix);
+		this.sourceElement.setId(id);
+		this.sourceElement.setDocumentationLocation(idWithPrefix.substring(0, 1));
 	}
 
-	@Override
-	public String getIdOfDestinationElement() {
-		return this.typeOfDestinationElement;
-	}
-
-	@Override
-	public void setDestinationElement(String idWithPrefix) {
-		this.typeOfDestinationElement = idWithPrefix;
-	}
-	
-	@Override
-	public DecisionKnowledgeElement getOppositeElement(String currentElementId) {
-		if (this.getIdOfSourceElement().equals(currentElementId)) {
-			return handleOppositeLink(this.getIdOfDestinationElement());
+	private DecisionKnowledgeElement instantiateElement(String elementIdWithPrefix) {
+		if (elementIdWithPrefix.startsWith("s")) {
+			return new SentenceImpl(GenericLinkManager.getId(elementIdWithPrefix));
 		}
-		if (this.getIdOfDestinationElement().equals(currentElementId)) {
-			return handleOppositeLink(this.getIdOfSourceElement());
-		}
-		return null;
-	}
-
-	private DecisionKnowledgeElement handleOppositeLink(String oppositeId) {
-		if (oppositeId.startsWith("s")) {
-			return new SentenceImpl(cutId(oppositeId));
-		}
-		if (oppositeId.startsWith("i")) {
-			Issue issue = ComponentAccessor.getIssueManager().getIssueObject(cutId(oppositeId));
+		if (elementIdWithPrefix.startsWith("i")) {
+			Issue issue = ComponentAccessor.getIssueManager()
+					.getIssueObject(GenericLinkManager.getId(elementIdWithPrefix));
 			return new DecisionKnowledgeElementImpl(issue);
 		}
-		if (oppositeId.startsWith("a")) {
-			return GenericLinkManager.getIssueFromAOTable(cutId(oppositeId));
+		if (elementIdWithPrefix.startsWith("a")) {
+			return GenericLinkManager.getIssueFromAOTable(GenericLinkManager.getId(elementIdWithPrefix));
+		}
+		return new DecisionKnowledgeElementImpl();
+	}
+
+	@Override
+	public String getIdOfDestinationElementWithPrefix() {
+		String idPrefix = DocumentationLocation.getIdentifier(destinationElement);
+		return idPrefix + this.destinationElement.getId();
+	}
+
+	@Override
+	@JsonProperty("idOfDestinationElement")
+	public void setDestinationElement(String idWithPrefix) {
+		if(Character.isDigit(idWithPrefix.charAt(0))) {
+			setDestinationElement(Long.parseLong(idWithPrefix));
+			return;
+		}
+		if (this.destinationElement == null) {
+			this.destinationElement = instantiateElement(idWithPrefix);
+		}
+		long id = GenericLinkManager.getId(idWithPrefix);
+		this.destinationElement.setId(id);
+		this.destinationElement.setDocumentationLocation(idWithPrefix.substring(0, 1));
+	}
+
+	@Override
+	public DecisionKnowledgeElement getOppositeElement(long elementId) {
+		if (this.sourceElement.getId() == elementId) {
+			return destinationElement;
+		}
+		if (this.destinationElement.getId() == elementId) {
+			return sourceElement;
 		}
 		return null;
+	}
+
+	@Override
+	public DecisionKnowledgeElement getOppositeElement(String elementIdWithPrefix) {
+		long elementId = GenericLinkManager.getId(elementIdWithPrefix);
+		return getOppositeElement(elementId);
 	}
 
 	@Override
 	public List<DecisionKnowledgeElement> getBothElements() throws NullPointerException {
 		List<DecisionKnowledgeElement> bothElements = new ArrayList<DecisionKnowledgeElement>();
-		bothElements.add(this.getOppositeElement(this.typeOfSourceElement));
-		bothElements.add(this.getOppositeElement(this.typeOfDestinationElement));
+		bothElements.add(destinationElement);
+		bothElements.add(sourceElement);
 		return bothElements;
-	}
-
-	private long cutId(String id) {
-		return (long) Integer.parseInt(id.substring(1));
 	}
 
 	@Override
 	public boolean isValid() {
-		DecisionKnowledgeElement source;
-		DecisionKnowledgeElement target;
-		try {
-			source = this.getBothElements().get(0);
-			target = this.getBothElements().get(1);
-		} catch (NullPointerException e) {
-			return false;
-		}
-		// I don't like this, I'd rather do an if, but codacy cries in this case.
-		// This checks if both ends are in the same project.
-		return !(source instanceof Sentence
-				&& (!((Sentence) source).getProjectKey().equals(target.getProject().getProjectKey())));
+		return sourceElement != null && destinationElement != null;
 	}
 
 	@Override
 	public boolean isInterProjectLink() {
 		try {
-			DecisionKnowledgeElement source = this.getBothElements().get(0);
-			DecisionKnowledgeElement target = this.getBothElements().get(1);
-			return !source.getProject().getProjectKey().equals(target.getProject().getProjectKey());
+			return !sourceElement.getProject().getProjectKey().equals(destinationElement.getProject().getProjectKey());
 		} catch (NullPointerException e) {
 			return false;
 		}
 	}
-	
+
 	public String toString() {
-		return this.typeOfSourceElement + " to " + this.typeOfDestinationElement;
+		String sourceElementIdPrefix = DocumentationLocation.getIdentifier(sourceElement);
+		String destinationElementIdPrefix = DocumentationLocation.getIdentifier(destinationElement);
+		return sourceElementIdPrefix + sourceElement.getId() + " to " + destinationElementIdPrefix + destinationElement.getId();
 	}
 }
