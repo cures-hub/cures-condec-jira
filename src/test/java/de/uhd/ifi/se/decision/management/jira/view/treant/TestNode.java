@@ -11,15 +11,26 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
+import net.java.ao.EntityManager;
+import net.java.ao.test.jdbc.Data;
+import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-public class TestNode {
+@RunWith(ActiveObjectsJUnitRunner.class)
+@Data(TestTreant.AoSentenceTestDatabaseUpdater.class)
+public class TestNode extends TestSetUpWithIssues{
 
 	private Map<String, String> nodeContent;
 	private Map<String, String> link;
@@ -31,11 +42,14 @@ public class TestNode {
 	private boolean isHyperlinked;
 
 	private Node node;
-
+	private EntityManager entityManager;
 	private DecisionKnowledgeElement element;
 
 	@Before
 	public void setUp() {
+		initialization();
+		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
+				new MockUserManager());
 		nodeContent = new HashMap<>();
 		link = new HashMap<>();
 		htmlClass = "Test";
@@ -54,9 +68,9 @@ public class TestNode {
 		element = new DecisionKnowledgeElementImpl();
 		element.setId(1);
 		element.setKey("Test-1");
-		element.setType("TEST");
+		element.setType("Argument");
 		element.setDescription("Test");
-		element.setProject("Test");
+		element.setProject("TEST");
 		element.setSummary("TESTfwf");
 
 		isCollapsed = false;
@@ -79,7 +93,7 @@ public class TestNode {
 
 	@Test
 	public void testElementLinkSupportConstructor() {
-		Link link = new LinkImpl();
+		Link link = new LinkImpl(element,element);
 		link.setType("support");
 		Node newNode = new Node(element, link, isCollapsed, isHyperlinked);
 		assertNotNull(newNode);
@@ -87,7 +101,7 @@ public class TestNode {
 
 	@Test
 	public void testElementLinkAttackConstructor() {
-		Link link = new LinkImpl();
+		Link link = new LinkImpl(element,element);
 		link.setType("attack");
 		Node newNode = new Node(element, link, isCollapsed, isHyperlinked);
 		assertNotNull(newNode);

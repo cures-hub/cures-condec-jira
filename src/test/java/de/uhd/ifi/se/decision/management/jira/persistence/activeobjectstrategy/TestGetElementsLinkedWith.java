@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 public class TestGetElementsLinkedWith extends ActiveObjectStrategyTestSetUp {
 
 	private Link link;
-
+	
 	@Before
 	public void setUp() {
 		initialisation();
@@ -34,7 +34,7 @@ public class TestGetElementsLinkedWith extends ActiveObjectStrategyTestSetUp {
 		DecisionKnowledgeElement linkedDecisionWithDatabaseId = aoStrategy
 				.insertDecisionKnowledgeElement(linkedDecision, user);
 		link = new LinkImpl(linkedDecisionWithDatabaseId, elementWithDatabaseId);
-		aoStrategy.insertLink(link, user);
+		aoStrategy.insertLinkWithoutTransaction(link, user);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -52,6 +52,7 @@ public class TestGetElementsLinkedWith extends ActiveObjectStrategyTestSetUp {
 	@Test
 	@NonTransactional
 	public void testElementInTableInward() {
+		aoStrategy.insertLinkWithoutTransaction(link, user);
 		assertEquals(1, aoStrategy.getElementsLinkedWithInwardLinks(link.getDestinationElement()).size(), 0.0);
 	}
 
