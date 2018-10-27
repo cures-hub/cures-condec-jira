@@ -87,7 +87,6 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
-	@JsonProperty("idOfSourceElement")
 	public void setSourceElement(long id) {
 		if (this.sourceElement == null) {
 			this.sourceElement = new DecisionKnowledgeElementImpl();
@@ -106,7 +105,6 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
-	@JsonProperty("idOfDestinationElement")
 	public void setDestinationElement(long id) {
 		if (this.destinationElement == null) {
 			this.destinationElement = new DecisionKnowledgeElementImpl();
@@ -131,12 +129,17 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
+	@JsonProperty("idOfSourceElement")
 	public void setSourceElement(String idWithPrefix) {
+		if(Character.isDigit(idWithPrefix.charAt(0))) {
+			setSourceElement(Long.parseLong(idWithPrefix));
+			return;
+		}
 		if (this.sourceElement == null) {
 			this.sourceElement = instantiateElement(idWithPrefix);
 		}
-//		long id = GenericLinkManager.getId(idWithPrefix);
-//		this.sourceElement.setId(id);
+		long id = GenericLinkManager.getId(idWithPrefix);
+		this.sourceElement.setId(id);
 		this.sourceElement.setDocumentationLocation(idWithPrefix.substring(0, 1));
 	}
 
@@ -162,12 +165,17 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
+	@JsonProperty("idOfDestinationElement")
 	public void setDestinationElement(String idWithPrefix) {
+		if(Character.isDigit(idWithPrefix.charAt(0))) {
+			setDestinationElement(Long.parseLong(idWithPrefix));
+			return;
+		}
 		if (this.destinationElement == null) {
 			this.destinationElement = instantiateElement(idWithPrefix);
 		}
-//		long id = GenericLinkManager.getId(idWithPrefix);
-//		this.destinationElement.setId(id);
+		long id = GenericLinkManager.getId(idWithPrefix);
+		this.destinationElement.setId(id);
 		this.destinationElement.setDocumentationLocation(idWithPrefix.substring(0, 1));
 	}
 
