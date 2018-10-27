@@ -85,8 +85,7 @@ function addDragAndDropSupportForTreeViewer() {
 		var parentNode = getTreeViewerNodeById(nodeInContext.parent);
 		var oldParentNode = getTreeViewerNodeById(nodeInContext.old_parent);
 		var nodeId = node.data.id;
-
-		if (!node.li_attr['class'] === "sentence") {
+		if (node.li_attr['class'] === "issue") {
 			if (oldParentNode === "#" && parentNode !== "#") {
 				createLinkToExistingElement(parentNode.data.id, nodeId);
 			}
@@ -102,7 +101,6 @@ function addDragAndDropSupportForTreeViewer() {
 			}
 		} else {
 			var targetType = (parentNode.li_attr['class'] === "sentence") ? "s" : "i";
-
 			if (oldParentNode === "#" && parentNode !== "#") {
 				linkGenericElements(parentNode.data.id, nodeId, targetType, "s", function() {
 					refreshTreeViewer();
