@@ -326,8 +326,9 @@ public class KnowledgeRest {
 				if (isDeleted) {
 					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 				} else {
-					return deleteGenericLink(projectKey, request, new LinkImpl("i" + link.getSourceElement().getId(),
-							"s" + link.getDestinationElement().getId()));
+					return deleteGenericLink(projectKey, request, new LinkImpl(link.getIdOfSourceElementWithPrefix(),
+							link.getIdOfDestinationElementWithPrefix()));
+
 				}
 			}
 		} else {
@@ -346,7 +347,8 @@ public class KnowledgeRest {
 			if (isDeleted) {
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 			} else {
-				Link inverseLink = new LinkImpl(link.getIdOfSourceElementWithPrefix(), link.getIdOfDestinationElementWithPrefix());
+				Link inverseLink = new LinkImpl(link.getIdOfSourceElementWithPrefix(),
+						link.getIdOfDestinationElementWithPrefix());
 				isDeleted = GenericLinkManager.deleteGenericLink(inverseLink);
 				if (isDeleted) {
 					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
