@@ -40,7 +40,7 @@ public class GraphImpl implements Graph {
 
 	public GraphImpl(String projectKey, String rootElementKey) {
 		this(projectKey);
-		// Support keys of decision knowledge elements documented in comments
+		// Support keys of decision knowledge elements documented in JIRA issue comments or commit messages
 		String issueKey = getJiraIssueKey(rootElementKey);
 		this.rootElement = this.project.getPersistenceStrategy().getDecisionKnowledgeElement(issueKey);
 	}
@@ -123,7 +123,6 @@ public class GraphImpl implements Graph {
 			if (link.isInterProjectLink()) {
 				continue;
 			}
-			link.setType("contain");
 			if (!this.genericLinkIds.contains(link.getId())) {
 				this.genericLinkIds.add(link.getId());
 				linkedElementsAndLinks.put(link.getOppositeElement(prefix + element.getId()), link);

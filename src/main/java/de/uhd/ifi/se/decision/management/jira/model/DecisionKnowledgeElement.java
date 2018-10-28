@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.Date;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
@@ -202,4 +203,19 @@ public interface DecisionKnowledgeElement {
 	 *            of the decision knowledge element.
 	 */
 	void setDocumentationLocation(String documentationLocation);
+
+	/**
+	 * Get the creation date of the decision knowledge element.
+	 *
+	 * @return creation date.
+	 */
+	Date getCreated();
+
+	/**
+	 * Set the creation date of the decision knowledge element.
+	 *
+	 * @param date
+	 *            of creation.
+	 */
+	void setCreated(Date date);
 }

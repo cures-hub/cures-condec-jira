@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import static org.hamcrest.Matchers.instanceOf;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,11 +46,10 @@ public class GraphImplFiltered extends GraphImpl {
 			if (link.isInterProjectLink()) {
 				continue;
 			}
-			DecisionKnowledgeElement source = link.getSourceElement();
-			link.setType("contain");
-			if (filter.isQueryContainsCreationDate()) {
+			DecisionKnowledgeElement sourceElement = link.getSourceElement();
+			if (filter.isQueryContainsCreationDate() && sourceElement instanceof Sentence) {
 				if (filter.getStartDate() <= 0) {
-					if (((Sentence) source).getCreated().getTime() < filter.getEndDate()) {
+					if (sourceElement.getCreated().getTime() < filter.getEndDate()) {
 						DecisionKnowledgeElement toLink = link.getOppositeElement(prefix + element.getId());
 						if (!this.genericLinkIds.contains(link.getId())) {
 							this.genericLinkIds.add(link.getId());
@@ -56,7 +57,7 @@ public class GraphImplFiltered extends GraphImpl {
 						}
 					}
 				} else if (filter.getEndDate() <= 0) {
-					if (((Sentence) source).getCreated().getTime() > filter.getStartDate()) {
+					if (sourceElement.getCreated().getTime() > filter.getStartDate()) {
 						DecisionKnowledgeElement toLink = link.getOppositeElement(prefix + element.getId());
 						if (!this.genericLinkIds.contains(link.getId())) {
 							this.genericLinkIds.add(link.getId());
@@ -64,8 +65,8 @@ public class GraphImplFiltered extends GraphImpl {
 						}
 					}
 				} else {
-					if ((((Sentence) source).getCreated().getTime() < filter.getEndDate())
-							&& (((Sentence) source).getCreated().getTime() > filter.getStartDate())) {
+					if (sourceElement.getCreated().getTime() < filter.getEndDate()
+							&& sourceElement.getCreated().getTime() > filter.getStartDate()) {
 						DecisionKnowledgeElement toLink = link.getOppositeElement(prefix + element.getId());
 						if (!this.genericLinkIds.contains(link.getId())) {
 							this.genericLinkIds.add(link.getId());
