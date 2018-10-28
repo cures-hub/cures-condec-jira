@@ -46,16 +46,16 @@ public class GraphImplFiltered extends GraphImpl {
 			if (link.isInterProjectLink()) {
 				continue;
 			}
-			DecisionKnowledgeElement sourceElement = link.getSourceElement();
-			if (filter.isQueryContainsCreationDate() && sourceElement instanceof Sentence) {
-				includeElementInGraph = isSentenceIncludedInGraph(sourceElement);
+			DecisionKnowledgeElement oppositeElement = link.getOppositeElement(element);
+			if (filter.isQueryContainsCreationDate() && oppositeElement instanceof Sentence) {
+				includeElementInGraph = isSentenceIncludedInGraph(oppositeElement);
 			} else {
 				includeElementInGraph = true;
 			}
 
 			if (includeElementInGraph && !this.genericLinkIds.contains(link.getId())) {
 				this.genericLinkIds.add(link.getId());
-				linkedElementsAndLinks.put(link.getOppositeElement(prefix + element.getId()), link);
+				linkedElementsAndLinks.put(oppositeElement, link);
 			}
 		}
 		return linkedElementsAndLinks;

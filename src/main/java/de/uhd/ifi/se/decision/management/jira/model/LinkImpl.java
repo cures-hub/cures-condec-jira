@@ -189,6 +189,11 @@ public class LinkImpl implements Link {
 		}
 		return null;
 	}
+	
+	@Override
+	public DecisionKnowledgeElement getOppositeElement(DecisionKnowledgeElement element) {
+		return getOppositeElement(element.getId());
+	}
 
 	@Override
 	public DecisionKnowledgeElement getOppositeElement(String elementIdWithPrefix) {
