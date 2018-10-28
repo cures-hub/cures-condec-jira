@@ -40,8 +40,8 @@ public class GraphImpl implements Graph {
 
 	public GraphImpl(String projectKey, String rootElementKey) {
 		this(projectKey);
-		// Support keys of decision knowledge elements documented in JIRA issue comments
-		// or commit messages
+
+		// for decision knowledge elements documented in comments or commit messages
 		String issueKey = getJiraIssueKey(rootElementKey);
 		this.rootElement = this.project.getPersistenceStrategy().getDecisionKnowledgeElement(issueKey);
 	}
@@ -69,44 +69,50 @@ public class GraphImpl implements Graph {
 			return linkedElementsAndLinks;
 		}
 
-		List<Link> links = this.project.getPersistenceStrategy().getLinks(element);
-		for (Link link : links) {
-			if (!linkIds.contains(link.getId())) {
-				DecisionKnowledgeElement oppositeElement = link.getOppositeElement(element);
-				if (oppositeElement != null) {
-					linkIds.add(link.getId());
-					linkedElementsAndLinks.put(oppositeElement, link);
-				}
-			}
-		}
-
-		linkedElementsAndLinks.putAll(this.getAllLinkedSentences(element));
+		linkedElementsAndLinks.putAll(this.getLinkedFirstClassElementsAndLinks(element));
+		linkedElementsAndLinks.putAll(this.getLinkedSentencesAndLinks(element));
 		return linkedElementsAndLinks;
 	}
 
-	protected Map<DecisionKnowledgeElement, Link> getAllLinkedSentences(DecisionKnowledgeElement element) {
+	protected Map<DecisionKnowledgeElement, Link> getLinkedFirstClassElementsAndLinks(
+			DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
-		if (element == null) {
-			return linkedElementsAndLinks;
+		List<Link> links = this.project.getPersistenceStrategy().getLinks(element);
+		for (Link link : links) {
+			if (linkIds.contains(link.getId())) {
+				continue;
+			}
+			DecisionKnowledgeElement oppositeElement = link.getOppositeElement(element);
+			if (oppositeElement == null) {
+				continue;
+			}
+			linkIds.add(link.getId());
+			linkedElementsAndLinks.put(oppositeElement, link);
 		}
+
+		return linkedElementsAndLinks;
+	}
+
+	protected Map<DecisionKnowledgeElement, Link> getLinkedSentencesAndLinks(DecisionKnowledgeElement element) {
+		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
 		String prefix = DocumentationLocation.getIdentifier(element);
 		List<Link> links = GenericLinkManager.getLinksForElement(prefix + element.getId(), false);
 
 		for (Link link : links) {
-			if (link.isInterProjectLink()) {
+			if (link.isInterProjectLink() || this.genericLinkIds.contains(link.getId())) {
 				continue;
 			}
-			if (!this.genericLinkIds.contains(link.getId())) {
-				this.genericLinkIds.add(link.getId());
-				linkedElementsAndLinks.put(link.getOppositeElement(element), link);
-			}
+			this.genericLinkIds.add(link.getId());
+			linkedElementsAndLinks.put(link.getOppositeElement(element), link);
 		}
 		return linkedElementsAndLinks;
 	}
 
 	@Override
+	// TODO This method is not working correctly. We also need to check the link ids
+	// rather than the elements itself cause this neglects some links
 	public List<DecisionKnowledgeElement> getAllElements() {
 		List<DecisionKnowledgeElement> allElements = new ArrayList<DecisionKnowledgeElement>();
 		allElements.add(this.getRootElement());
