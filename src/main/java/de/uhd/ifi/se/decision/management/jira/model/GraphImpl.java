@@ -64,49 +64,23 @@ public class GraphImpl implements Graph {
 	@Override
 	public Map<DecisionKnowledgeElement, Link> getLinkedElementsAndLinks(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
-		linkedElementsAndLinks.putAll(this.getElementsLinkedWithOutwardLinks(element));
-		linkedElementsAndLinks.putAll(this.getElementsLinkedWithInwardLinks(element));
+
+		if (element == null) {
+			return linkedElementsAndLinks;
+		}
+
+		List<Link> links = this.project.getPersistenceStrategy().getLinks(element);
+		for (Link link : links) {
+			if (!linkIds.contains(link.getId())) {
+				DecisionKnowledgeElement oppositeElement = link.getOppositeElement(element);
+				if (oppositeElement != null) {
+					linkIds.add(link.getId());
+					linkedElementsAndLinks.put(oppositeElement, link);
+				}
+			}
+		}
+
 		linkedElementsAndLinks.putAll(this.getAllLinkedSentences(element));
-		return linkedElementsAndLinks;
-	}
-
-	protected Map<DecisionKnowledgeElement, Link> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement element) {
-		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
-
-		if (element == null) {
-			return linkedElementsAndLinks;
-		}
-
-		List<Link> outwardLinks = this.project.getPersistenceStrategy().getOutwardLinks(element);
-		for (Link link : outwardLinks) {
-			if (!linkIds.contains(link.getId())) {
-				DecisionKnowledgeElement outwardElement = link.getDestinationElement();
-				if (outwardElement != null) {
-					linkIds.add(link.getId());
-					linkedElementsAndLinks.put(outwardElement, link);
-				}
-			}
-		}
-		return linkedElementsAndLinks;
-	}
-
-	protected Map<DecisionKnowledgeElement, Link> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element) {
-		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
-
-		if (element == null) {
-			return linkedElementsAndLinks;
-		}
-
-		List<Link> inwardLinks = this.project.getPersistenceStrategy().getInwardLinks(element);
-		for (Link link : inwardLinks) {
-			if (!linkIds.contains(link.getId())) {
-				DecisionKnowledgeElement inwardElement = link.getSourceElement();
-				if (inwardElement != null) {
-					linkIds.add(link.getId());
-					linkedElementsAndLinks.put(inwardElement, link);
-				}
-			}
-		}
 		return linkedElementsAndLinks;
 	}
 
