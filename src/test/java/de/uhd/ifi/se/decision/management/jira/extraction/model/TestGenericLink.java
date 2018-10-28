@@ -78,7 +78,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	public void testSecondConstructor() {
 		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence s = c.getSentences().get(0);
-		Link link = new LinkImpl("i" + issue.getId(), "s" + s.getId());
+		Link link = new LinkImpl("s" + s.getId(), "i" + issue.getId());
 		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("i" + issue.getId()));
 		assertTrue(link.getIdOfSourceElementWithPrefix().equals("s" + s.getId()));
 	}
@@ -88,11 +88,10 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	public void testThirdConstructor() {
 		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence s = c.getSentences().get(0);
-		Link link = new LinkImpl("i" + issue.getId(), "s" + s.getId(),"contain");
+		Link link = new LinkImpl("i" + issue.getId(), "s" + s.getId(), "contain");
 		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("i" + issue.getId()));
 		assertTrue(link.getIdOfSourceElementWithPrefix().equals("s" + s.getId()));
 		assertTrue(link.getType().equals("contain"));
-
 	}
 
 	@Test
@@ -105,7 +104,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 		Sentence s = c.getSentences().get(0);
 		link.setSourceElement("s" + s.getId());
 
-		GenericLinkManager.insertGenericLink(link, null);
+		GenericLinkManager.insertLink(link, null);
 
 		assertNotNull(link.getOppositeElement("s" + s.getId()));
 		assertNotNull(link.getOppositeElement("i" + issue.getId()));
@@ -121,7 +120,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 		Sentence s = c.getSentences().get(0);
 		link.setDestinationElement("s" + s.getId());
 
-		GenericLinkManager.insertGenericLink(link, null);
+		GenericLinkManager.insertLink(link, null);
 
 		assertNotNull(link.getOppositeElement("s" + s.getId()));
 		assertNotNull(link.getOppositeElement("i" + issue.getId()));
@@ -140,7 +139,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 		link.setSourceElement("s" + s1.getId());
 		link.setDestinationElement("s" + s.getId());
 
-		GenericLinkManager.insertGenericLink(link, null);
+		GenericLinkManager.insertLink(link, null);
 
 		assertNotNull(link.getOppositeElement("s" + s.getId()));
 		assertNotNull(link.getOppositeElement("s" + s1.getId()));
@@ -154,7 +153,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 		link.setSourceElement("i" + issue.getId());
 		link.setDestinationElement("i" + issue.getId());
-		GenericLinkManager.insertGenericLink(link, null);
+		GenericLinkManager.insertLink(link, null);
 
 		assertNotNull(link.getOppositeElement("i" + issue.getId()));
 		assertNotNull(link.getOppositeElement("i" + issue.getId()));
@@ -168,7 +167,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 		link.setSourceElement("i" + issue.getId());
 		link.setDestinationElement("i" + issue.getId());
-		GenericLinkManager.insertGenericLink(link, null);
+		GenericLinkManager.insertLink(link, null);
 
 		assertTrue(link.getBothElements().size() == 2);
 		assertNotNull(link.getBothElements().get(0));
@@ -183,7 +182,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 		link.setSourceElement("i" + issue.getId());
 		link.setDestinationElement("i" + issue.getId());
-		GenericLinkManager.insertGenericLink(link, null);
+		GenericLinkManager.insertLink(link, null);
 
 		assertTrue(link.isValid());
 	}
@@ -192,15 +191,13 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testIsIssueLinkWithValidLink() {
 
-
 		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence s = c.getSentences().get(0);
-		Link link = new LinkImpl("i" + issue.getId(), "s" + s.getId());
+		Link link = new LinkImpl("s" + s.getId(), "i" + issue.getId());
 		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("i" + issue.getId()));
 		assertTrue(link.getIdOfSourceElementWithPrefix().equals("s" + s.getId()));
 
-
-		GenericLinkManager.insertGenericLink(link, null);
+		GenericLinkManager.insertLink(link, null);
 
 		assertTrue(link.isValid());
 		assertFalse(GenericLinkManager.isIssueLink(link));
@@ -210,10 +207,9 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testToStringToBeatCodeCoverage() {
 
-
 		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence s = c.getSentences().get(0);
-		Link link = new LinkImpl("i" + issue.getId(), "s" + s.getId());
+		Link link = new LinkImpl("s" + s.getId(), "i" + issue.getId());
 		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("i" + issue.getId()));
 		assertTrue(link.getIdOfSourceElementWithPrefix().equals("s" + s.getId()));
 

@@ -173,6 +173,23 @@ public abstract class AbstractPersistenceStrategy {
 	}
 
 	/**
+	 * Get all links where the decision knowledge element is either the source or
+	 * the destination element.
+	 *
+	 * @see Link
+	 * @param element
+	 *            decision knowledge element with id in database.
+	 * @return list of links where the given decision knowledge element is either
+	 *         the source or the destination element.
+	 */
+	public List<Link> getLinks(DecisionKnowledgeElement element) {
+		List<Link> links = new ArrayList<Link>();
+		links.addAll(this.getInwardLinks(element));
+		links.addAll(this.getOutwardLinks(element));
+		return links;
+	}
+
+	/**
 	 * Get all links where the decision knowledge element is the source element.
 	 *
 	 * @see Link

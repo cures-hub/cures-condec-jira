@@ -49,21 +49,27 @@ public class LinkImpl implements Link {
 		}
 	}
 
-	public LinkImpl(String idOfDestinationElementWithPrefix, String idOfSourceElementWithPrefix) {
+	public LinkImpl(String idOfSourceElementWithPrefix, String idOfDestinationElementWithPrefix) {
 		this.type = "";
 		this.setDestinationElement(idOfDestinationElementWithPrefix);
 		this.setSourceElement(idOfSourceElementWithPrefix);
 	}
 
-	public LinkImpl(String idOfDestinationElementWithPrefix, String idOfSourceElementWithPrefix, String type) {
+	public LinkImpl(String idOfSourceElementWithPrefix, String idOfDestinationElementWithPrefix, String type) {
 		this(idOfDestinationElementWithPrefix, idOfSourceElementWithPrefix);
 		setType(type);
 	}
 
-	public LinkImpl(LinkInDatabase link) {
+	public LinkImpl(LinkInDatabase linkInDatabase) {
 		this();
-		this.id = link.getId();
-		this.type = link.getType();
+		if(linkInDatabase.getIdOfSourceElement() != null) {
+			this.setDestinationElement(linkInDatabase.getIdOfSourceElement());
+		}
+		if(linkInDatabase.getIdOfDestinationElement() != null) {
+			this.setDestinationElement(linkInDatabase.getIdOfDestinationElement());
+		}
+		this.id = linkInDatabase.getId();
+		this.type = linkInDatabase.getType();
 	}
 
 	@Override

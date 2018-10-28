@@ -169,7 +169,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				projectManager.getProjectObj(this.projectId).getKey(), KnowledgeType.ALTERNATIVE);
 
 		for (DecisionKnowledgeElement currentAlternative : listOfIssues) {
-			List<Link> links = GenericLinkManager.getLinksForElement("s" + currentAlternative.getId(), false);
+			List<Link> links = GenericLinkManager.getLinksForElement("s" + currentAlternative.getId());
 			boolean hasArgument = false;
 			for (Link link : links) {
 				DecisionKnowledgeElement dke = link.getOppositeElement("s" + currentAlternative.getId());
@@ -197,7 +197,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				.getAllElementsFromAoByType(projectManager.getProjectObj(this.projectId).getKey(), linkFrom);
 
 		for (DecisionKnowledgeElement issue : listOfIssues) {
-			List<Link> links = GenericLinkManager.getLinksForElement("s" + issue.getId(), false);
+			List<Link> links = GenericLinkManager.getLinksForElement("s" + issue.getId());
 			boolean hastOtherElementLinked = false;
 
 			for (Link link : links) {

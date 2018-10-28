@@ -99,8 +99,8 @@ public class TestLink {
 
 	@Test
 	public void testConstructorLinkEntity() {
-		LinkInDatabase linkEntity = mock(LinkInDatabase.class);
-		Link link = new LinkImpl(linkEntity);
+		LinkInDatabase linkInDatabase = mock(LinkInDatabase.class);
+		Link link = new LinkImpl(linkInDatabase);
 		assertNotNull(link);
 	}
 

@@ -52,8 +52,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 						} catch (SQLException e) {
 							return false;
 						} finally {
-							for (LinkInDatabase linkEntity : ACTIVE_OBJECTS
-									.find(LinkInDatabase.class)) {
+							for (LinkInDatabase linkEntity : ACTIVE_OBJECTS.find(LinkInDatabase.class)) {
 								if (linkEntity.getIdOfSourceElement().equals("a" + decisionKnowledgeElement.getId())
 										|| linkEntity.getIdOfDestinationElement()
 												.equals("a" + decisionKnowledgeElement.getId())) {
@@ -75,7 +74,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 
 	@Override
 	public boolean deleteLink(Link link, ApplicationUser user) {
-		return GenericLinkManager.deleteGenericLink("a" + link.getSourceElement().getId(),
+		return GenericLinkManager.deleteLink("a" + link.getSourceElement().getId(),
 				"a" + link.getDestinationElement().getId());
 	}
 
@@ -254,19 +253,19 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 		return element;
 	}
 
+	// TODO Align with method in GenericLinkManager
 	@Override
 	public long insertLink(Link link, ApplicationUser user) {
 		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction() {
-				return insertLinkWithoutTransaction(link,user);
+				return insertLinkWithoutTransaction(link, user);
 			}
 		});
 	}
 
 	public long insertLinkWithoutTransaction(Link link, ApplicationUser user) {
-		for (LinkInDatabase linkEntity : ACTIVE_OBJECTS
-				.find(LinkInDatabase.class)) {
+		for (LinkInDatabase linkEntity : ACTIVE_OBJECTS.find(LinkInDatabase.class)) {
 			if (linkEntity.getIdOfSourceElement().substring(1).equals(link.getSourceElement().getId() + "")
 					&& linkEntity.getIdOfDestinationElement().substring(1)
 							.equals(link.getDestinationElement().getId() + "")) {
@@ -296,11 +295,10 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 		}
 
 		// elements exist
-		Link newLink = new LinkImpl("a" + link.getDestinationElement().getId(),
-				"a" + link.getSourceElement().getId());
+		Link newLink = new LinkImpl("a" + link.getDestinationElement().getId(), "a" + link.getSourceElement().getId());
 		newLink.setType(link.getType());
-		return GenericLinkManager.insertGenericLink(newLink, user);
-		
+		return GenericLinkManager.insertLink(newLink, user);
+
 	}
 
 	@Override
