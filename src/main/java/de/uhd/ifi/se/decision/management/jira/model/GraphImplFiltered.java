@@ -1,7 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import static org.hamcrest.Matchers.instanceOf;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,46 +40,37 @@ public class GraphImplFiltered extends GraphImpl {
 		String prefix = DocumentationLocation.getIdentifier(element);
 		List<Link> links = GenericLinkManager.getLinksForElement(prefix + element.getId(), false);
 
+		boolean includeElementInGraph = false;
+
 		for (Link link : links) {
 			if (link.isInterProjectLink()) {
 				continue;
 			}
 			DecisionKnowledgeElement sourceElement = link.getSourceElement();
 			if (filter.isQueryContainsCreationDate() && sourceElement instanceof Sentence) {
-				if (filter.getStartDate() <= 0) {
-					if (sourceElement.getCreated().getTime() < filter.getEndDate()) {
-						DecisionKnowledgeElement toLink = link.getOppositeElement(prefix + element.getId());
-						if (!this.genericLinkIds.contains(link.getId())) {
-							this.genericLinkIds.add(link.getId());
-							linkedElementsAndLinks.put(toLink, link);
-						}
-					}
-				} else if (filter.getEndDate() <= 0) {
-					if (sourceElement.getCreated().getTime() > filter.getStartDate()) {
-						DecisionKnowledgeElement toLink = link.getOppositeElement(prefix + element.getId());
-						if (!this.genericLinkIds.contains(link.getId())) {
-							this.genericLinkIds.add(link.getId());
-							linkedElementsAndLinks.put(toLink, link);
-						}
-					}
-				} else {
-					if (sourceElement.getCreated().getTime() < filter.getEndDate()
-							&& sourceElement.getCreated().getTime() > filter.getStartDate()) {
-						DecisionKnowledgeElement toLink = link.getOppositeElement(prefix + element.getId());
-						if (!this.genericLinkIds.contains(link.getId())) {
-							this.genericLinkIds.add(link.getId());
-							linkedElementsAndLinks.put(toLink, link);
-						}
-					}
-				}
+				includeElementInGraph = isSentenceIncludedInGraph(sourceElement);
 			} else {
-				if (!this.genericLinkIds.contains(link.getId())) {
-					this.genericLinkIds.add(link.getId());
-					linkedElementsAndLinks.put(link.getOppositeElement(prefix + element.getId()), link);
-				}
+				includeElementInGraph = true;
+			}
+
+			if (includeElementInGraph && !this.genericLinkIds.contains(link.getId())) {
+				this.genericLinkIds.add(link.getId());
+				linkedElementsAndLinks.put(link.getOppositeElement(prefix + element.getId()), link);
 			}
 		}
 		return linkedElementsAndLinks;
+	}
+
+	private boolean isSentenceIncludedInGraph(DecisionKnowledgeElement element) {
+		if (filter.getStartDate() <= 0 && element.getCreated().getTime() < filter.getEndDate()) {
+			return true;
+		} else if (filter.getEndDate() <= 0 && element.getCreated().getTime() > filter.getStartDate()) {
+			return true;
+		} else if (element.getCreated().getTime() < filter.getEndDate()
+				&& element.getCreated().getTime() > filter.getStartDate()) {
+			return true;
+		}
+		return false;
 	}
 
 	protected Map<DecisionKnowledgeElement, Link> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element) {
