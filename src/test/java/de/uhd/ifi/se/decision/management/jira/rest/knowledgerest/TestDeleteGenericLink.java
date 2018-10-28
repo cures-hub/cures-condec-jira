@@ -60,11 +60,11 @@ public class TestDeleteGenericLink extends TestKnowledgeRestSetUp {
 		sentence = comment.getSentences().get(0);
 		
 		Link newLink =  new LinkImpl(decisionKnowledgeElement, sentence);
-		GenericLinkManager.insertGenericLink(newLink, null);
+		GenericLinkManager.insertLink(newLink, null);
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.deleteGenericLink("TEST", request, newLink).getStatus());
 
-		GenericLinkManager.insertGenericLink(newLink, null);
+		GenericLinkManager.insertLink(newLink, null);
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.deleteGenericLink("TEST", request, newLink).getStatus());
 

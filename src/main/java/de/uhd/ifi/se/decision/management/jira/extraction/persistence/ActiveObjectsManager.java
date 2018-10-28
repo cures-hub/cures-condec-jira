@@ -72,7 +72,7 @@ public class ActiveObjectsManager {
 	}
 
 	private static void checkIfSentenceHasAValidLink(long sentenceId, long issueId) {
-		List<Link> links = GenericLinkManager.getLinksForElement("s" + sentenceId, false);
+		List<Link> links = GenericLinkManager.getLinksForElement("s" + sentenceId);
 		if (links == null || links.size() == 0) {
 			addNewLinkBetweenSentenceAndIssue(issueId, sentenceId);
 		}
@@ -419,7 +419,7 @@ public class ActiveObjectsManager {
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
 				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
 						DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
-					GenericLinkManager.deleteLinksForElementIfExisting("s" + databaseEntry.getId());
+					GenericLinkManager.deleteLinksForElement("s" + databaseEntry.getId());
 					try {
 						databaseEntry.getEntityManager().delete(databaseEntry);
 					} catch (SQLException e) {

@@ -370,7 +370,7 @@ public class KnowledgeRest {
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
 			ApplicationUser user = AuthenticationManager.getUser(request);
-			long linkId = GenericLinkManager.insertGenericLink(link, user);
+			long linkId = GenericLinkManager.insertLink(link, user);
 			if (linkId == 0) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();

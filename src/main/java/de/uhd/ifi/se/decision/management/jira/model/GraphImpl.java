@@ -98,7 +98,7 @@ public class GraphImpl implements Graph {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
 		String prefix = DocumentationLocation.getIdentifier(element);
-		List<Link> links = GenericLinkManager.getLinksForElement(prefix + element.getId(), false);
+		List<Link> links = GenericLinkManager.getLinksForElement(prefix + element.getId());
 
 		for (Link link : links) {
 			if (link.isInterProjectLink() || this.genericLinkIds.contains(link.getId())) {

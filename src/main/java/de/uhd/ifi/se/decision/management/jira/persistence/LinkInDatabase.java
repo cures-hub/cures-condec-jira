@@ -16,7 +16,6 @@ import net.java.ao.schema.Table;
  */
 @Table("GenericLink")
 public interface LinkInDatabase extends RawEntity<Integer> {
-
 	@AutoIncrement
 	@PrimaryKey("ID")
 	long getId();

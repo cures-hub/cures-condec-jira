@@ -63,7 +63,7 @@ public class TestCreateGenericLink extends TestKnowledgeRestSetUp {
 		request.setAttribute("NoFails", true);
 		Link gl = newGenericLink();
 		gl.setId(0);
-		GenericLinkManager.insertGenericLink(gl, null);
+		GenericLinkManager.insertLink(gl, null);
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.createGenericLink("TEST", request, newGenericLink()).getStatus());
 	}
