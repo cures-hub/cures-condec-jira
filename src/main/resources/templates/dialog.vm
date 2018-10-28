@@ -31,4 +31,9 @@
             <li><Button class="aui-button" onclick="exportLinkedElements()">Export Linked Elements</Button></li>
         </ul>
     </div>
+	<footer class="aui-dialog2-footer">
+		<div class="aui-dialog2-footer-actions">
+			<button id="dialog-cancel-button" class="aui-button aui-button-link" onclick="closeExportDialog()">Cancel</button>
+		</div>
+	</footer>
 </section>
