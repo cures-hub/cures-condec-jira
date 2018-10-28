@@ -86,40 +86,51 @@ function addDragAndDropSupportForTreeViewer() {
 		var oldParentNode = getTreeViewerNodeById(nodeInContext.old_parent);
 		var nodeId = node.data.id;
 
-		if (!node.li_attr['class'] === "sentence") {
+		console.log(!node.li_attr['class'] === "sentence")
+		if (node.li_attr['class'] === "issue" && parentNode.li_attr['class'] === "issue" && oldParentNode.li_attr['class'] === "issue") {
+
 			if (oldParentNode === "#" && parentNode !== "#") {
+
 				createLinkToExistingElement(parentNode.data.id, nodeId);
 			}
 			if (parentNode === "#" && oldParentNode !== "#") {
+
 				deleteLink(oldParentNode.data.id, nodeId, function() {
 					updateView();
 				});
 			}
 			if (parentNode !== '#' && oldParentNode !== '#') {
+
 				deleteLink(oldParentNode.data.id, nodeId, function() {
 					createLinkToExistingElement(parentNode.data.id, nodeId);
 				});
 			}
-		} else {
+		} else{
+
 			var targetType = (parentNode.li_attr['class'] === "sentence") ? "s" : "i";
 
 			if (oldParentNode === "#" && parentNode !== "#") {
+
 				linkGenericElements(parentNode.data.id, nodeId, targetType, "s", function() {
 					refreshTreeViewer();
 				});
 			}
 			if (parentNode === "#" && oldParentNode !== "#") {
+
 				targetTypeOld = (oldParentNode.li_attr['class'] === "sentence") ? "s" : "i";
 				deleteGenericLink(oldParentNode.data.id, nodeId, targetTypeOld, "s", function() {
 					refreshTreeViewer()
 				});
 			}
 			if (parentNode !== '#' && oldParentNode !== '#') {
+
 				targetTypeOld = (oldParentNode.li_attr['class'] === "sentence") ? "s" : "i";
 				var nodeType = (node.li_attr['class'] === "sentence") ? "s" : "i";
 				if (nodeType == "i" && targetTypeOld == "i") {
-					linkGenericElements(parentNode.data.id, nodeId, targetType, nodeType, function() {
-						refreshTreeViewer()
+					deleteLink(oldParentNode.data.id, nodeId, function() {
+						linkGenericElements(parentNode.data.id, nodeId, targetType, nodeType, function() {
+							refreshTreeViewer()
+						});
 					});
 				} else {
 					deleteGenericLink(oldParentNode.data.id, nodeId, targetTypeOld, nodeType, function() {
