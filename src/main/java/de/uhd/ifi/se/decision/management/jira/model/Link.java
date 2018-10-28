@@ -106,6 +106,17 @@ public interface Link {
 	 * @return opposite element of this link.
 	 */
 	DecisionKnowledgeElement getOppositeElement(long elementId);
+	
+	/**
+	 * Get the opposite element of this link.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @param element
+	 *            a decision knowledge element on one side of this link.
+	 * 
+	 * @return opposite element of this link.
+	 */
+	DecisionKnowledgeElement getOppositeElement(DecisionKnowledgeElement element);
 
 	/**
 	 * Get both elements that are linked (both sides of the link) as a list.

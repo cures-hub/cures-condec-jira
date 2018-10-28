@@ -18,10 +18,10 @@ import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 @JsonAutoDetect
 public class GraphImpl implements Graph {
 
-	private DecisionKnowledgeElement rootElement;
-	private DecisionKnowledgeProject project;
-	private List<Long> linkIds;
-	private List<Long> genericLinkIds;
+	protected DecisionKnowledgeElement rootElement;
+	protected DecisionKnowledgeProject project;
+	protected List<Long> linkIds;
+	protected List<Long> genericLinkIds;
 
 	public GraphImpl() {
 		linkIds = new ArrayList<Long>();
@@ -40,7 +40,8 @@ public class GraphImpl implements Graph {
 
 	public GraphImpl(String projectKey, String rootElementKey) {
 		this(projectKey);
-		// Support keys of decision knowledge elements documented in comments
+		// Support keys of decision knowledge elements documented in JIRA issue comments
+		// or commit messages
 		String issueKey = getJiraIssueKey(rootElementKey);
 		this.rootElement = this.project.getPersistenceStrategy().getDecisionKnowledgeElement(issueKey);
 	}
@@ -69,7 +70,7 @@ public class GraphImpl implements Graph {
 		return linkedElementsAndLinks;
 	}
 
-	private Map<DecisionKnowledgeElement, Link> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement element) {
+	protected Map<DecisionKnowledgeElement, Link> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
 		if (element == null) {
@@ -89,7 +90,7 @@ public class GraphImpl implements Graph {
 		return linkedElementsAndLinks;
 	}
 
-	private Map<DecisionKnowledgeElement, Link> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element) {
+	protected Map<DecisionKnowledgeElement, Link> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
 		if (element == null) {
@@ -109,7 +110,7 @@ public class GraphImpl implements Graph {
 		return linkedElementsAndLinks;
 	}
 
-	private Map<DecisionKnowledgeElement, Link> getAllLinkedSentences(DecisionKnowledgeElement element) {
+	protected Map<DecisionKnowledgeElement, Link> getAllLinkedSentences(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
 		if (element == null) {
@@ -119,14 +120,13 @@ public class GraphImpl implements Graph {
 		String prefix = DocumentationLocation.getIdentifier(element);
 		List<Link> links = GenericLinkManager.getLinksForElement(prefix + element.getId(), false);
 
-		for (Link currentLink : links) {
-			if (currentLink.isInterProjectLink()) {
+		for (Link link : links) {
+			if (link.isInterProjectLink()) {
 				continue;
 			}
-			currentLink.setType("contain");
-			if (!this.genericLinkIds.contains(currentLink.getId())) {
-				this.genericLinkIds.add(currentLink.getId());
-				linkedElementsAndLinks.put(currentLink.getOppositeElement(prefix + element.getId()), currentLink);
+			if (!this.genericLinkIds.contains(link.getId())) {
+				this.genericLinkIds.add(link.getId());
+				linkedElementsAndLinks.put(link.getOppositeElement(element), link);
 			}
 		}
 		return linkedElementsAndLinks;

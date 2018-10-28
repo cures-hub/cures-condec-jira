@@ -18,145 +18,62 @@ import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
  */
 @JsonAutoDetect
 public class GraphImplFiltered extends GraphImpl {
-	private DecisionKnowledgeElement rootElement;
-	private List<Long> linkIds;
-	private DecisionKnowledgeProject project;
+
 	private GraphFiltering filter;
-	private static List<Link> sentenceLinkAlreadyVisited;
 	private List<DecisionKnowledgeElement> elementsVisitedTransitively;
 
 	public GraphImplFiltered() {
-		linkIds = new ArrayList<>();
-		sentenceLinkAlreadyVisited = new ArrayList<>();
-	}
-
-	public GraphImplFiltered(String projectKey) {
-		this();
-		this.project = new DecisionKnowledgeProjectImpl(projectKey);
+		super();
 	}
 
 	public GraphImplFiltered(String projectKey, String rootElementKey, GraphFiltering filter) {
-		this(projectKey);
-		String cleanRootElementKey = getRootElementKeyWithoutDoubleDot(rootElementKey);
-		this.rootElement = this.project.getPersistenceStrategy().getDecisionKnowledgeElement(cleanRootElementKey);
+		super(projectKey, rootElementKey);
 		this.filter = filter;
 	}
 
-	@Override
-	public Map<DecisionKnowledgeElement, Link> getLinkedElementsAndLinks(DecisionKnowledgeElement element) {
-		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<>();
-
-		linkedElementsAndLinks.putAll(this.getElementsLinkedWithInwardLinksFiltered(element));
-		linkedElementsAndLinks.putAll(this.getElementsLinkedWithOutwardLinksFiltered(element));
-		linkedElementsAndLinks.putAll(this.getAllLinkedSentences(element));
-		return linkedElementsAndLinks;
-	}
-
-	private String getRootElementKeyWithoutDoubleDot(String rootElementKey) {
-		String returnedRootElementKey;
-		if (rootElementKey.contains(":")) {
-			returnedRootElementKey = rootElementKey.substring(0, rootElementKey.indexOf(":"));
-		} else {
-			returnedRootElementKey = rootElementKey;
-		}
-		return returnedRootElementKey;
-	}
-
-	private Map<DecisionKnowledgeElement, Link> getAllLinkedSentences(DecisionKnowledgeElement element) {
+	protected Map<DecisionKnowledgeElement, Link> getAllLinkedSentences(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
 		if (element == null) {
 			return linkedElementsAndLinks;
 		}
-		String preIndex = getIdentifier(element);
-		List<Link> list = GenericLinkManager.getLinksForElement(preIndex + element.getId(), false);
+		String prefix = DocumentationLocation.getIdentifier(element);
+		List<Link> links = GenericLinkManager.getLinksForElement(prefix + element.getId(), false);
 
-		for (Link currentGenericLink : list) {
-			try {
+		boolean includeElementInGraph = false;
 
-				DecisionKnowledgeElement source = currentGenericLink.getBothElements().get(0);
-				DecisionKnowledgeElement target = currentGenericLink.getBothElements().get(1);
-				if (!source.getProject().getProjectKey().equals(target.getProject().getProjectKey())) {
-					continue;
-				}
-				Link linkBetweenSentenceAndOtherElement = new LinkImpl(source, target);
-				linkBetweenSentenceAndOtherElement.setType("contain");
-				if (filter.isQueryContainsCreationDate()) {
-					if (filter.getStartDate() <= 0) {
-						if (((Sentence) source).getCreated().getTime() < filter.getEndDate()) {
-							DecisionKnowledgeElement toLink = currentGenericLink
-									.getOppositeElement(preIndex + element.getId());
-							if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
-								sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
-								linkedElementsAndLinks.put(toLink, linkBetweenSentenceAndOtherElement);
-							}
-						}
-					} else if (filter.getEndDate() <= 0) {
-						if (((Sentence) source).getCreated().getTime() > filter.getStartDate()) {
-							DecisionKnowledgeElement toLink = currentGenericLink
-									.getOppositeElement(preIndex + element.getId());
-							if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
-								sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
-								linkedElementsAndLinks.put(toLink, linkBetweenSentenceAndOtherElement);
-							}
-						}
-					} else {
-						if ((((Sentence) source).getCreated().getTime() < filter.getEndDate())
-								&& (((Sentence) source).getCreated().getTime() > filter.getStartDate())) {
-							DecisionKnowledgeElement toLink = currentGenericLink
-									.getOppositeElement(preIndex + element.getId());
-							if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
-								sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
-								linkedElementsAndLinks.put(toLink, linkBetweenSentenceAndOtherElement);
-							}
-						}
-					}
-				} else {
-					if (!linkListContainsLink(linkBetweenSentenceAndOtherElement)) {
-						GraphImplFiltered.sentenceLinkAlreadyVisited.add(linkBetweenSentenceAndOtherElement);
-						linkedElementsAndLinks.put(currentGenericLink.getOppositeElement(preIndex + element.getId()),
-								linkBetweenSentenceAndOtherElement);
-					}
-				}
-
-			} catch (NullPointerException e) {
-				// Link in the wrong direction
+		for (Link link : links) {
+			if (link.isInterProjectLink()) {
 				continue;
+			}
+			DecisionKnowledgeElement oppositeElement = link.getOppositeElement(element);
+			if (filter.isQueryContainsCreationDate() && oppositeElement instanceof Sentence) {
+				includeElementInGraph = isSentenceIncludedInGraph(oppositeElement);
+			} else {
+				includeElementInGraph = true;
+			}
+
+			if (includeElementInGraph && !this.genericLinkIds.contains(link.getId())) {
+				this.genericLinkIds.add(link.getId());
+				linkedElementsAndLinks.put(oppositeElement, link);
 			}
 		}
 		return linkedElementsAndLinks;
 	}
 
-	private boolean linkListContainsLink(Link link2) {
-		for (Link link : GraphImplFiltered.sentenceLinkAlreadyVisited) {
-			if (link.getDestinationElement().getId() == link2.getDestinationElement().getId()
-					&& link.getSourceElement().getId() == link2.getSourceElement().getId()
-					|| link.getSourceElement().getId() == link2.getDestinationElement().getId()
-							&& link.getSourceElement().getId() == link2.getDestinationElement().getId()) {
-				return true;
-			}
+	private boolean isSentenceIncludedInGraph(DecisionKnowledgeElement element) {
+		if (filter.getStartDate() <= 0 && element.getCreated().getTime() < filter.getEndDate()) {
+			return true;
+		} else if (filter.getEndDate() <= 0 && element.getCreated().getTime() > filter.getStartDate()) {
+			return true;
+		} else if (element.getCreated().getTime() < filter.getEndDate()
+				&& element.getCreated().getTime() > filter.getStartDate()) {
+			return true;
 		}
 		return false;
 	}
 
-	private String getIdentifier(DecisionKnowledgeElement element) {
-		if (element instanceof Sentence) {
-			return "s";
-		} else {
-			return "i";
-		}
-	}
-
-	@Override
-	public List<DecisionKnowledgeElement> getLinkedElements(DecisionKnowledgeElement element) {
-		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = this.getLinkedElementsAndLinks(element);
-		List<DecisionKnowledgeElement> linkedElements = new ArrayList<DecisionKnowledgeElement>(
-				linkedElementsAndLinks.keySet());
-		return linkedElements;
-	}
-
-	private Map<DecisionKnowledgeElement, Link> getElementsLinkedWithInwardLinksFiltered(
-			DecisionKnowledgeElement element) {
+	protected Map<DecisionKnowledgeElement, Link> getElementsLinkedWithInwardLinks(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
 		if (element == null) {
@@ -217,8 +134,7 @@ public class GraphImplFiltered extends GraphImpl {
 		return transitiveLinkedNodes;
 	}
 
-	private Map<DecisionKnowledgeElement, Link> getElementsLinkedWithOutwardLinksFiltered(
-			DecisionKnowledgeElement element) {
+	protected Map<DecisionKnowledgeElement, Link> getElementsLinkedWithOutwardLinks(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
 		if (element == null) {

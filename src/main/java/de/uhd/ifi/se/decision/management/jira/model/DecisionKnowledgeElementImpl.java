@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,6 +24,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	protected DocumentationLocation documentationLocation;
 	private DecisionKnowledgeProject project;
 	private String key;
+	private Date created;
 
 	public DecisionKnowledgeElementImpl() {
 
@@ -51,6 +53,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 		this.project = new DecisionKnowledgeProjectImpl(issue.getProjectObject().getKey());
 		this.key = issue.getKey();
 		this.documentationLocation = DocumentationLocation.JIRAISSUE;
+		this.created = issue.getCreated();
 	}
 
 	public DecisionKnowledgeElementImpl(DecisionKnowledgeElementInDatabase entity) {
@@ -192,5 +195,15 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 		}
 		DecisionKnowledgeElement element = (DecisionKnowledgeElement) object;
 		return this.id == element.getId();
+	}
+
+	@Override
+	public Date getCreated() {
+		return this.created;
+	}
+
+	@Override
+	public void setCreated(Date date) {
+		this.created = date;
 	}
 }
