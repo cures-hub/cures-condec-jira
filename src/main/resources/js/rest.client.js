@@ -665,5 +665,4 @@ function getLinkedElementsByQuery(query, elementKey, callback) {
 			showFlag("error", "Linked elements for given query could not be received." + error);
 		}
 	});
-
 }

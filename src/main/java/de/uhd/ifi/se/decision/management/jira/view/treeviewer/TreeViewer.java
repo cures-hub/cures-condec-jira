@@ -82,16 +82,16 @@ public class TreeViewer {
 	/**
 	 * Constructor for DecXtract TreeViewer in IssueTabPanel.
 	 *
-	 * @param issueId the issue id
+	 * @param issueKey the issue id
 	 * @param isCalledFromTabPanel the show relevant (deprecated) currently used to distinguish between Constructors
 	 */
-	public TreeViewer(String issueId, boolean isCalledFromTabPanel) {
+	public TreeViewer(String issueKey, boolean isCalledFromTabPanel) {
 		this();
 		TreeViewer.isCalledFromIssueTabPanel = true;
-		if (issueId == null) {
+		if (issueKey == null) {
 			return;
 		}
-		Issue currentIssue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
+		Issue currentIssue = ComponentAccessor.getIssueManager().getIssueObject(issueKey);
 		if (currentIssue == null) {
 			return;
 		}

@@ -68,7 +68,7 @@ public class TestsetSentenceIrrelevant extends TestKnowledgeRestSetUp {
 
 	@Test
 	@NonTransactional
-	public void testRequestF€illedElementFilledButNotExisting() {
+	public void testRequestFilledElementFilledButNotExisting() {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());

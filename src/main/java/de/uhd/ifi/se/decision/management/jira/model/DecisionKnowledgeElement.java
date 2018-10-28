@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.Date;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
@@ -116,9 +117,9 @@ public interface DecisionKnowledgeElement {
 	void setProject(DecisionKnowledgeProject project);
 
 	/**
-	 * Set the project that the decision knowledge element belongs to via its key. The project
-	 * is a JIRA project that is extended with settings for this plug-in, for
-	 * example, whether the plug-in is activated for the project.
+	 * Set the project that the decision knowledge element belongs to via its key.
+	 * The project is a JIRA project that is extended with settings for this
+	 * plug-in, for example, whether the plug-in is activated for the project.
 	 *
 	 * @see DecisionKnowledgeProject
 	 * @param projectKey
@@ -170,4 +171,51 @@ public interface DecisionKnowledgeElement {
 	 *         destination element.
 	 */
 	List<Link> getInwardLinks();
+
+	/**
+	 * Get the documentation location of the decision knowledge element. For
+	 * example, decision knowledge can be documented in commit messages or in the
+	 * comments to a JIRA issue.
+	 *
+	 * @see DocumentationLocation
+	 * @return documentation location of the decision knowledge element.
+	 */
+	DocumentationLocation getDocumentationLocation();
+
+	/**
+	 * Set the documentation location of the decision knowledge element. For
+	 * example, decision knowledge can be documented in commit messages or in the
+	 * comments to a JIRA issue.
+	 *
+	 * @see DocumentationLocation
+	 * @param documentationLocation
+	 *            of the decision knowledge element.
+	 */
+	void setDocumentationLocation(DocumentationLocation documentationLocation);
+
+	/**
+	 * Set the documentation location of the decision knowledge element. For
+	 * example, decision knowledge can be documented in commit messages or in the
+	 * comments to a JIRA issue.
+	 *
+	 * @see DocumentationLocation
+	 * @param documentationLocation
+	 *            of the decision knowledge element.
+	 */
+	void setDocumentationLocation(String documentationLocation);
+
+	/**
+	 * Get the creation date of the decision knowledge element.
+	 *
+	 * @return creation date.
+	 */
+	Date getCreated();
+
+	/**
+	 * Set the creation date of the decision knowledge element.
+	 *
+	 * @param date
+	 *            of creation.
+	 */
+	void setCreated(Date date);
 }

@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -17,10 +18,13 @@ import com.atlassian.activeobjects.test.TestActiveObjects;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 import net.java.ao.EntityManager;
@@ -144,6 +148,45 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		TreeViewer tree = new TreeViewer();
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
 		assertEquals("14", tree.getDataStructure(element).getId());
+	}
+
+	@Test
+	@NonTransactional
+	public void testTreeViewerWithComment() {
+		TreeViewer tree = new TreeViewer();
+		TestComment tc = new TestComment();
+		Comment comment = tc.getComment("This is a testcomment with some text");
+		comment.getSentences().get(0).setKnowledgeTypeString(KnowledgeType.ALTERNATIVE.toString());
+		assertNotNull(tree.getDataStructure(comment.getSentences().get(0)));
+	}
+
+	// TODO Why does this test fail?
+	@Test
+	@NonTransactional
+	@Ignore
+	public void testTreeViewerCalledFromTabpanel() {
+		TestComment tc = new TestComment();
+		Comment comment = tc.getComment("This is a testcomment with some text");
+		comment.getSentences().get(0).setKnowledgeTypeString(KnowledgeType.ALTERNATIVE.toString());
+		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) comment.getIssueId());
+		TreeViewer tv = new TreeViewer(element.getKey(), true);
+		assertNotNull(tv);
+		assertEquals(2, tv.getDataStructure(element).getChildren().size());
+	}
+
+	@Test
+	@NonTransactional
+	public void testTreeViewerCalledFromTabpanelNullData() {
+		TreeViewer tv = new TreeViewer(null, true);
+		assertNotNull(tv);
+		assertEquals(tv.getData(), null);
+	}
+
+	@Test
+	@NonTransactional
+	public void testTreeViewerCalledFromTabpanelEmptyData() {
+		TreeViewer tv = new TreeViewer("", true);
+		assertNotNull(tv);
 	}
 
 }

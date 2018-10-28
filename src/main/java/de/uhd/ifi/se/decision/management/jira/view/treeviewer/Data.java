@@ -50,6 +50,7 @@ public class Data {
 				&& !decisionKnowledgeElement.getDescription().equals("undefined")) {
 			this.a_attr = ImmutableMap.of("title", decisionKnowledgeElement.getDescription());
 		}
+		this.li_attr = ImmutableMap.of("class", "issue");
 		if (decisionKnowledgeElement instanceof Sentence) {
 			this.li_attr = ImmutableMap.of("class", "sentence", "sid", "s" + decisionKnowledgeElement.getId());
 			checkTypeOfArgumentForSentenceEntity((Sentence) decisionKnowledgeElement);

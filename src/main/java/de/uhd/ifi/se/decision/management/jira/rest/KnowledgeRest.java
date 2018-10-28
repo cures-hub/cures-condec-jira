@@ -24,15 +24,14 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.GenericLinkImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
+import de.uhd.ifi.se.decision.management.jira.model.GraphImplFiltered;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
@@ -262,14 +261,22 @@ public class KnowledgeRest {
 							.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount()));
 					int index = mc.getBody().indexOf(sentenceToSearch);
 
-					String newType = CommentSplitter.getKnowledgeTypeFromManuallIssueTag(sentenceToSearch,
-							databaseEntity.getProjectKey(), false);
+					String newType = CommentSplitter.getKnowledgeTypeFromManuallIssueTag(
+							decisionKnowledgeElement.getDescription(), databaseEntity.getProjectKey(), false);
 					String tag = "";
 					if (databaseEntity.isTaggedManually()
-							&& StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) < 0
-							&& !newType.equalsIgnoreCase("other")) {
-						tag = "[" + WordUtils.capitalize(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(
-								sentenceToSearch, databaseEntity.getProjectKey(), false)) + "]";
+							// Allow changing of manual tags, but no tags for icons
+							&& StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) < 0) {
+						if (newType.equalsIgnoreCase("other") && databaseEntity.isTaggedManually()
+								&& !databaseEntity.getKnowledgeTypeString()
+										.equalsIgnoreCase(decisionKnowledgeElement.getType().toString())) {
+							if (decisionKnowledgeElement.getType().toString().equalsIgnoreCase("other")) {
+								newType = argument;
+							} else {
+								newType = decisionKnowledgeElement.getType().toString();
+							}
+						}
+						tag = "[" + WordUtils.capitalize(newType) + "]";
 					} else if (StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) >= 0) {
 						index = index + 3; // add icon to text.
 					}
@@ -319,8 +326,9 @@ public class KnowledgeRest {
 				if (isDeleted) {
 					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 				} else {
-					return deleteGenericLink(projectKey, request, new GenericLinkImpl(
-							"i" + link.getSourceElement().getId(), "s" + link.getDestinationElement().getId()));
+					return deleteGenericLink(projectKey, request, new LinkImpl(link.getIdOfSourceElementWithPrefix(),
+							link.getIdOfDestinationElementWithPrefix()));
+
 				}
 			}
 		} else {
@@ -333,14 +341,14 @@ public class KnowledgeRest {
 	@DELETE
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response deleteGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
-			GenericLinkImpl link) {
+			Link link) {
 		if (projectKey != null && request != null && link != null) {
 			boolean isDeleted = GenericLinkManager.deleteGenericLink(link);
 			if (isDeleted) {
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 			} else {
-				GenericLink inverseLink = new GenericLinkImpl(link.getIdOfSourceElement(),
-						link.getIdOfDestinationElement());
+				Link inverseLink = new LinkImpl(link.getIdOfSourceElementWithPrefix(),
+						link.getIdOfDestinationElementWithPrefix());
 				isDeleted = GenericLinkManager.deleteGenericLink(inverseLink);
 				if (isDeleted) {
 					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
@@ -359,10 +367,10 @@ public class KnowledgeRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
-			GenericLink link) {
+			Link link) {
 		if (projectKey != null && request != null && link != null) {
 			ApplicationUser user = AuthenticationManager.getUser(request);
-			long linkId = GenericLinkManager.insertGenericLink(link, user);
+			long linkId = GenericLinkManager.insertLink(link, user);
 			if (linkId == 0) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
@@ -403,10 +411,15 @@ public class KnowledgeRest {
 		String projectKey = getProjectKey(elementKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		GraphFiltering filter = new GraphFiltering(projectKey, uriSearch, user);
-		filter.produceResultsFromQuery();
-
-		Graph graph = new GraphImpl(projectKey, elementKey, filter);
+		Graph graph;
+		if ((uriSearch.matches("\\?jql=(.)+")) || (uriSearch.matches("\\?filter=(.)+"))) {
+			GraphFiltering filter = new GraphFiltering(projectKey, uriSearch, user);
+			filter = new GraphFiltering(projectKey, uriSearch, user);
+			filter.produceResultsFromQuery();
+			graph = new GraphImplFiltered(projectKey, elementKey, filter);
+		} else {
+			graph = new GraphImpl(projectKey, elementKey);
+		}
 		List<DecisionKnowledgeElement> filteredElements = graph.getAllElements();
 
 		return Response.ok(filteredElements).build();
