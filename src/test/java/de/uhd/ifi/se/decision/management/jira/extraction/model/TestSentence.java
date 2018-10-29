@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -136,7 +138,31 @@ public class TestSentence extends TestSetUpWithIssues {
 		Sentence sentence = new SentenceImpl();
 		assertNotNull(sentence.toString());
 	}
+	
+	@Test
+	@NonTransactional
+	public void testGetKnowledgeTypeString() {
+		Sentence sentence = new SentenceImpl();
+		sentence.setKnowledgeTypeString(null);
+		assertEquals("Other", sentence.getKnowledgeTypeString());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testGetUserId() {
+		Sentence sentence = new SentenceImpl();
+		sentence.setUserId((long)1337);
+		assertEquals((long)1337, sentence.getUserId());
+	}
 
+	
+	@Test
+	@NonTransactional
+	public void testGetCreated() {
+		Sentence sentence = new SentenceImpl();
+		sentence.setCreated(new Date());
+		assertNotNull(sentence.getCreated());
+	}
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater // (2)
 	{
 		@SuppressWarnings("unchecked")
