@@ -340,7 +340,7 @@ public class ConfigRest {
 			// Use link validation over deletion. Deletion is useful during development
 			// process
 			// ActiveObjectsManager.clearSentenceDatabaseForProject(projectKey);
-			GenericLinkManager.clearInValidLinks();
+			GenericLinkManager.clearInvalidLinks();
 			ActiveObjectsManager.cleanSentenceDatabaseForProject(projectKey);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {

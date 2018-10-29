@@ -30,7 +30,7 @@ public interface Graph {
 
 	/**
 	 * Get the decision knowledge elements and their respective links that can be
-	 * reached from the root element.
+	 * directly reached from the root element (with link distance 1).
 	 *
 	 * @see DecisionKnowledgeElement
 	 * @see Link
@@ -42,8 +42,8 @@ public interface Graph {
 	Map<DecisionKnowledgeElement, Link> getLinkedElementsAndLinks(DecisionKnowledgeElement element);
 
 	/**
-	 * Get the decision knowledge elements that can be reached from the root
-	 * element.
+	 * Get the decision knowledge elements that can be directly reached from the root
+	 * element (with link distance 1).
 	 *
 	 * @see DecisionKnowledgeElement
 	 * @param element
@@ -51,6 +51,14 @@ public interface Graph {
 	 * @return list of decision knowledge elements in the graph.
 	 */
 	List<DecisionKnowledgeElement> getLinkedElements(DecisionKnowledgeElement element);
+	
+	/**
+	 * Return all decision knowledge elements within the graph as a list. The list
+	 * is not sorted.
+	 *
+	 * @see DecisionKnowledgeElement
+	 */
+	List<DecisionKnowledgeElement> getAllElements();
 
 	/**
 	 * Get the project that this graph of decision knowledge elements belongs to.
@@ -72,12 +80,4 @@ public interface Graph {
 	 *            decision knowledge project.
 	 */
 	void setProject(DecisionKnowledgeProject project);
-
-	/**
-	 * Return all decision knowledge elements within the graph as a list. The list
-	 * is not sorted.
-	 *
-	 * @see DecisionKnowledgeElement
-	 */
-	List<DecisionKnowledgeElement> getAllElements();
 }

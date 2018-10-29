@@ -7,11 +7,11 @@ import com.atlassian.jira.user.MockApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ActiveObjectStrategy;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementEntity;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementInDatabase;
+import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 
@@ -32,9 +32,9 @@ public class ActiveObjectStrategyTestSetUp {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void update(EntityManager entityManager) throws Exception {
-			entityManager.migrate(DecisionKnowledgeElementEntity.class);
+			entityManager.migrate(DecisionKnowledgeElementInDatabase.class);
 			entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
-			entityManager.migrate(LinkBetweenDifferentEntitiesEntity.class);
+			entityManager.migrate(LinkInDatabase.class);
 		}
 	}
 }

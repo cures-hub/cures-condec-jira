@@ -30,13 +30,14 @@ import com.atlassian.jira.user.MockApplicationUser;
 import com.atlassian.jira.user.util.MockUserManager;
 import com.atlassian.jira.user.util.UserManager;
 import com.atlassian.jira.util.VelocityParamFactory;
+import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.velocity.VelocityManager;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.mocks.*;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementEntity;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementInDatabase;
+import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 
@@ -77,6 +78,7 @@ public class TestSetUpWithIssues {
 				.addMock(VelocityParamFactory.class, new MockVelocityParamFactory())
 				.addMock(AvatarManager.class, new MockAvatarManager()).addMock(IssueTypeManager.class, issueTypeManager)
 				.addMock(IssueTypeSchemeManager.class, new MockIssueTypeSchemeManager())
+				.addMock(PluginSettingsFactory.class, new MockPluginSettingsFactory())
 				.addMock(OptionSetManager.class, new MockOptionSetManager()).addMock(CommentManager.class, new MockCommentManager());
 
 		creatingProjectIssueStructure();
@@ -155,9 +157,9 @@ public class TestSetUpWithIssues {
         @Override
         public void update(EntityManager entityManager) throws Exception
         {
-        	entityManager.migrate(DecisionKnowledgeElementEntity.class);
+        	entityManager.migrate(DecisionKnowledgeElementInDatabase.class);
         	entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
-            entityManager.migrate(LinkBetweenDifferentEntitiesEntity.class);
+            entityManager.migrate(LinkInDatabase.class);
         }
     }
 }

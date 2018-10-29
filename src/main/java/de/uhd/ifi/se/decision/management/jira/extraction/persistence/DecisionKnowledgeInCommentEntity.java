@@ -5,6 +5,7 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import net.java.ao.RawEntity;
@@ -65,6 +66,13 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long>, Sente
 
 	@Ignore
 	List<Link> getInwardLinks();
+	
+	@Ignore
+	DocumentationLocation getDocumentationLocation();
 
+	@Ignore
+	void setDocumentationLocation(DocumentationLocation documentationLocation);
 
+	@Ignore
+	void setDocumentationLocation(String documentationLocation);
 }

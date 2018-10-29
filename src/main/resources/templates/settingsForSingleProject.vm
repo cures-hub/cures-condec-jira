@@ -133,15 +133,18 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				value="$projectKey" label="Use Classifier to Identify Decision Knowledge?"></aui-toggle>
 			<script>
 				var isClassifierUsedToggle = document.getElementById('isClassifierUsed-toggle');
-					isClassifierUsedToggle.checked = $isClassifierUsedForIssueComments
-
-                $(document).ready(function () {
-                    isClassifierUsedToggle.addEventListener('change', function (error) {
-                        this.busy = true;
-                        setUseClassiferForIssueComments(this.checked, this.value);
-                        this.busy = false;
-                    });
-                });
+					if ($project.isClassifierUsedForIssueComments() == true) {
+						isClassifierUsedToggle.checked = true;
+					} else {
+						isClassifierUsedToggle.checked = false;
+					};
+				$(document).ready(function () {
+					isClassifierUsedToggle.addEventListener('change', function(error) {
+						this.busy = true;
+						setUseClassiferForIssueComments(this.checked, this.value);
+						this.busy = false;
+					});
+				});
             </script>
 			<div class="description">Enables or disables whether decision
 				knowledge is extracted classified from issue comments for this project.</div>
@@ -152,13 +155,17 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				label="Use icon labels"></aui-toggle>
 			<script>
                 var sentenceIconToggle = document.getElementById('iconParsing-toggle');
-                sentenceIconToggle.checked = $iconToggle
-                $(document).ready(function () {
-                    sentenceIconToggle.addEventListener('change', function (error) {
-                        this.busy = true;
-                        setIconParsing(this.value, this.checked);
-                        this.busy = false;
-                    });
+                if ($project.isIconParsingEnabled() == true) {
+						sentenceIconToggle.checked = true;
+					} else {
+						sentenceIconToggle.checked = false;
+					};
+				$(document).ready(function () {
+                	sentenceIconToggle.addEventListener('change', function(error) {
+                    	this.busy = true;
+                    	setIconParsing(this.value, this.checked);
+                    	this.busy = false;
+                	});
                 });
             </script>
 			<div class="description">Enables or disables to use icons for tagging decision knowledge. <br/> WARNING: Use with caution. Sentences will not be labelled/classified correctly if a decision knowledge icon is used for other things than as a decision knowledge tag. </div>
@@ -286,8 +293,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                 window.onbeforeunload = null;
             });
 		</script>
-
-		
+				
 	</form>
 </body>
 </html>
