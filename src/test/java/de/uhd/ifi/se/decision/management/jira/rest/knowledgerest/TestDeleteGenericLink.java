@@ -36,8 +36,11 @@ public class TestDeleteGenericLink extends TestKnowledgeRestSetUp {
 	@Test
 	@NonTransactional
 	public void testRequestNullElementFilled() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.deleteGenericLink("TEST", null, new LinkImpl(decisionKnowledgeElement, sentence)).getEntity());
+		assertEquals(
+				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
+						.getEntity(),
+				knowledgeRest.deleteGenericLink("TEST", null, new LinkImpl(decisionKnowledgeElement, sentence))
+						.getEntity());
 	}
 
 	@Test
@@ -54,24 +57,62 @@ public class TestDeleteGenericLink extends TestKnowledgeRestSetUp {
 	public void testRequestFilledElementFilled() {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
-		
+
 		TestComment tc = new TestComment();
 		Comment comment = tc.getComment("this is atest sentence");
 		sentence = comment.getSentences().get(0);
+
+		Link newLink = new LinkImpl(decisionKnowledgeElement, sentence);
+		GenericLinkManager.insertLink(newLink, null);
 		
-		Link newLink =  new LinkImpl(decisionKnowledgeElement, sentence);
-		GenericLinkManager.insertLink(newLink, null);
-		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.deleteGenericLink("TEST", request, newLink).getStatus());
+		//Test Element existing in AO
+		assertEquals(1, GenericLinkManager
+				.getLinksForElement("i" + decisionKnowledgeElement.getId()).size());
+
+		assertEquals(Status.OK.getStatusCode(), knowledgeRest.deleteGenericLink("TEST", request, newLink).getStatus());
 
 		GenericLinkManager.insertLink(newLink, null);
-		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.deleteGenericLink("TEST", request, newLink).getStatus());
+		assertEquals(Status.OK.getStatusCode(), knowledgeRest.deleteGenericLink("TEST", request, newLink).getStatus());
 
-		assertEquals(
-				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-						.getEntity(),
-				knowledgeRest.deleteGenericLink("TEST", request, newLink).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
+				.getEntity(), knowledgeRest.deleteGenericLink("TEST", request, newLink).getEntity());
+		
+		//Test element not more exisitng in AO
+		assertEquals(0, GenericLinkManager
+				.getLinksForElement("i" + decisionKnowledgeElement.getId()).size());
+
+	}
+	
+	@Test
+	@NonTransactional
+	public void testRequestFilledElementFilledWithFlippedLink() {
+		request.setAttribute("WithFails", false);
+		request.setAttribute("NoFails", true);
+
+		TestComment tc = new TestComment();
+		Comment comment = tc.getComment("this is atest sentence");
+		sentence = comment.getSentences().get(0);
+
+		Link newLink = new LinkImpl(decisionKnowledgeElement, sentence);
+		GenericLinkManager.insertLink(newLink, null);
+		//Flip link
+		newLink = new LinkImpl(sentence,decisionKnowledgeElement);
+		
+		//Test Element existing in AO
+		assertEquals(1, GenericLinkManager
+				.getLinksForElement("i" + decisionKnowledgeElement.getId()).size());
+
+		assertEquals(Status.OK.getStatusCode(), knowledgeRest.deleteGenericLink("TEST", request, newLink).getStatus());
+
+		GenericLinkManager.insertLink(newLink, null);
+		assertEquals(Status.OK.getStatusCode(), knowledgeRest.deleteGenericLink("TEST", request, newLink).getStatus());
+
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
+				.getEntity(), knowledgeRest.deleteGenericLink("TEST", request, newLink).getEntity());
+		
+		//Test element not more exisitng in AO
+		assertEquals(0, GenericLinkManager
+				.getLinksForElement("i" + decisionKnowledgeElement.getId()).size());
 
 	}
 
