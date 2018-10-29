@@ -57,21 +57,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			typeToggles.push(document.getElementById(toggleName));
 		}
 		</script>
-		<script>
-		$(document).ready(function () {
-		for (j in additionalKnowledgeTypes) {
-				console.log(typeToggles[j].value);
-				isKnowledgeTypeEnabled(typeToggles[j].value, '$projectKey', typeToggles[j], function(isTypeEnabled, toggle) {				
-                	toggle.checked = isTypeEnabled;
-           		});
-                	typeToggles[j].addEventListener('change', function (error) {
-                    	this.busy = true;
-                    	setKnowledgeTypeEnabled(this.checked, this.value, '$projectKey');
-                    	this.busy = false;
-                	});           
-				}
-			});
-		</script>
 		
 		<h2>Decision Knowledge Extraction from Issue Comments</h2>
 		<div class="field-group">
@@ -248,6 +233,18 @@ strategyToggle.addEventListener('change', function(error) {
 	setIssueStrategy(this.checked, this.value);
 	this.busy = false;
 });
+
+for (j in additionalKnowledgeTypes) {
+	console.log(typeToggles[j].value);
+	isKnowledgeTypeEnabled(typeToggles[j].value, '$projectKey', typeToggles[j], function(isTypeEnabled, toggle) {				
+    	toggle.checked = isTypeEnabled;
+	});
+    typeToggles[j].addEventListener('change', function (error) {
+        this.busy = true;
+        setKnowledgeTypeEnabled(this.checked, this.value, '$projectKey');
+        this.busy = false;
+    });           
+}
 
 issueCommentsToggle.addEventListener('change', function(error) {
 	this.busy = true;
