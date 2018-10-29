@@ -17,21 +17,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			<label for="isActivated-toggle">ConDec Activated?</label>
 			<aui-toggle id="isActivated-toggle" value="$projectKey"
 				label="ConDec Activated?"></aui-toggle>
-			<script>
-                var activationToggle = document.getElementById('isActivated-toggle');
-                    #if ($project.isActivated() == true)
-						activationToggle.checked = true;
-                    #else
-						activationToggle.checked = false;
-                    #end
-				$(document).ready(function () {
-                    activationToggle.addEventListener('change', function(error) {
-                        this.busy = true;
-                        setActivated(this.checked, this.value);
-                        this.busy = false;
-                    });
-                });
-            </script>
 			<div class="description">Enables or disables the plug-in for
 				this project.</div>
 		</div>
@@ -39,21 +24,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			<label for="isIssueStrategy-toggle">Store in Issues?</label>
 			<aui-toggle id="isIssueStrategy-toggle" value="$projectKey"
 				label="Store in Issues?"></aui-toggle>
-			<script>
-                var strategyToggle = document.getElementById('isIssueStrategy-toggle');
-                    #if ($project.isIssueStrategy() == true)
-						strategyToggle.checked = true;
-                    #else
-						strategyToggle.checked = false;
-                    #end
-                $(document).ready(function () {
-                    strategyToggle.addEventListener('change', function (error) {
-                        this.busy = true;
-                        setIssueStrategy(this.checked, this.value);
-                        this.busy = false;
-                    });
-                });
-            </script>
 			<div class="description">Sets the persistence strategy for this
 				project (either issue strategy or active object strategy). If
 				enabled, decision knowledge is stored in JIRA issues. If you choose
@@ -109,21 +79,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				from Issue Comments?</label>
 			<aui-toggle id="isKnowledgeExtractedFromIssues-toggle"
 				value="$projectKey" label="Extract from	Issue Comments?"></aui-toggle>
-			<script>
-				var issueToggle = document.getElementById('isKnowledgeExtractedFromIssues-toggle');
-					if ($project.isKnowledgeExtractedFromIssues() == true) {
-						issueToggle.checked = true;
-					} else {
-						issueToggle.checked = false;
-					};
-                $(document).ready(function () {
-                    issueToggle.addEventListener('change', function (error) {
-                        this.busy = true;
-                        setKnowledgeExtractedFromIssues(this.checked, this.value);
-                        this.busy = false;
-                    });
-                });
-            </script>
 			<div class="description">Enables or disables whether decision
 				knowledge is extracted from issue comments for this project.</div>
 		</div>
@@ -131,21 +86,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			<label for="isClassifierUsed-toggle">Use Classifier to identify Decision Knowledge?</label>
 			<aui-toggle id="isClassifierUsed-toggle"
 				value="$projectKey" label="Use Classifier to Identify Decision Knowledge?"></aui-toggle>
-			<script>
-				var isClassifierUsedToggle = document.getElementById('isClassifierUsed-toggle');
-					if ($project.isClassifierUsedForIssueComments() == true) {
-						isClassifierUsedToggle.checked = true;
-					} else {
-						isClassifierUsedToggle.checked = false;
-					};
-				$(document).ready(function () {
-					isClassifierUsedToggle.addEventListener('change', function(error) {
-						this.busy = true;
-						setUseClassiferForIssueComments(this.checked, this.value);
-						this.busy = false;
-					});
-				});
-            </script>
 			<div class="description">Enables or disables whether decision
 				knowledge is extracted classified from issue comments for this project.</div>
 		</div>
@@ -153,33 +93,12 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			<label for="iconParsing-toggle">Use Icons as Tags?</label>
 			<aui-toggle id="iconParsing-toggle" value="$projectKey"
 				label="Use icon labels"></aui-toggle>
-			<script>
-                var sentenceIconToggle = document.getElementById('iconParsing-toggle');
-                if ($project.isIconParsingEnabled() == true) {
-						sentenceIconToggle.checked = true;
-					} else {
-						sentenceIconToggle.checked = false;
-					};
-				$(document).ready(function () {
-                	sentenceIconToggle.addEventListener('change', function(error) {
-                    	this.busy = true;
-                    	setIconParsing(this.value, this.checked);
-                    	this.busy = false;
-                	});
-                });
-            </script>
 			<div class="description">Enables or disables to use icons for tagging decision knowledge. <br/> WARNING: Use with caution. Sentences will not be labelled/classified correctly if a decision knowledge icon is used for other things than as a decision knowledge tag. </div>
 		</div>		
 		<div class="field-group">
 			<label for="validateSentenceDatabase">Validate Manual Tags and Links?</label>
 			<input type="button" class="aui-button" id="validateSentenceDatabase" value="Validate Sentence Database" />
 			<div class="description">Validates all metadata (manual provided tags) of sentences in issue comments including all links from and to sentences.</div>		
-			<script>
-				var clearSentenceDatabaseButton = document.getElementById("validateSentenceDatabase");
-				clearSentenceDatabaseButton.addEventListener("click", function() {				
-    					clearSentenceDatabase('$projectKey');        
-            	});
-			</script>	
 		</div>
 		<div class="field-group">
 			<label for="classifyAllIssuesInProject">Suggest Tags for Whole Project?</label>
@@ -207,21 +126,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				Git?</label>
 			<aui-toggle id="isKnowledgeExtractedFromGit-toggle"
 				value="$projectKey" label="Extract from	Git?"></aui-toggle>
-			<script>
-				var gitToggle = document.getElementById('isKnowledgeExtractedFromGit-toggle');
-					if ($project.isKnowledgeExtractedFromGit() == true) {
-						gitToggle.checked = true;
-					} else {
-						gitToggle.checked = false;
-					};
-                $(document).ready(function () {
-                    gitToggle.addEventListener('change', function (error) {
-                        this.busy = true;
-                        setKnowledgeExtractedFromGit(this.checked, this.value);
-                        this.busy = false;
-                    });
-                });
-            </script>
 			<div class="description">Enables or disables whether decision
 				knowledge is extracted from Git for this project. You need to install the 
 				<a href="https://bigbrassband.com/" target="_blank">
@@ -268,32 +172,114 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			<div class="description">Key to authenticate with remote
 				server.</div>				
 			<input type="button" id="submitWebhook" class="aui-button aui-button-primary" value="Set Webhook URL and Secret" />
-		</div>
+		</div>				
 
-		<script>
-			var webhookToggle = document.getElementById('isWebhookEnabled-toggle');
-            if ($project.isWebhookEnabled() == true) {
-                webhookToggle.checked = true;
-            } else {
-                webhookToggle.checked = false;
-            };
-            $(document).ready(function () {
-                webhookToggle.addEventListener('change', function (error) {
-                    this.busy = true;
-                    setWebhookEnabled(this.checked, this.value);
-                    this.busy = false;
-                });
-            });
+<script>
+var activationToggle = document.getElementById('isActivated-toggle');
+if ($project.isActivated() == true) {
+	activationToggle.checked = true;
+} else {
+	activationToggle.checked = false;
+};
 
-			var webHookSubmit = document.getElementById('submitWebhook');
-			webHookSubmit.addEventListener("click", function() {
-				var urlInput = document.getElementById("webhook-url");
-				var secretInput = document.getElementById("webhook-secret");
-                setWebhookData('$projectKey', urlInput.value, secretInput.value);
-                window.onbeforeunload = null;
-            });
-		</script>
-				
+var strategyToggle = document.getElementById('isIssueStrategy-toggle');
+if ($project.isIssueStrategy() == true) {
+	strategyToggle.checked = true;
+} else {
+	strategyToggle.checked = false;
+};
+
+var issueCommentsToggle = document.getElementById('isKnowledgeExtractedFromIssues-toggle');
+if ($project.isKnowledgeExtractedFromIssues() == true) {
+	issueCommentsToggle.checked = true;
+} else {
+	issueCommentsToggle.checked = false;
+};
+
+var isClassifierUsedToggle = document.getElementById('isClassifierUsed-toggle');
+if ($project.isClassifierUsedForIssueComments() == true) {
+	isClassifierUsedToggle.checked = true;
+} else {
+	isClassifierUsedToggle.checked = false;
+};
+
+var clearSentenceDatabaseButton = document.getElementById("validateSentenceDatabase");
+clearSentenceDatabaseButton.addEventListener("click", function() {
+	clearSentenceDatabase('$projectKey');
+});
+
+var sentenceIconToggle = document.getElementById('iconParsing-toggle');
+if ($project.isIconParsingEnabled() == true) {
+	sentenceIconToggle.checked = true;
+} else {
+	sentenceIconToggle.checked = false;
+};
+			
+var gitToggle = document.getElementById('isKnowledgeExtractedFromGit-toggle');
+if ($project.isKnowledgeExtractedFromGit() == true) {
+	gitToggle.checked = true;
+} else {
+	gitToggle.checked = false;
+};
+
+var webhookToggle = document.getElementById('isWebhookEnabled-toggle');
+if ($project.isWebhookEnabled() == true) {
+	webhookToggle.checked = true;
+} else {
+	webhookToggle.checked = false;
+};
+
+var webHookSubmit = document.getElementById('submitWebhook');
+webHookSubmit.addEventListener("click", function() {
+	var urlInput = document.getElementById("webhook-url");
+	var secretInput = document.getElementById("webhook-secret");
+	setWebhookData('$projectKey', urlInput.value, secretInput.value);
+	window.onbeforeunload = null;
+});
+
+activationToggle.addEventListener('change', function(error) {
+	this.busy = true;
+	setActivated(this.checked, this.value);
+	this.busy = false;
+});
+
+strategyToggle.addEventListener('change', function(error) {
+	this.busy = true;
+	setIssueStrategy(this.checked, this.value);
+	this.busy = false;
+});
+
+issueCommentsToggle.addEventListener('change', function(error) {
+	this.busy = true;
+	setKnowledgeExtractedFromIssues(this.checked, this.value);
+	this.busy = false;
+});
+
+isClassifierUsedToggle.addEventListener('change', function(error) {
+	this.busy = true;
+	setUseClassiferForIssueComments(this.checked, this.value);
+	this.busy = false;
+});
+
+sentenceIconToggle.addEventListener('change', function(error) {
+	this.busy = true;
+	setIconParsing(this.value, this.checked);
+	this.busy = false;
+});
+
+gitToggle.addEventListener('change', function(error) {
+	this.busy = true;
+	setKnowledgeExtractedFromGit(this.checked, this.value);
+	this.busy = false;
+});
+
+webhookToggle.addEventListener('change', function(error) {
+	this.busy = true;
+	setWebhookEnabled(this.checked, this.value);
+	this.busy = false;
+});
+
+</script>
 	</form>
 </body>
 </html>
