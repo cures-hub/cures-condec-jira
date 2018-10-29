@@ -10,16 +10,20 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.issue.comments.CommentManager;
+import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -163,15 +167,32 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	// TODO Why does this test fail?
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testTreeViewerCalledFromTabpanel() {
-		TestComment tc = new TestComment();
-		Comment comment = tc.getComment("This is a testcomment with some text");
-		comment.getSentences().get(0).setKnowledgeTypeString(KnowledgeType.ALTERNATIVE.toString());
-		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) comment.getIssueId());
+		//1) Check if Tree Element has no Children - Important! 
+		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
 		TreeViewer tv = new TreeViewer(element.getKey(), true);
 		assertNotNull(tv);
-		assertEquals(2, tv.getDataStructure(element).getChildren().size());
+		assertEquals(0, tv.getDataStructure(element).getChildren().size());
+		
+		//2) Add comment to issue
+		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("14");
+		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
+		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		CommentManager commentManager = ComponentAccessor.getCommentManager();
+		com.atlassian.jira.issue.comments.Comment comment1 = commentManager.create(issue, currentUser, "This is a testsentence for test purposes", true);
+		
+		//3) Manipulate Sentence object so it will be shown in the tree viewer
+		Comment comment = new CommentImpl(comment1);
+		comment.getSentences().get(0).setRelevant(true);
+		comment.getSentences().get(0).setKnowledgeTypeString(KnowledgeType.ALTERNATIVE.toString());
+		element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		tv = new TreeViewer(element.getKey(), true);
+		
+		//4) Check if TreeViewer has one new children 
+		assertNotNull(tv);
+		assertEquals(1, tv.getDataStructure(element).getChildren().size());
+
+		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 	}
 
 	@Test
