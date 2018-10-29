@@ -24,7 +24,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
@@ -257,8 +256,8 @@ public class KnowledgeRest {
 				MutableComment mc = (MutableComment) cm.getCommentById(databaseEntity.getCommentId());
 				// Generate sentence data generated for classification
 				if (mc.getBody().length() >= databaseEntity.getEndSubstringCount()) {
-					String sentenceToSearch = CommentImpl.textRule(mc.getBody()
-							.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount()));
+					String sentenceToSearch = mc.getBody()
+							.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount());
 					int index = mc.getBody().indexOf(sentenceToSearch);
 
 					String newType = CommentSplitter.getKnowledgeTypeFromManuallIssueTag(
