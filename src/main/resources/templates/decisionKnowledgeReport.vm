@@ -64,7 +64,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:repo
       #foreach ($item in $numAlternativeWoArgument.keySet())
         map.set("$item", $numAlternativeWoArgument.get("$item"));
       #end
-      initializeDivWithPieChart("altWithArguments","Arguments for Alterantives","",map);
+      initializeDivWithPieChart("altWithArguments","Arguments for Alternatives","",map);
 
 
       function copyToClipboard(parent){
