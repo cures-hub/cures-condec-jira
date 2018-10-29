@@ -81,10 +81,10 @@ public class GenericLinkManager {
 	private static long isLinkAlreadyInDatabase(Link link) {
 		for (LinkInDatabase linkInDatabase : activeObjects.find(LinkInDatabase.class)) {
 			// also checks the inverse link
-			if (linkInDatabase.getIdOfSourceElement() == link.getIdOfSourceElementWithPrefix()
-					&& linkInDatabase.getIdOfDestinationElement() == link.getIdOfDestinationElementWithPrefix()
-					|| linkInDatabase.getIdOfDestinationElement() == link.getIdOfSourceElementWithPrefix()
-							&& linkInDatabase.getIdOfSourceElement() == link.getIdOfDestinationElementWithPrefix()) {
+			if (linkInDatabase.getIdOfSourceElement().equals(link.getIdOfSourceElementWithPrefix())
+					&& linkInDatabase.getIdOfDestinationElement().equals(link.getIdOfDestinationElementWithPrefix())
+					|| linkInDatabase.getIdOfDestinationElement().equals(link.getIdOfSourceElementWithPrefix())
+							&& linkInDatabase.getIdOfSourceElement().equals(link.getIdOfDestinationElementWithPrefix())) {
 				return linkInDatabase.getId();
 			}
 		}
