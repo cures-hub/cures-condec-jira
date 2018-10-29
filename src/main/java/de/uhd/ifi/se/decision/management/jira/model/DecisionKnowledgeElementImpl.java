@@ -27,7 +27,9 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	private Date created;
 
 	public DecisionKnowledgeElementImpl() {
-
+		//prevent nullPointers later
+		this.description="";
+		this.summary="";
 	}
 
 	public DecisionKnowledgeElementImpl(long id, String summary, String description, KnowledgeType type,

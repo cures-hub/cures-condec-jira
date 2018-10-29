@@ -63,6 +63,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	public SentenceImpl(String body, long id) {
+		this();
 		super.setId(id);
 		retrieveAttributesFromActievObjects();
 		this.setBody(body);
@@ -70,6 +71,8 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	public SentenceImpl(DecisionKnowledgeInCommentEntity databaseEntry) throws NullPointerException {
+		this();
+		super.setId(databaseEntry.getId());
 		this.insertAoValues(databaseEntry);
 		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
@@ -181,7 +184,9 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	@Override
 	public void setKnowledgeTypeString(String type) {
-		if (type.equalsIgnoreCase("pro")) {
+		if(type == null) {
+			super.type = KnowledgeType.OTHER;
+		}else if (type.equalsIgnoreCase("pro")) {
 			super.type = KnowledgeType.ARGUMENT;
 			this.argument = "Pro";
 		} else if (type.equalsIgnoreCase("con")) {
@@ -248,7 +253,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.excludedTagList) >= 0) {
 			this.isPlainText = false;
 		}
-		if (CommentSplitter.containsOpenAndCloseTags(body)
+		if (CommentSplitter.containsOpenAndCloseTags(body,this.projectKey)
 				|| (ConfigPersistence.isIconParsing(projectKey)
 						&& StringUtils.indexOfAny(body, CommentSplitter.manualRationalIconList) >= 0)) {
 			this.setKnowledgeTypeString(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey,true));
@@ -258,7 +263,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	private void stripTagsFromBody(String body) {
-		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.manualRationaleTagList) >= 0) {
+		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.getAllTagsUsedInProject(this.projectKey)) >= 0) {
 			int tagLength = 2
 					+ CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey, true).length();
 			super.setDescription(body.substring(tagLength, body.length() - (1 + tagLength)));
