@@ -88,19 +88,19 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		}
 		</script>
 		<script>
+		$(document).ready(function () {
 		for (j in additionalKnowledgeTypes) {
-			console.log(typeToggles[j].value);
-			isKnowledgeTypeEnabled(typeToggles[j].value, '$projectKey', typeToggles[j], function(isTypeEnabled, toggle) {				
-                toggle.checked = isTypeEnabled;
-           	});
-            $(document).ready(function () {
-                typeToggles[j].addEventListener('change', function (error) {
-                    this.busy = true;
-                    setKnowledgeTypeEnabled(this.checked, this.value, '$projectKey');
-                    this.busy = false;
-                });
-            });
-		}
+				console.log(typeToggles[j].value);
+				isKnowledgeTypeEnabled(typeToggles[j].value, '$projectKey', typeToggles[j], function(isTypeEnabled, toggle) {				
+                	toggle.checked = isTypeEnabled;
+           		});
+                	typeToggles[j].addEventListener('change', function (error) {
+                    	this.busy = true;
+                    	setKnowledgeTypeEnabled(this.checked, this.value, '$projectKey');
+                    	this.busy = false;
+                	});           
+				}
+			});
 		</script>
 		
 		<h2>Decision Knowledge Extraction from Issue Comments</h2>
