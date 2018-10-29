@@ -111,48 +111,54 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				<td headers="isActivated"><aui-toggle id="$proj.getProjectKey()-isActivated-toggle"
 						label="$proj.getProjectName()-Activated"
 						value="$proj.getProjectKey()"></aui-toggle> <script>
-						var toggle = document.getElementById('$proj.getProjectKey()-isActivated-toggle');
-						#if ($proj.isActivated() == true)
-							toggle.checked = true;
-						#else
-							toggle.checked = false;
-						#end
-						toggle.addEventListener('change', function(error) {
-							this.busy = true;
-							setActivated(this.checked, this.value);
-							this.busy = false;
-						});
+                        $(document).ready(function () {
+                            var toggle = document.getElementById('$proj.getProjectKey()-isActivated-toggle');
+                            #if ($proj.isActivated() == true)
+                                toggle.checked = true;
+                            #else
+                                toggle.checked = false;
+                            #end
+                            toggle.addEventListener('change', function (error) {
+                                this.busy = true;
+                                setActivated(this.checked, this.value);
+                                this.busy = false;
+                            });
+                        });
 					</script></td>
 				<td headers="isIssue"><aui-toggle	id="$proj.getProjectKey()-isIssueStrategy-toggle"
 						label="$proj.getProjectName()-IssueStrategy"
 						value="$proj.getProjectKey()"></aui-toggle> <script>
-						var toggle = document.getElementById('$proj.getProjectKey()-isIssueStrategy-toggle');
-						#if ($proj.isIssueStrategy() == true)
-							toggle.checked = true;
-						#else
-							toggle.checked = false;
-						#end
-						toggle.addEventListener('change', function(e) {
-							this.busy = true;
-							setIssueStrategy(this.checked, this.value);
-							this.busy = false;
-						});
+                        $(document).ready(function () {
+                            var toggle = document.getElementById('$proj.getProjectKey()-isIssueStrategy-toggle');
+                            #if ($proj.isIssueStrategy() == true)
+                                toggle.checked = true;
+                            #else
+                                toggle.checked = false;
+                            #end
+                            toggle.addEventListener('change', function (e) {
+                                this.busy = true;
+                                setIssueStrategy(this.checked, this.value);
+                                this.busy = false;
+                            });
+                        });
 					</script></td>
 				<td headers="extractGit"><aui-toggle
 						id="$proj.getProjectKey()-isKnowledgeExtractedFromGit-toggle"
 						label="$proj.getProjectName()-KnowledgeExtractedFromGit"
 						value="$proj.getProjectKey()"></aui-toggle>
 					<script>
-						var toggle = document.getElementById('$proj.getProjectKey()-isKnowledgeExtractedFromGit-toggle');
-						#if ($proj.isKnowledgeExtractedFromGit() == true)
-				toggle.checked = true;
-						#else
-				toggle.checked = false;
-						#end
-                        toggle.addEventListener('change', function(error) {
-                            this.busy = true;
-                            setKnowledgeExtractedFromGit(this.checked, this.value);
-                            this.busy = false;
+                        $(document).ready(function () {
+                            var toggle = document.getElementById('$proj.getProjectKey()-isKnowledgeExtractedFromGit-toggle');
+                            #if ($proj.isKnowledgeExtractedFromGit() == true)
+                                toggle.checked = true;
+                            #else
+                                toggle.checked = false;
+                            #end
+                            toggle.addEventListener('change', function (error) {
+                                this.busy = true;
+                                setKnowledgeExtractedFromGit(this.checked, this.value);
+                                this.busy = false;
+                            });
                         });
 					</script></td>
 				<td headers="extractCom"><aui-toggle
@@ -160,16 +166,18 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 						label="$proj.getProjectName()-KnowledgeExtractedFromIssues"
 						value="$proj.getProjectKey()"></aui-toggle>
 					<script>
-						var toggle = document.getElementById('$proj.getProjectKey()-isKnowledgeExtractedFromIssues-toggle');
-						#if ($proj.isKnowledgeExtractedFromIssues() == true)
-				toggle.checked = true;
-						#else
-				toggle.checked = false;
-						#end
-                        toggle.addEventListener('change', function(error) {
-                            this.busy = true;
-                            setKnowledgeExtractedFromIssues(this.checked, this.value);
-                            this.busy = false;
+                        $(document).ready(function () {
+                            var toggle = document.getElementById('$proj.getProjectKey()-isKnowledgeExtractedFromIssues-toggle');
+                            #if ($proj.isKnowledgeExtractedFromIssues() == true)
+                                toggle.checked = true;
+                            #else
+                                toggle.checked = false;
+                            #end
+                            toggle.addEventListener('change', function (error) {
+                                this.busy = true;
+                                setKnowledgeExtractedFromIssues(this.checked, this.value);
+                                this.busy = false;
+                            });
                         });
 					</script></td>
 			</tr>
