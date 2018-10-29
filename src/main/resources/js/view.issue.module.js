@@ -1,5 +1,13 @@
 function fillIssueModule() {
 	console.log("view.issue.module fillIssueModule");
+	
+	var exportMenuItem = document.getElementById("export-as-table-link");
+	exportMenuItem.addEventListener("click", function(e) {
+	    e.preventDefault();
+	    e.stopPropagation();
+		console.log("view.issue.module exportDecisionKnowledge");
+		AJS.dialog2("#export-dialog").show();
+	});
 
 	updateView();
 }
@@ -27,17 +35,6 @@ var contextMenuActionsTreant = {
 	"deleteLink" : contextMenuDeleteLinkAction,
 	"delete" : contextMenuDeleteAction
 };
-/**
- * Button Handler gets overwritten if same method is used again...
- * 
- */
-AJS.$(document).off().on("click", "#export-as-table-link", function(e) {
-	e.preventDefault();
-	e.stopPropagation();
-	console.log("clickOnTable");
-	AJS.dialog2("#export-dialog").show();
-	return false;
-});
 
 function closeExportDialog() {
 	AJS.dialog2("#export-dialog").hide();
