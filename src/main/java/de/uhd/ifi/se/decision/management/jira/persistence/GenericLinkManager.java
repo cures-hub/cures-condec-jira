@@ -40,6 +40,7 @@ public class GenericLinkManager {
 	}
 
 	private static Boolean deleteLinkWithoutTransaction(String sourceIdWithPrefix, String targetIdWithPrefix) {
+		init();
 		for (LinkInDatabase linkInDatabase : activeObjects.find(LinkInDatabase.class)) {
 			if (linkInDatabase.getIdOfDestinationElement().equals(targetIdWithPrefix)
 					&& linkInDatabase.getIdOfSourceElement().equals(sourceIdWithPrefix)) {
@@ -65,6 +66,7 @@ public class GenericLinkManager {
 	}
 
 	public static long insertLinkWithoutTransaction(Link link) {
+		init();
 		if (isLinkAlreadyInDatabase(link) != -1) {
 			return isLinkAlreadyInDatabase(link);
 		}
@@ -82,6 +84,7 @@ public class GenericLinkManager {
 	}
 
 	private static long isLinkAlreadyInDatabase(Link link) {
+		init();
 		for (LinkInDatabase linkInDatabase : activeObjects.find(LinkInDatabase.class)) {
 			// also checks the inverse link
 			if (linkInDatabase.getIdOfSourceElement().equals(link.getIdOfSourceElementWithPrefix())
