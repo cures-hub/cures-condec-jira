@@ -12,14 +12,17 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 
 /**
@@ -82,8 +85,9 @@ public class TreeViewer {
 	/**
 	 * Constructor for DecXtract TreeViewer in IssueTabPanel.
 	 *
-	 * @param issueKey the issue id
-	 * @param isCalledFromTabPanel the show relevant (deprecated) currently used to distinguish between Constructors
+	 * @param issueKey             the issue id
+	 * @param isCalledFromTabPanel the show relevant (deprecated) currently used to
+	 *                             distinguish between Constructors
 	 */
 	public TreeViewer(String issueKey, boolean isCalledFromTabPanel) {
 		this();
@@ -95,11 +99,19 @@ public class TreeViewer {
 		if (currentIssue == null) {
 			return;
 		}
+		Data issueNode = this.getDataStructure(new DecisionKnowledgeElementImpl(currentIssue));
+		//Match irrelevant sentences back to list
+		String identifier = DocumentationLocation.getIdentifier(DocumentationLocation.JIRAISSUE);
+		for (Link link : GenericLinkManager.getLinksForElement(identifier + currentIssue.getId())) {
+			DecisionKnowledgeElement opposite = link.getOppositeElement(identifier + currentIssue.getId());
+			if (opposite instanceof Sentence && !((Sentence) opposite).isRelevant()) {
+				if (((Sentence) opposite).getBody().length() > 0) {
+					issueNode.getChildren().add(new Data(opposite));
+				}
+			}
+		}
 
-		Set<Data> dataSet = new HashSet<Data>();
-
-		dataSet.add(this.getDataStructure(new DecisionKnowledgeElementImpl(currentIssue)));
-		this.data = dataSet;
+		this.data = new HashSet<Data>(issueNode.getChildren());
 	}
 
 	public Data getDataStructure(DecisionKnowledgeElement decisionKnowledgeElement) {

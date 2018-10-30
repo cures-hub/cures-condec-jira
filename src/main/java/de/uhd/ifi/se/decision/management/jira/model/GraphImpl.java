@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.collections.IteratorUtils;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 
 /**
@@ -107,6 +108,10 @@ public class GraphImpl implements Graph {
 			this.genericLinkIds.add(link.getId());
 			linkedElementsAndLinks.put(link.getOppositeElement(element), link);
 		}
+		//remove irrelevant sentences from graph
+		linkedElementsAndLinks.keySet().removeIf(e->(e instanceof Sentence && !((Sentence) e).isRelevant()));
+		
+		
 		return linkedElementsAndLinks;
 	}
 
