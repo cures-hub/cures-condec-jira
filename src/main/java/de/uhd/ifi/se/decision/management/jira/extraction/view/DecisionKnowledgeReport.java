@@ -62,12 +62,11 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		Map<String, Object> velocityParams = new HashMap<>();
 		velocityParams.put("projectName", action.getProjectManager().getProjectObj(this.projectId).getName());
 
-		List<Integer> numCommentsPerIssue = getNumberOfCommentsPerIssue(action.getLoggedInUser());
-		velocityParams.put("numCommentsPerIssue", numCommentsPerIssue);
+		// get Number of comments per Issue
+		velocityParams.put("numCommentsPerIssueMap", getNumberOfCommentsPerIssueMap(action.getLoggedInUser()));
 
 		// get Number of Sentence per Issue
-		List<Integer> numSentencePerIssue = getNumberOfSentencePerIssue(action.getLoggedInUser());
-		velocityParams.put("numSentencePerIssue", numSentencePerIssue);
+		velocityParams.put("numSentencePerIssueMap", getNumberOfSentencePerIssueMap(action.getLoggedInUser()));
 
 		// get Number of relevant Sentences per Issue
 		Map<String, Integer> numRelevantSentences = getNumberOfRelevantSentences(action.getLoggedInUser());
@@ -75,8 +74,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		velocityParams.put("map", Map.class);
 
 		// get Number of commits per Issue
-		List<Integer> numCommitsPerIssue = getNumberOfCommitsPerIssue(action.getLoggedInUser());
-		velocityParams.put("numCommitsPerIssue", numCommitsPerIssue);
+		velocityParams.put("numCommitsPerIssueMap", getNumberOfCommitsPerIssueMap(action.getLoggedInUser()));
 
 		// Get associated Knowledge Types in Sentences per Issue
 		Map<String, Integer> numKnowledgeTypesPerIssue = getDecKnowElementsPerIssue();
@@ -126,8 +124,8 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return result;
 	}
 
-	private List<Integer> getNumberOfSentencePerIssue(ApplicationUser loggedInUser) {
-		List<Integer> result = new ArrayList<>();
+	private Map<String, Integer> getNumberOfSentencePerIssueMap(ApplicationUser loggedInUser) {
+		Map<String, Integer> result = new HashMap<String, Integer>();
 
 		SearchResults projectIssues = getIssuesForThisProject(loggedInUser);
 		if (projectIssues == null || projectIssues.getIssues().size() == 0) {
@@ -137,8 +135,8 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		for (Issue currentIssue : projectIssues.getIssues()) {
 			List<DecisionKnowledgeElement> elements = ActiveObjectsManager.getElementsForIssue(currentIssue.getId(),
 					projectKey);
-			if (elements.size() > 0) {
-				result.add(elements.size());
+			if (elements.size() >= 0) {
+				result.put(currentIssue.getKey(), elements.size());
 			}
 		}
 		return result;
@@ -151,9 +149,6 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				.getAllElementsFromAoByType(projectManager.getProjectObj(this.projectId).getKey(), type);
 
 		for (DecisionKnowledgeElement currentAlternative : listOfIssues) {
-			// Treant treant = new Treant(currentAlternative.getProject().getProjectKey(),
-			// currentAlternative.getKey(),
-			// 100);
 			int depth = graphRecursionBot(currentAlternative);
 			linkDistances.add(depth);
 		}
@@ -231,8 +226,8 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return dkeCount;
 	}
 
-	private List<Integer> getNumberOfCommitsPerIssue(ApplicationUser loggedInUser) {
-		List<Integer> commentList = new ArrayList<>();
+	private Map<String, Integer> getNumberOfCommitsPerIssueMap(ApplicationUser loggedInUser) {
+		Map<String, Integer> resultMap = new HashMap<String, Integer>();
 
 		SearchResults issues = getIssuesForThisProject(loggedInUser);
 		for (Issue issue : issues.getIssues()) {
@@ -240,32 +235,31 @@ public class DecisionKnowledgeReport extends AbstractReport {
 			if (restResponse != null) {
 				try {
 					JSONArray result = (JSONArray) restResponse.get("commits");
-					commentList.add(result.length());
+					resultMap.put(issue.getKey(), result.length());
 				} catch (Exception e) {
-					commentList.add(0);
+					resultMap.put(issue.getKey(), 0);
 				}
 			}
 		}
 
-		return commentList;
+		return resultMap;
 	}
 
-	private List<Integer> getNumberOfCommentsPerIssue(ApplicationUser user) {
-		List<Integer> commentList = new ArrayList<>();
+	private Map<String, Integer> getNumberOfCommentsPerIssueMap(ApplicationUser user) {
+		Map<String, Integer> result = new HashMap<String, Integer>();
 		SearchResults searchResults = getIssuesForThisProject(user);
 		if (searchResults == null || searchResults.getIssues().size() == 0) {
-			return commentList;
+			return result;
 		}
 		for (Issue issue : searchResults.getIssues()) {
 			int size = 0;
 			try {
 				size = ComponentAccessor.getCommentManager().getComments(issue).size();
+				result.put(issue.getKey(), size);
 			} catch (NullPointerException e) {// Issue does not exist
-				commentList.add(size);
 			}
-			commentList.add(size);
 		}
-		return commentList;
+		return result;
 	}
 
 	private SearchResults getIssuesForThisProject(ApplicationUser user) {

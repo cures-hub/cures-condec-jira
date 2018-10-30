@@ -5,6 +5,23 @@ function initializeDivWithBoxPlot(id, dataFromServer, xAxis, title) {
 	document.getElementById(id).setAttribute("list", dataFromServer);
 }
 
+function initializeDivWithBoxPlotFromMap(id, dataFromServer, xAxis, title) {
+	var dataMap =dataFromServer;
+	var listToShowUserWithAllValues = "";
+	var values = [];
+	 for (var i = Array.from(dataMap.keys()).length - 1; i >= 0; i--) {
+		var key = Array.from(dataMap.keys())[i];
+		var value =dataMap.get(key);
+		listToShowUserWithAllValues = listToShowUserWithAllValues + key+": "+ value+"; ";
+		values.push(value);
+	}
+
+	var myChart = echarts.init(document.getElementById(id));
+	var data = echarts.dataTool.prepareBoxplotData(new Array(values));
+	myChart.setOption(getOptionsForBoxplot(title, xAxis, "", data));
+	document.getElementById(id).setAttribute("list", listToShowUserWithAllValues);
+}
+
 function initializeDivWithPieChart(id, title, subtitle, dataMap) {
 	var myChart = echarts.init(document.getElementById(id));
 	var data = [];
