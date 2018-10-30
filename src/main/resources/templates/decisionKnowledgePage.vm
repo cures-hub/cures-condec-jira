@@ -26,6 +26,15 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
     <div id="treant-container" class="right"></div>
 </div>
 <script>
-    initializeDecisionKnowledgePage();
+/*
+instantiate the ConDecKnowledgePage object controlling this view
+*/
+$(document).ready(function(){
+    if ( window.conDecKnowledgePage.init(window,window,window,window,window,window) )
+        window.conDecKnowledgePage.fetchAndRender();
+    else {
+        console.error("ConDecKnowledgePage could not get its dependencies.");
+    }
+});
 </script>
 #include("templates/dialog.vm")
