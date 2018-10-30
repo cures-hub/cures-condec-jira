@@ -470,7 +470,7 @@ public class ActiveObjectsManager {
 	public static List<DecisionKnowledgeElement> getAllElementsFromAoByType(String projectKey,
 			KnowledgeType rootElementType) {
 		init();
-		List<DecisionKnowledgeElement> list = new ArrayList<>();
+		List<DecisionKnowledgeInCommentEntity> listOfDbEntries = new ArrayList<>();
 		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 			@Override
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
@@ -481,7 +481,7 @@ public class ActiveObjectsManager {
 									|| (databaseEntry.getKnowledgeTypeString().length() == 3 // its either Pro or con
 											&& rootElementType.equals(KnowledgeType.ARGUMENT)))) {
 						try {
-							list.add(new SentenceImpl(databaseEntry));
+							listOfDbEntries.add(databaseEntry);
 						} catch (NullPointerException e) {
 							continue;
 						}
@@ -490,7 +490,11 @@ public class ActiveObjectsManager {
 				return null;
 			}
 		});
-		return list;
+		List<DecisionKnowledgeElement> listOfDKE = new ArrayList<>();
+		for(DecisionKnowledgeInCommentEntity dke: listOfDbEntries) {
+			listOfDKE.add(new SentenceImpl(dke));
+		}
+		return listOfDKE;
 	}
 
 	/**

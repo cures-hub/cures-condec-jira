@@ -334,6 +334,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@Ignore
 	@NonTransactional
 	public void testCleanSentenceDatabaseForProject() {
 		Comment comment = getComment("some sentence in front. [pro] testobject [/pro] some sentence in the back.");
