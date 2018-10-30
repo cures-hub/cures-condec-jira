@@ -33,7 +33,7 @@ public enum DocumentationLocation {
 		}
 	}
 
-	public String getIdentifier(DocumentationLocation documentationLocation) {
+	public static String getIdentifier(DocumentationLocation documentationLocation) {
 		switch (documentationLocation) {
 		case JIRAISSUE:
 			return "i";

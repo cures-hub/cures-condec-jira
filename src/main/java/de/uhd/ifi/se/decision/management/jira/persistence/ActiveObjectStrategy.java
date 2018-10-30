@@ -253,52 +253,23 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 		return element;
 	}
 
-	// TODO Align with method in GenericLinkManager
 	@Override
 	public long insertLink(Link link, ApplicationUser user) {
 		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction() {
-				return insertLinkWithoutTransaction(link, user);
+				// return insertLinkWithoutTransaction(link, user);
+				return GenericLinkManager.insertLinkWithoutTransaction(link);
 			}
 		});
 	}
 
 	public long insertLinkWithoutTransaction(Link link, ApplicationUser user) {
-		for (LinkInDatabase linkEntity : ACTIVE_OBJECTS.find(LinkInDatabase.class)) {
-			if (linkEntity.getIdOfSourceElement().substring(1).equals(link.getSourceElement().getId() + "")
-					&& linkEntity.getIdOfDestinationElement().substring(1)
-							.equals(link.getDestinationElement().getId() + "")) {
-				LOGGER.error("Link does already exist.");
-				return linkEntity.getId();
-			}
-		}
-
-		DecisionKnowledgeElementInDatabase sourceElement = null;
-		DecisionKnowledgeElementInDatabase[] sourceElements = ACTIVE_OBJECTS.find(
-				DecisionKnowledgeElementInDatabase.class,
-				Query.select().where("ID = ?", link.getSourceElement().getId()));
-		if (sourceElements.length == 1) {
-			sourceElement = sourceElements[0];
-		}
-
-		DecisionKnowledgeElementInDatabase destinationElement = null;
-		DecisionKnowledgeElementInDatabase[] destinationElements = ACTIVE_OBJECTS.find(
-				DecisionKnowledgeElementInDatabase.class,
-				Query.select().where("ID = ?", link.getDestinationElement().getId()));
-		if (destinationElements.length == 1) {
-			destinationElement = destinationElements[0];
-		}
-		if (sourceElement == null || destinationElement == null) {
-			LOGGER.error("One of the elements to be linked does not exist.");
-			return (long) 0;
-		}
-
-		// elements exist
-		Link newLink = new LinkImpl("a" + link.getDestinationElement().getId(), "a" + link.getSourceElement().getId());
+		String prefix = DocumentationLocation.getIdentifier(DocumentationLocation.ACTIVEOBJECT);
+		Link newLink = new LinkImpl(prefix + link.getDestinationElement().getId(),
+				prefix + link.getSourceElement().getId());
 		newLink.setType(link.getType());
-		return GenericLinkManager.insertLink(newLink, user);
-
+		return GenericLinkManager.insertLinkWithoutTransaction(newLink);
 	}
 
 	@Override

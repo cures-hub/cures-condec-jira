@@ -64,9 +64,12 @@ public class GenericLinkManager {
 		});
 	}
 
-	private static long insertLinkWithoutTransaction(Link link) {
+	public static long insertLinkWithoutTransaction(Link link) {
 		if (isLinkAlreadyInDatabase(link) != -1) {
 			return isLinkAlreadyInDatabase(link);
+		}
+		if(!link.isValid()){
+			return -1;
 		}
 
 		final LinkInDatabase linkInDatabase = activeObjects.create(LinkInDatabase.class);
@@ -101,8 +104,6 @@ public class GenericLinkManager {
 	 *            if false, checks both directions
 	 * @return the generic links for element
 	 */
-	// @issue: Function is very slow.
-	// @alternative: run this as a service
 	public static List<Link> getLinksForElement(String elementIdWithPrefix) {
 		init();
 		List<Link> links = new ArrayList<Link>();
