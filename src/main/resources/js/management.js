@@ -11,10 +11,10 @@ var knowledgeTypes = getKnowledgeTypes(getProjectKey());
 var defaultKnowledgeTypes = getDefaultKnowledgeTypes(getProjectKey());
 var extendedKnowledgeTypes = replaceArgumentWithLinkTypes(knowledgeTypes);
 
-function replaceArgumentWithLinkTypes(knowledgeTypes) {
-	console.log("management.js replaceArgumentWithLinkTypes");
+function replaceArgumentWithLinkTypes(knowledgeTypes) { // TODO: check why is/was knowledgeTypes passed?
+    console.log("management.js replaceArgumentWithLinkTypes");
 	var extendedKnowledgeTypes = getKnowledgeTypes(getProjectKey());
-	remove(extendedKnowledgeTypes, "Argument");
+	extendedKnowledgeTypes = extendedKnowledgeTypes.filter( function(value) { return value.toLowerCase() !== "argument";} );
 	extendedKnowledgeTypes.push("Pro-argument");
 	extendedKnowledgeTypes.push("Con-argument");
 	return extendedKnowledgeTypes;
@@ -132,18 +132,6 @@ function showFlag(type, message) {
 		title : type.charAt(0).toUpperCase() + type.slice(1),
 		body : message
 	});
-}
-
-/*
- * TODO refactor name or extend array prototype or wehere use replace with arrow
- * function...
- */
-function remove(array, item) {
-	for (var i = array.length; i--;) {
-		if (array[i] === item) {
-			array.splice(i, 1);
-		}
-	}
 }
 
 function getURLsSearch() {
