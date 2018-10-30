@@ -13,13 +13,28 @@
  Referenced in HTML by
  * tabPanel.vm 
 */
-(function (global, _restClient, _i18n) {
-    var restClient = _restClient;
-    var i18n = _i18n;
+(function (global) {
+    /* private vars */
+    var contextMenu = null;
+    var restClient = null;
+    var treeViewer = null;
+    var i18n = null;
     
     var ConDecIssueTab = function ConDecIssueTab() {
     };
-    
+
+    ConDecIssueTab.prototype.init = function init(_restClient, _treeViewer, _contextMenu, _i18n) {
+        console.log("view.tab.panel.js init");
+
+        // TODO add simple type checks
+        restClient = _restClient;
+        treeViewer = _treeViewer;
+        contextMenu = _contextMenu;
+        i18n = _i18n;
+
+        return true;
+    }
+
     /* triggered by onchange event in tabPanel.vm */
     function toggleSelectedDecisionElements(element) {
         console.log("view.tab.panel.js toggleSelectedDecisionElements");
@@ -63,7 +78,7 @@
             console.log("view.tab.panel.js close.onclick");
             AJS.dialog2("#dialog").hide();
         };
-        setUpDialog();
+        contextMenu.setUpDialog();
         var header = document.getElementById("dialog-header");
         header.textContent = textheader;
     }
@@ -78,7 +93,7 @@
         document.getElementById("dialog").classList.remove("aui-dialog2-medium");
         document.getElementById("dialog").classList.add("aui-dialog2-large");
         $("#dialog-extension-button").remove();
-        $("#dialog-cancel-button").remove();
+        $("#dialog #dialog-cancel-button").remove();
 
         buildTreeViewer(document.getElementById("Relevant").checked);
     }
@@ -86,8 +101,7 @@
     /*
 
      called by
-     * view.tab.panel.js
-        lines: 43
+     * view.tab.panel.js:callDialog
      * view.context.menu.js
         lines: 414,617
     */
@@ -112,7 +126,7 @@
                 var searchString = $(this).val();
                 jQueryConDec("#jstree").jstree(true).search(searchString);
             });
-            addDragAndDropSupportForTreeViewer();
+            treeViewer.addDragAndDropSupportForTreeViewer();
             document.getElementById("jstree").addEventListener("mousemove", bringContextMenuToFront);
         });
     }
@@ -166,6 +180,6 @@
     // for view.context.menu.js
     ConDecIssueTab.prototype.buildTreeViewer = buildTreeViewer;
         
-    // initialize ConDecIssueTab
+    // export ConDecIssueTab
     global.conDecIssueTab= new ConDecIssueTab();
-})(window,window,null); //TODO: replace 2nd param with rest client object 
+})(window);

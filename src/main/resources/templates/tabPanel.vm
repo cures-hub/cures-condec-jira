@@ -54,3 +54,13 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:clas
 	</div> 
 </div>
 #end
+<script>
+/*
+instantiate the ConDecIssueTab object controlling this view
+*/
+$(document).ready(function(){
+    if (! window.conDecIssueTab.init(window,window,window) ) {
+        console.error("ConDecIssueTab could not get its dependencies.");
+    }
+});
+</script>
