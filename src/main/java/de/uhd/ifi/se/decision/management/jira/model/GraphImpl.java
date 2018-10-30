@@ -115,8 +115,6 @@ public class GraphImpl implements Graph {
 	}
 
 	@Override
-	// TODO This method is not working correctly. We also need to check the link ids
-	// rather than the elements itself cause this neglects some links
 	public List<DecisionKnowledgeElement> getAllElements() {
 		List<DecisionKnowledgeElement> allElements = new ArrayList<DecisionKnowledgeElement>();
 		allElements.add(this.getRootElement());
@@ -127,6 +125,7 @@ public class GraphImpl implements Graph {
 			for (DecisionKnowledgeElement element : linkedElements) {
 				if (!IteratorUtils.toList(iterator).contains(element)) {
 					iterator.add(element);
+					iterator.previous();
 				}
 			}
 		}
