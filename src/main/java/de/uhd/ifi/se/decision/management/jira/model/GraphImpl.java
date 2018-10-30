@@ -108,10 +108,9 @@ public class GraphImpl implements Graph {
 			this.genericLinkIds.add(link.getId());
 			linkedElementsAndLinks.put(link.getOppositeElement(element), link);
 		}
-		//remove irrelevant sentences from graph
-		linkedElementsAndLinks.keySet().removeIf(e->(e instanceof Sentence && !((Sentence) e).isRelevant()));
-		
-		
+		// remove irrelevant sentences from graph
+		linkedElementsAndLinks.keySet().removeIf(e -> (e instanceof Sentence && !((Sentence) e).isRelevant()));
+
 		return linkedElementsAndLinks;
 	}
 
