@@ -5,7 +5,8 @@ var treantTree;
 
 var draggedElement;
 
-function buildTreant(elementKey, isInteractive, searchTerm) {
+function buildTreant(elementKey, isInteractive, searchTerm, contextMenuActions) {
+    console.log("view.treant.js buildTreant");
     var depthOfTree = getDepthOfTree();
     getTreant(elementKey, depthOfTree, searchTerm, function(treeStructure) {
         document.getElementById("treant-container").innerHTML = "";
@@ -19,10 +20,10 @@ function buildTreant(elementKey, isInteractive, searchTerm) {
                                 treeStructure.nodeStructure.children);
                         }
                         // console.log(treeStructure);
-                        createTreant(treeStructure, isInteractive);
+                        createTreant(treeStructure, isInteractive, contextMenuActions);
                     });
             } else {
-                createTreant(treeStructure, isInteractive);
+                createTreant(treeStructure, isInteractive, contextMenuActions);
             }
         });
     });
@@ -39,22 +40,24 @@ function getDepthOfTree() {
 	return depthOfTree;
 }
 
-function createTreant(treeStructure, isInteractive) {
+function createTreant(treeStructure, isInteractive, contextMenuActions) {
 	console.log("view.treant.js createTreant");
+    if (contextMenuActions == undefined)
+        contextMenuActions = contextMenuActionsTreant;
 	treantTree = new Treant(treeStructure);
 	if (isInteractive !== undefined && isInteractive) {
 		createContextMenuForTreantNodesThatAreSentence();
-		createContextMenuForTreantNodes();
+		createContextMenuForTreantNodes(contextMenuActions);
 		addDragAndDropSupportForTreant();
 		addTooltip();
 	}
 }
 
-function createContextMenuForTreantNodes() {
+function createContextMenuForTreantNodes(contextMenuActions) {
 	jQueryConDec(function() {
 		jQueryConDec.contextMenu({
 			selector : ".decision, .rationale, .context, .problem, .solution, .pro, .contra, .other",
-			items : contextMenuActionsTreant
+			items : contextMenuActions
 		});
 	});
 }
