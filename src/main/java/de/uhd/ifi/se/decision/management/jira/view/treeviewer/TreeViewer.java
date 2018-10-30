@@ -12,14 +12,17 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 
 /**
@@ -82,8 +85,11 @@ public class TreeViewer {
 	/**
 	 * Constructor for DecXtract TreeViewer in IssueTabPanel.
 	 *
-	 * @param issueKey the issue id
-	 * @param isCalledFromTabPanel the show relevant (deprecated) currently used to distinguish between Constructors
+	 * @param issueKey
+	 *            the issue id
+	 * @param isCalledFromTabPanel
+	 *            the show relevant (deprecated) currently used to distinguish
+	 *            between Constructors
 	 */
 	public TreeViewer(String issueKey, boolean isCalledFromTabPanel) {
 		this();
@@ -91,15 +97,25 @@ public class TreeViewer {
 		if (issueKey == null) {
 			return;
 		}
-		Issue currentIssue = ComponentAccessor.getIssueManager().getIssueObject(issueKey);
-		if (currentIssue == null) {
+		Issue issue = ComponentAccessor.getIssueManager().getIssueObject(issueKey);
+		if (issue == null) {
 			return;
 		}
+		Data issueNode = this.getDataStructure(new DecisionKnowledgeElementImpl(issue));
+		// Match irrelevant sentences back to list
+		String identifier = DocumentationLocation.getIdentifier(DocumentationLocation.JIRAISSUE);
+		for (Link link : GenericLinkManager.getLinksForElement(identifier + issue.getId())) {
+			DecisionKnowledgeElement opposite = link.getOppositeElement(identifier + issue.getId());
+			if (opposite instanceof Sentence && isSentenceShown(opposite)) {
+				issueNode.getChildren().add(new Data(opposite));
+			}
+		}
 
-		Set<Data> dataSet = new HashSet<Data>();
+		this.data = new HashSet<Data>(issueNode.getChildren());
+	}
 
-		dataSet.add(this.getDataStructure(new DecisionKnowledgeElementImpl(currentIssue)));
-		this.data = dataSet;
+	private boolean isSentenceShown(DecisionKnowledgeElement element) {
+		return !((Sentence) element).isRelevant() && ((Sentence) element).getBody().length() > 0;
 	}
 
 	public Data getDataStructure(DecisionKnowledgeElement decisionKnowledgeElement) {
