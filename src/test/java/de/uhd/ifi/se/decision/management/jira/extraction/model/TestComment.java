@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import org.junit.Before;
@@ -18,15 +19,14 @@ import com.atlassian.jira.issue.issuetype.MockIssueType;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
-
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.LinkBetweenDifferentEntitiesEntity;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.DatabaseUpdater;
@@ -435,6 +435,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testManuallyTaggingWithWrongTagMix() {
 		CommentImpl comment = getComment("[Alternative] This is a testsentence[/Issue]");
+		System.out.println(comment.getTaggedBody(0));
 		assertTrue(comment.getTaggedBody(0).trim().equalsIgnoreCase(
 				"<span id=\"comment0\"><span class=\"sentence isNotRelevant\"  id  = ui1><span class =tag></span><span class = sentenceBody>[Alternative] This is a testsentence[/Issue]</span><span class =tag></span></span></span>\r\n"
 						.trim()));
@@ -459,13 +460,120 @@ public class TestComment extends TestSetUpWithIssues {
 		assertEquals(comment.getTaggedBody(0), comment1.getTaggedBody(0));
 
 	}
-
+	
+	@Test
+	@NonTransactional
+	public void testRelevantCommentWithoutPlainText() {
+		CommentImpl comment = getComment("{noformat} nonplain text {noformat}");
+		comment.getSentences().get(0).setRelevant(true);
+		assertNotNull(comment.getTaggedBody(0));
+	}
+	
+	
+	@Test
+	@NonTransactional
+	public void testCommentsWithExtendedKnowledgeTypeSolution() {
+		Comment comment = getComment("[Solution]just a solution[/Solution]");
+		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Solution\""));
+	}
+	
+	@Test
+	@NonTransactional
+	public void testCommentsWithExtendedKnowledgeTypeGoal() {
+		Comment comment = getComment("[Goal]just a Goal[/Goal]");
+		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Goal\""));
+	}
+	
+	@Test
+	@NonTransactional
+	public void testCommentsWithExtendedKnowledgeTypeImplication() {
+		Comment comment = getComment("[Implication]just an Implication[/Implication]");
+		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Implication\""));
+	}
+	
+	@Test
+	@NonTransactional
+	public void testCommentsWithExtendedKnowledgeTypeContext() {
+		Comment comment = getComment("[Context]just an Context[/Context]");
+		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Context\""));
+	}
+	
+	@Test
+	@NonTransactional
+	public void testCommentsWithExtendedKnowledgeTypeConstraint() {
+		Comment comment = getComment("[Constraint]just a Context[/Constraint]");
+		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Constraint\""));
+	}
+	
+	@Test
+	@NonTransactional
+	public void testCommentsWithExtendedKnowledgeTypeClaim() {
+		Comment comment = getComment("[Claim]just a Claim  [/Claim]");
+		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Claim\""));
+	}
+	
+	@Test
+	@NonTransactional
+	public void testCommentsWithExtendedKnowledgeTypeAssumption() {
+		Comment comment = getComment("[Assumption]just a Assumption  [/Assumption]");
+		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Assumption\""));
+	}
+	
+	@Test
+	@NonTransactional
+	public void testCommentsWithExtendedKnowledgeTypeAssessment() {
+		Comment comment = getComment("[Assessment]just a Assessment  [/Assessment]");
+		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Assessment\""));
+	}	
+	
+	@Test
+	@NonTransactional
+	public void testCommentsWithInvalidKnowledgeType() {
+		Comment comment = getComment("[invalid]just a Assessment  [/invalid]");
+		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence isNotRelevant\""));
+	}
+	
+	
+	@Test
+	@NonTransactional
+	public void testSetSentences() {
+		Comment comment = new CommentImpl();
+		comment.setSentences(new ArrayList<Sentence>());
+		assertNotNull(comment.getSentences());
+		assertEquals(0, comment.getSentences().size());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testGetSetBody() {
+		Comment comment = new CommentImpl();
+		comment.setBody("test");
+		assertEquals("test", comment.getBody());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testGetSetAuthorId() {
+		Comment comment = new CommentImpl();
+		comment.setAuthorId((long)1337);
+		assertEquals(1337, comment.getAuthorId());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testSetProjectKey() {
+		Comment comment = new CommentImpl();
+		comment.setProjectKey("Test");
+		assertEquals("Test", comment.getProjectKey());
+	}	
+	
+	
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void update(EntityManager entityManager) throws Exception {
 			entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
-			entityManager.migrate(LinkBetweenDifferentEntitiesEntity.class);
+			entityManager.migrate(LinkInDatabase.class);
 		}
 	}
 }

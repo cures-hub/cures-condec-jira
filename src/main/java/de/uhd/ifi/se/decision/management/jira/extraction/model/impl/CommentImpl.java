@@ -93,10 +93,6 @@ public class CommentImpl implements Comment {
 			}
 		}
 	}
-	
-	public static String textRule(String text) {
-		return text.replaceAll("\r\n", "");
-	}
 
 	public List<Sentence> getSentences() {
 		return sentences;

@@ -137,4 +137,14 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	public String getWebhookRootType() {
 		return ConfigPersistence.getWebhookType(projectKey);
 	}
+
+	@Override
+	public boolean isIconParsingEnabled() {
+		return ConfigPersistence.isIconParsing(projectKey);
+	}
+
+	@Override
+	public boolean isClassifierUsedForIssueComments() {
+		return ConfigPersistence.isUseClassiferForIssueComments(projectKey);
+	}
 }

@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,7 +10,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.issue.Issue;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementEntity;
+import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementInDatabase;
 
 /**
  * Model class for decision knowledge elements
@@ -20,11 +21,15 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	private String summary;
 	private String description;
 	protected KnowledgeType type;
+	protected DocumentationLocation documentationLocation;
 	private DecisionKnowledgeProject project;
 	private String key;
+	private Date created;
 
 	public DecisionKnowledgeElementImpl() {
-
+		//prevent nullPointers later
+		this.description="";
+		this.summary="";
 	}
 
 	public DecisionKnowledgeElementImpl(long id, String summary, String description, KnowledgeType type,
@@ -49,11 +54,14 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 		this.type = KnowledgeType.getKnowledgeType(issue.getIssueType().getName());
 		this.project = new DecisionKnowledgeProjectImpl(issue.getProjectObject().getKey());
 		this.key = issue.getKey();
+		this.documentationLocation = DocumentationLocation.JIRAISSUE;
+		this.created = issue.getCreated();
 	}
 
-	public DecisionKnowledgeElementImpl(DecisionKnowledgeElementEntity entity) {
+	public DecisionKnowledgeElementImpl(DecisionKnowledgeElementInDatabase entity) {
 		this(entity.getId(), entity.getSummary(), entity.getDescription(), entity.getType(), entity.getProjectKey(),
 				entity.getKey());
+		this.documentationLocation = DocumentationLocation.ACTIVEOBJECT;
 	}
 
 	@Override
@@ -156,6 +164,22 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	}
 
 	@Override
+	public DocumentationLocation getDocumentationLocation() {
+		return this.documentationLocation;
+	}
+
+	@Override
+	public void setDocumentationLocation(DocumentationLocation documentationLocation) {
+		this.documentationLocation = documentationLocation;
+	}
+
+	@Override
+	@JsonProperty("documentationLocation")
+	public void setDocumentationLocation(String documentationLocation) {
+		this.documentationLocation = DocumentationLocation.getDocumentationType(documentationLocation);
+	}
+
+	@Override
 	public int hashCode() {
 		return Objects.hash(id, summary);
 	}
@@ -173,5 +197,15 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 		}
 		DecisionKnowledgeElement element = (DecisionKnowledgeElement) object;
 		return this.id == element.getId();
+	}
+
+	@Override
+	public Date getCreated() {
+		return this.created;
+	}
+
+	@Override
+	public void setCreated(Date date) {
+		this.created = date;
 	}
 }

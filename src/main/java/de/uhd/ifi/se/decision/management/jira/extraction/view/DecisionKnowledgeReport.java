@@ -23,7 +23,6 @@ import com.atlassian.jira.web.action.ProjectActionSupport;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.model.GenericLink;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -32,6 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
 
@@ -84,12 +84,8 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 		// Get types of decisions and alternatives linkes to Issue (e.g. has decision
 		// but no alternative)
-		velocityParams.put("numLinksToIssue",
-				getLinkToOtherElement(KnowledgeType.ISSUE, KnowledgeType.ALTERNATIVE, KnowledgeType.DECISION));
-		velocityParams.put("numLinksToDecision",
-				getLinkToOtherElement(KnowledgeType.DECISION, KnowledgeType.ALTERNATIVE, KnowledgeType.ISSUE));
-		velocityParams.put("numLinksToAlternative",
-				getLinkToOtherElement(KnowledgeType.ALTERNATIVE, KnowledgeType.ISSUE, KnowledgeType.DECISION));
+		velocityParams.put("numLinksToIssue", getLinkToOtherElement(KnowledgeType.ISSUE, KnowledgeType.DECISION));
+		velocityParams.put("numLinksToDecision", getLinkToOtherElement(KnowledgeType.DECISION, KnowledgeType.ISSUE));
 
 		// Get Number of Alternatives With Arguments
 		Map<String, Integer> numAlternativeWoArgument = getAlternativeArguments();
@@ -173,11 +169,10 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				projectManager.getProjectObj(this.projectId).getKey(), KnowledgeType.ALTERNATIVE);
 
 		for (DecisionKnowledgeElement currentAlternative : listOfIssues) {
-			List<GenericLink> links = GenericLinkManager.getGenericLinksForElement("s" + currentAlternative.getId(),
-					false);
+			List<Link> links = GenericLinkManager.getLinksForElement("s" + currentAlternative.getId());
 			boolean hasArgument = false;
-			for (GenericLink link : links) {
-				DecisionKnowledgeElement dke = link.getOpposite("s" + currentAlternative.getId());
+			for (Link link : links) {
+				DecisionKnowledgeElement dke = link.getOppositeElement("s" + currentAlternative.getId());
 				if (dke instanceof Sentence && ((Sentence) dke).getArgument().equalsIgnoreCase("Pro")) {
 					hasArgument = true;
 				}
@@ -195,45 +190,33 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return dkeCount;
 	}
 
-	private Map<String, Integer> getLinkToOtherElement(KnowledgeType linkFrom, KnowledgeType linkTo1,
-			KnowledgeType linkTo2) {
+	private Map<String, Integer> getLinkToOtherElement(KnowledgeType linkFrom, KnowledgeType linkTo1) {
 		Integer[] statistics = new Integer[4];
 		Arrays.fill(statistics, 0);
 		List<DecisionKnowledgeElement> listOfIssues = ActiveObjectsManager
 				.getAllElementsFromAoByType(projectManager.getProjectObj(this.projectId).getKey(), linkFrom);
 
 		for (DecisionKnowledgeElement issue : listOfIssues) {
-			List<GenericLink> links = GenericLinkManager.getGenericLinksForElement("s" + issue.getId(), false);
-			boolean hasAlternative = false;
-			boolean hasDecision = false;
+			List<Link> links = GenericLinkManager.getLinksForElement("s" + issue.getId());
+			boolean hastOtherElementLinked = false;
 
-			for (GenericLink link : links) {
-				DecisionKnowledgeElement dke = link.getOpposite("s" + issue.getId());
+			for (Link link : links) {
+				DecisionKnowledgeElement dke = link.getOppositeElement("s" + issue.getId());
 				if (dke instanceof Sentence && dke.getType().equals(linkTo1)) { // alt
-					hasAlternative = true;
-				} else if (dke instanceof Sentence && dke.getType().equals(linkTo2)) {// dec
-					hasDecision = true;
+					hastOtherElementLinked = true;
 				}
 			}
-			if (hasAlternative && hasDecision) {
+			if (hastOtherElementLinked) {
 				statistics[0] = statistics[0] + 1;
-			} else if (hasAlternative && !hasDecision) {
+			} else if (!hastOtherElementLinked) {
 				statistics[1] = statistics[1] + 1;
-			} else if (!hasAlternative && hasDecision) {
-				statistics[2] = statistics[2] + 1;
-			} else if (!hasAlternative && !hasDecision) {
-				statistics[3] = statistics[3] + 1;
 			}
 		}
-		String id1 = linkTo1.toString().substring(0, 3);
-		String id2 = linkTo2.toString().substring(0, 3);
 
 		// Hashmaps as counter suck
 		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
-		dkeCount.put("Has " + id1 + " and " + id2, statistics[0]);
-		dkeCount.put("Has " + id1 + " but no " + id2, statistics[1]);
-		dkeCount.put("Has " + id1 + " but no " + id2, statistics[2]);
-		dkeCount.put("Has no " + id1 + " and no " + id2, statistics[3]);
+		dkeCount.put("Has " + linkTo1.toString(), statistics[0]);
+		dkeCount.put("Has no " + linkTo1.toString(), statistics[1]);
 
 		return dkeCount;
 	}
@@ -319,7 +302,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 	private int graphRecursionBot(DecisionKnowledgeElement dke) {
 		this.absolutDepth = 0;
-		Graph graph = new GraphImpl(projectManager.getProjectObj(this.projectId).getKey(), dke.getKey(), null);
+		Graph graph = new GraphImpl(projectManager.getProjectObj(this.projectId).getKey(), dke.getKey());
 		this.createNodeStructure(dke, null, 100, 1, graph);
 		return absolutDepth;
 	}
@@ -359,8 +342,11 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		}
 		try {
 			OAuthManager ar = new OAuthManager();
-			ar.startRequest(
-					"http://cures.ifi.uni-heidelberg.de:8080/rest/gitplugin/1.0/issues/" + issueKey + "/commits");
+			String baseUrl = ConfigPersistence.getOauthJiraHome();
+			if (!baseUrl.endsWith("/")) {
+				baseUrl = baseUrl + "/";
+			}
+			ar.startRequest(baseUrl + "rest/gitplugin/1.0/issues/" + issueKey + "/commits");
 		} catch (Exception e) {
 
 		}

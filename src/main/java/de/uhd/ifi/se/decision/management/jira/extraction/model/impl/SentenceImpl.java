@@ -6,7 +6,6 @@ import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
@@ -14,6 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjec
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 import net.java.ao.EntityManager;
@@ -52,23 +52,30 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	public SentenceImpl() {
 		super();
 		super.type = KnowledgeType.OTHER;
+		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
 
 	public SentenceImpl(long id) {
 		this();
 		super.setId(id);
 		retrieveAttributesFromActievObjects();
-		retrieveBodyFromJiraComment();
+		retrieveBodyFromJiraComment();		
 	}
 
 	public SentenceImpl(String body, long id) {
+		this();
 		super.setId(id);
 		retrieveAttributesFromActievObjects();
 		this.setBody(body);
+		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
 
 	public SentenceImpl(DecisionKnowledgeInCommentEntity databaseEntry) throws NullPointerException {
+		this();
+		super.setId(databaseEntry.getId());
 		this.insertAoValues(databaseEntry);
+		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
+		retrieveBodyFromJiraComment();		
 	}
 
 	@Override
@@ -178,7 +185,9 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	@Override
 	public void setKnowledgeTypeString(String type) {
-		if (type.equalsIgnoreCase("pro")) {
+		if(type == null) {
+			super.type = KnowledgeType.OTHER;
+		}else if (type.equalsIgnoreCase("pro")) {
 			super.type = KnowledgeType.ARGUMENT;
 			this.argument = "Pro";
 		} else if (type.equalsIgnoreCase("con")) {
@@ -245,7 +254,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.excludedTagList) >= 0) {
 			this.isPlainText = false;
 		}
-		if (CommentSplitter.containsOpenAndCloseTags(body)
+		if (CommentSplitter.containsOpenAndCloseTags(body,this.projectKey)
 				|| (ConfigPersistence.isIconParsing(projectKey)
 						&& StringUtils.indexOfAny(body, CommentSplitter.manualRationalIconList) >= 0)) {
 			this.setKnowledgeTypeString(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey,true));
@@ -255,11 +264,12 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	private void stripTagsFromBody(String body) {
-		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.manualRationaleTagList) >= 0) {
-			int tagLength = 2 + CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey,true).length();
+		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.getAllTagsUsedInProject(this.projectKey)) >= 0) {
+			int tagLength = 2
+					+ CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey, true).length();
 			super.setDescription(body.substring(tagLength, body.length() - (1 + tagLength)));
 			super.setSummary(super.getDescription());
-		} else { 
+		} else {
 			super.setDescription(body.replaceAll("\\(.*?\\)", ""));
 			super.setSummary(super.getDescription());
 		}
@@ -283,20 +293,23 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	private void retrieveBodyFromJiraComment() {
-		String text = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getBody();
-		if (this.endSubstringCount < text.length()) {
-			text = text.substring(this.startSubstringCount, this.endSubstringCount);
-		} else if (this.endSubstringCount == text.length()) {
-			text = text.substring(this.startSubstringCount);
+		if(this.commentId != 0 && this.commentId > 0) {
+			String text = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getBody();
+			if (this.endSubstringCount < text.length()) {
+				text = text.substring(this.startSubstringCount, this.endSubstringCount);
+			} else if (this.endSubstringCount == text.length()) {
+				text = text.substring(this.startSubstringCount);
+			}
+			this.setBody(text);
+			this.created = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getCreated();
 		}
-		this.setBody(text);
-		this.created = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getCreated();
 	}
 
 	private void retrieveAttributesFromActievObjects() {
 		DecisionKnowledgeInCommentEntity aoElement = ActiveObjectsManager.getElementFromAO(super.getId());
 		insertAoValues(aoElement);
 	}
+
 	private void insertAoValues(DecisionKnowledgeInCommentEntity aoElement) {
 		this.setEndSubstringCount(aoElement.getEndSubstringCount());
 		this.setStartSubstringCount(aoElement.getStartSubstringCount());
@@ -317,10 +330,9 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 			super.type = KnowledgeType.getKnowledgeType(kt);
 			this.setKnowledgeTypeString(kt);
 		}
-		IssueManager im = ComponentAccessor.getIssueManager();
-		MutableIssue mi = im.getIssueObject(this.getIssueId());
-		if(mi != null) {
-			super.setKey(mi.getKey() + ":" + this.getId());
+		MutableIssue mutableIssue = ComponentAccessor.getIssueManager().getIssueObject(this.getIssueId());
+		if (mutableIssue != null) {
+			super.setKey(mutableIssue.getKey() + ":" + this.getId());
 		}
 	}
 
@@ -380,7 +392,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	public void setCreated(Date date) {
 		this.created = date;
 	}
-	
+
 	public void setType(KnowledgeType type) {
 		super.setType(type);
 		this.setKnowledgeTypeString(type.toString());

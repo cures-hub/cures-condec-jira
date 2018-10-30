@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.model.util;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -116,7 +117,14 @@ public class CommentSplitter {
 		this.startSubstringCount.add(startIndex);
 		this.endSubstringCount.add(endIndex);
 	}
-
+	
+	/**
+	 * 
+	 * @param body
+	 * @param projectKey
+	 * @param lookOutForIcons search also for icons
+	 * @return The manual tagged knowledge type of a given string
+	 */
 	public static String getKnowledgeTypeFromManuallIssueTag(String body, String projectKey, boolean lookOutForIcons) {
 		boolean checkIcons = lookOutForIcons && ConfigPersistence.isIconParsing(projectKey);
 		if (body.toLowerCase().contains("[issue]") || (checkIcons && body.contains("(!)"))) {
@@ -139,22 +147,33 @@ public class CommentSplitter {
 
 	private static String matchSelectableKnowledgeTypes(String body, String projectKey) {
 		DecisionKnowledgeProject dkp = new DecisionKnowledgeProjectImpl(projectKey);
-		System.out.println(dkp.getKnowledgeTypes());
 		for (KnowledgeType type : dkp.getKnowledgeTypes()) {
-			if (body.toLowerCase().contains("[" + type.toString() + "]")) {
+			if (body.toLowerCase().contains("[" + type.toString().toLowerCase() + "]")) {
 				return type.toString();
 			}
 		}
 		return KnowledgeType.OTHER.toString();
 	}
 
-	public static boolean containsOpenAndCloseTags(String body) {
-		for (int i = 0; i < manualRationaleTagList.length; i++) {
-			String tag = manualRationaleTagList[i].toLowerCase();
+	public static boolean containsOpenAndCloseTags(String body, String projectKey) {
+		for (int i = 0; i < getAllTagsUsedInProject(projectKey).length; i++) {
+			String tag = getAllTagsUsedInProject(projectKey)[i].toLowerCase();
 			if (body.toLowerCase().contains(tag) && body.toLowerCase().contains(tag.replace("[", "[/"))) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	public static String[]  getAllTagsUsedInProject(String projectKey) {
+		Set<KnowledgeType> projectKnowledgeTypes = new DecisionKnowledgeProjectImpl(projectKey).getKnowledgeTypes();
+		ArrayList<String> projectList = new ArrayList<String>();
+		for(int i = 0; i < projectKnowledgeTypes.size(); i++) {
+			projectList.add("["+projectKnowledgeTypes.toArray()[i].toString().toLowerCase()+"]");
+		}
+		for (int i = 0; i < manualRationaleTagList.length; i++) {
+			projectList.add(manualRationaleTagList[i].toLowerCase());
+		}
+		return projectList.toArray(new String[0]);
 	}
 }

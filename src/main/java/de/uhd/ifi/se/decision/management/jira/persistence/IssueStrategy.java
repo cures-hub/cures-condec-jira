@@ -171,7 +171,10 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		List<IssueLink> inwardIssueLinks = getInwardIssueLinks(element);
 		List<Link> inwardLinks = new ArrayList<Link>();
 		for (IssueLink inwardIssueLink : inwardIssueLinks) {
-			inwardLinks.add(new LinkImpl(inwardIssueLink));
+			Link link = new LinkImpl(inwardIssueLink);
+			if(link.isValid()) {
+				inwardLinks.add(link);
+			}
 		}
 		return inwardLinks;
 	}
