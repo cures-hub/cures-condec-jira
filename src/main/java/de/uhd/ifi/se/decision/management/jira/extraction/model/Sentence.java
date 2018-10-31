@@ -6,7 +6,6 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
-import net.java.ao.schema.Ignore;
 
 @JsonSerialize(as = DecisionKnowledgeElementImpl.class)
 public interface Sentence extends DecisionKnowledgeElement {
@@ -15,7 +14,6 @@ public interface Sentence extends DecisionKnowledgeElement {
 
 	void setRelevant(boolean isRelevant);
 
-	@Ignore
 	void setRelevant(Double prediction);
 
 	boolean isTagged();
@@ -50,7 +48,6 @@ public interface Sentence extends DecisionKnowledgeElement {
 
 	void setKnowledgeTypeString(String type);
 
-	@Ignore
 	void setKnowledgeType(double[] prediction);
 
 	void setArgument(String argument);
@@ -65,21 +62,15 @@ public interface Sentence extends DecisionKnowledgeElement {
 
 	long getIssueId();
 
-	@Ignore
 	boolean isPlainText();
 
-	@Ignore
 	void setPlainText(boolean isPlainText);
 
-	@Ignore
 	String getBody();
 
-	@Ignore
 	void setBody(String body);
 
-	@Ignore
 	Date getCreated();
 
-	@Ignore
 	void setCreated(Date date);
 }
