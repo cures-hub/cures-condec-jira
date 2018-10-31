@@ -12,7 +12,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:repo
     <div style="text-align:center;">
       <div id="CommentsPerIssue" style="width:200px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
       <div id="CommitsPerIssue" style="width:200px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
-      <div id="SentencePerIssue" style="width:200px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
+      <div id="DecisionsPerIssue" style="width:200px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
+      <div id="IssuesPerIssue" style="width:200px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
       <div id="LinkDistanceIssue" style="width:200px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
       <div id="LinkDistanceAlternative" style="width:200px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
       <div id="LinkDistanceDecision" style="width:200px; height:400px; display:inline-block;" onclick="copyToClipboard(this)"></div>
@@ -33,19 +34,25 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:repo
       #foreach ($item in $numCommentsPerIssueMap.keySet())
        map.set("$item", $numCommentsPerIssueMap.get("$item"));
       #end
-      initializeDivWithBoxPlotFromMap('CommentsPerIssue',map,"Comments/Issue","Comments per Issue");
+      initializeDivWithBoxPlotFromMap('CommentsPerIssue',map,"Comments/Issue","Comments per\n JIRA Issue");
 
        map = new Map();
-      #foreach ($item in $numSentencePerIssueMap.keySet())
-       map.set("$item", $numSentencePerIssueMap.get("$item"));
+      #foreach ($item in $numDecisionsPerIssueMap.keySet())
+       map.set("$item", $numDecisionsPerIssueMap.get("$item"));
       #end
-      initializeDivWithBoxPlotFromMap('SentencePerIssue',map,"Sentence/Issue","Setences per Issue");
+      initializeDivWithBoxPlotFromMap('DecisionsPerIssue',map,"Decisions/JIRA Issue","Decisions per\n JIRA Issue");
+
+       map = new Map();
+      #foreach ($item in $numIssuesPerIssueMap.keySet())
+       map.set("$item", $numIssuesPerIssueMap.get("$item"));
+      #end
+      initializeDivWithBoxPlotFromMap('IssuesPerIssue',map,"Issues/JIRA Issue","Issues per\n JIRA Issue");
 
       map = new Map();
       #foreach ($item in $numCommitsPerIssueMap.keySet())
        map.set("$item", $numCommitsPerIssueMap.get("$item"));
       #end
-      initializeDivWithBoxPlotFromMap('CommitsPerIssue',map,"Commits/Issue","Commits per Issue");
+      initializeDivWithBoxPlotFromMap('CommitsPerIssue',map,"Commits/Issue","Commits per\n JIRA Issue");
 
       initializeDivWithBoxPlot('LinkDistanceIssue',$numLinkDistanceIssue,"Link distance","Link distance\nfrom Issue");
       initializeDivWithBoxPlot('LinkDistanceAlternative',$numLinkDistanceAlternative,"Link distance","Link distance\nfrom Alternative");
@@ -67,19 +74,22 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:repo
       #foreach ($item in $numLinksToIssue.keySet())
         map.set("$item", $numLinksToIssue.get("$item"));
       #end
-      initializeDivWithPieChart("issueLink","Links to Issue","",map);
+      initializeDivWithPieChart("issueLink","Issue linked to Decision","",map);
+      document.getElementById("issueLink").setAttribute("list", "$issuesWithoutDecisionLinks");
 
       map = new Map();
       #foreach ($item in $numLinksToDecision.keySet())
         map.set("$item", $numLinksToDecision.get("$item"));
       #end
-      initializeDivWithPieChart("decisionLink","Links to Decision","",map);
+      initializeDivWithPieChart("decisionLink","Decision linked to Issue","",map);
+      document.getElementById("decisionLink").setAttribute("list", "$issuesWithoutDecisionLinks");
 
       map = new Map();
       #foreach ($item in $numAlternativeWoArgument.keySet())
         map.set("$item", $numAlternativeWoArgument.get("$item"));
       #end
       initializeDivWithPieChart("altWithArguments","Arguments for Alternatives","",map);
+      document.getElementById("altWithArguments").setAttribute("list", "$issuesWithAltWoArg");
 
 
       map = new Map();

@@ -22,9 +22,11 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ParameterUtils;
 import com.atlassian.jira.web.action.ProjectActionSupport;
 import com.atlassian.jira.web.bean.PagerFilter;
+import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
@@ -37,6 +39,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
 
+@Scanned
 public class DecisionKnowledgeReport extends AbstractReport {
 
 	@JiraImport
@@ -58,6 +61,10 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		this.projectManager = projectManager;
 	}
 
+	public DecisionKnowledgeReport(ProjectManager projectManager, String rootType) {
+		this.projectManager = projectManager;
+	}
+
 	@SuppressWarnings("rawtypes")
 	public String generateReportHtml(ProjectActionSupport action, Map params) throws Exception {
 		Map<String, Object> velocityParams = createValues(action);
@@ -71,8 +78,13 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		// get Number of comments per Issue
 		velocityParams.put("numCommentsPerIssueMap", getNumberOfCommentsPerIssueMap(action.getLoggedInUser()));
 
-		// get Number of Sentence per Issue
-		velocityParams.put("numSentencePerIssueMap", getNumberOfSentencePerIssueMap(action.getLoggedInUser()));
+		// get Number of Decisions per Issue
+		velocityParams.put("numDecisionsPerIssueMap",
+				getNumberOfSentencePerIssueMap(action.getLoggedInUser(), KnowledgeType.DECISION));
+
+		// get Number of Issues per Issue
+		velocityParams.put("numIssuesPerIssueMap",
+				getNumberOfSentencePerIssueMap(action.getLoggedInUser(), KnowledgeType.ISSUE));
 
 		// get Number of relevant Sentences per Issue
 		Map<String, Integer> numRelevantSentences = getNumberOfRelevantSentences(action.getLoggedInUser());
@@ -89,11 +101,13 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		// Get types of decisions and alternatives linkes to Issue (e.g. has decision
 		// but no alternative)
 		velocityParams.put("numLinksToIssue", getLinkToOtherElement(KnowledgeType.ISSUE, KnowledgeType.DECISION));
+		velocityParams.put("issuesWithoutDecisionLinks", this.issuesWithNoExistingLinksToDecisionKnowledge);
 		velocityParams.put("numLinksToDecision", getLinkToOtherElement(KnowledgeType.DECISION, KnowledgeType.ISSUE));
+		velocityParams.put("decisionsWithoutIssueLinks", this.issuesWithNoExistingLinksToDecisionKnowledge);
 
 		// Get Number of Alternatives With Arguments
-		Map<String, Integer> numAlternativeWoArgument = getAlternativeArguments();
-		velocityParams.put("numAlternativeWoArgument", numAlternativeWoArgument);
+		velocityParams.put("numAlternativeWoArgument", getAlternativeArguments());
+		velocityParams.put("issuesWithAltWoArg", this.issuesWithNoExistingLinksToDecisionKnowledge);
 
 		// Get Link Distance
 		velocityParams.put("numLinkDistanceAlternative", getLinkDistance(KnowledgeType.ALTERNATIVE));
@@ -153,6 +167,9 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	}
 
 	private boolean checkEqualIssueTypeIssue(IssueType issueType2) {
+		if (issueType2 == null) {
+			return false;
+		}
 		if (this.jiraIssueTypeToLinkTo.equals("WI")) {
 			if (issueType2.getName().equalsIgnoreCase("User Task")
 					|| issueType2.getName().equalsIgnoreCase("Aufgabe")) {
@@ -194,7 +211,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		return result;
 	}
 
-	private Map<String, Integer> getNumberOfSentencePerIssueMap(ApplicationUser loggedInUser) {
+	private Map<String, Integer> getNumberOfSentencePerIssueMap(ApplicationUser loggedInUser, KnowledgeType type) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 
 		SearchResults projectIssues = getIssuesForThisProject(loggedInUser);
@@ -203,11 +220,15 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		}
 		String projectKey = ComponentAccessor.getProjectManager().getProjectObj(this.projectId).getKey();
 		for (Issue currentIssue : projectIssues.getIssues()) {
+			int count = 0;
 			List<DecisionKnowledgeElement> elements = ActiveObjectsManager.getElementsForIssue(currentIssue.getId(),
 					projectKey);
-			if (elements.size() >= 0) {
-				result.put(currentIssue.getKey(), elements.size());
+			for (DecisionKnowledgeElement dke : elements) {
+				if ((new SentenceImpl(dke.getId())).getType().equals(type)) {
+					count++;
+				}
 			}
+			result.put(currentIssue.getKey(), count);
 		}
 		return result;
 	}
@@ -229,6 +250,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	private Map<String, Integer> getAlternativeArguments() {
 		int alternativesHaveArgument = 0;
 		int alternativesHaveNoArgument = 0;
+		String listOfElementsWithoutArgument = "";
 
 		List<DecisionKnowledgeElement> listOfIssues = ActiveObjectsManager.getAllElementsFromAoByType(
 				projectManager.getProjectObj(this.projectId).getKey(), KnowledgeType.ALTERNATIVE);
@@ -238,7 +260,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 			boolean hasArgument = false;
 			for (Link link : links) {
 				DecisionKnowledgeElement dke = link.getOppositeElement("s" + currentAlternative.getId());
-				if (dke instanceof Sentence && ((Sentence) dke).getArgument().equalsIgnoreCase("Pro")) {
+				if (dke instanceof Sentence && dke.getType().equals(KnowledgeType.ARGUMENT)) {
 					hasArgument = true;
 				}
 			}
@@ -246,8 +268,13 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				alternativesHaveArgument++;
 			} else {
 				alternativesHaveNoArgument++;
+				if (currentAlternative instanceof Sentence && !listOfElementsWithoutArgument
+						.contains(((Sentence) currentAlternative).getKey().split(":")[0])) {
+					listOfElementsWithoutArgument += ((Sentence) currentAlternative).getKey().split(":")[0]+" ";
+				}
 			}
 		}
+		this.issuesWithNoExistingLinksToDecisionKnowledge = listOfElementsWithoutArgument;
 		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
 		dkeCount.put("Alternative with Argument", alternativesHaveArgument);
 		dkeCount.put("Alternative without Argument", alternativesHaveNoArgument);
@@ -258,6 +285,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	private Map<String, Integer> getLinkToOtherElement(KnowledgeType linkFrom, KnowledgeType linkTo1) {
 		Integer[] statistics = new Integer[4];
 		Arrays.fill(statistics, 0);
+		String listOfElementsWithoutLink=" ";
 		List<DecisionKnowledgeElement> listOfIssues = ActiveObjectsManager
 				.getAllElementsFromAoByType(projectManager.getProjectObj(this.projectId).getKey(), linkFrom);
 
@@ -275,6 +303,10 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				statistics[0] = statistics[0] + 1;
 			} else if (!hastOtherElementLinked) {
 				statistics[1] = statistics[1] + 1;
+				if (issue instanceof Sentence && !listOfElementsWithoutLink
+						.contains(((Sentence) issue).getKey().split(":")[0])) {
+					listOfElementsWithoutLink += ((Sentence) issue).getKey().split(":")[0] + " ";
+				}
 			}
 		}
 
@@ -282,7 +314,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
 		dkeCount.put("Has " + linkTo1.toString(), statistics[0]);
 		dkeCount.put("Has no " + linkTo1.toString(), statistics[1]);
-
+		this.issuesWithNoExistingLinksToDecisionKnowledge = listOfElementsWithoutLink;
 		return dkeCount;
 	}
 
