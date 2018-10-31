@@ -2,6 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
 import java.util.Date;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import net.java.ao.schema.Ignore;
 
@@ -62,7 +64,12 @@ public interface Sentence extends DecisionKnowledgeElement{
 	long getIssueId();
 	
 	@Ignore
+	@JsonIgnore
 	boolean isPlainText();
+	
+	@Ignore
+	@JsonIgnore
+	void setPlainText(boolean isPlainText);
 	
 	@Ignore
 	String getBody();
