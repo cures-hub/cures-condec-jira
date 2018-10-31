@@ -45,7 +45,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction() {
-				new WebhookConnector(projectKey).deleteElement(decisionKnowledgeElement, user);
+				new WebhookConnector(projectKey).sendElementChanges(decisionKnowledgeElement);
 				for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
 						.find(DecisionKnowledgeElementInDatabase.class)) {
 
