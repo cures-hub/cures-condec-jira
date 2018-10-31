@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.search.SearchException;
 import com.atlassian.jira.issue.search.SearchResults;
 import com.atlassian.jira.jql.builder.JqlClauseBuilder;
@@ -26,6 +27,7 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -45,6 +47,10 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	private SearchService searchService;
 
 	private int absolutDepth;
+
+	private String jiraIssueTypeToLinkTo;
+
+	private String issuesWithNoExistingLinksToDecisionKnowledge;
 
 	public static org.json.JSONObject restResponse;
 
@@ -94,7 +100,71 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		velocityParams.put("numLinkDistanceIssue", getLinkDistance(KnowledgeType.ISSUE));
 		velocityParams.put("numLinkDistanceDecision", getLinkDistance(KnowledgeType.DECISION));
 
+		velocityParams.put("numLinksToIssueTypeIssue",
+				getLinksToIssueTypeMap(KnowledgeType.ISSUE, action.getLoggedInUser()));
+		velocityParams.put("jiraIssuesWithoutLinksToIssue", this.issuesWithNoExistingLinksToDecisionKnowledge);
+
+		velocityParams.put("numLinksToIssueTypeDecision",
+				getLinksToIssueTypeMap(KnowledgeType.DECISION, action.getLoggedInUser()));
+		velocityParams.put("jiraIssuesWithoutLinksToDecision", this.issuesWithNoExistingLinksToDecisionKnowledge);
+
+		velocityParams.put("issueType", getPropperStringForBugAndTasksFromIssueType());
+
 		return velocityParams;
+	}
+
+	private Object getLinksToIssueTypeMap(KnowledgeType knowledgeType, ApplicationUser applicationUser) {
+		Map<String, Integer> result = new HashMap<>();
+		String noLinkExistingList = "";
+		int withLink = 0, withoutLink = 0;
+		SearchResults issues = getIssuesForThisProject(applicationUser);
+		for (Issue issue : issues.getIssues()) {
+			boolean linkExisting = false;
+			if (checkEqualIssueTypeIssue(issue.getIssueType())) {
+				for (Link link : GenericLinkManager.getLinksForElement("i" + issue.getId())) {
+					DecisionKnowledgeElement dke = link.getOppositeElement(new DecisionKnowledgeElementImpl(issue));
+					if (dke.getType().equals(knowledgeType)) {
+						linkExisting = true;
+					}
+				}
+			}
+			if (linkExisting) {
+				withLink++;
+			} else {
+				withoutLink++;
+				noLinkExistingList += issue.getKey() + " ";
+			}
+		}
+		result.put("Links from " + getPropperStringForBugAndTasksFromIssueType() + " " + knowledgeType.toString(),
+				withLink);
+		result.put("No links from " + getPropperStringForBugAndTasksFromIssueType() + " " + knowledgeType.toString(),
+				withoutLink);
+		this.issuesWithNoExistingLinksToDecisionKnowledge = noLinkExistingList;
+		return result;
+	}
+
+	private String getPropperStringForBugAndTasksFromIssueType() {
+		if (this.jiraIssueTypeToLinkTo.equalsIgnoreCase("Wi")) {
+			return "Work Item";
+		} else if (this.jiraIssueTypeToLinkTo.equals("B")) {
+			return "Bug";
+		}
+		return "Unknown Element";
+	}
+
+	private boolean checkEqualIssueTypeIssue(IssueType issueType2) {
+		if (this.jiraIssueTypeToLinkTo.equals("WI")) {
+			if (issueType2.getName().equalsIgnoreCase("User Task")
+					|| issueType2.getName().equalsIgnoreCase("Aufgabe")) {
+				return true;
+			}
+		}
+		if (this.jiraIssueTypeToLinkTo.equals("B")) {
+			if (issueType2.getName().equalsIgnoreCase("Bug") || issueType2.getName().equalsIgnoreCase("Fehler")) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private Map<String, Integer> getNumberOfRelevantSentences(ApplicationUser loggedInUser) {
@@ -292,6 +362,8 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	@SuppressWarnings("rawtypes")
 	public void validate(ProjectActionSupport action, Map params) {
 		this.projectId = ParameterUtils.getLongParam(params, "selectedProjectId");
+		this.jiraIssueTypeToLinkTo = ParameterUtils.getStringParam(params, "rootType");
+		this.jiraIssueTypeToLinkTo = "WI";
 	}
 
 	private int graphRecursionBot(DecisionKnowledgeElement dke) {
