@@ -33,6 +33,7 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -364,6 +365,18 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		assertNotNull(dBElement);
 		// Is unequal because new empty sentence is returned
 		assertFalse(dBElement.getId() == id);
+	}
+	
+	@Test
+	@NonTransactional
+	public void testLinkAllUnlikedSentence() {
+		Comment comment = getComment("some sentence in front. [pro] testobject [/pro] some sentence in the back.");
+		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
+		assertEquals(1,GenericLinkManager.getLinksForElement("s"+id).size());
+		GenericLinkManager.deleteLinksForElement("s"+id);
+		assertEquals(0,GenericLinkManager.getLinksForElement("s"+id).size());	
+		ActiveObjectsManager.createLinksForNonLinkedElements("TEST");
+		assertEquals(1,GenericLinkManager.getLinksForElement("s"+id).size());	
 	}
 	
 	
