@@ -2,79 +2,105 @@ package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
 import java.util.Date;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import net.java.ao.schema.Ignore;
 
-public interface Sentence extends DecisionKnowledgeElement{
+public interface Sentence extends DecisionKnowledgeElement {
 
+	@JsonIgnore
 	boolean isRelevant();
 
+	@JsonIgnore
 	void setRelevant(boolean isRelevant);
-	
-	@Ignore
+
+	@JsonIgnore
 	void setRelevant(Double prediction);
 
+	@JsonIgnore
 	boolean isTagged();
 
+	@JsonIgnore
 	void setTagged(boolean isTagged);
 
+	@JsonIgnore
 	boolean isTaggedManually();
 
+	@JsonIgnore
 	void setTaggedManually(boolean isTaggedManually);
 
+	@JsonIgnore
 	boolean isTaggedFineGrained();
 
+	@JsonIgnore
 	void setTaggedFineGrained(boolean isTaggedFineGrained);
 
+	@JsonIgnore
 	long getCommentId();
 
-    void setCommentId(long id);
+	@JsonIgnore
+	void setCommentId(long id);
 
+	@JsonIgnore
 	long getUserId();
 
+	@JsonIgnore
 	void setUserId(long id);
 
+	@JsonIgnore
 	int getStartSubstringCount();
 
+	@JsonIgnore
 	void setStartSubstringCount(int count);
 
+	@JsonIgnore
 	int getEndSubstringCount();
 
+	@JsonIgnore
 	void setEndSubstringCount(int count);
-	
-	String getKnowledgeTypeString();
-	
-	void setKnowledgeTypeString(String type);
-	
-	@Ignore
-	void setKnowledgeType(double[] prediction);
-	
-	void setArgument(String argument);
-	
-	String getArgument();
-	
-	String getProjectKey();
-	
-	void setProjectKey(String key);
-	
-	void setIssueId(long issueid);
-	
-	long getIssueId();
-	
-	@Ignore
-	boolean isPlainText();
-	
-	@Ignore
-	String getBody();
-	
-	@Ignore 
-	void setBody(String body);
-	
-	@Ignore
-	Date getCreated();
-	
-	@Ignore 
-	void setCreated(Date date);
-	
 
+	@JsonIgnore
+	String getKnowledgeTypeString();
+
+	@JsonIgnore
+	void setKnowledgeTypeString(String type);
+
+	@JsonIgnore
+	void setKnowledgeType(double[] prediction);
+
+	@JsonIgnore
+	void setArgument(String argument);
+
+	@JsonIgnore
+	String getArgument();
+
+	@JsonIgnore
+	String getProjectKey();
+
+	@JsonIgnore
+	void setProjectKey(String key);
+
+	@JsonIgnore
+	void setIssueId(long issueid);
+
+	@JsonIgnore
+	long getIssueId();
+
+	@JsonIgnore
+	boolean isPlainText();
+
+	@JsonIgnore
+	void setPlainText(boolean isPlainText);
+
+	@JsonIgnore
+	String getBody();
+
+	@JsonIgnore
+	void setBody(String body);
+
+	@JsonIgnore
+	Date getCreated();
+
+	@JsonIgnore
+	void setCreated(Date date);
 }
