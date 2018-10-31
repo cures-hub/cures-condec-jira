@@ -83,8 +83,7 @@ public class ActiveObjectsManager {
 		ActiveObjects.executeInTransaction(new TransactionCallback<LinkInDatabase>() {
 			@Override
 			public LinkInDatabase doInTransaction() {
-				LinkInDatabase newGenericLink = ActiveObjects
-						.create(LinkInDatabase.class); // (2)
+				LinkInDatabase newGenericLink = ActiveObjects.create(LinkInDatabase.class); // (2)
 				newGenericLink.setIdOfDestinationElement("s" + sentenceAoId);
 				newGenericLink.setIdOfSourceElement("i" + issueId);
 				newGenericLink.setType("contain");
@@ -312,8 +311,7 @@ public class ActiveObjectsManager {
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}
-						for (LinkInDatabase link : ActiveObjects
-								.find(LinkInDatabase.class)) {
+						for (LinkInDatabase link : ActiveObjects.find(LinkInDatabase.class)) {
 							if (link.getIdOfDestinationElement().equals("i" + comment.getIssueId())
 									|| link.getIdOfSourceElement().equals("i" + comment.getIssueId())) {
 								try {
@@ -408,8 +406,7 @@ public class ActiveObjectsManager {
 	 * Deletes all sentences in ao tables for this project and all links to and from
 	 * sentences. Currently not used. Useful for developing and system testing.
 	 * 
-	 * @param projectKey
-	 *            the project to clear
+	 * @param projectKey the project to clear
 	 */
 	@Deprecated
 	public static void clearSentenceDatabaseForProject(String projectKey) {
@@ -464,7 +461,16 @@ public class ActiveObjectsManager {
 				return null;
 			}
 		});
+	}
 
+	public static void createLinksForNonLinkedElements(String projectKey) {
+		init();
+
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("PROJECT_KEY = ?", projectKey))) {
+			checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getIssueId());
+
+		}
 	}
 
 	public static List<DecisionKnowledgeElement> getAllElementsFromAoByType(String projectKey,
@@ -491,7 +497,7 @@ public class ActiveObjectsManager {
 			}
 		});
 		List<DecisionKnowledgeElement> listOfDKE = new ArrayList<>();
-		for(DecisionKnowledgeInCommentEntity dke: listOfDbEntries) {
+		for (DecisionKnowledgeInCommentEntity dke : listOfDbEntries) {
 			listOfDKE.add(new SentenceImpl(dke));
 		}
 		return listOfDKE;
@@ -502,8 +508,7 @@ public class ActiveObjectsManager {
 	 * are inserted twice into the AO table. This functions checks all entry for one
 	 * comment if there are duplicates. If one duplicate is found, its deleted.
 	 *
-	 * @param comment
-	 *            the comment
+	 * @param comment the comment
 	 */
 	public static void checkSentenceAOForDuplicates(Comment comment) {
 		init();

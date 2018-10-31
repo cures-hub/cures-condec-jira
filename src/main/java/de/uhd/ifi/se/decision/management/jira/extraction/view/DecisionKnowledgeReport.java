@@ -316,15 +316,12 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		}
 		List<Node> nodes = new ArrayList<Node>();
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-			if ((childAndLink.getKey() instanceof Sentence && ((Sentence) childAndLink.getKey()).isRelevant())
-					|| (childAndLink.getKey() instanceof DecisionKnowledgeElement)) {
-				Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
-						currentDepth + 1, graph);
-				if (this.absolutDepth < currentDepth) {
-					this.absolutDepth = currentDepth;
-				}
-				nodes.add(newChildNode);
+			Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
+					currentDepth + 1, graph);
+			if (this.absolutDepth < currentDepth) {
+				this.absolutDepth = currentDepth;
 			}
+			nodes.add(newChildNode);
 		}
 		node.setChildren(nodes);
 		return node;

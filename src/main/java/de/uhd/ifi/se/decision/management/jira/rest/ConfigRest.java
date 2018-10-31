@@ -342,6 +342,7 @@ public class ConfigRest {
 			// ActiveObjectsManager.clearSentenceDatabaseForProject(projectKey);
 			GenericLinkManager.clearInvalidLinks();
 			ActiveObjectsManager.cleanSentenceDatabaseForProject(projectKey);
+			ActiveObjectsManager.createLinksForNonLinkedElements(projectKey);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());

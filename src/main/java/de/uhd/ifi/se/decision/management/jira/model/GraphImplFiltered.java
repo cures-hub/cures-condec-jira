@@ -102,7 +102,7 @@ public class GraphImplFiltered extends GraphImpl {
 					}
 					transitivelyLinkedElements.addAll(getTransitivelyLinkedElements(oppositeElement));
 					count++;
-				}				
+				}
 			}
 		}
 		return transitivelyLinkedElements;
@@ -135,6 +135,10 @@ public class GraphImplFiltered extends GraphImpl {
 				linkedElementsAndLinks.put(oppositeElement, link);
 			}
 		}
+
+		// remove irrelevant sentences from graph
+		linkedElementsAndLinks.keySet().removeIf(e -> (e instanceof Sentence && !((Sentence) e).isRelevant()));
+
 		return linkedElementsAndLinks;
 	}
 
