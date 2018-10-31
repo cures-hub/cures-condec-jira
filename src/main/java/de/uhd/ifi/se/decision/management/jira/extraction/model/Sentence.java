@@ -2,17 +2,19 @@ package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
 import java.util.Date;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import net.java.ao.schema.Ignore;
 
-public interface Sentence extends DecisionKnowledgeElement{
+@JsonSerialize(as = DecisionKnowledgeElementImpl.class)
+public interface Sentence extends DecisionKnowledgeElement {
 
 	boolean isRelevant();
 
 	void setRelevant(boolean isRelevant);
-	
+
 	@Ignore
 	void setRelevant(Double prediction);
 
@@ -30,7 +32,7 @@ public interface Sentence extends DecisionKnowledgeElement{
 
 	long getCommentId();
 
-    void setCommentId(long id);
+	void setCommentId(long id);
 
 	long getUserId();
 
@@ -43,45 +45,41 @@ public interface Sentence extends DecisionKnowledgeElement{
 	int getEndSubstringCount();
 
 	void setEndSubstringCount(int count);
-	
+
 	String getKnowledgeTypeString();
-	
+
 	void setKnowledgeTypeString(String type);
-	
+
 	@Ignore
 	void setKnowledgeType(double[] prediction);
-	
+
 	void setArgument(String argument);
-	
+
 	String getArgument();
-	
+
 	String getProjectKey();
-	
+
 	void setProjectKey(String key);
-	
+
 	void setIssueId(long issueid);
-	
+
 	long getIssueId();
-	
+
 	@Ignore
-	@JsonIgnore
 	boolean isPlainText();
-	
+
 	@Ignore
-	@JsonIgnore
 	void setPlainText(boolean isPlainText);
-	
+
 	@Ignore
 	String getBody();
-	
-	@Ignore 
+
+	@Ignore
 	void setBody(String body);
-	
+
 	@Ignore
 	Date getCreated();
-	
-	@Ignore 
-	void setCreated(Date date);
-	
 
+	@Ignore
+	void setCreated(Date date);
 }
