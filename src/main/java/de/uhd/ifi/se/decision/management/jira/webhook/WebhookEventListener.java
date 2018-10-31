@@ -24,40 +24,40 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 @Component
 public class WebhookEventListener implements InitializingBean, DisposableBean {
 
-    @JiraImport
-    private final EventPublisher eventPublisher;
+	@JiraImport
+	private final EventPublisher eventPublisher;
 
 	@Autowired
 	public WebhookEventListener(@JiraImport EventPublisher eventPublisher) {
-        this.eventPublisher = eventPublisher;
+		this.eventPublisher = eventPublisher;
 	}
 
-    /**
-     * Called when the plugin has been enabled.
-     * @throws Exception
-     */
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        eventPublisher.register(this);
-    }
+	/**
+	 * Called when the plugin has been enabled.
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		eventPublisher.register(this);
+	}
 
-    /**
-     * Called when the plugin is being disabled or removed.
-     * @throws Exception
-     */
-    @Override
-    public void destroy() throws Exception {
-        eventPublisher.unregister(this);
-    }
+	/**
+	 * Called when the plugin is being disabled or removed.
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public void destroy() throws Exception {
+		eventPublisher.unregister(this);
+	}
 
-
-    @EventListener
+	@EventListener
 	public void onIssueEvent(IssueEvent issueEvent) {
 		String projectKey = issueEvent.getProject().getKey();
 		if (ConfigPersistence.isWebhookEnabled(projectKey)) {
 			Long eventTypeId = issueEvent.getEventTypeId();
 			DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issueEvent.getIssue());
-			System.out.println("event");
 			if (eventTypeId.equals(EventType.ISSUE_CREATED_ID) || eventTypeId.equals(EventType.ISSUE_UPDATED_ID)) {
 				WebhookConnector connector = new WebhookConnector(projectKey);
 				connector.sendElementChanges(decisionKnowledgeElement);
@@ -66,7 +66,6 @@ public class WebhookEventListener implements InitializingBean, DisposableBean {
 				WebhookConnector webhookConnector = new WebhookConnector(projectKey);
 				webhookConnector.deleteElement(decisionKnowledgeElement, issueEvent.getUser());
 			}
-			
 		}
 	}
 
@@ -91,6 +90,4 @@ public class WebhookEventListener implements InitializingBean, DisposableBean {
 			connector.sendElementChanges(decisionKnowledgeElement);
 		}
 	}
-
-
 }
