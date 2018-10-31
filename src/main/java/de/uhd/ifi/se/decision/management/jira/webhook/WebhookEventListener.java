@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,14 +22,36 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
  * when links between JIRA issues are created or deleted
  */
 @Component
-public class WebhookEventListener {
+public class WebhookEventListener implements InitializingBean, DisposableBean {
+
+    @JiraImport
+    private final EventPublisher eventPublisher;
 
 	@Autowired
 	public WebhookEventListener(@JiraImport EventPublisher eventPublisher) {
-		eventPublisher.register(this);
+        this.eventPublisher = eventPublisher;
 	}
 
-	@EventListener
+    /**
+     * Called when the plugin has been enabled.
+     * @throws Exception
+     */
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        eventPublisher.register(this);
+    }
+
+    /**
+     * Called when the plugin is being disabled or removed.
+     * @throws Exception
+     */
+    @Override
+    public void destroy() throws Exception {
+        eventPublisher.unregister(this);
+    }
+
+
+    @EventListener
 	public void onIssueEvent(IssueEvent issueEvent) {
 		String projectKey = issueEvent.getProject().getKey();
 		if (ConfigPersistence.isWebhookEnabled(projectKey)) {
@@ -67,4 +91,6 @@ public class WebhookEventListener {
 			connector.sendElementChanges(decisionKnowledgeElement);
 		}
 	}
+
+
 }
