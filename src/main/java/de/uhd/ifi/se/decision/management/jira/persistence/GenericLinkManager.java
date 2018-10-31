@@ -70,7 +70,7 @@ public class GenericLinkManager {
 		if (isLinkAlreadyInDatabase(link) != -1) {
 			return isLinkAlreadyInDatabase(link);
 		}
-		if(!link.isValid()){
+		if (!link.isValid()) {
 			return -1;
 		}
 
@@ -90,7 +90,8 @@ public class GenericLinkManager {
 			if (linkInDatabase.getIdOfSourceElement().equals(link.getIdOfSourceElementWithPrefix())
 					&& linkInDatabase.getIdOfDestinationElement().equals(link.getIdOfDestinationElementWithPrefix())
 					|| linkInDatabase.getIdOfDestinationElement().equals(link.getIdOfSourceElementWithPrefix())
-							&& linkInDatabase.getIdOfSourceElement().equals(link.getIdOfDestinationElementWithPrefix())) {
+							&& linkInDatabase.getIdOfSourceElement()
+									.equals(link.getIdOfDestinationElementWithPrefix())) {
 				return linkInDatabase.getId();
 			}
 		}

@@ -87,7 +87,7 @@ public class TestDecisionKnowledgeProject extends TestSetUpWithIssues {
 
 	@Test
 	public void testGetKnowledgeTypes() {
-		assertEquals(17, project.getKnowledgeTypes().size(), 0.0);
+		assertEquals(16, project.getKnowledgeTypes().size(), 0.0);
 	}
 
 	@Test
