@@ -22,7 +22,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.ParameterUtils;
 import com.atlassian.jira.web.action.ProjectActionSupport;
 import com.atlassian.jira.web.bean.PagerFilter;
-import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
@@ -39,7 +38,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
 
-@Scanned
+
 public class DecisionKnowledgeReport extends AbstractReport {
 
 	@JiraImport
