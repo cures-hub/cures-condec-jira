@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -110,8 +111,7 @@ public class TreeViewer {
 				issueNode.getChildren().add(new Data(opposite));
 			}
 		}
-
-		this.data = new HashSet<Data>(issueNode.getChildren());
+		this.data = new HashSet<Data>(Arrays.asList(issueNode));
 	}
 
 	private boolean isSentenceShown(DecisionKnowledgeElement element) {
