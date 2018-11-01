@@ -375,7 +375,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		assertEquals(1,GenericLinkManager.getLinksForElement("s"+id).size());
 		GenericLinkManager.deleteLinksForElement("s"+id);
 		assertEquals(0,GenericLinkManager.getLinksForElement("s"+id).size());	
-		ActiveObjectsManager.createLinksForNonLinkedElements("TEST");
+		ActiveObjectsManager.createLinksForNonLinkedElementsForProject("TEST");
 		assertEquals(1,GenericLinkManager.getLinksForElement("s"+id).size());	
 	}
 	

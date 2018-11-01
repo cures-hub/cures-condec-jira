@@ -437,19 +437,11 @@ public class ActiveObjectsManager {
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
 				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
 						DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
-					Sentence sentence;
-					try {
-						sentence = new SentenceImpl(databaseEntry); // Fast method, but may some values are null
-					} catch (NullPointerException e) {
-						sentence = new SentenceImpl(databaseEntry.getId());
-					}
+					Sentence sentence = null;
 					boolean deleteFlag = false;
-					try {// Check if comment is existing
-						com.atlassian.jira.issue.comments.Comment c = ComponentAccessor.getCommentManager()
-								.getCommentById(sentence.getCommentId());
-						if (c.getBody().trim().length() < 1) {
-							deleteFlag = true;
-						}
+					try {
+						sentence = new SentenceImpl(databaseEntry);
+						ComponentAccessor.getCommentManager().getCommentById(sentence.getCommentId());
 					} catch (Exception e) {
 						deleteFlag = true;
 					}
@@ -465,13 +457,19 @@ public class ActiveObjectsManager {
 		});
 	}
 
-	public static void createLinksForNonLinkedElements(String projectKey) {
+	public static void createLinksForNonLinkedElementsForProject(String projectKey) {
 		init();
-
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
 			checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getIssueId());
+		}
+	}
 
+	public static void createLinksForNonLinkedElementsForIssue(String issueId) {
+		init();
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("ISSUE_ID = ?", issueId))) {
+			checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getIssueId());
 		}
 	}
 
