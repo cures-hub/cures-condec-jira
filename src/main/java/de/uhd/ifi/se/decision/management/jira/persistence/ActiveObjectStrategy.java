@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +45,10 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction() {
+				new WebhookConnector(projectKey).sendElementChanges(decisionKnowledgeElement);
 				for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
 						.find(DecisionKnowledgeElementInDatabase.class)) {
+
 					if (databaseEntry.getId() == decisionKnowledgeElement.getId()) {
 						try {
 							databaseEntry.getEntityManager().delete(databaseEntry);
@@ -74,6 +77,8 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 
 	@Override
 	public boolean deleteLink(Link link, ApplicationUser user) {
+		DecisionKnowledgeElement sourceElement = link.getSourceElement();
+		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
 		return GenericLinkManager.deleteLink("a" + link.getSourceElement().getId(),
 				"a" + link.getDestinationElement().getId());
 	}
@@ -249,16 +254,19 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 		}
 		element.setId(databaseEntry.getId());
 		element.setKey(databaseEntry.getKey());
+		new WebhookConnector(projectKey).sendElementChanges(element);
 		element.setDocumentationLocation(DocumentationLocation.ACTIVEOBJECT);
 		return element;
 	}
 
 	@Override
 	public long insertLink(Link link, ApplicationUser user) {
+		DecisionKnowledgeElement sourceElement = link.getSourceElement();
+		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
+
 		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction() {
-				// return insertLinkWithoutTransaction(link, user);
 				return GenericLinkManager.insertLinkWithoutTransaction(link);
 			}
 		});
@@ -295,6 +303,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 			LOGGER.error("Updating of decision knowledge element in database failed.");
 			return false;
 		}
+		new WebhookConnector(projectKey).sendElementChanges(element);
 		return true;
 	}
 }

@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
 
+import java.util.Date;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
@@ -35,6 +36,7 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long>, Sente
 	@Ignore
 	void setDescription(String description);
 
+	@Ignore
 	KnowledgeType getType();
 
 	@Ignore
@@ -75,4 +77,28 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long>, Sente
 
 	@Ignore
 	void setDocumentationLocation(String documentationLocation);
+	
+	@Ignore
+	void setRelevant(Double prediction);
+	
+	@Ignore
+	void setKnowledgeType(double[] prediction);
+
+	@Ignore
+	boolean isPlainText();
+
+	@Ignore
+	void setPlainText(boolean isPlainText);
+
+	@Ignore
+	String getBody();
+
+	@Ignore
+	void setBody(String body);
+
+	@Ignore
+	Date getCreated();
+
+	@Ignore
+	void setCreated(Date date);
 }

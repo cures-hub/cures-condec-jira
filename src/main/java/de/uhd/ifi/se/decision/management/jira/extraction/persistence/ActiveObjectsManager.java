@@ -239,10 +239,12 @@ public class ActiveObjectsManager {
 
 		String newBody = oldBody.substring(sentenceEntity.getStartSubstringCount(),
 				sentenceEntity.getEndSubstringCount());
-		if (knowledgeType.toString().equalsIgnoreCase("other")) {
-			newBody = newBody.replaceAll("(?i)" + sentenceEntity.getKnowledgeTypeString(), argument);
+		if (knowledgeType.toString().equalsIgnoreCase("other")
+				|| knowledgeType.toString().equalsIgnoreCase("argument")) {
+			newBody = newBody.replaceAll("(?i)" + sentenceEntity.getKnowledgeTypeString() + "]", argument + "]");
 		} else {
-			newBody = newBody.replaceAll("(?i)" + sentenceEntity.getKnowledgeTypeString(), knowledgeType.toString());
+			newBody = newBody.replaceAll("(?i)" + sentenceEntity.getKnowledgeTypeString() + "]",
+					knowledgeType.toString() + "]");
 		}
 		// build body with first text and changed text
 		int newEndSubstringCount = newBody.length();
@@ -354,7 +356,7 @@ public class ActiveObjectsManager {
 		return ActiveObjects.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction() {
-				int lengthDifference = 0; // TODO: Add project ID
+				int lengthDifference = 0;
 				int oldStart = 0;
 				for (DecisionKnowledgeInCommentEntity sentenceEntity : ActiveObjects
 						.find(DecisionKnowledgeInCommentEntity.class, "ID = ?", aoId)) {
