@@ -54,8 +54,8 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	private String issuesWithNoExistingLinksToDecisionKnowledge;
 
 	public static org.json.JSONObject restResponse;
-
-	public DecisionKnowledgeReport(ProjectManager projectManager) {
+	
+	public DecisionKnowledgeReport(ProjectManager projectManager, String rootType) {
 		this.projectManager = projectManager;
 	}
 
@@ -389,7 +389,6 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	public void validate(ProjectActionSupport action, Map params) {
 		this.projectId = ParameterUtils.getLongParam(params, "selectedProjectId");
 		this.jiraIssueTypeToLinkTo = ParameterUtils.getStringParam(params, "rootType");
-		this.jiraIssueTypeToLinkTo = "WI";
 	}
 
 	private int graphRecursionBot(DecisionKnowledgeElement dke) {
