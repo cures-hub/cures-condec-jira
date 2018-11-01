@@ -473,20 +473,28 @@ var contextMenuDeleteSentenceLinkAction = {
 	"name" : "Delete link to parent",
 	"action" : function(position) {
 		var node = getSelectedTreeViewerNode(position);
+		var issueId = AJS.$("meta[name='ajs-issue-key']").attr("content");
+		if (issueId === undefined) {
+			issueId = getIssueKey();
+		}
+
 		var id = node.id;
 		var parentId = node.parent;
 
 		var nodeType = (node.li_attr['class'] === "sentence") ? "s" : "i";
 
-		deleteGenericLink(parentId, node.id, "i", nodeType, refreshTreeViewer, false);
-		deleteGenericLink(parentId, node.id, "s", nodeType, refreshTreeViewer, false);
+		deleteGenericLink(parentId, node.id, "i", nodeType, linkGenericElements(JIRA.Issue.getIssueId(),node.id,"i",nodeType,refreshTreeViewer),false);
+		deleteGenericLink(parentId, node.id, "s", nodeType, linkGenericElements(JIRA.Issue.getIssueId(),node.id,"i",nodeType,refreshTreeViewer),false);
+
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
 		var parentId = findParentId(id);
-		deleteGenericLink(parentId, id, function(core) {
-			updateView();
-		});
+		var parentClass = (document.getElementById(parentId).className.includes("sentence")) ? "s":"i";
+		var nodeClass = (document.getElementById(id).className.includes("sentence")) ? "s":"i";
+
+		deleteGenericLink(parentId,id, parentClass, nodeClass, linkGenericElements(JIRA.Issue.getIssueId(),id,"i",nodeClass,updateView),false);
+
 
 	}
 };
@@ -588,7 +596,9 @@ function setUpEditSentenceDialogView(description, type) {
 		if (type.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase()) {
 			isSelected = "selected ";
 		}
-		
+		if (type.toLowerCase() === "argument" && extendedKnowledgeTypes[index].toLowerCase().includes("pro")) {
+			isSelected = "selected ";
+		}
 		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
 				+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
 	}
@@ -646,12 +656,13 @@ function refreshTreeViewer() {
 
 var contextMenuActionsForSentences = {
 	"edit" : contextMenuEditSentenceAction,
-	// "deleteLink" : contextMenuDeleteSentenceLinkAction,
+	"deleteLink" : contextMenuDeleteSentenceLinkAction,
 	"delete" : contextMenuDeleteSentenceAction,
 	"changeKt" : changeKnowledgeTypeAction
 };
 
 var contextMenuActionsForSentencesInTreant = {
 	"edit" : contextMenuEditSentenceAction,
+	"deleteLink" : contextMenuDeleteSentenceLinkAction,
 	"delete" : contextMenuDeleteSentenceAction
 };

@@ -289,6 +289,7 @@ function editSentenceBody(id, body, type, callback) {
 
 function deleteGenericLink(targetId, sourceId, targetType, sourceType, callback, showError) {
 	var jsondata = {
+		"type" : "contain",
 		"idOfSourceElement" : sourceType + sourceId,
 		"idOfDestinationElement" : targetType + targetId
 	};
