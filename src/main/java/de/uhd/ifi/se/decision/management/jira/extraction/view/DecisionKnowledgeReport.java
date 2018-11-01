@@ -38,7 +38,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
 
-
 public class DecisionKnowledgeReport extends AbstractReport {
 
 	@JiraImport
@@ -57,10 +56,6 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	public static org.json.JSONObject restResponse;
 
 	public DecisionKnowledgeReport(ProjectManager projectManager) {
-		this.projectManager = projectManager;
-	}
-
-	public DecisionKnowledgeReport(ProjectManager projectManager, String rootType) {
 		this.projectManager = projectManager;
 	}
 
@@ -129,7 +124,8 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	private Object getLinksToIssueTypeMap(KnowledgeType knowledgeType, ApplicationUser applicationUser) {
 		Map<String, Integer> result = new HashMap<>();
 		String noLinkExistingList = "";
-		int withLink = 0, withoutLink = 0;
+		int withLink = 0;
+		int withoutLink = 0;
 		SearchResults issues = getIssuesForThisProject(applicationUser);
 		for (Issue issue : issues.getIssues()) {
 			boolean linkExisting = false;
@@ -169,16 +165,15 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		if (issueType2 == null) {
 			return false;
 		}
-		if (this.jiraIssueTypeToLinkTo.equals("WI")) {
-			if (issueType2.getName().equalsIgnoreCase("User Task")
-					|| issueType2.getName().equalsIgnoreCase("Aufgabe")) {
-				return true;
-			}
+		if (this.jiraIssueTypeToLinkTo.equals("WI")
+				&& (issueType2.getName().equalsIgnoreCase("User Task") || issueType2.getName().equalsIgnoreCase("Aufgabe"))) {
+			return true;
+
 		}
-		if (this.jiraIssueTypeToLinkTo.equals("B")) {
-			if (issueType2.getName().equalsIgnoreCase("Bug") || issueType2.getName().equalsIgnoreCase("Fehler")) {
-				return true;
-			}
+		if (this.jiraIssueTypeToLinkTo.equals("B")
+				&& (issueType2.getName().equalsIgnoreCase("Bug") || issueType2.getName().equalsIgnoreCase("Fehler"))) {
+			return true;
+
 		}
 		return false;
 	}
@@ -269,7 +264,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				alternativesHaveNoArgument++;
 				if (currentAlternative instanceof Sentence && !listOfElementsWithoutArgument
 						.contains(((Sentence) currentAlternative).getKey().split(":")[0])) {
-					listOfElementsWithoutArgument += ((Sentence) currentAlternative).getKey().split(":")[0]+" ";
+					listOfElementsWithoutArgument += ((Sentence) currentAlternative).getKey().split(":")[0] + " ";
 				}
 			}
 		}
@@ -284,7 +279,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	private Map<String, Integer> getLinkToOtherElement(KnowledgeType linkFrom, KnowledgeType linkTo1) {
 		Integer[] statistics = new Integer[4];
 		Arrays.fill(statistics, 0);
-		String listOfElementsWithoutLink=" ";
+		String listOfElementsWithoutLink = " ";
 		List<DecisionKnowledgeElement> listOfIssues = ActiveObjectsManager
 				.getAllElementsFromAoByType(projectManager.getProjectObj(this.projectId).getKey(), linkFrom);
 
@@ -302,8 +297,8 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				statistics[0] = statistics[0] + 1;
 			} else if (!hastOtherElementLinked) {
 				statistics[1] = statistics[1] + 1;
-				if (issue instanceof Sentence && !listOfElementsWithoutLink
-						.contains(((Sentence) issue).getKey().split(":")[0])) {
+				if (issue instanceof Sentence
+						&& !listOfElementsWithoutLink.contains(((Sentence) issue).getKey().split(":")[0])) {
 					listOfElementsWithoutLink += ((Sentence) issue).getKey().split(":")[0] + " ";
 				}
 			}
