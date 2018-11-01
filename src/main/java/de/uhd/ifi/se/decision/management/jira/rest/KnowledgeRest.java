@@ -14,7 +14,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
 import com.atlassian.jira.component.ComponentAccessor;
@@ -31,6 +30,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImplFiltered;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
@@ -229,39 +229,33 @@ public class KnowledgeRest {
 			// Get corresponding element from ao database
 			DecisionKnowledgeInCommentEntity databaseEntity = ActiveObjectsManager
 					.getElementFromAO(decisionKnowledgeElement.getId());
-			if ((databaseEntity.getEndSubstringCount()
-					- databaseEntity.getStartSubstringCount()) != decisionKnowledgeElement.getDescription().length()) {
+			int newSentenceEnd = databaseEntity.getEndSubstringCount();
+			int newSentenceStart = databaseEntity.getStartSubstringCount();
+			String newSentenceBody = decisionKnowledgeElement.getDescription();
+			
+			if ((newSentenceEnd - newSentenceStart) != newSentenceBody.length()) {
 				// Get JIRA Comment instance - Casting fails in unittesting with Mock
 				CommentManager cm = ComponentAccessor.getCommentManager();
 				MutableComment mc = (MutableComment) cm.getCommentById(databaseEntity.getCommentId());
-				// Generate sentence data generated for classification
-				if (mc.getBody().length() >= databaseEntity.getEndSubstringCount()) {
-					String sentenceToSearch = mc.getBody()
-							.substring(databaseEntity.getStartSubstringCount(), databaseEntity.getEndSubstringCount());
-					int index = mc.getBody().indexOf(sentenceToSearch);
 
-					String newType = CommentSplitter.getKnowledgeTypeFromManuallIssueTag(
-							decisionKnowledgeElement.getDescription(), databaseEntity.getProjectKey(), false);
-					String tag = "";
-					if (databaseEntity.isTaggedManually()
-							// Allow changing of manual tags, but no tags for icons
-							&& StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) < 0) {
-						if (newType.equalsIgnoreCase("other") && databaseEntity.isTaggedManually()
-								&& !databaseEntity.getKnowledgeTypeString()
-										.equalsIgnoreCase(decisionKnowledgeElement.getType().toString())) {
-							if (decisionKnowledgeElement.getType().toString().equalsIgnoreCase("other")) {
-								newType = argument;
-							} else {
-								newType = decisionKnowledgeElement.getType().toString();
-							}
-						}
-						tag = "[" + WordUtils.capitalize(newType) + "]";
-					} else if (StringUtils.indexOfAny(sentenceToSearch, CommentSplitter.manualRationalIconList) >= 0) {
-						index = index + 3; // add icon to text.
+				if (mc.getBody().length() >= databaseEntity.getEndSubstringCount()) {
+					String oldSentenceInComment = mc.getBody().substring(newSentenceStart, newSentenceEnd);
+					int indexOfOldSentence = mc.getBody().indexOf(oldSentenceInComment);
+
+					String newType = decisionKnowledgeElement.getType().toString();
+					if(newType.equals(KnowledgeType.OTHER.toString()) && argument.length() >0) {
+						newType = argument;
 					}
-					String first = mc.getBody().substring(0, index);
-					String second = tag + decisionKnowledgeElement.getDescription() + tag.replace("[", "[/");
-					String third = mc.getBody().substring(index + sentenceToSearch.length());
+					String tag = "";
+					// Allow changing of manual tags, but no tags for icons
+					if (databaseEntity.isTaggedManually() && !CommentSplitter.isCommentIconTagged(oldSentenceInComment)) {
+						tag = "[" + WordUtils.capitalize(newType) + "]";
+					} else if (CommentSplitter.isCommentIconTagged(oldSentenceInComment)) {
+						indexOfOldSentence = indexOfOldSentence + 3; // add icon to text.
+					}
+					String first = mc.getBody().substring(0, indexOfOldSentence);
+					String second = tag + newSentenceBody + tag.replace("[", "[/");
+					String third = mc.getBody().substring(indexOfOldSentence + oldSentenceInComment.length());
 
 					mc.setBody(first + second + third);
 					cm.update(mc, true);

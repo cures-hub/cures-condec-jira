@@ -271,7 +271,7 @@ function changeKnowledgeTypeOfSentence(id, type, callback) {
 function editSentenceBody(id, body, type, callback) {
 	var jsondata = {
 		"id" : id,
-		"summary" : "",
+		"summary" : body,
 		"type" : type,
 		"projectKey" : getProjectKey(),
 		"description" : body
