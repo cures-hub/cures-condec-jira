@@ -581,23 +581,16 @@ function setUpEditSentenceDialogView(description, type) {
 					+ "' class='textarea full-width-field'>" + description + "</textarea></div>"
 					+ "<div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
 					+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
-					+ "</form>");
+					+ "</form>");	
 
-	var knowledgeTypesWithIrrelevant = Array.from(extendedKnowledgeTypes);
-	if (!knowledgeTypesWithIrrelevant.includes("Other")) {
-		knowledgeTypesWithIrrelevant.push("Other");
-	}
-
-	for (var index = 0; index < knowledgeTypesWithIrrelevant.length; index++) {
+	for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
 		var isSelected = "";
-		if (type.toLowerCase() === knowledgeTypesWithIrrelevant[index].toLowerCase()) {
+		if (type.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase()) {
 			isSelected = "selected ";
 		}
-		if (type.toLowerCase() === "argument" && knowledgeTypesWithIrrelevant[index].toLowerCase().includes("pro")) {
-			isSelected = "selected ";
-		}
+		
 		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
-				+ knowledgeTypesWithIrrelevant[index] + "'>" + knowledgeTypesWithIrrelevant[index] + "</option>");
+				+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
 	}
 }
 
