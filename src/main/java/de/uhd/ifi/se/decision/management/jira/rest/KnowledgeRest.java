@@ -263,10 +263,8 @@ public class KnowledgeRest {
 							decisionKnowledgeElement.getId(), second);
 				}
 			}
-
 			ActiveObjectsManager.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),
 					decisionKnowledgeElement.getType(), argument);
-
 			Response r = Response.status(Status.OK).entity(ImmutableMap.of("id", decisionKnowledgeElement.getId()))
 					.build();
 			return r;
