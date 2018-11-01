@@ -27,8 +27,6 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	@JiraImport
 	private final EventPublisher eventPublisher;
 
-	private DecisionKnowledgeElement actionElement;
-
 	private String projectKey;
 
 	private IssueEvent issueEvent;
@@ -63,39 +61,37 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		this.issueEvent = issueEvent;
 		this.projectKey = issueEvent.getProject().getKey();
 		Long eventTypeId = issueEvent.getEventTypeId();
-		this.actionElement = new DecisionKnowledgeElementImpl(issueEvent.getIssue());
+		DecisionKnowledgeElement actionElement = new DecisionKnowledgeElementImpl(issueEvent.getIssue());
 		if (eventTypeId.equals(EventType.ISSUE_COMMENTED_ID)) {
-			handleNewComment();
+			handleNewComment(actionElement);
 		}
 		if (eventTypeId.equals(EventType.ISSUE_COMMENT_DELETED_ID)) {
-			handleDeleteComment();
+			handleDeleteComment(actionElement);
 		}
 		if (eventTypeId.equals(EventType.ISSUE_COMMENT_EDITED_ID)) {
-			handleEditComment();
+			handleEditComment(actionElement);
 		}
 		if (eventTypeId.equals(EventType.ISSUE_DELETED_ID)) {
-			handleDeleteIssue();
+			handleDeleteIssue(actionElement);
 		}
 		// Always check if all sentences are linked correctly
-		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(this.actionElement.getId() + "");
+		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(actionElement.getId() + "");
 	}
 
-	private void handleDeleteIssue() {
+	private void handleDeleteIssue(DecisionKnowledgeElement actionElement) {
 		ActiveObjectsManager.cleanSentenceDatabaseForProject(this.projectKey);
 	}
 
-	private void handleEditComment() {
+	private void handleEditComment(DecisionKnowledgeElement actionElement) {
 		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(new CommentImpl(issueEvent.getComment()));
 	}
 
-	private void handleDeleteComment() {
+	private void handleDeleteComment(DecisionKnowledgeElement actionElement) {
 		ActiveObjectsManager.cleanSentenceDatabaseForProject(this.projectKey);
-
 	}
 
-	private void handleNewComment() {
+	private void handleNewComment(DecisionKnowledgeElement actionElement2) {
 		new ViewConnector(this.issueEvent.getIssue(), false);
-
 	}
 
 }
