@@ -55,6 +55,10 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 	public static org.json.JSONObject restResponse;
 	
+	public DecisionKnowledgeReport(ProjectManager projectManager) {
+		this.projectManager = projectManager;
+	}
+
 	public DecisionKnowledgeReport(ProjectManager projectManager, String rootType) {
 		this.projectManager = projectManager;
 	}
