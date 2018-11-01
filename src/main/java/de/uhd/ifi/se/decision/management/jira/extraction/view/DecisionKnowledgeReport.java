@@ -55,10 +55,12 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 	public static org.json.JSONObject restResponse;
 	
+	//Need these constructurs, instead bean exception
 	public DecisionKnowledgeReport(ProjectManager projectManager) {
 		this.projectManager = projectManager;
 	}
-
+	
+	//Need these constructurs, instead bean exception
 	public DecisionKnowledgeReport(ProjectManager projectManager, String rootType) {
 		this.projectManager = projectManager;
 	}
@@ -172,14 +174,10 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		if (this.jiraIssueTypeToLinkTo.equals("WI")
 				&& (issueType2.getName().equalsIgnoreCase("User Task") || issueType2.getName().equalsIgnoreCase("Aufgabe"))) {
 			return true;
-
 		}
-		if (this.jiraIssueTypeToLinkTo.equals("B")
-				&& (issueType2.getName().equalsIgnoreCase("Bug") || issueType2.getName().equalsIgnoreCase("Fehler"))) {
-			return true;
+		return (this.jiraIssueTypeToLinkTo.equals("B")
+				&& (issueType2.getName().equalsIgnoreCase("Bug") || issueType2.getName().equalsIgnoreCase("Fehler")));
 
-		}
-		return false;
 	}
 
 	private Map<String, Integer> getNumberOfRelevantSentences(ApplicationUser loggedInUser) {
