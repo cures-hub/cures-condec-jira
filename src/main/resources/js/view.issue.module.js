@@ -56,7 +56,7 @@ function exportLinkedElements() {
 		if (res) {
 			console.log("linked", res);
 			if (res.length > 0) {
-				var obj=getArrayAndTransformToConfluenceObject(res)
+				var obj=getArrayAndTransformToConfluenceObject(res);
 				download("issueLinkJson", JSON.stringify(obj));
 			} else {
 				showFlag("error", "The Element was not found.");
@@ -115,7 +115,7 @@ function callGetElementsByQueryAndDownload(jql, baseLink) {
 }
 function getArrayAndTransformToConfluenceObject(jsonArray) {
 	var baseUrl=AJS.params.baseURL+"/browse/";
-	return {url:baseUrl,data:jsonArray}
+	return {url:baseUrl,data:jsonArray};
 }
 
 function download(filename, text) {
