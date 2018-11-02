@@ -14,7 +14,6 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 
 /**
@@ -61,37 +60,39 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		this.issueEvent = issueEvent;
 		this.projectKey = issueEvent.getProject().getKey();
 		Long eventTypeId = issueEvent.getEventTypeId();
-		DecisionKnowledgeElement actionElement = new DecisionKnowledgeElementImpl(issueEvent.getIssue());
 		if (eventTypeId.equals(EventType.ISSUE_COMMENTED_ID)) {
-			handleNewComment();
+			handleNewComment(new DecisionKnowledgeElementImpl(issueEvent.getIssue()));
 		}
 		if (eventTypeId.equals(EventType.ISSUE_COMMENT_DELETED_ID)) {
-			handleDeleteComment();
+			handleDeleteComment(new DecisionKnowledgeElementImpl(issueEvent.getIssue()));
 		}
 		if (eventTypeId.equals(EventType.ISSUE_COMMENT_EDITED_ID)) {
-			handleEditComment();
+			handleEditComment(new DecisionKnowledgeElementImpl(issueEvent.getIssue()));
 		}
 		if (eventTypeId.equals(EventType.ISSUE_DELETED_ID)) {
-			handleDeleteIssue();
+			handleDeleteIssue(new DecisionKnowledgeElementImpl(issueEvent.getIssue()));
 		}
-		// Always check if all sentences are linked correctly
-		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(actionElement.getId() + "");
 	}
-
-	private void handleDeleteIssue() {
+	
+	private void handleDeleteIssue(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
 		ActiveObjectsManager.cleanSentenceDatabaseForProject(this.projectKey);
+		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId() + "");
 	}
 
-	private void handleEditComment() {
+	private void handleEditComment(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
 		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(new CommentImpl(issueEvent.getComment()));
-	}
-
-	private void handleDeleteComment() {
-		ActiveObjectsManager.cleanSentenceDatabaseForProject(this.projectKey);
-	}
-
-	private void handleNewComment() {
 		new ViewConnector(this.issueEvent.getIssue(), false);
+		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId() + "");
+	}
+
+	private void handleDeleteComment(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
+		ActiveObjectsManager.cleanSentenceDatabaseForProject(this.projectKey);
+		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId() + "");
+	}
+
+	private void handleNewComment(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
+		new ViewConnector(this.issueEvent.getIssue(), false);
+		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId() + "");
 	}
 
 }
