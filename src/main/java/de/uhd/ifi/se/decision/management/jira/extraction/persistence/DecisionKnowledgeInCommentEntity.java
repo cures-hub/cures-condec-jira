@@ -15,7 +15,7 @@ import net.java.ao.schema.Ignore;
 import net.java.ao.schema.PrimaryKey;
 import net.java.ao.schema.Table;
 
-@Table("Ssentence")
+@Table("DecisionKnowledgeInComment")
 public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long>, Sentence{
 	
 	@AutoIncrement
