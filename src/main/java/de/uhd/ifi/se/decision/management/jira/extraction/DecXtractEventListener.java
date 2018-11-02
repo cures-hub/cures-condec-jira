@@ -84,6 +84,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 
 	private void handleEditComment() {
 		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(new CommentImpl(issueEvent.getComment()));
+		new ViewConnector(this.issueEvent.getIssue(), false);
 	}
 
 	private void handleDeleteComment() {
