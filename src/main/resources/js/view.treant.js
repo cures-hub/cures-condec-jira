@@ -8,12 +8,12 @@ var draggedElement;
 function buildTreant(elementKey, isInteractive, searchTerm, contextMenuActions) {
     console.log("view.treant.js buildTreant");
     var depthOfTree = getDepthOfTree();
-    getTreant(elementKey, depthOfTree, searchTerm, function(treeStructure) {
+    conDecAPI.getTreant(elementKey, depthOfTree, searchTerm, function(treeStructure) {
         document.getElementById("treant-container").innerHTML = "";
 
-        isKnowledgeExtractedFromGit(getProjectKey(), function(isKnowledgeExtractedFromGit) {
+        conDecAPI.isKnowledgeExtractedFromGit(getProjectKey(), function(isKnowledgeExtractedFromGit) { //TODO: refactor isKnowledgeExtractedFromGit param name, confusing.
             if (isKnowledgeExtractedFromGit) {
-                getCommits(elementKey,
+                conDecAPI.getCommits(elementKey,
                     function(commits) {
                         if (commits.length > 0) {
                             treeStructure.nodeStructure.children = addCommits(commits,
@@ -127,7 +127,7 @@ function drop(event, target) {
 	var parentId = target.id;
 	var childId = dragId;
 	if (sentenceElementIsDropped(target, parentId, childId)) {
-		deleteLink(oldParentId, childId, function() {
+		conDecAPI.deleteLink(oldParentId, childId, function() {
 			createLinkToExistingElement(parentId, childId);
 		});
 	}
@@ -140,29 +140,29 @@ function sentenceElementIsDropped(target, parentId, childId) {
 	var newParentType = extractTypeFromHTMLElement(target);
 	// selected element is a sentence, dropped element is an issue
 	if (draggedElement.classList.contains("sentence") && !target.classList.contains("sentence")) {
-		deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType, function() {
-			linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
+		conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType, function() {
+			conDecAPI.linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
 				updateView();
 			});
 		});
 	} else // selected element is an issue, dropped element is an sentence
 	if (target.classList.contains("sentence") && !draggedElement.classList.contains("sentence")) {
-		deleteLink("s"+oldParentId, "i"+childId, function() {
-			linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
+		conDecAPI.deleteLink("s"+oldParentId, "i"+childId, function() {
+			conDecAPI.linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
 				updateView();
 			});
 		});
 	} else // selected element is a sentence, dropped element is an sentence
 	if (target.classList.contains("sentence") && draggedElement.classList.contains("sentence")) {
-		deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType, function() {
-			linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
+		conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType, function() {
+			conDecAPI.linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
 				updateView();
 			});
 		});
 	} else // selected element is an issue, parent element is a sentence
 	if (!draggedElement.classList.contains("sentence")
 			&& document.getElementById(findParentId(draggedElement.id)).classList.contains("sentence")) {
-		deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType, function() {
+		conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType, function() {
 			createLinkToExistingElement(parentId, childId);
 		});
 	} else {// usual link between issue and issue

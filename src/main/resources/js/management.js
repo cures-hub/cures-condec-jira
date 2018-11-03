@@ -3,17 +3,17 @@
  * "Assumption", "Claim", "Constraint", "Context", "Decision",
  * "Goal", "Implication", "Issue", "Problem", and "Solution".
  */
-var knowledgeTypes = getKnowledgeTypes(getProjectKey());
+var knowledgeTypes = conDecAPI.getKnowledgeTypes(getProjectKey());
 /*
  * Default knowledge types are "Alternative", "Argument", "Decision", and
  * "Issue".
  */
-var defaultKnowledgeTypes = getDefaultKnowledgeTypes(getProjectKey());
+var defaultKnowledgeTypes = conDecAPI.getDefaultKnowledgeTypes(getProjectKey());
 var extendedKnowledgeTypes = replaceArgumentWithLinkTypes(knowledgeTypes);
 
 function replaceArgumentWithLinkTypes(knowledgeTypes) { // TODO: check why is/was knowledgeTypes passed?
     console.log("management.js replaceArgumentWithLinkTypes");
-	var extendedKnowledgeTypes = getKnowledgeTypes(getProjectKey());
+	var extendedKnowledgeTypes = conDecAPI.getKnowledgeTypes(getProjectKey());
 	extendedKnowledgeTypes = extendedKnowledgeTypes.filter( function(value) { return value.toLowerCase() !== "argument";} );
 	extendedKnowledgeTypes.push("Pro-argument");
 	extendedKnowledgeTypes.push("Con-argument");
@@ -48,7 +48,7 @@ function updateDecisionKnowledgeElementAsChild(childId, summary, description, ty
 	console.log("management.js updateDecisionKnowledgeElementAsChild");
 	var simpleType = getSimpleType(type);
 	updateDecisionKnowledgeElement(childId, summary, description, simpleType, function() {
-		getDecisionKnowledgeElement(childId, function(decisionKnowledgeElement) {
+		conDecAPI.getDecisionKnowledgeElement(childId, function(decisionKnowledgeElement) {
 			if (decisionKnowledgeElement.type !== type) {
 				var parentId = findParentId(childId);
 				switchLinkTypes(type, parentId, childId, function(linkType, parentId, childId) {
@@ -77,10 +77,10 @@ function getSimpleType(type) {
 function createDecisionKnowledgeElementAsChild(summary, description, type, idOfExistingElement) {
 	console.log("management.js createDecisionKnowledgeElementAsChild");
 	var simpleType = getSimpleType(type);
-	createDecisionKnowledgeElement(summary, description, simpleType, function(idOfNewElement) {
+	conDecAPI.createDecisionKnowledgeElement(summary, description, simpleType, function(idOfNewElement) {
 		switchLinkTypes(type, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
 				idOfNewElement) {
-			linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
+			conDecAPI.linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
 				updateView();
 			});
 		});

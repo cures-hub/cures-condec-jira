@@ -11,7 +11,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:issu
 instantiate the ConDecIssueModule object controlling this view
 */
 $(document).ready(function(){
-    if ( window.conDecIssueModule.init(window,window,window,window,window,window) )
+    if ( window.conDecIssueModule.init(conDecAPI,window,window,window,window,window) )
         window.conDecIssueModule.initView();
     else {
         console.error("ConDecIssueModule could not get its dependencies.");

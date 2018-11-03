@@ -104,7 +104,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 			classifyAllIssuesInProjectButton.addEventListener("click", function() {
 				if (confirm('Are you sure you want to classify all issue comments? This might take some time if the project is big.')) {
 					AJS.progressBars.setIndeterminate("#progress-bar");
-	        		var isSucceeded = classifyWholeProject('$projectKey'); 
+	        		var isSucceeded = conDecAPI.classifyWholeProject('$projectKey'); 
 	        		AJS.progressBars.update("#progress-bar", isSucceeded);               		
 	        	}
 	    	});
@@ -139,7 +139,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 	<div class="field-group">
 		<label for="webhook-type">Root Element Type:</label>
 		<select id="webook-type" name="webhook-type" class="select medium-field" 
-				onchange="setWebhookType(this.options[this.selectedIndex].value, '$projectKey')"></select>
+				onchange="conDecAPI.setWebhookType(this.options[this.selectedIndex].value, '$projectKey')"></select>
 		#foreach ($issueType in $issueTypes) 
 			<script>
 				var isSelected = "";
@@ -196,7 +196,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 	
 	var clearSentenceDatabaseButton = document.getElementById("validateSentenceDatabase");
 	clearSentenceDatabaseButton.addEventListener("click", function() {
-		clearSentenceDatabase('$projectKey');
+		conDecAPI.clearSentenceDatabase('$projectKey');
 	});
 	
 	var sentenceIconToggle = document.getElementById('iconParsing-toggle');
@@ -224,19 +224,19 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 	webHookSubmit.addEventListener("click", function() {
 		var urlInput = document.getElementById("webhook-url");
 		var secretInput = document.getElementById("webhook-secret");
-		setWebhookData('$projectKey', urlInput.value, secretInput.value);
+		conDecAPI.setWebhookData('$projectKey', urlInput.value, secretInput.value);
 		window.onbeforeunload = null;
 	});
 	
 	activationToggle.addEventListener('change', function(error) {
 		this.busy = true;
-		setActivated(this.checked, this.value);
+		conDecAPI.setActivated(this.checked, this.value);
 		this.busy = false;
 	});
 	
 	strategyToggle.addEventListener('change', function(error) {
 		this.busy = true;
-		setIssueStrategy(this.checked, this.value);
+		conDecAPI.setIssueStrategy(this.checked, this.value);
 		this.busy = false;
 	});
 	
@@ -247,38 +247,38 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		});
 	    typeToggles[j].addEventListener('change', function (error) {
 	        this.busy = true;
-	        setKnowledgeTypeEnabled(this.checked, this.value, '$projectKey');
+	        conDecAPI.setKnowledgeTypeEnabled(this.checked, this.value, '$projectKey');
 	        this.busy = false;
 	    });           
 	}
 	
 	issueCommentsToggle.addEventListener('change', function(error) {
 		this.busy = true;
-		setKnowledgeExtractedFromIssues(this.checked, this.value);
+		conDecAPI.setKnowledgeExtractedFromIssues(this.checked, this.value);
 		this.busy = false;
 	});
 	
 	isClassifierUsedToggle.addEventListener('change', function(error) {
 		this.busy = true;
-		setUseClassiferForIssueComments(this.checked, this.value);
+		conDecAPI.setUseClassiferForIssueComments(this.checked, this.value);
 		this.busy = false;
 	});
 	
 	sentenceIconToggle.addEventListener('change', function(error) {
 		this.busy = true;
-		setIconParsing(this.value, this.checked);
+		conDecAPI.setIconParsing(this.value, this.checked);
 		this.busy = false;
 	});
 	
 	gitToggle.addEventListener('change', function(error) {
 		this.busy = true;
-		setKnowledgeExtractedFromGit(this.checked, this.value);
+		conDecAPI.setKnowledgeExtractedFromGit(this.checked, this.value);
 		this.busy = false;
 	});
 	
 	webhookToggle.addEventListener('change', function(error) {
 		this.busy = true;
-		setWebhookEnabled(this.checked, this.value);
+		conDecAPI.setWebhookEnabled(this.checked, this.value);
 		this.busy = false;
 	});
 </script>
