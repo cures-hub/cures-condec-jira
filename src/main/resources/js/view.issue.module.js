@@ -51,7 +51,7 @@
 		console.log("view.issue.module initView");
 
 		updateView(management, treant, contextMenu);
-	}
+	};
 
 	// for view.context.menu
 	ConDecIssueModule.prototype.setAsRootElement = function setAsRootElement(id) {
@@ -61,14 +61,12 @@
 			var key = decisionKnowledgeElement.key;
 			window.open(baseUrl + "/browse/" + key, '_self'); // TODO: why window open ?
 		});
-	}
+	};
 
 	function addOnClickEventToExportAsTable() {
 		console.log("view.issue.module addOnClickEventToExportAsTable");
 
 		var exportMenuItem = document.getElementById("export-as-table-link");
-		if (!exportMenuItem)
-			return;
 		exportMenuItem.addEventListener("click", function(e) {
 			e.preventDefault();
 			e.stopPropagation();

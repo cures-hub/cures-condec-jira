@@ -136,7 +136,7 @@
 								"An error occured when receiving the decision knowledge element for the given id and project key.");
 					}
 				});
-	}
+	};
 
 	/*
 	 external references: view.issue.module ..
@@ -153,7 +153,7 @@
 								"An error occured when receiving the linked decision knowledge elements for the selected element.");
 					}
 				});
-	}
+	};
 
 	/*
 	 external references: view.context.menu ..
@@ -170,7 +170,7 @@
 								"An error occured when receiving the unlinked decision knowledge elements for the selected element.");
 					}
 				});
-	}
+	};
 
 	/*
 	 external references: management, view.issue.module, view.decision.knowledge.page ..
@@ -194,7 +194,7 @@
 						}
 					});
 		}
-	}
+	};
 
 	/*
 	 external references: management ..
@@ -217,7 +217,7 @@
 						showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
 					}
 				});
-	}
+	};
 
 	/*
 	 external references: view.context.menu ..
@@ -236,7 +236,7 @@
 						showFlag("error", "Decision knowledge element was not deleted. Error Code: " + error);
 					}
 				});
-	}
+	};
 
 	/*
 	 external references: management ..
@@ -257,7 +257,7 @@
 				showFlag("error", "Link could not be created.");
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: management, view.context.menu, view.decision.knowledge.page, view.issue.module, view.treant, view.tree.viewer ..
@@ -277,7 +277,7 @@
 			}
 
 		});
-	}
+	};
 
 	/*
 	 external references: none, not even used locally! //TODO: delete function?
@@ -298,7 +298,7 @@
 			}
 
 		});
-	}
+	};
 
 	/*
 	 external references: view.context.menu
@@ -320,7 +320,7 @@
 				showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: view.context.menu 
@@ -343,7 +343,7 @@
 				showFlag("error", "Knowledge type could not be changed.");
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: view.context.menu ..
@@ -365,7 +365,7 @@
 						showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
 					}
 				});
-	}
+	};
 
 	/*
 	 external references: view.context.menu, view.treant, view.tree.viewer ..
@@ -386,7 +386,7 @@
 			}
 
 		});
-	}
+	};
 
 	/*
 	 external references: view.treant, view.tree.viewer ..
@@ -407,7 +407,7 @@
 				showFlag("error", "Link could not be created.");
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: view.tab.panel, view.tree.viewer ..
@@ -421,7 +421,7 @@
 				showFlag("error", "Tree viewer data could not be received. Error-Code: " + error);
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: view.treant ..
@@ -435,7 +435,7 @@
 				showFlag("error", "Filtered Treant data could not be received. Error-Code: " + error);
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: view.tab.panel ..
@@ -454,7 +454,7 @@
 				showFlag("error", "Tree viewer data could not be received. Error-Code: " + error);
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: settingsForSingleProject.vm, settingsForAllProjects.vm ..
@@ -468,7 +468,7 @@
 				showFlag("error", "Plug-in activation for the project has not been changed.");
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: settingsForSingleProject.vm, settingsForAllProjects.vm ..
@@ -482,7 +482,7 @@
 				showFlag("error", "Strategy could not be selected.");
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: settingsForSingleProject.vm, settingsForAllProjects.vm, view.context.menu ..
@@ -496,7 +496,7 @@
 				showFlag("error", "Persistence strategy for the project could not be received. Error-Code: " + error);
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: settingsForSingleProject.vm, settingsForAllProjects.vm ..
@@ -529,7 +529,7 @@
 								+ error);
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: settingsForSingleProject.vm, settingsForAllProjects.vm ..
@@ -546,7 +546,7 @@
 				showFlag("error", "Extraction from issue comments for this project could not be configured.");
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: settingsForSingleProject.vm ..
@@ -564,7 +564,7 @@
 						"Usage of classification for Decision Knowledge in Issue Comments could not be configured.");
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: none, not even used locally, parameter naming ..
@@ -580,7 +580,7 @@
 								+ error);
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: settingsForSingleProject.vm ..
@@ -598,7 +598,7 @@
 								+ " knowledge type for this project could not be changed.");
 					}
 				});
-	}
+	};
 
 	/*
 	 external references: settingsForSingleProject.vm
@@ -614,7 +614,7 @@
 						+ error);
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: management ..
@@ -627,7 +627,7 @@
 		} else {
 			showFlag("error", "The knowledge types could not be received. Error-Code: " + error);
 		}
-	}
+	};
 
 	/*
 	 external references: mangament ..
@@ -640,7 +640,7 @@
 		} else {
 			showFlag("error", "The default knowledge types could not be received. Error-Code: " + error);
 		}
-	}
+	};
 
 	/*
 	 external references: none, not even used locally! //TODO: delete function?
@@ -654,7 +654,7 @@
 				showFlag("error", "The git address  " + gitAddress + " for this project could not be set.");
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: view.treant ..
@@ -669,7 +669,7 @@
 				callback();
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: settingsForSingleProject.vm ..
@@ -683,7 +683,7 @@
 				showFlag("error", "The webhook for this project has not been set.");
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: settingsForSingleProject.vm
@@ -697,7 +697,7 @@
 				showFlag("error", "The webhook activation for this project could not be changed.");
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: none, not even used locally! //TODO: delete function?
@@ -711,7 +711,7 @@
 						showFlag("error", "Issue types of project could not be received. Error-Code: " + error);
 					}
 				});
-	}
+	};
 
 	/*
 	 external references: settingsForSingleProject.vm ..
@@ -725,7 +725,7 @@
 				showFlag("error", "The webhook root element type could not been changed for this project.");
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: none, not even used locally! //TODO: delete function?
@@ -734,7 +734,7 @@
 		var commitData = getResponseAsReturnValue(AJS.contextPath() + "/rest/gitplugin/latest/issues/" + elementKey
 				+ "/commits");
 		return commitData.commits;
-	}
+	};
 
 	/*
 	 external references: settingsForSingleProject.vm ..
@@ -748,7 +748,7 @@
 				showFlag("error", "The Sentence database has not been cleared.");
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: settingsForSingleProject.vm ..
@@ -762,7 +762,7 @@
 		}
 		showFlag("error", "The classification process failed.");
 		return 0.0;
-	}
+	};
 
 	/*
 	 external references: settingsForSingleProject.vm ..
@@ -776,7 +776,7 @@
 				showFlag("error", "It could not be received wether icons can be used to tag issue comments.");
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: none, not even used locally! //TODO: delete function?
@@ -793,7 +793,7 @@
 										+ error);
 					}
 				});
-	}
+	};
 
 	/*
 	 external references: settingsForAllProjects.vm ..
@@ -809,7 +809,7 @@
 				showFlag("error", "Request token could not be received. Error-Code: " + error);
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: settingsForAllProjects.vm ..
@@ -825,7 +825,7 @@
 				showFlag("error", "Access token could not be received. Error-Code: " + error);
 			}
 		});
-	}
+	};
 
 	/*
 	 external references: view.issue.module ..
@@ -854,7 +854,7 @@
 				showFlag("error", "Linked elements for given query could not be received." + error);
 			}
 		});
-	}
+	};
 
 	// export ConDecAPI
 	global.conDecAPI = new ConDecAPI();
