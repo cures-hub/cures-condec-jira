@@ -86,7 +86,7 @@ function addDragAndDropSupportForTreeViewer() {
 		var oldParentNode = getTreeViewerNodeById(nodeInContext.old_parent);
 		var nodeId = node.data.id;
 
-		console.log(!node.li_attr['class'] === "sentence")
+		console.log(!node.li_attr['class'] === "sentence");
 		if (node.li_attr['class'] === "issue" && parentNode.li_attr['class'] === "issue" && oldParentNode.li_attr['class'] === "issue") {
 
 			if (oldParentNode === "#" && parentNode !== "#") {

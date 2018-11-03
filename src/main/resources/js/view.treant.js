@@ -42,8 +42,10 @@ function getDepthOfTree() {
 
 function createTreant(treeStructure, isInteractive, contextMenuActions) {
 	console.log("view.treant.js createTreant");
-    if (contextMenuActions == undefined)
+    if (contextMenuActions === undefined)
+    {
         contextMenuActions = contextMenuActionsTreant;
+    }
 	treantTree = new Treant(treeStructure);
 	if (isInteractive !== undefined && isInteractive) {
 		createContextMenuForTreantNodesThatAreSentence();

@@ -103,44 +103,44 @@
      Init Helpers
     */
     function isConDecRestClientType(restClient) {
-        if (!( restClient!=undefined
-                && restClient.getDecisionKnowledgeElement!=undefined
+        if (!( restClient!==undefined
+                && restClient.getDecisionKnowledgeElement!==undefined
                 && typeof restClient.getDecisionKnowledgeElement === 'function' ))
             {
-                console.warn("ConDecIssueModule: invalid restClient object received.")
+                console.warn("ConDecIssueModule: invalid restClient object received.");
                 return false;
             }
         return true;
     }
 
     function isConDecManagementType(management) {
-        if (!( management!=undefined
-            && management.getIssueKey!=undefined
+        if (!( management!==undefined
+            && management.getIssueKey!==undefined
             && typeof management.getIssueKey === 'function' ))
         {
-            console.warn("ConDecIssueModule: invalid management object received.")
+            console.warn("ConDecIssueModule: invalid management object received.");
             return false;
         }
         return true;
     }
 
     function isConDecTreantType(buildTreant) {
-        if (!( buildTreant!=undefined
-            && buildTreant.buildTreant!=undefined
+        if (!( buildTreant!==undefined
+            && buildTreant.buildTreant!==undefined
             && typeof buildTreant.buildTreant === 'function' ))
         {
-            console.warn("ConDecIssueModule: invalid buildTreant object received.")
+            console.warn("ConDecIssueModule: invalid buildTreant object received.");
             return false;
         }
         return true;
     }
 
     function isConDecContextType(contextMenu) {
-        if (!( contextMenu!=undefined
-            && contextMenu.setUpDialog!=undefined
+        if (!( contextMenu!==undefined
+            && contextMenu.setUpDialog!==undefined
             && typeof contextMenu.setUpDialog === 'function' ))
         {
-            console.warn("ConDecIssueModule: invalid contextMenu object received.")
+            console.warn("ConDecIssueModule: invalid contextMenu object received.");
             return false;
         }
         return true;

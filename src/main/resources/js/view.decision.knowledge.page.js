@@ -48,16 +48,16 @@
             return true;
             }
         return false;
-    }
+    };
 
     ConDecKnowledgePage.prototype.fetchAndRender = function () {
         initializeDecisionKnowledgePage(restClient, management, treant, treeViewer);
-    }
+    };
 
     ConDecKnowledgePage.prototype.setAsRootElement = function setAsRootElement(id) {
         console.log("view.decision.knowledge.page setAsRootElement");
         treeViewer.selectNodeInTreeViewer(nodeId);
-    }
+    };
 
     ConDecKnowledgePage.prototype.openIssue = function openIssue(nodeId) {
         console.log("view.decision.knowledge.page openIssue");
@@ -68,7 +68,7 @@
             var key = decisionKnowledgeElement.key;
             window.open(baseUrl + "/browse/" + key, '_blank');
         });
-    }
+    };
 
     function initializeDecisionKnowledgePage(restClient, management, treant, treeViewer) {
         console.log("view.decision.knowledge.page initializeDecisionKnowledgePage");
@@ -146,55 +146,55 @@
      Init Helpers
     */
     function isConDecRestClientType(restClient) {
-        if (!( restClient!=undefined
-                && restClient.getDecisionKnowledgeElement!=undefined
+        if (!( restClient!==undefined
+                && restClient.getDecisionKnowledgeElement!==undefined
                 && typeof restClient.getDecisionKnowledgeElement === 'function' ))
             {
-                console.warn("ConDecKnowledgePage: invalid restClient object received.")
+                console.warn("ConDecKnowledgePage: invalid restClient object received.");
                 return false;
             }
         return true;
     }
 
     function isConDecManagementType(management) {
-        if (!( management!=undefined
-            && management.getIssueKey!=undefined
+        if (!( management!==undefined
+            && management.getIssueKey!==undefined
             && typeof management.getIssueKey === 'function' ))
         {
-            console.warn("ConDecKnowledgePage: invalid management object received.")
+            console.warn("ConDecKnowledgePage: invalid management object received.");
             return false;
         }
         return true;
     }
 
     function isConDecTreantType(treant) {
-        if (!( treant!=undefined
-            && treant.buildTreant!=undefined
+        if (!( treant!==undefined
+            && treant.buildTreant!==undefined
             && typeof treant.buildTreant === 'function' ))
         {
-            console.warn("ConDecKnowledgePage: invalid treant object received.")
+            console.warn("ConDecKnowledgePage: invalid treant object received.");
             return false;
         }
         return true;
     }
 
     function isConDecContextType(contextMenu) {
-        if (!( contextMenu!=undefined
-            && contextMenu.setUpDialog!=undefined
+        if (!( contextMenu!==undefined
+            && contextMenu.setUpDialog!==undefined
             && typeof contextMenu.setUpDialog === 'function' ))
         {
-            console.warn("ConDecKnowledgePage: invalid contextMenu object received.")
+            console.warn("ConDecKnowledgePage: invalid contextMenu object received.");
             return false;
         }
         return true;
     }
 
     function isConDecTreeViewerType(treeViewer) {
-        if (!( treeViewer!=undefined
-            && treeViewer.selectNodeInTreeViewer!=undefined
+        if (!( treeViewer!==undefined
+            && treeViewer.selectNodeInTreeViewer!==undefined
             && typeof treeViewer.selectNodeInTreeViewer === 'function' ))
         {
-            console.warn("ConDecKnowledgePage: invalid treeViewer object received.")
+            console.warn("ConDecKnowledgePage: invalid treeViewer object received.");
             return false;
         }
         return true;

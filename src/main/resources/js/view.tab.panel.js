@@ -33,7 +33,7 @@
         i18n = _i18n;
 
         return true;
-    }
+    };
 
     /* triggered by onchange event in tabPanel.vm */
     function toggleSelectedDecisionElements(element) {

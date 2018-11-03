@@ -18,7 +18,7 @@
 (function (global) {
     
     var ConDecAPI = function ConDecAPI() {        
-    }
+    };
     
     /*
      external references: none, only within this closure.
