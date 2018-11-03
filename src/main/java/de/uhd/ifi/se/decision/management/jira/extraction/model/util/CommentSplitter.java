@@ -176,4 +176,8 @@ public class CommentSplitter {
 		}
 		return projectList.toArray(new String[0]);
 	}
+	
+	public static boolean isCommentIconTagged(String text) {
+		return StringUtils.indexOfAny(text, CommentSplitter.manualRationalIconList) > 0 ;
+	}
 }

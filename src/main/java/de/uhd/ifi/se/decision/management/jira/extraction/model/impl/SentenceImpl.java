@@ -75,6 +75,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		super.setId(databaseEntry.getId());
 		this.insertAoValues(databaseEntry);
 		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
+		retrieveBodyFromJiraComment();		
 	}
 
 	@Override

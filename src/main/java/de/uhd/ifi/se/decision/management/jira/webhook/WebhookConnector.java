@@ -4,14 +4,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.atlassian.jira.user.ApplicationUser;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpsURL;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.IssueManager;
+import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
@@ -60,7 +65,13 @@ public class WebhookConnector {
 		}
 
 		List<DecisionKnowledgeElement> rootElements = getWebhookRootElements(elementToBeDeleted);
-		if (elementToBeDeleted.getType().toString().equals(rootType)) {
+		String type;
+		if (elementToBeDeleted.getType() == KnowledgeType.OTHER) {
+			type = specifyOtherType(elementToBeDeleted);
+		} else {
+			type = elementToBeDeleted.getType().toString();
+		}
+		if (type.toUpperCase().equals(rootType.toUpperCase())) {
 			rootElements.remove(elementToBeDeleted);
 		}
 
@@ -92,7 +103,13 @@ public class WebhookConnector {
 				continue;
 			}
 			elementIds.add(linkedElement.getId());
-			if (linkedElement.getType().toString().equals(rootType)) {
+			String type;
+			if (linkedElement.getType() == KnowledgeType.OTHER) {
+				type = specifyOtherType(linkedElement);
+			} else {
+				type = linkedElement.getType().toString();
+			}
+			if (type.equalsIgnoreCase(rootType)) {
 				webhookRootElements.add(linkedElement);
 			}
 			webhookRootElements.addAll(getWebhookRootElements(linkedElement));
@@ -136,6 +153,12 @@ public class WebhookConnector {
 			return false;
 		}
 		return true;
+	}
+
+	private String specifyOtherType(DecisionKnowledgeElement element) {
+		IssueManager issueManager = ComponentAccessor.getIssueManager();
+		Issue issue = issueManager.getIssueByCurrentKey(element.getKey());
+		return issue.getIssueType().toString().toUpperCase();
 	}
 
 	public String getUrl() {

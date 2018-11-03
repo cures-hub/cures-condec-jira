@@ -83,8 +83,7 @@ public class ActiveObjectsManager {
 		ActiveObjects.executeInTransaction(new TransactionCallback<LinkInDatabase>() {
 			@Override
 			public LinkInDatabase doInTransaction() {
-				LinkInDatabase newGenericLink = ActiveObjects
-						.create(LinkInDatabase.class); // (2)
+				LinkInDatabase newGenericLink = ActiveObjects.create(LinkInDatabase.class); // (2)
 				newGenericLink.setIdOfDestinationElement("s" + sentenceAoId);
 				newGenericLink.setIdOfSourceElement("i" + issueId);
 				newGenericLink.setType("contain");
@@ -240,10 +239,12 @@ public class ActiveObjectsManager {
 
 		String newBody = oldBody.substring(sentenceEntity.getStartSubstringCount(),
 				sentenceEntity.getEndSubstringCount());
-		if (knowledgeType.toString().equalsIgnoreCase("other")) {
-			newBody = newBody.replaceAll("(?i)" + sentenceEntity.getKnowledgeTypeString(), argument);
+		if (knowledgeType.toString().equalsIgnoreCase("other")
+				|| knowledgeType.toString().equalsIgnoreCase("argument")) {
+			newBody = newBody.replaceAll("(?i)" + sentenceEntity.getKnowledgeTypeString() + "]", argument + "]");
 		} else {
-			newBody = newBody.replaceAll("(?i)" + sentenceEntity.getKnowledgeTypeString(), knowledgeType.toString());
+			newBody = newBody.replaceAll("(?i)" + sentenceEntity.getKnowledgeTypeString() + "]",
+					knowledgeType.toString() + "]");
 		}
 		// build body with first text and changed text
 		int newEndSubstringCount = newBody.length();
@@ -312,8 +313,7 @@ public class ActiveObjectsManager {
 						} catch (SQLException e) {
 							e.printStackTrace();
 						}
-						for (LinkInDatabase link : ActiveObjects
-								.find(LinkInDatabase.class)) {
+						for (LinkInDatabase link : ActiveObjects.find(LinkInDatabase.class)) {
 							if (link.getIdOfDestinationElement().equals("i" + comment.getIssueId())
 									|| link.getIdOfSourceElement().equals("i" + comment.getIssueId())) {
 								try {
@@ -356,7 +356,7 @@ public class ActiveObjectsManager {
 		return ActiveObjects.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction() {
-				int lengthDifference = 0; // TODO: Add project ID
+				int lengthDifference = 0;
 				int oldStart = 0;
 				for (DecisionKnowledgeInCommentEntity sentenceEntity : ActiveObjects
 						.find(DecisionKnowledgeInCommentEntity.class, "ID = ?", aoId)) {
@@ -408,8 +408,7 @@ public class ActiveObjectsManager {
 	 * Deletes all sentences in ao tables for this project and all links to and from
 	 * sentences. Currently not used. Useful for developing and system testing.
 	 * 
-	 * @param projectKey
-	 *            the project to clear
+	 * @param projectKey the project to clear
 	 */
 	@Deprecated
 	public static void clearSentenceDatabaseForProject(String projectKey) {
@@ -438,19 +437,11 @@ public class ActiveObjectsManager {
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
 				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
 						DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
-					Sentence sentence;
-					try {
-						sentence = new SentenceImpl(databaseEntry); // Fast method, but may some values are null
-					} catch (NullPointerException e) {
-						sentence = new SentenceImpl(databaseEntry.getId());
-					}
+					Sentence sentence = null;
 					boolean deleteFlag = false;
-					try {// Check if comment is existing
-						com.atlassian.jira.issue.comments.Comment c = ComponentAccessor.getCommentManager()
-								.getCommentById(sentence.getCommentId());
-						if (c.getBody().trim().length() < 1) {
-							deleteFlag = true;
-						}
+					try {
+						sentence = new SentenceImpl(databaseEntry);
+						ComponentAccessor.getCommentManager().getCommentById(sentence.getCommentId());
 					} catch (Exception e) {
 						deleteFlag = true;
 					}
@@ -464,13 +455,28 @@ public class ActiveObjectsManager {
 				return null;
 			}
 		});
+	}
 
+	public static void createLinksForNonLinkedElementsForProject(String projectKey) {
+		init();
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("PROJECT_KEY = ?", projectKey))) {
+			checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getIssueId());
+		}
+	}
+
+	public static void createLinksForNonLinkedElementsForIssue(String issueId) {
+		init();
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("ISSUE_ID = ?", issueId))) {
+			checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getIssueId());
+		}
 	}
 
 	public static List<DecisionKnowledgeElement> getAllElementsFromAoByType(String projectKey,
 			KnowledgeType rootElementType) {
 		init();
-		List<DecisionKnowledgeElement> list = new ArrayList<>();
+		List<DecisionKnowledgeInCommentEntity> listOfDbEntries = new ArrayList<>();
 		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 			@Override
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
@@ -481,7 +487,7 @@ public class ActiveObjectsManager {
 									|| (databaseEntry.getKnowledgeTypeString().length() == 3 // its either Pro or con
 											&& rootElementType.equals(KnowledgeType.ARGUMENT)))) {
 						try {
-							list.add(new SentenceImpl(databaseEntry));
+							listOfDbEntries.add(databaseEntry);
 						} catch (NullPointerException e) {
 							continue;
 						}
@@ -490,7 +496,11 @@ public class ActiveObjectsManager {
 				return null;
 			}
 		});
-		return list;
+		List<DecisionKnowledgeElement> listOfDKE = new ArrayList<>();
+		for (DecisionKnowledgeInCommentEntity dke : listOfDbEntries) {
+			listOfDKE.add(new SentenceImpl(dke));
+		}
+		return listOfDKE;
 	}
 
 	/**
@@ -498,8 +508,7 @@ public class ActiveObjectsManager {
 	 * are inserted twice into the AO table. This functions checks all entry for one
 	 * comment if there are duplicates. If one duplicate is found, its deleted.
 	 *
-	 * @param comment
-	 *            the comment
+	 * @param comment the comment
 	 */
 	public static void checkSentenceAOForDuplicates(Comment comment) {
 		init();

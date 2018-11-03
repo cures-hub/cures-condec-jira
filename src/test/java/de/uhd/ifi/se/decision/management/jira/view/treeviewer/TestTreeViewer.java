@@ -188,9 +188,9 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
 		tv = new TreeViewer(element.getKey(), true);
 		
-		//4) Check if TreeViewer has one new children 
+		//4) Check if TreeViewer has one element
 		assertNotNull(tv);
-		assertEquals(1, tv.getDataStructure(element).getChildren().size());
+		assertEquals(1, tv.getData().size());
 
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 	}

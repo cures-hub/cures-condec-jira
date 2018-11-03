@@ -59,7 +59,7 @@ public class CommentImpl implements Comment {
 	private void splitCommentIntoSentences() {
 		List<String> rawSentences = this.splitter.sliceCommentRecursionCommander(this.body, this.projectKey);
 		runBreakIterator(rawSentences);
-		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(this);
+//		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(this); //ConDec-373: Now in EventListener
 		// Create AO entries
 		for (int i = 0; i < this.splitter.getStartSubstringCount().size(); i++) {
 			int startIndex = this.splitter.getStartSubstringCount().get(i);
