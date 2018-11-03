@@ -632,7 +632,7 @@ function setUpEditSentenceDialogContext(id, description, type) {
 						updateView();
 					}
 
-					 callDialog();
+					 conDecIssueTab.callDialog();
 				});
 	};
 	AJS.$("#form-select-type").auiSelect2();
