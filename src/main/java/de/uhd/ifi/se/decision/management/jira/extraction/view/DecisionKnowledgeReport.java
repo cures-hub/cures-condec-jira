@@ -89,7 +89,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		// get Number of relevant Sentences per Issue
 		Map<String, Integer> numRelevantSentences = getNumberOfRelevantSentences(action.getLoggedInUser());
 		velocityParams.put("numRelevantSentences", numRelevantSentences);
-		velocityParams.put("map", Map.class);
+		velocityParams.put("map", Map.class); // TODO: what was this for? It is not used in vm.
 
 		// get Number of commits per Issue
 		velocityParams.put("numCommitsPerIssueMap", getNumberOfCommitsPerIssueMap(action.getLoggedInUser()));

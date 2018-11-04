@@ -19,7 +19,7 @@
  */
 
 // closure locals
-var conDecDialogCancelButtonOnClickSet = false;
+var conDecDialogOnHideSet = false;
 
 /* TODO replace labels with a i18n resource */
 var makeRootText = "Set as Root";
@@ -73,10 +73,12 @@ function setUpDialogForCreateAction(id) {
 		var description = document.getElementById("form-input-description").value;
 		var type = $("select[name='form-select-type']").val();
 		createDecisionKnowledgeElementAsChild(summary, description, type, id);
-		closeDialog();
+		AJS.dialog2("#dialog").hide();
 	};
 
-	isIssueStrategy(id, function(isIssueStrategy) {
+	conDecAPI.isIssueStrategy(id, function(isIssueStrategy) { // TODO: rename
+																// param name,
+																// confusing.
 		if (isIssueStrategy === true) {
 			var extensionButton = document.getElementById("dialog-extension-button");
 			extensionButton.style.visibility = "visible";
@@ -88,7 +90,7 @@ function setUpDialogForCreateAction(id) {
 				}).asDialog({
 					windowTitle : createKnowledgeElementText
 				}).show();
-				closeDialog();
+				AJS.dialog2("#dialog").hide();
 			};
 		}
 	});
@@ -97,19 +99,17 @@ function setUpDialogForCreateAction(id) {
 }
 
 /*
- attaches cancel button handler
- shows(creates) the dialog
- TODO: attach should be moved out from this function
- TODO: rename to maybe showDialog()
+ * attaches cancel button handler shows(creates) the dialog TODO: attach should
+ * be moved out from this function TODO: rename to maybe showDialog()
  */
 function setUpDialog() {
 	console.log("view.context.menu.js setUpDialog");
 	AJS.dialog2("#dialog").show();
-	if (!conDecDialogCancelButtonOnClickSet) {
-		document.getElementById("dialog-cancel-button").addEventListener("click", function() {
-			closeDialog();
+	if (!conDecDialogOnHideSet) {
+		AJS.dialog2("#dialog").on("hide", function() {
+			resetDialog();
 		});
-		conDecDialogCancelButtonOnClickSet = true;
+		conDecDialogOnHideSet = true;
 	}
 }
 
@@ -169,7 +169,7 @@ function setUpDialogForLinkAction(id) {
 	setUpDialog();
 	setHeaderText(linkKnowledgeElementText);
 
-	getUnlinkedElements(id, function(unlinkedElements) {
+	conDecAPI.getUnlinkedElements(id, function(unlinkedElements) {
 		var insertString = "<form class='aui'><div class='field-group' id='select-field-group'></div>"
 				+ "<div class='field-group' id='argument-field-group'></div></form>";
 		var content = document.getElementById("dialog-content");
@@ -193,7 +193,7 @@ function setUpDialogForLinkAction(id) {
 			var childId = $("select[name='form-select-component']").val();
 			var knowledgeTypeOfChild = $('input[name=form-radio-argument]:checked').val();
 			createLinkToExistingElement(id, childId, knowledgeTypeOfChild);
-			closeDialog();
+			AJS.dialog2("#dialog").hide();
 		};
 	});
 }
@@ -203,18 +203,19 @@ function addFormForArguments() {
 	var childId = $("select[name='form-select-component']").val();
 	var argumentFieldGroup = document.getElementById("argument-field-group");
 	argumentFieldGroup.innerHTML = "";
-	getDecisionKnowledgeElement(
-			childId,
-			function(decisionKnowledgeElement) {
-				if (decisionKnowledgeElement && decisionKnowledgeElement.type === "Argument") {
-					insertString = "<label for='form-radio-argument'>Type of Argument:</label>"
-							+ "<div class='radio'><input type='radio' class='radio' name='form-radio-argument' id='Pro-argument' value='Pro-argument' checked='checked'>"
-							+ "<label for='Pro'>Pro-argument</label></div>"
-							+ "<div class='radio'><input type='radio' class='radio' name='form-radio-argument' id='Con-argument' value='Con-argument'>"
-							+ "<label for='Contra'>Con-argument</label></div>";
-					argumentFieldGroup.insertAdjacentHTML("afterBegin", insertString);
-				}
-			});
+	conDecAPI
+			.getDecisionKnowledgeElement(
+					childId,
+					function(decisionKnowledgeElement) {
+						if (decisionKnowledgeElement && decisionKnowledgeElement.type === "Argument") {
+							insertString = "<label for='form-radio-argument'>Type of Argument:</label>"
+									+ "<div class='radio'><input type='radio' class='radio' name='form-radio-argument' id='Pro-argument' value='Pro-argument' checked='checked'>"
+									+ "<label for='Pro'>Pro-argument</label></div>"
+									+ "<div class='radio'><input type='radio' class='radio' name='form-radio-argument' id='Con-argument' value='Con-argument'>"
+									+ "<label for='Contra'>Con-argument</label></div>";
+							argumentFieldGroup.insertAdjacentHTML("afterBegin", insertString);
+						}
+					});
 }
 
 var contextMenuEditAction = {
@@ -233,13 +234,16 @@ var contextMenuEditAction = {
 
 function setUpDialogForEditAction(id, type) {
 	console.log("view.context.menu.js setUpDialogForEditAction");
-
-	getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
+	conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
 		var summary = decisionKnowledgeElement.summary;
 		var description = decisionKnowledgeElement.description;
 		var type = decisionKnowledgeElement.type;
 
-		isIssueStrategy(id, function(isIssueStrategy) {
+		conDecAPI.isIssueStrategy(id, function(isIssueStrategy) { // TODO:
+																	// refactor
+																	// param
+																	// name,
+																	// confusing!
 			if (isIssueStrategy) {
 				var createEditIssueForm = require('quick-edit/form/factory/edit-issue');
 				createEditIssueForm({
@@ -247,7 +251,7 @@ function setUpDialogForEditAction(id, type) {
 				}).asDialog({
 					windowTitle : editKnowledgeElementText
 				}).show();
-				closeDialog();
+				AJS.dialog2("#dialog").hide();
 			} else {
 				setUpDialog();
 				setHeaderText(editKnowledgeElementText);
@@ -260,7 +264,7 @@ function setUpDialogForEditAction(id, type) {
 					var description = document.getElementById("form-input-description").value;
 					var type = $("select[name='form-select-type']").val();
 					updateDecisionKnowledgeElementAsChild(id, summary, description, type);
-					closeDialog();
+					AJS.dialog2("#dialog").hide();
 				};
 			}
 		});
@@ -292,10 +296,10 @@ function setUpDialogForDeleteAction(id) {
 	var submitButton = document.getElementById("dialog-submit-button");
 	submitButton.textContent = deleteKnowledgeElementText;
 	submitButton.onclick = function() {
-		deleteDecisionKnowledgeElement(id, function() {
-			updateView();
+		conDecAPI.deleteDecisionKnowledgeElement(id, function() {
+			notify();
 		});
-		closeDialog();
+		AJS.dialog2("#dialog").hide();
 	};
 }
 
@@ -327,10 +331,10 @@ function setUpDialogForDeleteLinkAction(id, parentId) {
 	var submitButton = document.getElementById("dialog-submit-button");
 	submitButton.textContent = deleteLinkToParentText;
 	submitButton.onclick = function() {
-		deleteLink(parentId, id, function() {
-			updateView();
+		conDecAPI.deleteLink(parentId, id, function() {
+			notify();
 		});
-		closeDialog();
+		AJS.dialog2("#dialog").hide();
 	};
 }
 
@@ -361,12 +365,8 @@ var contextMenuActions = {
 	"delete" : contextMenuDeleteAction
 };
 
-function closeDialog() {
-	AJS.dialog2("#dialog").hide();
-	resetDialog();
-}
-
 function resetDialog() {
+	console.log("view.context.menu.js resetDialog");
 	document.getElementById("dialog-header").innerHTML = "";
 	document.getElementById("dialog-content").innerHTML = "";
 	document.getElementById("dialog-extension-button").style.visibility = "hidden";
@@ -420,7 +420,7 @@ var changeKnowledgeTypeAction = {
 
 /* TODO: refactor name. "changeKnowledgeTypetTo" ? */
 function changeKtTo(id, position, type) {
-	changeKnowledgeTypeOfSentence(id, type, function() {
+	conDecAPI.changeKnowledgeTypeOfSentence(id, type, function() {
 		if (document.getElementById("Relevant") !== null) {
 			resetTreeViewer();
 			conDecIssueTab.buildTreeViewer(document.getElementById("Relevant").checked);
@@ -466,7 +466,7 @@ function replaceTagsFromContent(idOfUiElement, type) {
 	}
 }
 
-// local usage only 
+// local usage only
 var contextMenuDeleteSentenceLinkAction = {
 	// label for Tree Viewer, name for Treant context menu
 	"label" : "Delete link to parent",
@@ -483,18 +483,21 @@ var contextMenuDeleteSentenceLinkAction = {
 
 		var nodeType = (node.li_attr['class'] === "sentence") ? "s" : "i";
 
-		deleteGenericLink(parentId, node.id, "i", nodeType, linkGenericElements(JIRA.Issue.getIssueId(),node.id,"i",nodeType,refreshTreeViewer),false);
-		deleteGenericLink(parentId, node.id, "s", nodeType, linkGenericElements(JIRA.Issue.getIssueId(),node.id,"i",nodeType,refreshTreeViewer),false);
+		conDecAPI.deleteGenericLink(parentId, node.id, "i", nodeType, linkGenericElements(JIRA.Issue.getIssueId(),
+				node.id, "i", nodeType, refreshTreeViewer), false);
+		conDecAPI.deleteGenericLink(parentId, node.id, "s", nodeType, linkGenericElements(JIRA.Issue.getIssueId(),
+				node.id, "i", nodeType, refreshTreeViewer), false);
 
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
 		var parentId = findParentId(id);
-		var parentClass = (document.getElementById(parentId).className.includes("sentence")) ? "s":"i";
-		var nodeClass = (document.getElementById(id).className.includes("sentence")) ? "s":"i";
 
-		deleteGenericLink(parentId,id, parentClass, nodeClass, linkGenericElements(JIRA.Issue.getIssueId(),id,"i",nodeClass,updateView),false);
+		var parentClass = (document.getElementById(parentId).className.includes("sentence")) ? "s" : "i";
+		var nodeClass = (document.getElementById(id).className.includes("sentence")) ? "s" : "i";
 
+		conDecAPI.deleteGenericLink(parentId, id, parentClass, nodeClass, linkGenericElements(JIRA.Issue.getIssueId(),
+				id, "i", nodeClass, notify), false);
 
 	}
 };
@@ -507,7 +510,7 @@ var contextMenuDeleteSentenceAction = {
 	"action" : function(position) {
 		var node = getSelectedTreeViewerNode(position);
 		var id = node.id;
-		setSentenceIrrelevant(id, function(core, node) {
+		conDecAPI.setSentenceIrrelevant(id, function(core, node) {
 			jQueryConDec("#jstree").jstree(true).set_icon(jQueryConDec("#jstree").jstree(true).get_node(id),
 					"https://player.fm/static/images/128pixel.png");
 			if (!(document.getElementById("Relevant") == null)) {
@@ -521,7 +524,7 @@ var contextMenuDeleteSentenceAction = {
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		setSentenceIrrelevant(id, function(core, options, id) {
+		conDecAPI.setSentenceIrrelevant(id, function(core, options, id) {
 			refreshTreeViewer();
 		});
 	}
@@ -551,9 +554,9 @@ var contextMenuEditSentenceAction = {
 	}
 };
 
-//local usage only
+// local usage only
 /**
- returns a node with given id from a node list
+ * returns a node with given id from a node list
  */
 function getNodeWithId(nodes, id) {
 	for (var i = nodes.length - 1; i >= 0; i--) {
@@ -564,7 +567,7 @@ function getNodeWithId(nodes, id) {
 }
 
 /**
- fills HTML of dialog with contents
+ * fills HTML of dialog with contents
  */
 function setUpDialogForEditSentenceAction(id, description, type) {
 	setUpDialog();
@@ -574,7 +577,7 @@ function setUpDialogForEditSentenceAction(id, description, type) {
 }
 
 /**
- fills HTML view-protion of dialog with contents
+ * fills HTML view-protion of dialog with contents
  */
 function setUpEditSentenceDialogView(description, type) {
 
@@ -589,7 +592,7 @@ function setUpEditSentenceDialogView(description, type) {
 					+ "' class='textarea full-width-field'>" + description + "</textarea></div>"
 					+ "<div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
 					+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
-					+ "</form>");	
+					+ "</form>");
 
 	for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
 		var isSelected = "";
@@ -605,7 +608,7 @@ function setUpEditSentenceDialogView(description, type) {
 }
 
 /**
- sets-up submit button
+ * sets-up submit button
  */
 function setUpEditSentenceDialogContext(id, description, type) {
 
@@ -614,34 +617,33 @@ function setUpEditSentenceDialogContext(id, description, type) {
 	submitButton.onclick = function() {
 		var description = document.getElementById("form-input-description").value;
 		var type = $("select[name='form-select-type']").val().split("-")[0];
-		editSentenceBody(
-				id,
-				description,
-				type,
-				function() {
-					if (!(document.getElementById("Relevant") == null)) {
-						var idOfUiElement = "ui" + id;
-						replaceTagsFromContent(idOfUiElement, type);
+		conDecAPI
+				.editSentenceBody(
+						id,
+						description,
+						type,
+						function() {
+							if (!(document.getElementById("Relevant") == null)) {
+								var idOfUiElement = "ui" + id;
+								replaceTagsFromContent(idOfUiElement, type);
 
-						document.getElementById(idOfUiElement).classList.remove("Decision", "Issue", "Alternative",
-								"Pro", "Con");
-						document.getElementById(idOfUiElement).classList.add(type);
-						document.getElementById(idOfUiElement).getElementsByClassName("sentenceBody")[0].textContent = description;
-						closeDialog();
-					} else {
-						closeDialog();
-						updateView();
-					}
-
-					callDialog();
-				});
+								document.getElementById(idOfUiElement).classList.remove("Decision", "Issue",
+										"Alternative", "Pro", "Con");
+								document.getElementById(idOfUiElement).classList.add(type);
+								document.getElementById(idOfUiElement).getElementsByClassName("sentenceBody")[0].textContent = description;
+								AJS.dialog2("#dialog").hide();
+							} else {
+								AJS.dialog2("#dialog").hide();
+								notify();
+							}
+							conDecIssueTab.callDialog();
+						});
 	};
 	AJS.$("#form-select-type").auiSelect2();
 }
 
 /**
- local
- resets tree viewer and builds it again
+ * local resets tree viewer and builds it again
  */
 function refreshTreeViewer() {
 	console.log("view.context.menu.js refreshTreeViewer");
@@ -649,8 +651,8 @@ function refreshTreeViewer() {
 		resetTreeViewer();
 		conDecIssueTab.buildTreeViewer(document.getElementById("Relevant").checked);
 	} else {
-		closeDialog();
-		updateView();
+		AJS.dialog2("#dialog").hide();
+		notify();
 	}
 }
 

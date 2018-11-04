@@ -66,7 +66,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				var jiraPrivateKey = document.getElementById("privateKey");
 				var consumerKey = document.getElementById("consumerKey");
 				var projectKey = getProjectKey();
-                getRequestToken(projectKey, jiraBaseUrl.value, jiraPrivateKey.value, consumerKey.value, function(result) {
+                conDecAPI.getRequestToken(projectKey, jiraBaseUrl.value, jiraPrivateKey.value, consumerKey.value, function(result) {
                     this.busy = true;
                     document.getElementById("requestToken").value = result["result"];
                    	var url = jiraBaseUrl.value + "/plugins/servlet/oauth/authorize?oauth_token=" + result["result"];
@@ -85,7 +85,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				var projectKey = getProjectKey();
 				var secret = document.getElementById("gitIntegration-secret");
 
-                getAccessToken(projectKey, jiraBaseUrl.value, jiraPrivateKey.value, consumerKey.value, 
+                conDecAPI.getAccessToken(projectKey, jiraBaseUrl.value, jiraPrivateKey.value, consumerKey.value, 
                 		requestToken.value, secret.value, function(result) {
                 	this.busy = true;
                 	console.log(result);
@@ -120,7 +120,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                             #end
                             toggle.addEventListener('change', function (error) {
                                 this.busy = true;
-                                setActivated(this.checked, this.value);
+                                conDecAPI.setActivated(this.checked, this.value);
                                 this.busy = false;
                             });
                         });
@@ -137,7 +137,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                             #end
                             toggle.addEventListener('change', function (e) {
                                 this.busy = true;
-                                setIssueStrategy(this.checked, this.value);
+                                conDecAPI.setIssueStrategy(this.checked, this.value);
                                 this.busy = false;
                             });
                         });
@@ -156,7 +156,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                             #end
                             toggle.addEventListener('change', function (error) {
                                 this.busy = true;
-                                setKnowledgeExtractedFromGit(this.checked, this.value);
+                                conDecAPI.setKnowledgeExtractedFromGit(this.checked, this.value);
                                 this.busy = false;
                             });
                         });
@@ -175,7 +175,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                             #end
                             toggle.addEventListener('change', function (error) {
                                 this.busy = true;
-                                setKnowledgeExtractedFromIssues(this.checked, this.value);
+                                conDecAPI.setKnowledgeExtractedFromIssues(this.checked, this.value);
                                 this.busy = false;
                             });
                         });
