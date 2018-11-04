@@ -32,7 +32,7 @@ function createLinkToExistingElement(idOfExistingElement, idOfNewElement, knowle
 	console.log("management.js createLinkToExistingElement");
 	switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
 			idOfNewElement) {
-		linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
+		conDecAPI.linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
 			updateView();
 		});
 	});
@@ -61,7 +61,7 @@ function updateDecisionKnowledgeElementAsChild(childId, summary, description, ty
 				var parentId = findParentId(childId);
 				switchLinkTypes(type, parentId, childId, function(linkType, parentId, childId) {
 					deleteLink(parentId, childId, function() {
-						linkElements(parentId, childId, linkType, function() {
+						conDecAPI.linkElements(parentId, childId, linkType, function() {
 							updateView();
 						});
 					});
