@@ -297,7 +297,7 @@ function setUpDialogForDeleteAction(id) {
 	submitButton.textContent = deleteKnowledgeElementText;
 	submitButton.onclick = function() {
 		conDecAPI.deleteDecisionKnowledgeElement(id, function() {
-			updateView();
+			notify();
 		});
 		AJS.dialog2("#dialog").hide();
 	};
@@ -332,7 +332,7 @@ function setUpDialogForDeleteLinkAction(id, parentId) {
 	submitButton.textContent = deleteLinkToParentText;
 	submitButton.onclick = function() {
 		conDecAPI.deleteLink(parentId, id, function() {
-			updateView();
+			notify();
 		});
 		AJS.dialog2("#dialog").hide();
 	};
@@ -497,7 +497,7 @@ var contextMenuDeleteSentenceLinkAction = {
 		var nodeClass = (document.getElementById(id).className.includes("sentence")) ? "s" : "i";
 
 		conDecAPI.deleteGenericLink(parentId, id, parentClass, nodeClass, linkGenericElements(JIRA.Issue.getIssueId(),
-				id, "i", nodeClass, updateView), false);
+				id, "i", nodeClass, notify), false);
 
 	}
 };
@@ -634,7 +634,7 @@ function setUpEditSentenceDialogContext(id, description, type) {
 								AJS.dialog2("#dialog").hide();
 							} else {
 								AJS.dialog2("#dialog").hide();
-								updateView();
+								notify();
 							}
 							conDecIssueTab.callDialog();
 						});
@@ -652,7 +652,7 @@ function refreshTreeViewer() {
 		conDecIssueTab.buildTreeViewer(document.getElementById("Relevant").checked);
 	} else {
 		AJS.dialog2("#dialog").hide();
-		updateView();
+		notify();
 	}
 }
 

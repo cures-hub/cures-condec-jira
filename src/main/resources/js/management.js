@@ -12,8 +12,8 @@ var defaultKnowledgeTypes = conDecAPI.getDefaultKnowledgeTypes(getProjectKey());
 var extendedKnowledgeTypes = replaceArgumentWithLinkTypes(knowledgeTypes);
 
 function replaceArgumentWithLinkTypes(knowledgeTypes) { // TODO: check why
-														// is/was knowledgeTypes
-														// passed?
+	// is/was knowledgeTypes
+	// passed?
 	console.log("management.js replaceArgumentWithLinkTypes");
 	var extendedKnowledgeTypes = conDecAPI.getKnowledgeTypes(getProjectKey());
 	extendedKnowledgeTypes = extendedKnowledgeTypes.filter(function(value) {
@@ -24,8 +24,12 @@ function replaceArgumentWithLinkTypes(knowledgeTypes) { // TODO: check why
 	return extendedKnowledgeTypes;
 }
 
-function updateView() {
-	
+function notify() {
+	if (window.conDecIssueModule !== undefined) {
+		window.conDecIssueModule.initView();
+	} else if (window.conDecKnowledgePage !== undefined) {
+		window.conDecKnowledgePage.fetchAndRender();
+	}
 }
 
 function createLinkToExistingElement(idOfExistingElement, idOfNewElement, knowledgeTypeOfChild) {
@@ -33,7 +37,7 @@ function createLinkToExistingElement(idOfExistingElement, idOfNewElement, knowle
 	switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
 			idOfNewElement) {
 		conDecAPI.linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
-			updateView();
+			notify();
 		});
 	});
 }
@@ -62,12 +66,12 @@ function updateDecisionKnowledgeElementAsChild(childId, summary, description, ty
 				switchLinkTypes(type, parentId, childId, function(linkType, parentId, childId) {
 					deleteLink(parentId, childId, function() {
 						conDecAPI.linkElements(parentId, childId, linkType, function() {
-							updateView();
+							notify();
 						});
 					});
 				});
 			} else {
-				updateView();
+				notify();
 			}
 		});
 	});
@@ -89,7 +93,7 @@ function createDecisionKnowledgeElementAsChild(summary, description, type, idOfE
 		switchLinkTypes(type, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
 				idOfNewElement) {
 			conDecAPI.linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
-				updateView();
+				notify();
 			});
 		});
 	});
@@ -148,9 +152,9 @@ function getURLsSearch() {
 	return search;
 }
 
-/* OUT of scope for Restructing:
-ExportAsTable functions
-*/
+/*
+ * OUT of scope for Restructing: ExportAsTable functions
+ */
 function exportAllElementsMatchingQuery() {
 	// get jql from url
 	var myJql = getQueryFromUrl();
@@ -162,7 +166,7 @@ function exportAllElementsMatchingQuery() {
 function exportLinkedElements() {
 	var myJql = getQueryFromUrl();
 	var issueKey = getIssueKey();
-	getLinkedElementsByQuery(myJql, issueKey, function(res) {
+	conDecAPI.getLinkedElementsByQuery(myJql, issueKey, function(res) {
 		console.log("noResult", res);
 		if (res) {
 			console.log("linked", res);
@@ -177,10 +181,10 @@ function exportLinkedElements() {
 }
 
 /**
-* returns jql if empty or nonexistent create it returning jql for one issue
-* 
-* @returns {string}
-*/
+ * returns jql if empty or nonexistent create it returning jql for one issue
+ * 
+ * @returns {string}
+ */
 function getQueryFromUrl() {
 	var userInputJql = getURLsSearch();
 	var baseUrl = AJS.params.baseURL;
@@ -208,7 +212,7 @@ function getQueryFromUrl() {
 
 function callGetElementsByQueryAndDownload(jql, baseLink) {
 	var elementsWithLinkArray = [];
-	getElementsByQuery(jql, function(response) {
+	conDecAPI.getElementsByQuery(jql, function(response) {
 		console.log("byQuery", response);
 		if (response) {
 			response.map(function(el) {

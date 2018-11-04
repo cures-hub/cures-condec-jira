@@ -96,7 +96,7 @@ function addDragAndDropSupportForTreeViewer() {
 			if (parentNode === "#" && oldParentNode !== "#") {
 
 				conDecAPI.deleteLink(oldParentNode.data.id, nodeId, function() {
-					updateView();
+					notify();
 				});
 			}
 			if (parentNode !== '#' && oldParentNode !== '#') {
