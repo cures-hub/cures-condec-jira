@@ -241,10 +241,10 @@ public class ActiveObjectsManager {
 				sentenceEntity.getEndSubstringCount());
 		if (knowledgeType.toString().equalsIgnoreCase("other")
 				|| knowledgeType.toString().equalsIgnoreCase("argument")) {
-			newBody = newBody.replaceAll("(?i)" + sentenceEntity.getKnowledgeTypeString() + "]", argument + "]");
+			newBody = newBody.replaceAll("(?i)" + sentenceEntity.getKnowledgeTypeString() + "}", argument + "}");
 		} else {
-			newBody = newBody.replaceAll("(?i)" + sentenceEntity.getKnowledgeTypeString() + "]",
-					knowledgeType.toString() + "]");
+			newBody = newBody.replaceAll("(?i)" + sentenceEntity.getKnowledgeTypeString() + "}",
+					knowledgeType.toString() + "}");
 		}
 		// build body with first text and changed text
 		int newEndSubstringCount = newBody.length();

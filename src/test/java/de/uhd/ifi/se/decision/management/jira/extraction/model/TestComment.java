@@ -315,11 +315,10 @@ public class TestComment extends TestSetUpWithIssues {
 	}
 
 	@Test
-	@Ignore
 	@NonTransactional
 	public void testPropertiesOfTaggedElementedText() {
 		CommentImpl comment = getComment(
-				"[Alternative] this is a manually created alternative [/Alternative] and this is a test Sentence.");
+				"{Alternative} this is a manually created alternative {Alternative} and this is a test Sentence.");
 		assertEquals(2, comment.getSentences().size());
 		assertEquals(true, comment.getSentences().get(0).isRelevant());
 		assertEquals(false, comment.getSentences().get(0).isPlainText());
@@ -348,17 +347,16 @@ public class TestComment extends TestSetUpWithIssues {
 	}
 
 	@Test
-	@Ignore
 	@NonTransactional
 	public void testManuallyTaggingPro() {
-		CommentImpl comment = getComment("[Pro]this is a manual pro tagged sentence [/Pro]");
+		CommentImpl comment = getComment("{Pro}this is a manual pro tagged sentence {Pro}");
 		// test the result in splits, fails when checked with equals
 		assertTrue(comment.getTaggedBody(0).contains("<span id=\"comment0\">"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Pro\"  id  = ui1>"));
 		// important that the tag is not inside the text area
 		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[Pro]</span>"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class = sentenceBody>"));
-		assertTrue(comment.getTaggedBody(0).contains("this is a manual pro tagged sentence "));
+		assertTrue(comment.getTaggedBody(0).contains("this is a manual pro tagged sentence"));
 		// important that the tag is not inside the text area
 		assertTrue(comment.getTaggedBody(0).contains("</span><span class =tag>[/Pro]</span>"));
 		assertTrue(comment.getTaggedBody(0).contains("</span></span>"));
@@ -367,14 +365,15 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testManuallyTaggingDecision() {
-		CommentImpl comment = getComment("[Decision]this is a manual pro tagged sentence [/Decision]");
+		CommentImpl comment = getComment("{Decision}this is a manual decision tagged sentence{Decision}");
+		System.out.println(comment.getTaggedBody(0));
 		// test the result in splits, fails when checked with equals
 		assertTrue(comment.getTaggedBody(0).contains("<span id=\"comment0\">"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Decision\"  id  = ui1>"));
 		// important that the tag is not inside the text area
 		assertTrue(comment.getTaggedBody(0).contains("<span class =tag>[Decision]</span>"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class = sentenceBody>"));
-		assertTrue(comment.getTaggedBody(0).contains("this is a manual pro tagged sentence "));
+		assertTrue(comment.getTaggedBody(0).contains("this is a manual decision tagged sentence"));
 		// important that the tag is not inside the text area
 		assertTrue(comment.getTaggedBody(0).contains("</span><span class =tag>[/Decision]</span>"));
 		assertTrue(comment.getTaggedBody(0).contains("</span></span>"));
@@ -383,7 +382,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testManuallyTaggingIssue() {
-		CommentImpl comment = getComment("[Issue]this is a manual pro tagged sentence [/Issue]");
+		CommentImpl comment = getComment("{Issue}this is a manual pro tagged sentence {Issue}");
 		// test the result in splits, fails when checked with equals
 		assertTrue(comment.getTaggedBody(0).contains("<span id=\"comment0\">"));
 		assertTrue(comment.getTaggedBody(0).contains("<span class=\"sentence Issue\"  id  = ui1>"));
@@ -428,40 +427,38 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testManuallyTaggingWithOnlyOpenTag() {
-		CommentImpl comment = getComment("[Alternative] This is a testsentence");
-		assertTrue(comment.getTaggedBody(0).trim().equalsIgnoreCase(
-				"<span id=\"comment0\"><span class=\"sentence isNotRelevant\"  id  = ui1><span class =tag></span><span class = sentenceBody>[Alternative] This is a testsentence</span><span class =tag></span></span></span>\r\n"
-						.trim()));
+		CommentImpl comment = getComment("{Alternative} This is a testsentence");
+		assertEquals(comment.getTaggedBody(0).trim(),
+				"<span id=\"comment0\"><span class=\"sentence isNotRelevant\"  id  = ui1><span class =tag></span><span class = sentenceBody>{Alternative} This is a testsentence</span><span class =tag></span></span></span>\r\n"
+						.trim());
 	}
 
 	@Test
 	@NonTransactional
 	public void testManuallyTaggingWithWrongTagMix() {
-		CommentImpl comment = getComment("[Alternative] This is a testsentence[/Issue]");
+		CommentImpl comment = getComment("{Alternative} This is a testsentence{Issue}");
 		System.out.println(comment.getTaggedBody(0));
-		assertTrue(comment.getTaggedBody(0).trim().equalsIgnoreCase(
-				"<span id=\"comment0\"><span class=\"sentence isNotRelevant\"  id  = ui1><span class =tag></span><span class = sentenceBody>[Alternative] This is a testsentence[/Issue]</span><span class =tag></span></span></span>\r\n"
+		assertEquals(comment.getTaggedBody(0).trim(),(
+				"<span id=\"comment0\"><span class=\"sentence isNotRelevant\"  id  = ui1><span class =tag></span><span class = sentenceBody>{Alternative} This is a testsentence{Issue}</span><span class =tag></span></span></span>\r\n"
 						.trim()));
 	}
 
 	@Test
-	@Ignore
 	@NonTransactional
 	public void testManuallyTaggingWithIconsAndTags() {
 		CommentImpl comment = getComment(
-				"(y) I like this idea \r\n mid sentence without sense [Con] But the other one not [/Con]");
-		assertTrue(comment.getTaggedBody(0).trim().equalsIgnoreCase(
+				"(y) I like this idea \r\n mid sentence without sense {Con} But the other one not {Con}");
+		assertEquals(comment.getTaggedBody(0).trim().toLowerCase(),
 				"<span id=\"comment0\"><span class=\"sentence Pro\"  id  = ui1><span class =tag>[Pro]</span><span class = sentenceBody> I like this idea </span><span class =tag>[/Pro]</span></span><span class=\"sentence isNotRelevant\"  id  = ui2><span class =tag></span><span class = sentenceBody> mid sentence without sense </span><span class =tag></span></span><span class=\"sentence Con\"  id  = ui3><span class =tag>[Con]</span><span class = sentenceBody> But the other one not </span><span class =tag>[/Con]</span></span></span>\r\n"
-						.trim()));
+						.trim().toLowerCase());
 
 	}
 
 	@Test
-	@Ignore
 	@NonTransactional
 	public void testUpperLowerCaseTagging() {
-		CommentImpl comment = getComment("[Con] But the other one not [/Con]");
-		CommentImpl comment1 = getComment("[con] But the other one not [/con]");
+		CommentImpl comment = getComment("{Con} But the other one not {Con}");
+		CommentImpl comment1 = getComment("{con} But the other one not {con}");
 		assertEquals(comment.getTaggedBody(0), comment1.getTaggedBody(0));
 
 	}
@@ -472,10 +469,13 @@ public class TestComment extends TestSetUpWithIssues {
 		CommentImpl comment = getComment("{noformat} nonplain text {noformat}");
 		comment.getSentences().get(0).setRelevant(true);
 		assertNotNull(comment.getTaggedBody(0));
+		String expected = "<span id=\"comment0\"><span class=\"sentence \"  id  = ui1><span class =tag></span><span class = sentenceBody>{noformat} nonplain text {noformat}</span><span class =tag></span></span></span>";
+		assertEquals(expected, comment.getTaggedBody(0));
 	}
 	
 	
 	@Test
+	@Ignore //Ignored sinde [tags] have been replaced by {tags} we first decide about additional knowledge types
 	@NonTransactional
 	public void testCommentsWithExtendedKnowledgeTypeSolution() {
 		Comment comment = getComment("[Solution]just a solution[/Solution]");
@@ -483,6 +483,7 @@ public class TestComment extends TestSetUpWithIssues {
 	}
 	
 	@Test
+	@Ignore //Ignored sinde [tags] have been replaced by {tags} we first decide about additional knowledge types
 	@NonTransactional
 	public void testCommentsWithExtendedKnowledgeTypeGoal() {
 		Comment comment = getComment("[Goal]just a Goal[/Goal]");
@@ -490,6 +491,7 @@ public class TestComment extends TestSetUpWithIssues {
 	}
 	
 	@Test
+	@Ignore //Ignored sinde [tags] have been replaced by {tags} we first decide about additional knowledge types
 	@NonTransactional
 	public void testCommentsWithExtendedKnowledgeTypeImplication() {
 		Comment comment = getComment("[Implication]just an Implication[/Implication]");
@@ -497,6 +499,7 @@ public class TestComment extends TestSetUpWithIssues {
 	}
 	
 	@Test
+	@Ignore //Ignored sinde [tags] have been replaced by {tags} we first decide about additional knowledge types
 	@NonTransactional
 	public void testCommentsWithExtendedKnowledgeTypeContext() {
 		Comment comment = getComment("[Context]just an Context[/Context]");
@@ -504,6 +507,7 @@ public class TestComment extends TestSetUpWithIssues {
 	}
 	
 	@Test
+	@Ignore //Ignored sinde [tags] have been replaced by {tags} we first decide about additional knowledge types
 	@NonTransactional
 	public void testCommentsWithExtendedKnowledgeTypeConstraint() {
 		Comment comment = getComment("[Constraint]just a Context[/Constraint]");
@@ -511,6 +515,7 @@ public class TestComment extends TestSetUpWithIssues {
 	}
 	
 	@Test
+	@Ignore //Ignored sinde [tags] have been replaced by {tags} we first decide about additional knowledge types
 	@NonTransactional
 	public void testCommentsWithExtendedKnowledgeTypeClaim() {
 		Comment comment = getComment("[Claim]just a Claim  [/Claim]");
@@ -518,6 +523,7 @@ public class TestComment extends TestSetUpWithIssues {
 	}
 	
 	@Test
+	@Ignore //Ignored sinde [tags] have been replaced by {tags} we first decide about additional knowledge types
 	@NonTransactional
 	public void testCommentsWithExtendedKnowledgeTypeAssumption() {
 		Comment comment = getComment("[Assumption]just a Assumption  [/Assumption]");
@@ -525,6 +531,7 @@ public class TestComment extends TestSetUpWithIssues {
 	}
 	
 	@Test
+	@Ignore //Ignored sinde [tags] have been replaced by {tags} we first decide about additional knowledge types
 	@NonTransactional
 	public void testCommentsWithExtendedKnowledgeTypeAssessment() {
 		Comment comment = getComment("[Assessment]just a Assessment  [/Assessment]");
@@ -532,6 +539,7 @@ public class TestComment extends TestSetUpWithIssues {
 	}	
 	
 	@Test
+	@Ignore //Ignored sinde [tags] have been replaced by {tags} we first decide about additional knowledge types
 	@NonTransactional
 	public void testCommentsWithInvalidKnowledgeType() {
 		Comment comment = getComment("[invalid]just a Assessment  [/invalid]");

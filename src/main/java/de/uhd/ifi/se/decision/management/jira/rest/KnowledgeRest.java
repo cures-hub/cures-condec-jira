@@ -244,17 +244,17 @@ public class KnowledgeRest {
 
 					String newType = decisionKnowledgeElement.getType().toString();
 					if(newType.equals(KnowledgeType.OTHER.toString()) && argument.length() >0) {
-						newType = argument;
+						newType = argument; 
 					}
 					String tag = "";
 					// Allow changing of manual tags, but no tags for icons
 					if (databaseEntity.isTaggedManually() && !CommentSplitter.isCommentIconTagged(oldSentenceInComment)) {
-						tag = "[" + WordUtils.capitalize(newType) + "]";
+						tag = "{" + WordUtils.capitalize(newType) + "}";
 					} else if (CommentSplitter.isCommentIconTagged(oldSentenceInComment)) {
 						indexOfOldSentence = indexOfOldSentence + 3; // add icon to text.
 					}
 					String first = mc.getBody().substring(0, indexOfOldSentence);
-					String second = tag + newSentenceBody + tag.replace("[", "[/");
+					String second = tag + newSentenceBody + tag;
 					String third = mc.getBody().substring(indexOfOldSentence + oldSentenceInComment.length());
 
 					mc.setBody(first + second + third);
