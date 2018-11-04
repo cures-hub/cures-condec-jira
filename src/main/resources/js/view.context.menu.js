@@ -19,7 +19,7 @@
  */
 
 // closure locals
-var conDecDialogCancelButtonOnClickSet = false;
+var conDecDialogOnHideSet = false;
 
 /* TODO replace labels with a i18n resource */
 var makeRootText = "Set as Root";
@@ -73,7 +73,7 @@ function setUpDialogForCreateAction(id) {
 		var description = document.getElementById("form-input-description").value;
 		var type = $("select[name='form-select-type']").val();
 		createDecisionKnowledgeElementAsChild(summary, description, type, id);
-		closeDialog();
+		AJS.dialog2("#dialog").hide();
 	};
 
 	conDecAPI.isIssueStrategy(id, function(isIssueStrategy) { // TODO: rename
@@ -90,7 +90,7 @@ function setUpDialogForCreateAction(id) {
 				}).asDialog({
 					windowTitle : createKnowledgeElementText
 				}).show();
-				closeDialog();
+				AJS.dialog2("#dialog").hide();
 			};
 		}
 	});
@@ -105,11 +105,11 @@ function setUpDialogForCreateAction(id) {
 function setUpDialog() {
 	console.log("view.context.menu.js setUpDialog");
 	AJS.dialog2("#dialog").show();
-	if (!conDecDialogCancelButtonOnClickSet) {
-		document.getElementById("dialog-cancel-button").addEventListener("click", function() {
-			closeDialog();
+	if (!conDecDialogOnHideSet) {
+		AJS.dialog2("#dialog").on("hide", function() {
+			resetDialog();
 		});
-		conDecDialogCancelButtonOnClickSet = true;
+		conDecDialogOnHideSet = true;
 	}
 }
 
@@ -193,7 +193,7 @@ function setUpDialogForLinkAction(id) {
 			var childId = $("select[name='form-select-component']").val();
 			var knowledgeTypeOfChild = $('input[name=form-radio-argument]:checked').val();
 			createLinkToExistingElement(id, childId, knowledgeTypeOfChild);
-			closeDialog();
+			AJS.dialog2("#dialog").hide();
 		};
 	});
 }
@@ -251,7 +251,7 @@ function setUpDialogForEditAction(id, type) {
 				}).asDialog({
 					windowTitle : editKnowledgeElementText
 				}).show();
-				closeDialog();
+				AJS.dialog2("#dialog").hide();
 			} else {
 				setUpDialog();
 				setHeaderText(editKnowledgeElementText);
@@ -264,7 +264,7 @@ function setUpDialogForEditAction(id, type) {
 					var description = document.getElementById("form-input-description").value;
 					var type = $("select[name='form-select-type']").val();
 					updateDecisionKnowledgeElementAsChild(id, summary, description, type);
-					closeDialog();
+					AJS.dialog2("#dialog").hide();
 				};
 			}
 		});
@@ -299,7 +299,7 @@ function setUpDialogForDeleteAction(id) {
 		conDecAPI.deleteDecisionKnowledgeElement(id, function() {
 			updateView();
 		});
-		closeDialog();
+		AJS.dialog2("#dialog").hide();
 	};
 }
 
@@ -334,7 +334,7 @@ function setUpDialogForDeleteLinkAction(id, parentId) {
 		conDecAPI.deleteLink(parentId, id, function() {
 			updateView();
 		});
-		closeDialog();
+		AJS.dialog2("#dialog").hide();
 	};
 }
 
@@ -365,12 +365,8 @@ var contextMenuActions = {
 	"delete" : contextMenuDeleteAction
 };
 
-function closeDialog() {
-	AJS.dialog2("#dialog").hide();
-	resetDialog();
-}
-
 function resetDialog() {
+	console.log("view.context.menu.js resetDialog");
 	document.getElementById("dialog-header").innerHTML = "";
 	document.getElementById("dialog-content").innerHTML = "";
 	document.getElementById("dialog-extension-button").style.visibility = "hidden";
@@ -635,9 +631,9 @@ function setUpEditSentenceDialogContext(id, description, type) {
 										"Alternative", "Pro", "Con");
 								document.getElementById(idOfUiElement).classList.add(type);
 								document.getElementById(idOfUiElement).getElementsByClassName("sentenceBody")[0].textContent = description;
-								closeDialog();
+								AJS.dialog2("#dialog").hide();
 							} else {
-								closeDialog();
+								AJS.dialog2("#dialog").hide();
 								updateView();
 							}
 							conDecIssueTab.callDialog();
@@ -655,7 +651,7 @@ function refreshTreeViewer() {
 		resetTreeViewer();
 		conDecIssueTab.buildTreeViewer(document.getElementById("Relevant").checked);
 	} else {
-		closeDialog();
+		AJS.dialog2("#dialog").hide();
 		updateView();
 	}
 }

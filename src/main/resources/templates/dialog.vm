@@ -13,7 +13,7 @@
 				Editor</button>
 			<button id="dialog-submit-button"
 				class="aui-button aui-button-primary">Do it!</button>
-			<button id="dialog-cancel-button" class="aui-button aui-button-link">Cancel</button>
+			<button id="dialog-cancel-button" class="aui-button aui-button-link" onclick="AJS.dialog2('#dialog').hide()">Cancel</button>
 		</div>
 	</footer>
 </section>
@@ -33,7 +33,7 @@
     </div>
 	<footer class="aui-dialog2-footer">
 		<div class="aui-dialog2-footer-actions">
-			<button id="dialog-cancel-button" class="aui-button aui-button-link" onclick="closeExportDialog()">Cancel</button>
+			<button id="export-dialog-cancel-button" class="aui-button aui-button-link" onclick="AJS.dialog2('#export-dialog').hide()">Cancel</button>
 		</div>
 	</footer>
 </section>
