@@ -14,6 +14,7 @@ import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -33,6 +34,9 @@ public class Node {
 
 	@XmlElement
 	private Map<String, String> link;
+
+	@XmlElement
+	private String image;
 
 	@XmlElement(name = "HTMLclass")
 	@JsonProperty("HTMLclass")
@@ -64,14 +68,8 @@ public class Node {
 
 	public Node(DecisionKnowledgeElement decisionKnowledgeElement, boolean isCollapsed, boolean isHyperlinked) {
 		this();
-		KnowledgeType type = decisionKnowledgeElement.getType();
-		if (type == KnowledgeType.OTHER) {
-			this.nodeContent = ImmutableMap.of("title", decisionKnowledgeElement.getSummary(), "desc",
-					decisionKnowledgeElement.getKey());
-		} else {
-			this.nodeContent = ImmutableMap.of("name", type.toString(), "title", decisionKnowledgeElement.getSummary(),
-					"desc", decisionKnowledgeElement.getKey());
-		}
+		this.nodeContent = ImmutableMap.of("title", decisionKnowledgeElement.getSummary(), "desc",
+				decisionKnowledgeElement.getKey());
 		this.htmlClass = decisionKnowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
 		this.htmlId = decisionKnowledgeElement.getId();
 		DecisionKnowledgeProject project = decisionKnowledgeElement.getProject();
@@ -89,40 +87,40 @@ public class Node {
 		if (decisionKnowledgeElement instanceof Sentence) {
 			if (((Sentence) decisionKnowledgeElement).getArgument().length() == 3) { // Length == 3 means pro or con
 				if (((Sentence) decisionKnowledgeElement).getArgument().equalsIgnoreCase("pro")) {
-					makeArgument("Pro-argument", "pro", decisionKnowledgeElement);
+					this.htmlClass = "pro";
 				} else {
-					makeArgument("Con-argument", "contra", decisionKnowledgeElement);
+					this.htmlClass = "contra";
 				}
 			}
 			if (isHyperlinked) {
 				makeLinkToElement(decisionKnowledgeElement.getKey().split(":")[0]);
 			}
 		}
+		this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement);
+	}
+
+	public static String getIcon(DecisionKnowledgeElement element) {
+		return ComponentGetter.getUrlOfImageFolder() + element.getType().toString() + ".png";
 	}
 
 	public Node(DecisionKnowledgeElement decisionKnowledgeElement, Link link, boolean isCollapsed,
 			boolean isHyperlinked) {
 		this(decisionKnowledgeElement, isCollapsed, isHyperlinked);
+		this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement, link.getType());
 		switch (link.getType()) {
 		case "support":
 			if (decisionKnowledgeElement.getId() == link.getSourceElement().getId()) {
-				makeArgument("Pro-argument", "pro", decisionKnowledgeElement);
+				this.htmlClass = "pro";
 			}
 			break;
 		case "attack":
 			if (decisionKnowledgeElement.getId() == link.getSourceElement().getId()) {
-				makeArgument("Con-argument", "contra", decisionKnowledgeElement);
+				this.htmlClass = "contra";
 			}
 			break;
 		default:
 			break;
 		}
-	}
-
-	private void makeArgument(String nodeTitle, String htmlClass, DecisionKnowledgeElement decisionKnowledgeElement) {
-		this.nodeContent = ImmutableMap.of("name", nodeTitle, "title", decisionKnowledgeElement.getSummary(), "desc",
-				decisionKnowledgeElement.getKey());
-		this.htmlClass = htmlClass;
 	}
 
 	private void makeLinkToElement(String key) {
