@@ -18,6 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 
 /**
  * Triggers the decXtract related function when some changes to comments are
@@ -89,9 +90,11 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	}
 
 	private void handleEditComment(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
-		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(new CommentImpl(issueEvent.getComment()));
-		new ViewConnector(this.issueEvent.getIssue(), false);
-		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId() + "");
+		if(!KnowledgeRest.commentWriteLog) {
+			ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(new CommentImpl(issueEvent.getComment()));
+			new ViewConnector(this.issueEvent.getIssue(), false);
+			ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId() + "");
+		}
 	}
 
 	private void handleDeleteComment(DecisionKnowledgeElementImpl decisionKnowledgeElement) {

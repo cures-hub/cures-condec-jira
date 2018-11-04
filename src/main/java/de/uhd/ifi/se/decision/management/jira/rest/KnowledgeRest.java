@@ -45,6 +45,8 @@ import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 @Path("/decisions")
 public class KnowledgeRest {
 
+	public static boolean commentWriteLog;
+
 	@Path("/getDecisionKnowledgeElement")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -190,8 +192,10 @@ public class KnowledgeRest {
 			@Context HttpServletRequest request, DecisionKnowledgeElement newElement,
 			@QueryParam("argument") String argument) {
 		if (projectKey != null && request != null && newElement != null) {
+			KnowledgeRest.commentWriteLog =true;
 			Boolean result = ActiveObjectsManager.updateKnowledgeTypeOfSentence(newElement.getId(),
 					newElement.getType(), argument);
+			KnowledgeRest.commentWriteLog = false;
 			if (!result) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Update of element failed.")).build();
@@ -256,11 +260,13 @@ public class KnowledgeRest {
 					String first = mc.getBody().substring(0, indexOfOldSentence);
 					String second = tag + newSentenceBody + tag;
 					String third = mc.getBody().substring(indexOfOldSentence + oldSentenceInComment.length());
-
+					KnowledgeRest.commentWriteLog = true;
 					mc.setBody(first + second + third);
 					cm.update(mc, true);
 					ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(),
 							decisionKnowledgeElement.getId(), second);
+
+					KnowledgeRest.commentWriteLog = false;
 				}
 			}
 			ActiveObjectsManager.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),

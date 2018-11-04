@@ -193,12 +193,11 @@ public class ActiveObjectsManager {
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
 						if (sentenceEntity.isTaggedManually()) {
-							int oldTextLength = sentenceEntity.getEndSubstringCount()
-									- sentenceEntity.getStartSubstringCount();
+							int oldTextLength = getTextLengthOfAoElement(sentenceEntity);
 							int newTextLength = updateTagsInComment(sentenceEntity, knowledgeType, argument);
 							sentenceEntity
 									.setEndSubstringCount(sentenceEntity.getStartSubstringCount() + newTextLength);
-							updateSentenceLengthForOtherSentencesInSameComment(sentenceEntity.getCommentId(),
+							ActiveObjectsManager.updateSentenceLengthForOtherSentencesInSameComment(sentenceEntity.getCommentId(),
 									sentenceEntity.getStartSubstringCount(), newTextLength - oldTextLength,
 									sentenceEntity.getId());
 							sentenceEntity.save();
@@ -230,6 +229,12 @@ public class ActiveObjectsManager {
 		});
 
 	}
+	
+	private static int getTextLengthOfAoElement(DecisionKnowledgeInCommentEntity sentence) {
+		return sentence.getEndSubstringCount()- sentence.getStartSubstringCount();
+	}
+
+
 
 	private static int updateTagsInComment(DecisionKnowledgeInCommentEntity sentenceEntity, KnowledgeType knowledgeType,
 			String argument) {
@@ -253,6 +258,7 @@ public class ActiveObjectsManager {
 		if (oldBody.length() > sentenceEntity.getEndSubstringCount()) {
 			newBody = newBody + oldBody.substring(sentenceEntity.getEndSubstringCount());
 		}
+		
 		mc.setBody(newBody);
 		cm.update(mc, true);
 		return newEndSubstringCount;
