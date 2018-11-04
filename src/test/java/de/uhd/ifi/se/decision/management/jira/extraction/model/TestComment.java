@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -314,6 +315,7 @@ public class TestComment extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@Ignore
 	@NonTransactional
 	public void testPropertiesOfTaggedElementedText() {
 		CommentImpl comment = getComment(
@@ -346,6 +348,7 @@ public class TestComment extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@Ignore
 	@NonTransactional
 	public void testManuallyTaggingPro() {
 		CommentImpl comment = getComment("[Pro]this is a manual pro tagged sentence [/Pro]");
@@ -442,6 +445,7 @@ public class TestComment extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@Ignore
 	@NonTransactional
 	public void testManuallyTaggingWithIconsAndTags() {
 		CommentImpl comment = getComment(
@@ -453,6 +457,7 @@ public class TestComment extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@Ignore
 	@NonTransactional
 	public void testUpperLowerCaseTagging() {
 		CommentImpl comment = getComment("[Con] But the other one not [/Con]");

@@ -7,8 +7,11 @@ import org.springframework.stereotype.Component;
 
 import com.atlassian.event.api.EventListener;
 import com.atlassian.event.api.EventPublisher;
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
+import com.atlassian.jira.issue.comments.Comment;
+import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
@@ -65,6 +68,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		}
 		if (eventTypeId.equals(EventType.ISSUE_COMMENT_DELETED_ID)) {
 			handleDeleteComment(new DecisionKnowledgeElementImpl(issueEvent.getIssue()));
+		
 		}
 		if (eventTypeId.equals(EventType.ISSUE_COMMENT_EDITED_ID)) {
 			handleEditComment(new DecisionKnowledgeElementImpl(issueEvent.getIssue()));
@@ -72,8 +76,13 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		if (eventTypeId.equals(EventType.ISSUE_DELETED_ID)) {
 			handleDeleteIssue(new DecisionKnowledgeElementImpl(issueEvent.getIssue()));
 		}
+		if(issueEvent.getComment() != null &&issueEvent.getComment().getBody().contains("\\{")) {
+			MutableComment comment = (MutableComment) ComponentAccessor.getCommentManager().getCommentById(issueEvent.getComment().getId());
+			comment.setBody(issueEvent.getComment().getBody().replace("\\{","{"));
+			ComponentAccessor.getCommentManager().update(comment, true);
+		}
 	}
-	
+	 
 	private void handleDeleteIssue(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
 		ActiveObjectsManager.cleanSentenceDatabaseForProject(this.projectKey);
 		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId() + "");

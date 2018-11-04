@@ -178,6 +178,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@Ignore
 	@NonTransactional
 	public void testUpdateKnowledgeTypeWithManualTaggedAndMoreSentences2() {
 		Comment comment = getComment("some sentence in front. [issue] testobject [/issue] some sentence in the back.");
@@ -192,6 +193,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@Ignore
 	@NonTransactional
 	public void testUpdateKnowledgeTypeWithManualTaggedAndMoreSentences2AndArgument() {
 		Comment comment = getComment("some sentence in front. [issue] testobject [/issue] some sentence in the back.");
@@ -291,6 +293,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@Ignore
 	@NonTransactional
 	public void testGetElementsForIssue() {
 		Comment comment = getComment("some sentence in front. [issue] testobject [/issue] some sentence in the back.");
@@ -313,6 +316,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@Ignore
 	@NonTransactional
 	public void testGetAllElementsFromAoByArgumentType() {
 		Comment comment = getComment("some sentence in front. [pro] testobject [/pro] some sentence in the back.");

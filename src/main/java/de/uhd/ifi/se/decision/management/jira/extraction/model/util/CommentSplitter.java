@@ -22,8 +22,9 @@ public class CommentSplitter {
 
 	public static final String[] excludedTagList = new String[] { "{code}", "{quote}", "{noformat}", "{panel}" };
 
-	public static final String[] manualRationaleTagList = new String[] { "[issue]", "[decision]", "[alternative]",
-			"[pro]", "[con]", "[goal]" };
+	public static final String[] manualRationaleTagList = new String[] { "{issue}", "{decision}", "{alternative}",
+			"{pro}", "{con}", "{goal}" };
+			//new String[] { "[issue]", "[decision]", "[alternative]","[pro]", "[con]", "[goal]" };
 
 	public static final String[] manualRationalIconList = new String[] { "(!)", "(/)", "(?)", "(y)", "(n)" };
 
@@ -33,6 +34,10 @@ public class CommentSplitter {
 	public CommentSplitter() {
 		this.setStartSubstringCount(new ArrayList<Integer>());
 		this.setEndSubstringCount(new ArrayList<Integer>());
+	}
+	
+	public List<String> splitSentence(String body){
+		return sliceCommentRecursionCommander(body, "");
 	}
 
 	public List<String> sliceCommentRecursionCommander(String body, String projectKey) {
