@@ -88,8 +88,10 @@ public class Node {
 			if (((Sentence) decisionKnowledgeElement).getArgument().length() == 3) { // Length == 3 means pro or con
 				if (((Sentence) decisionKnowledgeElement).getArgument().equalsIgnoreCase("pro")) {
 					this.htmlClass = "pro";
+					this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement, "support");
 				} else {
 					this.htmlClass = "contra";
+					this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement, "attack");
 				}
 			}
 			if (isHyperlinked) {
