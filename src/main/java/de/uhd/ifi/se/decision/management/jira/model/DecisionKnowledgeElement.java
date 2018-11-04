@@ -76,6 +76,16 @@ public interface DecisionKnowledgeElement {
 	KnowledgeType getType();
 
 	/**
+	 * Get the type of the decision knowledge element as a String. For example,
+	 * prominent types are decision, alternative, issue, and argument. This methods returns
+	 * the type of JIRA issues that are no decision knowledge elements.
+	 *
+	 * @see KnowledgeType
+	 * @return type of the decision knowledge element.
+	 */
+	String getTypeAsString();
+
+	/**
 	 * Set the type of the decision knowledge element. For example, prominent types
 	 * are decision, alternative, issue, and argument.
 	 *

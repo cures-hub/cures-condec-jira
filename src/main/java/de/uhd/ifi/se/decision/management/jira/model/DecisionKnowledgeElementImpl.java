@@ -8,7 +8,9 @@ import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.IssueManager;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementInDatabase;
 
@@ -106,6 +108,11 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 
 	@XmlElement(name = "type")
 	public String getTypeAsString() {
+		if(type == KnowledgeType.OTHER) {
+			IssueManager issueManager = ComponentAccessor.getIssueManager();
+			Issue issue = issueManager.getIssueByCurrentKey(this.getKey());
+			return issue.getIssueType().toString();
+		}
 		return type.toString();
 	}
 
