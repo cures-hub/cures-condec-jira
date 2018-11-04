@@ -10,13 +10,9 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
@@ -65,12 +61,7 @@ public class WebhookConnector {
 		}
 
 		List<DecisionKnowledgeElement> rootElements = getWebhookRootElements(elementToBeDeleted);
-		String type;
-		if (elementToBeDeleted.getType() == KnowledgeType.OTHER) {
-			type = specifyOtherType(elementToBeDeleted);
-		} else {
-			type = elementToBeDeleted.getType().toString();
-		}
+		String type = elementToBeDeleted.getTypeAsString();
 		if (type.toUpperCase().equals(rootType.toUpperCase())) {
 			rootElements.remove(elementToBeDeleted);
 		}
@@ -103,12 +94,7 @@ public class WebhookConnector {
 				continue;
 			}
 			elementIds.add(linkedElement.getId());
-			String type;
-			if (linkedElement.getType() == KnowledgeType.OTHER) {
-				type = specifyOtherType(linkedElement);
-			} else {
-				type = linkedElement.getType().toString();
-			}
+			String type = linkedElement.getTypeAsString();
 			if (type.equalsIgnoreCase(rootType)) {
 				webhookRootElements.add(linkedElement);
 			}
@@ -153,12 +139,6 @@ public class WebhookConnector {
 			return false;
 		}
 		return true;
-	}
-
-	private String specifyOtherType(DecisionKnowledgeElement element) {
-		IssueManager issueManager = ComponentAccessor.getIssueManager();
-		Issue issue = issueManager.getIssueByCurrentKey(element.getKey());
-		return issue.getIssueType().toString().toUpperCase();
 	}
 
 	public String getUrl() {

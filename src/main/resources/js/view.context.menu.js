@@ -77,8 +77,8 @@ function setUpDialogForCreateAction(id) {
 	};
 
 	conDecAPI.isIssueStrategy(id, function(isIssueStrategy) { // TODO: rename
-																// param name,
-																// confusing.
+		// param name,
+		// confusing.
 		if (isIssueStrategy === true) {
 			var extensionButton = document.getElementById("dialog-extension-button");
 			extensionButton.style.visibility = "visible";
@@ -240,10 +240,10 @@ function setUpDialogForEditAction(id, type) {
 		var type = decisionKnowledgeElement.type;
 
 		conDecAPI.isIssueStrategy(id, function(isIssueStrategy) { // TODO:
-																	// refactor
-																	// param
-																	// name,
-																	// confusing!
+			// refactor
+			// param
+			// name,
+			// confusing!
 			if (isIssueStrategy) {
 				var createEditIssueForm = require('quick-edit/form/factory/edit-issue');
 				createEditIssueForm({
@@ -369,7 +369,9 @@ function resetDialog() {
 	console.log("view.context.menu.js resetDialog");
 	document.getElementById("dialog-header").innerHTML = "";
 	document.getElementById("dialog-content").innerHTML = "";
-	document.getElementById("dialog-extension-button").style.visibility = "hidden";
+	if (document.getElementById("dialog-extension-button")) {
+		document.getElementById("dialog-extension-button").style.visibility = "hidden";
+	}
 	var dialog = document.getElementById("dialog");
 	if (dialog.classList.contains("aui-dialog2-large")) {
 		dialog.classList.remove("aui-dialog2-large");
@@ -483,10 +485,10 @@ var contextMenuDeleteSentenceLinkAction = {
 
 		var nodeType = (node.li_attr['class'] === "sentence") ? "s" : "i";
 
-		conDecAPI.deleteGenericLink(parentId, node.id, "i", nodeType, linkGenericElements(JIRA.Issue.getIssueId(),
-				node.id, "i", nodeType, refreshTreeViewer), false);
-		conDecAPI.deleteGenericLink(parentId, node.id, "s", nodeType, linkGenericElements(JIRA.Issue.getIssueId(),
-				node.id, "i", nodeType, refreshTreeViewer), false);
+		conDecAPI.deleteGenericLink(parentId, node.id, "i", nodeType, conDecAPI.linkGenericElements(JIRA.Issue
+				.getIssueId(), node.id, "i", nodeType, refreshTreeViewer), false);
+		conDecAPI.deleteGenericLink(parentId, node.id, "s", nodeType, conDecAPI.linkGenericElements(JIRA.Issue
+				.getIssueId(), node.id, "i", nodeType, refreshTreeViewer), false);
 
 	},
 	"callback" : function(key, options) {
@@ -496,8 +498,8 @@ var contextMenuDeleteSentenceLinkAction = {
 		var parentClass = (document.getElementById(parentId).className.includes("sentence")) ? "s" : "i";
 		var nodeClass = (document.getElementById(id).className.includes("sentence")) ? "s" : "i";
 
-		conDecAPI.deleteGenericLink(parentId, id, parentClass, nodeClass, linkGenericElements(JIRA.Issue.getIssueId(),
-				id, "i", nodeClass, notify), false);
+		conDecAPI.deleteGenericLink(parentId, id, parentClass, nodeClass, conDecAPI.linkGenericElements(JIRA.Issue
+				.getIssueId(), id, "i", nodeClass, notify), false);
 
 	}
 };
@@ -525,7 +527,7 @@ var contextMenuDeleteSentenceAction = {
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
 		conDecAPI.setSentenceIrrelevant(id, function(core, options, id) {
-			refreshTreeViewer();
+			notify();
 		});
 	}
 };
@@ -614,6 +616,7 @@ function setUpEditSentenceDialogContext(id, description, type) {
 
 	var submitButton = document.getElementById("dialog-submit-button");
 	submitButton.textContent = "Change";
+	$("#dialog-extension-button").remove();
 	submitButton.onclick = function() {
 		var description = document.getElementById("form-input-description").value;
 		var type = $("select[name='form-select-type']").val().split("-")[0];
@@ -636,7 +639,7 @@ function setUpEditSentenceDialogContext(id, description, type) {
 								AJS.dialog2("#dialog").hide();
 								notify();
 							}
-							conDecIssueTab.callDialog();
+
 						});
 	};
 	AJS.$("#form-select-type").auiSelect2();

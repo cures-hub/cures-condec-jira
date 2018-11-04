@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
@@ -44,7 +45,7 @@ public class Data {
 	public Data(DecisionKnowledgeElement decisionKnowledgeElement) {
 		this.id = String.valueOf(decisionKnowledgeElement.getId());
 		this.text = decisionKnowledgeElement.getSummary();
-		this.icon = ComponentGetter.getUrlOfImageFolder() + decisionKnowledgeElement.getType().toString() + ".png";
+		this.icon = KnowledgeType.getIconUrl(decisionKnowledgeElement);
 		this.nodeInfo = decisionKnowledgeElement;
 		if (decisionKnowledgeElement.getDescription() != null && !decisionKnowledgeElement.getDescription().equals("")
 				&& !decisionKnowledgeElement.getDescription().equals("undefined")) {
@@ -59,20 +60,7 @@ public class Data {
 
 	public Data(DecisionKnowledgeElement decisionKnowledgeElement, Link link) {
 		this(decisionKnowledgeElement);
-		switch (link.getType()) {
-		case "support":
-			if (decisionKnowledgeElement.getId() == link.getSourceElement().getId()) {
-				this.icon = ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
-			}
-			break;
-		case "attack":
-			if (decisionKnowledgeElement.getId() == link.getSourceElement().getId()) {
-				this.icon = ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
-			}
-			break;
-		default:
-			break;
-		}
+		this.icon = KnowledgeType.getIconUrl(decisionKnowledgeElement, link.getType());
 	}
 
 	private void checkTypeOfArgumentForSentenceEntity(Sentence decisionKnowledgeElement) {

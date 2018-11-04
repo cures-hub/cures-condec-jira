@@ -6,6 +6,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.IssueManager;
+
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+
 /**
  * Type of decision knowledge element
  */
@@ -139,5 +145,29 @@ public enum KnowledgeType {
 			knowledgeTypes.add(knowledgeType.toString());
 		}
 		return knowledgeTypes;
+	}
+	
+	public static String getIconUrl(DecisionKnowledgeElement element) {
+		switch(element.getType()) {
+		case OTHER:
+			IssueManager issueManager = ComponentAccessor.getIssueManager();
+			Issue issue = issueManager.getIssueByCurrentKey(element.getKey());
+			return issue.getIssueType().getCompleteIconUrl();
+		default:
+			return ComponentGetter.getUrlOfImageFolder() + element.getType().toString() + ".png";
+		}		
+	}
+	
+	public static String getIconUrl(DecisionKnowledgeElement element, String linkType) {
+		switch(element.getType()) {
+		case ARGUMENT:
+			if ("support".equals(linkType)) {
+				return ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
+			} else if ("attack".equals(linkType)) {
+				return ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
+			}
+		default:
+			return getIconUrl(element);
+		}		
 	}
 }
