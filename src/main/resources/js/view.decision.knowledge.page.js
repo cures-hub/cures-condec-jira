@@ -53,6 +53,10 @@
     ConDecKnowledgePage.prototype.fetchAndRender = function () {
         initializeDecisionKnowledgePage(restClient, management, treant, treeViewer);
     };
+    
+    ConDecKnowledgePage.prototype.updateView = function () {
+    	updateView(null,treant,treeViewer);
+    };
 
     ConDecKnowledgePage.prototype.setAsRootElement = function setAsRootElement(id) {
         console.log("view.decision.knowledge.page setAsRootElement");

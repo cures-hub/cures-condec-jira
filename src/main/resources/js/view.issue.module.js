@@ -52,6 +52,10 @@
 
 		updateView(management, treant, contextMenu);
 	};
+	
+	ConDecIssueModule.prototype.updateView = function () {
+		updateView(management, treant, contextMenu);
+	};
 
 	// for view.context.menu
 	ConDecIssueModule.prototype.setAsRootElement = function setAsRootElement(id) {

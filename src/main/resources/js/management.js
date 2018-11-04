@@ -26,9 +26,9 @@ function replaceArgumentWithLinkTypes(knowledgeTypes) { // TODO: check why
 
 function notify() {
 	if (window.conDecIssueModule !== undefined) {
-		window.conDecIssueModule.initView();
+		window.conDecIssueModule.updateView();
 	} else if (window.conDecKnowledgePage !== undefined) {
-		window.conDecKnowledgePage.fetchAndRender();
+		window.conDecKnowledgePage.updateView();
 	}
 }
 
