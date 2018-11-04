@@ -161,9 +161,9 @@ public enum KnowledgeType {
 	public static String getIconUrl(DecisionKnowledgeElement element, String linkType) {
 		switch(element.getType()) {
 		case ARGUMENT:
-			if (linkType.equals("support")) {
+			if ("support".equals(linkType)) {
 				return ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
-			} else if (linkType.equals("attack")) {
+			} else if ("attack".equals(linkType)) {
 				return ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
 			}
 		default:
