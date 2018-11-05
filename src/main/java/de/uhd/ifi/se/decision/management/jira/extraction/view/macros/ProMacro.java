@@ -8,6 +8,7 @@ import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
 public class ProMacro extends BaseMacro {
 
@@ -23,12 +24,16 @@ public class ProMacro extends BaseMacro {
 
 	@Override
 	public String execute(Map<String, Object> parameters, String body, RenderContext renderContext){
+		if(!ConfigPersistence.isKnowledgeExtractedFromIssues(IssueMacro.getProjectKey(renderContext))) {
+			return body;
+		}
 		if (Boolean.TRUE.equals(renderContext.getParam(IssueRenderContext.WYSIWYG_PARAM))) {
 			return "\\{pro}"+body+"\\{pro}";
         }
-		body = IssueMacro.reformatCommentBody(body);
+		System.out.println(IssueMacro.getProjectKey(renderContext));
+		String newBody = IssueMacro.reformatCommentBody(body);
 		String icon = "<img src=\"" + ComponentGetter.getUrlOfImageFolder() + "argument_pro.png" + "\">";
-		return icon + "<span style =  \"background-color:#b9f7c0\">" + body + "</span>";
+		return icon + "<span style =  \"background-color:#b9f7c0\">" + newBody + "</span>";
 	}
 
 }

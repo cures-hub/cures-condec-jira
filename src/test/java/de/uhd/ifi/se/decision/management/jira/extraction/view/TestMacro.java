@@ -40,7 +40,9 @@ public class TestMacro extends TestSetUpWithIssues {
 				new MockUserManager());
 
 		issueView.addParam(IssueRenderContext.WYSIWYG_PARAM, false);
+		issueView.addParam("jira.issue", "Test-1");
 		wysiwygView.addParam(IssueRenderContext.WYSIWYG_PARAM, true);
+		wysiwygView.addParam("jira.issue", "Test-1");
 	}
 
 	@Test

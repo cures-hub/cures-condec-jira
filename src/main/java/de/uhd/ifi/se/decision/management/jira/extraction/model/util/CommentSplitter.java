@@ -22,12 +22,12 @@ public class CommentSplitter {
 
 	public static final String[] excludedTagList = new String[] { "{code}", "{quote}", "{noformat}", "{panel}" };
 
+	/**List with all knowledgeTypes as tags. Sequence matters! */
 	public static final String[] manualRationaleTagList = new String[] { "{issue}", "{alternative}", "{decision}",
 			"{pro}", "{con}" };
-	// new String[] { "[issue]", "[decision]", "[alternative]","[pro]", "[con]",
-	// "[goal]" };
-
-	public static final String[] manualRationalIconList = new String[] { "(!)", "(/)", "(?)", "(y)", "(n)" };
+	
+	/**List with all knowledgeTypes as icons. Sequence matters! */
+	public static final String[] manualRationalIconList = new String[] { "(!)", "(?)", "(/)", "(y)", "(n)" };
 
 	public static final String[] allExcluded = (String[]) ArrayUtils
 			.addAll(ArrayUtils.addAll(excludedTagList, manualRationaleTagList), manualRationalIconList);
@@ -146,19 +146,19 @@ public class CommentSplitter {
 	 */
 	public static String getKnowledgeTypeFromManuallIssueTag(String body, String projectKey, boolean lookOutForIcons) {
 		boolean checkIcons = lookOutForIcons && ConfigPersistence.isIconParsing(projectKey);
-		if (body.toLowerCase().contains(manualRationaleTagList[0]) || (checkIcons && body.contains("(!)"))) {
+		if (body.toLowerCase().contains(manualRationaleTagList[0]) || (checkIcons && body.contains(manualRationalIconList[0]))) {
 			return KnowledgeType.ISSUE.toString();
 		}
-		if (body.toLowerCase().contains(manualRationaleTagList[1]) || (checkIcons && body.contains("(?)"))) {
+		if (body.toLowerCase().contains(manualRationaleTagList[1]) || (checkIcons && body.contains(manualRationalIconList[1]))) {
 			return KnowledgeType.ALTERNATIVE.toString();
 		}
-		if (body.toLowerCase().contains(manualRationaleTagList[2]) || (checkIcons && body.contains("(/)"))) {
+		if (body.toLowerCase().contains(manualRationaleTagList[2]) || (checkIcons && body.contains(manualRationalIconList[2]))) {
 			return KnowledgeType.DECISION.toString();
 		}
-		if (body.toLowerCase().contains(manualRationaleTagList[3]) || (checkIcons && body.contains("y)"))) {
+		if (body.toLowerCase().contains(manualRationaleTagList[3]) || (checkIcons && body.contains(manualRationalIconList[3]))) {
 			return "pro";
 		}
-		if (body.toLowerCase().contains(manualRationaleTagList[4]) || (checkIcons && body.contains("(n)"))) {
+		if (body.toLowerCase().contains(manualRationaleTagList[4]) || (checkIcons && body.contains(manualRationalIconList[4]))) {
 			return "con";
 		}
 		return matchSelectableKnowledgeTypes(body, projectKey);

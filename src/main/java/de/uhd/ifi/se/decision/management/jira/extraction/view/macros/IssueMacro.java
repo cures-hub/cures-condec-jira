@@ -6,6 +6,8 @@ import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+
 import java.util.Map;
 
 public class IssueMacro extends BaseMacro {
@@ -20,14 +22,16 @@ public class IssueMacro extends BaseMacro {
 	}
 
 	@Override
-	public String execute(Map<String, Object> parameters, String body, RenderContext renderContext)
-			{
+	public String execute(Map<String, Object> parameters, String body, RenderContext renderContext)	{
+		if(!ConfigPersistence.isKnowledgeExtractedFromIssues(IssueMacro.getProjectKey(renderContext))) {
+			return body;
+		}
 		if (Boolean.TRUE.equals(renderContext.getParam(IssueRenderContext.WYSIWYG_PARAM))) {
 			return "\\{issue}"+body+"\\{issue}";
         }
-		body = IssueMacro.reformatCommentBody(body);
+		String newBody = IssueMacro.reformatCommentBody(body);
 		String icon = "<img src=\"" + ComponentGetter.getUrlOfImageFolder() + "issue.png" + "\">";
-		return icon + "<span style =  \"background-color:#F2F5A9\">" + body + "</span>";
+		return icon + "<span style =  \"background-color:#F2F5A9\">" + newBody + "</span>";
 	}
 
 	public static String reformatCommentBody(String inputBody) {
@@ -40,6 +44,10 @@ public class IssueMacro extends BaseMacro {
 			body = body.substring(0, body.length() - 1);
 		}
 		return body;
+	}
+	
+	public static String getProjectKey(RenderContext renderContext) {
+		return renderContext.getParams().get("jira.issue").toString().split("-")[0];
 	}
 
 }

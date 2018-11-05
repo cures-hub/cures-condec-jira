@@ -8,6 +8,7 @@ import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
 public class DecisionMacro extends BaseMacro {
 	@Override
@@ -22,12 +23,15 @@ public class DecisionMacro extends BaseMacro {
 
 	@Override
 	public String execute(Map<String, Object> parameters, String body, RenderContext renderContext){
+		if(!ConfigPersistence.isKnowledgeExtractedFromIssues(IssueMacro.getProjectKey(renderContext))) {
+			return body;
+		}
 		if (Boolean.TRUE.equals(renderContext.getParam(IssueRenderContext.WYSIWYG_PARAM))) {
 			return "\\{decision}"+body+"\\{decision}";
         }
-		body = IssueMacro.reformatCommentBody(body);
+		String newBody = IssueMacro.reformatCommentBody(body);
 		String icon = "<img src=\"" + ComponentGetter.getUrlOfImageFolder() + "decision.png" + "\">";
-		return icon + "<span style =  \"background-color:#c5f2f9\">" + body + "</span>";
+		return icon + "<span style =  \"background-color:#c5f2f9\">" + newBody + "</span>";
 	}
 
 }
