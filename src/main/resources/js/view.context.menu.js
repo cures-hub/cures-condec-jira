@@ -602,16 +602,18 @@ function setUpEditSentenceDialogView(description, type) {
 					+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
 					+ "</form>");
 
-	for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
+
+	var myKnowledgeType = replaceArgumentWithLinkTypes(conDecAPI.getKnowledgeTypes(getProjectKey()));
+	for (var index = 0; index < myKnowledgeType.length; index++) {
 		var isSelected = "";
-		if (type.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase()) {
+		if (type.toLowerCase() === myKnowledgeType[index].toLowerCase()) {
 			isSelected = "selected ";
 		}
-		if (type.toLowerCase() === "argument" && extendedKnowledgeTypes[index].toLowerCase().includes("pro")) {
+		if (type.toLowerCase() === "argument" && myKnowledgeType[index].toLowerCase().includes("pro")) {
 			isSelected = "selected ";
 		}
 		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
-				+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
+				+ myKnowledgeType[index] + "'>" + myKnowledgeType[index] + "</option>");
 	}
 }
 
