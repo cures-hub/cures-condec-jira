@@ -33,10 +33,10 @@ public class Treant {
 
 	public Treant(String projectKey, String elementKey, int depth, boolean isHyperlinked) {
 		this.graph = new GraphImpl(projectKey, elementKey);
+		this.setHyperlinked(isHyperlinked);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
 		this.setChart(new Chart());
 		this.setNodeStructure(this.createNodeStructure(rootElement, null, depth, 1));
-		this.setHyperlinked(isHyperlinked);
 	}
 
 	public Treant(String projectKey, String elementKey, int depth) {
