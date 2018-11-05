@@ -168,7 +168,6 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	// TODO Why does this test fail?
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testTreeViewerCalledFromTabpanel() {
 		//1) Check if Tree Element has no Children - Important! 
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
