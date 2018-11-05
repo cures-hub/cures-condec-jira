@@ -136,22 +136,22 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 	    	The key is the key of the root element and the value is the Treant JSON string.
 	    </div>
 	</div>
-	<div class="field-group">
-		<label for="webhook-type">Root Element Type:</label>
-		<select id="webook-type" name="webhook-type" class="select medium-field" 
-				onchange="conDecAPI.setWebhookType(this.options[this.selectedIndex].value, '$projectKey')"></select>
-		#foreach ($issueType in $issueTypes) 
-			<script>
-				var isSelected = "";
-				if ('$issueType'.localeCompare('$project.getWebhookRootType()') == 0) {
-					isSelected = "selected ";
-				}
-				$("select[name='webhook-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
-					+ '$issueType' + "'>" + '$issueType' + "</option>");
-			</script>	
+    <div class="field-group">
+        <label for="multiselect">Root Element Types:</label>
+        <select class="multi-select" size="8" multiple="multiple" id="multiselect" name="multiselect"
+                ##onchange="conDecAPI.setWebhookType(this.options[this.selectedIndex].value, '$projectKey', )">
+                onchange="conDecAPI.setWebhookType($(this).val()[0])">
+					#foreach ($issueType in $issueTypes)
+                        <option
+                        #if( $project.isWebhookTypeEnabled($issueType) )selected
+                        #{else}
+                        #end
+                                value="$issueType">
+                            $issueType</option>
 		#end
-	    <div class="description">Selects the issue type of the root element (key) of the webhook data.</div>
-	</div>
+        </select>
+        <div class="description">Selects the issue type of the root element (key) of the webhook data.</div>
+    </div>
 	<div class="field-group">
 		<label for="webhook-url">URL</label> <input type="text"
 			class="text long-field" id="webhook-url" value="$project.getWebhookUrl()" />
@@ -275,7 +275,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		conDecAPI.setKnowledgeExtractedFromGit(this.checked, this.value);
 		this.busy = false;
 	});
-	
+
 	webhookToggle.addEventListener('change', function(error) {
 		this.busy = true;
 		conDecAPI.setWebhookEnabled(this.checked, this.value);
