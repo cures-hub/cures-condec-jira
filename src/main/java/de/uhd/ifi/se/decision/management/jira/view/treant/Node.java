@@ -84,6 +84,7 @@ public class Node {
 		if (isCollapsed) {
 			this.collapsed = ImmutableMap.of("collapsed", isCollapsed);
 		}
+		this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement);
 		if (decisionKnowledgeElement instanceof Sentence) {
 			if (((Sentence) decisionKnowledgeElement).getArgument().length() == 3) { // Length == 3 means pro or con
 				if (((Sentence) decisionKnowledgeElement).getArgument().equalsIgnoreCase("pro")) {
@@ -97,8 +98,7 @@ public class Node {
 			if (isHyperlinked) {
 				makeLinkToElement(decisionKnowledgeElement.getKey().split(":")[0]);
 			}
-		}
-		this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement);
+		}		
 	}
 
 	public static String getIcon(DecisionKnowledgeElement element) {

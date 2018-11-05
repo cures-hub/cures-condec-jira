@@ -60,7 +60,7 @@
 
     ConDecKnowledgePage.prototype.setAsRootElement = function setAsRootElement(id) {
         console.log("view.decision.knowledge.page setAsRootElement");
-        treeViewer.selectNodeInTreeViewer(nodeId);
+        treeViewer.selectNodeInTreeViewer(id);
     };
 
     ConDecKnowledgePage.prototype.openIssue = function openIssue(nodeId) {
