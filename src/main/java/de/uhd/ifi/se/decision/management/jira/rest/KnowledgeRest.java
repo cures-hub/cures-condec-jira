@@ -23,6 +23,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
+import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
@@ -190,8 +191,10 @@ public class KnowledgeRest {
 			@Context HttpServletRequest request, DecisionKnowledgeElement newElement,
 			@QueryParam("argument") String argument) {
 		if (projectKey != null && request != null && newElement != null) {
+			DecXtractEventListener.editCommentLock=true;
 			Boolean result = ActiveObjectsManager.updateKnowledgeTypeOfSentence(newElement.getId(),
 					newElement.getType(), argument);
+			DecXtractEventListener.editCommentLock = false;
 			if (!result) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Update of element failed.")).build();
@@ -244,23 +247,25 @@ public class KnowledgeRest {
 
 					String newType = decisionKnowledgeElement.getType().toString();
 					if(newType.equals(KnowledgeType.OTHER.toString()) && argument.length() >0) {
-						newType = argument;
+						newType = argument; 
 					}
 					String tag = "";
 					// Allow changing of manual tags, but no tags for icons
 					if (databaseEntity.isTaggedManually() && !CommentSplitter.isCommentIconTagged(oldSentenceInComment)) {
-						tag = "[" + WordUtils.capitalize(newType) + "]";
+						tag = "{" + WordUtils.capitalize(newType) + "}";
 					} else if (CommentSplitter.isCommentIconTagged(oldSentenceInComment)) {
 						indexOfOldSentence = indexOfOldSentence + 3; // add icon to text.
 					}
 					String first = mc.getBody().substring(0, indexOfOldSentence);
-					String second = tag + newSentenceBody + tag.replace("[", "[/");
+					String second = tag + newSentenceBody + tag;
 					String third = mc.getBody().substring(indexOfOldSentence + oldSentenceInComment.length());
-
+					DecXtractEventListener.editCommentLock = true;
 					mc.setBody(first + second + third);
 					cm.update(mc, true);
 					ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(),
 							decisionKnowledgeElement.getId(), second);
+
+					DecXtractEventListener.editCommentLock = false;
 				}
 			}
 			ActiveObjectsManager.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),

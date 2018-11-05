@@ -22,10 +22,12 @@ public class CommentSplitter {
 
 	public static final String[] excludedTagList = new String[] { "{code}", "{quote}", "{noformat}", "{panel}" };
 
-	public static final String[] manualRationaleTagList = new String[] { "[issue]", "[decision]", "[alternative]",
-			"[pro]", "[con]", "[goal]" };
-
-	public static final String[] manualRationalIconList = new String[] { "(!)", "(/)", "(?)", "(y)", "(n)" };
+	/**List with all knowledgeTypes as tags. Sequence matters! */
+	public static final String[] manualRationaleTagList = new String[] { "{issue}", "{alternative}", "{decision}",
+			"{pro}", "{con}" };
+	
+	/**List with all knowledgeTypes as icons. Sequence matters! */
+	public static final String[] manualRationalIconList = new String[] { "(!)", "(?)", "(/)", "(y)", "(n)" };
 
 	public static final String[] allExcluded = (String[]) ArrayUtils
 			.addAll(ArrayUtils.addAll(excludedTagList, manualRationaleTagList), manualRationalIconList);
@@ -33,6 +35,10 @@ public class CommentSplitter {
 	public CommentSplitter() {
 		this.setStartSubstringCount(new ArrayList<Integer>());
 		this.setEndSubstringCount(new ArrayList<Integer>());
+	}
+
+	public List<String> splitSentence(String body) {
+		return sliceCommentRecursionCommander(body, "");
 	}
 
 	public List<String> sliceCommentRecursionCommander(String body, String projectKey) {
@@ -43,7 +49,7 @@ public class CommentSplitter {
 		firstSplit = searchForFurtherTags(firstSplit, "{code:", "{code}");
 		for (int i = 0; i < manualRationaleTagList.length; i++) {
 			String tag = manualRationaleTagList[i];
-			firstSplit = searchForFurtherTags(firstSplit, tag, tag.replace("[", "[/"));
+			firstSplit = searchForFurtherTags(firstSplit, tag, tag);
 		}
 		if (ConfigPersistence.isIconParsing(projectKey)) {
 			for (int i = 0; i < manualRationalIconList.length; i++) {
@@ -75,8 +81,12 @@ public class CommentSplitter {
 
 	private ArrayList<String> searchBetweenTagsRecursive(String toSearch, String openTag, String closeTag,
 			ArrayList<String> slices) {
+		if(checkIncorrectTagMix(toSearch,openTag,closeTag)) {
+			slices.add(toSearch);
+			return slices;
+		}
 		// Icon is used to identify a sentence or a closing tag is forgotten
-		if (toSearch.contains(openTag) && !toSearch.contains(closeTag)) {
+		if (toSearch.contains(openTag) && !toSearch.contains(closeTag) ) {
 			return slices;
 		} // Open and close tags are existent
 		if (toSearch.startsWith(openTag) && toSearch.contains(closeTag)) {
@@ -95,6 +105,10 @@ public class CommentSplitter {
 			}
 		}
 		return slices;
+	}
+
+	private boolean checkIncorrectTagMix(String toSearch, String openTag, String closeTag) {
+		return openTag.equals(closeTag) && !isKnowledgeTypeTagTwiceExistant(toSearch,openTag);
 	}
 
 	public List<Integer> getStartSubstringCount() {
@@ -117,29 +131,30 @@ public class CommentSplitter {
 		this.startSubstringCount.add(startIndex);
 		this.endSubstringCount.add(endIndex);
 	}
-	
+
 	/**
 	 * 
 	 * @param body
 	 * @param projectKey
-	 * @param lookOutForIcons search also for icons
+	 * @param lookOutForIcons
+	 *            search also for icons
 	 * @return The manual tagged knowledge type of a given string
 	 */
 	public static String getKnowledgeTypeFromManuallIssueTag(String body, String projectKey, boolean lookOutForIcons) {
 		boolean checkIcons = lookOutForIcons && ConfigPersistence.isIconParsing(projectKey);
-		if (body.toLowerCase().contains("[issue]") || (checkIcons && body.contains("(!)"))) {
+		if (body.toLowerCase().contains(manualRationaleTagList[0]) || (checkIcons && body.contains(manualRationalIconList[0]))) {
 			return KnowledgeType.ISSUE.toString();
 		}
-		if (body.toLowerCase().contains("[alternative]") || (checkIcons && body.contains("(?)"))) {
+		if (body.toLowerCase().contains(manualRationaleTagList[1]) || (checkIcons && body.contains(manualRationalIconList[1]))) {
 			return KnowledgeType.ALTERNATIVE.toString();
 		}
-		if (body.toLowerCase().contains("[decision]") || (checkIcons && body.contains("(/)"))) {
+		if (body.toLowerCase().contains(manualRationaleTagList[2]) || (checkIcons && body.contains(manualRationalIconList[2]))) {
 			return KnowledgeType.DECISION.toString();
 		}
-		if (body.toLowerCase().contains("[pro]") || (checkIcons && body.contains("y)"))) {
+		if (body.toLowerCase().contains(manualRationaleTagList[3]) || (checkIcons && body.contains(manualRationalIconList[3]))) {
 			return "pro";
 		}
-		if (body.toLowerCase().contains("[con]") || (checkIcons && body.contains("(n)"))) {
+		if (body.toLowerCase().contains(manualRationaleTagList[4]) || (checkIcons && body.contains(manualRationalIconList[4]))) {
 			return "con";
 		}
 		return matchSelectableKnowledgeTypes(body, projectKey);
@@ -165,19 +180,33 @@ public class CommentSplitter {
 		return false;
 	}
 
-	public static String[]  getAllTagsUsedInProject(String projectKey) {
+	public static boolean isAnyKnowledgeTypeTwiceExisintg(String body, String projectKey) {
+		for (int i = 0; i < getAllTagsUsedInProject(projectKey).length; i++) {
+			String tag = getAllTagsUsedInProject(projectKey)[i].toLowerCase().replace("[", "{").replace("]", "}");
+			if (isKnowledgeTypeTagTwiceExistant(body, tag)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean isKnowledgeTypeTagTwiceExistant(String body, String knowledgeType) {
+		return StringUtils.countMatches(body.toLowerCase(), knowledgeType.toLowerCase()) >= 2;
+	}
+
+	public static String[] getAllTagsUsedInProject(String projectKey) {
 		Set<KnowledgeType> projectKnowledgeTypes = new DecisionKnowledgeProjectImpl(projectKey).getKnowledgeTypes();
 		ArrayList<String> projectList = new ArrayList<String>();
-		for(int i = 0; i < projectKnowledgeTypes.size(); i++) {
-			projectList.add("["+projectKnowledgeTypes.toArray()[i].toString().toLowerCase()+"]");
+		for (int i = 0; i < projectKnowledgeTypes.size(); i++) {
+			projectList.add("[" + projectKnowledgeTypes.toArray()[i].toString().toLowerCase() + "]");
 		}
 		for (int i = 0; i < manualRationaleTagList.length; i++) {
 			projectList.add(manualRationaleTagList[i].toLowerCase());
 		}
 		return projectList.toArray(new String[0]);
 	}
-	
+
 	public static boolean isCommentIconTagged(String text) {
-		return StringUtils.indexOfAny(text, CommentSplitter.manualRationalIconList) > 0 ;
+		return StringUtils.indexOfAny(text, CommentSplitter.manualRationalIconList) > 0;
 	}
 }

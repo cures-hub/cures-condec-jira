@@ -152,55 +152,55 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testUpdateKnowledgeTypeWithManualTagged() {
-		Comment comment = getComment("[issue] testobject [/issue]");
+		Comment comment = getComment("{issue} testobject {issue}");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 
 		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE, "");
 		DecisionKnowledgeInCommentEntity element = ActiveObjectsManager.getElementFromAO(id);
 		assertEquals(new SentenceImpl(element.getId()).getBody().trim(), "testobject");
 		assertEquals(element.getKnowledgeTypeString(), KnowledgeType.ALTERNATIVE.toString());
-		assertEquals("[Alternative] testobject [/Alternative]",
+		assertEquals("{Alternative} testobject {Alternative}",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
 	}
 
 	@Test
 	@NonTransactional
 	public void testUpdateKnowledgeTypeWithManualTaggedAndMoreSentences() {
-		Comment comment = getComment("some sentence in front. [issue] testobject [/issue]");
+		Comment comment = getComment("some sentence in front. {issue} testobject {issue}");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
 
 		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE, "");
 		DecisionKnowledgeInCommentEntity element = ActiveObjectsManager.getElementFromAO(id);
 		assertEquals(new SentenceImpl(element.getId()).getBody().trim(), "testobject");
 		assertEquals(element.getKnowledgeTypeString(), KnowledgeType.ALTERNATIVE.toString());
-		assertEquals("some sentence in front. [Alternative] testobject [/Alternative]",
+		assertEquals("some sentence in front. {Alternative} testobject {Alternative}",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
 	}
 
 	@Test
 	@NonTransactional
 	public void testUpdateKnowledgeTypeWithManualTaggedAndMoreSentences2() {
-		Comment comment = getComment("some sentence in front. [issue] testobject [/issue] some sentence in the back.");
+		Comment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
 
 		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE, "");
 		DecisionKnowledgeInCommentEntity element = ActiveObjectsManager.getElementFromAO(id);
 		assertEquals(new SentenceImpl(element.getId()).getBody().trim(), "testobject");
 		assertEquals(element.getKnowledgeTypeString(), KnowledgeType.ALTERNATIVE.toString());
-		assertEquals("some sentence in front. [Alternative] testobject [/Alternative] some sentence in the back.",
+		assertEquals("some sentence in front. {Alternative} testobject {Alternative} some sentence in the back.",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
 	}
 
 	@Test
 	@NonTransactional
 	public void testUpdateKnowledgeTypeWithManualTaggedAndMoreSentences2AndArgument() {
-		Comment comment = getComment("some sentence in front. [issue] testobject [/issue] some sentence in the back.");
+		Comment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
 		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.OTHER, "Pro");
 		DecisionKnowledgeInCommentEntity element = ActiveObjectsManager.getElementFromAO(id);
 		assertEquals(new SentenceImpl(element.getId()).getBody().trim(), "testobject");
 		assertEquals(element.getKnowledgeTypeString(), "Pro");
-		assertEquals("some sentence in front. [Pro] testobject [/Pro] some sentence in the back.",
+		assertEquals("some sentence in front. {Pro} testobject {Pro} some sentence in the back.",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
 	}
 
@@ -293,7 +293,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testGetElementsForIssue() {
-		Comment comment = getComment("some sentence in front. [issue] testobject [/issue] some sentence in the back.");
+		Comment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
 
 		List<DecisionKnowledgeElement> listWithObjects = ActiveObjectsManager.getElementsForIssue(comment.getIssueId(),
@@ -304,7 +304,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testGetAllElementsFromAoByType() {
-		Comment comment = getComment("some sentence in front. [issue] testobject [/issue] some sentence in the back.");
+		Comment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
 
 		List<DecisionKnowledgeElement> listWithObjects = ActiveObjectsManager.getAllElementsFromAoByType("TEST",
@@ -315,7 +315,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testGetAllElementsFromAoByArgumentType() {
-		Comment comment = getComment("some sentence in front. [pro] testobject [/pro] some sentence in the back.");
+		Comment comment = getComment("some sentence in front. {pro} testobject {pro} some sentence in the back.");
 		ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
 
 		List<DecisionKnowledgeElement> listWithObjects = ActiveObjectsManager.getAllElementsFromAoByType("TEST",
@@ -326,7 +326,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testGetAllElementsFromAoByEmptyType() {
-		Comment comment = getComment("some sentence in front. [pro] testobject [/pro] some sentence in the back.");
+		Comment comment = getComment("some sentence in front.  {pro} testobject {pro} some sentence in the back.");
 		ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
 
 		List<DecisionKnowledgeElement> listWithObjects = ActiveObjectsManager.getAllElementsFromAoByType("TEST",
@@ -337,7 +337,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testCleanSentenceDatabaseForProject() {
-		Comment comment = getComment("some sentence in front. [pro] testobject [/pro] some sentence in the back.");
+		Comment comment = getComment("some sentence in front.  {pro} testobject {pro} some sentence in the back.");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
 
 		MutableComment comment2 = ComponentAccessor.getCommentManager().getMutableComment(comment.getIssueId());
@@ -354,7 +354,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testLinkAllUnlikedSentence() {
-		Comment comment = getComment("some sentence in front. [pro] testobject [/pro] some sentence in the back.");
+		Comment comment = getComment("some sentence in front.  {pro} testobject {pro} some sentence in the back.");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
 		assertEquals(1,GenericLinkManager.getLinksForElement("s"+id).size());
 		GenericLinkManager.deleteLinksForElement("s"+id);

@@ -154,9 +154,11 @@ public enum KnowledgeType {
 		}
 		switch(element.getType()) {
 		case OTHER:
-			IssueManager issueManager = ComponentAccessor.getIssueManager();
-			Issue issue = issueManager.getIssueByCurrentKey(element.getKey());
-			return issue.getIssueType().getCompleteIconUrl();
+			if(!(element instanceof Sentence)) {
+				IssueManager issueManager = ComponentAccessor.getIssueManager();
+				Issue issue = issueManager.getIssueByCurrentKey(element.getKey());
+				return issue.getIssueType().getCompleteIconUrl();
+			}
 		default:
 			return ComponentGetter.getUrlOfImageFolder() + element.getType().toString() + ".png";
 		}		

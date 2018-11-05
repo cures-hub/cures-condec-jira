@@ -254,7 +254,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.excludedTagList) >= 0) {
 			this.isPlainText = false;
 		}
-		if (CommentSplitter.containsOpenAndCloseTags(body,this.projectKey)
+		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisintg(body,this.projectKey)
 				|| (ConfigPersistence.isIconParsing(projectKey)
 						&& StringUtils.indexOfAny(body, CommentSplitter.manualRationalIconList) >= 0)) {
 			this.setKnowledgeTypeString(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey,true));
@@ -264,10 +264,10 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	private void stripTagsFromBody(String body) {
-		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.getAllTagsUsedInProject(this.projectKey)) >= 0) {
+		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisintg(body,this.projectKey)) {
 			int tagLength = 2
 					+ CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey, true).length();
-			super.setDescription(body.substring(tagLength, body.length() - (1 + tagLength)));
+			super.setDescription(body.substring(tagLength, body.length() - ( tagLength)));
 			super.setSummary(super.getDescription());
 		} else {
 			super.setDescription(body.replaceAll("\\(.*?\\)", ""));
