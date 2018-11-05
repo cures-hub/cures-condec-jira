@@ -14,7 +14,7 @@ import net.java.ao.schema.Table;
  * 
  * @see Link
  */
-@Table("GenericLink")
+@Table("CondecLink")
 public interface LinkInDatabase extends RawEntity<Integer> {
 	@AutoIncrement
 	@PrimaryKey("ID")
