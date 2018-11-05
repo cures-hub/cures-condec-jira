@@ -68,6 +68,9 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	public void onIssueEvent(IssueEvent issueEvent) {
 		this.issueEvent = issueEvent;
 		this.projectKey = issueEvent.getProject().getKey();
+		if(ConfigPersistence.isActivated(this.projectKey) && ConfigPersistence.isKnowledgeExtractedFromIssues(this.projectKey)) {
+			return;
+		}
 		Long eventTypeId = issueEvent.getEventTypeId();
 		if(eventTypeId.equals(EventType.ISSUE_COMMENTED_ID) || eventTypeId.equals(EventType.ISSUE_COMMENT_EDITED_ID)) {
 			parseIconsToTags();
