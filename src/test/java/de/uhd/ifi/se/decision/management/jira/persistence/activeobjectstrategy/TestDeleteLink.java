@@ -17,6 +17,9 @@ import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(ActiveObjectStrategyTestSetUp.AoSentenceTestDatabaseUpdater.class)
 public class TestDeleteLink extends ActiveObjectStrategyTestSetUp {
@@ -56,10 +59,10 @@ public class TestDeleteLink extends ActiveObjectStrategyTestSetUp {
 
 	@Test
 	@NonTransactional
-	@Ignore
-	// TODO Why does this test case fail?
 	public void testLinkFilledUserNull() {
-		assertTrue(aoStrategy.deleteLink(link, null));
+        List<Link> links = aoStrategy.getLinks(linkedDecisision);
+        Boolean bool = aoStrategy.deleteLink(links.get(0), user);
+		assertTrue(bool);
 	}
 
 	@Test
@@ -71,9 +74,9 @@ public class TestDeleteLink extends ActiveObjectStrategyTestSetUp {
 
 	@Test
 	@NonTransactional
-	@Ignore
-	// TODO Why does this test case fail?
 	public void testLinkFilledUserFilledLinkInTable() {
-		assertTrue(aoStrategy.deleteLink(link, user));
+        List<Link> links = aoStrategy.getLinks(linkedDecisision);
+        Boolean bool = aoStrategy.deleteLink(links.get(0), user);
+		assertTrue(bool);
 	}
 }

@@ -350,22 +350,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		// Is unequal because new empty sentence is returned
 		assertFalse(dBElement.getId() == id);
 	}
-	
-	@Test (expected = IllegalStateException.class)
-	@Ignore // Since method is deprecated and throwing Illegal State Exception during testing
-	@NonTransactional
-	public void testClearSentenceDatabaseForProject() {
-		Comment comment = getComment("some sentence in front.  {pro} testobject {pro} some sentence in the back.");
-		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
 
-		ActiveObjectsManager.clearSentenceDatabaseForProject("TEST");
-
-		DecisionKnowledgeInCommentEntity dBElement = ActiveObjectsManager.getElementFromAO(id);
-		assertNotNull(dBElement);
-		// Is unequal because new empty sentence is returned
-		assertFalse(dBElement.getId() == id);
-	}
-	
 	@Test
 	@NonTransactional
 	public void testLinkAllUnlikedSentence() {

@@ -149,6 +149,9 @@ public enum KnowledgeType {
 	}
 	
 	public static String getIconUrl(DecisionKnowledgeElement element) {
+		if ( element instanceof Sentence){
+			return "";
+		}
 		switch(element.getType()) {
 		case OTHER:
 			if(!(element instanceof Sentence)) {
