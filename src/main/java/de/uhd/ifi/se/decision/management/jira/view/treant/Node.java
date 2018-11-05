@@ -86,6 +86,7 @@ public class Node {
 		}
 		if (decisionKnowledgeElement instanceof Sentence) {
 			if (((Sentence) decisionKnowledgeElement).getArgument().length() == 3) { // Length == 3 means pro or con
+				decisionKnowledgeElement.setType(KnowledgeType.ARGUMENT);
 				if (((Sentence) decisionKnowledgeElement).getArgument().equalsIgnoreCase("pro")) {
 					this.htmlClass = "pro";
 					this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement, "support");
