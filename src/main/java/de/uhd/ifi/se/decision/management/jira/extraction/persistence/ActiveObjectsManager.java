@@ -12,6 +12,7 @@ import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
@@ -168,12 +169,16 @@ public class ActiveObjectsManager {
 		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 			@Override
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
+				
 				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (databaseEntry.getId() == sentence.getId()) {
 						databaseEntry.setKnowledgeTypeString(sentence.getKnowledgeTypeString());
+						int additionalLength = addTagsToCommentWhenAutoClassified(databaseEntry);
 						databaseEntry.setTaggedFineGrained(true);
 						databaseEntry.setArgument(sentence.getArgument());
+						databaseEntry.setEndSubstringCount(databaseEntry.getEndSubstringCount()+additionalLength);
+						updateSentenceLengthForOtherSentencesInSameComment(sentence.getCommentId(),sentence.getStartSubstringCount(),additionalLength,sentence.getId());
 						databaseEntry.save();
 						return databaseEntry;
 					}
@@ -182,6 +187,21 @@ public class ActiveObjectsManager {
 			}
 		});
 
+	}
+
+	protected static int addTagsToCommentWhenAutoClassified(DecisionKnowledgeInCommentEntity sentence) {
+		CommentManager cm = ComponentAccessor.getCommentManager();
+		MutableComment mc = (MutableComment) cm.getMutableComment(sentence.getCommentId());
+		String newBody = mc.getBody().substring(sentence.getStartSubstringCount(), sentence.getEndSubstringCount());
+		
+		newBody = "{"+sentence.getKnowledgeTypeString()+"}"+newBody+"{"+sentence.getKnowledgeTypeString()+"}";
+		int lengthDiff = (sentence.getKnowledgeTypeString().length()+2)*2;
+		
+		DecXtractEventListener.editCommentLock = true;
+		mc.setBody(mc.getBody().substring(0, sentence.getStartSubstringCount())+newBody+mc.getBody().substring(sentence.getEndSubstringCount()));
+		cm.update(mc, true);
+		DecXtractEventListener.editCommentLock = false;
+		return lengthDiff;
 	}
 
 	public static Boolean updateKnowledgeTypeOfSentence(long id, KnowledgeType knowledgeType, String argument) {
