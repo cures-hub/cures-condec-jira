@@ -149,8 +149,8 @@ public enum KnowledgeType {
 	}
 	
 	public static String getIconUrl(DecisionKnowledgeElement element) {
-		if ( element instanceof Sentence){
-			return "";
+		if (element instanceof Sentence && !((Sentence)element).isRelevant()){
+			return ComponentGetter.getUrlOfImageFolder()+"Other.png";
 		}
 		switch(element.getType()) {
 		case OTHER:
