@@ -15,15 +15,15 @@
 }
 
 .solution {
-	background-color: rgb(255, 255, 221);
+	background-color: rgb(255, 255, 230);
 }
 
 .decision {
-	background-color: rgb(255, 255, 221);
+	background-color: rgb(250, 235, 215);
 }
 
 .problem {
-	background-color: rgb(244, 240, 255);
+	background-color: rgb(255, 255, 204);
 }
 
 .other {
@@ -69,71 +69,24 @@
 	background-color: #d6d6c2;
 }
 
-.Treant>.node img {
-	border: none;
-	float: left;
-}
-
-.Treant .node {
-	margin: 0;
-	padding: 3px;
-	border-radius: 3px;
-}
-
-.Treant>.node {
-	padding: 2px;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
-	border: 1px solid #000;
-	font-family: Tahoma;
-	font-size: 12px;
-	visibility: inherit;
-	width: 160px;
-}
-
-.Treant>p {
-	font-family: "HelveticaNeue-Light", "Helvetica Neue Light",
-		"Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-	font-weight: bold;
-	font-size: 12px;
-}
-
-.node-name {
-	font-weight: bold;
-	visibility: inherit;
-}
-
-.comments {
-	width: 427px;
-	margin: 15px auto;
-}
-
-.comments ul {
-	margin-left: 35px;
-	list-style: none;
-}
-
 .node {
 	color: #333333;
 	display: inline-block;
 	font-size: 12px;
 	margin-top: 6px;
-	width: 190px;
-}
-
-.node img {
-	border-radius: 3px 3px 3px 3px;
-	float: left;
-	height: 30px;
-	margin-right: 8px;
-	margin-top: 3px;
-	width: 15px;
+	padding: 2px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	border: 1px solid #000;
+	visibility: inherit;
+	width: 160px;
+	margin: 0;
+	padding: 3px;
+	border-radius: 3px;
 }
 
 .node p {
-	color: #42474A;
-	font-size: 12px;
 	line-height: 1.4em;
 	margin-bottom: 0;
 	max-height: 16.8em;
@@ -142,4 +95,19 @@
 
 .node a {
 	font-size: 12px;
+}
+
+.node img {
+	margin-right: 5px;
+	margin-top: 3px;
+	margin-left: 3px;
+}
+
+.node-name {
+	font-weight: bold;
+	visibility: inherit;
+}
+
+.node-title {
+	display: inline;
 }
