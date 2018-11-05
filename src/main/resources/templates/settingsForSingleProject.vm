@@ -242,7 +242,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 	
 	for (j in additionalKnowledgeTypes) {
 		console.log(typeToggles[j].value);
-		isKnowledgeTypeEnabled(typeToggles[j].value, '$projectKey', typeToggles[j], function(isTypeEnabled, toggle) {				
+		conDecAPI.isKnowledgeTypeEnabled(typeToggles[j].value, '$projectKey', typeToggles[j], function(isTypeEnabled, toggle) {				
 	    	toggle.checked = isTypeEnabled;
 		});
 	    typeToggles[j].addEventListener('change', function (error) {
