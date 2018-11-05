@@ -491,10 +491,8 @@ var contextMenuDeleteSentenceLinkAction = {
 
 		var nodeType = (node.li_attr['class'] === "sentence") ? "s" : "i";
 
-		conDecAPI.deleteGenericLink(parentId, node.id, "i", nodeType, conDecAPI.linkGenericElements(JIRA.Issue.getIssueId(),
-				node.id, "i", nodeType, refreshTreeViewer), false);
-		conDecAPI.deleteGenericLink(parentId, node.id, "s", nodeType, conDecAPI.linkGenericElements(JIRA.Issue.getIssueId(),
-				node.id, "i", nodeType, refreshTreeViewer), false);
+		conDecAPI.deleteGenericLink(parentId, node.id, "i", nodeType, conDecAPI.setSentenceIrrelevant(node.id), false);
+		conDecAPI.deleteGenericLink(parentId, node.id, "s", nodeType, conDecAPI.setSentenceIrrelevant(node.id), false);
 
 	},
 	"callback" : function(key, options) {
@@ -504,8 +502,7 @@ var contextMenuDeleteSentenceLinkAction = {
 		var parentClass = (document.getElementById(parentId).className.includes("sentence")) ? "s" : "i";
 		var nodeClass = (document.getElementById(id).className.includes("sentence")) ? "s" : "i";
 
-		conDecAPI.deleteGenericLink(parentId, id, parentClass, nodeClass, conDecAPI.linkGenericElements(JIRA.Issue.getIssueId(),
-				id, "i", nodeClass, notify), false);
+		conDecAPI.deleteGenericLink(parentId, id, parentClass, nodeClass, conDecAPI.setSentenceIrrelevant(id, notify), false);
 
 	}
 };

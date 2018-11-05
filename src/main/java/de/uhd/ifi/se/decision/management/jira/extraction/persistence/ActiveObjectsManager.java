@@ -364,6 +364,7 @@ public class ActiveObjectsManager {
 				for (DecisionKnowledgeInCommentEntity sentenceEntity : ActiveObjects
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
+						ActiveObjectsManager.stripTagsOutOfComment(sentenceEntity);
 						sentenceEntity.setRelevant(false);
 						sentenceEntity.setTaggedManually(isTaggedManually);
 						sentenceEntity.setKnowledgeTypeString(KnowledgeType.OTHER.toString());
@@ -375,6 +376,31 @@ public class ActiveObjectsManager {
 				return false;
 			}
 		});
+	}
+
+	protected static void stripTagsOutOfComment(DecisionKnowledgeInCommentEntity sentence) {
+		if(sentence.getKnowledgeTypeString() == null || sentence.getKnowledgeTypeString().equalsIgnoreCase("Other")) {
+			return;
+		}
+		CommentManager cm = ComponentAccessor.getCommentManager();
+		MutableComment mc = (MutableComment) cm.getMutableComment(sentence.getCommentId());
+		String newBody = mc.getBody().substring(sentence.getStartSubstringCount(), sentence.getEndSubstringCount());
+		int oldlength= newBody.length();
+		int oldEnd = sentence.getEndSubstringCount();
+		newBody = newBody.replaceAll("\\{.*?\\}", "");
+		
+		sentence.setEndSubstringCount(sentence.getEndSubstringCount()-(2*(sentence.getKnowledgeTypeString().length()+2)));
+		sentence.save();
+		
+		int lengthDiff =newBody.length()- oldlength;
+		DecXtractEventListener.editCommentLock = true;
+		String first = mc.getBody().substring(0, sentence.getStartSubstringCount());
+		String second = newBody;
+		String third =mc.getBody().substring(oldEnd);
+		mc.setBody(first + second + third);
+		cm.update(mc, true);
+		DecXtractEventListener.editCommentLock = false;
+		updateSentenceLengthForOtherSentencesInSameComment(sentence.getCommentId(), sentence.getStartSubstringCount(), lengthDiff, sentence.getId());;		
 	}
 
 	public static boolean updateSentenceBodyWhenCommentChanged(long commentId, long aoId, String description) {

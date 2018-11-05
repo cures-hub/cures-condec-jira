@@ -68,7 +68,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	public void onIssueEvent(IssueEvent issueEvent) {
 		this.issueEvent = issueEvent;
 		this.projectKey = issueEvent.getProject().getKey();
-		if(ConfigPersistence.isActivated(this.projectKey) && ConfigPersistence.isKnowledgeExtractedFromIssues(this.projectKey)) {
+		if(!ConfigPersistence.isActivated(this.projectKey) && !ConfigPersistence.isKnowledgeExtractedFromIssues(this.projectKey)) {
 			return;
 		}
 		Long eventTypeId = issueEvent.getEventTypeId();
