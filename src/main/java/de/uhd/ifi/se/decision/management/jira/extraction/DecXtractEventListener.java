@@ -10,7 +10,6 @@ import com.atlassian.event.api.EventPublisher;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
-import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
@@ -18,7 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 
 /**
  * Triggers the decXtract related function when some changes to comments are
@@ -33,6 +31,9 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	private String projectKey;
 
 	private IssueEvent issueEvent;
+	
+	/** locks the editComment Event function if a rest service writes edites comments */
+	public static boolean editCommentLock;
 
 	@Autowired
 	public DecXtractEventListener(@JiraImport EventPublisher eventPublisher) {
@@ -90,7 +91,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	}
 
 	private void handleEditComment(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
-		if(!KnowledgeRest.commentWriteLog) {
+		if(!DecXtractEventListener.editCommentLock) {//If locked, a rest service is manipulating the comment and should not be handled by EL
 			ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(new CommentImpl(issueEvent.getComment()));
 			new ViewConnector(this.issueEvent.getIssue(), false);
 			ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId() + "");
