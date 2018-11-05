@@ -108,11 +108,7 @@ public class CommentSplitter {
 	}
 
 	private boolean checkIncorrectTagMix(String toSearch, String openTag, String closeTag) {
-		if(openTag.equals(closeTag) && !isKnowledgeTypeTagTwiceExistant(toSearch,openTag)) {
-			return true;
-		}
-		//all fine
-		return false;
+		return openTag.equals(closeTag) && !isKnowledgeTypeTagTwiceExistant(toSearch,openTag);
 	}
 
 	public List<Integer> getStartSubstringCount() {

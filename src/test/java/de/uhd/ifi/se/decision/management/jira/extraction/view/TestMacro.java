@@ -30,8 +30,8 @@ public class TestMacro extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
 
-	RenderContext issueView = new RenderContext();
-	RenderContext wysiwygView = new RenderContext();
+	private RenderContext issueView = new RenderContext();
+	private RenderContext wysiwygView = new RenderContext();
 
 	@Before
 	public void setUp() {
