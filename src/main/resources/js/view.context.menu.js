@@ -543,7 +543,7 @@ var contextMenuEditSentenceAction = {
 	"action" : function(position) {
 		var id = getSelectedTreeViewerNodeId(position);
 		var node = getSelectedTreeViewerNode(position);
-		setUpDialogForEditSentenceAction(id, node.data.summary, node.data.type);
+		setUpDialogForEditSentenceAction(id, node.data.summary, node.data.type,node);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
@@ -552,10 +552,11 @@ var contextMenuEditSentenceAction = {
 		var description = node.getElementsByClassName("node-title")[0].innerHTML;
 
 		var type = "Other";
+
 		if (node.getElementsByClassName("node-name").length > 0) {
 			type = node.getElementsByClassName("node-name")[0].innerHTML;
 		}
-		setUpDialogForEditSentenceAction(id, description, type);
+		setUpDialogForEditSentenceAction(id, description, type,node);
 	}
 };
 
@@ -574,17 +575,17 @@ function getNodeWithId(nodes, id) {
 /**
  * fills HTML of dialog with contents
  */
-function setUpDialogForEditSentenceAction(id, description, type) {
+function setUpDialogForEditSentenceAction(id, description, type,node) {
 	setUpDialog();
 	setHeaderText(editKnowledgeElementText);
-	setUpEditSentenceDialogView(description, type);
+	setUpEditSentenceDialogView(description, type,node);
 	setUpEditSentenceDialogContext(id, description, type);
 }
 
 /**
  * fills HTML view-protion of dialog with contents
  */
-function setUpEditSentenceDialogView(description, type) {
+function setUpEditSentenceDialogView(description, type,node) {
 
 	document.getElementById("dialog-content").innerHTML = "";
 	document.getElementById("dialog").classList.remove("aui-dialog2-large");
@@ -603,12 +604,13 @@ function setUpEditSentenceDialogView(description, type) {
 	var myKnowledgeType = replaceArgumentWithLinkTypes(conDecAPI.getKnowledgeTypes(getProjectKey()));
 	for (var index = 0; index < myKnowledgeType.length; index++) {
 		var isSelected = "";
-		if (type.toLowerCase() === myKnowledgeType[index].toLowerCase()) {
+		console.log("orig: " + type.toLowerCase());
+		console.log("array: " + myKnowledgeType[index].toLowerCase());
+
+		if (node.classList.value.includes(myKnowledgeType[index].toLowerCase())) {
 			isSelected = "selected ";
 		}
-		if (type.toLowerCase() === "argument" && myKnowledgeType[index].toLowerCase().includes("pro")) {
-			isSelected = "selected ";
-		}
+	
 		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
 				+ myKnowledgeType[index] + "'>" + myKnowledgeType[index] + "</option>");
 	}
