@@ -240,10 +240,6 @@ public class ActiveObjectsManager {
 								sentenceEntity.setRelevant(false);
 							}
 						}
-						int newLength = addTagsToCommentWhenAutoClassified(sentenceEntity);
-						sentenceEntity.setEndSubstringCount(sentenceEntity.getEndSubstringCount()+newLength);
-						updateSentenceLengthForOtherSentencesInSameComment(sentenceEntity.getCommentId(),sentenceEntity.getStartSubstringCount(),newLength,sentenceEntity.getId());
-						
 						sentenceEntity.save();
 						return true;
 					}
