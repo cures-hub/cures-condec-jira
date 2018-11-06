@@ -543,7 +543,8 @@ var contextMenuEditSentenceAction = {
 	"action" : function(position) {
 		var id = getSelectedTreeViewerNodeId(position);
 		var node = getSelectedTreeViewerNode(position);
-		setUpDialogForEditSentenceAction(id, node.data.summary, node.data.type,node);
+		console.log(node);
+		setUpDialogForEditSentenceAction(id, node.data.summary, node.data.type,node.data.type);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
@@ -556,7 +557,7 @@ var contextMenuEditSentenceAction = {
 		if (node.getElementsByClassName("node-name").length > 0) {
 			type = node.getElementsByClassName("node-name")[0].innerHTML;
 		}
-		setUpDialogForEditSentenceAction(id, description, type,node);
+		setUpDialogForEditSentenceAction(id, description, type,node.classList.value);
 	}
 };
 
@@ -601,18 +602,19 @@ function setUpEditSentenceDialogView(description, type,node) {
 					+ "</form>");
 
 
-	var myKnowledgeType = replaceArgumentWithLinkTypes(conDecAPI.getKnowledgeTypes(getProjectKey()));
-	for (var index = 0; index < myKnowledgeType.length; index++) {
+	var knowledgeTypes = replaceArgumentWithLinkTypes(conDecAPI.getKnowledgeTypes(getProjectKey()));
+	if(knowledgeTypes.includes("Issue") && knowledgeTypes.includes("Problem")){
+		knowledgeTypes.remove("Problem");
+	}
+	for (var index = 0; index < knowledgeTypes.length; index++) {
 		var isSelected = "";
-		console.log("orig: " + type.toLowerCase());
-		console.log("array: " + myKnowledgeType[index].toLowerCase());
-
-		if (node.classList.value.includes(myKnowledgeType[index].toLowerCase())) {
+		//first clause for treant, second for tree viewer
+		if (node.includes(knowledgeTypes[index].toLowerCase()) || node === knowledgeTypes[index]) {
 			isSelected = "selected ";
 		}
 	
 		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
-				+ myKnowledgeType[index] + "'>" + myKnowledgeType[index] + "</option>");
+				+ knowledgeTypes[index] + "'>" + knowledgeTypes[index] + "</option>");
 	}
 }
 

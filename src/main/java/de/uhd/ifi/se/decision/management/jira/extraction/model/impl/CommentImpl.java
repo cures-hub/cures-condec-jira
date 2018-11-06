@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.HTMLCodeGeneratorForSentences;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 
 public class CommentImpl implements Comment {
 
@@ -110,6 +111,16 @@ public class CommentImpl implements Comment {
 			result += hTMLGen.getCodedElement(sentence);
 		}
 		return result + "</span>";
+	}
+	
+	public void reloadSentencesFromAo() {
+		List<Sentence> newSentences = new ArrayList<>();
+		for(Sentence sentence: this.sentences) {
+			DecisionKnowledgeInCommentEntity aoElement = ActiveObjectsManager.getElementFromAO(sentence.getId());
+			Sentence aoSentence = new SentenceImpl(aoElement);
+			newSentences.add(aoSentence);
+		}
+		this.sentences = newSentences;
 	}
 
 	public String getBody() {

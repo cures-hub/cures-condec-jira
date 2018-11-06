@@ -212,18 +212,9 @@ public class ActiveObjectsManager {
 				for (DecisionKnowledgeInCommentEntity sentenceEntity : ActiveObjects
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
-						if (sentenceEntity.isTaggedManually()) {
-							int oldTextLength = getTextLengthOfAoElement(sentenceEntity);
-							int newTextLength = updateTagsInComment(sentenceEntity, knowledgeType, argument);
-							sentenceEntity
-									.setEndSubstringCount(sentenceEntity.getStartSubstringCount() + newTextLength);
-							ActiveObjectsManager.updateSentenceLengthForOtherSentencesInSameComment(sentenceEntity.getCommentId(),
-									sentenceEntity.getStartSubstringCount(), newTextLength - oldTextLength,
-									sentenceEntity.getId());
-							sentenceEntity.save();
-
-						}
 						// Knowledgetype is an Argument
+						
+						String oldKnowledgeType = sentenceEntity.getKnowledgeTypeString();
 						if (knowledgeType.equals(KnowledgeType.OTHER) || knowledgeType.equals(KnowledgeType.ARGUMENT)) {
 							sentenceEntity.setKnowledgeTypeString(argument);
 							sentenceEntity.setArgument(argument);
@@ -231,7 +222,6 @@ public class ActiveObjectsManager {
 							sentenceEntity.setKnowledgeTypeString(knowledgeType.toString());
 						}
 						sentenceEntity.setRelevant(true);
-						sentenceEntity.setTaggedManually(true);
 						sentenceEntity.setTaggedFineGrained(true);
 						if (!sentenceEntity.getKnowledgeTypeString().equals("Pro")
 								&& !sentenceEntity.getKnowledgeTypeString().equals("Con")) {
@@ -239,6 +229,22 @@ public class ActiveObjectsManager {
 							if (knowledgeType.equals(KnowledgeType.OTHER)) {
 								sentenceEntity.setRelevant(false);
 							}
+						}
+						if (sentenceEntity.isTaggedManually()) {
+							int oldTextLength = getTextLengthOfAoElement(sentenceEntity);
+							int newTextLength = updateTagsInComment(sentenceEntity, knowledgeType, argument,oldKnowledgeType);
+							sentenceEntity
+									.setEndSubstringCount(sentenceEntity.getStartSubstringCount() + newTextLength);
+							ActiveObjectsManager.updateSentenceLengthForOtherSentencesInSameComment(sentenceEntity.getCommentId(),
+									sentenceEntity.getStartSubstringCount(), newTextLength - oldTextLength,
+									sentenceEntity.getId());
+							sentenceEntity.save();
+						}else {
+							sentenceEntity.setTaggedManually(true);
+							int newLength = addTagsToCommentWhenAutoClassified(sentenceEntity);
+							sentenceEntity.setEndSubstringCount(sentenceEntity.getEndSubstringCount()+newLength);
+							updateSentenceLengthForOtherSentencesInSameComment(sentenceEntity.getCommentId(),sentenceEntity.getStartSubstringCount(),newLength,sentenceEntity.getId());
+							sentenceEntity.save();
 						}
 						sentenceEntity.save();
 						return true;
@@ -257,7 +263,7 @@ public class ActiveObjectsManager {
 
 
 	private static int updateTagsInComment(DecisionKnowledgeInCommentEntity sentenceEntity, KnowledgeType knowledgeType,
-			String argument) {
+			String argument, String oldKnowledgeType) {
 		CommentManager cm = ComponentAccessor.getCommentManager();
 		MutableComment mc = (MutableComment) cm.getMutableComment(sentenceEntity.getCommentId());
 		String oldBody = mc.getBody();
@@ -266,9 +272,9 @@ public class ActiveObjectsManager {
 				sentenceEntity.getEndSubstringCount());
 		if (knowledgeType.toString().equalsIgnoreCase("other")
 				|| knowledgeType.toString().equalsIgnoreCase("argument")) {
-			newBody = newBody.replaceAll("(?i)" + sentenceEntity.getKnowledgeTypeString() + "}", argument + "}");
+			newBody = newBody.replaceAll("(?i)" +oldKnowledgeType + "}", argument + "}");
 		} else {
-			newBody = newBody.replaceAll("(?i)" + sentenceEntity.getKnowledgeTypeString() + "}",
+			newBody = newBody.replaceAll("(?i)" + oldKnowledgeType+ "}",
 					knowledgeType.toString() + "}");
 		}
 		// build body with first text and changed text

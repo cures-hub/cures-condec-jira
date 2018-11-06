@@ -211,7 +211,7 @@ public class KnowledgeRest {
 	public Response setSentenceIrrelevant(@Context HttpServletRequest request,
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (request != null && decisionKnowledgeElement != null && decisionKnowledgeElement.getId() > 0) {
-			boolean isDeleted = ActiveObjectsManager.setSentenceIrrelevant(decisionKnowledgeElement.getId(), true);
+			boolean isDeleted = ActiveObjectsManager.setSentenceIrrelevant(decisionKnowledgeElement.getId(), false);
 			if (isDeleted) {
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 			} else {

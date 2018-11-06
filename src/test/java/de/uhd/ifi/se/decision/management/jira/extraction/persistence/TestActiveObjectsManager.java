@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -157,7 +156,8 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 
 		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE, "");
 		DecisionKnowledgeInCommentEntity element = ActiveObjectsManager.getElementFromAO(id);
-		assertEquals(new SentenceImpl(element.getId()).getBody().trim(), "testobject");
+		//Important that sentence object has no tags
+		assertEquals( "testobject",new SentenceImpl(element.getId()).getBody().trim());
 		assertEquals(element.getKnowledgeTypeString(), KnowledgeType.ALTERNATIVE.toString());
 		assertEquals("{Alternative} testobject {Alternative}",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
@@ -185,7 +185,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 
 		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE, "");
 		DecisionKnowledgeInCommentEntity element = ActiveObjectsManager.getElementFromAO(id);
-		assertEquals(new SentenceImpl(element.getId()).getBody().trim(), "testobject");
+		assertEquals(new SentenceImpl(element.getId()).getBody(), " testobject ");
 		assertEquals(element.getKnowledgeTypeString(), KnowledgeType.ALTERNATIVE.toString());
 		assertEquals("some sentence in front. {Alternative} testobject {Alternative} some sentence in the back.",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
@@ -198,7 +198,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
 		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.OTHER, "Pro");
 		DecisionKnowledgeInCommentEntity element = ActiveObjectsManager.getElementFromAO(id);
-		assertEquals(new SentenceImpl(element.getId()).getBody().trim(), "testobject");
+		assertEquals( " testobject ",new SentenceImpl(element.getId()).getBody());
 		assertEquals(element.getKnowledgeTypeString(), "Pro");
 		assertEquals("some sentence in front. {Pro} testobject {Pro} some sentence in the back.",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());

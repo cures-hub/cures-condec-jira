@@ -38,7 +38,7 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 			return new ArrayList<>();
 		}
 		//Initialize viewConnector with the current shown Issue
-		viewConnector = new ViewConnector(issue,false);
+		viewConnector = new ViewConnector(issue,true);
 
 		GenericMessageAction messageAction = new GenericMessageAction(getVelocityTemplate());
 		List<IssueAction> issueActions = new ArrayList<IssueAction>();
@@ -78,7 +78,7 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 	}
 
 	private Map<String, Object> addParamsToContext(Map<String, Object> context) {
-		context.put("comments",this.viewConnector.getAllTaggedComments());
+		context.put("comments",this.viewConnector.getTaggedCommentsFromAO());
 		context.put("authorNames",this.viewConnector.getAllCommentsAuthorNames());
 		context.put("dates", this.viewConnector.getAllCommentsDates());
 		context.put("style", this.viewConnector.getSentenceStyles());
