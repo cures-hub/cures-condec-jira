@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.webhook;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -26,23 +27,24 @@ public class WebhookConnector {
 	private String secret;
 	private String projectKey;
 	private List<Long> elementIds;
-	private String rootType;
+	private Collection<String> rootTypes;
 
-	public WebhookConnector(String projectKey, String webhookUrl, String webhookSecret, String rootType) {
+	public WebhookConnector(String projectKey, String webhookUrl, String webhookSecret, Collection rootTypes) {
 		this.projectKey = projectKey;
 		this.url = webhookUrl;
 		this.secret = webhookSecret;
-		if (rootType == null) {
-			this.rootType = "Task";
+		this.rootTypes = new ArrayList<>();
+		if (rootTypes == null || rootTypes.isEmpty()) {
+			this.rootTypes.add("Task");
 		} else {
-			this.rootType = rootType;
+			this.rootTypes = rootTypes;
 		}
 		this.elementIds = new ArrayList<Long>();
 	}
 
 	public WebhookConnector(String projectKey) {
 		this(projectKey, ConfigPersistence.getWebhookUrl(projectKey), ConfigPersistence.getWebhookSecret(projectKey),
-				ConfigPersistence.getWebhookType(projectKey));
+				ConfigPersistence.getEnabledWebhookTypes(projectKey));
 	}
 
 	public boolean sendElementChanges(DecisionKnowledgeElement changedElement) {
@@ -62,8 +64,11 @@ public class WebhookConnector {
 
 		List<DecisionKnowledgeElement> rootElements = getWebhookRootElements(elementToBeDeleted);
 		String type = elementToBeDeleted.getTypeAsString();
-		if (type.toUpperCase().equals(rootType.toUpperCase())) {
-			rootElements.remove(elementToBeDeleted);
+
+		for (String rootType: rootTypes) {
+			if (rootType.equalsIgnoreCase(type)) {
+				rootElements.remove(elementToBeDeleted);
+			}
 		}
 
 		AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
@@ -95,8 +100,10 @@ public class WebhookConnector {
 			}
 			elementIds.add(linkedElement.getId());
 			String type = linkedElement.getTypeAsString();
-			if (type.equalsIgnoreCase(rootType)) {
-				webhookRootElements.add(linkedElement);
+			for (String rootType: rootTypes) {
+				if (rootType.equalsIgnoreCase(type)) {
+					webhookRootElements.add(linkedElement);
+				}
 			}
 			webhookRootElements.addAll(getWebhookRootElements(linkedElement));
 		}

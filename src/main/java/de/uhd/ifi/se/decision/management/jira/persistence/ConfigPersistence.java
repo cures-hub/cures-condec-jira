@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.IssueTypeManager;
+import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
@@ -7,6 +10,9 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Class to store and receive configuration settings
@@ -161,13 +167,27 @@ public class ConfigPersistence {
 	}
 
 	// TODO Testing
-	public static void setWebhookType(String projectKey, String webhookType) {
-		setValue(projectKey, "webhookType", webhookType);
+	public static void setWebhookType(String projectKey, String webhookType, boolean isWebhookTypeEnabled) {
+		setValue(projectKey, "webhookType" + "." + webhookType, Boolean.toString(isWebhookTypeEnabled));
 	}
 
 	// TODO Testing
-	public static String getWebhookType(String projectKey) {
-		return getValue(projectKey, "webhookType");
+	public static boolean isWebhookTypeEnaled(String projectKey, String webhookType) {
+		String isWebhookTypeEnabled = getValue(projectKey, "webhookType" + "." + webhookType);
+		return "true".equals(isWebhookTypeEnabled);
+	}
+
+	// TODO Testing
+	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
+        IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
+        Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
+        Collection<String> issueTypeNames = new ArrayList<>();
+        for (IssueType issueType: issueTypes) {
+            if (isWebhookTypeEnaled(projectKey, issueType.getName())) {
+                issueTypeNames.add(issueType.getName());
+            }
+        }
+        return issueTypeNames;
 	}
 
 	public static void setRequestToken(String requestToken) {

@@ -203,7 +203,7 @@ public interface DecisionKnowledgeProject {
 	 *
 	 * @return type of webhook root element.
 	 */
-	String getWebhookRootType();
+	boolean isWebhookTypeEnabled(String issueType);
 
 	/**
 	 * Checks if is icon parsing enabled.
