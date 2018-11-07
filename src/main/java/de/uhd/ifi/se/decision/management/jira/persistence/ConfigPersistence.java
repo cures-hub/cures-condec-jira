@@ -9,15 +9,10 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Class to store and receive configuration settings
