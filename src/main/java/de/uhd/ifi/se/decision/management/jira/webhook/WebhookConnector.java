@@ -65,8 +65,10 @@ public class WebhookConnector {
 		List<DecisionKnowledgeElement> rootElements = getWebhookRootElements(elementToBeDeleted);
 		String type = elementToBeDeleted.getTypeAsString();
 
-		if (rootTypes.contains(type.toUpperCase())) {
-			rootElements.remove(elementToBeDeleted);
+		for (String rootType: rootTypes) {
+			if (rootType.equalsIgnoreCase(type)) {
+				rootElements.remove(elementToBeDeleted);
+			}
 		}
 
 		AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
@@ -98,8 +100,10 @@ public class WebhookConnector {
 			}
 			elementIds.add(linkedElement.getId());
 			String type = linkedElement.getTypeAsString();
-			if (rootTypes.contains(type)) {
-				webhookRootElements.add(linkedElement);
+			for (String rootType: rootTypes) {
+				if (rootType.equalsIgnoreCase(type)) {
+					webhookRootElements.add(linkedElement);
+				}
 			}
 			webhookRootElements.addAll(getWebhookRootElements(linkedElement));
 		}
