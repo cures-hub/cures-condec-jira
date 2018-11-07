@@ -29,6 +29,7 @@ var linkKnowledgeElementText = "Link Existing Element";
 var deleteLinkToParentText = "Delete Link to Parent";
 var editKnowledgeElementText = "Edit Element";
 var deleteKnowledgeElementText = "Delete Element";
+var changeKnowledgeTypeText = "Change Element Type";
 
 var contextMenuCreateAction = {
 	// label for Tree Viewer, name for Treant context menu
@@ -142,6 +143,24 @@ function setUpCreateOrEditDialog(summary, description, knowledgeType) {
 				+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
 	}
 	AJS.$("#form-select-type").auiSelect2();
+}
+
+function setUpTypeChangeDialog(knowledgeType){
+    console.log("view.context.menu.js setUpTypeChangeDialog");
+    document.getElementById("dialog-content").insertAdjacentHTML(
+        "afterBegin",
+        "<form class='aui'><div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
+            + "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
+            + "</form>");
+    for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
+        var isSelected = "";
+        if (isKnowledgeTypeLocatedAtIndex(knowledgeType, index)) {
+            isSelected = "selected ";
+        }
+        $("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
+            + extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
+    }
+    AJS.$("#form-select-type").auiSelect2();
 }
 
 function isKnowledgeTypeLocatedAtIndex(knowledgeType, index) {
@@ -336,6 +355,40 @@ function setUpDialogForDeleteLinkAction(id, parentId) {
 		});
 		AJS.dialog2("#dialog").hide();
 	};
+}
+
+var contextMenuChangeTypeAction = {
+    "label" : changeKnowledgeTypeText,
+    "name" : changeKnowledgeTypeText,
+    "action" : function (position) {
+        var node = getSelectedTreeViewerNode(position);
+        var id = node.id;
+        setUpDialogForChangeTypeAction(id);
+    },
+    "callback" : function(key, options) {
+        var id = getSelectedTreantNodeId(options);
+        setUpDialogForChangeTypeAction(id);
+    }
+};
+
+function setUpDialogForChangeTypeAction(id) {
+    console.log("view.context.menu.js setUpDialogForChangeTypeAction");
+    setUpDialog();
+    setHeaderText(changeKnowledgeTypeText);
+    conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
+        var summary = decisionKnowledgeElement.summary;
+        var description = decisionKnowledgeElement.description;
+        var type = decisionKnowledgeElement.type;
+        setUpTypeChangeDialog(type);
+
+        var submitButton = document.getElementById("dialog-submit-button");
+        submitButton.textContent = editKnowledgeElementText;
+        submitButton.onclick = function () {
+            var type = $("select[name='form-select-type']").val();
+            updateDecisionKnowledgeElementAsChild(id,summary,description,type);
+            AJS.dialog2("#dialog").hide();
+        };
+    });
 }
 
 var contextMenuSetAsRootAction = {

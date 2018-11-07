@@ -88,7 +88,8 @@
 			"edit" : contextMenu.contextMenuEditAction,
 			"link" : contextMenu.contextMenuLinkAction,
 			"deleteLink" : contextMenu.contextMenuDeleteLinkAction,
-			"delete" : contextMenu.contextMenuDeleteAction
+			"delete" : contextMenu.contextMenuDeleteAction,
+            "changeType" : contextMenu.contextMenuChangeTypeAction
 		};
 		return menu;
 	}

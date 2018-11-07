@@ -59,22 +59,23 @@ function switchLinkTypes(type, idOfExistingElement, idOfNewElement, linkTypeFunc
 function updateDecisionKnowledgeElementAsChild(childId, summary, description, type) {
 	console.log("management.js updateDecisionKnowledgeElementAsChild");
 	var simpleType = getSimpleType(type);
-	updateDecisionKnowledgeElement(childId, summary, description, simpleType, function() {
-		conDecAPI.getDecisionKnowledgeElement(childId, function(decisionKnowledgeElement) {
-			if (decisionKnowledgeElement.type !== type) {
-				var parentId = findParentId(childId);
-				switchLinkTypes(type, parentId, childId, function(linkType, parentId, childId) {
-					deleteLink(parentId, childId, function() {
-						conDecAPI.linkElements(parentId, childId, linkType, function() {
-							notify();
-						});
-					});
-				});
-			} else {
-				notify();
-			}
-		});
-	});
+    conDecAPI.getDecisionKnowledgeElement(childId, function(decisionKnowledgeElement) {
+		conDecAPI.updateDecisionKnowledgeElement(childId,summary,description,simpleType,function () {
+        	console.log(decisionKnowledgeElement.type +" IN function "+ type);
+            if (decisionKnowledgeElement.type !== type) {
+                var parentId = findParentId(childId);
+                switchLinkTypes(type, parentId, childId, function(linkType, parentId, childId) {
+                    conDecAPI.deleteLink(parentId, childId, function() {
+                        conDecAPI.linkElements(parentId, childId, linkType, function() {
+                            notify();
+                        });
+                    });
+                });
+            } else {
+                notify();
+            }
+        });
+    });
 }
 
 function getSimpleType(type) {
