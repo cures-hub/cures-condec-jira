@@ -119,9 +119,9 @@ public class TestEditSentenceBody extends TestKnowledgeRestSetUp {
 	public void testRequestFilledElementFilledWithCommentChanedCheckValidTextWithManuallTaggedComment() {
 		String newText = "some fancy new text";
 		request.setAttribute("WithFails", false);
-		request.setAttribute("NoFails", true);
+		request.setAttribute("NoFails", true); 
 		TestComment tc = new TestComment();
-		Comment comment = tc.getComment("[issue]this is atest sentence[/Issue]");
+		Comment comment = tc.getComment("{issue}this is atest sentence{Issue}");
 		decisionKnowledgeElement = comment.getSentences().get(0);
 		decisionKnowledgeElement.setDescription(newText);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
@@ -131,7 +131,7 @@ public class TestEditSentenceBody extends TestKnowledgeRestSetUp {
 		assertEquals(newText, sentence.getBody());
 		
 		MutableComment mc = (MutableComment) ComponentAccessor.getCommentManager().getCommentById(sentence.getCommentId());
-		assertEquals("[Issue]some fancy new text[/Issue]",mc.getBody());
+		assertEquals("{Issue}some fancy new text{Issue}",mc.getBody());
 		
 	}
 }

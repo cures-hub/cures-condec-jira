@@ -97,18 +97,6 @@ public class TestSentence extends TestSetUpWithIssues {
 	}
 
 	@Test
-	@Ignore
-	@NonTransactional // TODO: Findout how to initialize project impl
-	public void testGetKnowledgeTypeToString() {
-		Sentence sentence = new SentenceImpl();
-		assertEquals("", sentence.getKnowledgeTypeString());
-		sentence.setType(KnowledgeType.ALTERNATIVE);
-		assertEquals("Alternative", sentence.getKnowledgeTypeString());
-		sentence.setType(KnowledgeType.ARGUMENT);
-		assertEquals("", sentence.getKnowledgeTypeString());
-	}
-
-	@Test
 	@NonTransactional
 	public void testSetKnowledgeTypeString() {
 		Sentence sentence = new SentenceImpl();

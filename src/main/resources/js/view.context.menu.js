@@ -343,7 +343,11 @@ var contextMenuSetAsRootAction = {
 	"name" : makeRootText,
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		setAsRootElement(id);
+		if (window.conDecIssueModule !== undefined) {
+			window.conDecIssueModule.setAsRootElement(id);
+		} else if (window.conDecKnowledgePage !== undefined) {
+			window.conDecKnowledgePage.setAsRootElement(id);
+		}		
 	}
 };
 
@@ -352,7 +356,9 @@ var contextMenuOpenJiraIssueAction = {
 	"name" : openIssueText,
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		openIssue(id);
+		if (window.conDecKnowledgePage !== undefined) {
+			window.conDecKnowledgePage.openIssue(id);
+		}				
 	}
 };
 
@@ -485,10 +491,8 @@ var contextMenuDeleteSentenceLinkAction = {
 
 		var nodeType = (node.li_attr['class'] === "sentence") ? "s" : "i";
 
-		conDecAPI.deleteGenericLink(parentId, node.id, "i", nodeType, conDecAPI.linkGenericElements(JIRA.Issue.getIssueId(),
-				node.id, "i", nodeType, refreshTreeViewer), false);
-		conDecAPI.deleteGenericLink(parentId, node.id, "s", nodeType, conDecAPI.linkGenericElements(JIRA.Issue.getIssueId(),
-				node.id, "i", nodeType, refreshTreeViewer), false);
+		conDecAPI.deleteGenericLink(parentId, node.id, "i", nodeType, conDecAPI.setSentenceIrrelevant(node.id), false);
+		conDecAPI.deleteGenericLink(parentId, node.id, "s", nodeType, conDecAPI.setSentenceIrrelevant(node.id), false);
 
 	},
 	"callback" : function(key, options) {
@@ -498,8 +502,7 @@ var contextMenuDeleteSentenceLinkAction = {
 		var parentClass = (document.getElementById(parentId).className.includes("sentence")) ? "s" : "i";
 		var nodeClass = (document.getElementById(id).className.includes("sentence")) ? "s" : "i";
 
-		conDecAPI.deleteGenericLink(parentId, id, parentClass, nodeClass, conDecAPI.linkGenericElements(JIRA.Issue.getIssueId(),
-				id, "i", nodeClass, notify), false);
+		conDecAPI.deleteGenericLink(parentId, id, parentClass, nodeClass, conDecAPI.setSentenceIrrelevant(id, notify), false);
 
 	}
 };
@@ -540,7 +543,8 @@ var contextMenuEditSentenceAction = {
 	"action" : function(position) {
 		var id = getSelectedTreeViewerNodeId(position);
 		var node = getSelectedTreeViewerNode(position);
-		setUpDialogForEditSentenceAction(id, node.data.summary, node.data.type);
+		console.log(node);
+		setUpDialogForEditSentenceAction(id, node.data.summary, node.data.type,node.data.type);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
@@ -549,10 +553,11 @@ var contextMenuEditSentenceAction = {
 		var description = node.getElementsByClassName("node-title")[0].innerHTML;
 
 		var type = "Other";
+
 		if (node.getElementsByClassName("node-name").length > 0) {
 			type = node.getElementsByClassName("node-name")[0].innerHTML;
 		}
-		setUpDialogForEditSentenceAction(id, description, type);
+		setUpDialogForEditSentenceAction(id, description, type,node.classList.value);
 	}
 };
 
@@ -571,17 +576,17 @@ function getNodeWithId(nodes, id) {
 /**
  * fills HTML of dialog with contents
  */
-function setUpDialogForEditSentenceAction(id, description, type) {
+function setUpDialogForEditSentenceAction(id, description, type,node) {
 	setUpDialog();
 	setHeaderText(editKnowledgeElementText);
-	setUpEditSentenceDialogView(description, type);
+	setUpEditSentenceDialogView(description, type,node);
 	setUpEditSentenceDialogContext(id, description, type);
 }
 
 /**
  * fills HTML view-protion of dialog with contents
  */
-function setUpEditSentenceDialogView(description, type) {
+function setUpEditSentenceDialogView(description, type,node) {
 
 	document.getElementById("dialog-content").innerHTML = "";
 	document.getElementById("dialog").classList.remove("aui-dialog2-large");
@@ -596,16 +601,23 @@ function setUpEditSentenceDialogView(description, type) {
 					+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
 					+ "</form>");
 
-	for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
+
+	var knowledgeTypes = replaceArgumentWithLinkTypes(conDecAPI.getKnowledgeTypes(getProjectKey()));
+	if(knowledgeTypes.includes("Issue") && knowledgeTypes.includes("Problem")){
+		var index = knowledgeTypes.indexOf("Issue");
+		if (index > -1) {
+		  knowledgeTypes.splice(index, 1);
+		}
+	}
+	for (var index = 0; index < knowledgeTypes.length; index++) {
 		var isSelected = "";
-		if (type.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase()) {
+		//first clause for treant, second for tree viewer
+		if (node.includes(knowledgeTypes[index].toLowerCase()) || node === knowledgeTypes[index]) {
 			isSelected = "selected ";
 		}
-		if (type.toLowerCase() === "argument" && extendedKnowledgeTypes[index].toLowerCase().includes("pro")) {
-			isSelected = "selected ";
-		}
+	
 		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
-				+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
+				+ knowledgeTypes[index] + "'>" + knowledgeTypes[index] + "</option>");
 	}
 }
 
@@ -645,6 +657,27 @@ function setUpEditSentenceDialogContext(id, description, type) {
 	AJS.$("#form-select-type").auiSelect2();
 }
 
+
+
+// local usage only
+var contextMenuCreateIssueFromSentence = {
+	// label for Tree Viewer, name for Treant context menu
+	"label" : "Convert to Issue",
+	"name" : "Convert to Issue",
+	"action" : function(position) {
+		var id = getSelectedTreeViewerNodeId(position);
+		console.log(id);
+		conDecAPI.createIssueFromSentence(id,notify);
+	},
+	"callback" : function(key, options) {
+		var id = getSelectedTreantNodeId(options);
+	
+		console.log(id);
+		conDecAPI.createIssueFromSentence(id,notify);
+	}
+};
+
+
 /**
  * local resets tree viewer and builds it again
  */
@@ -663,11 +696,13 @@ var contextMenuActionsForSentences = {
 	"edit" : contextMenuEditSentenceAction,
 	"deleteLink" : contextMenuDeleteSentenceLinkAction,
 	"delete" : contextMenuDeleteSentenceAction,
+	"createIssue": contextMenuCreateIssueFromSentence,
 	"changeKt" : changeKnowledgeTypeAction
 };
 
 var contextMenuActionsForSentencesInTreant = {
 	"edit" : contextMenuEditSentenceAction,
 	"deleteLink" : contextMenuDeleteSentenceLinkAction,
+	"createIssue": contextMenuCreateIssueFromSentence,
 	"delete" : contextMenuDeleteSentenceAction
 };

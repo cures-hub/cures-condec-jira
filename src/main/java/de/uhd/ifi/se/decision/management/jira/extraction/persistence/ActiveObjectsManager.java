@@ -4,14 +4,19 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.exception.CreateException;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
+import com.atlassian.jira.issue.link.IssueLinkManager;
+import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
@@ -19,6 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.IssueStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
 import net.java.ao.Query;
 
@@ -168,12 +174,17 @@ public class ActiveObjectsManager {
 		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 			@Override
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
+
 				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (databaseEntry.getId() == sentence.getId()) {
 						databaseEntry.setKnowledgeTypeString(sentence.getKnowledgeTypeString());
+						int additionalLength = addTagsToCommentWhenAutoClassified(databaseEntry);
 						databaseEntry.setTaggedFineGrained(true);
 						databaseEntry.setArgument(sentence.getArgument());
+						databaseEntry.setEndSubstringCount(databaseEntry.getEndSubstringCount() + additionalLength);
+						updateSentenceLengthForOtherSentencesInSameComment(sentence.getCommentId(),
+								sentence.getStartSubstringCount(), additionalLength, sentence.getId());
 						databaseEntry.save();
 						return databaseEntry;
 					}
@@ -184,6 +195,23 @@ public class ActiveObjectsManager {
 
 	}
 
+	protected static int addTagsToCommentWhenAutoClassified(DecisionKnowledgeInCommentEntity sentence) {
+		CommentManager cm = ComponentAccessor.getCommentManager();
+		MutableComment mc = (MutableComment) cm.getMutableComment(sentence.getCommentId());
+		String newBody = mc.getBody().substring(sentence.getStartSubstringCount(), sentence.getEndSubstringCount());
+
+		newBody = "{" + sentence.getKnowledgeTypeString() + "}" + newBody + "{" + sentence.getKnowledgeTypeString()
+				+ "}";
+		int lengthDiff = (sentence.getKnowledgeTypeString().length() + 2) * 2;
+
+		DecXtractEventListener.editCommentLock = true;
+		mc.setBody(mc.getBody().substring(0, sentence.getStartSubstringCount()) + newBody
+				+ mc.getBody().substring(sentence.getEndSubstringCount()));
+		cm.update(mc, true);
+		DecXtractEventListener.editCommentLock = false;
+		return lengthDiff;
+	}
+
 	public static Boolean updateKnowledgeTypeOfSentence(long id, KnowledgeType knowledgeType, String argument) {
 		init();
 		return ActiveObjects.executeInTransaction(new TransactionCallback<Boolean>() {
@@ -192,19 +220,9 @@ public class ActiveObjectsManager {
 				for (DecisionKnowledgeInCommentEntity sentenceEntity : ActiveObjects
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
-						if (sentenceEntity.isTaggedManually()) {
-							int oldTextLength = sentenceEntity.getEndSubstringCount()
-									- sentenceEntity.getStartSubstringCount();
-							int newTextLength = updateTagsInComment(sentenceEntity, knowledgeType, argument);
-							sentenceEntity
-									.setEndSubstringCount(sentenceEntity.getStartSubstringCount() + newTextLength);
-							updateSentenceLengthForOtherSentencesInSameComment(sentenceEntity.getCommentId(),
-									sentenceEntity.getStartSubstringCount(), newTextLength - oldTextLength,
-									sentenceEntity.getId());
-							sentenceEntity.save();
-
-						}
 						// Knowledgetype is an Argument
+
+						String oldKnowledgeType = sentenceEntity.getKnowledgeTypeString();
 						if (knowledgeType.equals(KnowledgeType.OTHER) || knowledgeType.equals(KnowledgeType.ARGUMENT)) {
 							sentenceEntity.setKnowledgeTypeString(argument);
 							sentenceEntity.setArgument(argument);
@@ -212,7 +230,6 @@ public class ActiveObjectsManager {
 							sentenceEntity.setKnowledgeTypeString(knowledgeType.toString());
 						}
 						sentenceEntity.setRelevant(true);
-						sentenceEntity.setTaggedManually(true);
 						sentenceEntity.setTaggedFineGrained(true);
 						if (!sentenceEntity.getKnowledgeTypeString().equals("Pro")
 								&& !sentenceEntity.getKnowledgeTypeString().equals("Con")) {
@@ -220,6 +237,24 @@ public class ActiveObjectsManager {
 							if (knowledgeType.equals(KnowledgeType.OTHER)) {
 								sentenceEntity.setRelevant(false);
 							}
+						}
+						if (sentenceEntity.isTaggedManually()) {
+							int oldTextLength = getTextLengthOfAoElement(sentenceEntity);
+							int newTextLength = updateTagsInComment(sentenceEntity, knowledgeType, argument,
+									oldKnowledgeType);
+							sentenceEntity
+									.setEndSubstringCount(sentenceEntity.getStartSubstringCount() + newTextLength);
+							ActiveObjectsManager.updateSentenceLengthForOtherSentencesInSameComment(
+									sentenceEntity.getCommentId(), sentenceEntity.getStartSubstringCount(),
+									newTextLength - oldTextLength, sentenceEntity.getId());
+							sentenceEntity.save();
+						} else {
+							sentenceEntity.setTaggedManually(true);
+							int newLength = addTagsToCommentWhenAutoClassified(sentenceEntity);
+							sentenceEntity.setEndSubstringCount(sentenceEntity.getEndSubstringCount() + newLength);
+							updateSentenceLengthForOtherSentencesInSameComment(sentenceEntity.getCommentId(),
+									sentenceEntity.getStartSubstringCount(), newLength, sentenceEntity.getId());
+							sentenceEntity.save();
 						}
 						sentenceEntity.save();
 						return true;
@@ -231,8 +266,12 @@ public class ActiveObjectsManager {
 
 	}
 
+	private static int getTextLengthOfAoElement(DecisionKnowledgeInCommentEntity sentence) {
+		return sentence.getEndSubstringCount() - sentence.getStartSubstringCount();
+	}
+
 	private static int updateTagsInComment(DecisionKnowledgeInCommentEntity sentenceEntity, KnowledgeType knowledgeType,
-			String argument) {
+			String argument, String oldKnowledgeType) {
 		CommentManager cm = ComponentAccessor.getCommentManager();
 		MutableComment mc = (MutableComment) cm.getMutableComment(sentenceEntity.getCommentId());
 		String oldBody = mc.getBody();
@@ -241,10 +280,9 @@ public class ActiveObjectsManager {
 				sentenceEntity.getEndSubstringCount());
 		if (knowledgeType.toString().equalsIgnoreCase("other")
 				|| knowledgeType.toString().equalsIgnoreCase("argument")) {
-			newBody = newBody.replaceAll("(?i)" + sentenceEntity.getKnowledgeTypeString() + "]", argument + "]");
+			newBody = newBody.replaceAll("(?i)" + oldKnowledgeType + "}", argument + "}");
 		} else {
-			newBody = newBody.replaceAll("(?i)" + sentenceEntity.getKnowledgeTypeString() + "]",
-					knowledgeType.toString() + "]");
+			newBody = newBody.replaceAll("(?i)" + oldKnowledgeType + "}", knowledgeType.toString() + "}");
 		}
 		// build body with first text and changed text
 		int newEndSubstringCount = newBody.length();
@@ -253,6 +291,7 @@ public class ActiveObjectsManager {
 		if (oldBody.length() > sentenceEntity.getEndSubstringCount()) {
 			newBody = newBody + oldBody.substring(sentenceEntity.getEndSubstringCount());
 		}
+
 		mc.setBody(newBody);
 		cm.update(mc, true);
 		return newEndSubstringCount;
@@ -306,13 +345,11 @@ public class ActiveObjectsManager {
 					for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
 							DecisionKnowledgeInCommentEntity.class,
 							Query.select().where("COMMENT_ID = ?", comment.getJiraCommentId()))) {
-						try {
-							if (databaseEntry.getProjectKey().equals(comment.getProjectKey())) {
-								databaseEntry.getEntityManager().delete(databaseEntry);
-							}
-						} catch (SQLException e) {
-							e.printStackTrace();
+
+						if (databaseEntry.getProjectKey().equals(comment.getProjectKey())) {
+							deleteAOElement(databaseEntry);
 						}
+
 						for (LinkInDatabase link : ActiveObjects.find(LinkInDatabase.class)) {
 							if (link.getIdOfDestinationElement().equals("i" + comment.getIssueId())
 									|| link.getIdOfSourceElement().equals("i" + comment.getIssueId())) {
@@ -338,6 +375,7 @@ public class ActiveObjectsManager {
 				for (DecisionKnowledgeInCommentEntity sentenceEntity : ActiveObjects
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
+						ActiveObjectsManager.stripTagsOutOfComment(sentenceEntity);
 						sentenceEntity.setRelevant(false);
 						sentenceEntity.setTaggedManually(isTaggedManually);
 						sentenceEntity.setKnowledgeTypeString(KnowledgeType.OTHER.toString());
@@ -349,6 +387,34 @@ public class ActiveObjectsManager {
 				return false;
 			}
 		});
+	}
+
+	protected static void stripTagsOutOfComment(DecisionKnowledgeInCommentEntity sentence) {
+		if (sentence.getKnowledgeTypeString() == null || sentence.getKnowledgeTypeString().equalsIgnoreCase("Other")) {
+			return;
+		}
+		CommentManager cm = ComponentAccessor.getCommentManager();
+		MutableComment mc = (MutableComment) cm.getMutableComment(sentence.getCommentId());
+		String newBody = mc.getBody().substring(sentence.getStartSubstringCount(), sentence.getEndSubstringCount());
+		int oldlength = newBody.length();
+		int oldEnd = sentence.getEndSubstringCount();
+		newBody = newBody.replaceAll("\\{.*?\\}", "");
+
+		sentence.setEndSubstringCount(
+				sentence.getEndSubstringCount() - (2 * (sentence.getKnowledgeTypeString().length() + 2)));
+		sentence.save();
+
+		int lengthDiff = newBody.length() - oldlength;
+		DecXtractEventListener.editCommentLock = true;
+		String first = mc.getBody().substring(0, sentence.getStartSubstringCount());
+		String second = newBody;
+		String third = mc.getBody().substring(oldEnd);
+		mc.setBody(first + second + third);
+		cm.update(mc, true);
+		DecXtractEventListener.editCommentLock = false;
+		updateSentenceLengthForOtherSentencesInSameComment(sentence.getCommentId(), sentence.getStartSubstringCount(),
+				lengthDiff, sentence.getId());
+		;
 	}
 
 	public static boolean updateSentenceBodyWhenCommentChanged(long commentId, long aoId, String description) {
@@ -408,7 +474,8 @@ public class ActiveObjectsManager {
 	 * Deletes all sentences in ao tables for this project and all links to and from
 	 * sentences. Currently not used. Useful for developing and system testing.
 	 * 
-	 * @param projectKey the project to clear
+	 * @param projectKey
+	 *            the project to clear
 	 */
 	@Deprecated
 	public static void clearSentenceDatabaseForProject(String projectKey) {
@@ -419,11 +486,7 @@ public class ActiveObjectsManager {
 				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
 						DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
 					GenericLinkManager.deleteLinksForElement("s" + databaseEntry.getId());
-					try {
-						databaseEntry.getEntityManager().delete(databaseEntry);
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
+					deleteAOElement(databaseEntry);
 				}
 				return null;
 			}
@@ -446,10 +509,7 @@ public class ActiveObjectsManager {
 						deleteFlag = true;
 					}
 					if (deleteFlag) {
-						try {
-							databaseEntry.getEntityManager().delete(databaseEntry);
-						} catch (SQLException e1) {
-						} // deletion failed.
+						deleteAOElement(databaseEntry);
 					}
 				}
 				return null;
@@ -508,7 +568,8 @@ public class ActiveObjectsManager {
 	 * are inserted twice into the AO table. This functions checks all entry for one
 	 * comment if there are duplicates. If one duplicate is found, its deleted.
 	 *
-	 * @param comment the comment
+	 * @param comment
+	 *            the comment
 	 */
 	public static void checkSentenceAOForDuplicates(Comment comment) {
 		init();
@@ -549,6 +610,62 @@ public class ActiveObjectsManager {
 				return null;
 			}
 		});
+	}
+
+	public static Issue createJIRAIssueFromSentenceObject(long aoId, ApplicationUser user) {
+
+		DecisionKnowledgeInCommentEntity aoElement = ActiveObjectsManager.getElementFromAO(aoId);
+		Sentence element = new SentenceImpl(aoElement);
+
+		IssueStrategy s = new IssueStrategy(aoElement.getProjectKey());
+		DecisionKnowledgeElement decElement = s.insertDecisionKnowledgeElement(element, user);
+
+		MutableIssue issue = ComponentAccessor.getIssueService().getIssue(user, decElement.getId()).getIssue();
+
+		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
+		long linkTypeId = IssueStrategy.getLinkTypeId("contain");
+
+		try {
+			issueLinkManager.createIssueLink(element.getIssueId(), issue.getId(), linkTypeId, (long) 0, user);
+		} catch (CreateException e) {
+			e.printStackTrace();
+		}
+
+		// delete sentence in comment
+		int length = removeSentenceFromComment(element) * -1; // -1 because we decrease the total number of letters
+		updateSentenceLengthForOtherSentencesInSameComment(element.getCommentId(), element.getStartSubstringCount(),
+				length, aoId);
+
+		// delete ao sentence entry
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("ID = ?", aoId))) {
+			deleteAOElement(databaseEntry);
+		}
+
+		return issue;
+	}
+
+	private static int removeSentenceFromComment(Sentence element) {
+		CommentManager cm = ComponentAccessor.getCommentManager();
+		MutableComment mc = (MutableComment) cm.getMutableComment(element.getCommentId());
+		String newBody = mc.getBody();
+		newBody = newBody.substring(0, element.getStartSubstringCount())
+				+ newBody.substring(element.getEndSubstringCount());
+
+		DecXtractEventListener.editCommentLock = true;
+		mc.setBody(newBody);
+		cm.update(mc, true);
+		DecXtractEventListener.editCommentLock = false;
+		return element.getEndSubstringCount() - element.getStartSubstringCount();
+	}
+
+	private static boolean deleteAOElement(DecisionKnowledgeInCommentEntity elementToDelete) {
+		try {
+			elementToDelete.getEntityManager().delete(elementToDelete);
+			return true;
+		} catch (SQLException e) {
+			return false;
+		}
 	}
 
 }

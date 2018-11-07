@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.connector;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
 
@@ -81,17 +80,6 @@ public class TestViewConnector extends TestSetUpWithIssues {
 
 		ViewConnector vc = new ViewConnector(issue, true);
 		assertNotNull(vc);
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetAllTaggedComments() {
-		addCommentsToIssue();
-
-		ViewConnector vc = new ViewConnector(issue, true);
-		assertNotNull(vc.getAllTaggedComments());
-		String expectedResult = "<span id=\"comment1\"><span class=\"sentence isNotRelevant\"  id  = ui1><span class =tag></span><span class = sentenceBody>This is a testentence without any purpose. </span><span class =tag></span></span><span class=\"sentence isNotRelevant\"  id  = ui2><span class =tag></span><span class = sentenceBody>We expect this to be irrelevant. </span><span class =tag></span></span><span class=\"sentence isNotRelevant\"  id  = ui3><span class =tag></span><span class = sentenceBody>I got a problem in this class. </span><span class =tag></span></span><span class=\"sentence isNotRelevant\"  id  = ui4><span class =tag></span><span class = sentenceBody>The previous sentence should be much more relevant</span><span class =tag></span></span></span>";
-		assertTrue(vc.getAllTaggedComments().get(0).trim().equals(expectedResult.trim()));
 	}
 
 	@Test

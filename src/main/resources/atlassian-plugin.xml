@@ -271,6 +271,45 @@
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationConditionForIssueModule" />
 	</web-item>
 
+
+
+    <macro key='issue' name='issue formatting macro'
+           class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.IssueMacro'>
+        <description>Insert issue knowledge element in comments.</description>
+    </macro>
+
+
+    <macro key='decision' name='decision formatting macro'
+           class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.DecisionMacro'>
+        <description>Insert decision knowledge element in comments.</description>
+    </macro>
+
+    <macro key='alternative' name='alternative formatting macro'
+           class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.AlternativeMacro'>
+        <description>Insert alternative knowledge element in comments.</description>
+    </macro>
+
+     <macro key='pro' name='pro formatting macro'
+           class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.ProMacro'>
+        <description>Insert pro knowledge element in comments.</description>
+    </macro>
+
+         <macro key='con' name='con formatting macro'
+           class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.ConMacro'>
+        <description>Insert con knowledge element in comments.</description>
+    </macro>
+
+
+    <web-resource key="toolbar" name="JIRA Editor Reference Plugin Toolbar Init">
+	    <context>jira.rich.editor</context>
+	    <context>jira.view.issue</context>
+	    <context>jira.edit.issue</context>
+	    <context>jira.create.issue</context>
+	    <context>gh-rapid</context>
+	    <resource type="download" name="js/toolbar-init.js" location="js/view.commentTab.toolbar-init.js"/>
+	</web-resource>
+
+
 	<!-- Decision Knowledge Report -->
 	<report name="Decision Knowledge Report" key="decision-knowledge-report"
 		class="de.uhd.ifi.se.decision.management.jira.extraction.view.DecisionKnowledgeReport">

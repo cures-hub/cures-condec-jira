@@ -12,6 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.HTMLCodeGeneratorForSentences;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 
 public class CommentImpl implements Comment {
 
@@ -59,16 +60,17 @@ public class CommentImpl implements Comment {
 	private void splitCommentIntoSentences() {
 		List<String> rawSentences = this.splitter.sliceCommentRecursionCommander(this.body, this.projectKey);
 		runBreakIterator(rawSentences);
-//		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(this); //ConDec-373: Now in EventListener
-		// Create AO entries
+		// Create AO entries 
 		for (int i = 0; i < this.splitter.getStartSubstringCount().size(); i++) {
 			int startIndex = this.splitter.getStartSubstringCount().get(i);
 			int endIndex = this.splitter.getEndSubstringCount().get(i);
-			long aoId2 = ActiveObjectsManager.addNewSentenceintoAo(this.jiraCommentId, endIndex, startIndex,
-					this.authorId, this.issueId, this.projectKey);
-			Sentence sentence = new SentenceImpl(this.body.substring(startIndex, endIndex), aoId2);
-			sentence.setCreated(this.created);
-			this.sentences.add(sentence);
+			if(startIndex >= 0 && endIndex >= 0 &&(endIndex - startIndex) >0 && this.body.substring(startIndex, endIndex).replaceAll("\r\n", "").trim().length() > 1) {
+				long aoId2 = ActiveObjectsManager.addNewSentenceintoAo(this.jiraCommentId, endIndex, startIndex,
+						this.authorId, this.issueId, this.projectKey);
+				Sentence sentence = new SentenceImpl(this.body.substring(startIndex, endIndex), aoId2);
+				sentence.setCreated(this.created);
+				this.sentences.add(sentence);
+			}
 		}
 	}
 	
@@ -109,6 +111,16 @@ public class CommentImpl implements Comment {
 			result += hTMLGen.getCodedElement(sentence);
 		}
 		return result + "</span>";
+	}
+	
+	public void reloadSentencesFromAo() {
+		List<Sentence> newSentences = new ArrayList<>();
+		for(Sentence sentence: this.sentences) {
+			DecisionKnowledgeInCommentEntity aoElement = ActiveObjectsManager.getElementFromAO(sentence.getId());
+			Sentence aoSentence = new SentenceImpl(aoElement);
+			newSentences.add(aoSentence);
+		}
+		this.sentences = newSentences;
 	}
 
 	public String getBody() {

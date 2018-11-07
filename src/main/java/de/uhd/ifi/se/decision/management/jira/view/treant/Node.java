@@ -84,21 +84,7 @@ public class Node {
 		if (isCollapsed) {
 			this.collapsed = ImmutableMap.of("collapsed", isCollapsed);
 		}
-		if (decisionKnowledgeElement instanceof Sentence) {
-			if (((Sentence) decisionKnowledgeElement).getArgument().length() == 3) { // Length == 3 means pro or con
-				if (((Sentence) decisionKnowledgeElement).getArgument().equalsIgnoreCase("pro")) {
-					this.htmlClass = "pro";
-					this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement, "support");
-				} else {
-					this.htmlClass = "contra";
-					this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement, "attack");
-				}
-			}
-			if (isHyperlinked) {
-				makeLinkToElement(decisionKnowledgeElement.getKey().split(":")[0]);
-			}
-		}
-		this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement);
+		this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement);		
 	}
 
 	public static String getIcon(DecisionKnowledgeElement element) {
@@ -122,6 +108,21 @@ public class Node {
 			break;
 		default:
 			break;
+		}
+		if (decisionKnowledgeElement instanceof Sentence) {
+			if (((Sentence) decisionKnowledgeElement).getArgument().length() == 3) { // Length == 3 means pro or con
+				decisionKnowledgeElement.setType(KnowledgeType.ARGUMENT);
+				if (((Sentence) decisionKnowledgeElement).getArgument().equalsIgnoreCase("pro")) {
+					this.htmlClass = "pro";
+					this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement, "support");
+				} else {
+					this.htmlClass = "contra";
+					this.image = KnowledgeType.getIconUrl(decisionKnowledgeElement, "attack");
+				}
+			}
+			if (isHyperlinked) {
+				makeLinkToElement(decisionKnowledgeElement.getKey().split(":")[0]);
+			}
 		}
 	}
 

@@ -8,8 +8,9 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 
+import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.mocks.*;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -19,18 +20,17 @@ import com.atlassian.jira.security.roles.ProjectRole;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestAuthenticationManager {
+public class TestAuthenticationManager extends TestSetUpWithIssues {
 	protected EntityManager entityManager;
 	protected HttpServletRequest request;
 
 	@Before
 	public void setUp() {
+        initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
 
@@ -41,7 +41,6 @@ public class TestAuthenticationManager {
 	}
 
 	@Test
-	@Ignore
 	public void testIsProjectAdminByRequestSuccess() {
 		assertTrue(AuthenticationManager.isProjectAdmin(request));
 	}
@@ -59,7 +58,6 @@ public class TestAuthenticationManager {
 	}
 
 	@Test
-	@Ignore
 	public void testIsProjectAdminSuccess() {
 		assertTrue(AuthenticationManager.isProjectAdmin("SysAdmin", "TEST"));
 	}
@@ -85,28 +83,24 @@ public class TestAuthenticationManager {
 	}
 
 	@Test
-	@Ignore
 	public void testGetUserFromUsername() {
 		ApplicationUser user = AuthenticationManager.getUser("SysAdmin");
 		assertEquals(user.getUsername(), "SysAdmin");
 	}
 
 	@Test
-	@Ignore
 	public void testGetUserFromRequest() {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		assertEquals(user.getUsername(), "SysAdmin");
 	}
 
 	@Test
-	@Ignore
 	public void testGetRolesInProject() {
 		Collection<ProjectRole> roles = AuthenticationManager.getRolesInProject("TEST", "SysAdmin");
 		assertEquals(roles.size(), 1);
 	}
 
 	@Test
-	@Ignore
 	public void testGetRolesInProjectFail() {
 		Collection<ProjectRole> roles = AuthenticationManager.getRolesInProject("TEST", "NoSysAdmin");
 		assertEquals(roles.size(), 0);
