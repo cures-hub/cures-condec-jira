@@ -63,7 +63,7 @@ public class LinkImpl implements Link {
 	public LinkImpl(LinkInDatabase linkInDatabase) {
 		this();
 		if(linkInDatabase.getIdOfSourceElement() != null) {
-			this.setDestinationElement(linkInDatabase.getIdOfSourceElement());
+			this.setSourceElement(linkInDatabase.getIdOfSourceElement());
 		}
 		if(linkInDatabase.getIdOfDestinationElement() != null) {
 			this.setDestinationElement(linkInDatabase.getIdOfDestinationElement());

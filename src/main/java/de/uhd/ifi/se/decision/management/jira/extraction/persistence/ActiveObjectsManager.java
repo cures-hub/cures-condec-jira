@@ -21,8 +21,10 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.IssueStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
@@ -628,7 +630,7 @@ public class ActiveObjectsManager {
 		try {
 			issueLinkManager.createIssueLink(element.getIssueId(), issue.getId(), linkTypeId, (long) 0, user);
 		} catch (CreateException e) {
-			e.printStackTrace();
+			return null;
 		}
 
 		// delete sentence in comment
@@ -641,6 +643,14 @@ public class ActiveObjectsManager {
 				Query.select().where("ID = ?", aoId))) {
 			deleteAOElement(databaseEntry);
 		}
+		
+		for(LinkInDatabase link: ActiveObjects.find(LinkInDatabase.class,Query.select().where("ID_OF_DESTINATION_ELEMENT = ?", "s"+aoId))) {
+			if(link.getIdOfSourceElement() != "i"+issue.getId()) {
+				GenericLinkManager.deleteGenericLink(new LinkImpl(link));
+			}
+		}
+		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(element.getIssueId()+"");
+		
 
 		return issue;
 	}

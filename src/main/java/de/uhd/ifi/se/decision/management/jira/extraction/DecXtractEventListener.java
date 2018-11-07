@@ -74,6 +74,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		Long eventTypeId = issueEvent.getEventTypeId();
 		if(eventTypeId.equals(EventType.ISSUE_COMMENTED_ID) || eventTypeId.equals(EventType.ISSUE_COMMENT_EDITED_ID)) {
 			parseIconsToTags();
+			ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(new DecisionKnowledgeElementImpl(issueEvent.getIssue()).getId()+"");
 		}
 		if (eventTypeId.equals(EventType.ISSUE_COMMENTED_ID)) {
 			handleNewComment(new DecisionKnowledgeElementImpl(issueEvent.getIssue()));
