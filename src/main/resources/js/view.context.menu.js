@@ -604,10 +604,15 @@ function setUpEditSentenceDialogView(description, type,node) {
 
 	var knowledgeTypes = replaceArgumentWithLinkTypes(conDecAPI.getKnowledgeTypes(getProjectKey()));
 	if(knowledgeTypes.includes("Issue") && knowledgeTypes.includes("Problem")){
-		knowledgeTypes.remove("Problem");
+		var index = knowledgeTypes.indexOf("Issue");
+		if (index > -1) {
+		  knowledgeTypes.splice(index, 1);
+		}
 	}
 	for (var index = 0; index < knowledgeTypes.length; index++) {
 		var isSelected = "";
+		console.log(knowledgeTypes[index])
+		console.log(node)
 		//first clause for treant, second for tree viewer
 		if (node.includes(knowledgeTypes[index].toLowerCase()) || node === knowledgeTypes[index]) {
 			isSelected = "selected ";

@@ -207,8 +207,12 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
 			ApplicationUser user) {
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
-
-		issueInputParameters.setSummary(element.getSummary());
+		
+		if(element.getSummary().length() > 255) {
+			issueInputParameters.setSummary(element.getSummary().substring(0, 254));
+		}else {
+			issueInputParameters.setSummary(element.getSummary());
+		}
 		issueInputParameters.setDescription(element.getDescription());
 		issueInputParameters.setAssigneeId(user.getName());
 		issueInputParameters.setReporterId(user.getName());
