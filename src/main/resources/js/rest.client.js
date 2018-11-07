@@ -304,7 +304,6 @@
 	 external references: view.context.menu
 	 */
 	ConDecAPI.prototype.setSentenceIrrelevant = function setSentenceIrrelevant(id, callback) {
-		console.log("run")
 		var jsondata = {
 			"id" : id,
 			"summary" : "",
