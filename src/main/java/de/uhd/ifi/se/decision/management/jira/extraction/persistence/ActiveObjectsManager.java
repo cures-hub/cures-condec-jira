@@ -632,7 +632,7 @@ public class ActiveObjectsManager {
 		}
 
 		// delete sentence in comment
-		int length = removeSentenceFromComment(element) * -1;
+		int length = removeSentenceFromComment(element) * -1; // -1 because we decrease the total number of letters
 		updateSentenceLengthForOtherSentencesInSameComment(element.getCommentId(), element.getStartSubstringCount(),
 				length, aoId);
 
