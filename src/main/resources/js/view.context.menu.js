@@ -387,8 +387,7 @@ function setUpDialogForChangeTypeAction(id) {
             var type = $("select[name='form-select-type']").val();
             updateDecisionKnowledgeElementAsChild(id,summary,description,type);
             AJS.dialog2("#dialog").hide();
-
-        }
+        };
     });
 }
 
