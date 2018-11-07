@@ -141,6 +141,7 @@
 		, "deleteLink" : contextMenu.contextMenuDeleteLinkAction
 		, "delete" : contextMenu.contextMenuDeleteAction
 		, "openIssue" : contextMenu.contextMenuOpenJiraIssueAction
+        , "changeType" : contextMenu.contextMenuChangeTypeAction
         };
         return menu;
 	};
