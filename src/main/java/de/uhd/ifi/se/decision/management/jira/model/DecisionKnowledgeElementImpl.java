@@ -115,7 +115,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 			}
 			IssueManager issueManager = ComponentAccessor.getIssueManager();
 			Issue issue = issueManager.getIssueByCurrentKey(this.getKey());
-			return issue.getIssueType().toString();
+			return issue.getIssueType().getName();
 		}
 		return type.toString();
 	}
