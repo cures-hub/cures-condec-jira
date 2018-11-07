@@ -59,8 +59,9 @@ function switchLinkTypes(type, idOfExistingElement, idOfNewElement, linkTypeFunc
 function updateDecisionKnowledgeElementAsChild(childId, summary, description, type) {
 	console.log("management.js updateDecisionKnowledgeElementAsChild");
 	var simpleType = getSimpleType(type);
-    conDecAPI.updateDecisionKnowledgeElement(childId,summary,description,simpleType,function () {
-        conDecAPI.getDecisionKnowledgeElement(childId, function(decisionKnowledgeElement) {
+    conDecAPI.getDecisionKnowledgeElement(childId, function(decisionKnowledgeElement) {
+		conDecAPI.updateDecisionKnowledgeElement(childId,summary,description,simpleType,function () {
+        	console.log(decisionKnowledgeElement.type +" IN function "+ type);
             if (decisionKnowledgeElement.type !== type) {
                 var parentId = findParentId(childId);
                 switchLinkTypes(type, parentId, childId, function(linkType, parentId, childId) {
