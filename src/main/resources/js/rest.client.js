@@ -304,6 +304,7 @@
 	 external references: view.context.menu
 	 */
 	ConDecAPI.prototype.setSentenceIrrelevant = function setSentenceIrrelevant(id, callback) {
+		console.log("run")
 		var jsondata = {
 			"id" : id,
 			"summary" : "",
@@ -363,6 +364,28 @@
 						callback(id, type);
 					} else {
 						showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
+					}
+				});
+	};
+
+	/*
+	 external references: view.context.menu ..
+	 */
+	ConDecAPI.prototype.createIssueFromSentence = function createIssueFromSentence(id, callback) {
+		var jsondata = {
+			"id" : id,
+			"summary" : "",
+			"type" : "",
+			"projectKey" :"" ,
+			"description" : ""
+		};
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createIssueFromSentence.json",
+				jsondata, function(error, id, type) {
+					if (error === null) {
+						showFlag("success", "JIRA Issue has been created");
+						callback(id, type);
+					} else {
+						showFlag("error", "JIRA Issue has not been created. Error Code: " + error);
 					}
 				});
 	};

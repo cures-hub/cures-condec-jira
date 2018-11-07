@@ -4,11 +4,22 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
+import com.atlassian.jira.bc.issue.IssueService;
+import com.atlassian.jira.bc.issue.IssueService.CreateValidationResult;
+import com.atlassian.jira.bc.issue.IssueService.IssueResult;
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.exception.CreateException;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.IssueInputParameters;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
+import com.atlassian.jira.issue.link.IssueLink;
+import com.atlassian.jira.issue.link.IssueLinkManager;
+import com.atlassian.jira.project.Project;
+import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
@@ -20,6 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.IssueStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
 import net.java.ao.Query;
 
@@ -338,13 +350,11 @@ public class ActiveObjectsManager {
 					for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
 							DecisionKnowledgeInCommentEntity.class,
 							Query.select().where("COMMENT_ID = ?", comment.getJiraCommentId()))) {
-						try {
+						
 							if (databaseEntry.getProjectKey().equals(comment.getProjectKey())) {
-								databaseEntry.getEntityManager().delete(databaseEntry);
+								deleteAOElement(databaseEntry);
 							}
-						} catch (SQLException e) {
-							e.printStackTrace();
-						}
+					
 						for (LinkInDatabase link : ActiveObjects.find(LinkInDatabase.class)) {
 							if (link.getIdOfDestinationElement().equals("i" + comment.getIssueId())
 									|| link.getIdOfSourceElement().equals("i" + comment.getIssueId())) {
@@ -477,11 +487,7 @@ public class ActiveObjectsManager {
 				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
 						DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
 					GenericLinkManager.deleteLinksForElement("s" + databaseEntry.getId());
-					try {
-						databaseEntry.getEntityManager().delete(databaseEntry);
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
+						deleteAOElement(databaseEntry);
 				}
 				return null;
 			}
@@ -504,10 +510,7 @@ public class ActiveObjectsManager {
 						deleteFlag = true;
 					}
 					if (deleteFlag) {
-						try {
-							databaseEntry.getEntityManager().delete(databaseEntry);
-						} catch (SQLException e1) {
-						} // deletion failed.
+						deleteAOElement(databaseEntry);
 					}
 				}
 				return null;
@@ -607,6 +610,86 @@ public class ActiveObjectsManager {
 				return null;
 			}
 		});
+	}
+	
+	
+	
+	public static Issue createJIRAIssueFromSentenceObject(long aoId,ApplicationUser user) {
+		
+		DecisionKnowledgeInCommentEntity aoElement = ActiveObjectsManager.getElementFromAO(aoId);
+		Sentence element = new SentenceImpl(aoElement);
+		
+		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
+
+		if(element.getSummary().length() > 255) {
+			issueInputParameters.setSummary(element.getSummary().substring(0,254));	
+		}else {
+			issueInputParameters.setSummary(element.getSummary());		
+		}
+		issueInputParameters.setDescription(element.getDescription());
+		issueInputParameters.setAssigneeId(user.getName());
+		issueInputParameters.setReporterId(user.getName());
+
+		Project project = ComponentAccessor.getProjectManager()
+				.getProjectByCurrentKey(element.getProject().getProjectKey());
+		issueInputParameters.setProjectId(project.getId());
+
+		String issueTypeId = IssueStrategy.getIssueTypeId(element.getType());
+		issueInputParameters.setIssueTypeId(issueTypeId);
+
+		IssueService issueService = ComponentAccessor.getIssueService();
+		CreateValidationResult result = issueService.validateCreate(user, issueInputParameters);
+		if (result.getErrorCollection().hasAnyErrors()) {
+			return null;
+		}
+		IssueResult issueResult = issueService.create(user, result);
+		Issue issue = issueResult.getIssue();
+		
+		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
+		long linkTypeId = IssueStrategy.getLinkTypeId("contain");
+	
+		try {
+			issueLinkManager.createIssueLink(element.getIssueId(), issue.getId(),
+					linkTypeId, (long) 0, user);
+		} catch (CreateException e) {
+			e.printStackTrace();
+		}
+		
+		//delete sentence in comment
+		int length = removeSentenceFromComment(element)*-1;
+		updateSentenceLengthForOtherSentencesInSameComment(element.getCommentId(), element.getStartSubstringCount(), length, aoId);
+	
+		//delete ao sentence entry
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
+				DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("ID = ?", aoId))) {
+					deleteAOElement(databaseEntry);
+		}
+	
+		
+		return issue;
+	}
+	
+	private static int removeSentenceFromComment(Sentence element) {
+		CommentManager cm = ComponentAccessor.getCommentManager();
+		MutableComment mc = (MutableComment) cm.getMutableComment(element.getCommentId());
+		String newBody = mc.getBody();
+		newBody = newBody.substring(0,element.getStartSubstringCount()) + newBody.substring(element.getEndSubstringCount());
+		
+		DecXtractEventListener.editCommentLock =true;
+		mc.setBody(newBody);
+		cm.update(mc, true);
+		DecXtractEventListener.editCommentLock = false;
+		return element.getEndSubstringCount() - element.getStartSubstringCount();
+	}
+
+	private static boolean deleteAOElement(DecisionKnowledgeInCommentEntity elementToDelete) {
+		try {
+			elementToDelete.getEntityManager().delete(elementToDelete);
+			return true;
+		} catch (SQLException e) {
+			return false;
+		}
 	}
 
 }

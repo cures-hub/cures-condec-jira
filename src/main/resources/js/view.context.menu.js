@@ -654,6 +654,27 @@ function setUpEditSentenceDialogContext(id, description, type) {
 	AJS.$("#form-select-type").auiSelect2();
 }
 
+
+
+// local usage only
+var contextMenuCreateIssueFromSentence = {
+	// label for Tree Viewer, name for Treant context menu
+	"label" : "Convert to Issue",
+	"name" : "Convert to Issue",
+	"action" : function(position) {
+		var id = getSelectedTreeViewerNodeId(position);
+		console.log(id);
+		conDecAPI.createIssueFromSentence(id,notify);
+	},
+	"callback" : function(key, options) {
+		var id = getSelectedTreantNodeId(options);
+	
+		console.log(id);
+		conDecAPI.createIssueFromSentence(id,notify);
+	}
+};
+
+
 /**
  * local resets tree viewer and builds it again
  */
@@ -672,11 +693,13 @@ var contextMenuActionsForSentences = {
 	"edit" : contextMenuEditSentenceAction,
 	"deleteLink" : contextMenuDeleteSentenceLinkAction,
 	"delete" : contextMenuDeleteSentenceAction,
+	"createIssue": contextMenuCreateIssueFromSentence,
 	"changeKt" : changeKnowledgeTypeAction
 };
 
 var contextMenuActionsForSentencesInTreant = {
 	"edit" : contextMenuEditSentenceAction,
 	"deleteLink" : contextMenuDeleteSentenceLinkAction,
+	"createIssue": contextMenuCreateIssueFromSentence,
 	"delete" : contextMenuDeleteSentenceAction
 };

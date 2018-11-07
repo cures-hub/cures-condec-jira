@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.text.WordUtils;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.user.ApplicationUser;
@@ -110,6 +111,27 @@ public class KnowledgeRest {
 					.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
 			if (decisionKnowledgeElementWithId != null) {
 				return Response.status(Status.OK).entity(decisionKnowledgeElementWithId).build();
+			}
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
+		} else {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
+		}
+	}
+	
+	@Path("/createIssueFromSentence")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response createIssueFromSentence(@Context HttpServletRequest request,
+			DecisionKnowledgeElement decisionKnowledgeElement) {
+		if (decisionKnowledgeElement != null && request != null) {
+			
+			ApplicationUser user = AuthenticationManager.getUser(request);
+			 Issue issue = ActiveObjectsManager.createJIRAIssueFromSentenceObject(decisionKnowledgeElement.getId(), user);
+				
+			if (issue != null) {
+				return Response.status(Status.OK).entity(issue).build();
 			}
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
