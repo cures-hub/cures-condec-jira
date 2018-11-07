@@ -368,6 +368,28 @@
 	};
 
 	/*
+	 external references: view.context.menu ..
+	 */
+	ConDecAPI.prototype.createIssueFromSentence = function createIssueFromSentence(id, callback) {
+		var jsondata = {
+			"id" : id,
+			"summary" : "",
+			"type" : "",
+			"projectKey" :"" ,
+			"description" : ""
+		};
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createIssueFromSentence.json",
+				jsondata, function(error, id, type) {
+					if (error === null) {
+						showFlag("success", "JIRA Issue has been created");
+						callback(id, type);
+					} else {
+						showFlag("error", "JIRA Issue has not been created. Error Code: " + error);
+					}
+				});
+	};
+
+	/*
 	 external references: view.context.menu, view.treant, view.tree.viewer ..
 	 */
 	ConDecAPI.prototype.deleteGenericLink = function deleteGenericLink(targetId, sourceId, targetType, sourceType,

@@ -207,8 +207,12 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
 			ApplicationUser user) {
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
-
-		issueInputParameters.setSummary(element.getSummary());
+		
+		if(element.getSummary().length() > 255) {
+			issueInputParameters.setSummary(element.getSummary().substring(0, 254));
+		}else {
+			issueInputParameters.setSummary(element.getSummary());
+		}
 		issueInputParameters.setDescription(element.getDescription());
 		issueInputParameters.setAssigneeId(user.getName());
 		issueInputParameters.setReporterId(user.getName());
@@ -236,7 +240,7 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		return element;
 	}
 
-	private static String getIssueTypeId(KnowledgeType type) {
+	public static String getIssueTypeId(KnowledgeType type) {
 		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
 		Collection<IssueType> listOfIssueTypes = constantsManager.getAllIssueTypeObjects();
 		for (IssueType issueType : listOfIssueTypes) {
@@ -263,7 +267,7 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 		return 0;
 	}
 
-	private static long getLinkTypeId(String linkTypeName) {
+	public static long getLinkTypeId(String linkTypeName) {
 		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		Collection<IssueLinkType> issueLinkTypeCollection = issueLinkTypeManager.getIssueLinkTypesByName(linkTypeName);
 		Iterator<IssueLinkType> issueLinkTypeIterator = issueLinkTypeCollection.iterator();
