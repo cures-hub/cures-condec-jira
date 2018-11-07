@@ -39,7 +39,7 @@ public class ActiveObjectStrategyTestSetUp {
     private ProjectManager projectManager;
     private IssueManager issueManager;
     private ConstantsManager constantsManager;
-
+    private IssueTypeManager issueTypeManager = new MockIssueTypeManager();
 
     public void initialisation() {
 
@@ -51,6 +51,7 @@ public class ActiveObjectStrategyTestSetUp {
                 .addMock(VelocityParamFactory.class, new MockVelocityParamFactory())
                 .addMock(IssueTypeSchemeManager.class, new MockIssueTypeSchemeManager())
                 .addMock(PluginSettingsFactory.class, new MockPluginSettingsFactory())
+				.addMock(IssueTypeManager.class, issueTypeManager)
                 .addMock(OptionSetManager.class, new MockOptionSetManager()).addMock(CommentManager.class, new MockCommentManager());
 
 		ActiveObjects activeObjects = new TestActiveObjects(entityManager);

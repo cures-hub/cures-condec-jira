@@ -34,7 +34,7 @@ public class WebhookConnector {
 		this.url = webhookUrl;
 		this.secret = webhookSecret;
 		this.rootTypes = new ArrayList<>();
-		if (rootTypes.isEmpty()) {
+		if (rootTypes == null || rootTypes.isEmpty()) {
 			this.rootTypes.add("Task");
 		} else {
 			this.rootTypes = rootTypes;
