@@ -311,7 +311,7 @@ public class ConfigRest {
 	@Path("/setWebhookType")
 	@POST
 	public Response setWebhookType(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey, @QueryParam("webhookType") final String webhookType,
+		@QueryParam("projectKey") final String projectKey, @QueryParam("webhookType") final String webhookType,
 								   @QueryParam("isWebhookTypeEnabled") final boolean isWebhookTypeEnabled) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {

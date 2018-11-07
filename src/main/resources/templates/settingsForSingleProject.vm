@@ -140,11 +140,16 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
         <label for="select-root-types">Root Element Types:</label>
         <select class="multi-select" size="8" multiple="multiple" id="select-root-types" name="select-root-types">
             #foreach ($issueType in $issueTypes)
-                <option name="$issueType">
+                <option name="$issueType"
+                #if ( $rootTypes.contains($issueType) )
+                    selected
+                        #end
+                >
                     $issueType</option>
             #end
         </select>
         <div class="description">Selects the issue type of the root element (key) of the webhook data.</div>
+        <input type="button" value="Set Root Element Types" onclick="getMultipleSelectedValue()" class="aui-button aui-button-primary"/>
     </div>
 	<div class="field-group">
 		<label for="webhook-url">URL</label> <input type="text"
@@ -276,12 +281,18 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		this.busy = false;
 	});
 
-	var setWebhookTypes = document.getElementById('select-root-types');
-	setWebhookTypes.addEventListener('change', function (error) {
-	    this.busy = true;
-	    console.log(this.value);
-		this.busy = false;
-    })
+    function getMultipleSelectedValue()
+    {
+        var x = document.getElementById("select-root-types");
+        for (var i = 0; i < x.options.length; i++) {
+            if(x.options[i].selected == true){
+                conDecAPI.setWebhookType(x.options[i].value, '$projectKey', "true");
+            }
+            else {
+                conDecAPI.setWebhookType(x.options[i].value, '$projectKey', "false");
+            }
+        }
+    }
 
 </script>
 </form>

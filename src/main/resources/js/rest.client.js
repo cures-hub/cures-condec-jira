@@ -718,8 +718,8 @@
 	 */
 	ConDecAPI.prototype.setWebhookType = function setWebhookType(webhookType, projectKey, isWebhookTypeEnabled) {
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookType.json?projectKey=" + projectKey
-				+ "&webhookType=" + webhookType + "&isWebhookTypeEnabled=" + isWebhookTypeEnabled,
-			null, function(error, response) {
+            + "&webhookType=" + webhookType + "&isWebhookTypeEnabled=" + isWebhookTypeEnabled,
+            null, function(error, response) {
 			if (error === null) {
 				showFlag("success", "The webhook root element type was changed for this project.");
 			} else {

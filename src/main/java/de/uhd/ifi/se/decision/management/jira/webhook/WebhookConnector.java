@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.webhook;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -34,6 +33,7 @@ public class WebhookConnector {
 		this.projectKey = projectKey;
 		this.url = webhookUrl;
 		this.secret = webhookSecret;
+		this.rootTypes = new ArrayList<>();
 		if (rootTypes.isEmpty()) {
 			this.rootTypes.add("Task");
 		} else {
