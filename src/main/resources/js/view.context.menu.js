@@ -611,8 +611,6 @@ function setUpEditSentenceDialogView(description, type,node) {
 	}
 	for (var index = 0; index < knowledgeTypes.length; index++) {
 		var isSelected = "";
-		console.log(knowledgeTypes[index])
-		console.log(node)
 		//first clause for treant, second for tree viewer
 		if (node.includes(knowledgeTypes[index].toLowerCase()) || node === knowledgeTypes[index]) {
 			isSelected = "selected ";
