@@ -19,107 +19,6 @@
 	};
 
 	/*
-	 * external references: none, only within this closure.
-	 */
-	function getJSON(url, callback) {
-		var xhr = new XMLHttpRequest();
-		xhr.open("GET", url, true);
-		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-		xhr.responseType = "json";
-		xhr.onload = function() {
-			var status = xhr.status;
-			if (status === 200) {
-				callback(null, xhr.response);
-			} else {
-				callback(status);
-			}
-		};
-		xhr.send();
-	}
-
-	/*
-	 * external references: none, only within this closure.
-	 */
-	function getResponseAsReturnValue(url) {
-		var xhr = new XMLHttpRequest();
-		xhr.open("GET", url, false);
-		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-		xhr.send();
-		return JSON.parse(xhr.response);
-	}
-
-	/*
-	 * external references: none, only within this closure.
-	 */
-	function postWithResponseAsReturnValue(url) {
-		var xhr = new XMLHttpRequest();
-		xhr.open("POST", url, false);
-		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-		xhr.send();
-		return JSON.parse(xhr.response);
-	}
-
-	/*
-	 * external references: none, only within this closure.
-	 */
-	function postJSON(url, data, callback) {
-		var xhr = new XMLHttpRequest();
-		xhr.open("POST", url, true);
-		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-		xhr.setRequestHeader("Accept", "application/json");
-		xhr.responseType = "json";
-		xhr.onload = function() {
-			var status = xhr.status;
-			if (status === 200) {
-				callback(null, xhr.response);
-			} else {
-				callback(status);
-			}
-		};
-		xhr.send(JSON.stringify(data));
-	}
-
-	/*
-	 * external references: none, only within this closure.
-	 */
-	function putJSON(url, data, callback) {
-		var xhr = new XMLHttpRequest();
-		xhr.open("PUT", url, true);
-		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-		xhr.setRequestHeader("Accept", "application/json");
-		xhr.responseType = "json";
-		xhr.onload = function() {
-			var status = xhr.status;
-			if (status === 200) {
-				callback(null, xhr.response);
-			} else {
-				callback(status);
-			}
-		};
-		xhr.send(JSON.stringify(data));
-	}
-
-	/*
-	 * external references: none, only within this closure.
-	 */
-	function deleteJSON(url, data, callback) {
-		var xhr = new XMLHttpRequest();
-		xhr.open("DELETE", url, true);
-		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-		xhr.setRequestHeader("Accept", "application/json");
-		xhr.responseType = "json";
-		xhr.onload = function() {
-			var status = xhr.status;
-			if (status === 200) {
-				callback(null, xhr.response);
-			} else {
-				callback(status);
-			}
-		};
-		xhr.send(JSON.stringify(data));
-	}
-
-	/*
 	 * external references: management, view.context.menu,
 	 * view.decision.knowledge.page, view.issue.module ..
 	 */
@@ -279,6 +178,72 @@
 			}
 		});
 	};
+
+	ConDecAPI.prototype.createLinkToExistingElement = function createLinkToExistingElement(idOfExistingElement,
+			idOfNewElement, knowledgeTypeOfChild) {
+		switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, function(linkType,
+				idOfExistingElement, idOfNewElement) {
+			linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
+				notify();
+			});
+		});
+	}
+
+	function switchLinkTypes(type, idOfExistingElement, idOfNewElement, linkTypeFunction) {
+		console.log("management.js switchLinkTypes");
+		switch (type) {
+		case "Pro-argument":
+			linkTypeFunction("support", idOfExistingElement, idOfNewElement);
+			break;
+		case "Con-argument":
+			linkTypeFunction("attack", idOfExistingElement, idOfNewElement);
+			break;
+		default:
+			linkTypeFunction("contain", idOfNewElement, idOfExistingElement);
+		}
+	}
+
+	ConDecAPI.prototype.updateDecisionKnowledgeElementAsChild = function updateDecisionKnowledgeElementAsChild(childId,
+			summary, description, type) {
+		var simpleType = getSimpleType(type);
+		getDecisionKnowledgeElement(childId, function(decisionKnowledgeElement) {
+			updateDecisionKnowledgeElement(childId, summary, description, simpleType, function() {
+				if (decisionKnowledgeElement.type !== type) {
+					var parentId = findParentId(childId);
+					switchLinkTypes(type, parentId, childId, function(linkType, parentId, childId) {
+						deleteLink(parentId, childId, function() {
+							linkElements(parentId, childId, linkType, function() {
+								notify();
+							});
+						});
+					});
+				} else {
+					notify();
+				}
+			});
+		});
+	}
+
+	function getSimpleType(type) {
+		var simpleType = type;
+		if (type === "Pro-argument" || type === "Con-argument") {
+			simpleType = "Argument";
+		}
+		return simpleType;
+	}
+
+	ConDecAPI.prototype.createDecisionKnowledgeElementAsChild = function createDecisionKnowledgeElementAsChild(summary, description, type, idOfExistingElement) {
+		console.log("management.js createDecisionKnowledgeElementAsChild");
+		var simpleType = getSimpleType(type);
+		createDecisionKnowledgeElement(summary, description, simpleType, function(idOfNewElement) {
+			switchLinkTypes(type, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
+					idOfNewElement) {
+				linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
+					notify();
+				});
+			});
+		});
+	}
 
 	/*
 	 * external references: none, not even used locally! //TODO: delete
@@ -678,7 +643,7 @@
 	 * and con-argument in knowledge types array.
 	 */
 	ConDecAPI.prototype.getExtendedKnowledgeTypes = function getExtendedKnowledgeTypes() {
-		var extendedKnowledgeTypes = conDecAPI.getKnowledgeTypes(getProjectKey());
+		var extendedKnowledgeTypes = getKnowledgeTypes(getProjectKey());
 		extendedKnowledgeTypes = extendedKnowledgeTypes.filter(function(value) {
 			return value.toLowerCase() !== "argument";
 		});
@@ -872,6 +837,119 @@
 			}
 		});
 	};
+
+	/*
+	 * external references: none, only within this closure.
+	 */
+	function getJSON(url, callback) {
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", url, true);
+		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+		xhr.responseType = "json";
+		xhr.onload = function() {
+			var status = xhr.status;
+			if (status === 200) {
+				callback(null, xhr.response);
+			} else {
+				callback(status);
+			}
+		};
+		xhr.send();
+	}
+
+	/*
+	 * external references: none, only within this closure.
+	 */
+	function getResponseAsReturnValue(url) {
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", url, false);
+		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+		xhr.send();
+		return JSON.parse(xhr.response);
+	}
+
+	/*
+	 * external references: none, only within this closure.
+	 */
+	function postWithResponseAsReturnValue(url) {
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", url, false);
+		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+		xhr.send();
+		return JSON.parse(xhr.response);
+	}
+
+	/*
+	 * external references: none, only within this closure.
+	 */
+	function postJSON(url, data, callback) {
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", url, true);
+		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+		xhr.setRequestHeader("Accept", "application/json");
+		xhr.responseType = "json";
+		xhr.onload = function() {
+			var status = xhr.status;
+			if (status === 200) {
+				callback(null, xhr.response);
+			} else {
+				callback(status);
+			}
+		};
+		xhr.send(JSON.stringify(data));
+	}
+
+	/*
+	 * external references: none, only within this closure.
+	 */
+	function putJSON(url, data, callback) {
+		var xhr = new XMLHttpRequest();
+		xhr.open("PUT", url, true);
+		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+		xhr.setRequestHeader("Accept", "application/json");
+		xhr.responseType = "json";
+		xhr.onload = function() {
+			var status = xhr.status;
+			if (status === 200) {
+				callback(null, xhr.response);
+			} else {
+				callback(status);
+			}
+		};
+		xhr.send(JSON.stringify(data));
+	}
+
+	/*
+	 * external references: none, only within this closure.
+	 */
+	function deleteJSON(url, data, callback) {
+		var xhr = new XMLHttpRequest();
+		xhr.open("DELETE", url, true);
+		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+		xhr.setRequestHeader("Accept", "application/json");
+		xhr.responseType = "json";
+		xhr.onload = function() {
+			var status = xhr.status;
+			if (status === 200) {
+				callback(null, xhr.response);
+			} else {
+				callback(status);
+			}
+		};
+		xhr.send(JSON.stringify(data));
+	}
+	
+	/*
+	 * external references: none, only within this closure.
+	 */
+	function showFlag(type, message) {
+		AJS.flag({
+			type : type,
+			close : "auto",
+			title : type.charAt(0).toUpperCase() + type.slice(1),
+			body : message
+		});
+	}
 
 	// export ConDecAPI
 	global.conDecAPI = new ConDecAPI();

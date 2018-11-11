@@ -90,19 +90,19 @@ function addDragAndDropSupportForTreeViewer() {
 		if (node.li_attr['class'] === "issue" && parentNode.li_attr['class'] === "issue" && oldParentNode.li_attr['class'] === "issue") {
 
 			if (oldParentNode === "#" && parentNode !== "#") {
-
-				createLinkToExistingElement(parentNode.data.id, nodeId);
+				
+				conDecAPI.createLinkToExistingElement(parentNode.data.id, nodeId);
 			}
 			if (parentNode === "#" && oldParentNode !== "#") {
-
+				
 				conDecAPI.deleteLink(oldParentNode.data.id, nodeId, function() {
 					notify();
 				});
 			}
 			if (parentNode !== '#' && oldParentNode !== '#') {
-
+				
 				conDecAPI.deleteLink(oldParentNode.data.id, nodeId, function() {
-					createLinkToExistingElement(parentNode.data.id, nodeId);
+					conDecAPI.createLinkToExistingElement(parentNode.data.id, nodeId);
 				});
 			}
 		} else{

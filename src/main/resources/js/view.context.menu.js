@@ -73,7 +73,7 @@ function setUpDialogForCreateAction(id) {
 		var summary = document.getElementById("form-input-summary").value;
 		var description = document.getElementById("form-input-description").value;
 		var type = $("select[name='form-select-type']").val();
-		createDecisionKnowledgeElementAsChild(summary, description, type, id);
+		conDecAPI.createDecisionKnowledgeElementAsChild(summary, description, type, id);
 		AJS.dialog2("#dialog").hide();
 	};
 
@@ -86,7 +86,6 @@ function setUpDialogForCreateAction(id) {
 			extensionButton.onclick = function() {
 				var createCreateIssueForm = require('quick-edit/form/factory/create-issue');
 				createCreateIssueForm({
-					parentIssueId : id,
 					pid : getProjectId()
 				}).asDialog({
 					windowTitle : createKnowledgeElementText
@@ -284,7 +283,7 @@ function setUpDialogForEditAction(id, type) {
 					var summary = document.getElementById("form-input-summary").value;
 					var description = document.getElementById("form-input-description").value;
 					var type = $("select[name='form-select-type']").val();
-					updateDecisionKnowledgeElementAsChild(id, summary, description, type);
+					conDecAPI.updateDecisionKnowledgeElementAsChild(id, summary, description, type);
 					AJS.dialog2("#dialog").hide();
 				};
 			}
@@ -387,7 +386,7 @@ function setUpDialogForChangeTypeAction(id) {
         submitButton.textContent = editKnowledgeElementText;
         submitButton.onclick = function () {
             var type = $("select[name='form-select-type']").val();
-            updateDecisionKnowledgeElementAsChild(id,summary,description,type);
+            conDecAPI.updateDecisionKnowledgeElementAsChild(id,summary,description,type);
             AJS.dialog2("#dialog").hide();
         };
     });
