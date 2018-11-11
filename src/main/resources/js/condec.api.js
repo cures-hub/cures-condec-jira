@@ -986,12 +986,12 @@
 	ConDecAPI.prototype.getProjectId = function getProjectId() {
 		var projectId;
 		try {
-			var projectId = JIRA.API.Projects.getCurrentProjectId();
+			projectId = JIRA.API.Projects.getCurrentProjectId();
 		} catch (error) {
 			console.log(error);
 		}
 		return projectId;
-	}
+	};
 
 	/*
 	 * external references: none, only within this closure.

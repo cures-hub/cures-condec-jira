@@ -22,7 +22,7 @@
 		} else if (global.conDecKnowledgePage !== undefined) {
 			global.conDecKnowledgePage.updateView();
 		}
-	}
+	};
 
 	// export ConDecObservable
 	global.conDecObservable = new ConDecObservable();
