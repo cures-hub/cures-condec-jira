@@ -948,14 +948,16 @@
 		xhr.send(JSON.stringify(data));
 	}
 
-	ConDecAPI.prototype.getIssueKey = function getIssueKey() {
+	function getIssueKey() {
 		console.log("conDecAPI getIssueKey");
 		var issueKey = JIRA.Issue.getIssueKey();
 		if (issueKey === null) {
 			issueKey = AJS.Meta.get("issue-key");
 		}
 		return issueKey;
-	};
+	}
+	
+	ConDecAPI.prototype.getIssueKey = getIssueKey;
 
 	function getProjectKey() {
 		var projectKey;
