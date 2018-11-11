@@ -18,8 +18,8 @@
 	};
 
 	/*
-	 * external references: view.context.menu,
-	 * view.decision.knowledge.page, view.issue.module ..
+	 * external references: view.context.menu, view.decision.knowledge.page,
+	 * view.issue.module ..
 	 */
 	function getDecisionKnowledgeElement(id, callback) {
 		getJSON(
@@ -72,8 +72,7 @@
 	};
 
 	/*
-	 * external references: view.issue.module,
-	 * view.decision.knowledge.page ..
+	 * external references: view.issue.module, view.decision.knowledge.page ..
 	 */
 	function createDecisionKnowledgeElement(summary, description, type, callback) {
 		if (summary !== "") {
@@ -163,9 +162,8 @@
 	ConDecAPI.prototype.linkElements = linkElements;
 
 	/*
-	 * external references:  view.context.menu,
-	 * view.decision.knowledge.page, view.issue.module, view.treant,
-	 * view.tree.viewer ..
+	 * external references: view.context.menu, view.decision.knowledge.page,
+	 * view.issue.module, view.treant, view.tree.viewer ..
 	 */
 	function deleteLink(idOfDestinationElement, idOfSourceElement, callback) {
 		var jsondata = {
@@ -194,7 +192,7 @@
 				conDecObservable.notify();
 			});
 		});
-	}
+	};
 
 	function switchLinkTypes(type, idOfExistingElement, idOfNewElement, linkTypeFunction) {
 		console.log("conDecAPI switchLinkTypes");
@@ -229,7 +227,7 @@
 				}
 			});
 		});
-	}
+	};
 
 	function getSimpleType(type) {
 		var simpleType = type;
@@ -251,7 +249,7 @@
 				});
 			});
 		});
-	}
+	};
 
 	/*
 	 * external references: none, not even used locally! //TODO: delete
@@ -513,7 +511,7 @@
 				showFlag("error", "Git connection for this project could not be configured.");
 			}
 		});
-	}
+	};
 
 	/*
 	 * external references: view.treant ..
@@ -646,7 +644,6 @@
 			showFlag("error", "The knowledge types could not be received. Error-Code: " + error);
 		}
 	}
-	;
 
 	ConDecAPI.prototype.getKnowledgeTypes = getKnowledgeTypes;
 
@@ -662,7 +659,7 @@
 		extendedKnowledgeTypes.push("Pro-argument");
 		extendedKnowledgeTypes.push("Con-argument");
 		return extendedKnowledgeTypes;
-	}
+	};
 
 	/*
 	 * external references: none, not even used locally! //TODO: delete
@@ -834,7 +831,7 @@
 				showFlag("error", "Elements for given query could not be received." + error);
 			}
 		});
-	}
+	};
 
 	/*
 	 * external references: view.issue.module ..
@@ -958,7 +955,7 @@
 			issueKey = AJS.Meta.get("issue-key");
 		}
 		return issueKey;
-	}
+	};
 
 	function getProjectKey() {
 		var projectKey;
