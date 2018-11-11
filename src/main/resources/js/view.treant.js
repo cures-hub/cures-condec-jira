@@ -130,7 +130,7 @@ function drop(event, target) {
 	var childId = dragId;
 	if (sentenceElementIsDropped(target, parentId, childId)) {
 		conDecAPI.deleteLink(oldParentId, childId, function() {
-			createLinkToExistingElement(parentId, childId);
+			conDecAPI.createLinkToExistingElement(parentId, childId);
 		});
 	}
 }
@@ -165,7 +165,7 @@ function sentenceElementIsDropped(target, parentId, childId) {
 	if (!draggedElement.classList.contains("sentence")
 			&& document.getElementById(findParentId(draggedElement.id)).classList.contains("sentence")) {
 		conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType, function() {
-			createLinkToExistingElement(parentId, childId);
+			conDecAPI.createLinkToExistingElement(parentId, childId);
 		});
 	} else {// usual link between issue and issue
 		return true;

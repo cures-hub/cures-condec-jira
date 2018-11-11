@@ -1,14 +1,13 @@
 /*
- This module implements communication with the ConDec Java REST API
+ This module implements communication with the ConDec Java REST API and the JIRA API
  
- As known on 02. November 2018 this module:
+ As known on 11. November 2018 this module:
  
  Requires
- * management.global.getProjectKey()
+ * nothing
     
  Is required by
- * view.*
-  
+ * view.*  
   
  Is referenced in HTML by
  * settingsForAllProjects.vm and settingsForSingleProject.vm
@@ -937,6 +936,46 @@
 			}
 		};
 		xhr.send(JSON.stringify(data));
+	}
+	
+	ConDecAPI.prototype.getIssueKey = function getIssueKey() {
+		console.log("conDecAPI getIssueKey");
+		var issueKey = JIRA.Issue.getIssueKey();
+		if (issueKey === null) {
+			issueKey = AJS.Meta.get("issue-key");
+		}
+		return issueKey;
+	}
+
+	ConDecAPI.prototype.getProjectKey = function getProjectKey() {
+		var projectKey;
+		try {
+			projectKey = JIRA.API.Projects.getCurrentProjectKey();
+		} catch (error) {
+			console.log(error);
+		}
+		if (projectKey === undefined) {
+			try {
+				var issueKey = getIssueKey();
+				projectKey = issueKey.split("-")[0];
+			} catch (error) {
+				console.log(error);
+			}
+		}
+		return projectKey;
+	}
+
+	/*
+	 * external references: view.context.menu.js
+	 */
+	ConDecAPI.prototype.getProjectId = function getProjectId() {
+		var projectId;
+		try {
+			var projectId = JIRA.API.Projects.getCurrentProjectId();
+		} catch (error) {
+			console.log(error);
+		}
+		return projectId;
 	}
 	
 	/*

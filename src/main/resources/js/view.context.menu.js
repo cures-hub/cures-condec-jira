@@ -86,7 +86,7 @@ function setUpDialogForCreateAction(id) {
 			extensionButton.onclick = function() {
 				var createCreateIssueForm = require('quick-edit/form/factory/create-issue');
 				createCreateIssueForm({
-					pid : getProjectId()
+					pid : conDecAPI.getProjectId()
 				}).asDialog({
 					windowTitle : createKnowledgeElementText
 				}).show();
