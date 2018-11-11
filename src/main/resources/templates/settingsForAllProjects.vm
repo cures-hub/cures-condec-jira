@@ -22,7 +22,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		</div>
 		<div class="field-group">
 			<label for="jiraHome">JIRA Home URL</label> <input type="text"
-				class="text long-field" id="jiraHome" value=$jiraHomeForGitAuthentication placeholder="https://..." />
+				class="text long-field" id="jiraHome" placeholder="https://..." value=$jiraHomeForGitAuthentication />
 			<div class="description">URL to a JIRA Server.</div>
 		</div>
 

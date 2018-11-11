@@ -70,8 +70,8 @@
 			Provides the JavaScript REST Client for the REST API used in this plug-in.
 		</description>
 		<context>atl.general</context>
-		<resource type="download" name="rest.client.js" location="/js/rest.client.js" />
-		<resource type="download" name="management.js" location="/js/management.js" />
+		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
+		<resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-edit-issue</dependency>
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-create-issue</dependency>
 	</web-resource>

@@ -13,21 +13,21 @@ import static org.junit.Assert.assertEquals;
 public class TestGetKnowledgeTypes extends TestConfigSuper {
     @Test
     public void testProjectKeyNull(){
-        assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getStatus(),confRest.getKnowledgeTypes(null).getStatus());
+        assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getStatus(),configRest.getKnowledgeTypes(null).getStatus());
     }
 
     @Test
     public void testProjectKeyEmpty(){
-        assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getStatus(),confRest.getKnowledgeTypes("").getStatus());
+        assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getStatus(),configRest.getKnowledgeTypes("").getStatus());
     }
 
     @Test
     public void testProjectKeyInvalid(){
-        assertEquals(Response.status(Response.Status.OK).build().getStatus(),confRest.getKnowledgeTypes("InvalidKey").getStatus());
+        assertEquals(Response.status(Response.Status.OK).build().getStatus(),configRest.getKnowledgeTypes("InvalidKey").getStatus());
     }
 
     @Test
     public void testProjectKeyValid(){
-        assertEquals(Response.status(Response.Status.OK).build().getStatus(),confRest.getKnowledgeTypes("TEST").getStatus());
+        assertEquals(Response.status(Response.Status.OK).build().getStatus(),configRest.getKnowledgeTypes("TEST").getStatus());
     }
 }
