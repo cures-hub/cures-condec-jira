@@ -277,7 +277,6 @@
 			} else {
 				showFlag("error", "Link could not be deleted.");
 			}
-
 		});
 	};
 
@@ -299,7 +298,6 @@
 			} else {
 				showFlag("error", "Link could not be deleted.");
 			}
-
 		});
 	};
 
@@ -409,7 +407,6 @@
 			} else if (showError) {
 				showFlag("error", "Link could not be deleted.");
 			}
-
 		});
 	};
 
@@ -749,21 +746,6 @@
 	};
 
 	/*
-	 * external references: none, not even used locally! //TODO: delete
-	 * function?
-	 */
-	ConDecAPI.prototype.getProjectIssueTypes = function getProjectIssueTypes(projectKey, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/getProjectIssueTypes.json?projectKey=" + projectKey,
-				function(error, issueTypes) {
-					if (error === null) {
-						callback(issueTypes);
-					} else {
-						showFlag("error", "Issue types of project could not be received. Error-Code: " + error);
-					}
-				});
-	};
-
-	/*
 	 * external references: settingsForSingleProject.vm ..
 	 */
 	ConDecAPI.prototype.setWebhookType = function setWebhookType(webhookType, projectKey, isWebhookTypeEnabled) {
@@ -828,24 +810,6 @@
 				showFlag("error", "It could not be received wether icons can be used to tag issue comments.");
 			}
 		});
-	};
-
-	/*
-	 * external references: none, not even used locally! //TODO: delete
-	 * function?
-	 */
-	ConDecAPI.prototype.isIconParsing = function isIconParsing(projectKey, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isIconParsing.json?projectKey="
-				+ global.getProjectKey(),
-				function(error, isIconParsingBoolean) {
-					if (error === null) {
-						callback(isIconParsingBoolean);
-					} else {
-						showFlag("error",
-								"It could not be received wether icons can be used to tag issue comments. Error-Code: "
-										+ error);
-					}
-				});
 	};
 
 	/*

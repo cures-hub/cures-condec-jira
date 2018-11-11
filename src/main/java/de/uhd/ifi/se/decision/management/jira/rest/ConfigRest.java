@@ -424,33 +424,6 @@ public class ConfigRest {
 		}
 	}
 
-	@Path("/isIconParsing")
-	@GET
-	public Response isIconParsing(@QueryParam("projectKey") final String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		boolean isIconParsing = ConfigPersistence.isIconParsing(projectKey);
-		return Response.ok(isIconParsing).build();
-	}
-
-	@Path("/getProjectIssueTypes")
-	@GET
-	public Response getProjectIssueTypes(@QueryParam("projectKey") final String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
-		Collection<IssueType> types = issueTypeManager.getIssueTypes();
-		Collection<String> typeNames = new ArrayList<String>();
-		for (IssueType type : types) {
-			typeNames.add(type.getName());
-		}
-		return Response.ok(typeNames).build();
-	}
-
 	@Path("/getRequestToken")
 	@GET
 	public Response getRequestToken(@QueryParam("projectKey") String projectKey, @QueryParam("baseURL") String baseURL,
