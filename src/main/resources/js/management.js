@@ -1,29 +1,3 @@
-/*
- * Knowledge types are a subset of "Alternative", "Argument", "Assessment",
- * "Assumption", "Claim", "Constraint", "Context", "Decision",
- * "Goal", "Implication", "Issue", "Problem", and "Solution".
- */
-var knowledgeTypes = conDecAPI.getKnowledgeTypes(getProjectKey());
-/*
- * Default knowledge types are "Alternative", "Argument", "Decision", and
- * "Issue".
- */
-var defaultKnowledgeTypes = conDecAPI.getDefaultKnowledgeTypes(getProjectKey());
-var extendedKnowledgeTypes = replaceArgumentWithLinkTypes(knowledgeTypes);
-
-function replaceArgumentWithLinkTypes(knowledgeTypes) { // TODO: check why
-	// is/was knowledgeTypes
-	// passed?
-	console.log("management.js replaceArgumentWithLinkTypes");
-	var extendedKnowledgeTypes = conDecAPI.getKnowledgeTypes(getProjectKey());
-	extendedKnowledgeTypes = extendedKnowledgeTypes.filter(function(value) {
-		return value.toLowerCase() !== "argument";
-	});
-	extendedKnowledgeTypes.push("Pro-argument");
-	extendedKnowledgeTypes.push("Con-argument");
-	return extendedKnowledgeTypes;
-}
-
 function notify() {
 	if (window.conDecIssueModule !== undefined) {
 		window.conDecIssueModule.updateView();

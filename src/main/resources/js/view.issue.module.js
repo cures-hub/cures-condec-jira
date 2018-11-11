@@ -1,8 +1,7 @@
 /*
  This issue module view controller does:
- * render decision tree
+ * render tree of decision knowledge
  * provide a list of action items for the context menu
- * OUT OF SCOPE for now set onclick events to button for exporting as table
 
  Requires
  * rest.client.js

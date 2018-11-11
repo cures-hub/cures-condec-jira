@@ -134,9 +134,10 @@ function setUpCreateOrEditDialog(summary, description, knowledgeType) {
 					+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
 					+ "</form>");
 
+	var extendedKnowledgeTypes = conDecAPI.getExtendedKnowledgeTypes();
 	for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
 		var isSelected = "";
-		if (isKnowledgeTypeLocatedAtIndex(knowledgeType, index)) {
+		if (isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index)) {
 			isSelected = "selected ";
 		}
 		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
@@ -152,9 +153,10 @@ function setUpTypeChangeDialog(knowledgeType){
         "<form class='aui'><div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
             + "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
             + "</form>");
+    var extendedKnowledgeTypes = conDecAPI.getExtendedKnowledgeTypes();
     for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
         var isSelected = "";
-        if (isKnowledgeTypeLocatedAtIndex(knowledgeType, index)) {
+        if (isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index)) {
             isSelected = "selected ";
         }
         $("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
@@ -163,7 +165,7 @@ function setUpTypeChangeDialog(knowledgeType){
     AJS.$("#form-select-type").auiSelect2();
 }
 
-function isKnowledgeTypeLocatedAtIndex(knowledgeType, index) {
+function isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index) {
 	console.log("view.context.menu.js isKnowledgeTypeLocatedAtIndex");
 	return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase();
 }
@@ -655,7 +657,7 @@ function setUpEditSentenceDialogView(description, type,node) {
 					+ "</form>");
 
 
-	var knowledgeTypes = replaceArgumentWithLinkTypes(conDecAPI.getKnowledgeTypes(getProjectKey()));
+	var knowledgeTypes = conDecAPI.getExtendedKnowledgeTypes();
 	if(knowledgeTypes.includes("Issue") && knowledgeTypes.includes("Problem")){
 		var index = knowledgeTypes.indexOf("Issue");
 		if (index > -1) {
@@ -715,8 +717,8 @@ function setUpEditSentenceDialogContext(id, description, type) {
 // local usage only
 var contextMenuCreateIssueFromSentence = {
 	// label for Tree Viewer, name for Treant context menu
-	"label" : "Convert to Issue",
-	"name" : "Convert to Issue",
+	"label" : "Convert to JIRA Issue",
+	"name" : "Convert to JIRA Issue",
 	"action" : function(position) {
 		var id = getSelectedTreeViewerNodeId(position);
 		console.log(id);
