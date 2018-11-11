@@ -67,7 +67,7 @@
 
 	<web-resource key="rest-client-resources" name="ConDec Rest Client Resources">
 		<description>
-			Provides the Java Script REST Client for the REST API used in this plug-in.
+			Provides the JavaScript REST Client for the REST API used in this plug-in.
 		</description>
 		<context>atl.general</context>
 		<resource type="download" name="rest.client.js" location="/js/rest.client.js" />
@@ -79,7 +79,7 @@
 	<web-resource key="decision-knowledge-management-resources"
 		name="ConDec Decision Knowledge Management Resources">
 		<description>
-			Provides the Java Script files for the management of decision knowledge.
+			Provides the JavaScript files for the management of decision knowledge.
 		</description>
 		<context>jira.view.issue</context>
 		<!-- jquery 1.9.1 for the plug-in (required by jstree) with Sizzle -->
@@ -102,7 +102,7 @@
 	<web-resource key="decision-knowledge-page-resources"
 		name="ConDec Decision Knowledge Page Resources">
 		<description>
-			Provides the Java Script files for the separate decision knowledge page of this
+			Provides the JavaScript files for the separate decision knowledge page of this
 			plug-in.
 		</description>
 		<resource type="download" name="view.decision.knowledge.page.js"
@@ -110,9 +110,9 @@
 	</web-resource>
 
 	<web-resource key="issue-module-resources"
-		name="ConDec Java Script Resources for the Issue Module">
+		name="ConDec JavaScript Resources for the Issue Module">
 		<description>
-			Provides the Java Script file used in the issue module.
+			Provides the JavaScript file used in the issue module.
 		</description>
 		<context>jira.view.issue</context>
 		<resource type="download" name="view.issue.module.js" location="/js/view.issue.module.js" />
@@ -142,22 +142,18 @@
 	</web-resource>
 
 	<!-- Decision Knowledge Page -->
-	<web-item name="Link to the ConDec Plug-in in Side Bar" key="side-bar-link"
+	<web-item name="Link to the Decision Knowledge Page in Side Bar" key="sidebar-link"
 		section="jira.project.sidebar.plugins.navigation" weight="1000">
-		<description>Provides the "Decisions" link to the plug-in page in the project's navigation side
-			bar.
+		<description>Provides the "Decision Knowledge" link in the project's navigation sidebar.
 		</description>
 		<label>Decision Knowledge</label>
 		<param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-decision" />
-		<link> /projects/$pathEncodedProjectKey?selectedItem=decisions-page</link>
-		<conditions type="AND">
-			<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition">
-				<param name="projectKey" value="$pathEncodedProjectKey" />
-			</condition>
-		</conditions>
+		<link> /projects/$pathEncodedProjectKey?selectedItem=decision-knowledge-page</link>
+		<condition
+			class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
-	<web-panel name="ConDec Plug-in Page" key="decisions-page" location="decisions-page"
-		weight="1000">
+	<web-panel name="Decision Knowledge Page" key="decision-knowledge-page"
+		location="decision-knowledge-page" weight="1000">
 		<description>
 			Provides the plug-in page that developers use to manage decision knowledge.
 		</description>
@@ -174,23 +170,17 @@
 
 	<!-- Global Settings -->
 	<web-section key="condec-admin-section"
-		name="Web Section for ConDec Plug-in Administration" location="admin_plugins_menu">
-		<description>
-			Adds a section to the add-ons menu.
-		</description>
-	</web-section>
-	<web-section key="condec-admin-section-label"
-		name="Web Section Label for ConDec Plug-in Administration" location="condec-admin-section">
+		name="Web Section Label for ConDec Plug-in Administration" location="admin_plugins_menu">
 		<label>Decision Knowledge</label>
 		<description>
-			Adds the "Decisions" label to the ConDec section in the add-ons menu.
+			Adds the "Decision Knowledge" label to the sidebar of the add-ons admin page.
 		</description>
 	</web-section>
 	<web-item key="condec-admin-menu-item" name="Menu Item for ConDec Plug-in Administration"
-		section="condec-admin-section/condec-admin-section-label" weight="10" application="jira">
-		<label>ConDec Settings</label>
+		section="admin_plugins_menu/condec-admin-section" weight="10" application="jira">
+		<label>ConDec settings</label>
 		<description>
-			Adds the "ConDec Settings" menu item that links to the administration page.
+			Adds the "ConDec settings" menu item that links to the ConDec admin page.
 		</description>
 		<link>/plugins/servlet/condec/globalsettings</link>
 	</web-item>
@@ -202,20 +192,22 @@
 	</servlet>
 
 	<!-- Project Settings -->
-	<web-section key="decisions-tabs-section"
+	<web-section key="condec-project-settings-section"
 		name="Web Section for ConDec Plug-in in Project Settings" location="atl.jira.proj.config">
 		<label>Decision Knowledge</label>
 		<description>
-			Adds the "Decisions" label to the project settings menu.
+			Adds the "Decision Knowledge" label to the project settings menu.
 		</description>
 	</web-section>
 	<web-item key="condec-project-settings-menu-item"
 		name="Menu Item for ConDec Plug-in Project Settings"
-		section="atl.jira.proj.config/decisions-tabs-section" weight="15">
-		<description>Adds the "ConDec Settings" menu item that links to the project settings.
+		section="atl.jira.proj.config/condec-project-settings-section" weight="15">
+		<description>Adds the "ConDec project settings" menu item that links to the project settings.
 		</description>
-		<label>ConDec Project Settings</label>
+		<label>ConDec project settings</label>
 		<link linkId="condec-project-settings-menu-item">/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded</link>
+		<condition
+			class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
 	<servlet key="servlet-for-settings-of-single-project"
 		name="Servlet for Settings of Single Project"
@@ -248,65 +240,65 @@
 		<label>Decision Knowledge</label>
 		<resource type="velocity" name="view" location="templates/issueModule.vm" />
 		<condition
-			class="de.uhd.ifi.se.decision.management.jira.config.ActivationConditionForIssueModule" />
+			class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 		<supports-ajax-load>true</supports-ajax-load>
 	</web-panel>
-
-	<!-- Decision Knowledge Extraction Tab Panel -->
-	<issue-tabpanel key="condec-tab-panel"
-		name="Decision Knowledge Extraction Tab Panel"
-		class="de.uhd.ifi.se.decision.management.jira.extraction.view.IssueTabPanelRenderer">
-		<description>Extraction of Decision Knowledge from Issue Comments</description>
-		<label>Decision Knowledge Extraction</label>
-		<order>10</order>
-		<resource type="velocity" name="view" location="templates/tabPanel.vm" />
-		<supports-ajax-load>true</supports-ajax-load>
-	</issue-tabpanel>
 
 	<!-- Decision Knowledge Export Functions -->
 	<web-item key="export-as-table-item"
 		name="Menu Item for Decision Knowledge Export as Table" section="operations-operations">
 		<label>Export decision knowledge</label>
 		<link linkId="export-as-table-link" />
-		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationConditionForIssueModule" />
+		<condition
+			class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
 
+	<!-- Decision Knowledge Extraction From Issue Description and Comments -->
+	<issue-tabpanel key="condec-tab-panel"
+		name="Decision Knowledge Extraction Tab Panel"
+		class="de.uhd.ifi.se.decision.management.jira.extraction.view.IssueTabPanelRenderer">
+		<description>Tab panel to manage extraction of decision knowledge from issue comments
+		</description>
+		<label>Decision Knowledge Extraction</label>
+		<order>10</order>
+		<resource type="velocity" name="view" location="templates/tabPanel.vm" />
+		<supports-ajax-load>true</supports-ajax-load>
+	</issue-tabpanel>
+
+	<macro key='issue' name='issue formatting macro'
+		class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.IssueMacro'>
+		<description>Insert issue knowledge element in comments.</description>
+	</macro>
+
+	<macro key='decision' name='decision formatting macro'
+		class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.DecisionMacro'>
+		<description>Insert decision knowledge element in comments.</description>
+	</macro>
+
+	<macro key='alternative' name='alternative formatting macro'
+		class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.AlternativeMacro'>
+		<description>Insert alternative knowledge element in comments.</description>
+	</macro>
+
+	<macro key='pro' name='pro formatting macro'
+		class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.ProMacro'>
+		<description>Insert pro knowledge element in comments.</description>
+	</macro>
+
+	<macro key='con' name='con formatting macro'
+		class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.ConMacro'>
+		<description>Insert con knowledge element in comments.</description>
+	</macro>
 
 
-    <macro key='issue' name='issue formatting macro'
-           class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.IssueMacro'>
-        <description>Insert issue knowledge element in comments.</description>
-    </macro>
-
-
-    <macro key='decision' name='decision formatting macro'
-           class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.DecisionMacro'>
-        <description>Insert decision knowledge element in comments.</description>
-    </macro>
-
-    <macro key='alternative' name='alternative formatting macro'
-           class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.AlternativeMacro'>
-        <description>Insert alternative knowledge element in comments.</description>
-    </macro>
-
-     <macro key='pro' name='pro formatting macro'
-           class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.ProMacro'>
-        <description>Insert pro knowledge element in comments.</description>
-    </macro>
-
-         <macro key='con' name='con formatting macro'
-           class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.ConMacro'>
-        <description>Insert con knowledge element in comments.</description>
-    </macro>
-
-
-    <web-resource key="toolbar" name="JIRA Editor Reference Plugin Toolbar Init">
-	    <context>jira.rich.editor</context>
-	    <context>jira.view.issue</context>
-	    <context>jira.edit.issue</context>
-	    <context>jira.create.issue</context>
-	    <context>gh-rapid</context>
-	    <resource type="download" name="js/toolbar-init.js" location="js/view.commentTab.toolbar-init.js"/>
+	<web-resource key="toolbar" name="JIRA Editor Reference Plugin Toolbar Init">
+		<context>jira.rich.editor</context>
+		<context>jira.view.issue</context>
+		<context>jira.edit.issue</context>
+		<context>jira.create.issue</context>
+		<context>gh-rapid</context>
+		<resource type="download" name="js/toolbar-init.js"
+			location="js/view.commentTab.toolbar-init.js" />
 	</web-resource>
 
 
@@ -326,7 +318,8 @@
 			<property>
 				<key>rootType</key>
 				<name>JIRA Issue Type</name>
-				<description>Please select the JIRA Issue type you want to see decision knowledge linked to.</description>
+				<description>Please select the JIRA Issue type you want to see decision knowledge linked to.
+				</description>
 				<type>select</type>
 				<values>
 					<value>

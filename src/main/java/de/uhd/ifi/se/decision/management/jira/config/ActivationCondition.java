@@ -2,19 +2,17 @@ package de.uhd.ifi.se.decision.management.jira.config;
 
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.atlassian.plugin.web.Condition;
+import com.atlassian.jira.plugin.webfragment.conditions.AbstractWebCondition;
+import com.atlassian.jira.plugin.webfragment.model.JiraHelper;
+import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
 /**
- * Condition for side bar link to plug-in. Determines whether link is displayed
+ * Condition for the activation of the plugin. Determines whether the plugin is displayed
  * for a project. Is used in atlassian-plugin.xml
  */
-public class ActivationCondition implements Condition {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ActivationCondition.class);
+public class ActivationCondition extends AbstractWebCondition {
 
 	@Override
 	public void init(Map<String, String> params) {
@@ -22,15 +20,8 @@ public class ActivationCondition implements Condition {
 	}
 
 	@Override
-	public boolean shouldDisplay(Map<String, Object> context) {
-		if (context == null) {
-			LOGGER.error("Plugin settings could not be retrieved.");
-			return false;
-		}
-		Object projectKey = context.get("projectKey");
-		if (projectKey instanceof String) {
-			return ConfigPersistence.isActivated((String) projectKey);
-		}
-		return false;
+	public boolean shouldDisplay(ApplicationUser applicationUser, JiraHelper jiraHelper) {
+		String projectKey = jiraHelper.getProject().getKey();
+		return ConfigPersistence.isActivated(projectKey);
 	}
 }
