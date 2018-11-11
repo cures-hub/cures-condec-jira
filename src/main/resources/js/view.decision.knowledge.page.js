@@ -4,8 +4,8 @@
  * provide a list of action items for the context menu
 
  Requires
- * rest.client.js
- * management.js
+ * condec.api.js
+ * condec.observable.js
  * view.treant.js
  * view.tree.viewer.js
  * view.context.menu.js
@@ -21,22 +21,24 @@
 	/* private vars */
 	var contextMenu = null;
 	var i18n = null;
-	var management = null;
-	var restClient = null;
+	var conDecObservable = null;
+	var conDecAPI = null;
 	var treant = null;
 	var treeViewer = null;
 
 	var ConDecKnowledgePage = function ConDecKnowledgePage() {
 	};
 
-	ConDecKnowledgePage.prototype.init = function(_restClient, _management, _treant, _treeViewer, _contextMenu, _i18n) {
+	ConDecKnowledgePage.prototype.init = function(_conDecAPI, _conDecObservable, _treant, _treeViewer, _contextMenu, _i18n) {
 		console.log("view.decision.knowledge.page init");
 
-		if (isConDecRestClientType(_restClient) && isConDecManagementType(_management) && isConDecTreantType(_treant)
+		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable) && isConDecTreantType(_treant)
 				&& isConDecTreeViewerType(_treeViewer) && isConDecContextType(_contextMenu) // not using and thus not checking i18n yet.
 		) {
-			restClient = _restClient;
-			management = _management;
+			conDecAPI = _conDecAPI;
+			
+			//TODO: Register/Subscribe as observer
+			conDecObservable = _conDecObservable;
 			treant = _treant;
 			treeViewer = _treeViewer;
 			contextMenu = _contextMenu;
@@ -48,7 +50,7 @@
 	};
 
 	ConDecKnowledgePage.prototype.fetchAndRender = function() {
-		initializeDecisionKnowledgePage(restClient, management, treant, treeViewer);
+		initializeDecisionKnowledgePage(conDecAPI, treant, treeViewer);
 	};
 
 	ConDecKnowledgePage.prototype.updateView = function() {
@@ -64,17 +66,17 @@
 		console.log("view.decision.knowledge.page openIssue");
 
 		// only allow this in case the selected node is a JIRA issue, for sentences map to JIRA issue
-		restClient.getDecisionKnowledgeElement(nodeId, function(decisionKnowledgeElement) {
+		conDecAPI.getDecisionKnowledgeElement(nodeId, function(decisionKnowledgeElement) {
 			var baseUrl = AJS.params.baseURL;
 			var key = decisionKnowledgeElement.key;
 			window.open(baseUrl + "/browse/" + key, '_blank');
 		});
 	};
 
-	function initializeDecisionKnowledgePage(restClient, management, treant, treeViewer) {
+	function initializeDecisionKnowledgePage(conDecAPI, treant, treeViewer) {
 		console.log("view.decision.knowledge.page initializeDecisionKnowledgePage");
 
-		var knowledgeTypes = management.knowledgeTypes;
+		var knowledgeTypes = conDecAPI.getKnowledgeTypes(conDecAPI.getProjectKey());
 		for (var index = 0; index < knowledgeTypes.length; index++) {
 			var isSelected = "";
 			if (knowledgeTypes[index] === "Decision") {
@@ -90,7 +92,7 @@
 			var summary = elementInputField.value;
 			var type = jQueryConDec("select[name='select-root-element-type']").val();
 			elementInputField.value = "";
-			restClient.createDecisionKnowledgeElement(summary, "", type, function(id) {
+			conDecAPI.createDecisionKnowledgeElement(summary, "", type, function(id) {
 				updateView(id, treant, treeViewer);
 			});
 		});
@@ -146,17 +148,17 @@
 	/*
 	 Init Helpers
 	 */
-	function isConDecRestClientType(restClient) {
-		if (!(restClient !== undefined && restClient.getDecisionKnowledgeElement !== undefined && typeof restClient.getDecisionKnowledgeElement === 'function')) {
-			console.warn("ConDecKnowledgePage: invalid restClient object received.");
+	function isConDecAPIType(conDecAPI) {
+		if (!(conDecAPI !== undefined && conDecAPI.getDecisionKnowledgeElement !== undefined && typeof conDecAPI.getDecisionKnowledgeElement === 'function')) {
+			console.warn("ConDecKnowledgePage: invalid ConDecAPI object received.");
 			return false;
 		}
 		return true;
 	}
 
-	function isConDecManagementType(management) {
-		if (!(management !== undefined && management.getIssueKey !== undefined && typeof management.getIssueKey === 'function')) {
-			console.warn("ConDecKnowledgePage: invalid management object received.");
+	function isConDecObservableType(conDecObservable) {
+		if (!(conDecObservable !== undefined && conDecObservable.notify !== undefined && typeof conDecObservable.notify === 'function')) {
+			console.warn("ConDecKnowledgePage: invalid ConDecObservable object received.");
 			return false;
 		}
 		return true;

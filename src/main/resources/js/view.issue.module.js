@@ -4,8 +4,8 @@
  * provide a list of action items for the context menu
 
  Requires
- * rest.client.js
- * management.js
+ * condec.api.js
+ * condec.observable.js
  * view.treant.js
  * view.context.menu.js
 
@@ -17,24 +17,26 @@
  * tabPanel.vm
 */
 (function(global) {
-	/* private vars */
+	/* private vars */	
+	var i18n = null;	
+	var conDecAPI = null;
+	var conDecObservable = null;
 	var contextMenu = null;
-	var i18n = null;
-	var management = null;
-	var restClient = null;
 	var treant = null;
 
 	var ConDecIssueModule = function ConDecIssueModule() {
 	};
 
-	ConDecIssueModule.prototype.init = function init(_restClient, _management, _treant, _contextMenu, _i18n) {
+	ConDecIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _treant, _contextMenu, _i18n) {
 		console.log("view.issue.module init");
 
-		if (isConDecRestClientType(_restClient) && isConDecManagementType(_management) && isConDecTreantType(_treant)
+		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable) && isConDecTreantType(_treant)
 				&& isConDecContextType(_contextMenu) // not using and thus not checking i18n yet.
 		) {
-			restClient = _restClient;
-			management = _management;
+			conDecAPI = _conDecAPI;
+			
+			//TODO: Register/Subscribe as observer
+			conDecObservable = _conDecObservable;
 			treant = _treant;
 			contextMenu = _contextMenu;
 			i18n = _i18n;
@@ -49,17 +51,17 @@
 	ConDecIssueModule.prototype.initView = function initView() {
 		console.log("view.issue.module initView");
 
-		updateView(management, treant, contextMenu);
+		updateView(treant, contextMenu);
 	};
 	
 	ConDecIssueModule.prototype.updateView = function () {
-		updateView(management, treant, contextMenu);
+		updateView(treant, contextMenu);
 	};
 
 	// for view.context.menu
 	ConDecIssueModule.prototype.setAsRootElement = function setAsRootElement(id) {
 		console.log("view.issue.module setAsRootElement", id);
-		restClient.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
+		conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
 			var baseUrl = AJS.params.baseURL;
 			var key = decisionKnowledgeElement.key;
 			window.open(baseUrl + "/browse/" + key, '_self'); // TODO: why window open ?
@@ -93,7 +95,7 @@
 		return menu;
 	}
 
-	function updateView(management, treant, contextMenu) {
+	function updateView(treant, contextMenu) {
 		console.log("view.issue.module updateView");
 		var issueKey = conDecAPI.getIssueKey();
 		var search = getURLsSearch();
@@ -103,17 +105,17 @@
 	/*
 	 Init Helpers
 	 */
-	function isConDecRestClientType(restClient) {
-		if (!(restClient !== undefined && restClient.getDecisionKnowledgeElement !== undefined && typeof restClient.getDecisionKnowledgeElement === 'function')) {
-			console.warn("ConDecIssueModule: invalid restClient object received.");
+	function isConDecAPIType(conDecAPI) {
+		if (!(conDecAPI !== undefined && conDecAPI.getDecisionKnowledgeElement !== undefined && typeof conDecAPI.getDecisionKnowledgeElement === 'function')) {
+			console.warn("ConDecIssueModule: invalid ConDecAPI object received.");
 			return false;
 		}
 		return true;
 	}
 
-	function isConDecManagementType(management) {
-		if (!(management !== undefined && management.getIssueKey !== undefined && typeof management.getIssueKey === 'function')) {
-			console.warn("ConDecIssueModule: invalid management object received.");
+	function isConDecObservableType(conDecObservable) {
+		if (!(conDecObservable !== undefined && conDecObservable.notify !== undefined && typeof conDecObservable.notify === 'function')) {
+			console.warn("ConDecIssueModule: invalid ConDecObservable object received.");
 			return false;
 		}
 		return true;

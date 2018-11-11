@@ -212,7 +212,7 @@ function setUpDialogForLinkAction(id) {
 		submitButton.onclick = function() {
 			var childId = $("select[name='form-select-component']").val();
 			var knowledgeTypeOfChild = $('input[name=form-radio-argument]:checked').val();
-			createLinkToExistingElement(id, childId, knowledgeTypeOfChild);
+			conDecAPI.createLinkToExistingElement(id, childId, knowledgeTypeOfChild);
 			AJS.dialog2("#dialog").hide();
 		};
 	});
@@ -317,7 +317,7 @@ function setUpDialogForDeleteAction(id) {
 	submitButton.textContent = deleteKnowledgeElementText;
 	submitButton.onclick = function() {
 		conDecAPI.deleteDecisionKnowledgeElement(id, function() {
-			notify();
+			conDecObservable.notify();
 		});
 		AJS.dialog2("#dialog").hide();
 	};
@@ -352,7 +352,7 @@ function setUpDialogForDeleteLinkAction(id, parentId) {
 	submitButton.textContent = deleteLinkToParentText;
 	submitButton.onclick = function() {
 		conDecAPI.deleteLink(parentId, id, function() {
-			notify();
+			conDecObservable.notify();
 		});
 		AJS.dialog2("#dialog").hide();
 	};
@@ -556,7 +556,7 @@ var contextMenuDeleteSentenceLinkAction = {
 		var parentClass = (document.getElementById(parentId).className.includes("sentence")) ? "s" : "i";
 		var nodeClass = (document.getElementById(id).className.includes("sentence")) ? "s" : "i";
 
-		conDecAPI.deleteGenericLink(parentId, id, parentClass, nodeClass, conDecAPI.setSentenceIrrelevant(id, notify), false);
+		conDecAPI.deleteGenericLink(parentId, id, parentClass, nodeClass, conDecAPI.setSentenceIrrelevant(id, conDecObservable.notify), false);
 
 	}
 };
@@ -584,7 +584,7 @@ var contextMenuDeleteSentenceAction = {
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
 		conDecAPI.setSentenceIrrelevant(id, function(core, options, id) {
-			notify();
+			conDecObservable.notify();
 		});
 	}
 };
@@ -703,7 +703,7 @@ function setUpEditSentenceDialogContext(id, description, type) {
 								AJS.dialog2("#dialog").hide();
 							} else {
 								AJS.dialog2("#dialog").hide();
-								notify();
+								conDecObservable.notify();
 							}
 							
 						});
@@ -721,13 +721,13 @@ var contextMenuCreateIssueFromSentence = {
 	"action" : function(position) {
 		var id = getSelectedTreeViewerNodeId(position);
 		console.log(id);
-		conDecAPI.createIssueFromSentence(id,notify);
+		conDecAPI.createIssueFromSentence(id,conDecObservable.notify);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
 	
 		console.log(id);
-		conDecAPI.createIssueFromSentence(id,notify);
+		conDecAPI.createIssueFromSentence(id,conDecObservable.notify);
 	}
 };
 
@@ -742,7 +742,7 @@ function refreshTreeViewer() {
 		conDecIssueTab.buildTreeViewer(document.getElementById("Relevant").checked);
 	} else {
 		AJS.dialog2("#dialog").hide();
-		notify();
+		conDecObservable.notify();
 	}
 }
 

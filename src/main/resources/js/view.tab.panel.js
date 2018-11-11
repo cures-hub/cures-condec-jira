@@ -16,18 +16,18 @@
 (function(global) {
 	/* private vars */
 	var contextMenu = null;
-	var restClient = null;
+	var conDecAPI = null;
 	var treeViewer = null;
 	var i18n = null;
 
 	var ConDecIssueTab = function ConDecIssueTab() {
 	};
 
-	ConDecIssueTab.prototype.init = function init(_restClient, _treeViewer, _contextMenu, _i18n) {
+	ConDecIssueTab.prototype.init = function init(_conDecAPI, _treeViewer, _contextMenu, _i18n) {
 		console.log("view.tab.panel.js init");
 
 		// TODO add simple type checks
-		restClient = _restClient;
+		conDecAPI = _conDecAPI;
 		treeViewer = _treeViewer;
 		contextMenu = _contextMenu;
 		i18n = _i18n;
@@ -108,7 +108,7 @@
 	function buildTreeViewer(showRelevant) {
 		console.log("view.tab.panel.js buildTreeViewer");
 
-		restClient.getTreeViewerWithoutRootElement(showRelevant, function(core) {
+		conDecAPI.getTreeViewerWithoutRootElement(showRelevant, function(core) {
 			console.log("view.tab.panel.js getTreeViewerWithoutRootElement callback");
 
 			jQueryConDec("#jstree").jstree({

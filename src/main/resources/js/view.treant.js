@@ -11,7 +11,7 @@ function buildTreant(elementKey, isInteractive, searchTerm, contextMenuActions) 
     conDecAPI.getTreant(elementKey, depthOfTree, searchTerm, function(treeStructure) {
         document.getElementById("treant-container").innerHTML = "";
 
-        conDecAPI.isKnowledgeExtractedFromGit(getProjectKey(), function(isKnowledgeExtractedFromGit) { //TODO: refactor isKnowledgeExtractedFromGit param name, confusing.
+        conDecAPI.isKnowledgeExtractedFromGit(conDecAPI.getProjectKey(), function(isKnowledgeExtractedFromGit) { //TODO: refactor isKnowledgeExtractedFromGit param name, confusing.
             if (isKnowledgeExtractedFromGit) {
                 conDecAPI.getCommits(elementKey,
                     function(commits) {
@@ -144,21 +144,21 @@ function sentenceElementIsDropped(target, parentId, childId) {
 	if (draggedElement.classList.contains("sentence") && !target.classList.contains("sentence")) {
 		conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType, function() {
 			conDecAPI.linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
-				notify();
+				conDecObservable.notify();
 			});
 		});
 	} else // selected element is an issue, dropped element is an sentence
 	if (target.classList.contains("sentence") && !draggedElement.classList.contains("sentence")) {
 		conDecAPI.deleteLink("s"+oldParentId, "i"+childId, function() {
 			conDecAPI.linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
-				notify();
+				conDecObservable.notify();
 			});
 		});
 	} else // selected element is a sentence, dropped element is an sentence
 	if (target.classList.contains("sentence") && draggedElement.classList.contains("sentence")) {
 		conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType, function() {
 			conDecAPI.linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
-				notify();
+				conDecObservable.notify();
 			});
 		});
 	} else // selected element is an issue, parent element is a sentence
