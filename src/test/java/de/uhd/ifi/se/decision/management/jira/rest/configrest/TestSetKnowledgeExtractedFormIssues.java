@@ -17,91 +17,91 @@ public class TestSetKnowledgeExtractedFormIssues extends TestConfigSuper {
     @Test
     public void testRequestNullProjectKeyNullIsKnowledgeExtractedNull(){
         assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-                confRest.setKnowledgeExtractedFromIssues(null, null, null).getEntity());
+                configRest.setKnowledgeExtractedFromIssues(null, null, null).getEntity());
     }
 
     @Test
     public void testRequestNullProjectKeyNullIsKnowledgeExtractedTrue() {
         assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-                confRest.setKnowledgeExtractedFromIssues(null, null, "true").getEntity());
+                configRest.setKnowledgeExtractedFromIssues(null, null, "true").getEntity());
     }
 
     @Test
     public void testRequestNullProjectKeyNullIsKnowledgeExtractedFalse() {
         assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-                confRest.setKnowledgeExtractedFromIssues(null, null, "false").getEntity());
+                configRest.setKnowledgeExtractedFromIssues(null, null, "false").getEntity());
     }
 
     @Test
     public void testRequestNullProjectKeyExistsIsKnowledgeExtractedNull() {
         assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-                confRest.setKnowledgeExtractedFromIssues(null, "TEST", null).getEntity());
+                configRest.setKnowledgeExtractedFromIssues(null, "TEST", null).getEntity());
     }
 
     @Test
     public void testRequestNullProjectKeyExistsIsKnowledgeExtractedTrue() {
         assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-                confRest.setKnowledgeExtractedFromIssues(null, "TEST", "true").getEntity());
+                configRest.setKnowledgeExtractedFromIssues(null, "TEST", "true").getEntity());
     }
 
     @Test
     public void testRequestNullProjectKeyExistsIsKnowledgeExtractedFalse() {
         assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-                confRest.setKnowledgeExtractedFromIssues(null, "TEST", "false").getEntity());
+                configRest.setKnowledgeExtractedFromIssues(null, "TEST", "false").getEntity());
     }
 
     @Test
     public void testRequestNullProjectKeyDoesNotExistIsKnowledgeExtractedNull() {
         assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-                confRest.setKnowledgeExtractedFromIssues(null, "NotTEST", null).getEntity());
+                configRest.setKnowledgeExtractedFromIssues(null, "NotTEST", null).getEntity());
     }
 
     @Test
     public void testRequestNullProjectKeyDoesNotExistIsKnowledgeExtractedTrue() {
         assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-                confRest.setKnowledgeExtractedFromIssues(null, "NotTEST", "true").getEntity());
+                configRest.setKnowledgeExtractedFromIssues(null, "NotTEST", "true").getEntity());
     }
 
     @Test
     public void testRequestNullProjectKeyDoesNotExistIsKnowledgeExtractedFalse() {
         assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-                confRest.setKnowledgeExtractedFromIssues(null, "NotTEST", "false").getEntity());
+                configRest.setKnowledgeExtractedFromIssues(null, "NotTEST", "false").getEntity());
     }
 
     @Test
     public void testRequestExistsProjectKeyNullIsKnowledgeExtractedNull() {
         assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-                confRest.setKnowledgeExtractedFromIssues(request, null, null).getEntity());
+                configRest.setKnowledgeExtractedFromIssues(request, null, null).getEntity());
     }
 
     @Test
     public void testRequestExistsProjectKeyNullIsKnowledgeExtractedTrue() {
         assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-                confRest.setKnowledgeExtractedFromIssues(request, null, "true").getEntity());
+                configRest.setKnowledgeExtractedFromIssues(request, null, "true").getEntity());
     }
 
     @Test
     public void testRequestExistsProjectKeyNullIsKnowledgeExtractedFalse() {
         assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-                confRest.setKnowledgeExtractedFromIssues(request, null, "false").getEntity());
+                configRest.setKnowledgeExtractedFromIssues(request, null, "false").getEntity());
     }
 
     @Test
     public void testRequestExistsProjectKeyExistsIsKnowledgeExtractedNull() {
         assertEquals(getBadRequestResponse(INVALID_EXTRACTEDISSUES).getEntity(),
-                confRest.setKnowledgeExtractedFromIssues(request, "TEST", null).getEntity());
+                configRest.setKnowledgeExtractedFromIssues(request, "TEST", null).getEntity());
     }
 
     @Test
     public void testRequestExistsProjectKeyExistsIsKnowledgeExtractedTrue() {
         assertEquals(Response.ok().build().getClass(),
-                confRest.setKnowledgeExtractedFromIssues(request, "TEST", "true").getClass());
+                configRest.setKnowledgeExtractedFromIssues(request, "TEST", "true").getClass());
     }
 
     @Test
     public void testRequestExistsProjectKeyExistsIsKnowledgeExtractedFalse() {
         assertEquals(Response.ok().build().getClass(),
-                confRest.setKnowledgeExtractedFromIssues(request, "TEST", "false").getClass());
+                configRest.setKnowledgeExtractedFromIssues(request, "TEST", "false").getClass());
     }
 
     @Test
@@ -110,7 +110,7 @@ public class TestSetKnowledgeExtractedFormIssues extends TestConfigSuper {
         request.setAttribute("WithFails", true);
         request.setAttribute("NoFails", false);
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                confRest.setKnowledgeExtractedFromIssues(request, "NotTEST", "false").getStatus());
+                configRest.setKnowledgeExtractedFromIssues(request, "NotTEST", "false").getStatus());
     }
 
     @Test
@@ -120,6 +120,6 @@ public class TestSetKnowledgeExtractedFormIssues extends TestConfigSuper {
         request.setAttribute("NoFails", false);
         request.setAttribute("SysAdmin", false);
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                confRest.setKnowledgeExtractedFromIssues(request, "NotTEST", "false").getStatus());
+                configRest.setKnowledgeExtractedFromIssues(request, "NotTEST", "false").getStatus());
     }
 }

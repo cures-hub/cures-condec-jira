@@ -15,24 +15,24 @@ public class TestGetDefaultKnowledgeTypes extends TestConfigSuper {
 	@Test
 	public void testProjectKeyNull() {
 		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getStatus(),
-				confRest.getDefaultKnowledgeTypes(null).getStatus());
+				configRest.getDefaultKnowledgeTypes(null).getStatus());
 	}
 
 	@Test
 	public void testProjectKeyEmpty() {
 		assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getStatus(),
-				confRest.getDefaultKnowledgeTypes("").getStatus());
+				configRest.getDefaultKnowledgeTypes("").getStatus());
 	}
 
 	@Test
 	public void testProjectKeyInvalid() {
 		assertEquals(Response.status(Response.Status.OK).build().getStatus(),
-				confRest.getDefaultKnowledgeTypes("InvalidKey").getStatus());
+				configRest.getDefaultKnowledgeTypes("InvalidKey").getStatus());
 	}
 
 	@Test
 	public void testProjectKeyValid() {
 		assertEquals(Response.status(Response.Status.OK).build().getStatus(),
-				confRest.getDefaultKnowledgeTypes("TEST").getStatus());
+				configRest.getDefaultKnowledgeTypes("TEST").getStatus());
 	}
 }

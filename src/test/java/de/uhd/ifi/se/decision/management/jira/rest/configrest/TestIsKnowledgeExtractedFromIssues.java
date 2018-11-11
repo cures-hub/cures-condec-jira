@@ -13,24 +13,24 @@ public class TestIsKnowledgeExtractedFromIssues extends TestConfigSuper {
     @Test
     public void testProjectKeyNull(){
         assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-                confRest.isKnowledgeExtractedFromIssues(null).getEntity());
+                configRest.isKnowledgeExtractedFromIssues(null).getEntity());
     }
 
     @Test
     public  void testProjectKeyEmpty(){
         assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-                confRest.isKnowledgeExtractedFromIssues("").getEntity());
+                configRest.isKnowledgeExtractedFromIssues("").getEntity());
     }
 
     @Test
     public void testProjectKeyInvalid(){
         assertEquals(Response.status(Response.Status.OK).build().getStatus(),
-                confRest.isKnowledgeExtractedFromIssues("InvalidKey").getStatus());
+                configRest.isKnowledgeExtractedFromIssues("InvalidKey").getStatus());
     }
 
     @Test
     public void testProjectKeyValid(){
         assertEquals(Response.status(Response.Status.OK).build().getStatus(),
-                confRest.isKnowledgeExtractedFromIssues("TEST").getStatus());
+                configRest.isKnowledgeExtractedFromIssues("TEST").getStatus());
     }
 }

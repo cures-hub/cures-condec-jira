@@ -13,13 +13,14 @@ import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
+import de.uhd.ifi.se.decision.management.jira.rest.ConfigRestImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import net.java.ao.EntityManager;
 
 public class TestConfigSuper extends TestSetUpWithIssues {
 	protected EntityManager entityManager;
 	protected HttpServletRequest request;
-	protected ConfigRest confRest;
+	protected ConfigRest configRest;
 
 	protected static final String INVALID_PROJECTKEY = "Project key is invalid.";
 	protected static final String INVALID_REQUEST = "request = null";
@@ -28,7 +29,7 @@ public class TestConfigSuper extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
-		confRest = new ConfigRest();
+		configRest = new ConfigRestImpl();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
 

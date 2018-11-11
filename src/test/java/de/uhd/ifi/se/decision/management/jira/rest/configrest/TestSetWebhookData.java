@@ -18,73 +18,73 @@ public class TestSetWebhookData extends TestConfigSuper {
 	@Test
 	public void testReqNullProNullAdrNullSecNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setWebhookData(null, null, null, null).getStatus());
+				configRest.setWebhookData(null, null, null, null).getStatus());
 	}
 
 	@Test
 	public void testReqNullProNullAdrNullSecFilled() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setWebhookData(null, null, null, "TEST").getStatus());
+				configRest.setWebhookData(null, null, null, "TEST").getStatus());
 	}
 
 	@Test
 	public void testReqNullProNullAdrFilledSecNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setWebhookData(null, null, "TEST", null).getStatus());
+				configRest.setWebhookData(null, null, "TEST", null).getStatus());
 	}
 
 	@Test
 	public void testReqNullProNullAdrFilledSecFilled() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setWebhookData(null, null, "TEST", "TEST").getStatus());
+				configRest.setWebhookData(null, null, "TEST", "TEST").getStatus());
 	}
 
 	@Test
 	public void testReqNullProFilledAdrNullSecNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setWebhookData(null, "TEST", null, null).getStatus());
+				configRest.setWebhookData(null, "TEST", null, null).getStatus());
 	}
 
 	@Test
 	public void testReqNullProFilledAdrNullSecFilled() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setWebhookData(null, "TEST", null, "TEST").getStatus());
+				configRest.setWebhookData(null, "TEST", null, "TEST").getStatus());
 	}
 
 	@Test
 	public void testReqNullProFilledAdrFilledSecNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setWebhookData(null, "TEST", "TEST", null).getStatus());
+				configRest.setWebhookData(null, "TEST", "TEST", null).getStatus());
 	}
 
 	@Test
 	public void testReqNullProFilledAdrFilledSecFilled() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setWebhookData(null, "TEST", "TEST", "TEST").getStatus());
+				configRest.setWebhookData(null, "TEST", "TEST", "TEST").getStatus());
 	}
 
 	@Test
 	public void testReqFilledProNullAdrNullSecNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setWebhookData(request, null, null, null).getStatus());
+				configRest.setWebhookData(request, null, null, null).getStatus());
 	}
 
 	@Test
 	public void testReqFilledProNullAdrNullSecFilled() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setWebhookData(request, null, null, "TEST").getStatus());
+				configRest.setWebhookData(request, null, null, "TEST").getStatus());
 	}
 
 	@Test
 	public void testReqFilledProNullAdrFilledSecNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setWebhookData(request, null, "TEST", null).getStatus());
+				configRest.setWebhookData(request, null, "TEST", null).getStatus());
 	}
 
 	@Test
 	public void testReqFilledProNullAdrFilledSecFilled() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setWebhookData(request, null, "TEST", "TEST").getStatus());
+				configRest.setWebhookData(request, null, "TEST", "TEST").getStatus());
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class TestSetWebhookData extends TestConfigSuper {
 		request.setAttribute("SysAdmin", true);
 		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setWebhookData(request, "TEST", null, null).getStatus());
+				configRest.setWebhookData(request, "TEST", null, null).getStatus());
 	}
 
 	@Test
@@ -102,7 +102,7 @@ public class TestSetWebhookData extends TestConfigSuper {
 		request.setAttribute("SysAdmin", true);
 		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setWebhookData(request, "TEST", null, "TEST").getStatus());
+				configRest.setWebhookData(request, "TEST", null, "TEST").getStatus());
 	}
 
 	@Test
@@ -111,7 +111,7 @@ public class TestSetWebhookData extends TestConfigSuper {
 		request.setAttribute("SysAdmin", true);
 		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setWebhookData(request, "TEST", "TEST", null).getStatus());
+				configRest.setWebhookData(request, "TEST", "TEST", null).getStatus());
 	}
 
 	@Test
@@ -120,6 +120,6 @@ public class TestSetWebhookData extends TestConfigSuper {
 		request.setAttribute("SysAdmin", true);
 		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
 		assertEquals(Response.Status.OK.getStatusCode(),
-				confRest.setWebhookData(request, "TEST", "TEST", "TEST").getStatus());
+				configRest.setWebhookData(request, "TEST", "TEST", "TEST").getStatus());
 	}
 }

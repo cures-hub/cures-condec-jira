@@ -15,23 +15,23 @@ public class TestIsIssueStrategy extends TestConfigSuper {
     @Test
     public void testIsIssueStrategyNull(){
         assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-                confRest.isIssueStrategy(null).getEntity());
+                configRest.isIssueStrategy(null).getEntity());
     }
 
     @Test
     public void testIsIssueStrategyProjectKeyEmpty(){
         assertEquals(getBadRequestResponse(INVALID_PROJECTKEY).getEntity(),
-                confRest.isIssueStrategy("").getEntity());
+                configRest.isIssueStrategy("").getEntity());
     }
 
     @Test
     public void testIsIssueStrategyProjectKeyFalse(){
         assertEquals(Response.status(Response.Status.OK).build().getStatus(),
-                confRest.isIssueStrategy("InvalidKey").getStatus());
+                configRest.isIssueStrategy("InvalidKey").getStatus());
     }
 
     @Test
     public void testIsIssueStrategyProjectKeyOK(){
-        assertEquals(Response.status(Response.Status.OK).build().getStatus(),confRest.isIssueStrategy("TEST").getStatus());
+        assertEquals(Response.status(Response.Status.OK).build().getStatus(),configRest.isIssueStrategy("TEST").getStatus());
     }
 }

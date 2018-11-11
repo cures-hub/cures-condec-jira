@@ -15,18 +15,18 @@ public class TestClearSentenceDatabase extends TestConfigSuper{
     @Test
     public void testSetActivatedRequestNullProjectKeyNull() {
         assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-                confRest.clearSentenceDatabase(null, null).getEntity());
+                configRest.clearSentenceDatabase(null, null).getEntity());
     }
 
     @Test
     public void testSetActivatedRequestNullProjectKeyTrue() {
         assertEquals(getBadRequestResponse(INVALID_REQUEST).getEntity(),
-                confRest.clearSentenceDatabase(null, "TEST").getEntity());
+                configRest.clearSentenceDatabase(null, "TEST").getEntity());
     }
 
     @Test
     public void testSetActivatedRequestExistsProjectKeyExistsIsActivatedFalse() {
-        assertEquals(Response.ok().build().getClass(), confRest.setActivated(request, "TEST", "false").getClass());
+        assertEquals(Response.ok().build().getClass(), configRest.setActivated(request, "TEST", "false").getClass());
     }
 
     @Test
@@ -34,7 +34,7 @@ public class TestClearSentenceDatabase extends TestConfigSuper{
         request.setAttribute("WithFails", true);
         request.setAttribute("NoFails", false);
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                confRest.setActivated(request, "NotTEST", "false").getStatus());
+                configRest.setActivated(request, "NotTEST", "false").getStatus());
     }
 
     @Test
@@ -43,6 +43,6 @@ public class TestClearSentenceDatabase extends TestConfigSuper{
         request.setAttribute("NoFails", false);
         request.setAttribute("SysAdmin", false);
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                confRest.setActivated(request, "NotTEST", "false").getStatus());
+                configRest.setActivated(request, "NotTEST", "false").getStatus());
     }
 }

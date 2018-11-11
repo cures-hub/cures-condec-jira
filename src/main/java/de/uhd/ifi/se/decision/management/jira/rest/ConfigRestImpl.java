@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -19,9 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.jql.builder.JqlClauseBuilder;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
@@ -41,9 +38,10 @@ import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
  * REST resource for plug-in configuration
  */
 @Path("/config")
-public class ConfigRest {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigRest.class);
+public class ConfigRestImpl implements ConfigRest {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigRestImpl.class);
 
+	@Override
 	@Path("/setActivated")
 	@POST
 	public Response setActivated(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
@@ -66,7 +64,7 @@ public class ConfigRest {
 		}
 	}
 
-	public static void setDefaultKnowledgeTypesEnabled(String projectKey, boolean isActivated,
+	private static void setDefaultKnowledgeTypesEnabled(String projectKey, boolean isActivated,
 			boolean isIssueStrategy) {
 		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaulTypes();
 		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
@@ -74,6 +72,7 @@ public class ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/isIssueStrategy")
 	@GET
 	public Response isIssueStrategy(@QueryParam("projectKey") final String projectKey) {
@@ -85,6 +84,7 @@ public class ConfigRest {
 		return Response.ok(isIssueStrategy).build();
 	}
 
+	@Override
 	@Path("/setIssueStrategy")
 	@POST
 	public Response setIssueStrategy(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
@@ -121,6 +121,7 @@ public class ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/isKnowledgeExtractedFromGit")
 	@GET
 	public Response isKnowledgeExtractedFromGit(@QueryParam("projectKey") final String projectKey) {
@@ -132,6 +133,7 @@ public class ConfigRest {
 		return Response.ok(isKnowledgeExtractedFromGit).build();
 	}
 
+	@Override
 	@Path("/setKnowledgeExtractedFromGit")
 	@POST
 	public Response setKnowledgeExtractedFromGit(@Context HttpServletRequest request,
@@ -154,6 +156,7 @@ public class ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/isKnowledgeExtractedFromIssues")
 	@GET
 	public Response isKnowledgeExtractedFromIssues(@QueryParam("projectKey") final String projectKey) {
@@ -165,6 +168,7 @@ public class ConfigRest {
 		return Response.ok(isKnowledgeExtractedFromIssues).build();
 	}
 
+	@Override
 	@Path("/setKnowledgeExtractedFromIssues")
 	@POST
 	public Response setKnowledgeExtractedFromIssues(@Context HttpServletRequest request,
@@ -188,6 +192,7 @@ public class ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/isKnowledgeTypeEnabled")
 	@GET
 	public Response isKnowledgeTypeEnabled(@QueryParam("projectKey") final String projectKey,
@@ -200,6 +205,7 @@ public class ConfigRest {
 		return Response.ok(isKnowledgeTypeEnabled).build();
 	}
 
+	@Override
 	@Path("/setKnowledgeTypeEnabled")
 	@POST
 	public Response setKnowledgeTypeEnabled(@Context HttpServletRequest request,
@@ -232,6 +238,7 @@ public class ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/getKnowledgeTypes")
 	@GET
 	public Response getKnowledgeTypes(@QueryParam("projectKey") final String projectKey) {
@@ -249,6 +256,7 @@ public class ConfigRest {
 		return Response.ok(knowledgeTypes).build();
 	}
 
+	@Override
 	@Path("/getDefaultKnowledgeTypes")
 	@GET
 	public Response getDefaultKnowledgeTypes(@QueryParam("projectKey") final String projectKey) {
@@ -263,6 +271,7 @@ public class ConfigRest {
 		return Response.ok(defaultKnowledgeTypes).build();
 	}
 
+	@Override
 	@Path("/setWebhookEnabled")
 	@POST
 	public Response setWebhookEnabled(@Context HttpServletRequest request,
@@ -286,6 +295,7 @@ public class ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/setWebhookData")
 	@POST
 	public Response setWebhookData(@Context HttpServletRequest request,
@@ -308,11 +318,12 @@ public class ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/setWebhookType")
 	@POST
 	public Response setWebhookType(@Context HttpServletRequest request,
-		@QueryParam("projectKey") final String projectKey, @QueryParam("webhookType") final String webhookType,
-								   @QueryParam("isWebhookTypeEnabled") final boolean isWebhookTypeEnabled) {
+			@QueryParam("projectKey") final String projectKey, @QueryParam("webhookType") final String webhookType,
+			@QueryParam("isWebhookTypeEnabled") final boolean isWebhookTypeEnabled) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -329,6 +340,7 @@ public class ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/clearSentenceDatabase")
 	@POST
 	public Response clearSentenceDatabase(@Context HttpServletRequest request,
@@ -351,6 +363,7 @@ public class ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/classifyWholeProject")
 	@POST
 	public Response classifyWholeProject(@Context HttpServletRequest request,
@@ -379,6 +392,7 @@ public class ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/setIconParsing")
 	@POST
 	public Response setIconParsing(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
@@ -401,6 +415,7 @@ public class ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/setUseClassiferForIssueComments")
 	@POST
 	public Response setUseClassiferForIssueComments(@Context HttpServletRequest request,
@@ -424,6 +439,7 @@ public class ConfigRest {
 		}
 	}
 
+	@Override
 	@Path("/getRequestToken")
 	@GET
 	public Response getRequestToken(@QueryParam("projectKey") String projectKey, @QueryParam("baseURL") String baseURL,
@@ -437,16 +453,17 @@ public class ConfigRest {
 			String requestToken = oAuthManager.retrieveRequestToken(consumerKey, privateKey);
 
 			ConfigPersistence.setRequestToken(requestToken);
-			// TODO: Tim: why do we have to use a map here, Response.ok(requestToken).build() does not work, why?
+			// TODO: Tim: why do we have to use a map here,
+			// Response.ok(requestToken).build() does not work, why?
 			return Response.status(Status.OK).entity(ImmutableMap.of("result", requestToken)).build();
 		} else {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error",
-							"Request token could not be retrieved since the base URL, private key, and/or consumer key are missing."))
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"Request token could not be retrieved since the base URL, private key, and/or consumer key are missing."))
 					.build();
 		}
 	}
 
+	@Override
 	@Path("/getAccessToken")
 	@GET
 	public Response getAccessToken(@QueryParam("projectKey") String projectKey, @QueryParam("baseURL") String baseURL,
@@ -467,12 +484,12 @@ public class ConfigRest {
 
 			ConfigPersistence.setAccessToken(accessToken);
 
-			// TODO: Tim: why do we have to use a map here, Response.ok(accessToken).build() does not work, why?
+			// TODO: Tim: why do we have to use a map here, Response.ok(accessToken).build()
+			// does not work, why?
 			return Response.status(Status.OK).entity(ImmutableMap.of("result", accessToken)).build();
 		} else {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error",
-							"Access token could not be retrieved since the base URL, private key, and/or consumer key are missing."))
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"Access token could not be retrieved since the base URL, private key, and/or consumer key are missing."))
 					.build();
 		}
 	}

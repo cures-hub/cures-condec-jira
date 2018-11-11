@@ -13,16 +13,16 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 public class TestIsKnowledgeExtractedFromGit extends TestConfigSuper {
 	@Test
 	public void testIsKnowledgeExtractedNull() {
-		assertEquals(Status.BAD_REQUEST.getStatusCode(), confRest.isKnowledgeExtractedFromGit(null).getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(), configRest.isKnowledgeExtractedFromGit(null).getStatus());
 	}
 
 	@Test
 	public void testIsKnowledgeExtractedNonExistend() {
-		assertEquals(Status.OK.getStatusCode(), confRest.isKnowledgeExtractedFromGit("NotTEST").getStatus());
+		assertEquals(Status.OK.getStatusCode(), configRest.isKnowledgeExtractedFromGit("NotTEST").getStatus());
 	}
 
 	@Test
 	public void testIsKnowledgeExtratedExistend() {
-		assertEquals(Status.OK.getStatusCode(), confRest.isKnowledgeExtractedFromGit("TEST").getStatus());
+		assertEquals(Status.OK.getStatusCode(), configRest.isKnowledgeExtractedFromGit("TEST").getStatus());
 	}
 }

@@ -16,19 +16,19 @@ public class TestSetKnowledgeExtractedFromGit extends TestConfigSuper {
 	@Test
 	public void testSetKnowledgeExtractedNullNullNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setKnowledgeExtractedFromGit(null, null, null).getStatus());
+				configRest.setKnowledgeExtractedFromGit(null, null, null).getStatus());
 	}
 
 	@Test
 	public void testSetKnowledgeExtractedNullFilledNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setKnowledgeExtractedFromGit(null, "TEST", null).getStatus());
+				configRest.setKnowledgeExtractedFromGit(null, "TEST", null).getStatus());
 	}
 
 	@Test
 	public void testSetKnowledgeExtractedNullNullFilled() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setKnowledgeExtractedFromGit(null, null, "false").getStatus());
+				configRest.setKnowledgeExtractedFromGit(null, null, "false").getStatus());
 	}
 
 	@Test
@@ -36,7 +36,7 @@ public class TestSetKnowledgeExtractedFromGit extends TestConfigSuper {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", false);
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setKnowledgeExtractedFromGit(request, null, null).getStatus());
+				configRest.setKnowledgeExtractedFromGit(request, null, null).getStatus());
 	}
 
 	@Test
@@ -45,19 +45,19 @@ public class TestSetKnowledgeExtractedFromGit extends TestConfigSuper {
 		request.setAttribute("NoFails", false);
 		request.setAttribute("SysAdmin", false);
 		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-				confRest.setKnowledgeExtractedFromGit(request, "TEST", null).getStatus());
+				configRest.setKnowledgeExtractedFromGit(request, "TEST", null).getStatus());
 	}
 
 	@Test
 	public void testSetKnowledgeExtractedFilledNoFailsFilledNull() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setKnowledgeExtractedFromGit(request, "TEST", null).getStatus());
+				configRest.setKnowledgeExtractedFromGit(request, "TEST", null).getStatus());
 	}
 
 	@Test
 	public void testSetKnowledgeExtractedNullFilledFilled() {
 		assertEquals(Response.Status.BAD_REQUEST.getStatusCode(),
-				confRest.setKnowledgeExtractedFromGit(null, "TEST", "false").getStatus());
+				configRest.setKnowledgeExtractedFromGit(null, "TEST", "false").getStatus());
 	}
 
 	@Test
@@ -67,7 +67,7 @@ public class TestSetKnowledgeExtractedFromGit extends TestConfigSuper {
 		request.setAttribute("NoFails", false);
 		request.setAttribute("SysAdmin", false);
 		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-				confRest.setKnowledgeExtractedFromGit(request, "TEST", "false").getStatus());
+				configRest.setKnowledgeExtractedFromGit(request, "TEST", "false").getStatus());
 	}
 
 	@Test
@@ -77,18 +77,18 @@ public class TestSetKnowledgeExtractedFromGit extends TestConfigSuper {
 		request.setAttribute("NoFails", false);
 		request.setAttribute("SysAdmin", false);
 		assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-				confRest.setKnowledgeExtractedFromGit(request, "TEST", "false").getStatus());
+				configRest.setKnowledgeExtractedFromGit(request, "TEST", "false").getStatus());
 	}
 
 	@Test
 	public void testSetKnowledgeExtractedFilledNoFailsFilledFilled() {
 		assertEquals(Response.Status.OK.getStatusCode(),
-				confRest.setKnowledgeExtractedFromGit(request, "TEST", "false").getStatus());
+				configRest.setKnowledgeExtractedFromGit(request, "TEST", "false").getStatus());
 	}
 
 	@Test
 	public void testSetKnowledgeExtractedFilledNoFailsFilledInvalid() {
 		assertEquals(Response.Status.OK.getStatusCode(),
-				confRest.setKnowledgeExtractedFromGit(request, "TEST", "testNotABoolean").getStatus());
+				configRest.setKnowledgeExtractedFromGit(request, "TEST", "testNotABoolean").getStatus());
 	}
 }
