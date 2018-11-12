@@ -397,10 +397,10 @@ var contextMenuSetAsRootAction = {
 	"name" : makeRootText,
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		if (global.conDecIssueModule !== undefined) {
-			global.conDecIssueModule.setAsRootElement(id);
-		} else if (global.conDecKnowledgePage !== undefined) {
-			global.conDecKnowledgePage.setAsRootElement(id);
+		if (window.conDecIssueModule !== undefined) {
+			window.conDecIssueModule.setAsRootElement(id);
+		} else if (window.conDecKnowledgePage !== undefined) {
+			window.conDecKnowledgePage.setAsRootElement(id);
 		}		
 	}
 };
@@ -410,8 +410,8 @@ var contextMenuOpenJiraIssueAction = {
 	"name" : openIssueText,
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		if (global.conDecKnowledgePage !== undefined) {
-			global.conDecKnowledgePage.openIssue(id);
+		if (window.conDecKnowledgePage !== undefined) {
+			window.conDecKnowledgePage.openIssue(id);
 		}				
 	}
 };
