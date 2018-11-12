@@ -69,7 +69,7 @@
 		conDecAPI.getDecisionKnowledgeElement(nodeId, function(decisionKnowledgeElement) {
 			var baseUrl = AJS.params.baseURL;
 			var key = decisionKnowledgeElement.key;
-			window.open(baseUrl + "/browse/" + key, '_blank');
+			global.open(baseUrl + "/browse/" + key, '_blank');
 		});
 	};
 
