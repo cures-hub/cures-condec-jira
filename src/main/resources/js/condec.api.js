@@ -13,10 +13,11 @@
  * settingsForAllProjects.vm and settingsForSingleProject.vm
  */
 (function(global) {
-    var extendedKnowledgeTypes = null;
-
 	var ConDecAPI = function ConDecAPI() {
-        ConDecAPI.extendedKnowledgeTypes = getKnowledgeTypes(getProjectKey());
+	    var projectKey  = getProjectKey();
+        this.knowledgeTypes = ConDecAPI.prototype.getKnowledgeTypes(projectKey);
+        this.extendedKnowledgeTypes = ConDecAPI.prototype.getExtendedKnowledgeTypes();
+
 	};
 
 	/*
@@ -654,12 +655,13 @@
 	 * and con-argument in knowledge types array.
 	 */
 	ConDecAPI.prototype.getExtendedKnowledgeTypes = function getExtendedKnowledgeTypes() {
-		extendedKnowledgeTypes = extendedKnowledgeTypes.filter(function(value) {
+	    this.extendedKnowledgeTypes = getKnowledgeTypes(getProjectKey());
+		this.extendedKnowledgeTypes = this.extendedKnowledgeTypes.filter(function(value) {
 			return value.toLowerCase() !== "argument";
 		});
-		extendedKnowledgeTypes.push("Pro-argument");
-		extendedKnowledgeTypes.push("Con-argument");
-		return extendedKnowledgeTypes;
+		this.extendedKnowledgeTypes.push("Pro-argument");
+		this.extendedKnowledgeTypes.push("Con-argument");
+		return this.extendedKnowledgeTypes;
 	};
 
 	/*

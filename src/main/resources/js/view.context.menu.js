@@ -133,7 +133,7 @@ function setUpCreateOrEditDialog(summary, description, knowledgeType) {
 					+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
 					+ "</form>");
 
-	var extendedKnowledgeTypes = conDecAPI.getExtendedKnowledgeTypes();
+	var extendedKnowledgeTypes = conDecAPI.extendedKnowledgeTypes;
 	for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
 		var isSelected = "";
 		if (isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index)) {
@@ -152,7 +152,7 @@ function setUpTypeChangeDialog(knowledgeType){
         "<form class='aui'><div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
             + "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
             + "</form>");
-    var extendedKnowledgeTypes = conDecAPI.getExtendedKnowledgeTypes();
+    var extendedKnowledgeTypes = conDecAPI.extendedKnowledgeTypes;
     for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
         var isSelected = "";
         if (isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index)) {
@@ -656,7 +656,7 @@ function setUpEditSentenceDialogView(description, type,node) {
 					+ "</form>");
 
 
-	var knowledgeTypes = conDecAPI.getExtendedKnowledgeTypes();
+	var knowledgeTypes = conDecAPI.extendedKnowledgeTypes;
 	if(knowledgeTypes.includes("Issue") && knowledgeTypes.includes("Problem")){
 		var index = knowledgeTypes.indexOf("Issue");
 		if (index > -1) {
