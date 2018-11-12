@@ -29,7 +29,7 @@ public class WebhookConnector {
 	private List<Long> elementIds;
 	private Collection<String> rootTypes;
 
-	public WebhookConnector(String projectKey, String webhookUrl, String webhookSecret, Collection rootTypes) {
+	public WebhookConnector(String projectKey, String webhookUrl, String webhookSecret, Collection<String> rootTypes) {
 		this.projectKey = projectKey;
 		this.url = webhookUrl;
 		this.secret = webhookSecret;
@@ -65,7 +65,7 @@ public class WebhookConnector {
 		List<DecisionKnowledgeElement> rootElements = getWebhookRootElements(elementToBeDeleted);
 		String type = elementToBeDeleted.getTypeAsString();
 
-		for (String rootType: rootTypes) {
+		for (String rootType : rootTypes) {
 			if (rootType.equalsIgnoreCase(type)) {
 				rootElements.remove(elementToBeDeleted);
 			}
@@ -100,7 +100,7 @@ public class WebhookConnector {
 			}
 			elementIds.add(linkedElement.getId());
 			String type = linkedElement.getTypeAsString();
-			for (String rootType: rootTypes) {
+			for (String rootType : rootTypes) {
 				if (rootType.equalsIgnoreCase(type)) {
 					webhookRootElements.add(linkedElement);
 				}
