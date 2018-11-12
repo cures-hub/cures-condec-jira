@@ -257,21 +257,6 @@ public class ConfigRestImpl implements ConfigRest {
 	}
 
 	@Override
-	@Path("/getDefaultKnowledgeTypes")
-	@GET
-	public Response getDefaultKnowledgeTypes(@QueryParam("projectKey") final String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		List<String> defaultKnowledgeTypes = new ArrayList<String>();
-		for (KnowledgeType knowledgeType : KnowledgeType.getDefaulTypes()) {
-			defaultKnowledgeTypes.add(knowledgeType.toString());
-		}
-		return Response.ok(defaultKnowledgeTypes).build();
-	}
-
-	@Override
 	@Path("/setWebhookEnabled")
 	@POST
 	public Response setWebhookEnabled(@Context HttpServletRequest request,

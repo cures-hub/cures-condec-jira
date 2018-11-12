@@ -619,20 +619,6 @@
 	};
 
 	/*
-	 * external references: context.menu, Default knowledge types are
-	 * "Alternative", "Argument", "Decision", and "Issue".
-	 */
-	ConDecAPI.prototype.getDefaultKnowledgeTypes = function getDefaultKnowledgeTypes(projectKey) {
-		var defaultKnowledgeTypes = getResponseAsReturnValue(AJS.contextPath()
-				+ "/rest/decisions/latest/config/getDefaultKnowledgeTypes.json?projectKey=" + projectKey);
-		if (defaultKnowledgeTypes !== null) {
-			return defaultKnowledgeTypes;
-		} else {
-			showFlag("error", "The default knowledge types could not be received. Error-Code: " + error);
-		}
-	};
-
-	/*
 	 * external references: context.menu, Knowledge types are a subset of
 	 * "Alternative", "Argument", "Assessment", "Assumption", "Claim",
 	 * "Constraint", "Context", "Decision", "Goal", "Implication", "Issue",
