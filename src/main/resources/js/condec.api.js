@@ -13,8 +13,10 @@
  * settingsForAllProjects.vm and settingsForSingleProject.vm
  */
 (function(global) {
+    var extendedKnowledgeTypes = null;
 
 	var ConDecAPI = function ConDecAPI() {
+        ConDecAPI.extendedKnowledgeTypes = getKnowledgeTypes(getProjectKey());
 	};
 
 	/*
@@ -652,7 +654,6 @@
 	 * and con-argument in knowledge types array.
 	 */
 	ConDecAPI.prototype.getExtendedKnowledgeTypes = function getExtendedKnowledgeTypes() {
-		var extendedKnowledgeTypes = getKnowledgeTypes(getProjectKey());
 		extendedKnowledgeTypes = extendedKnowledgeTypes.filter(function(value) {
 			return value.toLowerCase() !== "argument";
 		});
