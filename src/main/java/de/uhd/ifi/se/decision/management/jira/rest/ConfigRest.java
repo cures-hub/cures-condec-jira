@@ -31,8 +31,6 @@ public interface ConfigRest {
 
 	Response getKnowledgeTypes(String projectKey);
 
-	Response getDefaultKnowledgeTypes(String projectKey);
-
 	Response setWebhookEnabled(HttpServletRequest request, String projectKey, String isActivated);
 
 	Response setWebhookData(HttpServletRequest request, String projectKey, String webhookUrl, String webhookSecret);

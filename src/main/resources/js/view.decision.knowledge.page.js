@@ -69,14 +69,14 @@
 		conDecAPI.getDecisionKnowledgeElement(nodeId, function(decisionKnowledgeElement) {
 			var baseUrl = AJS.params.baseURL;
 			var key = decisionKnowledgeElement.key;
-			window.open(baseUrl + "/browse/" + key, '_blank');
+			global.open(baseUrl + "/browse/" + key, '_blank');
 		});
 	};
 
 	function initializeDecisionKnowledgePage(conDecAPI, treant, treeViewer) {
 		console.log("view.decision.knowledge.page initializeDecisionKnowledgePage");
 
-		var knowledgeTypes = conDecAPI.getKnowledgeTypes(conDecAPI.getProjectKey());
+		var knowledgeTypes = conDecAPI.knowledgeTypes;
 		for (var index = 0; index < knowledgeTypes.length; index++) {
 			var isSelected = "";
 			if (knowledgeTypes[index] === "Decision") {

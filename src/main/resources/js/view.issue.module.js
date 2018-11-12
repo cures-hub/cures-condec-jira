@@ -64,7 +64,7 @@
 		conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
 			var baseUrl = AJS.params.baseURL;
 			var key = decisionKnowledgeElement.key;
-			window.open(baseUrl + "/browse/" + key, '_self'); // TODO: why window open ?
+			global.open(baseUrl + "/browse/" + key, '_self');
 		});
 	};
 
@@ -138,7 +138,7 @@
 	}
 
 	function getURLsSearch() {
-		var search = window.location.search.toString();
+		var search = global.location.search.toString();
 		search = search.toString().replace("&", "§");
 		return search;
 	}
@@ -150,7 +150,7 @@
 		// get jql from url
 		var myJql = getQueryFromUrl();
 		console.log("query", myJql);
-		var baseLink = window.location.origin + "/browse/";
+		var baseLink = global.location.origin + "/browse/";
 		callGetElementsByQueryAndDownload(myJql, baseLink);
 	}
 

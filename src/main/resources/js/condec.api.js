@@ -13,8 +13,10 @@
  * settingsForAllProjects.vm and settingsForSingleProject.vm
  */
 (function(global) {
-
 	var ConDecAPI = function ConDecAPI() {
+		this.projectKey = getProjectKey();
+		this.knowledgeTypes = getKnowledgeTypes(this.projectKey);
+		this.extendedKnowledgeTypes = getExtendedKnowledgeTypes(this.knowledgeTypes);
 	};
 
 	/*
@@ -616,20 +618,6 @@
 	};
 
 	/*
-	 * external references: context.menu, Default knowledge types are
-	 * "Alternative", "Argument", "Decision", and "Issue".
-	 */
-	ConDecAPI.prototype.getDefaultKnowledgeTypes = function getDefaultKnowledgeTypes(projectKey) {
-		var defaultKnowledgeTypes = getResponseAsReturnValue(AJS.contextPath()
-				+ "/rest/decisions/latest/config/getDefaultKnowledgeTypes.json?projectKey=" + projectKey);
-		if (defaultKnowledgeTypes !== null) {
-			return defaultKnowledgeTypes;
-		} else {
-			showFlag("error", "The default knowledge types could not be received. Error-Code: " + error);
-		}
-	};
-
-	/*
 	 * external references: context.menu, Knowledge types are a subset of
 	 * "Alternative", "Argument", "Assessment", "Assumption", "Claim",
 	 * "Constraint", "Context", "Decision", "Goal", "Implication", "Issue",
@@ -645,15 +633,12 @@
 		}
 	}
 
-	ConDecAPI.prototype.getKnowledgeTypes = getKnowledgeTypes;
-
 	/*
 	 * external references: context.menu, Replaces argument with pro-argument
 	 * and con-argument in knowledge types array.
 	 */
-	ConDecAPI.prototype.getExtendedKnowledgeTypes = function getExtendedKnowledgeTypes() {
-		var extendedKnowledgeTypes = getKnowledgeTypes(getProjectKey());
-		extendedKnowledgeTypes = extendedKnowledgeTypes.filter(function(value) {
+	function getExtendedKnowledgeTypes(knowledgeTypes) {
+		var extendedKnowledgeTypes = knowledgeTypes.filter(function(value) {
 			return value.toLowerCase() !== "argument";
 		});
 		extendedKnowledgeTypes.push("Pro-argument");
@@ -956,7 +941,7 @@
 		}
 		return issueKey;
 	}
-	
+
 	ConDecAPI.prototype.getIssueKey = getIssueKey;
 
 	function getProjectKey() {
@@ -976,8 +961,6 @@
 		}
 		return projectKey;
 	}
-
-	ConDecAPI.prototype.getProjectKey = getProjectKey;
 
 	/*
 	 * external references: view.context.menu.js

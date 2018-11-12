@@ -32,6 +32,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 <h2 id="additionale-types-header">Additional Decision Knowledge	Types</h2>
 	<script>
 	html = "<p id='additionale-types-text'> The default decision knowledge types are:";
+	var defaultKnowledgeTypes = [ "Decision", "Issue", "Alternative", "Argument" ]
 	for (i in defaultKnowledgeTypes) {
 		html += " <span class='aui-lozenge'>" + defaultKnowledgeTypes[i];
 		html += "&nbsp;<img src='$imageFolderUrl" + defaultKnowledgeTypes[i] + ".png'></span>";
