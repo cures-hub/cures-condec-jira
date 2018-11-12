@@ -11,7 +11,7 @@ function buildTreant(elementKey, isInteractive, searchTerm, contextMenuActions) 
     conDecAPI.getTreant(elementKey, depthOfTree, searchTerm, function(treeStructure) {
         document.getElementById("treant-container").innerHTML = "";
 
-        conDecAPI.isKnowledgeExtractedFromGit(conDecAPI.getProjectKey(), function(isKnowledgeExtractedFromGit) { //TODO: refactor isKnowledgeExtractedFromGit param name, confusing.
+        conDecAPI.isKnowledgeExtractedFromGit(conDecAPI.projectKey, function(isKnowledgeExtractedFromGit) { //TODO: refactor isKnowledgeExtractedFromGit param name, confusing.
             if (isKnowledgeExtractedFromGit) {
                 conDecAPI.getCommits(elementKey,
                     function(commits) {

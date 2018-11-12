@@ -6,7 +6,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
     <input class="text medium-long-field" id="jstree-search-input"
            placeholder="Search decision knowledge"/>
     <select id="select-root-element-type" name="select-root-element-type"
-            class="select medium-field" onchange="conDecView.notify()"/>
+            class="select medium-field" onchange="conDecObservable.notify()"/>
     <input type="text" class="text medium-long-field"
            id="element-input-field" placeholder="Summary of new element"/>
     <input type="button" id="create-element-button"

@@ -14,10 +14,9 @@
  */
 (function(global) {
 	var ConDecAPI = function ConDecAPI() {
-	    var projectKey  = getProjectKey();
-        this.knowledgeTypes = ConDecAPI.prototype.getKnowledgeTypes(projectKey);
-        this.extendedKnowledgeTypes = ConDecAPI.prototype.getExtendedKnowledgeTypes();
-
+		this.projectKey = getProjectKey();
+		this.knowledgeTypes = getKnowledgeTypes(this.projectKey);
+		this.extendedKnowledgeTypes = getExtendedKnowledgeTypes(this.knowledgeTypes);
 	};
 
 	/*
@@ -634,20 +633,17 @@
 		}
 	}
 
-	ConDecAPI.prototype.getKnowledgeTypes = getKnowledgeTypes;
-
 	/*
 	 * external references: context.menu, Replaces argument with pro-argument
 	 * and con-argument in knowledge types array.
 	 */
-	ConDecAPI.prototype.getExtendedKnowledgeTypes = function getExtendedKnowledgeTypes() {
-	    this.extendedKnowledgeTypes = getKnowledgeTypes(getProjectKey());
-		this.extendedKnowledgeTypes = this.extendedKnowledgeTypes.filter(function(value) {
+	function getExtendedKnowledgeTypes(knowledgeTypes) {
+		var extendedKnowledgeTypes = knowledgeTypes.filter(function(value) {
 			return value.toLowerCase() !== "argument";
 		});
-		this.extendedKnowledgeTypes.push("Pro-argument");
-		this.extendedKnowledgeTypes.push("Con-argument");
-		return this.extendedKnowledgeTypes;
+		extendedKnowledgeTypes.push("Pro-argument");
+		extendedKnowledgeTypes.push("Con-argument");
+		return extendedKnowledgeTypes;
 	};
 
 	/*
@@ -945,7 +941,7 @@
 		}
 		return issueKey;
 	}
-	
+
 	ConDecAPI.prototype.getIssueKey = getIssueKey;
 
 	function getProjectKey() {
@@ -965,8 +961,6 @@
 		}
 		return projectKey;
 	}
-
-	ConDecAPI.prototype.getProjectKey = getProjectKey;
 
 	/*
 	 * external references: view.context.menu.js

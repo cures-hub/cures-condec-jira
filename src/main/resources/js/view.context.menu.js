@@ -656,7 +656,7 @@ function setUpEditSentenceDialogView(description, type,node) {
 					+ "</form>");
 
 
-	var knowledgeTypes = conDecAPI.extendedKnowledgeTypes;
+	var knowledgeTypes = conDecAPI.knowledgeTypes;
 	if(knowledgeTypes.includes("Issue") && knowledgeTypes.includes("Problem")){
 		var index = knowledgeTypes.indexOf("Issue");
 		if (index > -1) {

@@ -77,8 +77,6 @@
 		console.log("view.decision.knowledge.page initializeDecisionKnowledgePage");
 
 		var knowledgeTypes = conDecAPI.knowledgeTypes;
-		conDecAPI.knowledgeTypes;
-        console.log(knowledgeTypes +"This is a of ConDecAPi call");
 		for (var index = 0; index < knowledgeTypes.length; index++) {
 			var isSelected = "";
 			if (knowledgeTypes[index] === "Decision") {
