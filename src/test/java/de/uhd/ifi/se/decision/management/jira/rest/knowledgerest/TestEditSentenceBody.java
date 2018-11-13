@@ -17,7 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplateWebhook;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -110,7 +109,7 @@ public class TestEditSentenceBody extends TestKnowledgeRestSetUp {
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.editSentenceBody(request, decisionKnowledgeElement, "pro").getStatus());
-		Sentence sentence = new SentenceImpl(ActiveObjectsManager.getElementFromAO(decisionKnowledgeElement.getId()));
+		Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(decisionKnowledgeElement.getId());
 		assertEquals(newText, sentence.getBody());
 	}
 
@@ -127,7 +126,7 @@ public class TestEditSentenceBody extends TestKnowledgeRestSetUp {
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.editSentenceBody(request, decisionKnowledgeElement, "pro").getStatus());
-		Sentence sentence = new SentenceImpl(ActiveObjectsManager.getElementFromAO(decisionKnowledgeElement.getId()));
+		Sentence sentence =(Sentence) ActiveObjectsManager.getElementFromAO(decisionKnowledgeElement.getId());
 		assertEquals(newText, sentence.getBody());
 		
 		MutableComment mc = (MutableComment) ComponentAccessor.getCommentManager().getCommentById(sentence.getCommentId());

@@ -25,9 +25,9 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
@@ -252,7 +252,7 @@ public class KnowledgeRest {
 		if (decisionKnowledgeElement != null && request != null) {
 
 			// Get corresponding element from ao database
-			DecisionKnowledgeInCommentEntity databaseEntity = ActiveObjectsManager
+			Sentence databaseEntity = (Sentence) ActiveObjectsManager
 					.getElementFromAO(decisionKnowledgeElement.getId());
 			int newSentenceEnd = databaseEntity.getEndSubstringCount();
 			int newSentenceStart = databaseEntity.getStartSubstringCount();

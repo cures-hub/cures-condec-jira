@@ -64,8 +64,8 @@ public class ClassificationManagerForCommentSentences {
 					sentence.setTaggedFineGrained(true);
 					i++;
 				} else if (sentence.isRelevant() && sentence.isTaggedFineGrained() && sentence.isPlainText()) {
-					sentence.setKnowledgeTypeString(
-							ActiveObjectsManager.getElementFromAO(sentence.getId()).getKnowledgeTypeString());
+					Sentence aosentence = (Sentence) ActiveObjectsManager.getElementFromAO(sentence.getId());
+					sentence.setKnowledgeTypeString(aosentence.getKnowledgeTypeString());
 				}
 			}
 		}
@@ -77,8 +77,8 @@ public class ClassificationManagerForCommentSentences {
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
 				if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {
-					sentence.setKnowledgeTypeString(
-							ActiveObjectsManager.getElementFromAO(sentence.getId()).getKnowledgeTypeString());
+					Sentence aosentence = (Sentence) ActiveObjectsManager.getElementFromAO(sentence.getId());
+					sentence.setKnowledgeTypeString(aosentence.getKnowledgeTypeString());
 				}
 			}
 		}
@@ -104,7 +104,8 @@ public class ClassificationManagerForCommentSentences {
 	public List<Comment> writeDataFromActiveObjectsToSentences(List<Comment> commentsList) {
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
-				sentence.setRelevant(ActiveObjectsManager.getElementFromAO(sentence.getId()).isRelevant());
+				Sentence aoSentence = (Sentence) ActiveObjectsManager.getElementFromAO(sentence.getId());
+				sentence.setRelevant(aoSentence.isRelevant());
 			}
 		}
 		return commentsList;

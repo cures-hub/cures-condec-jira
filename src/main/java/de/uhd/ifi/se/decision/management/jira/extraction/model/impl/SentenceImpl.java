@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.model.impl;
 
-import java.beans.PropertyChangeListener;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,10 +15,8 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
-import net.java.ao.EntityManager;
-import net.java.ao.RawEntity;
 
-public class SentenceImpl extends DecisionKnowledgeElementImpl implements Sentence, DecisionKnowledgeInCommentEntity {
+public class SentenceImpl extends DecisionKnowledgeElementImpl implements Sentence {
 
 	private boolean isTagged;
 
@@ -306,18 +303,17 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	private void retrieveAttributesFromActievObjects() {
-		DecisionKnowledgeInCommentEntity aoElement = ActiveObjectsManager.getElementFromAO(super.getId());
-		insertAoValues(aoElement);
+		insertAoValues((Sentence) ActiveObjectsManager.getElementFromAO(super.getId()));
 	}
 
-	private void insertAoValues(DecisionKnowledgeInCommentEntity aoElement) {
+	private void insertAoValues(Sentence aoElement) {
 		this.setEndSubstringCount(aoElement.getEndSubstringCount());
 		this.setStartSubstringCount(aoElement.getStartSubstringCount());
 		this.setUserId(aoElement.getUserId());
 		this.setTagged(aoElement.isTagged());
 		this.setRelevant(aoElement.isRelevant());
 		this.setTaggedFineGrained(aoElement.isTaggedFineGrained());
-		this.setTaggedManually(aoElement.isTaggedFineGrained());
+		this.setTaggedManually(aoElement.isTaggedManually());
 		this.setProjectKey(aoElement.getProjectKey());
 		this.setArgument(aoElement.getArgument());
 		this.setCommentId(aoElement.getCommentId());
@@ -334,42 +330,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		if (mutableIssue != null) {
 			super.setKey(mutableIssue.getKey() + ":" + this.getId());
 		}
-	}
-
-	@Override
-	public void addPropertyChangeListener(PropertyChangeListener arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public EntityManager getEntityManager() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <X extends RawEntity<Long>> Class<X> getEntityType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void init() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void removePropertyChangeListener(PropertyChangeListener arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void save() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
