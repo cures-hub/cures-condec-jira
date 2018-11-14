@@ -50,8 +50,8 @@ public class ActiveObjectsManager {
 			long issueId, String projectKey) {
 		init();
 		if (checkElementExistingInAO(commentId, endSubStringCount, startSubstringCount, userId, projectKey)) {
-			Sentence existingElement = getElementFromAO(commentId, endSubStringCount, startSubstringCount, userId,
-					projectKey);
+			DecisionKnowledgeInCommentEntity existingElement = getElementFromAO(commentId, endSubStringCount,
+					startSubstringCount, userId, projectKey);
 			checkIfSentenceHasAValidLink(existingElement.getId(), issueId);
 			return existingElement.getId();
 		}
@@ -66,6 +66,7 @@ public class ActiveObjectsManager {
 						todo.setStartSubstringCount(startSubstringCount);
 						todo.setUserId(userId);
 						todo.setTagged(false);
+						todo.setRelevant(false);
 						todo.setTaggedFineGrained(false);
 						todo.setTaggedManually(false);
 						todo.setProjectKey(projectKey);
@@ -452,17 +453,11 @@ public class ActiveObjectsManager {
 	public static List<DecisionKnowledgeElement> getElementsForIssue(long issueId, String projectKey) {
 		init();
 		List<DecisionKnowledgeElement> elements = new ArrayList<>();
-		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeElement>() {
-			@Override
-			public DecisionKnowledgeElement doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
-						DecisionKnowledgeInCommentEntity.class,
-						Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ?", projectKey, issueId))) {
-					elements.add(databaseEntry);
-				}
-				return null;
-			}
-		});
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ?", projectKey, issueId))) {
+			elements.add(new SentenceImpl(databaseEntry.getId()));
+		}
+
 		return elements;
 	}
 
@@ -499,7 +494,7 @@ public class ActiveObjectsManager {
 					Sentence sentence = null;
 					boolean deleteFlag = false;
 					try {
-						sentence = new SentenceImpl(databaseEntry);
+						sentence = new SentenceImpl(databaseEntry.getId());
 						ComponentAccessor.getCommentManager().getCommentById(sentence.getCommentId());
 					} catch (Exception e) {
 						deleteFlag = true;
@@ -554,7 +549,7 @@ public class ActiveObjectsManager {
 		});
 		List<DecisionKnowledgeElement> listOfDKE = new ArrayList<>();
 		for (DecisionKnowledgeInCommentEntity dke : listOfDbEntries) {
-			listOfDKE.add(new SentenceImpl(dke));
+			listOfDKE.add(new SentenceImpl(dke.getId()));
 		}
 		return listOfDKE;
 	}

@@ -331,6 +331,33 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 			super.setKey(mutableIssue.getKey() + ":" + this.getId());
 		}
 	}
+	
+	private void insertAoValues(DecisionKnowledgeInCommentEntity aoElement) {
+		this.setEndSubstringCount(aoElement.getEndSubstringCount());
+		this.setStartSubstringCount(aoElement.getStartSubstringCount());
+		this.setUserId(aoElement.getUserId());
+		this.setTagged(aoElement.isTagged());
+		this.setRelevant(aoElement.isRelevant());
+		this.setTaggedFineGrained(aoElement.isTaggedFineGrained());
+		this.setTaggedManually(aoElement.isTaggedManually());
+		this.setProjectKey(aoElement.getProjectKey());
+		this.setArgument(aoElement.getArgument());
+		this.setCommentId(aoElement.getCommentId());
+		this.setIssueId(aoElement.getIssueId());
+		super.setProject(new DecisionKnowledgeProjectImpl(aoElement.getProjectKey()));
+		String kt = aoElement.getKnowledgeTypeString();
+		if (kt == null || kt.equals("")) {
+			super.type = KnowledgeType.OTHER;
+		} else {
+			super.type = KnowledgeType.getKnowledgeType(kt);
+			this.setKnowledgeTypeString(kt);
+		}
+		MutableIssue mutableIssue = ComponentAccessor.getIssueManager().getIssueObject(this.getIssueId());
+		if (mutableIssue != null) {
+			super.setKey(mutableIssue.getKey() + ":" + this.getId());
+		}
+	}
+
 
 	@Override
 	public void setIssueId(long issueId) {

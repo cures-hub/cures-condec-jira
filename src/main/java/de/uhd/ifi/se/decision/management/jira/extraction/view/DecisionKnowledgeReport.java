@@ -25,7 +25,6 @@ import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
@@ -220,7 +219,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 			List<DecisionKnowledgeElement> elements = ActiveObjectsManager.getElementsForIssue(currentIssue.getId(),
 					projectKey);
 			for (DecisionKnowledgeElement dke : elements) {
-				if ((new SentenceImpl(dke.getId())).getType().equals(type)) {
+				if (dke.getType().equals(type)) {
 					count++;
 				}
 			}
