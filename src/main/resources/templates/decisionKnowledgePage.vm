@@ -37,5 +37,5 @@ $(document).ready(function(){
     }
 });
 </script>
-#include("templates/dialog.vm")
 #include("templates/contextMenu.vm")
+#include("templates/dialog.vm")

@@ -5,6 +5,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:issu
 <div id="treant-container">
 	<p>No Element has been selected</p>
 </div>
+#include("templates/contextMenu.vm")
 #include("templates/dialog.vm")
 <script>
 /*

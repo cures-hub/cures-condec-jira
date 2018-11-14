@@ -1,24 +1,50 @@
 // TODO create closure/object
 (function(global) {
 
-    var ConDecContext = function ConDecContext() {
-    };
+	var ConDecContext = function ConDecContext() {
+	};
 
-    ConDecContext.prototype.setUpContext = function setUpContext(){
-        $(document).ready(function () {
-            var nodes = document.getElementsByClassName("node");
-            var i;
-            for(i=0; i<nodes.length ; i++){
-                nodes[i].addEventListener('contextmenu', function(ev) {
-                    document.getElementById("context").style.display = "block";
-                    document.querySelector('#context').removeAttribute('hidden');
-                });
-            }
-        });
-    };
+	ConDecContext.prototype.setUpContext = function setUpContext() {
+		var isContextMenuOpen;
 
-    // export ConDecContext
-    global.conDecContext = new ConDecContext();
+		$(document).ready(function() {
+			var nodes = document.getElementsByClassName("node");
+			var i;
+			for (i = 0; i < nodes.length; i++) {
+				nodes[i].addEventListener('contextmenu', function(event) {
+					isContextMenuOpen = true;
+					// TODO Find correct position
+					var left = event.clientX;
+					var top = event.clientY;
+					console.log("contextmenu opened");
+					console.log(left);
+					console.log(top);
+//					$("#condec-context-menu").css({
+//						left : left,
+//						top : top
+//					});
+					document.querySelector("#condec-context-menu").setAttribute('aria-hidden', 'false');
+					
+					// TODO handle node id
+					console.log(event.target.id)
+				});
+			}
+			function hideContextmenu() {
+				if (isContextMenuOpen) {
+					console.log("contextmenu closed");
+					document.querySelector("#condec-context-menu").setAttribute('aria-hidden', 'true');
+				}
+				isContextMenuOpen = false;
+			}
+
+			$(global).blur(hideContextmenu);
+
+			$(document).click(hideContextmenu);
+		});
+	};
+
+	// export ConDecContext
+	global.conDecContext = new ConDecContext();
 })(window);
 
 /**
@@ -100,8 +126,8 @@ function setUpDialogForCreateAction(id) {
 	};
 
 	conDecAPI.isIssueStrategy(id, function(isIssueStrategy) { // TODO: rename
-																// param name,
-																// confusing.
+		// param name,
+		// confusing.
 		if (isIssueStrategy === true) {
 			var extensionButton = document.getElementById("dialog-extension-button");
 			extensionButton.style.visibility = "visible";
@@ -167,23 +193,23 @@ function setUpCreateOrEditDialog(summary, description, knowledgeType) {
 	AJS.$("#form-select-type").auiSelect2();
 }
 
-function setUpTypeChangeDialog(knowledgeType){
-    console.log("view.context.menu.js setUpTypeChangeDialog");
-    document.getElementById("dialog-content").insertAdjacentHTML(
-        "afterBegin",
-        "<form class='aui'><div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
-            + "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
-            + "</form>");
-    var extendedKnowledgeTypes = conDecAPI.extendedKnowledgeTypes;
-    for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
-        var isSelected = "";
-        if (isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index)) {
-            isSelected = "selected ";
-        }
-        $("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
-            + extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
-    }
-    AJS.$("#form-select-type").auiSelect2();
+function setUpTypeChangeDialog(knowledgeType) {
+	console.log("view.context.menu.js setUpTypeChangeDialog");
+	document.getElementById("dialog-content").insertAdjacentHTML(
+			"afterBegin",
+			"<form class='aui'><div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
+					+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
+					+ "</form>");
+	var extendedKnowledgeTypes = conDecAPI.extendedKnowledgeTypes;
+	for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
+		var isSelected = "";
+		if (isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index)) {
+			isSelected = "selected ";
+		}
+		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
+				+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
+	}
+	AJS.$("#form-select-type").auiSelect2();
 }
 
 function isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index) {
@@ -282,10 +308,10 @@ function setUpDialogForEditAction(id, type) {
 		var type = decisionKnowledgeElement.type;
 
 		conDecAPI.isIssueStrategy(id, function(isIssueStrategy) { // TODO:
-																	// refactor
-																	// param
-																	// name,
-																	// confusing!
+			// refactor
+			// param
+			// name,
+			// confusing!
 			if (isIssueStrategy) {
 				var createEditIssueForm = require('quick-edit/form/factory/edit-issue');
 				createEditIssueForm({
@@ -381,37 +407,37 @@ function setUpDialogForDeleteLinkAction(id, parentId) {
 }
 
 var contextMenuChangeTypeAction = {
-    "label" : changeKnowledgeTypeText,
-    "name" : changeKnowledgeTypeText,
-    "action" : function (position) {
-        var node = getSelectedTreeViewerNode(position);
-        var id = node.id;
-        setUpDialogForChangeTypeAction(id);
-    },
-    "callback" : function(key, options) {
-        var id = getSelectedTreantNodeId(options);
-        setUpDialogForChangeTypeAction(id);
-    }
+	"label" : changeKnowledgeTypeText,
+	"name" : changeKnowledgeTypeText,
+	"action" : function(position) {
+		var node = getSelectedTreeViewerNode(position);
+		var id = node.id;
+		setUpDialogForChangeTypeAction(id);
+	},
+	"callback" : function(key, options) {
+		var id = getSelectedTreantNodeId(options);
+		setUpDialogForChangeTypeAction(id);
+	}
 };
 
 function setUpDialogForChangeTypeAction(id) {
-    console.log("view.context.menu.js setUpDialogForChangeTypeAction");
-    setUpDialog();
-    setHeaderText(changeKnowledgeTypeText);
-    conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
-        var summary = decisionKnowledgeElement.summary;
-        var description = decisionKnowledgeElement.description;
-        var type = decisionKnowledgeElement.type;
-        setUpTypeChangeDialog(type);
+	console.log("view.context.menu.js setUpDialogForChangeTypeAction");
+	setUpDialog();
+	setHeaderText(changeKnowledgeTypeText);
+	conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
+		var summary = decisionKnowledgeElement.summary;
+		var description = decisionKnowledgeElement.description;
+		var type = decisionKnowledgeElement.type;
+		setUpTypeChangeDialog(type);
 
-        var submitButton = document.getElementById("dialog-submit-button");
-        submitButton.textContent = editKnowledgeElementText;
-        submitButton.onclick = function () {
-            var type = $("select[name='form-select-type']").val();
-            conDecAPI.updateDecisionKnowledgeElementAsChild(id,summary,description,type);
-            AJS.dialog2("#dialog").hide();
-        };
-    });
+		var submitButton = document.getElementById("dialog-submit-button");
+		submitButton.textContent = editKnowledgeElementText;
+		submitButton.onclick = function() {
+			var type = $("select[name='form-select-type']").val();
+			conDecAPI.updateDecisionKnowledgeElementAsChild(id, summary, description, type);
+			AJS.dialog2("#dialog").hide();
+		};
+	});
 }
 
 var contextMenuSetAsRootAction = {
@@ -423,22 +449,22 @@ var contextMenuSetAsRootAction = {
 			window.conDecIssueModule.setAsRootElement(id);
 		} else if (window.conDecKnowledgePage !== undefined) {
 			window.conDecKnowledgePage.setAsRootElement(id);
-		}		
+		}
 	}
 };
 
 var contextMenuOpenJiraIssueAction = {
 	// label for Tree Viewer, name for Treant context menu
 	"name" : openIssueText,
-    "onload" : function () {
-        alert(Test);
-    },
-    "callback" : function(key, options) {
+	"onload" : function() {
+		alert(Test);
+	},
+	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
 
 		if (window.conDecKnowledgePage !== undefined) {
 			window.conDecKnowledgePage.openIssue(id);
-		}				
+		}
 	}
 };
 
@@ -455,7 +481,7 @@ function resetDialog() {
 	console.log("view.context.menu.js resetDialog");
 	document.getElementById("dialog-header").innerHTML = "";
 	document.getElementById("dialog-content").innerHTML = "";
-	if(document.getElementById("dialog-extension-button")){
+	if (document.getElementById("dialog-extension-button")) {
 		document.getElementById("dialog-extension-button").style.visibility = "hidden"
 	}
 	var dialog = document.getElementById("dialog");
@@ -582,7 +608,8 @@ var contextMenuDeleteSentenceLinkAction = {
 		var parentClass = (document.getElementById(parentId).className.includes("sentence")) ? "s" : "i";
 		var nodeClass = (document.getElementById(id).className.includes("sentence")) ? "s" : "i";
 
-		conDecAPI.deleteGenericLink(parentId, id, parentClass, nodeClass, conDecAPI.setSentenceIrrelevant(id, conDecObservable.notify), false);
+		conDecAPI.deleteGenericLink(parentId, id, parentClass, nodeClass, conDecAPI.setSentenceIrrelevant(id,
+				conDecObservable.notify), false);
 
 	}
 };
@@ -624,7 +651,7 @@ var contextMenuEditSentenceAction = {
 		var id = getSelectedTreeViewerNodeId(position);
 		var node = getSelectedTreeViewerNode(position);
 		console.log(node);
-		setUpDialogForEditSentenceAction(id, node.data.summary, node.data.type,node.data.type);
+		setUpDialogForEditSentenceAction(id, node.data.summary, node.data.type, node.data.type);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
@@ -637,7 +664,7 @@ var contextMenuEditSentenceAction = {
 		if (node.getElementsByClassName("node-name").length > 0) {
 			type = node.getElementsByClassName("node-name")[0].innerHTML;
 		}
-		setUpDialogForEditSentenceAction(id, description, type,node.classList.value);
+		setUpDialogForEditSentenceAction(id, description, type, node.classList.value);
 	}
 };
 
@@ -656,17 +683,17 @@ function getNodeWithId(nodes, id) {
 /**
  * fills HTML of dialog with contents
  */
-function setUpDialogForEditSentenceAction(id, description, type,node) {
+function setUpDialogForEditSentenceAction(id, description, type, node) {
 	setUpDialog();
 	setHeaderText(editKnowledgeElementText);
-	setUpEditSentenceDialogView(description, type,node);
+	setUpEditSentenceDialogView(description, type, node);
 	setUpEditSentenceDialogContext(id, description, type);
 }
 
 /**
  * fills HTML view-protion of dialog with contents
  */
-function setUpEditSentenceDialogView(description, type,node) {
+function setUpEditSentenceDialogView(description, type, node) {
 
 	document.getElementById("dialog-content").innerHTML = "";
 	document.getElementById("dialog").classList.remove("aui-dialog2-large");
@@ -681,12 +708,11 @@ function setUpEditSentenceDialogView(description, type,node) {
 					+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
 					+ "</form>");
 
-
 	var knowledgeTypes = conDecAPI.knowledgeTypes;
-	if(knowledgeTypes.includes("Issue") && knowledgeTypes.includes("Problem")){
+	if (knowledgeTypes.includes("Issue") && knowledgeTypes.includes("Problem")) {
 		var index = knowledgeTypes.indexOf("Issue");
 		if (index > -1) {
-		  knowledgeTypes.splice(index, 1);
+			knowledgeTypes.splice(index, 1);
 		}
 	}
 	for (var index = 0; index < knowledgeTypes.length; index++) {
@@ -695,7 +721,7 @@ function setUpEditSentenceDialogView(description, type,node) {
 		if (node.includes(knowledgeTypes[index].toLowerCase()) || node === knowledgeTypes[index]) {
 			isSelected = "selected ";
 		}
-	
+
 		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
 				+ knowledgeTypes[index] + "'>" + knowledgeTypes[index] + "</option>");
 	}
@@ -731,13 +757,11 @@ function setUpEditSentenceDialogContext(id, description, type) {
 								AJS.dialog2("#dialog").hide();
 								conDecObservable.notify();
 							}
-							
+
 						});
 	};
 	AJS.$("#form-select-type").auiSelect2();
 }
-
-
 
 // local usage only
 var contextMenuCreateIssueFromSentence = {
@@ -747,16 +771,15 @@ var contextMenuCreateIssueFromSentence = {
 	"action" : function(position) {
 		var id = getSelectedTreeViewerNodeId(position);
 		console.log(id);
-		conDecAPI.createIssueFromSentence(id,conDecObservable.notify);
+		conDecAPI.createIssueFromSentence(id, conDecObservable.notify);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-	
+
 		console.log(id);
-		conDecAPI.createIssueFromSentence(id,conDecObservable.notify);
+		conDecAPI.createIssueFromSentence(id, conDecObservable.notify);
 	}
 };
-
 
 /**
  * local resets tree viewer and builds it again
@@ -776,13 +799,13 @@ var contextMenuActionsForSentences = {
 	"edit" : contextMenuEditSentenceAction,
 	"deleteLink" : contextMenuDeleteSentenceLinkAction,
 	"delete" : contextMenuDeleteSentenceAction,
-	"createIssue": contextMenuCreateIssueFromSentence,
+	"createIssue" : contextMenuCreateIssueFromSentence,
 	"changeKt" : changeKnowledgeTypeAction
 };
 
 var contextMenuActionsForSentencesInTreant = {
 	"edit" : contextMenuEditSentenceAction,
 	"deleteLink" : contextMenuDeleteSentenceLinkAction,
-	"createIssue": contextMenuCreateIssueFromSentence,
+	"createIssue" : contextMenuCreateIssueFromSentence,
 	"delete" : contextMenuDeleteSentenceAction
 };
