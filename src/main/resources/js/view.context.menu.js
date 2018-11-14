@@ -1,4 +1,26 @@
 // TODO create closure/object
+(function(global) {
+
+    var ConDecContext = function ConDecContext() {
+    };
+
+    ConDecContext.prototype.setUpContext = function setUpContext(){
+        $(document).ready(function () {
+            var nodes = document.getElementsByClassName("node");
+            var i;
+            for(i=0; i<nodes.length ; i++){
+                nodes[i].addEventListener('contextmenu', function(ev) {
+                    document.getElementById("context").style.display = "block";
+                    document.querySelector('#context').removeAttribute('hidden');
+                });
+            }
+        });
+    };
+
+    // export ConDecContext
+    global.conDecContext = new ConDecContext();
+})(window);
+
 /**
  * This module is responsible for:
  * + showing a context menu upon left mouse click
@@ -408,8 +430,12 @@ var contextMenuSetAsRootAction = {
 var contextMenuOpenJiraIssueAction = {
 	// label for Tree Viewer, name for Treant context menu
 	"name" : openIssueText,
-	"callback" : function(key, options) {
+    "onload" : function () {
+        alert(Test);
+    },
+    "callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
+
 		if (window.conDecKnowledgePage !== undefined) {
 			window.conDecKnowledgePage.openIssue(id);
 		}				

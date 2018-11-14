@@ -23,13 +23,14 @@
 	var i18n = null;
 	var conDecObservable = null;
 	var conDecAPI = null;
+	var conDecContext = null;
 	var treant = null;
 	var treeViewer = null;
 
 	var ConDecKnowledgePage = function ConDecKnowledgePage() {
 	};
 
-	ConDecKnowledgePage.prototype.init = function(_conDecAPI, _conDecObservable, _treant, _treeViewer, _contextMenu, _i18n) {
+	ConDecKnowledgePage.prototype.init = function(_conDecAPI, _conDecObservable, _conDecContext, _treant, _treeViewer, _contextMenu, _i18n) {
 		console.log("view.decision.knowledge.page init");
 
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable) && isConDecTreantType(_treant)
@@ -39,6 +40,7 @@
 			
 			//TODO: Register/Subscribe as observer
 			conDecObservable = _conDecObservable;
+			conDecContext = _conDecContext;
 			treant = _treant;
 			treeViewer = _treeViewer;
 			contextMenu = _contextMenu;
@@ -66,11 +68,19 @@
 		console.log("view.decision.knowledge.page openIssue");
 
 		// only allow this in case the selected node is a JIRA issue, for sentences map to JIRA issue
-		conDecAPI.getDecisionKnowledgeElement(nodeId, function(decisionKnowledgeElement) {
-			var baseUrl = AJS.params.baseURL;
-			var key = decisionKnowledgeElement.key;
-			global.open(baseUrl + "/browse/" + key, '_blank');
-		});
+        $( document ).ready(function() {
+            conDecAPI.getDecisionKnowledgeElement(nodeId, function (decisionKnowledgeElement) {
+                var baseUrl = AJS.params.baseURL;
+                var key = decisionKnowledgeElement.key;
+                var spans = document.getElementsByTagName("span");
+                for (var index = 0; index < spans.length; index++) {
+                    if (spans[index].innerText == "Open JIRA Issue") {
+                        spans[index].innerHTML = '<a href="">Visit W3Schools</a>';
+                        console.log(spans[index]);
+                    }
+                }
+            });
+        });
 	};
 
 	function initializeDecisionKnowledgePage(conDecAPI, treant, treeViewer) {

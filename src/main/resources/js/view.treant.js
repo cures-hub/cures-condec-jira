@@ -49,7 +49,7 @@ function createTreant(treeStructure, isInteractive, contextMenuActions) {
 	treantTree = new Treant(treeStructure);
 	if (isInteractive !== undefined && isInteractive) {
 		createContextMenuForTreantNodesThatAreSentence();
-		createContextMenuForTreantNodes(contextMenuActions);
+		addContextMenu();
 		addDragAndDropSupportForTreant();
 		addTooltip();
 	}
@@ -184,6 +184,11 @@ function addTooltip() {
 		AJS.$("#" + nodes[i].id).tooltip();
 	}
 }
+
+function addContextMenu(){
+    console.log("view.treant.js addContextMenu");
+    conDecContext.setUpContext();
+   }
 
 function addCommits(commits, elementArray) {
 	console.log("view.treant.js addCommits");

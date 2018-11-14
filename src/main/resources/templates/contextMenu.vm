@@ -1,0 +1,12 @@
+<div id="context" class="contextMenu" hidden>
+    <h2>eigenes Kontextmenü</h2>
+    <ul>
+        <li><button id="hide">verstecken</button></li>
+        <li><button id="show">Anzeigen</button>
+            <ul>
+                <li><button id="showUrl">URL anzeigen</button></li>
+                <li><button id="showSrc">SRC anzeigen</button></li>
+            </ul></li>
+        <li><button id="move">1x normales Kontextmenü</button></li>
+    </ul>
+</div>
