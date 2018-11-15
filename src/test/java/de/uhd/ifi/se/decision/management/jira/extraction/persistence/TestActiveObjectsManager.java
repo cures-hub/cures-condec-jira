@@ -27,7 +27,6 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -157,7 +156,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE, "");
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(id);
 		//Important that sentence object has no tags
-		assertEquals( "testobject",new SentenceImpl(element.getId()).getBody().trim());
+		assertEquals( "testobject",element.getBody().trim());
 		assertEquals(element.getKnowledgeTypeString(), KnowledgeType.ALTERNATIVE.toString());
 		assertEquals("{Alternative} testobject {Alternative}",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
@@ -171,7 +170,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 
 		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE, "");
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(id);
-		assertEquals(new SentenceImpl(element.getId()).getBody().trim(), "testobject");
+		assertEquals(element.getBody().trim(), "testobject");
 		assertEquals(element.getKnowledgeTypeString(), KnowledgeType.ALTERNATIVE.toString());
 		assertEquals("some sentence in front. {Alternative} testobject {Alternative}",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
@@ -185,7 +184,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 
 		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE, "");
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(id);
-		assertEquals(new SentenceImpl(element.getId()).getBody(), " testobject ");
+		assertEquals(element.getBody(), " testobject ");
 		assertEquals(element.getKnowledgeTypeString(), KnowledgeType.ALTERNATIVE.toString());
 		assertEquals("some sentence in front. {Alternative} testobject {Alternative} some sentence in the back.",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
@@ -198,7 +197,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
 		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.OTHER, "Pro");
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(id);
-		assertEquals( " testobject ",new SentenceImpl(element.getId()).getBody());
+		assertEquals( " testobject ",element.getBody());
 		assertEquals(element.getKnowledgeTypeString(), "Pro");
 		assertEquals("some sentence in front. {Pro} testobject {Pro} some sentence in the back.",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());

@@ -457,7 +457,7 @@ public class ActiveObjectsManager {
 		List<DecisionKnowledgeElement> elements = new ArrayList<>();
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ?", projectKey, issueId))) {
-			elements.add(new SentenceImpl(databaseEntry.getId()));
+			elements.add(new SentenceImpl(databaseEntry));
 		}
 
 		return elements;
@@ -496,7 +496,7 @@ public class ActiveObjectsManager {
 					Sentence sentence = null;
 					boolean deleteFlag = false;
 					try {
-						sentence = new SentenceImpl(databaseEntry.getId());
+						sentence = new SentenceImpl(databaseEntry);
 						ComponentAccessor.getCommentManager().getCommentById(sentence.getCommentId());
 					} catch (Exception e) {
 						deleteFlag = true;
@@ -551,7 +551,7 @@ public class ActiveObjectsManager {
 		});
 		List<DecisionKnowledgeElement> listOfDKE = new ArrayList<>();
 		for (DecisionKnowledgeInCommentEntity dke : listOfDbEntries) {
-			listOfDKE.add(new SentenceImpl(dke.getId()));
+			listOfDKE.add(new SentenceImpl(dke));
 		}
 		return listOfDKE;
 	}

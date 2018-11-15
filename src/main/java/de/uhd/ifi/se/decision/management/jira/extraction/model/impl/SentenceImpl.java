@@ -52,17 +52,12 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
 
-	public SentenceImpl(long id) {
-		this();
-		super.setId(id);
-		retrieveAttributesFromActievObjects();
-		retrieveBodyFromJiraComment();
-	}
-
 	public SentenceImpl(DecisionKnowledgeInCommentEntity databaseEntry) throws NullPointerException {
-		this(databaseEntry.getId(), databaseEntry.getEndSubstringCount(), databaseEntry.getStartSubstringCount(), databaseEntry.getUserId(), databaseEntry.isTagged(),	
-				databaseEntry.isRelevant(), databaseEntry.isTaggedFineGrained(), databaseEntry.isTaggedManually(), databaseEntry.getProjectKey(),
-				databaseEntry.getArgument(), databaseEntry.getCommentId(), databaseEntry.getIssueId(), databaseEntry.getKnowledgeTypeString());
+		this(databaseEntry.getId(), databaseEntry.getEndSubstringCount(), databaseEntry.getStartSubstringCount(),
+				databaseEntry.getUserId(), databaseEntry.isTagged(), databaseEntry.isRelevant(),
+				databaseEntry.isTaggedFineGrained(), databaseEntry.isTaggedManually(), databaseEntry.getProjectKey(),
+				databaseEntry.getArgument(), databaseEntry.getCommentId(), databaseEntry.getIssueId(),
+				databaseEntry.getKnowledgeTypeString());
 	}
 
 	public SentenceImpl(long id, int endSubstringCount, int startSubstringCount, long userId, boolean isTagged,
@@ -94,8 +89,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		}
 		retrieveBodyFromJiraComment();
 	}
-
-
 
 	@Override
 	public boolean isRelevant() {
@@ -324,37 +317,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 			this.created = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getCreated();
 		}
 	}
-
-	private void retrieveAttributesFromActievObjects() {
-		insertAoValues((Sentence) ActiveObjectsManager.getElementFromAO(super.getId()));
-	}
-
-	private void insertAoValues(Sentence aoElement) {
-		this.setEndSubstringCount(aoElement.getEndSubstringCount());
-		this.setStartSubstringCount(aoElement.getStartSubstringCount());
-		this.setUserId(aoElement.getUserId());
-		this.setTagged(aoElement.isTagged());
-		this.setRelevant(aoElement.isRelevant());
-		this.setTaggedFineGrained(aoElement.isTaggedFineGrained());
-		this.setTaggedManually(aoElement.isTaggedManually());
-		this.setProjectKey(aoElement.getProjectKey());
-		this.setArgument(aoElement.getArgument());
-		this.setCommentId(aoElement.getCommentId());
-		this.setIssueId(aoElement.getIssueId());
-		super.setProject(new DecisionKnowledgeProjectImpl(aoElement.getProjectKey()));
-		String kt = aoElement.getKnowledgeTypeString();
-		if (kt == null || kt.equals("")) {
-			super.type = KnowledgeType.OTHER;
-		} else {
-			super.type = KnowledgeType.getKnowledgeType(kt);
-			this.setKnowledgeTypeString(kt);
-		}
-		MutableIssue mutableIssue = ComponentAccessor.getIssueManager().getIssueObject(this.getIssueId());
-		if (mutableIssue != null) {
-			super.setKey(mutableIssue.getKey() + ":" + this.getId());
-		}
-	}
-
 
 	@Override
 	public void setIssueId(long issueId) {

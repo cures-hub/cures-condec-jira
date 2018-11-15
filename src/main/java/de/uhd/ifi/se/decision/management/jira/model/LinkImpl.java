@@ -9,7 +9,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLink;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
 
@@ -151,7 +151,7 @@ public class LinkImpl implements Link {
 
 	private DecisionKnowledgeElement instantiateElement(String elementIdWithPrefix) {
 		if (elementIdWithPrefix.startsWith("s")) {
-			return new SentenceImpl(GenericLinkManager.getId(elementIdWithPrefix));
+			return ActiveObjectsManager.getElementFromAO(GenericLinkManager.getId(elementIdWithPrefix));
 		}
 		if (elementIdWithPrefix.startsWith("i")) {
 			Issue issue = ComponentAccessor.getIssueManager()
