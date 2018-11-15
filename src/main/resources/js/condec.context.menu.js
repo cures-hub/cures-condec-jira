@@ -7,7 +7,17 @@
 	var isContextMenuOpen;
 
 	var ConDecContextMenu = function ConDecContextMenu() {
+		$(global).blur(hideContextMenu);
+		$(document).click(hideContextMenu);
 	};
+
+	function hideContextMenu() {
+		if (isContextMenuOpen) {
+			console.log("contextmenu closed");
+			document.querySelector("#condec-context-menu").setAttribute('aria-hidden', 'true');
+		}
+		isContextMenuOpen = false;
+	}
 
 	ConDecContextMenu.prototype.setUpContext = function setUpContext() {
 		$(document).ready(function() {
@@ -29,31 +39,16 @@
 			}
 
 			// TODO Move to TreeViewer closure object
-			var jsTreeNodes = document.getElementsByClassName("jstree-node");
-			var j;
-			for (j = 0; j < jsTreeNodes.length; j++) {
-				jsTreeNodes[j].addEventListener('contextmenu', function(event) {
-					event.preventDefault();
-					var left = event.pageX;
-					var top = event.pageY;
-					console.log(left);
-					console.log(top);
+			jQueryConDec("#jstree").on("contextmenu.jstree", function(event) {
+				event.preventDefault();
+				var left = event.pageX;
+				var top = event.pageY;
+				console.log(left);
+				console.log(top);
 
-					// TODO: This provides only the id for the root element, find the correct ids
-					console.log(this.id);
-					createContextMenu(left, top, this.id);
-				});
-			}
-
-			function hideContextMenu() {
-				if (isContextMenuOpen) {
-					console.log("contextmenu closed");
-					document.querySelector("#condec-context-menu").setAttribute('aria-hidden', 'true');
-				}
-				isContextMenuOpen = false;
-			}
-			$(global).blur(hideContextMenu);
-			$(document).click(hideContextMenu);
+				console.log(event.target.parentNode.id);
+				createContextMenu(left, top, event.target.parentNode.id);
+			});
 		});
 	};
 
@@ -106,6 +101,8 @@
 			}
 		};
 	}
+
+	ConDecContextMenu.prototype.createContextMenu = createContextMenu;
 
 	// export ConDecContext
 	global.conDecContextMenu = new ConDecContextMenu();
@@ -263,7 +260,7 @@ var contextMenuDeleteSentenceAction = {
 		conDecAPI.setSentenceIrrelevant(id, function(core, node) {
 			jQueryConDec("#jstree").jstree(true).set_icon(jQueryConDec("#jstree").jstree(true).get_node(id),
 					"https://player.fm/static/images/128pixel.png");
-			if (!(document.getElementById("Relevant") == null)) {
+			if (!(document.getElementById("Relevant") === null)) {
 				document.getElementById("ui" + id).getElementsByClassName("tag")[0].textContent = "";
 				document.getElementById("ui" + id).getElementsByClassName("tag")[1].textContent = "";
 				document.getElementById("ui" + id).classList.remove("Decision", "Issue", "Alternative", "Pro", "Con");

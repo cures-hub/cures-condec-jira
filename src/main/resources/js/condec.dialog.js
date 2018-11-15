@@ -361,7 +361,7 @@
 							description,
 							type,
 							function() {
-								if (!(document.getElementById("Relevant") == null)) {
+								if (!(document.getElementById("Relevant") === null)) {
 									var idOfUiElement = "ui" + id;
 									replaceTagsFromContent(idOfUiElement, type);
 
@@ -374,7 +374,6 @@
 									AJS.dialog2("#dialog").hide();
 									conDecObservable.notify();
 								}
-
 							});
 		};
 		AJS.$("#form-select-type").auiSelect2();
