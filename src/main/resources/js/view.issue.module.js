@@ -32,12 +32,10 @@
 			_treant, _i18n) {
 		console.log("view.issue.module init");
 
-		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable) && isConDecTreantType(_treant)
-				&& isConDecContextMenuType(_conDecContextMenu) // not using and
-		// thus not
-		// checking i18n
-		// yet.
-		) {
+		// TODO: Add i18n support and check i18n
+		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
+				&& isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
+				&& isConDecTreantType(_treant)) {
 			conDecAPI = _conDecAPI;
 
 			// TODO: Register/Subscribe as observer
@@ -112,9 +110,9 @@
 		return true;
 	}
 
-	function isConDecTreantType(buildTreant) {
-		if (!(buildTreant !== undefined && buildTreant.buildTreant !== undefined && typeof buildTreant.buildTreant === 'function')) {
-			console.warn("ConDecIssueModule: invalid buildTreant object received.");
+	function isConDecDialogType(conDecDialog) {
+		if (!(conDecDialog !== undefined && conDecDialog.showCreateDialog !== undefined && typeof conDecDialog.showCreateDialog === 'function')) {
+			console.warn("ConDecDialog: invalid conDecDialog object received.");
 			return false;
 		}
 		return true;
@@ -123,6 +121,14 @@
 	function isConDecContextMenuType(conDecContextMenu) {
 		if (!(conDecContextMenu !== undefined && conDecContextMenu.createContextMenu !== undefined && typeof conDecContextMenu.createContextMenu === 'function')) {
 			console.warn("ConDecContextMenu: invalid conDecContextMenu object received.");
+			return false;
+		}
+		return true;
+	}
+
+	function isConDecTreantType(buildTreant) {
+		if (!(buildTreant !== undefined && buildTreant.buildTreant !== undefined && typeof buildTreant.buildTreant === 'function')) {
+			console.warn("ConDecIssueModule: invalid buildTreant object received.");
 			return false;
 		}
 		return true;

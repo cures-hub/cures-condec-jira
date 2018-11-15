@@ -34,16 +34,10 @@
 			_treant, _treeViewer, _i18n) {
 		console.log("view.decision.knowledge.page init");
 
-		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable) && isConDecTreantType(_treant)
-				&& isConDecTreeViewerType(_treeViewer) && isConDecContextMenuType(_conDecContextMenu) // not
-																										// using
-																										// and
-																										// thus
-																										// not
-																										// checking
-																										// i18n
-																										// yet.
-		) {
+		// TODO: Add i18n support and check i18n
+		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
+				&& isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
+				&& isConDecTreantType(_treant) && isConDecTreeViewerType(_treeViewer)) {
 			conDecAPI = _conDecAPI;
 
 			// TODO: Register/Subscribe as observer
@@ -156,9 +150,9 @@
 		return true;
 	}
 
-	function isConDecTreantType(treant) {
-		if (!(treant !== undefined && treant.buildTreant !== undefined && typeof treant.buildTreant === 'function')) {
-			console.warn("ConDecKnowledgePage: invalid treant object received.");
+	function isConDecDialogType(conDecDialog) {
+		if (!(conDecDialog !== undefined && conDecDialog.showCreateDialog !== undefined && typeof conDecDialog.showCreateDialog === 'function')) {
+			console.warn("ConDecDialog: invalid conDecDialog object received.");
 			return false;
 		}
 		return true;
@@ -167,6 +161,14 @@
 	function isConDecContextMenuType(conDecContextMenu) {
 		if (!(conDecContextMenu !== undefined && conDecContextMenu.createContextMenu !== undefined && typeof conDecContextMenu.createContextMenu === 'function')) {
 			console.warn("ConDecContextMenu: invalid conDecContextMenu object received.");
+			return false;
+		}
+		return true;
+	}
+
+	function isConDecTreantType(treant) {
+		if (!(treant !== undefined && treant.buildTreant !== undefined && typeof treant.buildTreant === 'function')) {
+			console.warn("ConDecKnowledgePage: invalid treant object received.");
 			return false;
 		}
 		return true;
