@@ -74,7 +74,7 @@
                 var key = decisionKnowledgeElement.key;
                 var spans = document.getElementsByTagName("span");
                 for (var index = 0; index < spans.length; index++) {
-                    if (spans[index].innerText == "Open JIRA Issue") {
+                    if (spans[index].innerText === "Open JIRA Issue") {
                         spans[index].innerHTML = '<a href="">Visit W3Schools</a>';
                         console.log(spans[index]);
                     }

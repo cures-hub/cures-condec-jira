@@ -1,56 +1,48 @@
 // TODO create closure/object
 (function(global) {
 
+	var isContextMenuOpen;
+
 	var ConDecContext = function ConDecContext() {
 	};
 
 	ConDecContext.prototype.setUpContext = function setUpContext() {
-		var isContextMenuOpen;
-
 		$(document).ready(function() {
-			var nodes = document.getElementsByClassName("node");
+			var treantNodes = document.getElementsByClassName("node");
 			var i;
-			for (i = 0; i < nodes.length; i++) {
-				nodes[i].addEventListener('contextmenu', function(event) {
+			for (i = 0; i < treantNodes.length; i++) {
+				treantNodes[i].addEventListener('contextmenu', function(event) {
 					event.preventDefault();
-					isContextMenuOpen = true;
-
 					// TODO Find correct position in issue module
 					var left = event.pageX;
 					var top = event.pageY;
-					console.log("contextmenu opened");
 					console.log(left);
 					console.log(top);
-					$("#condec-context-menu").css({
-						left : left,
-						top : top
-					});
-					document.querySelector("#condec-context-menu").setAttribute('aria-hidden', 'false');
-
-					// TODO handle node id
-					var id = event.target.id
+					
+					// TODO getting node id sometimes fails
+					var id = event.target.id;
 					console.log(event.target.id);
-
-					document.getElementById("condec-context-menu-create-item").onclick = function() {
-						setUpDialogForCreateAction(id);
-					};
-					document.getElementById("condec-context-menu-edit-item").onclick = function() {
-						setUpDialogForEditAction(id);
-					};
-					document.getElementById("condec-context-menu-change-type-item").onclick = function() {
-						setUpDialogForChangeTypeAction(id);
-					};
-					document.getElementById("condec-context-menu-link-item").onclick = function() {
-						setUpDialogForLinkAction(id);
-					};
-					document.getElementById("condec-context-menu-delete-link-item").onclick = function() {
-						setUpDialogForDeleteLinkAction(id);
-					};
-					document.getElementById("condec-context-menu-delete-item").onclick = function() {
-						setUpDialogForDeleteAction(id);
-					};
+					createContextMenu(left, top, id);
 				});
 			}
+			
+			var jsTreeNodes = document.getElementsByClassName("jstree-node");
+			var j;
+			for (j = 0; j < jsTreeNodes.length; j++) {
+				jsTreeNodes[j].addEventListener('contextmenu', function(event) {
+					event.preventDefault();
+					var left = event.pageX;
+					var top = event.pageY;
+					console.log(left);
+					console.log(top);
+					
+					// TODO Get node id for jstree nodes, this does not work
+					var id = event.target.id;
+					console.log(event.target.id);
+					createContextMenu(left, top, id);
+				});
+			}
+			
 			function hideContextmenu() {
 				if (isContextMenuOpen) {
 					console.log("contextmenu closed");
@@ -58,12 +50,41 @@
 				}
 				isContextMenuOpen = false;
 			}
-
 			$(global).blur(hideContextmenu);
-
 			$(document).click(hideContextmenu);
 		});
 	};
+
+	function createContextMenu(posX, posY, id) {
+		isContextMenuOpen = true;
+		console.log("contextmenu opened");
+
+		$("#condec-context-menu").css({
+			left : posX,
+			top : posY
+		});
+		document.querySelector("#condec-context-menu").setAttribute('aria-hidden', 'false');
+
+		document.getElementById("condec-context-menu-create-item").onclick = function() {
+			setUpDialogForCreateAction(id);
+		};
+		document.getElementById("condec-context-menu-edit-item").onclick = function() {
+			setUpDialogForEditAction(id);
+		};
+		document.getElementById("condec-context-menu-change-type-item").onclick = function() {
+			setUpDialogForChangeTypeAction(id);
+		};
+		document.getElementById("condec-context-menu-link-item").onclick = function() {
+			setUpDialogForLinkAction(id);
+		};
+		document.getElementById("condec-context-menu-delete-link-item").onclick = function() {
+			var parentId = findParentId(id);
+			setUpDialogForDeleteLinkAction(id, parentId);
+		};
+		document.getElementById("condec-context-menu-delete-item").onclick = function() {
+			setUpDialogForDeleteAction(id);
+		};
+	}
 
 	// export ConDecContext
 	global.conDecContext = new ConDecContext();
