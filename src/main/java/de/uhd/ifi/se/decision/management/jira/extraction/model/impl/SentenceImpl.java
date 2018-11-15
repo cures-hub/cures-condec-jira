@@ -56,24 +56,46 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this();
 		super.setId(id);
 		retrieveAttributesFromActievObjects();
-		retrieveBodyFromJiraComment();		
-	}
-
-	public SentenceImpl(String body, long id) {
-		this();
-		super.setId(id);
-		retrieveAttributesFromActievObjects();
-		this.setBody(body);
-		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
+		retrieveBodyFromJiraComment();
 	}
 
 	public SentenceImpl(DecisionKnowledgeInCommentEntity databaseEntry) throws NullPointerException {
-		this();
-		super.setId(databaseEntry.getId());
-		this.insertAoValues(databaseEntry);
-		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
-		retrieveBodyFromJiraComment();		
+		this(databaseEntry.getId(), databaseEntry.getEndSubstringCount(), databaseEntry.getStartSubstringCount(), databaseEntry.getUserId(), databaseEntry.isTagged(),	
+				databaseEntry.isRelevant(), databaseEntry.isTaggedFineGrained(), databaseEntry.isTaggedManually(), databaseEntry.getProjectKey(),
+				databaseEntry.getArgument(), databaseEntry.getCommentId(), databaseEntry.getIssueId(), databaseEntry.getKnowledgeTypeString());
 	}
+
+	public SentenceImpl(long id, int endSubstringCount, int startSubstringCount, long userId, boolean isTagged,
+			boolean isRelevant, boolean isTaggedFineGrained, boolean isTaggedManually, String projectKey,
+			String argument, long commentId, long issueId, String knowledgeTypeString) {
+		this();
+		super.setId(id);
+		this.setEndSubstringCount(endSubstringCount);
+		this.setStartSubstringCount(startSubstringCount);
+		this.setUserId(userId);
+		this.setTagged(isTagged);
+		this.setRelevant(isRelevant);
+		this.setTaggedFineGrained(isTaggedFineGrained);
+		this.setTaggedManually(isTaggedManually);
+		this.setProjectKey(projectKey);
+		this.setArgument(argument);
+		this.setCommentId(commentId);
+		this.setIssueId(issueId);
+		super.setProject(new DecisionKnowledgeProjectImpl(projectKey));
+		if (knowledgeTypeString == null || knowledgeTypeString.equals("")) {
+			super.type = KnowledgeType.OTHER;
+		} else {
+			super.type = KnowledgeType.getKnowledgeType(knowledgeTypeString);
+			this.setKnowledgeTypeString(knowledgeTypeString);
+		}
+		MutableIssue mutableIssue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
+		if (mutableIssue != null) {
+			super.setKey(mutableIssue.getKey() + ":" + this.getId());
+		}
+		retrieveBodyFromJiraComment();
+	}
+
+
 
 	@Override
 	public boolean isRelevant() {
@@ -182,9 +204,9 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	@Override
 	public void setKnowledgeTypeString(String type) {
-		if(type == null) {
+		if (type == null) {
 			super.type = KnowledgeType.OTHER;
-		}else if (type.equalsIgnoreCase("pro")) {
+		} else if (type.equalsIgnoreCase("pro")) {
 			super.type = KnowledgeType.ARGUMENT;
 			this.argument = "Pro";
 		} else if (type.equalsIgnoreCase("con")) {
@@ -251,20 +273,21 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.excludedTagList) >= 0) {
 			this.isPlainText = false;
 		}
-		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisintg(body,this.projectKey)
+		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisintg(body, this.projectKey)
 				|| (ConfigPersistence.isIconParsing(projectKey)
 						&& StringUtils.indexOfAny(body, CommentSplitter.manualRationalIconList) >= 0)) {
-			this.setKnowledgeTypeString(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey,true));
+			this.setKnowledgeTypeString(
+					CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey, true));
 			setManuallyTagged();
 			stripTagsFromBody(body);
 		}
 	}
 
 	private void stripTagsFromBody(String body) {
-		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisintg(body,this.projectKey)) {
+		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisintg(body, this.projectKey)) {
 			int tagLength = 2
 					+ CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey, true).length();
-			super.setDescription(body.substring(tagLength, body.length() - ( tagLength)));
+			super.setDescription(body.substring(tagLength, body.length() - (tagLength)));
 			super.setSummary(super.getDescription());
 		} else {
 			super.setDescription(body.replaceAll("\\(.*?\\)", ""));
@@ -290,7 +313,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	private void retrieveBodyFromJiraComment() {
-		if(this.commentId != 0 && this.commentId > 0) {
+		if (this.commentId != 0 && this.commentId > 0) {
 			String text = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getBody();
 			if (this.endSubstringCount < text.length()) {
 				text = text.substring(this.startSubstringCount, this.endSubstringCount);
@@ -307,32 +330,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	private void insertAoValues(Sentence aoElement) {
-		this.setEndSubstringCount(aoElement.getEndSubstringCount());
-		this.setStartSubstringCount(aoElement.getStartSubstringCount());
-		this.setUserId(aoElement.getUserId());
-		this.setTagged(aoElement.isTagged());
-		this.setRelevant(aoElement.isRelevant());
-		this.setTaggedFineGrained(aoElement.isTaggedFineGrained());
-		this.setTaggedManually(aoElement.isTaggedManually());
-		this.setProjectKey(aoElement.getProjectKey());
-		this.setArgument(aoElement.getArgument());
-		this.setCommentId(aoElement.getCommentId());
-		this.setIssueId(aoElement.getIssueId());
-		super.setProject(new DecisionKnowledgeProjectImpl(aoElement.getProjectKey()));
-		String kt = aoElement.getKnowledgeTypeString();
-		if (kt == null || kt.equals("")) {
-			super.type = KnowledgeType.OTHER;
-		} else {
-			super.type = KnowledgeType.getKnowledgeType(kt);
-			this.setKnowledgeTypeString(kt);
-		}
-		MutableIssue mutableIssue = ComponentAccessor.getIssueManager().getIssueObject(this.getIssueId());
-		if (mutableIssue != null) {
-			super.setKey(mutableIssue.getKey() + ":" + this.getId());
-		}
-	}
-	
-	private void insertAoValues(DecisionKnowledgeInCommentEntity aoElement) {
 		this.setEndSubstringCount(aoElement.getEndSubstringCount());
 		this.setStartSubstringCount(aoElement.getStartSubstringCount());
 		this.setUserId(aoElement.getUserId());

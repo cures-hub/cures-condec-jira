@@ -165,6 +165,8 @@ public class ActiveObjectsManager {
 		}
 		return new SentenceImpl();
 	}
+	
+
 
 	public static void setSentenceKnowledgeType(Sentence sentence) {
 		init();

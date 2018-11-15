@@ -66,7 +66,7 @@ public class CommentImpl implements Comment {
 			if(startIndex >= 0 && endIndex >= 0 &&(endIndex - startIndex) >0 && this.body.substring(startIndex, endIndex).replaceAll("\r\n", "").trim().length() > 1) {
 				long aoId2 = ActiveObjectsManager.addNewSentenceintoAo(this.jiraCommentId, endIndex, startIndex,
 						this.authorId, this.issueId, this.projectKey);
-				Sentence sentence = new SentenceImpl(this.body.substring(startIndex, endIndex), aoId2);
+				Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(aoId2);
 				sentence.setCreated(this.created);
 				this.sentences.add(sentence);
 			}
