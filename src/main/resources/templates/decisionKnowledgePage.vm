@@ -25,17 +25,17 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
     </div>
     <div id="treant-container" class="right"></div>
 </div>
+#include("templates/dialog.vm")
+#include("templates/contextMenu.vm")
 <script>
 /*
 instantiate the ConDecKnowledgePage object controlling this view
 */
 $(document).ready(function(){
-    if ( window.conDecKnowledgePage.init(conDecAPI, conDecObservable, conDecContext,window, window, window, window) )
+    if ( window.conDecKnowledgePage.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, window, window, window) )
         window.conDecKnowledgePage.fetchAndRender();
     else {
         console.error("ConDecKnowledgePage could not get its dependencies.");
     }
 });
 </script>
-#include("templates/contextMenu.vm")
-#include("templates/dialog.vm")

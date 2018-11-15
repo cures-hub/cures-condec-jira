@@ -1,12 +1,15 @@
-// TODO create closure/object
+/*
+ * This module is responsible for showing a context menu upon right mouse click.
+ * 
+ */
 (function(global) {
 
 	var isContextMenuOpen;
 
-	var ConDecContext = function ConDecContext() {
+	var ConDecContextMenu = function ConDecContextMenu() {
 	};
 
-	ConDecContext.prototype.setUpContext = function setUpContext() {
+	ConDecContextMenu.prototype.setUpContext = function setUpContext() {
 		$(document).ready(function() {
 			var treantNodes = document.getElementsByClassName("node");
 			var i;
@@ -18,14 +21,14 @@
 					var top = event.pageY;
 					console.log(left);
 					console.log(top);
-					
+
 					// TODO getting node id sometimes fails
 					var id = event.target.id;
 					console.log(event.target.id);
 					createContextMenu(left, top, id);
 				});
 			}
-			
+
 			var jsTreeNodes = document.getElementsByClassName("jstree-node");
 			var j;
 			for (j = 0; j < jsTreeNodes.length; j++) {
@@ -35,23 +38,23 @@
 					var top = event.pageY;
 					console.log(left);
 					console.log(top);
-					
+
 					// TODO Get node id for jstree nodes, this does not work
 					var id = event.target.id;
 					console.log(event.target.id);
 					createContextMenu(left, top, id);
 				});
 			}
-			
-			function hideContextmenu() {
+
+			function hideContextMenu() {
 				if (isContextMenuOpen) {
 					console.log("contextmenu closed");
 					document.querySelector("#condec-context-menu").setAttribute('aria-hidden', 'true');
 				}
 				isContextMenuOpen = false;
 			}
-			$(global).blur(hideContextmenu);
-			$(document).click(hideContextmenu);
+			$(global).blur(hideContextMenu);
+			$(document).click(hideContextMenu);
 		});
 	};
 
@@ -66,68 +69,29 @@
 		document.querySelector("#condec-context-menu").setAttribute('aria-hidden', 'false');
 
 		document.getElementById("condec-context-menu-create-item").onclick = function() {
-			setUpDialogForCreateAction(id);
+			conDecDialog.setUpDialogForCreateAction(id);
 		};
 		document.getElementById("condec-context-menu-edit-item").onclick = function() {
-			setUpDialogForEditAction(id);
+			conDecDialog.setUpDialogForEditAction(id);
 		};
 		document.getElementById("condec-context-menu-change-type-item").onclick = function() {
-			setUpDialogForChangeTypeAction(id);
+			conDecDialog.setUpDialogForChangeTypeAction(id);
 		};
 		document.getElementById("condec-context-menu-link-item").onclick = function() {
-			setUpDialogForLinkAction(id);
+			conDecDialog.setUpDialogForLinkAction(id);
 		};
 		document.getElementById("condec-context-menu-delete-link-item").onclick = function() {
 			var parentId = findParentId(id);
-			setUpDialogForDeleteLinkAction(id, parentId);
+			conDecDialog.setUpDialogForDeleteLinkAction(id, parentId);
 		};
 		document.getElementById("condec-context-menu-delete-item").onclick = function() {
-			setUpDialogForDeleteAction(id);
+			conDecDialog.setUpDialogForDeleteAction(id);
 		};
 	}
 
 	// export ConDecContext
-	global.conDecContext = new ConDecContext();
+	global.conDecContextMenu = new ConDecContextMenu();
 })(window);
-
-/**
- * This module is responsible for: + showing a context menu upon left mouse
- * click ++ on a sentence or on an issue element + building the context menu ++
- * setUpDialogForCreateAction ++ setUpDialogForLinkAction ++
- * setUpDialogForEditAction ++ setUpDialogForDeleteAction ++
- * setUpDialogForDeleteLinkAction ++ setUpDialogForEditSentenceAction + opening
- * a dialog + pre-filling the dialog depending on action and element + setting
- * the click event for closing the dialog (too many times)
- * 
- * 
- */
-
-// closure locals
-var conDecDialogOnHideSet = false;
-
-/* TODO replace labels with a i18n resource */
-var makeRootText = "Set as Root";
-var openIssueText = "Open JIRA Issue";
-var createKnowledgeElementText = "Add Element";
-var linkKnowledgeElementText = "Link Existing Element";
-var deleteLinkToParentText = "Delete Link to Parent";
-var editKnowledgeElementText = "Edit Element";
-var deleteKnowledgeElementText = "Delete Element";
-var changeKnowledgeTypeText = "Change Element Type";
-
-var contextMenuCreateAction = {
-	// label for Tree Viewer, name for Treant context menu
-	"label" : createKnowledgeElementText,
-	"name" : createKnowledgeElementText,
-	"action" : function(position) {
-		var id = getSelectedTreeViewerNodeId(position);
-		setUpDialogForCreateAction(id);
-	},
-	"callback" : function(key, options) {
-		var id = getSelectedTreantNodeId(options);
-		setUpDialogForCreateAction(id);
-	}
-};
 
 function getSelectedTreeViewerNode(position) {
 	console.log("view.context.menu.js getSelectedTreeViewerNode");
@@ -148,340 +112,96 @@ function getSelectedTreantNodeId(options) {
 	return context.id;
 }
 
-function setUpDialogForCreateAction(id) {
-	console.log("view.context.menu.js setUpDialogForCreateAction");
-	console.log(id);
-	setHeaderText(createKnowledgeElementText);
-	setUpCreateOrEditDialog("", "", "Alternative");
-
-	var submitButton = document.getElementById("dialog-submit-button");
-	submitButton.textContent = createKnowledgeElementText;
-	submitButton.onclick = function() {
-		var summary = document.getElementById("form-input-summary").value;
-		var description = document.getElementById("form-input-description").value;
-		var type = $("select[name='form-select-type']").val();
-		conDecAPI.createDecisionKnowledgeElementAsChild(summary, description, type, id);
-		AJS.dialog2("#dialog").hide();
-	};
-
-	conDecAPI.isIssueStrategy(id, function(isIssueStrategy) { // TODO: rename
-		// param name,
-		// confusing.
-		if (isIssueStrategy === true) {
-			var extensionButton = document.getElementById("dialog-extension-button");
-			extensionButton.style.visibility = "visible";
-			extensionButton.onclick = function() {
-				var createCreateIssueForm = require('quick-edit/form/factory/create-issue');
-				createCreateIssueForm({
-					pid : conDecAPI.getProjectId()
-				}).asDialog({
-					windowTitle : createKnowledgeElementText
-				}).show();
-				AJS.dialog2("#dialog").hide();
-			};
-		}
-	});
-
-	setUpDialog();
-}
-
-/*
- * attaches cancel button handler shows(creates) the dialog TODO: attach should
- * be moved out from this function TODO: rename to maybe showDialog()
- */
-function setUpDialog() {
-	console.log("view.context.menu.js setUpDialog");
-	AJS.dialog2("#dialog").show();
-	if (!conDecDialogOnHideSet) {
-		AJS.dialog2("#dialog").on("hide", function() {
-			resetDialog();
-		});
-		conDecDialogOnHideSet = true;
+var contextMenuCreateAction = {
+	// label for Tree Viewer, name for Treant context menu
+	"label" : "Add Element",
+	"name" : "Add Element",
+	"action" : function(position) {
+		var id = getSelectedTreeViewerNodeId(position);
+		conDecDialog.setUpDialogForCreateAction(id);
+	},
+	"callback" : function(key, options) {
+		var id = getSelectedTreantNodeId(options);
+		conDecDialog.setUpDialogForCreateAction(id);
 	}
-}
-
-function setHeaderText(headerText) {
-	console.log("view.context.menu.js headerText");
-	var header = document.getElementById("dialog-header");
-	header.textContent = headerText;
-}
-
-function setUpCreateOrEditDialog(summary, description, knowledgeType) {
-	console.log("view.context.menu.js setUpCreateOrEditDialog");
-	document.getElementById("dialog-content").insertAdjacentHTML(
-			"afterBegin",
-			"<form class='aui'><div class='field-group'><label for='form-input-summary'>Summary:</label>"
-					+ "<input id='form-input-summary' type='text' placeholder='Summary' value='" + summary
-					+ "' class='text full-width-field'/></div>"
-					+ "<div class='field-group'><label for='form-input-description'>Description:</label>"
-					+ "<textarea id='form-input-description' placeholder='Description' value='" + description
-					+ "' class='textarea full-width-field'>" + description + "</textarea></div>"
-					+ "<div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
-					+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
-					+ "</form>");
-
-	var extendedKnowledgeTypes = conDecAPI.extendedKnowledgeTypes;
-	for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
-		var isSelected = "";
-		if (isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index)) {
-			isSelected = "selected ";
-		}
-		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
-				+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
-	}
-	AJS.$("#form-select-type").auiSelect2();
-}
-
-function setUpTypeChangeDialog(knowledgeType) {
-	console.log("view.context.menu.js setUpTypeChangeDialog");
-	document.getElementById("dialog-content").insertAdjacentHTML(
-			"afterBegin",
-			"<form class='aui'><div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
-					+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
-					+ "</form>");
-	var extendedKnowledgeTypes = conDecAPI.extendedKnowledgeTypes;
-	for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
-		var isSelected = "";
-		if (isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index)) {
-			isSelected = "selected ";
-		}
-		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
-				+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
-	}
-	AJS.$("#form-select-type").auiSelect2();
-}
-
-function isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index) {
-	console.log("view.context.menu.js isKnowledgeTypeLocatedAtIndex");
-	return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase();
-}
+};
 
 var contextMenuLinkAction = {
 	// label for Tree Viewer, name for Treant context menu
-	"label" : linkKnowledgeElementText,
-	"name" : linkKnowledgeElementText,
+	"label" : "Link Existing Element",
+	"name" : "Link Existing Element",
 	"action" : function(position) {
 		var id = getSelectedTreeViewerNodeId(position);
-		setUpDialogForLinkAction(id);
+		conDecDialog.setUpDialogForLinkAction(id);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		setUpDialogForLinkAction(id);
+		conDecDialog.setUpDialogForLinkAction(id);
 	}
 };
-
-function setUpDialogForLinkAction(id) {
-	console.log("view.context.menu.js setUpDialogForLinkAction");
-	console.log(id);
-	setUpDialog();
-	setHeaderText(linkKnowledgeElementText);
-
-	conDecAPI.getUnlinkedElements(id, function(unlinkedElements) {
-		var insertString = "<form class='aui'><div class='field-group' id='select-field-group'></div>"
-				+ "<div class='field-group' id='argument-field-group'></div></form>";
-		var content = document.getElementById("dialog-content");
-		content.insertAdjacentHTML("afterBegin", insertString);
-
-		insertString = "<label for='form-select-component'>Unlinked Element:</label>"
-				+ "<select id='form-select-component' name='form-select-component' "
-				+ "onchange='addFormForArguments()' class='select full-width-field'/>";
-		for (var index = 0; index < unlinkedElements.length; index++) {
-			insertString += "<option value='" + unlinkedElements[index].id + "'>" + unlinkedElements[index].type
-					+ ' / ' + unlinkedElements[index].summary + "</option>";
-		}
-		var selectFieldGroup = document.getElementById("select-field-group");
-		selectFieldGroup.insertAdjacentHTML("afterBegin", insertString);
-		AJS.$("#form-select-component").auiSelect2();
-		addFormForArguments();
-
-		var submitButton = document.getElementById("dialog-submit-button");
-		submitButton.textContent = linkKnowledgeElementText;
-		submitButton.onclick = function() {
-			var childId = $("select[name='form-select-component']").val();
-			var knowledgeTypeOfChild = $('input[name=form-radio-argument]:checked').val();
-			conDecAPI.createLinkToExistingElement(id, childId, knowledgeTypeOfChild);
-			AJS.dialog2("#dialog").hide();
-		};
-	});
-}
-
-function addFormForArguments() {
-	console.log("view.context.menu.js addFormForArguments");
-	var childId = $("select[name='form-select-component']").val();
-	var argumentFieldGroup = document.getElementById("argument-field-group");
-	argumentFieldGroup.innerHTML = "";
-	conDecAPI
-			.getDecisionKnowledgeElement(
-					childId,
-					function(decisionKnowledgeElement) {
-						if (decisionKnowledgeElement && decisionKnowledgeElement.type === "Argument") {
-							insertString = "<label for='form-radio-argument'>Type of Argument:</label>"
-									+ "<div class='radio'><input type='radio' class='radio' name='form-radio-argument' id='Pro-argument' value='Pro-argument' checked='checked'>"
-									+ "<label for='Pro'>Pro-argument</label></div>"
-									+ "<div class='radio'><input type='radio' class='radio' name='form-radio-argument' id='Con-argument' value='Con-argument'>"
-									+ "<label for='Contra'>Con-argument</label></div>";
-							argumentFieldGroup.insertAdjacentHTML("afterBegin", insertString);
-						}
-					});
-}
 
 var contextMenuEditAction = {
 	// label for Tree Viewer, name for Treant context menu
-	"label" : editKnowledgeElementText,
-	"name" : editKnowledgeElementText,
+	"label" : "Edit Element",
+	"name" : "Edit Element",
 	"action" : function(position) {
 		var id = getSelectedTreeViewerNodeId(position);
-		setUpDialogForEditAction(id);
+		conDecDialog.setUpDialogForEditAction(id);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		setUpDialogForEditAction(id);
+		conDecDialog.setUpDialogForEditAction(id);
 	}
 };
-
-function setUpDialogForEditAction(id, type) {
-	console.log("view.context.menu.js setUpDialogForEditAction");
-	conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
-		var summary = decisionKnowledgeElement.summary;
-		var description = decisionKnowledgeElement.description;
-		var type = decisionKnowledgeElement.type;
-
-		conDecAPI.isIssueStrategy(id, function(isIssueStrategy) { // TODO:
-			// refactor
-			// param
-			// name,
-			// confusing!
-			if (isIssueStrategy) {
-				var createEditIssueForm = require('quick-edit/form/factory/edit-issue');
-				createEditIssueForm({
-					issueId : id
-				}).asDialog({
-					windowTitle : editKnowledgeElementText
-				}).show();
-				AJS.dialog2("#dialog").hide();
-			} else {
-				setUpDialog();
-				setHeaderText(editKnowledgeElementText);
-				setUpCreateOrEditDialog(summary, description, type);
-
-				var submitButton = document.getElementById("dialog-submit-button");
-				submitButton.textContent = editKnowledgeElementText;
-				submitButton.onclick = function() {
-					var summary = document.getElementById("form-input-summary").value;
-					var description = document.getElementById("form-input-description").value;
-					var type = $("select[name='form-select-type']").val();
-					conDecAPI.updateDecisionKnowledgeElementAsChild(id, summary, description, type);
-					AJS.dialog2("#dialog").hide();
-				};
-			}
-		});
-	});
-}
 
 var contextMenuDeleteAction = {
 	// label for Tree Viewer, name for Treant context menu
-	"label" : deleteKnowledgeElementText,
-	"name" : deleteKnowledgeElementText,
+	"label" : "Delete Element",
+	"name" : "Delete Element",
 	"action" : function(position) {
 		var id = getSelectedTreeViewerNodeId(position);
-		setUpDialogForDeleteAction(id);
+		conDecDialog.setUpDialogForDeleteAction(id);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		setUpDialogForDeleteAction(id);
+		conDecDialog.setUpDialogForDeleteAction(id);
 	}
 };
 
-function setUpDialogForDeleteAction(id) {
-	console.log("view.context.menu.js setUpDialogForDeleteAction");
-	setUpDialog();
-	setHeaderText(deleteKnowledgeElementText);
-
-	var content = document.getElementById("dialog-content");
-	content.textContent = "Do you really want to delete this element?";
-
-	var submitButton = document.getElementById("dialog-submit-button");
-	submitButton.textContent = deleteKnowledgeElementText;
-	submitButton.onclick = function() {
-		conDecAPI.deleteDecisionKnowledgeElement(id, function() {
-			conDecObservable.notify();
-		});
-		AJS.dialog2("#dialog").hide();
-	};
-}
-
 var contextMenuDeleteLinkAction = {
 	// label for Tree Viewer, name for Treant context menu
-	"label" : deleteLinkToParentText,
-	"name" : deleteLinkToParentText,
+	"label" : "Delete Link to Parent",
+	"name" : "Delete Link to Parent",
 	"action" : function(position) {
 		var node = getSelectedTreeViewerNode(position);
 		var id = node.id;
 		var parentId = node.parent;
-		setUpDialogForDeleteLinkAction(id, parentId);
+		conDecDialog.setUpDialogForDeleteLinkAction(id, parentId);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
 		var parentId = findParentId(id);
-		setUpDialogForDeleteLinkAction(id, parentId);
+		conDecDialog.setUpDialogForDeleteLinkAction(id, parentId);
 	}
 };
 
-function setUpDialogForDeleteLinkAction(id, parentId) {
-	console.log("view.context.menu.js setUpDialogForDeleteLinkAction");
-	setUpDialog();
-	setHeaderText(deleteLinkToParentText);
-
-	var content = document.getElementById("dialog-content");
-	content.textContent = "Do you really want to delete the link to the parent element?";
-
-	var submitButton = document.getElementById("dialog-submit-button");
-	submitButton.textContent = deleteLinkToParentText;
-	submitButton.onclick = function() {
-		conDecAPI.deleteLink(parentId, id, function() {
-			conDecObservable.notify();
-		});
-		AJS.dialog2("#dialog").hide();
-	};
-}
-
 var contextMenuChangeTypeAction = {
-	"label" : changeKnowledgeTypeText,
-	"name" : changeKnowledgeTypeText,
+	"label" : "Change Element Type",
+	"name" : "Change Element Type",
 	"action" : function(position) {
 		var node = getSelectedTreeViewerNode(position);
 		var id = node.id;
-		setUpDialogForChangeTypeAction(id);
+		conDecDialog.setUpDialogForChangeTypeAction(id);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		setUpDialogForChangeTypeAction(id);
+		conDecDialog.setUpDialogForChangeTypeAction(id);
 	}
 };
 
-function setUpDialogForChangeTypeAction(id) {
-	console.log("view.context.menu.js setUpDialogForChangeTypeAction");
-	setUpDialog();
-	setHeaderText(changeKnowledgeTypeText);
-	conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
-		var summary = decisionKnowledgeElement.summary;
-		var description = decisionKnowledgeElement.description;
-		var type = decisionKnowledgeElement.type;
-		setUpTypeChangeDialog(type);
-
-		var submitButton = document.getElementById("dialog-submit-button");
-		submitButton.textContent = editKnowledgeElementText;
-		submitButton.onclick = function() {
-			var type = $("select[name='form-select-type']").val();
-			conDecAPI.updateDecisionKnowledgeElementAsChild(id, summary, description, type);
-			AJS.dialog2("#dialog").hide();
-		};
-	});
-}
-
 var contextMenuSetAsRootAction = {
 	// label for Tree Viewer, name for Treant context menu
-	"name" : makeRootText,
+	"name" : "Set as Root",
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
 		if (window.conDecIssueModule !== undefined) {
@@ -494,7 +214,7 @@ var contextMenuSetAsRootAction = {
 
 var contextMenuOpenJiraIssueAction = {
 	// label for Tree Viewer, name for Treant context menu
-	"name" : openIssueText,
+	"name" : "Open JIRA Issue",
 	"onload" : function() {
 		alert(Test);
 	},
@@ -515,22 +235,6 @@ var contextMenuActions = {
 	"deleteLink" : contextMenuDeleteLinkAction,
 	"delete" : contextMenuDeleteAction
 };
-
-function resetDialog() {
-	console.log("view.context.menu.js resetDialog");
-	document.getElementById("dialog-header").innerHTML = "";
-	document.getElementById("dialog-content").innerHTML = "";
-	if (document.getElementById("dialog-extension-button")) {
-		document.getElementById("dialog-extension-button").style.visibility = "hidden"
-	}
-	var dialog = document.getElementById("dialog");
-	if (dialog.classList.contains("aui-dialog2-large")) {
-		dialog.classList.remove("aui-dialog2-large");
-	}
-	if (!dialog.classList.contains("aui-dialog2-medium")) {
-		dialog.classList.add("aui-dialog2-medium");
-	}
-}
 
 var changeKnowledgeTypeAction = {
 	// label for Tree Viewer, name for Treant context menu

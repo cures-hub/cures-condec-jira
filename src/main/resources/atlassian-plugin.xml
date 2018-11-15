@@ -94,6 +94,7 @@
 		<resource type="download" name="raphael.js" location="/js/treant/raphael.js" />
 		<resource type="download" name="jquery.easing.js" location="/js/jquery/jquery.easing.js" />
 		<!-- ConDec java script files -->
+		<resource type="download" name="condec.dialog.js" location="/js/condec.dialog.js" />
 		<resource type="download" name="view.context.menu.js" location="/js/view.context.menu.js" />
 		<resource type="download" name="view.treant.js" location="/js/view.treant.js" />
 		<resource type="download" name="view.tree.viewer.js" location="/js/view.tree.viewer.js" />

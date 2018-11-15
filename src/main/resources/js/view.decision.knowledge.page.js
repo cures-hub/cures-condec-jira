@@ -19,31 +19,31 @@
  */
 (function(global) {
 	/* private vars */
-	var contextMenu = null;
 	var i18n = null;
 	var conDecObservable = null;
 	var conDecAPI = null;
-	var conDecContext = null;
+	var conDecDialog = null;
+	var conDecContextMenu = null;	
 	var treant = null;
 	var treeViewer = null;
 
 	var ConDecKnowledgePage = function ConDecKnowledgePage() {
 	};
 
-	ConDecKnowledgePage.prototype.init = function(_conDecAPI, _conDecObservable, _conDecContext, _treant, _treeViewer, _contextMenu, _i18n) {
+	ConDecKnowledgePage.prototype.init = function(_conDecAPI, _conDecObservable, _conDecDialog, _conDecContextMenu, _treant, _treeViewer, _i18n) {
 		console.log("view.decision.knowledge.page init");
 
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable) && isConDecTreantType(_treant)
-				&& isConDecTreeViewerType(_treeViewer) && isConDecContextType(_contextMenu) // not using and thus not checking i18n yet.
+				&& isConDecTreeViewerType(_treeViewer) //&& isConDecContextType(_contextMenu) // not using and thus not checking i18n yet.
 		) {
 			conDecAPI = _conDecAPI;
 			
 			//TODO: Register/Subscribe as observer
 			conDecObservable = _conDecObservable;
-			conDecContext = _conDecContext;
+			conDecDialog = _conDecDialog;
+			conDecContextMenu = _conDecContextMenu;			
 			treant = _treant;
 			treeViewer = _treeViewer;
-			contextMenu = _contextMenu;
 			i18n = _i18n;
 
 			return true;
@@ -134,7 +134,7 @@
 		}
 		jQueryConDec("#jstree").on("select_node.jstree", function(error, tree) {
 			var node = tree.node.data;
-			treant.buildTreant(node.key, true, "", getContextMenuActionsForTreant(contextMenu));
+			treant.buildTreant(node.key, true, "");
 		});
 	}
 
@@ -182,13 +182,13 @@
 		return true;
 	}
 
-	function isConDecContextType(contextMenu) {
-		if (!(contextMenu !== undefined && contextMenu.setUpDialog !== undefined && typeof contextMenu.setUpDialog === 'function')) {
-			console.warn("ConDecKnowledgePage: invalid contextMenu object received.");
-			return false;
-		}
-		return true;
-	}
+//	function isConDecContextType(contextMenu) {
+//		if (!(contextMenu !== undefined && contextMenu.setUpDialog !== undefined && typeof contextMenu.setUpDialog === 'function')) {
+//			console.warn("ConDecKnowledgePage: invalid contextMenu object received.");
+//			return false;
+//		}
+//		return true;
+//	}
 
 	function isConDecTreeViewerType(treeViewer) {
 		if (!(treeViewer !== undefined && treeViewer.selectNodeInTreeViewer !== undefined && typeof treeViewer.selectNodeInTreeViewer === 'function')) {

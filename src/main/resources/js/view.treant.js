@@ -5,30 +5,29 @@ var treantTree;
 
 var draggedElement;
 
-function buildTreant(elementKey, isInteractive, searchTerm, contextMenuActions) {
-    console.log("view.treant.js buildTreant");
-    var depthOfTree = getDepthOfTree();
-    conDecAPI.getTreant(elementKey, depthOfTree, searchTerm, function(treeStructure) {
-        document.getElementById("treant-container").innerHTML = "";
+function buildTreant(elementKey, isInteractive, searchTerm) {
+	console.log("view.treant.js buildTreant");
+	var depthOfTree = getDepthOfTree();
+	conDecAPI.getTreant(elementKey, depthOfTree, searchTerm, function(treeStructure) {
+		document.getElementById("treant-container").innerHTML = "";
 
-        conDecAPI.isKnowledgeExtractedFromGit(conDecAPI.projectKey, function(isKnowledgeExtractedFromGit) { //TODO: refactor isKnowledgeExtractedFromGit param name, confusing.
-            if (isKnowledgeExtractedFromGit) {
-                conDecAPI.getCommits(elementKey,
-                    function(commits) {
-                        if (commits.length > 0) {
-                            treeStructure.nodeStructure.children = addCommits(commits,
-                                treeStructure.nodeStructure.children);
-                        }
-                        // console.log(treeStructure);
-                        createTreant(treeStructure, isInteractive, contextMenuActions);
-                    });
-            } else {
-                createTreant(treeStructure, isInteractive, contextMenuActions);
-            }
-        });
-    });
+		conDecAPI.isKnowledgeExtractedFromGit(conDecAPI.projectKey, function(isKnowledgeExtractedFromGit) { //TODO: refactor isKnowledgeExtractedFromGit param name, confusing.
+			if (isKnowledgeExtractedFromGit) {
+				conDecAPI.getCommits(elementKey,
+						function(commits) {
+							if (commits.length > 0) {
+								treeStructure.nodeStructure.children = addCommits(commits,
+										treeStructure.nodeStructure.children);
+							}
+							// console.log(treeStructure);
+							createTreant(treeStructure, isInteractive);
+						});
+			} else {
+				createTreant(treeStructure, isInteractive);
+			}
+		});
+	});
 }
-
 
 function getDepthOfTree() {
 	console.log("view.treant.js getDepthOfTree");
@@ -40,12 +39,8 @@ function getDepthOfTree() {
 	return depthOfTree;
 }
 
-function createTreant(treeStructure, isInteractive, contextMenuActions) {
+function createTreant(treeStructure, isInteractive) {
 	console.log("view.treant.js createTreant");
-    if (contextMenuActions === undefined)
-    {
-        contextMenuActions = contextMenuActionsTreant;
-    }
 	treantTree = new Treant(treeStructure);
 	if (isInteractive !== undefined && isInteractive) {
 		createContextMenuForTreantNodesThatAreSentence();
@@ -55,7 +50,7 @@ function createTreant(treeStructure, isInteractive, contextMenuActions) {
 	}
 }
 
-function createContextMenuForTreantNodes(contextMenuActions) {
+function createContextMenuForTreantNodes() {
 	jQueryConDec(function() {
 		jQueryConDec.contextMenu({
 			selector : ".decision, .rationale, .context, .problem, .solution, .pro, .contra, .other",
@@ -142,31 +137,34 @@ function sentenceElementIsDropped(target, parentId, childId) {
 	var newParentType = extractTypeFromHTMLElement(target);
 	// selected element is a sentence, dropped element is an issue
 	if (draggedElement.classList.contains("sentence") && !target.classList.contains("sentence")) {
-		conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType, function() {
-			conDecAPI.linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
-				conDecObservable.notify();
-			});
-		});
+		conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,
+				function() {
+					conDecAPI.linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
+						conDecObservable.notify();
+					});
+				});
 	} else // selected element is an issue, dropped element is an sentence
 	if (target.classList.contains("sentence") && !draggedElement.classList.contains("sentence")) {
-		conDecAPI.deleteLink("s"+oldParentId, "i"+childId, function() {
+		conDecAPI.deleteLink("s" + oldParentId, "i" + childId, function() {
 			conDecAPI.linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
 				conDecObservable.notify();
 			});
 		});
 	} else // selected element is a sentence, dropped element is an sentence
 	if (target.classList.contains("sentence") && draggedElement.classList.contains("sentence")) {
-		conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType, function() {
-			conDecAPI.linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
-				conDecObservable.notify();
-			});
-		});
+		conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,
+				function() {
+					conDecAPI.linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
+						conDecObservable.notify();
+					});
+				});
 	} else // selected element is an issue, parent element is a sentence
 	if (!draggedElement.classList.contains("sentence")
 			&& document.getElementById(findParentId(draggedElement.id)).classList.contains("sentence")) {
-		conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType, function() {
-			conDecAPI.createLinkToExistingElement(parentId, childId);
-		});
+		conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,
+				function() {
+					conDecAPI.createLinkToExistingElement(parentId, childId);
+				});
 	} else {// usual link between issue and issue
 		return true;
 	}
@@ -185,10 +183,10 @@ function addTooltip() {
 	}
 }
 
-function addContextMenu(){
-    console.log("view.treant.js addContextMenu");
-    conDecContext.setUpContext();
-   }
+function addContextMenu() {
+	console.log("view.treant.js addContextMenu");
+	conDecContextMenu.setUpContext();
+}
 
 function addCommits(commits, elementArray) {
 	console.log("view.treant.js addCommits");

@@ -15,30 +15,33 @@
 
  Referenced in HTML by
  * tabPanel.vm
-*/
+ */
 (function(global) {
-	/* private vars */	
-	var i18n = null;	
+	/* private vars */
+	var i18n = null;
 	var conDecAPI = null;
 	var conDecObservable = null;
-	var contextMenu = null;
+	var conDecDialog = null;
+	var conDecContextMenu = null;
 	var treant = null;
 
 	var ConDecIssueModule = function ConDecIssueModule() {
 	};
 
-	ConDecIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _treant, _contextMenu, _i18n) {
+	ConDecIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog, _conDecContextMenu,
+			_treant, _i18n) {
 		console.log("view.issue.module init");
 
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable) && isConDecTreantType(_treant)
-				&& isConDecContextType(_contextMenu) // not using and thus not checking i18n yet.
+		//&& isConDecContextType(_contextMenu) // not using and thus not checking i18n yet.
 		) {
 			conDecAPI = _conDecAPI;
-			
+
 			//TODO: Register/Subscribe as observer
 			conDecObservable = _conDecObservable;
+			conDecDialog = _conDecDialog;
+			conDecContextMenu = _conDecContextMenu;
 			treant = _treant;
-			contextMenu = _contextMenu;
 			i18n = _i18n;
 
 			addOnClickEventToExportAsTable();
@@ -51,11 +54,11 @@
 	ConDecIssueModule.prototype.initView = function initView() {
 		console.log("view.issue.module initView");
 
-		updateView(treant, contextMenu);
+		updateView(treant);
 	};
-	
-	ConDecIssueModule.prototype.updateView = function () {
-		updateView(treant, contextMenu);
+
+	ConDecIssueModule.prototype.updateView = function() {
+		updateView(treant);
 	};
 
 	// for view.context.menu
@@ -90,16 +93,16 @@
 			"link" : contextMenu.contextMenuLinkAction,
 			"deleteLink" : contextMenu.contextMenuDeleteLinkAction,
 			"delete" : contextMenu.contextMenuDeleteAction,
-            "changeType" : contextMenu.contextMenuChangeTypeAction
+			"changeType" : contextMenu.contextMenuChangeTypeAction
 		};
 		return menu;
 	}
 
-	function updateView(treant, contextMenu) {
+	function updateView(treant) {
 		console.log("view.issue.module updateView");
 		var issueKey = conDecAPI.getIssueKey();
 		var search = getURLsSearch();
-		treant.buildTreant(issueKey, true, search, getContextMenuActionsForTreant(contextMenu));
+		treant.buildTreant(issueKey, true, search);
 	}
 
 	/*
@@ -129,13 +132,13 @@
 		return true;
 	}
 
-	function isConDecContextType(contextMenu) {
-		if (!(contextMenu !== undefined && contextMenu.setUpDialog !== undefined && typeof contextMenu.setUpDialog === 'function')) {
-			console.warn("ConDecIssueModule: invalid contextMenu object received.");
-			return false;
-		}
-		return true;
-	}
+	//	function isConDecContextType(contextMenu) {
+	//		if (!(contextMenu !== undefined && contextMenu.setUpDialog !== undefined && typeof contextMenu.setUpDialog === 'function')) {
+	//			console.warn("ConDecIssueModule: invalid contextMenu object received.");
+	//			return false;
+	//		}
+	//		return true;
+	//	}
 
 	function getURLsSearch() {
 		var search = global.location.search.toString();
