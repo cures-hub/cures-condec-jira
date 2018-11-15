@@ -11,6 +11,7 @@
 
 	ConDecContextMenu.prototype.setUpContext = function setUpContext() {
 		$(document).ready(function() {
+			// TODO Move to Treant closure object
 			var treantNodes = document.getElementsByClassName("node");
 			var i;
 			for (i = 0; i < treantNodes.length; i++) {
@@ -27,6 +28,7 @@
 				});
 			}
 
+			// TODO Move to TreeViewer closure object
 			var jsTreeNodes = document.getElementsByClassName("jstree-node");
 			var j;
 			for (j = 0; j < jsTreeNodes.length; j++) {
@@ -37,6 +39,7 @@
 					console.log(left);
 					console.log(top);
 
+					// TODO: This provides only the id for the root element, find the correct ids
 					console.log(this.id);
 					createContextMenu(left, top, this.id);
 				});
@@ -67,19 +70,24 @@
 		document.getElementById("condec-context-menu-create-item").onclick = function() {
 			conDecDialog.showCreateDialog(id);
 		};
+
 		document.getElementById("condec-context-menu-edit-item").onclick = function() {
 			conDecDialog.showEditDialog(id);
 		};
+
 		document.getElementById("condec-context-menu-change-type-item").onclick = function() {
 			conDecDialog.showChangeTypeDialog(id);
 		};
+
 		document.getElementById("condec-context-menu-link-item").onclick = function() {
 			conDecDialog.showLinkDialog(id);
 		};
+
 		document.getElementById("condec-context-menu-delete-link-item").onclick = function() {
 			var parentId = findParentId(id);
 			conDecDialog.showDeleteLinkDialog(id, parentId);
 		};
+
 		document.getElementById("condec-context-menu-delete-item").onclick = function() {
 			conDecDialog.showDeleteDialog(id);
 		};
@@ -94,7 +102,7 @@
 
 		document.getElementById("condec-context-menu-open-jira-issue-item").onclick = function() {
 			if (window.conDecKnowledgePage !== undefined) {
-				window.conDecKnowledgePage.openIssue(id);
+				window.conDecKnowledgePage.openJiraIssue(id);
 			}
 		};
 	}
@@ -187,6 +195,7 @@ function getArrayId(array, id) {
 	}
 }
 
+// TODO: Move to backend
 function getIconUrl(core, indexOfNode, type) {
 	var url = core.data[indexOfNode].icon;
 	if (type.includes("Pro")) {

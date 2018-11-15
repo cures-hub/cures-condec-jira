@@ -380,7 +380,7 @@
 		AJS.$("#form-select-type").auiSelect2();
 	}
 
-	// TODO: Remove this method from conDecDialog
+	// TODO: Remove this method from conDecDialog, subscribe tab panel at observable and add updateView method for tabPanel
 	/**
 	 * local resets tree viewer and builds it again
 	 */

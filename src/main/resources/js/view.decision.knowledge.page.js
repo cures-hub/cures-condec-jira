@@ -64,23 +64,14 @@
 		treeViewer.selectNodeInTreeViewer(id);
 	};
 
-	ConDecKnowledgePage.prototype.openIssue = function openIssue(nodeId) {
-		console.log("view.decision.knowledge.page openIssue");
+	ConDecKnowledgePage.prototype.openJiraIssue = function openJiraIssue(nodeId) {
+		console.log("view.decision.knowledge.page openJiraIssue");
 
-		// only allow this in case the selected node is a JIRA issue, for sentences map to JIRA issue
-        $( document ).ready(function() {
-            conDecAPI.getDecisionKnowledgeElement(nodeId, function (decisionKnowledgeElement) {
-                var baseUrl = AJS.params.baseURL;
-                var key = decisionKnowledgeElement.key;
-                var spans = document.getElementsByTagName("span");
-                for (var index = 0; index < spans.length; index++) {
-                    if (spans[index].innerText === "Open JIRA Issue") {
-                        spans[index].innerHTML = '<a href="">Visit W3Schools</a>';
-                        console.log(spans[index]);
-                    }
-                }
-            });
-        });
+		conDecAPI.getDecisionKnowledgeElement(nodeId, function(decisionKnowledgeElement) {
+			var baseUrl = AJS.params.baseURL;
+			var key = decisionKnowledgeElement.key;
+			global.open(baseUrl + "/browse/" + key, '_self');
+		});
 	};
 
 	function initializeDecisionKnowledgePage(conDecAPI, treant, treeViewer) {
@@ -138,23 +129,6 @@
 		});
 	}
 
-//	// for view.context.menu
-//	function getContextMenuActionsForTreant(contextMenu) {
-//		console.log("view.decision.knowledge.page getContextMenuActionsForTreant");
-//		var menu = {
-//			"asRoot" : contextMenu.contextMenuSetAsRootAction,
-//			"create" : contextMenu.contextMenuCreateAction,
-//			"edit" : contextMenu.contextMenuEditAction,
-//			"link" : contextMenu.contextMenuLinkAction,
-//			"deleteLink" : contextMenu.contextMenuDeleteLinkAction,
-//			"delete" : contextMenu.contextMenuDeleteAction,
-//			"openIssue" : contextMenu.contextMenuOpenJiraIssueAction,
-//			"changeType" : contextMenu.contextMenuChangeTypeAction
-//		};
-//		return menu;
-//	}
-	
-
 	/*
 	 Init Helpers
 	 */
@@ -197,6 +171,7 @@
 		}
 		return true;
 	}
+	
 	// export ConDecKnowledgePage
 	global.conDecKnowledgePage = new ConDecKnowledgePage();
 })(window);
