@@ -25,6 +25,25 @@ function buildTreeViewer() {
 	addDragAndDropSupportForTreeViewer();
 }
 
+function addContextMenuToTreeViewer() {
+	// TODO Move to TreeViewer closure object
+	jQueryConDec("#jstree").on("contextmenu.jstree", function(event) {
+		event.preventDefault();
+		var left = event.pageX;
+		var top = event.pageY;
+		console.log(left);
+		console.log(top);
+
+		console.log(event);
+		console.log(event.target.parentNode.id);
+		//if (node.li_attr['class'] == "sentence") {
+		//conDecContextMenu.createContextMenuForSentences(left, top, event.target.parentNode.id);
+		//} else {
+		conDecContextMenu.createContextMenu(left, top, event.target.parentNode.id);
+		//}
+	});
+}
+
 /**
  local usage only
 */

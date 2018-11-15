@@ -6,11 +6,11 @@
  Requires
  * condec.api.js
  * condec.observable.js
+ * condec.context.menu.js
  * view.treant.js
- * view.context.menu.js
 
  Required by
- * view.context.menu.js
+ * view.context.menu.js???
  * tabPanel.vm
 
  Referenced in HTML by

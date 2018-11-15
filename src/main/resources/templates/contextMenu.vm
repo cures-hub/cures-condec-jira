@@ -10,3 +10,12 @@
         <aui-item-link id="condec-context-menu-open-jira-issue-item">Open JIRA Issue</aui-item-link>  
     </aui-section>
 </aui-dropdown-menu>
+
+<aui-dropdown-menu id="condec-context-menu-sentence">
+    <aui-section id="condec-context-menu-section">
+        <aui-item-link id="condec-context-menu-sentence-edit-item">Edit Element</aui-item-link>
+        <aui-item-link id="condec-context-menu-sentence-delete-link-item">Delete Link to Parent</aui-item-link>
+        <aui-item-link id="condec-context-menu-sentence-convert-item">Convert to JIRA Issue</aui-item-link> 
+        <aui-item-link id="condec-context-menu-sentence-irrelevant-item">Set Irrelevant</aui-item-link>      
+    </aui-section>
+</aui-dropdown-menu>

@@ -11,7 +11,12 @@ function buildTreant(elementKey, isInteractive, searchTerm) {
 	conDecAPI.getTreant(elementKey, depthOfTree, searchTerm, function(treeStructure) {
 		document.getElementById("treant-container").innerHTML = "";
 
-		conDecAPI.isKnowledgeExtractedFromGit(conDecAPI.projectKey, function(isKnowledgeExtractedFromGit) { //TODO: refactor isKnowledgeExtractedFromGit param name, confusing.
+		conDecAPI.isKnowledgeExtractedFromGit(conDecAPI.projectKey, function(isKnowledgeExtractedFromGit) { // TODO:
+			// refactor
+			// isKnowledgeExtractedFromGit
+			// param
+			// name,
+			// confusing.
 			if (isKnowledgeExtractedFromGit) {
 				conDecAPI.getCommits(elementKey,
 						function(commits) {
@@ -43,26 +48,10 @@ function createTreant(treeStructure, isInteractive) {
 	console.log("view.treant.js createTreant");
 	treantTree = new Treant(treeStructure);
 	if (isInteractive !== undefined && isInteractive) {
-		createContextMenuForTreantNodesThatAreSentence();
-		addContextMenu();
+		addContextMenuToTreant();
 		addDragAndDropSupportForTreant();
 		addTooltip();
 	}
-}
-
-function createContextMenuForTreantNodesThatAreSentence() {
-	var nodes = document.getElementsByClassName("node");
-	for (var i = nodes.length - 1; i >= 0; i--) {
-		if (nodes[i].getElementsByClassName("node-desc")[0].innerHTML.includes(":")) {
-			nodes[i].classList.add("sentence");
-		}
-	}
-	jQueryConDec(function() {
-		jQueryConDec.contextMenu({
-			selector : ".sentence.node",
-			items : contextMenuActionsForSentencesInTreant
-		});
-	});
 }
 
 function addDragAndDropSupportForTreant() {
@@ -174,9 +163,28 @@ function addTooltip() {
 	}
 }
 
-function addContextMenu() {
-	console.log("view.treant.js addContextMenu");
-	conDecContextMenu.setUpContext();
+function addContextMenuToTreant() {
+	console.log("view.treant.js addContextMenuToTreant");
+	var treantNodes = document.getElementsByClassName("node");
+	var i;
+	for (i = 0; i < treantNodes.length; i++) {
+		treantNodes[i].addEventListener('contextmenu', function(event) {
+			event.preventDefault();
+			// TODO Find correct position in issue module
+			var left = event.pageX;
+			var top = event.pageY;
+			
+			console.log(left);
+			console.log(top);
+
+			console.log(this.id);
+			if (this.getElementsByClassName("node-desc")[0].innerHTML.includes(":")) {
+				conDecContextMenu.createContextMenuForSentences(left, top, this.id);
+			} else {
+				conDecContextMenu.createContextMenu(left, top, this.id);
+			}			
+		});
+	}
 }
 
 function addCommits(commits, elementArray) {

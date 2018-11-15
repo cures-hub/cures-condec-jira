@@ -109,7 +109,10 @@
 			}
 		});
 
-		updateView(null, treant, treeViewer);
+		updateView(null, treant, treeViewer);				
+		
+		// TODO Move to treeviewer constructor
+		treeViewer.addContextMenuToTreeViewer();
 	}
 
 	function updateView(nodeId, treant, treeViewer) {
@@ -125,7 +128,7 @@
 		}
 		jQueryConDec("#jstree").on("select_node.jstree", function(error, tree) {
 			var node = tree.node.data;
-			treant.buildTreant(node.key, true, "");
+			treant.buildTreant(node.key, true, "");			
 		});
 	}
 

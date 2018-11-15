@@ -7,50 +7,18 @@
 	var isContextMenuOpen;
 
 	var ConDecContextMenu = function ConDecContextMenu() {
-		$(global).blur(hideContextMenu);
-		$(document).click(hideContextMenu);
+		jQueryConDec(global).blur(hideContextMenu);
+		jQueryConDec(document).click(hideContextMenu);
 	};
 
 	function hideContextMenu() {
 		if (isContextMenuOpen) {
 			console.log("contextmenu closed");
 			document.querySelector("#condec-context-menu").setAttribute('aria-hidden', 'true');
+			document.querySelector("#condec-context-menu-sentence").setAttribute('aria-hidden', 'true');
 		}
 		isContextMenuOpen = false;
 	}
-
-	ConDecContextMenu.prototype.setUpContext = function setUpContext() {
-		$(document).ready(function() {
-			// TODO Move to Treant closure object
-			var treantNodes = document.getElementsByClassName("node");
-			var i;
-			for (i = 0; i < treantNodes.length; i++) {
-				treantNodes[i].addEventListener('contextmenu', function(event) {
-					event.preventDefault();
-					// TODO Find correct position in issue module
-					var left = event.pageX;
-					var top = event.pageY;
-					console.log(left);
-					console.log(top);
-
-					console.log(this.id);
-					createContextMenu(left, top, this.id);
-				});
-			}
-
-			// TODO Move to TreeViewer closure object
-			jQueryConDec("#jstree").on("contextmenu.jstree", function(event) {
-				event.preventDefault();
-				var left = event.pageX;
-				var top = event.pageY;
-				console.log(left);
-				console.log(top);
-
-				console.log(event.target.parentNode.id);
-				createContextMenu(left, top, event.target.parentNode.id);
-			});
-		});
-	};
 
 	function createContextMenu(posX, posY, id) {
 		isContextMenuOpen = true;
@@ -101,8 +69,37 @@
 			}
 		};
 	}
-
+	
 	ConDecContextMenu.prototype.createContextMenu = createContextMenu;
+	
+	function createContextMenuForSentences(posX, posY, id) {
+		isContextMenuOpen = true;
+		console.log("contextmenu opened");
+
+		$("#condec-context-menu-sentence").css({
+			left : posX,
+			top : posY
+		});
+		document.querySelector("#condec-context-menu-sentence").setAttribute('aria-hidden', 'false');
+
+		document.getElementById("condec-context-menu-sentence-edit-item").onclick = function() {
+			// TODO
+		};
+
+		document.getElementById("condec-context-menu-sentence-delete-link-item").onclick = function() {
+			// TODO
+		};
+
+		document.getElementById("condec-context-menu-sentence-convert-item").onclick = function() {
+			conDecAPI.createIssueFromSentence(id, conDecObservable.notify);
+		};
+
+		document.getElementById("condec-context-menu-sentence-irrelevant-item").onclick = function() {
+			// TODO
+		};
+	}
+
+	ConDecContextMenu.prototype.createContextMenuForSentences = createContextMenuForSentences;
 
 	// export ConDecContext
 	global.conDecContextMenu = new ConDecContextMenu();
@@ -245,7 +242,6 @@ var contextMenuDeleteSentenceLinkAction = {
 
 		conDecAPI.deleteGenericLink(parentId, id, parentClass, nodeClass, conDecAPI.setSentenceIrrelevant(id,
 				conDecObservable.notify), false);
-
 	}
 };
 
