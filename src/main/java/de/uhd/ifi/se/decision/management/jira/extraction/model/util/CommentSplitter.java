@@ -42,28 +42,28 @@ public class CommentSplitter {
 	}
 
 	public List<String> sliceCommentRecursionCommander(String body, String projectKey) {
-		List<String> firstSplit = searchBetweenTagsRecursive(body, "{quote}", "{quote}", new ArrayList<String>());
+		List<String> firstSplit = searchForTagsRecursive(body, "{quote}", "{quote}", new ArrayList<String>());
 
-		firstSplit = searchForFurtherTags(firstSplit, "{noformat}", "{noformat}");
-		firstSplit = searchForFurtherTags(firstSplit, "{panel:", "{panel}");
-		firstSplit = searchForFurtherTags(firstSplit, "{code:", "{code}");
+		firstSplit = searchForTags(firstSplit, "{noformat}", "{noformat}");
+		firstSplit = searchForTags(firstSplit, "{panel:", "{panel}");
+		firstSplit = searchForTags(firstSplit, "{code:", "{code}");
 		for (int i = 0; i < manualRationaleTagList.length; i++) {
 			String tag = manualRationaleTagList[i];
-			firstSplit = searchForFurtherTags(firstSplit, tag, tag);
+			firstSplit = searchForTags(firstSplit, tag, tag);
 		}
 		if (ConfigPersistence.isIconParsing(projectKey)) {
 			for (int i = 0; i < manualRationalIconList.length; i++) {
-				firstSplit = searchForFurtherTags(firstSplit, manualRationalIconList[i],
+				firstSplit = searchForTags(firstSplit, manualRationalIconList[i],
 						System.getProperty("line.separator"));
 			}
 		}
 		return firstSplit;
 	}
 
-	private List<String> searchForFurtherTags(List<String> firstSplit, String openTag, String closeTag) {
+	private List<String> searchForTags(List<String> firstSplit, String openTag, String closeTag) {
 		HashMap<Integer, ArrayList<String>> newSlices = new HashMap<Integer, ArrayList<String>>();
 		for (String slice : firstSplit) {
-			ArrayList<String> slicesOfSentence = searchBetweenTagsRecursive(slice.toLowerCase(), openTag.toLowerCase(),
+			ArrayList<String> slicesOfSentence = searchForTagsRecursive(slice.toLowerCase(), openTag.toLowerCase(),
 					closeTag.toLowerCase(), new ArrayList<String>());
 			if (slicesOfSentence.size() > 1) {
 				newSlices.put(firstSplit.indexOf(slice), slicesOfSentence);
@@ -79,7 +79,7 @@ public class CommentSplitter {
 
 	}
 
-	private ArrayList<String> searchBetweenTagsRecursive(String toSearch, String openTag, String closeTag,
+	private ArrayList<String> searchForTagsRecursive(String toSearch, String openTag, String closeTag,
 			ArrayList<String> slices) {
 		if(checkIncorrectTagMix(toSearch,openTag,closeTag)) {
 			slices.add(toSearch);
@@ -94,11 +94,11 @@ public class CommentSplitter {
 			part = openTag + part + closeTag;
 			slices.add(part);
 			toSearch = toSearch.substring(toSearch.indexOf(openTag) + part.length());
-			slices = searchBetweenTagsRecursive(toSearch, openTag, closeTag, slices);
+			slices = searchForTagsRecursive(toSearch, openTag, closeTag, slices);
 		} else {// currently plain text
 			if (toSearch.contains(openTag)) {// comment block has special text later
 				slices.add(toSearch.substring(0, toSearch.indexOf(openTag)));
-				slices = searchBetweenTagsRecursive(toSearch.substring(toSearch.indexOf(openTag)), openTag, closeTag,
+				slices = searchForTagsRecursive(toSearch.substring(toSearch.indexOf(openTag)), openTag, closeTag,
 						slices);
 			} else {// comment block has no more special text
 				slices.add(toSearch);

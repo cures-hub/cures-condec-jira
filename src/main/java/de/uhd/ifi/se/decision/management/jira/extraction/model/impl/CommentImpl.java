@@ -107,7 +107,7 @@ public class CommentImpl implements Comment {
 		HTMLCodeGeneratorForSentences hTMLGen = new HTMLCodeGeneratorForSentences();
 		String result = "<span id=\"comment" + index + "\">";
 		for (Sentence sentence : this.sentences) {
-			result += hTMLGen.getCodedElement(sentence);
+			result += hTMLGen.getHTMLCodeForSentence(sentence);
 		}
 		return result + "</span>";
 	}

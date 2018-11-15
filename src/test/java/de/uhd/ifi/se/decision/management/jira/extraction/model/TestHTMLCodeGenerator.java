@@ -73,7 +73,7 @@ public class TestHTMLCodeGenerator extends TestSetUpWithIssues {
 		HTMLCodeGeneratorForSentences html = new HTMLCodeGeneratorForSentences();
 		addCommentsToIssue("This is a testsentence");
 		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
-		assertTrue(html.getCodedElement(c.getSentences().get(0)).length() > 0);
+		assertTrue(html.getHTMLCodeForSentence(c.getSentences().get(0)).length() > 0);
 	}
 
 	@Test
@@ -84,7 +84,7 @@ public class TestHTMLCodeGenerator extends TestSetUpWithIssues {
 		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence s = c.getSentences().get(0);
 		s.setRelevant(true);
-		assertTrue(html.getCodedElement(s).length() > 0);
+		assertTrue(html.getHTMLCodeForSentence(s).length() > 0);
 	}
 
 	@Test
@@ -95,7 +95,7 @@ public class TestHTMLCodeGenerator extends TestSetUpWithIssues {
 		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence s = c.getSentences().get(0);
 		s.setRelevant(false);
-		assertTrue(html.getCodedElement(s).length() > 0);
+		assertTrue(html.getHTMLCodeForSentence(s).length() > 0);
 	}
 
 	@Test
@@ -106,7 +106,7 @@ public class TestHTMLCodeGenerator extends TestSetUpWithIssues {
 		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence s = c.getSentences().get(0);
 		s.setRelevant(false);
-		assertTrue(html.getCodedElement(s).length() > 0);
+		assertTrue(html.getHTMLCodeForSentence(s).length() > 0);
 	}
 
 	@Test
@@ -116,7 +116,7 @@ public class TestHTMLCodeGenerator extends TestSetUpWithIssues {
 		addCommentsToIssue("[issue] this is a isue[/issue]");
 		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence s = c.getSentences().get(0);
-		assertTrue(html.getCodedElement(s).length() > 0);
+		assertTrue(html.getHTMLCodeForSentence(s).length() > 0);
 	}
 
 	@Test
@@ -128,7 +128,7 @@ public class TestHTMLCodeGenerator extends TestSetUpWithIssues {
 		Sentence s = c.getSentences().get(0);
 		s.setRelevant(true);
 		s.setType(KnowledgeType.ISSUE);
-		assertTrue(html.getCodedElement(s).length() > 0);
+		assertTrue(html.getHTMLCodeForSentence(s).length() > 0);
 	}
 
 	@Test
@@ -141,7 +141,7 @@ public class TestHTMLCodeGenerator extends TestSetUpWithIssues {
 		s.setRelevant(true);
 		s.setType(KnowledgeType.ARGUMENT);
 		s.setArgument("pro");
-		assertTrue(html.getCodedElement(s).length() > 0);
+		assertTrue(html.getHTMLCodeForSentence(s).length() > 0);
 	}
 
 }

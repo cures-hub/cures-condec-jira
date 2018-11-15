@@ -50,7 +50,7 @@ public class ClassificationManagerForCommentSentences {
 		if (this.classifier == null) {
 			this.classifier = new DecisionKnowledgeClassifier();
 		}
-		List<double[]> classificationResult = this.classifier.classifySentencesFineGrained(data);
+		List<double[]> classificationResult = this.classifier.makeFineGrainedPredictions(data);
 
 		// Write classification results back to sentence objects
 		int i = 0;

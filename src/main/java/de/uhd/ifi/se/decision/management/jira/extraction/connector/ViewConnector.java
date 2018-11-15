@@ -67,14 +67,6 @@ public class ViewConnector {
 		return result;
 	}
 
-	public List<Long> getAllCommentsIDs() {
-		List<Long> comments = new ArrayList<Long>();
-		for (Comment c : commentsList) {
-			comments.add(c.getJiraCommentId());
-		}
-		return comments;
-	}
-
 	public List<String> getAllCommentsAuthorNames() {
 		List<String> authorName = new ArrayList<String>();
 		for (Comment c : commentsList) {
