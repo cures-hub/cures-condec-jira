@@ -28,6 +28,7 @@
 			left : posX,
 			top : posY
 		});
+		document.getElementById("condec-context-menu").style.zIndex = 9998;
 		document.querySelector("#condec-context-menu").setAttribute('aria-hidden', 'false');
 
 		document.getElementById("condec-context-menu-create-item").onclick = function() {
@@ -80,6 +81,7 @@
 			left : posX,
 			top : posY
 		});
+		document.getElementById("condec-context-menu-sentence").style.zIndex = 9998;
 		document.querySelector("#condec-context-menu-sentence").setAttribute('aria-hidden', 'false');
 
 		document.getElementById("condec-context-menu-sentence-edit-item").onclick = function() {
