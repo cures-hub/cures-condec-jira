@@ -138,22 +138,22 @@
 		});
 	}
 
-	// for view.context.menu
-	function getContextMenuActionsForTreant(contextMenu) {
-		console.log("view.decision.knowledge.page getContextMenuActionsForTreant");
-		var menu = {
-			"asRoot" : contextMenu.contextMenuSetAsRootAction,
-			"create" : contextMenu.contextMenuCreateAction,
-			"edit" : contextMenu.contextMenuEditAction,
-			"link" : contextMenu.contextMenuLinkAction,
-			"deleteLink" : contextMenu.contextMenuDeleteLinkAction,
-			"delete" : contextMenu.contextMenuDeleteAction,
-			"openIssue" : contextMenu.contextMenuOpenJiraIssueAction,
-			"changeType" : contextMenu.contextMenuChangeTypeAction
-		};
-		return menu;
-	}
-	;
+//	// for view.context.menu
+//	function getContextMenuActionsForTreant(contextMenu) {
+//		console.log("view.decision.knowledge.page getContextMenuActionsForTreant");
+//		var menu = {
+//			"asRoot" : contextMenu.contextMenuSetAsRootAction,
+//			"create" : contextMenu.contextMenuCreateAction,
+//			"edit" : contextMenu.contextMenuEditAction,
+//			"link" : contextMenu.contextMenuLinkAction,
+//			"deleteLink" : contextMenu.contextMenuDeleteLinkAction,
+//			"delete" : contextMenu.contextMenuDeleteAction,
+//			"openIssue" : contextMenu.contextMenuOpenJiraIssueAction,
+//			"changeType" : contextMenu.contextMenuChangeTypeAction
+//		};
+//		return menu;
+//	}
+	
 
 	/*
 	 Init Helpers

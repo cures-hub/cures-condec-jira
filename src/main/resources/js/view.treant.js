@@ -50,15 +50,6 @@ function createTreant(treeStructure, isInteractive) {
 	}
 }
 
-function createContextMenuForTreantNodes() {
-	jQueryConDec(function() {
-		jQueryConDec.contextMenu({
-			selector : ".decision, .rationale, .context, .problem, .solution, .pro, .contra, .other",
-			items : contextMenuActions
-		});
-	});
-}
-
 function createContextMenuForTreantNodesThatAreSentence() {
 	var nodes = document.getElementsByClassName("node");
 	for (var i = nodes.length - 1; i >= 0; i--) {

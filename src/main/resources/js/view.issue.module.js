@@ -83,20 +83,20 @@
 		});
 	}
 
-	// for view.context.menu
-	function getContextMenuActionsForTreant(contextMenu) {
-		console.log("view.issue.module getContextMenuActionsForTreant");
-		var menu = {
-			"asRoot" : contextMenu.contextMenuSetAsRootAction,
-			"create" : contextMenu.contextMenuCreateAction,
-			"edit" : contextMenu.contextMenuEditAction,
-			"link" : contextMenu.contextMenuLinkAction,
-			"deleteLink" : contextMenu.contextMenuDeleteLinkAction,
-			"delete" : contextMenu.contextMenuDeleteAction,
-			"changeType" : contextMenu.contextMenuChangeTypeAction
-		};
-		return menu;
-	}
+//	// for view.context.menu
+//	function getContextMenuActionsForTreant(contextMenu) {
+//		console.log("view.issue.module getContextMenuActionsForTreant");
+//		var menu = {
+//			"asRoot" : contextMenu.contextMenuSetAsRootAction,
+//			"create" : contextMenu.contextMenuCreateAction,
+//			"edit" : contextMenu.contextMenuEditAction,
+//			"link" : contextMenu.contextMenuLinkAction,
+//			"deleteLink" : contextMenu.contextMenuDeleteLinkAction,
+//			"delete" : contextMenu.contextMenuDeleteAction,
+//			"changeType" : contextMenu.contextMenuChangeTypeAction
+//		};
+//		return menu;
+//	}
 
 	function updateView(treant) {
 		console.log("view.issue.module updateView");

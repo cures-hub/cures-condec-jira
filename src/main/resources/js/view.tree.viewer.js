@@ -33,7 +33,7 @@ function customMenu(node) {
 	if (node.li_attr['class'] == "sentence") {
 		return contextMenuActionsForSentences;
 	} else {
-		return contextMenuActions;
+		return null;
 	}
 }
 

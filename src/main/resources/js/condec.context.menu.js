@@ -22,10 +22,8 @@
 					console.log(left);
 					console.log(top);
 
-					// TODO getting node id sometimes fails
-					var id = event.target.id;
-					console.log(event.target.id);
-					createContextMenu(left, top, id);
+					console.log(this.id);
+					createContextMenu(left, top, this.id);
 				});
 			}
 
@@ -39,10 +37,8 @@
 					console.log(left);
 					console.log(top);
 
-					// TODO Get node id for jstree nodes, this does not work
-					var id = event.target.id;
-					console.log(event.target.id);
-					createContextMenu(left, top, id);
+					console.log(this.id);
+					createContextMenu(left, top, this.id);
 				});
 			}
 
@@ -87,6 +83,20 @@
 		document.getElementById("condec-context-menu-delete-item").onclick = function() {
 			conDecDialog.showDeleteDialog(id);
 		};
+
+		document.getElementById("condec-context-menu-set-root-item").onclick = function() {
+			if (window.conDecIssueModule !== undefined) {
+				window.conDecIssueModule.setAsRootElement(id);
+			} else if (window.conDecKnowledgePage !== undefined) {
+				window.conDecKnowledgePage.setAsRootElement(id);
+			}
+		};
+
+		document.getElementById("condec-context-menu-open-jira-issue-item").onclick = function() {
+			if (window.conDecKnowledgePage !== undefined) {
+				window.conDecKnowledgePage.openIssue(id);
+			}
+		};
 	}
 
 	// export ConDecContext
@@ -111,130 +121,6 @@ function getSelectedTreantNodeId(options) {
 	console.log(context.id);
 	return context.id;
 }
-
-var contextMenuCreateAction = {
-	// label for Tree Viewer, name for Treant context menu
-	"label" : "Add Element",
-	"name" : "Add Element",
-	"action" : function(position) {
-		var id = getSelectedTreeViewerNodeId(position);
-		conDecDialog.showCreateDialog(id);
-	},
-	"callback" : function(key, options) {
-		var id = getSelectedTreantNodeId(options);
-		conDecDialog.showCreateDialog(id);
-	}
-};
-
-var contextMenuLinkAction = {
-	// label for Tree Viewer, name for Treant context menu
-	"label" : "Link Existing Element",
-	"name" : "Link Existing Element",
-	"action" : function(position) {
-		var id = getSelectedTreeViewerNodeId(position);
-		conDecDialog.showLinkDialog(id);
-	},
-	"callback" : function(key, options) {
-		var id = getSelectedTreantNodeId(options);
-		conDecDialog.showForLinkDialog(id);
-	}
-};
-
-var contextMenuEditAction = {
-	// label for Tree Viewer, name for Treant context menu
-	"label" : "Edit Element",
-	"name" : "Edit Element",
-	"action" : function(position) {
-		var id = getSelectedTreeViewerNodeId(position);
-		conDecDialog.showForEditDialog(id);
-	},
-	"callback" : function(key, options) {
-		var id = getSelectedTreantNodeId(options);
-		conDecDialog.showForEditDialog(id);
-	}
-};
-
-var contextMenuDeleteAction = {
-	// label for Tree Viewer, name for Treant context menu
-	"label" : "Delete Element",
-	"name" : "Delete Element",
-	"action" : function(position) {
-		var id = getSelectedTreeViewerNodeId(position);
-		conDecDialog.showDeleteDialog(id);
-	},
-	"callback" : function(key, options) {
-		var id = getSelectedTreantNodeId(options);
-		conDecDialog.showDeleteDialog(id);
-	}
-};
-
-var contextMenuDeleteLinkAction = {
-	// label for Tree Viewer, name for Treant context menu
-	"label" : "Delete Link to Parent",
-	"name" : "Delete Link to Parent",
-	"action" : function(position) {
-		var node = getSelectedTreeViewerNode(position);
-		var id = node.id;
-		var parentId = node.parent;
-		conDecDialog.showDeleteLinkDialog(id, parentId);
-	},
-	"callback" : function(key, options) {
-		var id = getSelectedTreantNodeId(options);
-		var parentId = findParentId(id);
-		conDecDialog.showDeleteLinkDialog(id, parentId);
-	}
-};
-
-var contextMenuChangeTypeAction = {
-	"label" : "Change Element Type",
-	"name" : "Change Element Type",
-	"action" : function(position) {
-		var node = getSelectedTreeViewerNode(position);
-		var id = node.id;
-		conDecDialog.showChangeTypeDialog(id);
-	},
-	"callback" : function(key, options) {
-		var id = getSelectedTreantNodeId(options);
-		conDecDialog.showChangeTypeDialog(id);
-	}
-};
-
-var contextMenuSetAsRootAction = {
-	// label for Tree Viewer, name for Treant context menu
-	"name" : "Set as Root",
-	"callback" : function(key, options) {
-		var id = getSelectedTreantNodeId(options);
-		if (window.conDecIssueModule !== undefined) {
-			window.conDecIssueModule.setAsRootElement(id);
-		} else if (window.conDecKnowledgePage !== undefined) {
-			window.conDecKnowledgePage.setAsRootElement(id);
-		}
-	}
-};
-
-var contextMenuOpenJiraIssueAction = {
-	// label for Tree Viewer, name for Treant context menu
-	"name" : "Open JIRA Issue",
-	"onload" : function() {
-		alert(Test);
-	},
-	"callback" : function(key, options) {
-		var id = getSelectedTreantNodeId(options);
-
-		if (window.conDecKnowledgePage !== undefined) {
-			window.conDecKnowledgePage.openIssue(id);
-		}
-	}
-};
-
-/* used by view.tree.viewer.js */
-var contextMenuActions = {
-	"create" : contextMenuCreateAction,
-	"edit" : contextMenuEditAction,
-	"link" : contextMenuLinkAction,
-	"deleteLink" : contextMenuDeleteLinkAction,
-	"delete" : contextMenuDeleteAction
-};
 
 var changeKnowledgeTypeAction = {
 	// label for Tree Viewer, name for Treant context menu
