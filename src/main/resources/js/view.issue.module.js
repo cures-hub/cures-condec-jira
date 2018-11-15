@@ -33,11 +33,14 @@
 		console.log("view.issue.module init");
 
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable) && isConDecTreantType(_treant)
-		//&& isConDecContextType(_contextMenu) // not using and thus not checking i18n yet.
+				&& isConDecContextMenuType(_conDecContextMenu) // not using and
+		// thus not
+		// checking i18n
+		// yet.
 		) {
 			conDecAPI = _conDecAPI;
 
-			//TODO: Register/Subscribe as observer
+			// TODO: Register/Subscribe as observer
 			conDecObservable = _conDecObservable;
 			conDecDialog = _conDecDialog;
 			conDecContextMenu = _conDecContextMenu;
@@ -91,7 +94,7 @@
 	}
 
 	/*
-	 Init Helpers
+	 * Init Helpers
 	 */
 	function isConDecAPIType(conDecAPI) {
 		if (!(conDecAPI !== undefined && conDecAPI.getDecisionKnowledgeElement !== undefined && typeof conDecAPI.getDecisionKnowledgeElement === 'function')) {
@@ -117,13 +120,13 @@
 		return true;
 	}
 
-	//	function isConDecContextType(contextMenu) {
-	//		if (!(contextMenu !== undefined && contextMenu.setUpDialog !== undefined && typeof contextMenu.setUpDialog === 'function')) {
-	//			console.warn("ConDecIssueModule: invalid contextMenu object received.");
-	//			return false;
-	//		}
-	//		return true;
-	//	}
+	function isConDecContextMenuType(conDecContextMenu) {
+		if (!(conDecContextMenu !== undefined && conDecContextMenu.createContextMenu !== undefined && typeof conDecContextMenu.createContextMenu === 'function')) {
+			console.warn("ConDecContextMenu: invalid conDecContextMenu object received.");
+			return false;
+		}
+		return true;
+	}
 
 	function getURLsSearch() {
 		var search = global.location.search.toString();

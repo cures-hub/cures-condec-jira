@@ -23,25 +23,33 @@
 	var conDecObservable = null;
 	var conDecAPI = null;
 	var conDecDialog = null;
-	var conDecContextMenu = null;	
+	var conDecContextMenu = null;
 	var treant = null;
 	var treeViewer = null;
 
 	var ConDecKnowledgePage = function ConDecKnowledgePage() {
 	};
 
-	ConDecKnowledgePage.prototype.init = function(_conDecAPI, _conDecObservable, _conDecDialog, _conDecContextMenu, _treant, _treeViewer, _i18n) {
+	ConDecKnowledgePage.prototype.init = function(_conDecAPI, _conDecObservable, _conDecDialog, _conDecContextMenu,
+			_treant, _treeViewer, _i18n) {
 		console.log("view.decision.knowledge.page init");
 
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable) && isConDecTreantType(_treant)
-				&& isConDecTreeViewerType(_treeViewer) //&& isConDecContextType(_contextMenu) // not using and thus not checking i18n yet.
+				&& isConDecTreeViewerType(_treeViewer) && isConDecContextMenuType(_conDecContextMenu) // not
+																										// using
+																										// and
+																										// thus
+																										// not
+																										// checking
+																										// i18n
+																										// yet.
 		) {
 			conDecAPI = _conDecAPI;
-			
-			//TODO: Register/Subscribe as observer
+
+			// TODO: Register/Subscribe as observer
 			conDecObservable = _conDecObservable;
 			conDecDialog = _conDecDialog;
-			conDecContextMenu = _conDecContextMenu;			
+			conDecContextMenu = _conDecContextMenu;
 			treant = _treant;
 			treeViewer = _treeViewer;
 			i18n = _i18n;
@@ -109,10 +117,7 @@
 			}
 		});
 
-		updateView(null, treant, treeViewer);				
-		
-		// TODO Move to treeviewer constructor
-		treeViewer.addContextMenuToTreeViewer();
+		updateView(null, treant, treeViewer);
 	}
 
 	function updateView(nodeId, treant, treeViewer) {
@@ -128,12 +133,12 @@
 		}
 		jQueryConDec("#jstree").on("select_node.jstree", function(error, tree) {
 			var node = tree.node.data;
-			treant.buildTreant(node.key, true, "");			
+			treant.buildTreant(node.key, true, "");
 		});
 	}
 
 	/*
-	 Init Helpers
+	 * Init Helpers
 	 */
 	function isConDecAPIType(conDecAPI) {
 		if (!(conDecAPI !== undefined && conDecAPI.getDecisionKnowledgeElement !== undefined && typeof conDecAPI.getDecisionKnowledgeElement === 'function')) {
@@ -159,13 +164,13 @@
 		return true;
 	}
 
-//	function isConDecContextType(contextMenu) {
-//		if (!(contextMenu !== undefined && contextMenu.setUpDialog !== undefined && typeof contextMenu.setUpDialog === 'function')) {
-//			console.warn("ConDecKnowledgePage: invalid contextMenu object received.");
-//			return false;
-//		}
-//		return true;
-//	}
+	function isConDecContextMenuType(conDecContextMenu) {
+		if (!(conDecContextMenu !== undefined && conDecContextMenu.createContextMenu !== undefined && typeof conDecContextMenu.createContextMenu === 'function')) {
+			console.warn("ConDecContextMenu: invalid conDecContextMenu object received.");
+			return false;
+		}
+		return true;
+	}
 
 	function isConDecTreeViewerType(treeViewer) {
 		if (!(treeViewer !== undefined && treeViewer.selectNodeInTreeViewer !== undefined && typeof treeViewer.selectNodeInTreeViewer === 'function')) {
@@ -174,7 +179,7 @@
 		}
 		return true;
 	}
-	
+
 	// export ConDecKnowledgePage
 	global.conDecKnowledgePage = new ConDecKnowledgePage();
 })(window);

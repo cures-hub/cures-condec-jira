@@ -19,6 +19,7 @@ function buildTreeViewer() {
 		});
 	});
 	addDragAndDropSupportForTreeViewer();
+	addContextMenuToTreeViewer();
 }
 
 function addContextMenuToTreeViewer() {
