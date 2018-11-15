@@ -12,21 +12,43 @@
 			var i;
 			for (i = 0; i < nodes.length; i++) {
 				nodes[i].addEventListener('contextmenu', function(event) {
+					event.preventDefault();
 					isContextMenuOpen = true;
-					// TODO Find correct position
-					var left = event.clientX;
-					var top = event.clientY;
+
+					// TODO Find correct position in issue module
+					var left = event.pageX;
+					var top = event.pageY;
 					console.log("contextmenu opened");
 					console.log(left);
 					console.log(top);
-//					$("#condec-context-menu").css({
-//						left : left,
-//						top : top
-//					});
+					$("#condec-context-menu").css({
+						left : left,
+						top : top
+					});
 					document.querySelector("#condec-context-menu").setAttribute('aria-hidden', 'false');
-					
+
 					// TODO handle node id
-					console.log(event.target.id)
+					var id = event.target.id
+					console.log(event.target.id);
+
+					document.getElementById("condec-context-menu-create-item").onclick = function() {
+						setUpDialogForCreateAction(id);
+					};
+					document.getElementById("condec-context-menu-edit-item").onclick = function() {
+						setUpDialogForEditAction(id);
+					};
+					document.getElementById("condec-context-menu-change-type-item").onclick = function() {
+						setUpDialogForChangeTypeAction(id);
+					};
+					document.getElementById("condec-context-menu-link-item").onclick = function() {
+						setUpDialogForLinkAction(id);
+					};
+					document.getElementById("condec-context-menu-delete-link-item").onclick = function() {
+						setUpDialogForDeleteLinkAction(id);
+					};
+					document.getElementById("condec-context-menu-delete-item").onclick = function() {
+						setUpDialogForDeleteAction(id);
+					};
 				});
 			}
 			function hideContextmenu() {
@@ -48,22 +70,15 @@
 })(window);
 
 /**
- * This module is responsible for:
- * + showing a context menu upon left mouse click
- * ++ on a sentence or on an issue element
- * + building the context menu
- * ++ setUpDialogForCreateAction
- * ++ setUpDialogForLinkAction
- * ++ setUpDialogForEditAction
- * ++ setUpDialogForDeleteAction
- * ++ setUpDialogForDeleteLinkAction
- * ++ setUpDialogForEditSentenceAction
-
- * + opening a dialog
- * + pre-filling the dialog depending on action and element
- * + setting the click event for closing the dialog (too many times)
- *
- *
+ * This module is responsible for: + showing a context menu upon left mouse
+ * click ++ on a sentence or on an issue element + building the context menu ++
+ * setUpDialogForCreateAction ++ setUpDialogForLinkAction ++
+ * setUpDialogForEditAction ++ setUpDialogForDeleteAction ++
+ * setUpDialogForDeleteLinkAction ++ setUpDialogForEditSentenceAction + opening
+ * a dialog + pre-filling the dialog depending on action and element + setting
+ * the click event for closing the dialog (too many times)
+ * 
+ * 
  */
 
 // closure locals
@@ -101,17 +116,20 @@ function getSelectedTreeViewerNode(position) {
 
 function getSelectedTreeViewerNodeId(node) {
 	console.log("view.context.menu.js getSelectedTreeViewerNodeId");
+	console.log(getSelectedTreeViewerNode(node).data.id);
 	return getSelectedTreeViewerNode(node).data.id;
 }
 
 function getSelectedTreantNodeId(options) {
 	console.log("view.context.menu.js getSelectedTreantNodeId");
 	var context = options.$trigger.context;
+	console.log(context.id);
 	return context.id;
 }
 
 function setUpDialogForCreateAction(id) {
 	console.log("view.context.menu.js setUpDialogForCreateAction");
+	console.log(id);
 	setHeaderText(createKnowledgeElementText);
 	setUpCreateOrEditDialog("", "", "Alternative");
 
@@ -717,7 +735,7 @@ function setUpEditSentenceDialogView(description, type, node) {
 	}
 	for (var index = 0; index < knowledgeTypes.length; index++) {
 		var isSelected = "";
-		//first clause for treant, second for tree viewer
+		// first clause for treant, second for tree viewer
 		if (node.includes(knowledgeTypes[index].toLowerCase()) || node === knowledgeTypes[index]) {
 			isSelected = "selected ";
 		}

@@ -1,6 +1,10 @@
 <aui-dropdown-menu id="condec-context-menu">
     <aui-section id="condec-context-menu-section">
-        <aui-item-link href="http://amazon.com">Amazon</aui-item-link>
-        <aui-item-link href="http://apple.com">Apple</aui-item-link>
+        <aui-item-link id="condec-context-menu-create-item">Add Decision Knowledge Element</aui-item-link>
+        <aui-item-link id="condec-context-menu-edit-item">Edit Element</aui-item-link>
+        <aui-item-link id="condec-context-menu-change-type-item">Change Element Type</aui-item-link>
+        <aui-item-link id="condec-context-menu-link-item">Link Existing Decision Knowledge Element</aui-item-link>
+        <aui-item-link id="condec-context-menu-delete-link-item">Delete Link to Parent</aui-item-link>
+        <aui-item-link id="condec-context-menu-delete-item">Delete Element</aui-item-link>        
     </aui-section>
 </aui-dropdown-menu>
