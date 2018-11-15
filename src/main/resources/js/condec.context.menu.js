@@ -69,23 +69,23 @@
 		document.querySelector("#condec-context-menu").setAttribute('aria-hidden', 'false');
 
 		document.getElementById("condec-context-menu-create-item").onclick = function() {
-			conDecDialog.setUpDialogForCreateAction(id);
+			conDecDialog.showCreateDialog(id);
 		};
 		document.getElementById("condec-context-menu-edit-item").onclick = function() {
-			conDecDialog.setUpDialogForEditAction(id);
+			conDecDialog.showEditDialog(id);
 		};
 		document.getElementById("condec-context-menu-change-type-item").onclick = function() {
-			conDecDialog.setUpDialogForChangeTypeAction(id);
+			conDecDialog.showChangeTypeDialog(id);
 		};
 		document.getElementById("condec-context-menu-link-item").onclick = function() {
-			conDecDialog.setUpDialogForLinkAction(id);
+			conDecDialog.showLinkDialog(id);
 		};
 		document.getElementById("condec-context-menu-delete-link-item").onclick = function() {
 			var parentId = findParentId(id);
-			conDecDialog.setUpDialogForDeleteLinkAction(id, parentId);
+			conDecDialog.showDeleteLinkDialog(id, parentId);
 		};
 		document.getElementById("condec-context-menu-delete-item").onclick = function() {
-			conDecDialog.setUpDialogForDeleteAction(id);
+			conDecDialog.showDeleteDialog(id);
 		};
 	}
 
@@ -118,11 +118,11 @@ var contextMenuCreateAction = {
 	"name" : "Add Element",
 	"action" : function(position) {
 		var id = getSelectedTreeViewerNodeId(position);
-		conDecDialog.setUpDialogForCreateAction(id);
+		conDecDialog.showCreateDialog(id);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		conDecDialog.setUpDialogForCreateAction(id);
+		conDecDialog.showCreateDialog(id);
 	}
 };
 
@@ -132,11 +132,11 @@ var contextMenuLinkAction = {
 	"name" : "Link Existing Element",
 	"action" : function(position) {
 		var id = getSelectedTreeViewerNodeId(position);
-		conDecDialog.setUpDialogForLinkAction(id);
+		conDecDialog.showLinkDialog(id);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		conDecDialog.setUpDialogForLinkAction(id);
+		conDecDialog.showForLinkDialog(id);
 	}
 };
 
@@ -146,11 +146,11 @@ var contextMenuEditAction = {
 	"name" : "Edit Element",
 	"action" : function(position) {
 		var id = getSelectedTreeViewerNodeId(position);
-		conDecDialog.setUpDialogForEditAction(id);
+		conDecDialog.showForEditDialog(id);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		conDecDialog.setUpDialogForEditAction(id);
+		conDecDialog.showForEditDialog(id);
 	}
 };
 
@@ -160,11 +160,11 @@ var contextMenuDeleteAction = {
 	"name" : "Delete Element",
 	"action" : function(position) {
 		var id = getSelectedTreeViewerNodeId(position);
-		conDecDialog.setUpDialogForDeleteAction(id);
+		conDecDialog.showDeleteDialog(id);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		conDecDialog.setUpDialogForDeleteAction(id);
+		conDecDialog.showDeleteDialog(id);
 	}
 };
 
@@ -176,12 +176,12 @@ var contextMenuDeleteLinkAction = {
 		var node = getSelectedTreeViewerNode(position);
 		var id = node.id;
 		var parentId = node.parent;
-		conDecDialog.setUpDialogForDeleteLinkAction(id, parentId);
+		conDecDialog.showDeleteLinkDialog(id, parentId);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
 		var parentId = findParentId(id);
-		conDecDialog.setUpDialogForDeleteLinkAction(id, parentId);
+		conDecDialog.showDeleteLinkDialog(id, parentId);
 	}
 };
 
@@ -191,11 +191,11 @@ var contextMenuChangeTypeAction = {
 	"action" : function(position) {
 		var node = getSelectedTreeViewerNode(position);
 		var id = node.id;
-		conDecDialog.setUpDialogForChangeTypeAction(id);
+		conDecDialog.showChangeTypeDialog(id);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-		conDecDialog.setUpDialogForChangeTypeAction(id);
+		conDecDialog.showChangeTypeDialog(id);
 	}
 };
 
@@ -394,7 +394,7 @@ var contextMenuEditSentenceAction = {
 		var id = getSelectedTreeViewerNodeId(position);
 		var node = getSelectedTreeViewerNode(position);
 		console.log(node);
-		setUpDialogForEditSentenceAction(id, node.data.summary, node.data.type, node.data.type);
+		conDecDialog.setUpDialogForEditSentenceAction(id, node.data.summary, node.data.type, node.data.type);
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
@@ -407,7 +407,7 @@ var contextMenuEditSentenceAction = {
 		if (node.getElementsByClassName("node-name").length > 0) {
 			type = node.getElementsByClassName("node-name")[0].innerHTML;
 		}
-		setUpDialogForEditSentenceAction(id, description, type, node.classList.value);
+		conDecDialog.setUpDialogForEditSentenceAction(id, description, type, node.classList.value);
 	}
 };
 
@@ -423,89 +423,6 @@ function getNodeWithId(nodes, id) {
 	}
 }
 
-/**
- * fills HTML of dialog with contents
- */
-function setUpDialogForEditSentenceAction(id, description, type, node) {
-	setUpDialog();
-	setHeaderText(editKnowledgeElementText);
-	setUpEditSentenceDialogView(description, type, node);
-	setUpEditSentenceDialogContext(id, description, type);
-}
-
-/**
- * fills HTML view-protion of dialog with contents
- */
-function setUpEditSentenceDialogView(description, type, node) {
-
-	document.getElementById("dialog-content").innerHTML = "";
-	document.getElementById("dialog").classList.remove("aui-dialog2-large");
-	document.getElementById("dialog").classList.add("aui-dialog2-medium");
-	document.getElementById("dialog").style.zIndex = 9999;
-	document.getElementById("dialog-content").insertAdjacentHTML(
-			"afterBegin",
-			"<form class='aui'>" + "<div class='field-group'><label for='form-input-description'>Sentence:</label>"
-					+ "<textarea id='form-input-description' placeholder='Description' value='" + description
-					+ "' class='textarea full-width-field'>" + description + "</textarea></div>"
-					+ "<div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
-					+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
-					+ "</form>");
-
-	var knowledgeTypes = conDecAPI.knowledgeTypes;
-	if (knowledgeTypes.includes("Issue") && knowledgeTypes.includes("Problem")) {
-		var index = knowledgeTypes.indexOf("Issue");
-		if (index > -1) {
-			knowledgeTypes.splice(index, 1);
-		}
-	}
-	for (var index = 0; index < knowledgeTypes.length; index++) {
-		var isSelected = "";
-		// first clause for treant, second for tree viewer
-		if (node.includes(knowledgeTypes[index].toLowerCase()) || node === knowledgeTypes[index]) {
-			isSelected = "selected ";
-		}
-
-		$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
-				+ knowledgeTypes[index] + "'>" + knowledgeTypes[index] + "</option>");
-	}
-}
-
-/**
- * sets-up submit button
- */
-function setUpEditSentenceDialogContext(id, description, type) {
-
-	var submitButton = document.getElementById("dialog-submit-button");
-	submitButton.textContent = "Change";
-	$("#dialog-extension-button").remove();
-	submitButton.onclick = function() {
-		var description = document.getElementById("form-input-description").value;
-		var type = $("select[name='form-select-type']").val().split("-")[0];
-		conDecAPI
-				.editSentenceBody(
-						id,
-						description,
-						type,
-						function() {
-							if (!(document.getElementById("Relevant") == null)) {
-								var idOfUiElement = "ui" + id;
-								replaceTagsFromContent(idOfUiElement, type);
-
-								document.getElementById(idOfUiElement).classList.remove("Decision", "Issue",
-										"Alternative", "Pro", "Con");
-								document.getElementById(idOfUiElement).classList.add(type);
-								document.getElementById(idOfUiElement).getElementsByClassName("sentenceBody")[0].textContent = description;
-								AJS.dialog2("#dialog").hide();
-							} else {
-								AJS.dialog2("#dialog").hide();
-								conDecObservable.notify();
-							}
-
-						});
-	};
-	AJS.$("#form-select-type").auiSelect2();
-}
-
 // local usage only
 var contextMenuCreateIssueFromSentence = {
 	// label for Tree Viewer, name for Treant context menu
@@ -518,25 +435,10 @@ var contextMenuCreateIssueFromSentence = {
 	},
 	"callback" : function(key, options) {
 		var id = getSelectedTreantNodeId(options);
-
 		console.log(id);
 		conDecAPI.createIssueFromSentence(id, conDecObservable.notify);
 	}
 };
-
-/**
- * local resets tree viewer and builds it again
- */
-function refreshTreeViewer() {
-	console.log("view.context.menu.js refreshTreeViewer");
-	if (document.getElementById("Relevant") !== null) {
-		resetTreeViewer();
-		conDecIssueTab.buildTreeViewer(document.getElementById("Relevant").checked);
-	} else {
-		AJS.dialog2("#dialog").hide();
-		conDecObservable.notify();
-	}
-}
 
 var contextMenuActionsForSentences = {
 	"edit" : contextMenuEditSentenceAction,

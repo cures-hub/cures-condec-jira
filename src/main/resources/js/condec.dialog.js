@@ -16,10 +16,7 @@
 	var ConDecDialog = function ConDecDialog() {
 	};
 
-	ConDecDialog.prototype.setUpContext = function setUpContext() {
-	};
-
-	ConDecDialog.prototype.setUpDialogForCreateAction = function setUpDialogForCreateAction(id) {
+	ConDecDialog.prototype.showCreateDialog = function showCreateDialog(id) {
 		console.log("view.context.menu.js setUpDialogForCreateAction");
 		console.log(id);
 		setHeaderText(createKnowledgeElementText);
@@ -36,7 +33,7 @@
 		};
 
 		conDecAPI.isIssueStrategy(id, function(isIssueStrategy) { // TODO:
-																	// rename
+			// rename
 			// param name,
 			// confusing.
 			if (isIssueStrategy === true) {
@@ -55,7 +52,7 @@
 		});
 
 		setUpDialog();
-	}
+	};
 
 	/*
 	 * attaches cancel button handler shows(creates) the dialog TODO: attach
@@ -136,7 +133,7 @@
 		return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase();
 	}
 
-	ConDecDialog.prototype.setUpDialogForLinkAction = function setUpDialogForLinkAction(id) {
+	ConDecDialog.prototype.showLinkDialog = function showLinkDialog(id) {
 		console.log("view.context.menu.js setUpDialogForLinkAction");
 		console.log(id);
 		setUpDialog();
@@ -150,7 +147,7 @@
 
 			insertString = "<label for='form-select-component'>Unlinked Element:</label>"
 					+ "<select id='form-select-component' name='form-select-component' "
-					+ "onchange='addFormForArguments()' class='select full-width-field'/>";
+					+ "onchange='conDecDialog.addFormForArguments()' class='select full-width-field'/>";
 			for (var index = 0; index < unlinkedElements.length; index++) {
 				insertString += "<option value='" + unlinkedElements[index].id + "'>" + unlinkedElements[index].type
 						+ ' / ' + unlinkedElements[index].summary + "</option>";
@@ -169,7 +166,7 @@
 				AJS.dialog2("#dialog").hide();
 			};
 		});
-	}
+	};
 
 	function addFormForArguments() {
 		console.log("view.context.menu.js addFormForArguments");
@@ -191,7 +188,9 @@
 						});
 	}
 
-	ConDecDialog.prototype.setUpDialogForEditAction = function setUpDialogForEditAction(id, type) {
+	ConDecDialog.prototype.addFormForArguments = addFormForArguments;
+
+	ConDecDialog.prototype.showEditDialog = function showEditDialog(id, type) {
 		console.log("view.context.menu.js setUpDialogForEditAction");
 		conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
 			var summary = decisionKnowledgeElement.summary;
@@ -228,9 +227,9 @@
 				}
 			});
 		});
-	}
+	};
 
-	ConDecDialog.prototype.setUpDialogForDeleteAction = function setUpDialogForDeleteAction(id) {
+	ConDecDialog.prototype.showDeleteDialog = function showDeleteDialog(id) {
 		console.log("view.context.menu.js setUpDialogForDeleteAction");
 		setUpDialog();
 		setHeaderText(deleteKnowledgeElementText);
@@ -246,9 +245,9 @@
 			});
 			AJS.dialog2("#dialog").hide();
 		};
-	}
+	};
 
-	ConDecDialog.prototype.setUpDialogForDeleteLinkAction = function setUpDialogForDeleteLinkAction(id, parentId) {
+	ConDecDialog.prototype.showDeleteLinkDialog = function showDeleteLinkDialog(id, parentId) {
 		console.log("view.context.menu.js setUpDialogForDeleteLinkAction");
 		setUpDialog();
 		setHeaderText(deleteLinkToParentText);
@@ -264,9 +263,9 @@
 			});
 			AJS.dialog2("#dialog").hide();
 		};
-	}
+	};
 
-	ConDecDialog.prototype.setUpDialogForChangeTypeAction = function setUpDialogForChangeTypeAction(id) {
+	ConDecDialog.prototype.showChangeTypeDialog = function showChangeTypeDialog(id) {
 		console.log("view.context.menu.js setUpDialogForChangeTypeAction");
 		setUpDialog();
 		setHeaderText(changeKnowledgeTypeText);
@@ -284,7 +283,7 @@
 				AJS.dialog2("#dialog").hide();
 			};
 		});
-	}
+	};
 
 	function resetDialog() {
 		console.log("view.context.menu.js resetDialog");
@@ -301,6 +300,108 @@
 			dialog.classList.add("aui-dialog2-medium");
 		}
 	}
+
+	/**
+	 * fills HTML view-protion of dialog with contents
+	 */
+	function setUpEditSentenceDialogView(description, type, node) {
+
+		document.getElementById("dialog-content").innerHTML = "";
+		document.getElementById("dialog").classList.remove("aui-dialog2-large");
+		document.getElementById("dialog").classList.add("aui-dialog2-medium");
+		document.getElementById("dialog").style.zIndex = 9999;
+		document
+				.getElementById("dialog-content")
+				.insertAdjacentHTML(
+						"afterBegin",
+						"<form class='aui'>"
+								+ "<div class='field-group'><label for='form-input-description'>Sentence:</label>"
+								+ "<textarea id='form-input-description' placeholder='Description' value='"
+								+ description
+								+ "' class='textarea full-width-field'>"
+								+ description
+								+ "</textarea></div>"
+								+ "<div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
+								+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
+								+ "</form>");
+
+		var knowledgeTypes = conDecAPI.knowledgeTypes;
+		if (knowledgeTypes.includes("Issue") && knowledgeTypes.includes("Problem")) {
+			var index = knowledgeTypes.indexOf("Issue");
+			if (index > -1) {
+				knowledgeTypes.splice(index, 1);
+			}
+		}
+		for (var index = 0; index < knowledgeTypes.length; index++) {
+			var isSelected = "";
+			// first clause for treant, second for tree viewer
+			if (node.includes(knowledgeTypes[index].toLowerCase()) || node === knowledgeTypes[index]) {
+				isSelected = "selected ";
+			}
+
+			$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
+					+ knowledgeTypes[index] + "'>" + knowledgeTypes[index] + "</option>");
+		}
+	}
+
+	/**
+	 * sets-up submit button
+	 */
+	function setUpEditSentenceDialogContext(id, description, type) {
+
+		var submitButton = document.getElementById("dialog-submit-button");
+		submitButton.textContent = "Change";
+		$("#dialog-extension-button").remove();
+		submitButton.onclick = function() {
+			var description = document.getElementById("form-input-description").value;
+			var type = $("select[name='form-select-type']").val().split("-")[0];
+			conDecAPI
+					.editSentenceBody(
+							id,
+							description,
+							type,
+							function() {
+								if (!(document.getElementById("Relevant") == null)) {
+									var idOfUiElement = "ui" + id;
+									replaceTagsFromContent(idOfUiElement, type);
+
+									document.getElementById(idOfUiElement).classList.remove("Decision", "Issue",
+											"Alternative", "Pro", "Con");
+									document.getElementById(idOfUiElement).classList.add(type);
+									document.getElementById(idOfUiElement).getElementsByClassName("sentenceBody")[0].textContent = description;
+									AJS.dialog2("#dialog").hide();
+								} else {
+									AJS.dialog2("#dialog").hide();
+									conDecObservable.notify();
+								}
+
+							});
+		};
+		AJS.$("#form-select-type").auiSelect2();
+	}
+
+	// TODO: Remove this method from conDecDialog
+	/**
+	 * local resets tree viewer and builds it again
+	 */
+	function refreshTreeViewer() {
+		console.log("view.context.menu.js refreshTreeViewer");
+		if (document.getElementById("Relevant") !== null) {
+			resetTreeViewer();
+			conDecIssueTab.buildTreeViewer(document.getElementById("Relevant").checked);
+		} else {
+			AJS.dialog2("#dialog").hide();
+			conDecObservable.notify();
+		}
+	}
+
+	ConDecDialog.prototype.setUpDialogForEditSentenceAction = function setUpDialogForEditSentenceAction(id,
+			description, type, node) {
+		setUpDialog();
+		setHeaderText(editKnowledgeElementText);
+		setUpEditSentenceDialogView(description, type, node);
+		setUpEditSentenceDialogContext(id, description, type);
+	};
 
 	// export ConDecDialog
 	global.conDecDialog = new ConDecDialog();
