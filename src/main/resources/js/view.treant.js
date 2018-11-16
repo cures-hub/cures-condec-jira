@@ -266,6 +266,6 @@
 		return extractTypeFromHTMLElement(element);
 	}
 
-	// export ConDecDialog
+	// export ConDecTreant
 	global.conDecTreant = new ConDecTreant();
 })(window);
