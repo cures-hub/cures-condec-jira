@@ -32,7 +32,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 instantiate the ConDecKnowledgePage object controlling this view
 */
 $(document).ready(function(){
-    if ( window.conDecKnowledgePage.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, window, window, window) )
+    if ( window.conDecKnowledgePage.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant, window, window) )
         window.conDecKnowledgePage.fetchAndRender();
     else {
         console.error("ConDecKnowledgePage could not get its dependencies.");

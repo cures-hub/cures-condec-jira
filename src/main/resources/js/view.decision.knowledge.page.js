@@ -152,7 +152,7 @@
 
 	function isConDecDialogType(conDecDialog) {
 		if (!(conDecDialog !== undefined && conDecDialog.showCreateDialog !== undefined && typeof conDecDialog.showCreateDialog === 'function')) {
-			console.warn("ConDecDialog: invalid conDecDialog object received.");
+			console.warn("ConDecKnowledgePage: invalid conDecDialog object received.");
 			return false;
 		}
 		return true;
@@ -160,15 +160,15 @@
 
 	function isConDecContextMenuType(conDecContextMenu) {
 		if (!(conDecContextMenu !== undefined && conDecContextMenu.createContextMenu !== undefined && typeof conDecContextMenu.createContextMenu === 'function')) {
-			console.warn("ConDecContextMenu: invalid conDecContextMenu object received.");
+			console.warn("ConDecKnowledgePage: invalid conDecContextMenu object received.");
 			return false;
 		}
 		return true;
 	}
 
-	function isConDecTreantType(treant) {
-		if (!(treant !== undefined && treant.buildTreant !== undefined && typeof treant.buildTreant === 'function')) {
-			console.warn("ConDecKnowledgePage: invalid treant object received.");
+	function isConDecTreantType(conDecTreant) {
+		if (!(conDecTreant !== undefined && conDecTreant.buildTreant !== undefined && typeof conDecTreant.buildTreant === 'function')) {
+			console.warn("ConDecKnowledgePage: invalid conDecTreant object received.");
 			return false;
 		}
 		return true;

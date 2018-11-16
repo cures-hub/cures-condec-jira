@@ -1,10 +1,10 @@
 /*
  This module implements communication with the ConDec Java REST API and the JIRA API
  
- As known on 11. November 2018 this module:
+ As known on 16. November 2018 this module:
  
  Requires
- * nothing
+ * conDecTreant.findParentId
     
  Is required by
  * view.*  
@@ -216,7 +216,7 @@
 		getDecisionKnowledgeElement(childId, function(decisionKnowledgeElement) {
 			updateDecisionKnowledgeElement(childId, summary, description, simpleType, function() {
 				if (decisionKnowledgeElement.type !== type) {
-					var parentId = findParentId(childId);
+					var parentId = conDecTreant.findParentId(childId);
 					switchLinkTypes(type, parentId, childId, function(linkType, parentId, childId) {
 						deleteLink(parentId, childId, function() {
 							linkElements(parentId, childId, linkType, function() {

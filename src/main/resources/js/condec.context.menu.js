@@ -48,7 +48,7 @@
 		};
 
 		document.getElementById("condec-context-menu-delete-link-item").onclick = function() {
-			var parentId = findParentId(id);
+			var parentId = conDecTreant.findParentId(id);
 			conDecDialog.showDeleteLinkDialog(id, parentId);
 		};
 
