@@ -85,11 +85,14 @@
 		document.querySelector("#condec-context-menu-sentence").setAttribute('aria-hidden', 'false');
 
 		document.getElementById("condec-context-menu-sentence-edit-item").onclick = function() {
-			// TODO
+			conDecDialog.setUpDialogForEditSentenceAction(id);
 		};
 
 		document.getElementById("condec-context-menu-sentence-delete-link-item").onclick = function() {
-			// TODO
+			var parentId = findParentId(id);
+			conDecAPI.deleteGenericLink(parentId, id, "i", "s", conDecAPI.setSentenceIrrelevant(id,conDecObservable.notify), false);
+			conDecAPI.deleteGenericLink(parentId, id, "s", "s", conDecAPI.setSentenceIrrelevant(id,conDecObservable.notify), false);
+
 		};
 
 		document.getElementById("condec-context-menu-sentence-convert-item").onclick = function() {
@@ -97,7 +100,7 @@
 		};
 
 		document.getElementById("condec-context-menu-sentence-irrelevant-item").onclick = function() {
-			// TODO
+			conDecAPI.setSentenceIrrelevant(id,conDecObservable.notify)
 		};
 	}
 

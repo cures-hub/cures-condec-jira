@@ -109,11 +109,7 @@
 		event.preventDefault();
 		var parentId = target.id;
 		var childId = dragId;
-		if (sentenceElementIsDropped(target, parentId, childId)) {
-			conDecAPI.deleteLink(oldParentId, childId, function() {
-				conDecAPI.createLinkToExistingElement(parentId, childId);
-			});
-		}
+		sentenceElementIsDropped(target, parentId, childId)
 	}
 
 	function sentenceElementIsDropped(target, parentId, childId) {
@@ -121,25 +117,20 @@
 		var sourceType = extractTypeFromHTMLElement(draggedElement);
 		var oldParentType = extractTypeFromHTMLId(findParentId(draggedElement.id));
 		var newParentType = extractTypeFromHTMLElement(target);
-		// selected element is a sentence, dropped element is an issue
-		if (draggedElement.classList.contains("sentence") && !target.classList.contains("sentence")) {
-			conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,
-					function() {
-						conDecAPI.linkGenericElements(target.id, draggedElement.id, newParentType, sourceType,
-								function() {
-									conDecObservable.notify();
-								});
-					});
-		} else // selected element is an issue, dropped element is an sentence
-		if (target.classList.contains("sentence") && !draggedElement.classList.contains("sentence")) {
-			conDecAPI.deleteLink("s" + oldParentId, "i" + childId, function() {
+		// selected element is an issue, dropped element is an sentence
+		if (newParentType === "s" && oldParentType === "i") {
+			conDecAPI.deleteLink("i" + oldParentId, "s" + childId, function() {
 				conDecAPI.linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
 					conDecObservable.notify();
 				});
 			});
-		} else // selected element is a sentence, dropped element is an
-		// sentence
-		if (target.classList.contains("sentence") && draggedElement.classList.contains("sentence")) {
+		} else // selected element is an issue, parent element is a sentence
+		if (sourceType === "i" && newParentType === "i") {
+			conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,
+					function() {
+						conDecAPI.createLinkToExistingElement(parentId, childId);
+					});
+		} else {
 			conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,
 					function() {
 						conDecAPI.linkGenericElements(target.id, draggedElement.id, newParentType, sourceType,
@@ -147,17 +138,7 @@
 									conDecObservable.notify();
 								});
 					});
-		} else // selected element is an issue, parent element is a sentence
-		if (!draggedElement.classList.contains("sentence")
-				&& document.getElementById(findParentId(draggedElement.id)).classList.contains("sentence")) {
-			conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,
-					function() {
-						conDecAPI.createLinkToExistingElement(parentId, childId);
-					});
-		} else {// usual link between issue and issue
-			return true;
 		}
-		return false;
 	}
 
 	function allowDrop(event) {
@@ -252,10 +233,13 @@
 	// the method "createcontextMenuForTreant"
 	function extractTypeFromHTMLElement(element) {
 		console.log("view.treant.js extractTypeFromHTMLElement");
-		if (element.classList.contains("sentence")) {
-			return "s";
+		// Sentences have the node desc shape "ProjectId-IssueID:SentenceID"
+		if (element.getElementsByClassName("node-desc").length == 0) {
+			return "i";
 		}
-		if (!element.classList.contains("sentence")) {
+		if (element.getElementsByClassName("node-desc")[0].innerHTML.includes(":")) {
+			return "s";
+		} else {
 			return "i";
 		}
 	}
@@ -263,6 +247,7 @@
 	function extractTypeFromHTMLId(id) {
 		console.log("view.treant.js extractTypeFromHTMLId");
 		var element = document.getElementById(id);
+		console.log(id)
 		return extractTypeFromHTMLElement(element);
 	}
 
