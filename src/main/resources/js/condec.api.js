@@ -12,9 +12,12 @@
  * settingsForSingleProject.vm
  */
 (function(global) {
+	
+	var projectKey = null;
+
 	var ConDecAPI = function ConDecAPI() {
-		this.projectKey = getProjectKey();
-		this.knowledgeTypes = getKnowledgeTypes(this.projectKey);
+		projectKey = getProjectKey();
+		this.knowledgeTypes = getKnowledgeTypes(projectKey);
 		this.extendedKnowledgeTypes = getExtendedKnowledgeTypes(this.knowledgeTypes);
 	};
 
@@ -25,7 +28,7 @@
 	function getDecisionKnowledgeElement(id, callback) {
 		getJSON(
 				AJS.contextPath() + "/rest/decisions/latest/decisions/getDecisionKnowledgeElement.json?projectKey="
-						+ getProjectKey() + "&id=" + id,
+						+ projectKey + "&id=" + id,
 				function(error, decisionKnowledgeElement) {
 					if (error === null) {
 						callback(decisionKnowledgeElement);
@@ -44,7 +47,7 @@
 	ConDecAPI.prototype.getLinkedElements = function getLinkedElements(id, callback) {
 		getJSON(
 				AJS.contextPath() + "/rest/decisions/latest/decisions/getLinkedElements.json?projectKey="
-						+ getProjectKey() + "&id=" + id,
+						+ projectKey + "&id=" + id,
 				function(error, linkedElements) {
 					if (error === null) {
 						callback(linkedElements);
@@ -61,7 +64,7 @@
 	ConDecAPI.prototype.getUnlinkedElements = function getUnlinkedElements(id, callback) {
 		getJSON(
 				AJS.contextPath() + "/rest/decisions/latest/decisions/getUnlinkedElements.json?projectKey="
-						+ getProjectKey() + "&id=" + id,
+						+ projectKey + "&id=" + id,
 				function(error, unlinkedElements) {
 					if (error === null) {
 						callback(unlinkedElements);
@@ -78,7 +81,7 @@
 	function createDecisionKnowledgeElement(summary, description, type, callback) {
 		if (summary !== "") {
 			var jsondata = {
-				"projectKey" : getProjectKey(),
+				"projectKey" : projectKey,
 				"summary" : summary,
 				"type" : type,
 				"description" : description
@@ -105,7 +108,7 @@
 			"id" : id,
 			"summary" : summary,
 			"type" : type,
-			"projectKey" : getProjectKey(),
+			"projectKey" : projectKey,
 			"description" : description
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/updateDecisionKnowledgeElement.json", jsondata,
@@ -127,7 +130,7 @@
 	ConDecAPI.prototype.deleteDecisionKnowledgeElement = function deleteDecisionKnowledgeElement(id, callback) {
 		var jsondata = {
 			"id" : id,
-			"projectKey" : getProjectKey()
+			"projectKey" : projectKey
 		};
 		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteDecisionKnowledgeElement.json",
 				jsondata, function(error, isDeleted) {
@@ -149,7 +152,7 @@
 			"idOfSourceElement" : idOfSourceElement,
 			"idOfDestinationElement" : idOfDestinationElement
 		};
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLink.json?projectKey=" + getProjectKey(),
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLink.json?projectKey=" + projectKey,
 				jsondata, function(error, link) {
 					if (error === null) {
 						showFlag("success", "Link has been created.");
@@ -172,7 +175,7 @@
 			"idOfDestinationElement" : idOfDestinationElement
 		};
 		deleteJSON(
-				AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLink.json?projectKey=" + getProjectKey(),
+				AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLink.json?projectKey=" + projectKey,
 				jsondata, function(error, link) {
 					if (error === null) {
 						showFlag("success", "Link has been deleted.");
@@ -263,7 +266,7 @@
 			"idOfDestinationElement" : idOfDestinationElement
 		};
 		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLinkBetweenSentences.json?projectKey="
-				+ getProjectKey(), jsondata, function(error, link) {
+				+ projectKey, jsondata, function(error, link) {
 			if (error === null) {
 				showFlag("success", "Link has been deleted.");
 				callback();
@@ -322,7 +325,7 @@
 			argument = type;
 		}
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/changeKnowledgeTypeOfSentence.json?projectKey="
-				+ getProjectKey() + "&argument=" + argument, jsondata, function(error, link) {
+				+ projectKey + "&argument=" + argument, jsondata, function(error, link) {
 			if (error === null) {
 				showFlag("success", "Knowledge type has been changed.");
 				callback(link);
@@ -340,7 +343,7 @@
 			"id" : id,
 			"summary" : "",
 			"type" : type,
-			"projectKey" : getProjectKey(),
+			"projectKey" : projectKey,
 			"description" : body
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/editSentenceBody.json?argument=" + type,
@@ -386,7 +389,7 @@
 			"idOfDestinationElement" : targetType + targetId
 		};
 		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteGenericLink.json?projectKey="
-				+ getProjectKey(), jsondata, function(error, link) {
+				+ projectKey, jsondata, function(error, link) {
 			if (error === null) {
 				showFlag("success", "Link has been deleted.");
 				callback();
@@ -407,7 +410,7 @@
 			"idOfDestinationElement" : targetType + targetId
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createGenericLink.json?projectKey="
-				+ getProjectKey(), jsondata, function(error, link) {
+				+ projectKey, jsondata, function(error, link) {
 			if (error === null) {
 				showFlag("success", "Link has been created.");
 				callback(link);
@@ -421,7 +424,7 @@
 	 * external references: view.tab.panel, view.tree.viewer ..
 	 */
 	ConDecAPI.prototype.getTreeViewer = function getTreeViewer(rootElementType, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer.json?projectKey=" + getProjectKey()
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer.json?projectKey=" + projectKey
 				+ "&rootElementType=" + rootElementType, function(error, core) {
 			if (error === null) {
 				callback(core);
@@ -499,7 +502,7 @@
 	 * settingsForAllProjects.vm, view.context.menu ..
 	 */
 	ConDecAPI.prototype.isIssueStrategy = function isIssueStrategy(projectKey, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isIssueStrategy.json?projectKey=" + getProjectKey(),
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isIssueStrategy.json?projectKey=" + projectKey,
 				function(error, isIssueStrategyBoolean) {
 					if (error === null) {
 						callback(isIssueStrategyBoolean);
@@ -821,7 +824,7 @@
 	 * external references: view.issue.module ..
 	 */
 	ConDecAPI.prototype.getElementsByQuery = function getElementsByQuery(query, callback) {
-		var projectKey = getProjectKey() || "";
+		var projectKey = projectKey || "";
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?projectKey="
 				+ projectKey + "&query=" + query, null, function(error, result) {
 			if (error === null) {

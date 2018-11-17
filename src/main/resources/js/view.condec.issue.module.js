@@ -35,12 +35,15 @@
 				&& isConDecTreantType(_treant)) {
 			conDecAPI = _conDecAPI;
 
-			// TODO: Register/Subscribe as observer
+			
 			conDecObservable = _conDecObservable;
 			conDecDialog = _conDecDialog;
 			conDecContextMenu = _conDecContextMenu;
 			treant = _treant;
 			i18n = _i18n;
+			
+			// Register/subscribe this view as an observer
+			conDecObservable.subscribe(this);
 
 			addOnClickEventToExportAsTable();
 
