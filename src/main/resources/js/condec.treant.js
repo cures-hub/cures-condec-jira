@@ -71,7 +71,8 @@
 		var nodes = treantTree.tree.nodeDB.db;
 		var i;
 		for (i = 0; i < nodes.length; i++) {
-			if (nodes[i].nodeHTMLid === elementId) {
+			//necessary to have ==, not ===
+			if (nodes[i].nodeHTMLid == elementId) {
 				var parentNode = treantTree.tree.getNodeDb().get(nodes[i].parentId);
 				var parentId = parentNode.nodeHTMLid;
 				return parentId;
