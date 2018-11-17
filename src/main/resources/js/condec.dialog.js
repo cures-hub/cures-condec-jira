@@ -290,7 +290,7 @@
 		document.getElementById("dialog-header").innerHTML = "";
 		document.getElementById("dialog-content").innerHTML = "";
 		if (document.getElementById("dialog-extension-button")) {
-			document.getElementById("dialog-extension-button").style.visibility = "hidden"
+			document.getElementById("dialog-extension-button").style.visibility = "hidden";
 		}
 		var dialog = document.getElementById("dialog");
 		if (dialog.classList.contains("aui-dialog2-large")) {
@@ -305,7 +305,6 @@
 	 * fills HTML view-protion of dialog with contents
 	 */
 	function setUpEditSentenceDialogView(description, type, node) {
-
 		document.getElementById("dialog-content").innerHTML = "";
 		document.getElementById("dialog").classList.remove("aui-dialog2-large");
 		document.getElementById("dialog").classList.add("aui-dialog2-medium");
@@ -348,7 +347,6 @@
 	 * sets-up submit button
 	 */
 	function setUpEditSentenceDialogContext(id, description, type) {
-
 		var submitButton = document.getElementById("dialog-submit-button");
 		submitButton.textContent = "Change";
 		$("#dialog-extension-button").remove();
@@ -380,7 +378,8 @@
 		AJS.$("#form-select-type").auiSelect2();
 	}
 
-	// TODO: Remove this method from conDecDialog, subscribe tab panel at observable and add updateView method for tabPanel
+	// TODO: Remove this method from conDecDialog, subscribe tab panel at
+	// observable and add updateView method for tabPanel
 	/**
 	 * local resets tree viewer and builds it again
 	 */
@@ -395,8 +394,8 @@
 		}
 	}
 
-	ConDecDialog.prototype.setUpDialogForEditSentenceAction = function setUpDialogForEditSentenceAction(id){
-		conDecAPI.getSentenceElement(id, function(result){
+	ConDecDialog.prototype.setUpDialogForEditSentenceAction = function setUpDialogForEditSentenceAction(id) {
+		conDecAPI.getSentenceElement(id, function(result) {
 			var description = result["description"];
 			var type = result["type"];
 			setUpDialog();
@@ -404,9 +403,7 @@
 			setUpEditSentenceDialogView(description, type, type);
 			setUpEditSentenceDialogContext(id, description, type);
 		});
-		
 	};
-
 
 	// export ConDecDialog
 	global.conDecDialog = new ConDecDialog();

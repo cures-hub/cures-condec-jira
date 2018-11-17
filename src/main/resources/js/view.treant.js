@@ -36,7 +36,7 @@
 				}
 			});
 		});
-	}
+	};
 
 	function getDepthOfTree() {
 		console.log("view.treant.js getDepthOfTree");
@@ -109,7 +109,7 @@
 		event.preventDefault();
 		var parentId = target.id;
 		var childId = dragId;
-		sentenceElementIsDropped(target, parentId, childId)
+		sentenceElementIsDropped(target, parentId, childId);
 	}
 
 	function sentenceElementIsDropped(target, parentId, childId) {
@@ -234,7 +234,7 @@
 	function extractTypeFromHTMLElement(element) {
 		console.log("view.treant.js extractTypeFromHTMLElement");
 		// Sentences have the node desc shape "ProjectId-IssueID:SentenceID"
-		if (element.getElementsByClassName("node-desc").length == 0) {
+		if (element.getElementsByClassName("node-desc").length === 0) {
 			return "i";
 		}
 		if (element.getElementsByClassName("node-desc")[0].innerHTML.includes(":")) {
@@ -247,7 +247,7 @@
 	function extractTypeFromHTMLId(id) {
 		console.log("view.treant.js extractTypeFromHTMLId");
 		var element = document.getElementById(id);
-		console.log(id)
+		console.log(id);
 		return extractTypeFromHTMLElement(element);
 	}
 

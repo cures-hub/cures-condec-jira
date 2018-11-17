@@ -23,6 +23,7 @@
 	var ConDecIssueTab = function ConDecIssueTab() {
 	};
 
+	// TODO Insert TreeViewer directly into Tab panel without dialog
 	ConDecIssueTab.prototype.init = function init(_conDecAPI, _treeViewer, _contextMenu, _i18n) {
 		console.log("view.tab.panel.js init");
 

@@ -25,7 +25,7 @@
 		});
 		addDragAndDropSupportForTreeViewer();
 		addContextMenuToTreeViewer();
-	}
+	};
 
 	function addContextMenuToTreeViewer() {
 		console.log("view.tree.viewer.js addContextMenuToTreeViewer");
@@ -73,8 +73,8 @@
 				treeViewer.select_node(nodeId);
 			}
 		});
-	}
-	
+	};
+
 	/**
 	 * called by view.tab.panel.js locally
 	 */
