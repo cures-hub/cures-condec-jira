@@ -96,8 +96,8 @@
 		<!-- ConDec java script files -->
 		<resource type="download" name="condec.dialog.js" location="/js/condec.dialog.js" />
 		<resource type="download" name="condec.context.menu.js" location="/js/condec.context.menu.js" />
-		<resource type="download" name="view.treant.js" location="/js/view.treant.js" />
-		<resource type="download" name="view.tree.viewer.js" location="/js/view.tree.viewer.js" />
+		<resource type="download" name="condec.treant.js" location="/js/condec.treant.js" />
+		<resource type="download" name="condec.tree.viewer.js" location="/js/condec.tree.viewer.js" />
 	</web-resource>
 
 	<web-resource key="decision-knowledge-page-resources"
@@ -106,8 +106,8 @@
 			Provides the JavaScript files for the separate decision knowledge page of this
 			plug-in.
 		</description>
-		<resource type="download" name="view.decision.knowledge.page.js"
-			location="/js/view.decision.knowledge.page.js" />
+		<resource type="download" name="view.condec.knowledge.page.js"
+			location="/js/view.condec.knowledge.page.js" />
 	</web-resource>
 
 	<web-resource key="issue-module-resources"
@@ -116,7 +116,7 @@
 			Provides the JavaScript file used in the issue module.
 		</description>
 		<context>jira.view.issue</context>
-		<resource type="download" name="view.issue.module.js" location="/js/view.issue.module.js" />
+		<resource type="download" name="view.condec.issue.module.js" location="/js/view.condec.issue.module.js" />
 	</web-resource>
 
 	<web-resource key="classifier-resources"
@@ -128,7 +128,7 @@
 		<context>jira.view.issue</context>
 		<resource type="download" name="fc.model" location="/classifier/fc.model" />
 		<resource type="download" name="br.model" location="/classifier/br.model" />
-		<resource type="download" name="view.tab.panel.js" location="/js/view.tab.panel.js" />
+		<resource type="download" name="view.condec.tab.panel.js" location="/js/view.condec.tab.panel.js" />
 	</web-resource>
 
 	<web-resource key="report-resources" name="Resources for Decision Knowledge Report">
