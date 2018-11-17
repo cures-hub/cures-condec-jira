@@ -1,16 +1,15 @@
 /*
- This tab view controller does:
+ This tab panel view does:
  * toggle sentence types
- * open the dialog box
+ * show a tree of relevant decision knowledge
 
  Requires
- * rest.client.js
+ * condec.api.js
  
- Required by
- * view.context.menu.js
+ Is required by
  * tabPanel.vm 
  
- Referenced in HTML by
+ Is referenced in HTML by
  * tabPanel.vm 
  */
 (function(global) {

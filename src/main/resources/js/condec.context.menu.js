@@ -1,6 +1,13 @@
 /*
- * This module is responsible for showing a context menu upon right mouse click.
- * 
+ This module is responsible for showing a context menu upon right mouse click.
+ 
+ Requires
+ * conDecAPI
+ * conDecDialog
+
+ Is required by
+ * conDecTreant
+ * conDecTreeViewer
  */
 (function(global) {
 

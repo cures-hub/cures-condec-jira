@@ -1,3 +1,19 @@
+/*
+ This module provides the dialogs for managing decision knowledge. The user can
+ * create a new decision knowledge element,
+ * edit an existing decision knowledge element,
+ * delete an existing knowledge element,
+ * create a new link between two knowledge elements,
+ * delete a link between two knowledge elements,
+ * change the documentation location (e.g. from issue comments to single JIRA issues),
+ * set an element to the root element in the knowledge tree.
+ 
+ Requires
+ * conDecAPI
+ 
+ Is required by
+ * conDecContextMenu
+ */
 (function(global) {
 
 	// closure locals
@@ -331,7 +347,7 @@
 				knowledgeTypes.splice(index, 1);
 			}
 		}
-		for (var index = 0; index < knowledgeTypes.length; index++) {
+		for (index = 0; index < knowledgeTypes.length; index++) {
 			var isSelected = "";
 			// first clause for treant, second for tree viewer
 			if (node.includes(knowledgeTypes[index].toLowerCase()) || node === knowledgeTypes[index]) {

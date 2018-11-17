@@ -1,8 +1,6 @@
 /*
- This module implements communication with the ConDec Java REST API and the JIRA API
- 
- As known on 16. November 2018 this module:
- 
+ This module implements the communication with the ConDec Java REST API and the JIRA API.
+
  Requires
  * conDecTreant.findParentId
     
@@ -10,7 +8,8 @@
  * view.*  
   
  Is referenced in HTML by
- * settingsForAllProjects.vm and settingsForSingleProject.vm
+ * settingsForAllProjects.vm 
+ * settingsForSingleProject.vm
  */
 (function(global) {
 	var ConDecAPI = function ConDecAPI() {
@@ -296,12 +295,12 @@
 		});
 	};
 
-		/*
+	/*
 	 * external references: view.context.menu
 	 */
 	ConDecAPI.prototype.getSentenceElement = function getSentenceElement(id, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getSentenceElement.json?id=" +id
-				, function(error, core) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getSentenceElement.json?id=" + id, function(
+				error, core) {
 			if (error === null) {
 				callback(core);
 			} else {
@@ -658,7 +657,8 @@
 		extendedKnowledgeTypes.push("Pro-argument");
 		extendedKnowledgeTypes.push("Con-argument");
 		return extendedKnowledgeTypes;
-	};
+	}
+	;
 
 	/*
 	 * external references: none, not even used locally! //TODO: delete

@@ -1,20 +1,17 @@
 /*
- This decision knowledge view controller does:
- * render tree of decision knowledge
- * provide a list of action items for the context menu
-
+ This view provides trees of decision knowledge.
+ 
  Requires
  * condec.api.js
  * condec.observable.js
- * view.treant.js
- * view.tree.viewer.js
- * view.context.menu.js
+ * condec.treant.js
+ * condec.tree.viewer.js
+ * condec.context.menu.js
 
- Required by
- * view.context.menu.js
+ Is required by
  * decisionKnowledgePage.vm
 
- Referenced in HTML by
+ Is referenced in HTML by
  * decisionKnowledgePage.vm
  */
 (function(global) {

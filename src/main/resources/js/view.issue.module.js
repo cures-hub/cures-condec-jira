@@ -1,19 +1,16 @@
 /*
- This issue module view controller does:
- * render tree of decision knowledge
- * provide a list of action items for the context menu
+ This view provides a tree of relevant decision knowledge in the JIRA issue view.
 
  Requires
  * condec.api.js
  * condec.observable.js
  * condec.context.menu.js
- * view.treant.js
+ * condec.treant.js
 
- Required by
- * view.context.menu.js???
+ Is required by
  * tabPanel.vm
 
- Referenced in HTML by
+ Is referenced in HTML by
  * tabPanel.vm
  */
 (function(global) {
