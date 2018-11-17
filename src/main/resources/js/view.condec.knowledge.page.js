@@ -1,47 +1,48 @@
 /*
- This decision knowledge view controller does:
- * render tree of decision knowledge
- * provide a list of action items for the context menu
-
+ This view provides trees of decision knowledge.
+ 
  Requires
  * condec.api.js
  * condec.observable.js
- * view.treant.js
- * view.tree.viewer.js
- * view.context.menu.js
+ * condec.treant.js
+ * condec.tree.viewer.js
+ * condec.context.menu.js
 
- Required by
- * view.context.menu.js
+ Is required by
  * decisionKnowledgePage.vm
 
- Referenced in HTML by
+ Is referenced in HTML by
  * decisionKnowledgePage.vm
  */
 (function(global) {
 	/* private vars */
-	var contextMenu = null;
 	var i18n = null;
 	var conDecObservable = null;
 	var conDecAPI = null;
+	var conDecDialog = null;
+	var conDecContextMenu = null;
 	var treant = null;
 	var treeViewer = null;
 
 	var ConDecKnowledgePage = function ConDecKnowledgePage() {
 	};
 
-	ConDecKnowledgePage.prototype.init = function(_conDecAPI, _conDecObservable, _treant, _treeViewer, _contextMenu, _i18n) {
+	ConDecKnowledgePage.prototype.init = function(_conDecAPI, _conDecObservable, _conDecDialog, _conDecContextMenu,
+			_treant, _treeViewer, _i18n) {
 		console.log("view.decision.knowledge.page init");
 
-		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable) && isConDecTreantType(_treant)
-				&& isConDecTreeViewerType(_treeViewer) && isConDecContextType(_contextMenu) // not using and thus not checking i18n yet.
-		) {
+		// TODO: Add i18n support and check i18n
+		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
+				&& isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
+				&& isConDecTreantType(_treant) && isConDecTreeViewerType(_treeViewer)) {
 			conDecAPI = _conDecAPI;
-			
-			//TODO: Register/Subscribe as observer
+
+			// TODO: Register/Subscribe as observer
 			conDecObservable = _conDecObservable;
+			conDecDialog = _conDecDialog;
+			conDecContextMenu = _conDecContextMenu;
 			treant = _treant;
 			treeViewer = _treeViewer;
-			contextMenu = _contextMenu;
 			i18n = _i18n;
 
 			return true;
@@ -62,14 +63,13 @@
 		treeViewer.selectNodeInTreeViewer(id);
 	};
 
-	ConDecKnowledgePage.prototype.openIssue = function openIssue(nodeId) {
-		console.log("view.decision.knowledge.page openIssue");
+	ConDecKnowledgePage.prototype.openJiraIssue = function openJiraIssue(nodeId) {
+		console.log("view.decision.knowledge.page openJiraIssue");
 
-		// only allow this in case the selected node is a JIRA issue, for sentences map to JIRA issue
 		conDecAPI.getDecisionKnowledgeElement(nodeId, function(decisionKnowledgeElement) {
 			var baseUrl = AJS.params.baseURL;
 			var key = decisionKnowledgeElement.key;
-			global.open(baseUrl + "/browse/" + key, '_blank');
+			global.open(baseUrl + "/browse/" + key, '_self');
 		});
 	};
 
@@ -124,29 +124,12 @@
 		}
 		jQueryConDec("#jstree").on("select_node.jstree", function(error, tree) {
 			var node = tree.node.data;
-			treant.buildTreant(node.key, true, "", getContextMenuActionsForTreant(contextMenu));
+			treant.buildTreant(node.key, true, "");
 		});
 	}
 
-	// for view.context.menu
-	function getContextMenuActionsForTreant(contextMenu) {
-		console.log("view.decision.knowledge.page getContextMenuActionsForTreant");
-		var menu = {
-			"asRoot" : contextMenu.contextMenuSetAsRootAction,
-			"create" : contextMenu.contextMenuCreateAction,
-			"edit" : contextMenu.contextMenuEditAction,
-			"link" : contextMenu.contextMenuLinkAction,
-			"deleteLink" : contextMenu.contextMenuDeleteLinkAction,
-			"delete" : contextMenu.contextMenuDeleteAction,
-			"openIssue" : contextMenu.contextMenuOpenJiraIssueAction,
-			"changeType" : contextMenu.contextMenuChangeTypeAction
-		};
-		return menu;
-	}
-	;
-
 	/*
-	 Init Helpers
+	 * Init Helpers
 	 */
 	function isConDecAPIType(conDecAPI) {
 		if (!(conDecAPI !== undefined && conDecAPI.getDecisionKnowledgeElement !== undefined && typeof conDecAPI.getDecisionKnowledgeElement === 'function')) {
@@ -164,17 +147,25 @@
 		return true;
 	}
 
-	function isConDecTreantType(treant) {
-		if (!(treant !== undefined && treant.buildTreant !== undefined && typeof treant.buildTreant === 'function')) {
-			console.warn("ConDecKnowledgePage: invalid treant object received.");
+	function isConDecDialogType(conDecDialog) {
+		if (!(conDecDialog !== undefined && conDecDialog.showCreateDialog !== undefined && typeof conDecDialog.showCreateDialog === 'function')) {
+			console.warn("ConDecKnowledgePage: invalid conDecDialog object received.");
 			return false;
 		}
 		return true;
 	}
 
-	function isConDecContextType(contextMenu) {
-		if (!(contextMenu !== undefined && contextMenu.setUpDialog !== undefined && typeof contextMenu.setUpDialog === 'function')) {
-			console.warn("ConDecKnowledgePage: invalid contextMenu object received.");
+	function isConDecContextMenuType(conDecContextMenu) {
+		if (!(conDecContextMenu !== undefined && conDecContextMenu.createContextMenu !== undefined && typeof conDecContextMenu.createContextMenu === 'function')) {
+			console.warn("ConDecKnowledgePage: invalid conDecContextMenu object received.");
+			return false;
+		}
+		return true;
+	}
+
+	function isConDecTreantType(conDecTreant) {
+		if (!(conDecTreant !== undefined && conDecTreant.buildTreant !== undefined && typeof conDecTreant.buildTreant === 'function')) {
+			console.warn("ConDecKnowledgePage: invalid conDecTreant object received.");
 			return false;
 		}
 		return true;
@@ -187,6 +178,7 @@
 		}
 		return true;
 	}
+
 	// export ConDecKnowledgePage
 	global.conDecKnowledgePage = new ConDecKnowledgePage();
 })(window);

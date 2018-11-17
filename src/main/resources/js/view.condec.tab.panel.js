@@ -1,16 +1,15 @@
 /*
- This tab view controller does:
+ This tab panel view does:
  * toggle sentence types
- * open the dialog box
+ * show a tree of relevant decision knowledge
 
  Requires
- * rest.client.js
+ * condec.api.js
  
- Required by
- * view.context.menu.js
+ Is required by
  * tabPanel.vm 
  
- Referenced in HTML by
+ Is referenced in HTML by
  * tabPanel.vm 
  */
 (function(global) {
@@ -23,6 +22,7 @@
 	var ConDecIssueTab = function ConDecIssueTab() {
 	};
 
+	// TODO Insert TreeViewer directly into Tab panel without dialog
 	ConDecIssueTab.prototype.init = function init(_conDecAPI, _treeViewer, _contextMenu, _i18n) {
 		console.log("view.tab.panel.js init");
 
