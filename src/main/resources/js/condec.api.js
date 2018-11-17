@@ -1,16 +1,15 @@
 /*
- This module implements communication with the ConDec Java REST API and the JIRA API
- 
- As known on 11. November 2018 this module:
- 
+ This module implements the communication with the ConDec Java REST API and the JIRA API.
+
  Requires
- * nothing
+ * conDecTreant.findParentId
     
  Is required by
  * view.*  
   
  Is referenced in HTML by
- * settingsForAllProjects.vm and settingsForSingleProject.vm
+ * settingsForAllProjects.vm 
+ * settingsForSingleProject.vm
  */
 (function(global) {
 	var ConDecAPI = function ConDecAPI() {
@@ -216,7 +215,7 @@
 		getDecisionKnowledgeElement(childId, function(decisionKnowledgeElement) {
 			updateDecisionKnowledgeElement(childId, summary, description, simpleType, function() {
 				if (decisionKnowledgeElement.type !== type) {
-					var parentId = findParentId(childId);
+					var parentId = conDecTreant.findParentId(childId);
 					switchLinkTypes(type, parentId, childId, function(linkType, parentId, childId) {
 						deleteLink(parentId, childId, function() {
 							linkElements(parentId, childId, linkType, function() {
@@ -292,6 +291,20 @@
 				callback();
 			} else {
 				showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
+			}
+		});
+	};
+
+	/*
+	 * external references: view.context.menu
+	 */
+	ConDecAPI.prototype.getSentenceElement = function getSentenceElement(id, callback) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getSentenceElement.json?id=" + id, function(
+				error, core) {
+			if (error === null) {
+				callback(core);
+			} else {
+				showFlag("error", "The Element data could not be fetched");
 			}
 		});
 	};
@@ -644,7 +657,8 @@
 		extendedKnowledgeTypes.push("Pro-argument");
 		extendedKnowledgeTypes.push("Con-argument");
 		return extendedKnowledgeTypes;
-	};
+	}
+	;
 
 	/*
 	 * external references: none, not even used locally! //TODO: delete

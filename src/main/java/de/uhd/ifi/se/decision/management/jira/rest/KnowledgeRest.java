@@ -26,6 +26,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -300,6 +301,24 @@ public class KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build();
 		}
 	}
+	
+	@Path("/getSentenceElement")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getSentenceElement(@QueryParam("id") long id) {
+
+		Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(id);
+		
+		if (sentence != null) {
+			//TODO: Reweork this after merging with ConDec-378
+			return Response.status(Status.OK).entity(ImmutableMap.of("id", sentence.getId(),"description",sentence.getDescription(),"type",sentence.getKnowledgeTypeString())).build();
+		} else {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"Unlinked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
+					.build();
+		}
+	}
+
 
 	@Path("/deleteLink")
 	@DELETE
