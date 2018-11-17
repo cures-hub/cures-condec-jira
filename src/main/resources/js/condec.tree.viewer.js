@@ -99,7 +99,7 @@
 						if (parentNode === "#" && oldParentNode !== "#") {
 
 							conDecAPI.deleteLink(oldParentNode.data.id, nodeId, function() {
-								notify();
+								conDecObservable.notify();
 							});
 						}
 						if (parentNode !== '#' && oldParentNode !== '#') {
@@ -115,6 +115,7 @@
 						if (oldParentNode === "#" && parentNode !== "#") {
 
 							conDecAPI.linkGenericElements(parentNode.data.id, nodeId, targetType, "s", function() {
+								// TODO Replace with observable notify function
 								refreshTreeViewer();
 							});
 						}
@@ -122,18 +123,21 @@
 
 							targetTypeOld = (oldParentNode.li_attr['class'] === "sentence") ? "s" : "i";
 							conDecAPI.deleteGenericLink(oldParentNode.data.id, nodeId, targetTypeOld, "s", function() {
-								refreshTreeViewer()
+								// TODO Replace with observable notify function
+								refreshTreeViewer();
 							});
 						}
 						if (parentNode !== '#' && oldParentNode !== '#') {
 
 							targetTypeOld = (oldParentNode.li_attr['class'] === "sentence") ? "s" : "i";
 							var nodeType = (node.li_attr['class'] === "sentence") ? "s" : "i";
-							if (nodeType == "i" && targetTypeOld == "i") {
+							if (nodeType === "i" && targetTypeOld === "i") {
 								conDecAPI.deleteLink(oldParentNode.data.id, nodeId, function() {
 									conDecAPI.linkGenericElements(parentNode.data.id, nodeId, targetType, nodeType,
 											function() {
-												refreshTreeViewer()
+												// TODO Replace with observable
+												// notify function
+												refreshTreeViewer();
 											});
 								});
 							} else {
@@ -141,7 +145,10 @@
 										function() {
 											conDecAPI.linkGenericElements(parentNode.data.id, nodeId, targetType,
 													nodeType, function() {
-														refreshTreeViewer()
+														// TODO Replace with
+														// observable notify
+														// function
+														refreshTreeViewer();
 													});
 										});
 							}
