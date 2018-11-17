@@ -370,6 +370,7 @@
 									document.getElementById(idOfUiElement).classList.add(type);
 									document.getElementById(idOfUiElement).getElementsByClassName("sentenceBody")[0].textContent = description;
 									AJS.dialog2("#dialog").hide();
+									conDecObservable.notify();
 								} else {
 									AJS.dialog2("#dialog").hide();
 									conDecObservable.notify();
@@ -394,13 +395,18 @@
 		}
 	}
 
-	ConDecDialog.prototype.setUpDialogForEditSentenceAction = function setUpDialogForEditSentenceAction(id,
-			description, type, node) {
-		setUpDialog();
-		setHeaderText(editKnowledgeElementText);
-		setUpEditSentenceDialogView(description, type, node);
-		setUpEditSentenceDialogContext(id, description, type);
+	ConDecDialog.prototype.setUpDialogForEditSentenceAction = function setUpDialogForEditSentenceAction(id){
+		conDecAPI.getSentenceElement(id, function(result){
+			var description = result["description"];
+			var type = result["type"];
+			setUpDialog();
+			setHeaderText(editKnowledgeElementText);
+			setUpEditSentenceDialogView(description, type, type);
+			setUpEditSentenceDialogContext(id, description, type);
+		});
+		
 	};
+
 
 	// export ConDecDialog
 	global.conDecDialog = new ConDecDialog();

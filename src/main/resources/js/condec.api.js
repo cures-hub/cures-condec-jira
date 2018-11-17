@@ -296,6 +296,20 @@
 		});
 	};
 
+		/*
+	 * external references: view.context.menu
+	 */
+	ConDecAPI.prototype.getSentenceElement = function getSentenceElement(id, callback) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getSentenceElement.json?id=" +id
+				, function(error, core) {
+			if (error === null) {
+				callback(core);
+			} else {
+				showFlag("error", "The Element data could not be fetched");
+			}
+		});
+	};
+
 	/*
 	 * external references: view.context.menu
 	 */
