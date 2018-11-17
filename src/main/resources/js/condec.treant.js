@@ -15,26 +15,12 @@
 		var depthOfTree = getDepthOfTree();
 		conDecAPI.getTreant(elementKey, depthOfTree, searchTerm, function(treeStructure) {
 			document.getElementById("treant-container").innerHTML = "";
-
-			conDecAPI.isKnowledgeExtractedFromGit(conDecAPI.projectKey, function(isKnowledgeExtractedFromGit) { // TODO:
-				// refactor
-				// isKnowledgeExtractedFromGit
-				// param
-				// name,
-				// confusing.
-				if (isKnowledgeExtractedFromGit) {
-					conDecAPI.getCommits(elementKey, function(commits) {
-						if (commits.length > 0) {
-							treeStructure.nodeStructure.children = addCommits(commits,
-									treeStructure.nodeStructure.children);
-						}
-						// console.log(treeStructure);
-						createTreant(treeStructure, isInteractive);
-					});
-				} else {
-					createTreant(treeStructure, isInteractive);
-				}
-			});
+			treantTree = new Treant(treeStructure);
+			if (isInteractive !== undefined && isInteractive) {
+				addContextMenuToTreant();
+				addDragAndDropSupportForTreant();
+				addTooltip();
+			}
 		});
 	};
 
@@ -46,16 +32,6 @@
 			depthOfTree = depthOfTreeInput.value;
 		}
 		return depthOfTree;
-	}
-
-	function createTreant(treeStructure, isInteractive) {
-		console.log("view.treant.js createTreant");
-		treantTree = new Treant(treeStructure);
-		if (isInteractive !== undefined && isInteractive) {
-			addContextMenuToTreant();
-			addDragAndDropSupportForTreant();
-			addTooltip();
-		}
 	}
 
 	function addDragAndDropSupportForTreant() {
@@ -95,7 +71,7 @@
 		var nodes = treantTree.tree.nodeDB.db;
 		var i;
 		for (i = 0; i < nodes.length; i++) {
-			if (nodes[i].nodeHTMLid == elementId) {
+			if (nodes[i].nodeHTMLid === elementId) {
 				var parentNode = treantTree.tree.getNodeDb().get(nodes[i].parentId);
 				var parentId = parentNode.nodeHTMLid;
 				return parentId;
@@ -175,56 +151,6 @@
 				}
 			});
 		}
-	}
-
-	function addCommits(commits, elementArray) {
-		console.log("view.treant.js addCommits");
-		commits.forEach(function(commit) {
-			var message = commit.message;
-
-			var splitMessage = message.split("@");
-			splitMessage.shift();
-
-			var decision;
-			var element;
-			for ( var i in splitMessage) {
-				var split = splitMessage[i].split(" ");
-				message = splitMessage[i].substr(splitMessage[i].indexOf(" ") + 1);
-				switch (split[0]) {
-				case "Decision:":
-					decision = {
-						children : [],
-						HTMLclass : 'decision',
-						innerHTML : "<p class=\"node-title\">Decision:</p><p class=\"node-name\">" + message
-								+ "</p><a href=\"#\" id=\"" + commit.commitId + "\">More Information</a>"
-					};
-					$(document).on('click', '#' + commit.commitId + '', function() {
-						openCommitDetails(commit);
-					});
-					elementArray.push(decision);
-					break;
-				default:
-					element = {
-						children : [],
-						HTMLclass : 'decision',
-						text : {
-							title : split[0],
-							name : message
-						}
-					};
-					elementArray.push(element);
-					break;
-				}
-			}
-		});
-		return elementArray;
-	}
-
-	function openCommitDetails(commit) {
-		console.log("view.treant.js openCommitDetails");
-		var url = AJS.contextPath() + "/secure/bbb.gp.gitviewer.Commit.jspa?repoId=" + commit.repository.id
-				+ "&commitId=" + commit.commitId;
-		window.open(url);
 	}
 
 	// differentiate between issue elements and sentence elements
