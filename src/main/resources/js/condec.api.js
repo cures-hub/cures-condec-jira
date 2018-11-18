@@ -372,7 +372,7 @@
 				function(error, id, type) {
 					if (error === null) {
 						showFlag("success", "JIRA Issue has been created");
-						callback(id, type);
+						callback();
 					} else {
 						showFlag("error", "JIRA Issue has not been created. Error Code: " + error);
 					}

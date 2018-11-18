@@ -46,6 +46,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	private Map<String, Boolean> themes;
 	private Set<Data> data;
 	private TreeViewer treeViewer;
+	private Boolean[] selectedKnowledgeTypes = {true,true,true,true,true};
 
 	@Before
 	public void setUp() {
@@ -170,7 +171,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	public void testTreeViewerCalledFromTabpanel() {
 		//1) Check if Tree Element has no Children - Important! 
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
-		TreeViewer tv = new TreeViewer(element.getKey(), {true,true,true,true,true}};
+		TreeViewer tv = new TreeViewer(element.getKey(), selectedKnowledgeTypes);
 		assertNotNull(tv);
 		assertEquals(0, tv.getDataStructure(element).getChildren().size());
 		
@@ -186,7 +187,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		comment.getSentences().get(0).setRelevant(true);
 		comment.getSentences().get(0).setKnowledgeType(KnowledgeType.ALTERNATIVE.toString());
 		element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
-		tv = new TreeViewer(element.getKey(), true);
+		tv = new TreeViewer(element.getKey(), selectedKnowledgeTypes);
 		
 		//4) Check if TreeViewer has one element
 		assertNotNull(tv);
@@ -198,7 +199,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testTreeViewerCalledFromTabpanelNullData() {
-		TreeViewer tv = new TreeViewer(null, true);
+		TreeViewer tv = new TreeViewer(null, selectedKnowledgeTypes);
 		assertNotNull(tv);
 		assertEquals(tv.getData(), null);
 	}
@@ -206,7 +207,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testTreeViewerCalledFromTabpanelEmptyData() {
-		TreeViewer tv = new TreeViewer("", true);
+		TreeViewer tv = new TreeViewer("", selectedKnowledgeTypes);
 		assertNotNull(tv);
 	}
 
