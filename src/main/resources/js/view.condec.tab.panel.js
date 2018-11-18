@@ -32,6 +32,11 @@
 		contextMenu = _contextMenu;
 		i18n = _i18n;
 
+
+		console.log(treeViewer)
+		buildTreeViewer(true);
+
+
 		return true;
 	};
 
@@ -61,42 +66,6 @@
 		}
 	}
 
-	/* called by callDialog */
-	function callDialogFromView() {
-		console.log("view.tab.panel.js callDialogFromView");
-
-		var textheader = "Edit and Link Decision Knowledge in Issue Comments";
-		var textSaveButton = "Done";
-
-		var submitButton = document.getElementById("dialog-submit-button");
-		submitButton.textContent = textSaveButton;
-		submitButton.onclick = function() {
-			console.log("view.tab.panel.js submitButton.onclick");
-			AJS.dialog2("#dialog").hide();
-		};
-		document.getElementsByClassName("aui-dialog2-header-close")[0].onclick = function() {
-			console.log("view.tab.panel.js close.onclick");
-			AJS.dialog2("#dialog").hide();
-		};
-		contextMenu.setUpDialog();
-		var header = document.getElementById("dialog-header");
-		header.textContent = textheader;
-	}
-
-	/* Triggered by tabPanel.vm */
-	function callDialog() {
-		console.log("view.tab.panel.js callDialog");
-
-		callDialogFromView();
-		document.getElementById("dialog-content").innerHTML = "<div id =header2> </div> <div id =jstree> </div> ";
-		document.getElementById("header2").innerHTML = "<input class=text medium-long-field id=jstree-search-input placeholder=Search decision knowledge />";
-		document.getElementById("dialog").classList.remove("aui-dialog2-medium");
-		document.getElementById("dialog").classList.add("aui-dialog2-large");
-		$("#dialog-extension-button").remove();
-		$("#dialog #dialog-cancel-button").remove();
-
-		buildTreeViewer(document.getElementById("Relevant").checked);
-	}
 
 	/*
 
@@ -113,12 +82,9 @@
 
 			jQueryConDec("#jstree").jstree({
 				"core" : core,
-				"plugins" : [ "dnd", "contextmenu", "wholerow", "search", "sort", "state" ],
+				"plugins" : [ "dnd", "wholerow", "search", "sort", "state" ],
 				"search" : {
 					"show_only_matches" : true
-				},
-				"contextmenu" : {
-					"items" : customContextMenu
 				},
 				"sort" : sortfunction
 			});
@@ -126,8 +92,9 @@
 				var searchString = $(this).val();
 				jQueryConDec("#jstree").jstree(true).search(searchString);
 			});
+			console.log(treeViewer)
 			treeViewer.addDragAndDropSupportForTreeViewer();
-			document.getElementById("jstree").addEventListener("mousemove", bringContextMenuToFront);
+			treeViewer.addContextMenuToTreeViewer();
 		});
 	}
 
@@ -142,37 +109,17 @@
 		}
 	}
 
-	/* used by buildTreeViewer */
-	function customContextMenu(node) {
-		console.log("view.tab.panel.js customContextMenu");
-
-		if (node.li_attr['class'] === "sentence") {
-			return contextMenuActionsForSentences;
-		} else {
-			return;
-		}
+	
+	function updateView() {
+		console.log("view.tabPanel updateView");
+		treeViewer.resetTreeViewer();
+		buildTreeViewer(true);
 	}
 
-	/* used by buildTreeViewer */
-	function bringContextMenuToFront() {
-		if (document.getElementsByClassName("vakata-context").length > 0) {
-			document.getElementsByClassName("vakata-context")[0].style.zIndex = 9999;
-		}
-	}
 
-	/* TODO: check is it not used ? */
-	function createSentenceLinkToExistingElement(idOfExistingElement, idOfNewElement, knowledgeTypeOfChild) {
-		console.log("view.tab.panel.js createSentenceLinkToExistingElement");
-
-		switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, function(linkType,
-				idOfExistingElement, idOfNewElement) {
-			linkSentences(idOfExistingElement, idOfNewElement, linkType, function() {
-			});
-		});
-	}
 
 	// Expose methods:
-
+	ConDecIssueTab.prototype.updateView = updateView;
 	// for tabPanel.vm
 	ConDecIssueTab.prototype.callDialog = callDialog;
 	// for tabPanel.vm

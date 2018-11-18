@@ -24,6 +24,9 @@
 			global.conDecIssueModule.updateView();
 		} else if (global.conDecKnowledgePage !== undefined) {
 			global.conDecKnowledgePage.updateView();
+		} 
+		if (global.conDecIssueTab !== undefined) {
+			global.conDecIssueTab.updateView();
 		}
 	};
 

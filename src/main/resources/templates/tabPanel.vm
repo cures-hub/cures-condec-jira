@@ -31,7 +31,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:clas
 </table>
 
 
-#foreach($comment in $comments )
+<!-- #foreach($comment in $comments )
 #set($currentIndex = $velocityCount - 1)
 <div class="comment issue-data-block activity-comment twixi-block  expanded" >
   $style
@@ -53,14 +53,19 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:clas
 		<p>$comment</p>
 	</div> 
 </div>
-#end
+#end -->
+
+ <input class=text medium-long-field id=jstree-search-input placeholder=Search decision knowledge />
+ <div id =jstree> </div> 
 <script>
 /*
 instantiate the ConDecIssueTab object controlling this view
 */
 $(document).ready(function(){
-    if (! window.conDecIssueTab.init(conDecAPI,window,window) ) {
+    if (! window.conDecIssueTab.init(conDecAPI,conDecTreeViewer,conDecContextMenu) ) {
         console.error("ConDecIssueTab could not get its dependencies.");
     }
+
+    
 });
 </script>
