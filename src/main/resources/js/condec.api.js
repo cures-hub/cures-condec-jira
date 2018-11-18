@@ -458,7 +458,7 @@
 			issueId = getIssueKey();
 		}
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer2.json?issueKey=" + issueId
-				+ "&showRelevant=" + showRelevant, function(error, core) {
+				+ "&showRelevant=" + showRelevant.toString(), function(error, core) {
 			if (error === null) {
 				callback(core);
 			} else {

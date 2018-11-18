@@ -7,63 +7,33 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:clas
 	<tbody>
 		<tr>
 			<td><input type="checkbox" id="Issue" name="feature"
-				value="scales" onchange='conDecIssueTab.toggleSelectedDecisionElements(this);' checked /> <label
+				value="scales" onchange='conDecIssueTab.updateView();' checked /> <label
 				for="Issue">Issue</label></td>
 			<td><input type="checkbox" id="Decision" name="feature"
-				value="scales" onchange='conDecIssueTab.toggleSelectedDecisionElements(this);' checked /> <label
+				value="scales" onchange='conDecIssueTab.updateView();' checked /> <label
 				for="Decision">Decision</label></td>
 			<td><input type="checkbox" id="Alternative" name="feature"
-				value="scales" onchange='conDecIssueTab.toggleSelectedDecisionElements(this);' checked /> <label
+				value="scales" onchange='conDecIssueTab.updateView();' checked /> <label
 				for="Alternative">Alternative</label></td>
-			<td><input type="checkbox" id="Pro" name="feature"
-				value="scales" onchange='conDecIssueTab.toggleSelectedDecisionElements(this);' checked /> <label
-				for="Pro">Pro</label></td>
-			<td><input type="checkbox" id="Con" name="feature"
-				value="scales" onchange='conDecIssueTab.toggleSelectedDecisionElements(this);' checked /> <label
-				for="Con">Con</label></td>
+			<td><input type="checkbox" id="Argument" name="feature"
+				value="scales" onchange='conDecIssueTab.updateView();' checked /> <label
+				for="Argument">Argument</label></td>
 			<td><input type="checkbox" id="Relevant" name="feature"
-				value="scales" onchange='conDecIssueTab.toggleSelectedDecisionElements(this);' checked /> <label
+				value="scales" onchange='conDecIssueTab.updateView();' checked /> <label
 				for="Relevant">Relevant</label></td>
 		</tr>
 	</tbody>
 </table>
 
-
-<!-- #foreach($comment in $comments )
-#set($currentIndex = $velocityCount - 1)
-<div class="comment issue-data-block activity-comment twixi-block  expanded" >
-  $style
-	<a class="user-hover user-avatar" rel="$authorNames.get($currentIndex)"
-		id="commentauthor_10102_verbose"
-		href=/jira/secure/ViewProfile.jspa?name=$authorNames.get($currentIndex)><span
-		class="aui-avatar aui-avatar-xsmall"><span
-			class="aui-avatar-inner"><img
-				src="http://www.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028?d=mm&amp;s=16"
-
-				alt="admin"></span></span>  $authorNames.get($currentIndex)</a> - <span
-		class="commentdate_10102_verbose subText"><span
-		class="date user-tz">$dates.get($currentIndex)</span></span>
-
-	<div class="commentBody" style="visibility: visible;">
-    #foreach($i in [0..10])
-       #set($comment = $comment.replaceFirst("\{quote\}","<blockquote>").replaceFirst("\{quote\}","</blockquote>"))
-    #end
-		<p>$comment</p>
-	</div> 
-</div>
-#end -->
-
  <input class=text medium-long-field id=jstree-search-input placeholder=Search decision knowledge />
  <div id =jstree> </div> 
 <script>
-/*
-instantiate the ConDecIssueTab object controlling this view
-*/
-$(document).ready(function(){
-    if (! window.conDecIssueTab.init(conDecAPI,conDecTreeViewer,conDecContextMenu) ) {
-        console.error("ConDecIssueTab could not get its dependencies.");
-    }
-
-    
-});
+	/*
+	instantiate the ConDecIssueTab object controlling this view
+	*/
+	$(document).ready(function(){
+	    if (! window.conDecIssueTab.init(conDecAPI,conDecTreeViewer,conDecContextMenu) ) {
+	        console.error("ConDecIssueTab could not get its dependencies.");
+	    }
+	});
 </script>

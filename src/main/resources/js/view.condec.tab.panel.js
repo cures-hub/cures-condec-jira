@@ -35,52 +35,37 @@
 		// Register/subscribe this view as an observer
 		conDecObservable.subscribe(this);
 
-
 		console.log(treeViewer)
-		buildTreeViewer(true);
+		buildTreeViewer(toggleSelectedDecisionElements());
 
 
 		return true;
 	};
 
 	/* triggered by onchange event in tabPanel.vm */
-	function toggleSelectedDecisionElements(element) {
+	function toggleSelectedDecisionElements() {
 		console.log("view.tab.panel.js toggleSelectedDecisionElements");
 
-		var decisionElements = [ "Issue", "Decision", "Alternative", "Pro", "Con" ];
-		var sentences = document.getElementsByClassName(element.id);
-		if (element.id !== "Relevant") {
-			setVisibility(sentences, element.checked);
-		} else if (element.id === "Relevant") {
-			sentences = document.getElementsByClassName("isNotRelevant");
-			setVisibility(sentences, element.checked);
+		var decisionElements = [ "Issue", "Decision", "Alternative", "Argument","Relevant" ];
+		var checked = [];
+		
+		for (var i = 0; i < decisionElements.length ; i++) {
+			var check = document.getElementById(decisionElements[i]).checked;
+			checked.push(check);
 		}
+		return checked;
 	}
-
-	/* called by toggleSelectedDecisionElements */
-	function setVisibility(sentences, checked) {
-		for (var i = sentences.length - 1; i >= 0; i--) {
-			if (checked) {
-				sentences[i].style.visibility = 'visible';
-			}
-			if (!checked) {
-				sentences[i].style.visibility = 'collapse';
-			}
-		}
-	}
-
 
 	/*
 
 	 called by
 	 * view.tab.panel.js:callDialog
 	 * view.context.menu.js
-	    lines: 414,617
 	 */
-	function buildTreeViewer(showRelevant) {
+	function buildTreeViewer(knowledgeTypeSelection) {
 		console.log("view.tab.panel.js buildTreeViewer");
 
-		conDecAPI.getTreeViewerWithoutRootElement(showRelevant, function(core) {
+		conDecAPI.getTreeViewerWithoutRootElement(knowledgeTypeSelection, function(core) {
 			console.log("view.tab.panel.js getTreeViewerWithoutRootElement callback");
 
 			jQueryConDec("#jstree").jstree({
@@ -116,7 +101,8 @@
 	function updateView() {
 		console.log("view.tabPanel updateView");
 		treeViewer.resetTreeViewer();
-		buildTreeViewer(true);
+		var checked = toggleSelectedDecisionElements();
+		buildTreeViewer(checked);
 	}
 
 

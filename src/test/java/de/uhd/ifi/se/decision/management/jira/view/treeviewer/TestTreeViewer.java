@@ -170,7 +170,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	public void testTreeViewerCalledFromTabpanel() {
 		//1) Check if Tree Element has no Children - Important! 
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
-		TreeViewer tv = new TreeViewer(element.getKey(), true);
+		TreeViewer tv = new TreeViewer(element.getKey(), {true,true,true,true,true}};
 		assertNotNull(tv);
 		assertEquals(0, tv.getDataStructure(element).getChildren().size());
 		

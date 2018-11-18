@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -92,6 +93,9 @@ public class Data {
 	}
 
 	public List<Data> getChildren() {
+		if(children == null) {
+			return new ArrayList<Data>();
+		}
 		return children;
 	}
 
