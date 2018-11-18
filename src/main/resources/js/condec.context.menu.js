@@ -11,9 +11,10 @@
  */
 (function(global) {
 
-	var isContextMenuOpen;
+	var isContextMenuOpen = null;
 
 	var ConDecContextMenu = function ConDecContextMenu() {
+		isContextMenuOpen = false;
 		jQueryConDec(global).blur(hideContextMenu);
 		jQueryConDec(document).click(hideContextMenu);
 	};
@@ -114,6 +115,6 @@
 
 	ConDecContextMenu.prototype.createContextMenuForSentences = createContextMenuForSentences;
 
-	// export ConDecContext
+	// export ConDecContextMenu
 	global.conDecContextMenu = new ConDecContextMenu();
 })(window);

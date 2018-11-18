@@ -1,6 +1,6 @@
 /*
  This module provides the notification method for the ConDec views. This module is the subject/observable 
- according to the observer design pattern. The views/observers subscribe to this observable. 
+ according to the observer design pattern. The views/observers subscribe/register to this observable. 
  The views need to implement an updateView function. 
  The updateView functions of the subscribed views are called in the notify function.
  
@@ -15,19 +15,20 @@
  */
 (function(global) {
 
+	var observers = null;
+
 	var ConDecObservable = function ConDecObservable() {
-		// TODO add observers
+		this.observers = [];
 	};
 
 	ConDecObservable.prototype.notify = function notify() {
-		if (global.conDecIssueModule !== undefined) {
-			global.conDecIssueModule.updateView();
-		} else if (global.conDecKnowledgePage !== undefined) {
-			global.conDecKnowledgePage.updateView();
-		} 
-		if (global.conDecIssueTab !== undefined) {
-			global.conDecIssueTab.updateView();
-		}
+		this.observers.forEach(function(observer) {
+			observer.updateView();
+		});
+	};
+
+	ConDecObservable.prototype.subscribe = function subscribe(observer) {
+		this.observers.push(observer);
 	};
 
 	// export ConDecObservable

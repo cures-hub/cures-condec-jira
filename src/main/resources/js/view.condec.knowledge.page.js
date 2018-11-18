@@ -37,13 +37,15 @@
 				&& isConDecTreantType(_treant) && isConDecTreeViewerType(_treeViewer)) {
 			conDecAPI = _conDecAPI;
 
-			// TODO: Register/Subscribe as observer
 			conDecObservable = _conDecObservable;
 			conDecDialog = _conDecDialog;
 			conDecContextMenu = _conDecContextMenu;
 			treant = _treant;
 			treeViewer = _treeViewer;
 			i18n = _i18n;
+			
+			// Register/subscribe this view as an observer
+			conDecObservable.subscribe(this);
 
 			return true;
 		}

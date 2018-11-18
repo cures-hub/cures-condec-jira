@@ -32,6 +32,9 @@
 		contextMenu = _contextMenu;
 		i18n = _i18n;
 
+		// Register/subscribe this view as an observer
+		conDecObservable.subscribe(this);
+
 
 		console.log(treeViewer)
 		buildTreeViewer(true);
@@ -120,8 +123,6 @@
 
 	// Expose methods:
 	ConDecIssueTab.prototype.updateView = updateView;
-	// for tabPanel.vm
-	ConDecIssueTab.prototype.callDialog = callDialog;
 	// for tabPanel.vm
 	ConDecIssueTab.prototype.toggleSelectedDecisionElements = toggleSelectedDecisionElements;
 	// for view.context.menu.js
