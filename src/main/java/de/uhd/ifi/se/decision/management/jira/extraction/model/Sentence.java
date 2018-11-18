@@ -63,7 +63,7 @@ public interface Sentence extends DecisionKnowledgeElement {
 	String getKnowledgeTypeString();
 
 	@JsonIgnore
-	void setKnowledgeTypeString(String type);
+	void setKnowledgeType(String type);
 
 	@JsonIgnore
 	void setKnowledgeType(double[] prediction);

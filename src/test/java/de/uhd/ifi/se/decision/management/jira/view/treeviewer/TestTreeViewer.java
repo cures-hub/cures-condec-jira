@@ -160,7 +160,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		TreeViewer tree = new TreeViewer();
 		TestComment tc = new TestComment();
 		Comment comment = tc.getComment("This is a testcomment with some text");
-		comment.getSentences().get(0).setKnowledgeTypeString(KnowledgeType.ALTERNATIVE.toString());
+		comment.getSentences().get(0).setKnowledgeType(KnowledgeType.ALTERNATIVE.toString());
 		assertNotNull(tree.getDataStructure(comment.getSentences().get(0)));
 	}
 
@@ -184,7 +184,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		//3) Manipulate Sentence object so it will be shown in the tree viewer
 		Comment comment = new CommentImpl(comment1);
 		comment.getSentences().get(0).setRelevant(true);
-		comment.getSentences().get(0).setKnowledgeTypeString(KnowledgeType.ALTERNATIVE.toString());
+		comment.getSentences().get(0).setKnowledgeType(KnowledgeType.ALTERNATIVE.toString());
 		element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
 		tv = new TreeViewer(element.getKey(), true);
 		

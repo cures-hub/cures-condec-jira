@@ -65,7 +65,7 @@ public class ClassificationManagerForCommentSentences {
 					i++;
 				} else if (sentence.isRelevant() && sentence.isTaggedFineGrained() && sentence.isPlainText()) {
 					Sentence aosentence = (Sentence) ActiveObjectsManager.getElementFromAO(sentence.getId());
-					sentence.setKnowledgeTypeString(aosentence.getKnowledgeTypeString());
+					sentence.setKnowledgeType(aosentence.getKnowledgeTypeString());
 				}
 			}
 		}
@@ -78,7 +78,7 @@ public class ClassificationManagerForCommentSentences {
 			for (Sentence sentence : comment.getSentences()) {
 				if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {
 					Sentence aosentence = (Sentence) ActiveObjectsManager.getElementFromAO(sentence.getId());
-					sentence.setKnowledgeTypeString(aosentence.getKnowledgeTypeString());
+					sentence.setKnowledgeType(aosentence.getKnowledgeTypeString());
 				}
 			}
 		}

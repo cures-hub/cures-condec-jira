@@ -106,7 +106,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 		Sentence sentence = comment.getSentences().get(0);
-		sentence.setKnowledgeTypeString("ALTERNATIVE");
+		sentence.setKnowledgeType("ALTERNATIVE");
 		ActiveObjectsManager.updateSentenceElement(sentence);
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(id);
 		assertTrue(element.getKnowledgeTypeString().equalsIgnoreCase("ALTERNATIVE"));

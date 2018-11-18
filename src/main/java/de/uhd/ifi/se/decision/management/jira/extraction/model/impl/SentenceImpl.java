@@ -81,7 +81,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 			super.type = KnowledgeType.OTHER;
 		} else {
 			super.type = KnowledgeType.getKnowledgeType(knowledgeTypeString);
-			this.setKnowledgeTypeString(knowledgeTypeString);
+			this.setKnowledgeType(knowledgeTypeString);
 		}
 		MutableIssue mutableIssue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
 		if (mutableIssue != null) {
@@ -196,7 +196,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	@Override
-	public void setKnowledgeTypeString(String type) {
+	public void setKnowledgeType(String type) {
 		if (type == null) {
 			super.type = KnowledgeType.OTHER;
 		} else if (type.equalsIgnoreCase("pro")) {
@@ -225,7 +225,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 			super.type = KnowledgeType.ARGUMENT;
 			this.argument = "Con";
 		}
-		this.setKnowledgeTypeString(super.type.toString());
+		this.setKnowledgeType(super.type.toString());
 	}
 
 	@Override
@@ -269,7 +269,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisintg(body, this.projectKey)
 				|| (ConfigPersistence.isIconParsing(projectKey)
 						&& StringUtils.indexOfAny(body, CommentSplitter.manualRationalIconList) >= 0)) {
-			this.setKnowledgeTypeString(
+			this.setKnowledgeType(
 					CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey, true));
 			setManuallyTagged();
 			stripTagsFromBody(body);
@@ -341,7 +341,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	public void setType(KnowledgeType type) {
 		super.setType(type);
-		this.setKnowledgeTypeString(type.toString());
+		this.setKnowledgeType(type.toString());
 	}
 
 }
