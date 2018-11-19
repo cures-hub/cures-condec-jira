@@ -57,16 +57,6 @@ public class ViewConnector {
 		this.currentIssue = currentIssue;
 	}
 
-	public List<String> getTaggedCommentsFromAO() {
-		List<String> result = new ArrayList<>();
-		for (int i = 0; i < commentsList.size(); i++) {
-			Comment comment = commentsList.get(i);
-			comment.reloadSentencesFromAo();
-			result.add(comment.getTaggedBody(i));
-		}
-		return result;
-	}
-
 	public List<String> getAllCommentsAuthorNames() {
 		List<String> authorName = new ArrayList<String>();
 		for (Comment c : commentsList) {

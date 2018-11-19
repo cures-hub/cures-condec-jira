@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.util.HTMLCodeGeneratorForSentences;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 
 public class CommentImpl implements Comment {
@@ -101,15 +100,6 @@ public class CommentImpl implements Comment {
 
 	public void setSentences(ArrayList<Sentence> sentences) {
 		this.sentences = sentences;
-	}
-
-	public String getTaggedBody(int index) {
-		HTMLCodeGeneratorForSentences hTMLGen = new HTMLCodeGeneratorForSentences();
-		String result = "<span id=\"comment" + index + "\">";
-		for (Sentence sentence : this.sentences) {
-			result += hTMLGen.getHTMLCodeForSentence(sentence);
-		}
-		return result + "</span>";
 	}
 	
 	public void reloadSentencesFromAo() {

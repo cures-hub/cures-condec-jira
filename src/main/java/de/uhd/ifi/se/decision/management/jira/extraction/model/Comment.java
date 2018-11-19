@@ -10,8 +10,6 @@ public interface Comment {
 
 	public void setSentences(ArrayList<Sentence> sentences);
 
-	public String getTaggedBody(int index);
-
 	public String getBody();
 
 	public void setBody(String body);

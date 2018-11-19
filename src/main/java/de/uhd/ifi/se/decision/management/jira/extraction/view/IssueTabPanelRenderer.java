@@ -28,17 +28,14 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements IssueTabPanel {
 	private static final Logger LOGGER = LoggerFactory.getLogger(IssueTabPanelRenderer.class);
 
-	private ViewConnector viewConnector;
-
-
 	@Override
 	public List<IssueAction> getActions(Issue issue, ApplicationUser remoteUser) {
-		if(issue == null || remoteUser == null){
+		if (issue == null || remoteUser == null) {
 			LOGGER.error("Issue tab panel cannot be rendered correctly since no issue or user are provided.");
 			return new ArrayList<>();
 		}
-		//Initialize viewConnector with the current shown Issue
-		viewConnector = new ViewConnector(issue,true);
+		// Initialize viewConnector with the current shown Issue
+		new ViewConnector(issue, true);
 
 		GenericMessageAction messageAction = new GenericMessageAction(getVelocityTemplate());
 		List<IssueAction> issueActions = new ArrayList<IssueAction>();
@@ -49,12 +46,13 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 
 	@Override
 	public boolean showPanel(Issue issue, ApplicationUser remoteUser) {
-		if(issue == null || remoteUser == null){
+		if (issue == null || remoteUser == null) {
 			LOGGER.error("Issue tab panel cannot be rendered correctly since no issue or user are provided.");
 			return false;
 		}
 		String projectKey = this.getProjectKey(issue.getKey());
-		return ConfigPersistence.isActivated(projectKey) && ConfigPersistence.isKnowledgeExtractedFromIssues(projectKey);
+		return ConfigPersistence.isActivated(projectKey)
+				&& ConfigPersistence.isKnowledgeExtractedFromIssues(projectKey);
 	}
 
 	private String getProjectKey(String issueKey) {
@@ -71,19 +69,8 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 
 		Map<String, Object> context = velocityParamFactory.getDefaultVelocityParams();
 
-		context = addParamsToContext(context);
-
-		return(velocityManager.getEncodedBody("templates/", "tabPanel.vm", baseUrl, webworkEncoding, context));
+		return (velocityManager.getEncodedBody("templates/", "tabPanel.vm", baseUrl, webworkEncoding, context));
 
 	}
-
-	private Map<String, Object> addParamsToContext(Map<String, Object> context) {
-		context.put("comments",this.viewConnector.getTaggedCommentsFromAO());
-		context.put("authorNames",this.viewConnector.getAllCommentsAuthorNames());
-		context.put("dates", this.viewConnector.getAllCommentsDates());
-		context.put("style", this.viewConnector.getSentenceStyles());
-		return context;
-	}
-
 
 }
