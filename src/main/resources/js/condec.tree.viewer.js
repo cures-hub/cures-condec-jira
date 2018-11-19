@@ -8,7 +8,7 @@
 	 */
 	ConDecTreeViewer.prototype.buildTreeViewer = function buildTreeViewer() {
 		console.log("view.tree.viewer.js buildTreeViewer");
-		resetTreeViewer();
+		this.resetTreeViewer();
 		var rootElementType = $("select[name='select-root-element-type']").val();
 		conDecAPI.getTreeViewer(rootElementType, function(core) {
 			jQueryConDec("#jstree").jstree({
@@ -23,8 +23,8 @@
 				jQueryConDec("#jstree").jstree(true).search(searchString);
 			});
 		});
-		addDragAndDropSupportForTreeViewer();
-		addContextMenuToTreeViewer();
+		this.addDragAndDropSupportForTreeViewer();
+		this.addContextMenuToTreeViewer();
 	};
 
 	ConDecTreeViewer.prototype.addContextMenuToTreeViewer = function addContextMenuToTreeViewer() {
