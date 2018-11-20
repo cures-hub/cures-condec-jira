@@ -22,5 +22,6 @@
         <aui-item-link id="condec-context-menu-sentence-alternative-item">Set Alternative</aui-item-link>      
         <aui-item-link id="condec-context-menu-sentence-pro-item">Set Pro</aui-item-link>      
         <aui-item-link id="condec-context-menu-sentence-con-item">Set Con</aui-item-link>      
+        <aui-item-link id="condec-context-menu-sentence-delete-item">Delete Element</aui-item-link>      
     </aui-section>
 </aui-dropdown-menu>

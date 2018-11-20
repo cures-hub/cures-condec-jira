@@ -335,6 +335,22 @@
 		});
 	};
 
+
+	/*
+	 * external references: view.context.menu
+	 */
+	ConDecAPI.prototype.deleteSentenceObject2 = function deleteSentenceObject2(id,  callback) {
+		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteSentenceObject2.json?id="+ id 
+			,null ,function(error) {
+			if (error === null) {
+				showFlag("success", "Knowledge element has been deleted.");
+				callback();
+			} else {
+				showFlag("error", "Knowledge element could not be deleted.");
+			}
+		});
+	};
+
 	/*
 	 * external references: view.context.menu ..
 	 */

@@ -318,6 +318,21 @@ public class KnowledgeRest {
 		}
 	}
 
+	@Path("/deleteSentenceObject2")
+	@DELETE
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response deleteSentenceObject2(@QueryParam("id") long id, @Context HttpServletRequest request) {
+		if (id >0 && request != null) {
+			boolean isDeleted = ActiveObjectsManager.deleteSentenceObject(id);
+			if (isDeleted) {
+				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
+			} 
+		}
+		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of element failed."))
+					.build();
+	}
+
+	
 
 	@Path("/deleteLink")
 	@DELETE

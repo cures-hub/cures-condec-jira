@@ -115,18 +115,14 @@
 						if (oldParentNode === "#" && parentNode !== "#") {
 
 							conDecAPI.linkGenericElements(parentNode.data.id, nodeId, targetType, "s", function() {
-								// TODO Replace with observable notify function
-								
-								conDecObservable.notify();
+								// conDecObservable.notify();
 							});
 						}
 						if (parentNode === "#" && oldParentNode !== "#") {
 
 							targetTypeOld = (oldParentNode.li_attr['class'] === "sentence") ? "s" : "i";
 							conDecAPI.deleteGenericLink(oldParentNode.data.id, nodeId, targetTypeOld, "s", function() {
-								// TODO Replace with observable notify function
-						
-								conDecObservable.notify();
+								//conDecObservable.notify();
 							});
 						}
 						if (parentNode !== '#' && oldParentNode !== '#') {
@@ -137,10 +133,7 @@
 								conDecAPI.deleteLink(oldParentNode.data.id, nodeId, function() {
 									conDecAPI.linkGenericElements(parentNode.data.id, nodeId, targetType, nodeType,
 											function() {
-												// TODO Replace with observable
-												// notify function
-											
-												conDecObservable.notify();
+										//		conDecObservable.notify();
 											});
 								});
 							} else {
@@ -148,11 +141,7 @@
 										function() {
 											conDecAPI.linkGenericElements(parentNode.data.id, nodeId, targetType,
 													nodeType, function() {
-														// TODO Replace with
-														// observable notify
-														// function
-													
-														conDecObservable.notify();
+													//	conDecObservable.notify();
 													});
 										});
 							}
