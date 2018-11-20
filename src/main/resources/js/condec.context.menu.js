@@ -133,6 +133,10 @@
 		document.getElementById("condec-context-menu-sentence-con-item").onclick = function() {
 			conDecAPI.changeKnowledgeTypeOfSentence(id,"Con",conDecObservable.notify);
 		};
+
+		document.getElementById("condec-context-menu-sentence-delete-item").onclick = function() {
+			conDecAPI.deleteSentenceObject2(id,conDecObservable.notify);
+		};
 	}
 
 	ConDecContextMenu.prototype.createContextMenuForSentences = createContextMenuForSentences;
