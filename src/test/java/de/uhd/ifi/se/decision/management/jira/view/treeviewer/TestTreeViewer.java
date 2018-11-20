@@ -138,7 +138,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testGetDataStructureFilled() {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
-		assertEquals("14", treeViewer.getDataStructure(element).getId());
+		assertEquals("tv14", treeViewer.getDataStructure(element).getId());
 	}
 
 	@Test
@@ -152,7 +152,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	public void testEmptyGraphGetDataStructure() {
 		TreeViewer tree = new TreeViewer();
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
-		assertEquals("14", tree.getDataStructure(element).getId());
+		assertEquals("tv14", tree.getDataStructure(element).getId());
 	}
 
 	@Test

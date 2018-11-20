@@ -44,7 +44,7 @@ public class Data {
 	}
 
 	public Data(DecisionKnowledgeElement decisionKnowledgeElement) {
-		this.id = String.valueOf(decisionKnowledgeElement.getId());
+		this.id = "tv"+ String.valueOf(decisionKnowledgeElement.getId());
 		this.text = decisionKnowledgeElement.getSummary();
 		this.icon = KnowledgeType.getIconUrl(decisionKnowledgeElement);
 		this.nodeInfo = decisionKnowledgeElement;
