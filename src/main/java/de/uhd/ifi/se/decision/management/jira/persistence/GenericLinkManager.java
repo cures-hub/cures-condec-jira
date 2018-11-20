@@ -13,6 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
+import net.java.ao.Query;
 
 public class GenericLinkManager {
 
@@ -104,22 +105,18 @@ public class GenericLinkManager {
 	 * @param elementIdWithPrefix
 	 *            the id of an decision knowledge element with identifier. Example:
 	 *            "i1234" for Issue, "s1337" for sentence. "1337" will not work
-	 * @param getOnlyOutwardLink
-	 *            if false, checks both directions
 	 * @return the generic links for element
 	 */
 	public static List<Link> getLinksForElement(String elementIdWithPrefix) {
 		init();
 		List<Link> links = new ArrayList<Link>();
-		LinkInDatabase[] linksInDatabase = activeObjects.find(LinkInDatabase.class);
+		LinkInDatabase[] linksInDatabase = activeObjects.find(LinkInDatabase.class, Query.select().where(
+				"ID_OF_DESTINATION_ELEMENT = ? OR ID_OF_SOURCE_ELEMENT = ?", elementIdWithPrefix, elementIdWithPrefix));
+
 		for (LinkInDatabase linkInDatabase : linksInDatabase) {
-			if (linkInDatabase.getIdOfDestinationElement().equals(elementIdWithPrefix)
-					|| linkInDatabase.getIdOfSourceElement().equals(elementIdWithPrefix)) {
-				Link link = new LinkImpl(linkInDatabase.getIdOfSourceElement(),
-						linkInDatabase.getIdOfDestinationElement());
-				link.setId(linkInDatabase.getId());
-				links.add(link);
-			}
+			Link link = new LinkImpl(linkInDatabase.getIdOfSourceElement(), linkInDatabase.getIdOfDestinationElement());
+			link.setId(linkInDatabase.getId());
+			links.add(link);
 		}
 		return links;
 	}

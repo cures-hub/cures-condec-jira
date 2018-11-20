@@ -157,16 +157,13 @@ public class ActiveObjectsManager {
 
 	public static DecisionKnowledgeElement getElementFromAO(long aoId) {
 		init();
-		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects
-				.find(DecisionKnowledgeInCommentEntity.class)) {
-			if (databaseEntry.getId() == aoId) {
-				return new SentenceImpl(databaseEntry);
-			}
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("ID = ?", aoId))) {
+			return new SentenceImpl(databaseEntry);
+
 		}
 		return new SentenceImpl();
 	}
-	
-
 
 	public static void setSentenceKnowledgeType(Sentence sentence) {
 		init();
@@ -666,6 +663,15 @@ public class ActiveObjectsManager {
 		} catch (SQLException e) {
 			return false;
 		}
+	}
+
+	public static boolean deleteSentenceObject(long id) {
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("ID = ?", id))) {
+			GenericLinkManager.deleteLinksForElement("s" + id);
+			return deleteAOElement(databaseEntry);
+		}
+		return false;
 	}
 
 }
