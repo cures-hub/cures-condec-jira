@@ -26,10 +26,8 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
@@ -254,7 +252,7 @@ public class KnowledgeRest {
 		if (decisionKnowledgeElement != null && request != null) {
 
 			// Get corresponding element from ao database
-			DecisionKnowledgeInCommentEntity databaseEntity = ActiveObjectsManager
+			Sentence databaseEntity = (Sentence) ActiveObjectsManager
 					.getElementFromAO(decisionKnowledgeElement.getId());
 			int newSentenceEnd = databaseEntity.getEndSubstringCount();
 			int newSentenceStart = databaseEntity.getStartSubstringCount();
@@ -308,10 +306,9 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getSentenceElement(@QueryParam("id") long id) {
 
-		DecisionKnowledgeInCommentEntity dbObject = ActiveObjectsManager.getElementFromAO(id);
+		Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(id);
 		
-		if (dbObject != null) {
-			Sentence sentence = new SentenceImpl(dbObject);
+		if (sentence != null) {
 			//TODO: Reweork this after merging with ConDec-378
 			return Response.status(Status.OK).entity(ImmutableMap.of("id", sentence.getId(),"description",sentence.getDescription(),"type",sentence.getKnowledgeTypeString())).build();
 		} else {

@@ -57,22 +57,22 @@ public class DecisionKnowledgeClassifier {
 		return areRelevant;
 	}
 
-	public List<double[]> classifySentencesFineGrained(Instances structure) {
+	public List<double[]> makeFineGrainedPredictions(Instances data) {
 		List<double[]> results = new ArrayList<double[]>();
-		structure.setClassIndex(5);
+		data.setClassIndex(5);
 
 		// Create and use Filter
 		Filter stwv;
 		try {
-			structure.setClassIndex(5);
+			data.setClassIndex(5);
 			stwv = getSTWV();
-			stwv.setInputFormat(structure);
-			structure = Filter.useFilter(structure, stwv);
-			structure.setClassIndex(5);
+			stwv.setInputFormat(data);
+			data = Filter.useFilter(data, stwv);
+			data.setClassIndex(5);
 
 			// Classify string instances
-			for (int n = 0; n < structure.size(); n++) {
-				Instance predictionInstance = structure.get(n);
+			for (int n = 0; n < data.size(); n++) {
+				Instance predictionInstance = data.get(n);
 				double[] predictionResult = fineGrainedClassifier.distributionForInstance(predictionInstance);
 				results.add(predictionResult);
 			}

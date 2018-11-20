@@ -7,7 +7,7 @@ public class HTMLCodeGeneratorForSentences {
 
 	private Sentence sentence;
 
-	public String getCodedElement(Sentence sentence) {
+	public String getHTMLCodeForSentence(Sentence sentence) {
 		this.sentence = sentence;
 		this.sentence.setBody(this.sentence.getBody().replaceAll("\r\n", ""));
 
@@ -30,7 +30,7 @@ public class HTMLCodeGeneratorForSentences {
 
 	}
 
-	public String getOpeningTagSpan() {
+	private String getOpeningTagSpan() {
 		if (sentence.getType() == null || sentence.getType() == KnowledgeType.OTHER || !sentence.isRelevant()) {
 			return "<span class =tag></span>";
 		}
@@ -41,7 +41,7 @@ public class HTMLCodeGeneratorForSentences {
 		return "<span class =tag>[" + typeText + "]</span>";
 	}
 
-	public String getClosingTagSpan() {
+	private String getClosingTagSpan() {
 		if (sentence.getType() == null || sentence.getType() == KnowledgeType.OTHER || !sentence.isRelevant()) {
 			return "<span class =tag></span>";
 		}
@@ -52,7 +52,7 @@ public class HTMLCodeGeneratorForSentences {
 		return "<span class =tag>[/" + typeText + "]</span>";
 	}
 
-	public String getSpecialBodyWithHTMLCodes() {
+	private String getSpecialBodyWithHTMLCodes() {
 		// quotes are replaced on js side
 		if (sentence.getBody().contains("{quote}")) {
 			return sentence.getBody();

@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.model.impl;
 
-import java.beans.PropertyChangeListener;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,10 +15,8 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
-import net.java.ao.EntityManager;
-import net.java.ao.RawEntity;
 
-public class SentenceImpl extends DecisionKnowledgeElementImpl implements Sentence, DecisionKnowledgeInCommentEntity {
+public class SentenceImpl extends DecisionKnowledgeElementImpl implements Sentence {
 
 	private boolean isTagged;
 
@@ -55,27 +52,42 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
 
-	public SentenceImpl(long id) {
-		this();
-		super.setId(id);
-		retrieveAttributesFromActievObjects();
-		retrieveBodyFromJiraComment();		
-	}
-
-	public SentenceImpl(String body, long id) {
-		this();
-		super.setId(id);
-		retrieveAttributesFromActievObjects();
-		this.setBody(body);
-		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
-	}
-
 	public SentenceImpl(DecisionKnowledgeInCommentEntity databaseEntry) throws NullPointerException {
+		this(databaseEntry.getId(), databaseEntry.getEndSubstringCount(), databaseEntry.getStartSubstringCount(),
+				databaseEntry.getUserId(), databaseEntry.isTagged(), databaseEntry.isRelevant(),
+				databaseEntry.isTaggedFineGrained(), databaseEntry.isTaggedManually(), databaseEntry.getProjectKey(),
+				databaseEntry.getArgument(), databaseEntry.getCommentId(), databaseEntry.getIssueId(),
+				databaseEntry.getKnowledgeTypeString());
+	}
+
+	public SentenceImpl(long id, int endSubstringCount, int startSubstringCount, long userId, boolean isTagged,
+			boolean isRelevant, boolean isTaggedFineGrained, boolean isTaggedManually, String projectKey,
+			String argument, long commentId, long issueId, String knowledgeTypeString) {
 		this();
-		super.setId(databaseEntry.getId());
-		this.insertAoValues(databaseEntry);
-		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
-		retrieveBodyFromJiraComment();		
+		super.setId(id);
+		this.setEndSubstringCount(endSubstringCount);
+		this.setStartSubstringCount(startSubstringCount);
+		this.setUserId(userId);
+		this.setTagged(isTagged);
+		this.setRelevant(isRelevant);
+		this.setTaggedFineGrained(isTaggedFineGrained);
+		this.setTaggedManually(isTaggedManually);
+		this.setProjectKey(projectKey);
+		this.setArgument(argument);
+		this.setCommentId(commentId);
+		this.setIssueId(issueId);
+		super.setProject(new DecisionKnowledgeProjectImpl(projectKey));
+		if (knowledgeTypeString == null || knowledgeTypeString.equals("")) {
+			super.type = KnowledgeType.OTHER;
+		} else {
+			super.type = KnowledgeType.getKnowledgeType(knowledgeTypeString);
+			this.setKnowledgeType(knowledgeTypeString);
+		}
+		MutableIssue mutableIssue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
+		if (mutableIssue != null) {
+			super.setKey(mutableIssue.getKey() + ":" + this.getId());
+		}
+		retrieveBodyFromJiraComment();
 	}
 
 	@Override
@@ -184,10 +196,10 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	@Override
-	public void setKnowledgeTypeString(String type) {
-		if(type == null) {
+	public void setKnowledgeType(String type) {
+		if (type == null) {
 			super.type = KnowledgeType.OTHER;
-		}else if (type.equalsIgnoreCase("pro")) {
+		} else if (type.equalsIgnoreCase("pro")) {
 			super.type = KnowledgeType.ARGUMENT;
 			this.argument = "Pro";
 		} else if (type.equalsIgnoreCase("con")) {
@@ -213,7 +225,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 			super.type = KnowledgeType.ARGUMENT;
 			this.argument = "Con";
 		}
-		this.setKnowledgeTypeString(super.type.toString());
+		this.setKnowledgeType(super.type.toString());
 	}
 
 	@Override
@@ -254,20 +266,21 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.excludedTagList) >= 0) {
 			this.isPlainText = false;
 		}
-		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisintg(body,this.projectKey)
+		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisintg(body, this.projectKey)
 				|| (ConfigPersistence.isIconParsing(projectKey)
 						&& StringUtils.indexOfAny(body, CommentSplitter.manualRationalIconList) >= 0)) {
-			this.setKnowledgeTypeString(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey,true));
+			this.setKnowledgeType(
+					CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey, true));
 			setManuallyTagged();
 			stripTagsFromBody(body);
 		}
 	}
 
 	private void stripTagsFromBody(String body) {
-		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisintg(body,this.projectKey)) {
+		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisintg(body, this.projectKey)) {
 			int tagLength = 2
 					+ CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey, true).length();
-			super.setDescription(body.substring(tagLength, body.length() - ( tagLength)));
+			super.setDescription(body.substring(tagLength, body.length() - (tagLength)));
 			super.setSummary(super.getDescription());
 		} else {
 			super.setDescription(body.replaceAll("\\(.*?\\)", ""));
@@ -293,7 +306,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	private void retrieveBodyFromJiraComment() {
-		if(this.commentId != 0 && this.commentId > 0) {
+		if (this.commentId != 0 && this.commentId > 0) {
 			String text = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getBody();
 			if (this.endSubstringCount < text.length()) {
 				text = text.substring(this.startSubstringCount, this.endSubstringCount);
@@ -303,73 +316,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 			this.setBody(text);
 			this.created = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getCreated();
 		}
-	}
-
-	private void retrieveAttributesFromActievObjects() {
-		DecisionKnowledgeInCommentEntity aoElement = ActiveObjectsManager.getElementFromAO(super.getId());
-		insertAoValues(aoElement);
-	}
-
-	private void insertAoValues(DecisionKnowledgeInCommentEntity aoElement) {
-		this.setEndSubstringCount(aoElement.getEndSubstringCount());
-		this.setStartSubstringCount(aoElement.getStartSubstringCount());
-		this.setUserId(aoElement.getUserId());
-		this.setTagged(aoElement.isTagged());
-		this.setRelevant(aoElement.isRelevant());
-		this.setTaggedFineGrained(aoElement.isTaggedFineGrained());
-		this.setTaggedManually(aoElement.isTaggedFineGrained());
-		this.setProjectKey(aoElement.getProjectKey());
-		this.setArgument(aoElement.getArgument());
-		this.setCommentId(aoElement.getCommentId());
-		this.setIssueId(aoElement.getIssueId());
-		super.setProject(new DecisionKnowledgeProjectImpl(aoElement.getProjectKey()));
-		String kt = aoElement.getKnowledgeTypeString();
-		if (kt == null || kt.equals("")) {
-			super.type = KnowledgeType.OTHER;
-		} else {
-			super.type = KnowledgeType.getKnowledgeType(kt);
-			this.setKnowledgeTypeString(kt);
-		}
-		MutableIssue mutableIssue = ComponentAccessor.getIssueManager().getIssueObject(this.getIssueId());
-		if (mutableIssue != null) {
-			super.setKey(mutableIssue.getKey() + ":" + this.getId());
-		}
-	}
-
-	@Override
-	public void addPropertyChangeListener(PropertyChangeListener arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public EntityManager getEntityManager() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <X extends RawEntity<Long>> Class<X> getEntityType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void init() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void removePropertyChangeListener(PropertyChangeListener arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void save() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -395,7 +341,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	public void setType(KnowledgeType type) {
 		super.setType(type);
-		this.setKnowledgeTypeString(type.toString());
+		this.setKnowledgeType(type.toString());
 	}
 
 }

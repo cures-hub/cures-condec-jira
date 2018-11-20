@@ -84,15 +84,6 @@ public class TestViewConnector extends TestSetUpWithIssues {
 
 	@Test
 	@NonTransactional
-	public void testGetAllCommentIds() {
-		addCommentsToIssue();
-
-		ViewConnector vc = new ViewConnector(issue, true);
-		assertNotNull(vc.getAllCommentsIDs());
-	}
-
-	@Test
-	@NonTransactional
 	public void testGetAllCommentAuthorNames() {
 		addCommentsToIssue();
 

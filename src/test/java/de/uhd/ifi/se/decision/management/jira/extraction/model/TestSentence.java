@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Date;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -100,12 +99,12 @@ public class TestSentence extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testSetKnowledgeTypeString() {
 		Sentence sentence = new SentenceImpl();
-		sentence.setKnowledgeTypeString(KnowledgeType.ALTERNATIVE.toString());
+		sentence.setKnowledgeType(KnowledgeType.ALTERNATIVE.toString());
 		assertEquals(KnowledgeType.ALTERNATIVE.toString(), sentence.getKnowledgeTypeString());
-		sentence.setKnowledgeTypeString("pro");
+		sentence.setKnowledgeType("pro");
 		assertEquals("Pro", sentence.getKnowledgeTypeString());
 		assertEquals("pro", sentence.getArgument().toLowerCase());
-		sentence.setKnowledgeTypeString("con");
+		sentence.setKnowledgeType("con");
 		assertEquals("Con", sentence.getKnowledgeTypeString());
 		assertEquals("con", sentence.getArgument().toLowerCase());
 	}
@@ -131,7 +130,7 @@ public class TestSentence extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testGetKnowledgeTypeString() {
 		Sentence sentence = new SentenceImpl();
-		sentence.setKnowledgeTypeString(null);
+		sentence.setKnowledgeType("");
 		assertEquals("Other", sentence.getKnowledgeTypeString());
 	}
 	

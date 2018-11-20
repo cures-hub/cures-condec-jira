@@ -25,7 +25,6 @@ import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
@@ -137,9 +136,11 @@ public class DecisionKnowledgeReport extends AbstractReport {
 			boolean linkExisting = false;
 			if (checkEqualIssueTypeIssue(issue.getIssueType())) {
 				for (Link link : GenericLinkManager.getLinksForElement("i" + issue.getId())) {
-					DecisionKnowledgeElement dke = link.getOppositeElement(new DecisionKnowledgeElementImpl(issue));
-					if (dke.getType().equals(knowledgeType)) {
-						linkExisting = true;
+					if(link.isValid()) {
+						DecisionKnowledgeElement dke = link.getOppositeElement(new DecisionKnowledgeElementImpl(issue));
+						if (dke.getType().equals(knowledgeType)) {
+							linkExisting = true;
+						}
 					}
 				}
 			}
@@ -220,7 +221,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 			List<DecisionKnowledgeElement> elements = ActiveObjectsManager.getElementsForIssue(currentIssue.getId(),
 					projectKey);
 			for (DecisionKnowledgeElement dke : elements) {
-				if ((new SentenceImpl(dke.getId())).getType().equals(type)) {
+				if (dke.getType().equals(type)) {
 					count++;
 				}
 			}
@@ -255,9 +256,11 @@ public class DecisionKnowledgeReport extends AbstractReport {
 			List<Link> links = GenericLinkManager.getLinksForElement("s" + currentAlternative.getId());
 			boolean hasArgument = false;
 			for (Link link : links) {
-				DecisionKnowledgeElement dke = link.getOppositeElement("s" + currentAlternative.getId());
-				if (dke instanceof Sentence && dke.getType().equals(KnowledgeType.ARGUMENT)) {
-					hasArgument = true;
+				if(link.isValid()) {
+					DecisionKnowledgeElement dke = link.getOppositeElement("s" + currentAlternative.getId());
+					if (dke instanceof Sentence && dke.getType().equals(KnowledgeType.ARGUMENT)) {
+						hasArgument = true;
+					}
 				}
 			}
 			if (hasArgument) {
@@ -290,9 +293,11 @@ public class DecisionKnowledgeReport extends AbstractReport {
 			boolean hastOtherElementLinked = false;
 
 			for (Link link : links) {
-				DecisionKnowledgeElement dke = link.getOppositeElement("s" + issue.getId());
-				if (dke instanceof Sentence && dke.getType().equals(linkTo1)) { // alt
-					hastOtherElementLinked = true;
+				if(link.isValid()) {
+					DecisionKnowledgeElement dke = link.getOppositeElement("s" + issue.getId());
+					if (dke instanceof Sentence && dke.getType().equals(linkTo1)) { // alt
+						hastOtherElementLinked = true;
+					}
 				}
 			}
 			if (hastOtherElementLinked) {

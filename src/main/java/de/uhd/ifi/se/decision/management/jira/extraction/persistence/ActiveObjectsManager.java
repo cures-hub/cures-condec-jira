@@ -21,7 +21,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
@@ -51,8 +50,8 @@ public class ActiveObjectsManager {
 			long issueId, String projectKey) {
 		init();
 		if (checkElementExistingInAO(commentId, endSubStringCount, startSubstringCount, userId, projectKey)) {
-			Sentence existingElement = getElementFromAO(commentId, endSubStringCount, startSubstringCount, userId,
-					projectKey);
+			DecisionKnowledgeInCommentEntity existingElement = getElementFromAO(commentId, endSubStringCount,
+					startSubstringCount, userId, projectKey);
 			checkIfSentenceHasAValidLink(existingElement.getId(), issueId);
 			return existingElement.getId();
 		}
@@ -67,6 +66,7 @@ public class ActiveObjectsManager {
 						todo.setStartSubstringCount(startSubstringCount);
 						todo.setUserId(userId);
 						todo.setTagged(false);
+						todo.setRelevant(false);
 						todo.setTaggedFineGrained(false);
 						todo.setTaggedManually(false);
 						todo.setProjectKey(projectKey);
@@ -155,21 +155,18 @@ public class ActiveObjectsManager {
 
 	}
 
-	public static DecisionKnowledgeInCommentEntity getElementFromAO(long aoId) {
+	public static DecisionKnowledgeElement getElementFromAO(long aoId) {
 		init();
-		return ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-			@Override
-			public DecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects
-						.find(DecisionKnowledgeInCommentEntity.class)) {
-					if (databaseEntry.getId() == aoId) {
-						return databaseEntry;
-					}
-				}
-				return new SentenceImpl();
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects
+				.find(DecisionKnowledgeInCommentEntity.class)) {
+			if (databaseEntry.getId() == aoId) {
+				return new SentenceImpl(databaseEntry);
 			}
-		});
+		}
+		return new SentenceImpl();
 	}
+	
+
 
 	public static void setSentenceKnowledgeType(Sentence sentence) {
 		init();
@@ -458,17 +455,11 @@ public class ActiveObjectsManager {
 	public static List<DecisionKnowledgeElement> getElementsForIssue(long issueId, String projectKey) {
 		init();
 		List<DecisionKnowledgeElement> elements = new ArrayList<>();
-		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-			@Override
-			public DecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
-						DecisionKnowledgeInCommentEntity.class,
-						Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ?", projectKey, issueId))) {
-					elements.add(databaseEntry);
-				}
-				return new SentenceImpl();
-			}
-		});
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ?", projectKey, issueId))) {
+			elements.add(new SentenceImpl(databaseEntry));
+		}
+
 		return elements;
 	}
 
@@ -616,10 +607,9 @@ public class ActiveObjectsManager {
 
 	public static Issue createJIRAIssueFromSentenceObject(long aoId, ApplicationUser user) {
 
-		DecisionKnowledgeInCommentEntity aoElement = ActiveObjectsManager.getElementFromAO(aoId);
-		Sentence element = new SentenceImpl(aoElement);
+		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(aoId);
 
-		IssueStrategy s = new IssueStrategy(aoElement.getProjectKey());
+		IssueStrategy s = new IssueStrategy(element.getProjectKey());
 		DecisionKnowledgeElement decElement = s.insertDecisionKnowledgeElement(element, user);
 
 		MutableIssue issue = ComponentAccessor.getIssueService().getIssue(user, decElement.getId()).getIssue();
@@ -643,14 +633,14 @@ public class ActiveObjectsManager {
 				Query.select().where("ID = ?", aoId))) {
 			deleteAOElement(databaseEntry);
 		}
-		
-		for(LinkInDatabase link: ActiveObjects.find(LinkInDatabase.class,Query.select().where("ID_OF_DESTINATION_ELEMENT = ?", "s"+aoId))) {
-			if(link.getIdOfSourceElement() != "i"+issue.getId()) {
+
+		for (LinkInDatabase link : ActiveObjects.find(LinkInDatabase.class,
+				Query.select().where("ID_OF_DESTINATION_ELEMENT = ?", "s" + aoId))) {
+			if (link.getIdOfSourceElement() != "i" + issue.getId()) {
 				GenericLinkManager.deleteGenericLink(new LinkImpl(link));
 			}
 		}
-		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(element.getIssueId()+"");
-		
+		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(element.getIssueId() + "");
 
 		return issue;
 	}
