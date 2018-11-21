@@ -86,7 +86,11 @@
 		event.preventDefault();
 		var parentId = target.id;
 		var childId = dragId;
-		sentenceElementIsDropped(target, parentId, childId);
+		if (!sentenceElementIsDropped(target, parentId, childId)) {
+		conDecAPI.deleteLink(oldParentId, childId, function() {
+			conDecAPI.createLinkToExistingElement(parentId, childId);
+		});
+	}
 	}
 
 	function sentenceElementIsDropped(target, parentId, childId) {
@@ -101,12 +105,14 @@
 					conDecObservable.notify();
 				});
 			});
+			return true;
 		} else // selected element is an issue, parent element is a sentence
-		if (sourceType === "i" && newParentType === "i") {
+		if (sourceType === "i" && newParentType === "i" && oldParentType === "s") {
 			conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,
 					function() {
 						conDecAPI.createLinkToExistingElement(parentId, childId);
 					});
+			return true;
 		} else {
 			conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,
 					function() {
@@ -115,7 +121,9 @@
 									conDecObservable.notify();
 								});
 					});
+			return true;
 		}
+		return false;
 	}
 
 	function allowDrop(event) {

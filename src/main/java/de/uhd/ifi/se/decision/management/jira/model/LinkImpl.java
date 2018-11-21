@@ -228,6 +228,15 @@ public class LinkImpl implements Link {
 			return false;
 		}
 	}
+	
+	public boolean isIssueLink() {
+		return getIdOfSourceElementWithPrefix().startsWith("i") && getIdOfDestinationElementWithPrefix().startsWith("i");
+	}
+	
+	public LinkImpl flip() {
+		return new LinkImpl(this.getIdOfDestinationElementWithPrefix(),
+				this.getIdOfSourceElementWithPrefix());
+	}
 
 	public String toString() {
 		String sourceElementIdPrefix = DocumentationLocation.getIdentifier(sourceElement);

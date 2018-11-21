@@ -85,6 +85,7 @@ public class IssueStrategy extends AbstractPersistenceStrategy {
 				return true;
 			}
 		}
+		
 		LOGGER.error("Deletion of link in database failed.");
 		return false;
 	}
