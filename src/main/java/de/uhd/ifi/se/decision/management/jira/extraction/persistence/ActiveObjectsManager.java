@@ -4,6 +4,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.CreateException;
@@ -21,6 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
@@ -34,6 +39,9 @@ public class ActiveObjectsManager {
 	public static ActiveObjects ActiveObjects;
 
 	private static int deleteSentenceCounter = 0;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectsManager.class);
+
 
 	public static void init() {
 		if (ActiveObjects == null) {
@@ -72,6 +80,7 @@ public class ActiveObjectsManager {
 						todo.setProjectKey(projectKey);
 						todo.setIssueId(issueId);
 						todo.save();
+						LOGGER.debug("\naddNewSentenceintoAo:\nInsert Sentence " +todo.getId() +" into AO from comment "+todo.getCommentId());
 						return todo;
 					}
 				});
@@ -322,7 +331,6 @@ public class ActiveObjectsManager {
 		init();
 		final List<Integer> starts = comment.getStartSubstringCount();
 		final List<Integer> ends = comment.getEndSubstringCount();
-
 		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 			@Override
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
@@ -341,19 +349,18 @@ public class ActiveObjectsManager {
 					for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
 							DecisionKnowledgeInCommentEntity.class,
 							Query.select().where("COMMENT_ID = ?", comment.getJiraCommentId()))) {
-
 						if (databaseEntry.getProjectKey().equals(comment.getProjectKey())) {
+							LOGGER.debug("\ncheckIfCommentBodyHasChangedOutsideOfPlugin:\nDelete "+ databaseEntry.getId() +" from comment "+comment.getJiraCommentId()+"\n");
 							deleteAOElement(databaseEntry);
 						}
-
-						for (LinkInDatabase link : ActiveObjects.find(LinkInDatabase.class)) {
-							if (link.getIdOfDestinationElement().equals("i" + comment.getIssueId())
-									|| link.getIdOfSourceElement().equals("i" + comment.getIssueId())) {
-								try {
-									link.getEntityManager().delete(link);
-								} catch (SQLException e) {
-									e.printStackTrace();
-								}
+						List<Link> elementsLinks = GenericLinkManager.getLinksForElement(DocumentationLocation.getIdentifier(DocumentationLocation.JIRAISSUECOMMENT)+databaseEntry.getId());
+						for(Link link: elementsLinks) {
+							LinkInDatabase linkInDatabase = ActiveObjects.find(LinkInDatabase.class,Query.select().where("ID = ?", link.getId()))[0];
+							LOGGER.debug("\ncheckIfCommentBodyHasChangedOutsideOfPlugin:\nDelete link from "+link.getIdOfDestinationElementWithPrefix()+" to "+link.getIdOfDestinationElementWithPrefix()+"\n");
+							try {
+								linkInDatabase.getEntityManager().delete(linkInDatabase);
+							} catch (SQLException e) {
+								LOGGER.debug("Could not delete link: "+linkInDatabase.getId());
 							}
 						}
 					}
@@ -515,7 +522,7 @@ public class ActiveObjectsManager {
 		}
 	}
 
-	public static void createLinksForNonLinkedElementsForIssue(String issueId) {
+	public static void createLinksForNonLinkedElementsForIssue(long issueId) {
 		init();
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("ISSUE_ID = ?", issueId))) {
@@ -637,7 +644,7 @@ public class ActiveObjectsManager {
 				GenericLinkManager.deleteGenericLink(new LinkImpl(link));
 			}
 		}
-		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(element.getIssueId() + "");
+		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(element.getIssueId());
 
 		return issue;
 	}

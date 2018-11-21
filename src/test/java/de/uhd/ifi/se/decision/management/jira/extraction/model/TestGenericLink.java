@@ -76,7 +76,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSecondConstructor() {
-		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue),true);
 		Sentence s = c.getSentences().get(0);
 		Link link = new LinkImpl("s" + s.getId(), "i" + issue.getId());
 		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("i" + issue.getId()));
@@ -86,7 +86,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testThirdConstructor() {
-		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue),true);
 		Sentence s = c.getSentences().get(0);
 		Link link = new LinkImpl("i" + issue.getId(), "s" + s.getId(), "contain");
 		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("i" + issue.getId()));
@@ -100,7 +100,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 		Link link = new LinkImpl();
 		link.setDestinationElement("i" + issue.getId());
-		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue),true);
 		Sentence s = c.getSentences().get(0);
 		link.setSourceElement("s" + s.getId());
 
@@ -116,7 +116,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 		Link link = new LinkImpl();
 		link.setSourceElement("i" + issue.getId());
-		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue),true);
 		Sentence s = c.getSentences().get(0);
 		link.setDestinationElement("s" + s.getId());
 
@@ -132,7 +132,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 		Link link = new LinkImpl();
 
-		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue),true);
 		Sentence s = c.getSentences().get(0);
 		Sentence s1 = c.getSentences().get(1);
 
@@ -191,7 +191,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testIsIssueLinkWithValidLink() {
 
-		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue),true);
 		Sentence s = c.getSentences().get(0);
 		Link link = new LinkImpl("s" + s.getId(), "i" + issue.getId());
 		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("i" + issue.getId()));
@@ -207,7 +207,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testToStringToBeatCodeCoverage() {
 
-		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
+		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue),true);
 		Sentence s = c.getSentences().get(0);
 		Link link = new LinkImpl("s" + s.getId(), "i" + issue.getId());
 		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("i" + issue.getId()));

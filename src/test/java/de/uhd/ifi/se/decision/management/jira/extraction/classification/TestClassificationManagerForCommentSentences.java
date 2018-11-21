@@ -84,7 +84,7 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 	}
 
 	private void fillCommentList() {
-		list.add(new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue)));
+		list.add(new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue),true));
 
 	}
 

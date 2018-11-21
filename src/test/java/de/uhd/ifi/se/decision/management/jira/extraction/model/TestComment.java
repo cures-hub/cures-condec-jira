@@ -76,7 +76,7 @@ public class TestComment extends TestSetUpWithIssues {
 		createLocalIssue();
 
 		addCommentsToIssue(text);
-		return new CommentImpl(comment1);
+		return new CommentImpl(comment1,true);
 	}
 
 	@Test

@@ -183,7 +183,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		com.atlassian.jira.issue.comments.Comment comment1 = commentManager.create(issue, currentUser, "This is a testsentence for test purposes", true);
 		
 		//3) Manipulate Sentence object so it will be shown in the tree viewer
-		Comment comment = new CommentImpl(comment1);
+		Comment comment = new CommentImpl(comment1,true);
 		comment.getSentences().get(0).setRelevant(true);
 		comment.getSentences().get(0).setKnowledgeType(KnowledgeType.ALTERNATIVE.toString());
 		element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);

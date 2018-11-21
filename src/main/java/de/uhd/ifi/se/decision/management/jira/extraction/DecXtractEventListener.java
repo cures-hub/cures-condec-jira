@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,9 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	private String projectKey;
 
 	private IssueEvent issueEvent;
+	
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(DecXtractEventListener.class);
 
 	/**
 	 * locks the editComment Event function if a rest service writes edites comments
@@ -66,6 +71,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 
 	@EventListener
 	public void onIssueEvent(IssueEvent issueEvent) {
+		LOGGER.debug("DecXtract Event Listener catched an event");
 		this.issueEvent = issueEvent;
 		this.projectKey = issueEvent.getProject().getKey();
 		if(!ConfigPersistence.isActivated(this.projectKey) && !ConfigPersistence.isKnowledgeExtractedFromIssues(this.projectKey)) {
@@ -73,20 +79,26 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		}
 		Long eventTypeId = issueEvent.getEventTypeId();
 		if(eventTypeId.equals(EventType.ISSUE_COMMENTED_ID) || eventTypeId.equals(EventType.ISSUE_COMMENT_EDITED_ID)) {
+
+			LOGGER.debug("\nDecXtract Event Listener:\nparseIconsToTags()\ncreateLinksForNonLinkedElementsForIssue");
 			parseIconsToTags();
-			ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(new DecisionKnowledgeElementImpl(issueEvent.getIssue()).getId()+"");
+			ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(new DecisionKnowledgeElementImpl(issueEvent.getIssue()).getId());
 		}
 		if (eventTypeId.equals(EventType.ISSUE_COMMENTED_ID)) {
+			LOGGER.debug("\nDecXtract Event Listener:\nhandleNewComment()");
 			handleNewComment(new DecisionKnowledgeElementImpl(issueEvent.getIssue()));
 		}
 		if (eventTypeId.equals(EventType.ISSUE_COMMENT_DELETED_ID)) {
+			LOGGER.debug("\nDecXtract Event Listener:\nhandleDeleteComment()");
 			handleDeleteComment(new DecisionKnowledgeElementImpl(issueEvent.getIssue()));
 
 		}
 		if (eventTypeId.equals(EventType.ISSUE_COMMENT_EDITED_ID)) {
+			LOGGER.debug("\nDecXtract Event Listener:\nhandleEditComment()");
 			handleEditComment(new DecisionKnowledgeElementImpl(issueEvent.getIssue()));
 		}
 		if (eventTypeId.equals(EventType.ISSUE_DELETED_ID)) {
+			LOGGER.debug("\nDecXtract Event Listener:\nhandleDeleteIssue()");
 			handleDeleteIssue(new DecisionKnowledgeElementImpl(issueEvent.getIssue()));
 		}
 		pareseSlashTagsOutOfComment();
@@ -128,26 +140,26 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 
 	private void handleDeleteIssue(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
 		ActiveObjectsManager.cleanSentenceDatabaseForProject(this.projectKey);
-		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId() + "");
+		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
 	}
 
 	private void handleEditComment(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
 		if (!DecXtractEventListener.editCommentLock) {// If locked, a rest service is manipulating the comment and
 														// should not be handled by EL
-			ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(new CommentImpl(issueEvent.getComment()));
+			ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(new CommentImpl(issueEvent.getComment(),false));
 			new ViewConnector(this.issueEvent.getIssue(), false);
-			ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId() + "");
+			ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId() );
 		}
 	}
 
 	private void handleDeleteComment(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
 		ActiveObjectsManager.cleanSentenceDatabaseForProject(this.projectKey);
-		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId() + "");
+		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
 	}
 
 	private void handleNewComment(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
 		new ViewConnector(this.issueEvent.getIssue(), false);
-		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId() + "");
+		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
 	}
 
 }

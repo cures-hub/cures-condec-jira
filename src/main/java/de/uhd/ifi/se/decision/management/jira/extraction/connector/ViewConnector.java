@@ -33,7 +33,7 @@ public class ViewConnector {
 		this(issue);
 		if (issue != null && commentManager.getComments(issue) != null) {
 			for (com.atlassian.jira.issue.comments.Comment comment : commentManager.getComments(issue)) {
-				Comment comment2 = new CommentImpl(comment);
+				Comment comment2 = new CommentImpl(comment,true);
 				commentsList.add(comment2);
 				ActiveObjectsManager.checkSentenceAOForDuplicates(comment2);
 			}

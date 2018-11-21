@@ -43,7 +43,7 @@ public class CommentImpl implements Comment {
 		this.issueId = 0L;
 	}
 
-	public CommentImpl(com.atlassian.jira.issue.comments.Comment comment) {
+	public CommentImpl(com.atlassian.jira.issue.comments.Comment comment, boolean insertSentencesIntoAO) {
 		this();
 		this.projectKey = comment.getIssue().getProjectObject().getKey();
 		this.body = comment.getBody();
@@ -52,17 +52,17 @@ public class CommentImpl implements Comment {
 		this.jiraCommentId = comment.getId();
 		this.authorId = comment.getAuthorApplicationUser().getId();
 		this.setIssueId(comment.getIssue().getId());
-		splitCommentIntoSentences();
+		splitCommentIntoSentences(insertSentencesIntoAO);
 	}
 
-	private void splitCommentIntoSentences() {
+	private void splitCommentIntoSentences(boolean insertSentencesIntoAO) {
 		List<String> rawSentences = this.splitter.sliceCommentRecursionCommander(this.body, this.projectKey);
 		runBreakIterator(rawSentences);
 		// Create AO entries 
 		for (int i = 0; i < this.splitter.getStartSubstringCount().size(); i++) {
 			int startIndex = this.splitter.getStartSubstringCount().get(i);
 			int endIndex = this.splitter.getEndSubstringCount().get(i);
-			if(startIndex >= 0 && endIndex >= 0 &&(endIndex - startIndex) >0 && this.body.substring(startIndex, endIndex).replaceAll("\r\n", "").trim().length() > 1) {
+			if(insertSentencesIntoAO && startIndex >= 0 && endIndex >= 0 &&(endIndex - startIndex) >0 && this.body.substring(startIndex, endIndex).replaceAll("\r\n", "").trim().length() > 1) {
 				long aoId2 = ActiveObjectsManager.addNewSentenceintoAo(this.jiraCommentId, endIndex, startIndex,
 						this.authorId, this.issueId, this.projectKey);
 				Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(aoId2);

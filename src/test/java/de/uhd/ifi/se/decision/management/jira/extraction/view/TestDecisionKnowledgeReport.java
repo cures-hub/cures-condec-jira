@@ -84,7 +84,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 				text, true);
 
 		// 3) Manipulate Sentence object so it will be shown in the tree viewer
-		this.comment = new CommentImpl(comment1);
+		this.comment = new CommentImpl(comment1,true);
 		return issue;
 		
 	}
