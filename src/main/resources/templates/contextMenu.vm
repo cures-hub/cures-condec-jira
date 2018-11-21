@@ -17,5 +17,11 @@
         <aui-item-link id="condec-context-menu-sentence-delete-link-item">Delete Link to Parent</aui-item-link>
         <aui-item-link id="condec-context-menu-sentence-convert-item">Convert to JIRA Issue</aui-item-link> 
         <aui-item-link id="condec-context-menu-sentence-irrelevant-item">Set Irrelevant</aui-item-link>      
+        <aui-item-link id="condec-context-menu-sentence-issue-item">Set Issue</aui-item-link>      
+        <aui-item-link id="condec-context-menu-sentence-decision-item">Set Decision</aui-item-link>      
+        <aui-item-link id="condec-context-menu-sentence-alternative-item">Set Alternative</aui-item-link>      
+        <aui-item-link id="condec-context-menu-sentence-pro-item">Set Pro</aui-item-link>      
+        <aui-item-link id="condec-context-menu-sentence-con-item">Set Con</aui-item-link>      
+        <aui-item-link id="condec-context-menu-sentence-delete-item">Delete Element</aui-item-link>      
     </aui-section>
 </aui-dropdown-menu>

@@ -335,6 +335,22 @@
 		});
 	};
 
+
+	/*
+	 * external references: view.context.menu
+	 */
+	ConDecAPI.prototype.deleteSentenceObject2 = function deleteSentenceObject2(id,  callback) {
+		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteSentenceObject2.json?id="+ id 
+			,null ,function(error) {
+			if (error === null) {
+				showFlag("success", "Knowledge element has been deleted.");
+				callback();
+			} else {
+				showFlag("error", "Knowledge element could not be deleted.");
+			}
+		});
+	};
+
 	/*
 	 * external references: view.context.menu ..
 	 */
@@ -372,7 +388,7 @@
 				function(error, id, type) {
 					if (error === null) {
 						showFlag("success", "JIRA Issue has been created");
-						callback(id, type);
+						callback();
 					} else {
 						showFlag("error", "JIRA Issue has not been created. Error Code: " + error);
 					}
@@ -458,7 +474,7 @@
 			issueId = getIssueKey();
 		}
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer2.json?issueKey=" + issueId
-				+ "&showRelevant=" + showRelevant, function(error, core) {
+				+ "&showRelevant=" + showRelevant.toString(), function(error, core) {
 			if (error === null) {
 				callback(core);
 			} else {

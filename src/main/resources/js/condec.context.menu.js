@@ -31,6 +31,7 @@
 	function createContextMenu(posX, posY, id) {
 		isContextMenuOpen = true;
 		console.log("contextmenu opened");
+		id = id.replace("tv","");
 
 		$("#condec-context-menu").css({
 			left : posX,
@@ -89,6 +90,7 @@
 			left : posX,
 			top : posY
 		});
+		id = id.replace("tv","");
 		document.getElementById("condec-context-menu-sentence").style.zIndex = 9998;
 		document.querySelector("#condec-context-menu-sentence").setAttribute('aria-hidden', 'false');
 
@@ -110,6 +112,30 @@
 
 		document.getElementById("condec-context-menu-sentence-irrelevant-item").onclick = function() {
 			conDecAPI.setSentenceIrrelevant(id, conDecObservable.notify);
+		};
+
+		document.getElementById("condec-context-menu-sentence-issue-item").onclick = function() {
+			conDecAPI.changeKnowledgeTypeOfSentence(id,"Issue",conDecObservable.notify);
+		};
+
+		document.getElementById("condec-context-menu-sentence-decision-item").onclick = function() {
+			conDecAPI.changeKnowledgeTypeOfSentence(id,"Decision",conDecObservable.notify);
+		};
+
+		document.getElementById("condec-context-menu-sentence-alternative-item").onclick = function() {
+			conDecAPI.changeKnowledgeTypeOfSentence(id,"Alternative",conDecObservable.notify);
+		};
+
+		document.getElementById("condec-context-menu-sentence-pro-item").onclick = function() {
+			conDecAPI.changeKnowledgeTypeOfSentence(id,"Pro",conDecObservable.notify);
+		};
+
+		document.getElementById("condec-context-menu-sentence-con-item").onclick = function() {
+			conDecAPI.changeKnowledgeTypeOfSentence(id,"Con",conDecObservable.notify);
+		};
+
+		document.getElementById("condec-context-menu-sentence-delete-item").onclick = function() {
+			conDecAPI.deleteSentenceObject2(id,conDecObservable.notify);
 		};
 	}
 

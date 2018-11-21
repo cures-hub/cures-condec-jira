@@ -347,6 +347,11 @@
 				knowledgeTypes.splice(index, 1);
 			}
 		}
+		if(!knowledgeTypes.includes("Pro") && !knowledgeTypes.includes("Con") && knowledgeTypes.includes("Argument")){
+			knowledgeTypes.splice(knowledgeTypes.indexOf("Argument"),1);
+			knowledgeTypes.push("Pro");
+			knowledgeTypes.push("Con");
+		}
 		for (index = 0; index < knowledgeTypes.length; index++) {
 			var isSelected = "";
 			// first clause for treant, second for tree viewer
@@ -369,46 +374,14 @@
 		submitButton.onclick = function() {
 			var description = document.getElementById("form-input-description").value;
 			var type = $("select[name='form-select-type']").val().split("-")[0];
-			conDecAPI
-					.editSentenceBody(
-							id,
-							description,
-							type,
-							function() {
-								if (!(document.getElementById("Relevant") === null)) {
-									var idOfUiElement = "ui" + id;
-									replaceTagsFromContent(idOfUiElement, type);
-
-									document.getElementById(idOfUiElement).classList.remove("Decision", "Issue",
-											"Alternative", "Pro", "Con");
-									document.getElementById(idOfUiElement).classList.add(type);
-									document.getElementById(idOfUiElement).getElementsByClassName("sentenceBody")[0].textContent = description;
-									AJS.dialog2("#dialog").hide();
-									conDecObservable.notify();
-								} else {
-									AJS.dialog2("#dialog").hide();
-									conDecObservable.notify();
-								}
-							});
+			conDecAPI.editSentenceBody(id,description,type,	function() {
+				AJS.dialog2("#dialog").hide();
+				conDecObservable.notify();	
+			});
 		};
 		AJS.$("#form-select-type").auiSelect2();
 	}
 
-	// TODO: Remove this method from conDecDialog, subscribe tab panel at
-	// observable and add updateView method for tabPanel
-	/**
-	 * local resets tree viewer and builds it again
-	 */
-	function refreshTreeViewer() {
-		console.log("view.context.menu.js refreshTreeViewer");
-		if (document.getElementById("Relevant") !== null) {
-			resetTreeViewer();
-			conDecIssueTab.buildTreeViewer(document.getElementById("Relevant").checked);
-		} else {
-			AJS.dialog2("#dialog").hide();
-			conDecObservable.notify();
-		}
-	}
 
 	ConDecDialog.prototype.setUpDialogForEditSentenceAction = function setUpDialogForEditSentenceAction(id) {
 		conDecAPI.getSentenceElement(id, function(result) {
@@ -418,6 +391,7 @@
 			setHeaderText(editKnowledgeElementText);
 			setUpEditSentenceDialogView(description, type, type);
 			setUpEditSentenceDialogContext(id, description, type);
+			
 		});
 	};
 

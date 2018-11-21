@@ -8,7 +8,7 @@
 	 */
 	ConDecTreeViewer.prototype.buildTreeViewer = function buildTreeViewer() {
 		console.log("view.tree.viewer.js buildTreeViewer");
-		resetTreeViewer();
+		this.resetTreeViewer();
 		var rootElementType = $("select[name='select-root-element-type']").val();
 		conDecAPI.getTreeViewer(rootElementType, function(core) {
 			jQueryConDec("#jstree").jstree({
@@ -23,11 +23,11 @@
 				jQueryConDec("#jstree").jstree(true).search(searchString);
 			});
 		});
-		addDragAndDropSupportForTreeViewer();
-		addContextMenuToTreeViewer();
+		this.addDragAndDropSupportForTreeViewer();
+		this.addContextMenuToTreeViewer();
 	};
 
-	function addContextMenuToTreeViewer() {
+	ConDecTreeViewer.prototype.addContextMenuToTreeViewer = function addContextMenuToTreeViewer() {
 		console.log("view.tree.viewer.js addContextMenuToTreeViewer");
 		jQueryConDec("#jstree").on("contextmenu.jstree", function(event) {
 			event.preventDefault();
@@ -42,9 +42,9 @@
 	}
 
 	/**
-	 * called by view.context.menu.js locally
+	 * called by view.context.menu.js view.condec.tab.panel.js locally
 	 */
-	function resetTreeViewer() {
+	ConDecTreeViewer.prototype.resetTreeViewer = function resetTreeViewer() {
 		console.log("view.tree.viewer.js resetTreeViewer");
 		var treeViewer = jQueryConDec("#jstree").jstree(true);
 		if (treeViewer) {
@@ -78,7 +78,7 @@
 	/**
 	 * called by view.tab.panel.js locally
 	 */
-	function addDragAndDropSupportForTreeViewer() {
+	ConDecTreeViewer.prototype.addDragAndDropSupportForTreeViewer =  function addDragAndDropSupportForTreeViewer() {
 		console.log("view.tree.viewer.js addDragAndDropSupportForTreeViewer");
 		jQueryConDec("#jstree").on(
 				'move_node.jstree',
@@ -115,16 +115,14 @@
 						if (oldParentNode === "#" && parentNode !== "#") {
 
 							conDecAPI.linkGenericElements(parentNode.data.id, nodeId, targetType, "s", function() {
-								// TODO Replace with observable notify function
-								refreshTreeViewer();
+								 conDecObservable.notify();
 							});
 						}
 						if (parentNode === "#" && oldParentNode !== "#") {
 
 							targetTypeOld = (oldParentNode.li_attr['class'] === "sentence") ? "s" : "i";
 							conDecAPI.deleteGenericLink(oldParentNode.data.id, nodeId, targetTypeOld, "s", function() {
-								// TODO Replace with observable notify function
-								refreshTreeViewer();
+								conDecObservable.notify();
 							});
 						}
 						if (parentNode !== '#' && oldParentNode !== '#') {
@@ -135,9 +133,7 @@
 								conDecAPI.deleteLink(oldParentNode.data.id, nodeId, function() {
 									conDecAPI.linkGenericElements(parentNode.data.id, nodeId, targetType, nodeType,
 											function() {
-												// TODO Replace with observable
-												// notify function
-												refreshTreeViewer();
+												conDecObservable.notify();
 											});
 								});
 							} else {
@@ -145,10 +141,7 @@
 										function() {
 											conDecAPI.linkGenericElements(parentNode.data.id, nodeId, targetType,
 													nodeType, function() {
-														// TODO Replace with
-														// observable notify
-														// function
-														refreshTreeViewer();
+														conDecObservable.notify();
 													});
 										});
 							}

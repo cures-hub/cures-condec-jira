@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.view.treeviewer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -92,7 +93,7 @@ public class TreeViewer {
 	 *            the show relevant (deprecated) currently used to distinguish
 	 *            between Constructors
 	 */
-	public TreeViewer(String issueKey, boolean isCalledFromTabPanel) {
+	public TreeViewer(String issueKey, Boolean[] showKnowledgeTypes) {
 		this();
 		TreeViewer.isCalledFromIssueTabPanel = true;
 		if (issueKey == null) {
@@ -104,15 +105,42 @@ public class TreeViewer {
 		}
 		Data issueNode = this.getDataStructure(new DecisionKnowledgeElementImpl(issue));
 		// Match irrelevant sentences back to list
-		String identifier = DocumentationLocation.getIdentifier(DocumentationLocation.JIRAISSUE);
-		for (Link link : GenericLinkManager.getLinksForElement(identifier + issue.getId())) {
-			DecisionKnowledgeElement opposite = link.getOppositeElement(identifier + issue.getId());
-			if (opposite instanceof Sentence && isSentenceShown(opposite)) {
-				issueNode.getChildren().add(new Data(opposite));
+		if(showKnowledgeTypes[4]) {
+			String identifier = DocumentationLocation.getIdentifier(DocumentationLocation.JIRAISSUE);
+			for (Link link : GenericLinkManager.getLinksForElement(identifier + issue.getId())) {
+				DecisionKnowledgeElement opposite = link.getOppositeElement(identifier + issue.getId());
+				if (opposite instanceof Sentence && isSentenceShown(opposite)) {
+					issueNode.getChildren().add(new Data(opposite));
+				}
 			}
 		}
+		KnowledgeType[] knowledgeType = {KnowledgeType.ISSUE, KnowledgeType.DECISION, KnowledgeType.ALTERNATIVE, KnowledgeType.ARGUMENT};
 		this.data = new HashSet<Data>(Arrays.asList(issueNode));
+		for(int i = 0; i <= 3; i++) {
+			for(Data node: this.data) {
+				Iterator<Data> it= node.getChildren().iterator();
+				while(it.hasNext()) {
+					removeChildrenWithType(it,knowledgeType[i],showKnowledgeTypes[i]);
+				}	
+			}
+		}
 	}
+	
+	private void removeChildrenWithType(Iterator<Data> node, KnowledgeType knowledgeType, Boolean showKnowledgeType) {
+		Data currentNode = node.next();
+		if(!showKnowledgeType && currentNode.getNode().getType().equals(knowledgeType)) {
+			node.remove();
+			return;
+		}else {
+			Iterator<Data> it= currentNode.getChildren().iterator();
+			while(it.hasNext()) {
+					removeChildrenWithType(it,knowledgeType, showKnowledgeType);
+				
+			}
+		}
+	}
+	
+	
 
 	private boolean isSentenceShown(DecisionKnowledgeElement element) {
 		return !((Sentence) element).isRelevant() && ((Sentence) element).getBody().length() > 0;
