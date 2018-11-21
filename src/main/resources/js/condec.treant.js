@@ -86,49 +86,18 @@
 		event.preventDefault();
 		var parentId = target.id;
 		var childId = dragId;
-	//	sentenceElementIsDropped(target, parentId, childId);
-		if (sentenceElementIsDropped(target, parentId, childId)) {
-		conDecAPI.deleteLink(oldParentId, childId, function() {
-			conDecAPI.createLinkToExistingElement(parentId, childId);
-		});
-	}
-	}
 
-	function sentenceElementIsDropped(target, parentId, childId) {
-		console.log("view.treant.js sentenceElementIsDropped");
 		var sourceType = extractTypeFromHTMLElement(draggedElement);
 		var oldParentType = extractTypeFromHTMLId(findParentId(draggedElement.id));
 		var newParentType = extractTypeFromHTMLElement(target);
-		// selected element is an issue, dropped element is an sentence
-		if (newParentType === "s" && oldParentType === "i") {
-			console.log("case 1")
-			conDecAPI.deleteLink("i" + oldParentId, "s" + childId, function() {
+
+		conDecAPI.deleteGenericLink(oldParentId, childId,oldParentType,sourceType, function() {
 				conDecAPI.linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
 					conDecObservable.notify();
 				});
 			});
-			return false;
-		} else // selected element is an issue, parent element is a sentence
-		if (sourceType === "i" && newParentType === "i" && oldParentType === "s") {
-			console.log("case 2")
-			conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,
-					function() {
-						conDecAPI.createLinkToExistingElement(parentId, childId);
-					});
-			return false;
-		} else if (sourceType != "i" && oldParentType != "i") {
-			console.log("case 3")
-			conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,
-					function() {
-						conDecAPI.linkGenericElements(target.id, draggedElement.id, newParentType, sourceType,
-								function() {
-									conDecObservable.notify();
-								});
-					});
-			return false;
-		}
-		return true;
 	}
+
 
 	function allowDrop(event) {
 		event.preventDefault();
