@@ -86,7 +86,8 @@
 		event.preventDefault();
 		var parentId = target.id;
 		var childId = dragId;
-		if (!sentenceElementIsDropped(target, parentId, childId)) {
+	//	sentenceElementIsDropped(target, parentId, childId);
+		if (sentenceElementIsDropped(target, parentId, childId)) {
 		conDecAPI.deleteLink(oldParentId, childId, function() {
 			conDecAPI.createLinkToExistingElement(parentId, childId);
 		});
@@ -100,20 +101,23 @@
 		var newParentType = extractTypeFromHTMLElement(target);
 		// selected element is an issue, dropped element is an sentence
 		if (newParentType === "s" && oldParentType === "i") {
+			console.log("case 1")
 			conDecAPI.deleteLink("i" + oldParentId, "s" + childId, function() {
 				conDecAPI.linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
 					conDecObservable.notify();
 				});
 			});
-			return true;
+			return false;
 		} else // selected element is an issue, parent element is a sentence
 		if (sourceType === "i" && newParentType === "i" && oldParentType === "s") {
+			console.log("case 2")
 			conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,
 					function() {
 						conDecAPI.createLinkToExistingElement(parentId, childId);
 					});
-			return true;
-		} else {
+			return false;
+		} else if (sourceType != "i" && oldParentType != "i") {
+			console.log("case 3")
 			conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,
 					function() {
 						conDecAPI.linkGenericElements(target.id, draggedElement.id, newParentType, sourceType,
@@ -121,9 +125,9 @@
 									conDecObservable.notify();
 								});
 					});
-			return true;
+			return false;
 		}
-		return false;
+		return true;
 	}
 
 	function allowDrop(event) {
