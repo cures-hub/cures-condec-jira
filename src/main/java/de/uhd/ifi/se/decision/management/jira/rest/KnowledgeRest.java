@@ -347,14 +347,12 @@ public class KnowledgeRest {
 			if (isDeleted) {
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 			} else {
-				Link inverseLink = new LinkImpl(link.getDestinationElement(), link.getSourceElement());
-				isDeleted = strategy.deleteLink(inverseLink, user);
+				isDeleted = strategy.deleteLink(link.flip(), user);
 				if (isDeleted) {
 					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 				} else {
 					return deleteGenericLink(projectKey, request, new LinkImpl(link.getIdOfSourceElementWithPrefix(),
 							link.getIdOfDestinationElementWithPrefix()));
-
 				}
 			}
 		} else {
