@@ -34,10 +34,7 @@
 
 		// Register/subscribe this view as an observer
 		conDecObservable.subscribe(this);
-
-		console.log(treeViewer)
 		buildTreeViewer(toggleSelectedDecisionElements());
-
 
 		return true;
 	};

@@ -341,7 +341,6 @@
 								+ "</form>");
 
 		var knowledgeTypes = conDecAPI.knowledgeTypes;
-		console.log(knowledgeTypes)
 		if (knowledgeTypes.includes("Issue") && knowledgeTypes.includes("Problem")) {
 			var index = knowledgeTypes.indexOf("Issue");
 			if (index > -1) {
@@ -350,8 +349,8 @@
 		}
 		if(!knowledgeTypes.includes("Pro") && !knowledgeTypes.includes("Con") && knowledgeTypes.includes("Argument")){
 			knowledgeTypes.splice(knowledgeTypes.indexOf("Argument"),1);
-			knowledgeTypes.push("Pro")
-			knowledgeTypes.push("Con")
+			knowledgeTypes.push("Pro");
+			knowledgeTypes.push("Con");
 		}
 		for (index = 0; index < knowledgeTypes.length; index++) {
 			var isSelected = "";
