@@ -335,11 +335,15 @@ public class ConfigRestImpl implements ConfigRest {
 			return isValidDataResponse;
 		}
 		try {
-			// Use link validation over deletion. Deletion is useful during development
-			// process
+			// Deletion is only useful during development, do not ship to enduser!!
 			// ActiveObjectsManager.clearSentenceDatabaseForProject(projectKey);
-			GenericLinkManager.clearInvalidLinks();
+			//find possible null values in AO Table, set them to default
+			ActiveObjectsManager.setDefaultValuesToExistingElements();
+			//If still something is wrong, delete an elements and its links
 			ActiveObjectsManager.cleanSentenceDatabaseForProject(projectKey);
+			//If some links ar bad, delete those links
+			GenericLinkManager.clearInvalidLinks();
+			//If there are now some "lonely" sentences, link them to their issues.
 			ActiveObjectsManager.createLinksForNonLinkedElementsForProject(projectKey);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
