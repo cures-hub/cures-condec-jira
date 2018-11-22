@@ -260,7 +260,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 	
 	isClassifierUsedToggle.addEventListener('change', function(error) {
 		this.busy = true;
-		conDecAPI.setUseClassiferForIssueComments(this.checked, this.value);
+		conDecAPI.setUseClassifierForIssueComments(this.checked, this.value);
 		this.busy = false;
 	});
 	

@@ -44,7 +44,7 @@ public interface ConfigRest {
 
 	Response setIconParsing(HttpServletRequest request, String projectKey, String isActivatedString);
 
-	Response setUseClassiferForIssueComments(HttpServletRequest request, String projectKey, String isActivatedString);
+	Response setUseClassifierForIssueComments(HttpServletRequest request, String projectKey, String isActivatedString);
 
 	Response getRequestToken(String projectKey, String baseURL, String privateKey, String consumerKey);
 
