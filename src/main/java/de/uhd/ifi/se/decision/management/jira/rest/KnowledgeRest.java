@@ -119,17 +119,18 @@ public class KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
 		}
 	}
-	
+
 	@Path("/createIssueFromSentence")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createIssueFromSentence(@Context HttpServletRequest request,
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement != null && request != null) {
-			
+
 			ApplicationUser user = AuthenticationManager.getUser(request);
-			 Issue issue = ActiveObjectsManager.createJIRAIssueFromSentenceObject(decisionKnowledgeElement.getId(), user);
-				
+			Issue issue = ActiveObjectsManager.createJIRAIssueFromSentenceObject(decisionKnowledgeElement.getId(),
+					user);
+
 			if (issue != null) {
 				return Response.status(Status.OK).entity(issue).build();
 			}
@@ -213,7 +214,7 @@ public class KnowledgeRest {
 			@Context HttpServletRequest request, DecisionKnowledgeElement newElement,
 			@QueryParam("argument") String argument) {
 		if (projectKey != null && request != null && newElement != null) {
-			DecXtractEventListener.editCommentLock=true;
+			DecXtractEventListener.editCommentLock = true;
 			Boolean result = ActiveObjectsManager.updateKnowledgeTypeOfSentence(newElement.getId(),
 					newElement.getType(), argument);
 			DecXtractEventListener.editCommentLock = false;
@@ -257,7 +258,7 @@ public class KnowledgeRest {
 			int newSentenceEnd = databaseEntity.getEndSubstringCount();
 			int newSentenceStart = databaseEntity.getStartSubstringCount();
 			String newSentenceBody = decisionKnowledgeElement.getDescription();
-			
+
 			if ((newSentenceEnd - newSentenceStart) != newSentenceBody.length()) {
 				// Get JIRA Comment instance - Casting fails in unittesting with Mock
 				CommentManager cm = ComponentAccessor.getCommentManager();
@@ -268,12 +269,13 @@ public class KnowledgeRest {
 					int indexOfOldSentence = mc.getBody().indexOf(oldSentenceInComment);
 
 					String newType = decisionKnowledgeElement.getType().toString();
-					if(newType.equals(KnowledgeType.OTHER.toString()) && argument.length() >0) {
-						newType = argument; 
+					if (newType.equals(KnowledgeType.OTHER.toString()) && argument.length() > 0) {
+						newType = argument;
 					}
 					String tag = "";
 					// Allow changing of manual tags, but no tags for icons
-					if (databaseEntity.isTaggedManually() && !CommentSplitter.isCommentIconTagged(oldSentenceInComment)) {
+					if (databaseEntity.isTaggedManually()
+							&& !CommentSplitter.isCommentIconTagged(oldSentenceInComment)) {
 						tag = "{" + WordUtils.capitalize(newType) + "}";
 					} else if (CommentSplitter.isCommentIconTagged(oldSentenceInComment)) {
 						indexOfOldSentence = indexOfOldSentence + 3; // add icon to text.
@@ -300,17 +302,18 @@ public class KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build();
 		}
 	}
-	
+
 	@Path("/getSentenceElement")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getSentenceElement(@QueryParam("id") long id) {
 
 		Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(id);
-		
+
 		if (sentence != null) {
-			//TODO: Reweork this after merging with ConDec-378
-			return Response.status(Status.OK).entity(ImmutableMap.of("id", sentence.getId(),"description",sentence.getDescription(),"type",sentence.getKnowledgeTypeString())).build();
+			// TODO: Reweork this after merging with ConDec-378
+			return Response.status(Status.OK).entity(ImmutableMap.of("id", sentence.getId(), "description",
+					sentence.getDescription(), "type", sentence.getKnowledgeTypeString())).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Unlinked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
@@ -322,17 +325,15 @@ public class KnowledgeRest {
 	@DELETE
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response deleteSentenceObject2(@QueryParam("id") long id, @Context HttpServletRequest request) {
-		if (id >0 && request != null) {
+		if (id > 0 && request != null) {
 			boolean isDeleted = ActiveObjectsManager.deleteSentenceObject(id);
 			if (isDeleted) {
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
-			} 
+			}
 		}
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of element failed."))
-					.build();
+				.build();
 	}
-
-	
 
 	@Path("/deleteLink")
 	@DELETE
@@ -346,14 +347,12 @@ public class KnowledgeRest {
 			if (isDeleted) {
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 			} else {
-				Link inverseLink = new LinkImpl(link.getDestinationElement(), link.getSourceElement());
-				isDeleted = strategy.deleteLink(inverseLink, user);
+				isDeleted = strategy.deleteLink(link.flip(), user);
 				if (isDeleted) {
 					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 				} else {
 					return deleteGenericLink(projectKey, request, new LinkImpl(link.getIdOfSourceElementWithPrefix(),
 							link.getIdOfDestinationElementWithPrefix()));
-
 				}
 			}
 		} else {
@@ -368,19 +367,19 @@ public class KnowledgeRest {
 	public Response deleteGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
+			if(link.isIssueLink()) {
+				return deleteLink(projectKey, request, link);
+			}
 			boolean isDeleted = GenericLinkManager.deleteGenericLink(link);
 			if (isDeleted) {
 				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
+			}
+			isDeleted = GenericLinkManager.deleteGenericLink(link.flip());
+			if (isDeleted) {
+				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
 			} else {
-				Link inverseLink = new LinkImpl(link.getIdOfDestinationElementWithPrefix(),
-						link.getIdOfSourceElementWithPrefix());
-				isDeleted = GenericLinkManager.deleteGenericLink(inverseLink);
-				if (isDeleted) {
-					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
-				} else {
-					return Response.status(Status.INTERNAL_SERVER_ERROR)
-							.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
-				}
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
 			}
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
@@ -394,6 +393,9 @@ public class KnowledgeRest {
 	public Response createGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
+			if(link.isIssueLink()) {
+				return createLink(projectKey, request, link);
+			}
 			ApplicationUser user = AuthenticationManager.getUser(request);
 			long linkId = GenericLinkManager.insertLink(link, user);
 			if (linkId == 0) {

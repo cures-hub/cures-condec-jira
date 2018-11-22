@@ -86,37 +86,18 @@
 		event.preventDefault();
 		var parentId = target.id;
 		var childId = dragId;
-		sentenceElementIsDropped(target, parentId, childId);
-	}
 
-	function sentenceElementIsDropped(target, parentId, childId) {
-		console.log("view.treant.js sentenceElementIsDropped");
 		var sourceType = extractTypeFromHTMLElement(draggedElement);
 		var oldParentType = extractTypeFromHTMLId(findParentId(draggedElement.id));
 		var newParentType = extractTypeFromHTMLElement(target);
-		// selected element is an issue, dropped element is an sentence
-		if (newParentType === "s" && oldParentType === "i") {
-			conDecAPI.deleteLink("i" + oldParentId, "s" + childId, function() {
+
+		conDecAPI.deleteGenericLink(oldParentId, childId,oldParentType,sourceType, function() {
 				conDecAPI.linkGenericElements(target.id, draggedElement.id, newParentType, sourceType, function() {
 					conDecObservable.notify();
 				});
 			});
-		} else // selected element is an issue, parent element is a sentence
-		if (sourceType === "i" && newParentType === "i") {
-			conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,
-					function() {
-						conDecAPI.createLinkToExistingElement(parentId, childId);
-					});
-		} else {
-			conDecAPI.deleteGenericLink(findParentId(draggedElement.id), draggedElement.id, oldParentType, sourceType,
-					function() {
-						conDecAPI.linkGenericElements(target.id, draggedElement.id, newParentType, sourceType,
-								function() {
-									conDecObservable.notify();
-								});
-					});
-		}
 	}
+
 
 	function allowDrop(event) {
 		event.preventDefault();

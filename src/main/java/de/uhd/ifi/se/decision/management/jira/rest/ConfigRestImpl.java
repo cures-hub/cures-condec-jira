@@ -401,9 +401,9 @@ public class ConfigRestImpl implements ConfigRest {
 	}
 
 	@Override
-	@Path("/setUseClassiferForIssueComments")
+	@Path("/setUseClassifierForIssueComments")
 	@POST
-	public Response setUseClassiferForIssueComments(@Context HttpServletRequest request,
+	public Response setUseClassifierForIssueComments(@Context HttpServletRequest request,
 			@QueryParam("projectKey") String projectKey,
 			@QueryParam("isClassifierUsedForIssues") String isActivatedString) {
 		System.out.println(isActivatedString);

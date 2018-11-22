@@ -12,7 +12,7 @@
  * settingsForSingleProject.vm
  */
 (function(global) {
-	
+
 	var projectKey = null;
 
 	var ConDecAPI = function ConDecAPI() {
@@ -46,8 +46,8 @@
 	 */
 	ConDecAPI.prototype.getLinkedElements = function getLinkedElements(id, callback) {
 		getJSON(
-				AJS.contextPath() + "/rest/decisions/latest/decisions/getLinkedElements.json?projectKey="
-						+ projectKey + "&id=" + id,
+				AJS.contextPath() + "/rest/decisions/latest/decisions/getLinkedElements.json?projectKey=" + projectKey
+						+ "&id=" + id,
 				function(error, linkedElements) {
 					if (error === null) {
 						callback(linkedElements);
@@ -174,8 +174,7 @@
 			"idOfSourceElement" : idOfSourceElement,
 			"idOfDestinationElement" : idOfDestinationElement
 		};
-		deleteJSON(
-				AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLink.json?projectKey=" + projectKey,
+		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLink.json?projectKey=" + projectKey,
 				jsondata, function(error, link) {
 					if (error === null) {
 						showFlag("success", "Link has been deleted.");
@@ -335,20 +334,19 @@
 		});
 	};
 
-
 	/*
 	 * external references: view.context.menu
 	 */
-	ConDecAPI.prototype.deleteSentenceObject2 = function deleteSentenceObject2(id,  callback) {
-		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteSentenceObject2.json?id="+ id 
-			,null ,function(error) {
-			if (error === null) {
-				showFlag("success", "Knowledge element has been deleted.");
-				callback();
-			} else {
-				showFlag("error", "Knowledge element could not be deleted.");
-			}
-		});
+	ConDecAPI.prototype.deleteSentenceObject2 = function deleteSentenceObject2(id, callback) {
+		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteSentenceObject2.json?id=" + id, null,
+				function(error) {
+					if (error === null) {
+						showFlag("success", "Knowledge element has been deleted.");
+						callback();
+					} else {
+						showFlag("error", "Knowledge element could not be deleted.");
+					}
+				});
 	};
 
 	/*
@@ -425,15 +423,16 @@
 			"idOfSourceElement" : sourceType + sourceId,
 			"idOfDestinationElement" : targetType + targetId
 		};
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createGenericLink.json?projectKey="
-				+ projectKey, jsondata, function(error, link) {
-			if (error === null) {
-				showFlag("success", "Link has been created.");
-				callback(link);
-			} else {
-				showFlag("error", "Link could not be created.");
-			}
-		});
+		postJSON(
+				AJS.contextPath() + "/rest/decisions/latest/decisions/createGenericLink.json?projectKey=" + projectKey,
+				jsondata, function(error, link) {
+					if (error === null) {
+						showFlag("success", "Link has been created.");
+						callback(link);
+					} else {
+						showFlag("error", "Link could not be created.");
+					}
+				});
 	};
 
 	/*
@@ -584,17 +583,17 @@
 	/*
 	 * external references: settingsForSingleProject.vm ..
 	 */
-	ConDecAPI.prototype.setUseClassiferForIssueComments = function setUseClassiferForIssueComments(
+	ConDecAPI.prototype.setUseClassifierForIssueComments = function setUseClassifierForIssueComments(
 			isClassifierUsedForIssues, projectKey) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setUseClassiferForIssueComments.json?projectKey="
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setUseClassifierForIssueComments.json?projectKey="
 				+ projectKey + "&isClassifierUsedForIssues=" + isClassifierUsedForIssues, null, function(error,
 				response) {
 			if (error === null) {
-				showFlag("success", "Usage of classification for Decision Knowledge in Issue Comments has been set to "
+				showFlag("success", "Usage of classification for Decision Knowledge in JIRA Issue Comments has been set to "
 						+ isClassifierUsedForIssues + ".");
 			} else {
 				showFlag("error",
-						"Usage of classification for Decision Knowledge in Issue Comments could not be configured.");
+						"Usage of classification for Decision Knowledge in JIRA Issue Comments could not be configured.");
 			}
 		});
 	};

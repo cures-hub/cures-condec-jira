@@ -167,4 +167,10 @@ public interface Link {
 	String getIdOfDestinationElementWithPrefix();
 
 	void setDestinationElement(String idWithPrefix);
+	
+	boolean isIssueLink();
+
+	Link flip();
+	
+	
 }
