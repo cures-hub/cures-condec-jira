@@ -22,10 +22,10 @@
 	};
 
 	/*
-	 * external references: view.context.menu, view.decision.knowledge.page,
-	 * view.issue.module ..
+	 * external references: condec.context.menu, view.condec.knowledge.page,
+	 * view.condec.issue.module ..
 	 */
-	function getDecisionKnowledgeElement(id, callback) {
+	ConDecAPI.prototype.getDecisionKnowledgeElement = function getDecisionKnowledgeElement(id, callback) {
 		getJSON(
 				AJS.contextPath() + "/rest/decisions/latest/decisions/getDecisionKnowledgeElement.json?projectKey="
 						+ projectKey + "&id=" + id,
@@ -37,12 +37,10 @@
 								"An error occured when receiving the decision knowledge element for the given id and project key.");
 					}
 				});
-	}
-
-	ConDecAPI.prototype.getDecisionKnowledgeElement = getDecisionKnowledgeElement;
+	};
 
 	/*
-	 * external references: view.issue.module ..
+	 * external references: view.condec.issue.module ..
 	 */
 	ConDecAPI.prototype.getLinkedElements = function getLinkedElements(id, callback) {
 		getJSON(
@@ -59,7 +57,7 @@
 	};
 
 	/*
-	 * external references: view.context.menu ..
+	 * external references: condec.context.menu ..
 	 */
 	ConDecAPI.prototype.getUnlinkedElements = function getUnlinkedElements(id, callback) {
 		getJSON(
@@ -76,9 +74,10 @@
 	};
 
 	/*
-	 * external references: view.issue.module, view.decision.knowledge.page ..
+	 * external references: view.condec.issue.module, view.condec.knowledge.page ..
 	 */
-	function createDecisionKnowledgeElement(summary, description, type, callback) {
+	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElement(summary, description,
+			type, callback) {
 		if (summary !== "") {
 			var jsondata = {
 				"projectKey" : projectKey,
@@ -96,14 +95,13 @@
 						}
 					});
 		}
-	}
-
-	ConDecAPI.prototype.createDecisionKnowledgeElement = createDecisionKnowledgeElement;
+	};
 
 	/*
 	 * external references: none
 	 */
-	function updateDecisionKnowledgeElement(id, summary, description, type, callback) {
+	ConDecAPI.prototype.updateDecisionKnowledgeElement = function updateDecisionKnowledgeElement(id, summary,
+			description, type, callback) {
 		var jsondata = {
 			"id" : id,
 			"summary" : summary,
@@ -120,12 +118,10 @@
 						showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
 					}
 				});
-	}
-
-	ConDecAPI.prototype.updateDecisionKnowledgeElement = updateDecisionKnowledgeElement;
+	};
 
 	/*
-	 * external references: view.context.menu ..
+	 * external references: condec.context.menu ..
 	 */
 	ConDecAPI.prototype.deleteDecisionKnowledgeElement = function deleteDecisionKnowledgeElement(id, callback) {
 		var jsondata = {
@@ -146,7 +142,8 @@
 	/*
 	 * external references: none
 	 */
-	function linkElements(idOfDestinationElement, idOfSourceElement, linkType, callback) {
+	ConDecAPI.prototype.linkElements = function linkElements(idOfDestinationElement, idOfSourceElement, linkType,
+			callback) {
 		var jsondata = {
 			"type" : linkType,
 			"idOfSourceElement" : idOfSourceElement,
@@ -161,15 +158,13 @@
 						showFlag("error", "Link could not be created.");
 					}
 				});
-	}
-
-	ConDecAPI.prototype.linkElements = linkElements;
+	};
 
 	/*
-	 * external references: view.context.menu, view.decision.knowledge.page,
-	 * view.issue.module, view.treant, view.tree.viewer ..
+	 * external references: condec.context.menu, view.condec.knowledge.page,
+	 * view.condec.issue.module, condec.treant, condec.tree.viewer ..
 	 */
-	function deleteLink(idOfDestinationElement, idOfSourceElement, callback) {
+	ConDecAPI.prototype.deleteLink = function deleteLink(idOfDestinationElement, idOfSourceElement, callback) {
 		var jsondata = {
 			"idOfSourceElement" : idOfSourceElement,
 			"idOfDestinationElement" : idOfDestinationElement
@@ -183,18 +178,19 @@
 						showFlag("error", "Link could not be deleted.");
 					}
 				});
-	}
+	};
 
-	ConDecAPI.prototype.deleteLink = deleteLink;
-
+	/*
+	 * external references: condec.dialog
+	 */
 	ConDecAPI.prototype.createLinkToExistingElement = function createLinkToExistingElement(idOfExistingElement,
 			idOfNewElement, knowledgeTypeOfChild) {
-		switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, function(linkType,
+		switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, (function(linkType,
 				idOfExistingElement, idOfNewElement) {
-			linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
+			this.linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
 				conDecObservable.notify();
 			});
-		});
+		}).bind(this));
 	};
 
 	function switchLinkTypes(type, idOfExistingElement, idOfNewElement, linkTypeFunction) {
@@ -211,25 +207,28 @@
 		}
 	}
 
+	/*
+	 * external references: condec.dialog
+	 */
 	ConDecAPI.prototype.updateDecisionKnowledgeElementAsChild = function updateDecisionKnowledgeElementAsChild(childId,
 			summary, description, type) {
 		var simpleType = getSimpleType(type);
-		getDecisionKnowledgeElement(childId, function(decisionKnowledgeElement) {
-			updateDecisionKnowledgeElement(childId, summary, description, simpleType, function() {
+		this.getDecisionKnowledgeElement(childId, (function(decisionKnowledgeElement) {
+			this.updateDecisionKnowledgeElement(childId, summary, description, simpleType, (function() {
 				if (decisionKnowledgeElement.type !== type) {
 					var parentId = conDecTreant.findParentId(childId);
-					switchLinkTypes(type, parentId, childId, function(linkType, parentId, childId) {
-						deleteLink(parentId, childId, function() {
-							linkElements(parentId, childId, linkType, function() {
+					switchLinkTypes(type, parentId, childId, (function(linkType, parentId, childId) {
+						this.deleteLink(parentId, childId, (function() {
+							this.linkElements(parentId, childId, linkType, function() {
 								conDecObservable.notify();
 							});
-						});
-					});
+						}).bind(this));
+					}).bind(this));
 				} else {
 					conDecObservable.notify();
 				}
-			});
-		});
+			}).bind(this));
+		}).bind(this));
 	};
 
 	function getSimpleType(type) {
@@ -240,18 +239,21 @@
 		return simpleType;
 	}
 
+	/*
+	 * external references: condec.dialog
+	 */
 	ConDecAPI.prototype.createDecisionKnowledgeElementAsChild = function createDecisionKnowledgeElementAsChild(summary,
 			description, type, idOfExistingElement) {
 		console.log("conDecAPI createDecisionKnowledgeElementAsChild");
 		var simpleType = getSimpleType(type);
-		createDecisionKnowledgeElement(summary, description, simpleType, function(idOfNewElement) {
-			switchLinkTypes(type, idOfExistingElement, idOfNewElement, function(linkType, idOfExistingElement,
+		this.createDecisionKnowledgeElement(summary, description, simpleType, (function(idOfNewElement) {
+			switchLinkTypes(type, idOfExistingElement, idOfNewElement, (function(linkType, idOfExistingElement,
 					idOfNewElement) {
-				linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
+				this.linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
 					conDecObservable.notify();
 				});
-			});
-		});
+			}).bind(this));
+		}).bind(this));
 	};
 
 	/*
@@ -276,7 +278,7 @@
 	};
 
 	/*
-	 * external references: view.context.menu
+	 * external references: condec.context.menu
 	 */
 	ConDecAPI.prototype.setSentenceIrrelevant = function setSentenceIrrelevant(id, callback) {
 		var jsondata = {
@@ -298,7 +300,7 @@
 	};
 
 	/*
-	 * external references: view.context.menu
+	 * external references: condec.context.menu
 	 */
 	ConDecAPI.prototype.getSentenceElement = function getSentenceElement(id, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getSentenceElement.json?id=" + id, function(
@@ -312,7 +314,7 @@
 	};
 
 	/*
-	 * external references: view.context.menu
+	 * external references: condec.context.menu
 	 */
 	ConDecAPI.prototype.changeKnowledgeTypeOfSentence = function changeKnowledgeTypeOfSentence(id, type, callback) {
 		var jsondata = {
@@ -335,7 +337,7 @@
 	};
 
 	/*
-	 * external references: view.context.menu
+	 * external references: condec.context.menu
 	 */
 	ConDecAPI.prototype.deleteSentenceObject2 = function deleteSentenceObject2(id, callback) {
 		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteSentenceObject2.json?id=" + id, null,
@@ -350,7 +352,7 @@
 	};
 
 	/*
-	 * external references: view.context.menu ..
+	 * external references: condec.context.menu ..
 	 */
 	ConDecAPI.prototype.editSentenceBody = function editSentenceBody(id, body, type, callback) {
 		var jsondata = {
@@ -372,7 +374,7 @@
 	};
 
 	/*
-	 * external references: view.context.menu ..
+	 * external references: condec.context.menu ..
 	 */
 	ConDecAPI.prototype.createIssueFromSentence = function createIssueFromSentence(id, callback) {
 		var jsondata = {
@@ -394,7 +396,8 @@
 	};
 
 	/*
-	 * external references: view.context.menu, view.treant, view.tree.viewer ..
+	 * external references: condec.context.menu, condec.treant,
+	 * condec.tree.viewer ..
 	 */
 	ConDecAPI.prototype.deleteGenericLink = function deleteGenericLink(targetId, sourceId, targetType, sourceType,
 			callback, showError) {
@@ -414,7 +417,7 @@
 	};
 
 	/*
-	 * external references: view.treant, view.tree.viewer ..
+	 * external references: condec.treant, condec.tree.viewer ..
 	 */
 	ConDecAPI.prototype.linkGenericElements = function linkGenericElements(targetId, sourceId, targetType, sourceType,
 			callback) {
@@ -436,7 +439,7 @@
 	};
 
 	/*
-	 * external references: view.tab.panel, view.tree.viewer ..
+	 * external references: view.tab.panel, condec.tree.viewer ..
 	 */
 	ConDecAPI.prototype.getTreeViewer = function getTreeViewer(rootElementType, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer.json?projectKey=" + projectKey
@@ -450,7 +453,7 @@
 	};
 
 	/*
-	 * external references: view.treant ..
+	 * external references: condec.treant ..
 	 */
 	ConDecAPI.prototype.getTreant = function getTreant(elementKey, depthOfTree, searchTerm, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreant.json?&elementKey=" + elementKey
@@ -470,7 +473,7 @@
 			callback) {
 		var issueId = AJS.$("meta[name='ajs-issue-key']").attr("content");
 		if (issueId === undefined) {
-			issueId = getIssueKey();
+			issueId = this.getIssueKey();
 		}
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getTreeViewer2.json?issueKey=" + issueId
 				+ "&showRelevant=" + showRelevant.toString(), function(error, core) {
@@ -514,7 +517,7 @@
 
 	/*
 	 * external references: settingsForSingleProject.vm,
-	 * settingsForAllProjects.vm, view.context.menu ..
+	 * settingsForAllProjects.vm, condec.context.menu ..
 	 */
 	ConDecAPI.prototype.isIssueStrategy = function isIssueStrategy(projectKey, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isIssueStrategy.json?projectKey=" + projectKey,
@@ -547,7 +550,7 @@
 	};
 
 	/*
-	 * external references: view.treant ..
+	 * external references: condec.treant ..
 	 */
 	ConDecAPI.prototype.isKnowledgeExtractedFromGit = function isKnowledgeExtractedFromGit(projectKey, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isKnowledgeExtractedFromGit.json?projectKey="
@@ -585,17 +588,20 @@
 	 */
 	ConDecAPI.prototype.setUseClassifierForIssueComments = function setUseClassifierForIssueComments(
 			isClassifierUsedForIssues, projectKey) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setUseClassifierForIssueComments.json?projectKey="
-				+ projectKey + "&isClassifierUsedForIssues=" + isClassifierUsedForIssues, null, function(error,
-				response) {
-			if (error === null) {
-				showFlag("success", "Usage of classification for Decision Knowledge in JIRA Issue Comments has been set to "
-						+ isClassifierUsedForIssues + ".");
-			} else {
-				showFlag("error",
-						"Usage of classification for Decision Knowledge in JIRA Issue Comments could not be configured.");
-			}
-		});
+		postJSON(
+				AJS.contextPath() + "/rest/decisions/latest/config/setUseClassifierForIssueComments.json?projectKey="
+						+ projectKey + "&isClassifierUsedForIssues=" + isClassifierUsedForIssues,
+				null,
+				function(error, response) {
+					if (error === null) {
+						showFlag("success",
+								"Usage of classification for Decision Knowledge in JIRA Issue Comments has been set to "
+										+ isClassifierUsedForIssues + ".");
+					} else {
+						showFlag("error",
+								"Usage of classification for Decision Knowledge in JIRA Issue Comments could not be configured.");
+					}
+				});
 	};
 
 	/*
@@ -649,10 +655,9 @@
 	};
 
 	/*
-	 * external references: context.menu, Knowledge types are a subset of
-	 * "Alternative", "Argument", "Assessment", "Assumption", "Claim",
-	 * "Constraint", "Context", "Decision", "Goal", "Implication", "Issue",
-	 * "Problem", and "Solution".
+	 * Knowledge types are a subset of "Alternative", "Argument", "Assessment",
+	 * "Assumption", "Claim", "Constraint", "Context", "Decision", "Goal",
+	 * "Implication", "Issue", "Problem", and "Solution".
 	 */
 	function getKnowledgeTypes(projectKey) {
 		var knowledgeTypes = getResponseAsReturnValue(AJS.contextPath()
@@ -665,8 +670,8 @@
 	}
 
 	/*
-	 * external references: context.menu, Replaces argument with pro-argument
-	 * and con-argument in knowledge types array.
+	 * Replaces argument with pro-argument and con-argument in knowledge types
+	 * array.
 	 */
 	function getExtendedKnowledgeTypes(knowledgeTypes) {
 		var extendedKnowledgeTypes = knowledgeTypes.filter(function(value) {
@@ -676,7 +681,6 @@
 		extendedKnowledgeTypes.push("Con-argument");
 		return extendedKnowledgeTypes;
 	}
-	;
 
 	/*
 	 * external references: none, not even used locally! //TODO: delete
@@ -694,7 +698,7 @@
 	};
 
 	/*
-	 * external references: view.treant ..
+	 * external references: condec.treant ..
 	 */
 	ConDecAPI.prototype.getCommits = function getCommits(elementKey, callback) {
 		getJSON(AJS.contextPath() + "/rest/gitplugin/latest/issues/" + elementKey + "/commits", function(error,
@@ -836,7 +840,7 @@
 	};
 
 	/*
-	 * external references: view.issue.module ..
+	 * external references: view.condec.issue.module ..
 	 */
 	ConDecAPI.prototype.getElementsByQuery = function getElementsByQuery(query, callback) {
 		var projectKey = projectKey || "";
@@ -851,7 +855,7 @@
 	};
 
 	/*
-	 * external references: view.issue.module ..
+	 * external references: view.condec.issue.module ..
 	 */
 	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, elementKey, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsLinkedToElement.json?elementKey="
@@ -864,9 +868,6 @@
 		});
 	};
 
-	/*
-	 * external references: none, only within this closure.
-	 */
 	function getJSON(url, callback) {
 		var xhr = new XMLHttpRequest();
 		xhr.open("GET", url, true);
@@ -883,9 +884,6 @@
 		xhr.send();
 	}
 
-	/*
-	 * external references: none, only within this closure.
-	 */
 	function getResponseAsReturnValue(url) {
 		var xhr = new XMLHttpRequest();
 		xhr.open("GET", url, false);
@@ -894,9 +892,6 @@
 		return JSON.parse(xhr.response);
 	}
 
-	/*
-	 * external references: none, only within this closure.
-	 */
 	function postWithResponseAsReturnValue(url) {
 		var xhr = new XMLHttpRequest();
 		xhr.open("POST", url, false);
@@ -905,9 +900,6 @@
 		return JSON.parse(xhr.response);
 	}
 
-	/*
-	 * external references: none, only within this closure.
-	 */
 	function postJSON(url, data, callback) {
 		var xhr = new XMLHttpRequest();
 		xhr.open("POST", url, true);
@@ -925,9 +917,6 @@
 		xhr.send(JSON.stringify(data));
 	}
 
-	/*
-	 * external references: none, only within this closure.
-	 */
 	function putJSON(url, data, callback) {
 		var xhr = new XMLHttpRequest();
 		xhr.open("PUT", url, true);
@@ -945,9 +934,6 @@
 		xhr.send(JSON.stringify(data));
 	}
 
-	/*
-	 * external references: none, only within this closure.
-	 */
 	function deleteJSON(url, data, callback) {
 		var xhr = new XMLHttpRequest();
 		xhr.open("DELETE", url, true);
@@ -965,16 +951,17 @@
 		xhr.send(JSON.stringify(data));
 	}
 
-	function getIssueKey() {
+	/*
+	 * external references: view.condec.issue.module
+	 */
+	ConDecAPI.prototype.getIssueKey = function getIssueKey() {
 		console.log("conDecAPI getIssueKey");
 		var issueKey = JIRA.Issue.getIssueKey();
 		if (issueKey === null) {
 			issueKey = AJS.Meta.get("issue-key");
 		}
 		return issueKey;
-	}
-
-	ConDecAPI.prototype.getIssueKey = getIssueKey;
+	};
 
 	function getProjectKey() {
 		var projectKey;
@@ -985,7 +972,7 @@
 		}
 		if (projectKey === undefined) {
 			try {
-				var issueKey = getIssueKey();
+				var issueKey = this.getIssueKey();
 				projectKey = issueKey.split("-")[0];
 			} catch (error) {
 				console.log(error);
@@ -995,7 +982,7 @@
 	}
 
 	/*
-	 * external references: view.context.menu.js
+	 * external references: condec.context.menu
 	 */
 	ConDecAPI.prototype.getProjectId = function getProjectId() {
 		var projectId;
@@ -1007,9 +994,6 @@
 		return projectId;
 	};
 
-	/*
-	 * external references: none, only within this closure.
-	 */
 	function showFlag(type, message) {
 		AJS.flag({
 			type : type,
