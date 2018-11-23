@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.model.impl;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.MutableIssue;
@@ -306,15 +307,19 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	private void retrieveBodyFromJiraComment() {
-		if (this.commentId != 0 && this.commentId > 0) {
-			String text = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getBody();
-			if (this.endSubstringCount < text.length()) {
-				text = text.substring(this.startSubstringCount, this.endSubstringCount);
-			} else if (this.endSubstringCount == text.length()) {
-				text = text.substring(this.startSubstringCount);
+		try {
+			if (this.commentId != 0 && this.commentId > 0) {
+				String text = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getBody();
+				if (this.endSubstringCount < text.length()) {
+					text = text.substring(this.startSubstringCount, this.endSubstringCount);
+				} else if (this.endSubstringCount == text.length()) {
+					text = text.substring(this.startSubstringCount);
+				}
+				this.setBody(text);
+				this.created = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getCreated();
 			}
-			this.setBody(text);
-			this.created = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getCreated();
+		}catch(StringIndexOutOfBoundsException e) {
+			this.setBody("");
 		}
 	}
 

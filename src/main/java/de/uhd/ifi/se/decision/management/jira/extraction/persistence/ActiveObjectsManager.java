@@ -711,17 +711,8 @@ public class ActiveObjectsManager {
 				length, aoId);
 
 		// delete ao sentence entry
-		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("ID = ?", aoId))) {
-			deleteAOElement(databaseEntry);
-		}
-
-		for (LinkInDatabase link : ActiveObjects.find(LinkInDatabase.class,
-				Query.select().where("ID_OF_DESTINATION_ELEMENT = ?", "s" + aoId))) {
-			if (link.getIdOfSourceElement() != "i" + issue.getId()) {
-				GenericLinkManager.deleteGenericLink(new LinkImpl(link));
-			}
-		}
+		deleteSentenceObject(aoId);
+		
 		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(element.getIssueId());
 
 		return issue;
@@ -749,7 +740,13 @@ public class ActiveObjectsManager {
 			return false;
 		}
 	}
-
+	
+	/**
+	 * Propper way to delete sentences from ao.
+	 * Also deletes their links
+	 * @param id
+	 * @return
+	 */
 	public static boolean deleteSentenceObject(long id) {
 		init();
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
@@ -776,7 +773,7 @@ public class ActiveObjectsManager {
 				Query.select().where("ISSUE_ID = ? AND COMMENT_ID = ?", issueId, jiraCommentId));
 		for (DecisionKnowledgeInCommentEntity entity : commentSentences) {
 			if (entity.getEndSubstringCount() <= endIndex && entity.getStartSubstringCount() >= startIndex) {
-				deleteAOElement(entity);
+				deleteSentenceObject(entity.getId());
 			}
 		}
 	}
