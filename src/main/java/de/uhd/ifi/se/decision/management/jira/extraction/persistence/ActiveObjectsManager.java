@@ -42,7 +42,6 @@ public class ActiveObjectsManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectsManager.class);
 
-
 	public static void init() {
 		if (ActiveObjects == null) {
 			ActiveObjects = ComponentGetter.getActiveObjects();
@@ -80,7 +79,8 @@ public class ActiveObjectsManager {
 						todo.setProjectKey(projectKey);
 						todo.setIssueId(issueId);
 						todo.save();
-						LOGGER.debug("\naddNewSentenceintoAo:\nInsert Sentence " +todo.getId() +" into AO from comment "+todo.getCommentId());
+						LOGGER.debug("\naddNewSentenceintoAo:\nInsert Sentence " + todo.getId()
+								+ " into AO from comment " + todo.getCommentId());
 						return todo;
 					}
 				});
@@ -350,17 +350,23 @@ public class ActiveObjectsManager {
 							DecisionKnowledgeInCommentEntity.class,
 							Query.select().where("COMMENT_ID = ?", comment.getJiraCommentId()))) {
 						if (databaseEntry.getProjectKey().equals(comment.getProjectKey())) {
-							LOGGER.debug("\ncheckIfCommentBodyHasChangedOutsideOfPlugin:\nDelete "+ databaseEntry.getId() +" from comment "+comment.getJiraCommentId()+"\n");
+							LOGGER.debug("\ncheckIfCommentBodyHasChangedOutsideOfPlugin:\nDelete "
+									+ databaseEntry.getId() + " from comment " + comment.getJiraCommentId() + "\n");
 							deleteAOElement(databaseEntry);
 						}
-						List<Link> elementsLinks = GenericLinkManager.getLinksForElement(DocumentationLocation.getIdentifier(DocumentationLocation.JIRAISSUECOMMENT)+databaseEntry.getId());
-						for(Link link: elementsLinks) {
-							LinkInDatabase linkInDatabase = ActiveObjects.find(LinkInDatabase.class,Query.select().where("ID = ?", link.getId()))[0];
-							LOGGER.debug("\ncheckIfCommentBodyHasChangedOutsideOfPlugin:\nDelete link from "+link.getIdOfDestinationElementWithPrefix()+" to "+link.getIdOfDestinationElementWithPrefix()+"\n");
+						List<Link> elementsLinks = GenericLinkManager.getLinksForElement(
+								DocumentationLocation.getIdentifier(DocumentationLocation.JIRAISSUECOMMENT)
+										+ databaseEntry.getId());
+						for (Link link : elementsLinks) {
+							LinkInDatabase linkInDatabase = ActiveObjects.find(LinkInDatabase.class,
+									Query.select().where("ID = ?", link.getId()))[0];
+							LOGGER.debug("\ncheckIfCommentBodyHasChangedOutsideOfPlugin:\nDelete link from "
+									+ link.getIdOfDestinationElementWithPrefix() + " to "
+									+ link.getIdOfDestinationElementWithPrefix() + "\n");
 							try {
 								linkInDatabase.getEntityManager().delete(linkInDatabase);
 							} catch (SQLException e) {
-								LOGGER.debug("Could not delete link: "+linkInDatabase.getId());
+								LOGGER.debug("Could not delete link: " + linkInDatabase.getId());
 							}
 						}
 					}
@@ -507,7 +513,34 @@ public class ActiveObjectsManager {
 					}
 					if (deleteFlag) {
 						deleteAOElement(databaseEntry);
+						GenericLinkManager.deleteLinksForElement("s" + databaseEntry.getId());
 					}
+				}
+				return null;
+			}
+		});
+	}
+
+	public static void setDefaultValuesToExistingElements() {
+		init();
+		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+			@Override
+			public DecisionKnowledgeInCommentEntity doInTransaction() {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects
+						.find(DecisionKnowledgeInCommentEntity.class)) {
+					if (databaseEntry.isRelevant() == null) {
+						databaseEntry.setRelevant(false);
+					}
+					if (databaseEntry.isTagged() == null) {
+						databaseEntry.setTagged(false);
+					}
+					if (databaseEntry.isTaggedFineGrained() == null) {
+						databaseEntry.setTaggedFineGrained(false);
+					}
+					if (databaseEntry.getArgument() == null) {
+						databaseEntry.setArgument("");
+					}
+					databaseEntry.save();
 				}
 				return null;
 			}
