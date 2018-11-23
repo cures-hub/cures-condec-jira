@@ -56,12 +56,14 @@ public class ActiveObjectsManager {
 	public static long addNewSentenceintoAo(long commentId, int endSubStringCount, int startSubstringCount, long userId,
 			long issueId, String projectKey) {
 		init();
-		if (checkElementExistingInAO(commentId, endSubStringCount, startSubstringCount, userId, projectKey)) {
-			DecisionKnowledgeInCommentEntity existingElement = getElementFromAO(commentId, endSubStringCount,
-					startSubstringCount, userId, projectKey);
+
+		DecisionKnowledgeInCommentEntity existingElement = getElementFromAO(commentId, endSubStringCount,
+				startSubstringCount, userId, projectKey);
+		if (existingElement != null) {
 			checkIfSentenceHasAValidLink(existingElement.getId(), issueId);
 			return existingElement.getId();
 		}
+
 		DecisionKnowledgeInCommentEntity newElement = ActiveObjects
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 					@Override
@@ -91,7 +93,7 @@ public class ActiveObjectsManager {
 
 	private static void checkIfSentenceHasAValidLink(long sentenceId, long issueId) {
 		if (!isSentenceLinked(sentenceId)) {
-			Link link = new LinkImpl("i"+issueId,"s"+sentenceId);
+			Link link = new LinkImpl("i" + issueId, "s" + sentenceId);
 			GenericLinkManager.insertLink(link, null);
 		}
 	}
@@ -114,11 +116,11 @@ public class ActiveObjectsManager {
 			DecisionKnowledgeElement lastElement = compareForLaterElement(
 					searchForLast(sentence, KnowledgeType.ALTERNATIVE),
 					searchForLast(sentence, KnowledgeType.DECISION));
-			smartLinkCreated = checkLastElementAndCreateLink(lastElement,sentence);
+			smartLinkCreated = checkLastElementAndCreateLink(lastElement, sentence);
 		} else if (sentence.getType().equals(KnowledgeType.DECISION)
 				|| sentence.getType().equals(KnowledgeType.ALTERNATIVE)) {
 			DecisionKnowledgeElement lastElement = searchForLast(sentence, KnowledgeType.ISSUE);
-			smartLinkCreated = checkLastElementAndCreateLink(lastElement,sentence);
+			smartLinkCreated = checkLastElementAndCreateLink(lastElement, sentence);
 		}
 		if (!smartLinkCreated) {
 			checkIfSentenceHasAValidLink(sentence.getId(), sentence.getIssueId());
@@ -156,14 +158,6 @@ public class ActiveObjectsManager {
 			}
 		}
 		return null;
-	}
-
-	public static boolean checkElementExistingInAO(long commentId, int endSubtringCount, int startSubstringCount,
-			long userId, String projectKey) {
-		init();
-		DecisionKnowledgeInCommentEntity databaseEntry = getElementFromAO(commentId, endSubtringCount,
-				startSubstringCount, userId, projectKey);
-		return databaseEntry != null;
 	}
 
 	public static void updateSentenceElement(Sentence sentence) {
@@ -757,12 +751,34 @@ public class ActiveObjectsManager {
 	}
 
 	public static boolean deleteSentenceObject(long id) {
+		init();
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("ID = ?", id))) {
 			GenericLinkManager.deleteLinksForElement("s" + id);
 			return deleteAOElement(databaseEntry);
 		}
 		return false;
+	}
+
+	/**
+	 * This method checks the following case. Two nearby sentences in the same
+	 * comment are set to irrelevant by the user. The system sow sees them as one
+	 * sentences and tries to add a "third" instance to the AO db. This method
+	 * deletes the small sentences.
+	 * 
+	 * @param startIndex
+	 * @param endIndex
+	 * @return always true
+	 */
+	public static void checkIfSentenceOverlaps(Long issueId, long jiraCommentId, int startIndex, int endIndex) {
+		init();
+		DecisionKnowledgeInCommentEntity[] commentSentences = ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("ISSUE_ID = ? AND COMMENT_ID = ?", issueId, jiraCommentId));
+		for (DecisionKnowledgeInCommentEntity entity : commentSentences) {
+			if (entity.getEndSubstringCount() <= endIndex && entity.getStartSubstringCount() >= startIndex) {
+				deleteAOElement(entity);
+			}
+		}
 	}
 
 }

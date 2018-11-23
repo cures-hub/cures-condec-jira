@@ -58,11 +58,12 @@ public class CommentImpl implements Comment {
 	private void splitCommentIntoSentences(boolean insertSentencesIntoAO) {
 		List<String> rawSentences = this.splitter.sliceCommentRecursionCommander(this.body, this.projectKey);
 		runBreakIterator(rawSentences);
-		// Create AO entries 
+		// Create AO entries
 		for (int i = 0; i < this.splitter.getStartSubstringCount().size(); i++) {
 			int startIndex = this.splitter.getStartSubstringCount().get(i);
 			int endIndex = this.splitter.getEndSubstringCount().get(i);
-			if(insertSentencesIntoAO && startIndex >= 0 && endIndex >= 0 &&(endIndex - startIndex) >0 && this.body.substring(startIndex, endIndex).replaceAll("\r\n", "").trim().length() > 1) {
+			ActiveObjectsManager.checkIfSentenceOverlaps(this.issueId, this.jiraCommentId, startIndex, endIndex);
+			if (insertSentencesIntoAO && startAndEndIndexRules(startIndex, endIndex)) {
 				long aoId2 = ActiveObjectsManager.addNewSentenceintoAo(this.jiraCommentId, endIndex, startIndex,
 						this.authorId, this.issueId, this.projectKey);
 				Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(aoId2);
@@ -72,7 +73,19 @@ public class CommentImpl implements Comment {
 			}
 		}
 	}
-	
+
+	/**
+	 * Checks: Start Index >=0, End Index >= 0, End Index - Start Index > 0, Body not
+	 * only whitespaces
+	 * @param startIndex
+	 * @param endIndex
+	 * @return
+	 */
+	private boolean startAndEndIndexRules(int startIndex, int endIndex) {
+		return (startIndex >= 0 && endIndex >= 0 && (endIndex - startIndex) > 0
+				&& this.body.substring(startIndex, endIndex).replaceAll("\r\n", "").trim().length() > 1);
+	}
+
 	private void runBreakIterator(List<String> rawSentences) {
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
 
@@ -82,7 +95,8 @@ public class CommentImpl implements Comment {
 				int start = iterator.first();
 				for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
 					if (end - start > 1 && currentSentence.substring(start, end).trim().length() > 0) {
-						int startOfSentence = this.body.toLowerCase().indexOf(currentSentence.toLowerCase().substring(start, end));
+						int startOfSentence = this.body.toLowerCase()
+								.indexOf(currentSentence.toLowerCase().substring(start, end));
 						int endOfSentence = currentSentence.substring(start, end).length() + startOfSentence;
 						this.splitter.addSentenceIndex(startOfSentence, endOfSentence);
 					}
@@ -102,10 +116,10 @@ public class CommentImpl implements Comment {
 	public void setSentences(ArrayList<Sentence> sentences) {
 		this.sentences = sentences;
 	}
-	
+
 	public void reloadSentencesFromAo() {
 		List<Sentence> newSentences = new ArrayList<>();
-		for(Sentence sentence: this.sentences) {
+		for (Sentence sentence : this.sentences) {
 			Sentence aoSentence = (Sentence) ActiveObjectsManager.getElementFromAO(sentence.getId());
 			newSentences.add(aoSentence);
 		}
