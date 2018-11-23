@@ -7,19 +7,19 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:clas
 	<tbody>
 		<tr>
 			<td><input type="checkbox" id="Issue" name="feature"
-				value="scales" onchange='conDecIssueTab.updateView();' checked /> <label
+				value="scales" onchange='conDecIssueTab.updateView()' checked /> <label
 				for="Issue">Issue</label></td>
 			<td><input type="checkbox" id="Decision" name="feature"
-				value="scales" onchange='conDecIssueTab.updateView();' checked /> <label
+				value="scales" onchange='conDecIssueTab.updateView()' checked /> <label
 				for="Decision">Decision</label></td>
 			<td><input type="checkbox" id="Alternative" name="feature"
-				value="scales" onchange='conDecIssueTab.updateView();' checked /> <label
+				value="scales" onchange='conDecIssueTab.updateView()' checked /> <label
 				for="Alternative">Alternative</label></td>
 			<td><input type="checkbox" id="Argument" name="feature"
-				value="scales" onchange='conDecIssueTab.updateView();' checked /> <label
+				value="scales" onchange='conDecIssueTab.updateView()' checked /> <label
 				for="Argument">Argument</label></td>
 			<td><input type="checkbox" id="Relevant" name="feature"
-				value="scales" onchange='conDecIssueTab.updateView();' checked /> <label
+				value="scales" onchange='conDecIssueTab.updateView()' checked /> <label
 				for="Relevant">Relevant</label></td>
 		</tr>
 	</tbody>
@@ -32,7 +32,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:clas
 	instantiate the ConDecIssueTab object controlling this view
 	*/
 	$(document).ready(function(){
-	    if (! window.conDecIssueTab.init(conDecAPI,conDecTreeViewer,conDecContextMenu) ) {
+	    if (! window.conDecIssueTab.init(conDecAPI, conDecObservable, conDecTreeViewer, conDecContextMenu) ) {
 	        console.error("ConDecIssueTab could not get its dependencies.");
 	    }
 	});

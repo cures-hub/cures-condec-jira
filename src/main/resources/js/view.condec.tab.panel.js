@@ -5,6 +5,7 @@
 
  Requires
  * condec.api.js
+ * condec.observable.js
  
  Is required by
  * tabPanel.vm 
@@ -16,18 +17,19 @@
 	/* private vars */
 	var contextMenu = null;
 	var conDecAPI = null;
+	var conDecObservable = null;
 	var treeViewer = null;
 	var i18n = null;
 
 	var ConDecIssueTab = function ConDecIssueTab() {
 	};
 
-	// TODO Insert TreeViewer directly into Tab panel without dialog
-	ConDecIssueTab.prototype.init = function init(_conDecAPI, _treeViewer, _contextMenu, _i18n) {
+	ConDecIssueTab.prototype.init = function init(_conDecAPI, _conDecObservable, _treeViewer, _contextMenu, _i18n) {
 		console.log("view.tab.panel.js init");
 
 		// TODO add simple type checks
 		conDecAPI = _conDecAPI;
+		conDecObservable = _conDecObservable;
 		treeViewer = _treeViewer;
 		contextMenu = _contextMenu;
 		i18n = _i18n;
@@ -43,10 +45,10 @@
 	function toggleSelectedDecisionElements() {
 		console.log("view.tab.panel.js toggleSelectedDecisionElements");
 
-		var decisionElements = [ "Issue", "Decision", "Alternative", "Argument","Relevant" ];
+		var decisionElements = [ "Issue", "Decision", "Alternative", "Argument", "Relevant" ];
 		var checked = [];
-		
-		for (var i = 0; i < decisionElements.length ; i++) {
+
+		for (var i = 0; i < decisionElements.length; i++) {
 			var check = document.getElementById(decisionElements[i]).checked;
 			checked.push(check);
 		}
@@ -94,15 +96,12 @@
 		}
 	}
 
-	
 	function updateView() {
 		console.log("view.tabPanel updateView");
 		treeViewer.resetTreeViewer();
 		var checked = toggleSelectedDecisionElements();
 		buildTreeViewer(checked);
 	}
-
-
 
 	// Expose methods:
 	ConDecIssueTab.prototype.updateView = updateView;
