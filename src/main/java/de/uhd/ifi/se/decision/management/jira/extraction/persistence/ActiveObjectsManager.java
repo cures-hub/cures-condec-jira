@@ -213,7 +213,7 @@ public class ActiveObjectsManager {
 			return new SentenceImpl(databaseEntry);
 
 		}
-		return new SentenceImpl();
+		return null;
 	}
 
 	public static void setSentenceKnowledgeType(Sentence sentence) {
@@ -391,6 +391,7 @@ public class ActiveObjectsManager {
 					for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
 							DecisionKnowledgeInCommentEntity.class,
 							Query.select().where("COMMENT_ID = ?", comment.getJiraCommentId()))) {
+
 						if (databaseEntry.getProjectKey().equals(comment.getProjectKey())) {
 							LOGGER.debug("\ncheckIfCommentBodyHasChangedOutsideOfPlugin:\nDelete "
 									+ databaseEntry.getId() + " from comment " + comment.getJiraCommentId() + "\n");
@@ -410,6 +411,11 @@ public class ActiveObjectsManager {
 							} catch (SQLException e) {
 								LOGGER.debug("Could not delete link: " + linkInDatabase.getId());
 							}
+						}
+						if (databaseEntry.getProjectKey().equals(comment.getProjectKey())) {
+							LOGGER.debug("\ncheckIfCommentBodyHasChangedOutsideOfPlugin:\nDelete "
+									+ databaseEntry.getId() + " from comment " + comment.getJiraCommentId() + "\n");
+							deleteAOElement(databaseEntry);
 						}
 					}
 				}
@@ -540,9 +546,6 @@ public class ActiveObjectsManager {
 
 	public static void cleanSentenceDatabaseForProject(String projectKey) {
 		init();
-		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-			@Override
-			public DecisionKnowledgeInCommentEntity doInTransaction() {
 				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
 						DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
 					Sentence sentence = null;
@@ -550,17 +553,19 @@ public class ActiveObjectsManager {
 					try {
 						sentence = new SentenceImpl(databaseEntry);
 						ComponentAccessor.getCommentManager().getCommentById(sentence.getCommentId());
+						if(sentence.getEndSubstringCount() == 0 && sentence.getStartSubstringCount() == 0) {
+							deleteFlag = true;
+						}
 					} catch (Exception e) {
 						deleteFlag = true;
 					}
 					if (deleteFlag) {
 						deleteAOElement(databaseEntry);
 						GenericLinkManager.deleteLinksForElementWithoutTransaction("s" + databaseEntry.getId());
+//						GenericLinkManager.deleteLinksForElement("s" + databaseEntry.getId());
 					}
 				}
-				return null;
-			}
-		});
+	
 	}
 
 	public static void setDefaultValuesToExistingElements() {
@@ -712,7 +717,7 @@ public class ActiveObjectsManager {
 
 		// delete ao sentence entry
 		deleteSentenceObject(aoId);
-		
+
 		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(element.getIssueId());
 
 		return issue;
