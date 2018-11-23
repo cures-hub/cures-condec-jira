@@ -28,7 +28,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.IssueStrategy;
 import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
@@ -171,7 +170,7 @@ public class ActiveObjectsManager {
 			return new SentenceImpl(databaseEntry);
 
 		}
-		return new SentenceImpl();
+		return null;
 	}
 
 	public static void setSentenceKnowledgeType(Sentence sentence) {
@@ -349,11 +348,7 @@ public class ActiveObjectsManager {
 					for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
 							DecisionKnowledgeInCommentEntity.class,
 							Query.select().where("COMMENT_ID = ?", comment.getJiraCommentId()))) {
-						if (databaseEntry.getProjectKey().equals(comment.getProjectKey())) {
-							LOGGER.debug("\ncheckIfCommentBodyHasChangedOutsideOfPlugin:\nDelete "
-									+ databaseEntry.getId() + " from comment " + comment.getJiraCommentId() + "\n");
-							deleteAOElement(databaseEntry);
-						}
+					
 						List<Link> elementsLinks = GenericLinkManager.getLinksForElement(
 								DocumentationLocation.getIdentifier(DocumentationLocation.JIRAISSUECOMMENT)
 										+ databaseEntry.getId());
@@ -368,6 +363,11 @@ public class ActiveObjectsManager {
 							} catch (SQLException e) {
 								LOGGER.debug("Could not delete link: " + linkInDatabase.getId());
 							}
+						}
+						if (databaseEntry.getProjectKey().equals(comment.getProjectKey())) {
+							LOGGER.debug("\ncheckIfCommentBodyHasChangedOutsideOfPlugin:\nDelete "
+									+ databaseEntry.getId() + " from comment " + comment.getJiraCommentId() + "\n");
+							deleteAOElement(databaseEntry);
 						}
 					}
 				}
@@ -498,9 +498,6 @@ public class ActiveObjectsManager {
 
 	public static void cleanSentenceDatabaseForProject(String projectKey) {
 		init();
-		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-			@Override
-			public DecisionKnowledgeInCommentEntity doInTransaction() {
 				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
 						DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
 					Sentence sentence = null;
@@ -508,6 +505,9 @@ public class ActiveObjectsManager {
 					try {
 						sentence = new SentenceImpl(databaseEntry);
 						ComponentAccessor.getCommentManager().getCommentById(sentence.getCommentId());
+						if(sentence.getEndSubstringCount() == 0 && sentence.getStartSubstringCount() == 0) {
+							deleteFlag = true;
+						}
 					} catch (Exception e) {
 						deleteFlag = true;
 					}
@@ -516,9 +516,7 @@ public class ActiveObjectsManager {
 						GenericLinkManager.deleteLinksForElement("s" + databaseEntry.getId());
 					}
 				}
-				return null;
-			}
-		});
+	
 	}
 
 	public static void setDefaultValuesToExistingElements() {
@@ -674,7 +672,7 @@ public class ActiveObjectsManager {
 		for (LinkInDatabase link : ActiveObjects.find(LinkInDatabase.class,
 				Query.select().where("ID_OF_DESTINATION_ELEMENT = ?", "s" + aoId))) {
 			if (link.getIdOfSourceElement() != "i" + issue.getId()) {
-				GenericLinkManager.deleteGenericLink(new LinkImpl(link));
+				GenericLinkManager.deleteLink(link.getIdOfSourceElement(),link.getIdOfDestinationElement());
 			}
 		}
 		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(element.getIssueId());

@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -253,8 +254,8 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(comment2);
 
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(id);
-		// Check if new SentenceInstance is returned
-		assertTrue(element.getEndSubstringCount() == 0);
+
+		assertNull(element);
 	}
 
 	@Test
@@ -345,9 +346,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		ActiveObjectsManager.cleanSentenceDatabaseForProject("TEST");
 
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(id);
-		assertNotNull(element);
-		// Is unequal because new empty sentence is returned
-		assertFalse(element.getId() == id);
+		assertNull(element);
 	}
 
 	@Test
