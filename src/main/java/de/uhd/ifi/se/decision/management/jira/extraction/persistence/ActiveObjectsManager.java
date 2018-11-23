@@ -78,36 +78,84 @@ public class ActiveObjectsManager {
 						todo.setTaggedManually(false);
 						todo.setProjectKey(projectKey);
 						todo.setIssueId(issueId);
+						todo.setKnowledgeTypeString("");
+						todo.setArgument("");
 						todo.save();
 						LOGGER.debug("\naddNewSentenceintoAo:\nInsert Sentence " + todo.getId()
 								+ " into AO from comment " + todo.getCommentId());
 						return todo;
 					}
 				});
-		addNewLinkBetweenSentenceAndIssue(issueId, newElement.getId());
 		return newElement.getId();
 	}
 
 	private static void checkIfSentenceHasAValidLink(long sentenceId, long issueId) {
-		List<Link> links = GenericLinkManager.getLinksForElement("s" + sentenceId);
-		if (links == null || links.size() == 0) {
-			addNewLinkBetweenSentenceAndIssue(issueId, sentenceId);
+		if (!isSentenceLinked(sentenceId)) {
+			Link link = new LinkImpl("i"+issueId,"s"+sentenceId);
+			GenericLinkManager.insertLink(link, null);
 		}
-
 	}
 
-	private static void addNewLinkBetweenSentenceAndIssue(long issueId, long sentenceAoId) {
-		ActiveObjects.executeInTransaction(new TransactionCallback<LinkInDatabase>() {
-			@Override
-			public LinkInDatabase doInTransaction() {
-				LinkInDatabase newGenericLink = ActiveObjects.create(LinkInDatabase.class); // (2)
-				newGenericLink.setIdOfDestinationElement("s" + sentenceAoId);
-				newGenericLink.setIdOfSourceElement("i" + issueId);
-				newGenericLink.setType("contain");
-				newGenericLink.save();
-				return newGenericLink;
+	private static boolean isSentenceLinked(long sentenceId) {
+		List<Link> links = GenericLinkManager.getLinksForElement("s" + sentenceId);
+		if (links == null || links.size() == 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public static void createSmartLinkForSentence(Sentence sentence) {
+		if (sentence == null || isSentenceLinked(sentence.getId())) {
+			return;
+		}
+		boolean smartLinkCreated = false;
+		if (sentence.getType().equals(KnowledgeType.ARGUMENT)) {
+			DecisionKnowledgeElement lastElement = compareForLaterElement(
+					searchForLast(sentence, KnowledgeType.ALTERNATIVE),
+					searchForLast(sentence, KnowledgeType.DECISION));
+			smartLinkCreated = checkLastElementAndCreateLink(lastElement,sentence);
+		} else if (sentence.getType().equals(KnowledgeType.DECISION)
+				|| sentence.getType().equals(KnowledgeType.ALTERNATIVE)) {
+			DecisionKnowledgeElement lastElement = searchForLast(sentence, KnowledgeType.ISSUE);
+			smartLinkCreated = checkLastElementAndCreateLink(lastElement,sentence);
+		}
+		if (!smartLinkCreated) {
+			checkIfSentenceHasAValidLink(sentence.getId(), sentence.getIssueId());
+		}
+	}
+
+	private static boolean checkLastElementAndCreateLink(DecisionKnowledgeElement lastElement, Sentence sentence) {
+		if (lastElement != null) {
+			GenericLinkManager.insertLink(new LinkImpl(lastElement, sentence), null);
+			return true;
+		}
+		return false;
+	}
+
+	private static DecisionKnowledgeElement compareForLaterElement(DecisionKnowledgeElement first,
+			DecisionKnowledgeElement second) {
+		if (first == null) {
+			return second;
+		} else if (second == null) {
+			return first;
+		} else if (first.getId() > second.getId()) {
+			return first;
+		} else {
+			return second;
+		}
+	}
+
+	private static DecisionKnowledgeElement searchForLast(Sentence sentence, KnowledgeType typeToSearch) {
+		DecisionKnowledgeInCommentEntity[] sententenceList = ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("ISSUE_ID = ?", sentence.getIssueId()).order("ID DESC"));
+
+		for (DecisionKnowledgeInCommentEntity aoElement : sententenceList) {
+			if (aoElement.getKnowledgeTypeString().equals(typeToSearch.toString())) {
+				return new SentenceImpl(aoElement);
 			}
-		});
+		}
+		return null;
 	}
 
 	public static boolean checkElementExistingInAO(long commentId, int endSubtringCount, int startSubstringCount,
@@ -513,7 +561,7 @@ public class ActiveObjectsManager {
 					}
 					if (deleteFlag) {
 						deleteAOElement(databaseEntry);
-						GenericLinkManager.deleteLinksForElement("s" + databaseEntry.getId());
+						GenericLinkManager.deleteLinksForElementWithoutTransaction("s" + databaseEntry.getId());
 					}
 				}
 				return null;
@@ -539,6 +587,9 @@ public class ActiveObjectsManager {
 					}
 					if (databaseEntry.getArgument() == null) {
 						databaseEntry.setArgument("");
+					}
+					if (databaseEntry.getKnowledgeTypeString() == null) {
+						databaseEntry.setKnowledgeTypeString("");
 					}
 					databaseEntry.save();
 				}

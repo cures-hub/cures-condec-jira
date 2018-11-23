@@ -147,19 +147,23 @@ public class GenericLinkManager {
 		activeObjects.executeInTransaction(new TransactionCallback<LinkInDatabase>() {
 			@Override
 			public LinkInDatabase doInTransaction() {
-				LinkInDatabase[] linksInDatabase = activeObjects.find(LinkInDatabase.class);
-				for (LinkInDatabase linkInDatabase : linksInDatabase) {
-					if (linkInDatabase.getIdOfDestinationElement().equals(elementIdWithPrefix)
-							|| linkInDatabase.getIdOfSourceElement().equals(elementIdWithPrefix)) {
-						try {
-							linkInDatabase.getEntityManager().delete(linkInDatabase);
-						} catch (SQLException e) {
-						}
-					}
-				}
+				deleteLinksForElementWithoutTransaction(elementIdWithPrefix);
 				return null;
 			}
 		});
+	}
+	
+	public static void deleteLinksForElementWithoutTransaction(String elementIdWithPrefix) {
+		LinkInDatabase[] linksInDatabase = activeObjects.find(LinkInDatabase.class);
+		for (LinkInDatabase linkInDatabase : linksInDatabase) {
+			if (linkInDatabase.getIdOfDestinationElement().equals(elementIdWithPrefix)
+					|| linkInDatabase.getIdOfSourceElement().equals(elementIdWithPrefix)) {
+				try {
+					linkInDatabase.getEntityManager().delete(linkInDatabase);
+				} catch (SQLException e) {
+				}
+			}
+		}
 	}
 
 	public static DecisionKnowledgeElement getIssueFromAOTable(long dkeId) {
