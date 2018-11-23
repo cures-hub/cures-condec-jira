@@ -66,6 +66,7 @@ public class CommentImpl implements Comment {
 				long aoId2 = ActiveObjectsManager.addNewSentenceintoAo(this.jiraCommentId, endIndex, startIndex,
 						this.authorId, this.issueId, this.projectKey);
 				Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(aoId2);
+				ActiveObjectsManager.createSmartLinkForSentence(sentence);
 				sentence.setCreated(this.created);
 				this.sentences.add(sentence);
 			}
