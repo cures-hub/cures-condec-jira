@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.model.impl;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.MutableIssue;

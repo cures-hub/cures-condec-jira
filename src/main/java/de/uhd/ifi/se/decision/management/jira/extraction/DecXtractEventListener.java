@@ -16,7 +16,6 @@ import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
@@ -144,11 +143,13 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	}
 
 	private void handleEditComment(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
-		if (!DecXtractEventListener.editCommentLock) {// If locked, a rest service is manipulating the comment and
-														// should not be handled by EL
-			ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(new CommentImpl(issueEvent.getComment(),false));
+		// If locked, a rest service is manipulating the comment and should not be handled by EL
+		if (!DecXtractEventListener.editCommentLock) { 
+			ActiveObjectsManager.deleteCommentsSentences(issueEvent.getComment());
 			new ViewConnector(this.issueEvent.getIssue(), false);
 			ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId() );
+		}else {
+			LOGGER.debug("\nDecXtract Event Listener:\nHandle Edit Comment is still locked");
 		}
 	}
 

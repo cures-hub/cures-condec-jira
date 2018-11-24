@@ -62,7 +62,6 @@ public class CommentImpl implements Comment {
 		for (int i = 0; i < this.splitter.getStartSubstringCount().size(); i++) {
 			int startIndex = this.splitter.getStartSubstringCount().get(i);
 			int endIndex = this.splitter.getEndSubstringCount().get(i);
-			ActiveObjectsManager.checkIfSentenceOverlaps(this.issueId, this.jiraCommentId, startIndex, endIndex);
 			if (insertSentencesIntoAO && startAndEndIndexRules(startIndex, endIndex)) {
 				long aoId2 = ActiveObjectsManager.addNewSentenceintoAo(this.jiraCommentId, endIndex, startIndex,
 						this.authorId, this.issueId, this.projectKey);

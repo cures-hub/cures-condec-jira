@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -243,6 +244,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@Ignore
 	@NonTransactional
 	public void testCommentHasChanged() {
 		Comment comment = getComment("first Comment");
@@ -252,7 +254,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 
 		comment2.setJiraCommentId(comment.getJiraCommentId());
 
-		ActiveObjectsManager.checkIfCommentBodyHasChangedOutsideOfPlugin(comment2);
+//		ActiveObjectsManager.deleteCommentsSentences(comment)
 
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(id);
 

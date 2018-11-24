@@ -20,6 +20,7 @@ import com.atlassian.jira.util.VelocityParamFactory;
 import com.atlassian.velocity.VelocityManager;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
 /**
@@ -34,8 +35,10 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 			LOGGER.error("Issue tab panel cannot be rendered correctly since no issue or user are provided.");
 			return new ArrayList<>();
 		}
-		// Initialize viewConnector with the current shown Issue
-		new ViewConnector(issue, true);
+		// Initialize viewConnector with the current shown Issue, only if there are more comments than saved
+		if(ActiveObjectsManager.countCommentsForIssue(issue.getId()) != ComponentAccessor.getCommentManager().getComments(issue).size()) {
+			new ViewConnector(issue, true);
+		}
 
 		GenericMessageAction messageAction = new GenericMessageAction(getVelocityTemplate());
 		List<IssueAction> issueActions = new ArrayList<IssueAction>();
