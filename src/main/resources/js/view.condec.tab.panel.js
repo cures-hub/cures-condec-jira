@@ -101,13 +101,9 @@
 		buildTreeViewer(checked);
 	}
 
-
 	ConDecIssueTab.prototype.fetchAndRender = function() {
-		buildTreeViewer([true,true,true,true,true]);
+		buildTreeViewer([ true, true, true, true, true ]);
 	};
-
-
-
 
 	// Expose methods:
 	ConDecIssueTab.prototype.updateView = updateView;
