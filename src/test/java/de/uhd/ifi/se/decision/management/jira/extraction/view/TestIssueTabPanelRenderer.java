@@ -24,6 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
+import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
@@ -87,21 +88,25 @@ public class TestIssueTabPanelRenderer extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@NonTransactional
 	public void testShowPanelFilledFilled() {
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
 		Issue issue = new MockIssue();
 		((MockIssue) issue).setProjectObject(project);
 		((MockIssue) issue).setKey("TEST-1");
+		((MockIssue) issue).setId((long) 1337);
 		ApplicationUser user = new MockApplicationUser("NoFails");
 		assertTrue(renderer.showPanel(issue, user));
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetActionsFilledFilledWithoutComment() {
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
 		Issue issue = new MockIssue();
 		((MockIssue) issue).setProjectObject(project);
 		((MockIssue) issue).setKey("TEST-1");
+		((MockIssue) issue).setId((long) 1337);
 		ApplicationUser user = new MockApplicationUser("NoFails");
 		assertNotNull(renderer.getActions(issue, user));
 	}

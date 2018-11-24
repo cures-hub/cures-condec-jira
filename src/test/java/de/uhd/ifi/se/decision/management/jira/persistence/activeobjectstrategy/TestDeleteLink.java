@@ -3,8 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectstrategy;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -16,9 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(ActiveObjectStrategyTestSetUp.AoSentenceTestDatabaseUpdater.class)
@@ -60,8 +58,8 @@ public class TestDeleteLink extends ActiveObjectStrategyTestSetUp {
 	@Test
 	@NonTransactional
 	public void testLinkFilledUserNull() {
-        List<Link> links = aoStrategy.getLinks(linkedDecisision);
-        Boolean bool = aoStrategy.deleteLink(links.get(0), user);
+		List<Link> links = aoStrategy.getLinks(linkedDecisision);
+		Boolean bool = aoStrategy.deleteLink(links.get(0), user);
 		assertTrue(bool);
 	}
 
@@ -75,8 +73,8 @@ public class TestDeleteLink extends ActiveObjectStrategyTestSetUp {
 	@Test
 	@NonTransactional
 	public void testLinkFilledUserFilledLinkInTable() {
-        List<Link> links = aoStrategy.getLinks(linkedDecisision);
-        Boolean bool = aoStrategy.deleteLink(links.get(0), user);
+		List<Link> links = aoStrategy.getLinks(linkedDecisision);
+		Boolean bool = aoStrategy.deleteLink(links.get(0), user);
 		assertTrue(bool);
 	}
 }

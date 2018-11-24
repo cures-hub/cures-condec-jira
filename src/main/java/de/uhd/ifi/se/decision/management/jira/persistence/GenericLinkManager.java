@@ -128,13 +128,14 @@ public class GenericLinkManager {
 			public LinkInDatabase doInTransaction() {
 				LinkInDatabase[] linkElements = activeObjects.find(LinkInDatabase.class);
 				for (LinkInDatabase linkElement : linkElements) {
+					try {
 					Link link = new LinkImpl(linkElement.getIdOfSourceElement(),
 							linkElement.getIdOfDestinationElement());
-					if (!link.isValid()) {
-						try {
-							linkElement.getEntityManager().delete(linkElement);
-						} catch (SQLException e) {
+						if (!link.isValid()) {
+							deleteLinkElementFromDatabase(linkElement);
 						}
+					}catch(Exception e) {
+						deleteLinkElementFromDatabase(linkElement);
 					}
 				}
 				return null;
@@ -178,5 +179,14 @@ public class GenericLinkManager {
 
 	public static long getId(String idWithPrefix) {
 		return (long) Integer.parseInt(idWithPrefix.substring(1));
+	}
+	
+	private static void deleteLinkElementFromDatabase(LinkInDatabase linkElement) {
+		try {
+			linkElement.getEntityManager().delete(linkElement);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

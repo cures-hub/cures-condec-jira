@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.Arrays;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -56,7 +57,8 @@ public class ViewRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Issue Key is not valid."))
 					.build();
 		}
-		Boolean[] booleanArray = Arrays.stream(showRelevant.split(",")).map(Boolean::parseBoolean).toArray(Boolean[]::new);
+		Boolean[] booleanArray = Arrays.stream(showRelevant.split(",")).map(Boolean::parseBoolean)
+				.toArray(Boolean[]::new);
 		String projectKey = issueKey.substring(0, issueKey.indexOf("-"));
 		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {

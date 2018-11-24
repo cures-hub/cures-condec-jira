@@ -2,8 +2,9 @@ package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,20 +26,16 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.IssueStrategy;
-import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
 import net.java.ao.Query;
 
 public class ActiveObjectsManager {
 
 	public static ActiveObjects ActiveObjects;
-
-	private static int deleteSentenceCounter = 0;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectsManager.class);
 
@@ -56,12 +53,14 @@ public class ActiveObjectsManager {
 	public static long addNewSentenceintoAo(long commentId, int endSubStringCount, int startSubstringCount, long userId,
 			long issueId, String projectKey) {
 		init();
-		if (checkElementExistingInAO(commentId, endSubStringCount, startSubstringCount, userId, projectKey)) {
-			DecisionKnowledgeInCommentEntity existingElement = getElementFromAO(commentId, endSubStringCount,
-					startSubstringCount, userId, projectKey);
+
+		DecisionKnowledgeInCommentEntity existingElement = getElementFromAO(commentId, endSubStringCount,
+				startSubstringCount, userId, projectKey);
+		if (existingElement != null) {
 			checkIfSentenceHasAValidLink(existingElement.getId(), issueId);
 			return existingElement.getId();
 		}
+
 		DecisionKnowledgeInCommentEntity newElement = ActiveObjects
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 					@Override
@@ -91,8 +90,8 @@ public class ActiveObjectsManager {
 
 	private static void checkIfSentenceHasAValidLink(long sentenceId, long issueId) {
 		if (!isSentenceLinked(sentenceId)) {
-			Link link = new LinkImpl("i"+issueId,"s"+sentenceId);
-			GenericLinkManager.insertLink(link, null);
+			Link link = new LinkImpl("i" + issueId, "s" + sentenceId);
+			GenericLinkManager.insertLinkWithoutTransaction(link);
 		}
 	}
 
@@ -114,11 +113,11 @@ public class ActiveObjectsManager {
 			DecisionKnowledgeElement lastElement = compareForLaterElement(
 					searchForLast(sentence, KnowledgeType.ALTERNATIVE),
 					searchForLast(sentence, KnowledgeType.DECISION));
-			smartLinkCreated = checkLastElementAndCreateLink(lastElement,sentence);
+			smartLinkCreated = checkLastElementAndCreateLink(lastElement, sentence);
 		} else if (sentence.getType().equals(KnowledgeType.DECISION)
 				|| sentence.getType().equals(KnowledgeType.ALTERNATIVE)) {
 			DecisionKnowledgeElement lastElement = searchForLast(sentence, KnowledgeType.ISSUE);
-			smartLinkCreated = checkLastElementAndCreateLink(lastElement,sentence);
+			smartLinkCreated = checkLastElementAndCreateLink(lastElement, sentence);
 		}
 		if (!smartLinkCreated) {
 			checkIfSentenceHasAValidLink(sentence.getId(), sentence.getIssueId());
@@ -156,14 +155,6 @@ public class ActiveObjectsManager {
 			}
 		}
 		return null;
-	}
-
-	public static boolean checkElementExistingInAO(long commentId, int endSubtringCount, int startSubstringCount,
-			long userId, String projectKey) {
-		init();
-		DecisionKnowledgeInCommentEntity databaseEntry = getElementFromAO(commentId, endSubtringCount,
-				startSubstringCount, userId, projectKey);
-		return databaseEntry != null;
 	}
 
 	public static void updateSentenceElement(Sentence sentence) {
@@ -219,7 +210,7 @@ public class ActiveObjectsManager {
 			return new SentenceImpl(databaseEntry);
 
 		}
-		return new SentenceImpl();
+		return null;
 	}
 
 	public static void setSentenceKnowledgeType(Sentence sentence) {
@@ -375,55 +366,6 @@ public class ActiveObjectsManager {
 		return true;
 	}
 
-	public static void checkIfCommentBodyHasChangedOutsideOfPlugin(Comment comment) {
-		init();
-		final List<Integer> starts = comment.getStartSubstringCount();
-		final List<Integer> ends = comment.getEndSubstringCount();
-		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-			@Override
-			public DecisionKnowledgeInCommentEntity doInTransaction() {
-				boolean deleteFlag = false;
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
-						DecisionKnowledgeInCommentEntity.class,
-						Query.select().where("COMMENT_ID = ?", comment.getJiraCommentId()))) {
-					if (databaseEntry.getProjectKey().equals(comment.getProjectKey())
-							&& (!starts.contains(databaseEntry.getStartSubstringCount())
-									|| !ends.contains(databaseEntry.getEndSubstringCount()))) {
-						deleteFlag = true;
-					}
-				}
-				// delete all here
-				if (deleteFlag) {
-					for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
-							DecisionKnowledgeInCommentEntity.class,
-							Query.select().where("COMMENT_ID = ?", comment.getJiraCommentId()))) {
-						if (databaseEntry.getProjectKey().equals(comment.getProjectKey())) {
-							LOGGER.debug("\ncheckIfCommentBodyHasChangedOutsideOfPlugin:\nDelete "
-									+ databaseEntry.getId() + " from comment " + comment.getJiraCommentId() + "\n");
-							deleteAOElement(databaseEntry);
-						}
-						List<Link> elementsLinks = GenericLinkManager.getLinksForElement(
-								DocumentationLocation.getIdentifier(DocumentationLocation.JIRAISSUECOMMENT)
-										+ databaseEntry.getId());
-						for (Link link : elementsLinks) {
-							LinkInDatabase linkInDatabase = ActiveObjects.find(LinkInDatabase.class,
-									Query.select().where("ID = ?", link.getId()))[0];
-							LOGGER.debug("\ncheckIfCommentBodyHasChangedOutsideOfPlugin:\nDelete link from "
-									+ link.getIdOfDestinationElementWithPrefix() + " to "
-									+ link.getIdOfDestinationElementWithPrefix() + "\n");
-							try {
-								linkInDatabase.getEntityManager().delete(linkInDatabase);
-							} catch (SQLException e) {
-								LOGGER.debug("Could not delete link: " + linkInDatabase.getId());
-							}
-						}
-					}
-				}
-				return null;
-			}
-		});
-	}
-
 	public static boolean setSentenceIrrelevant(long id, boolean isTaggedManually) {
 		init();
 		return ActiveObjects.executeInTransaction(new TransactionCallback<Boolean>() {
@@ -433,6 +375,9 @@ public class ActiveObjectsManager {
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
 						ActiveObjectsManager.stripTagsOutOfComment(sentenceEntity);
+						GenericLinkManager.deleteLinksForElementWithoutTransaction("s" + id);
+
+						ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(sentenceEntity.getIssueId());
 						sentenceEntity.setRelevant(false);
 						sentenceEntity.setTaggedManually(isTaggedManually);
 						sentenceEntity.setKnowledgeTypeString(KnowledgeType.OTHER.toString());
@@ -546,27 +491,26 @@ public class ActiveObjectsManager {
 
 	public static void cleanSentenceDatabaseForProject(String projectKey) {
 		init();
-		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-			@Override
-			public DecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
-						DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
-					Sentence sentence = null;
-					boolean deleteFlag = false;
-					try {
-						sentence = new SentenceImpl(databaseEntry);
-						ComponentAccessor.getCommentManager().getCommentById(sentence.getCommentId());
-					} catch (Exception e) {
-						deleteFlag = true;
-					}
-					if (deleteFlag) {
-						deleteAOElement(databaseEntry);
-						GenericLinkManager.deleteLinksForElementWithoutTransaction("s" + databaseEntry.getId());
-					}
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("PROJECT_KEY = ?", projectKey))) {
+			Sentence sentence = null;
+			boolean deleteFlag = false;
+			try {
+				sentence = new SentenceImpl(databaseEntry);
+				ComponentAccessor.getCommentManager().getCommentById(sentence.getCommentId());
+				if (sentence.getEndSubstringCount() == 0 && sentence.getStartSubstringCount() == 0) {
+					deleteFlag = true;
 				}
-				return null;
+			} catch (Exception e) {
+				deleteFlag = true;
 			}
-		});
+			if (deleteFlag) {
+				deleteAOElement(databaseEntry);
+				GenericLinkManager.deleteLinksForElementWithoutTransaction("s" + databaseEntry.getId());
+				// GenericLinkManager.deleteLinksForElement("s" + databaseEntry.getId());
+			}
+		}
+
 	}
 
 	public static void setDefaultValuesToExistingElements() {
@@ -644,55 +588,6 @@ public class ActiveObjectsManager {
 		return listOfDKE;
 	}
 
-	/**
-	 * Check sentence AO for duplicates. In some cases it can happen that sentences
-	 * are inserted twice into the AO table. This functions checks all entry for one
-	 * comment if there are duplicates. If one duplicate is found, its deleted.
-	 *
-	 * @param comment
-	 *            the comment
-	 */
-	public static void checkSentenceAOForDuplicates(Comment comment) {
-		init();
-		List<Integer> sentenceList = new ArrayList<>();
-		List<Long> deleteList = new ArrayList<>();
-
-		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-			@Override
-			public DecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
-						DecisionKnowledgeInCommentEntity.class,
-						Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ?", comment.getProjectKey(),
-								comment.getJiraCommentId()))) {
-					if (databaseEntry != null) {
-						sentenceList.add(databaseEntry.getStartSubstringCount());
-					}
-				}
-				if (sentenceList.size() != comment.getSentences().size()) {
-					for (Sentence sentence : comment.getSentences()) {
-						int occurrences = Collections.frequency(sentenceList, sentence.getStartSubstringCount());
-						if (occurrences > 1) {
-							deleteList.add(sentence.getId());
-						}
-					}
-					for (long idToDelete : deleteList) {
-						for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
-								DecisionKnowledgeInCommentEntity.class, Query.select().where("ID = ?", idToDelete))) {
-							try {
-								if (deleteSentenceCounter % 2 == 1) {
-									databaseEntry.getEntityManager().delete(databaseEntry);
-								}
-								deleteSentenceCounter++;
-							} catch (SQLException e) {// element not deleted
-							}
-						}
-					}
-				}
-				return null;
-			}
-		});
-	}
-
 	public static Issue createJIRAIssueFromSentenceObject(long aoId, ApplicationUser user) {
 
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(aoId);
@@ -717,17 +612,8 @@ public class ActiveObjectsManager {
 				length, aoId);
 
 		// delete ao sentence entry
-		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("ID = ?", aoId))) {
-			deleteAOElement(databaseEntry);
-		}
+		deleteSentenceObject(aoId);
 
-		for (LinkInDatabase link : ActiveObjects.find(LinkInDatabase.class,
-				Query.select().where("ID_OF_DESTINATION_ELEMENT = ?", "s" + aoId))) {
-			if (link.getIdOfSourceElement() != "i" + issue.getId()) {
-				GenericLinkManager.deleteGenericLink(new LinkImpl(link));
-			}
-		}
 		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(element.getIssueId());
 
 		return issue;
@@ -756,13 +642,42 @@ public class ActiveObjectsManager {
 		}
 	}
 
+	/**
+	 * Proper way to delete sentences from ao. Also deletes their links
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public static boolean deleteSentenceObject(long id) {
+		init();
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("ID = ?", id))) {
 			GenericLinkManager.deleteLinksForElement("s" + id);
 			return deleteAOElement(databaseEntry);
 		}
 		return false;
+	}
+
+	public static void deleteCommentsSentences(com.atlassian.jira.issue.comments.Comment comment) {
+		init();
+		DecisionKnowledgeInCommentEntity[] commentSentences = ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("ISSUE_ID = ? AND COMMENT_ID = ?", comment.getIssue().getId(), comment.getId()));
+		for (DecisionKnowledgeInCommentEntity entity : commentSentences) {
+			deleteSentenceObject(entity.getId());
+		}
+	}
+
+	public static int countCommentsForIssue(long issueId) {
+		init();
+		DecisionKnowledgeInCommentEntity[] commentSentences = ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("ISSUE_ID = ?", issueId));
+		Set<Long> treeSet = new TreeSet<>();
+
+		for (DecisionKnowledgeInCommentEntity sentence : commentSentences) {
+			treeSet.add(sentence.getCommentId());
+		}
+
+		return treeSet.size();
 	}
 
 }

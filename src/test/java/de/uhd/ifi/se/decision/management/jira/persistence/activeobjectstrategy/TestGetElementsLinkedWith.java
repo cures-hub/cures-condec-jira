@@ -1,22 +1,26 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectstrategy;
 
-import de.uhd.ifi.se.decision.management.jira.model.*;
-import net.java.ao.test.jdbc.Data;
-import net.java.ao.test.jdbc.NonTransactional;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertEquals;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
+import net.java.ao.test.jdbc.Data;
+import net.java.ao.test.jdbc.NonTransactional;
+import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(ActiveObjectStrategyTestSetUp.AoSentenceTestDatabaseUpdater.class)
 public class TestGetElementsLinkedWith extends ActiveObjectStrategyTestSetUp {
 
 	private Link link;
-	
+
 	@Before
 	public void setUp() {
 		initialisation();

@@ -1,24 +1,25 @@
 (function(global) {
 
-
 	var ConDecReport = function ConDecReport() {
 	};
 
-	ConDecReport.prototype.initializeDivWithBoxPlot = function initializeDivWithBoxPlot(id, dataFromServer, xAxis, title) {
+	ConDecReport.prototype.initializeDivWithBoxPlot = function initializeDivWithBoxPlot(id, dataFromServer, xAxis,
+			title) {
 		var myChart = echarts.init(document.getElementById(id));
 		var data = echarts.dataTool.prepareBoxplotData(new Array(dataFromServer));
 		myChart.setOption(getOptionsForBoxplot(title, xAxis, "", data));
 		document.getElementById(id).setAttribute("list", dataFromServer);
 	};
 
-	ConDecReport.prototype.initializeDivWithBoxPlotFromMap = function initializeDivWithBoxPlotFromMap(id, dataFromServer, xAxis, title) {
-		var dataMap =dataFromServer;
+	ConDecReport.prototype.initializeDivWithBoxPlotFromMap = function initializeDivWithBoxPlotFromMap(id,
+			dataFromServer, xAxis, title) {
+		var dataMap = dataFromServer;
 		var listToShowUserWithAllValues = "";
 		var values = [];
 		for (var i = Array.from(dataMap.keys()).length - 1; i >= 0; i--) {
 			var key = Array.from(dataMap.keys())[i];
-			var value =dataMap.get(key);
-			listToShowUserWithAllValues = listToShowUserWithAllValues + key+": "+ value+"; ";
+			var value = dataMap.get(key);
+			listToShowUserWithAllValues = listToShowUserWithAllValues + key + ": " + value + "; ";
 			values.push(value);
 		}
 
@@ -28,7 +29,7 @@
 		document.getElementById(id).setAttribute("list", listToShowUserWithAllValues);
 	};
 
-	ConDecReport.prototype.initializeDivWithPieChart =  function initializeDivWithPieChart(id, title, subtitle, dataMap) {
+	ConDecReport.prototype.initializeDivWithPieChart = function initializeDivWithPieChart(id, title, subtitle, dataMap) {
 		var myChart = echarts.init(document.getElementById(id));
 		var data = [];
 		var list = "";
@@ -45,7 +46,7 @@
 		document.getElementById(id).setAttribute("list", list);
 	};
 
-	 function getOptionsForBoxplot(name, xLabel, ylabel, data) {
+	function getOptionsForBoxplot(name, xLabel, ylabel, data) {
 		return {
 			title : [ {
 				text : name,
@@ -126,5 +127,5 @@
 		};
 	}
 
-	global.ConDecReport = new ConDecReport();
+	global.conDecReport = new ConDecReport();
 })(window);

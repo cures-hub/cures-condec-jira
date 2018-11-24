@@ -52,6 +52,9 @@ public class MockCommentManager implements CommentManager {
 
 	@Override
 	public List<Comment> getComments(Issue issue) {
+		if(this.comments == null) {
+			return new ArrayList<Comment>();
+		}
 		return this.comments;
 	}
 

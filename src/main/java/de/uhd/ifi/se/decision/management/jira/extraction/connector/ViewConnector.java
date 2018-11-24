@@ -3,6 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.extraction.connector;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.CommentManager;
@@ -10,7 +13,6 @@ import com.atlassian.jira.issue.comments.CommentManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationManagerForCommentSentences;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
 public class ViewConnector {
@@ -20,6 +22,10 @@ public class ViewConnector {
 	private List<Comment> commentsList;
 
 	private CommentManager commentManager;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ViewConnector.class);
+
+	private static List<String> connectorInUseLock = new ArrayList<String>();
 
 	public ViewConnector(Issue issue) {
 		if (issue != null) {
@@ -31,15 +37,20 @@ public class ViewConnector {
 
 	public ViewConnector(Issue issue, boolean doNotClassify) {
 		this(issue);
-		if (issue != null && commentManager.getComments(issue) != null) {
-			for (com.atlassian.jira.issue.comments.Comment comment : commentManager.getComments(issue)) {
-				Comment comment2 = new CommentImpl(comment,true);
-				commentsList.add(comment2);
-				ActiveObjectsManager.checkSentenceAOForDuplicates(comment2);
+		if (!connectorInUseLock.contains(issue.getKey())) {
+			connectorInUseLock.add(issue.getKey());
+			if (issue != null && commentManager.getComments(issue) != null) {
+				for (com.atlassian.jira.issue.comments.Comment comment : commentManager.getComments(issue)) {
+					Comment comment2 = new CommentImpl(comment, true);
+					commentsList.add(comment2);
+				}
 			}
-		}
-		if (!doNotClassify && ConfigPersistence.isUseClassiferForIssueComments(issue.getProjectObject().getKey())) {
-			this.startClassification();
+			if (!doNotClassify && ConfigPersistence.isUseClassiferForIssueComments(issue.getProjectObject().getKey())) {
+				this.startClassification();
+			}
+			connectorInUseLock.remove(issue.getKey());
+		} else {
+			LOGGER.debug("Could not run ViewConnector. It's currently in use for issue: " + issue.getKey());
 		}
 	}
 
@@ -58,19 +69,19 @@ public class ViewConnector {
 	}
 
 	public List<String> getAllCommentsAuthorNames() {
-		List<String> authorName = new ArrayList<String>();
-		for (Comment c : commentsList) {
-			authorName.add(c.getAuthorFullName());
+		List<String> authorNames = new ArrayList<String>();
+		for (Comment comment : commentsList) {
+			authorNames.add(comment.getAuthorFullName());
 		}
-		return authorName;
+		return authorNames;
 	}
 
 	public List<String> getAllCommentsDates() {
-		List<String> commentDate = new ArrayList<String>();
-		for (Comment c : commentsList) {
-			commentDate.add(c.getCreated().toString().replace("CEST", ""));
+		List<String> commentDates = new ArrayList<String>();
+		for (Comment comment : commentsList) {
+			commentDates.add(comment.getCreated().toString().replace("CEST", ""));
 		}
-		return commentDate;
+		return commentDates;
 	}
 
 	public String getSentenceStyles() {
@@ -85,5 +96,4 @@ public class ViewConnector {
 
 		return style;
 	}
-
 }
