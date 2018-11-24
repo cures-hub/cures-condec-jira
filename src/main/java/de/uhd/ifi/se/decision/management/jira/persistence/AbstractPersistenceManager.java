@@ -19,7 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  *
  * @see JiraIssuePersistence
  * @see ActiveObjectPersistence
- * @see StrategyProvider
+ * @see PersistenceProvider
  */
 public abstract class AbstractPersistenceManager {
 

@@ -37,7 +37,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
+import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceProvider;
 import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 
 /**
@@ -53,7 +53,7 @@ public class KnowledgeRest {
 	public Response getDecisionKnowledgeElement(@QueryParam("id") long id,
 			@QueryParam("projectKey") String projectKey) {
 		if (projectKey != null) {
-			AbstractPersistenceManager strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = PersistenceProvider.getPersistenceStrategy(projectKey);
 			DecisionKnowledgeElement decisionKnowledgeElement = strategy.getDecisionKnowledgeElement(id);
 			if (decisionKnowledgeElement != null) {
 				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
@@ -73,7 +73,7 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getLinkedElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey) {
 		if (projectKey != null) {
-			AbstractPersistenceManager strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = PersistenceProvider.getPersistenceStrategy(projectKey);
 			List<DecisionKnowledgeElement> linkedDecisionKnowledgeElements = strategy.getLinkedElements(id);
 			return Response.ok(linkedDecisionKnowledgeElements).build();
 		} else {
@@ -88,7 +88,7 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getUnlinkedElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey) {
 		if (projectKey != null) {
-			AbstractPersistenceManager strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = PersistenceProvider.getPersistenceStrategy(projectKey);
 			List<DecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = strategy.getUnlinkedElements(id);
 			return Response.ok(unlinkedDecisionKnowledgeElements).build();
 		} else {
@@ -105,7 +105,7 @@ public class KnowledgeRest {
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
-			AbstractPersistenceManager strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = PersistenceProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = AuthenticationManager.getUser(request);
 			DecisionKnowledgeElement decisionKnowledgeElementWithId = strategy
 					.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
@@ -149,7 +149,7 @@ public class KnowledgeRest {
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
-			AbstractPersistenceManager strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = PersistenceProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = AuthenticationManager.getUser(request);
 			if (strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user)) {
 				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
@@ -171,7 +171,7 @@ public class KnowledgeRest {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
 			ApplicationUser user = AuthenticationManager.getUser(request);
 			boolean isDeleted = false;
-			AbstractPersistenceManager strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = PersistenceProvider.getPersistenceStrategy(projectKey);
 			DecisionKnowledgeElement elementToBeDeletedWithLinks = strategy
 					.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 			isDeleted = strategy.deleteDecisionKnowledgeElement(elementToBeDeletedWithLinks, user);
@@ -193,7 +193,7 @@ public class KnowledgeRest {
 	public Response createLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
-			AbstractPersistenceManager strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = PersistenceProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = AuthenticationManager.getUser(request);
 			long linkId = strategy.insertLink(link, user);
 			if (linkId == 0) {
@@ -341,7 +341,7 @@ public class KnowledgeRest {
 	public Response deleteLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
-			AbstractPersistenceManager strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = PersistenceProvider.getPersistenceStrategy(projectKey);
 			ApplicationUser user = AuthenticationManager.getUser(request);
 			boolean isDeleted = strategy.deleteLink(link, user);
 			if (isDeleted) {

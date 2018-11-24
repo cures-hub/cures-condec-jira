@@ -16,16 +16,16 @@ public class TestStrategyProvider extends TestSetUpWithIssues {
 
 	@Test(expected = java.lang.IllegalArgumentException.class)
 	public void testProjectKeyNull() {
-		StrategyProvider.getPersistenceStrategy(null);
+		PersistenceProvider.getPersistenceStrategy(null);
 	}
 
 	@Test
 	public void testProjectKeyNonExistent() {
-		assertTrue(StrategyProvider.getPersistenceStrategy("TESTNOT") instanceof JiraIssuePersistence);
+		assertTrue(PersistenceProvider.getPersistenceStrategy("TESTNOT") instanceof JiraIssuePersistence);
 	}
 
 	@Test
 	public void testProjectKeyExistent() {
-		assertTrue(StrategyProvider.getPersistenceStrategy("TEST") instanceof JiraIssuePersistence);
+		assertTrue(PersistenceProvider.getPersistenceStrategy("TEST") instanceof JiraIssuePersistence);
 	}
 }
