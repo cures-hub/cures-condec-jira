@@ -251,7 +251,7 @@ public class KnowledgeRest {
 	public Response editSentenceBody(@Context HttpServletRequest request,
 			DecisionKnowledgeElement decisionKnowledgeElement, @QueryParam("argument") String argument) {
 		if (decisionKnowledgeElement != null && request != null) {
-
+			DecXtractEventListener.editCommentLock = true;
 			// Get corresponding element from ao database
 			Sentence databaseEntity = (Sentence) ActiveObjectsManager
 					.getElementFromAO(decisionKnowledgeElement.getId());
@@ -283,19 +283,20 @@ public class KnowledgeRest {
 					String first = mc.getBody().substring(0, indexOfOldSentence);
 					String second = tag + newSentenceBody + tag;
 					String third = mc.getBody().substring(indexOfOldSentence + oldSentenceInComment.length());
-					DecXtractEventListener.editCommentLock = true;
+					
 					mc.setBody(first + second + third);
 					cm.update(mc, true);
 					ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(),
 							decisionKnowledgeElement.getId(), second);
 
-					DecXtractEventListener.editCommentLock = false;
+					
 				}
 			}
 			ActiveObjectsManager.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),
 					decisionKnowledgeElement.getType(), argument);
 			Response r = Response.status(Status.OK).entity(ImmutableMap.of("id", decisionKnowledgeElement.getId()))
 					.build();
+			DecXtractEventListener.editCommentLock = false;
 			return r;
 		} else {
 			return Response.status(Status.BAD_REQUEST)
