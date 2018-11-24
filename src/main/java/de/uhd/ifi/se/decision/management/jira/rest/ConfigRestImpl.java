@@ -268,7 +268,7 @@ public class ConfigRestImpl implements ConfigRest {
 		}
 		if (isActivatedString == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Webhook Activation bookean = null")).build();
+					.entity(ImmutableMap.of("error", "Webhook activation boolean = null")).build();
 		}
 		try {
 			boolean isActivated = Boolean.valueOf(isActivatedString);

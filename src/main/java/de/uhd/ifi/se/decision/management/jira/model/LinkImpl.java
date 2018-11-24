@@ -229,15 +229,13 @@ public class LinkImpl implements Link {
 		}
 	}
 	
-	public boolean isIssueLink() {
-		return getIdOfSourceElementWithPrefix().startsWith("i") && getIdOfDestinationElementWithPrefix().startsWith("i");
-	}
-	
+	@Override
 	public LinkImpl flip() {
 		return new LinkImpl(this.getIdOfDestinationElementWithPrefix(),
 				this.getIdOfSourceElementWithPrefix());
 	}
 
+	@Override
 	public String toString() {
 		String sourceElementIdPrefix = DocumentationLocation.getIdentifier(sourceElement);
 		String destinationElementIdPrefix = DocumentationLocation.getIdentifier(destinationElement);

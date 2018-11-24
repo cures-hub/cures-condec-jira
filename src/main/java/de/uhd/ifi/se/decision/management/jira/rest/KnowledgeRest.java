@@ -367,7 +367,7 @@ public class KnowledgeRest {
 	public Response deleteGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
-			if (link.isIssueLink()) {
+			if (GenericLinkManager.isIssueLink(link)) {
 				return deleteLink(projectKey, request, link);
 			}
 			boolean isDeleted = GenericLinkManager.deleteGenericLink(link);
@@ -393,7 +393,7 @@ public class KnowledgeRest {
 	public Response createGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
-			if (link.isIssueLink()) {
+			if (GenericLinkManager.isIssueLink(link)) {
 				return createLink(projectKey, request, link);
 			}
 			ApplicationUser user = AuthenticationManager.getUser(request);

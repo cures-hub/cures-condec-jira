@@ -106,7 +106,7 @@ public interface Link {
 	 * @return opposite element of this link.
 	 */
 	DecisionKnowledgeElement getOppositeElement(long elementId);
-	
+
 	/**
 	 * Get the opposite element of this link.
 	 *
@@ -146,7 +146,15 @@ public interface Link {
 	 * @return true if the link connects two existing decision knowledge elements.
 	 */
 	boolean isValid();
-	
+
+	/**
+	 * Get the a new link with swapped source and destination elements.
+	 * @see DecisionKnowledgeElement
+	 * 
+	 * @return new link with swapped source and destination elements.
+	 */
+	Link flip();
+
 	/**
 	 * Get the opposite element of this link.
 	 *
@@ -167,10 +175,4 @@ public interface Link {
 	String getIdOfDestinationElementWithPrefix();
 
 	void setDestinationElement(String idWithPrefix);
-	
-	boolean isIssueLink();
-
-	Link flip();
-	
-	
 }
