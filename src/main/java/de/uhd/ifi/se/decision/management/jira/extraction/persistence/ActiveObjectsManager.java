@@ -37,8 +37,6 @@ public class ActiveObjectsManager {
 
 	public static ActiveObjects ActiveObjects;
 
-	private static int deleteSentenceCounter = 0;
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectsManager.class);
 
 	public static void init() {
