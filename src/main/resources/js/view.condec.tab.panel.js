@@ -55,7 +55,6 @@
 	}
 
 	/*
-
 	 called by
 	 * view.tab.panel.js:callDialog
 	 * view.context.menu.js
@@ -104,8 +103,7 @@
 
 
 	ConDecIssueTab.prototype.fetchAndRender = function() {
-		
-		buildTreeViewer(toggleSelectedDecisionElements());
+		buildTreeViewer([true,true,true,true,true]);
 	};
 
 
