@@ -36,7 +36,6 @@
 
 		// Register/subscribe this view as an observer
 		conDecObservable.subscribe(this);
-		buildTreeViewer(toggleSelectedDecisionElements());
 
 		return true;
 	};
@@ -102,6 +101,15 @@
 		var checked = toggleSelectedDecisionElements();
 		buildTreeViewer(checked);
 	}
+
+
+	ConDecIssueTab.prototype.fetchAndRender = function() {
+		
+		buildTreeViewer(toggleSelectedDecisionElements());
+	};
+
+
+
 
 	// Expose methods:
 	ConDecIssueTab.prototype.updateView = updateView;
