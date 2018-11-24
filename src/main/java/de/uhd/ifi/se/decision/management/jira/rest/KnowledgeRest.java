@@ -283,13 +283,12 @@ public class KnowledgeRest {
 					String first = mc.getBody().substring(0, indexOfOldSentence);
 					String second = tag + newSentenceBody + tag;
 					String third = mc.getBody().substring(indexOfOldSentence + oldSentenceInComment.length());
-					
+
 					mc.setBody(first + second + third);
 					cm.update(mc, true);
 					ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(),
 							decisionKnowledgeElement.getId(), second);
 
-					
 				}
 			}
 			ActiveObjectsManager.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),
@@ -368,7 +367,7 @@ public class KnowledgeRest {
 	public Response deleteGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
-			if(link.isIssueLink()) {
+			if (link.isIssueLink()) {
 				return deleteLink(projectKey, request, link);
 			}
 			boolean isDeleted = GenericLinkManager.deleteGenericLink(link);
@@ -394,7 +393,7 @@ public class KnowledgeRest {
 	public Response createGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
-			if(link.isIssueLink()) {
+			if (link.isIssueLink()) {
 				return createLink(projectKey, request, link);
 			}
 			ApplicationUser user = AuthenticationManager.getUser(request);

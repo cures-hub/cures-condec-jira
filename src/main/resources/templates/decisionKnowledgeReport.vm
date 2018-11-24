@@ -34,61 +34,61 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:repo
       #foreach ($item in $numCommentsPerIssueMap.keySet())
        map.set("$item", $numCommentsPerIssueMap.get("$item"));
       #end
-      ConDecReport.initializeDivWithBoxPlotFromMap('CommentsPerIssue',map,"Comments/Issue","Comments per\n JIRA Issue");
+      conDecReport.initializeDivWithBoxPlotFromMap('CommentsPerIssue',map,"Comments/Issue","Comments per\n JIRA Issue");
 
        map = new Map();
       #foreach ($item in $numDecisionsPerIssueMap.keySet())
        map.set("$item", $numDecisionsPerIssueMap.get("$item"));
       #end
-     ConDecReport.initializeDivWithBoxPlotFromMap('DecisionsPerIssue',map,"Decisions/JIRA Issue","Decisions per\n JIRA Issue");
+     conDecReport.initializeDivWithBoxPlotFromMap('DecisionsPerIssue',map,"Decisions/JIRA Issue","Decisions per\n JIRA Issue");
 
        map = new Map();
       #foreach ($item in $numIssuesPerIssueMap.keySet())
        map.set("$item", $numIssuesPerIssueMap.get("$item"));
       #end
-      ConDecReport.initializeDivWithBoxPlotFromMap('IssuesPerIssue',map,"Issues/JIRA Issue","Issues per\n JIRA Issue");
+      conDecReport.initializeDivWithBoxPlotFromMap('IssuesPerIssue',map,"Issues/JIRA Issue","Issues per\n JIRA Issue");
 
       map = new Map();
       #foreach ($item in $numCommitsPerIssueMap.keySet())
        map.set("$item", $numCommitsPerIssueMap.get("$item"));
       #end
-      ConDecReport.initializeDivWithBoxPlotFromMap('CommitsPerIssue',map,"Commits/Issue","Commits per\n JIRA Issue");
+      conDecReport.initializeDivWithBoxPlotFromMap('CommitsPerIssue',map,"Commits/Issue","Commits per\n JIRA Issue");
 
-      ConDecReport.initializeDivWithBoxPlot('LinkDistanceIssue',$numLinkDistanceIssue,"Link distance","Link distance\nfrom Issue");
-      ConDecReport.initializeDivWithBoxPlot('LinkDistanceAlternative',$numLinkDistanceAlternative,"Link distance","Link distance\nfrom Alternative");
-      ConDecReport.initializeDivWithBoxPlot('LinkDistanceDecision',$numLinkDistanceDecision,"Link distance","Link distance\nfrom Decision");
+      conDecReport.initializeDivWithBoxPlot('LinkDistanceIssue',$numLinkDistanceIssue,"Link distance","Link distance\nfrom Issue");
+      conDecReport.initializeDivWithBoxPlot('LinkDistanceAlternative',$numLinkDistanceAlternative,"Link distance","Link distance\nfrom Alternative");
+      conDecReport.initializeDivWithBoxPlot('LinkDistanceDecision',$numLinkDistanceDecision,"Link distance","Link distance\nfrom Decision");
       
       var map = new Map();
       #foreach ($item in $numRelevantSentences.keySet())
         map.set("$item", $numRelevantSentences.get("$item"));
       #end
-      ConDecReport.initializeDivWithPieChart("relevantSentences","Relevance of Sentences","",map);
+      conDecReport.initializeDivWithPieChart("relevantSentences","Relevance of Sentences","",map);
 
       map = new Map();
       #foreach ($item in $numKnowledgeTypesPerIssue.keySet())
         map.set("$item", $numKnowledgeTypesPerIssue.get("$item"));
       #end
-      ConDecReport.initializeDivWithPieChart("knowledgeTypeDist","Knowledge Types","",map);
+      conDecReport.initializeDivWithPieChart("knowledgeTypeDist","Knowledge Types","",map);
 
       map = new Map();
       #foreach ($item in $numLinksToIssue.keySet())
         map.set("$item", $numLinksToIssue.get("$item"));
       #end
-      ConDecReport.initializeDivWithPieChart("issueLink","Issue linked to Decision","",map);
+      conDecReport.initializeDivWithPieChart("issueLink","Issue linked to Decision","",map);
       document.getElementById("issueLink").setAttribute("list", "$issuesWithoutDecisionLinks");
 
       map = new Map();
       #foreach ($item in $numLinksToDecision.keySet())
         map.set("$item", $numLinksToDecision.get("$item"));
       #end
-      ConDecReport.initializeDivWithPieChart("decisionLink","Decision linked to Issue","",map);
+      conDecReport.initializeDivWithPieChart("decisionLink","Decision linked to Issue","",map);
       document.getElementById("decisionLink").setAttribute("list", "$issuesWithoutDecisionLinks");
 
       map = new Map();
       #foreach ($item in $numAlternativeWoArgument.keySet())
         map.set("$item", $numAlternativeWoArgument.get("$item"));
       #end
-      ConDecReport.initializeDivWithPieChart("altWithArguments","Arguments for Alternatives","",map);
+      conDecReport.initializeDivWithPieChart("altWithArguments","Arguments for Alternatives","",map);
       document.getElementById("altWithArguments").setAttribute("list", "$issuesWithAltWoArg");
 
 
@@ -96,20 +96,20 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:repo
       #foreach ($item in $numLinksToIssueTypeIssue.keySet())
         map.set("$item", $numLinksToIssueTypeIssue.get("$item"));
       #end
-      ConDecReport.initializeDivWithPieChart("linksFromWiToIssue","Links from to Issue","",map);
+      conDecReport.initializeDivWithPieChart("linksFromWiToIssue","Links from to Issue","",map);
 
        map = new Map();
       #foreach ($item in $numLinksToIssueTypeIssue.keySet())
         map.set("$item", $numLinksToIssueTypeIssue.get("$item"));
       #end
-      ConDecReport.initializeDivWithPieChart("linksFromWiToIssue","Links from $issueType to Issue","",map);
+      conDecReport.initializeDivWithPieChart("linksFromWiToIssue","Links from $issueType to Issue","",map);
       document.getElementById("linksFromWiToIssue").setAttribute("list", "$jiraIssuesWithoutLinksToIssue");
 
       map = new Map();
       #foreach ($item in $numLinksToIssueTypeDecision.keySet())
         map.set("$item", $numLinksToIssueTypeDecision.get("$item"));
       #end
-      ConDecReport.initializeDivWithPieChart("linksFromWiToDecision","Links from $issueType to Decision","",map);
+      conDecReport.initializeDivWithPieChart("linksFromWiToDecision","Links from $issueType to Decision","",map);
       document.getElementById("linksFromWiToDecision").setAttribute("list", "$jiraIssuesWithoutLinksToDecision");
 
 

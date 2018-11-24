@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -27,13 +26,11 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.IssueStrategy;
-import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
 import net.java.ao.Query;
 
 public class ActiveObjectsManager {
@@ -380,7 +377,7 @@ public class ActiveObjectsManager {
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
 						ActiveObjectsManager.stripTagsOutOfComment(sentenceEntity);
-						GenericLinkManager.deleteLinksForElementWithoutTransaction("s"+id);
+						GenericLinkManager.deleteLinksForElementWithoutTransaction("s" + id);
 
 						ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(sentenceEntity.getIssueId());
 						sentenceEntity.setRelevant(false);
@@ -671,19 +668,17 @@ public class ActiveObjectsManager {
 			deleteSentenceObject(entity.getId());
 		}
 	}
-	
-	
+
 	public static int countCommentsForIssue(long issueId) {
 		init();
 		DecisionKnowledgeInCommentEntity[] commentSentences = ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("ISSUE_ID = ?", issueId));
-		 Set<Long> treeSet = new TreeSet<>();
-		
-		
-		for(DecisionKnowledgeInCommentEntity sentence: commentSentences) {
-			 treeSet.add(sentence.getCommentId());
+		Set<Long> treeSet = new TreeSet<>();
+
+		for (DecisionKnowledgeInCommentEntity sentence : commentSentences) {
+			treeSet.add(sentence.getCommentId());
 		}
-		
+
 		return treeSet.size();
 	}
 

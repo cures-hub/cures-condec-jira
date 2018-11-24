@@ -34,12 +34,11 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	private String projectKey;
 
 	private IssueEvent issueEvent;
-	
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DecXtractEventListener.class);
 
 	/**
-	 * locks the editComment Event function if a rest service writes edites comments
+	 * Locks the editComment Event function if a rest service edites comments.
 	 */
 	public static boolean editCommentLock;
 
@@ -73,15 +72,17 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		LOGGER.debug("DecXtract Event Listener catched an event");
 		this.issueEvent = issueEvent;
 		this.projectKey = issueEvent.getProject().getKey();
-		if(!ConfigPersistence.isActivated(this.projectKey) && !ConfigPersistence.isKnowledgeExtractedFromIssues(this.projectKey)) {
+		if (!ConfigPersistence.isActivated(this.projectKey)
+				&& !ConfigPersistence.isKnowledgeExtractedFromIssues(this.projectKey)) {
 			return;
 		}
 		Long eventTypeId = issueEvent.getEventTypeId();
-		if(eventTypeId.equals(EventType.ISSUE_COMMENTED_ID) || eventTypeId.equals(EventType.ISSUE_COMMENT_EDITED_ID)) {
+		if (eventTypeId.equals(EventType.ISSUE_COMMENTED_ID) || eventTypeId.equals(EventType.ISSUE_COMMENT_EDITED_ID)) {
 
 			LOGGER.debug("\nDecXtract Event Listener:\nparseIconsToTags()\ncreateLinksForNonLinkedElementsForIssue");
 			parseIconsToTags();
-			ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(new DecisionKnowledgeElementImpl(issueEvent.getIssue()).getId());
+			ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(
+					new DecisionKnowledgeElementImpl(issueEvent.getIssue()).getId());
 		}
 		if (eventTypeId.equals(EventType.ISSUE_COMMENTED_ID)) {
 			LOGGER.debug("\nDecXtract Event Listener:\nhandleNewComment()");
@@ -100,20 +101,22 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 			LOGGER.debug("\nDecXtract Event Listener:\nhandleDeleteIssue()");
 			handleDeleteIssue(new DecisionKnowledgeElementImpl(issueEvent.getIssue()));
 		}
-		pareseSlashTagsOutOfComment();
+		parseSlashTagsOutOfComment();
 	}
 
 	private void parseIconsToTags() {
-		if(!ConfigPersistence.isIconParsing(issueEvent.getProject().getKey())) {
-			return ;
+		if (!ConfigPersistence.isIconParsing(issueEvent.getProject().getKey())) {
+			return;
 		}
 		MutableComment comment = getCurrentEditedComment();
 		for (int i = 0; i < CommentSplitter.manualRationalIconList.length; i++) {
-			String icon = CommentSplitter.manualRationalIconList[i];			
-			while(comment.getBody().contains(icon)) {
-				comment.setBody(comment.getBody().replaceFirst(icon.replace("(", "\\(").replace(")", "\\)"), CommentSplitter.manualRationaleTagList[i]));
-				if(comment.getBody().split(System.getProperty("line.separator")).length == 1 && !comment.getBody().endsWith("\r\n")) {
-					comment.setBody(comment.getBody()+ CommentSplitter.manualRationaleTagList[i]);
+			String icon = CommentSplitter.manualRationalIconList[i];
+			while (comment.getBody().contains(icon)) {
+				comment.setBody(comment.getBody().replaceFirst(icon.replace("(", "\\(").replace(")", "\\)"),
+						CommentSplitter.manualRationaleTagList[i]));
+				if (comment.getBody().split(System.getProperty("line.separator")).length == 1
+						&& !comment.getBody().endsWith("\r\n")) {
+					comment.setBody(comment.getBody() + CommentSplitter.manualRationaleTagList[i]);
 				}
 				comment.setBody(comment.getBody().replaceFirst("\r\n", CommentSplitter.manualRationaleTagList[i]));
 				ComponentAccessor.getCommentManager().update(comment, true);
@@ -122,19 +125,18 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	}
 
 	/**
-	 * Parse \{ out of tags. These slashes are inserted by the visual mode editor
+	 * Parses \{ out of tags. These slashes are inserted by the visual mode editor.
 	 */
-	private void pareseSlashTagsOutOfComment() {
+	private void parseSlashTagsOutOfComment() {
 		if (issueEvent.getComment() != null && issueEvent.getComment().getBody().contains("\\{")) {
 			MutableComment comment = getCurrentEditedComment();
 			comment.setBody(issueEvent.getComment().getBody().replace("\\{", "{"));
 			ComponentAccessor.getCommentManager().update(comment, true);
 		}
 	}
-	
+
 	private MutableComment getCurrentEditedComment() {
-		return (MutableComment) ComponentAccessor.getCommentManager()
-				.getCommentById(issueEvent.getComment().getId());
+		return (MutableComment) ComponentAccessor.getCommentManager().getCommentById(issueEvent.getComment().getId());
 	}
 
 	private void handleDeleteIssue(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
@@ -143,12 +145,13 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	}
 
 	private void handleEditComment(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
-		// If locked, a rest service is manipulating the comment and should not be handled by EL
-		if (!DecXtractEventListener.editCommentLock) { 
+		// If locked, a REST service is manipulating the comment and should not be
+		// handled by this event listener.
+		if (!DecXtractEventListener.editCommentLock) {
 			ActiveObjectsManager.deleteCommentsSentences(issueEvent.getComment());
 			new ViewConnector(this.issueEvent.getIssue(), false);
-			ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId() );
-		}else {
+			ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
+		} else {
 			LOGGER.debug("\nDecXtract Event Listener:\nHandle Edit Comment is still locked");
 		}
 	}

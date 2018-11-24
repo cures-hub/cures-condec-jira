@@ -22,9 +22,9 @@ public class ViewConnector {
 	private List<Comment> commentsList;
 
 	private CommentManager commentManager;
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(ViewConnector.class);
-	
+
 	private static List<String> connectorInUseLock = new ArrayList<String>();
 
 	public ViewConnector(Issue issue) {
@@ -37,11 +37,11 @@ public class ViewConnector {
 
 	public ViewConnector(Issue issue, boolean doNotClassify) {
 		this(issue);
-		if(!connectorInUseLock.contains(issue.getKey())) {
+		if (!connectorInUseLock.contains(issue.getKey())) {
 			connectorInUseLock.add(issue.getKey());
 			if (issue != null && commentManager.getComments(issue) != null) {
 				for (com.atlassian.jira.issue.comments.Comment comment : commentManager.getComments(issue)) {
-					Comment comment2 = new CommentImpl(comment,true);
+					Comment comment2 = new CommentImpl(comment, true);
 					commentsList.add(comment2);
 				}
 			}
@@ -49,8 +49,8 @@ public class ViewConnector {
 				this.startClassification();
 			}
 			connectorInUseLock.remove(issue.getKey());
-		}else {
-			LOGGER.debug("Could not run ViewConnector. It's currently in use for issue: " +issue.getKey());
+		} else {
+			LOGGER.debug("Could not run ViewConnector. It's currently in use for issue: " + issue.getKey());
 		}
 	}
 
@@ -69,19 +69,19 @@ public class ViewConnector {
 	}
 
 	public List<String> getAllCommentsAuthorNames() {
-		List<String> authorName = new ArrayList<String>();
-		for (Comment c : commentsList) {
-			authorName.add(c.getAuthorFullName());
+		List<String> authorNames = new ArrayList<String>();
+		for (Comment comment : commentsList) {
+			authorNames.add(comment.getAuthorFullName());
 		}
-		return authorName;
+		return authorNames;
 	}
 
 	public List<String> getAllCommentsDates() {
-		List<String> commentDate = new ArrayList<String>();
-		for (Comment c : commentsList) {
-			commentDate.add(c.getCreated().toString().replace("CEST", ""));
+		List<String> commentDates = new ArrayList<String>();
+		for (Comment comment : commentsList) {
+			commentDates.add(comment.getCreated().toString().replace("CEST", ""));
 		}
-		return commentDate;
+		return commentDates;
 	}
 
 	public String getSentenceStyles() {
@@ -96,5 +96,4 @@ public class ViewConnector {
 
 		return style;
 	}
-
 }

@@ -35,8 +35,10 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 			LOGGER.error("Issue tab panel cannot be rendered correctly since no issue or user are provided.");
 			return new ArrayList<>();
 		}
-		// Initialize viewConnector with the current shown Issue, only if there are more comments than saved
-		if(ActiveObjectsManager.countCommentsForIssue(issue.getId()) != ComponentAccessor.getCommentManager().getComments(issue).size()) {
+		// Initialize viewConnector with the current shown Issue, only if there are more
+		// comments than saved
+		if (ActiveObjectsManager.countCommentsForIssue(issue.getId()) != ComponentAccessor.getCommentManager()
+				.getComments(issue).size()) {
 			new ViewConnector(issue, true);
 		}
 
@@ -73,7 +75,6 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 		Map<String, Object> context = velocityParamFactory.getDefaultVelocityParams();
 
 		return (velocityManager.getEncodedBody("templates/", "tabPanel.vm", baseUrl, webworkEncoding, context));
-
 	}
 
 }

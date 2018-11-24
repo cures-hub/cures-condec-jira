@@ -53,13 +53,13 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	private String issuesWithNoExistingLinksToDecisionKnowledge;
 
 	public static org.json.JSONObject restResponse;
-	
-	//Need these constructurs, instead bean exception
+
+	// Need these constructurs, instead bean exception
 	public DecisionKnowledgeReport(ProjectManager projectManager) {
 		this.projectManager = projectManager;
 	}
-	
-	//Need these constructurs, instead bean exception
+
+	// Need these constructurs, instead bean exception
 	public DecisionKnowledgeReport(ProjectManager projectManager, String rootType) {
 		this.projectManager = projectManager;
 	}
@@ -136,7 +136,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 			boolean linkExisting = false;
 			if (checkEqualIssueTypeIssue(issue.getIssueType())) {
 				for (Link link : GenericLinkManager.getLinksForElement("i" + issue.getId())) {
-					if(link.isValid()) {
+					if (link.isValid()) {
 						DecisionKnowledgeElement dke = link.getOppositeElement(new DecisionKnowledgeElementImpl(issue));
 						if (dke.getType().equals(knowledgeType)) {
 							linkExisting = true;
@@ -172,8 +172,8 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		if (issueType2 == null) {
 			return false;
 		}
-		if (this.jiraIssueTypeToLinkTo.equals("WI")
-				&& (issueType2.getName().equalsIgnoreCase("User Task") || issueType2.getName().equalsIgnoreCase("Aufgabe"))) {
+		if (this.jiraIssueTypeToLinkTo.equals("WI") && (issueType2.getName().equalsIgnoreCase("User Task")
+				|| issueType2.getName().equalsIgnoreCase("Aufgabe"))) {
 			return true;
 		}
 		return (this.jiraIssueTypeToLinkTo.equals("B")
@@ -256,7 +256,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 			List<Link> links = GenericLinkManager.getLinksForElement("s" + currentAlternative.getId());
 			boolean hasArgument = false;
 			for (Link link : links) {
-				if(link.isValid()) {
+				if (link.isValid()) {
 					DecisionKnowledgeElement dke = link.getOppositeElement("s" + currentAlternative.getId());
 					if (dke instanceof Sentence && dke.getType().equals(KnowledgeType.ARGUMENT)) {
 						hasArgument = true;
@@ -293,7 +293,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 			boolean hastOtherElementLinked = false;
 
 			for (Link link : links) {
-				if(link.isValid()) {
+				if (link.isValid()) {
 					DecisionKnowledgeElement dke = link.getOppositeElement("s" + issue.getId());
 					if (dke instanceof Sentence && dke.getType().equals(linkTo1)) { // alt
 						hastOtherElementLinked = true;

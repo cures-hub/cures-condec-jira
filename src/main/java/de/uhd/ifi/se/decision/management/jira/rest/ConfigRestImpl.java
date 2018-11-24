@@ -337,13 +337,13 @@ public class ConfigRestImpl implements ConfigRest {
 		try {
 			// Deletion is only useful during development, do not ship to enduser!!
 			// ActiveObjectsManager.clearSentenceDatabaseForProject(projectKey);
-			//find possible null values in AO Table, set them to default
+			// find possible null values in AO Table, set them to default
 			ActiveObjectsManager.setDefaultValuesToExistingElements();
-			//If still something is wrong, delete an elements and its links
+			// If still something is wrong, delete an elements and its links
 			ActiveObjectsManager.cleanSentenceDatabaseForProject(projectKey);
-			//If some links ar bad, delete those links
+			// If some links ar bad, delete those links
 			GenericLinkManager.clearInvalidLinks();
-			//If there are now some "lonely" sentences, link them to their issues.
+			// If there are now some "lonely" sentences, link them to their issues.
 			ActiveObjectsManager.createLinksForNonLinkedElementsForProject(projectKey);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {

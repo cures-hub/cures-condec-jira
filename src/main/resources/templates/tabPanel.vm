@@ -25,17 +25,17 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:clas
 	</tbody>
 </table>
 
- <input class=text medium-long-field id=jstree-search-input placeholder=Search decision knowledge />
- <div id =jstree> </div> 
+<input class="text medium-long-field" id="jstree-search-input" placeholder="Search decision knowledge" />
+<div id="jstree"> </div> 
 <script>
 	/*
 	instantiate the ConDecIssueTab object controlling this view
 	*/
 	$(document).ready(function(){
 	    if ( window.conDecIssueTab.init(conDecAPI, conDecObservable, conDecTreeViewer, conDecContextMenu) ) {
-	    	 window.conDecIssueTab.fetchAndRender();
-	    }else{
-	        console.error("ConDecIssueTab could not get its dependencies.");
+	    	window.conDecIssueTab.fetchAndRender();
+	    } else {
+	    	console.error("ConDecIssueTab could not get its dependencies.");
 	    }
 	});
 </script>
