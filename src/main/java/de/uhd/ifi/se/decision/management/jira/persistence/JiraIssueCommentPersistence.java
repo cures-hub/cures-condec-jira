@@ -7,12 +7,18 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
+/**
+ * Extends the abstract class AbstractPersistenceManager. Uses JIRA issue comments to
+ * store decision knowledge.
+ *
+ * @see AbstractPersistenceManager
+ */
 public class JiraIssueCommentPersistence extends AbstractPersistenceManager {
 
-	private String projectKey;
+	//private String projectKey;
 
 	public JiraIssueCommentPersistence(String projectKey) {
-		this.projectKey = projectKey;
+		//this.projectKey = projectKey;
 	}
 
 	@Override

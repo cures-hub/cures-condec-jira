@@ -23,8 +23,9 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import net.java.ao.Query;
 
 /**
- * Extends the abstract class AbstractPersistenceStrategy. Uses the active
- * object framework to store decision knowledge.
+ * Extends the abstract class AbstractPersistenceStrategy. Uses object
+ * relational mapping with the help of the active object framework to store
+ * decision knowledge.
  *
  * @see AbstractPersistenceManager
  */

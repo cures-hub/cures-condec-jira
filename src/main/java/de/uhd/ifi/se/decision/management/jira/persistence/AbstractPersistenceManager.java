@@ -13,12 +13,14 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
  * Abstract class to create, edit, delete and retrieve decision knowledge
- * elements and their links. Concrete persistence strategies are either the
- * issue strategy or the active object strategy. Use the strategy provider to
- * get the persistence strategy used in a project.
+ * elements and their links. Concrete persistence strategies for first class
+ * elements are either the JIRA issue strategy or the active object strategy. Use the
+ * strategy provider to get the persistence strategy used in a project. Other
+ * persistence methods are for example JIRA issue comments, description, and commit messages.
  *
  * @see JiraIssuePersistence
  * @see ActiveObjectPersistence
+ * @see JiraIssueCommentPersistence
  * @see PersistenceProvider
  */
 public abstract class AbstractPersistenceManager {
