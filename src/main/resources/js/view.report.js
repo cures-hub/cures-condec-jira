@@ -9,7 +9,7 @@
 		var data = echarts.dataTool.prepareBoxplotData(new Array(dataFromServer));
 		myChart.setOption(getOptionsForBoxplot(title, xAxis, "", data));
 		document.getElementById(id).setAttribute("list", dataFromServer);
-	}
+	};
 
 	ConDecReport.prototype.initializeDivWithBoxPlotFromMap = function initializeDivWithBoxPlotFromMap(id, dataFromServer, xAxis, title) {
 		var dataMap =dataFromServer;
@@ -26,7 +26,7 @@
 		var data = echarts.dataTool.prepareBoxplotData(new Array(values));
 		myChart.setOption(getOptionsForBoxplot(title, xAxis, "", data));
 		document.getElementById(id).setAttribute("list", listToShowUserWithAllValues);
-	}
+	};
 
 	ConDecReport.prototype.initializeDivWithPieChart =  function initializeDivWithPieChart(id, title, subtitle, dataMap) {
 		var myChart = echarts.init(document.getElementById(id));
@@ -43,7 +43,7 @@
 		}
 		myChart.setOption(getOptionsForPieChart(title, subtitle, Array.from(dataMap.keys()), data));
 		document.getElementById(id).setAttribute("list", list);
-	}
+	};
 
 	 function getOptionsForBoxplot(name, xLabel, ylabel, data) {
 		return {
