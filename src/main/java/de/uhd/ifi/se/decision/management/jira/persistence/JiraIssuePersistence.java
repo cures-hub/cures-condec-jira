@@ -40,15 +40,15 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
  * Extends the abstract class AbstractPersistenceStrategy. Uses JIRA issues to
  * store decision knowledge.
  *
- * @see AbstractPersistenceStrategy
+ * @see AbstractPersistenceManager
  */
 @JsonAutoDetect
-public class IssueStrategy extends AbstractPersistenceStrategy {
-	private static final Logger LOGGER = LoggerFactory.getLogger(IssueStrategy.class);
+public class JiraIssuePersistence extends AbstractPersistenceManager {
+	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssuePersistence.class);
 
 	private String projectKey;
 
-	public IssueStrategy(String projectKey) {
+	public JiraIssuePersistence(String projectKey) {
 		this.projectKey = projectKey;
 	}
 

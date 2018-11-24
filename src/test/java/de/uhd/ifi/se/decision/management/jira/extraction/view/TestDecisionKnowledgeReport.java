@@ -31,7 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 import net.java.ao.EntityManager;
@@ -48,7 +48,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 	private DecisionKnowledgeReport report;
 	 
 
-	private AbstractPersistenceStrategy persistenceStrategy;
+	private AbstractPersistenceManager persistenceStrategy;
 
 	private Comment comment;
 

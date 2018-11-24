@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 
@@ -71,7 +71,7 @@ public class WebhookConnector {
 			}
 		}
 
-		AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+		AbstractPersistenceManager strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 		boolean isDeleted = strategy.deleteDecisionKnowledgeElement(elementToBeDeleted, user);
 		if (isDeleted) {
 			isDeleted = postKnowledgeTrees(rootElements);
@@ -91,7 +91,7 @@ public class WebhookConnector {
 	private List<DecisionKnowledgeElement> getWebhookRootElements(DecisionKnowledgeElement element) {
 		List<DecisionKnowledgeElement> webhookRootElements = new ArrayList<DecisionKnowledgeElement>();
 
-		AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+		AbstractPersistenceManager strategy = StrategyProvider.getPersistenceStrategy(projectKey);
 		List<DecisionKnowledgeElement> linkedElements = strategy.getLinkedElements(element);
 		linkedElements.add(element);
 		for (DecisionKnowledgeElement linkedElement : linkedElements) {

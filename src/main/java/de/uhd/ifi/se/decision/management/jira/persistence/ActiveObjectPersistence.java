@@ -26,16 +26,16 @@ import net.java.ao.Query;
  * Extends the abstract class AbstractPersistenceStrategy. Uses the active
  * object framework to store decision knowledge.
  *
- * @see AbstractPersistenceStrategy
+ * @see AbstractPersistenceManager
  */
 @JsonAutoDetect
-public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectStrategy.class);
+public class ActiveObjectPersistence extends AbstractPersistenceManager {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectPersistence.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
 	private String projectKey;
 
-	public ActiveObjectStrategy(String projectKey) {
+	public ActiveObjectPersistence(String projectKey) {
 		this.projectKey = projectKey;
 	}
 

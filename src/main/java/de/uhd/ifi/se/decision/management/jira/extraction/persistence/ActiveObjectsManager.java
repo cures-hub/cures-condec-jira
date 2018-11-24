@@ -30,7 +30,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.IssueStrategy;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistence;
 import net.java.ao.Query;
 
 public class ActiveObjectsManager {
@@ -592,13 +592,13 @@ public class ActiveObjectsManager {
 
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(aoId);
 
-		IssueStrategy s = new IssueStrategy(element.getProjectKey());
+		JiraIssuePersistence s = new JiraIssuePersistence(element.getProjectKey());
 		DecisionKnowledgeElement decElement = s.insertDecisionKnowledgeElement(element, user);
 
 		MutableIssue issue = ComponentAccessor.getIssueService().getIssue(user, decElement.getId()).getIssue();
 
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
-		long linkTypeId = IssueStrategy.getLinkTypeId("contain");
+		long linkTypeId = JiraIssuePersistence.getLinkTypeId("contain");
 
 		try {
 			issueLinkManager.createIssueLink(element.getIssueId(), issue.getId(), linkTypeId, (long) 0, user);

@@ -17,11 +17,11 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  * issue strategy or the active object strategy. Use the strategy provider to
  * get the persistence strategy used in a project.
  *
- * @see IssueStrategy
- * @see ActiveObjectStrategy
+ * @see JiraIssuePersistence
+ * @see ActiveObjectPersistence
  * @see StrategyProvider
  */
-public abstract class AbstractPersistenceStrategy {
+public abstract class AbstractPersistenceManager {
 
 	/**
 	 * Delete an existing decision knowledge element in database.

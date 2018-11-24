@@ -3,7 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
 
 /**
@@ -13,7 +13,7 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 
 	private String projectKey;
 	private String projectName;
-	private AbstractPersistenceStrategy persistenceStrategy;
+	private AbstractPersistenceManager persistenceStrategy;
 
 	public DecisionKnowledgeProjectImpl(String projectKey) {
 		this.projectKey = projectKey;
@@ -65,7 +65,7 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	}
 
 	@Override
-	public AbstractPersistenceStrategy getPersistenceStrategy() {
+	public AbstractPersistenceManager getPersistenceStrategy() {
 		if (this.persistenceStrategy == null) {
 			this.persistenceStrategy = DecisionKnowledgeProject.getPersistenceStrategy(this.projectKey);
 		}

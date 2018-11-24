@@ -21,11 +21,11 @@ public class TestStrategyProvider extends TestSetUpWithIssues {
 
 	@Test
 	public void testProjectKeyNonExistent() {
-		assertTrue(StrategyProvider.getPersistenceStrategy("TESTNOT") instanceof IssueStrategy);
+		assertTrue(StrategyProvider.getPersistenceStrategy("TESTNOT") instanceof JiraIssuePersistence);
 	}
 
 	@Test
 	public void testProjectKeyExistent() {
-		assertTrue(StrategyProvider.getPersistenceStrategy("TEST") instanceof IssueStrategy);
+		assertTrue(StrategyProvider.getPersistenceStrategy("TEST") instanceof JiraIssuePersistence);
 	}
 }

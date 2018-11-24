@@ -2,9 +2,9 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.Set;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
-import de.uhd.ifi.se.decision.management.jira.persistence.ActiveObjectStrategy;
-import de.uhd.ifi.se.decision.management.jira.persistence.IssueStrategy;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.ActiveObjectPersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistence;
 import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 
 /**
@@ -69,9 +69,9 @@ public interface DecisionKnowledgeProject {
 	 * project. If you choose the issue strategy, you need to associate the project
 	 * with the decision knowledge issue type scheme.
 	 *
-	 * @see AbstractPersistenceStrategy
-	 * @see IssueStrategy
-	 * @see ActiveObjectStrategy
+	 * @see AbstractPersistenceManager
+	 * @see JiraIssuePersistence
+	 * @see ActiveObjectPersistence
 	 * @return true if decision knowledge is stored in JIRA issues for this project
 	 *         (issue strategy). Otherwise object relational mapping is used (active
 	 *         object strategy).
@@ -83,9 +83,9 @@ public interface DecisionKnowledgeProject {
 	 * you choose the issue strategy, you need to associate the project with the
 	 * decision knowledge issue type scheme.
 	 *
-	 * @see AbstractPersistenceStrategy
-	 * @see IssueStrategy
-	 * @see ActiveObjectStrategy
+	 * @see AbstractPersistenceManager
+	 * @see JiraIssuePersistence
+	 * @see ActiveObjectPersistence
 	 * @param isIssueStrategy true if decision knowledge should be stored in JIRA
 	 *                        issues for this project (issue strategy). Otherwise
 	 *                        object relational mapping is used (active object
@@ -96,27 +96,27 @@ public interface DecisionKnowledgeProject {
 	/**
 	 * Get the persistence strategy for decision knowledge used in this project.
 	 *
-	 * @see AbstractPersistenceStrategy
-	 * @see IssueStrategy
-	 * @see ActiveObjectStrategy
+	 * @see AbstractPersistenceManager
+	 * @see JiraIssuePersistence
+	 * @see ActiveObjectPersistence
 	 * @return persistence strategy for decision knowledge used in this project,
 	 *         either issue strategy or active object strategy. The active object
 	 *         strategy is the default strategy.
 	 */
-	AbstractPersistenceStrategy getPersistenceStrategy();
+	AbstractPersistenceManager getPersistenceStrategy();
 
 	/**
 	 * Get the persistence strategy for decision knowledge used in this project.
 	 *
-	 * @see AbstractPersistenceStrategy
-	 * @see IssueStrategy
-	 * @see ActiveObjectStrategy
+	 * @see AbstractPersistenceManager
+	 * @see JiraIssuePersistence
+	 * @see ActiveObjectPersistence
 	 * @param projectKey of the JIRA project.
 	 * @return persistence strategy for decision knowledge used in this project,
 	 *         either issue strategy or active object strategy. The active object
 	 *         strategy is the default strategy.
 	 */
-	static AbstractPersistenceStrategy getPersistenceStrategy(String projectKey) {
+	static AbstractPersistenceManager getPersistenceStrategy(String projectKey) {
 		return StrategyProvider.getPersistenceStrategy(projectKey);
 	}
 
