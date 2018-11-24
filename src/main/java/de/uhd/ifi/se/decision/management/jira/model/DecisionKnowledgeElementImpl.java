@@ -107,6 +107,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 		return type;
 	}
 
+	@Override
 	@XmlElement(name = "type")
 	public String getTypeAsString() {
 		if(type == KnowledgeType.OTHER) {

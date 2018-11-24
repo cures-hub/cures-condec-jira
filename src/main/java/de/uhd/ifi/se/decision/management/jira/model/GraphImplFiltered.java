@@ -33,6 +33,7 @@ public class GraphImplFiltered extends GraphImpl {
 		this.elementsVisitedTransitively = new ArrayList<DecisionKnowledgeElement>();
 	}
 
+	@Override
 	protected Map<DecisionKnowledgeElement, Link> getLinkedFirstClassElementsAndLinks(
 			DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
@@ -108,6 +109,7 @@ public class GraphImplFiltered extends GraphImpl {
 		return transitivelyLinkedElements;
 	}
 
+	@Override
 	protected Map<DecisionKnowledgeElement, Link> getLinkedSentencesAndLinks(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
