@@ -33,11 +33,12 @@
 			event.preventDefault();
 			var left = event.pageX;
 			var top = event.pageY;
-			var id = event.target.parentNode.id.split("-")[0];
+			var id = event.target.parentNode.id;
+			id = id.replace("tv", "");
 			if (event.target.parentNode.classList.contains("sentence")) {
-				conDecContextMenu.createContextMenuForSentences(left, top, event.target.parentNode.id);
+				conDecContextMenu.createContextMenuForSentences(left, top, id);
 			} else {
-				conDecContextMenu.createContextMenu(left, top, "tv" + event.target.parentNode.id);
+				conDecContextMenu.createContextMenu(left, top, id);
 			}
 		});
 	}

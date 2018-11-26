@@ -31,9 +31,8 @@
 	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(posX, posY, id) {
 		isContextMenuOpen = true;
 		console.log("contextmenu opened");
-		id = id.replace("tv", "");
 
-		posY = getCorrectPosY(posY, id);
+		posY = getCorrectPosY(posY);
 
 		$("#condec-context-menu").css({
 			left : posX,
@@ -84,16 +83,15 @@
 
 	ConDecContextMenu.prototype.createContextMenuForSentences = function createContextMenuForSentences(posX, posY, id) {
 		isContextMenuOpen = true;
-
-		posY = getCorrectPosY(posY, id);
-
 		console.log("contextmenu opened");
 
+		posY = getCorrectPosY(posY);
+		
 		$("#condec-context-menu-sentence").css({
 			left : posX,
 			top : posY
 		});
-		id = id.replace("tv", "");
+		
 		document.getElementById("condec-context-menu-sentence").style.zIndex = 9998;
 		document.querySelector("#condec-context-menu-sentence").setAttribute('aria-hidden', 'false');
 
@@ -160,7 +158,7 @@
 		};
 	};
 
-	function getCorrectPosY(posY, id) {
+	function getCorrectPosY(posY) {
 		var view = null;
 		if (document.getElementsByClassName("aui-item detail-panel")[0] != undefined) {// filtered	
 			view = document.getElementsByClassName("aui-item detail-panel")[0];
@@ -168,8 +166,7 @@
 			view = document.getElementsByClassName("issue-view")[0];
 		}
 		if (view != null) {
-			console.log(id);
-			posY = ($("#" + id).offset().top + view.scrollTop);
+			posY = (posY + view.scrollTop);
 		}
 		return posY;
 	}
