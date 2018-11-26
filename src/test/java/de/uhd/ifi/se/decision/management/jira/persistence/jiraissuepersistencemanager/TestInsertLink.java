@@ -11,7 +11,7 @@ import com.atlassian.jira.user.MockApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 
-public class TestInsertLink extends TestIssueStrategySetUp {
+public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test(expected = NullPointerException.class)
 	public void testLinkNullUserNull() {

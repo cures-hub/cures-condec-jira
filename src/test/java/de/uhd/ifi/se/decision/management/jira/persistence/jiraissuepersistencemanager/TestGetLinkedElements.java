@@ -17,7 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 
-public class TestGetLinkedElements extends TestIssueStrategySetUp {
+public class TestGetLinkedElements extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test
 	public void testDecisionKnowledgeElementNull() {

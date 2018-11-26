@@ -37,7 +37,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 
-public class ActiveObjectStrategyTestSetUp {
+public class ActiveObjectPersistenceManagerTestSetUp {
 
 	protected EntityManager entityManager;
 	protected ApplicationUser user;

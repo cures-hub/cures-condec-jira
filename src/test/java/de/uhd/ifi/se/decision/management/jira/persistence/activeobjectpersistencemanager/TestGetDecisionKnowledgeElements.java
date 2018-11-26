@@ -13,8 +13,8 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(ActiveObjectStrategyTestSetUp.AoSentenceTestDatabaseUpdater.class)
-public class TestGetDecisionKnowledgeElements extends ActiveObjectStrategyTestSetUp {
+@Data(ActiveObjectPersistenceManagerTestSetUp.AoSentenceTestDatabaseUpdater.class)
+public class TestGetDecisionKnowledgeElements extends ActiveObjectPersistenceManagerTestSetUp {
 
 	@Before
 	public void setUp() {

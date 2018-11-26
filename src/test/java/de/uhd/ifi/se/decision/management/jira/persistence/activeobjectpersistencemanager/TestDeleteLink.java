@@ -19,8 +19,8 @@ import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(ActiveObjectStrategyTestSetUp.AoSentenceTestDatabaseUpdater.class)
-public class TestDeleteLink extends ActiveObjectStrategyTestSetUp {
+@Data(ActiveObjectPersistenceManagerTestSetUp.AoSentenceTestDatabaseUpdater.class)
+public class TestDeleteLink extends ActiveObjectPersistenceManagerTestSetUp {
 
 	private Link link;
 	DecisionKnowledgeElement linkedDecisision;

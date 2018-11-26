@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
 
-public class TestGetDecisionKnowledgeElements extends TestIssueStrategySetUp {
+public class TestGetDecisionKnowledgeElements extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test
 	public void testProjectNonExistent() {

@@ -7,7 +7,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 
-public class TestGetElementsLinkedWithOutwardLinks extends TestIssueStrategySetUp {
+public class TestGetElementsLinkedWithOutwardLinks extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test
 	public void testElementNull() {

@@ -13,8 +13,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(ActiveObjectStrategyTestSetUp.AoSentenceTestDatabaseUpdater.class)
-public class TestInsertDecisionKnowledgeElement extends ActiveObjectStrategyTestSetUp {
+@Data(ActiveObjectPersistenceManagerTestSetUp.AoSentenceTestDatabaseUpdater.class)
+public class TestInsertDecisionKnowledgeElement extends ActiveObjectPersistenceManagerTestSetUp {
 
 	private DecisionKnowledgeElement element;
 

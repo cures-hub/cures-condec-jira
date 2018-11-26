@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class TestGetUnlinkedElements extends TestIssueStrategySetUp {
+public class TestGetUnlinkedElements extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test
 	public void testIdCannotBeFound() {

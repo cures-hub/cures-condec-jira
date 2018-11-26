@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-public class TestInsertDecisionKnowledgeElement extends TestIssueStrategySetUp {
+public class TestInsertDecisionKnowledgeElement extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test(expected = NullPointerException.class)
 	public void testElementNullUserNull() {

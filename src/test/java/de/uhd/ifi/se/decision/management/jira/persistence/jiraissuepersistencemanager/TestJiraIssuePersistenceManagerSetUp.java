@@ -5,7 +5,7 @@ import org.junit.Before;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
 
-public class TestIssueStrategySetUp extends TestSetUpWithIssues {
+public class TestJiraIssuePersistenceManagerSetUp extends TestSetUpWithIssues {
 
 	protected JiraIssuePersistenceManager issueStrategy;
 	protected int numberOfElements;

@@ -14,8 +14,8 @@ import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(ActiveObjectStrategyTestSetUp.AoSentenceTestDatabaseUpdater.class)
-public class TestGetDecisionKnowledgeElementId extends ActiveObjectStrategyTestSetUp {
+@Data(ActiveObjectPersistenceManagerTestSetUp.AoSentenceTestDatabaseUpdater.class)
+public class TestGetDecisionKnowledgeElementId extends ActiveObjectPersistenceManagerTestSetUp {
 
     private DecisionKnowledgeElement element;
 
