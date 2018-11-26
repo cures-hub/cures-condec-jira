@@ -160,12 +160,12 @@
 
 	function getCorrectPosY(posY) {
 		var view = null;
-		if (document.getElementsByClassName("aui-item detail-panel")[0] != undefined) {// filtered	
+		if (document.getElementsByClassName("aui-item detail-panel")[0] !== undefined) {// filtered	
 			view = document.getElementsByClassName("aui-item detail-panel")[0];
-		} else if (document.getElementsByClassName("issue-view")[0] != undefined) {// unfiltered
+		} else if (document.getElementsByClassName("issue-view")[0] !== undefined) {// unfiltered
 			view = document.getElementsByClassName("issue-view")[0];
 		}
-		if (view != null) {
+		if (view !== null) {
 			posY = posY + view.scrollTop;
 		}
 		return posY;
