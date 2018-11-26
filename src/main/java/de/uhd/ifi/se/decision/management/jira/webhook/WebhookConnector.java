@@ -16,7 +16,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceProvider;
 
 /**
  * Webhook class that posts changed decision knowledge to a given URL.
@@ -71,7 +70,7 @@ public class WebhookConnector {
 			}
 		}
 
-		AbstractPersistenceManager strategy = PersistenceProvider.getPersistenceStrategy(projectKey);
+		AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
 		boolean isDeleted = strategy.deleteDecisionKnowledgeElement(elementToBeDeleted, user);
 		if (isDeleted) {
 			isDeleted = postKnowledgeTrees(rootElements);
@@ -91,7 +90,7 @@ public class WebhookConnector {
 	private List<DecisionKnowledgeElement> getWebhookRootElements(DecisionKnowledgeElement element) {
 		List<DecisionKnowledgeElement> webhookRootElements = new ArrayList<DecisionKnowledgeElement>();
 
-		AbstractPersistenceManager strategy = PersistenceProvider.getPersistenceStrategy(projectKey);
+		AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
 		List<DecisionKnowledgeElement> linkedElements = strategy.getLinkedElements(element);
 		linkedElements.add(element);
 		for (DecisionKnowledgeElement linkedElement : linkedElements) {

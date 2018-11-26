@@ -33,7 +33,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceProvider;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -68,7 +67,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		this.report.validate(pas, params);
 		
 		
-		persistenceStrategy = PersistenceProvider.getPersistenceStrategy("TEST");
+		persistenceStrategy = AbstractPersistenceManager.getPersistenceStrategy("TEST");
 	}
 	
 	private MutableIssue createCommentStructureWithTestIssue(String text) {

@@ -5,7 +5,6 @@ import java.util.Set;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ActiveObjectPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceProvider;
 
 /**
  * Interface for a project and its configuration. The project is a JIRA project
@@ -117,7 +116,7 @@ public interface DecisionKnowledgeProject {
 	 *         strategy is the default strategy.
 	 */
 	static AbstractPersistenceManager getPersistenceStrategy(String projectKey) {
-		return PersistenceProvider.getPersistenceStrategy(projectKey);
+		return AbstractPersistenceManager.getPersistenceStrategy(projectKey);
 	}
 
 	/**

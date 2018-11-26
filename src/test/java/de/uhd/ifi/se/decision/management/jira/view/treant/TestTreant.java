@@ -24,7 +24,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceProvider;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.DatabaseUpdater;
@@ -50,7 +49,7 @@ public class TestTreant extends TestSetUpWithIssues {
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
 		initialization();
-		persistenceStrategy = PersistenceProvider.getPersistenceStrategy("TEST");
+		persistenceStrategy = AbstractPersistenceManager.getPersistenceStrategy("TEST");
 	}
 
 	@Test

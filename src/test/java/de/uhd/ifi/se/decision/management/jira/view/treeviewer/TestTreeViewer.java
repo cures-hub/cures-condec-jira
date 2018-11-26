@@ -30,7 +30,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceProvider;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
@@ -64,7 +63,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		treeViewer.setCheckCallback(checkCallback);
 		treeViewer.setThemes(themes);
 		treeViewer.setData(data);
-		persistenceStrategy = PersistenceProvider.getPersistenceStrategy("TEST");
+		persistenceStrategy = AbstractPersistenceManager.getPersistenceStrategy("TEST");
 	}
 
 	@Test

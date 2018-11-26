@@ -14,9 +14,10 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 /**
  * Abstract class to create, edit, delete and retrieve decision knowledge
  * elements and their links. Concrete persistence strategies for first class
- * elements are either the JIRA issue strategy or the active object strategy. Use the
- * strategy provider to get the persistence strategy used in a project. Other
- * persistence methods are for example JIRA issue comments, description, and commit messages.
+ * elements are either the JIRA issue strategy or the active object strategy.
+ * Use the strategy provider to get the persistence strategy used in a project.
+ * Other persistence methods are for example JIRA issue comments, description,
+ * and commit messages.
  *
  * @see JiraIssuePersistenceManager
  * @see ActiveObjectPersistenceManager
@@ -281,4 +282,59 @@ public abstract class AbstractPersistenceManager {
 	 * @return true if updating was successful.
 	 */
 	public abstract boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
+
+	/**
+	 * Get the persistence manager of a given decision knowledge elements.
+	 *
+	 * @see AbstractPersistenceManager
+	 * @param element
+	 *            decision knowledge element with project and documentation
+	 *            location.
+	 * @return persistence manager of a given decision knowledge elements. Returns
+	 *         null in case the persistence manager cannot be found.
+	 */
+	public static AbstractPersistenceManager getPersistence(DecisionKnowledgeElement element) {
+		if (element == null) {
+			throw new IllegalArgumentException("The element cannot be null.");
+		}
+
+		String projectKey = element.getProject().getProjectKey();
+
+		switch (element.getDocumentationLocation()) {
+		case JIRAISSUE:
+			return new JiraIssuePersistenceManager(projectKey);
+		case JIRAISSUECOMMENT:
+			return new JiraIssueCommentPersistenceManager(projectKey);
+		case ACTIVEOBJECT:
+			return new ActiveObjectPersistenceManager(projectKey);
+		default:
+			return null;
+		}
+	}
+
+	/**
+	 * Get the persistence strategy for autarkical decision knowledge elements used
+	 * in a project. This elements are directly stored in JIRA and independent from
+	 * other JIRA issues. These elements are "first class" elements.
+	 *
+	 * @see AbstractPersistenceManager
+	 * @see JiraIssuePersistenceManager
+	 * @see ActiveObjectPersistenceManager
+	 * @param projectKey
+	 *            of the JIRA project.
+	 * @return persistence strategy for "first class" decision knowledge elements
+	 *         used in the given project, either issue strategy or active object
+	 *         strategy. The active object strategy is the default strategy.
+	 */
+	public static AbstractPersistenceManager getPersistenceStrategy(String projectKey) {
+		if (projectKey == null) {
+			throw new IllegalArgumentException("The project key cannot be null.");
+		}
+
+		boolean isIssueStrategy = ConfigPersistenceManager.isIssueStrategy(projectKey);
+		if (isIssueStrategy) {
+			return new JiraIssuePersistenceManager(projectKey);
+		}
+		return new ActiveObjectPersistenceManager(projectKey);
+	}
 }
