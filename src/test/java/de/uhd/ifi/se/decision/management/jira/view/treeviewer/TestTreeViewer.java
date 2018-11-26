@@ -29,8 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
-import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
@@ -39,7 +38,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestTreeViewer extends TestSetUpWithIssues {
 	private EntityManager entityManager;
-	private AbstractPersistenceStrategy persistenceStrategy;
+	private AbstractPersistenceManager persistenceStrategy;
 
 	private boolean multiple;
 	private boolean checkCallback;
@@ -64,7 +63,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		treeViewer.setCheckCallback(checkCallback);
 		treeViewer.setThemes(themes);
 		treeViewer.setData(data);
-		persistenceStrategy = StrategyProvider.getPersistenceStrategy("TEST");
+		persistenceStrategy = AbstractPersistenceManager.getPersistenceStrategy("TEST");
 	}
 
 	@Test

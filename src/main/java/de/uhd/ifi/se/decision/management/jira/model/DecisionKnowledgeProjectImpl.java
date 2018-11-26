@@ -3,8 +3,8 @@ package de.uhd.ifi.se.decision.management.jira.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
  * Model class for a project and its configuration
@@ -13,7 +13,7 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 
 	private String projectKey;
 	private String projectName;
-	private AbstractPersistenceStrategy persistenceStrategy;
+	private AbstractPersistenceManager persistenceStrategy;
 
 	public DecisionKnowledgeProjectImpl(String projectKey) {
 		this.projectKey = projectKey;
@@ -46,26 +46,26 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 
 	@Override
 	public boolean isActivated() {
-		return ConfigPersistence.isActivated(this.getProjectKey());
+		return ConfigPersistenceManager.isActivated(this.getProjectKey());
 	}
 
 	@Override
 	public void setActivated(boolean isActivated) {
-		ConfigPersistence.setActivated(this.getProjectKey(), isActivated);
+		ConfigPersistenceManager.setActivated(this.getProjectKey(), isActivated);
 	}
 
 	@Override
 	public boolean isIssueStrategy() {
-		return ConfigPersistence.isIssueStrategy(this.getProjectKey());
+		return ConfigPersistenceManager.isIssueStrategy(this.getProjectKey());
 	}
 
 	@Override
 	public void setIssueStrategy(boolean isIssueStrategy) {
-		ConfigPersistence.setIssueStrategy(this.getProjectKey(), isIssueStrategy);
+		ConfigPersistenceManager.setIssueStrategy(this.getProjectKey(), isIssueStrategy);
 	}
 
 	@Override
-	public AbstractPersistenceStrategy getPersistenceStrategy() {
+	public AbstractPersistenceManager getPersistenceStrategy() {
 		if (this.persistenceStrategy == null) {
 			this.persistenceStrategy = DecisionKnowledgeProject.getPersistenceStrategy(this.projectKey);
 		}
@@ -76,7 +76,7 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	public Set<KnowledgeType> getKnowledgeTypes() {
 		Set<KnowledgeType> knowledgeTypes = new HashSet<KnowledgeType>();
 		for (KnowledgeType knowledgeType : KnowledgeType.values()) {
-			boolean isEnabled = ConfigPersistence.isKnowledgeTypeEnabled(this.projectKey, knowledgeType);
+			boolean isEnabled = ConfigPersistenceManager.isKnowledgeTypeEnabled(this.projectKey, knowledgeType);
 			if (isEnabled) {
 				knowledgeTypes.add(knowledgeType);
 			}
@@ -86,32 +86,32 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 
 	@Override
 	public boolean isKnowledgeExtractedFromGit() {
-		return ConfigPersistence.isKnowledgeExtractedFromGit(projectKey);
+		return ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey);
 	}
 
 	@Override
 	public void setKnowledgeExtractedFromGit(boolean isKnowledgeExtractedFromGit) {
-		ConfigPersistence.setKnowledgeExtractedFromGit(projectKey, isKnowledgeExtractedFromGit);
+		ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, isKnowledgeExtractedFromGit);
 	}
 
 	@Override
 	public boolean isKnowledgeExtractedFromIssues() {
-		return ConfigPersistence.isKnowledgeExtractedFromIssues(projectKey);
+		return ConfigPersistenceManager.isKnowledgeExtractedFromIssues(projectKey);
 	}
 
 	@Override
 	public void setKnowledgeExtractedFromIssues(boolean isKnowledgeExtractedFromIssues) {
-		ConfigPersistence.setKnowledgeExtractedFromIssues(projectKey, isKnowledgeExtractedFromIssues);
+		ConfigPersistenceManager.setKnowledgeExtractedFromIssues(projectKey, isKnowledgeExtractedFromIssues);
 	}
 
 	@Override
 	public void setWebhookEnabled(boolean isWebhookEnabled) {
-		ConfigPersistence.setWebhookEnabled(projectKey, isWebhookEnabled);
+		ConfigPersistenceManager.setWebhookEnabled(projectKey, isWebhookEnabled);
 	}
 
 	@Override
 	public boolean isWebhookEnabled() {
-		return ConfigPersistence.isWebhookEnabled(projectKey);
+		return ConfigPersistenceManager.isWebhookEnabled(projectKey);
 	}
 
 	@Override
@@ -119,33 +119,33 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 		if (webhookUrl == null || webhookSecret == null) {
 			return;
 		}
-		ConfigPersistence.setWebhookUrl(projectKey, webhookUrl);
-		ConfigPersistence.setWebhookSecret(projectKey, webhookSecret);
+		ConfigPersistenceManager.setWebhookUrl(projectKey, webhookUrl);
+		ConfigPersistenceManager.setWebhookSecret(projectKey, webhookSecret);
 	}
 
 	@Override
 	public String getWebhookUrl() {
-		return ConfigPersistence.getWebhookUrl(projectKey);
+		return ConfigPersistenceManager.getWebhookUrl(projectKey);
 	}
 
 	@Override
 	public String getWebhookSecret() {
-		return ConfigPersistence.getWebhookSecret(projectKey);
+		return ConfigPersistenceManager.getWebhookSecret(projectKey);
 	}
 
 	@Override
 	public boolean isWebhookTypeEnabled(String issueType) {
-		return ConfigPersistence.isWebhookTypeEnaled(projectKey, issueType);
+		return ConfigPersistenceManager.isWebhookTypeEnaled(projectKey, issueType);
 	}
 
 
 	@Override
 	public boolean isIconParsingEnabled() {
-		return ConfigPersistence.isIconParsing(projectKey);
+		return ConfigPersistenceManager.isIconParsing(projectKey);
 	}
 
 	@Override
 	public boolean isClassifierUsedForIssueComments() {
-		return ConfigPersistence.isUseClassiferForIssueComments(projectKey);
+		return ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey);
 	}
 }

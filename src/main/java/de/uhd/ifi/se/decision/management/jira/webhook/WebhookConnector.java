@@ -14,9 +14,8 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
-import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
  * Webhook class that posts changed decision knowledge to a given URL.
@@ -43,8 +42,8 @@ public class WebhookConnector {
 	}
 
 	public WebhookConnector(String projectKey) {
-		this(projectKey, ConfigPersistence.getWebhookUrl(projectKey), ConfigPersistence.getWebhookSecret(projectKey),
-				ConfigPersistence.getEnabledWebhookTypes(projectKey));
+		this(projectKey, ConfigPersistenceManager.getWebhookUrl(projectKey), ConfigPersistenceManager.getWebhookSecret(projectKey),
+				ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
 	}
 
 	public boolean sendElementChanges(DecisionKnowledgeElement changedElement) {
@@ -71,7 +70,7 @@ public class WebhookConnector {
 			}
 		}
 
-		AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+		AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
 		boolean isDeleted = strategy.deleteDecisionKnowledgeElement(elementToBeDeleted, user);
 		if (isDeleted) {
 			isDeleted = postKnowledgeTrees(rootElements);
@@ -91,7 +90,7 @@ public class WebhookConnector {
 	private List<DecisionKnowledgeElement> getWebhookRootElements(DecisionKnowledgeElement element) {
 		List<DecisionKnowledgeElement> webhookRootElements = new ArrayList<DecisionKnowledgeElement>();
 
-		AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+		AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
 		List<DecisionKnowledgeElement> linkedElements = strategy.getLinkedElements(element);
 		linkedElements.add(element);
 		for (DecisionKnowledgeElement linkedElement : linkedElements) {

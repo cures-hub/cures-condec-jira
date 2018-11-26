@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectstrategy;
+package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectpersistencemanager;
 
 import static org.junit.Assert.assertEquals;
 
@@ -16,8 +16,8 @@ import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(ActiveObjectStrategyTestSetUp.AoSentenceTestDatabaseUpdater.class)
-public class TestGetElementsLinkedWith extends ActiveObjectStrategyTestSetUp {
+@Data(ActiveObjectPersistenceManagerTestSetUp.AoSentenceTestDatabaseUpdater.class)
+public class TestGetElementsLinkedWith extends ActiveObjectPersistenceManagerTestSetUp {
 
 	private Link link;
 
@@ -39,7 +39,7 @@ public class TestGetElementsLinkedWith extends ActiveObjectStrategyTestSetUp {
 		DecisionKnowledgeElement linkedDecisionWithDatabaseId = aoStrategy
 				.insertDecisionKnowledgeElement(linkedDecision, user);
 		link = new LinkImpl(elementWithDatabaseId, linkedDecisionWithDatabaseId);
-		aoStrategy.insertLinkWithoutTransaction(link, user);
+		aoStrategy.insertLink(link, user);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -57,7 +57,7 @@ public class TestGetElementsLinkedWith extends ActiveObjectStrategyTestSetUp {
 	@Test
 	@NonTransactional
 	public void testElementInTableInward() {
-		aoStrategy.insertLinkWithoutTransaction(link, user);
+		aoStrategy.insertLink(link, user);
 		assertEquals(1, aoStrategy.getElementsLinkedWithInwardLinks(link.getSourceElement()).size(), 0.0);
 	}
 

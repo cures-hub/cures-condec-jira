@@ -31,9 +31,8 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -48,7 +47,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 	private DecisionKnowledgeReport report;
 	 
 
-	private AbstractPersistenceStrategy persistenceStrategy;
+	private AbstractPersistenceManager persistenceStrategy;
 
 	private Comment comment;
 
@@ -68,7 +67,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		this.report.validate(pas, params);
 		
 		
-		persistenceStrategy = StrategyProvider.getPersistenceStrategy("TEST");
+		persistenceStrategy = AbstractPersistenceManager.getPersistenceStrategy("TEST");
 	}
 	
 	private MutableIssue createCommentStructureWithTestIssue(String text) {

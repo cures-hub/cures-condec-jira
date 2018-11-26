@@ -35,9 +35,8 @@ import de.uhd.ifi.se.decision.management.jira.model.GraphImplFiltered;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 
 /**
@@ -53,7 +52,7 @@ public class KnowledgeRest {
 	public Response getDecisionKnowledgeElement(@QueryParam("id") long id,
 			@QueryParam("projectKey") String projectKey) {
 		if (projectKey != null) {
-			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
 			DecisionKnowledgeElement decisionKnowledgeElement = strategy.getDecisionKnowledgeElement(id);
 			if (decisionKnowledgeElement != null) {
 				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
@@ -73,7 +72,7 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getLinkedElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey) {
 		if (projectKey != null) {
-			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
 			List<DecisionKnowledgeElement> linkedDecisionKnowledgeElements = strategy.getLinkedElements(id);
 			return Response.ok(linkedDecisionKnowledgeElements).build();
 		} else {
@@ -88,7 +87,7 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getUnlinkedElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey) {
 		if (projectKey != null) {
-			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
 			List<DecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = strategy.getUnlinkedElements(id);
 			return Response.ok(unlinkedDecisionKnowledgeElements).build();
 		} else {
@@ -105,7 +104,7 @@ public class KnowledgeRest {
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
-			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
 			ApplicationUser user = AuthenticationManager.getUser(request);
 			DecisionKnowledgeElement decisionKnowledgeElementWithId = strategy
 					.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
@@ -149,7 +148,7 @@ public class KnowledgeRest {
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
-			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
 			ApplicationUser user = AuthenticationManager.getUser(request);
 			if (strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user)) {
 				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
@@ -171,7 +170,7 @@ public class KnowledgeRest {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
 			ApplicationUser user = AuthenticationManager.getUser(request);
 			boolean isDeleted = false;
-			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
 			DecisionKnowledgeElement elementToBeDeletedWithLinks = strategy
 					.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 			isDeleted = strategy.deleteDecisionKnowledgeElement(elementToBeDeletedWithLinks, user);
@@ -193,7 +192,7 @@ public class KnowledgeRest {
 	public Response createLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
-			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
 			ApplicationUser user = AuthenticationManager.getUser(request);
 			long linkId = strategy.insertLink(link, user);
 			if (linkId == 0) {
@@ -308,12 +307,19 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getSentenceElement(@QueryParam("id") long id) {
 
+		// TODO: Replace by JiraIssueCommentPersistenceManager.getDecisionKnowledgeElement(id)
+		// @issue: GetDecisionKnowledgeElement might not be the correct method name to retrieve irrelevant sentences. How to deal with irrelevant sentences? 
 		Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(id);
 
 		if (sentence != null) {
 			// TODO: Reweork this after merging with ConDec-378
-			return Response.status(Status.OK).entity(ImmutableMap.of("id", sentence.getId(), "description",
-					sentence.getDescription(), "type", sentence.getKnowledgeTypeString())).build();
+			// @issue: Can we return a whole sentence object similar as done in the method
+			// getDecisionKnowledgeElement instead of building a new object here?
+			return Response.status(Status.OK)
+					.entity(ImmutableMap.of("id", sentence.getId(), "description", sentence.getDescription(), "type",
+							sentence.getKnowledgeTypeString(), "documentationLocation",
+							sentence.getDocumentationLocationAsString()))
+					.build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Unlinked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
@@ -341,7 +347,7 @@ public class KnowledgeRest {
 	public Response deleteLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
-			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
 			ApplicationUser user = AuthenticationManager.getUser(request);
 			boolean isDeleted = strategy.deleteLink(link, user);
 			if (isDeleted) {
@@ -367,7 +373,7 @@ public class KnowledgeRest {
 	public Response deleteGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
-			if (link.isIssueLink()) {
+			if (GenericLinkManager.isIssueLink(link)) {
 				return deleteLink(projectKey, request, link);
 			}
 			boolean isDeleted = GenericLinkManager.deleteGenericLink(link);
@@ -393,7 +399,7 @@ public class KnowledgeRest {
 	public Response createGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
-			if (link.isIssueLink()) {
+			if (GenericLinkManager.isIssueLink(link)) {
 				return createLink(projectKey, request, link);
 			}
 			ApplicationUser user = AuthenticationManager.getUser(request);

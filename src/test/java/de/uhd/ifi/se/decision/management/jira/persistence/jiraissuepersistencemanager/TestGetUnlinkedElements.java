@@ -1,10 +1,10 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.issuestrategy;
+package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuepersistencemanager;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class TestGetUnlinkedElements extends TestIssueStrategySetUp {
+public class TestGetUnlinkedElements extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test
 	public void testIdCannotBeFound() {

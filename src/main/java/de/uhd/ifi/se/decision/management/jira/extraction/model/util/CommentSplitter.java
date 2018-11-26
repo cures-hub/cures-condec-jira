@@ -12,7 +12,7 @@ import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class CommentSplitter {
 
@@ -51,7 +51,7 @@ public class CommentSplitter {
 			String tag = manualRationaleTagList[i];
 			firstSplit = searchForTags(firstSplit, tag, tag);
 		}
-		if (ConfigPersistence.isIconParsing(projectKey)) {
+		if (ConfigPersistenceManager.isIconParsing(projectKey)) {
 			for (int i = 0; i < manualRationalIconList.length; i++) {
 				firstSplit = searchForTags(firstSplit, manualRationalIconList[i],
 						System.getProperty("line.separator"));
@@ -141,7 +141,7 @@ public class CommentSplitter {
 	 * @return The manual tagged knowledge type of a given string
 	 */
 	public static String getKnowledgeTypeFromManuallIssueTag(String body, String projectKey, boolean lookOutForIcons) {
-		boolean checkIcons = lookOutForIcons && ConfigPersistence.isIconParsing(projectKey);
+		boolean checkIcons = lookOutForIcons && ConfigPersistenceManager.isIconParsing(projectKey);
 		if (body.toLowerCase().contains(manualRationaleTagList[0]) || (checkIcons && body.contains(manualRationalIconList[0]))) {
 			return KnowledgeType.ISSUE.toString();
 		}

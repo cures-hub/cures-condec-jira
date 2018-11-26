@@ -30,9 +30,9 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	private Date created;
 
 	public DecisionKnowledgeElementImpl() {
-		//prevent nullPointers later
-		this.description="";
-		this.summary="";
+		// prevent nullPointers later
+		this.description = "";
+		this.summary = "";
 	}
 
 	public DecisionKnowledgeElementImpl(long id, String summary, String description, KnowledgeType type,
@@ -51,7 +51,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	}
 
 	public DecisionKnowledgeElementImpl(Issue issue) {
-		if(issue != null) {
+		if (issue != null) {
 			this.id = issue.getId();
 			this.summary = issue.getSummary();
 			this.description = issue.getDescription();
@@ -107,11 +107,12 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 		return type;
 	}
 
+	@Override
 	@XmlElement(name = "type")
 	public String getTypeAsString() {
-		if(type == KnowledgeType.OTHER) {
-			if(this instanceof Sentence) {
-				return ((Sentence)this).getKnowledgeTypeString();
+		if (type == KnowledgeType.OTHER) {
+			if (this instanceof Sentence) {
+				return ((Sentence) this).getKnowledgeTypeString();
 			}
 			IssueManager issueManager = ComponentAccessor.getIssueManager();
 			Issue issue = issueManager.getIssueByCurrentKey(this.getKey());
@@ -184,6 +185,12 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	@Override
 	public void setDocumentationLocation(DocumentationLocation documentationLocation) {
 		this.documentationLocation = documentationLocation;
+	}
+
+	@Override
+	@XmlElement(name = "documentationLocation")
+	public String getDocumentationLocationAsString() {
+		return this.documentationLocation.toString();
 	}
 
 	@Override

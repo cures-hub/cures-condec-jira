@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.issuestrategy;
+package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuepersistencemanager;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -17,7 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 
-public class TestGetLinkedElements extends TestIssueStrategySetUp {
+public class TestGetLinkedElements extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test
 	public void testDecisionKnowledgeElementNull() {

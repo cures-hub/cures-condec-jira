@@ -304,9 +304,9 @@
 	 */
 	ConDecAPI.prototype.getSentenceElement = function getSentenceElement(id, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getSentenceElement.json?id=" + id, function(
-				error, core) {
+				error, sentenceElement) {
 			if (error === null) {
-				callback(core);
+				callback(sentenceElement);
 			} else {
 				showFlag("error", "The Element data could not be fetched");
 			}

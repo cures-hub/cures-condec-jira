@@ -13,7 +13,6 @@ import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.rest.ConfigRestImpl;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import net.java.ao.EntityManager;
 
@@ -29,7 +28,7 @@ public class TestConfigSuper extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {
-		configRest = new ConfigRestImpl();
+		configRest = new ConfigRest();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
 
