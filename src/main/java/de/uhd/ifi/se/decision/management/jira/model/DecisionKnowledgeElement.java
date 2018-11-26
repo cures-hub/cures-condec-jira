@@ -191,6 +191,16 @@ public interface DecisionKnowledgeElement {
 	 * @return documentation location of the decision knowledge element.
 	 */
 	DocumentationLocation getDocumentationLocation();
+	
+	/**
+	 * Get the documentation location of the decision knowledge element. For
+	 * example, decision knowledge can be documented in commit messages or in the
+	 * comments to a JIRA issue.
+	 *
+	 * @see DocumentationLocation
+	 * @return documentation location of the decision knowledge element as a String.
+	 */
+	String getDocumentationLocationAsString();
 
 	/**
 	 * Set the documentation location of the decision knowledge element. For

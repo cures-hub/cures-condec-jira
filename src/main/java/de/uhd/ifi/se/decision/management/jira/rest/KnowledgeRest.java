@@ -307,12 +307,19 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getSentenceElement(@QueryParam("id") long id) {
 
+		// TODO: Replace by JiraIssueCommentPersistenceManager.getDecisionKnowledgeElement(id)
+		// @issue: GetDecisionKnowledgeElement might not be the correct method name to retrieve irrelevant sentences. How to deal with irrelevant sentences? 
 		Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(id);
 
 		if (sentence != null) {
 			// TODO: Reweork this after merging with ConDec-378
-			return Response.status(Status.OK).entity(ImmutableMap.of("id", sentence.getId(), "description",
-					sentence.getDescription(), "type", sentence.getKnowledgeTypeString())).build();
+			// @issue: Can we return a whole sentence object similar as done in the method
+			// getDecisionKnowledgeElement instead of building a new object here?
+			return Response.status(Status.OK)
+					.entity(ImmutableMap.of("id", sentence.getId(), "description", sentence.getDescription(), "type",
+							sentence.getKnowledgeTypeString(), "documentationLocation",
+							sentence.getDocumentationLocationAsString()))
+					.build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Unlinked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))

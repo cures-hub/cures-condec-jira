@@ -49,7 +49,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	public SentenceImpl() {
 		super();
 		super.type = KnowledgeType.OTHER;
-		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
+		super.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
 
 	public SentenceImpl(DecisionKnowledgeInCommentEntity databaseEntry) throws NullPointerException {
