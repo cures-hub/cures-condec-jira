@@ -33,10 +33,11 @@
 			event.preventDefault();
 			var left = event.pageX;
 			var top = event.pageY;
+			var id = event.target.parentNode.id.split("-")[0];
 			if (event.target.parentNode.classList.contains("sentence")) {
 				conDecContextMenu.createContextMenuForSentences(left, top, event.target.parentNode.id);
 			} else {
-				conDecContextMenu.createContextMenu(left, top, event.target.parentNode.id);
+				conDecContextMenu.createContextMenu(left, top, "tv" + event.target.parentNode.id);
 			}
 		});
 	}
