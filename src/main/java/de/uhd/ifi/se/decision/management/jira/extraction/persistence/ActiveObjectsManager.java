@@ -640,13 +640,13 @@ public class ActiveObjectsManager {
 	 */
 	public static boolean deleteSentenceObject(long id) {
 		init();
+		boolean isDeleted = false;
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("ID = ?", id))) {
 			GenericLinkManager.deleteLinksForElement("s" + id);
-			boolean isDeleted = DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
-			return isDeleted;
+			isDeleted = DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
 		}
-		return false;
+		return isDeleted;
 	}
 
 	public static void deleteCommentsSentences(com.atlassian.jira.issue.comments.Comment comment) {

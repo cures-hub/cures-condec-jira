@@ -46,15 +46,15 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		if (decisionKnowledgeElement == null) {
 			return false;
 		}
+		boolean isDeleted = false;
 		new WebhookConnector(projectKey).sendElementChanges(decisionKnowledgeElement);
 		long id = decisionKnowledgeElement.getId();
 		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", id))) {
 			GenericLinkManager.deleteLinksForElement(PREFIX + id);
-			boolean isDeleted = DecisionKnowledgeElementInDatabase.deleteElement(databaseEntry);
-			return isDeleted;
+			isDeleted = DecisionKnowledgeElementInDatabase.deleteElement(databaseEntry);
 		}
-		return false;
+		return isDeleted;
 	}
 
 	@Override
@@ -245,8 +245,9 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 	public long insertLink(Link link, ApplicationUser user) {
 		DecisionKnowledgeElement sourceElement = link.getSourceElement();
 		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
-		
-		// TODO Replace by checking the documentation location of both elements in GenericLinkManager
+
+		// TODO Replace by checking the documentation location of both elements in
+		// GenericLinkManager
 		Link newLink = new LinkImpl(PREFIX + link.getDestinationElement().getId(),
 				PREFIX + link.getSourceElement().getId());
 		newLink.setType(link.getType());
