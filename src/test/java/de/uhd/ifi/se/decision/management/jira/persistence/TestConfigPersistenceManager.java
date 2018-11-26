@@ -45,16 +45,20 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetIssueStrategyNullFalse() {
 		ConfigPersistenceManager.setIssueStrategy(null, false);
+		assertTrue(ConfigPersistenceManager.isIssueStrategy("TEST"));
 	}
 
 	@Test
 	public void testSetIssueStrategyNullTrue() {
 		ConfigPersistenceManager.setIssueStrategy(null, true);
+		assertTrue(ConfigPersistenceManager.isIssueStrategy("TEST"));
 	}
 
+	// @issue: The settings are always true, even if they were set to false before. Why?
 	@Test
-	public void testSetIssueStrategyValid() {
+	public void testSetIssueStrategyValidTrue() {
 		ConfigPersistenceManager.setIssueStrategy("TEST", true);
+		assertTrue(ConfigPersistenceManager.isIssueStrategy("TEST"));
 	}
 
 	// IsActivated
@@ -72,16 +76,19 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetActivatedNullFalse() {
 		ConfigPersistenceManager.setActivated(null, false);
+		assertTrue(ConfigPersistenceManager.isActivated("TEST"));
 	}
 
 	@Test
 	public void testSetActivateNullTrue() {
 		ConfigPersistenceManager.setActivated(null, true);
+		assertTrue(ConfigPersistenceManager.isActivated("TEST"));
 	}
 
 	@Test
 	public void testSetActivatedValid() {
 		ConfigPersistenceManager.setActivated("TEST", true);
+		assertTrue(ConfigPersistenceManager.isActivated("TEST"));
 	}
 
 	// IsKnowledgeExtractedFromGit
@@ -109,6 +116,7 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetKnowledgeExtractedInvalidFalse() {
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit("NotTEST", false);
+		assertTrue(ConfigPersistenceManager.isKnowledgeExtractedFromGit("NotTEST"));
 	}
 
 	@Test
@@ -284,5 +292,4 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	public void testGetSecretForOAuth() {
 		assertNotNull(ConfigPersistenceManager.getSecretForOAuth());
 	}
-
 }

@@ -22,8 +22,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 @Data(ActiveObjectPersistenceManagerTestSetUp.AoSentenceTestDatabaseUpdater.class)
 public class TestDeleteLink extends ActiveObjectPersistenceManagerTestSetUp {
 
-	private Link link;
-	DecisionKnowledgeElement linkedDecisision;
+	private DecisionKnowledgeElement linkedDecisision;
 
 	@Before
 	public void setUp() {
@@ -39,7 +38,7 @@ public class TestDeleteLink extends ActiveObjectPersistenceManagerTestSetUp {
 		DecisionKnowledgeElement elementWithDatabaseId = aoStrategy.insertDecisionKnowledgeElement(element, user);
 		DecisionKnowledgeElement linkedDecisionWithDatabaseId = aoStrategy
 				.insertDecisionKnowledgeElement(linkedDecisision, user);
-		link = new LinkImpl(linkedDecisionWithDatabaseId, elementWithDatabaseId);
+		Link link = new LinkImpl(linkedDecisionWithDatabaseId, elementWithDatabaseId);
 		aoStrategy.insertLinkWithoutTransaction(link, user);
 	}
 
