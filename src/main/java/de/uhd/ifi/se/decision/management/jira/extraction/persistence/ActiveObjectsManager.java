@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +22,13 @@ import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
+import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -678,6 +683,29 @@ public class ActiveObjectsManager {
 		}
 
 		return treeSet.size();
+	}
+
+	public static Response addNewCommentToJIRAIssue(DecisionKnowledgeElement decisionKnowledgeElement, ApplicationUser user) {
+		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(decisionKnowledgeElement.getId());
+		if(issue != null) {
+			String macro = "";
+			if(decisionKnowledgeElement.getType().equals(KnowledgeType.ARGUMENT)) {
+				macro = "{pro}";
+			}else {
+				macro = "{"+ decisionKnowledgeElement.getTypeAsString() +"}";
+			}
+			com.atlassian.jira.issue.comments.Comment comment = ComponentAccessor.getCommentManager().create(issue, user, macro + decisionKnowledgeElement.getSummary() + macro, false);
+			Comment com = new CommentImpl(comment, true);
+			for(Sentence sentence: com.getSentences()) {
+				GenericLinkManager.deleteLinksForElement("s"+sentence.getId());
+				Link link = new LinkImpl("i"+decisionKnowledgeElement.getId(),"s"+sentence.getId());
+				GenericLinkManager.insertLink(link, user);
+			}
+			return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
+		}else {
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
+		}
 	}
 
 }

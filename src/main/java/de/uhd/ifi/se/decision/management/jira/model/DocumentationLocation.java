@@ -62,4 +62,10 @@ public enum DocumentationLocation {
 		}
 
 	}
+	
+	@Override
+	public String toString() {
+		return this.name().substring(0, 1).toUpperCase(Locale.ENGLISH)
+				+ this.name().substring(1).toLowerCase(Locale.ENGLISH);
+	}
 }

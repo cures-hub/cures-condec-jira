@@ -77,13 +77,15 @@
 	 * external references: view.condec.issue.module, view.condec.knowledge.page ..
 	 */
 	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElement(summary, description,
-			type, callback) {
+			type, documentationLocation,idOfExistingElement, callback) {
 		if (summary !== "") {
 			var jsondata = {
 				"projectKey" : projectKey,
 				"summary" : summary,
 				"type" : type,
-				"description" : description
+				"description" : description,
+				"documentationLocation" : documentationLocation,
+				"id": idOfExistingElement
 			};
 			postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createDecisionKnowledgeElement.json",
 					jsondata, function(error, decisionKnowledgeElement) {
@@ -243,10 +245,10 @@
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.createDecisionKnowledgeElementAsChild = function createDecisionKnowledgeElementAsChild(summary,
-			description, type, idOfExistingElement) {
+			description, type, idOfExistingElement, documentationLocation) {
 		console.log("conDecAPI createDecisionKnowledgeElementAsChild");
 		var simpleType = getSimpleType(type);
-		this.createDecisionKnowledgeElement(summary, description, simpleType, (function(idOfNewElement) {
+		this.createDecisionKnowledgeElement(summary, description, simpleType, documentationLocation,idOfExistingElement, (function(idOfNewElement) {
 			switchLinkTypes(type, idOfExistingElement, idOfNewElement, (function(linkType, idOfExistingElement,
 					idOfNewElement) {
 				this.linkElements(idOfExistingElement, idOfNewElement, linkType, function() {

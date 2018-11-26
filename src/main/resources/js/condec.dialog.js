@@ -36,7 +36,8 @@
 		console.log("view.context.menu.js setUpDialogForCreateAction");
 		console.log(id);
 		setHeaderText(createKnowledgeElementText);
-		setUpCreateOrEditDialog("", "", "Alternative");
+		setUpCreateOrEditDialog("", "", "Alternative",true);
+		document.getElementById("dialog-content")
 
 		var submitButton = document.getElementById("dialog-submit-button");
 		submitButton.textContent = createKnowledgeElementText;
@@ -44,7 +45,8 @@
 			var summary = document.getElementById("form-input-summary").value;
 			var description = document.getElementById("form-input-description").value;
 			var type = $("select[name='form-select-type']").val();
-			conDecAPI.createDecisionKnowledgeElementAsChild(summary, description, type, id);
+			var documentationLocation = $("select[name='form-select-location']").val();
+			conDecAPI.createDecisionKnowledgeElementAsChild(summary, description, type, id,documentationLocation);
 			AJS.dialog2("#dialog").hide();
 		};
 
@@ -91,11 +93,17 @@
 		header.textContent = headerText;
 	}
 
-	function setUpCreateOrEditDialog(summary, description, knowledgeType) {
+	function setUpCreateOrEditDialog(summary, description, knowledgeType,addDocumentLocation) {
 		console.log("view.context.menu.js setUpCreateOrEditDialog");
-		document
-				.getElementById("dialog-content")
-				.insertAdjacentHTML(
+		var documentationLocation ="";
+		if(addDocumentLocation){
+			documentationLocation = "<div class='field-group'><label for='form-select-location'>Documentation Location:</label>"
+								+ "<select id='form-select-location' name='form-select-location' class='select full-width-field'>"+
+								" <option selected value = \"i\">JIRA Issue</option>"
+								+"<option value = \"s\">"+
+								"Issue Comment</option> </select> </div>";
+		}
+		document.getElementById("dialog-content").insertAdjacentHTML(
 						"afterBegin",
 						"<form class='aui'><div class='field-group'><label for='form-input-summary'>Summary:</label>"
 								+ "<input id='form-input-summary' type='text' placeholder='Summary' value='"
@@ -106,9 +114,9 @@
 								+ description
 								+ "' class='textarea full-width-field'>"
 								+ description
-								+ "</textarea></div>"
+								+ "</textarea></div>"+ documentationLocation
 								+ "<div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
-								+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
+								+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/> </div>"
 								+ "</form>");
 
 		var extendedKnowledgeTypes = conDecAPI.extendedKnowledgeTypes;
@@ -120,7 +128,9 @@
 			$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
 					+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
 		}
+
 		AJS.$("#form-select-type").auiSelect2();
+		AJS.$("#form-select-location").auiSelect2();
 	}
 
 	function setUpTypeChangeDialog(knowledgeType) {
@@ -229,7 +239,7 @@
 				} else {
 					setUpDialog();
 					setHeaderText(editKnowledgeElementText);
-					setUpCreateOrEditDialog(summary, description, type);
+					setUpCreateOrEditDialog(summary, description, type,false);
 
 					var submitButton = document.getElementById("dialog-submit-button");
 					submitButton.textContent = editKnowledgeElementText;
