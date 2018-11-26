@@ -31,7 +31,6 @@
 						+ projectKey + "&id=" + id,
 				function(error, decisionKnowledgeElement) {
 					if (error === null) {
-						console.log(decisionKnowledgeElement.documentationLocation);
 						callback(decisionKnowledgeElement);
 					} else {
 						showFlag("error",
@@ -307,7 +306,6 @@
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getSentenceElement.json?id=" + id, function(
 				error, sentenceElement) {
 			if (error === null) {
-				console.log(sentenceElement.documentationLocation);
 				callback(sentenceElement);
 			} else {
 				showFlag("error", "The Element data could not be fetched");
