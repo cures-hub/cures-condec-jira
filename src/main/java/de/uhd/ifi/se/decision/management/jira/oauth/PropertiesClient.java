@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class PropertiesClient {
 	public static final String CONSUMER_KEY = "consumer_key";
@@ -39,12 +39,12 @@ public class PropertiesClient {
 
 	private void initAuthPropertysFromConfigPersistance() {
 		PropertiesClient.DEFAULT_PROPERTY_VALUES = ImmutableMap.<String, String>builder()
-				.put(JIRA_HOME, ConfigPersistence.getOauthJiraHome())
-				.put(CONSUMER_KEY, ConfigPersistence.getConsumerKey())
-				.put(REQUEST_TOKEN, ConfigPersistence.getRequestToken())
-				.put(SECRET, ConfigPersistence.getSecretForOAuth())
-				.put(ACCESS_TOKEN, ConfigPersistence.getAccessToken())
-				.put(PRIVATE_KEY, ConfigPersistence.getPrivateKey()).build();
+				.put(JIRA_HOME, ConfigPersistenceManager.getOauthJiraHome())
+				.put(CONSUMER_KEY, ConfigPersistenceManager.getConsumerKey())
+				.put(REQUEST_TOKEN, ConfigPersistenceManager.getRequestToken())
+				.put(SECRET, ConfigPersistenceManager.getSecretForOAuth())
+				.put(ACCESS_TOKEN, ConfigPersistenceManager.getAccessToken())
+				.put(PRIVATE_KEY, ConfigPersistenceManager.getPrivateKey()).build();
 	}
 
 	public Map<String, String> getPropertiesOrDefaults() {

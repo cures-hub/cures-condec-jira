@@ -21,7 +21,7 @@ import com.atlassian.velocity.VelocityManager;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
  * Renders the issue tab panel
@@ -56,8 +56,8 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 			return false;
 		}
 		String projectKey = this.getProjectKey(issue.getKey());
-		return ConfigPersistence.isActivated(projectKey)
-				&& ConfigPersistence.isKnowledgeExtractedFromIssues(projectKey);
+		return ConfigPersistenceManager.isActivated(projectKey)
+				&& ConfigPersistenceManager.isKnowledgeExtractedFromIssues(projectKey);
 	}
 
 	private String getProjectKey(String issueKey) {

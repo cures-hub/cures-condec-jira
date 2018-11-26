@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectstrategy;
+package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectpersistencemanager;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.activeobjects.test.TestActiveObjects;
@@ -31,17 +31,17 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityParamFactory;
-import de.uhd.ifi.se.decision.management.jira.persistence.ActiveObjectStrategy;
+import de.uhd.ifi.se.decision.management.jira.persistence.ActiveObjectPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 
-public class ActiveObjectStrategyTestSetUp {
+public class ActiveObjectPersistenceManagerTestSetUp {
 
 	protected EntityManager entityManager;
 	protected ApplicationUser user;
-	protected ActiveObjectStrategy aoStrategy;
+	protected ActiveObjectPersistenceManager aoStrategy;
 	private IssueManager issueManager;
 	private IssueTypeManager issueTypeManager = new MockIssueTypeManager();
 
@@ -61,7 +61,7 @@ public class ActiveObjectStrategyTestSetUp {
 
 		ActiveObjects activeObjects = new TestActiveObjects(entityManager);
 		TestComponentGetter.init(activeObjects, new MockTransactionTemplate(), new MockUserManager());
-		aoStrategy = new ActiveObjectStrategy("TEST");
+		aoStrategy = new ActiveObjectPersistenceManager("TEST");
 		user = new MockApplicationUser("NoFails");
 	}
 

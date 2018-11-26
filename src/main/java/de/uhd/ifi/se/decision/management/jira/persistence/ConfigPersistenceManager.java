@@ -17,7 +17,7 @@ import java.util.Collection;
 /**
  * Class to store and receive configuration settings
  */
-public class ConfigPersistence {
+public class ConfigPersistenceManager {
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentGetter.getPluginSettingsFactory();
 	private static TransactionTemplate transactionTemplate = ComponentGetter.getTransactionTemplate();
 	private static String pluginStorageKey = ComponentGetter.getPluginStorageKey();

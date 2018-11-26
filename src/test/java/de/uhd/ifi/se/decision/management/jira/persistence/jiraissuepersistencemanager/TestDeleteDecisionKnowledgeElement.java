@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.issuestrategy;
+package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuepersistencemanager;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -12,7 +12,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-public class TestDeleteDecisionKnowledgeElement extends TestIssueStrategySetUp {
+public class TestDeleteDecisionKnowledgeElement extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test(expected = NullPointerException.class)
 	public void testElementNullUserNull() {

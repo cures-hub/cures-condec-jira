@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.issuestrategy;
+package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuepersistencemanager;
 
 import static org.junit.Assert.assertEquals;
 
@@ -7,11 +7,11 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 
-public class TestGetElementsLinkedWithInwardLinks extends TestIssueStrategySetUp {
+public class TestGetElementsLinkedWithOutwardLinks extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test
 	public void testElementNull() {
-		assertEquals(0, issueStrategy.getElementsLinkedWithInwardLinks(null).size());
+		assertEquals(0, issueStrategy.getElementsLinkedWithOutwardLinks(null).size());
 	}
 
 	@Test

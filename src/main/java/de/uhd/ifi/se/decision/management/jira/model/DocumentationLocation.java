@@ -60,6 +60,5 @@ public enum DocumentationLocation {
 		} else {
 			return "";
 		}
-
 	}
 }

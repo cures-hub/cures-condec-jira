@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectstrategy;
+package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectpersistencemanager;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -19,11 +19,10 @@ import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(ActiveObjectStrategyTestSetUp.AoSentenceTestDatabaseUpdater.class)
-public class TestDeleteLink extends ActiveObjectStrategyTestSetUp {
+@Data(ActiveObjectPersistenceManagerTestSetUp.AoSentenceTestDatabaseUpdater.class)
+public class TestDeleteLink extends ActiveObjectPersistenceManagerTestSetUp {
 
-	private Link link;
-	DecisionKnowledgeElement linkedDecisision;
+	private DecisionKnowledgeElement linkedDecisision;
 
 	@Before
 	public void setUp() {
@@ -39,8 +38,8 @@ public class TestDeleteLink extends ActiveObjectStrategyTestSetUp {
 		DecisionKnowledgeElement elementWithDatabaseId = aoStrategy.insertDecisionKnowledgeElement(element, user);
 		DecisionKnowledgeElement linkedDecisionWithDatabaseId = aoStrategy
 				.insertDecisionKnowledgeElement(linkedDecisision, user);
-		link = new LinkImpl(linkedDecisionWithDatabaseId, elementWithDatabaseId);
-		aoStrategy.insertLinkWithoutTransaction(link, user);
+		Link link = new LinkImpl(linkedDecisionWithDatabaseId, elementWithDatabaseId);
+		aoStrategy.insertLink(link, user);
 	}
 
 	@Test(expected = NullPointerException.class)

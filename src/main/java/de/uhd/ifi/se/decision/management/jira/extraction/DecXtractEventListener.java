@@ -19,7 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
  * Triggers the decXtract related function when some changes to comments are
@@ -72,8 +72,8 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		LOGGER.debug("DecXtract Event Listener catched an event");
 		this.issueEvent = issueEvent;
 		this.projectKey = issueEvent.getProject().getKey();
-		if (!ConfigPersistence.isActivated(this.projectKey)
-				&& !ConfigPersistence.isKnowledgeExtractedFromIssues(this.projectKey)) {
+		if (!ConfigPersistenceManager.isActivated(this.projectKey)
+				&& !ConfigPersistenceManager.isKnowledgeExtractedFromIssues(this.projectKey)) {
 			return;
 		}
 		Long eventTypeId = issueEvent.getEventTypeId();
@@ -105,7 +105,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	}
 
 	private void parseIconsToTags() {
-		if (!ConfigPersistence.isIconParsing(issueEvent.getProject().getKey())) {
+		if (!ConfigPersistenceManager.isIconParsing(issueEvent.getProject().getKey())) {
 			return;
 		}
 		MutableComment comment = getCurrentEditedComment();

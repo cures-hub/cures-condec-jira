@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class SentenceImpl extends DecisionKnowledgeElementImpl implements Sentence {
 
@@ -49,7 +49,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	public SentenceImpl() {
 		super();
 		super.type = KnowledgeType.OTHER;
-		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
+		super.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
 
 	public SentenceImpl(DecisionKnowledgeInCommentEntity databaseEntry) throws NullPointerException {
@@ -267,7 +267,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 			this.isPlainText = false;
 		}
 		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisintg(body, this.projectKey)
-				|| (ConfigPersistence.isIconParsing(projectKey)
+				|| (ConfigPersistenceManager.isIconParsing(projectKey)
 						&& StringUtils.indexOfAny(body, CommentSplitter.manualRationalIconList) >= 0)) {
 			this.setKnowledgeType(
 					CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey, true));

@@ -1,11 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,67 +18,51 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 import net.java.ao.Query;
 
 /**
- * Extends the abstract class AbstractPersistenceStrategy. Uses the active
- * object framework to store decision knowledge.
+ * Extends the abstract class AbstractPersistenceStrategy. Uses object
+ * relational mapping with the help of the active object framework to store
+ * decision knowledge.
  *
- * @see AbstractPersistenceStrategy
+ * @see AbstractPersistenceManager
  */
 @JsonAutoDetect
-public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectStrategy.class);
+public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectPersistenceManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
+	private static final String PREFIX = DocumentationLocation.getIdentifier(DocumentationLocation.ACTIVEOBJECT);
 
 	private String projectKey;
 
-	public ActiveObjectStrategy(String projectKey) {
+	public ActiveObjectPersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
 	}
 
 	@Override
 	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement,
 			ApplicationUser user) {
-		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Boolean>() {
-			@Override
-			public Boolean doInTransaction() {
-				new WebhookConnector(projectKey).sendElementChanges(decisionKnowledgeElement);
-				for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
-						.find(DecisionKnowledgeElementInDatabase.class)) {
-
-					if (databaseEntry.getId() == decisionKnowledgeElement.getId()) {
-						try {
-							databaseEntry.getEntityManager().delete(databaseEntry);
-						} catch (SQLException e) {
-							return false;
-						} finally {
-							for (LinkInDatabase linkEntity : ACTIVE_OBJECTS.find(LinkInDatabase.class)) {
-								if (linkEntity.getIdOfSourceElement().equals("a" + decisionKnowledgeElement.getId())
-										|| linkEntity.getIdOfDestinationElement()
-												.equals("a" + decisionKnowledgeElement.getId())) {
-									try {
-										linkEntity.getEntityManager().delete(linkEntity);
-									} catch (SQLException e) {
-										return false;
-									}
-								}
-							}
-						}
-						return true;
-					}
-				}
-				return false;
-			}
-		});
+		if (decisionKnowledgeElement == null) {
+			return false;
+		}
+		boolean isDeleted = false;
+		new WebhookConnector(projectKey).sendElementChanges(decisionKnowledgeElement);
+		long id = decisionKnowledgeElement.getId();
+		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
+				.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", id))) {
+			GenericLinkManager.deleteLinksForElement(PREFIX + id);
+			isDeleted = DecisionKnowledgeElementInDatabase.deleteElement(databaseEntry);
+		}
+		return isDeleted;
 	}
 
 	@Override
 	public boolean deleteLink(Link link, ApplicationUser user) {
 		DecisionKnowledgeElement sourceElement = link.getSourceElement();
 		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
-		return GenericLinkManager.deleteLink("a" + link.getSourceElement().getId(),
-				"a" + link.getDestinationElement().getId());
+		return GenericLinkManager.deleteLink(PREFIX + link.getSourceElement().getId(),
+				PREFIX + link.getDestinationElement().getId());
 	}
 
 	@Override
@@ -203,7 +185,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
 		List<Link> inwardLinks = new ArrayList<>();
 		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class,
-				Query.select().where("ID_OF_DESTINATION_ELEMENT = ?", "a" + element.getId()));
+				Query.select().where("ID_OF_DESTINATION_ELEMENT = ?", PREFIX + element.getId()));
 		for (LinkInDatabase link : links) {
 			Link inwardLink = new LinkImpl(link);
 			inwardLink.setDestinationElement(element);
@@ -218,7 +200,7 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
 		List<Link> outwardLinks = new ArrayList<>();
 		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class,
-				Query.select().where("ID_OF_SOURCE_ELEMENT = ?", "a" + element.getId()));
+				Query.select().where("ID_OF_SOURCE_ELEMENT = ?", PREFIX + element.getId()));
 		for (LinkInDatabase link : links) {
 			Link outwardLink = new LinkImpl(link);
 			outwardLink.setSourceElement(element);
@@ -264,20 +246,18 @@ public class ActiveObjectStrategy extends AbstractPersistenceStrategy {
 		DecisionKnowledgeElement sourceElement = link.getSourceElement();
 		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
 
+		// TODO Replace by checking the documentation location of both elements in
+		// GenericLinkManager
+		Link newLink = new LinkImpl(PREFIX + link.getDestinationElement().getId(),
+				PREFIX + link.getSourceElement().getId());
+		newLink.setType(link.getType());
+
 		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction() {
-				return GenericLinkManager.insertLinkWithoutTransaction(link);
+				return GenericLinkManager.insertLinkWithoutTransaction(newLink);
 			}
 		});
-	}
-
-	public long insertLinkWithoutTransaction(Link link, ApplicationUser user) {
-		String prefix = DocumentationLocation.getIdentifier(DocumentationLocation.ACTIVEOBJECT);
-		Link newLink = new LinkImpl(prefix + link.getDestinationElement().getId(),
-				prefix + link.getSourceElement().getId());
-		newLink.setType(link.getType());
-		return GenericLinkManager.insertLinkWithoutTransaction(newLink);
 	}
 
 	@Override

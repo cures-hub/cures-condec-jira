@@ -8,7 +8,7 @@ import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class ProMacro extends BaseMacro {
 
@@ -24,7 +24,7 @@ public class ProMacro extends BaseMacro {
 
 	@Override
 	public String execute(Map<String, Object> parameters, String body, RenderContext renderContext){
-		if(!ConfigPersistence.isKnowledgeExtractedFromIssues(IssueMacro.getProjectKey(renderContext))) {
+		if(!ConfigPersistenceManager.isKnowledgeExtractedFromIssues(IssueMacro.getProjectKey(renderContext))) {
 			return body;
 		}
 		if (Boolean.TRUE.equals(renderContext.getParam(IssueRenderContext.WYSIWYG_PARAM))) {

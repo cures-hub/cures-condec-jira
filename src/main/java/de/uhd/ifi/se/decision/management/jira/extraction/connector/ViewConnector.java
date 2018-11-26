@@ -13,7 +13,7 @@ import com.atlassian.jira.issue.comments.CommentManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationManagerForCommentSentences;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class ViewConnector {
 
@@ -45,7 +45,7 @@ public class ViewConnector {
 					commentsList.add(comment2);
 				}
 			}
-			if (!doNotClassify && ConfigPersistence.isUseClassiferForIssueComments(issue.getProjectObject().getKey())) {
+			if (!doNotClassify && ConfigPersistenceManager.isUseClassiferForIssueComments(issue.getProjectObject().getKey())) {
 				this.startClassification();
 			}
 			connectorInUseLock.remove(issue.getKey());

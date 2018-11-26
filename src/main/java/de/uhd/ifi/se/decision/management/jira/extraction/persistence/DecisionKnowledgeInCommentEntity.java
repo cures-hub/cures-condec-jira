@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
 
+import java.sql.SQLException;
+
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
 import net.java.ao.schema.PrimaryKey;
@@ -61,4 +63,13 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long> {
 	long getUserId();
 
 	void setUserId(long id);
+
+	static boolean deleteElement(DecisionKnowledgeInCommentEntity elementToDelete) {
+		try {
+			elementToDelete.getEntityManager().delete(elementToDelete);
+			return true;
+		} catch (SQLException e) {
+			return false;
+		}
+	}
 }

@@ -20,7 +20,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
@@ -52,20 +52,20 @@ public class TestOAuthManager extends TestSetUpWithIssues {
 
 	@Test
 	public void testConfigPersistenceProperties() {
-		ConfigPersistence.setAccessToken("token");
-		assertNotNull(ConfigPersistence.getAccessToken());
+		ConfigPersistenceManager.setAccessToken("token");
+		assertNotNull(ConfigPersistenceManager.getAccessToken());
 
-		ConfigPersistence.setOauthJiraHome("token");
-		assertNotNull(ConfigPersistence.getOauthJiraHome());
+		ConfigPersistenceManager.setOauthJiraHome("token");
+		assertNotNull(ConfigPersistenceManager.getOauthJiraHome());
 
-		ConfigPersistence.setConsumerKey("token");
-		assertNotNull(ConfigPersistence.getConsumerKey());
+		ConfigPersistenceManager.setConsumerKey("token");
+		assertNotNull(ConfigPersistenceManager.getConsumerKey());
 
-		ConfigPersistence.setRequestToken("token");
-		assertNotNull(ConfigPersistence.getRequestToken());
+		ConfigPersistenceManager.setRequestToken("token");
+		assertNotNull(ConfigPersistenceManager.getRequestToken());
 
-		ConfigPersistence.setSecretForOAuth("token");
-		assertNotNull(ConfigPersistence.getSecretForOAuth());
+		ConfigPersistenceManager.setSecretForOAuth("token");
+		assertNotNull(ConfigPersistenceManager.getSecretForOAuth());
 	}
 
 	@Test

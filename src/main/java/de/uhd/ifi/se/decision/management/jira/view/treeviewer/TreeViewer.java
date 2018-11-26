@@ -23,9 +23,8 @@ import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceStrategy;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.StrategyProvider;
 
 /**
  * Creates tree viewer content
@@ -63,7 +62,7 @@ public class TreeViewer {
 	public TreeViewer(String projectKey, KnowledgeType rootElementType) {
 		this();
 		if (rootElementType != KnowledgeType.OTHER) {
-			AbstractPersistenceStrategy strategy = StrategyProvider.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
 			List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements(rootElementType);
 
 			Set<Data> dataSet = new HashSet<Data>();

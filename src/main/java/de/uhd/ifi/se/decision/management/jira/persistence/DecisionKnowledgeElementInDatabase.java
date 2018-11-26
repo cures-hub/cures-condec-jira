@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
+import java.sql.SQLException;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
@@ -40,4 +42,13 @@ public interface DecisionKnowledgeElementInDatabase extends RawEntity<Integer> {
 	String getKey();
 
 	void setKey(String key);
+
+	static boolean deleteElement(DecisionKnowledgeElementInDatabase elementToDelete) {
+		try {
+			elementToDelete.getEntityManager().delete(elementToDelete);
+			return true;
+		} catch (SQLException e) {
+			return false;
+		}
+	}
 }
