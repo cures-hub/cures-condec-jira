@@ -28,10 +28,11 @@
 		isContextMenuOpen = false;
 	}
 
-	function createContextMenu(posX, posY, id) {
+	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(posX, posY, id) {
 		isContextMenuOpen = true;
 		console.log("contextmenu opened");
-		id = id.replace("tv", "");
+
+		posY = getCorrectPosY(posY);
 
 		$("#condec-context-menu").css({
 			left : posX,
@@ -78,19 +79,19 @@
 				window.conDecKnowledgePage.openJiraIssue(id);
 			}
 		};
-	}
+	};
 
-	ConDecContextMenu.prototype.createContextMenu = createContextMenu;
-
-	function createContextMenuForSentences(posX, posY, id) {
+	ConDecContextMenu.prototype.createContextMenuForSentences = function createContextMenuForSentences(posX, posY, id) {
 		isContextMenuOpen = true;
 		console.log("contextmenu opened");
 
+		posY = getCorrectPosY(posY);
+		
 		$("#condec-context-menu-sentence").css({
 			left : posX,
 			top : posY
 		});
-		id = id.replace("tv", "");
+		
 		document.getElementById("condec-context-menu-sentence").style.zIndex = 9998;
 		document.querySelector("#condec-context-menu-sentence").setAttribute('aria-hidden', 'false');
 
@@ -155,9 +156,20 @@
 				conDecObservable.notify();
 			});
 		};
-	}
+	};
 
-	ConDecContextMenu.prototype.createContextMenuForSentences = createContextMenuForSentences;
+	function getCorrectPosY(posY) {
+		var view = null;
+		if (document.getElementsByClassName("aui-item detail-panel")[0] !== undefined) {// filtered	
+			view = document.getElementsByClassName("aui-item detail-panel")[0];
+		} else if (document.getElementsByClassName("issue-view")[0] !== undefined) {// unfiltered
+			view = document.getElementsByClassName("issue-view")[0];
+		}
+		if (view !== null) {
+			posY = posY + view.scrollTop;
+		}
+		return posY;
+	}
 
 	// export ConDecContextMenu
 	global.conDecContextMenu = new ConDecContextMenu();

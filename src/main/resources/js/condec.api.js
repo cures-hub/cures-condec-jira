@@ -83,7 +83,8 @@
 				"projectKey" : projectKey,
 				"summary" : summary,
 				"type" : type,
-				"description" : description
+				"description" : description,
+				"documentationLocation" : ""
 			};
 			postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createDecisionKnowledgeElement.json",
 					jsondata, function(error, decisionKnowledgeElement) {
@@ -107,7 +108,8 @@
 			"summary" : summary,
 			"type" : type,
 			"projectKey" : projectKey,
-			"description" : description
+			"description" : description,
+			"documentationLocation" : "" 
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/updateDecisionKnowledgeElement.json", jsondata,
 				function(error, decisionKnowledgeElement) {

@@ -46,8 +46,6 @@
 		<!-- style sheets -->
 		<resource type="download" name="treant.css" location="/css/treant.css" />
 		<resource type="download" name="condec.css" location="/css/condec.css" />
-		<resource type="download" name="jquery.contextMenu.css"
-			location="/css/jquery.contextMenu.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
 		<!-- look and feel like JIRA -->
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
@@ -84,9 +82,6 @@
 		<context>jira.view.issue</context>
 		<!-- jquery 1.9.1 for the plug-in (required by jstree) with Sizzle -->
 		<resource type="download" name="jqueryConDec" location="/js/jquery/jquery.js" />
-		<!-- jquery.contextMenu -->
-		<resource type="download" name="jquery.contextMenu.js"
-			location="/js/jquery/jquery.contextMenu.js" />
 		<!-- jstree -->
 		<resource type="download" name="jstree.js" location="/js/jstree/jstree.js" />
 		<!-- treant -->
