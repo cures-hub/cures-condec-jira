@@ -166,7 +166,7 @@
 			view = document.getElementsByClassName("issue-view")[0];
 		}
 		if (view != null) {
-			posY = (posY + view.scrollTop);
+			posY = posY + view.scrollTop;
 		}
 		return posY;
 	}

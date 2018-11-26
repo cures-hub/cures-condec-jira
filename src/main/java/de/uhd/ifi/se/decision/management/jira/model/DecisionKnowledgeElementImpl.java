@@ -196,6 +196,9 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	@Override
 	@JsonProperty("documentationLocation")
 	public void setDocumentationLocation(String documentationLocation) {
+		if(documentationLocation == null || documentationLocation.equals("")) {
+			this.documentationLocation = DocumentationLocation.JIRAISSUE;
+		}
 		this.documentationLocation = DocumentationLocation.getDocumentationType(documentationLocation);
 	}
 
