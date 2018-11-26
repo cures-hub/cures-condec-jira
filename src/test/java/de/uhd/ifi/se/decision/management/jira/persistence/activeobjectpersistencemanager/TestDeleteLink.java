@@ -39,7 +39,7 @@ public class TestDeleteLink extends ActiveObjectPersistenceManagerTestSetUp {
 		DecisionKnowledgeElement linkedDecisionWithDatabaseId = aoStrategy
 				.insertDecisionKnowledgeElement(linkedDecisision, user);
 		Link link = new LinkImpl(linkedDecisionWithDatabaseId, elementWithDatabaseId);
-		aoStrategy.insertLinkWithoutTransaction(link, user);
+		aoStrategy.insertLink(link, user);
 	}
 
 	@Test(expected = NullPointerException.class)

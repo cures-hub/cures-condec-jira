@@ -32,6 +32,7 @@ import net.java.ao.Query;
 public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectPersistenceManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
+	private static final String PREFIX = DocumentationLocation.getIdentifier(DocumentationLocation.ACTIVEOBJECT);
 
 	private String projectKey;
 
@@ -49,7 +50,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		long id = decisionKnowledgeElement.getId();
 		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", id))) {
-			GenericLinkManager.deleteLinksForElement("a" + id);
+			GenericLinkManager.deleteLinksForElement(PREFIX + id);
 			boolean isDeleted = DecisionKnowledgeElementInDatabase.deleteElement(databaseEntry);
 			return isDeleted;
 		}
@@ -60,8 +61,8 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 	public boolean deleteLink(Link link, ApplicationUser user) {
 		DecisionKnowledgeElement sourceElement = link.getSourceElement();
 		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
-		return GenericLinkManager.deleteLink("a" + link.getSourceElement().getId(),
-				"a" + link.getDestinationElement().getId());
+		return GenericLinkManager.deleteLink(PREFIX + link.getSourceElement().getId(),
+				PREFIX + link.getDestinationElement().getId());
 	}
 
 	@Override
@@ -184,7 +185,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
 		List<Link> inwardLinks = new ArrayList<>();
 		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class,
-				Query.select().where("ID_OF_DESTINATION_ELEMENT = ?", "a" + element.getId()));
+				Query.select().where("ID_OF_DESTINATION_ELEMENT = ?", PREFIX + element.getId()));
 		for (LinkInDatabase link : links) {
 			Link inwardLink = new LinkImpl(link);
 			inwardLink.setDestinationElement(element);
@@ -199,7 +200,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
 		List<Link> outwardLinks = new ArrayList<>();
 		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class,
-				Query.select().where("ID_OF_SOURCE_ELEMENT = ?", "a" + element.getId()));
+				Query.select().where("ID_OF_SOURCE_ELEMENT = ?", PREFIX + element.getId()));
 		for (LinkInDatabase link : links) {
 			Link outwardLink = new LinkImpl(link);
 			outwardLink.setSourceElement(element);
@@ -244,21 +245,18 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 	public long insertLink(Link link, ApplicationUser user) {
 		DecisionKnowledgeElement sourceElement = link.getSourceElement();
 		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
+		
+		// TODO Replace by checking the documentation location of both elements in GenericLinkManager
+		Link newLink = new LinkImpl(PREFIX + link.getDestinationElement().getId(),
+				PREFIX + link.getSourceElement().getId());
+		newLink.setType(link.getType());
 
 		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction() {
-				return GenericLinkManager.insertLinkWithoutTransaction(link);
+				return GenericLinkManager.insertLinkWithoutTransaction(newLink);
 			}
 		});
-	}
-
-	public long insertLinkWithoutTransaction(Link link, ApplicationUser user) {
-		String prefix = DocumentationLocation.getIdentifier(DocumentationLocation.ACTIVEOBJECT);
-		Link newLink = new LinkImpl(prefix + link.getDestinationElement().getId(),
-				prefix + link.getSourceElement().getId());
-		newLink.setType(link.getType());
-		return GenericLinkManager.insertLinkWithoutTransaction(newLink);
 	}
 
 	@Override

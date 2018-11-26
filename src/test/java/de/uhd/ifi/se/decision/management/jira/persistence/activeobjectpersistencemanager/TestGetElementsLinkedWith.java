@@ -39,7 +39,7 @@ public class TestGetElementsLinkedWith extends ActiveObjectPersistenceManagerTes
 		DecisionKnowledgeElement linkedDecisionWithDatabaseId = aoStrategy
 				.insertDecisionKnowledgeElement(linkedDecision, user);
 		link = new LinkImpl(elementWithDatabaseId, linkedDecisionWithDatabaseId);
-		aoStrategy.insertLinkWithoutTransaction(link, user);
+		aoStrategy.insertLink(link, user);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -57,7 +57,7 @@ public class TestGetElementsLinkedWith extends ActiveObjectPersistenceManagerTes
 	@Test
 	@NonTransactional
 	public void testElementInTableInward() {
-		aoStrategy.insertLinkWithoutTransaction(link, user);
+		aoStrategy.insertLink(link, user);
 		assertEquals(1, aoStrategy.getElementsLinkedWithInwardLinks(link.getSourceElement()).size(), 0.0);
 	}
 
