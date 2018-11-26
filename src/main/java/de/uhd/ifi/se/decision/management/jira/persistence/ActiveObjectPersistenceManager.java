@@ -50,7 +50,8 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", id))) {
 			GenericLinkManager.deleteLinksForElement("a" + id);
-			return DecisionKnowledgeElementInDatabase.deleteElement(databaseEntry);
+			boolean isDeleted = DecisionKnowledgeElementInDatabase.deleteElement(databaseEntry);
+			return isDeleted;
 		}
 		return false;
 	}

@@ -643,7 +643,8 @@ public class ActiveObjectsManager {
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("ID = ?", id))) {
 			GenericLinkManager.deleteLinksForElement("s" + id);
-			return DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
+			boolean isDeleted = DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
+			return isDeleted;
 		}
 		return false;
 	}
