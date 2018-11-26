@@ -20,7 +20,7 @@ import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestConfigPersistence extends TestSetUpWithIssues {
+public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	private EntityManager entityManager;
 
 	@Before

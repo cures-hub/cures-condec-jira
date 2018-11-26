@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectstrategy;
+package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectpersistencemanager;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
@@ -10,11 +10,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(ActiveObjectStrategyTestSetUp.AoSentenceTestDatabaseUpdater.class)
-public class TestGetDecisionKnowledgeElements extends ActiveObjectStrategyTestSetUp {
+public class TestGetDecisionKnowledgeElementKey extends ActiveObjectStrategyTestSetUp {
+
+	private DecisionKnowledgeElement element;
 
 	@Before
 	public void setUp() {
@@ -23,16 +26,30 @@ public class TestGetDecisionKnowledgeElements extends ActiveObjectStrategyTestSe
 		insertElement.setKey("TEST-13");
 		insertElement.setProject("TEST");
 		insertElement.setType(KnowledgeType.DECISION);
+		element = aoStrategy.insertDecisionKnowledgeElement(insertElement, user);
+	}
 
-		aoStrategy.insertDecisionKnowledgeElement(insertElement, user);
-
-		insertElement.setKey("TEST-14");
-		aoStrategy.insertDecisionKnowledgeElement(insertElement, user);
+	@Test(expected = NullPointerException.class)
+	@NonTransactional
+	public void testKeyNull() {
+		aoStrategy.getDecisionKnowledgeElement(null);
 	}
 
 	@Test
 	@NonTransactional
-	public void testFunction() {
-		assertNotNull(aoStrategy.getDecisionKnowledgeElements());
+	public void testKeyEmpty() {
+		assertNull(aoStrategy.getDecisionKnowledgeElement(""));
+	}
+
+	@Test
+	@NonTransactional
+	public void testKeyFilledNotInTable() {
+		assertNull(aoStrategy.getDecisionKnowledgeElement("TEST-123124"));
+	}
+
+	@Test
+	@NonTransactional
+	public void testKeyFilledInTable() {
+		assertNotNull(aoStrategy.getDecisionKnowledgeElement(element.getKey()));
 	}
 }

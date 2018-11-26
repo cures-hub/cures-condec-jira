@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectstrategy;
+package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectpersistencemanager;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;

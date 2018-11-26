@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectstrategy;
+package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectpersistencemanager;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
@@ -10,14 +10,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(ActiveObjectStrategyTestSetUp.AoSentenceTestDatabaseUpdater.class)
-public class TestGetDecisionKnowledgeElementKey extends ActiveObjectStrategyTestSetUp {
-
-	private DecisionKnowledgeElement element;
+public class TestGetDecisionKnowledgeElements extends ActiveObjectStrategyTestSetUp {
 
 	@Before
 	public void setUp() {
@@ -26,30 +23,16 @@ public class TestGetDecisionKnowledgeElementKey extends ActiveObjectStrategyTest
 		insertElement.setKey("TEST-13");
 		insertElement.setProject("TEST");
 		insertElement.setType(KnowledgeType.DECISION);
-		element = aoStrategy.insertDecisionKnowledgeElement(insertElement, user);
-	}
 
-	@Test(expected = NullPointerException.class)
-	@NonTransactional
-	public void testKeyNull() {
-		aoStrategy.getDecisionKnowledgeElement(null);
-	}
+		aoStrategy.insertDecisionKnowledgeElement(insertElement, user);
 
-	@Test
-	@NonTransactional
-	public void testKeyEmpty() {
-		assertNull(aoStrategy.getDecisionKnowledgeElement(""));
+		insertElement.setKey("TEST-14");
+		aoStrategy.insertDecisionKnowledgeElement(insertElement, user);
 	}
 
 	@Test
 	@NonTransactional
-	public void testKeyFilledNotInTable() {
-		assertNull(aoStrategy.getDecisionKnowledgeElement("TEST-123124"));
-	}
-
-	@Test
-	@NonTransactional
-	public void testKeyFilledInTable() {
-		assertNotNull(aoStrategy.getDecisionKnowledgeElement(element.getKey()));
+	public void testFunction() {
+		assertNotNull(aoStrategy.getDecisionKnowledgeElements());
 	}
 }

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectstrategy;
+package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectpersistencemanager;
 
 import static org.junit.Assert.assertEquals;
 

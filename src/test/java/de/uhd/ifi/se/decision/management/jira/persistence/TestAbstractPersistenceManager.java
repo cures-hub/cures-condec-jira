@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 
-public class TestStrategyProvider extends TestSetUpWithIssues {
+public class TestAbstractPersistenceManager extends TestSetUpWithIssues {
 
 	@Before
 	public void setUp() {

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.issuestrategy;
+package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuepersistencemanager;
 
 import org.junit.Before;
 
