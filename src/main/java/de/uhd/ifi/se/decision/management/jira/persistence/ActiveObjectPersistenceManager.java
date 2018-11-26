@@ -1,11 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +18,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 import net.java.ao.Query;
 
 /**
@@ -43,37 +42,17 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 	@Override
 	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement,
 			ApplicationUser user) {
-		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Boolean>() {
-			@Override
-			public Boolean doInTransaction() {
-				new WebhookConnector(projectKey).sendElementChanges(decisionKnowledgeElement);
-				for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
-						.find(DecisionKnowledgeElementInDatabase.class)) {
-
-					if (databaseEntry.getId() == decisionKnowledgeElement.getId()) {
-						try {
-							databaseEntry.getEntityManager().delete(databaseEntry);
-						} catch (SQLException e) {
-							return false;
-						} finally {
-							for (LinkInDatabase linkEntity : ACTIVE_OBJECTS.find(LinkInDatabase.class)) {
-								if (linkEntity.getIdOfSourceElement().equals("a" + decisionKnowledgeElement.getId())
-										|| linkEntity.getIdOfDestinationElement()
-												.equals("a" + decisionKnowledgeElement.getId())) {
-									try {
-										linkEntity.getEntityManager().delete(linkEntity);
-									} catch (SQLException e) {
-										return false;
-									}
-								}
-							}
-						}
-						return true;
-					}
-				}
-				return false;
-			}
-		});
+		if (decisionKnowledgeElement == null) {
+			return false;
+		}
+		new WebhookConnector(projectKey).sendElementChanges(decisionKnowledgeElement);
+		long id = decisionKnowledgeElement.getId();
+		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
+				.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", id))) {
+			GenericLinkManager.deleteLinksForElement("a" + id);
+			return DecisionKnowledgeElementInDatabase.deleteElement(databaseEntry);
+		}
+		return false;
 	}
 
 	@Override

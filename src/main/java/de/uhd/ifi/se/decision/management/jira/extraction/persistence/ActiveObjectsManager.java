@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -482,7 +481,7 @@ public class ActiveObjectsManager {
 				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
 						DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
 					GenericLinkManager.deleteLinksForElement("s" + databaseEntry.getId());
-					deleteAOElement(databaseEntry);
+					DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
 				}
 				return null;
 			}
@@ -505,7 +504,7 @@ public class ActiveObjectsManager {
 				deleteFlag = true;
 			}
 			if (deleteFlag) {
-				deleteAOElement(databaseEntry);
+				DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
 				GenericLinkManager.deleteLinksForElementWithoutTransaction("s" + databaseEntry.getId());
 				// GenericLinkManager.deleteLinksForElement("s" + databaseEntry.getId());
 			}
@@ -633,15 +632,6 @@ public class ActiveObjectsManager {
 		return element.getEndSubstringCount() - element.getStartSubstringCount();
 	}
 
-	private static boolean deleteAOElement(DecisionKnowledgeInCommentEntity elementToDelete) {
-		try {
-			elementToDelete.getEntityManager().delete(elementToDelete);
-			return true;
-		} catch (SQLException e) {
-			return false;
-		}
-	}
-
 	/**
 	 * Proper way to delete sentences from ao. Also deletes their links
 	 * 
@@ -653,7 +643,7 @@ public class ActiveObjectsManager {
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("ID = ?", id))) {
 			GenericLinkManager.deleteLinksForElement("s" + id);
-			return deleteAOElement(databaseEntry);
+			return DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
 		}
 		return false;
 	}

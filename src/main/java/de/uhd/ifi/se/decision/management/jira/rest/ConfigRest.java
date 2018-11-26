@@ -55,7 +55,7 @@ public class ConfigRest {
 		try {
 			boolean isActivated = Boolean.valueOf(isActivatedString);
 			ConfigPersistenceManager.setActivated(projectKey, isActivated);
-			setDefaultKnowledgeTypesEnabled(projectKey, isActivated, ConfigPersistenceManager.isIssueStrategy(projectKey));
+			setDefaultKnowledgeTypesEnabled(projectKey, isActivated);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -63,8 +63,7 @@ public class ConfigRest {
 		}
 	}
 
-	private static void setDefaultKnowledgeTypesEnabled(String projectKey, boolean isActivated,
-			boolean isIssueStrategy) {
+	private static void setDefaultKnowledgeTypesEnabled(String projectKey, boolean isActivated) {
 		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaulTypes();
 		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
 			ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), isActivated);
@@ -143,7 +142,8 @@ public class ConfigRest {
 					.entity(ImmutableMap.of("error", "isKnowledgeExtractedFromGit = null")).build();
 		}
 		try {
-			ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, Boolean.valueOf(isKnowledgeExtractedFromGit));
+			ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey,
+					Boolean.valueOf(isKnowledgeExtractedFromGit));
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -414,9 +414,9 @@ public class ConfigRest {
 	@Path("/getRequestToken")
 	@GET
 	public Response getRequestToken(@QueryParam("projectKey") String projectKey, @QueryParam("baseURL") String baseURL,
-			@QueryParam("privateKey") String privateKey, @QueryParam("consumerKey") String consumerKey) {
-		if (baseURL != null && privateKey != null && consumerKey != null) {
-			privateKey = privateKey.replaceAll(" ", "+");
+			@QueryParam("privateKey") String privateKeyWithWhitespaces, @QueryParam("consumerKey") String consumerKey) {
+		if (baseURL != null && privateKeyWithWhitespaces != null && consumerKey != null) {
+			String privateKey = privateKeyWithWhitespaces.replaceAll(" ", "+");
 			ConfigPersistenceManager.setOauthJiraHome(baseURL);
 			ConfigPersistenceManager.setPrivateKey(privateKey);
 			ConfigPersistenceManager.setConsumerKey(consumerKey);
@@ -437,11 +437,11 @@ public class ConfigRest {
 	@Path("/getAccessToken")
 	@GET
 	public Response getAccessToken(@QueryParam("projectKey") String projectKey, @QueryParam("baseURL") String baseURL,
-			@QueryParam("privateKey") String privateKey, @QueryParam("consumerKey") String consumerKey,
+			@QueryParam("privateKey") String privateKeyWithWhitespaces, @QueryParam("consumerKey") String consumerKey,
 			@QueryParam("requestToken") String requestToken, @QueryParam("secret") String secret) {
-		if (baseURL != null && privateKey != null && consumerKey != null) {
+		if (baseURL != null && privateKeyWithWhitespaces != null && consumerKey != null) {
 
-			privateKey = privateKey.replaceAll(" ", "+");
+			String privateKey = privateKeyWithWhitespaces.replaceAll(" ", "+");
 
 			ConfigPersistenceManager.setOauthJiraHome(baseURL);
 			ConfigPersistenceManager.setRequestToken(requestToken);
