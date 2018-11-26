@@ -15,7 +15,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.PersistenceProvider;
 
 /**
@@ -43,8 +43,8 @@ public class WebhookConnector {
 	}
 
 	public WebhookConnector(String projectKey) {
-		this(projectKey, ConfigPersistence.getWebhookUrl(projectKey), ConfigPersistence.getWebhookSecret(projectKey),
-				ConfigPersistence.getEnabledWebhookTypes(projectKey));
+		this(projectKey, ConfigPersistenceManager.getWebhookUrl(projectKey), ConfigPersistenceManager.getWebhookSecret(projectKey),
+				ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
 	}
 
 	public boolean sendElementChanges(DecisionKnowledgeElement changedElement) {

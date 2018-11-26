@@ -13,8 +13,8 @@ public class PersistenceProvider {
 	 * other JIRA issues. These elements are "first class" elements.
 	 *
 	 * @see AbstractPersistenceManager
-	 * @see JiraIssuePersistence
-	 * @see ActiveObjectPersistence
+	 * @see JiraIssuePersistenceManager
+	 * @see ActiveObjectPersistenceManager
 	 * @param projectKey
 	 *            of the JIRA project.
 	 * @return persistence strategy for "first class" decision knowledge elements
@@ -26,11 +26,11 @@ public class PersistenceProvider {
 			throw new IllegalArgumentException("The project key cannot be null.");
 		}
 
-		boolean isIssueStrategy = ConfigPersistence.isIssueStrategy(projectKey);
+		boolean isIssueStrategy = ConfigPersistenceManager.isIssueStrategy(projectKey);
 		if (isIssueStrategy) {
-			return new JiraIssuePersistence(projectKey);
+			return new JiraIssuePersistenceManager(projectKey);
 		}
-		return new ActiveObjectPersistence(projectKey);
+		return new ActiveObjectPersistenceManager(projectKey);
 	}
 
 	/**
@@ -52,11 +52,11 @@ public class PersistenceProvider {
 
 		switch (element.getDocumentationLocation()) {
 		case JIRAISSUE:
-			return new JiraIssuePersistence(projectKey);
+			return new JiraIssuePersistenceManager(projectKey);
 		case JIRAISSUECOMMENT:
-			return new JiraIssueCommentPersistence(projectKey);
+			return new JiraIssueCommentPersistenceManager(projectKey);
 		case ACTIVEOBJECT:
-			return new ActiveObjectPersistence(projectKey);
+			return new ActiveObjectPersistenceManager(projectKey);
 		default:
 			return null;
 		}

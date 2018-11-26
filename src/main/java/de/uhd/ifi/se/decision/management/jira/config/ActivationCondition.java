@@ -6,7 +6,7 @@ import com.atlassian.jira.plugin.webfragment.conditions.AbstractWebCondition;
 import com.atlassian.jira.plugin.webfragment.model.JiraHelper;
 import com.atlassian.jira.user.ApplicationUser;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
  * Condition for the activation of the plugin. Determines whether the plugin is displayed
@@ -22,6 +22,6 @@ public class ActivationCondition extends AbstractWebCondition {
 	@Override
 	public boolean shouldDisplay(ApplicationUser applicationUser, JiraHelper jiraHelper) {
 		String projectKey = jiraHelper.getProject().getKey();
-		return ConfigPersistence.isActivated(projectKey);
+		return ConfigPersistenceManager.isActivated(projectKey);
 	}
 }

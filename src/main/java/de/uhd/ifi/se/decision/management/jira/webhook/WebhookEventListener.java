@@ -15,7 +15,7 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
  * Triggers the webhook when JIRA issues are created, updated, or deleted or
@@ -55,7 +55,7 @@ public class WebhookEventListener implements InitializingBean, DisposableBean {
 	@EventListener
 	public void onIssueEvent(IssueEvent issueEvent) {
 		String projectKey = issueEvent.getProject().getKey();
-		if (ConfigPersistence.isWebhookEnabled(projectKey)) {
+		if (ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
 			Long eventTypeId = issueEvent.getEventTypeId();
 			DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issueEvent.getIssue());
 			if (eventTypeId.equals(EventType.ISSUE_CREATED_ID) || eventTypeId.equals(EventType.ISSUE_UPDATED_ID)) {
@@ -74,7 +74,7 @@ public class WebhookEventListener implements InitializingBean, DisposableBean {
 		String projectKey = linkCreatedEvent.getIssueLink().getSourceObject().getProjectObject().getKey();
 		DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(
 				linkCreatedEvent.getIssueLink().getSourceObject());
-		if (ConfigPersistence.isWebhookEnabled(projectKey)) {
+		if (ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
 			WebhookConnector connector = new WebhookConnector(projectKey);
 			connector.sendElementChanges(decisionKnowledgeElement);
 		}
@@ -85,7 +85,7 @@ public class WebhookEventListener implements InitializingBean, DisposableBean {
 		String projectKey = linkDeletedEvent.getIssueLink().getSourceObject().getProjectObject().getKey();
 		DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(
 				linkDeletedEvent.getIssueLink().getSourceObject());
-		if (ConfigPersistence.isWebhookEnabled(projectKey)) {
+		if (ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
 			WebhookConnector connector = new WebhookConnector(projectKey);
 			connector.sendElementChanges(decisionKnowledgeElement);
 		}

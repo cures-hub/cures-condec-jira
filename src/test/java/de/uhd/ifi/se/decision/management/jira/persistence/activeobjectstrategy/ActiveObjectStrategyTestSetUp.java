@@ -31,7 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityParamFactory;
-import de.uhd.ifi.se.decision.management.jira.persistence.ActiveObjectPersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.ActiveObjectPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.DecisionKnowledgeElementInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
 import net.java.ao.EntityManager;
@@ -41,7 +41,7 @@ public class ActiveObjectStrategyTestSetUp {
 
 	protected EntityManager entityManager;
 	protected ApplicationUser user;
-	protected ActiveObjectPersistence aoStrategy;
+	protected ActiveObjectPersistenceManager aoStrategy;
 	private IssueManager issueManager;
 	private IssueTypeManager issueTypeManager = new MockIssueTypeManager();
 
@@ -61,7 +61,7 @@ public class ActiveObjectStrategyTestSetUp {
 
 		ActiveObjects activeObjects = new TestActiveObjects(entityManager);
 		TestComponentGetter.init(activeObjects, new MockTransactionTemplate(), new MockUserManager());
-		aoStrategy = new ActiveObjectPersistence("TEST");
+		aoStrategy = new ActiveObjectPersistenceManager("TEST");
 		user = new MockApplicationUser("NoFails");
 	}
 

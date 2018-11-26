@@ -43,12 +43,12 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
  * @see AbstractPersistenceManager
  */
 @JsonAutoDetect
-public class JiraIssuePersistence extends AbstractPersistenceManager {
-	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssuePersistence.class);
+public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
+	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssuePersistenceManager.class);
 
 	private String projectKey;
 
-	public JiraIssuePersistence(String projectKey) {
+	public JiraIssuePersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
 	}
 

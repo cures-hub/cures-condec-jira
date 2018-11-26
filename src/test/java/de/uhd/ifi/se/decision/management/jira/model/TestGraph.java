@@ -22,7 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -79,7 +79,7 @@ public class TestGraph extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testGetLinkedElementsFilled() {
-		JiraIssuePersistence issueStrategy = new JiraIssuePersistence("TEST");
+		JiraIssuePersistenceManager issueStrategy = new JiraIssuePersistenceManager("TEST");
 		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
 

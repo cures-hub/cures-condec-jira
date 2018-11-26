@@ -31,7 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 
 /**
@@ -54,8 +54,8 @@ public class ConfigRest {
 		}
 		try {
 			boolean isActivated = Boolean.valueOf(isActivatedString);
-			ConfigPersistence.setActivated(projectKey, isActivated);
-			setDefaultKnowledgeTypesEnabled(projectKey, isActivated, ConfigPersistence.isIssueStrategy(projectKey));
+			ConfigPersistenceManager.setActivated(projectKey, isActivated);
+			setDefaultKnowledgeTypesEnabled(projectKey, isActivated, ConfigPersistenceManager.isIssueStrategy(projectKey));
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -67,7 +67,7 @@ public class ConfigRest {
 			boolean isIssueStrategy) {
 		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaulTypes();
 		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
-			ConfigPersistence.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), isActivated);
+			ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), isActivated);
 		}
 	}
 
@@ -78,7 +78,7 @@ public class ConfigRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		Boolean isIssueStrategy = ConfigPersistence.isIssueStrategy(projectKey);
+		Boolean isIssueStrategy = ConfigPersistenceManager.isIssueStrategy(projectKey);
 		return Response.ok(isIssueStrategy).build();
 	}
 
@@ -96,7 +96,7 @@ public class ConfigRest {
 		}
 		try {
 			boolean isIssueStrategy = Boolean.valueOf(isIssueStrategyString);
-			ConfigPersistence.setIssueStrategy(projectKey, isIssueStrategy);
+			ConfigPersistenceManager.setIssueStrategy(projectKey, isIssueStrategy);
 			manageDefaultIssueTypes(projectKey, isIssueStrategy);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
@@ -109,7 +109,7 @@ public class ConfigRest {
 		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaulTypes();
 		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
 			if (isIssueStrategy) {
-				ConfigPersistence.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), true);
+				ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), true);
 				PluginInitializer.createIssueType(knowledgeType.toString());
 				PluginInitializer.addIssueTypeToScheme(knowledgeType.toString(), projectKey);
 			} else {
@@ -125,7 +125,7 @@ public class ConfigRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		Boolean isKnowledgeExtractedFromGit = ConfigPersistence.isKnowledgeExtractedFromGit(projectKey);
+		Boolean isKnowledgeExtractedFromGit = ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey);
 		return Response.ok(isKnowledgeExtractedFromGit).build();
 	}
 
@@ -143,7 +143,7 @@ public class ConfigRest {
 					.entity(ImmutableMap.of("error", "isKnowledgeExtractedFromGit = null")).build();
 		}
 		try {
-			ConfigPersistence.setKnowledgeExtractedFromGit(projectKey, Boolean.valueOf(isKnowledgeExtractedFromGit));
+			ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey, Boolean.valueOf(isKnowledgeExtractedFromGit));
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -158,7 +158,7 @@ public class ConfigRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		Boolean isKnowledgeExtractedFromIssues = ConfigPersistence.isKnowledgeExtractedFromIssues(projectKey);
+		Boolean isKnowledgeExtractedFromIssues = ConfigPersistenceManager.isKnowledgeExtractedFromIssues(projectKey);
 		return Response.ok(isKnowledgeExtractedFromIssues).build();
 	}
 
@@ -176,7 +176,7 @@ public class ConfigRest {
 					.entity(ImmutableMap.of("error", "isKnowledgeExtractedFromIssues = null")).build();
 		}
 		try {
-			ConfigPersistence.setKnowledgeExtractedFromIssues(projectKey,
+			ConfigPersistenceManager.setKnowledgeExtractedFromIssues(projectKey,
 					Boolean.valueOf(isKnowledgeExtractedFromIssues));
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
@@ -193,7 +193,7 @@ public class ConfigRest {
 		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
 			return checkIfProjectKeyIsValidResponse;
 		}
-		Boolean isKnowledgeTypeEnabled = ConfigPersistence.isKnowledgeTypeEnabled(projectKey, knowledgeType);
+		Boolean isKnowledgeTypeEnabled = ConfigPersistenceManager.isKnowledgeTypeEnabled(projectKey, knowledgeType);
 		return Response.ok(isKnowledgeTypeEnabled).build();
 	}
 
@@ -213,8 +213,8 @@ public class ConfigRest {
 		}
 		try {
 			boolean isKnowledgeTypeEnabled = Boolean.valueOf(isKnowledgeTypeEnabledString);
-			ConfigPersistence.setKnowledgeTypeEnabled(projectKey, knowledgeType, isKnowledgeTypeEnabled);
-			if (ConfigPersistence.isIssueStrategy(projectKey)) {
+			ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType, isKnowledgeTypeEnabled);
+			if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
 				if (isKnowledgeTypeEnabled) {
 					PluginInitializer.createIssueType(knowledgeType);
 					PluginInitializer.addIssueTypeToScheme(knowledgeType, projectKey);
@@ -238,7 +238,7 @@ public class ConfigRest {
 		}
 		List<String> knowledgeTypes = new ArrayList<String>();
 		for (KnowledgeType knowledgeType : KnowledgeType.values()) {
-			boolean isEnabled = ConfigPersistence.isKnowledgeTypeEnabled(projectKey, knowledgeType);
+			boolean isEnabled = ConfigPersistenceManager.isKnowledgeTypeEnabled(projectKey, knowledgeType);
 			if (isEnabled) {
 				knowledgeTypes.add(knowledgeType.toString());
 			}
@@ -261,7 +261,7 @@ public class ConfigRest {
 		}
 		try {
 			boolean isActivated = Boolean.valueOf(isActivatedString);
-			ConfigPersistence.setWebhookEnabled(projectKey, isActivated);
+			ConfigPersistenceManager.setWebhookEnabled(projectKey, isActivated);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -282,8 +282,8 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "webhook Data = null")).build();
 		}
 		try {
-			ConfigPersistence.setWebhookUrl(projectKey, webhookUrl);
-			ConfigPersistence.setWebhookSecret(projectKey, webhookSecret);
+			ConfigPersistenceManager.setWebhookUrl(projectKey, webhookUrl);
+			ConfigPersistenceManager.setWebhookSecret(projectKey, webhookSecret);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -304,7 +304,7 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "webhook Type = null")).build();
 		}
 		try {
-			ConfigPersistence.setWebhookType(projectKey, webhookType, isWebhookTypeEnabled);
+			ConfigPersistenceManager.setWebhookType(projectKey, webhookType, isWebhookTypeEnabled);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -380,7 +380,7 @@ public class ConfigRest {
 		}
 		try {
 			boolean isActivated = Boolean.valueOf(isActivatedString);
-			ConfigPersistence.setIconParsing(projectKey, isActivated);
+			ConfigPersistenceManager.setIconParsing(projectKey, isActivated);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -403,7 +403,7 @@ public class ConfigRest {
 		}
 		try {
 			boolean isActivated = Boolean.valueOf(isActivatedString);
-			ConfigPersistence.setUseClassiferForIssueComments(projectKey, isActivated);
+			ConfigPersistenceManager.setUseClassiferForIssueComments(projectKey, isActivated);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -417,13 +417,13 @@ public class ConfigRest {
 			@QueryParam("privateKey") String privateKey, @QueryParam("consumerKey") String consumerKey) {
 		if (baseURL != null && privateKey != null && consumerKey != null) {
 			privateKey = privateKey.replaceAll(" ", "+");
-			ConfigPersistence.setOauthJiraHome(baseURL);
-			ConfigPersistence.setPrivateKey(privateKey);
-			ConfigPersistence.setConsumerKey(consumerKey);
+			ConfigPersistenceManager.setOauthJiraHome(baseURL);
+			ConfigPersistenceManager.setPrivateKey(privateKey);
+			ConfigPersistenceManager.setConsumerKey(consumerKey);
 			OAuthManager oAuthManager = new OAuthManager();
 			String requestToken = oAuthManager.retrieveRequestToken(consumerKey, privateKey);
 
-			ConfigPersistence.setRequestToken(requestToken);
+			ConfigPersistenceManager.setRequestToken(requestToken);
 			// TODO: Tim: why do we have to use a map here,
 			// Response.ok(requestToken).build() does not work, why?
 			return Response.status(Status.OK).entity(ImmutableMap.of("result", requestToken)).build();
@@ -443,16 +443,16 @@ public class ConfigRest {
 
 			privateKey = privateKey.replaceAll(" ", "+");
 
-			ConfigPersistence.setOauthJiraHome(baseURL);
-			ConfigPersistence.setRequestToken(requestToken);
-			ConfigPersistence.setPrivateKey(privateKey);
-			ConfigPersistence.setConsumerKey(consumerKey);
-			ConfigPersistence.setSecretForOAuth(secret);
+			ConfigPersistenceManager.setOauthJiraHome(baseURL);
+			ConfigPersistenceManager.setRequestToken(requestToken);
+			ConfigPersistenceManager.setPrivateKey(privateKey);
+			ConfigPersistenceManager.setConsumerKey(consumerKey);
+			ConfigPersistenceManager.setSecretForOAuth(secret);
 
 			OAuthManager oAuthManager = new OAuthManager();
 			String accessToken = oAuthManager.retrieveAccessToken(requestToken, secret, consumerKey, privateKey);
 
-			ConfigPersistence.setAccessToken(accessToken);
+			ConfigPersistenceManager.setAccessToken(accessToken);
 
 			// TODO: Tim: why do we have to use a map here, Response.ok(accessToken).build()
 			// does not work, why?

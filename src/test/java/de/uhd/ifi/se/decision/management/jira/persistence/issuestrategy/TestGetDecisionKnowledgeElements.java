@@ -4,13 +4,13 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
 
 public class TestGetDecisionKnowledgeElements extends TestIssueStrategySetUp {
 
 	@Test
 	public void testProjectNonExistent() {
-		JiraIssuePersistence issueStrategy = new JiraIssuePersistence("NOTExistend");
+		JiraIssuePersistenceManager issueStrategy = new JiraIssuePersistenceManager("NOTExistend");
 		assertEquals(0, issueStrategy.getDecisionKnowledgeElements().size());
 	}
 

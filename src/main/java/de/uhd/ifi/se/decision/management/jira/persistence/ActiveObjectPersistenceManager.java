@@ -30,13 +30,13 @@ import net.java.ao.Query;
  * @see AbstractPersistenceManager
  */
 @JsonAutoDetect
-public class ActiveObjectPersistence extends AbstractPersistenceManager {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectPersistence.class);
+public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectPersistenceManager.class);
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
 	private String projectKey;
 
-	public ActiveObjectPersistence(String projectKey) {
+	public ActiveObjectPersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
 	}
 

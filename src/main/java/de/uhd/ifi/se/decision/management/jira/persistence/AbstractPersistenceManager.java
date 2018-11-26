@@ -18,9 +18,9 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  * strategy provider to get the persistence strategy used in a project. Other
  * persistence methods are for example JIRA issue comments, description, and commit messages.
  *
- * @see JiraIssuePersistence
- * @see ActiveObjectPersistence
- * @see JiraIssueCommentPersistence
+ * @see JiraIssuePersistenceManager
+ * @see ActiveObjectPersistenceManager
+ * @see JiraIssueCommentPersistenceManager
  * @see PersistenceProvider
  */
 public abstract class AbstractPersistenceManager {

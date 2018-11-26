@@ -168,7 +168,7 @@ public class GenericLinkManager {
 	}
 
 	public static DecisionKnowledgeElement getIssueFromAOTable(long dkeId) {
-		ActiveObjectPersistence aos = new ActiveObjectPersistence("");
+		ActiveObjectPersistenceManager aos = new ActiveObjectPersistenceManager("");
 		return aos.getDecisionKnowledgeElement(dkeId);
 	}
 

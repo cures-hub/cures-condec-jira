@@ -33,7 +33,7 @@ import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistence;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
 
@@ -437,7 +437,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		}
 		try {
 			OAuthManager ar = new OAuthManager();
-			String baseUrl = ConfigPersistence.getOauthJiraHome();
+			String baseUrl = ConfigPersistenceManager.getOauthJiraHome();
 			if (!baseUrl.endsWith("/")) {
 				baseUrl = baseUrl + "/";
 			}
