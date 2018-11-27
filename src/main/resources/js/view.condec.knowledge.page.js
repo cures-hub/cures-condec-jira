@@ -60,11 +60,6 @@
 		updateView(null, treant, treeViewer);
 	};
 
-	ConDecKnowledgePage.prototype.setAsRootElement = function setAsRootElement(id) {
-		console.log("view.decision.knowledge.page setAsRootElement");
-		treeViewer.selectNodeInTreeViewer(id);
-	};
-
 	function initializeDecisionKnowledgePage(conDecAPI, treant, treeViewer) {
 		console.log("view.decision.knowledge.page initializeDecisionKnowledgePage");
 

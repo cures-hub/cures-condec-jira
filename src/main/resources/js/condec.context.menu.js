@@ -4,6 +4,7 @@
  Requires
  * conDecAPI
  * conDecDialog
+ * conDecTreant
 
  Is required by
  * conDecTreant
@@ -67,11 +68,9 @@
 		};
 
 		document.getElementById("condec-context-menu-set-root-item").onclick = function() {
-			if (window.conDecIssueModule !== undefined) {
-				window.conDecIssueModule.setAsRootElement(id);
-			} else if (window.conDecKnowledgePage !== undefined) {
-				window.conDecKnowledgePage.setAsRootElement(id);
-			}
+			conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
+				conDecTreant.buildTreant(decisionKnowledgeElement.key, true, "");
+			});
 		};
 
 		document.getElementById("condec-context-menu-open-jira-issue-item").onclick = function() {
@@ -158,7 +157,7 @@
 
 	function getCorrectPosY(posY) {
 		var view = null;
-		if (document.getElementsByClassName("aui-item detail-panel")[0] !== undefined) {// filtered	
+		if (document.getElementsByClassName("aui-item detail-panel")[0] !== undefined) {// filtered
 			view = document.getElementsByClassName("aui-item detail-panel")[0];
 		} else if (document.getElementsByClassName("issue-view")[0] !== undefined) {// unfiltered
 			view = document.getElementsByClassName("issue-view")[0];
