@@ -21,6 +21,14 @@
 		this.extendedKnowledgeTypes = getExtendedKnowledgeTypes(this.knowledgeTypes);
 	};
 
+	ConDecAPI.prototype.checkIfProjectKeyIsValid = function checkIfProjectKeyIsValid() {
+		if (projectKey === null || projectKey === undefined) {
+			projectKey = getProjectKey();
+			this.knowledgeTypes = getKnowledgeTypes(projectKey);
+			this.extendedKnowledgeTypes = getExtendedKnowledgeTypes(this.knowledgeTypes);
+		}
+	};
+
 	/*
 	 * external references: condec.context.menu, view.condec.knowledge.page,
 	 * view.condec.issue.module ..
@@ -109,7 +117,7 @@
 			"type" : type,
 			"projectKey" : projectKey,
 			"description" : description,
-			"documentationLocation" : "" 
+			"documentationLocation" : ""
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/updateDecisionKnowledgeElement.json", jsondata,
 				function(error, decisionKnowledgeElement) {
@@ -956,16 +964,19 @@
 	/*
 	 * external references: view.condec.issue.module
 	 */
-	ConDecAPI.prototype.getIssueKey = function getIssueKey() {
+	function getIssueKey() {
 		console.log("conDecAPI getIssueKey");
 		var issueKey = JIRA.Issue.getIssueKey();
 		if (issueKey === null) {
 			issueKey = AJS.Meta.get("issue-key");
 		}
 		return issueKey;
-	};
+	}
+
+	ConDecAPI.prototype.getIssueKey = getIssueKey;
 
 	function getProjectKey() {
+		console.log("conDecAPI getProjectKey");
 		var projectKey;
 		try {
 			projectKey = JIRA.API.Projects.getCurrentProjectKey();
@@ -974,7 +985,7 @@
 		}
 		if (projectKey === undefined) {
 			try {
-				var issueKey = this.getIssueKey();
+				var issueKey = getIssueKey();
 				projectKey = issueKey.split("-")[0];
 			} catch (error) {
 				console.log(error);
@@ -987,6 +998,7 @@
 	 * external references: condec.context.menu
 	 */
 	ConDecAPI.prototype.getProjectId = function getProjectId() {
+		console.log("conDecAPI getProjectId");
 		var projectId;
 		try {
 			projectId = JIRA.API.Projects.getCurrentProjectId();

@@ -31,7 +31,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 /*
 instantiate the ConDecKnowledgePage object controlling this view
 */
-$(document).ready(function(){
+$(document).ready(function() {
+	conDecAPI.checkIfProjectKeyIsValid();
     if ( window.conDecKnowledgePage.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant, conDecTreeViewer, window) )
         window.conDecKnowledgePage.fetchAndRender();
     else {

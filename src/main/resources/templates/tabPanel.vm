@@ -3,6 +3,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rest
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:classifier-resources")
 
+<form class="aui">
 <table>
 	<tbody>
 		<tr>
@@ -25,13 +26,15 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:clas
 	</tbody>
 </table>
 
-<input class="text medium-long-field" id="jstree-search-input" placeholder="Search decision knowledge" />
+<input class="text full-width-field" id="jstree-search-input" placeholder="Search decision knowledge" />
+</form>
 <div id="jstree"> </div> 
 <script>
 	/*
 	instantiate the ConDecIssueTab object controlling this view
 	*/
-	$(document).ready(function(){
+	$(document).ready(function() {
+		conDecAPI.checkIfProjectKeyIsValid();
 	    if ( window.conDecIssueTab.init(conDecAPI, conDecObservable, conDecTreeViewer, conDecContextMenu) ) {
 	    	window.conDecIssueTab.fetchAndRender();
 	    } else {
