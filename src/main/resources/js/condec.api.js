@@ -1016,6 +1016,16 @@
 			body : message
 		});
 	}
+	
+	ConDecAPI.prototype.openJiraIssue = function openJiraIssue(nodeId) {
+		console.log("conDecAPI openJiraIssue");
+
+		this.getDecisionKnowledgeElement(nodeId, function(decisionKnowledgeElement) {
+			var baseUrl = AJS.params.baseURL;
+			var key = decisionKnowledgeElement.key;
+			global.open(baseUrl + "/browse/" + key, '_self');
+		});
+	};
 
 	// export ConDecAPI
 	global.conDecAPI = new ConDecAPI();

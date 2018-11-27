@@ -75,9 +75,7 @@
 		};
 
 		document.getElementById("condec-context-menu-open-jira-issue-item").onclick = function() {
-			if (window.conDecKnowledgePage !== undefined) {
-				window.conDecKnowledgePage.openJiraIssue(id);
-			}
+			conDecAPI.openJiraIssue(id);
 		};
 	};
 
@@ -86,12 +84,12 @@
 		console.log("contextmenu opened");
 
 		posY = getCorrectPosY(posY);
-		
+
 		$("#condec-context-menu-sentence").css({
 			left : posX,
 			top : posY
 		});
-		
+
 		document.getElementById("condec-context-menu-sentence").style.zIndex = 9998;
 		document.querySelector("#condec-context-menu-sentence").setAttribute('aria-hidden', 'false');
 
