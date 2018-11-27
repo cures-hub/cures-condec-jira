@@ -3,7 +3,7 @@
 }
 
 .rationale {
-	background-color: rgb(255, 255, 221);
+	background-color: rgb(245, 245, 245);
 }
 
 .contra {
@@ -15,11 +15,11 @@
 }
 
 .solution {
-	background-color: rgb(255, 255, 230);
+	background-color: rgb(255, 246, 232);
 }
 
 .decision {
-	background-color: rgb(250, 235, 215);
+	background-color: rgb(252, 227, 190);
 }
 
 .problem {
