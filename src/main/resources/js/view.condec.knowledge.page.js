@@ -60,21 +60,6 @@
 		updateView(null, treant, treeViewer);
 	};
 
-	ConDecKnowledgePage.prototype.setAsRootElement = function setAsRootElement(id) {
-		console.log("view.decision.knowledge.page setAsRootElement");
-		treeViewer.selectNodeInTreeViewer(id);
-	};
-
-	ConDecKnowledgePage.prototype.openJiraIssue = function openJiraIssue(nodeId) {
-		console.log("view.decision.knowledge.page openJiraIssue");
-
-		conDecAPI.getDecisionKnowledgeElement(nodeId, function(decisionKnowledgeElement) {
-			var baseUrl = AJS.params.baseURL;
-			var key = decisionKnowledgeElement.key;
-			global.open(baseUrl + "/browse/" + key, '_self');
-		});
-	};
-
 	function initializeDecisionKnowledgePage(conDecAPI, treant, treeViewer) {
 		console.log("view.decision.knowledge.page initializeDecisionKnowledgePage");
 
