@@ -36,18 +36,25 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	}
 
 	public DecisionKnowledgeElementImpl(long id, String summary, String description, KnowledgeType type,
-			String projectKey, String key) {
+			String projectKey, String key, DocumentationLocation documentationLocation) {
 		this.id = id;
 		this.summary = summary;
 		this.description = description;
 		this.type = type;
 		this.project = new DecisionKnowledgeProjectImpl(projectKey);
 		this.key = key;
+		this.documentationLocation = documentationLocation;
 	}
 
 	public DecisionKnowledgeElementImpl(long id, String summary, String description, String type, String projectKey,
-			String key) {
-		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key);
+			String key, String documentationLocation) {
+		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key,
+				DocumentationLocation.getDocumentationType(documentationLocation));
+	}
+
+	public DecisionKnowledgeElementImpl(long id, String summary, String description, String type, String projectKey,
+			String key, DocumentationLocation documentationLocation) {
+		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key, documentationLocation);
 	}
 
 	public DecisionKnowledgeElementImpl(Issue issue) {
@@ -65,8 +72,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 
 	public DecisionKnowledgeElementImpl(DecisionKnowledgeElementInDatabase entity) {
 		this(entity.getId(), entity.getSummary(), entity.getDescription(), entity.getType(), entity.getProjectKey(),
-				entity.getKey());
-		this.documentationLocation = DocumentationLocation.ACTIVEOBJECT;
+				entity.getKey(), DocumentationLocation.ACTIVEOBJECT);
 	}
 
 	@Override
@@ -196,7 +202,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	@Override
 	@JsonProperty("documentationLocation")
 	public void setDocumentationLocation(String documentationLocation) {
-		if(documentationLocation == null || documentationLocation.equals("")) {
+		if (documentationLocation == null || documentationLocation.equals("")) {
 			// TODO Add here persistence strategy chosen in project
 			this.documentationLocation = DocumentationLocation.JIRAISSUE;
 		}

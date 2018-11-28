@@ -13,6 +13,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
@@ -37,7 +38,7 @@ public class TestGetLinkedElements extends TestJiraIssuePersistenceManagerSetUp 
 
 		long i = 2;
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(5000, "TESTSummary",
-				"TestDescription", KnowledgeType.DECISION, project.getKey(), "TEST-" + 5000);
+				"TestDescription", KnowledgeType.DECISION, project.getKey(), "TEST-" + 5000, DocumentationLocation.JIRAISSUE);
 		element.setId(5000);
 
 		issueStrategy.insertDecisionKnowledgeElement(element, user);
@@ -46,7 +47,7 @@ public class TestGetLinkedElements extends TestJiraIssuePersistenceManagerSetUp 
 			link.setType("support");
 			if (type != KnowledgeType.DECISION) {
 				DecisionKnowledgeElementImpl decisionKnowledgeElement = new DecisionKnowledgeElementImpl(i,
-						"TESTSummary", "TestDescription", type, project.getKey(), "TEST-" + i);
+						"TESTSummary", "TestDescription", type, project.getKey(), "TEST-" + i, DocumentationLocation.JIRAISSUE);
 				issueStrategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
 				link.setDestinationElement(element.getId());
 				link.setSourceElement(decisionKnowledgeElement.getId());
