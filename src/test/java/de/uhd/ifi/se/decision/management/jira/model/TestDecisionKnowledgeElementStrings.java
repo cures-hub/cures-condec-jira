@@ -41,7 +41,7 @@ public class TestDecisionKnowledgeElementStrings extends TestSetUpWithIssues {
 		String key = "Test";
 
 		this.decisionKnowledgeElement = new DecisionKnowledgeElementImpl(id, summary, description, type, projectKey,
-				key);
+				key, DocumentationLocation.ACTIVEOBJECT);
 
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());

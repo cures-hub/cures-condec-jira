@@ -81,10 +81,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 					}
 				});
 		if (decisionKnowledgeElement != null) {
-			return new DecisionKnowledgeElementImpl(decisionKnowledgeElement.getId(),
-					decisionKnowledgeElement.getSummary(), decisionKnowledgeElement.getDescription(),
-					decisionKnowledgeElement.getType(), decisionKnowledgeElement.getProjectKey(),
-					decisionKnowledgeElement.getKey());
+			return new DecisionKnowledgeElementImpl(decisionKnowledgeElement);
 		}
 		return null;
 	}
