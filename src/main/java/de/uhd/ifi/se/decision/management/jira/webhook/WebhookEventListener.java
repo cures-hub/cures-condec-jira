@@ -28,7 +28,7 @@ public class WebhookEventListener implements InitializingBean, DisposableBean {
 	private final EventPublisher eventPublisher;
 
 	@Autowired
-	public WebhookEventListener(@JiraImport EventPublisher eventPublisher) {
+	public WebhookEventListener(EventPublisher eventPublisher) {
 		this.eventPublisher = eventPublisher;
 	}
 

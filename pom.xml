@@ -145,12 +145,6 @@
 		</dependency>
 		<!-- Tests -->
 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.1.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.atlassian.activeobjects</groupId>
 			<artifactId>activeobjects-test</artifactId>
 			<version>${ao.version}</version>

@@ -43,7 +43,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	public static boolean editCommentLock;
 
 	@Autowired
-	public DecXtractEventListener(@JiraImport EventPublisher eventPublisher) {
+	public DecXtractEventListener(EventPublisher eventPublisher) {
 		this.eventPublisher = eventPublisher;
 	}
 
