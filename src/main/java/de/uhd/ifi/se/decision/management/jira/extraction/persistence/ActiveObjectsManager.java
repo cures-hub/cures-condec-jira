@@ -18,11 +18,11 @@ import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -669,6 +669,32 @@ public class ActiveObjectsManager {
 		}
 
 		return treeSet.size();
+	}
+
+	public static DecisionKnowledgeElement addNewCommentToJIRAIssue(DecisionKnowledgeElement decisionKnowledgeElement,
+			String argument, ApplicationUser user) {
+		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(decisionKnowledgeElement.getId());
+		if (issue != null) {
+			String macro = "{" + decisionKnowledgeElement.getType().toString() + "}";
+			if (argument != null && !argument.equals("")) {
+				if (argument.equalsIgnoreCase("Pro-argument")) {
+					macro = "{pro}";
+				} else if (argument.equalsIgnoreCase("Con-argument")) {
+					macro = "{con}";
+				}
+			}
+			String text = decisionKnowledgeElement.getSummary() + "\n" + decisionKnowledgeElement.getDescription();
+			com.atlassian.jira.issue.comments.Comment comment = ComponentAccessor.getCommentManager().create(issue,
+					user, macro + text + macro, false);
+			Comment com = new CommentImpl(comment, true);
+			for (Sentence sentence : com.getSentences()) {
+				GenericLinkManager.deleteLinksForElement("s" + sentence.getId());
+				ActiveObjectsManager.createSmartLinkForSentence(sentence);
+			}
+			return com.getSentences().get(0);
+		} else {
+			return null;
+		}
 	}
 
 }

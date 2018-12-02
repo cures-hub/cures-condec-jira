@@ -107,6 +107,31 @@
 	};
 
 	/*
+	 * external references: view.condec.issue.module, view.condec.knowledge.page ..
+	 */
+	ConDecAPI.prototype.createDecisionKnowledgeElementAsJIRAIssueComment = function createDecisionKnowledgeElementAsJIRAIssueComment(summary, description,
+			type,idOfParentElement, callback) {
+		if (summary !== "") {
+			var jsondata = {
+				"projectKey" : projectKey,
+				"summary" : summary,
+				"type" : type,
+				"description" : description,
+				"id": idOfParentElement
+			};
+			postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createDecisionKnowledgeElementAsJIRAIssueComment.json?argument="+type,
+					jsondata, function(error, decisionKnowledgeElement) {
+						if (error === null) {
+							showFlag("success", type + " has been created.");
+							callback();
+						} else {
+							showFlag("error", type + " has not been created. Error Code: " + error);
+						}
+					});
+		}
+	};
+
+	/*
 	 * external references: none
 	 */
 	ConDecAPI.prototype.updateDecisionKnowledgeElement = function updateDecisionKnowledgeElement(id, summary,
