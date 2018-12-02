@@ -19,14 +19,14 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
-public class TestCreateDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
+public class TestCreateDecisionKnowledeElementInComment extends TestKnowledgeRestSetUp {
 
 	private final static String CREATION_ERROR = "Creation of decision knowledge element failed.";
 
 	@Test
 	public void testRequestNullElementNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createDecisionKnowledgeElement(null, null).getEntity());
+				.getEntity(), knowledgeRest.createDecisionKnowledgeElementAsJIRAIssueComment(null, null, null).getEntity());
 	}
 
 	@Test
@@ -34,7 +34,7 @@ public class TestCreateDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
 		assertEquals(
 				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 						.getEntity(),
-				knowledgeRest.createDecisionKnowledgeElement(null, decisionKnowledgeElement).getEntity());
+				knowledgeRest.createDecisionKnowledgeElementAsJIRAIssueComment(null, decisionKnowledgeElement,"").getEntity());
 	}
 
 	@Test
@@ -42,7 +42,7 @@ public class TestCreateDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createDecisionKnowledgeElement(request, null).getEntity());
+				.getEntity(), knowledgeRest.createDecisionKnowledgeElementAsJIRAIssueComment(request, null,"").getEntity());
 	}
 
 	@Test
@@ -52,6 +52,26 @@ public class TestCreateDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
 		request.setAttribute("NoFails", true);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement).getStatus());
+				knowledgeRest.createDecisionKnowledgeElementAsJIRAIssueComment(request, decisionKnowledgeElement,"").getStatus());
+	}
+	
+	@Test
+    @NonTransactional
+	public void testRequestFilledElementFilledWithArgument() {
+		request.setAttribute("WithFails", false);
+		request.setAttribute("NoFails", true);
+		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
+		assertEquals(Status.OK.getStatusCode(),
+				knowledgeRest.createDecisionKnowledgeElementAsJIRAIssueComment(request, decisionKnowledgeElement,"Pro-argument").getStatus());
+	}	
+	
+	@Test
+    @NonTransactional
+	public void testRequestFilledElementFilledWithConArgument() {
+		request.setAttribute("WithFails", false);
+		request.setAttribute("NoFails", true);
+		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
+		assertEquals(Status.OK.getStatusCode(),
+				knowledgeRest.createDecisionKnowledgeElementAsJIRAIssueComment(request, decisionKnowledgeElement,"Con-argument").getStatus());
 	}
 }
