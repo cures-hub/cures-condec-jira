@@ -91,6 +91,10 @@
 
 		document.getElementById("condec-context-menu-sentence").style.zIndex = 9998;
 		document.querySelector("#condec-context-menu-sentence").setAttribute('aria-hidden', 'false');
+		
+		document.getElementById("condec-context-menu-sentence-create-item").onclick = function() {
+			conDecDialog.showCreateDialog(id);
+		};
 
 		document.getElementById("condec-context-menu-sentence-edit-item").onclick = function() {
 			conDecDialog.setUpDialogForEditSentenceAction(id);

@@ -84,9 +84,8 @@
 		if (addDocumentLocation) {
 			documentationLocation = "<div class='field-group'><label for='form-select-location'>Documentation Location:</label>"
 					+ "<select id='form-select-location' name='form-select-location' class='select full-width-field'>"
-					+ " <option selected value = 'i'>JIRA Issue</option>"
-					+ "<option value = 's'>"
-					+ "Issue Comment</option> </select> </div>";
+					+ "<option selected value = 'i'>JIRA Issue</option>"
+					+ "<option value = 's'>JIRA Issue Comment</option></select></div>";
 		}
 		document
 				.getElementById("dialog-content")
@@ -117,6 +116,7 @@
 					+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
 		}
 		AJS.$("#form-select-type").auiSelect2();
+		AJS.$("#form-select-location").auiSelect2();
 	}
 
 	function setUpTypeChangeDialog(knowledgeType) {

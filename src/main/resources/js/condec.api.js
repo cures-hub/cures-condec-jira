@@ -109,18 +109,20 @@
 	/*
 	 * external references: view.condec.issue.module, view.condec.knowledge.page ..
 	 */
-	ConDecAPI.prototype.createDecisionKnowledgeElementAsJIRAIssueComment = function createDecisionKnowledgeElementAsJIRAIssueComment(summary, description,
-			type,idOfParentElement, callback) {
+	ConDecAPI.prototype.createDecisionKnowledgeElementAsJIRAIssueComment = function createDecisionKnowledgeElementAsJIRAIssueComment(
+			summary, description, type, idOfParentElement, callback) {
 		if (summary !== "") {
 			var jsondata = {
 				"projectKey" : projectKey,
 				"summary" : summary,
 				"type" : type,
 				"description" : description,
-				"id": idOfParentElement
+				"id" : idOfParentElement
 			};
-			postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createDecisionKnowledgeElementAsJIRAIssueComment.json?argument="+type,
-					jsondata, function(error, decisionKnowledgeElement) {
+			postJSON(
+					AJS.contextPath()
+							+ "/rest/decisions/latest/decisions/createDecisionKnowledgeElementAsJIRAIssueComment.json?argument="
+							+ type, jsondata, function(error, decisionKnowledgeElement) {
 						if (error === null) {
 							showFlag("success", type + " has been created.");
 							callback();
@@ -1041,7 +1043,7 @@
 			body : message
 		});
 	}
-	
+
 	ConDecAPI.prototype.openJiraIssue = function openJiraIssue(nodeId) {
 		console.log("conDecAPI openJiraIssue");
 

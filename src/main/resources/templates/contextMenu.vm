@@ -13,6 +13,7 @@
 
 <aui-dropdown-menu id="condec-context-menu-sentence">
     <aui-section>
+    	<aui-item-link id="condec-context-menu-sentence-create-item">Add Decision Knowledge Element</aui-item-link>
         <aui-item-link id="condec-context-menu-sentence-edit-item">Edit Element</aui-item-link>
         <aui-item-link id="condec-context-menu-sentence-delete-link-item">Delete Link to Parent</aui-item-link>
         <aui-item-link id="condec-context-menu-sentence-convert-item">Convert to JIRA Issue</aui-item-link> 
