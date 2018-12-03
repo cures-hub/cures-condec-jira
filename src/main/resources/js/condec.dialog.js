@@ -36,7 +36,7 @@
 		console.log("view.context.menu.js setUpDialogForCreateAction");
 		console.log(id);
 		setHeaderText(createKnowledgeElementText);
-		setUpCreateOrEditDialog("", "", "Alternative",true);
+		setUpCreateOrEditDialog("", "", "Alternative", true);
 
 		var submitButton = document.getElementById("dialog-submit-button");
 		submitButton.textContent = createKnowledgeElementText;
@@ -45,34 +45,15 @@
 			var description = document.getElementById("form-input-description").value;
 			var type = $("select[name='form-select-type']").val();
 			var documentationLocation = $("select[name='form-select-location']").val();
-			if(documentationLocation === "i"){
+			if (documentationLocation === "i") {
 				conDecAPI.createDecisionKnowledgeElementAsChild(summary, description, type, id);
-			}else if (documentationLocation === "s"){
-				conDecAPI.createDecisionKnowledgeElementAsJIRAIssueComment(summary, description, type, id, function(){conDecObservable.notify();});
+			} else if (documentationLocation === "s") {
+				conDecAPI.createDecisionKnowledgeElementAsJIRAIssueComment(summary, description, type, id, function() {
+					conDecObservable.notify();
+				});
 			}
-
 			AJS.dialog2("#dialog").hide();
 		};
-
-		conDecAPI.isIssueStrategy(id, function(isIssueStrategy) { // TODO:
-			// rename
-			// param name,
-			// confusing.
-			if (isIssueStrategy === true) {
-				var extensionButton = document.getElementById("dialog-extension-button");
-				extensionButton.style.visibility = "visible";
-				extensionButton.onclick = function() {
-					var createCreateIssueForm = require('quick-edit/form/factory/create-issue');
-					createCreateIssueForm({
-						pid : conDecAPI.getProjectId()
-					}).asDialog({
-						windowTitle : createKnowledgeElementText
-					}).show();
-					AJS.dialog2("#dialog").hide();
-				};
-			}
-		});
-
 		setUpDialog();
 	};
 
@@ -97,18 +78,21 @@
 		header.textContent = headerText;
 	}
 
-	function setUpCreateOrEditDialog(summary, description, knowledgeType,addDocumentLocation) {
+	function setUpCreateOrEditDialog(summary, description, knowledgeType, addDocumentLocation) {
 		console.log("view.context.menu.js setUpCreateOrEditDialog");
-		var documentationLocation ="";
-		if(addDocumentLocation){
+		var documentationLocation = "";
+		if (addDocumentLocation) {
 			documentationLocation = "<div class='field-group'><label for='form-select-location'>Documentation Location:</label>"
-								+ "<select id='form-select-location' name='form-select-location' class='select full-width-field'>"+
-								" <option selected value = \"i\">JIRA Issue</option>"
-								+"<option value = \"s\">"+
-								"Issue Comment</option> </select> </div>";
+					+ "<select id='form-select-location' name='form-select-location' class='select full-width-field'>"
+					+ " <option selected value = 'i'>JIRA Issue</option>"
+					+ "<option value = 's'>"
+					+ "Issue Comment</option> </select> </div>";
 		}
-		document.getElementById("dialog-content").insertAdjacentHTML("afterBegin",
-								"<form class='aui'><div class='field-group'><label for='form-input-summary'>Summary:</label>"
+		document
+				.getElementById("dialog-content")
+				.insertAdjacentHTML(
+						"afterBegin",
+						"<form class='aui'><div class='field-group'><label for='form-input-summary'>Summary:</label>"
 								+ "<input id='form-input-summary' type='text' placeholder='Summary' value='"
 								+ summary
 								+ "' class='text full-width-field'/></div>"
@@ -117,7 +101,8 @@
 								+ description
 								+ "' class='textarea full-width-field'>"
 								+ description
-								+ "</textarea></div>"+documentationLocation
+								+ "</textarea></div>"
+								+ documentationLocation
 								+ "<div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
 								+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
 								+ "</form>");
@@ -224,7 +209,7 @@
 			var description = decisionKnowledgeElement.description;
 			var type = decisionKnowledgeElement.type;
 
-			conDecAPI.isIssueStrategy(id, function(isIssueStrategy) { // TODO:
+			conDecAPI.isIssueStrategy(function(isIssueStrategy) { // TODO:
 				// refactor
 				// param
 				// name,
@@ -358,8 +343,8 @@
 				knowledgeTypes.splice(index, 1);
 			}
 		}
-		if(!knowledgeTypes.includes("Pro") && !knowledgeTypes.includes("Con") && knowledgeTypes.includes("Argument")){
-			knowledgeTypes.splice(knowledgeTypes.indexOf("Argument"),1);
+		if (!knowledgeTypes.includes("Pro") && !knowledgeTypes.includes("Con") && knowledgeTypes.includes("Argument")) {
+			knowledgeTypes.splice(knowledgeTypes.indexOf("Argument"), 1);
 			knowledgeTypes.push("Pro");
 			knowledgeTypes.push("Con");
 		}
@@ -385,14 +370,13 @@
 		submitButton.onclick = function() {
 			var description = document.getElementById("form-input-description").value;
 			var type = $("select[name='form-select-type']").val().split("-")[0];
-			conDecAPI.editSentenceBody(id,description,type,	function() {
+			conDecAPI.editSentenceBody(id, description, type, function() {
 				AJS.dialog2("#dialog").hide();
-				conDecObservable.notify();	
+				conDecObservable.notify();
 			});
 		};
 		AJS.$("#form-select-type").auiSelect2();
 	}
-
 
 	ConDecDialog.prototype.setUpDialogForEditSentenceAction = function setUpDialogForEditSentenceAction(id) {
 		conDecAPI.getSentenceElement(id, function(result) {
@@ -402,7 +386,7 @@
 			setHeaderText(editKnowledgeElementText);
 			setUpEditSentenceDialogView(description, type, type);
 			setUpEditSentenceDialogContext(id, description, type);
-			
+
 		});
 	};
 
