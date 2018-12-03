@@ -209,12 +209,8 @@
 			var description = decisionKnowledgeElement.description;
 			var type = decisionKnowledgeElement.type;
 
-			conDecAPI.isIssueStrategy(function(isIssueStrategy) { // TODO:
-				// refactor
-				// param
-				// name,
-				// confusing!
-				if (isIssueStrategy) {
+			conDecAPI.isIssueStrategy(function(isDocumentedInJIRAIssue) {
+				if (isDocumentedInJIRAIssue) {
 					var createEditIssueForm = require('quick-edit/form/factory/edit-issue');
 					createEditIssueForm({
 						issueId : id
@@ -301,9 +297,6 @@
 		console.log("view.context.menu.js resetDialog");
 		document.getElementById("dialog-header").innerHTML = "";
 		document.getElementById("dialog-content").innerHTML = "";
-		if (document.getElementById("dialog-extension-button")) {
-			document.getElementById("dialog-extension-button").style.visibility = "hidden";
-		}
 		var dialog = document.getElementById("dialog");
 		if (dialog.classList.contains("aui-dialog2-large")) {
 			dialog.classList.remove("aui-dialog2-large");
@@ -366,7 +359,6 @@
 	function setUpEditSentenceDialogContext(id, description, type) {
 		var submitButton = document.getElementById("dialog-submit-button");
 		submitButton.textContent = "Change";
-		$("#dialog-extension-button").remove();
 		submitButton.onclick = function() {
 			var description = document.getElementById("form-input-description").value;
 			var type = $("select[name='form-select-type']").val().split("-")[0];

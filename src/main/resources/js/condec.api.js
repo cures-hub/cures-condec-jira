@@ -554,7 +554,7 @@
 	 * external references: settingsForSingleProject.vm,
 	 * settingsForAllProjects.vm, condec.context.menu ..
 	 */
-	ConDecAPI.prototype.isIssueStrategy = function isIssueStrategy(projectKey, callback) {
+	ConDecAPI.prototype.isIssueStrategy = function isIssueStrategy(callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isIssueStrategy.json?projectKey=" + projectKey,
 				function(error, isIssueStrategyBoolean) {
 					if (error === null) {
