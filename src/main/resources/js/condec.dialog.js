@@ -48,7 +48,7 @@
 			if(documentationLocation === "i"){
 				conDecAPI.createDecisionKnowledgeElementAsChild(summary, description, type, id);
 			}else if (documentationLocation === "s"){
-				conDecAPI.createDecisionKnowledgeElementAsJIRAIssueComment(summary, description, type, id, function(){conDecObservable.notify()});
+				conDecAPI.createDecisionKnowledgeElementAsJIRAIssueComment(summary, description, type, id, function(){conDecObservable.notify();});
 			}
 
 			AJS.dialog2("#dialog").hide();

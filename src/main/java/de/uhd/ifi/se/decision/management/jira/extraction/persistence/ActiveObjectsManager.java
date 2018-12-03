@@ -689,7 +689,7 @@ public class ActiveObjectsManager {
 			Comment com = new CommentImpl(comment, true);
 			for (Sentence sentence : com.getSentences()) {
 				GenericLinkManager.deleteLinksForElement("s" + sentence.getId());
-				ActiveObjectsManager.createSmartLinkForSentence(sentence);
+				checkIfSentenceHasAValidLink(sentence.getId(),decisionKnowledgeElement.getId());
 			}
 			return com.getSentences().get(0);
 		} else {
