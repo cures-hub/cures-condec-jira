@@ -43,7 +43,7 @@
 		document.querySelector("#condec-context-menu").setAttribute('aria-hidden', 'false');
 
 		document.getElementById("condec-context-menu-create-item").onclick = function() {
-			conDecDialog.showCreateDialog(id);
+			conDecDialog.showCreateDialog(id, "i");
 		};
 
 		document.getElementById("condec-context-menu-edit-item").onclick = function() {
@@ -93,7 +93,7 @@
 		document.querySelector("#condec-context-menu-sentence").setAttribute('aria-hidden', 'false');
 		
 		document.getElementById("condec-context-menu-sentence-create-item").onclick = function() {
-			conDecDialog.showCreateDialog(id);
+			conDecDialog.showCreateDialog(id, "s");
 		};
 
 		document.getElementById("condec-context-menu-sentence-edit-item").onclick = function() {

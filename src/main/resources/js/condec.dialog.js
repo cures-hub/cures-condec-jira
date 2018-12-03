@@ -32,7 +32,7 @@
 	var ConDecDialog = function ConDecDialog() {
 	};
 
-	ConDecDialog.prototype.showCreateDialog = function showCreateDialog(id) {
+	ConDecDialog.prototype.showCreateDialog = function showCreateDialog(id, documentationLocationOfParentElement) {
 		console.log("view.context.menu.js setUpDialogForCreateAction");
 		console.log(id);
 		setHeaderText(createKnowledgeElementText);
@@ -44,11 +44,11 @@
 			var summary = document.getElementById("form-input-summary").value;
 			var description = document.getElementById("form-input-description").value;
 			var type = $("select[name='form-select-type']").val();
-			var documentationLocation = $("select[name='form-select-location']").val();
+			var documentationLocation = $("select[name='form-select-location']").val(); 
 			if (documentationLocation === "i") {
-				conDecAPI.createDecisionKnowledgeElementAsChild(summary, description, type, id);
+				conDecAPI.createDecisionKnowledgeElementAsChild(summary, description, type, id, documentationLocationOfParentElement);
 			} else if (documentationLocation === "s") {
-				conDecAPI.createDecisionKnowledgeElementAsJIRAIssueComment(summary, description, type, id, function() {
+				conDecAPI.createDecisionKnowledgeElementAsJIRAIssueComment(summary, description, type, id, documentationLocationOfParentElement, function() {
 					conDecObservable.notify();
 				});
 			}

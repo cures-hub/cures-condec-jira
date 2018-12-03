@@ -125,7 +125,8 @@ public class KnowledgeRest {
 	public Response createDecisionKnowledgeElementAsJIRAIssueComment(@Context HttpServletRequest request,
 			DecisionKnowledgeElement decisionKnowledgeElement, @QueryParam("argument") String argument) {
 		if (decisionKnowledgeElement != null && request != null) {
-
+			System.out.println(decisionKnowledgeElement.getDocumentationLocationAsString());
+			// TODO Enable to add elements as children of Sentence, currently only JIRA issues can be parents
 			DecisionKnowledgeElement newSentenceObject = ActiveObjectsManager.addNewCommentToJIRAIssue(
 					decisionKnowledgeElement, argument, AuthenticationManager.getUser(request));
 			if (newSentenceObject != null) {

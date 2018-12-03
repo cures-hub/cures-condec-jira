@@ -110,14 +110,15 @@
 	 * external references: view.condec.issue.module, view.condec.knowledge.page ..
 	 */
 	ConDecAPI.prototype.createDecisionKnowledgeElementAsJIRAIssueComment = function createDecisionKnowledgeElementAsJIRAIssueComment(
-			summary, description, type, idOfParentElement, callback) {
+			summary, description, type, idOfParentElement, documentationLocationOfParentElement, callback) {
 		if (summary !== "") {
 			var jsondata = {
 				"projectKey" : projectKey,
 				"summary" : summary,
 				"type" : type,
 				"description" : description,
-				"id" : idOfParentElement
+				"id" : idOfParentElement,
+				"documentationLocation" : documentationLocationOfParentElement
 			};
 			postJSON(
 					AJS.contextPath()
