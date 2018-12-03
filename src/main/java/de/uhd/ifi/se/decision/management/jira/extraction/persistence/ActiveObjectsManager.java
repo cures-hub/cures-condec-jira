@@ -25,6 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
@@ -673,28 +674,46 @@ public class ActiveObjectsManager {
 
 	public static DecisionKnowledgeElement addNewCommentToJIRAIssue(DecisionKnowledgeElement decisionKnowledgeElement,
 			String argument, ApplicationUser user) {
-		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(decisionKnowledgeElement.getId());
+		long issueId = getIssueId(decisionKnowledgeElement);
+		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
 		if (issue != null) {
-			String macro = "{" + decisionKnowledgeElement.getType().toString() + "}";
-			if (argument != null && !argument.equals("")) {
-				if (argument.equalsIgnoreCase("Pro-argument")) {
-					macro = "{pro}";
-				} else if (argument.equalsIgnoreCase("Con-argument")) {
-					macro = "{con}";
-				}
-			}
-			String text = decisionKnowledgeElement.getSummary() + "\n" + decisionKnowledgeElement.getDescription();
+			String macro = getMacro(decisionKnowledgeElement, argument);
+			String text = macro + decisionKnowledgeElement.getSummary() + "\n" + decisionKnowledgeElement.getDescription() + macro;
 			com.atlassian.jira.issue.comments.Comment comment = ComponentAccessor.getCommentManager().create(issue,
-					user, macro + text + macro, false);
+					user,  text, false);
 			Comment com = new CommentImpl(comment, true);
 			for (Sentence sentence : com.getSentences()) {
 				GenericLinkManager.deleteLinksForElement("s" + sentence.getId());
-				checkIfSentenceHasAValidLink(sentence.getId(),decisionKnowledgeElement.getId());
+				String parentDocLoc = DocumentationLocation.getIdentifier(decisionKnowledgeElement);
+				Link link = new LinkImpl(parentDocLoc + decisionKnowledgeElement.getId(), "s" + sentence.getId());
+				GenericLinkManager.insertLinkWithoutTransaction(link);
+				checkIfSentenceHasAValidLink(sentence.getId(), decisionKnowledgeElement.getId());
 			}
 			return com.getSentences().get(0);
 		} else {
 			return null;
 		}
+	}
+
+	private static long getIssueId(DecisionKnowledgeElement decisionKnowledgeElement) {
+		long issueId = decisionKnowledgeElement.getId();
+		if(decisionKnowledgeElement.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUECOMMENT)) {
+			Sentence element = (Sentence)ActiveObjectsManager.getElementFromAO(decisionKnowledgeElement.getId());
+			issueId = element.getIssueId();
+		}
+		return issueId;
+	}
+
+	private static String getMacro(DecisionKnowledgeElement decisionKnowledgeElement, String argument) {
+		String macro = "{" + decisionKnowledgeElement.getType().toString() + "}";
+		if (argument != null && !argument.equals("")) {
+			if (argument.equalsIgnoreCase("Pro-argument")) {
+				macro = "{pro}";
+			} else if (argument.equalsIgnoreCase("Con-argument")) {
+				macro = "{con}";
+			}
+		}
+		return macro;
 	}
 
 }

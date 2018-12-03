@@ -47,7 +47,7 @@ public enum DocumentationLocation {
 	}
 
 	public static String getIdentifier(DecisionKnowledgeElement element) {
-		if (element instanceof Sentence) {
+		if (element instanceof Sentence || element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUECOMMENT)) {
 			return "s";
 		}
 		if (element.getDocumentationLocation() == null) {
