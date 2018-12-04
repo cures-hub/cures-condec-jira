@@ -105,6 +105,7 @@ public class KnowledgeRest {
 		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
 			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
+			System.out.println(decisionKnowledgeElement.getDocumentationLocationAsString());
 			ApplicationUser user = AuthenticationManager.getUser(request);
 			DecisionKnowledgeElement decisionKnowledgeElementWithId = strategy
 					.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
