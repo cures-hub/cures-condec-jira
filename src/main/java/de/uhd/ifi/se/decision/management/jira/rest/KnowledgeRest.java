@@ -119,6 +119,27 @@ public class KnowledgeRest {
 		}
 	}
 
+	@Path("/createDecisionKnowledgeElementAsJIRAIssueComment")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response createDecisionKnowledgeElementAsJIRAIssueComment(@Context HttpServletRequest request,
+			DecisionKnowledgeElement decisionKnowledgeElement, @QueryParam("argument") String argument) {
+		if (decisionKnowledgeElement != null && request != null) {
+			System.out.println(decisionKnowledgeElement.getDocumentationLocationAsString());
+			// TODO Enable to add elements as children of Sentence, currently only JIRA issues can be parents
+			DecisionKnowledgeElement newSentenceObject = ActiveObjectsManager.addNewCommentToJIRAIssue(
+					decisionKnowledgeElement, argument, AuthenticationManager.getUser(request));
+			if (newSentenceObject != null) {
+				return Response.status(Status.OK).entity(newSentenceObject).build();
+			}
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
+		} else {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
+		}
+	}
+
 	@Path("/createIssueFromSentence")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -307,8 +328,10 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getSentenceElement(@QueryParam("id") long id) {
 
-		// TODO: Replace by JiraIssueCommentPersistenceManager.getDecisionKnowledgeElement(id)
-		// @issue: GetDecisionKnowledgeElement might not be the correct method name to retrieve irrelevant sentences. How to deal with irrelevant sentences? 
+		// TODO: Replace by
+		// JiraIssueCommentPersistenceManager.getDecisionKnowledgeElement(id)
+		// @issue: GetDecisionKnowledgeElement might not be the correct method name to
+		// retrieve irrelevant sentences. How to deal with irrelevant sentences?
 		Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(id);
 
 		if (sentence != null) {

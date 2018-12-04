@@ -107,6 +107,34 @@
 	};
 
 	/*
+	 * external references: view.condec.issue.module, view.condec.knowledge.page ..
+	 */
+	ConDecAPI.prototype.createDecisionKnowledgeElementAsJIRAIssueComment = function createDecisionKnowledgeElementAsJIRAIssueComment(
+			summary, description, type, idOfParentElement, documentationLocationOfParentElement, callback) {
+		if (summary !== "") {
+			var jsondata = {
+				"projectKey" : projectKey,
+				"summary" : summary,
+				"type" : type,
+				"description" : description,
+				"id" : idOfParentElement,
+				"documentationLocation" : documentationLocationOfParentElement
+			};
+			postJSON(
+					AJS.contextPath()
+							+ "/rest/decisions/latest/decisions/createDecisionKnowledgeElementAsJIRAIssueComment.json?argument="
+							+ type, jsondata, function(error, decisionKnowledgeElement) {
+						if (error === null) {
+							showFlag("success", type + " has been created.");
+							callback();
+						} else {
+							showFlag("error", type + " has not been created. Error Code: " + error);
+						}
+					});
+		}
+	};
+
+	/*
 	 * external references: none
 	 */
 	ConDecAPI.prototype.updateDecisionKnowledgeElement = function updateDecisionKnowledgeElement(id, summary,
@@ -203,17 +231,17 @@
 		}).bind(this));
 	};
 
-	function switchLinkTypes(type, idOfExistingElement, idOfNewElement, linkTypeFunction) {
+	function switchLinkTypes(type, idOfExistingElement, idOfNewElement, documentationLocationOfParentElement, documentationLocationOfNewElement, linkTypeFunction) {
 		console.log("conDecAPI switchLinkTypes");
 		switch (type) {
 		case "Pro-argument":
-			linkTypeFunction("support", idOfExistingElement, idOfNewElement);
+			linkTypeFunction("support", idOfExistingElement, idOfNewElement, documentationLocationOfParentElement, documentationLocationOfNewElement);
 			break;
 		case "Con-argument":
-			linkTypeFunction("attack", idOfExistingElement, idOfNewElement);
+			linkTypeFunction("attack", idOfExistingElement, idOfNewElement, documentationLocationOfParentElement, documentationLocationOfNewElement);
 			break;
 		default:
-			linkTypeFunction("contain", idOfNewElement, idOfExistingElement);
+			linkTypeFunction("contain", idOfNewElement, idOfExistingElement, documentationLocationOfNewElement, documentationLocationOfParentElement);
 		}
 	}
 
@@ -253,13 +281,12 @@
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.createDecisionKnowledgeElementAsChild = function createDecisionKnowledgeElementAsChild(summary,
-			description, type, idOfExistingElement) {
+			description, type, idOfExistingElement, documentationLocationOfParentElement, documentationLocationOfNewElement) {
 		console.log("conDecAPI createDecisionKnowledgeElementAsChild");
 		var simpleType = getSimpleType(type);
 		this.createDecisionKnowledgeElement(summary, description, simpleType, (function(idOfNewElement) {
-			switchLinkTypes(type, idOfExistingElement, idOfNewElement, (function(linkType, idOfExistingElement,
-					idOfNewElement) {
-				this.linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
+			switchLinkTypes(type, idOfExistingElement, idOfNewElement, documentationLocationOfParentElement, documentationLocationOfNewElement, (function(linkType, idOfExistingElement, idOfNewElement, documentationLocationOfParentElement, documentationLocationOfNewElement) {
+				this.linkGenericElements(linkType, idOfExistingElement, idOfNewElement, documentationLocationOfParentElement, documentationLocationOfNewElement, function() {
 					conDecObservable.notify();
 				});
 			}).bind(this));
@@ -429,10 +456,10 @@
 	/*
 	 * external references: condec.treant, condec.tree.viewer ..
 	 */
-	ConDecAPI.prototype.linkGenericElements = function linkGenericElements(targetId, sourceId, targetType, sourceType,
+	ConDecAPI.prototype.linkGenericElements = function linkGenericElements(type, targetId, sourceId, targetType, sourceType,
 			callback) {
 		var jsondata = {
-			"type" : "contain",
+			"type" : type,
 			"idOfSourceElement" : sourceType + sourceId,
 			"idOfDestinationElement" : targetType + targetId
 		};
@@ -529,7 +556,7 @@
 	 * external references: settingsForSingleProject.vm,
 	 * settingsForAllProjects.vm, condec.context.menu ..
 	 */
-	ConDecAPI.prototype.isIssueStrategy = function isIssueStrategy(projectKey, callback) {
+	ConDecAPI.prototype.isIssueStrategy = function isIssueStrategy(callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isIssueStrategy.json?projectKey=" + projectKey,
 				function(error, isIssueStrategyBoolean) {
 					if (error === null) {
@@ -1016,7 +1043,7 @@
 			body : message
 		});
 	}
-	
+
 	ConDecAPI.prototype.openJiraIssue = function openJiraIssue(nodeId) {
 		console.log("conDecAPI openJiraIssue");
 

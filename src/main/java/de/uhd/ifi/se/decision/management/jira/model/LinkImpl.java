@@ -187,6 +187,9 @@ public class LinkImpl implements Link {
 
 	@Override
 	public DecisionKnowledgeElement getOppositeElement(long elementId) {
+		if(!this.isValid()) {
+			return null;
+		}
 		if (this.sourceElement.getId() == elementId) {
 			return destinationElement;
 		}
