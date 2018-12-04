@@ -46,7 +46,7 @@
 			var type = $("select[name='form-select-type']").val();
 			var documentationLocation = $("select[name='form-select-location']").val(); 
 			if (documentationLocation === "i") {
-				conDecAPI.createDecisionKnowledgeElementAsChild(summary, description, type, id, documentationLocationOfParentElement);
+				conDecAPI.createDecisionKnowledgeElementAsChild(summary, description, type, id, documentationLocationOfParentElement, documentationLocation);
 			} else if (documentationLocation === "s") {
 				conDecAPI.createDecisionKnowledgeElementAsJIRAIssueComment(summary, description, type, id, documentationLocationOfParentElement, function() {
 					conDecObservable.notify();

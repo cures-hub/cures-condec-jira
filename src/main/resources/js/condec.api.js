@@ -231,17 +231,17 @@
 		}).bind(this));
 	};
 
-	function switchLinkTypes(type, idOfExistingElement, idOfNewElement, linkTypeFunction) {
+	function switchLinkTypes(type, idOfExistingElement, idOfNewElement, documentationLocationOfParentElement, documentationLocationOfNewElement, linkTypeFunction) {
 		console.log("conDecAPI switchLinkTypes");
 		switch (type) {
 		case "Pro-argument":
-			linkTypeFunction("support", idOfExistingElement, idOfNewElement);
+			linkTypeFunction("support", idOfExistingElement, idOfNewElement, documentationLocationOfParentElement, documentationLocationOfNewElement);
 			break;
 		case "Con-argument":
-			linkTypeFunction("attack", idOfExistingElement, idOfNewElement);
+			linkTypeFunction("attack", idOfExistingElement, idOfNewElement, documentationLocationOfParentElement, documentationLocationOfNewElement);
 			break;
 		default:
-			linkTypeFunction("contain", idOfNewElement, idOfExistingElement);
+			linkTypeFunction("contain", idOfNewElement, idOfExistingElement, documentationLocationOfNewElement, documentationLocationOfParentElement);
 		}
 	}
 
@@ -281,13 +281,12 @@
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.createDecisionKnowledgeElementAsChild = function createDecisionKnowledgeElementAsChild(summary,
-			description, type, idOfExistingElement) {
+			description, type, idOfExistingElement, documentationLocationOfParentElement, documentationLocationOfNewElement) {
 		console.log("conDecAPI createDecisionKnowledgeElementAsChild");
 		var simpleType = getSimpleType(type);
 		this.createDecisionKnowledgeElement(summary, description, simpleType, (function(idOfNewElement) {
-			switchLinkTypes(type, idOfExistingElement, idOfNewElement, (function(linkType, idOfExistingElement,
-					idOfNewElement) {
-				this.linkElements(idOfExistingElement, idOfNewElement, linkType, function() {
+			switchLinkTypes(type, idOfExistingElement, idOfNewElement, documentationLocationOfParentElement, documentationLocationOfNewElement, (function(linkType, idOfExistingElement, idOfNewElement, documentationLocationOfParentElement, documentationLocationOfNewElement) {
+				this.linkGenericElements(linkType, idOfExistingElement, idOfNewElement, documentationLocationOfParentElement, documentationLocationOfNewElement, function() {
 					conDecObservable.notify();
 				});
 			}).bind(this));
@@ -457,10 +456,10 @@
 	/*
 	 * external references: condec.treant, condec.tree.viewer ..
 	 */
-	ConDecAPI.prototype.linkGenericElements = function linkGenericElements(targetId, sourceId, targetType, sourceType,
+	ConDecAPI.prototype.linkGenericElements = function linkGenericElements(type, targetId, sourceId, targetType, sourceType,
 			callback) {
 		var jsondata = {
-			"type" : "contain",
+			"type" : type,
 			"idOfSourceElement" : sourceType + sourceId,
 			"idOfDestinationElement" : targetType + targetId
 		};
