@@ -127,7 +127,8 @@ public class KnowledgeRest {
 			DecisionKnowledgeElement decisionKnowledgeElement, @QueryParam("argument") String argument) {
 		if (decisionKnowledgeElement != null && request != null) {
 			System.out.println(decisionKnowledgeElement.getDocumentationLocationAsString());
-			// TODO Enable to add elements as children of Sentence, currently only JIRA issues can be parents
+			// TODO Enable to add elements as children of Sentence, currently only JIRA
+			// issues can be parents
 			DecisionKnowledgeElement newSentenceObject = ActiveObjectsManager.addNewCommentToJIRAIssue(
 					decisionKnowledgeElement, argument, AuthenticationManager.getUser(request));
 			if (newSentenceObject != null) {
@@ -227,7 +228,7 @@ public class KnowledgeRest {
 					.build();
 		}
 	}
-	
+
 	@Path("/createGenericLink")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -236,12 +237,19 @@ public class KnowledgeRest {
 		if (projectKey != null && request != null && link != null) {
 			System.out.println("source " + link.getSourceElement().getDocumentationLocationAsString());
 			System.out.println("dest " + link.getSourceElement().getDocumentationLocationAsString());
-			if (GenericLinkManager.isIssueLink(link)) {
-				return createLink(projectKey, request, link);
-			}
+
 			ApplicationUser user = AuthenticationManager.getUser(request);
 
-			long linkId = GenericLinkManager.insertLink(link, user);
+			long linkId = 0;
+			// TODO Rework strategy
+			//@issue What happens when using AOStrategy?
+			if (GenericLinkManager.isIssueLink(link)) {
+				AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
+				linkId = strategy.insertLink(link, user);
+			} else {
+				linkId = GenericLinkManager.insertLink(link, user);
+			}
+
 			if (linkId == 0) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
