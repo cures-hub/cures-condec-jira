@@ -40,7 +40,5 @@ public class TestKnowledgeRestSetUp extends TestSetUpWithIssues {
 		decisionKnowledgeElement.setProject("TEST");
 		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 		request = new MockHttpServletRequest();
-		
-
 	}
 }
