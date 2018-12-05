@@ -27,7 +27,7 @@ public class ConfigPersistenceManager {
 		if (isGlobalSetting) {
 			settings = pluginSettingsFactory.createGlobalSettings();
 		} else {
-			if (projectKey == null) {
+			if (projectKey == null || projectKey == "") {
 				return "";
 			}
 			settings = pluginSettingsFactory.createSettingsForKey(projectKey);
@@ -150,7 +150,7 @@ public class ConfigPersistenceManager {
 	public static String getWebhookSecret(String projectKey) {
 		return getValue(projectKey, "webhookSecret");
 	}
-	
+
 	public static void setWebhookEnabled(String projectKey, boolean isWebhookEnabled) {
 		setValue(projectKey, "isWebhookEnabled", Boolean.toString(isWebhookEnabled));
 	}

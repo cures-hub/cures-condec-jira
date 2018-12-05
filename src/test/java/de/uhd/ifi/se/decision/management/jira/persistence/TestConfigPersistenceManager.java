@@ -371,4 +371,19 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
     public void testSetWebhookEnabledFiledTrue(){
         ConfigPersistenceManager.setWebhookEnabled("TEST", true);
     }
+
+    @Test
+    public void testIsWebhookEnabledNull(){
+	    assertFalse(ConfigPersistenceManager.isWebhookEnabled(null));
+    }
+
+    @Test
+    public void testIsWebhookEnabledEmpty(){
+        assertFalse(ConfigPersistenceManager.isWebhookEnabled(""));
+    }
+
+    @Test
+    public void testIsWebhookEnabledFilled(){
+        assertTrue(ConfigPersistenceManager.isWebhookEnabled("TEST"));
+    }
 }
