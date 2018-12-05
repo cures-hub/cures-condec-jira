@@ -222,7 +222,7 @@ public class KnowledgeRest {
 
 			long linkId = 0;
 			// TODO Rework strategy
-			//@issue What happens when using AOStrategy?
+			// @issue What happens when using AOStrategy?
 			if (GenericLinkManager.isIssueLink(link)) {
 				AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
 				linkId = strategy.insertLink(link, user);
@@ -378,52 +378,33 @@ public class KnowledgeRest {
 				.build();
 	}
 
-	@Path("/deleteLink")
-	@DELETE
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response deleteLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
-			Link link) {
-		if (projectKey != null && request != null && link != null) {
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
-			ApplicationUser user = AuthenticationManager.getUser(request);
-			boolean isDeleted = strategy.deleteLink(link, user);
-			if (isDeleted) {
-				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
-			} else {
-				isDeleted = strategy.deleteLink(link.flip(), user);
-				if (isDeleted) {
-					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
-				} else {
-					return deleteGenericLink(projectKey, request, new LinkImpl(link.getIdOfSourceElementWithPrefix(),
-							link.getIdOfDestinationElementWithPrefix()));
-				}
-			}
-		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
-					.build();
-		}
-	}
-
 	@Path("/deleteGenericLink")
 	@DELETE
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response deleteGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
+			boolean isDeleted = false;
+
 			if (GenericLinkManager.isIssueLink(link)) {
-				return deleteLink(projectKey, request, link);
-			}
-			boolean isDeleted = GenericLinkManager.deleteGenericLink(link);
-			if (isDeleted) {
-				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
-			}
-			isDeleted = GenericLinkManager.deleteGenericLink(link.flip());
-			if (isDeleted) {
-				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
+				AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
+				ApplicationUser user = AuthenticationManager.getUser(request);
+				isDeleted = strategy.deleteLink(link, user);
+				if (!isDeleted) {
+					isDeleted = strategy.deleteLink(link.flip(), user);
+				}
 			} else {
-				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
+				isDeleted = GenericLinkManager.deleteGenericLink(link);
+				if (!isDeleted) {
+					isDeleted = GenericLinkManager.deleteGenericLink(link.flip());
+				}
 			}
+
+			if (isDeleted) {
+				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
+			}
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
 					.build();

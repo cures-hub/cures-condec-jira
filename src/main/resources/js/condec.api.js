@@ -178,31 +178,33 @@
 	};
 
 	/*
-	 * external references: condec.context.menu, view.condec.knowledge.page,
-	 * view.condec.issue.module, condec.treant, condec.tree.viewer ..
+	 * external references: condec.context.menu, condec.dialog, condec.treant,
+	 * condec.tree.viewer
 	 */
-	ConDecAPI.prototype.deleteLink = function deleteLink(idOfDestinationElement, idOfSourceElement, callback) {
-		var jsondata = {
+	ConDecAPI.prototype.deleteGenericLink = function deleteGenericLink(idOfDestinationElement, idOfSourceElement,
+			documentationLocationOfDestinationElement, documentationLocationOfSourceElement, callback, showError) {
+		var link = {
 			"idOfSourceElement" : idOfSourceElement,
-			"idOfDestinationElement" : idOfDestinationElement
+			"idOfDestinationElement" : idOfDestinationElement,
+			"documentationLocationOfSourceElement" : documentationLocationOfSourceElement,
+			"documentationLocationOfDestinationElement" : documentationLocationOfDestinationElement
 		};
-		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLink.json?projectKey=" + projectKey,
-				jsondata, function(error, link) {
-					if (error === null) {
-						showFlag("success", "Link has been deleted.");
-						callback();
-					} else {
-						showFlag("error", "Link could not be deleted.");
-					}
-				});
+		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteGenericLink.json?projectKey="
+				+ projectKey, link, function(error, link) {
+			if (error === null) {
+				showFlag("success", "Link has been deleted.");
+				callback();
+			} else if (showError) {
+				showFlag("error", "Link could not be deleted.");
+			}
+		});
 	};
 
 	/*
 	 * external references: condec.treant, condec.tree.viewer
 	 */
-	ConDecAPI.prototype.linkElements = function linkElements(linkType, idOfDestinationElement,
-			idOfSourceElement, documentationLocationOfDestinationElement, documentationLocationOfSourceElement,
-			callback) {
+	ConDecAPI.prototype.linkElements = function linkElements(linkType, idOfDestinationElement, idOfSourceElement,
+			documentationLocationOfDestinationElement, documentationLocationOfSourceElement, callback) {
 		console.log("conDecAPI linkElements");
 		var link = {
 			"type" : linkType,
@@ -211,9 +213,8 @@
 			"documentationLocationOfSourceElement" : documentationLocationOfSourceElement,
 			"documentationLocationOfDestinationElement" : documentationLocationOfDestinationElement
 		};
-		postJSON(
-				AJS.contextPath() + "/rest/decisions/latest/decisions/createLink.json?projectKey=" + projectKey,
-				link, function(error, link) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLink.json?projectKey=" + projectKey, link,
+				function(error, link) {
 					if (error === null) {
 						showFlag("success", "Link has been created.");
 						callback(link);
@@ -221,27 +222,6 @@
 						showFlag("error", "Link could not be created.");
 					}
 				});
-	};
-
-	/*
-	 * external references: condec.context.menu, condec.treant,
-	 * condec.tree.viewer ..
-	 */
-	ConDecAPI.prototype.deleteGenericLink = function deleteGenericLink(targetId, sourceId, targetDocumentationLocation,
-			sourceDocumentationLocation, callback, showError) {
-		var jsondata = {
-			"idOfSourceElement" : sourceDocumentationLocation + sourceId,
-			"idOfDestinationElement" : targetDocumentationLocation + targetId
-		};
-		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteGenericLink.json?projectKey="
-				+ projectKey, jsondata, function(error, link) {
-			if (error === null) {
-				showFlag("success", "Link has been deleted.");
-				callback();
-			} else if (showError) {
-				showFlag("error", "Link could not be deleted.");
-			}
-		});
 	};
 
 	/*
@@ -316,7 +296,7 @@
 				if (decisionKnowledgeElement.type !== type) {
 					var parentId = conDecTreant.findParentId(childId);
 					switchLinkTypes(type, parentId, childId, "i", "i", (function(linkType, parentId, childId) {
-						this.deleteLink(parentId, childId, (function() {
+						this.deleteGenericLink(parentId, childId, "i", "i", (function() {
 							this.linkElements(linkType, parentId, childId, "i", "i", function() {
 								conDecObservable.notify();
 							});
