@@ -378,7 +378,6 @@
 			setHeaderText(editKnowledgeElementText);
 			setUpEditSentenceDialogView(description, type, type);
 			setUpEditSentenceDialogContext(id, description, type);
-
 		});
 	};
 

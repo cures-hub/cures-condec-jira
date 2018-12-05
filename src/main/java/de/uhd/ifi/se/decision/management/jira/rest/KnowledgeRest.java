@@ -126,8 +126,6 @@ public class KnowledgeRest {
 			DecisionKnowledgeElement decisionKnowledgeElement, @QueryParam("argument") String argument) {
 		if (decisionKnowledgeElement != null && request != null) {
 			System.out.println(decisionKnowledgeElement.getDocumentationLocationAsString());
-			// TODO Enable to add elements as children of Sentence, currently only JIRA
-			// issues can be parents
 			DecisionKnowledgeElement newSentenceObject = ActiveObjectsManager.addNewCommentToJIRAIssue(
 					decisionKnowledgeElement, argument, AuthenticationManager.getUser(request));
 			if (newSentenceObject != null) {
@@ -236,6 +234,39 @@ public class KnowledgeRest {
 			return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Creation of link failed."))
+					.build();
+		}
+	}
+	
+	@Path("/deleteLink")
+	@DELETE
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response deleteLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
+			Link link) {
+		if (projectKey != null && request != null && link != null) {
+			boolean isDeleted = false;
+
+			if (GenericLinkManager.isIssueLink(link)) {
+				AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
+				ApplicationUser user = AuthenticationManager.getUser(request);
+				isDeleted = strategy.deleteLink(link, user);
+				if (!isDeleted) {
+					isDeleted = strategy.deleteLink(link.flip(), user);
+				}
+			} else {
+				isDeleted = GenericLinkManager.deleteGenericLink(link);
+				if (!isDeleted) {
+					isDeleted = GenericLinkManager.deleteGenericLink(link.flip());
+				}
+			}
+
+			if (isDeleted) {
+				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
+			}
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
+		} else {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
 					.build();
 		}
 	}
@@ -375,39 +406,6 @@ public class KnowledgeRest {
 		}
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of element failed."))
 				.build();
-	}
-
-	@Path("/deleteLink")
-	@DELETE
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response deleteLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
-			Link link) {
-		if (projectKey != null && request != null && link != null) {
-			boolean isDeleted = false;
-
-			if (GenericLinkManager.isIssueLink(link)) {
-				AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
-				ApplicationUser user = AuthenticationManager.getUser(request);
-				isDeleted = strategy.deleteLink(link, user);
-				if (!isDeleted) {
-					isDeleted = strategy.deleteLink(link.flip(), user);
-				}
-			} else {
-				isDeleted = GenericLinkManager.deleteGenericLink(link);
-				if (!isDeleted) {
-					isDeleted = GenericLinkManager.deleteGenericLink(link.flip());
-				}
-			}
-
-			if (isDeleted) {
-				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
-			}
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
-		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
-					.build();
-		}
 	}
 
 	@Path("getAllElementsMatchingQuery")
