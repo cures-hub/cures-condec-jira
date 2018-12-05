@@ -101,12 +101,12 @@
 				});
 			}
 			if (parentNode === "#" && oldParentNode !== "#") {
-				conDecAPI.deleteGenericLink(oldParentNode.data.id, nodeId, oldParentType, sourceType, function() {
+				conDecAPI.deleteLink(oldParentNode.data.id, nodeId, oldParentType, sourceType, function() {
 					conDecObservable.notify();
 				});
 			}
 			if (parentNode !== '#' && oldParentNode !== '#') {
-				conDecAPI.deleteGenericLink(oldParentNode.data.id, nodeId, oldParentType, sourceType, function() {
+				conDecAPI.deleteLink(oldParentNode.data.id, nodeId, oldParentType, sourceType, function() {
 					conDecAPI.linkElements("contain",parentNode.data.id, nodeId, newParentType, sourceType, function() {
 						conDecObservable.notify();
 					});

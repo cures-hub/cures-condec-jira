@@ -102,10 +102,10 @@
 
 		document.getElementById("condec-context-menu-sentence-delete-link-item").onclick = function() {
 			var parentId = conDecTreant.findParentId(id);
-			conDecAPI.deleteGenericLink(parentId, id, "i", "s", conDecAPI.setSentenceIrrelevant(id, function() {
+			conDecAPI.deleteLink(parentId, id, "i", "s", conDecAPI.setSentenceIrrelevant(id, function() {
 				conDecObservable.notify();
 			}), false);
-			conDecAPI.deleteGenericLink(parentId, id, "s", "s", conDecAPI.setSentenceIrrelevant(id, function() {
+			conDecAPI.deleteLink(parentId, id, "s", "s", conDecAPI.setSentenceIrrelevant(id, function() {
 				conDecObservable.notify();
 			}), false);
 		};

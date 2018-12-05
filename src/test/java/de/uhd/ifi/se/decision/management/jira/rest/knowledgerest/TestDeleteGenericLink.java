@@ -30,7 +30,7 @@ public class TestDeleteGenericLink extends TestKnowledgeRestSetUp {
 	@NonTransactional
 	public void testRequestNullElementNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.deleteGenericLink(null, null, null).getEntity());
+				.getEntity(), knowledgeRest.deleteLink(null, null, null).getEntity());
 	}
 
 	@Test
@@ -39,7 +39,7 @@ public class TestDeleteGenericLink extends TestKnowledgeRestSetUp {
 		assertEquals(
 				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 						.getEntity(),
-				knowledgeRest.deleteGenericLink("TEST", null, new LinkImpl(decisionKnowledgeElement, sentence))
+				knowledgeRest.deleteLink("TEST", null, new LinkImpl(decisionKnowledgeElement, sentence))
 						.getEntity());
 	}
 
@@ -49,7 +49,7 @@ public class TestDeleteGenericLink extends TestKnowledgeRestSetUp {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.deleteGenericLink("TEST", request, null).getEntity());
+				.getEntity(), knowledgeRest.deleteLink("TEST", request, null).getEntity());
 	}
 
 	@Test
@@ -69,13 +69,13 @@ public class TestDeleteGenericLink extends TestKnowledgeRestSetUp {
 		assertEquals(1, GenericLinkManager
 				.getLinksForElement("i" + decisionKnowledgeElement.getId()).size());
 
-		assertEquals(Status.OK.getStatusCode(), knowledgeRest.deleteGenericLink("TEST", request, newLink).getStatus());
+		assertEquals(Status.OK.getStatusCode(), knowledgeRest.deleteLink("TEST", request, newLink).getStatus());
 
 		GenericLinkManager.insertLink(newLink, null);
-		assertEquals(Status.OK.getStatusCode(), knowledgeRest.deleteGenericLink("TEST", request, newLink).getStatus());
+		assertEquals(Status.OK.getStatusCode(), knowledgeRest.deleteLink("TEST", request, newLink).getStatus());
 
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.deleteGenericLink("TEST", request, newLink).getEntity());
+				.getEntity(), knowledgeRest.deleteLink("TEST", request, newLink).getEntity());
 		
 		//Test element not more exisitng in AO
 		assertEquals(0, GenericLinkManager
@@ -102,13 +102,13 @@ public class TestDeleteGenericLink extends TestKnowledgeRestSetUp {
 		assertEquals(1, GenericLinkManager
 				.getLinksForElement("i" + decisionKnowledgeElement.getId()).size());
 
-		assertEquals(Status.OK.getStatusCode(), knowledgeRest.deleteGenericLink("TEST", request, newLink).getStatus());
+		assertEquals(Status.OK.getStatusCode(), knowledgeRest.deleteLink("TEST", request, newLink).getStatus());
 
 		GenericLinkManager.insertLink(newLink, null);
-		assertEquals(Status.OK.getStatusCode(), knowledgeRest.deleteGenericLink("TEST", request, newLink).getStatus());
+		assertEquals(Status.OK.getStatusCode(), knowledgeRest.deleteLink("TEST", request, newLink).getStatus());
 
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.deleteGenericLink("TEST", request, newLink).getEntity());
+				.getEntity(), knowledgeRest.deleteLink("TEST", request, newLink).getEntity());
 		
 		//Test element not more exisitng in AO
 		assertEquals(0, GenericLinkManager

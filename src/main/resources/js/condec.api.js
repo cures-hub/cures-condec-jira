@@ -181,7 +181,7 @@
 	 * external references: condec.context.menu, condec.dialog, condec.treant,
 	 * condec.tree.viewer
 	 */
-	ConDecAPI.prototype.deleteGenericLink = function deleteGenericLink(idOfDestinationElement, idOfSourceElement,
+	ConDecAPI.prototype.deleteLink = function deleteLink(idOfDestinationElement, idOfSourceElement,
 			documentationLocationOfDestinationElement, documentationLocationOfSourceElement, callback, showError) {
 		var link = {
 			"idOfSourceElement" : idOfSourceElement,
@@ -189,7 +189,7 @@
 			"documentationLocationOfSourceElement" : documentationLocationOfSourceElement,
 			"documentationLocationOfDestinationElement" : documentationLocationOfDestinationElement
 		};
-		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteGenericLink.json?projectKey="
+		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLink.json?projectKey="
 				+ projectKey, link, function(error, link) {
 			if (error === null) {
 				showFlag("success", "Link has been deleted.");
@@ -296,7 +296,7 @@
 				if (decisionKnowledgeElement.type !== type) {
 					var parentId = conDecTreant.findParentId(childId);
 					switchLinkTypes(type, parentId, childId, "i", "i", (function(linkType, parentId, childId) {
-						this.deleteGenericLink(parentId, childId, "i", "i", (function() {
+						this.deleteLink(parentId, childId, "i", "i", (function() {
 							this.linkElements(linkType, parentId, childId, "i", "i", function() {
 								conDecObservable.notify();
 							});

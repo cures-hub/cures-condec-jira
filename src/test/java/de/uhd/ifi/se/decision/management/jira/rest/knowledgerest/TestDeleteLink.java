@@ -23,7 +23,7 @@ public class TestDeleteLink extends TestKnowledgeRestSetUp {
 		assertEquals(
 				Response.status(Response.Status.BAD_REQUEST)
 						.entity(ImmutableMap.of("error", DELETION_LINK_ERROR)).build().getEntity(),
-				knowledgeRest.deleteGenericLink(null, null, null).getEntity());
+				knowledgeRest.deleteLink(null, null, null).getEntity());
 
 	}
 
@@ -32,7 +32,7 @@ public class TestDeleteLink extends TestKnowledgeRestSetUp {
 		assertEquals(
 				Response.status(Response.Status.BAD_REQUEST)
 						.entity(ImmutableMap.of("error", DELETION_LINK_ERROR)).build().getEntity(),
-				knowledgeRest.deleteGenericLink("TEST", null, null).getEntity());
+				knowledgeRest.deleteLink("TEST", null, null).getEntity());
 
 	}
 
@@ -43,7 +43,7 @@ public class TestDeleteLink extends TestKnowledgeRestSetUp {
 		assertEquals(
 				Response.status(Response.Status.BAD_REQUEST)
 						.entity(ImmutableMap.of("error", DELETION_LINK_ERROR)).build().getEntity(),
-				knowledgeRest.deleteGenericLink(null, request, null).getEntity());
+				knowledgeRest.deleteLink(null, request, null).getEntity());
 
 	}
 
@@ -56,7 +56,7 @@ public class TestDeleteLink extends TestKnowledgeRestSetUp {
 		assertEquals(
 				Response.status(Response.Status.BAD_REQUEST)
 						.entity(ImmutableMap.of("error", DELETION_LINK_ERROR)).build().getEntity(),
-				knowledgeRest.deleteGenericLink(null, null, link).getEntity());
+				knowledgeRest.deleteLink(null, null, link).getEntity());
 	}
 
 	@Test

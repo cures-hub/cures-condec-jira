@@ -378,10 +378,10 @@ public class KnowledgeRest {
 				.build();
 	}
 
-	@Path("/deleteGenericLink")
+	@Path("/deleteLink")
 	@DELETE
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response deleteGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
+	public Response deleteLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
 			boolean isDeleted = false;

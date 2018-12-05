@@ -266,7 +266,7 @@
 		var submitButton = document.getElementById("dialog-submit-button");
 		submitButton.textContent = deleteLinkToParentText;
 		submitButton.onclick = function() {
-			conDecAPI.deleteGenericLink(parentId, id, "i", "i", function() {
+			conDecAPI.deleteLink(parentId, id, "i", "i", function() {
 				conDecObservable.notify();
 			});
 			AJS.dialog2("#dialog").hide();
