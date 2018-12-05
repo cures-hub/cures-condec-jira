@@ -117,17 +117,6 @@ public class ConfigRest {
 		}
 	}
 
-	@Path("/isKnowledgeExtractedFromGit")
-	@GET
-	public Response isKnowledgeExtractedFromGit(@QueryParam("projectKey") final String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		Boolean isKnowledgeExtractedFromGit = ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey);
-		return Response.ok(isKnowledgeExtractedFromGit).build();
-	}
-
 	@Path("/setKnowledgeExtractedFromGit")
 	@POST
 	public Response setKnowledgeExtractedFromGit(@Context HttpServletRequest request,
@@ -149,17 +138,6 @@ public class ConfigRest {
 			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
-	}
-
-	@Path("/isKnowledgeExtractedFromIssues")
-	@GET
-	public Response isKnowledgeExtractedFromIssues(@QueryParam("projectKey") final String projectKey) {
-		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
-		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
-			return checkIfProjectKeyIsValidResponse;
-		}
-		Boolean isKnowledgeExtractedFromIssues = ConfigPersistenceManager.isKnowledgeExtractedFromIssues(projectKey);
-		return Response.ok(isKnowledgeExtractedFromIssues).build();
 	}
 
 	@Path("/setKnowledgeExtractedFromIssues")

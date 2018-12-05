@@ -22,7 +22,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
-public class TestsetSentenceIrrelevant extends TestKnowledgeRestSetUp {
+public class TestSetSentenceIrrelevant extends TestKnowledgeRestSetUp {
 
 	private final static String CREATION_ERROR = "Deletion of link failed.";
 

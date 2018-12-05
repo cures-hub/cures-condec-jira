@@ -475,7 +475,7 @@
 
 	/*
 	 * external references: settingsForSingleProject.vm,
-	 * settingsForAllProjects.vm ..
+	 * settingsForAllProjects.vm
 	 */
 	ConDecAPI.prototype.setActivated = function setActivated(isActivated, projectKey) {
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setActivated.json?projectKey=" + projectKey
@@ -490,7 +490,7 @@
 
 	/*
 	 * external references: settingsForSingleProject.vm,
-	 * settingsForAllProjects.vm ..
+	 * settingsForAllProjects.vm
 	 */
 	ConDecAPI.prototype.setIssueStrategy = function setIssueStrategy(isIssueStrategy, projectKey) {
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setIssueStrategy.json?projectKey=" + projectKey
@@ -504,8 +504,7 @@
 	};
 
 	/*
-	 * external references: settingsForSingleProject.vm,
-	 * settingsForAllProjects.vm, condec.context.menu ..
+	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.isIssueStrategy = function isIssueStrategy(callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isIssueStrategy.json?projectKey=" + projectKey,
@@ -521,7 +520,7 @@
 
 	/*
 	 * external references: settingsForSingleProject.vm,
-	 * settingsForAllProjects.vm ..
+	 * settingsForAllProjects.vm
 	 */
 	ConDecAPI.prototype.setKnowledgeExtractedFromGit = function setKnowledgeExtractedFromGit(
 			isKnowledgeExtractedFromGit, projectKey) {
@@ -538,24 +537,8 @@
 	};
 
 	/*
-	 * external references: condec.treant ..
-	 */
-	ConDecAPI.prototype.isKnowledgeExtractedFromGit = function isKnowledgeExtractedFromGit(projectKey, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isKnowledgeExtractedFromGit.json?projectKey="
-				+ projectKey, function(error, isKnowledgeExtractedFromGit) {
-			if (error === null) {
-				callback(isKnowledgeExtractedFromGit);
-			} else {
-				showFlag("error",
-						"It could not be received whether decision knowledge is extracted from git. Error-Code: "
-								+ error);
-			}
-		});
-	};
-
-	/*
 	 * external references: settingsForSingleProject.vm,
-	 * settingsForAllProjects.vm ..
+	 * settingsForAllProjects.vm
 	 */
 	ConDecAPI.prototype.setKnowledgeExtractedFromIssues = function setKnowledgeExtractedFromIssues(
 			isKnowledgeExtractedFromIssues, projectKey) {
@@ -572,7 +555,7 @@
 	};
 
 	/*
-	 * external references: settingsForSingleProject.vm ..
+	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setUseClassifierForIssueComments = function setUseClassifierForIssueComments(
 			isClassifierUsedForIssues, projectKey) {
@@ -593,23 +576,7 @@
 	};
 
 	/*
-	 * external references: none, not even used locally, parameter naming ..
-	 */
-	ConDecAPI.prototype.isKnowledgeExtractedFromIssues = function isKnowledgeExtractedFromIssues(projectKey, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isKnowledgeExtractedFromIssues.json?projectKey="
-				+ projectKey, function(error, isKnowledgeExtractedFromIssues) {
-			if (error === null) {
-				callback(isKnowledgeExtractedFromIssues);
-			} else {
-				showFlag("error",
-						"It could not be received whether decision knowledge is extracted from issue comments. Error-Code: "
-								+ error);
-			}
-		});
-	};
-
-	/*
-	 * external references: settingsForSingleProject.vm ..
+	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setKnowledgeTypeEnabled = function setKnowledgeTypeEnabled(isKnowledgeTypeEnabled,
 			knowledgeType, projectKey) {
@@ -671,7 +638,7 @@
 	}
 
 	/*
-	 * external references: settingsForSingleProject.vm ..
+	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setWebhookData = function setWebhookData(projectKey, webhookUrl, webhookSecret) {
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookData.json?projectKey=" + projectKey
@@ -699,7 +666,7 @@
 	};
 
 	/*
-	 * external references: settingsForSingleProject.vm ..
+	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setWebhookType = function setWebhookType(webhookType, projectKey, isWebhookTypeEnabled) {
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookType.json?projectKey=" + projectKey
@@ -714,7 +681,7 @@
 	};
 
 	/*
-	 * external references: settingsForSingleProject.vm ..
+	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.clearSentenceDatabase = function clearSentenceDatabase(projectKey) {
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/clearSentenceDatabase.json?projectKey="
@@ -728,7 +695,7 @@
 	};
 
 	/*
-	 * external references: settingsForSingleProject.vm ..
+	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.classifyWholeProject = function classifyWholeProject(projectKey) {
 		var isSucceeded = postWithResponseAsReturnValue(AJS.contextPath()
@@ -742,7 +709,7 @@
 	};
 
 	/*
-	 * external references: settingsForSingleProject.vm ..
+	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setIconParsing = function setIconParsing(projectKey, isActivated) {
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setIconParsing.json?projectKey=" + projectKey
@@ -756,7 +723,7 @@
 	};
 
 	/*
-	 * external references: settingsForAllProjects.vm ..
+	 * external references: settingsForAllProjects.vm
 	 */
 	ConDecAPI.prototype.getRequestToken = function getRequestToken(projectKey, baseURL, privateKey, consumerKey,
 			callback) {
@@ -772,7 +739,7 @@
 	};
 
 	/*
-	 * external references: settingsForAllProjects.vm ..
+	 * external references: settingsForAllProjects.vm
 	 */
 	ConDecAPI.prototype.getAccessToken = function getAccessToken(projectKey, baseURL, privateKey, consumerKey,
 			requestToken, secret, callback) {
@@ -788,7 +755,7 @@
 	};
 
 	/*
-	 * external references: view.condec.issue.module ..
+	 * external references: view.condec.issue.module
 	 */
 	ConDecAPI.prototype.getElementsByQuery = function getElementsByQuery(query, callback) {
 		var projectKey = projectKey || "";
@@ -803,7 +770,7 @@
 	};
 
 	/*
-	 * external references: view.condec.issue.module ..
+	 * external references: view.condec.issue.module
 	 */
 	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, elementKey, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsLinkedToElement.json?elementKey="
