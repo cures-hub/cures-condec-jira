@@ -146,12 +146,11 @@ public class ConfigPersistenceManager {
 	public static void setWebhookSecret(String projectKey, String webhookSecret) {
 		setValue(projectKey, "webhookSecret", webhookSecret);
 	}
-	
+
 	public static String getWebhookSecret(String projectKey) {
 		return getValue(projectKey, "webhookSecret");
 	}
-
-	// TODO Testing
+	
 	public static void setWebhookEnabled(String projectKey, boolean isWebhookEnabled) {
 		setValue(projectKey, "isWebhookEnabled", Boolean.toString(isWebhookEnabled));
 	}
