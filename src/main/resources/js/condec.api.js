@@ -139,14 +139,14 @@
 	/*
 	 * internal references: updateDecisionKnowledgeElementAsChild
 	 */
-	function updateDecisionKnowledgeElement(id, summary, description, type, callback) {
+	function updateDecisionKnowledgeElement(id, summary, description, type, documentationLocation, callback) {
 		var element = {
 			"id" : id,
 			"summary" : summary,
 			"type" : type,
 			"projectKey" : projectKey,
 			"description" : description,
-			"documentationLocation" : ""
+			"documentationLocation" : documentationLocation
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/updateDecisionKnowledgeElement.json", element,
 				function(error, decisionKnowledgeElement) {
@@ -288,17 +288,19 @@
 
 	/*
 	 * external references: condec.dialog
+	 * TODO: This is currently not working if a JIRA issue is child of a sentence element
 	 */
 	ConDecAPI.prototype.updateDecisionKnowledgeElementAsChild = function updateDecisionKnowledgeElementAsChild(childId,
 			summary, description, type) {
 		var simpleType = getSimpleType(type);
-		this.getDecisionKnowledgeElement(childId, (function(decisionKnowledgeElement) {
-			updateDecisionKnowledgeElement(childId, summary, description, simpleType, (function() {
-				if (decisionKnowledgeElement.type !== type) {
+		this.getDecisionKnowledgeElement(childId, (function(childElement) {
+			updateDecisionKnowledgeElement(childId, summary, description, simpleType, "i", (function() {
+				if (childElement.type !== type) {
 					var parentId = conDecTreant.findParentId(childId);
-					switchLinkTypes(type, parentId, childId, "i", "i", (function(linkType, parentId, childId) {
-						this.deleteLink(parentId, childId, "i", "i", (function() {
-							this.linkElements(linkType, parentId, childId, "i", "i", function() {
+					//@issue What if parent is a sentence object? Get documentation location of parent.
+					switchLinkTypes(type, parentId, childId, "i", childElement.documentationLocation, (function(linkType, parentId, childId) {
+						this.deleteLink(parentId, childId, "i", childElement.documentationLocation, (function() {
+							this.linkElements(linkType, parentId, childId, "i", childElement.documentationLocation, function() {
 								conDecObservable.notify();
 							});
 						}).bind(this));

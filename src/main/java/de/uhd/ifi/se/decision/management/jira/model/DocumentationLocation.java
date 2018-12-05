@@ -16,7 +16,7 @@ public enum DocumentationLocation {
 	 * @param type
 	 *            as a String.
 	 */
-	public static DocumentationLocation getDocumentationType(String type) {
+	public static DocumentationLocation getDocumentationLocationFromIdentifier(String type) {
 		switch (type.toLowerCase(Locale.ENGLISH)) {
 		case "i":
 			return DocumentationLocation.JIRAISSUE;
