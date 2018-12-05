@@ -32,7 +32,7 @@ public class ConfigPersistenceManager {
 			}
 			settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 		}
-		if (parameter == null) {
+		if (parameter == null || parameter == "") {
 			return "";
 		}
 		Object value = transactionTemplate.execute(new TransactionCallback<Object>() {
@@ -159,13 +159,18 @@ public class ConfigPersistenceManager {
 		String isWebhookEnabled = getValue(projectKey, "isWebhookEnabled");
 		return "true".equals(isWebhookEnabled);
 	}
-	
+
 	public static void setWebhookType(String projectKey, String webhookType, boolean isWebhookTypeEnabled) {
+        if(webhookType == null || webhookType.equals("")){
+            return;
+        }
 		setValue(projectKey, "webhookType" + "." + webhookType, Boolean.toString(isWebhookTypeEnabled));
 	}
 
-	// TODO Testing
-	public static boolean isWebhookTypeEnaled(String projectKey, String webhookType) {
+	public static boolean isWebhookTypeEnabled(String projectKey, String webhookType) {
+	    if(webhookType == null || webhookType.equals("")){
+	        return false;
+        }
 		String isWebhookTypeEnabled = getValue(projectKey, "webhookType" + "." + webhookType);
 		return "true".equals(isWebhookTypeEnabled);
 	}
@@ -176,7 +181,7 @@ public class ConfigPersistenceManager {
         Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
         Collection<String> issueTypeNames = new ArrayList<>();
         for (IssueType issueType: issueTypes) {
-            if (isWebhookTypeEnaled(projectKey, issueType.getName())) {
+            if (isWebhookTypeEnabled(projectKey, issueType.getName())) {
                 issueTypeNames.add(issueType.getName());
             }
         }

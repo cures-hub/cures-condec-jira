@@ -417,11 +417,6 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
         ConfigPersistenceManager.setWebhookType(null, "Task", true);
     }
 
-
-
-
-
-
     @Test
     public void testSetWebhookTypeFilledNullFalse(){
         ConfigPersistenceManager.setWebhookType("TEST", null, false);
@@ -450,5 +445,45 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
     @Test
     public void testSetWebhookTypeFilledFilledTrue(){
         ConfigPersistenceManager.setWebhookType("TEST", "Task", true);
+    }
+
+    @Test
+    public void testIsWebhookTypeEnabledNullNull(){
+	    assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled(null, null));
+    }
+
+    @Test
+    public void testIsWebhookTypeEnabledNullEmpty(){
+        assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled(null, ""));
+    }
+
+    @Test
+    public void testIsWebhookTypeEnabledEmptyNull(){
+        assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled("", null));
+    }
+
+    @Test
+    public void testIsWebhookTypeEnabledNullFilled(){
+        assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled(null, "Task"));
+    }
+
+    @Test
+    public void testIsWebhookTypeEnabledFilledNull(){
+        assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled("TEST", null));
+    }
+
+    @Test
+    public void testIsWebhookTypeEnabledEmptyFilled(){
+        assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled("", "Task"));
+    }
+
+    @Test
+    public void testIsWebhookTypeEnabledFilledEmpty(){
+        assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled("TEST", ""));
+    }
+
+    @Test
+    public void testIsWebhookTypeEnabledFilledFilled(){
+        assertTrue(ConfigPersistenceManager.isWebhookTypeEnabled("TEST", "Task"));
     }
 }
