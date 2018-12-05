@@ -134,12 +134,11 @@ public class ConfigPersistenceManager {
 			boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
-	
+
 	public static void setWebhookUrl(String projectKey, String webhookUrl) {
 		setValue(projectKey, "webhookUrl", webhookUrl);
 	}
-
-	// TODO Testing
+	
 	public static String getWebhookUrl(String projectKey) {
 		return getValue(projectKey, "webhookUrl");
 	}

@@ -1,9 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -18,6 +14,8 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+
+import static org.junit.Assert.*;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestConfigPersistenceManager extends TestSetUpWithIssues {
@@ -311,5 +309,15 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
     @Test
     public void testSetWebhookUrlFilledFilled(){
         ConfigPersistenceManager.setWebhookUrl("TEST", "http://true");
+    }
+
+    @Test
+    public void testGetWebhookUrlNull(){
+        assertEquals("", ConfigPersistenceManager.getWebhookUrl(null));
+    }
+
+    @Test
+    public void testGetWebhookUrlFilled(){
+        assertEquals("true", ConfigPersistenceManager.getWebhookUrl("TEST"));
     }
 }
