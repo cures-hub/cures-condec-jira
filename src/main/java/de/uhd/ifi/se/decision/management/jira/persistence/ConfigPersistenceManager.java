@@ -155,13 +155,11 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, "isWebhookEnabled", Boolean.toString(isWebhookEnabled));
 	}
 
-	// TODO Testing
 	public static boolean isWebhookEnabled(String projectKey) {
 		String isWebhookEnabled = getValue(projectKey, "isWebhookEnabled");
 		return "true".equals(isWebhookEnabled);
 	}
-
-	// TODO Testing
+	
 	public static void setWebhookType(String projectKey, String webhookType, boolean isWebhookTypeEnabled) {
 		setValue(projectKey, "webhookType" + "." + webhookType, Boolean.toString(isWebhookTypeEnabled));
 	}
