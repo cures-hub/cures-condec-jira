@@ -32,11 +32,11 @@
 	var ConDecDialog = function ConDecDialog() {
 	};
 
-	ConDecDialog.prototype.showCreateDialog = function showCreateDialog(id) {
+	ConDecDialog.prototype.showCreateDialog = function showCreateDialog(idOfParentElement, documentationLocationOfParentElement) {
 		console.log("view.context.menu.js setUpDialogForCreateAction");
-		console.log(id);
+		console.log(idOfParentElement);
 		setHeaderText(createKnowledgeElementText);
-		setUpCreateOrEditDialog("", "", "Alternative");
+		setUpCreateOrEditDialog("", "", "Alternative", true);
 
 		var submitButton = document.getElementById("dialog-submit-button");
 		submitButton.textContent = createKnowledgeElementText;
@@ -44,29 +44,16 @@
 			var summary = document.getElementById("form-input-summary").value;
 			var description = document.getElementById("form-input-description").value;
 			var type = $("select[name='form-select-type']").val();
-			conDecAPI.createDecisionKnowledgeElementAsChild(summary, description, type, id);
+			var documentationLocation = $("select[name='form-select-location']").val(); 
+			if (documentationLocation === "i") {
+				conDecAPI.createDecisionKnowledgeElementAsChild(summary, description, type, idOfParentElement, documentationLocationOfParentElement, documentationLocation);
+			} else if (documentationLocation === "s") {
+				conDecAPI.createDecisionKnowledgeElementAsJIRAIssueComment(summary, description, type, idOfParentElement, documentationLocationOfParentElement, function() {
+					conDecObservable.notify();
+				});
+			}
 			AJS.dialog2("#dialog").hide();
 		};
-
-		conDecAPI.isIssueStrategy(id, function(isIssueStrategy) { // TODO:
-			// rename
-			// param name,
-			// confusing.
-			if (isIssueStrategy === true) {
-				var extensionButton = document.getElementById("dialog-extension-button");
-				extensionButton.style.visibility = "visible";
-				extensionButton.onclick = function() {
-					var createCreateIssueForm = require('quick-edit/form/factory/create-issue');
-					createCreateIssueForm({
-						pid : conDecAPI.getProjectId()
-					}).asDialog({
-						windowTitle : createKnowledgeElementText
-					}).show();
-					AJS.dialog2("#dialog").hide();
-				};
-			}
-		});
-
 		setUpDialog();
 	};
 
@@ -91,8 +78,15 @@
 		header.textContent = headerText;
 	}
 
-	function setUpCreateOrEditDialog(summary, description, knowledgeType) {
+	function setUpCreateOrEditDialog(summary, description, knowledgeType, addDocumentLocation) {
 		console.log("view.context.menu.js setUpCreateOrEditDialog");
+		var documentationLocation = "";
+		if (addDocumentLocation) {
+			documentationLocation = "<div class='field-group'><label for='form-select-location'>Documentation Location:</label>"
+					+ "<select id='form-select-location' name='form-select-location' class='select full-width-field'>"
+					+ "<option selected value = 'i'>JIRA Issue</option>"
+					+ "<option value = 's'>JIRA Issue Comment</option></select></div>";
+		}
 		document
 				.getElementById("dialog-content")
 				.insertAdjacentHTML(
@@ -107,6 +101,7 @@
 								+ "' class='textarea full-width-field'>"
 								+ description
 								+ "</textarea></div>"
+								+ documentationLocation
 								+ "<div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
 								+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
 								+ "</form>");
@@ -121,6 +116,7 @@
 					+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
 		}
 		AJS.$("#form-select-type").auiSelect2();
+		AJS.$("#form-select-location").auiSelect2();
 	}
 
 	function setUpTypeChangeDialog(knowledgeType) {
@@ -213,12 +209,8 @@
 			var description = decisionKnowledgeElement.description;
 			var type = decisionKnowledgeElement.type;
 
-			conDecAPI.isIssueStrategy(id, function(isIssueStrategy) { // TODO:
-				// refactor
-				// param
-				// name,
-				// confusing!
-				if (isIssueStrategy) {
+			conDecAPI.isIssueStrategy(function(isDocumentedInJIRAIssue) {
+				if (isDocumentedInJIRAIssue) {
 					var createEditIssueForm = require('quick-edit/form/factory/edit-issue');
 					createEditIssueForm({
 						issueId : id
@@ -229,7 +221,7 @@
 				} else {
 					setUpDialog();
 					setHeaderText(editKnowledgeElementText);
-					setUpCreateOrEditDialog(summary, description, type);
+					setUpCreateOrEditDialog(summary, description, type, false);
 
 					var submitButton = document.getElementById("dialog-submit-button");
 					submitButton.textContent = editKnowledgeElementText;
@@ -274,7 +266,7 @@
 		var submitButton = document.getElementById("dialog-submit-button");
 		submitButton.textContent = deleteLinkToParentText;
 		submitButton.onclick = function() {
-			conDecAPI.deleteLink(parentId, id, function() {
+			conDecAPI.deleteLink(parentId, id, "i", "i", function() {
 				conDecObservable.notify();
 			});
 			AJS.dialog2("#dialog").hide();
@@ -305,9 +297,6 @@
 		console.log("view.context.menu.js resetDialog");
 		document.getElementById("dialog-header").innerHTML = "";
 		document.getElementById("dialog-content").innerHTML = "";
-		if (document.getElementById("dialog-extension-button")) {
-			document.getElementById("dialog-extension-button").style.visibility = "hidden";
-		}
 		var dialog = document.getElementById("dialog");
 		if (dialog.classList.contains("aui-dialog2-large")) {
 			dialog.classList.remove("aui-dialog2-large");
@@ -347,8 +336,8 @@
 				knowledgeTypes.splice(index, 1);
 			}
 		}
-		if(!knowledgeTypes.includes("Pro") && !knowledgeTypes.includes("Con") && knowledgeTypes.includes("Argument")){
-			knowledgeTypes.splice(knowledgeTypes.indexOf("Argument"),1);
+		if (!knowledgeTypes.includes("Pro") && !knowledgeTypes.includes("Con") && knowledgeTypes.includes("Argument")) {
+			knowledgeTypes.splice(knowledgeTypes.indexOf("Argument"), 1);
 			knowledgeTypes.push("Pro");
 			knowledgeTypes.push("Con");
 		}
@@ -370,18 +359,16 @@
 	function setUpEditSentenceDialogContext(id, description, type) {
 		var submitButton = document.getElementById("dialog-submit-button");
 		submitButton.textContent = "Change";
-		$("#dialog-extension-button").remove();
 		submitButton.onclick = function() {
 			var description = document.getElementById("form-input-description").value;
 			var type = $("select[name='form-select-type']").val().split("-")[0];
-			conDecAPI.editSentenceBody(id,description,type,	function() {
+			conDecAPI.editSentenceBody(id, description, type, function() {
 				AJS.dialog2("#dialog").hide();
-				conDecObservable.notify();	
+				conDecObservable.notify();
 			});
 		};
 		AJS.$("#form-select-type").auiSelect2();
 	}
-
 
 	ConDecDialog.prototype.setUpDialogForEditSentenceAction = function setUpDialogForEditSentenceAction(id) {
 		conDecAPI.getSentenceElement(id, function(result) {
@@ -391,7 +378,6 @@
 			setHeaderText(editKnowledgeElementText);
 			setUpEditSentenceDialogView(description, type, type);
 			setUpEditSentenceDialogContext(id, description, type);
-			
 		});
 	};
 

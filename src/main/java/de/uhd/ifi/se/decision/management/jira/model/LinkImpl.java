@@ -62,10 +62,10 @@ public class LinkImpl implements Link {
 
 	public LinkImpl(LinkInDatabase linkInDatabase) {
 		this();
-		if(linkInDatabase.getIdOfSourceElement() != null) {
+		if (linkInDatabase.getIdOfSourceElement() != null) {
 			this.setSourceElement(linkInDatabase.getIdOfSourceElement());
 		}
-		if(linkInDatabase.getIdOfDestinationElement() != null) {
+		if (linkInDatabase.getIdOfDestinationElement() != null) {
 			this.setDestinationElement(linkInDatabase.getIdOfDestinationElement());
 		}
 		this.id = linkInDatabase.getId();
@@ -137,7 +137,7 @@ public class LinkImpl implements Link {
 	@Override
 	@JsonProperty("idOfSourceElement")
 	public void setSourceElement(String idWithPrefix) {
-		if(Character.isDigit(idWithPrefix.charAt(0))) {
+		if (Character.isDigit(idWithPrefix.charAt(0))) {
 			setSourceElement(Long.parseLong(idWithPrefix));
 			return;
 		}
@@ -173,7 +173,7 @@ public class LinkImpl implements Link {
 	@Override
 	@JsonProperty("idOfDestinationElement")
 	public void setDestinationElement(String idWithPrefix) {
-		if(Character.isDigit(idWithPrefix.charAt(0))) {
+		if (Character.isDigit(idWithPrefix.charAt(0))) {
 			setDestinationElement(Long.parseLong(idWithPrefix));
 			return;
 		}
@@ -187,6 +187,9 @@ public class LinkImpl implements Link {
 
 	@Override
 	public DecisionKnowledgeElement getOppositeElement(long elementId) {
+		if (!this.isValid()) {
+			return null;
+		}
 		if (this.sourceElement.getId() == elementId) {
 			return destinationElement;
 		}
@@ -195,7 +198,7 @@ public class LinkImpl implements Link {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public DecisionKnowledgeElement getOppositeElement(DecisionKnowledgeElement element) {
 		return getOppositeElement(element.getId());
@@ -228,17 +231,29 @@ public class LinkImpl implements Link {
 			return false;
 		}
 	}
-	
+
 	@Override
 	public LinkImpl flip() {
-		return new LinkImpl(this.getIdOfDestinationElementWithPrefix(),
-				this.getIdOfSourceElementWithPrefix());
+		return new LinkImpl(this.getIdOfDestinationElementWithPrefix(), this.getIdOfSourceElementWithPrefix());
 	}
 
 	@Override
 	public String toString() {
 		String sourceElementIdPrefix = DocumentationLocation.getIdentifier(sourceElement);
 		String destinationElementIdPrefix = DocumentationLocation.getIdentifier(destinationElement);
-		return sourceElementIdPrefix + sourceElement.getId() + " to " + destinationElementIdPrefix + destinationElement.getId();
+		return sourceElementIdPrefix + sourceElement.getId() + " to " + destinationElementIdPrefix
+				+ destinationElement.getId();
+	}
+
+	@Override
+	@JsonProperty("documentationLocationOfSourceElement")
+	public void setDocumentationLocationOfSourceElement(String documentationLocation) {
+		this.getSourceElement().setDocumentationLocation(documentationLocation);
+	}
+
+	@Override
+	@JsonProperty("documentationLocationOfDestinationElement")
+	public void setDocumentationLocationOfDestinationElement(String documentationLocation) {
+		this.getDestinationElement().setDocumentationLocation(documentationLocation);
 	}
 }

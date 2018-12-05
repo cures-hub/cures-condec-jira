@@ -43,7 +43,7 @@
 		document.querySelector("#condec-context-menu").setAttribute('aria-hidden', 'false');
 
 		document.getElementById("condec-context-menu-create-item").onclick = function() {
-			conDecDialog.showCreateDialog(id);
+			conDecDialog.showCreateDialog(id, "i");
 		};
 
 		document.getElementById("condec-context-menu-edit-item").onclick = function() {
@@ -91,6 +91,10 @@
 
 		document.getElementById("condec-context-menu-sentence").style.zIndex = 9998;
 		document.querySelector("#condec-context-menu-sentence").setAttribute('aria-hidden', 'false');
+		
+		document.getElementById("condec-context-menu-sentence-create-item").onclick = function() {
+			conDecDialog.showCreateDialog(id, "s");
+		};
 
 		document.getElementById("condec-context-menu-sentence-edit-item").onclick = function() {
 			conDecDialog.setUpDialogForEditSentenceAction(id);
@@ -98,10 +102,10 @@
 
 		document.getElementById("condec-context-menu-sentence-delete-link-item").onclick = function() {
 			var parentId = conDecTreant.findParentId(id);
-			conDecAPI.deleteGenericLink(parentId, id, "i", "s", conDecAPI.setSentenceIrrelevant(id, function() {
+			conDecAPI.deleteLink(parentId, id, "i", "s", conDecAPI.setSentenceIrrelevant(id, function() {
 				conDecObservable.notify();
 			}), false);
-			conDecAPI.deleteGenericLink(parentId, id, "s", "s", conDecAPI.setSentenceIrrelevant(id, function() {
+			conDecAPI.deleteLink(parentId, id, "s", "s", conDecAPI.setSentenceIrrelevant(id, function() {
 				conDecObservable.notify();
 			}), false);
 		};

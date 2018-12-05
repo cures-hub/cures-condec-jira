@@ -34,7 +34,6 @@ import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImplFiltered;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
@@ -105,11 +104,32 @@ public class KnowledgeRest {
 		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
 			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
+
 			ApplicationUser user = AuthenticationManager.getUser(request);
 			DecisionKnowledgeElement decisionKnowledgeElementWithId = strategy
 					.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
 			if (decisionKnowledgeElementWithId != null) {
 				return Response.status(Status.OK).entity(decisionKnowledgeElementWithId).build();
+			}
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
+		} else {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
+		}
+	}
+
+	@Path("/createDecisionKnowledgeElementAsJIRAIssueComment")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response createDecisionKnowledgeElementAsJIRAIssueComment(@Context HttpServletRequest request,
+			DecisionKnowledgeElement decisionKnowledgeElement, @QueryParam("argument") String argument) {
+		if (decisionKnowledgeElement != null && request != null) {
+
+			DecisionKnowledgeElement newSentenceObject = ActiveObjectsManager.addNewCommentToJIRAIssue(
+					decisionKnowledgeElement, argument, AuthenticationManager.getUser(request));
+			if (newSentenceObject != null) {
+				return Response.status(Status.OK).entity(newSentenceObject).build();
 			}
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
@@ -192,9 +212,18 @@ public class KnowledgeRest {
 	public Response createLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
 			ApplicationUser user = AuthenticationManager.getUser(request);
-			long linkId = strategy.insertLink(link, user);
+
+			long linkId = 0;
+			// TODO Rework strategy
+			// @issue What happens when using AOStrategy?
+			if (GenericLinkManager.isIssueLink(link)) {
+				AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
+				linkId = strategy.insertLink(link, user);
+			} else {
+				linkId = GenericLinkManager.insertLink(link, user);
+			}
+
 			if (linkId == 0) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
 						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
@@ -202,6 +231,39 @@ public class KnowledgeRest {
 			return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Creation of link failed."))
+					.build();
+		}
+	}
+
+	@Path("/deleteLink")
+	@DELETE
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response deleteLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
+			Link link) {
+		if (projectKey != null && request != null && link != null) {
+			boolean isDeleted = false;
+
+			if (GenericLinkManager.isIssueLink(link)) {
+				AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
+				ApplicationUser user = AuthenticationManager.getUser(request);
+				isDeleted = strategy.deleteLink(link, user);
+				if (!isDeleted) {
+					isDeleted = strategy.deleteLink(link.flip(), user);
+				}
+			} else {
+				isDeleted = GenericLinkManager.deleteGenericLink(link);
+				if (!isDeleted) {
+					isDeleted = GenericLinkManager.deleteGenericLink(link.flip());
+				}
+			}
+
+			if (isDeleted) {
+				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
+			}
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
+		} else {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
 					.build();
 		}
 	}
@@ -307,8 +369,10 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getSentenceElement(@QueryParam("id") long id) {
 
-		// TODO: Replace by JiraIssueCommentPersistenceManager.getDecisionKnowledgeElement(id)
-		// @issue: GetDecisionKnowledgeElement might not be the correct method name to retrieve irrelevant sentences. How to deal with irrelevant sentences? 
+		// TODO: Replace by
+		// JiraIssueCommentPersistenceManager.getDecisionKnowledgeElement(id)
+		// @issue: GetDecisionKnowledgeElement might not be the correct method name to
+		// retrieve irrelevant sentences. How to deal with irrelevant sentences?
 		Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(id);
 
 		if (sentence != null) {
@@ -339,80 +403,6 @@ public class KnowledgeRest {
 		}
 		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of element failed."))
 				.build();
-	}
-
-	@Path("/deleteLink")
-	@DELETE
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response deleteLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
-			Link link) {
-		if (projectKey != null && request != null && link != null) {
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
-			ApplicationUser user = AuthenticationManager.getUser(request);
-			boolean isDeleted = strategy.deleteLink(link, user);
-			if (isDeleted) {
-				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
-			} else {
-				isDeleted = strategy.deleteLink(link.flip(), user);
-				if (isDeleted) {
-					return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
-				} else {
-					return deleteGenericLink(projectKey, request, new LinkImpl(link.getIdOfSourceElementWithPrefix(),
-							link.getIdOfDestinationElementWithPrefix()));
-				}
-			}
-		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
-					.build();
-		}
-	}
-
-	@Path("/deleteGenericLink")
-	@DELETE
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response deleteGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
-			Link link) {
-		if (projectKey != null && request != null && link != null) {
-			if (GenericLinkManager.isIssueLink(link)) {
-				return deleteLink(projectKey, request, link);
-			}
-			boolean isDeleted = GenericLinkManager.deleteGenericLink(link);
-			if (isDeleted) {
-				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
-			}
-			isDeleted = GenericLinkManager.deleteGenericLink(link.flip());
-			if (isDeleted) {
-				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
-			} else {
-				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
-			}
-		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
-					.build();
-		}
-	}
-
-	@Path("/createGenericLink")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
-			Link link) {
-		if (projectKey != null && request != null && link != null) {
-			if (GenericLinkManager.isIssueLink(link)) {
-				return createLink(projectKey, request, link);
-			}
-			ApplicationUser user = AuthenticationManager.getUser(request);
-			long linkId = GenericLinkManager.insertLink(link, user);
-			if (linkId == 0) {
-				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
-			}
-			return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
-		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Creation of link failed."))
-					.build();
-		}
 	}
 
 	@Path("getAllElementsMatchingQuery")

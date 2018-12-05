@@ -9,8 +9,6 @@
 	<div id="dialog-content" class="aui-dialog2-content"></div>
 	<footer class="aui-dialog2-footer">
 		<div class="aui-dialog2-footer-actions">
-			<button id="dialog-extension-button" class="aui-button">Extended
-				Editor</button>
 			<button id="dialog-submit-button"
 				class="aui-button aui-button-primary">Do it!</button>
 			<button id="dialog-cancel-button" class="aui-button aui-button-link" onclick="AJS.dialog2('#dialog').hide()">Cancel</button>

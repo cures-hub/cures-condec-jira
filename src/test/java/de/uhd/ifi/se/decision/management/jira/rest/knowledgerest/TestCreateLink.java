@@ -7,6 +7,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -16,15 +17,23 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import net.java.ao.EntityManager;
+import net.java.ao.test.jdbc.Data;
+import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestCreateLink extends TestSetUpWithIssues {
+@Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
+public class TestCreateLink extends TestKnowledgeRestSetUp {
 	private EntityManager entityManager;
 	private KnowledgeRest knowledgeRest;
 	private HttpServletRequest request;
@@ -121,10 +130,15 @@ public class TestCreateLink extends TestSetUpWithIssues {
 				.getEntity(), knowledgeRest.createLink("TEST", request, null).getEntity());
 	}
 
+	// TODO
+	@Ignore
 	@Test
+	@NonTransactional
 	public void testProjectKeyFilledRequestFilledLinkIdZero() {
 		link.setType("Zero");
 		link.setSourceElement(3);
+		link.setDocumentationLocationOfDestinationElement("s");
+		link.setDocumentationLocationOfDestinationElement("s");
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", CREATION_ERROR))
 				.build().getEntity(), knowledgeRest.createLink("create", request, link).getEntity());
 	}
@@ -140,5 +154,51 @@ public class TestCreateLink extends TestSetUpWithIssues {
 		link.setType("Zero");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), knowledgeRest.createLink("notCreate", null, link).getEntity());
+	}
+
+	private Link newGenericLink() {
+		TestComment tc = new TestComment();
+		Comment comment = tc.getComment("first Comment");
+		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
+
+		return GenericLinkManager.getLinksForElement("s" + id).get(0);
+	}
+
+	@Test
+	@NonTransactional
+	public void testRequestNullElementNull() {
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
+				.getEntity(), knowledgeRest.createLink(null, null, null).getEntity());
+	}
+
+	@Test
+	@NonTransactional
+	public void testRequestNullElementFilled() {
+		TestComment tc = new TestComment();
+		Comment comment = tc.getComment("this is atest sentence");
+		decisionKnowledgeElement = comment.getSentences().get(0);
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
+				.getEntity(), knowledgeRest.createLink("TEST", null, newGenericLink()).getEntity());
+	}
+
+	@Test
+	@NonTransactional
+	public void testRequestFilledElementNull() {
+		request.setAttribute("WithFails", false);
+		request.setAttribute("NoFails", true);
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
+				.getEntity(), knowledgeRest.createLink("TEST", request, null).getEntity());
+	}
+
+	@Test
+	@NonTransactional
+	public void testRequestFilledElementFilled() {
+		request.setAttribute("WithFails", false);
+		request.setAttribute("NoFails", true);
+		Link gl = newGenericLink();
+		gl.setId(0);
+		GenericLinkManager.insertLink(gl, null);
+		assertEquals(Status.OK.getStatusCode(),
+				knowledgeRest.createLink("TEST", request, newGenericLink()).getStatus());
 	}
 }

@@ -16,7 +16,7 @@ public enum DocumentationLocation {
 	 * @param type
 	 *            as a String.
 	 */
-	public static DocumentationLocation getDocumentationType(String type) {
+	public static DocumentationLocation getDocumentationLocationFromIdentifier(String type) {
 		switch (type.toLowerCase(Locale.ENGLISH)) {
 		case "i":
 			return DocumentationLocation.JIRAISSUE;
@@ -45,15 +45,18 @@ public enum DocumentationLocation {
 			return "";
 		}
 	}
+	
+	public String getIdentifier() {
+		return getIdentifier(this);
+	}
 
 	public static String getIdentifier(DecisionKnowledgeElement element) {
-		if (element instanceof Sentence) {
-			return "s";
-		}
-		if (element.getDocumentationLocation() == null) {
+		if (element == null || element.getDocumentationLocation() == null) {
 			return "";
-		}
-		if (element.getDocumentationLocation().equals(DocumentationLocation.ACTIVEOBJECT)) {
+		} else if (element instanceof Sentence
+				|| element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUECOMMENT)) {
+			return "s";
+		} else if (element.getDocumentationLocation().equals(DocumentationLocation.ACTIVEOBJECT)) {
 			return "a";
 		} else if (element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUE)) {
 			return "i";
