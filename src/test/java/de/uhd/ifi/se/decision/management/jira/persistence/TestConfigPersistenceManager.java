@@ -486,4 +486,19 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
     public void testIsWebhookTypeEnabledFilledFilled(){
         assertTrue(ConfigPersistenceManager.isWebhookTypeEnabled("TEST", "Task"));
     }
+
+    @Test
+    public void testGetEnabledWebhookTypesNull(){
+	    assertEquals(0, ConfigPersistenceManager.getEnabledWebhookTypes(null).size(),0.0);
+    }
+
+    @Test
+    public void testGetEnabledWebhookTypesEmpty(){
+        assertEquals(0, ConfigPersistenceManager.getEnabledWebhookTypes("").size(),0.0);
+    }
+
+    @Test
+    public void testGetEnabledWebhookTypesFilled(){
+        assertEquals(13, ConfigPersistenceManager.getEnabledWebhookTypes("TEST").size(),0.0);
+    }
 }

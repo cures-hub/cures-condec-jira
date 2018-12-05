@@ -174,8 +174,7 @@ public class ConfigPersistenceManager {
 		String isWebhookTypeEnabled = getValue(projectKey, "webhookType" + "." + webhookType);
 		return "true".equals(isWebhookTypeEnabled);
 	}
-
-	// TODO Testing
+	
 	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
         IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
         Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
