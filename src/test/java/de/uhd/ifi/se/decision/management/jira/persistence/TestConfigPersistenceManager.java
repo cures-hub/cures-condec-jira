@@ -292,4 +292,24 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	public void testGetSecretForOAuth() {
 		assertNotNull(ConfigPersistenceManager.getSecretForOAuth());
 	}
+
+	@Test
+    public void testSetWebhookUrlNullNull(){
+	    ConfigPersistenceManager.setWebhookUrl(null, null);
+    }
+
+    @Test
+    public void testSetWebhookUrlFilledNull(){
+        ConfigPersistenceManager.setWebhookUrl("TEST", null);
+    }
+
+    @Test
+    public void testSetWebhookUrlNullFilled(){
+        ConfigPersistenceManager.setWebhookUrl(null, "http://true");
+    }
+
+    @Test
+    public void testSetWebhookUrlFilledFilled(){
+        ConfigPersistenceManager.setWebhookUrl("TEST", "http://true");
+    }
 }
