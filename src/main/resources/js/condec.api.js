@@ -686,21 +686,6 @@
 	};
 
 	/*
-	 * external references: condec.treant ..
-	 */
-	ConDecAPI.prototype.getCommits = function getCommits(elementKey, callback) {
-		getJSON(AJS.contextPath() + "/rest/gitplugin/latest/issues/" + elementKey + "/commits", function(error,
-				commitData) {
-			if (error === null) {
-				callback(commitData.commits);
-			} else {
-				showFlag("error", "Commits for this element could not be received. Error-Code: " + error);
-				callback();
-			}
-		});
-	};
-
-	/*
 	 * external references: settingsForSingleProject.vm ..
 	 */
 	ConDecAPI.prototype.setWebhookData = function setWebhookData(projectKey, webhookUrl, webhookSecret) {
@@ -741,16 +726,6 @@
 				showFlag("error", "The webhook root element type could not been changed for this project.");
 			}
 		});
-	};
-
-	/*
-	 * external references: none, not even used locally! //TODO: delete
-	 * function?
-	 */
-	ConDecAPI.prototype.getCommitsAsReturnValue = function getCommitsAsReturnValue(elementKey) {
-		var commitData = getResponseAsReturnValue(AJS.contextPath() + "/rest/gitplugin/latest/issues/" + elementKey
-				+ "/commits");
-		return commitData.commits;
 	};
 
 	/*
