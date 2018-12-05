@@ -30,8 +30,8 @@
 	};
 
 	/*
-	 * external references: condec.context.menu, view.condec.knowledge.page,
-	 * view.condec.issue.module ..
+	 * external references: condec.context.menu, condec.dialog,
+	 * view.condec.knowledge.page, view.condec.issue.module
 	 */
 	ConDecAPI.prototype.getDecisionKnowledgeElement = function getDecisionKnowledgeElement(id, callback) {
 		getJSON(
@@ -48,7 +48,7 @@
 	};
 
 	/*
-	 * external references: view.condec.issue.module ..
+	 * external references: view.condec.issue.module
 	 */
 	ConDecAPI.prototype.getLinkedElements = function getLinkedElements(id, callback) {
 		getJSON(
@@ -65,7 +65,7 @@
 	};
 
 	/*
-	 * external references: condec.context.menu ..
+	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.getUnlinkedElements = function getUnlinkedElements(id, callback) {
 		getJSON(
@@ -82,7 +82,7 @@
 	};
 
 	/*
-	 * external references: view.condec.issue.module, view.condec.knowledge.page ..
+	 * external references: view.condec.knowledge.page
 	 */
 	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElement(summary, description,
 			type, documentationLocation, callback) {
@@ -137,8 +137,7 @@
 	/*
 	 * external references: none
 	 */
-	ConDecAPI.prototype.updateDecisionKnowledgeElement = function updateDecisionKnowledgeElement(id, summary,
-			description, type, callback) {
+	function updateDecisionKnowledgeElement(id, summary, description, type, callback) {
 		var jsondata = {
 			"id" : id,
 			"summary" : summary,
@@ -156,10 +155,10 @@
 						showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
 					}
 				});
-	};
+	}
 
 	/*
-	 * external references: condec.context.menu ..
+	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.deleteDecisionKnowledgeElement = function deleteDecisionKnowledgeElement(id, callback) {
 		var jsondata = {
@@ -175,29 +174,6 @@
 						showFlag("error", "Decision knowledge element was not deleted. Error Code: " + error);
 					}
 				});
-	};
-
-	/*
-	 * external references: condec.context.menu, condec.dialog, condec.treant,
-	 * condec.tree.viewer
-	 */
-	ConDecAPI.prototype.deleteLink = function deleteLink(idOfDestinationElement, idOfSourceElement,
-			documentationLocationOfDestinationElement, documentationLocationOfSourceElement, callback, showError) {
-		var link = {
-			"idOfSourceElement" : idOfSourceElement,
-			"idOfDestinationElement" : idOfDestinationElement,
-			"documentationLocationOfSourceElement" : documentationLocationOfSourceElement,
-			"documentationLocationOfDestinationElement" : documentationLocationOfDestinationElement
-		};
-		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLink.json?projectKey="
-				+ projectKey, link, function(error, link) {
-			if (error === null) {
-				showFlag("success", "Link has been deleted.");
-				callback();
-			} else if (showError) {
-				showFlag("error", "Link could not be deleted.");
-			}
-		});
 	};
 
 	/*
@@ -220,6 +196,29 @@
 						callback(link);
 					} else {
 						showFlag("error", "Link could not be created.");
+					}
+				});
+	};
+
+	/*
+	 * external references: condec.context.menu, condec.dialog, condec.treant,
+	 * condec.tree.viewer
+	 */
+	ConDecAPI.prototype.deleteLink = function deleteLink(idOfDestinationElement, idOfSourceElement,
+			documentationLocationOfDestinationElement, documentationLocationOfSourceElement, callback, showError) {
+		var link = {
+			"idOfSourceElement" : idOfSourceElement,
+			"idOfDestinationElement" : idOfDestinationElement,
+			"documentationLocationOfSourceElement" : documentationLocationOfSourceElement,
+			"documentationLocationOfDestinationElement" : documentationLocationOfDestinationElement
+		};
+		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLink.json?projectKey=" + projectKey,
+				link, function(error, link) {
+					if (error === null) {
+						showFlag("success", "Link has been deleted.");
+						callback();
+					} else if (showError) {
+						showFlag("error", "Link could not be deleted.");
 					}
 				});
 	};
@@ -292,7 +291,7 @@
 			summary, description, type) {
 		var simpleType = getSimpleType(type);
 		this.getDecisionKnowledgeElement(childId, (function(decisionKnowledgeElement) {
-			this.updateDecisionKnowledgeElement(childId, summary, description, simpleType, (function() {
+			updateDecisionKnowledgeElement(childId, summary, description, simpleType, function() {
 				if (decisionKnowledgeElement.type !== type) {
 					var parentId = conDecTreant.findParentId(childId);
 					switchLinkTypes(type, parentId, childId, "i", "i", (function(linkType, parentId, childId) {
@@ -305,29 +304,8 @@
 				} else {
 					conDecObservable.notify();
 				}
-			}).bind(this));
+			});
 		}).bind(this));
-	};
-
-	/*
-	 * external references: none, not even used locally! //TODO: delete
-	 * function?
-	 */
-	ConDecAPI.prototype.deleteSentenceLink = function deleteSentenceLink(idOfDestinationElement, idOfSourceElement,
-			callback) {
-		var jsondata = {
-			"idOfSourceElement" : idOfSourceElement,
-			"idOfDestinationElement" : idOfDestinationElement
-		};
-		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteLinkBetweenSentences.json?projectKey="
-				+ projectKey, jsondata, function(error, link) {
-			if (error === null) {
-				showFlag("success", "Link has been deleted.");
-				callback();
-			} else {
-				showFlag("error", "Link could not be deleted.");
-			}
-		});
 	};
 
 	/*
