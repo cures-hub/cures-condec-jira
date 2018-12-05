@@ -138,17 +138,15 @@ public class ConfigPersistenceManager {
 	public static void setWebhookUrl(String projectKey, String webhookUrl) {
 		setValue(projectKey, "webhookUrl", webhookUrl);
 	}
-	
+
 	public static String getWebhookUrl(String projectKey) {
 		return getValue(projectKey, "webhookUrl");
 	}
 
-	// TODO Testing
 	public static void setWebhookSecret(String projectKey, String webhookSecret) {
 		setValue(projectKey, "webhookSecret", webhookSecret);
 	}
-
-	// TODO Testing
+	
 	public static String getWebhookSecret(String projectKey) {
 		return getValue(projectKey, "webhookSecret");
 	}
