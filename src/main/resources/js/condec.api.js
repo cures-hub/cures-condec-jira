@@ -671,21 +671,6 @@
 	}
 
 	/*
-	 * external references: none, not even used locally! //TODO: delete
-	 * function?
-	 */
-	ConDecAPI.prototype.setGitAddress = function setGitAddress(projectKey, gitAddress) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setGitAddress.json?projectKey=" + projectKey
-				+ "&gitAddress=" + gitAddress, null, function(error, response) {
-			if (error === null) {
-				showFlag("success", "The git address  " + gitAddress + " for this project has been set.");
-			} else {
-				showFlag("error", "The git address  " + gitAddress + " for this project could not be set.");
-			}
-		});
-	};
-
-	/*
 	 * external references: settingsForSingleProject.vm ..
 	 */
 	ConDecAPI.prototype.setWebhookData = function setWebhookData(projectKey, webhookUrl, webhookSecret) {
