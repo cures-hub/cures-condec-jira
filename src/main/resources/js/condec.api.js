@@ -23,9 +23,11 @@
 
 	ConDecAPI.prototype.checkIfProjectKeyIsValid = function checkIfProjectKeyIsValid() {
 		if (projectKey === null || projectKey === undefined) {
-			projectKey = getProjectKey();
-			this.knowledgeTypes = getKnowledgeTypes(projectKey);
-			this.extendedKnowledgeTypes = getExtendedKnowledgeTypes(this.knowledgeTypes);
+			/*
+			 * Some dependencies were missing when the closure object was first instantiated.
+			 * Instantiates the object again.
+			 */
+			global.conDecAPI = new ConDecAPI();
 		}
 	};
 
@@ -869,14 +871,16 @@
 	/*
 	 * external references: view.condec.issue.module
 	 */
-	ConDecAPI.prototype.getIssueKey = function getIssueKey() {
+	function getIssueKey() {
 		console.log("conDecAPI getIssueKey");
 		var issueKey = JIRA.Issue.getIssueKey();
 		if (issueKey === null) {
 			issueKey = AJS.Meta.get("issue-key");
 		}
 		return issueKey;
-	};
+	}
+	
+	ConDecAPI.prototype.getIssueKey = getIssueKey;
 
 	function getProjectKey() {
 		console.log("conDecAPI getProjectKey");
@@ -888,7 +892,7 @@
 		}
 		if (projectKey === undefined) {
 			try {
-				var issueKey = this.getIssueKey();
+				var issueKey = getIssueKey();
 				projectKey = issueKey.split("-")[0];
 			} catch (error) {
 				console.log(error);
