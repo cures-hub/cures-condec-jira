@@ -217,20 +217,25 @@
 					}
 				});
 	};
-	
+
 	/*
 	 * external references: condec.treant, condec.tree.viewer ..
 	 */
-	ConDecAPI.prototype.linkGenericElements = function linkGenericElements(type, targetId, sourceId, targetDocumentationLocation,
-			sourceDocumentationLocation, callback) {
-		var jsondata = {
-			"type" : type,
-			"idOfSourceElement" : sourceDocumentationLocation + sourceId,
-			"idOfDestinationElement" : targetDocumentationLocation + targetId
+	ConDecAPI.prototype.linkGenericElements = function linkGenericElements(linkType, idOfDestinationElement,
+			idOfSourceElement, documentationLocationOfDestinationElement, documentationLocationOfSourceElement,
+			callback) {
+		console.log("conDecAPI linkGenericElements");
+		var link = {
+			"type" : linkType,
+			"idOfSourceElement" : idOfSourceElement,
+			"idOfDestinationElement" : idOfDestinationElement,
+			"documentationLocationOfSourceElement" : documentationLocationOfSourceElement,
+			"documentationLocationOfDestinationElement" : documentationLocationOfDestinationElement
 		};
 		postJSON(
 				AJS.contextPath() + "/rest/decisions/latest/decisions/createGenericLink.json?projectKey=" + projectKey,
-				jsondata, function(error, link) {
+				link, function(
+						error, link) {
 					if (error === null) {
 						showFlag("success", "Link has been created.");
 						callback(link);
@@ -312,7 +317,7 @@
 				(function(idOfNewElement) {
 					switchLinkTypes(type, idOfExistingElement, idOfNewElement, documentationLocationOfExistingElement,
 							documentationLocationOfNewElement, (function(linkType, idOfExistingElement, idOfNewElement,
-									documentationLocationOfExistingElement, documentationLocationOfNewElement) {
+									documentationLocationOfExistingElement, documentationLocationOfNewElement) {						
 								this.linkGenericElements(linkType, idOfExistingElement, idOfNewElement,
 										documentationLocationOfExistingElement, documentationLocationOfNewElement,
 										function() {

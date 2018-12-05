@@ -227,6 +227,31 @@ public class KnowledgeRest {
 					.build();
 		}
 	}
+	
+	@Path("/createGenericLink")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response createGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
+			Link link) {
+		if (projectKey != null && request != null && link != null) {
+			System.out.println("source " + link.getSourceElement().getDocumentationLocationAsString());
+			System.out.println("dest " + link.getSourceElement().getDocumentationLocationAsString());
+			if (GenericLinkManager.isIssueLink(link)) {
+				return createLink(projectKey, request, link);
+			}
+			ApplicationUser user = AuthenticationManager.getUser(request);
+
+			long linkId = GenericLinkManager.insertLink(link, user);
+			if (linkId == 0) {
+				return Response.status(Status.INTERNAL_SERVER_ERROR)
+						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
+			}
+			return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
+		} else {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Creation of link failed."))
+					.build();
+		}
+	}
 
 	@Path("/changeKnowledgeTypeOfSentence")
 	@POST
@@ -413,28 +438,6 @@ public class KnowledgeRest {
 			}
 		} else {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
-					.build();
-		}
-	}
-
-	@Path("/createGenericLink")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
-			Link link) {
-		if (projectKey != null && request != null && link != null) {
-			if (GenericLinkManager.isIssueLink(link)) {
-				return createLink(projectKey, request, link);
-			}
-			ApplicationUser user = AuthenticationManager.getUser(request);
-			long linkId = GenericLinkManager.insertLink(link, user);
-			if (linkId == 0) {
-				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
-			}
-			return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
-		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Creation of link failed."))
 					.build();
 		}
 	}

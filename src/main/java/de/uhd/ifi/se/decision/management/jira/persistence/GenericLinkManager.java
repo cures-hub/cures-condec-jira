@@ -76,8 +76,10 @@ public class GenericLinkManager {
 		}
 
 		final LinkInDatabase linkInDatabase = activeObjects.create(LinkInDatabase.class);
-		linkInDatabase.setIdOfSourceElement(link.getIdOfSourceElementWithPrefix());
-		linkInDatabase.setIdOfDestinationElement(link.getIdOfDestinationElementWithPrefix());
+		DecisionKnowledgeElement sourceElement = link.getSourceElement();
+		linkInDatabase.setIdOfSourceElement(sourceElement.getDocumentationLocation().getIdentifier() + sourceElement.getId());
+		DecisionKnowledgeElement destinationElement = link.getDestinationElement();
+		linkInDatabase.setIdOfDestinationElement(destinationElement.getDocumentationLocation().getIdentifier() + destinationElement.getId());
 		linkInDatabase.setType(link.getType());
 		linkInDatabase.save();
 		activeObjects.find(LinkInDatabase.class);
@@ -129,12 +131,12 @@ public class GenericLinkManager {
 				LinkInDatabase[] linkElements = activeObjects.find(LinkInDatabase.class);
 				for (LinkInDatabase linkElement : linkElements) {
 					try {
-					Link link = new LinkImpl(linkElement.getIdOfSourceElement(),
-							linkElement.getIdOfDestinationElement());
+						Link link = new LinkImpl(linkElement.getIdOfSourceElement(),
+								linkElement.getIdOfDestinationElement());
 						if (!link.isValid()) {
 							deleteLinkElementFromDatabase(linkElement);
 						}
-					}catch(Exception e) {
+					} catch (Exception e) {
 						deleteLinkElementFromDatabase(linkElement);
 					}
 				}
@@ -153,7 +155,7 @@ public class GenericLinkManager {
 			}
 		});
 	}
-	
+
 	public static void deleteLinksForElementWithoutTransaction(String elementIdWithPrefix) {
 		LinkInDatabase[] linksInDatabase = activeObjects.find(LinkInDatabase.class);
 		for (LinkInDatabase linkInDatabase : linksInDatabase) {
@@ -180,7 +182,7 @@ public class GenericLinkManager {
 	public static long getId(String idWithPrefix) {
 		return (long) Integer.parseInt(idWithPrefix.substring(1));
 	}
-	
+
 	private static void deleteLinkElementFromDatabase(LinkInDatabase linkElement) {
 		try {
 			linkElement.getEntityManager().delete(linkElement);

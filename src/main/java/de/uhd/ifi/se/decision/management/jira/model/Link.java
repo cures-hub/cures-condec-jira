@@ -175,4 +175,8 @@ public interface Link {
 	String getIdOfDestinationElementWithPrefix();
 
 	void setDestinationElement(String idWithPrefix);
+	
+	void setDocumentationLocationOfSourceElement(String documentationLocation);
+	
+	void setDocumentationLocationOfDestinationElement(String documentationLocation);
 }

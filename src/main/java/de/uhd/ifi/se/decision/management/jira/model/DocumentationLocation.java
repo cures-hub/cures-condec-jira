@@ -45,6 +45,10 @@ public enum DocumentationLocation {
 			return "";
 		}
 	}
+	
+	public String getIdentifier() {
+		return getIdentifier(this);
+	}
 
 	public static String getIdentifier(DecisionKnowledgeElement element) {
 		if (element == null || element.getDocumentationLocation() == null) {
