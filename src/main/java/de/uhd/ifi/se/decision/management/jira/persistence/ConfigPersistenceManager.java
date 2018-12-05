@@ -27,12 +27,12 @@ public class ConfigPersistenceManager {
 		if (isGlobalSetting) {
 			settings = pluginSettingsFactory.createGlobalSettings();
 		} else {
-			if (projectKey == null || projectKey == "") {
+			if (projectKey == null || projectKey.equals("")) {
 				return "";
 			}
 			settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 		}
-		if (parameter == null || parameter == "") {
+		if (parameter == null || parameter.equals("")) {
 			return "";
 		}
 		Object value = transactionTemplate.execute(new TransactionCallback<Object>() {
@@ -112,15 +112,15 @@ public class ConfigPersistenceManager {
 	public static void setKnowledgeExtractedFromIssues(String projectKey, boolean isKnowledgeExtractedFromIssues) {
 		setValue(projectKey, "isKnowledgeExtractedFromIssues", Boolean.toString(isKnowledgeExtractedFromIssues));
 	}
-	
+
 	public static void setUseClassiferForIssueComments(String projectKey, boolean isActivated) {
 		setValue(projectKey, "setClassiferForIssueComments", Boolean.toString(isActivated));
 	}
-	
+
 	public static boolean isUseClassiferForIssueComments(String projectKey) {
 		return getValue(projectKey, "setClassiferForIssueComments").equals("true");
 	}
-	
+
 	public static boolean isIconParsing(String projectKey) {
 		String isIconParsing = getValue(projectKey, "isIconParsing");
 		return "true".equals(isIconParsing);
@@ -161,30 +161,30 @@ public class ConfigPersistenceManager {
 	}
 
 	public static void setWebhookType(String projectKey, String webhookType, boolean isWebhookTypeEnabled) {
-        if(webhookType == null || webhookType.equals("")){
-            return;
-        }
+		if (webhookType == null || webhookType.equals("")) {
+			return;
+		}
 		setValue(projectKey, "webhookType" + "." + webhookType, Boolean.toString(isWebhookTypeEnabled));
 	}
 
 	public static boolean isWebhookTypeEnabled(String projectKey, String webhookType) {
-	    if(webhookType == null || webhookType.equals("")){
-	        return false;
-        }
+		if (webhookType == null || webhookType.equals("")) {
+			return false;
+		}
 		String isWebhookTypeEnabled = getValue(projectKey, "webhookType" + "." + webhookType);
 		return "true".equals(isWebhookTypeEnabled);
 	}
-	
+
 	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
-        IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
-        Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
-        Collection<String> issueTypeNames = new ArrayList<>();
-        for (IssueType issueType: issueTypes) {
-            if (isWebhookTypeEnabled(projectKey, issueType.getName())) {
-                issueTypeNames.add(issueType.getName());
-            }
-        }
-        return issueTypeNames;
+		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
+		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
+		Collection<String> issueTypeNames = new ArrayList<>();
+		for (IssueType issueType : issueTypes) {
+			if (isWebhookTypeEnabled(projectKey, issueType.getName())) {
+				issueTypeNames.add(issueType.getName());
+			}
+		}
+		return issueTypeNames;
 	}
 
 	public static void setRequestToken(String requestToken) {
