@@ -49,7 +49,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	public DecisionKnowledgeElementImpl(long id, String summary, String description, String type, String projectKey,
 			String key, String documentationLocation) {
 		this(id, summary, description, KnowledgeType.getKnowledgeType(type), projectKey, key,
-				DocumentationLocation.getDocumentationType(documentationLocation));
+				DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation));
 	}
 
 	public DecisionKnowledgeElementImpl(long id, String summary, String description, String type, String projectKey,
@@ -196,7 +196,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	@Override
 	@XmlElement(name = "documentationLocation")
 	public String getDocumentationLocationAsString() {
-		return this.documentationLocation.toString();
+		return this.documentationLocation.getIdentifier();
 	}
 
 	@Override
@@ -206,7 +206,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 			// TODO Add here persistence strategy chosen in project
 			this.documentationLocation = DocumentationLocation.JIRAISSUE;
 		}
-		this.documentationLocation = DocumentationLocation.getDocumentationType(documentationLocation);
+		this.documentationLocation = DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation);
 	}
 
 	@Override

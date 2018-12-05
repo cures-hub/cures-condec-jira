@@ -96,18 +96,18 @@
 			var newParentType = (parentNode.li_attr['class'] === "sentence") ? "s" : "i";
 
 			if (oldParentNode === "#" && parentNode !== "#") {
-				conDecAPI.linkGenericElements("contain", parentNode.data.id, nodeId, newParentType, sourceType, function() {
+				conDecAPI.linkElements("contain", parentNode.data.id, nodeId, newParentType, sourceType, function() {
 					conDecObservable.notify();
 				});
 			}
 			if (parentNode === "#" && oldParentNode !== "#") {
-				conDecAPI.deleteGenericLink(oldParentNode.data.id, nodeId, oldParentType, sourceType, function() {
+				conDecAPI.deleteLink(oldParentNode.data.id, nodeId, oldParentType, sourceType, function() {
 					conDecObservable.notify();
 				});
 			}
 			if (parentNode !== '#' && oldParentNode !== '#') {
-				conDecAPI.deleteGenericLink(oldParentNode.data.id, nodeId, oldParentType, sourceType, function() {
-					conDecAPI.linkGenericElements("contain",parentNode.data.id, nodeId, newParentType, sourceType, function() {
+				conDecAPI.deleteLink(oldParentNode.data.id, nodeId, oldParentType, sourceType, function() {
+					conDecAPI.linkElements("contain",parentNode.data.id, nodeId, newParentType, sourceType, function() {
 						conDecObservable.notify();
 					});
 				});
