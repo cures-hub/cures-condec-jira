@@ -209,10 +209,10 @@ public class KnowledgeRest {
 		}
 	}
 
-	@Path("/createGenericLink")
+	@Path("/createLink")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createGenericLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
+	public Response createLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
 		if (projectKey != null && request != null && link != null) {
 			System.out.println("source " + link.getSourceElement().getDocumentationLocationAsString());

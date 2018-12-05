@@ -198,12 +198,12 @@
 	};
 
 	/*
-	 * external references: condec.treant, condec.tree.viewer ..
+	 * external references: condec.treant, condec.tree.viewer
 	 */
-	ConDecAPI.prototype.linkGenericElements = function linkGenericElements(linkType, idOfDestinationElement,
+	ConDecAPI.prototype.linkElements = function linkElements(linkType, idOfDestinationElement,
 			idOfSourceElement, documentationLocationOfDestinationElement, documentationLocationOfSourceElement,
 			callback) {
-		console.log("conDecAPI linkGenericElements");
+		console.log("conDecAPI linkElements");
 		var link = {
 			"type" : linkType,
 			"idOfSourceElement" : idOfSourceElement,
@@ -212,7 +212,7 @@
 			"documentationLocationOfDestinationElement" : documentationLocationOfDestinationElement
 		};
 		postJSON(
-				AJS.contextPath() + "/rest/decisions/latest/decisions/createGenericLink.json?projectKey=" + projectKey,
+				AJS.contextPath() + "/rest/decisions/latest/decisions/createLink.json?projectKey=" + projectKey,
 				link, function(error, link) {
 					if (error === null) {
 						showFlag("success", "Link has been created.");
@@ -251,7 +251,7 @@
 			idOfNewElement, knowledgeTypeOfChild) {
 		switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, "i", "i", (function(linkType,
 				idOfExistingElement, idOfNewElement) {
-			this.linkGenericElements(linkType, idOfExistingElement, idOfNewElement, "i", "i", function() {
+			this.linkElements(linkType, idOfExistingElement, idOfNewElement, "i", "i", function() {
 				conDecObservable.notify();
 			});
 		}).bind(this));
@@ -296,7 +296,7 @@
 					switchLinkTypes(type, idOfExistingElement, idOfNewElement, documentationLocationOfExistingElement,
 							documentationLocationOfNewElement, (function(linkType, idOfExistingElement, idOfNewElement,
 									documentationLocationOfExistingElement, documentationLocationOfNewElement) {
-								this.linkGenericElements(linkType, idOfExistingElement, idOfNewElement,
+								this.linkElements(linkType, idOfExistingElement, idOfNewElement,
 										documentationLocationOfExistingElement, documentationLocationOfNewElement,
 										function() {
 											conDecObservable.notify();
@@ -317,7 +317,7 @@
 					var parentId = conDecTreant.findParentId(childId);
 					switchLinkTypes(type, parentId, childId, "i", "i", (function(linkType, parentId, childId) {
 						this.deleteLink(parentId, childId, (function() {
-							this.linkGenericElements(linkType, parentId, childId, "i", "i", function() {
+							this.linkElements(linkType, parentId, childId, "i", "i", function() {
 								conDecObservable.notify();
 							});
 						}).bind(this));

@@ -38,7 +38,7 @@ public class TestCreateGenericLink extends TestKnowledgeRestSetUp {
 	@NonTransactional
 	public void testRequestNullElementNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createGenericLink(null, null, null).getEntity());
+				.getEntity(), knowledgeRest.createLink(null, null, null).getEntity());
 	}
 
 	@Test
@@ -48,7 +48,7 @@ public class TestCreateGenericLink extends TestKnowledgeRestSetUp {
 		Comment comment = tc.getComment("this is atest sentence");
 		decisionKnowledgeElement = comment.getSentences().get(0);
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createGenericLink("TEST", null, newGenericLink()).getEntity());
+				.getEntity(), knowledgeRest.createLink("TEST", null, newGenericLink()).getEntity());
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class TestCreateGenericLink extends TestKnowledgeRestSetUp {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createGenericLink("TEST", request, null).getEntity());
+				.getEntity(), knowledgeRest.createLink("TEST", request, null).getEntity());
 	}
 
 	@Test
@@ -69,7 +69,7 @@ public class TestCreateGenericLink extends TestKnowledgeRestSetUp {
 		gl.setId(0);
 		GenericLinkManager.insertLink(gl, null);
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createGenericLink("TEST", request, newGenericLink()).getStatus());
+				knowledgeRest.createLink("TEST", request, newGenericLink()).getStatus());
 	}
 
 }

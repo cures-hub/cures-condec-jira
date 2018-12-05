@@ -92,7 +92,7 @@
 		var newParentType = extractTypeFromHTMLElement(target);
 
 		conDecAPI.deleteGenericLink(oldParentId, childId,oldParentType,sourceType, function() {
-				conDecAPI.linkGenericElements("contain", target.id, draggedElement.id, newParentType, sourceType, function() {
+				conDecAPI.linkElements("contain", target.id, draggedElement.id, newParentType, sourceType, function() {
 					conDecObservable.notify();
 				});
 			});
