@@ -13,6 +13,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.comments.MutableComment;
+import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
@@ -26,6 +27,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * made.
  */
 @Component
+@Scanned
 public class DecXtractEventListener implements InitializingBean, DisposableBean {
 
 	@JiraImport

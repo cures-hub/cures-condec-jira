@@ -11,6 +11,7 @@ import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.issue.link.IssueLinkCreatedEvent;
 import com.atlassian.jira.event.issue.link.IssueLinkDeletedEvent;
 import com.atlassian.jira.event.type.EventType;
+import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -22,6 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * when links between JIRA issues are created or deleted
  */
 @Component
+@Scanned
 public class WebhookEventListener implements InitializingBean, DisposableBean {
 
 	@JiraImport
