@@ -85,7 +85,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 				return true;
 			}
 		}
-		
+
 		LOGGER.error("Deletion of link in database failed.");
 		return false;
 	}
@@ -173,7 +173,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		List<Link> inwardLinks = new ArrayList<Link>();
 		for (IssueLink inwardIssueLink : inwardIssueLinks) {
 			Link link = new LinkImpl(inwardIssueLink);
-			if(link.isValid()) {
+			if (link.isValid()) {
 				inwardLinks.add(link);
 			}
 		}
@@ -208,10 +208,10 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
 			ApplicationUser user) {
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
-		
-		if(element.getSummary().length() > 255) {
+
+		if (element.getSummary().length() > 255) {
 			issueInputParameters.setSummary(element.getSummary().substring(0, 254));
-		}else {
+		} else {
 			issueInputParameters.setSummary(element.getSummary());
 		}
 		issueInputParameters.setDescription(element.getDescription());
@@ -245,7 +245,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
 		Collection<IssueType> listOfIssueTypes = constantsManager.getAllIssueTypeObjects();
 		for (IssueType issueType : listOfIssueTypes) {
-			if (issueType.getName().equalsIgnoreCase(type.toString())) {
+			if (issueType.getName().equalsIgnoreCase(type.getSimpleKnowledgeType().toString())) {
 				return issueType.getId();
 			}
 		}

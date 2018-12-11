@@ -64,7 +64,7 @@ public class ConfigRest {
 	}
 
 	private static void setDefaultKnowledgeTypesEnabled(String projectKey, boolean isActivated) {
-		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaulTypes();
+		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaultTypes();
 		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
 			ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), isActivated);
 		}
@@ -105,7 +105,7 @@ public class ConfigRest {
 	}
 
 	public static void manageDefaultIssueTypes(String projectKey, boolean isIssueStrategy) {
-		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaulTypes();
+		Set<KnowledgeType> defaultKnowledgeTypes = KnowledgeType.getDefaultTypes();
 		for (KnowledgeType knowledgeType : defaultKnowledgeTypes) {
 			if (isIssueStrategy) {
 				ConfigPersistenceManager.setKnowledgeTypeEnabled(projectKey, knowledgeType.toString(), true);

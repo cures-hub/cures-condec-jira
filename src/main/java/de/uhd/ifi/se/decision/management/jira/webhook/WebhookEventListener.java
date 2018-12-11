@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.webhook;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.atlassian.event.api.EventListener;
 import com.atlassian.event.api.EventPublisher;
@@ -11,7 +10,6 @@ import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.issue.link.IssueLinkCreatedEvent;
 import com.atlassian.jira.event.issue.link.IssueLinkDeletedEvent;
 import com.atlassian.jira.event.type.EventType;
-import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -22,8 +20,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * Triggers the webhook when JIRA issues are created, updated, or deleted or
  * when links between JIRA issues are created or deleted
  */
-@Component
-@Scanned
 public class WebhookEventListener implements InitializingBean, DisposableBean {
 
 	@JiraImport

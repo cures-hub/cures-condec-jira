@@ -221,7 +221,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 								+ databaseEntry.getId());
 						databaseEntry.setSummary(element.getSummary());
 						databaseEntry.setDescription(element.getDescription());
-						databaseEntry.setType(element.getType().toString());
+						databaseEntry.setType(element.getType().getSimpleKnowledgeType().toString());
 						databaseEntry.setProjectKey(element.getProject().getProjectKey());
 						databaseEntry.save();
 						return databaseEntry;

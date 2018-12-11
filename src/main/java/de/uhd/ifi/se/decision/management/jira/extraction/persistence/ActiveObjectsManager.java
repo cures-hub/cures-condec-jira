@@ -18,6 +18,7 @@ import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.transaction.TransactionCallback;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
@@ -25,7 +26,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
@@ -673,21 +673,18 @@ public class ActiveObjectsManager {
 	}
 
 	public static DecisionKnowledgeElement addNewCommentToJIRAIssue(DecisionKnowledgeElement decisionKnowledgeElement,
-			String argument, ApplicationUser user) {
-		long issueId = getIssueId(decisionKnowledgeElement);
+			ApplicationUser user) {
+		long issueId = decisionKnowledgeElement.getId();
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
 		if (issue != null) {
-			String macro = getMacro(decisionKnowledgeElement, argument);
-			String text = macro + decisionKnowledgeElement.getSummary() + "\n" + decisionKnowledgeElement.getDescription() + macro;
+			String macro = getMacro(decisionKnowledgeElement);
+			String text = macro + decisionKnowledgeElement.getSummary() + "\n"
+					+ decisionKnowledgeElement.getDescription() + macro;
 			com.atlassian.jira.issue.comments.Comment comment = ComponentAccessor.getCommentManager().create(issue,
-					user,  text, false);
+					user, text, false);
 			Comment com = new CommentImpl(comment, true);
 			for (Sentence sentence : com.getSentences()) {
 				GenericLinkManager.deleteLinksForElement("s" + sentence.getId());
-				String parentDocLoc = DocumentationLocation.getIdentifier(decisionKnowledgeElement);
-				Link link = new LinkImpl(parentDocLoc + decisionKnowledgeElement.getId(), "s" + sentence.getId());
-				GenericLinkManager.insertLinkWithoutTransaction(link);
-				checkIfSentenceHasAValidLink(sentence.getId(), decisionKnowledgeElement.getId());
 			}
 			return com.getSentences().get(0);
 		} else {
@@ -695,24 +692,9 @@ public class ActiveObjectsManager {
 		}
 	}
 
-	private static long getIssueId(DecisionKnowledgeElement decisionKnowledgeElement) {
-		long issueId = decisionKnowledgeElement.getId();
-		if(decisionKnowledgeElement.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUECOMMENT)) {
-			Sentence element = (Sentence)ActiveObjectsManager.getElementFromAO(decisionKnowledgeElement.getId());
-			issueId = element.getIssueId();
-		}
-		return issueId;
-	}
-
-	private static String getMacro(DecisionKnowledgeElement decisionKnowledgeElement, String argument) {
-		String macro = "{" + decisionKnowledgeElement.getType().toString() + "}";
-		if (argument != null && !argument.equals("")) {
-			if (argument.equalsIgnoreCase("Pro-argument")) {
-				macro = "{pro}";
-			} else if (argument.equalsIgnoreCase("Con-argument")) {
-				macro = "{con}";
-			}
-		}
+	private static String getMacro(DecisionKnowledgeElement decisionKnowledgeElement) {
+		KnowledgeType knowledgeType = decisionKnowledgeElement.getType();
+		String macro = "{" + knowledgeType.toString() + "}";
 		return macro;
 	}
 

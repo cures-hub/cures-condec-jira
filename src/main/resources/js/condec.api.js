@@ -24,8 +24,8 @@
 	ConDecAPI.prototype.checkIfProjectKeyIsValid = function checkIfProjectKeyIsValid() {
 		if (projectKey === null || projectKey === undefined) {
 			/*
-			 * Some dependencies were missing when the closure object was first instantiated.
-			 * Instantiates the object again.
+			 * Some dependencies were missing when the closure object was first
+			 * instantiated. Instantiates the object again.
 			 */
 			global.conDecAPI = new ConDecAPI();
 		}
@@ -84,56 +84,31 @@
 	};
 
 	/*
-	 * external references: view.condec.knowledge.page
+	 * external references: view.condec.knowledge.page, condec.dialog
 	 */
-	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElement(summary, description,
-			type, documentationLocation, callback) {
-		if (summary !== "") {
-			var jsondata = {
-				"projectKey" : projectKey,
-				"summary" : summary,
-				"type" : type,
-				"description" : description,
-				"documentationLocation" : documentationLocation
-			};
-			postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createDecisionKnowledgeElement.json",
-					jsondata, function(error, decisionKnowledgeElement) {
-						if (error === null) {
-							showFlag("success", type + " has been created.");
-							callback(decisionKnowledgeElement.id);
-						} else {
-							showFlag("error", type + " has not been created. Error Code: " + error);
-						}
-					});
-		}
-	};
+	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElementAsChild(summary,
+			description, type, documentationLocation, idOfExistingElement, documentationLocationOfExistingElement,
+			callback) {
+		console.log("conDecAPI createDecisionKnowledgeElementAsChild");
+		var newElement = {
+			"summary" : summary,
+			"type" : type,
+			"projectKey" : projectKey,
+			"description" : description,
+			"documentationLocation" : documentationLocation,
+		};
 
-	/*
-	 * external references: view.condec.issue.module, view.condec.knowledge.page ..
-	 */
-	ConDecAPI.prototype.createDecisionKnowledgeElementAsJIRAIssueComment = function createDecisionKnowledgeElementAsJIRAIssueComment(
-			summary, description, type, idOfParentElement, documentationLocationOfParentElement, callback) {
-		if (summary !== "") {
-			var jsondata = {
-				"projectKey" : projectKey,
-				"summary" : summary,
-				"type" : type,
-				"description" : description,
-				"id" : idOfParentElement,
-				"documentationLocation" : documentationLocationOfParentElement
-			};
-			postJSON(
-					AJS.contextPath()
-							+ "/rest/decisions/latest/decisions/createDecisionKnowledgeElementAsJIRAIssueComment.json?argument="
-							+ type, jsondata, function(error, decisionKnowledgeElement) {
-						if (error === null) {
-							showFlag("success", type + " has been created.");
-							callback();
-						} else {
-							showFlag("error", type + " has not been created. Error Code: " + error);
-						}
-					});
-		}
+		postJSON(AJS.contextPath()
+				+ "/rest/decisions/latest/decisions/createDecisionKnowledgeElement.json?idOfExistingElement="
+				+ idOfExistingElement + "&documentationLocationOfExistingElement="
+				+ documentationLocationOfExistingElement, newElement, function(error, newElement) {
+			if (error === null) {
+				showFlag("success", type + " and link have been created.");
+				callback(newElement.id);
+			} else {
+				showFlag("error", type + " and link have not been created. Error Code: " + error);
+			}
+		});
 	};
 
 	/*
@@ -163,12 +138,12 @@
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.deleteDecisionKnowledgeElement = function deleteDecisionKnowledgeElement(id, callback) {
-		var jsondata = {
+		var element = {
 			"id" : id,
 			"projectKey" : projectKey
 		};
-		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteDecisionKnowledgeElement.json",
-				jsondata, function(error, isDeleted) {
+		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteDecisionKnowledgeElement.json", element,
+				function(error, isDeleted) {
 					if (error === null) {
 						showFlag("success", "Decision knowledge element has been deleted.");
 						callback();
@@ -256,53 +231,26 @@
 		}
 	}
 
-	function getSimpleType(type) {
-		var simpleType = type;
-		if (type === "Pro-argument" || type === "Con-argument") {
-			simpleType = "Argument";
-		}
-		return simpleType;
-	}
-
 	/*
-	 * external references: condec.dialog
-	 */
-	ConDecAPI.prototype.createDecisionKnowledgeElementAsChild = function createDecisionKnowledgeElementAsChild(summary,
-			description, type, idOfExistingElement, documentationLocationOfExistingElement,
-			documentationLocationOfNewElement) {
-		console.log("conDecAPI createDecisionKnowledgeElementAsChild");
-		var simpleType = getSimpleType(type);
-		this.createDecisionKnowledgeElement(summary, description, simpleType, documentationLocationOfNewElement,
-				(function(idOfNewElement) {
-					switchLinkTypes(type, idOfExistingElement, idOfNewElement, documentationLocationOfExistingElement,
-							documentationLocationOfNewElement, (function(linkType, idOfExistingElement, idOfNewElement,
-									documentationLocationOfExistingElement, documentationLocationOfNewElement) {
-								this.linkElements(linkType, idOfExistingElement, idOfNewElement,
-										documentationLocationOfExistingElement, documentationLocationOfNewElement,
-										function() {
-											conDecObservable.notify();
-										});
-							}).bind(this));
-				}).bind(this));
-	};
-
-	/*
-	 * external references: condec.dialog
-	 * TODO: This is currently not working if a JIRA issue is child of a sentence element
+	 * external references: condec.dialog TODO: This is currently not working if
+	 * a JIRA issue is child of a sentence element
 	 */
 	ConDecAPI.prototype.updateDecisionKnowledgeElementAsChild = function updateDecisionKnowledgeElementAsChild(childId,
 			summary, description, type) {
-		var simpleType = getSimpleType(type);
+		// var simpleType = getSimpleType(type);
 		this.getDecisionKnowledgeElement(childId, (function(childElement) {
-			updateDecisionKnowledgeElement(childId, summary, description, simpleType, "i", (function() {
+			updateDecisionKnowledgeElement(childId, summary, description, type, "i", (function() {
 				if (childElement.type !== type) {
 					var parentId = conDecTreant.findParentId(childId);
-					//@issue What if parent is a sentence object? Get documentation location of parent.
-					switchLinkTypes(type, parentId, childId, "i", childElement.documentationLocation, (function(linkType, parentId, childId) {
+					// @issue What if parent is a sentence object? Get
+					// documentation location of parent.
+					switchLinkTypes(type, parentId, childId, "i", childElement.documentationLocation, (function(
+							linkType, parentId, childId) {
 						this.deleteLink(parentId, childId, "i", childElement.documentationLocation, (function() {
-							this.linkElements(linkType, parentId, childId, "i", childElement.documentationLocation, function() {
-								conDecObservable.notify();
-							});
+							this.linkElements(linkType, parentId, childId, "i", childElement.documentationLocation,
+									function() {
+										conDecObservable.notify();
+									});
 						}).bind(this));
 					}).bind(this));
 				} else {
@@ -881,7 +829,7 @@
 		}
 		return issueKey;
 	}
-	
+
 	ConDecAPI.prototype.getIssueKey = getIssueKey;
 
 	function getProjectKey() {

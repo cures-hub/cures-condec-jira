@@ -17,6 +17,9 @@ public enum DocumentationLocation {
 	 *            as a String.
 	 */
 	public static DocumentationLocation getDocumentationLocationFromIdentifier(String type) {
+		if(type == null) {
+			return DocumentationLocation.UNKNOWN;
+		}
 		switch (type.toLowerCase(Locale.ENGLISH)) {
 		case "i":
 			return DocumentationLocation.JIRAISSUE;
