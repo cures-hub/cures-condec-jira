@@ -22,17 +22,16 @@ public class DecisionMacro extends BaseMacro {
 	}
 
 	@Override
-	public String execute(Map<String, Object> parameters, String body, RenderContext renderContext){
-		if(!ConfigPersistenceManager.isKnowledgeExtractedFromIssues(IssueMacro.getProjectKey(renderContext))) {
+	public String execute(Map<String, Object> parameters, String body, RenderContext renderContext) {
+		if (!ConfigPersistenceManager.isKnowledgeExtractedFromIssues(IssueMacro.getProjectKey(renderContext))) {
 			return body;
 		}
 		if (Boolean.TRUE.equals(renderContext.getParam(IssueRenderContext.WYSIWYG_PARAM))) {
-			return "\\{decision}"+body+"\\{decision}";
-        }
+			return "\\{decision}" + body + "\\{decision}";
+		}
 		String newBody = IssueMacro.reformatCommentBody(body);
 		String icon = "<img src=\"" + ComponentGetter.getUrlOfImageFolder() + "decision.png" + "\">";
 		String contextMenuCall = IssueMacro.getContextMenuCall(renderContext, newBody, "Decision");
-		return icon + "<span "+contextMenuCall+" style =  \"background-color:#c5f2f9\">" + newBody + "</span>";
+		return icon + "<span " + contextMenuCall + " style =  \"background-color:#c5f2f9\">" + newBody + "</span>";
 	}
-
 }

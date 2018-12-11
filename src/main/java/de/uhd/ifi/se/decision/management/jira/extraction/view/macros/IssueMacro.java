@@ -1,5 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.view.macros;
 
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.issue.IssueImpl;
 import com.atlassian.jira.issue.fields.renderer.IssueRenderContext;
 import com.atlassian.renderer.RenderContext;
@@ -10,15 +15,9 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class IssueMacro extends BaseMacro {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(IssueMacro.class);
-
 
 	@Override
 	public boolean hasBody() {
@@ -43,9 +42,10 @@ public class IssueMacro extends BaseMacro {
 		String contextMenuCall = IssueMacro.getContextMenuCall(renderContext, newBody, "Issue");
 		return icon + "<span " + contextMenuCall + "style =  \"background-color:#F2F5A9\">" + newBody + "</span>";
 	}
-	
+
 	/**
 	 * Static function for other Macro Classes
+	 * 
 	 * @param inputBody
 	 * @return Body without html p tags
 	 */
@@ -63,6 +63,7 @@ public class IssueMacro extends BaseMacro {
 
 	/**
 	 * Static function for other Macro Classes
+	 * 
 	 * @param renderContext
 	 * @return
 	 */
@@ -72,6 +73,7 @@ public class IssueMacro extends BaseMacro {
 
 	/**
 	 * Static function for other Macro Classes
+	 * 
 	 * @param renderContext
 	 * @param body
 	 * @param type
@@ -85,7 +87,7 @@ public class IssueMacro extends BaseMacro {
 					getProjectKey(renderContext));
 		}
 		if (id == 0) {
-		//	LOGGER.debug("No sentence object found for: " + body);
+			// LOGGER.debug("No sentence object found for: " + body);
 			return "";
 		}
 		return "oncontextmenu=\"conDecContextMenu.createContextMenuForSentences(this.offsetLeft, this.offsetTop, " + id

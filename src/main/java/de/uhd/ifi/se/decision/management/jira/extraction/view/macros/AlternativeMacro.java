@@ -23,16 +23,15 @@ public class AlternativeMacro extends BaseMacro {
 
 	@Override
 	public String execute(Map<String, Object> parameters, String body, RenderContext renderContext) {
-		if(!ConfigPersistenceManager.isKnowledgeExtractedFromIssues(IssueMacro.getProjectKey(renderContext))) {
+		if (!ConfigPersistenceManager.isKnowledgeExtractedFromIssues(IssueMacro.getProjectKey(renderContext))) {
 			return body;
 		}
 		if (Boolean.TRUE.equals(renderContext.getParam(IssueRenderContext.WYSIWYG_PARAM))) {
-			return "\\{alternative}"+body+"\\{alternative}";
-        }
+			return "\\{alternative}" + body + "\\{alternative}";
+		}
 		String newBody = IssueMacro.reformatCommentBody(body);
 		String icon = "<img src=\"" + ComponentGetter.getUrlOfImageFolder() + "alternative.png" + "\">";
 		String contextMenuCall = IssueMacro.getContextMenuCall(renderContext, newBody, "Alternative");
-		return icon + "<span "+contextMenuCall+"style =  \"background-color:#f1ccf9\">" + newBody + "</span>";
+		return icon + "<span " + contextMenuCall + "style =  \"background-color:#f1ccf9\">" + newBody + "</span>";
 	}
-
 }

@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.view;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -59,13 +60,13 @@ public class TestMacro extends TestSetUpWithIssues {
 		IssueMacro fm = new IssueMacro();
 		assertEquals(RenderMode.allow(RenderMode.F_ALL), fm.getBodyRenderMode());
 		assertTrue(fm.hasBody());
-		String body = "<p>This is a issue</p>";
+		String body = "<p>This is an issue.</p>";
 		String result = fm.execute(null, body, issueView);
 		assertEquals(
-				"<img src=\"null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/issue.png\"><span style =  \"background-color:#F2F5A9\">This is a issue</span>",
+				"<img src=\"null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/issue.png\"><span style =  \"background-color:#F2F5A9\">This is an issue.</span>",
 				result);
 		result = fm.execute(null, body, wysiwygView);
-		assertEquals("\\{issue}<p>This is a issue</p>\\{issue}", result);
+		assertEquals("\\{issue}<p>This is an issue.</p>\\{issue}", result);
 	}
 
 	@Test
@@ -75,13 +76,13 @@ public class TestMacro extends TestSetUpWithIssues {
 		assertEquals(RenderMode.allow(RenderMode.F_ALL), fm.getBodyRenderMode());
 		assertTrue(fm.hasBody());
 
-		String body = "<p>This is a issue</p>";
+		String body = "<p>This is a decision.</p>";
 		String result = fm.execute(null, body, issueView);
 		assertEquals(
-				"<img src=\"null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/decision.png\"><span  style =  \"background-color:#c5f2f9\">This is a issue</span>",
+				"<img src=\"null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/decision.png\"><span  style =  \"background-color:#c5f2f9\">This is a decision.</span>",
 				result);
 		result = fm.execute(null, body, wysiwygView);
-		assertEquals("\\{decision}<p>This is a issue</p>\\{decision}", result);
+		assertEquals("\\{decision}<p>This is a decision.</p>\\{decision}", result);
 
 	}
 
@@ -92,14 +93,14 @@ public class TestMacro extends TestSetUpWithIssues {
 		assertEquals(RenderMode.allow(RenderMode.F_ALL), fm.getBodyRenderMode());
 		assertTrue(fm.hasBody());
 
-		String body = "<p>This is a issue</p>";
+		String body = "<p>This is an alternative.</p>";
 
 		String result = fm.execute(null, body, issueView);
 		assertEquals(
-				"<img src=\"null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/alternative.png\"><span style =  \"background-color:#f1ccf9\">This is a issue</span>",
+				"<img src=\"null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/alternative.png\"><span style =  \"background-color:#f1ccf9\">This is an alternative.</span>",
 				result);
 		result = fm.execute(null, body, wysiwygView);
-		assertEquals("\\{alternative}<p>This is a issue</p>\\{alternative}", result);
+		assertEquals("\\{alternative}<p>This is an alternative.</p>\\{alternative}", result);
 	}
 
 	@Test
@@ -109,19 +110,17 @@ public class TestMacro extends TestSetUpWithIssues {
 		assertEquals(RenderMode.allow(RenderMode.F_ALL), fm.getBodyRenderMode());
 		assertTrue(fm.hasBody());
 
-		String body = "<p>This is a issue</p>";
+		String body = "<p>This is a supporting argument.</p>";
 
 		String result = fm.execute(null, body, issueView);
 		assertEquals(
-				"<img src=\"null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/argument_pro.png\"><span style =  \"background-color:#b9f7c0\">This is a issue</span>",
+				"<img src=\"null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/argument_pro.png\"><span style =  \"background-color:#b9f7c0\">This is a supporting argument.</span>",
 				result);
 
 		result = fm.execute(null, body, wysiwygView);
-		assertEquals("\\{pro}<p>This is a issue</p>\\{pro}", result);
+		assertEquals("\\{pro}<p>This is a supporting argument.</p>\\{pro}", result);
 
 	}
-
-
 
 	@Test
 	public void testConMacro() {
@@ -130,14 +129,14 @@ public class TestMacro extends TestSetUpWithIssues {
 		assertEquals(RenderMode.allow(RenderMode.F_ALL), fm.getBodyRenderMode());
 		assertTrue(fm.hasBody());
 
-		String body = "<p>This is a issue</p>";
+		String body = "<p>This is an attacking argument.</p>";
 
 		String result = fm.execute(null, body, issueView);
 		assertEquals(
-				"<img src=\"null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/argument_con.png\"><span style =  \"background-color:#ffdeb5\">This is a issue</span>",
+				"<img src=\"null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/argument_con.png\"><span style =  \"background-color:#ffdeb5\">This is an attacking argument.</span>",
 				result);
 
 		result = fm.execute(null, body, wysiwygView);
-		assertEquals("\\{con}<p>This is a issue</p>\\{con}", result);
+		assertEquals("\\{con}<p>This is an attacking argument.</p>\\{con}", result);
 	}
 }
