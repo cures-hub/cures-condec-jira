@@ -46,7 +46,7 @@
 			var description = document.getElementById("form-input-description").value;
 			var type = $("select[name='form-select-type']").val();
 			var documentationLocation = $("select[name='form-select-location']").val();
-			conDecAPI.createDecisionKnowledgeElementAsChild(summary, description, type, documentationLocation,
+			conDecAPI.createDecisionKnowledgeElement(summary, description, type, documentationLocation,
 					idOfParentElement, documentationLocationOfParentElement, function() {
 						conDecObservable.notify();
 					});

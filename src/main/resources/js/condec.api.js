@@ -84,27 +84,31 @@
 	};
 
 	/*
-	 * external references: view.condec.knowledge.page
+	 * external references: view.condec.knowledge.page, condec.dialog
 	 */
-	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElement(summary, description,
-			type, documentationLocation, idOfParentElement, callback) {
-		var element = {
-			"projectKey" : projectKey,
+	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElementAsChild(summary,
+			description, type, documentationLocation, idOfExistingElement, documentationLocationOfExistingElement,
+			callback) {
+		console.log("conDecAPI createDecisionKnowledgeElementAsChild");
+		var newElement = {
 			"summary" : summary,
 			"type" : type,
+			"projectKey" : projectKey,
 			"description" : description,
 			"documentationLocation" : documentationLocation,
-			"id" : idOfParentElement
 		};
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createDecisionKnowledgeElement.json", element,
-				function(error, decisionKnowledgeElement) {
-					if (error === null) {
-						showFlag("success", type + " has been created.");
-						callback(decisionKnowledgeElement.id);
-					} else {
-						showFlag("error", type + " has not been created. Error Code: " + error);
-					}
-				});
+
+		postJSON(AJS.contextPath()
+				+ "/rest/decisions/latest/decisions/createDecisionKnowledgeElement.json?idOfExistingElement="
+				+ idOfExistingElement + "&documentationLocationOfExistingElement="
+				+ documentationLocationOfExistingElement, newElement, function(error, newElement) {
+			if (error === null) {
+				showFlag("success", type + " and link have been created.");
+				callback(newElement.id);
+			} else {
+				showFlag("error", type + " and link have not been created. Error Code: " + error);
+			}
+		});
 	};
 
 	/*
@@ -226,33 +230,6 @@
 					documentationLocationOfExistingElement);
 		}
 	}
-
-	/*
-	 * external references: condec.dialog
-	 */
-	ConDecAPI.prototype.createDecisionKnowledgeElementAsChild = function createDecisionKnowledgeElementAsChild(summary,
-			description, type, documentationLocation, idOfExistingElement, documentationLocationOfExistingElement,
-			callback) {
-		console.log("conDecAPI createDecisionKnowledgeElementAsChild");
-		var newElement = {
-			"summary" : summary,
-			"type" : type,
-			"projectKey" : projectKey,
-			"description" : description,
-			"documentationLocation" : documentationLocation,
-		};
-
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createDecisionKnowledgeElementAsChild.json?id="
-				+ idOfExistingElement + "&documentationLocationOfExistingElement="
-				+ documentationLocationOfExistingElement, newElement, function(error, newElement) {
-			if (error === null) {
-				showFlag("success", type + " and link have been created.");
-				callback(newElement.id);
-			} else {
-				showFlag("error", type + " and link have not been created. Error Code: " + error);
-			}
-		});
-	};
 
 	/*
 	 * external references: condec.dialog TODO: This is currently not working if

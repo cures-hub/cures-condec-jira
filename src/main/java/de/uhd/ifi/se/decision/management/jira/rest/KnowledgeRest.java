@@ -101,41 +101,11 @@ public class KnowledgeRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createDecisionKnowledgeElement(@Context HttpServletRequest request,
-			DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (decisionKnowledgeElement != null && request != null) {
-			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
-
-			ApplicationUser user = AuthenticationManager.getUser(request);
-			DecisionKnowledgeElement decisionKnowledgeElementWithId = null;
-
-			if (decisionKnowledgeElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
-				decisionKnowledgeElementWithId = ActiveObjectsManager.addNewCommentToJIRAIssue(decisionKnowledgeElement,
-						user);
-			} else {
-				decisionKnowledgeElementWithId = strategy.insertDecisionKnowledgeElement(decisionKnowledgeElement,
-						user);
-			}
-
-			if (decisionKnowledgeElementWithId != null) {
-				return Response.status(Status.OK).entity(decisionKnowledgeElementWithId).build();
-			}
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
-		} else {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
-		}
-	}
-
-	@Path("/createDecisionKnowledgeElementAsChild")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createDecisionKnowledgeElementAsChild(@Context HttpServletRequest request,
-			@QueryParam("id") long idOfExistingElement,
+			@QueryParam("idOfExistingElement") long idOfExistingElement,
 			@QueryParam("documentationLocationOfExistingElement") String documentationLocationOfExistingElement,
 			DecisionKnowledgeElement newElement) {
 		if (newElement != null && request != null) {
+			System.out.println(idOfExistingElement);
 			String projectKey = newElement.getProject().getProjectKey();
 			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
 
@@ -158,6 +128,10 @@ public class KnowledgeRest {
 			}
 
 			if (newElementWithId != null) {
+
+				if (idOfExistingElement == 0) {
+					return Response.status(Status.OK).entity(newElementWithId).build();
+				}
 
 				LinkType linkType = LinkType.getLinkType(newElement.getType());
 				Link link = Link.instantiateDirectedLink(existingElement, newElementWithId, linkType);
