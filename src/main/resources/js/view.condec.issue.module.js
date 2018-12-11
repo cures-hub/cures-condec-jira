@@ -27,7 +27,7 @@
 
 	ConDecIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog, _conDecContextMenu,
 			_treant, _i18n) {
-		console.log("view.issue.module init");
+		console.log("view.condec.issue.module init");
 
 		// TODO: Add i18n support and check i18n
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
@@ -53,18 +53,20 @@
 	};
 
 	ConDecIssueModule.prototype.initView = function initView() {
-		console.log("view.issue.module initView");
-
-		updateView(treant);
+		console.log("view.condec.issue.module initView");
+		var issueKey = conDecAPI.getIssueKey();
+		var search = getURLsSearch();
+		treant.buildTreant(issueKey, true, search);
 	};
 
 	ConDecIssueModule.prototype.updateView = function() {
-		updateView(treant);
+		console.log("view.condec.issue.module updateView");
+		JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
 	};
 
 	// for view.context.menu
 	ConDecIssueModule.prototype.setAsRootElement = function setAsRootElement(id) {
-		console.log("view.issue.module setAsRootElement", id);
+		console.log("view.condec.issue.module setAsRootElement", id);
 		conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
 			var baseUrl = AJS.params.baseURL;
 			var key = decisionKnowledgeElement.key;
@@ -73,22 +75,15 @@
 	};
 
 	function addOnClickEventToExportAsTable() {
-		console.log("view.issue.module addOnClickEventToExportAsTable");
+		console.log("view.condec.issue.module addOnClickEventToExportAsTable");
 
 		var exportMenuItem = document.getElementById("export-as-table-link");
 		exportMenuItem.addEventListener("click", function(e) {
 			e.preventDefault();
 			e.stopPropagation();
-			console.log("view.issue.module exportDecisionKnowledge");
+			console.log("view.condec.issue.module exportDecisionKnowledge");
 			AJS.dialog2("#export-dialog").show();
 		});
-	}
-
-	function updateView(treant) {
-		console.log("view.issue.module updateView");
-		var issueKey = conDecAPI.getIssueKey();
-		var search = getURLsSearch();
-		treant.buildTreant(issueKey, true, search);
 	}
 
 	/*
