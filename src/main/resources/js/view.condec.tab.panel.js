@@ -40,9 +40,13 @@
 		return true;
 	};
 
+	ConDecIssueTab.prototype.fetchAndRender = function() {
+		buildTreeViewer([ true, true, true, true, true ]);
+	};
+
 	/* triggered by onchange event in tabPanel.vm */
 	function toggleSelectedDecisionElements() {
-		console.log("view.tab.panel.js toggleSelectedDecisionElements");
+		console.log("view.condec.tab.panel toggleSelectedDecisionElements");
 
 		var decisionElements = [ "Issue", "Decision", "Alternative", "Argument", "Relevant" ];
 		var checked = [];
@@ -53,6 +57,13 @@
 		}
 		return checked;
 	}
+
+	ConDecIssueTab.prototype.updateView = function updateView() {
+		console.log("view.condec.tab.panel updateView");
+		treeViewer.resetTreeViewer();
+		var checked = toggleSelectedDecisionElements();
+		buildTreeViewer(checked);
+	};
 
 	/*
 	 called by
@@ -94,19 +105,7 @@
 		}
 	}
 
-	function updateView() {
-		console.log("view.tabPanel updateView");
-		treeViewer.resetTreeViewer();
-		var checked = toggleSelectedDecisionElements();
-		buildTreeViewer(checked);
-	}
-
-	ConDecIssueTab.prototype.fetchAndRender = function() {
-		buildTreeViewer([ true, true, true, true, true ]);
-	};
-
 	// Expose methods:
-	ConDecIssueTab.prototype.updateView = updateView;
 	// for tabPanel.vm
 	ConDecIssueTab.prototype.toggleSelectedDecisionElements = toggleSelectedDecisionElements;
 	// for view.context.menu.js

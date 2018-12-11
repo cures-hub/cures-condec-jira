@@ -21,7 +21,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:clas
 				for="Argument">Argument</label></td>
 			<td><input type="checkbox" id="Relevant" name="feature"
 				value="scales" onchange='conDecIssueTab.updateView()' checked /> <label
-				for="Irrelevant">Relevant</label></td>
+				for="Irrelevant">Irrelevant</label></td>
 		</tr>
 	</tbody>
 </table>
