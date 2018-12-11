@@ -464,19 +464,23 @@ public class ActiveObjectsManager {
 		}
 		return elements;
 	}
-	
+
 	/**
-	 * Works more efficient than "getElementsForIssue" for Sentence ID searching in Macros
+	 * Works more efficient than "getElementsForIssue" for Sentence ID searching in
+	 * Macros
+	 * 
 	 * @param issueId
 	 * @param projectKey
 	 * @param type
 	 * @return A list of all fitting Sentence objects
 	 */
-	public static List<DecisionKnowledgeElement> getElementsForIssueWithType(long issueId, String projectKey, String type) {
+	public static List<DecisionKnowledgeElement> getElementsForIssueWithType(long issueId, String projectKey,
+			String type) {
 		init();
 		List<DecisionKnowledgeElement> elements = new ArrayList<>();
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ? AND KNOWLEDGE_TYPE_STRING = ?", projectKey, issueId, type))) {
+				Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ? AND KNOWLEDGE_TYPE_STRING = ?", projectKey,
+						issueId, type))) {
 			elements.add(new SentenceImpl(databaseEntry));
 		}
 		return elements;
@@ -694,9 +698,10 @@ public class ActiveObjectsManager {
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
 		if (issue != null) {
 			String macro = getMacro(decisionKnowledgeElement, argument);
-			String text = macro + decisionKnowledgeElement.getSummary() + "\n" + decisionKnowledgeElement.getDescription() + macro;
+			String text = macro + decisionKnowledgeElement.getSummary() + "\n"
+					+ decisionKnowledgeElement.getDescription() + macro;
 			com.atlassian.jira.issue.comments.Comment comment = ComponentAccessor.getCommentManager().create(issue,
-					user,  text, false);
+					user, text, false);
 			Comment com = new CommentImpl(comment, true);
 			for (Sentence sentence : com.getSentences()) {
 				GenericLinkManager.deleteLinksForElement("s" + sentence.getId());
@@ -713,8 +718,8 @@ public class ActiveObjectsManager {
 
 	private static long getIssueId(DecisionKnowledgeElement decisionKnowledgeElement) {
 		long issueId = decisionKnowledgeElement.getId();
-		if(decisionKnowledgeElement.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUECOMMENT)) {
-			Sentence element = (Sentence)ActiveObjectsManager.getElementFromAO(decisionKnowledgeElement.getId());
+		if (decisionKnowledgeElement.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUECOMMENT)) {
+			Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(decisionKnowledgeElement.getId());
 			issueId = element.getIssueId();
 		}
 		return issueId;
@@ -731,16 +736,16 @@ public class ActiveObjectsManager {
 		}
 		return macro;
 	}
-	
 
 	public static long getIdOfSentenceForMacro(String body, Long issueId, String typeString, String projectKey) {
 		init();
 		List<DecisionKnowledgeElement> sentences = ActiveObjectsManager.getElementsForIssueWithType(issueId, projectKey,typeString);
 		for(DecisionKnowledgeElement sentence: sentences) {
-			if(sentence.getDescription().equals(body)) {
+			if(sentence.getDescription().trim().equals(body.trim().replaceAll("<[^>]*>", ""))) {
 				return sentence.getId();
 			}
 		}
+		LOGGER.debug("Nothing found for: "+body.replace("<br/>", "").trim() );
 		return 0;
 	}
 

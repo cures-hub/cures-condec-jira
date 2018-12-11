@@ -12,7 +12,13 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class IssueMacro extends BaseMacro {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(IssueMacro.class);
+
 
 	@Override
 	public boolean hasBody() {
@@ -79,6 +85,7 @@ public class IssueMacro extends BaseMacro {
 					getProjectKey(renderContext));
 		}
 		if (id == 0) {
+		//	LOGGER.debug("No sentence object found for: " + body);
 			return "";
 		}
 		return "oncontextmenu=\"conDecContextMenu.createContextMenuForSentences(this.offsetLeft, this.offsetTop, " + id
