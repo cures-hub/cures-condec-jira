@@ -29,8 +29,6 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 public class TestEditSentenceBody extends TestKnowledgeRestSetUp {
 
 	private final static String CREATION_ERROR = "Update of decision knowledge element failed.";
-	
-	
 
 	@Test
 	@NonTransactional
@@ -71,17 +69,16 @@ public class TestEditSentenceBody extends TestKnowledgeRestSetUp {
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.editSentenceBody(request, decisionKnowledgeElement, "pro").getStatus());
 	}
-	
-	
+
 	@Test
 	@NonTransactional
-	public void testRequestF€illedElementFilledButNotExisting() {
+	public void testRequestFilledElementFilledButNotExisting() {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
 		assertEquals(500, knowledgeRest.setSentenceIrrelevant(request, decisionKnowledgeElement).getStatus());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledWithCommentChaned() {
@@ -95,7 +92,7 @@ public class TestEditSentenceBody extends TestKnowledgeRestSetUp {
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.editSentenceBody(request, decisionKnowledgeElement, "pro").getStatus());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledWithCommentChanedCheckValidText() {
@@ -118,7 +115,7 @@ public class TestEditSentenceBody extends TestKnowledgeRestSetUp {
 	public void testRequestFilledElementFilledWithCommentChanedCheckValidTextWithManuallTaggedComment() {
 		String newText = "some fancy new text";
 		request.setAttribute("WithFails", false);
-		request.setAttribute("NoFails", true); 
+		request.setAttribute("NoFails", true);
 		TestComment tc = new TestComment();
 		Comment comment = tc.getComment("{issue}this is atest sentence{Issue}");
 		decisionKnowledgeElement = comment.getSentences().get(0);
@@ -126,11 +123,12 @@ public class TestEditSentenceBody extends TestKnowledgeRestSetUp {
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.editSentenceBody(request, decisionKnowledgeElement, "pro").getStatus());
-		Sentence sentence =(Sentence) ActiveObjectsManager.getElementFromAO(decisionKnowledgeElement.getId());
+		Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(decisionKnowledgeElement.getId());
 		assertEquals(newText, sentence.getBody());
-		
-		MutableComment mc = (MutableComment) ComponentAccessor.getCommentManager().getCommentById(sentence.getCommentId());
-		assertEquals("{Issue}some fancy new text{Issue}",mc.getBody());
-		
+
+		MutableComment mc = (MutableComment) ComponentAccessor.getCommentManager()
+				.getCommentById(sentence.getCommentId());
+		assertEquals("{Issue}some fancy new text{Issue}", mc.getBody());
+
 	}
 }

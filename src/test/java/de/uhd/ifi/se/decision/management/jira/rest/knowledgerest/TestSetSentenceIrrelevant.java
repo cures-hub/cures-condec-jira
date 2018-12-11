@@ -37,7 +37,7 @@ public class TestSetSentenceIrrelevant extends TestKnowledgeRestSetUp {
 	@NonTransactional
 	public void testRequestNullElementFilled() {
 		TestComment tc = new TestComment();
-		Comment comment = tc.getComment("this is atest sentence");
+		Comment comment = tc.getComment("This is a test sentence.");
 		decisionKnowledgeElement = comment.getSentences().get(0);
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 				.getEntity(), knowledgeRest.setSentenceIrrelevant(null, decisionKnowledgeElement).getEntity());
@@ -58,7 +58,7 @@ public class TestSetSentenceIrrelevant extends TestKnowledgeRestSetUp {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
 		TestComment tc = new TestComment();
-		Comment comment = tc.getComment("this is atest sentence");
+		Comment comment = tc.getComment("This is a test sentence.");
 		decisionKnowledgeElement = comment.getSentences().get(0);
 		decisionKnowledgeElement.setType(KnowledgeType.ALTERNATIVE);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());

@@ -2,9 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.view.macros;
 
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.atlassian.jira.issue.IssueImpl;
 import com.atlassian.jira.issue.fields.renderer.IssueRenderContext;
 import com.atlassian.renderer.RenderContext;
@@ -16,8 +13,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjec
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class IssueMacro extends BaseMacro {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(IssueMacro.class);
 
 	@Override
 	public boolean hasBody() {

@@ -395,9 +395,14 @@ public class ActiveObjectsManager {
 		if (sentence.getKnowledgeTypeString() == null || sentence.getKnowledgeTypeString().equalsIgnoreCase("Other")) {
 			return;
 		}
-		CommentManager cm = ComponentAccessor.getCommentManager();
-		MutableComment mc = (MutableComment) cm.getMutableComment(sentence.getCommentId());
-		String newBody = mc.getBody().substring(sentence.getStartSubstringCount(), sentence.getEndSubstringCount());
+		CommentManager commentManager = ComponentAccessor.getCommentManager();
+		MutableComment mutableComment = (MutableComment) commentManager.getMutableComment(sentence.getCommentId());
+		String newBody = "";
+		try {
+			newBody = mutableComment.getBody().substring(sentence.getStartSubstringCount(), sentence.getEndSubstringCount());
+		} catch(StringIndexOutOfBoundsException e) {
+			return;
+		}		
 		int oldlength = newBody.length();
 		int oldEnd = sentence.getEndSubstringCount();
 		newBody = newBody.replaceAll("\\{.*?\\}", "");
@@ -408,15 +413,14 @@ public class ActiveObjectsManager {
 
 		int lengthDiff = newBody.length() - oldlength;
 		DecXtractEventListener.editCommentLock = true;
-		String first = mc.getBody().substring(0, sentence.getStartSubstringCount());
+		String first = mutableComment.getBody().substring(0, sentence.getStartSubstringCount());
 		String second = newBody;
-		String third = mc.getBody().substring(oldEnd);
-		mc.setBody(first + second + third);
-		cm.update(mc, true);
+		String third = mutableComment.getBody().substring(oldEnd);
+		mutableComment.setBody(first + second + third);
+		commentManager.update(mutableComment, true);
 		DecXtractEventListener.editCommentLock = false;
 		updateSentenceLengthForOtherSentencesInSameComment(sentence.getCommentId(), sentence.getStartSubstringCount(),
 				lengthDiff, sentence.getId());
-		;
 	}
 
 	public static boolean updateSentenceBodyWhenCommentChanged(long commentId, long aoId, String description) {
