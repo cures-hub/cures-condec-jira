@@ -60,8 +60,6 @@ public class Data {
 	public Data(DecisionKnowledgeElement decisionKnowledgeElement, Link link) {
 		this(decisionKnowledgeElement);
 		this.icon = KnowledgeType.getIconUrl(decisionKnowledgeElement, link.getType());
-		if (decisionKnowledgeElement instanceof Sentence) {
-		}
 	}
 
 	public String getId() {

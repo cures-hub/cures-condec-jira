@@ -101,9 +101,9 @@ public class KnowledgeRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createDecisionKnowledgeElement(@Context HttpServletRequest request,
+			DecisionKnowledgeElement newElement,
 			@QueryParam("idOfExistingElement") long idOfExistingElement,
-			@QueryParam("documentationLocationOfExistingElement") String documentationLocationOfExistingElement,
-			DecisionKnowledgeElement newElement) {
+			@QueryParam("documentationLocationOfExistingElement") String documentationLocationOfExistingElement) {
 		if (newElement == null || request == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();

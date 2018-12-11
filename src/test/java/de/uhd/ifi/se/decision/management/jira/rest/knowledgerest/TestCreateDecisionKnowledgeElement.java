@@ -24,56 +24,106 @@ public class TestCreateDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
 	private final static String CREATION_ERROR = "Creation of decision knowledge element failed.";
 
 	@Test
-	public void testRequestNullElementNull() {
+	public void testRequestNullElementNullParentIdZeroParentDocumentationLocationNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createDecisionKnowledgeElement(null, 0, null, null).getEntity());
+				.getEntity(), knowledgeRest.createDecisionKnowledgeElement(null, null, 0, null).getEntity());
 	}
 
 	@Test
-	public void testRequestNullElementFilled() {
+	public void testRequestNullElementFilledParentIdZeroParentDocumentationLocationNull() {
 		assertEquals(
 				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
 						.getEntity(),
-				knowledgeRest.createDecisionKnowledgeElement(null, 0, null, decisionKnowledgeElement).getEntity());
+				knowledgeRest.createDecisionKnowledgeElement(null, decisionKnowledgeElement, 0, null).getEntity());
 	}
 
 	@Test
-	public void testRequestFilledElementNull() {
+	public void testRequestFilledElementNullParentIdZeroParentDocumentationLocationNull() {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createDecisionKnowledgeElement(request, 0, null, null).getEntity());
+				.getEntity(), knowledgeRest.createDecisionKnowledgeElement(request, null, 0, null).getEntity());
 	}
 
 	@Test
 	@NonTransactional
-	public void testRequestFilledElementFilled() {
+	public void testRequestFilledElementFilledParentIdZeroParentDocumentationLocationNull() {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createDecisionKnowledgeElement(request, 0, null, decisionKnowledgeElement).getStatus());
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, null).getStatus());
 	}
-
+	
 	@Test
 	@NonTransactional
-	public void testRequestFilledElementFilledWithArgument() {
+	public void testRequestFilledElementFilledWithProArgumentParentIdZeroParentDocumentationLocationNull() {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
 		decisionKnowledgeElement.setType("Pro-argument");
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createDecisionKnowledgeElement(request, 0, null, decisionKnowledgeElement).getStatus());
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, null).getStatus());
 	}
 
 	@Test
 	@NonTransactional
-	public void testRequestFilledElementFilledWithConArgument() {
+	public void testRequestFilledElementFilledWithConArgumentParentIdZeroParentDocumentationLocationNull() {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
 		decisionKnowledgeElement.setType("Con-argument");
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createDecisionKnowledgeElement(request, 0, null, decisionKnowledgeElement).getStatus());
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, null).getStatus());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testRequestFilledElementFilledParentIdFilledParentDocumentationLocationFilled() {
+		request.setAttribute("WithFails", false);
+		request.setAttribute("NoFails", true);
+		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
+		assertEquals(Status.OK.getStatusCode(),
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 2, "i").getStatus());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testRequestFilledElementFilledParentIdZeroParentDocumentationLocationJiraIssue() {
+		request.setAttribute("WithFails", false);
+		request.setAttribute("NoFails", true);
+		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
+		assertEquals(Status.OK.getStatusCode(),
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "i").getStatus());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testRequestFilledElementFilledParentIdFilledParentDocumentationLocationEmpty() {
+		request.setAttribute("WithFails", false);
+		request.setAttribute("NoFails", true);
+		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
+		assertEquals(Status.OK.getStatusCode(),
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 2, "").getStatus());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testRequestFilledElementFilledParentIdFilledParentDocumentationLocationNull() {
+		request.setAttribute("WithFails", false);
+		request.setAttribute("NoFails", true);
+		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
+		assertEquals(Status.OK.getStatusCode(),
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 2, null).getStatus());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testRequestFilledElementFilledParentIdFilledParentDocumentationLocationJiraIssueComment() {
+		request.setAttribute("WithFails", false);
+		request.setAttribute("NoFails", true);
+		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
+		assertEquals(Status.OK.getStatusCode(),
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 2, "s").getStatus());
 	}
 }
