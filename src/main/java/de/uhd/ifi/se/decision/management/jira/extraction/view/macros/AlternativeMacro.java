@@ -31,7 +31,8 @@ public class AlternativeMacro extends BaseMacro {
         }
 		String newBody = IssueMacro.reformatCommentBody(body);
 		String icon = "<img src=\"" + ComponentGetter.getUrlOfImageFolder() + "alternative.png" + "\">";
-		return icon + "<span style =  \"background-color:#f1ccf9\">" + newBody + "</span>";
+		String contextMenuCall = IssueMacro.getContextMenuCall(renderContext, newBody, "Alternative");
+		return icon + "<span "+contextMenuCall+"style =  \"background-color:#f1ccf9\">" + newBody + "</span>";
 	}
 
 }

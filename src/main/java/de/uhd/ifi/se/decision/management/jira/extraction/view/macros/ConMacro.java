@@ -23,7 +23,8 @@ public class ConMacro extends BaseMacro {
 
 	@Override
 	public String execute(Map<String, Object> parameters, String body, RenderContext renderContext){
-		if(!ConfigPersistenceManager.isKnowledgeExtractedFromIssues(IssueMacro.getProjectKey(renderContext))) {
+		String projectKey = IssueMacro.getProjectKey(renderContext);
+		if(!ConfigPersistenceManager.isKnowledgeExtractedFromIssues(projectKey)) {
 			return body;
 		}
 		if (Boolean.TRUE.equals(renderContext.getParam(IssueRenderContext.WYSIWYG_PARAM))) {
@@ -31,7 +32,8 @@ public class ConMacro extends BaseMacro {
         }
 		String newBody  = IssueMacro.reformatCommentBody(body);
 		String icon = "<img src=\"" + ComponentGetter.getUrlOfImageFolder() + "argument_con.png" + "\">";
-		return icon + "<span style =  \"background-color:#ffdeb5\">" + newBody + "</span>";
+		String contextMenuCall = IssueMacro.getContextMenuCall(renderContext, newBody, "Con");
+		return icon + "<span "+contextMenuCall+"style =  \"background-color:#ffdeb5\">" + newBody + "</span>";
 	}
 
 }

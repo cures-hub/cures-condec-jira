@@ -31,7 +31,8 @@ public class DecisionMacro extends BaseMacro {
         }
 		String newBody = IssueMacro.reformatCommentBody(body);
 		String icon = "<img src=\"" + ComponentGetter.getUrlOfImageFolder() + "decision.png" + "\">";
-		return icon + "<span style =  \"background-color:#c5f2f9\">" + newBody + "</span>";
+		String contextMenuCall = IssueMacro.getContextMenuCall(renderContext, newBody, "Decision");
+		return icon + "<span "+contextMenuCall+" style =  \"background-color:#c5f2f9\">" + newBody + "</span>";
 	}
 
 }

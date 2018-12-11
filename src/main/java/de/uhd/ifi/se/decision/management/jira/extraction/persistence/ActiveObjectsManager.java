@@ -462,7 +462,23 @@ public class ActiveObjectsManager {
 				Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ?", projectKey, issueId))) {
 			elements.add(new SentenceImpl(databaseEntry));
 		}
-
+		return elements;
+	}
+	
+	/**
+	 * Works more efficient than "getElementsForIssue" for Sentence ID searching in Macros
+	 * @param issueId
+	 * @param projectKey
+	 * @param type
+	 * @return A list of all fitting Sentence objects
+	 */
+	public static List<DecisionKnowledgeElement> getElementsForIssueWithType(long issueId, String projectKey, String type) {
+		init();
+		List<DecisionKnowledgeElement> elements = new ArrayList<>();
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ? AND KNOWLEDGE_TYPE_STRING = ?", projectKey, issueId, type))) {
+			elements.add(new SentenceImpl(databaseEntry));
+		}
 		return elements;
 	}
 
@@ -714,6 +730,18 @@ public class ActiveObjectsManager {
 			}
 		}
 		return macro;
+	}
+	
+
+	public static long getIdOfSentenceForMacro(String body, Long issueId, String typeString, String projectKey) {
+		init();
+		List<DecisionKnowledgeElement> sentences = ActiveObjectsManager.getElementsForIssueWithType(issueId, projectKey,typeString);
+		for(DecisionKnowledgeElement sentence: sentences) {
+			if(sentence.getDescription().equals(body)) {
+				return sentence.getId();
+			}
+		}
+		return 0;
 	}
 
 }

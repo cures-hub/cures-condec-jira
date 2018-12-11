@@ -78,7 +78,7 @@ public class TestMacro extends TestSetUpWithIssues {
 		String body = "<p>This is a issue</p>";
 		String result = fm.execute(null, body, issueView);
 		assertEquals(
-				"<img src=\"null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/decision.png\"><span style =  \"background-color:#c5f2f9\">This is a issue</span>",
+				"<img src=\"null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/decision.png\"><span  style =  \"background-color:#c5f2f9\">This is a issue</span>",
 				result);
 		result = fm.execute(null, body, wysiwygView);
 		assertEquals("\\{decision}<p>This is a issue</p>\\{decision}", result);

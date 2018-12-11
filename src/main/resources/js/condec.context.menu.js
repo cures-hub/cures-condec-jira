@@ -104,57 +104,67 @@
 			var parentId = conDecTreant.findParentId(id);
 			conDecAPI.deleteLink(parentId, id, "i", "s", conDecAPI.setSentenceIrrelevant(id, function() {
 				conDecObservable.notify();
+				JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
 			}), false);
 			conDecAPI.deleteLink(parentId, id, "s", "s", conDecAPI.setSentenceIrrelevant(id, function() {
 				conDecObservable.notify();
+				JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
 			}), false);
 		};
 
 		document.getElementById("condec-context-menu-sentence-convert-item").onclick = function() {
 			conDecAPI.createIssueFromSentence(id, function() {
 				conDecObservable.notify();
+				 JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
 			});
 		};
 
 		document.getElementById("condec-context-menu-sentence-irrelevant-item").onclick = function() {
 			conDecAPI.setSentenceIrrelevant(id, function() {
 				conDecObservable.notify();
+				 JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
 			});
 		};
 
 		document.getElementById("condec-context-menu-sentence-issue-item").onclick = function() {
 			conDecAPI.changeKnowledgeTypeOfSentence(id, "Issue", function() {
 				conDecObservable.notify();
+				 JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
 			});
 		};
 
 		document.getElementById("condec-context-menu-sentence-decision-item").onclick = function() {
 			conDecAPI.changeKnowledgeTypeOfSentence(id, "Decision", function() {
 				conDecObservable.notify();
+				JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
 			});
 		};
 
 		document.getElementById("condec-context-menu-sentence-alternative-item").onclick = function() {
 			conDecAPI.changeKnowledgeTypeOfSentence(id, "Alternative", function() {
 				conDecObservable.notify();
+				JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
 			});
 		};
 
 		document.getElementById("condec-context-menu-sentence-pro-item").onclick = function() {
 			conDecAPI.changeKnowledgeTypeOfSentence(id, "Pro", function() {
 				conDecObservable.notify();
+				 JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
 			});
 		};
 
 		document.getElementById("condec-context-menu-sentence-con-item").onclick = function() {
 			conDecAPI.changeKnowledgeTypeOfSentence(id, "Con", function() {
 				conDecObservable.notify();
+				 JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
 			});
 		};
 
 		document.getElementById("condec-context-menu-sentence-delete-item").onclick = function() {
 			conDecAPI.deleteSentenceObject2(id, function() {
 				conDecObservable.notify();
+				 JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
 			});
 		};
 	};
@@ -167,6 +177,7 @@
 			view = document.getElementsByClassName("issue-view")[0];
 		}
 		if (view !== null) {
+			console.log("add "+view.scrollTop + " to "+ posY)
 			posY = posY + view.scrollTop;
 		}
 		return posY;

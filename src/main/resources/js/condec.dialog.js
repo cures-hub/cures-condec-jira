@@ -365,6 +365,7 @@
 			conDecAPI.editSentenceBody(id, description, type, function() {
 				AJS.dialog2("#dialog").hide();
 				conDecObservable.notify();
+				JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
 			});
 		};
 		AJS.$("#form-select-type").auiSelect2();

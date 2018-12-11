@@ -33,7 +33,8 @@ public class ProMacro extends BaseMacro {
 		System.out.println(IssueMacro.getProjectKey(renderContext));
 		String newBody = IssueMacro.reformatCommentBody(body);
 		String icon = "<img src=\"" + ComponentGetter.getUrlOfImageFolder() + "argument_pro.png" + "\">";
-		return icon + "<span style =  \"background-color:#b9f7c0\">" + newBody + "</span>";
+		String contextMenuCall = IssueMacro.getContextMenuCall(renderContext, newBody, "Pro");
+		return icon + "<span "+contextMenuCall+"style =  \"background-color:#b9f7c0\">" + newBody + "</span>";
 	}
 
 }
