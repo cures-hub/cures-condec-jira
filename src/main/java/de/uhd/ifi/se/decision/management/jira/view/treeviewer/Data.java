@@ -8,7 +8,6 @@ import javax.xml.bind.annotation.XmlElement;
 
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -44,7 +43,7 @@ public class Data {
 	}
 
 	public Data(DecisionKnowledgeElement decisionKnowledgeElement) {
-		this.id = "tv"+ String.valueOf(decisionKnowledgeElement.getId());
+		this.id = "tv" + String.valueOf(decisionKnowledgeElement.getId());
 		this.text = decisionKnowledgeElement.getSummary();
 		this.icon = KnowledgeType.getIconUrl(decisionKnowledgeElement);
 		this.nodeInfo = decisionKnowledgeElement;
@@ -55,7 +54,6 @@ public class Data {
 		this.li_attr = ImmutableMap.of("class", "issue");
 		if (decisionKnowledgeElement instanceof Sentence) {
 			this.li_attr = ImmutableMap.of("class", "sentence", "sid", "s" + decisionKnowledgeElement.getId());
-			checkTypeOfArgumentForSentenceEntity((Sentence) decisionKnowledgeElement);
 		}
 	}
 
@@ -63,16 +61,6 @@ public class Data {
 		this(decisionKnowledgeElement);
 		this.icon = KnowledgeType.getIconUrl(decisionKnowledgeElement, link.getType());
 		if (decisionKnowledgeElement instanceof Sentence) {
-			checkTypeOfArgumentForSentenceEntity((Sentence) decisionKnowledgeElement);
-		}
-	}
-
-	private void checkTypeOfArgumentForSentenceEntity(Sentence decisionKnowledgeElement) {
-		if (((Sentence) decisionKnowledgeElement).getArgument().equalsIgnoreCase("pro")) {
-			this.icon = ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
-		}
-		if (((Sentence) decisionKnowledgeElement).getArgument().equalsIgnoreCase("con")) {
-			this.icon = ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
 		}
 	}
 
@@ -93,7 +81,7 @@ public class Data {
 	}
 
 	public List<Data> getChildren() {
-		if(children == null) {
+		if (children == null) {
 			return new ArrayList<Data>();
 		}
 		return children;
