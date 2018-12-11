@@ -322,7 +322,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	private Map<String, Integer> getDecKnowElementsPerIssue() {
 		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
 
-		for (KnowledgeType type : KnowledgeType.getDefaulTypes()) {
+		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
 			String projectKey = projectManager.getProjectObj(this.projectId).getKey();
 			dkeCount.put(type.toString(), ActiveObjectsManager.getAllElementsFromAoByType(projectKey, type).size());
 		}

@@ -79,7 +79,7 @@
 			var summary = elementInputField.value;
 			var type = jQueryConDec("select[name='select-root-element-type']").val();
 			elementInputField.value = "";
-			conDecAPI.createDecisionKnowledgeElement(summary, "", type, "", function(id) {
+			conDecAPI.createDecisionKnowledgeElement(summary, "", type, "", 0, null, function(id) {
 				updateView(id, treant, treeViewer);
 			});
 		});

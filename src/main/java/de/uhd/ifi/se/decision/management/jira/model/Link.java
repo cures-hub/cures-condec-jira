@@ -149,6 +149,7 @@ public interface Link {
 
 	/**
 	 * Get the a new link with swapped source and destination elements.
+	 * 
 	 * @see DecisionKnowledgeElement
 	 * 
 	 * @return new link with swapped source and destination elements.
@@ -168,6 +169,35 @@ public interface Link {
 	 */
 	DecisionKnowledgeElement getOppositeElement(String elementIdWithPrefix);
 
+	/**
+	 * Get a link object with the correct direction: In case the child element is a
+	 * pro- or con-argument, the link points from the child towards the parent
+	 * element. In case the child element is NOT a pro- or con-argument, the link
+	 * points from the parent towards the child element.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see LinkType
+	 * @param childElement
+	 *            a decision knowledge element that is on one end of the link.
+	 * @param parentElement
+	 *            a decision knowledge element that is on one end of the link.
+	 * @param linkType
+	 *            the type of the link, either attack, support, or contain.
+	 * 
+	 * @return a link object.
+	 */
+	public static Link instantiateDirectedLink(DecisionKnowledgeElement parentElement,
+			DecisionKnowledgeElement childElement, LinkType linkType) {
+		switch (linkType) {
+		case ATTACK:
+			return new LinkImpl(childElement, parentElement, linkType);
+		case SUPPORT:
+			return new LinkImpl(childElement, parentElement, linkType);
+		default:
+			return new LinkImpl(parentElement, childElement, linkType);
+		}
+	}
+
 	String getIdOfSourceElementWithPrefix();
 
 	void setSourceElement(String idWithPrefix);
@@ -175,8 +205,8 @@ public interface Link {
 	String getIdOfDestinationElementWithPrefix();
 
 	void setDestinationElement(String idWithPrefix);
-	
+
 	void setDocumentationLocationOfSourceElement(String documentationLocation);
-	
+
 	void setDocumentationLocationOfDestinationElement(String documentationLocation);
 }

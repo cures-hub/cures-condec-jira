@@ -55,7 +55,7 @@ public class PluginInitializer implements InitializingBean {
 
 	public List<String> findMissingDecisionKnowledgeIssueTypes() {
 		List<String> knowledgeTypes = new ArrayList<String>();
-		for (KnowledgeType type : KnowledgeType.getDefaulTypes()) {
+		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
 			knowledgeTypes.add(type.toString());
 		}
 		for (String issueTypeName : getNamesOfExistingIssueTypes()) {

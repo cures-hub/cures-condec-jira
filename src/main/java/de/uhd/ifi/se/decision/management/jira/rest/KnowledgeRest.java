@@ -29,11 +29,14 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImplFiltered;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
@@ -50,20 +53,18 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionKnowledgeElement(@QueryParam("id") long id,
 			@QueryParam("projectKey") String projectKey) {
-		if (projectKey != null) {
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
-			DecisionKnowledgeElement decisionKnowledgeElement = strategy.getDecisionKnowledgeElement(id);
-			if (decisionKnowledgeElement != null) {
-				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
-			}
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Decision knowledge element was not found for the given id."))
-					.build();
-		} else {
+		if (projectKey == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Decision knowledge element could not be received due to a bad request (element id or project key was missing)."))
 					.build();
 		}
+		AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
+		DecisionKnowledgeElement decisionKnowledgeElement = strategy.getDecisionKnowledgeElement(id);
+		if (decisionKnowledgeElement != null) {
+			return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
+		}
+		return Response.status(Status.INTERNAL_SERVER_ERROR)
+				.entity(ImmutableMap.of("error", "Decision knowledge element was not found for the given id.")).build();
 	}
 
 	@Path("/getLinkedElements")
@@ -100,43 +101,51 @@ public class KnowledgeRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createDecisionKnowledgeElement(@Context HttpServletRequest request,
-			DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (decisionKnowledgeElement != null && request != null) {
-			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
+			DecisionKnowledgeElement newElement,
+			@QueryParam("idOfExistingElement") long idOfExistingElement,
+			@QueryParam("documentationLocationOfExistingElement") String documentationLocationOfExistingElement) {
+		if (newElement == null || request == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
+		}
+
+		String projectKey = newElement.getProject().getProjectKey();
+
+		ApplicationUser user = AuthenticationManager.getUser(request);		
+
+		DecisionKnowledgeElement existingElement = new DecisionKnowledgeElementImpl();
+		existingElement.setId(idOfExistingElement);
+		existingElement.setDocumentationLocation(documentationLocationOfExistingElement);
+
+		DecisionKnowledgeElement newElementWithId = null;
+		if (newElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {			
+			if (existingElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
+				Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(idOfExistingElement);
+				newElement.setId(element.getIssueId());
+			} else {
+				newElement.setId(idOfExistingElement);
+			}
+			newElementWithId = ActiveObjectsManager.addNewCommentToJIRAIssue(newElement, user);
+		} else {
 			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
-
-			ApplicationUser user = AuthenticationManager.getUser(request);
-			DecisionKnowledgeElement decisionKnowledgeElementWithId = strategy
-					.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
-			if (decisionKnowledgeElementWithId != null) {
-				return Response.status(Status.OK).entity(decisionKnowledgeElementWithId).build();
-			}
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
-		} else {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
+			newElementWithId = strategy.insertDecisionKnowledgeElement(newElement, user);
 		}
-	}
 
-	@Path("/createDecisionKnowledgeElementAsJIRAIssueComment")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createDecisionKnowledgeElementAsJIRAIssueComment(@Context HttpServletRequest request,
-			DecisionKnowledgeElement decisionKnowledgeElement, @QueryParam("argument") String argument) {
-		if (decisionKnowledgeElement != null && request != null) {
+		if (newElementWithId != null) {
 
-			DecisionKnowledgeElement newSentenceObject = ActiveObjectsManager.addNewCommentToJIRAIssue(
-					decisionKnowledgeElement, argument, AuthenticationManager.getUser(request));
-			if (newSentenceObject != null) {
-				return Response.status(Status.OK).entity(newSentenceObject).build();
+			if (idOfExistingElement == 0) {
+				return Response.status(Status.OK).entity(newElementWithId).build();
 			}
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
-		} else {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
+
+			LinkType linkType = LinkType.getLinkTypeForKnowledgeType(newElement.getType());
+			Link link = Link.instantiateDirectedLink(existingElement, newElementWithId, linkType);
+
+			createLink(projectKey, request, link);
+
+			return Response.status(Status.OK).entity(newElementWithId).build();
 		}
+		return Response.status(Status.INTERNAL_SERVER_ERROR)
+				.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
 	}
 
 	@Path("/createIssueFromSentence")
