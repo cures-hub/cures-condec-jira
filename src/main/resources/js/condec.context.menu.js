@@ -177,7 +177,6 @@
 			view = document.getElementsByClassName("issue-view")[0];
 		}
 		if (view !== null) {
-			console.log("add "+view.scrollTop + " to "+ posY)
 			posY = posY + view.scrollTop;
 		}
 		return posY;

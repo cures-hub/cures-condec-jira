@@ -30,7 +30,6 @@ public class ProMacro extends BaseMacro {
 		if (Boolean.TRUE.equals(renderContext.getParam(IssueRenderContext.WYSIWYG_PARAM))) {
 			return "\\{pro}"+body+"\\{pro}";
         }
-		System.out.println(IssueMacro.getProjectKey(renderContext));
 		String newBody = IssueMacro.reformatCommentBody(body);
 		String icon = "<img src=\"" + ComponentGetter.getUrlOfImageFolder() + "argument_pro.png" + "\">";
 		String contextMenuCall = IssueMacro.getContextMenuCall(renderContext, newBody, "Pro");
