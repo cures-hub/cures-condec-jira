@@ -104,48 +104,47 @@ public class KnowledgeRest {
 			@QueryParam("idOfExistingElement") long idOfExistingElement,
 			@QueryParam("documentationLocationOfExistingElement") String documentationLocationOfExistingElement,
 			DecisionKnowledgeElement newElement) {
-		if (newElement != null && request != null) {
-			System.out.println(idOfExistingElement);
-			String projectKey = newElement.getProject().getProjectKey();
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
-
-			ApplicationUser user = AuthenticationManager.getUser(request);
-			DecisionKnowledgeElement newElementWithId = null;
-
-			DecisionKnowledgeElement existingElement = new DecisionKnowledgeElementImpl();
-			existingElement.setId(idOfExistingElement);
-			existingElement.setDocumentationLocation(documentationLocationOfExistingElement);
-
-			if (newElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
-				newElement.setId(idOfExistingElement);
-				if (existingElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
-					Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(idOfExistingElement);
-					newElement.setId(element.getIssueId());
-				}
-				newElementWithId = ActiveObjectsManager.addNewCommentToJIRAIssue(newElement, user);
-			} else {
-				newElementWithId = strategy.insertDecisionKnowledgeElement(newElement, user);
-			}
-
-			if (newElementWithId != null) {
-
-				if (idOfExistingElement == 0) {
-					return Response.status(Status.OK).entity(newElementWithId).build();
-				}
-
-				LinkType linkType = LinkType.getLinkType(newElement.getType());
-				Link link = Link.instantiateDirectedLink(existingElement, newElementWithId, linkType);
-
-				createLink(projectKey, request, link);
-
-				return Response.status(Status.OK).entity(newElementWithId).build();
-			}
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
-		} else {
+		if (newElement == null || request == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
 		}
+
+		String projectKey = newElement.getProject().getProjectKey();
+
+		ApplicationUser user = AuthenticationManager.getUser(request);		
+
+		DecisionKnowledgeElement existingElement = new DecisionKnowledgeElementImpl();
+		existingElement.setId(idOfExistingElement);
+		existingElement.setDocumentationLocation(documentationLocationOfExistingElement);
+
+		DecisionKnowledgeElement newElementWithId = null;
+		if (newElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
+			newElement.setId(idOfExistingElement);
+			if (existingElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
+				Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(idOfExistingElement);
+				newElement.setId(element.getIssueId());
+			}
+			newElementWithId = ActiveObjectsManager.addNewCommentToJIRAIssue(newElement, user);
+		} else {
+			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
+			newElementWithId = strategy.insertDecisionKnowledgeElement(newElement, user);
+		}
+
+		if (newElementWithId != null) {
+
+			if (idOfExistingElement == 0) {
+				return Response.status(Status.OK).entity(newElementWithId).build();
+			}
+
+			LinkType linkType = LinkType.getLinkType(newElement.getType());
+			Link link = Link.instantiateDirectedLink(existingElement, newElementWithId, linkType);
+
+			createLink(projectKey, request, link);
+
+			return Response.status(Status.OK).entity(newElementWithId).build();
+		}
+		return Response.status(Status.INTERNAL_SERVER_ERROR)
+				.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
 	}
 
 	@Path("/createIssueFromSentence")

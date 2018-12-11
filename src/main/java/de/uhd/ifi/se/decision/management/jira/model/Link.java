@@ -186,8 +186,8 @@ public interface Link {
 	 * 
 	 * @return a link object.
 	 */
-	public static Link instantiateDirectedLink(DecisionKnowledgeElement childElement,
-			DecisionKnowledgeElement parentElement, LinkType linkType) {
+	public static Link instantiateDirectedLink(DecisionKnowledgeElement parentElement,
+			DecisionKnowledgeElement childElement, LinkType linkType) {
 		switch (linkType) {
 		case ATTACK:
 			return new LinkImpl(childElement, parentElement, linkType);
