@@ -118,11 +118,12 @@ public class KnowledgeRest {
 		existingElement.setDocumentationLocation(documentationLocationOfExistingElement);
 
 		DecisionKnowledgeElement newElementWithId = null;
-		if (newElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
-			newElement.setId(idOfExistingElement);
+		if (newElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {			
 			if (existingElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
 				Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(idOfExistingElement);
 				newElement.setId(element.getIssueId());
+			} else {
+				newElement.setId(idOfExistingElement);
 			}
 			newElementWithId = ActiveObjectsManager.addNewCommentToJIRAIssue(newElement, user);
 		} else {
@@ -136,7 +137,7 @@ public class KnowledgeRest {
 				return Response.status(Status.OK).entity(newElementWithId).build();
 			}
 
-			LinkType linkType = LinkType.getLinkType(newElement.getType());
+			LinkType linkType = LinkType.getLinkTypeForKnowledgeType(newElement.getType());
 			Link link = Link.instantiateDirectedLink(existingElement, newElementWithId, linkType);
 
 			createLink(projectKey, request, link);

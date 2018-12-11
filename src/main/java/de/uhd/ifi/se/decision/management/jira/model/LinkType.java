@@ -22,13 +22,34 @@ public enum LinkType {
 	}
 
 	/**
+	 * Convert a string to a link type.
+	 *
+	 * @param type
+	 *            as a String.
+	 * @return link type.
+	 */
+	public static LinkType getLinkType(String type) {
+		if (type == null) {
+			return LinkType.CONTAIN;
+		}
+		switch (type.toLowerCase(Locale.ENGLISH)) {
+		case "support":
+			return LinkType.SUPPORT;
+		case "attack":
+			return LinkType.ATTACK;
+		default:
+			return LinkType.CONTAIN;
+		}
+	}
+
+	/**
 	 * Get the link type that is associated to a certain knowledge type, e.g.,
 	 * support for pro-arguments and attack for con-arguments. The default link type
 	 * is contain.
 	 *
 	 * @return link type.
 	 */
-	public static LinkType getLinkType(KnowledgeType knowledgeTypeOfChildElement) {
+	public static LinkType getLinkTypeForKnowledgeType(KnowledgeType knowledgeTypeOfChildElement) {
 		switch (knowledgeTypeOfChildElement) {
 		case PRO:
 			return LinkType.SUPPORT;

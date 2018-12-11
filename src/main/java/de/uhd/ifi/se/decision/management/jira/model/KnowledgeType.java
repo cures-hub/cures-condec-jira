@@ -34,6 +34,7 @@ public enum KnowledgeType {
 	 *
 	 * @param type
 	 *            as a String.
+	 * @return knowledge type.
 	 */
 	public static KnowledgeType getKnowledgeType(String type) {
 		if (type == null) {

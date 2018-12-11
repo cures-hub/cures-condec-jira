@@ -82,7 +82,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		createLocalIssue();
 
 		addCommentsToIssue(text);
-		return new CommentImpl(comment1,true);
+		return new CommentImpl(comment1, true);
 	}
 
 	@Test
@@ -158,8 +158,8 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 
 		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE, "");
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(id);
-		//Important that sentence object has no tags
-		assertEquals( "testobject",element.getBody().trim());
+		// Important that sentence object has no tags
+		assertEquals("testobject", element.getBody().trim());
 		assertEquals(element.getKnowledgeTypeString(), KnowledgeType.ALTERNATIVE.toString());
 		assertEquals("{Alternative} testobject {Alternative}",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
@@ -200,7 +200,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
 		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.OTHER, "Pro");
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(id);
-		assertEquals( " testobject ",element.getBody());
+		assertEquals(" testobject ", element.getBody());
 		assertEquals(element.getKnowledgeTypeString(), "Pro");
 		assertEquals("some sentence in front. {Pro} testobject {Pro} some sentence in the back.",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
@@ -254,7 +254,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 
 		comment2.setJiraCommentId(comment.getJiraCommentId());
 
-//		ActiveObjectsManager.deleteCommentsSentences(comment)
+		// ActiveObjectsManager.deleteCommentsSentences(comment)
 
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(id);
 
@@ -357,70 +357,72 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	public void testLinkAllUnlikedSentence() {
 		Comment comment = getComment("some sentence in front.  {pro} testobject {pro} some sentence in the back.");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
-		assertEquals(1,GenericLinkManager.getLinksForElement("s"+id).size());
-		GenericLinkManager.deleteLinksForElement("s"+id);
-		assertEquals(0,GenericLinkManager.getLinksForElement("s"+id).size());	
+		assertEquals(1, GenericLinkManager.getLinksForElement("s" + id).size());
+		GenericLinkManager.deleteLinksForElement("s" + id);
+		assertEquals(0, GenericLinkManager.getLinksForElement("s" + id).size());
 		ActiveObjectsManager.createLinksForNonLinkedElementsForProject("TEST");
-		assertEquals(1,GenericLinkManager.getLinksForElement("s"+id).size());	
+		assertEquals(1, GenericLinkManager.getLinksForElement("s" + id).size());
 	}
-	
-	
+
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForProAlternative() {
 		Comment comment = getComment("{alternative}first sentence{alternative} {pro}second sentence{pro}");
-		Link sentenceLink = GenericLinkManager.getLinksForElement("s"+ comment.getSentences().get(1).getId()).get(0);
-		assertEquals(sentenceLink.getOppositeElement(comment.getSentences().get(0)).getId(),comment.getSentences().get(1).getId());
-	}	
-	
+		Link sentenceLink = GenericLinkManager.getLinksForElement("s" + comment.getSentences().get(1).getId()).get(0);
+		assertEquals(sentenceLink.getOppositeElement(comment.getSentences().get(0)).getId(),
+				comment.getSentences().get(1).getId());
+	}
+
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForConAlternative() {
 		Comment comment = getComment("{alternative}first sentence{alternative} {con}second sentence{con}");
-		Link sentenceLink = GenericLinkManager.getLinksForElement("s"+ comment.getSentences().get(1).getId()).get(0);
-		assertEquals(sentenceLink.getOppositeElement(comment.getSentences().get(0)).getId(),comment.getSentences().get(1).getId());
-	}	
+		Link sentenceLink = GenericLinkManager.getLinksForElement("s" + comment.getSentences().get(1).getId()).get(0);
+		assertEquals(sentenceLink.getOppositeElement(comment.getSentences().get(0)).getId(),
+				comment.getSentences().get(1).getId());
+	}
+
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForProDecision() {
 		Comment comment = getComment("{decision}first sentence{decision} {pro}second sentence{pro}");
-		Link sentenceLink = GenericLinkManager.getLinksForElement("s"+ comment.getSentences().get(1).getId()).get(0);
-		assertEquals(sentenceLink.getOppositeElement(comment.getSentences().get(0)).getId(),comment.getSentences().get(1).getId());
-	}	
-	
+		Link sentenceLink = GenericLinkManager.getLinksForElement("s" + comment.getSentences().get(1).getId()).get(0);
+		assertEquals(sentenceLink.getOppositeElement(comment.getSentences().get(0)).getId(),
+				comment.getSentences().get(1).getId());
+	}
+
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForConDecision() {
 		Comment comment = getComment("{decision}first sentence{decision} {con}second sentence{con}");
-		Link sentenceLink = GenericLinkManager.getLinksForElement("s"+ comment.getSentences().get(1).getId()).get(0);
-		assertEquals(sentenceLink.getOppositeElement(comment.getSentences().get(0)).getId(),comment.getSentences().get(1).getId());
+		Link sentenceLink = GenericLinkManager.getLinksForElement("s" + comment.getSentences().get(1).getId()).get(0);
+		assertEquals(sentenceLink.getOppositeElement(comment.getSentences().get(0)).getId(),
+				comment.getSentences().get(1).getId());
 	}
 
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForAlternativeIssue() {
 		Comment comment = getComment("{issue}first sentence{issue} {alternative}second sentence{alternative}");
-		Link sentenceLink = GenericLinkManager.getLinksForElement("s"+ comment.getSentences().get(1).getId()).get(0);
-		assertEquals(sentenceLink.getOppositeElement(comment.getSentences().get(0)).getId(),comment.getSentences().get(1).getId());
+		Link sentenceLink = GenericLinkManager.getLinksForElement("s" + comment.getSentences().get(1).getId()).get(0);
+		assertEquals(sentenceLink.getOppositeElement(comment.getSentences().get(0)).getId(),
+				comment.getSentences().get(1).getId());
 	}
 
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForDecisionIssue() {
 		Comment comment = getComment("{issue}first sentence{issue} {decision}second sentence{decision}");
-		Link sentenceLink = GenericLinkManager.getLinksForElement("s"+ comment.getSentences().get(1).getId()).get(0);
-		assertEquals(sentenceLink.getOppositeElement(comment.getSentences().get(0)).getId(),comment.getSentences().get(1).getId());
+		Link sentenceLink = GenericLinkManager.getLinksForElement("s" + comment.getSentences().get(1).getId()).get(0);
+		assertEquals(sentenceLink.getOppositeElement(comment.getSentences().get(0)).getId(),
+				comment.getSentences().get(1).getId());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForBoringNonSmartLink() {
 		Comment comment = getComment("{issue}first sentence{issue} {pro}second sentence{pro}");
-		Link sentenceLink = GenericLinkManager.getLinksForElement("s"+ comment.getSentences().get(1).getId()).get(0);
+		Link sentenceLink = GenericLinkManager.getLinksForElement("s" + comment.getSentences().get(1).getId()).get(0);
 		assertEquals("i30 to s2", sentenceLink.toString());
 	}
-	
-	
-	
-
 }

@@ -77,9 +77,11 @@ public class GenericLinkManager {
 
 		final LinkInDatabase linkInDatabase = activeObjects.create(LinkInDatabase.class);
 		DecisionKnowledgeElement sourceElement = link.getSourceElement();
-		linkInDatabase.setIdOfSourceElement(sourceElement.getDocumentationLocation().getIdentifier() + sourceElement.getId());
+		linkInDatabase
+				.setIdOfSourceElement(sourceElement.getDocumentationLocation().getIdentifier() + sourceElement.getId());
 		DecisionKnowledgeElement destinationElement = link.getDestinationElement();
-		linkInDatabase.setIdOfDestinationElement(destinationElement.getDocumentationLocation().getIdentifier() + destinationElement.getId());
+		linkInDatabase.setIdOfDestinationElement(
+				destinationElement.getDocumentationLocation().getIdentifier() + destinationElement.getId());
 		linkInDatabase.setType(link.getType());
 		linkInDatabase.save();
 		activeObjects.find(LinkInDatabase.class);
@@ -111,13 +113,12 @@ public class GenericLinkManager {
 	 */
 	public static List<Link> getLinksForElement(String elementIdWithPrefix) {
 		init();
-		List<Link> links = new ArrayList<Link>();
 		LinkInDatabase[] linksInDatabase = activeObjects.find(LinkInDatabase.class, Query.select().where(
 				"ID_OF_DESTINATION_ELEMENT = ? OR ID_OF_SOURCE_ELEMENT = ?", elementIdWithPrefix, elementIdWithPrefix));
 
+		List<Link> links = new ArrayList<Link>();
 		for (LinkInDatabase linkInDatabase : linksInDatabase) {
-			Link link = new LinkImpl(linkInDatabase.getIdOfSourceElement(), linkInDatabase.getIdOfDestinationElement());
-			link.setId(linkInDatabase.getId());
+			Link link = new LinkImpl(linkInDatabase);
 			links.add(link);
 		}
 		return links;
