@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.atlassian.event.api.EventListener;
 import com.atlassian.event.api.EventPublisher;
@@ -13,7 +12,6 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.comments.MutableComment;
-import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
@@ -26,8 +24,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * Triggers the decXtract related function when some changes to comments are
  * made.
  */
-@Component
-@Scanned
 public class DecXtractEventListener implements InitializingBean, DisposableBean {
 
 	@JiraImport

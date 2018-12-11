@@ -16,6 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
@@ -221,7 +222,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 								+ databaseEntry.getId());
 						databaseEntry.setSummary(element.getSummary());
 						databaseEntry.setDescription(element.getDescription());
-						databaseEntry.setType(element.getType().toString());
+						databaseEntry.setType(element.getType().getSimpleKnowledgeType().toString());
 						databaseEntry.setProjectKey(element.getProject().getProjectKey());
 						databaseEntry.save();
 						return databaseEntry;
