@@ -90,6 +90,9 @@ public class LinkImpl implements Link {
 
 	@Override
 	public String getType() {
+		if(type == null|| type.equals("")) {
+			return "contain";
+		}
 		return type;
 	}
 

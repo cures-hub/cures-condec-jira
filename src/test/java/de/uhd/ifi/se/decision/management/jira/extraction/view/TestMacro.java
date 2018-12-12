@@ -11,6 +11,7 @@ import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.issue.fields.renderer.IssueRenderContext;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
+import com.atlassian.renderer.v2.macro.MacroException;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
@@ -56,7 +57,7 @@ public class TestMacro extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testIssueMacro() {
+	public void testIssueMacro() throws MacroException {
 		IssueMacro fm = new IssueMacro();
 		assertEquals(RenderMode.allow(RenderMode.F_ALL), fm.getBodyRenderMode());
 		assertTrue(fm.hasBody());
@@ -70,7 +71,7 @@ public class TestMacro extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testDecisionMacro() {
+	public void testDecisionMacro() throws MacroException {
 		DecisionMacro fm = new DecisionMacro();
 
 		assertEquals(RenderMode.allow(RenderMode.F_ALL), fm.getBodyRenderMode());
@@ -79,7 +80,7 @@ public class TestMacro extends TestSetUpWithIssues {
 		String body = "<p>This is a decision.</p>";
 		String result = fm.execute(null, body, issueView);
 		assertEquals(
-				"<img src=\"null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/decision.png\"><span  style =  \"background-color:#c5f2f9\">This is a decision.</span>",
+				"<img src=\"null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/decision.png\"><span style =  \"background-color:#c5f2f9\">This is a decision.</span>",
 				result);
 		result = fm.execute(null, body, wysiwygView);
 		assertEquals("\\{decision}<p>This is a decision.</p>\\{decision}", result);
@@ -87,7 +88,7 @@ public class TestMacro extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testAlternativeMacro() {
+	public void testAlternativeMacro() throws MacroException {
 		AlternativeMacro fm = new AlternativeMacro();
 
 		assertEquals(RenderMode.allow(RenderMode.F_ALL), fm.getBodyRenderMode());
@@ -104,7 +105,7 @@ public class TestMacro extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testProMacro() {
+	public void testProMacro() throws MacroException {
 		ProMacro fm = new ProMacro();
 
 		assertEquals(RenderMode.allow(RenderMode.F_ALL), fm.getBodyRenderMode());
@@ -123,7 +124,7 @@ public class TestMacro extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testConMacro() {
+	public void testConMacro() throws MacroException {
 		ConMacro fm = new ConMacro();
 
 		assertEquals(RenderMode.allow(RenderMode.F_ALL), fm.getBodyRenderMode());
