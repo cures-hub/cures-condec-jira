@@ -3,32 +3,39 @@
  */
 require([ "jquery", "jira/util/formatter", "jira/editor/registry" ], function($, formatter, editorRegistry) {
 	var DEFAULT_PLACEHOLDER = "knowledge element";
-	var lastItem;
-
+	
 	editorRegistry.on('register', function(entry) {
 		var $otherDropdown = $(entry.toolbar).find('.wiki-edit-other-picker-trigger');
 
 		$otherDropdown.one('click', function(dropdownClickEvent) {
 
 			var speechItem = getDropDownContent(dropdownClickEvent).querySelector('.wiki-edit-speech-item');
-			var issueItem = $(getHTMLLiItem("Issue")).insertAfter(speechItem).on('click', function() {
-				entry.applyIfTextMode(addWikiMarkupIssue).applyIfTextMode(addRenderedContentIssue);
+			
+			var issueItem = $(getHTMLListItem("Issue"));
+			issueItem.insertAfter(speechItem);
+			issueItem.on('click', function() {
+				entry.applyIfTextMode(addWikiMarkup(entry, "issue"));
+				entry.applyIfTextMode(addRenderedContent(entry, "F2F5A9", "issue"));
 			});
 
-			var alternativeItem = $(getHTMLLiItem("Alternative")).insertAfter(issueItem).on('click', function() {
-				entry.applyIfTextMode(addWikiMarkupAlternative).applyIfVisualMode(addRenderedContentAlternative);
+			var alternativeItem = $(getHTMLListItem("Alternative")).insertAfter(issueItem).on('click', function() {
+				entry.applyIfTextMode(addWikiMarkup(entry, "alternative"));
+				entry.applyIfVisualMode(addRenderedContent(entry, "f1ccf9", "alternative"));
 			});
 
-			var decisionItem = $(getHTMLLiItem("Decision")).insertAfter(alternativeItem).on('click', function() {
-				entry.applyIfTextMode(addWikiMarkupDecision).applyIfVisualMode(addRenderedContentDecision);
+			var decisionItem = $(getHTMLListItem("Decision")).insertAfter(alternativeItem).on('click', function() {
+				entry.applyIfTextMode(addWikiMarkup(entry, "decision"));
+				entry.applyIfVisualMode(addRenderedContent(entry, "c5f2f9", "decision"));
 			});
 
-			var proItem = $(getHTMLLiItem("Pro")).insertAfter(decisionItem).on('click', function() {
-				entry.applyIfTextMode(addWikiMarkupPro).applyIfVisualMode(addRenderedContentPro);
+			var proItem = $(getHTMLListItem("Pro")).insertAfter(decisionItem).on('click', function() {
+				entry.applyIfTextMode(addWikiMarkup(entry, "pro"));
+				entry.applyIfVisualMode(addRenderedContent(entry, "b9f7c0", "pro"));
 			});
 
-			var conItem = $(getHTMLLiItem("Con")).insertAfter(proItem).on('click', function() {
-				entry.applyIfTextMode(addWikiMarkupCon).applyIfVisualMode(addRenderedContentCon);
+			var conItem = $(getHTMLListItem("Con")).insertAfter(proItem).on('click', function() {
+				entry.applyIfTextMode(addWikiMarkup(entry, "con"));
+				entry.applyIfVisualMode(addRenderedContent(entry, "ffdeb5", "con"));
 			});
 
 			entry.onUnregister(function cleanup() {
@@ -41,9 +48,9 @@ require([ "jquery", "jira/util/formatter", "jira/editor/registry" ], function($,
 		});
 	});
 
-	function getHTMLLiItem(knowledgeType) {
-		return '<li><a href="#" class="li-' + knowledgeType + '-dropdown-entry" data-operation="' + knowledgeType
-				+ '">' + knowledgeType + '</a></li>';
+	function getHTMLListItem(knowledgeType) {
+		return "<li><a href='#' class='li-" + knowledgeType + "-dropdown-entry' data-operation='" + knowledgeType
+				+ "'>" + knowledgeType + "</a></li>";
 	}
 
 	function addWikiMarkup(entry, knowledgeType) {
@@ -67,45 +74,4 @@ require([ "jquery", "jira/util/formatter", "jira/editor/registry" ], function($,
 		var dropdownContentId = dropdownClickEvent.currentTarget.getAttribute('aria-owns');
 		return document.getElementById(dropdownContentId);
 	}
-
-	function addWikiMarkupIssue(entry) {
-		addWikiMarkup(entry, "issue");
-	}
-
-	function addRenderedContentIssue(entry) {
-		addRenderedContent(entry, "F2F5A9", "issue");
-	}
-
-	function addWikiMarkupAlternative(entry) {
-		addWikiMarkup(entry, "alternative");
-	}
-
-	function addRenderedContentAlternative(entry) {
-		addRenderedContent(entry, "f1ccf9", "alternative");
-	}
-
-	function addWikiMarkupDecision(entry) {
-		addWikiMarkup(entry, "decision");
-	}
-
-	function addRenderedContentDecision(entry) {
-		addRenderedContent(entry, "c5f2f9", "decision");
-	}
-
-	function addWikiMarkupPro(entry) {
-		addWikiMarkup(entry, "pro");
-	}
-
-	function addRenderedContentPro(entry) {
-		addRenderedContent(entry, "b9f7c0", "pro");
-	}
-
-	function addWikiMarkupCon(entry) {
-		addWikiMarkup(entry, "con");
-	}
-
-	function addRenderedContentCon(entry) {
-		addRenderedContent(entry, "ffdeb5", "con");
-	}
-
 });
