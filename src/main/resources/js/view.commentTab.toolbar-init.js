@@ -1,9 +1,18 @@
 /*
- *This class manages the insertion of knowledge types into the rich text exitor. Also the transition between stlyed (Rich text) and plan text with taggs.
+ This file manages the insertion of knowledge types into the rich text editor.
+ Also the transition between styled (rich text) and plan text with tags.
+ 
+ Requires
+ * jquery
+ * jira/editor/registry
+ * jira/util/formatter (currently not used)
  */
 require([ "jquery", "jira/util/formatter", "jira/editor/registry" ], function($, formatter, editorRegistry) {
+
 	var DEFAULT_PLACEHOLDER = "knowledge element";
-	
+	var KNOWLEDGE_TYPES = [ "Issue", "Alternative", "Decision", "Pro", "Con" ];
+	var COLORS = [ "F2F5A9", "f1ccf9", "c5f2f9", "b9f7c0", "ffdeb5" ]
+
 	editorRegistry.on('register', function(entry) {
 		var $otherDropdown = $(entry.toolbar).find('.wiki-edit-other-picker-trigger');
 
@@ -11,39 +20,24 @@ require([ "jquery", "jira/util/formatter", "jira/editor/registry" ], function($,
 
 			var speechItem = getDropDownContent(dropdownClickEvent).querySelector('.wiki-edit-speech-item');
 			
-			var issueItem = $(getHTMLListItem("Issue"));
-			issueItem.insertAfter(speechItem);
-			issueItem.on('click', function() {
-				entry.applyIfTextMode(addWikiMarkup(entry, "issue"));
-				entry.applyIfTextMode(addRenderedContent(entry, "F2F5A9", "issue"));
-			});
+			var menuItems = [ speechItem ];
 
-			var alternativeItem = $(getHTMLListItem("Alternative")).insertAfter(issueItem).on('click', function() {
-				entry.applyIfTextMode(addWikiMarkup(entry, "alternative"));
-				entry.applyIfVisualMode(addRenderedContent(entry, "f1ccf9", "alternative"));
-			});
-
-			var decisionItem = $(getHTMLListItem("Decision")).insertAfter(alternativeItem).on('click', function() {
-				entry.applyIfTextMode(addWikiMarkup(entry, "decision"));
-				entry.applyIfVisualMode(addRenderedContent(entry, "c5f2f9", "decision"));
-			});
-
-			var proItem = $(getHTMLListItem("Pro")).insertAfter(decisionItem).on('click', function() {
-				entry.applyIfTextMode(addWikiMarkup(entry, "pro"));
-				entry.applyIfVisualMode(addRenderedContent(entry, "b9f7c0", "pro"));
-			});
-
-			var conItem = $(getHTMLListItem("Con")).insertAfter(proItem).on('click', function() {
-				entry.applyIfTextMode(addWikiMarkup(entry, "con"));
-				entry.applyIfVisualMode(addRenderedContent(entry, "ffdeb5", "con"));
-			});
+			for (var i = 0; i < KNOWLEDGE_TYPES.length; i++) {
+				menuItems.push($(getHTMLListItem(KNOWLEDGE_TYPES[i])));
+				menuItems[i + 1].insertAfter(menuItems[i]);
+				menuItems[i + 1].on("click", {
+					type : KNOWLEDGE_TYPES[i].toLowerCase(),
+					color : COLORS[i]
+				}, function(event) {
+					entry.applyIfTextMode(addWikiMarkup(entry, event.data.type));
+					entry.applyIfTextMode(addRenderedContent(entry, event.data.color, event.data.type));
+				});
+			}
 
 			entry.onUnregister(function cleanup() {
-				issueItem.remove();
-				alternativeItem.remove();
-				decisionItem.remove();
-				proItem.remove();
-				conItem.remove();
+				for (var i = 0; i < KNOWLEDGE_TYPES.length; i++) {
+					menuItems[i + 1].remove();
+				}
 			});
 		});
 	});
