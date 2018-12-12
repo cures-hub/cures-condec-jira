@@ -11,7 +11,6 @@ require([ "jquery", "jira/util/formatter", "jira/editor/registry" ], function($,
 
 	var DEFAULT_PLACEHOLDER = "knowledge element";
 	var KNOWLEDGE_TYPES = [ "Issue", "Alternative", "Decision", "Pro", "Con" ];
-	var COLORS = [ "F2F5A9", "f1ccf9", "c5f2f9", "b9f7c0", "ffdeb5" ]
 
 	editorRegistry.on('register', function(entry) {
 		var $otherDropdown = $(entry.toolbar).find('.wiki-edit-other-picker-trigger');
@@ -26,14 +25,13 @@ require([ "jquery", "jira/util/formatter", "jira/editor/registry" ], function($,
 				menuItems.push($(getHTMLListItem(KNOWLEDGE_TYPES[i])));
 				menuItems[i + 1].insertAfter(menuItems[i]);
 				menuItems[i + 1].on("click", {
-					type : KNOWLEDGE_TYPES[i].toLowerCase(),
-					color : COLORS[i]
+					type : KNOWLEDGE_TYPES[i].toLowerCase()
 				}, function(event) {
 					entry.applyIfTextMode(function() {
 						addWikiMarkup(entry, event.data.type);
 					});
 					entry.applyIfTextMode(function() {
-						addRenderedContent(entry, event.data.color, event.data.type);
+						addRenderedContent(entry, event.data.type);
 					});
 				});
 			}
@@ -58,7 +56,7 @@ require([ "jquery", "jira/util/formatter", "jira/editor/registry" ], function($,
 				+ "}");
 	}
 
-	function addRenderedContent(entry, knowledgeTypeColor, knowledgeType) {
+	function addRenderedContent(entry, knowledgeType) {
 		entry.rteInstance.then(function(rteInstance) {
 			var tinyMCE = rteInstance.editor;
 			if (tinyMCE && !tinyMCE.isHidden()) {

@@ -10,9 +10,10 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 public class ProMacro extends ConDecMacro {
 
 	private String knowledgeType = KnowledgeType.PRO.toString().toLowerCase();
-	
+
 	@Override
-	public String execute(Map<String, Object> parameters, String body, RenderContext renderContext) throws MacroException {
+	public String execute(Map<String, Object> parameters, String body, RenderContext renderContext)
+			throws MacroException {
 		return super.execute(parameters, body, renderContext, knowledgeType, "#b9f7c0");
 	}
 }

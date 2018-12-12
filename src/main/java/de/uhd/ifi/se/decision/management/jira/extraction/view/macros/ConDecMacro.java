@@ -22,9 +22,9 @@ public class ConDecMacro extends BaseMacro {
 			throws MacroException {
 		return body;
 	}
-	
-	protected String execute(Map<String, Object> parameters, String body, RenderContext renderContext, String knowledgeType, String colorCode)
-			throws MacroException {
+
+	protected String execute(Map<String, Object> parameters, String body, RenderContext renderContext,
+			String knowledgeType, String colorCode) throws MacroException {
 		if (!ConfigPersistenceManager.isKnowledgeExtractedFromIssues(getProjectKey(renderContext))) {
 			return body;
 		}
@@ -32,20 +32,18 @@ public class ConDecMacro extends BaseMacro {
 			return putTypeInBrackets(knowledgeType) + body + putTypeInBrackets(knowledgeType);
 		}
 		String newBody = reformatCommentBody(body);
-		String icon = "<img src=\"" + ComponentGetter.getUrlOfImageFolder()+addPrefixForArgumentsForArguments(knowledgeType) +".png" + "\">";
+		String icon = "<img src='" + ComponentGetter.getUrlOfImageFolder()
+				+ addPrefixForArgumentsForArguments(knowledgeType) + ".png" + "'>";
 		String contextMenuCall = getContextMenuCall(renderContext, newBody, WordUtils.capitalize(knowledgeType));
-		return icon + "<span " + contextMenuCall + "style =  \"background-color:"+colorCode+"\">" + newBody + "</span>";
+		return icon + "<span " + contextMenuCall + "style='background-color:" + colorCode + "'>" + newBody + "</span>";
 	}
-	
-	
+
 	private String addPrefixForArgumentsForArguments(String knowledgeType) {
-		if(knowledgeType.equalsIgnoreCase("con") || knowledgeType.equalsIgnoreCase("pro")) {
-			return "argument_"+knowledgeType;
+		if (knowledgeType.equalsIgnoreCase("con") || knowledgeType.equalsIgnoreCase("pro")) {
+			return "argument_" + knowledgeType;
 		}
 		return knowledgeType;
 	}
-	
-	
 
 	@Override
 	public RenderMode getBodyRenderMode() {
@@ -56,8 +54,7 @@ public class ConDecMacro extends BaseMacro {
 	public boolean hasBody() {
 		return true;
 	}
-	
-	
+
 	/**
 	 * Static function for other Macro Classes
 	 * 
@@ -108,11 +105,8 @@ public class ConDecMacro extends BaseMacro {
 		return "oncontextmenu=\"conDecContextMenu.createContextMenuForSentences(this.offsetLeft, this.offsetTop, " + id
 				+ "); return false;\"";
 	}
-	
-	
+
 	protected String putTypeInBrackets(String type) {
-		return "\\{"+type+"}";
+		return "\\{" + type + "}";
 	}
-
-
 }
