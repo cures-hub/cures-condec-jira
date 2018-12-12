@@ -224,11 +224,11 @@
 	</ao>
 
 	<!-- Decision Knowledge Issue Module -->
-	<web-panel key="condec-issue-module" name="Decision Knowledge Issue Module"
+	<web-panel key="condec-jira-issue-module" name="Decision Knowledge JIRA Issue Module"
 		location="atl.jira.view.issue.left.context" weight="200">
 		<description>Decision Knowledge related to a JIRA Issue</description>
 		<label>Decision Knowledge</label>
-		<resource type="velocity" name="view" location="templates/issueModule.vm" />
+		<resource type="velocity" name="view" location="templates/jiraIssueModule.vm" />
 		<condition
 			class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 		<supports-ajax-load>true</supports-ajax-load>

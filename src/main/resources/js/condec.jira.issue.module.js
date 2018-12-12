@@ -8,10 +8,10 @@
  * condec.treant.js
 
  Is required by
- * tabPanel.vm
+ * jiraIssueModule.vm
 
  Is referenced in HTML by
- * tabPanel.vm
+ * jiraIssueModule.vm
  */
 (function(global) {
 	/* private vars */

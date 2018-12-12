@@ -5,7 +5,13 @@
  * conDecTreant.findParentId
     
  Is required by
- * view.*  
+ * conDecContextMenu
+ * conDecDialog
+ * conDecIssueModule
+ * conDecTreant
+ * conDecTreeViewer
+ * conDecKnowledgePage
+ * conDecTabPanel
   
  Is referenced in HTML by
  * settingsForAllProjects.vm 
@@ -33,7 +39,7 @@
 
 	/*
 	 * external references: condec.context.menu, condec.dialog,
-	 * view.condec.knowledge.page, view.condec.issue.module
+	 * view.condec.knowledge.page, condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getDecisionKnowledgeElement = function getDecisionKnowledgeElement(id, callback) {
 		getJSON(
@@ -50,7 +56,7 @@
 	};
 
 	/*
-	 * external references: view.condec.issue.module
+	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getLinkedElements = function getLinkedElements(id, callback) {
 		getJSON(
@@ -704,7 +710,7 @@
 	};
 
 	/*
-	 * external references: view.condec.issue.module
+	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getElementsByQuery = function getElementsByQuery(query, callback) {
 		var projectKey = projectKey || "";
@@ -719,7 +725,7 @@
 	};
 
 	/*
-	 * external references: view.condec.issue.module
+	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, elementKey, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsLinkedToElement.json?elementKey="
@@ -816,7 +822,7 @@
 	}
 
 	/*
-	 * external references: view.condec.issue.module
+	 * external references: condec.jira.issue.module
 	 */
 	function getIssueKey() {
 		console.log("conDecAPI getIssueKey");
