@@ -19,7 +19,7 @@ require([ "jquery", "jira/util/formatter", "jira/editor/registry" ], function($,
 		$otherDropdown.one('click', function(dropdownClickEvent) {
 
 			var speechItem = getDropDownContent(dropdownClickEvent).querySelector('.wiki-edit-speech-item');
-			
+
 			var menuItems = [ speechItem ];
 
 			for (var i = 0; i < KNOWLEDGE_TYPES.length; i++) {
@@ -29,8 +29,12 @@ require([ "jquery", "jira/util/formatter", "jira/editor/registry" ], function($,
 					type : KNOWLEDGE_TYPES[i].toLowerCase(),
 					color : COLORS[i]
 				}, function(event) {
-					entry.applyIfTextMode(addWikiMarkup(entry, event.data.type));
-					entry.applyIfTextMode(addRenderedContent(entry, event.data.color, event.data.type));
+					entry.applyIfTextMode(function() {
+						addWikiMarkup(entry, event.data.type);
+					});
+					entry.applyIfTextMode(function() {
+						addRenderedContent(entry, event.data.color, event.data.type);
+					});
 				});
 			}
 
