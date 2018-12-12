@@ -4,11 +4,9 @@
  * show a tree of relevant decision knowledge
 
  Requires
- * condec.api.js
- * condec.observable.js
- 
- Is required by
- * tabPanel.vm 
+ * conDecAPI
+ * conDecObservable
+ * conDecTreeViewer
  
  Is referenced in HTML by
  * tabPanel.vm 

@@ -2,13 +2,10 @@
  This view provides a tree of relevant decision knowledge in the JIRA issue view.
 
  Requires
- * condec.api.js
- * condec.observable.js
- * condec.context.menu.js
- * condec.treant.js
-
- Is required by
- * jiraIssueModule.vm
+ * conDecAPI
+ * conDecObservable
+ * conDecContextMenu
+ * conDecTreant
 
  Is referenced in HTML by
  * jiraIssueModule.vm
@@ -22,12 +19,12 @@
 	var conDecContextMenu = null;
 	var treant = null;
 
-	var ConDecIssueModule = function ConDecIssueModule() {
+	var ConDecJiraIssueModule = function ConDecJiraIssueModule() {
 	};
 
-	ConDecIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog, _conDecContextMenu,
+	ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog, _conDecContextMenu,
 			_treant, _i18n) {
-		console.log("ConDecIssueModule init");
+		console.log("ConDecJiraIssueModule init");
 
 		// TODO: Add i18n support and check i18n
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
@@ -51,21 +48,21 @@
 		return false;
 	};
 
-	ConDecIssueModule.prototype.initView = function initView() {
-		console.log("ConDecIssueModule initView");
+	ConDecJiraIssueModule.prototype.initView = function initView() {
+		console.log("ConDecJiraIssueModule initView");
 		var issueKey = conDecAPI.getIssueKey();
 		var search = getURLsSearch();
 		treant.buildTreant(issueKey, true, search);
 	};
 
-	ConDecIssueModule.prototype.updateView = function() {
-		console.log("ConDecIssueModule updateView");
+	ConDecJiraIssueModule.prototype.updateView = function() {
+		console.log("ConDecJiraIssueModule updateView");
 		JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [ JIRA.Issue.getIssueId() ]);
 	};
 
 	// for view.context.menu
-	ConDecIssueModule.prototype.setAsRootElement = function setAsRootElement(id) {
-		console.log("ConDecIssueModule setAsRootElement", id);
+	ConDecJiraIssueModule.prototype.setAsRootElement = function setAsRootElement(id) {
+		console.log("ConDecJiraIssueModule setAsRootElement", id);
 		conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
 			var baseUrl = AJS.params.baseURL;
 			var key = decisionKnowledgeElement.key;
@@ -74,7 +71,7 @@
 	};
 
 	function addOnClickEventToExportAsTable() {
-		console.log("ConDecIssueModule addOnClickEventToExportAsTable");
+		console.log("ConDecJiraIssueModule addOnClickEventToExportAsTable");
 
 		var exportMenuItem = document.getElementById("export-as-table-link");
 		exportMenuItem.addEventListener("click", function(e) {
@@ -90,7 +87,7 @@
 	 */
 	function isConDecAPIType(conDecAPI) {
 		if (!(conDecAPI !== undefined && conDecAPI.getDecisionKnowledgeElement !== undefined && typeof conDecAPI.getDecisionKnowledgeElement === 'function')) {
-			console.warn("ConDecIssueModule: invalid ConDecAPI object received.");
+			console.warn("ConDecJiraIssueModule: invalid ConDecAPI object received.");
 			return false;
 		}
 		return true;
@@ -98,7 +95,7 @@
 
 	function isConDecObservableType(conDecObservable) {
 		if (!(conDecObservable !== undefined && conDecObservable.notify !== undefined && typeof conDecObservable.notify === 'function')) {
-			console.warn("ConDecIssueModule: invalid ConDecObservable object received.");
+			console.warn("ConDecJiraIssueModule: invalid ConDecObservable object received.");
 			return false;
 		}
 		return true;
@@ -106,7 +103,7 @@
 
 	function isConDecDialogType(conDecDialog) {
 		if (!(conDecDialog !== undefined && conDecDialog.showCreateDialog !== undefined && typeof conDecDialog.showCreateDialog === 'function')) {
-			console.warn("ConDecIssueModule: invalid conDecDialog object received.");
+			console.warn("ConDecJiraIssueModule: invalid conDecDialog object received.");
 			return false;
 		}
 		return true;
@@ -114,7 +111,7 @@
 
 	function isConDecContextMenuType(conDecContextMenu) {
 		if (!(conDecContextMenu !== undefined && conDecContextMenu.createContextMenu !== undefined && typeof conDecContextMenu.createContextMenu === 'function')) {
-			console.warn("ConDecIssueModule: invalid conDecContextMenu object received.");
+			console.warn("ConDecJiraIssueModule: invalid conDecContextMenu object received.");
 			return false;
 		}
 		return true;
@@ -122,7 +119,7 @@
 
 	function isConDecTreantType(conDecTreant) {
 		if (!(conDecTreant !== undefined && conDecTreant.buildTreant !== undefined && typeof conDecTreant.buildTreant === 'function')) {
-			console.warn("ConDecIssueModule: invalid conDecTreant object received.");
+			console.warn("ConDecJiraIssueModule: invalid conDecTreant object received.");
 			return false;
 		}
 		return true;
@@ -229,6 +226,6 @@
 		document.body.removeChild(element);
 	}
 
-	// export ConDecIssueModule
-	global.conDecIssueModule = new ConDecIssueModule();
+	// export ConDecJiraIssueModule
+	global.conDecJiraIssueModule = new ConDecJiraIssueModule();
 })(window);

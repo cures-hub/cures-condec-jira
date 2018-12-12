@@ -7,9 +7,9 @@
  Is required by
  * conDecContextMenu
  * conDecDialog
- * conDecIssueModule
  * conDecTreant
  * conDecTreeViewer
+ * conDecJiraIssueModule
  * conDecKnowledgePage
  * conDecTabPanel
   
@@ -410,7 +410,7 @@
 	};
 
 	/*
-	 * external references: view.condec.tab.panel
+	 * external references: condec.tab.panel
 	 */
 	ConDecAPI.prototype.getTreeViewerWithoutRootElement = function getTreeViewerWithoutRootElement(showRelevant,
 			callback) {

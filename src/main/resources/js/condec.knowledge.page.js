@@ -2,14 +2,11 @@
  This view provides trees of decision knowledge.
  
  Requires
- * condec.api.js
- * condec.observable.js
- * condec.treant.js
- * condec.tree.viewer.js
- * condec.context.menu.js
-
- Is required by
- * decisionKnowledgePage.vm
+ * conDecAPI
+ * conDecObservable
+ * conDecContextMenu
+ * conDecTreant
+ * conDecTreeViewer
 
  Is referenced in HTML by
  * decisionKnowledgePage.vm

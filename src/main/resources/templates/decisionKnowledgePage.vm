@@ -28,8 +28,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 #include("templates/contextMenu.vm")
 <script>
 /*
-instantiate the ConDecKnowledgePage object controlling this view
-*/
+ * Instantiate the ConDecKnowledgePage object controlling this view:
+ */
 $(document).ready(function() {
 	conDecAPI.checkIfProjectKeyIsValid();
     if ( window.conDecKnowledgePage.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant, conDecTreeViewer, window) )

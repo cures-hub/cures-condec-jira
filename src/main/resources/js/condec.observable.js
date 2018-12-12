@@ -5,12 +5,14 @@
  The updateView functions of the subscribed views are called in the notify function.
  
  Registered/subscribed views/observers can be
- * conDecIssueModule
+ * conDecJiraIssueModule
  * conDecKnowledgePage
  * conDecTabPanel
     
  Is required by
- * view.*  
+ * condec.jira.issue.module
+ * condec.knowledge.page
+ * condec.tab.panel
  * 
  */
 (function(global) {
