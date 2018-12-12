@@ -29,7 +29,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
-public class TestMacro extends TestSetUpWithIssues {
+public class TestKnowledgeClassificationMacro extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
 
