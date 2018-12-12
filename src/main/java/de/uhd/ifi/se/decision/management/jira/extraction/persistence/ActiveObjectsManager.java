@@ -29,6 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
 import net.java.ao.Query;
@@ -57,7 +58,7 @@ public class ActiveObjectsManager {
 		DecisionKnowledgeInCommentEntity existingElement = getElementFromAO(commentId, endSubStringCount,
 				startSubstringCount, userId, projectKey);
 		if (existingElement != null) {
-			checkIfSentenceHasAValidLink(existingElement.getId(), issueId);
+			checkIfSentenceHasAValidLink(existingElement.getId(), issueId,getLinkTypeFromKnowledgeType(existingElement.getKnowledgeTypeString()));
 			return existingElement.getId();
 		}
 
@@ -88,9 +89,9 @@ public class ActiveObjectsManager {
 		return newElement.getId();
 	}
 
-	private static void checkIfSentenceHasAValidLink(long sentenceId, long issueId) {
+	private static void checkIfSentenceHasAValidLink(long sentenceId, long issueId, LinkType linkType) {
 		if (!isSentenceLinked(sentenceId)) {
-			Link link = new LinkImpl("i" + issueId, "s" + sentenceId);
+			Link link = new LinkImpl("i" + issueId, "s" + sentenceId,"");//linkType.toString());
 			GenericLinkManager.insertLinkWithoutTransaction(link);
 		}
 	}
@@ -101,6 +102,16 @@ public class ActiveObjectsManager {
 			return false;
 		} else {
 			return true;
+		}
+	}
+	
+	private static LinkType getLinkTypeFromKnowledgeType(String type) {
+		if(type.equalsIgnoreCase("pro") || type.equalsIgnoreCase("support")) {
+			return LinkType.SUPPORT;
+		}else if(type.equalsIgnoreCase("con") || type.equalsIgnoreCase("attack")) {
+			return LinkType.ATTACK;
+		}else {
+			return LinkType.CONTAIN;
 		}
 	}
 
@@ -120,13 +131,14 @@ public class ActiveObjectsManager {
 			smartLinkCreated = checkLastElementAndCreateLink(lastElement, sentence);
 		}
 		if (!smartLinkCreated) {
-			checkIfSentenceHasAValidLink(sentence.getId(), sentence.getIssueId());
+			checkIfSentenceHasAValidLink(sentence.getId(), sentence.getIssueId(),getLinkTypeFromKnowledgeType(sentence.getKnowledgeTypeString()));
 		}
 	}
 
-	private static boolean checkLastElementAndCreateLink(DecisionKnowledgeElement lastElement, Sentence sentence) {
+	private static boolean checkLastElementAndCreateLink(DecisionKnowledgeElement lastElement, DecisionKnowledgeElement sentence) {
 		if (lastElement != null) {
-			GenericLinkManager.insertLink(new LinkImpl(lastElement, sentence), null);
+			Link link = new LinkImpl("s"+lastElement.getId(),"s"+ sentence.getId(), getLinkTypeFromKnowledgeType(sentence.getType().toString()).toString());
+			GenericLinkManager.insertLink(link, null);
 			return true;
 		}
 		return false;
@@ -570,7 +582,7 @@ public class ActiveObjectsManager {
 		init();
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getIssueId());
+			checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getIssueId(),getLinkTypeFromKnowledgeType(databaseEntry.getKnowledgeTypeString()));
 		}
 	}
 
@@ -578,7 +590,7 @@ public class ActiveObjectsManager {
 		init();
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("ISSUE_ID = ?", issueId))) {
-			checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getIssueId());
+			checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getIssueId(), getLinkTypeFromKnowledgeType(databaseEntry.getKnowledgeTypeString()));
 		}
 	}
 
@@ -733,5 +745,29 @@ public class ActiveObjectsManager {
 		}
 		LOGGER.debug("Nothing found for: " + body.replace("<br/>", "").trim());
 		return 0;
+	}
+	
+	/**
+	 * Migration function on button "Validate Sentence Database" 
+	 * Adds Link types to "empty" links.
+	 * Can be deleted in a future release
+	 * @param projectKey
+	 */
+	public static void migrateArgumentTypesInLinks(String projectKey) {
+		init();
+		DecisionKnowledgeInCommentEntity[] sentencesInProject = ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("PROJECT_KEY = ?", projectKey));
+		for(DecisionKnowledgeInCommentEntity dbEntry: sentencesInProject) {
+			if(dbEntry.getKnowledgeTypeString().length() == 3) {//Equals Argument
+				List<Link> links = GenericLinkManager.getLinksForElement("s"+dbEntry.getId());	
+				for(Link link: links) {
+					if(link.getType() == null || link.getType() == "" || link.getType().equalsIgnoreCase("contain")) {
+						GenericLinkManager.deleteGenericLink(link);
+						link.setType(getLinkTypeFromKnowledgeType(dbEntry.getKnowledgeTypeString()).toString());
+						GenericLinkManager.insertLinkWithoutTransaction(link);
+					}
+				}
+			}
+		}
 	}
 }

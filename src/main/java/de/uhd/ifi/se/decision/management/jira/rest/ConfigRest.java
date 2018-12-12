@@ -309,6 +309,8 @@ public class ConfigRest {
 			GenericLinkManager.clearInvalidLinks();
 			// If there are now some "lonely" sentences, link them to their issues.
 			ActiveObjectsManager.createLinksForNonLinkedElementsForProject(projectKey);
+			//
+			ActiveObjectsManager.migrateArgumentTypesInLinks(projectKey);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
