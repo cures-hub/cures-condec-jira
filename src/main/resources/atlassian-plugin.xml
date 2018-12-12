@@ -294,9 +294,8 @@
 		<context>jira.create.issue</context>
 		<context>gh-rapid</context>
 		<resource type="download" name="js/toolbar-init.js"
-			location="js/view.commentTab.toolbar-init.js" />
+			location="js/condec.text.editor.extension.js" />
 	</web-resource>
-
 
 	<!-- Decision Knowledge Report -->
 	<report name="Decision Knowledge Report" key="decision-knowledge-report"
