@@ -61,15 +61,7 @@
 		<dependency>com.atlassian.auiplugin:aui-select2</dependency>
 		<dependency>com.atlassian.auiplugin:aui-experimental-iconfont</dependency>
 		<dependency>com.atlassian.auiplugin:aui-tooltips</dependency>
-	</web-resource>
-
-	<web-resource key="rest-client-resources" name="ConDec Rest Client Resources">
-		<description>
-			Provides the JavaScript REST Client for the REST API used in this plug-in.
-		</description>
-		<context>atl.general</context>
-		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
-		<resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />
+		<!-- JIRA dialogs -->
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-edit-issue</dependency>
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-create-issue</dependency>
 	</web-resource>
@@ -89,6 +81,8 @@
 		<resource type="download" name="raphael.js" location="/js/treant/raphael.js" />
 		<resource type="download" name="jquery.easing.js" location="/js/jquery/jquery.easing.js" />
 		<!-- ConDec java script files -->
+		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
+		<resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />
 		<resource type="download" name="condec.dialog.js" location="/js/condec.dialog.js" />
 		<resource type="download" name="condec.context.menu.js" location="/js/condec.context.menu.js" />
 		<resource type="download" name="condec.treant.js" location="/js/condec.treant.js" />
@@ -105,19 +99,19 @@
 			location="/js/view.condec.knowledge.page.js" />
 	</web-resource>
 
-	<web-resource key="issue-module-resources"
-		name="ConDec JavaScript Resources for the Issue Module">
+	<web-resource key="jira-issue-module-resources"
+		name="ConDec JIRA Issue Module Resources">
 		<description>
-			Provides the JavaScript file used in the issue module.
+			Provides the JavaScript file used in the JIRA issue module.
 		</description>
 		<context>jira.view.issue</context>
-		<resource type="download" name="view.condec.issue.module.js" location="/js/view.condec.issue.module.js" />
+		<resource type="download" name="condec.jira.issue.module.js" location="/js/condec.jira.issue.module.js" />
 	</web-resource>
 
 	<web-resource key="classifier-resources"
 		name="Resources for Decision Knowledge Extraction">
 		<description>
-			Provides the resources needed for extraction of decision knowledge from issue
+			Provides the resources needed for extraction of decision knowledge from JIRA issue
 			comments such as the model files for Weka and Meka classifiers.
 		</description>
 		<context>jira.view.issue</context>
@@ -285,7 +279,6 @@
 		class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.ConMacro'>
 		<description>Insert con knowledge element in comments.</description>
 	</macro>
-
 
 	<web-resource key="toolbar" name="JIRA Editor Reference Plugin Toolbar Init">
 		<context>jira.rich.editor</context>

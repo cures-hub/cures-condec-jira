@@ -6,7 +6,7 @@
 <meta name="admin.active.tab"
 	content="decdoc-project-settings-menu-item" />
 <meta name="projectKey" content="$projectKey" />
-$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:rest-client-resources")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 </head>
 <body>
