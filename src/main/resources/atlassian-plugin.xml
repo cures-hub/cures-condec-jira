@@ -120,8 +120,8 @@
 		<context>jira.view.issue</context>
 		<resource type="download" name="fc.model" location="/classifier/fc.model" />
 		<resource type="download" name="br.model" location="/classifier/br.model" />
-		<resource type="download" name="view.condec.tab.panel.js"
-			location="/js/view.condec.tab.panel.js" />
+		<resource type="download" name="condec.tab.panel.js"
+			location="/js/condec.tab.panel.js" />
 	</web-resource>
 
 	<web-resource key="report-resources" name="Resources for Decision Knowledge Report">
