@@ -1,6 +1,7 @@
 /*
- This file manages the insertion of knowledge types into the rich text editor.
- Also the transition between styled (rich text) and plan text with tags.
+ This file manages the extension of the rich text editor for manual classification of text as decision knowledge.
+ It adds five menu items to the editor to insert tags of the following pattern:
+ {knowledge type} text {knowledge type}.
  
  Requires
  * jquery
