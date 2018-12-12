@@ -97,8 +97,8 @@
 			Provides the JavaScript files for the separate decision knowledge page of this
 			plug-in.
 		</description>
-		<resource type="download" name="view.condec.knowledge.page.js"
-			location="/js/view.condec.knowledge.page.js" />
+		<resource type="download" name="condec.knowledge.page.js"
+			location="/js/condec.knowledge.page.js" />
 	</web-resource>
 
 	<web-resource key="jira-issue-module-resources"

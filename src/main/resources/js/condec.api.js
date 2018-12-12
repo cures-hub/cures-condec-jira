@@ -39,7 +39,7 @@
 
 	/*
 	 * external references: condec.context.menu, condec.dialog,
-	 * view.condec.knowledge.page, condec.jira.issue.module
+	 * condec.knowledge.page, condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getDecisionKnowledgeElement = function getDecisionKnowledgeElement(id, callback) {
 		getJSON(
@@ -90,7 +90,7 @@
 	};
 
 	/*
-	 * external references: view.condec.knowledge.page, condec.dialog
+	 * external references: condec.knowledge.page, condec.dialog
 	 */
 	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElementAsChild(summary,
 			description, type, documentationLocation, idOfExistingElement, documentationLocationOfExistingElement,
