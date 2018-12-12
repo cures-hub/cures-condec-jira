@@ -5,7 +5,6 @@ require([ "jquery", "jira/util/formatter", "jira/editor/registry" ], function($,
 	var DEFAULT_PLACEHOLDER = "knowledge element";
 	var lastItem;
 
-	//ISSUE
 	editorRegistry.on('register', function(entry) {
 		var $otherDropdown = $(entry.toolbar).find('.wiki-edit-other-picker-trigger');
 
@@ -15,75 +14,28 @@ require([ "jquery", "jira/util/formatter", "jira/editor/registry" ], function($,
 			var issueItem = $(getHTMLLiItem("Issue")).insertAfter(speechItem).on('click', function() {
 				entry.applyIfTextMode(addWikiMarkupIssue).applyIfTextMode(addRenderedContentIssue);
 			});
-			lastItem = issueItem;
 
-			entry.onUnregister(function cleanup() {
-				issueItem.remove();
-			});
-
-		});
-	});
-
-	//ALTERNATIVE
-	editorRegistry.on('register', function(entry) {
-		var $otherDropdown = $(entry.toolbar).find('.wiki-edit-other-picker-trigger');
-
-		$otherDropdown.one('click', function(dropdownClickEvent) {
-
-			var alternativeItem = $(getHTMLLiItem("Alternative")).insertAfter(lastItem).on('click', function() {
+			var alternativeItem = $(getHTMLLiItem("Alternative")).insertAfter(issueItem).on('click', function() {
 				entry.applyIfTextMode(addWikiMarkupAlternative).applyIfVisualMode(addRenderedContentAlternative);
 			});
-			lastItem = alternativeItem;
 
-			entry.onUnregister(function cleanup() {
-				alternativeItem.remove();
-			});
-		});
-	});
-
-	//Decision
-	editorRegistry.on('register', function(entry) {
-		var $otherDropdown = $(entry.toolbar).find('.wiki-edit-other-picker-trigger');
-
-		$otherDropdown.one('click', function(dropdownClickEvent) {
-			var decisionItem = $(getHTMLLiItem("Decision")).insertAfter(lastItem).on('click', function() {
+			var decisionItem = $(getHTMLLiItem("Decision")).insertAfter(alternativeItem).on('click', function() {
 				entry.applyIfTextMode(addWikiMarkupDecision).applyIfVisualMode(addRenderedContentDecision);
 			});
-			lastItem = decisionItem;
 
-			entry.onUnregister(function cleanup() {
-				decisionItem.remove();
-			});
-		});
-	});
-
-	//Pro
-	editorRegistry.on('register', function(entry) {
-		var $otherDropdown = $(entry.toolbar).find('.wiki-edit-other-picker-trigger');
-
-		$otherDropdown.one('click', function(dropdownClickEvent) {
-			var proItem = $(getHTMLLiItem("Pro")).insertAfter(lastItem).on('click', function() {
+			var proItem = $(getHTMLLiItem("Pro")).insertAfter(decisionItem).on('click', function() {
 				entry.applyIfTextMode(addWikiMarkupPro).applyIfVisualMode(addRenderedContentPro);
 			});
-			lastItem = proItem;
 
-			entry.onUnregister(function cleanup() {
-				proItem.remove();
-			});
-		});
-	});
-
-	//Con
-	editorRegistry.on('register', function(entry) {
-		var $otherDropdown = $(entry.toolbar).find('.wiki-edit-other-picker-trigger');
-
-		$otherDropdown.one('click', function(dropdownClickEvent) {
-
-			var conItem = $(getHTMLLiItem("Con")).insertAfter(lastItem).on('click', function() {
+			var conItem = $(getHTMLLiItem("Con")).insertAfter(proItem).on('click', function() {
 				entry.applyIfTextMode(addWikiMarkupCon).applyIfVisualMode(addRenderedContentCon);
 			});
 
 			entry.onUnregister(function cleanup() {
+				issueItem.remove();
+				alternativeItem.remove();
+				decisionItem.remove();
+				proItem.remove();
 				conItem.remove();
 			});
 		});

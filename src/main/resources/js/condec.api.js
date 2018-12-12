@@ -89,7 +89,7 @@
 	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElementAsChild(summary,
 			description, type, documentationLocation, idOfExistingElement, documentationLocationOfExistingElement,
 			callback) {
-		console.log("conDecAPI createDecisionKnowledgeElementAsChild");
+		console.log("conDecAPI createDecisionKnowledgeElement");
 		var newElement = {
 			"summary" : summary,
 			"type" : type,
