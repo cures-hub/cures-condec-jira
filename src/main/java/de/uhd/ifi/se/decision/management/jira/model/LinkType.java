@@ -46,7 +46,9 @@ public enum LinkType {
 	 * Get the link type that is associated to a certain knowledge type, e.g.,
 	 * support for pro-arguments and attack for con-arguments. The default link type
 	 * is contain.
-	 *
+	 * 
+	 * @param knowledgeTypeOfChildElement
+	 *            knowledge type of the child element.
 	 * @return link type.
 	 */
 	public static LinkType getLinkTypeForKnowledgeType(KnowledgeType knowledgeTypeOfChildElement) {
@@ -58,6 +60,11 @@ public enum LinkType {
 		default:
 			return LinkType.CONTAIN;
 		}
+	}
+
+	public static LinkType getLinkTypeForKnowledgeType(String knowledgeTypeOfChildElement) {
+		KnowledgeType type = KnowledgeType.getKnowledgeType(knowledgeTypeOfChildElement);
+		return getLinkTypeForKnowledgeType(type);
 	}
 
 	/**
