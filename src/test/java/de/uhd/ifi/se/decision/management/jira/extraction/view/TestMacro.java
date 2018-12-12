@@ -16,7 +16,7 @@ import com.atlassian.renderer.v2.macro.MacroException;
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.view.macros.AlternativeMacro;
-import de.uhd.ifi.se.decision.management.jira.extraction.view.macros.ConDecMacro;
+import de.uhd.ifi.se.decision.management.jira.extraction.view.macros.AbstractKnowledgeClassificationMacro;
 import de.uhd.ifi.se.decision.management.jira.extraction.view.macros.ConMacro;
 import de.uhd.ifi.se.decision.management.jira.extraction.view.macros.DecisionMacro;
 import de.uhd.ifi.se.decision.management.jira.extraction.view.macros.IssueMacro;
@@ -50,11 +50,11 @@ public class TestMacro extends TestSetUpWithIssues {
 
 	@Test
 	public void testReformatCommentBody() {
-		assertEquals("test", ConDecMacro.reformatCommentBody("<p>test</p>"));
-		assertEquals("test", ConDecMacro.reformatCommentBody("<p> test</p>"));
-		assertEquals("test", ConDecMacro.reformatCommentBody("<p> test </p>"));
-		assertEquals("test", ConDecMacro.reformatCommentBody("<p> test   </p>"));
-		assertEquals("test", ConDecMacro.reformatCommentBody("<p>      test   </p>"));
+		assertEquals("test", AbstractKnowledgeClassificationMacro.reformatCommentBody("<p>test</p>"));
+		assertEquals("test", AbstractKnowledgeClassificationMacro.reformatCommentBody("<p> test</p>"));
+		assertEquals("test", AbstractKnowledgeClassificationMacro.reformatCommentBody("<p> test </p>"));
+		assertEquals("test", AbstractKnowledgeClassificationMacro.reformatCommentBody("<p> test   </p>"));
+		assertEquals("test", AbstractKnowledgeClassificationMacro.reformatCommentBody("<p>      test   </p>"));
 	}
 
 	@Test

@@ -7,7 +7,7 @@ import com.atlassian.renderer.v2.macro.MacroException;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-public class IssueMacro extends ConDecMacro {
+public class IssueMacro extends AbstractKnowledgeClassificationMacro {
 
 	private String knowledgeType = KnowledgeType.ISSUE.toString().toLowerCase();
 

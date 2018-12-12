@@ -15,7 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
-public class ConDecMacro extends BaseMacro {
+public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 
 	@Override
 	public String execute(Map<String, Object> parameters, String body, RenderContext renderContext)
