@@ -5,7 +5,13 @@
  * conDecTreant.findParentId
     
  Is required by
- * view.*  
+ * conDecContextMenu
+ * conDecDialog
+ * conDecTreant
+ * conDecTreeViewer
+ * conDecJiraIssueModule
+ * conDecKnowledgePage
+ * conDecTabPanel
   
  Is referenced in HTML by
  * settingsForAllProjects.vm 
@@ -33,7 +39,7 @@
 
 	/*
 	 * external references: condec.context.menu, condec.dialog,
-	 * view.condec.knowledge.page, view.condec.issue.module
+	 * condec.knowledge.page, condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getDecisionKnowledgeElement = function getDecisionKnowledgeElement(id, callback) {
 		getJSON(
@@ -50,7 +56,7 @@
 	};
 
 	/*
-	 * external references: view.condec.issue.module
+	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getLinkedElements = function getLinkedElements(id, callback) {
 		getJSON(
@@ -84,12 +90,12 @@
 	};
 
 	/*
-	 * external references: view.condec.knowledge.page, condec.dialog
+	 * external references: condec.knowledge.page, condec.dialog
 	 */
 	ConDecAPI.prototype.createDecisionKnowledgeElement = function createDecisionKnowledgeElementAsChild(summary,
 			description, type, documentationLocation, idOfExistingElement, documentationLocationOfExistingElement,
 			callback) {
-		console.log("conDecAPI createDecisionKnowledgeElementAsChild");
+		console.log("conDecAPI createDecisionKnowledgeElement");
 		var newElement = {
 			"summary" : summary,
 			"type" : type,
@@ -266,10 +272,7 @@
 	ConDecAPI.prototype.setSentenceIrrelevant = function setSentenceIrrelevant(id, callback) {
 		var jsondata = {
 			"id" : id,
-			"summary" : "",
-			"type" : "",
-			"projectKey" : "",
-			"description" : ""
+			"documentationLocation" : "s"
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/setSentenceIrrelevant.json", jsondata, function(
 				error) {
@@ -407,7 +410,7 @@
 	};
 
 	/*
-	 * external references: view.condec.tab.panel
+	 * external references: condec.tab.panel
 	 */
 	ConDecAPI.prototype.getTreeViewerWithoutRootElement = function getTreeViewerWithoutRootElement(showRelevant,
 			callback) {
@@ -707,7 +710,7 @@
 	};
 
 	/*
-	 * external references: view.condec.issue.module
+	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getElementsByQuery = function getElementsByQuery(query, callback) {
 		var projectKey = projectKey || "";
@@ -722,7 +725,7 @@
 	};
 
 	/*
-	 * external references: view.condec.issue.module
+	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, elementKey, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsLinkedToElement.json?elementKey="
@@ -819,7 +822,7 @@
 	}
 
 	/*
-	 * external references: view.condec.issue.module
+	 * external references: condec.jira.issue.module
 	 */
 	function getIssueKey() {
 		console.log("conDecAPI getIssueKey");

@@ -34,7 +34,7 @@
 
 	ConDecDialog.prototype.showCreateDialog = function showCreateDialog(idOfParentElement,
 			documentationLocationOfParentElement) {
-		console.log("view.context.menu.js setUpDialogForCreateAction");
+		console.log("conDecDialog setUpDialogForCreateAction");
 		console.log(idOfParentElement);
 		setHeaderText(createKnowledgeElementText);
 		setUpCreateOrEditDialog("", "", "Alternative", true);
@@ -60,7 +60,7 @@
 	 * should be moved out from this function TODO: rename to maybe showDialog()
 	 */
 	function setUpDialog() {
-		console.log("view.context.menu.js setUpDialog");
+		console.log("conDecDialog setUpDialog");
 		AJS.dialog2("#dialog").show();
 		if (!conDecDialogOnHideSet) {
 			AJS.dialog2("#dialog").on("hide", function() {
@@ -71,13 +71,13 @@
 	}
 
 	function setHeaderText(headerText) {
-		console.log("view.context.menu.js headerText");
+		console.log("conDecDialog headerText");
 		var header = document.getElementById("dialog-header");
 		header.textContent = headerText;
 	}
 
 	function setUpCreateOrEditDialog(summary, description, knowledgeType, addDocumentLocation) {
-		console.log("view.context.menu.js setUpCreateOrEditDialog");
+		console.log("conDecDialog setUpCreateOrEditDialog");
 		var documentationLocation = "";
 		if (addDocumentLocation) {
 			documentationLocation = "<div class='field-group'><label for='form-select-location'>Documentation Location:</label>"
@@ -118,7 +118,7 @@
 	}
 
 	function setUpTypeChangeDialog(knowledgeType) {
-		console.log("view.context.menu.js setUpTypeChangeDialog");
+		console.log("conDecDialog setUpTypeChangeDialog");
 		document
 				.getElementById("dialog-content")
 				.insertAdjacentHTML(
@@ -139,12 +139,12 @@
 	}
 
 	function isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index) {
-		console.log("view.context.menu.js isKnowledgeTypeLocatedAtIndex");
+		console.log("conDecDialog isKnowledgeTypeLocatedAtIndex");
 		return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase();
 	}
 
 	ConDecDialog.prototype.showLinkDialog = function showLinkDialog(id) {
-		console.log("view.context.menu.js setUpDialogForLinkAction");
+		console.log("conDecDialog setUpDialogForLinkAction");
 		console.log(id);
 		setUpDialog();
 		setHeaderText(linkKnowledgeElementText);
@@ -179,7 +179,7 @@
 	};
 
 	function addFormForArguments() {
-		console.log("view.context.menu.js addFormForArguments");
+		console.log("conDecDialog addFormForArguments");
 		var childId = $("select[name='form-select-component']").val();
 		var argumentFieldGroup = document.getElementById("argument-field-group");
 		argumentFieldGroup.innerHTML = "";
@@ -201,7 +201,7 @@
 	ConDecDialog.prototype.addFormForArguments = addFormForArguments;
 
 	ConDecDialog.prototype.showEditDialog = function showEditDialog(id, type) {
-		console.log("view.context.menu.js setUpDialogForEditAction");
+		console.log("conDecDialog setUpDialogForEditAction");
 		conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
 			var summary = decisionKnowledgeElement.summary;
 			var description = decisionKnowledgeElement.description;
@@ -236,7 +236,7 @@
 	};
 
 	ConDecDialog.prototype.showDeleteDialog = function showDeleteDialog(id) {
-		console.log("view.context.menu.js setUpDialogForDeleteAction");
+		console.log("conDecDialog setUpDialogForDeleteAction");
 		setUpDialog();
 		setHeaderText(deleteKnowledgeElementText);
 
@@ -254,7 +254,7 @@
 	};
 
 	ConDecDialog.prototype.showDeleteLinkDialog = function showDeleteLinkDialog(id, parentId) {
-		console.log("view.context.menu.js setUpDialogForDeleteLinkAction");
+		console.log("conDecDialog setUpDialogForDeleteLinkAction");
 		setUpDialog();
 		setHeaderText(deleteLinkToParentText);
 
@@ -272,7 +272,7 @@
 	};
 
 	ConDecDialog.prototype.showChangeTypeDialog = function showChangeTypeDialog(id) {
-		console.log("view.context.menu.js setUpDialogForChangeTypeAction");
+		console.log("conDecDialog setUpDialogForChangeTypeAction");
 		setUpDialog();
 		setHeaderText(changeKnowledgeTypeText);
 		conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
@@ -292,7 +292,7 @@
 	};
 
 	function resetDialog() {
-		console.log("view.context.menu.js resetDialog");
+		console.log("conDecDialog resetDialog");
 		document.getElementById("dialog-header").innerHTML = "";
 		document.getElementById("dialog-content").innerHTML = "";
 		var dialog = document.getElementById("dialog");
@@ -363,6 +363,7 @@
 			conDecAPI.editSentenceBody(id, description, type, function() {
 				AJS.dialog2("#dialog").hide();
 				conDecObservable.notify();
+				JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
 			});
 		};
 		AJS.$("#form-select-type").auiSelect2();

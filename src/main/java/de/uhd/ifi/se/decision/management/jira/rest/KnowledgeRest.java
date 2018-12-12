@@ -101,8 +101,7 @@ public class KnowledgeRest {
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createDecisionKnowledgeElement(@Context HttpServletRequest request,
-			DecisionKnowledgeElement newElement,
-			@QueryParam("idOfExistingElement") long idOfExistingElement,
+			DecisionKnowledgeElement newElement, @QueryParam("idOfExistingElement") long idOfExistingElement,
 			@QueryParam("documentationLocationOfExistingElement") String documentationLocationOfExistingElement) {
 		if (newElement == null || request == null) {
 			return Response.status(Status.BAD_REQUEST)
@@ -111,14 +110,14 @@ public class KnowledgeRest {
 
 		String projectKey = newElement.getProject().getProjectKey();
 
-		ApplicationUser user = AuthenticationManager.getUser(request);		
+		ApplicationUser user = AuthenticationManager.getUser(request);
 
 		DecisionKnowledgeElement existingElement = new DecisionKnowledgeElementImpl();
 		existingElement.setId(idOfExistingElement);
 		existingElement.setDocumentationLocation(documentationLocationOfExistingElement);
 
 		DecisionKnowledgeElement newElementWithId = null;
-		if (newElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {			
+		if (newElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
 			if (existingElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
 				Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(idOfExistingElement);
 				newElement.setId(element.getIssueId());
@@ -303,16 +302,17 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response setSentenceIrrelevant(@Context HttpServletRequest request,
 			DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (request != null && decisionKnowledgeElement != null && decisionKnowledgeElement.getId() > 0) {
-			boolean isDeleted = ActiveObjectsManager.setSentenceIrrelevant(decisionKnowledgeElement.getId(), false);
-			if (isDeleted) {
-				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
-			} else {
-				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
-			}
+		if (request == null || decisionKnowledgeElement == null || decisionKnowledgeElement.getId() <= 0) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
+					.build();
 		}
-		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
+		boolean isDeleted = ActiveObjectsManager.setSentenceIrrelevant(decisionKnowledgeElement.getId(), false);
+		if (isDeleted) {
+			return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
+		} else {
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
+		}
 	}
 
 	@Path("/editSentenceBody")

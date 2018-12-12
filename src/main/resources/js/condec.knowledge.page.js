@@ -2,14 +2,11 @@
  This view provides trees of decision knowledge.
  
  Requires
- * condec.api.js
- * condec.observable.js
- * condec.treant.js
- * condec.tree.viewer.js
- * condec.context.menu.js
-
- Is required by
- * decisionKnowledgePage.vm
+ * conDecAPI
+ * conDecObservable
+ * conDecContextMenu
+ * conDecTreant
+ * conDecTreeViewer
 
  Is referenced in HTML by
  * decisionKnowledgePage.vm
@@ -29,7 +26,7 @@
 
 	ConDecKnowledgePage.prototype.init = function(_conDecAPI, _conDecObservable, _conDecDialog, _conDecContextMenu,
 			_treant, _treeViewer, _i18n) {
-		console.log("view.decision.knowledge.page init");
+		console.log("conDecKnowledgePage init");
 
 		// TODO: Add i18n support and check i18n
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
@@ -61,7 +58,7 @@
 	};
 
 	function initializeDecisionKnowledgePage(conDecAPI, treant, treeViewer) {
-		console.log("view.decision.knowledge.page initializeDecisionKnowledgePage");
+		console.log("conDecKnowledgePage initializeDecisionKnowledgePage");
 
 		var knowledgeTypes = conDecAPI.knowledgeTypes;
 		for (var index = 0; index < knowledgeTypes.length; index++) {
@@ -99,7 +96,7 @@
 	}
 
 	function updateView(nodeId, treant, treeViewer) {
-		console.log("view.decision.knowledge.page updateView");
+		console.log("conDecKnowledgePage updateView");
 		treeViewer.buildTreeViewer();
 		if (nodeId === undefined) {
 			var rootElement = treant.getCurrentRootElement();

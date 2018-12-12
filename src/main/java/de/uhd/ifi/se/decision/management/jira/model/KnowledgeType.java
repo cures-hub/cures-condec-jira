@@ -195,6 +195,9 @@ public enum KnowledgeType {
 	}
 
 	public static String getIconUrl(DecisionKnowledgeElement element, String linkType) {
+		if (linkType == null) {
+			return ComponentGetter.getUrlOfImageFolder() + "Other.png";
+		}
 		switch (element.getType()) {
 		case ARGUMENT:
 			if (linkType.equals("support")) {

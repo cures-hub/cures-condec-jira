@@ -62,7 +62,7 @@ public class LinkImpl implements Link {
 	}
 
 	public LinkImpl(String idOfSourceElementWithPrefix, String idOfDestinationElementWithPrefix, String type) {
-		this(idOfDestinationElementWithPrefix, idOfSourceElementWithPrefix);
+		this(idOfSourceElementWithPrefix, idOfDestinationElementWithPrefix);
 		setType(type);
 	}
 
@@ -90,6 +90,9 @@ public class LinkImpl implements Link {
 
 	@Override
 	public String getType() {
+		if(type == null|| type.equals("")) {
+			return "contain";
+		}
 		return type;
 	}
 
