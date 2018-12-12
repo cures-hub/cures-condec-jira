@@ -25,7 +25,7 @@
 	};
 
 	ConDecIssueTab.prototype.init = function init(_conDecAPI, _conDecObservable, _treeViewer, _contextMenu, _i18n) {
-		console.log("view.tab.panel.js init");
+		console.log("conDecTabPanel init");
 
 		// TODO add simple type checks
 		conDecAPI = _conDecAPI;
@@ -67,14 +67,14 @@
 
 	/*
 	 called by
-	 * view.tab.panel.js:callDialog
+	 * conDecTabPanel:callDialog
 	 * view.context.menu.js
 	 */
 	function buildTreeViewer(knowledgeTypeSelection) {
-		console.log("view.tab.panel.js buildTreeViewer");
+		console.log("conDecTabPanel buildTreeViewer");
 
 		conDecAPI.getTreeViewerWithoutRootElement(knowledgeTypeSelection, function(core) {
-			console.log("view.tab.panel.js getTreeViewerWithoutRootElement callback");
+			console.log("conDecTabPanel getTreeViewerWithoutRootElement callback");
 
 			jQueryConDec("#jstree").jstree({
 				"core" : core,
