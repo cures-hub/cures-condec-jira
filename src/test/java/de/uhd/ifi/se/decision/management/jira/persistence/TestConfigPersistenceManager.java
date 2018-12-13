@@ -1,10 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -19,6 +14,8 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+
+import static org.junit.Assert.*;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestConfigPersistenceManager extends TestSetUpWithIssues {
@@ -108,11 +105,13 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetKnowledgeExtractedNullFalse() {
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit(null, false);
+		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromGit(null));
 	}
 
 	@Test
 	public void testSetKnowledgeExtractedNullTrue() {
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit(null, true);
+		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromGit(null));
 	}
 
 	@Test
@@ -124,6 +123,7 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetKnowledgeExtractedInvalidTrue() {
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit("NotTEST", true);
+		assertTrue(ConfigPersistenceManager.isKnowledgeExtractedFromGit("NotTEST"));
 	}
 
 	@Test
@@ -134,6 +134,7 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetKnowledgeExtractedFilledTrue() {
 		ConfigPersistenceManager.setKnowledgeExtractedFromGit("TEST", true);
+		assertTrue(ConfigPersistenceManager.isKnowledgeExtractedFromGit("TEST"));
 	}
 
 	// IsKnowledgeExtractedFromIssues
@@ -162,16 +163,19 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetKnowledgeExtractedFromIssuesKeyNullIssueTrue() {
 		ConfigPersistenceManager.setKnowledgeExtractedFromIssues(null, true);
+		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromIssues(null));
 	}
 
 	@Test
 	public void testSetKnowledgeExtractedFromIssuesKeyNullIssueFalse() {
 		ConfigPersistenceManager.setKnowledgeExtractedFromIssues(null, false);
+		assertFalse(ConfigPersistenceManager.isKnowledgeExtractedFromIssues(null));
 	}
 
 	@Test
 	public void testSetKnowledgeExtractedFromIssuesKeyFilledIssueTrue() {
 		ConfigPersistenceManager.setKnowledgeExtractedFromIssues("TEST", true);
+		assertTrue(ConfigPersistenceManager.isKnowledgeExtractedFromIssues("TEST"));
 	}
 
 	@Test
@@ -183,31 +187,37 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetKnowledgeTypeEnabledKeyNullTypeNullEnabledFalse() {
 		ConfigPersistenceManager.setKnowledgeTypeEnabled(null, null, false);
+		assertFalse(ConfigPersistenceManager.isKnowledgeTypeEnabled(null,""));
 	}
 
 	@Test
 	public void testSetKnowledgeTypeEnabledKeyNullTypeNullEnabledTrue() {
 		ConfigPersistenceManager.setKnowledgeTypeEnabled(null, null, true);
+        assertFalse(ConfigPersistenceManager.isKnowledgeTypeEnabled(null,""));
 	}
 
 	@Test
 	public void testSetKnowledgeTypeEnabledKeyNullTypeFilledEnabledFalse() {
 		ConfigPersistenceManager.setKnowledgeTypeEnabled(null, KnowledgeType.SOLUTION.toString(), false);
+        assertFalse(ConfigPersistenceManager.isKnowledgeTypeEnabled(null,""));
 	}
 
 	@Test
 	public void testSetKnowledgeTypeEnabledKeyNullTypeFilledEnabledTrue() {
 		ConfigPersistenceManager.setKnowledgeTypeEnabled(null, KnowledgeType.SOLUTION.toString(), true);
+        assertFalse(ConfigPersistenceManager.isKnowledgeTypeEnabled(null,""));
 	}
 
 	@Test
 	public void testSetKnowledgeTypeEnabledKeyFilledTypeNullEnabledFalse() {
 		ConfigPersistenceManager.setKnowledgeTypeEnabled("TEST", null, false);
+        assertFalse(ConfigPersistenceManager.isKnowledgeTypeEnabled("TEST",""));
 	}
 
 	@Test
 	public void testSetKnowledgeTypeEnabledKeyFilledTypeNullEnabledTrue() {
 		ConfigPersistenceManager.setKnowledgeTypeEnabled("TEST", null, true);
+        assertFalse(ConfigPersistenceManager.isKnowledgeTypeEnabled("TEST",""));
 	}
 
 	@Test
@@ -218,11 +228,13 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetKnowledgeTypeEnabledKeyFilledTypeFilledEnabledTrue() {
 		ConfigPersistenceManager.setKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString(), true);
+		assertTrue(ConfigPersistenceManager.isKnowledgeTypeEnabled("TEST", KnowledgeType.SOLUTION.toString()));
 	}
 
 	@Test
 	public void testSetIconParsingTrue() {
 		ConfigPersistenceManager.setIconParsing("TEST", true);
+		assertTrue(ConfigPersistenceManager.isIconParsing("TEST"));
 	}
 
 	@Test
@@ -238,6 +250,7 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetAccessToken() {
 		ConfigPersistenceManager.setAccessToken("new Token");
+		assertNotNull(ConfigPersistenceManager.getAccessToken());
 	}
 
 	@Test
@@ -248,6 +261,7 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetRequestToken() {
 		ConfigPersistenceManager.setRequestToken("new Token");
+		assertNotNull(ConfigPersistenceManager.getRequestToken());
 	}
 
 	@Test
@@ -258,6 +272,7 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetOauthJiraHome() {
 		ConfigPersistenceManager.setOauthJiraHome("new Token");
+		assertNotNull(ConfigPersistenceManager.getOauthJiraHome());
 	}
 
 	@Test
@@ -268,6 +283,7 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetPrivateKey() {
 		ConfigPersistenceManager.setPrivateKey("new Token");
+		assertNotNull(ConfigPersistenceManager.getPrivateKey());
 	}
 
 	@Test
@@ -278,6 +294,7 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetConsumerKey() {
 		ConfigPersistenceManager.setConsumerKey("new Token");
+		assertNotNull(ConfigPersistenceManager.getConsumerKey());
 	}
 
 	@Test
@@ -288,6 +305,7 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetSecretForOAuth() {
 		ConfigPersistenceManager.setSecretForOAuth("new Token");
+		assertNotNull(ConfigPersistenceManager.getSecretForOAuth());
 	}
 
 	@Test
@@ -298,6 +316,7 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetWebhookUrlNullNull() {
 		ConfigPersistenceManager.setWebhookUrl(null, null);
+		assertEquals("", ConfigPersistenceManager.getWebhookUrl(null));
 	}
 
 	@Test
@@ -308,11 +327,13 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetWebhookUrlNullFilled() {
 		ConfigPersistenceManager.setWebhookUrl(null, "http://true");
+		assertEquals("", ConfigPersistenceManager.getWebhookUrl(null));
 	}
 
 	@Test
 	public void testSetWebhookUrlFilledFilled() {
 		ConfigPersistenceManager.setWebhookUrl("TEST", "http://true");
+		assertEquals("true", ConfigPersistenceManager.getWebhookUrl("TEST"));
 	}
 
 	@Test
@@ -328,6 +349,7 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetWebhookSecretNullNull() {
 		ConfigPersistenceManager.setWebhookSecret(null, null);
+		assertEquals("", ConfigPersistenceManager.getWebhookSecret(null));
 	}
 
 	@Test
@@ -338,11 +360,13 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetWebhookSecretNullFilled() {
 		ConfigPersistenceManager.setWebhookSecret(null, "http://true");
+		assertEquals("", ConfigPersistenceManager.getWebhookSecret(null));
 	}
 
 	@Test
 	public void testSetWebhookSecretFilledFilled() {
 		ConfigPersistenceManager.setWebhookSecret("TEST", "http://true");
+		assertEquals("true", ConfigPersistenceManager.getWebhookSecret("TEST"));
 	}
 
 	@Test
@@ -358,11 +382,13 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetWebhookEnabledNullFalse() {
 		ConfigPersistenceManager.setWebhookEnabled(null, false);
+		assertFalse(ConfigPersistenceManager.isWebhookEnabled(null));
 	}
 
 	@Test
 	public void testSetWebhookEnabledNullTrue() {
 		ConfigPersistenceManager.setWebhookEnabled(null, true);
+		assertFalse(ConfigPersistenceManager.isWebhookEnabled(null));
 	}
 
 	@Test
@@ -373,6 +399,7 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetWebhookEnabledFiledTrue() {
 		ConfigPersistenceManager.setWebhookEnabled("TEST", true);
+		assertTrue(ConfigPersistenceManager.isWebhookEnabled("TEST"));
 	}
 
 	@Test
@@ -393,31 +420,37 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetWebhookTypeNullNullFalse() {
 		ConfigPersistenceManager.setWebhookType(null, null, false);
+		assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled(null,null));
 	}
 
 	@Test
 	public void testSetWebhookTypeNullNullTrue() {
 		ConfigPersistenceManager.setWebhookType(null, null, true);
+        assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled(null,null));
 	}
 
 	@Test
 	public void testSetWebhookTypeNullEmptyFalse() {
 		ConfigPersistenceManager.setWebhookType(null, "", false);
+        assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled(null,""));
 	}
 
 	@Test
 	public void testSetWebhookTypeNullEmptyTrue() {
 		ConfigPersistenceManager.setWebhookType(null, "", true);
+        assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled(null, ""));
 	}
 
 	@Test
 	public void testSetWebhookTypeNullFilledFalse() {
 		ConfigPersistenceManager.setWebhookType(null, "Task", false);
+        assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled(null, "Task"));
 	}
 
 	@Test
 	public void testSetWebhookTypeNullFilledTrue() {
 		ConfigPersistenceManager.setWebhookType(null, "Task", true);
+        assertFalse(ConfigPersistenceManager.isWebhookTypeEnabled(null, "Task"));
 	}
 
 	@Test
@@ -448,6 +481,7 @@ public class TestConfigPersistenceManager extends TestSetUpWithIssues {
 	@Test
 	public void testSetWebhookTypeFilledFilledTrue() {
 		ConfigPersistenceManager.setWebhookType("TEST", "Task", true);
+		assertNotNull(ConfigPersistenceManager.getEnabledWebhookTypes("TEST"));
 	}
 
 	@Test
