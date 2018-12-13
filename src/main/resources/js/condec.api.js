@@ -242,28 +242,26 @@
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.updateDecisionKnowledgeElementAsChild = function updateDecisionKnowledgeElementAsChild(childId,
-			summary, description, type) {
-		this.getDecisionKnowledgeElement(childId, (function(childElement) {
+			summary, description, type, documentationLocation) {
+		this.getDecisionKnowledgeElement(childId, documentationLocation, (function(childElement) {
 			var parentDocumentationLocation = conDecTreant.findDocumentationLocationOfParent(childId);
-			updateDecisionKnowledgeElement(childId, summary, description, type, parentDocumentationLocation,
-					(function() {
-						if (childElement.type !== type) {
-							var parentId = conDecTreant.findParentId(childId);
-							switchLinkTypes(type, parentId, childId, parentDocumentationLocation,
-									childElement.documentationLocation, (function(linkType, parentId, childId) {
-										this.deleteLink(parentId, childId, parentDocumentationLocation,
-												childElement.documentationLocation, (function() {
-													this.linkElements(linkType, parentId, childId,
-															parentDocumentationLocation,
-															childElement.documentationLocation, function() {
-																conDecObservable.notify();
-															});
-												}).bind(this));
-									}).bind(this));
-						} else {
-							conDecObservable.notify();
-						}
-					}).bind(this));
+			updateDecisionKnowledgeElement(childId, summary, description, type, documentationLocation, (function() {
+				if (childElement.type !== type) {
+					var parentId = conDecTreant.findParentId(childId);
+					switchLinkTypes(type, parentId, childId, parentDocumentationLocation, documentationLocation,
+							(function(linkType, parentId, childId) {
+								this.deleteLink(parentId, childId, parentDocumentationLocation,
+										childElement.documentationLocation, (function() {
+											this.linkElements(linkType, parentId, childId, parentDocumentationLocation,
+													documentationLocation, function() {
+														conDecObservable.notify();
+													});
+										}).bind(this));
+							}).bind(this));
+				} else {
+					conDecObservable.notify();
+				}
+			}).bind(this));
 		}).bind(this));
 	};
 
@@ -853,7 +851,7 @@
 	ConDecAPI.prototype.openJiraIssue = function openJiraIssue(nodeId) {
 		console.log("conDecAPI openJiraIssue");
 
-		this.getDecisionKnowledgeElement(nodeId, function(decisionKnowledgeElement) {
+		this.getDecisionKnowledgeElement(nodeId, "i", function(decisionKnowledgeElement) {
 			var baseUrl = AJS.params.baseURL;
 			var key = decisionKnowledgeElement.key;
 			global.open(baseUrl + "/browse/" + key, '_self');
