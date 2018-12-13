@@ -64,28 +64,19 @@ public class KnowledgeRest {
 		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(projectKey,
 				documentationLocation);
 
+		DecisionKnowledgeElement decisionKnowledgeElement = null;
+
 		if (persistenceManager instanceof JiraIssueCommentPersistenceManager) {
 			// TODO: Implement
 			// JiraIssueCommentPersistenceManager.getDecisionKnowledgeElement(id)
 			// @issue: GetDecisionKnowledgeElement might not be the correct method name to
 			// retrieve irrelevant sentences. How to deal with irrelevant sentences?
-			Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(id);
-
-			if (sentence != null) {
-				// TODO: Reweork this after merging with ConDec-378
-				// @issue: Can we return a whole sentence object similar as done in the method
-				// getDecisionKnowledgeElement instead of building a new object here?
-				return Response.status(Status.OK)
-						.entity(ImmutableMap.of("id", sentence.getId(), "description", sentence.getDescription(),
-								"type", sentence.getKnowledgeTypeString(), "documentationLocation",
-								sentence.getDocumentationLocationAsString()))
-						.build();
-			}
+			decisionKnowledgeElement = ActiveObjectsManager.getElementFromAO(id);
 		} else {
-			DecisionKnowledgeElement decisionKnowledgeElement = persistenceManager.getDecisionKnowledgeElement(id);
-			if (decisionKnowledgeElement != null) {
-				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
-			}
+			decisionKnowledgeElement = persistenceManager.getDecisionKnowledgeElement(id);
+		}
+		if (decisionKnowledgeElement != null) {
+			return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error", "Decision knowledge element was not found for the given id.")).build();
