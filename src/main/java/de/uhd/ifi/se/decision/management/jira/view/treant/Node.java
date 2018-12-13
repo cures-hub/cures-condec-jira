@@ -68,8 +68,8 @@ public class Node {
 
 	public Node(DecisionKnowledgeElement decisionKnowledgeElement, boolean isCollapsed, boolean isHyperlinked) {
 		this();
-		this.nodeContent = ImmutableMap.of("title", decisionKnowledgeElement.getSummary(), "desc",
-				decisionKnowledgeElement.getKey());
+		this.nodeContent = ImmutableMap.of("title", decisionKnowledgeElement.getSummary(), "documentationLocation",
+				decisionKnowledgeElement.getDocumentationLocationAsString(), "desc", decisionKnowledgeElement.getKey());
 		this.htmlClass = decisionKnowledgeElement.getType().getSuperType().toString().toLowerCase(Locale.ENGLISH);
 		this.htmlId = decisionKnowledgeElement.getId();
 		DecisionKnowledgeProject project = decisionKnowledgeElement.getProject();
