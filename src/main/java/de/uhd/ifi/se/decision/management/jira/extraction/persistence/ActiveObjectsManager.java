@@ -644,6 +644,26 @@ public class ActiveObjectsManager {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		long linkTypeId = JiraIssuePersistenceManager.getLinkTypeId("contain");
 
+		for(Link oldLink: GenericLinkManager.getLinksForElement("s"+aoId)) {
+			Link newLink = oldLink;
+			if(newLink.getIdOfDestinationElementWithPrefix().equals("s"+aoId)) {
+				newLink.setDestinationElement(new DecisionKnowledgeElementImpl(issue));
+			}else if(newLink.getIdOfSourceElementWithPrefix().equals("s"+aoId)) {
+				newLink.setSourceElement(new DecisionKnowledgeElementImpl(issue));
+			}
+			GenericLinkManager.deleteGenericLink(oldLink);
+			if(GenericLinkManager.isIssueLink(newLink)) {
+				try {
+					issueLinkManager.createIssueLink(element.getIssueId(), issue.getId(), linkTypeId, (long) 0, user);
+				} catch (CreateException e) {
+					
+				}
+			}else {
+				GenericLinkManager.insertLink(newLink, user);
+			}
+		}
+		
+		
 		try {
 			issueLinkManager.createIssueLink(element.getIssueId(), issue.getId(), linkTypeId, (long) 0, user);
 		} catch (CreateException e) {
