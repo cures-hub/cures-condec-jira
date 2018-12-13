@@ -39,7 +39,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 
 /**
@@ -64,17 +63,7 @@ public class KnowledgeRest {
 		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(projectKey,
 				documentationLocation);
 
-		DecisionKnowledgeElement decisionKnowledgeElement = null;
-
-		if (persistenceManager instanceof JiraIssueCommentPersistenceManager) {
-			// TODO: Implement
-			// JiraIssueCommentPersistenceManager.getDecisionKnowledgeElement(id)
-			// @issue: GetDecisionKnowledgeElement might not be the correct method name to
-			// retrieve irrelevant sentences. How to deal with irrelevant sentences?
-			decisionKnowledgeElement = ActiveObjectsManager.getElementFromAO(id);
-		} else {
-			decisionKnowledgeElement = persistenceManager.getDecisionKnowledgeElement(id);
-		}
+		DecisionKnowledgeElement decisionKnowledgeElement = persistenceManager.getDecisionKnowledgeElement(id);
 		if (decisionKnowledgeElement != null) {
 			return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
 		}
