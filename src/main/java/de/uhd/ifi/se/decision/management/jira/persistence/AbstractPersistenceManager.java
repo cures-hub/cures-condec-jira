@@ -302,7 +302,7 @@ public abstract class AbstractPersistenceManager {
 		String projectKey = element.getProject().getProjectKey();
 		return getPersistenceManager(projectKey, element.getDocumentationLocation());
 	}
-	
+
 	/**
 	 * Get the persistence manager for a given project and documentation location.
 	 *
@@ -330,6 +330,26 @@ public abstract class AbstractPersistenceManager {
 		default:
 			return getDefaultPersistenceStrategy(projectKey);
 		}
+	}
+
+	/**
+	 * Get the persistence manager for a given project and documentation location.
+	 *
+	 * @see AbstractPersistenceManager
+	 * @param projectKey
+	 *            of a JIRA project.
+	 * @param documentationLocationIdentifier
+	 *            String identifier indicating the documentation location of
+	 *            knowledge (e.g., i for JIRA issue).
+	 * @return persistence manager associated to a documentation location. Returns
+	 *         the default persistence manager in case the documentation location
+	 *         cannot be found.
+	 */
+	public static AbstractPersistenceManager getPersistenceManager(String projectKey,
+			String documentationLocationIdentifier) {
+		DocumentationLocation documentationLocation = DocumentationLocation
+				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
+		return getPersistenceManager(projectKey, documentationLocation);
 	}
 
 	/**

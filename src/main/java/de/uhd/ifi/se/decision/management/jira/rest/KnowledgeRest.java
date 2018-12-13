@@ -52,14 +52,12 @@ public class KnowledgeRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionKnowledgeElement(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
-			@QueryParam("documentationLocation") String documentationLocationIdentifier) {
+			@QueryParam("documentationLocation") String documentationLocation) {
 		if (projectKey == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Decision knowledge element could not be received due to a bad request (element id or project key was missing)."))
 					.build();
 		}
-		DocumentationLocation documentationLocation = DocumentationLocation
-				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
 		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(projectKey,
 				documentationLocation);
 
