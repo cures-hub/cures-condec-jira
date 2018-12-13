@@ -93,10 +93,6 @@
 	overflow: hidden;
 }
 
-.node-title {
-	display: inline;
-}
-
 .node-documentationLocation {
 	visibility: hidden;
 	display: inline;
