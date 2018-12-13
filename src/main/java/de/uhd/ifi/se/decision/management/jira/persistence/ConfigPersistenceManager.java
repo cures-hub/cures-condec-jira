@@ -27,12 +27,12 @@ public class ConfigPersistenceManager {
 		if (isGlobalSetting) {
 			settings = pluginSettingsFactory.createGlobalSettings();
 		} else {
-			if (projectKey == null) {
+			if (projectKey == null || projectKey.equals("")) {
 				return "";
 			}
 			settings = pluginSettingsFactory.createSettingsForKey(projectKey);
 		}
-		if (parameter == null) {
+		if (parameter == null || parameter.equals("")) {
 			return "";
 		}
 		Object value = transactionTemplate.execute(new TransactionCallback<Object>() {
@@ -112,15 +112,15 @@ public class ConfigPersistenceManager {
 	public static void setKnowledgeExtractedFromIssues(String projectKey, boolean isKnowledgeExtractedFromIssues) {
 		setValue(projectKey, "isKnowledgeExtractedFromIssues", Boolean.toString(isKnowledgeExtractedFromIssues));
 	}
-	
+
 	public static void setUseClassiferForIssueComments(String projectKey, boolean isActivated) {
 		setValue(projectKey, "setClassiferForIssueComments", Boolean.toString(isActivated));
 	}
-	
+
 	public static boolean isUseClassiferForIssueComments(String projectKey) {
 		return getValue(projectKey, "setClassiferForIssueComments").equals("true");
 	}
-	
+
 	public static boolean isIconParsing(String projectKey) {
 		String isIconParsing = getValue(projectKey, "isIconParsing");
 		return "true".equals(isIconParsing);
@@ -135,59 +135,56 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
-	// TODO Testing
 	public static void setWebhookUrl(String projectKey, String webhookUrl) {
 		setValue(projectKey, "webhookUrl", webhookUrl);
 	}
 
-	// TODO Testing
 	public static String getWebhookUrl(String projectKey) {
 		return getValue(projectKey, "webhookUrl");
 	}
 
-	// TODO Testing
 	public static void setWebhookSecret(String projectKey, String webhookSecret) {
 		setValue(projectKey, "webhookSecret", webhookSecret);
 	}
 
-	// TODO Testing
 	public static String getWebhookSecret(String projectKey) {
 		return getValue(projectKey, "webhookSecret");
 	}
 
-	// TODO Testing
 	public static void setWebhookEnabled(String projectKey, boolean isWebhookEnabled) {
 		setValue(projectKey, "isWebhookEnabled", Boolean.toString(isWebhookEnabled));
 	}
 
-	// TODO Testing
 	public static boolean isWebhookEnabled(String projectKey) {
 		String isWebhookEnabled = getValue(projectKey, "isWebhookEnabled");
 		return "true".equals(isWebhookEnabled);
 	}
 
-	// TODO Testing
 	public static void setWebhookType(String projectKey, String webhookType, boolean isWebhookTypeEnabled) {
+		if (webhookType == null || webhookType.equals("")) {
+			return;
+		}
 		setValue(projectKey, "webhookType" + "." + webhookType, Boolean.toString(isWebhookTypeEnabled));
 	}
 
-	// TODO Testing
-	public static boolean isWebhookTypeEnaled(String projectKey, String webhookType) {
+	public static boolean isWebhookTypeEnabled(String projectKey, String webhookType) {
+		if (webhookType == null || webhookType.equals("")) {
+			return false;
+		}
 		String isWebhookTypeEnabled = getValue(projectKey, "webhookType" + "." + webhookType);
 		return "true".equals(isWebhookTypeEnabled);
 	}
 
-	// TODO Testing
 	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
-        IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
-        Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
-        Collection<String> issueTypeNames = new ArrayList<>();
-        for (IssueType issueType: issueTypes) {
-            if (isWebhookTypeEnaled(projectKey, issueType.getName())) {
-                issueTypeNames.add(issueType.getName());
-            }
-        }
-        return issueTypeNames;
+		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
+		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
+		Collection<String> issueTypeNames = new ArrayList<>();
+		for (IssueType issueType : issueTypes) {
+			if (isWebhookTypeEnabled(projectKey, issueType.getName())) {
+				issueTypeNames.add(issueType.getName());
+			}
+		}
+		return issueTypeNames;
 	}
 
 	public static void setRequestToken(String requestToken) {
