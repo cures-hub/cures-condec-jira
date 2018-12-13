@@ -30,7 +30,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestTreant.AoSentenceTestDatabaseUpdater.class)
-public class TestNode extends TestSetUpWithIssues{
+public class TestNode extends TestSetUpWithIssues {
 
 	private Map<String, String> nodeContent;
 	private Map<String, String> link;
@@ -72,6 +72,7 @@ public class TestNode extends TestSetUpWithIssues{
 		element.setDescription("Test");
 		element.setProject("TEST");
 		element.setSummary("TESTfwf");
+		element.setDocumentationLocation("i");
 
 		isCollapsed = false;
 		isHyperlinked = true;
@@ -93,7 +94,7 @@ public class TestNode extends TestSetUpWithIssues{
 
 	@Test
 	public void testElementLinkSupportConstructor() {
-		Link link = new LinkImpl(element,element);
+		Link link = new LinkImpl(element, element);
 		link.setType("support");
 		Node newNode = new Node(element, link, isCollapsed, isHyperlinked);
 		assertNotNull(newNode);
@@ -101,7 +102,7 @@ public class TestNode extends TestSetUpWithIssues{
 
 	@Test
 	public void testElementLinkAttackConstructor() {
-		Link link = new LinkImpl(element,element);
+		Link link = new LinkImpl(element, element);
 		link.setType("attack");
 		Node newNode = new Node(element, link, isCollapsed, isHyperlinked);
 		assertNotNull(newNode);
