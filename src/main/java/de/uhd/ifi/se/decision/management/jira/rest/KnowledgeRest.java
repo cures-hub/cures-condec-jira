@@ -286,6 +286,7 @@ public class KnowledgeRest {
 			DecXtractEventListener.editCommentLock = true;
 			Boolean result = ActiveObjectsManager.updateKnowledgeTypeOfSentence(newElement.getId(),
 					newElement.getType(), argument);
+			result = result & ActiveObjectsManager.updateLinkTypeOfSentence(newElement,argument);
 			DecXtractEventListener.editCommentLock = false;
 			if (!result) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)

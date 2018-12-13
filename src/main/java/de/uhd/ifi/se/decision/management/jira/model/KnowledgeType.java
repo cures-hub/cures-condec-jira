@@ -71,7 +71,11 @@ public enum KnowledgeType {
 			return KnowledgeType.ARGUMENT;
 		case "pro-argument":
 			return KnowledgeType.PRO;
+		case "pro":
+			return KnowledgeType.PRO;
 		case "con-argument":
+			return KnowledgeType.CON;
+		case "con":
 			return KnowledgeType.CON;
 		case "assessment":
 			return KnowledgeType.ASSESSMENT;

@@ -92,7 +92,7 @@ public class ActiveObjectsManager {
 
 	private static void checkIfSentenceHasAValidLink(long sentenceId, long issueId, LinkType linkType) {
 		if (!isSentenceLinked(sentenceId)) {
-			Link link = new LinkImpl("i" + issueId, "s" + sentenceId, "");// linkType.toString());
+			Link link = new LinkImpl("i" + issueId, "s" + sentenceId, linkType.toString());// linkType.toString());
 			GenericLinkManager.insertLinkWithoutTransaction(link);
 		}
 	}
@@ -313,7 +313,18 @@ public class ActiveObjectsManager {
 				return false;
 			}
 		});
+	}
 
+	public static Boolean updateLinkTypeOfSentence(DecisionKnowledgeElement newElement, String argument) {
+		init();
+		List<Link> links = GenericLinkManager.getLinksForElement("s" + newElement.getId());
+		for (Link link : links) {
+			GenericLinkManager.deleteGenericLink(link);
+			link.setType(LinkType.getLinkTypeForKnowledgeType(argument).toString());
+			GenericLinkManager.insertLinkWithoutTransaction(link);
+			return true;
+		}
+		return false;
 	}
 
 	private static int getTextLengthOfAoElement(DecisionKnowledgeInCommentEntity sentence) {
@@ -767,4 +778,5 @@ public class ActiveObjectsManager {
 			}
 		}
 	}
+
 }
