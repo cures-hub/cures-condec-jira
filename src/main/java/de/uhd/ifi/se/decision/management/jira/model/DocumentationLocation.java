@@ -37,6 +37,9 @@ public enum DocumentationLocation {
 	}
 
 	public static String getIdentifier(DocumentationLocation documentationLocation) {
+		if(documentationLocation == null) {
+			return "i";
+		}
 		switch (documentationLocation) {
 		case JIRAISSUE:
 			return "i";

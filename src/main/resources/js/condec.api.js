@@ -245,24 +245,28 @@
 			summary, description, type) {
 		// var simpleType = getSimpleType(type);
 		this.getDecisionKnowledgeElement(childId, (function(childElement) {
-			updateDecisionKnowledgeElement(childId, summary, description, type, "i", (function() {
-				if (childElement.type !== type) {
-					var parentId = conDecTreant.findParentId(childId);
-					// @issue What if parent is a sentence object? Get
-					// documentation location of parent.
-					switchLinkTypes(type, parentId, childId, "i", childElement.documentationLocation, (function(
-							linkType, parentId, childId) {
-						this.deleteLink(parentId, childId, "i", childElement.documentationLocation, (function() {
-							this.linkElements(linkType, parentId, childId, "i", childElement.documentationLocation,
-									function() {
-										conDecObservable.notify();
-									});
-						}).bind(this));
+			var parentDocumentationLocation = conDecTreant.findDocumentationLocationOfParent(childId);
+			updateDecisionKnowledgeElement(childId, summary, description, type, parentDocumentationLocation,
+					(function() {
+						if (childElement.type !== type) {
+							var parentId = conDecTreant.findParentId(childId);
+							// @issue What if parent is a sentence object? Get
+							// documentation location of parent.
+							switchLinkTypes(type, parentId, childId, parentDocumentationLocation,
+									childElement.documentationLocation, (function(linkType, parentId, childId) {
+										this.deleteLink(parentId, childId, parentDocumentationLocation,
+												childElement.documentationLocation, (function() {
+													this.linkElements(linkType, parentId, childId,
+															parentDocumentationLocation,
+															childElement.documentationLocation, function() {
+																conDecObservable.notify();
+															});
+												}).bind(this));
+									}).bind(this));
+						} else {
+							conDecObservable.notify();
+						}
 					}).bind(this));
-				} else {
-					conDecObservable.notify();
-				}
-			}).bind(this));
 		}).bind(this));
 	};
 
