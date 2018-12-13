@@ -41,10 +41,11 @@
 	 * external references: condec.context.menu, condec.dialog,
 	 * condec.knowledge.page, condec.jira.issue.module
 	 */
-	ConDecAPI.prototype.getDecisionKnowledgeElement = function getDecisionKnowledgeElement(id, callback) {
+	ConDecAPI.prototype.getDecisionKnowledgeElement = function getDecisionKnowledgeElement(id, documentationLocation,
+			callback) {
 		getJSON(
 				AJS.contextPath() + "/rest/decisions/latest/decisions/getDecisionKnowledgeElement.json?projectKey="
-						+ projectKey + "&id=" + id,
+						+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation,
 				function(error, decisionKnowledgeElement) {
 					if (error === null) {
 						callback(decisionKnowledgeElement);
@@ -238,20 +239,16 @@
 	}
 
 	/*
-	 * external references: condec.dialog TODO: This is currently not working if
-	 * a JIRA issue is child of a sentence element
+	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.updateDecisionKnowledgeElementAsChild = function updateDecisionKnowledgeElementAsChild(childId,
 			summary, description, type) {
-		// var simpleType = getSimpleType(type);
 		this.getDecisionKnowledgeElement(childId, (function(childElement) {
 			var parentDocumentationLocation = conDecTreant.findDocumentationLocationOfParent(childId);
 			updateDecisionKnowledgeElement(childId, summary, description, type, parentDocumentationLocation,
 					(function() {
 						if (childElement.type !== type) {
 							var parentId = conDecTreant.findParentId(childId);
-							// @issue What if parent is a sentence object? Get
-							// documentation location of parent.
 							switchLinkTypes(type, parentId, childId, parentDocumentationLocation,
 									childElement.documentationLocation, (function(linkType, parentId, childId) {
 										this.deleteLink(parentId, childId, parentDocumentationLocation,
@@ -285,20 +282,6 @@
 				callback();
 			} else {
 				showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
-			}
-		});
-	};
-
-	/*
-	 * external references: condec.context.menu
-	 */
-	ConDecAPI.prototype.getSentenceElement = function getSentenceElement(id, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getSentenceElement.json?id=" + id, function(
-				error, sentenceElement) {
-			if (error === null) {
-				callback(sentenceElement);
-			} else {
-				showFlag("error", "The Element data could not be fetched");
 			}
 		});
 	};

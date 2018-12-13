@@ -185,7 +185,7 @@
 		argumentFieldGroup.innerHTML = "";
 		conDecAPI
 				.getDecisionKnowledgeElement(
-						childId,
+						childId, "i",
 						function(decisionKnowledgeElement) {
 							if (decisionKnowledgeElement && decisionKnowledgeElement.type === "Argument") {
 								insertString = "<label for='form-radio-argument'>Type of Argument:</label>"
@@ -202,7 +202,7 @@
 
 	ConDecDialog.prototype.showEditDialog = function showEditDialog(id, type) {
 		console.log("conDecDialog setUpDialogForEditAction");
-		conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
+		conDecAPI.getDecisionKnowledgeElement(id, "i", function(decisionKnowledgeElement) {
 			var summary = decisionKnowledgeElement.summary;
 			var description = decisionKnowledgeElement.description;
 			var type = decisionKnowledgeElement.type;
@@ -275,7 +275,7 @@
 		console.log("conDecDialog setUpDialogForChangeTypeAction");
 		setUpDialog();
 		setHeaderText(changeKnowledgeTypeText);
-		conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
+		conDecAPI.getDecisionKnowledgeElement(id, "i", function(decisionKnowledgeElement) {
 			var summary = decisionKnowledgeElement.summary;
 			var description = decisionKnowledgeElement.description;
 			var type = decisionKnowledgeElement.type;
@@ -370,7 +370,7 @@
 	}
 
 	ConDecDialog.prototype.setUpDialogForEditSentenceAction = function setUpDialogForEditSentenceAction(id) {
-		conDecAPI.getSentenceElement(id, function(result) {
+		conDecAPI.getDecisionKnowledgeElement(id, "s", function(result) {
 			var description = result["description"];
 			var type = result["type"];
 			setUpDialog();

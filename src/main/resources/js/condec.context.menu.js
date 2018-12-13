@@ -68,7 +68,7 @@
 		};
 
 		document.getElementById("condec-context-menu-set-root-item").onclick = function() {
-			conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
+			conDecAPI.getDecisionKnowledgeElement(id, "i", function(decisionKnowledgeElement) {
 				conDecTreant.buildTreant(decisionKnowledgeElement.key, true, "");
 			});
 		};

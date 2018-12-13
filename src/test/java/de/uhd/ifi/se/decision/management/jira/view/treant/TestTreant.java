@@ -49,7 +49,7 @@ public class TestTreant extends TestSetUpWithIssues {
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
 		initialization();
-		persistenceStrategy = AbstractPersistenceManager.getPersistenceStrategy("TEST");
+		persistenceStrategy = AbstractPersistenceManager.getDefaultPersistenceStrategy("TEST");
 	}
 
 	@Test

@@ -8,6 +8,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
@@ -291,16 +292,35 @@ public abstract class AbstractPersistenceManager {
 	 *            decision knowledge element with project and documentation
 	 *            location.
 	 * @return persistence manager of a given decision knowledge elements. Returns
-	 *         null in case the persistence manager cannot be found.
+	 *         the default persistence manager in case the documentation location of
+	 *         the element cannot be found.
 	 */
-	public static AbstractPersistenceManager getPersistence(DecisionKnowledgeElement element) {
+	public static AbstractPersistenceManager getPersistenceManager(DecisionKnowledgeElement element) {
 		if (element == null) {
 			throw new IllegalArgumentException("The element cannot be null.");
 		}
-
 		String projectKey = element.getProject().getProjectKey();
-
-		switch (element.getDocumentationLocation()) {
+		return getPersistenceManager(projectKey, element.getDocumentationLocation());
+	}
+	
+	/**
+	 * Get the persistence manager for a given project and documentation location.
+	 *
+	 * @see AbstractPersistenceManager
+	 * @param projectKey
+	 *            of a JIRA project.
+	 * @param documentationLocation
+	 *            of knowledge.
+	 * @return persistence manager associated to a documentation location. Returns
+	 *         the default persistence manager in case the documentation location
+	 *         cannot be found.
+	 */
+	public static AbstractPersistenceManager getPersistenceManager(String projectKey,
+			DocumentationLocation documentationLocation) {
+		if (documentationLocation == null) {
+			return getDefaultPersistenceStrategy(projectKey);
+		}
+		switch (documentationLocation) {
 		case JIRAISSUE:
 			return new JiraIssuePersistenceManager(projectKey);
 		case JIRAISSUECOMMENT:
@@ -308,7 +328,7 @@ public abstract class AbstractPersistenceManager {
 		case ACTIVEOBJECT:
 			return new ActiveObjectPersistenceManager(projectKey);
 		default:
-			return null;
+			return getDefaultPersistenceStrategy(projectKey);
 		}
 	}
 
@@ -326,7 +346,7 @@ public abstract class AbstractPersistenceManager {
 	 *         used in the given project, either issue strategy or active object
 	 *         strategy. The active object strategy is the default strategy.
 	 */
-	public static AbstractPersistenceManager getPersistenceStrategy(String projectKey) {
+	public static AbstractPersistenceManager getDefaultPersistenceStrategy(String projectKey) {
 		if (projectKey == null) {
 			throw new IllegalArgumentException("The project key cannot be null.");
 		}

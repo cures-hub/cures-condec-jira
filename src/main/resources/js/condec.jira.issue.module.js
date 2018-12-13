@@ -63,7 +63,7 @@
 	// for view.context.menu
 	ConDecJiraIssueModule.prototype.setAsRootElement = function setAsRootElement(id) {
 		console.log("ConDecJiraIssueModule setAsRootElement", id);
-		conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
+		conDecAPI.getDecisionKnowledgeElement(id, "i", function(decisionKnowledgeElement) {
 			var baseUrl = AJS.params.baseURL;
 			var key = decisionKnowledgeElement.key;
 			global.open(baseUrl + "/browse/" + key, '_self');

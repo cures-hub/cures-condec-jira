@@ -26,7 +26,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
@@ -128,8 +127,7 @@ public class ActiveObjectsManager {
 		}
 	}
 
-	private static boolean checkLastElementAndCreateLink(DecisionKnowledgeElement lastElement,
-			Sentence sentence) {
+	private static boolean checkLastElementAndCreateLink(DecisionKnowledgeElement lastElement, Sentence sentence) {
 		if (lastElement != null) {
 			Link link = new LinkImpl("s" + lastElement.getId(), "s" + sentence.getId(),
 					LinkType.getLinkTypeForKnowledgeType(sentence.getArgument().toString()).toString());
@@ -645,7 +643,6 @@ public class ActiveObjectsManager {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		long linkTypeId = JiraIssuePersistenceManager.getLinkTypeId("contain");
 
-		
 		try {
 			issueLinkManager.createIssueLink(element.getIssueId(), issue.getId(), linkTypeId, (long) 0, user);
 		} catch (CreateException e) {

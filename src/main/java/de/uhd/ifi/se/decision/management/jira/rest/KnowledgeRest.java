@@ -39,6 +39,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 
 /**
@@ -51,17 +52,40 @@ public class KnowledgeRest {
 	@Path("/getDecisionKnowledgeElement")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getDecisionKnowledgeElement(@QueryParam("id") long id,
-			@QueryParam("projectKey") String projectKey) {
+	public Response getDecisionKnowledgeElement(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
+			@QueryParam("documentationLocation") String documentationLocationIdentifier) {
 		if (projectKey == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Decision knowledge element could not be received due to a bad request (element id or project key was missing)."))
 					.build();
 		}
-		AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
-		DecisionKnowledgeElement decisionKnowledgeElement = strategy.getDecisionKnowledgeElement(id);
-		if (decisionKnowledgeElement != null) {
-			return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
+		DocumentationLocation documentationLocation = DocumentationLocation
+				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
+		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(projectKey,
+				documentationLocation);
+
+		if (persistenceManager instanceof JiraIssueCommentPersistenceManager) {
+			// TODO: Implement
+			// JiraIssueCommentPersistenceManager.getDecisionKnowledgeElement(id)
+			// @issue: GetDecisionKnowledgeElement might not be the correct method name to
+			// retrieve irrelevant sentences. How to deal with irrelevant sentences?
+			Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(id);
+
+			if (sentence != null) {
+				// TODO: Reweork this after merging with ConDec-378
+				// @issue: Can we return a whole sentence object similar as done in the method
+				// getDecisionKnowledgeElement instead of building a new object here?
+				return Response.status(Status.OK)
+						.entity(ImmutableMap.of("id", sentence.getId(), "description", sentence.getDescription(),
+								"type", sentence.getKnowledgeTypeString(), "documentationLocation",
+								sentence.getDocumentationLocationAsString()))
+						.build();
+			}
+		} else {
+			DecisionKnowledgeElement decisionKnowledgeElement = persistenceManager.getDecisionKnowledgeElement(id);
+			if (decisionKnowledgeElement != null) {
+				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
+			}
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error", "Decision knowledge element was not found for the given id.")).build();
@@ -72,7 +96,7 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getLinkedElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey) {
 		if (projectKey != null) {
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
 			List<DecisionKnowledgeElement> linkedDecisionKnowledgeElements = strategy.getLinkedElements(id);
 			return Response.ok(linkedDecisionKnowledgeElements).build();
 		} else {
@@ -87,7 +111,7 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getUnlinkedElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey) {
 		if (projectKey != null) {
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
 			List<DecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = strategy.getUnlinkedElements(id);
 			return Response.ok(unlinkedDecisionKnowledgeElements).build();
 		} else {
@@ -126,7 +150,7 @@ public class KnowledgeRest {
 			}
 			newElementWithId = ActiveObjectsManager.addNewCommentToJIRAIssue(newElement, user);
 		} else {
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
 			newElementWithId = strategy.insertDecisionKnowledgeElement(newElement, user);
 		}
 
@@ -176,7 +200,7 @@ public class KnowledgeRest {
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement != null && request != null) {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
 			ApplicationUser user = AuthenticationManager.getUser(request);
 			if (strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user)) {
 				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
@@ -198,7 +222,7 @@ public class KnowledgeRest {
 			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
 			ApplicationUser user = AuthenticationManager.getUser(request);
 			boolean isDeleted = false;
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
 			DecisionKnowledgeElement elementToBeDeletedWithLinks = strategy
 					.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 			isDeleted = strategy.deleteDecisionKnowledgeElement(elementToBeDeletedWithLinks, user);
@@ -226,7 +250,8 @@ public class KnowledgeRest {
 			// TODO Rework strategy
 			// @issue What happens when using AOStrategy?
 			if (GenericLinkManager.isIssueLink(link)) {
-				AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
+				AbstractPersistenceManager strategy = AbstractPersistenceManager
+						.getDefaultPersistenceStrategy(projectKey);
 				linkId = strategy.insertLink(link, user);
 			} else {
 				linkId = GenericLinkManager.insertLink(link, user);
@@ -252,7 +277,8 @@ public class KnowledgeRest {
 			boolean isDeleted = false;
 
 			if (GenericLinkManager.isIssueLink(link)) {
-				AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
+				AbstractPersistenceManager strategy = AbstractPersistenceManager
+						.getDefaultPersistenceStrategy(projectKey);
 				ApplicationUser user = AuthenticationManager.getUser(request);
 				isDeleted = strategy.deleteLink(link, user);
 				if (!isDeleted) {
@@ -286,7 +312,7 @@ public class KnowledgeRest {
 			DecXtractEventListener.editCommentLock = true;
 			Boolean result = ActiveObjectsManager.updateKnowledgeTypeOfSentence(newElement.getId(),
 					newElement.getType(), argument);
-			result = result & ActiveObjectsManager.updateLinkTypeOfSentence(newElement,argument);
+			result = result & ActiveObjectsManager.updateLinkTypeOfSentence(newElement, argument);
 			DecXtractEventListener.editCommentLock = false;
 			if (!result) {
 				return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -371,33 +397,6 @@ public class KnowledgeRest {
 		} else {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build();
-		}
-	}
-
-	@Path("/getSentenceElement")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getSentenceElement(@QueryParam("id") long id) {
-
-		// TODO: Replace by
-		// JiraIssueCommentPersistenceManager.getDecisionKnowledgeElement(id)
-		// @issue: GetDecisionKnowledgeElement might not be the correct method name to
-		// retrieve irrelevant sentences. How to deal with irrelevant sentences?
-		Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(id);
-
-		if (sentence != null) {
-			// TODO: Reweork this after merging with ConDec-378
-			// @issue: Can we return a whole sentence object similar as done in the method
-			// getDecisionKnowledgeElement instead of building a new object here?
-			return Response.status(Status.OK)
-					.entity(ImmutableMap.of("id", sentence.getId(), "description", sentence.getDescription(), "type",
-							sentence.getKnowledgeTypeString(), "documentationLocation",
-							sentence.getDocumentationLocationAsString()))
-					.build();
-		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"Unlinked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
-					.build();
 		}
 	}
 

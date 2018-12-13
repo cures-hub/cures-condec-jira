@@ -63,7 +63,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		treeViewer.setCheckCallback(checkCallback);
 		treeViewer.setThemes(themes);
 		treeViewer.setData(data);
-		persistenceStrategy = AbstractPersistenceManager.getPersistenceStrategy("TEST");
+		persistenceStrategy = AbstractPersistenceManager.getDefaultPersistenceStrategy("TEST");
 	}
 
 	@Test
