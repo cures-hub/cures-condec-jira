@@ -285,6 +285,7 @@
 			submitButton.textContent = editKnowledgeElementText;
 			submitButton.onclick = function() {
 				var type = $("select[name='form-select-type']").val();
+				// TODO Add changeKnowledgeType function to conDecAPI 
 				conDecAPI.updateDecisionKnowledgeElementAsChild(id, summary, description, type, "");
 				AJS.dialog2("#dialog").hide();
 			};
