@@ -64,7 +64,7 @@
 		};
 
 		document.getElementById("condec-context-menu-delete-item").onclick = function() {
-			conDecDialog.showDeleteDialog(id);
+			conDecDialog.showDeleteDialog(id, "");
 		};
 
 		document.getElementById("condec-context-menu-set-root-item").onclick = function() {
@@ -153,9 +153,7 @@
 		};
 
 		document.getElementById("condec-context-menu-sentence-delete-item").onclick = function() {
-			conDecAPI.deleteDecisionKnowledgeElement(id, "s", function() {
-				conDecObservable.notify();
-			});
+			conDecDialog.showDeleteDialog(id, "s");
 		};
 	};
 

@@ -142,7 +142,7 @@
 	}
 
 	/*
-	 * external references: condec.context.menu, condec.dialog
+	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.deleteDecisionKnowledgeElement = function deleteDecisionKnowledgeElement(id,
 			documentationLocation, callback) {
