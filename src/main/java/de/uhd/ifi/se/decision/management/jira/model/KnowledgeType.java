@@ -6,10 +6,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.IssueManager;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 
@@ -182,24 +178,29 @@ public enum KnowledgeType {
 		return knowledgeTypes;
 	}
 
-	public static String getIconUrl(DecisionKnowledgeElement element) {
-		if (element instanceof Sentence && !((Sentence) element).isRelevant()) {
-			return ComponentGetter.getUrlOfImageFolder() + "Other.png";
-		}
-		switch (element.getType()) {
-		case OTHER:
-			if (!(element instanceof Sentence)) {
-				IssueManager issueManager = ComponentAccessor.getIssueManager();
-				Issue issue = issueManager.getIssueByCurrentKey(element.getKey());
-				return issue.getIssueType().getCompleteIconUrl();
-			}
+	public String getIconUrl() {
+		switch (this) {
+		case PRO:
+			return ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
+		case CON:
+			return ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
 		default:
-			return ComponentGetter.getUrlOfImageFolder() + element.getType().toString() + ".png";
+			return ComponentGetter.getUrlOfImageFolder() + this.name().toLowerCase(Locale.ENGLISH) + ".png";
 		}
 	}
 
+	public static String getIconUrl(DecisionKnowledgeElement element) {
+		if (element == null) {
+			return "";
+		}
+		if (element instanceof Sentence && !((Sentence) element).isRelevant()) {
+			return ComponentGetter.getUrlOfImageFolder() + "Other.png";
+		}
+		return element.getType().getIconUrl();
+	}
+
 	public static String getIconUrl(DecisionKnowledgeElement element, String linkType) {
-		if (linkType == null) {
+		if (element == null || linkType == null) {
 			return ComponentGetter.getUrlOfImageFolder() + "Other.png";
 		}
 		switch (element.getType()) {
@@ -209,6 +210,7 @@ public enum KnowledgeType {
 			} else if (linkType.equals("attack")) {
 				return ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
 			}
+
 		default:
 			return getIconUrl(element);
 		}

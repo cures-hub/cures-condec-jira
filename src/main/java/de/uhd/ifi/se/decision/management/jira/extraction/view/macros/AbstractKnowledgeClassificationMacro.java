@@ -11,8 +11,8 @@ import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
 
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
@@ -32,17 +32,9 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 			return putTypeInBrackets(knowledgeType) + body + putTypeInBrackets(knowledgeType);
 		}
 		String newBody = reformatCommentBody(body);
-		String icon = "<img src='" + ComponentGetter.getUrlOfImageFolder()
-				+ addPrefixForArgumentsForArguments(knowledgeType) + ".png" + "'>";
+		String icon = "<img src='" + KnowledgeType.getKnowledgeType(knowledgeType).getIconUrl() + "'>";
 		String contextMenuCall = getContextMenuCall(renderContext, newBody, WordUtils.capitalize(knowledgeType));
 		return icon + "<span " + contextMenuCall + "style='background-color:" + colorCode + "'>" + newBody + "</span>";
-	}
-
-	private String addPrefixForArgumentsForArguments(String knowledgeType) {
-		if (knowledgeType.equalsIgnoreCase("con") || knowledgeType.equalsIgnoreCase("pro")) {
-			return "argument_" + knowledgeType;
-		}
-		return knowledgeType;
 	}
 
 	@Override

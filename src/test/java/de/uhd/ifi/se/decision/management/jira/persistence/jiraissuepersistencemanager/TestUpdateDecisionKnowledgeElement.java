@@ -25,7 +25,6 @@ public class TestUpdateDecisionKnowledgeElement extends TestJiraIssuePersistence
 		issueStrategy.updateDecisionKnowledgeElement(element, null);
 	}
 
-	@Test(expected = NullPointerException.class)
 	public void testElementNonExistentUserExistent() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
 		ApplicationUser user = new MockApplicationUser("NoFails");

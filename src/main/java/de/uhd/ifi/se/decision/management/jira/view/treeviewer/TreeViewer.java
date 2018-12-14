@@ -163,7 +163,7 @@ public class TreeViewer {
 
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
 			Data dataChild = new Data(childAndLink.getKey(), childAndLink.getValue());
-			if (dataChild.getNode().getProject().getProjectKey()
+			if (dataChild.getNode().getProject() != null && dataChild.getNode().getProject().getProjectKey()
 					.equals(decisionKnowledgeElement.getProject().getProjectKey())) {
 				dataChild = this.makeIdUnique(dataChild);
 				List<Data> childrenOfElement = this.getChildren(childAndLink.getKey());
