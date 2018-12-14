@@ -67,7 +67,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		params.put("rootType", "WI");
 		this.report.validate(pas, params);
 
-		persistenceStrategy = AbstractPersistenceManager.getPersistenceStrategy("TEST");
+		persistenceStrategy = AbstractPersistenceManager.getDefaultPersistenceStrategy("TEST");
 	}
 
 	private MutableIssue createCommentStructureWithTestIssue(String text) {

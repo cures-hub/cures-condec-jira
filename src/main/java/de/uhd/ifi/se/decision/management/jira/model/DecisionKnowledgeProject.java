@@ -116,7 +116,7 @@ public interface DecisionKnowledgeProject {
 	 *         strategy is the default strategy.
 	 */
 	static AbstractPersistenceManager getPersistenceStrategy(String projectKey) {
-		return AbstractPersistenceManager.getPersistenceStrategy(projectKey);
+		return AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
 	}
 
 	/**

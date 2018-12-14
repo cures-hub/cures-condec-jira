@@ -60,16 +60,6 @@
 		JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [ JIRA.Issue.getIssueId() ]);
 	};
 
-	// for view.context.menu
-	ConDecJiraIssueModule.prototype.setAsRootElement = function setAsRootElement(id) {
-		console.log("ConDecJiraIssueModule setAsRootElement", id);
-		conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
-			var baseUrl = AJS.params.baseURL;
-			var key = decisionKnowledgeElement.key;
-			global.open(baseUrl + "/browse/" + key, '_self');
-		});
-	};
-
 	function addOnClickEventToExportAsTable() {
 		console.log("ConDecJiraIssueModule addOnClickEventToExportAsTable");
 

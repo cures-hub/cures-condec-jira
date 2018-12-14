@@ -62,7 +62,7 @@ public class TreeViewer {
 	public TreeViewer(String projectKey, KnowledgeType rootElementType) {
 		this();
 		if (rootElementType != KnowledgeType.OTHER) {
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
 			List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements(rootElementType);
 
 			Set<Data> dataSet = new HashSet<Data>();

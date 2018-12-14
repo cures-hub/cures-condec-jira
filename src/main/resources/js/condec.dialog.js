@@ -185,7 +185,7 @@
 		argumentFieldGroup.innerHTML = "";
 		conDecAPI
 				.getDecisionKnowledgeElement(
-						childId,
+						childId, "i",
 						function(decisionKnowledgeElement) {
 							if (decisionKnowledgeElement && decisionKnowledgeElement.type === "Argument") {
 								insertString = "<label for='form-radio-argument'>Type of Argument:</label>"
@@ -202,7 +202,7 @@
 
 	ConDecDialog.prototype.showEditDialog = function showEditDialog(id, type) {
 		console.log("conDecDialog setUpDialogForEditAction");
-		conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
+		conDecAPI.getDecisionKnowledgeElement(id, "i", function(decisionKnowledgeElement) {
 			var summary = decisionKnowledgeElement.summary;
 			var description = decisionKnowledgeElement.description;
 			var type = decisionKnowledgeElement.type;
@@ -227,7 +227,7 @@
 						var summary = document.getElementById("form-input-summary").value;
 						var description = document.getElementById("form-input-description").value;
 						var type = $("select[name='form-select-type']").val();
-						conDecAPI.updateDecisionKnowledgeElementAsChild(id, summary, description, type);
+						conDecAPI.updateDecisionKnowledgeElementAsChild(id, summary, description, type, "");
 						AJS.dialog2("#dialog").hide();
 					};
 				}
@@ -275,7 +275,7 @@
 		console.log("conDecDialog setUpDialogForChangeTypeAction");
 		setUpDialog();
 		setHeaderText(changeKnowledgeTypeText);
-		conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
+		conDecAPI.getDecisionKnowledgeElement(id, "i", function(decisionKnowledgeElement) {
 			var summary = decisionKnowledgeElement.summary;
 			var description = decisionKnowledgeElement.description;
 			var type = decisionKnowledgeElement.type;
@@ -285,7 +285,8 @@
 			submitButton.textContent = editKnowledgeElementText;
 			submitButton.onclick = function() {
 				var type = $("select[name='form-select-type']").val();
-				conDecAPI.updateDecisionKnowledgeElementAsChild(id, summary, description, type);
+				// TODO Add changeKnowledgeType function to conDecAPI 
+				conDecAPI.updateDecisionKnowledgeElementAsChild(id, summary, description, type, "");
 				AJS.dialog2("#dialog").hide();
 			};
 		});
@@ -370,7 +371,7 @@
 	}
 
 	ConDecDialog.prototype.setUpDialogForEditSentenceAction = function setUpDialogForEditSentenceAction(id) {
-		conDecAPI.getSentenceElement(id, function(result) {
+		conDecAPI.getDecisionKnowledgeElement(id, "s", function(result) {
 			var description = result["description"];
 			var type = result["type"];
 			setUpDialog();
