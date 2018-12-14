@@ -196,24 +196,20 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response deleteDecisionKnowledgeElement(@Context HttpServletRequest request,
 			DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (decisionKnowledgeElement != null && request != null) {
-			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
-			ApplicationUser user = AuthenticationManager.getUser(request);
-			boolean isDeleted = false;
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
-			DecisionKnowledgeElement elementToBeDeletedWithLinks = strategy
-					.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
-			isDeleted = strategy.deleteDecisionKnowledgeElement(elementToBeDeletedWithLinks, user);
-			if (isDeleted) {
-				return Response.status(Status.OK).entity(true).build();
-			}
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
-
-		} else {
+		if (decisionKnowledgeElement == null || request == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
 		}
+		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager
+				.getPersistenceManager(decisionKnowledgeElement);
+		ApplicationUser user = AuthenticationManager.getUser(request);
+
+		boolean isDeleted = persistenceManager.deleteDecisionKnowledgeElement(decisionKnowledgeElement.getId(), user);
+		if (isDeleted) {
+			return Response.status(Status.OK).entity(true).build();
+		}
+		return Response.status(Status.INTERNAL_SERVER_ERROR)
+				.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
 	}
 
 	@Path("/createLink")
@@ -376,20 +372,6 @@ public class KnowledgeRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build();
 		}
-	}
-
-	@Path("/deleteSentenceObject2")
-	@DELETE
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response deleteSentenceObject2(@QueryParam("id") long id, @Context HttpServletRequest request) {
-		if (id > 0 && request != null) {
-			boolean isDeleted = ActiveObjectsManager.deleteSentenceObject(id);
-			if (isDeleted) {
-				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
-			}
-		}
-		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of element failed."))
-				.build();
 	}
 
 	@Path("getAllElementsMatchingQuery")

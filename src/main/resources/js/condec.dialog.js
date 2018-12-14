@@ -246,7 +246,7 @@
 		var submitButton = document.getElementById("dialog-submit-button");
 		submitButton.textContent = deleteKnowledgeElementText;
 		submitButton.onclick = function() {
-			conDecAPI.deleteDecisionKnowledgeElement(id, function() {
+			conDecAPI.deleteDecisionKnowledgeElement(id, "", function() {
 				conDecObservable.notify();
 			});
 			AJS.dialog2("#dialog").hide();

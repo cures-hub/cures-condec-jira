@@ -142,12 +142,14 @@
 	}
 
 	/*
-	 * external references: condec.dialog
+	 * external references: condec.context.menu, condec.dialog
 	 */
-	ConDecAPI.prototype.deleteDecisionKnowledgeElement = function deleteDecisionKnowledgeElement(id, callback) {
+	ConDecAPI.prototype.deleteDecisionKnowledgeElement = function deleteDecisionKnowledgeElement(id,
+			documentationLocation, callback) {
 		var element = {
 			"id" : id,
-			"projectKey" : projectKey
+			"projectKey" : projectKey,
+			"documentationLocation" : documentationLocation
 		};
 		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteDecisionKnowledgeElement.json", element,
 				function(error, isDeleted) {
@@ -305,21 +307,6 @@
 				showFlag("error", "Knowledge type could not be changed.");
 			}
 		});
-	};
-
-	/*
-	 * external references: condec.context.menu
-	 */
-	ConDecAPI.prototype.deleteSentenceObject2 = function deleteSentenceObject2(id, callback) {
-		deleteJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/deleteSentenceObject2.json?id=" + id, null,
-				function(error) {
-					if (error === null) {
-						showFlag("success", "Knowledge element has been deleted.");
-						callback();
-					} else {
-						showFlag("error", "Knowledge element could not be deleted.");
-					}
-				});
 	};
 
 	/*
