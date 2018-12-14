@@ -41,6 +41,19 @@ public abstract class AbstractPersistenceManager {
 	public abstract boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
 
 	/**
+	 * Delete an existing decision knowledge element in database.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see ApplicationUser
+	 * @param id
+	 *            id of the decision knowledge element in database.
+	 * @param user
+	 *            authenticated JIRA application user
+	 * @return true if deleting was successful.
+	 */
+	public abstract boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user);
+
+	/**
 	 * Delete an existing link in database.
 	 *
 	 * @see Link

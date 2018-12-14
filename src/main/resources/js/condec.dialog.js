@@ -235,8 +235,8 @@
 		});
 	};
 
-	ConDecDialog.prototype.showDeleteDialog = function showDeleteDialog(id) {
-		console.log("conDecDialog setUpDialogForDeleteAction");
+	ConDecDialog.prototype.showDeleteDialog = function showDeleteDialog(id, documentationLocation) {
+		console.log("conDecDialog showDeleteDialog");
 		setUpDialog();
 		setHeaderText(deleteKnowledgeElementText);
 
@@ -246,7 +246,7 @@
 		var submitButton = document.getElementById("dialog-submit-button");
 		submitButton.textContent = deleteKnowledgeElementText;
 		submitButton.onclick = function() {
-			conDecAPI.deleteDecisionKnowledgeElement(id, function() {
+			conDecAPI.deleteDecisionKnowledgeElement(id, documentationLocation, function() {
 				conDecObservable.notify();
 			});
 			AJS.dialog2("#dialog").hide();
@@ -254,7 +254,7 @@
 	};
 
 	ConDecDialog.prototype.showDeleteLinkDialog = function showDeleteLinkDialog(id, parentId) {
-		console.log("conDecDialog setUpDialogForDeleteLinkAction");
+		console.log("conDecDialog showDeleteLinkDialog");
 		setUpDialog();
 		setHeaderText(deleteLinkToParentText);
 

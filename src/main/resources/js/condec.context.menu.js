@@ -64,7 +64,7 @@
 		};
 
 		document.getElementById("condec-context-menu-delete-item").onclick = function() {
-			conDecDialog.showDeleteDialog(id);
+			conDecDialog.showDeleteDialog(id, "");
 		};
 
 		document.getElementById("condec-context-menu-set-root-item").onclick = function() {
@@ -91,7 +91,7 @@
 
 		document.getElementById("condec-context-menu-sentence").style.zIndex = 9998;
 		document.querySelector("#condec-context-menu-sentence").setAttribute('aria-hidden', 'false');
-		
+
 		document.getElementById("condec-context-menu-sentence-create-item").onclick = function() {
 			conDecDialog.showCreateDialog(id, "s");
 		};
@@ -153,9 +153,7 @@
 		};
 
 		document.getElementById("condec-context-menu-sentence-delete-item").onclick = function() {
-			conDecAPI.deleteSentenceObject2(id, function() {
-				conDecObservable.notify();
-			});
+			conDecDialog.showDeleteDialog(id, "s");
 		};
 	};
 

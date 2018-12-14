@@ -24,8 +24,12 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 	@Override
 	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
-		// TODO Auto-generated method stub
-		return false;
+		return ActiveObjectsManager.deleteSentenceObject(element.getId());
+	}
+	
+	@Override
+	public boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user) {
+		return ActiveObjectsManager.deleteSentenceObject(id);
 	}
 
 	@Override
