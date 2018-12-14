@@ -43,51 +43,37 @@
 	 */
 	ConDecAPI.prototype.getDecisionKnowledgeElement = function getDecisionKnowledgeElement(id, documentationLocation,
 			callback) {
-		getJSON(
-				AJS.contextPath() + "/rest/decisions/latest/decisions/getDecisionKnowledgeElement.json?projectKey="
-						+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation,
-				function(error, decisionKnowledgeElement) {
-					if (error === null) {
-						callback(decisionKnowledgeElement);
-					} else {
-						showFlag("error",
-								"An error occured when receiving the decision knowledge element for the given id and project key.");
-					}
-				});
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getDecisionKnowledgeElement.json?projectKey="
+				+ projectKey + "&id=" + id + "12213&documentationLocation=" + documentationLocation, function(error,
+				decisionKnowledgeElement) {
+			if (error === null) {
+				callback(decisionKnowledgeElement);
+			}
+		});
 	};
 
 	/*
 	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getLinkedElements = function getLinkedElements(id, callback) {
-		getJSON(
-				AJS.contextPath() + "/rest/decisions/latest/decisions/getLinkedElements.json?projectKey=" + projectKey
-						+ "&id=" + id,
-				function(error, linkedElements) {
-					if (error === null) {
-						callback(linkedElements);
-					} else {
-						showFlag("error",
-								"An error occured when receiving the linked decision knowledge elements for the selected element.");
-					}
-				});
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getLinkedElements.json?projectKey=" + projectKey
+				+ "&id=" + id, function(error, linkedElements) {
+			if (error === null) {
+				callback(linkedElements);
+			}
+		});
 	};
 
 	/*
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.getUnlinkedElements = function getUnlinkedElements(id, callback) {
-		getJSON(
-				AJS.contextPath() + "/rest/decisions/latest/decisions/getUnlinkedElements.json?projectKey="
-						+ projectKey + "&id=" + id,
-				function(error, unlinkedElements) {
-					if (error === null) {
-						callback(unlinkedElements);
-					} else {
-						showFlag("error",
-								"An error occured when receiving the unlinked decision knowledge elements for the selected element.");
-					}
-				});
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getUnlinkedElements.json?projectKey="
+				+ projectKey + "&id=" + id, function(error, unlinkedElements) {
+			if (error === null) {
+				callback(unlinkedElements);
+			}
+		});
 	};
 
 	/*
@@ -112,8 +98,6 @@
 			if (error === null) {
 				showFlag("success", type + " and link have been created.");
 				callback(newElement.id);
-			} else {
-				showFlag("error", type + " and link have not been created. Error Code: " + error);
 			}
 		});
 	};
@@ -135,8 +119,6 @@
 					if (error === null) {
 						showFlag("success", "Decision knowledge element has been updated.");
 						callback(decisionKnowledgeElement);
-					} else {
-						showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
 					}
 				});
 	}
@@ -156,8 +138,6 @@
 					if (error === null) {
 						showFlag("success", "Decision knowledge element has been deleted.");
 						callback();
-					} else {
-						showFlag("error", "Decision knowledge element was not deleted. Error Code: " + error);
 					}
 				});
 	};
@@ -180,8 +160,6 @@
 					if (error === null) {
 						showFlag("success", "Link has been created.");
 						callback(link);
-					} else {
-						showFlag("error", "Link could not be created.");
 					}
 				});
 	};
@@ -203,8 +181,6 @@
 					if (error === null) {
 						showFlag("success", "Link has been deleted.");
 						callback();
-					} else if (showError) {
-						showFlag("error", "Link could not be deleted.");
 					}
 				});
 	};
@@ -280,8 +256,6 @@
 			if (error === null) {
 				showFlag("success", "Decision knowledge element has been updated.");
 				callback();
-			} else {
-				showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
 			}
 		});
 	};
@@ -303,8 +277,6 @@
 			if (error === null) {
 				showFlag("success", "Knowledge type has been changed.");
 				callback(link);
-			} else {
-				showFlag("error", "Knowledge type could not be changed.");
 			}
 		});
 	};
@@ -325,8 +297,6 @@
 					if (error === null) {
 						showFlag("success", "Decision knowledge element has been updated.");
 						callback(id, type);
-					} else {
-						showFlag("error", "Decision knowledge element was not updated. Error Code: " + error);
 					}
 				});
 	};
@@ -347,8 +317,6 @@
 					if (error === null) {
 						showFlag("success", "JIRA Issue has been created");
 						callback();
-					} else {
-						showFlag("error", "JIRA Issue has not been created. Error Code: " + error);
 					}
 				});
 	};
@@ -361,8 +329,6 @@
 				+ "&rootElementType=" + rootElementType, function(error, core) {
 			if (error === null) {
 				callback(core);
-			} else {
-				showFlag("error", "Tree viewer data could not be received. Error-Code: " + error);
 			}
 		});
 	};
@@ -375,8 +341,6 @@
 				+ "&depthOfTree=" + depthOfTree + "&searchTerm=" + searchTerm, function(error, treant) {
 			if (error === null) {
 				callback(treant);
-			} else {
-				showFlag("error", "Filtered Treant data could not be received. Error-Code: " + error);
 			}
 		});
 	};
@@ -394,8 +358,6 @@
 				+ "&showRelevant=" + showRelevant.toString(), function(error, core) {
 			if (error === null) {
 				callback(core);
-			} else {
-				showFlag("error", "Tree viewer data could not be received. Error-Code: " + error);
 			}
 		});
 	};
@@ -409,8 +371,6 @@
 				+ "&isActivated=" + isActivated, null, function(error, response) {
 			if (error === null) {
 				showFlag("success", "Plug-in activation for the project has been set to " + isActivated + ".");
-			} else {
-				showFlag("error", "Plug-in activation for the project has not been changed.");
 			}
 		});
 	};
@@ -424,8 +384,6 @@
 				+ "&isIssueStrategy=" + isIssueStrategy, null, function(error, response) {
 			if (error === null) {
 				showFlag("success", "Strategy has been selected.");
-			} else {
-				showFlag("error", "Strategy could not be selected.");
 			}
 		});
 	};
@@ -438,9 +396,6 @@
 				function(error, isIssueStrategyBoolean) {
 					if (error === null) {
 						callback(isIssueStrategyBoolean);
-					} else {
-						showFlag("error", "Persistence strategy for the project could not be received. Error-Code: "
-								+ error);
 					}
 				});
 	};
@@ -457,8 +412,6 @@
 			if (error === null) {
 				showFlag("success", "Git connection for this project has been set to " + isKnowledgeExtractedFromGit
 						+ ".");
-			} else {
-				showFlag("error", "Git connection for this project could not be configured.");
 			}
 		});
 	};
@@ -475,8 +428,6 @@
 			if (error === null) {
 				showFlag("success", "Extraction from issue comments for this project has been set to "
 						+ isKnowledgeExtractedFromIssues + ".");
-			} else {
-				showFlag("error", "Extraction from issue comments for this project could not be configured.");
 			}
 		});
 	};
@@ -486,20 +437,15 @@
 	 */
 	ConDecAPI.prototype.setUseClassifierForIssueComments = function setUseClassifierForIssueComments(
 			isClassifierUsedForIssues, projectKey) {
-		postJSON(
-				AJS.contextPath() + "/rest/decisions/latest/config/setUseClassifierForIssueComments.json?projectKey="
-						+ projectKey + "&isClassifierUsedForIssues=" + isClassifierUsedForIssues,
-				null,
-				function(error, response) {
-					if (error === null) {
-						showFlag("success",
-								"Usage of classification for Decision Knowledge in JIRA Issue Comments has been set to "
-										+ isClassifierUsedForIssues + ".");
-					} else {
-						showFlag("error",
-								"Usage of classification for Decision Knowledge in JIRA Issue Comments could not be configured.");
-					}
-				});
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setUseClassifierForIssueComments.json?projectKey="
+				+ projectKey + "&isClassifierUsedForIssues=" + isClassifierUsedForIssues, null, function(error,
+				response) {
+			if (error === null) {
+				showFlag("success",
+						"Usage of classification for Decision Knowledge in JIRA Issue Comments has been set to "
+								+ isClassifierUsedForIssues + ".");
+			}
+		});
 	};
 
 	/*
@@ -513,9 +459,6 @@
 					if (error === null) {
 						showFlag("success", "The activation of the " + knowledgeType
 								+ " knowledge type for this project has been set to " + isKnowledgeTypeEnabled + ".");
-					} else {
-						showFlag("error", "The activation of the " + knowledgeType
-								+ " knowledge type for this project could not be changed.");
 					}
 				});
 	};
@@ -529,9 +472,6 @@
 				+ knowledgeType + "&projectKey=" + projectKey, function(error, isKnowledgeTypeEnabled) {
 			if (error === null) {
 				callback(isKnowledgeTypeEnabled, toggle);
-			} else {
-				showFlag("error", "It could not be received whether the knowledge type is enabled. Error-Code: "
-						+ error);
 			}
 		});
 	};
@@ -546,8 +486,6 @@
 				+ "/rest/decisions/latest/config/getKnowledgeTypes.json?projectKey=" + projectKey);
 		if (knowledgeTypes !== null) {
 			return knowledgeTypes;
-		} else {
-			showFlag("error", "The knowledge types could not be received. Error-Code: " + error);
 		}
 	}
 
@@ -572,8 +510,6 @@
 				+ "&webhookUrl=" + webhookUrl + "&webhookSecret=" + webhookSecret, null, function(error, response) {
 			if (error === null) {
 				showFlag("success", "The webhook for this project has been set.");
-			} else {
-				showFlag("error", "The webhook for this project has not been set.");
 			}
 		});
 	};
@@ -586,8 +522,6 @@
 				+ "&isActivated=" + isActivated, null, function(error, response) {
 			if (error === null) {
 				showFlag("success", "The webhook activation for this project has been changed.");
-			} else {
-				showFlag("error", "The webhook activation for this project could not be changed.");
 			}
 		});
 	};
@@ -601,8 +535,6 @@
 				error, response) {
 			if (error === null) {
 				showFlag("success", "The webhook root element type was changed for this project.");
-			} else {
-				showFlag("error", "The webhook root element type could not been changed for this project.");
 			}
 		});
 	};
@@ -615,8 +547,6 @@
 				+ projectKey, null, function(error, response) {
 			if (error === null) {
 				showFlag("success", "The Sentence database has been cleared.");
-			} else {
-				showFlag("error", "The Sentence database has not been cleared.");
 			}
 		});
 	};
@@ -643,8 +573,6 @@
 				+ "&isActivatedString=" + isActivated, null, function(error, response) {
 			if (error === null) {
 				showFlag("success", "Using icons to tag issue comments has been set to " + isActivated + ".");
-			} else {
-				showFlag("error", "It could not be received wether icons can be used to tag issue comments.");
 			}
 		});
 	};
@@ -659,8 +587,6 @@
 				result) {
 			if (error === null) {
 				callback(result);
-			} else {
-				showFlag("error", "Request token could not be received. Error-Code: " + error);
 			}
 		});
 	};
@@ -675,8 +601,6 @@
 				+ "&requestToken=" + requestToken + "&secret=" + secret, function(error, result) {
 			if (error === null) {
 				callback(result);
-			} else {
-				showFlag("error", "Access token could not be received. Error-Code: " + error);
 			}
 		});
 	};
@@ -690,8 +614,6 @@
 				+ projectKey + "&query=" + query, null, function(error, result) {
 			if (error === null) {
 				callback(result);
-			} else {
-				showFlag("error", "Elements for given query could not be received." + error);
 			}
 		});
 	};
@@ -704,8 +626,6 @@
 				+ elementKey + "&URISearch=" + query, function(error, result) {
 			if (error === null) {
 				callback(result);
-			} else {
-				showFlag("error", "Linked elements for given query could not be received." + error);
 			}
 		});
 	};
@@ -720,6 +640,7 @@
 			if (status === 200) {
 				callback(null, xhr.response);
 			} else {
+				showFlag("error", xhr.response.error, status);
 				callback(status);
 			}
 		};
@@ -753,6 +674,7 @@
 			if (status === 200) {
 				callback(null, xhr.response);
 			} else {
+				showFlag("error", xhr.response.error, status);
 				callback(status);
 			}
 		};
@@ -770,6 +692,7 @@
 			if (status === 200) {
 				callback(null, xhr.response);
 			} else {
+				showFlag("error", xhr.response.error, status);
 				callback(status);
 			}
 		};
@@ -787,6 +710,7 @@
 			if (status === 200) {
 				callback(null, xhr.response);
 			} else {
+				showFlag("error", xhr.response.error, status);
 				callback(status);
 			}
 		};
@@ -826,11 +750,14 @@
 		return projectKey;
 	}
 
-	function showFlag(type, message) {
+	function showFlag(type, message, status) {
+		if (status == null || status == undefined) {
+			status = "";
+		}
 		AJS.flag({
 			type : type,
 			close : "auto",
-			title : type.charAt(0).toUpperCase() + type.slice(1),
+			title : type.charAt(0).toUpperCase() + type.slice(1) + " " + status,
 			body : message
 		});
 	}
