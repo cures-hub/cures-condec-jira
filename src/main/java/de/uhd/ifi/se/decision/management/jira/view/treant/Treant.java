@@ -64,7 +64,7 @@ public class Treant {
 	}
 
 	public Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth) {
-		if (element == null || element.getProject().getProjectKey() == null) {
+		if (element == null || element.getProject() == null) {
 			return new Node();
 		}
 

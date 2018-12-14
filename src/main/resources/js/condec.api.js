@@ -44,7 +44,7 @@
 	ConDecAPI.prototype.getDecisionKnowledgeElement = function getDecisionKnowledgeElement(id, documentationLocation,
 			callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getDecisionKnowledgeElement.json?projectKey="
-				+ projectKey + "&id=" + id + "12213&documentationLocation=" + documentationLocation, function(error,
+				+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function(error,
 				decisionKnowledgeElement) {
 			if (error === null) {
 				callback(decisionKnowledgeElement);
@@ -751,7 +751,7 @@
 	}
 
 	function showFlag(type, message, status) {
-		if (status == null || status == undefined) {
+		if (status === null || status === undefined) {
 			status = "";
 		}
 		AJS.flag({
