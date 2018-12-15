@@ -46,9 +46,13 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		if (decisionKnowledgeElement == null) {
 			return false;
 		}
-		boolean isDeleted = false;
 		new WebhookConnector(projectKey).sendElementChanges(decisionKnowledgeElement);
-		long id = decisionKnowledgeElement.getId();
+		return deleteDecisionKnowledgeElement(decisionKnowledgeElement.getId(), user);
+	}
+
+	@Override
+	public boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user) {
+		boolean isDeleted = false;
 		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", id))) {
 			GenericLinkManager.deleteLinksForElement(PREFIX + id);
@@ -221,7 +225,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 								+ databaseEntry.getId());
 						databaseEntry.setSummary(element.getSummary());
 						databaseEntry.setDescription(element.getDescription());
-						databaseEntry.setType(element.getType().toString());
+						databaseEntry.setType(element.getType().getSimpleKnowledgeType().toString());
 						databaseEntry.setProjectKey(element.getProject().getProjectKey());
 						databaseEntry.save();
 						return databaseEntry;

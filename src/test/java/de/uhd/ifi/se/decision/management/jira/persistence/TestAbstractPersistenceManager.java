@@ -23,34 +23,34 @@ public class TestAbstractPersistenceManager extends TestSetUpWithIssues {
 
 	@Test(expected = java.lang.IllegalArgumentException.class)
 	public void testProjectKeyNull() {
-		AbstractPersistenceManager.getPersistenceStrategy(null);
+		AbstractPersistenceManager.getDefaultPersistenceStrategy(null);
 	}
 
 	@Test
 	public void testGetPersistenceStrategyProjectKeyNonExistent() {
-		assertTrue(AbstractPersistenceManager.getPersistenceStrategy("TESTNOT") instanceof JiraIssuePersistenceManager);
+		assertTrue(AbstractPersistenceManager.getDefaultPersistenceStrategy("TESTNOT") instanceof JiraIssuePersistenceManager);
 	}
 
 	@Test
 	public void testGetPersistenceStrategyProjectKeyExistent() {
-		assertTrue(AbstractPersistenceManager.getPersistenceStrategy("TEST") instanceof JiraIssuePersistenceManager);
+		assertTrue(AbstractPersistenceManager.getDefaultPersistenceStrategy("TEST") instanceof JiraIssuePersistenceManager);
 	}
 	
 	@Test
 	public void testGetPersistenceManagerElementExistentJiraIssue() {
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUE);
-		assertTrue(AbstractPersistenceManager.getPersistence(element) instanceof JiraIssuePersistenceManager);
+		assertTrue(AbstractPersistenceManager.getPersistenceManager(element) instanceof JiraIssuePersistenceManager);
 	}
 	
 	@Test
 	public void testGetPersistenceManagerElementExistentActiveObject() {
 		element.setDocumentationLocation(DocumentationLocation.ACTIVEOBJECT);
-		assertTrue(AbstractPersistenceManager.getPersistence(element) instanceof ActiveObjectPersistenceManager);
+		assertTrue(AbstractPersistenceManager.getPersistenceManager(element) instanceof ActiveObjectPersistenceManager);
 	}
 	
 	@Test
 	public void testGetPersistenceManagerElementExistentJiraIssueComment() {
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUECOMMENT);
-		assertTrue(AbstractPersistenceManager.getPersistence(element) instanceof JiraIssueCommentPersistenceManager);
+		assertTrue(AbstractPersistenceManager.getPersistenceManager(element) instanceof JiraIssueCommentPersistenceManager);
 	}
 }

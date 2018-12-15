@@ -93,6 +93,11 @@
 	overflow: hidden;
 }
 
+.node-documentationLocation {
+	visibility: hidden;
+	display: inline;
+}
+
 .node a {
 	font-size: 12px;
 }

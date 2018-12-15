@@ -19,6 +19,7 @@ import com.atlassian.jira.issue.issuetype.MockIssueType;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
+
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
@@ -76,7 +77,7 @@ public class TestComment extends TestSetUpWithIssues {
 		createLocalIssue();
 
 		addCommentsToIssue(text);
-		return new CommentImpl(comment1,true);
+		return new CommentImpl(comment1, true);
 	}
 
 	@Test
@@ -92,7 +93,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testCommentIsCreated() {
-		assertNotNull(getComment("this is a test Sentence. With two sentences"));
+		assertNotNull(getComment("This is a test Sentence. With two sentences"));
 	}
 
 	@Test
@@ -119,7 +120,6 @@ public class TestComment extends TestSetUpWithIssues {
 		assertNotNull(comment);
 		assertEquals(3, comment.getSentences().size());
 	}
-
 
 	@Test
 	@NonTransactional
@@ -329,8 +329,6 @@ public class TestComment extends TestSetUpWithIssues {
 		assertEquals(KnowledgeType.ARGUMENT, comment.getSentences().get(0).getType());
 	}
 
-	
-	
 	@Test
 	@NonTransactional
 	public void testSetSentences() {
@@ -339,7 +337,7 @@ public class TestComment extends TestSetUpWithIssues {
 		assertNotNull(comment.getSentences());
 		assertEquals(0, comment.getSentences().size());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testGetSetBody() {
@@ -347,24 +345,23 @@ public class TestComment extends TestSetUpWithIssues {
 		comment.setBody("test");
 		assertEquals("test", comment.getBody());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testGetSetAuthorId() {
 		Comment comment = new CommentImpl();
-		comment.setAuthorId((long)1337);
+		comment.setAuthorId((long) 1337);
 		assertEquals(1337, comment.getAuthorId());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testSetProjectKey() {
 		Comment comment = new CommentImpl();
 		comment.setProjectKey("Test");
 		assertEquals("Test", comment.getProjectKey());
-	}	
-	
-	
+	}
+
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
 		@SuppressWarnings("unchecked")
 		@Override

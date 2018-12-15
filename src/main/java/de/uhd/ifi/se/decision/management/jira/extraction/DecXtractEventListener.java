@@ -81,8 +81,8 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 
 			LOGGER.debug("\nDecXtract Event Listener:\nparseIconsToTags()\ncreateLinksForNonLinkedElementsForIssue");
 			parseIconsToTags();
-			ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(
-					new DecisionKnowledgeElementImpl(issueEvent.getIssue()).getId());
+			//ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(
+				//	new DecisionKnowledgeElementImpl(issueEvent.getIssue()).getId());
 		}
 		if (eventTypeId.equals(EventType.ISSUE_COMMENTED_ID)) {
 			LOGGER.debug("\nDecXtract Event Listener:\nhandleNewComment()");

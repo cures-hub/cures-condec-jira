@@ -62,7 +62,7 @@ public class TreeViewer {
 	public TreeViewer(String projectKey, KnowledgeType rootElementType) {
 		this();
 		if (rootElementType != KnowledgeType.OTHER) {
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getPersistenceStrategy(projectKey);
+			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
 			List<DecisionKnowledgeElement> elements = strategy.getDecisionKnowledgeElements(rootElementType);
 
 			Set<Data> dataSet = new HashSet<Data>();
@@ -104,7 +104,7 @@ public class TreeViewer {
 		}
 		Data issueNode = this.getDataStructure(new DecisionKnowledgeElementImpl(issue));
 		// Match irrelevant sentences back to list
-		if(showKnowledgeTypes[4]) {
+		if (showKnowledgeTypes[4]) {
 			String identifier = DocumentationLocation.getIdentifier(DocumentationLocation.JIRAISSUE);
 			for (Link link : GenericLinkManager.getLinksForElement(identifier + issue.getId())) {
 				DecisionKnowledgeElement opposite = link.getOppositeElement(identifier + issue.getId());
@@ -113,33 +113,32 @@ public class TreeViewer {
 				}
 			}
 		}
-		KnowledgeType[] knowledgeType = {KnowledgeType.ISSUE, KnowledgeType.DECISION, KnowledgeType.ALTERNATIVE, KnowledgeType.ARGUMENT};
+		KnowledgeType[] knowledgeType = { KnowledgeType.ISSUE, KnowledgeType.DECISION, KnowledgeType.ALTERNATIVE,
+				KnowledgeType.ARGUMENT };
 		this.data = new HashSet<Data>(Arrays.asList(issueNode));
-		for(int i = 0; i <= 3; i++) {
-			for(Data node: this.data) {
-				Iterator<Data> it= node.getChildren().iterator();
-				while(it.hasNext()) {
-					removeChildrenWithType(it,knowledgeType[i],showKnowledgeTypes[i]);
-				}	
+		for (int i = 0; i <= 3; i++) {
+			for (Data node : this.data) {
+				Iterator<Data> it = node.getChildren().iterator();
+				while (it.hasNext()) {
+					removeChildrenWithType(it, knowledgeType[i], showKnowledgeTypes[i]);
+				}
 			}
 		}
 	}
-	
+
 	private void removeChildrenWithType(Iterator<Data> node, KnowledgeType knowledgeType, Boolean showKnowledgeType) {
 		Data currentNode = node.next();
-		if(!showKnowledgeType && currentNode.getNode().getType().equals(knowledgeType)) {
+		if (!showKnowledgeType && currentNode.getNode().getType().equals(knowledgeType)) {
 			node.remove();
 			return;
-		}else {
-			Iterator<Data> it= currentNode.getChildren().iterator();
-			while(it.hasNext()) {
-					removeChildrenWithType(it,knowledgeType, showKnowledgeType);
-				
+		} else {
+			Iterator<Data> it = currentNode.getChildren().iterator();
+			while (it.hasNext()) {
+				removeChildrenWithType(it, knowledgeType, showKnowledgeType);
+
 			}
 		}
 	}
-	
-	
 
 	private boolean isSentenceShown(DecisionKnowledgeElement element) {
 		return !((Sentence) element).isRelevant() && ((Sentence) element).getBody().length() > 0;
@@ -164,7 +163,7 @@ public class TreeViewer {
 
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
 			Data dataChild = new Data(childAndLink.getKey(), childAndLink.getValue());
-			if (dataChild.getNode().getProject().getProjectKey()
+			if (dataChild.getNode().getProject() != null && dataChild.getNode().getProject().getProjectKey()
 					.equals(decisionKnowledgeElement.getProject().getProjectKey())) {
 				dataChild = this.makeIdUnique(dataChild);
 				List<Data> childrenOfElement = this.getChildren(childAndLink.getKey());

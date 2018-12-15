@@ -49,7 +49,7 @@ public class TestTreant extends TestSetUpWithIssues {
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
 		initialization();
-		persistenceStrategy = AbstractPersistenceManager.getPersistenceStrategy("TEST");
+		persistenceStrategy = AbstractPersistenceManager.getDefaultPersistenceStrategy("TEST");
 	}
 
 	@Test
@@ -88,7 +88,6 @@ public class TestTreant extends TestSetUpWithIssues {
 		assertEquals(Node.class, treant.createNodeStructure(null, null, 0, 0).getClass());
 	}
 
-	@Test(expected = NullPointerException.class)
 	public void testCreateNodeStructureEmptyNullZeroZero() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
 		assertEquals(Node.class, treant.createNodeStructure(element, null, 0, 0).getClass());
@@ -106,7 +105,6 @@ public class TestTreant extends TestSetUpWithIssues {
 		assertEquals(Node.class, treant.createNodeStructure(null, null, 4, 0).getClass());
 	}
 
-	@Test(expected = NullPointerException.class)
 	public void testCreateNodeStructureEmptyNullFilledFilled() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
 		assertEquals(Node.class, treant.createNodeStructure(element, null, 4, 0).getClass());

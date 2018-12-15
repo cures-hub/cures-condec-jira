@@ -4,11 +4,9 @@
  * show a tree of relevant decision knowledge
 
  Requires
- * condec.api.js
- * condec.observable.js
- 
- Is required by
- * tabPanel.vm 
+ * conDecAPI
+ * conDecObservable
+ * conDecTreeViewer
  
  Is referenced in HTML by
  * tabPanel.vm 
@@ -25,7 +23,7 @@
 	};
 
 	ConDecIssueTab.prototype.init = function init(_conDecAPI, _conDecObservable, _treeViewer, _contextMenu, _i18n) {
-		console.log("view.tab.panel.js init");
+		console.log("conDecTabPanel init");
 
 		// TODO add simple type checks
 		conDecAPI = _conDecAPI;
@@ -40,9 +38,13 @@
 		return true;
 	};
 
+	ConDecIssueTab.prototype.fetchAndRender = function() {
+		buildTreeViewer([ true, true, true, true, true ]);
+	};
+
 	/* triggered by onchange event in tabPanel.vm */
 	function toggleSelectedDecisionElements() {
-		console.log("view.tab.panel.js toggleSelectedDecisionElements");
+		console.log("view.condec.tab.panel toggleSelectedDecisionElements");
 
 		var decisionElements = [ "Issue", "Decision", "Alternative", "Argument", "Relevant" ];
 		var checked = [];
@@ -54,16 +56,23 @@
 		return checked;
 	}
 
+	ConDecIssueTab.prototype.updateView = function updateView() {
+		console.log("view.condec.tab.panel updateView");
+		treeViewer.resetTreeViewer();
+		var checked = toggleSelectedDecisionElements();
+		buildTreeViewer(checked);
+	};
+
 	/*
 	 called by
-	 * view.tab.panel.js:callDialog
+	 * conDecTabPanel:callDialog
 	 * view.context.menu.js
 	 */
 	function buildTreeViewer(knowledgeTypeSelection) {
-		console.log("view.tab.panel.js buildTreeViewer");
+		console.log("conDecTabPanel buildTreeViewer");
 
 		conDecAPI.getTreeViewerWithoutRootElement(knowledgeTypeSelection, function(core) {
-			console.log("view.tab.panel.js getTreeViewerWithoutRootElement callback");
+			console.log("conDecTabPanel getTreeViewerWithoutRootElement callback");
 
 			jQueryConDec("#jstree").jstree({
 				"core" : core,
@@ -94,19 +103,7 @@
 		}
 	}
 
-	function updateView() {
-		console.log("view.tabPanel updateView");
-		treeViewer.resetTreeViewer();
-		var checked = toggleSelectedDecisionElements();
-		buildTreeViewer(checked);
-	}
-
-	ConDecIssueTab.prototype.fetchAndRender = function() {
-		buildTreeViewer([ true, true, true, true, true ]);
-	};
-
 	// Expose methods:
-	ConDecIssueTab.prototype.updateView = updateView;
 	// for tabPanel.vm
 	ConDecIssueTab.prototype.toggleSelectedDecisionElements = toggleSelectedDecisionElements;
 	// for view.context.menu.js

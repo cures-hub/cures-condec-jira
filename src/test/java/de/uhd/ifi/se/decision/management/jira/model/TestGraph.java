@@ -73,6 +73,7 @@ public class TestGraph extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testGetLinkedElementsEmpty() {
 		DecisionKnowledgeElement emptyElement = new DecisionKnowledgeElementImpl();
+		emptyElement.setDocumentationLocation(DocumentationLocation.JIRAISSUE);
 		assertEquals(0, graph.getLinkedElements(emptyElement).size());
 	}
 
@@ -124,6 +125,7 @@ public class TestGraph extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testGetLinkedElementsAndLinksEmpty() {
 		DecisionKnowledgeElement emptyElement = new DecisionKnowledgeElementImpl();
+		emptyElement.setDocumentationLocation(DocumentationLocation.JIRAISSUE);
 		assertEquals(0, graph.getLinkedElements(emptyElement).size());
 	}
 

@@ -31,6 +31,12 @@ public class LinkImpl implements Link {
 		this.destinationElement = destinationElement;
 	}
 
+	public LinkImpl(DecisionKnowledgeElement sourceElement, DecisionKnowledgeElement destinationElement,
+			LinkType linkType) {
+		this(sourceElement, destinationElement);
+		this.type = linkType.toString();
+	}
+
 	public LinkImpl(long idOfSourceElement, long idOfDestinationElement) {
 		this.setSourceElement(idOfSourceElement);
 		this.setDestinationElement(idOfDestinationElement);
@@ -56,7 +62,7 @@ public class LinkImpl implements Link {
 	}
 
 	public LinkImpl(String idOfSourceElementWithPrefix, String idOfDestinationElementWithPrefix, String type) {
-		this(idOfDestinationElementWithPrefix, idOfSourceElementWithPrefix);
+		this(idOfSourceElementWithPrefix, idOfDestinationElementWithPrefix);
 		setType(type);
 	}
 
@@ -84,6 +90,9 @@ public class LinkImpl implements Link {
 
 	@Override
 	public String getType() {
+		if(type == null|| type.equals("")) {
+			return "contain";
+		}
 		return type;
 	}
 

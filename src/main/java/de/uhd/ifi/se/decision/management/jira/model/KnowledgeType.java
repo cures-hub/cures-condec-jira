@@ -6,10 +6,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.IssueManager;
-
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 
@@ -17,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
  * Type of decision knowledge element
  */
 public enum KnowledgeType {
-	ALTERNATIVE, ASSUMPTION, ASSESSMENT, ARGUMENT, CLAIM, CONTEXT, CONSTRAINT, DECISION, GOAL, ISSUE, IMPLICATION, PROBLEM, RATIONALE, SOLUTION, OTHER, QUESTION;
+	ALTERNATIVE, ASSUMPTION, ASSESSMENT, ARGUMENT, PRO, CON, CLAIM, CONTEXT, CONSTRAINT, DECISION, GOAL, ISSUE, IMPLICATION, PROBLEM, RATIONALE, SOLUTION, OTHER, QUESTION;
 
 	/**
 	 * Get the minimal set of decision knowledge types for the management of
@@ -25,7 +21,7 @@ public enum KnowledgeType {
 	 *
 	 * @return minimal set of decision knowledge types.
 	 */
-	public static Set<KnowledgeType> getDefaulTypes() {
+	public static Set<KnowledgeType> getDefaultTypes() {
 		return EnumSet.of(DECISION, ISSUE, ARGUMENT, ALTERNATIVE);
 	}
 
@@ -34,6 +30,7 @@ public enum KnowledgeType {
 	 *
 	 * @param type
 	 *            as a String.
+	 * @return knowledge type.
 	 */
 	public static KnowledgeType getKnowledgeType(String type) {
 		if (type == null) {
@@ -68,6 +65,14 @@ public enum KnowledgeType {
 			return KnowledgeType.QUESTION;
 		case "argument":
 			return KnowledgeType.ARGUMENT;
+		case "pro-argument":
+			return KnowledgeType.PRO;
+		case "pro":
+			return KnowledgeType.PRO;
+		case "con-argument":
+			return KnowledgeType.CON;
+		case "con":
+			return KnowledgeType.CON;
 		case "assessment":
 			return KnowledgeType.ASSESSMENT;
 		default:
@@ -76,12 +81,36 @@ public enum KnowledgeType {
 	}
 
 	/**
+	 * Return the argument knowledge type instead of pro-argument or con-argument.
+	 */
+	public KnowledgeType getSimpleKnowledgeType() {
+		return getSimpleKnowledgeType(this);
+	}
+
+	public static KnowledgeType getSimpleKnowledgeType(KnowledgeType type) {
+		switch (type) {
+		case PRO:
+			return KnowledgeType.ARGUMENT;
+		case CON:
+			return KnowledgeType.ARGUMENT;
+		default:
+			return type;
+		}
+	}
+
+	public static KnowledgeType getSimpleKnowledgeType(String type) {
+		KnowledgeType knowledgeType = getKnowledgeType(type);
+		return getSimpleKnowledgeType(knowledgeType);
+	}
+
+	/**
 	 * Get the super class of a knowledge type in the decision documentation model.
 	 * For example, the super type of argument is rationale and the super type of
 	 * issue is problem.
 	 *
 	 * @see DecisionKnowledgeElement
-	 * @param type of knowledge
+	 * @param type
+	 *            of knowledge
 	 * @return super knowledge type of the decision knowledge element.
 	 */
 	public static KnowledgeType getSuperType(KnowledgeType type) {
@@ -125,7 +154,8 @@ public enum KnowledgeType {
 	}
 
 	/**
-	 * Convert the knowledge type to a String starting with a capital letter, e.g., Argument, Decision, or Alternative.
+	 * Convert the knowledge type to a String starting with a capital letter, e.g.,
+	 * Argument, Decision, or Alternative.
 	 *
 	 * @return knowledge type as a String starting with a capital letter.
 	 */
@@ -147,33 +177,42 @@ public enum KnowledgeType {
 		}
 		return knowledgeTypes;
 	}
-	
-	public static String getIconUrl(DecisionKnowledgeElement element) {
-		if (element instanceof Sentence && !((Sentence)element).isRelevant()){
-			return ComponentGetter.getUrlOfImageFolder()+"Other.png";
-		}
-		switch(element.getType()) {
-		case OTHER:
-			if(!(element instanceof Sentence)) {
-				IssueManager issueManager = ComponentAccessor.getIssueManager();
-				Issue issue = issueManager.getIssueByCurrentKey(element.getKey());
-				return issue.getIssueType().getCompleteIconUrl();
-			}
+
+	public String getIconUrl() {
+		switch (this) {
+		case PRO:
+			return ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
+		case CON:
+			return ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
 		default:
-			return ComponentGetter.getUrlOfImageFolder() + element.getType().toString() + ".png";
-		}		
+			return ComponentGetter.getUrlOfImageFolder() + this.name().toLowerCase(Locale.ENGLISH) + ".png";
+		}
 	}
-	
+
+	public static String getIconUrl(DecisionKnowledgeElement element) {
+		if (element == null) {
+			return "";
+		}
+		if (element instanceof Sentence && !((Sentence) element).isRelevant()) {
+			return ComponentGetter.getUrlOfImageFolder() + "Other.png";
+		}
+		return element.getType().getIconUrl();
+	}
+
 	public static String getIconUrl(DecisionKnowledgeElement element, String linkType) {
-		switch(element.getType()) {
+		if (element == null || linkType == null) {
+			return ComponentGetter.getUrlOfImageFolder() + "Other.png";
+		}
+		switch (element.getType()) {
 		case ARGUMENT:
 			if (linkType.equals("support")) {
 				return ComponentGetter.getUrlOfImageFolder() + "argument_pro.png";
 			} else if (linkType.equals("attack")) {
 				return ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
 			}
+
 		default:
 			return getIconUrl(element);
-		}		
+		}
 	}
 }

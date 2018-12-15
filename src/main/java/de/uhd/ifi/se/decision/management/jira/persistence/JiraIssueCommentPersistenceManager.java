@@ -4,27 +4,32 @@ import java.util.List;
 
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
- * Extends the abstract class AbstractPersistenceManager. Uses JIRA issue comments to
- * store decision knowledge.
+ * Extends the abstract class AbstractPersistenceManager. Uses JIRA issue
+ * comments to store decision knowledge.
  *
  * @see AbstractPersistenceManager
  */
 public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManager {
 
-	//private String projectKey;
+	// private String projectKey;
 
 	public JiraIssueCommentPersistenceManager(String projectKey) {
-		//this.projectKey = projectKey;
+		// this.projectKey = projectKey;
 	}
 
 	@Override
 	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
-		// TODO Auto-generated method stub
-		return false;
+		return ActiveObjectsManager.deleteSentenceObject(element.getId());
+	}
+	
+	@Override
+	public boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user) {
+		return ActiveObjectsManager.deleteSentenceObject(id);
 	}
 
 	@Override
@@ -35,8 +40,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return ActiveObjectsManager.getElementFromAO(id);
 	}
 
 	@Override

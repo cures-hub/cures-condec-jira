@@ -13,11 +13,14 @@ public enum DocumentationLocation {
 	/**
 	 * Convert a string to a documentation type.
 	 *
-	 * @param type
+	 * @param identifier
 	 *            as a String.
 	 */
-	public static DocumentationLocation getDocumentationLocationFromIdentifier(String type) {
-		switch (type.toLowerCase(Locale.ENGLISH)) {
+	public static DocumentationLocation getDocumentationLocationFromIdentifier(String identifier) {
+		if(identifier == null) {
+			return DocumentationLocation.UNKNOWN;
+		}
+		switch (identifier.toLowerCase(Locale.ENGLISH)) {
 		case "i":
 			return DocumentationLocation.JIRAISSUE;
 		case "a":
@@ -34,6 +37,9 @@ public enum DocumentationLocation {
 	}
 
 	public static String getIdentifier(DocumentationLocation documentationLocation) {
+		if(documentationLocation == null) {
+			return "i";
+		}
 		switch (documentationLocation) {
 		case JIRAISSUE:
 			return "i";

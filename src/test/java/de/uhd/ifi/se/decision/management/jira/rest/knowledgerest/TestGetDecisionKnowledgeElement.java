@@ -37,22 +37,23 @@ public class TestGetDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
 	@Test
 	public void testIssueIdZeroProjectKeyNull() {
 		assertEquals(Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error", ERROR_MISSING_KEY_ID))
-				.build().getEntity(), decRest.getDecisionKnowledgeElement(0, null).getEntity());
+				.build().getEntity(), decRest.getDecisionKnowledgeElement(0, null, null).getEntity());
 	}
 
 	@Test
 	public void testIssueIdFilledProjectKeyNull() {
 		assertEquals(Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error", ERROR_MISSING_KEY_ID))
-				.build().getEntity(), decRest.getDecisionKnowledgeElement(7, null).getEntity());
+				.build().getEntity(), decRest.getDecisionKnowledgeElement(7, null, null).getEntity());
 	}
 
 	@Test
 	public void testIssueIdFilledProjectKeyDontExist() {
-		assertEquals(200, decRest.getDecisionKnowledgeElement(7, "NotTEST").getStatus());
+		assertEquals(200, decRest.getDecisionKnowledgeElement(7, "NotTEST", null).getStatus());
 	}
 
 	@Test
 	public void testIssueIdFilledProjectKeyExist() {
-		assertEquals(Response.Status.OK.getStatusCode(), decRest.getDecisionKnowledgeElement(7, "TEST").getStatus());
+		assertEquals(Response.Status.OK.getStatusCode(),
+				decRest.getDecisionKnowledgeElement(7, "TEST", null).getStatus());
 	}
 }

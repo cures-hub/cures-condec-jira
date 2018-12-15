@@ -32,8 +32,9 @@
 	var ConDecDialog = function ConDecDialog() {
 	};
 
-	ConDecDialog.prototype.showCreateDialog = function showCreateDialog(idOfParentElement, documentationLocationOfParentElement) {
-		console.log("view.context.menu.js setUpDialogForCreateAction");
+	ConDecDialog.prototype.showCreateDialog = function showCreateDialog(idOfParentElement,
+			documentationLocationOfParentElement) {
+		console.log("conDecDialog setUpDialogForCreateAction");
 		console.log(idOfParentElement);
 		setHeaderText(createKnowledgeElementText);
 		setUpCreateOrEditDialog("", "", "Alternative", true);
@@ -44,14 +45,11 @@
 			var summary = document.getElementById("form-input-summary").value;
 			var description = document.getElementById("form-input-description").value;
 			var type = $("select[name='form-select-type']").val();
-			var documentationLocation = $("select[name='form-select-location']").val(); 
-			if (documentationLocation === "i") {
-				conDecAPI.createDecisionKnowledgeElementAsChild(summary, description, type, idOfParentElement, documentationLocationOfParentElement, documentationLocation);
-			} else if (documentationLocation === "s") {
-				conDecAPI.createDecisionKnowledgeElementAsJIRAIssueComment(summary, description, type, idOfParentElement, documentationLocationOfParentElement, function() {
-					conDecObservable.notify();
-				});
-			}
+			var documentationLocation = $("select[name='form-select-location']").val();
+			conDecAPI.createDecisionKnowledgeElement(summary, description, type, documentationLocation,
+					idOfParentElement, documentationLocationOfParentElement, function() {
+						conDecObservable.notify();
+					});
 			AJS.dialog2("#dialog").hide();
 		};
 		setUpDialog();
@@ -62,7 +60,7 @@
 	 * should be moved out from this function TODO: rename to maybe showDialog()
 	 */
 	function setUpDialog() {
-		console.log("view.context.menu.js setUpDialog");
+		console.log("conDecDialog setUpDialog");
 		AJS.dialog2("#dialog").show();
 		if (!conDecDialogOnHideSet) {
 			AJS.dialog2("#dialog").on("hide", function() {
@@ -73,13 +71,13 @@
 	}
 
 	function setHeaderText(headerText) {
-		console.log("view.context.menu.js headerText");
+		console.log("conDecDialog headerText");
 		var header = document.getElementById("dialog-header");
 		header.textContent = headerText;
 	}
 
 	function setUpCreateOrEditDialog(summary, description, knowledgeType, addDocumentLocation) {
-		console.log("view.context.menu.js setUpCreateOrEditDialog");
+		console.log("conDecDialog setUpCreateOrEditDialog");
 		var documentationLocation = "";
 		if (addDocumentLocation) {
 			documentationLocation = "<div class='field-group'><label for='form-select-location'>Documentation Location:</label>"
@@ -120,7 +118,7 @@
 	}
 
 	function setUpTypeChangeDialog(knowledgeType) {
-		console.log("view.context.menu.js setUpTypeChangeDialog");
+		console.log("conDecDialog setUpTypeChangeDialog");
 		document
 				.getElementById("dialog-content")
 				.insertAdjacentHTML(
@@ -141,12 +139,12 @@
 	}
 
 	function isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index) {
-		console.log("view.context.menu.js isKnowledgeTypeLocatedAtIndex");
+		console.log("conDecDialog isKnowledgeTypeLocatedAtIndex");
 		return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase();
 	}
 
 	ConDecDialog.prototype.showLinkDialog = function showLinkDialog(id) {
-		console.log("view.context.menu.js setUpDialogForLinkAction");
+		console.log("conDecDialog setUpDialogForLinkAction");
 		console.log(id);
 		setUpDialog();
 		setHeaderText(linkKnowledgeElementText);
@@ -181,13 +179,13 @@
 	};
 
 	function addFormForArguments() {
-		console.log("view.context.menu.js addFormForArguments");
+		console.log("conDecDialog addFormForArguments");
 		var childId = $("select[name='form-select-component']").val();
 		var argumentFieldGroup = document.getElementById("argument-field-group");
 		argumentFieldGroup.innerHTML = "";
 		conDecAPI
 				.getDecisionKnowledgeElement(
-						childId,
+						childId, "i",
 						function(decisionKnowledgeElement) {
 							if (decisionKnowledgeElement && decisionKnowledgeElement.type === "Argument") {
 								insertString = "<label for='form-radio-argument'>Type of Argument:</label>"
@@ -203,8 +201,8 @@
 	ConDecDialog.prototype.addFormForArguments = addFormForArguments;
 
 	ConDecDialog.prototype.showEditDialog = function showEditDialog(id, type) {
-		console.log("view.context.menu.js setUpDialogForEditAction");
-		conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
+		console.log("conDecDialog setUpDialogForEditAction");
+		conDecAPI.getDecisionKnowledgeElement(id, "i", function(decisionKnowledgeElement) {
 			var summary = decisionKnowledgeElement.summary;
 			var description = decisionKnowledgeElement.description;
 			var type = decisionKnowledgeElement.type;
@@ -229,7 +227,7 @@
 						var summary = document.getElementById("form-input-summary").value;
 						var description = document.getElementById("form-input-description").value;
 						var type = $("select[name='form-select-type']").val();
-						conDecAPI.updateDecisionKnowledgeElementAsChild(id, summary, description, type);
+						conDecAPI.updateDecisionKnowledgeElementAsChild(id, summary, description, type, "");
 						AJS.dialog2("#dialog").hide();
 					};
 				}
@@ -237,8 +235,8 @@
 		});
 	};
 
-	ConDecDialog.prototype.showDeleteDialog = function showDeleteDialog(id) {
-		console.log("view.context.menu.js setUpDialogForDeleteAction");
+	ConDecDialog.prototype.showDeleteDialog = function showDeleteDialog(id, documentationLocation) {
+		console.log("conDecDialog showDeleteDialog");
 		setUpDialog();
 		setHeaderText(deleteKnowledgeElementText);
 
@@ -248,7 +246,7 @@
 		var submitButton = document.getElementById("dialog-submit-button");
 		submitButton.textContent = deleteKnowledgeElementText;
 		submitButton.onclick = function() {
-			conDecAPI.deleteDecisionKnowledgeElement(id, function() {
+			conDecAPI.deleteDecisionKnowledgeElement(id, documentationLocation, function() {
 				conDecObservable.notify();
 			});
 			AJS.dialog2("#dialog").hide();
@@ -256,7 +254,7 @@
 	};
 
 	ConDecDialog.prototype.showDeleteLinkDialog = function showDeleteLinkDialog(id, parentId) {
-		console.log("view.context.menu.js setUpDialogForDeleteLinkAction");
+		console.log("conDecDialog showDeleteLinkDialog");
 		setUpDialog();
 		setHeaderText(deleteLinkToParentText);
 
@@ -274,10 +272,10 @@
 	};
 
 	ConDecDialog.prototype.showChangeTypeDialog = function showChangeTypeDialog(id) {
-		console.log("view.context.menu.js setUpDialogForChangeTypeAction");
+		console.log("conDecDialog setUpDialogForChangeTypeAction");
 		setUpDialog();
 		setHeaderText(changeKnowledgeTypeText);
-		conDecAPI.getDecisionKnowledgeElement(id, function(decisionKnowledgeElement) {
+		conDecAPI.getDecisionKnowledgeElement(id, "i", function(decisionKnowledgeElement) {
 			var summary = decisionKnowledgeElement.summary;
 			var description = decisionKnowledgeElement.description;
 			var type = decisionKnowledgeElement.type;
@@ -287,14 +285,15 @@
 			submitButton.textContent = editKnowledgeElementText;
 			submitButton.onclick = function() {
 				var type = $("select[name='form-select-type']").val();
-				conDecAPI.updateDecisionKnowledgeElementAsChild(id, summary, description, type);
+				// TODO Add changeKnowledgeType function to conDecAPI 
+				conDecAPI.updateDecisionKnowledgeElementAsChild(id, summary, description, type, "");
 				AJS.dialog2("#dialog").hide();
 			};
 		});
 	};
 
 	function resetDialog() {
-		console.log("view.context.menu.js resetDialog");
+		console.log("conDecDialog resetDialog");
 		document.getElementById("dialog-header").innerHTML = "";
 		document.getElementById("dialog-content").innerHTML = "";
 		var dialog = document.getElementById("dialog");
@@ -365,13 +364,14 @@
 			conDecAPI.editSentenceBody(id, description, type, function() {
 				AJS.dialog2("#dialog").hide();
 				conDecObservable.notify();
+				JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
 			});
 		};
 		AJS.$("#form-select-type").auiSelect2();
 	}
 
 	ConDecDialog.prototype.setUpDialogForEditSentenceAction = function setUpDialogForEditSentenceAction(id) {
-		conDecAPI.getSentenceElement(id, function(result) {
+		conDecAPI.getDecisionKnowledgeElement(id, "s", function(result) {
 			var description = result["description"];
 			var type = result["type"];
 			setUpDialog();

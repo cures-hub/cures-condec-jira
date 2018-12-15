@@ -2,38 +2,18 @@ package de.uhd.ifi.se.decision.management.jira.extraction.view.macros;
 
 import java.util.Map;
 
-import com.atlassian.jira.issue.fields.renderer.IssueRenderContext;
 import com.atlassian.renderer.RenderContext;
-import com.atlassian.renderer.v2.RenderMode;
-import com.atlassian.renderer.v2.macro.BaseMacro;
+import com.atlassian.renderer.v2.macro.MacroException;
 
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-public class ProMacro extends BaseMacro {
+public class ProMacro extends AbstractKnowledgeClassificationMacro {
 
-	@Override
-	public boolean hasBody() {
-		return true;
-	}
+	private String knowledgeType = KnowledgeType.PRO.toString().toLowerCase();
 
 	@Override
-	public RenderMode getBodyRenderMode() {
-		return RenderMode.allow(RenderMode.F_ALL);
+	public String execute(Map<String, Object> parameters, String body, RenderContext renderContext)
+			throws MacroException {
+		return super.execute(parameters, body, renderContext, knowledgeType, "#b9f7c0");
 	}
-
-	@Override
-	public String execute(Map<String, Object> parameters, String body, RenderContext renderContext){
-		if(!ConfigPersistenceManager.isKnowledgeExtractedFromIssues(IssueMacro.getProjectKey(renderContext))) {
-			return body;
-		}
-		if (Boolean.TRUE.equals(renderContext.getParam(IssueRenderContext.WYSIWYG_PARAM))) {
-			return "\\{pro}"+body+"\\{pro}";
-        }
-		System.out.println(IssueMacro.getProjectKey(renderContext));
-		String newBody = IssueMacro.reformatCommentBody(body);
-		String icon = "<img src=\"" + ComponentGetter.getUrlOfImageFolder() + "argument_pro.png" + "\">";
-		return icon + "<span style =  \"background-color:#b9f7c0\">" + newBody + "</span>";
-	}
-
 }

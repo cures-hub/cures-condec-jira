@@ -61,15 +61,7 @@
 		<dependency>com.atlassian.auiplugin:aui-select2</dependency>
 		<dependency>com.atlassian.auiplugin:aui-experimental-iconfont</dependency>
 		<dependency>com.atlassian.auiplugin:aui-tooltips</dependency>
-	</web-resource>
-
-	<web-resource key="rest-client-resources" name="ConDec Rest Client Resources">
-		<description>
-			Provides the JavaScript REST Client for the REST API used in this plug-in.
-		</description>
-		<context>atl.general</context>
-		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
-		<resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />
+		<!-- JIRA dialogs -->
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-edit-issue</dependency>
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-create-issue</dependency>
 	</web-resource>
@@ -89,10 +81,14 @@
 		<resource type="download" name="raphael.js" location="/js/treant/raphael.js" />
 		<resource type="download" name="jquery.easing.js" location="/js/jquery/jquery.easing.js" />
 		<!-- ConDec java script files -->
+		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
+		<resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />
 		<resource type="download" name="condec.dialog.js" location="/js/condec.dialog.js" />
-		<resource type="download" name="condec.context.menu.js" location="/js/condec.context.menu.js" />
+		<resource type="download" name="condec.context.menu.js"
+			location="/js/condec.context.menu.js" />
 		<resource type="download" name="condec.treant.js" location="/js/condec.treant.js" />
-		<resource type="download" name="condec.tree.viewer.js" location="/js/condec.tree.viewer.js" />
+		<resource type="download" name="condec.tree.viewer.js"
+			location="/js/condec.tree.viewer.js" />
 	</web-resource>
 
 	<web-resource key="decision-knowledge-page-resources"
@@ -101,29 +97,31 @@
 			Provides the JavaScript files for the separate decision knowledge page of this
 			plug-in.
 		</description>
-		<resource type="download" name="view.condec.knowledge.page.js"
-			location="/js/view.condec.knowledge.page.js" />
+		<resource type="download" name="condec.knowledge.page.js"
+			location="/js/condec.knowledge.page.js" />
 	</web-resource>
 
-	<web-resource key="issue-module-resources"
-		name="ConDec JavaScript Resources for the Issue Module">
+	<web-resource key="jira-issue-module-resources"
+		name="ConDec JIRA Issue Module Resources">
 		<description>
-			Provides the JavaScript file used in the issue module.
+			Provides the JavaScript file used in the JIRA issue module.
 		</description>
 		<context>jira.view.issue</context>
-		<resource type="download" name="view.condec.issue.module.js" location="/js/view.condec.issue.module.js" />
+		<resource type="download" name="condec.jira.issue.module.js"
+			location="/js/condec.jira.issue.module.js" />
 	</web-resource>
 
 	<web-resource key="classifier-resources"
 		name="Resources for Decision Knowledge Extraction">
 		<description>
-			Provides the resources needed for extraction of decision knowledge from issue
+			Provides the resources needed for extraction of decision knowledge from JIRA issue
 			comments such as the model files for Weka and Meka classifiers.
 		</description>
 		<context>jira.view.issue</context>
 		<resource type="download" name="fc.model" location="/classifier/fc.model" />
 		<resource type="download" name="br.model" location="/classifier/br.model" />
-		<resource type="download" name="view.condec.tab.panel.js" location="/js/view.condec.tab.panel.js" />
+		<resource type="download" name="condec.tab.panel.js"
+			location="/js/condec.tab.panel.js" />
 	</web-resource>
 
 	<web-resource key="report-resources" name="Resources for Decision Knowledge Report">
@@ -134,7 +132,7 @@
 		<context>jira-report-plugin</context>
 		<resource type="download" name="echarts.js" location="/js/echart/echarts.js" />
 		<resource type="download" name="dataTool.js" location="/js/echart/dataTool.js" />
-		<resource type="download" name="view.report.js" location="/js/view.report.js" />
+		<resource type="download" name="condec.report.js" location="/js/condec.report.js" />
 	</web-resource>
 
 	<!-- Decision Knowledge Page -->
@@ -145,8 +143,7 @@
 		<label>Decision Knowledge</label>
 		<param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-decision" />
 		<link> /projects/$pathEncodedProjectKey?selectedItem=decision-knowledge-page</link>
-		<condition
-			class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
 	<web-panel name="Decision Knowledge Page" key="decision-knowledge-page"
 		location="decision-knowledge-page" weight="1000">
@@ -202,8 +199,7 @@
 		</description>
 		<label>ConDec project settings</label>
 		<link linkId="condec-project-settings-menu-item">/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded</link>
-		<condition
-			class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
 	<servlet key="servlet-for-settings-of-single-project"
 		name="Servlet for Settings of Single Project"
@@ -230,13 +226,12 @@
 	</ao>
 
 	<!-- Decision Knowledge Issue Module -->
-	<web-panel key="condec-issue-module" name="Decision Knowledge Issue Module"
+	<web-panel key="condec-jira-issue-module" name="Decision Knowledge JIRA Issue Module"
 		location="atl.jira.view.issue.left.context" weight="200">
 		<description>Decision Knowledge related to a JIRA Issue</description>
 		<label>Decision Knowledge</label>
-		<resource type="velocity" name="view" location="templates/issueModule.vm" />
-		<condition
-			class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+		<resource type="velocity" name="view" location="templates/jiraIssueModule.vm" />
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 		<supports-ajax-load>true</supports-ajax-load>
 	</web-panel>
 
@@ -244,16 +239,17 @@
 	<web-item key="export-as-table-item"
 		name="Menu Item for Decision Knowledge Export as Table" section="operations-operations">
 		<label>Export decision knowledge</label>
+		<description>Adds a menu item to the "More" dropdown in the JIRA issue view.</description>
 		<link linkId="export-as-table-link" />
-		<condition
-			class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
+		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
 
-	<!-- Decision Knowledge Extraction From Issue Description and Comments -->
+	<!-- Decision Knowledge Extraction From JIRA Issue Description and Comments -->
 	<issue-tabpanel key="condec-tab-panel"
 		name="Decision Knowledge Extraction Tab Panel"
 		class="de.uhd.ifi.se.decision.management.jira.extraction.view.IssueTabPanelRenderer">
-		<description>Tab panel to manage extraction of decision knowledge from issue comments
+		<description>Tab panel to manage extraction of decision knowledge from JIRA issue description and
+			comments.
 		</description>
 		<label>Decision Knowledge Extraction</label>
 		<order>10</order>
@@ -261,42 +257,43 @@
 		<supports-ajax-load>true</supports-ajax-load>
 	</issue-tabpanel>
 
-	<macro key='issue' name='issue formatting macro'
+	<macro key='issue' name='ConDec Editor Macro for Issues'
 		class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.IssueMacro'>
-		<description>Insert issue knowledge element in comments.</description>
+		<description>Highlights issue knowledge elements in comments.</description>
 	</macro>
 
-	<macro key='decision' name='decision formatting macro'
+	<macro key='decision' name='ConDec Editor Macro for Decisions'
 		class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.DecisionMacro'>
-		<description>Insert decision knowledge element in comments.</description>
+		<description>Highlights decision knowledge elements in comments.</description>
 	</macro>
 
-	<macro key='alternative' name='alternative formatting macro'
+	<macro key='alternative' name='ConDec Editor Macro for Alternatives'
 		class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.AlternativeMacro'>
-		<description>Insert alternative knowledge element in comments.</description>
+		<description>Highlights alternative knowledge elements in comments.</description>
 	</macro>
 
-	<macro key='pro' name='pro formatting macro'
+	<macro key='pro' name='ConDec Editor Macro for Pro-arguments'
 		class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.ProMacro'>
-		<description>Insert pro knowledge element in comments.</description>
+		<description>Highlights pro knowledge elements in comments.</description>
 	</macro>
 
-	<macro key='con' name='con formatting macro'
+	<macro key='con' name='ConDec Editor Macro for Con-arguments'
 		class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.ConMacro'>
-		<description>Insert con knowledge element in comments.</description>
+		<description>Highlights con knowledge elements in comments.</description>
 	</macro>
-
 
 	<web-resource key="toolbar" name="JIRA Editor Reference Plugin Toolbar Init">
+		<description>Extends the rich text editor with menu items that enable the user to manually
+			classify text into decision knowledge elements.
+		</description>
 		<context>jira.rich.editor</context>
 		<context>jira.view.issue</context>
 		<context>jira.edit.issue</context>
 		<context>jira.create.issue</context>
 		<context>gh-rapid</context>
 		<resource type="download" name="js/toolbar-init.js"
-			location="js/view.commentTab.toolbar-init.js" />
+			location="js/condec.text.editor.extension.js" />
 	</web-resource>
-
 
 	<!-- Decision Knowledge Report -->
 	<report name="Decision Knowledge Report" key="decision-knowledge-report"

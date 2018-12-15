@@ -1,0 +1,21 @@
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira-issue-module-resources")
+<div id="treant-container">
+	<p>No Element has been selected</p>
+</div>
+#include("templates/dialog.vm")
+#include("templates/contextMenu.vm")
+<script>
+/*
+ * Instantiate the ConDecJiraIssueModule object controlling this view:
+ */
+$(document).ready(function() {
+	conDecAPI.checkIfProjectKeyIsValid();
+    if ( window.conDecJiraIssueModule.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant, window) )
+        window.conDecJiraIssueModule.initView();
+    else {
+        console.error("ConDecJiraIssueModule could not get its dependencies.");
+    }
+});
+</script>

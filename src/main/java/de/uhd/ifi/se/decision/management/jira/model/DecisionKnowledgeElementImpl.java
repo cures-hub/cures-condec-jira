@@ -110,7 +110,10 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 
 	@Override
 	public KnowledgeType getType() {
-		return type;
+		if (type != null) {
+			return type;
+		}
+		return KnowledgeType.OTHER;
 	}
 
 	@Override
@@ -196,7 +199,10 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	@Override
 	@XmlElement(name = "documentationLocation")
 	public String getDocumentationLocationAsString() {
-		return this.documentationLocation.getIdentifier();
+		if (documentationLocation != null) {
+			return this.documentationLocation.getIdentifier();
+		}
+		return "";
 	}
 
 	@Override
@@ -206,7 +212,8 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 			// TODO Add here persistence strategy chosen in project
 			this.documentationLocation = DocumentationLocation.JIRAISSUE;
 		}
-		this.documentationLocation = DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation);
+		this.documentationLocation = DocumentationLocation
+				.getDocumentationLocationFromIdentifier(documentationLocation);
 	}
 
 	@Override

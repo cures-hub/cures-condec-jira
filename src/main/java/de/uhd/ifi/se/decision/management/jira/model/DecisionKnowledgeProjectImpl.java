@@ -135,7 +135,7 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 
 	@Override
 	public boolean isWebhookTypeEnabled(String issueType) {
-		return ConfigPersistenceManager.isWebhookTypeEnaled(projectKey, issueType);
+		return ConfigPersistenceManager.isWebhookTypeEnabled(projectKey, issueType);
 	}
 
 

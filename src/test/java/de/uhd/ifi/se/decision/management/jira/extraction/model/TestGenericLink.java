@@ -89,8 +89,8 @@ public class TestGenericLink extends TestSetUpWithIssues {
 		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue),true);
 		Sentence s = c.getSentences().get(0);
 		Link link = new LinkImpl("i" + issue.getId(), "s" + s.getId(), "contain");
-		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("i" + issue.getId()));
-		assertTrue(link.getIdOfSourceElementWithPrefix().equals("s" + s.getId()));
+		assertTrue(link.getIdOfSourceElementWithPrefix().equals("i" + issue.getId()));
+		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("s" + s.getId()));
 		assertTrue(link.getType().equals("contain"));
 	}
 

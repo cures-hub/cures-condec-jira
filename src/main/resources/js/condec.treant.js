@@ -79,8 +79,23 @@
 			}
 		}
 	}
-
+	
 	ConDecTreant.prototype.findParentId = findParentId;
+	
+	ConDecTreant.prototype.findDocumentationLocationOfParent = function findDocumentationLocationOfParent(elementId) {
+		var nodes = treantTree.tree.nodeDB.db;
+		var i;
+		for (i = 0; i < nodes.length; i++) {
+			//necessary to have ==, not ===
+			if (nodes[i].nodeHTMLid == elementId) {
+				var parentNode = treantTree.tree.getNodeDb().get(nodes[i].parentId);
+				var parentDocuLoc = parentNode.text;
+				console.log(parentDocuLoc);
+				console.log(parentDocuLoc.documentationLocation);
+				return parentDocuLoc.documentationLocation;
+			}
+		}
+	};	
 
 	function drop(event, target) {
 		event.preventDefault();

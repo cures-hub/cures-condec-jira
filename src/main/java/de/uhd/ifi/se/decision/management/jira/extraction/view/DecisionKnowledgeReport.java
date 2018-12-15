@@ -322,7 +322,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	private Map<String, Integer> getDecKnowElementsPerIssue() {
 		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
 
-		for (KnowledgeType type : KnowledgeType.getDefaulTypes()) {
+		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
 			String projectKey = projectManager.getProjectObj(this.projectId).getKey();
 			dkeCount.put(type.toString(), ActiveObjectsManager.getAllElementsFromAoByType(projectKey, type).size());
 		}
@@ -407,8 +407,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 	private Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth,
 			Graph graph) {
-		if (element == null || element.getProject().getProjectKey() == null
-				|| element.getType() == KnowledgeType.OTHER) {
+		if (element == null || element.getProject() == null || element.getType() == KnowledgeType.OTHER) {
 			return new Node();
 		}
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getLinkedElementsAndLinks(element);
