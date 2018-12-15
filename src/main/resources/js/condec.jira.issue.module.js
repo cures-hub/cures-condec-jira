@@ -54,6 +54,7 @@
 		var issueKey = conDecAPI.getIssueKey();
 		var search = getURLsSearch();
 		treant.buildTreant(issueKey, true, search);
+	};
 
 
 	ConDecJiraIssueModule.prototype.updateView = function() {
@@ -166,7 +167,7 @@
 
 	/**
 	 * returns jql if empty or nonexistent create it returning jql for one issue
-	 *
+	 * 
 	 * @returns {string}
 	 */
 	function getQueryFromUrl() {
