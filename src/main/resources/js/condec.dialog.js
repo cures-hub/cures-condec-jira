@@ -185,7 +185,8 @@
 		argumentFieldGroup.innerHTML = "";
 		conDecAPI
 				.getDecisionKnowledgeElement(
-						childId, "i",
+						childId,
+						"i",
 						function(decisionKnowledgeElement) {
 							if (decisionKnowledgeElement && decisionKnowledgeElement.type === "Argument") {
 								insertString = "<label for='form-radio-argument'>Type of Argument:</label>"
@@ -271,13 +272,11 @@
 		};
 	};
 
-	ConDecDialog.prototype.showChangeTypeDialog = function showChangeTypeDialog(id) {
+	ConDecDialog.prototype.showChangeTypeDialog = function showChangeTypeDialog(id, documentationLocation) {
 		console.log("conDecDialog setUpDialogForChangeTypeAction");
 		setUpDialog();
 		setHeaderText(changeKnowledgeTypeText);
-		conDecAPI.getDecisionKnowledgeElement(id, "i", function(decisionKnowledgeElement) {
-			var summary = decisionKnowledgeElement.summary;
-			var description = decisionKnowledgeElement.description;
+		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
 			var type = decisionKnowledgeElement.type;
 			setUpTypeChangeDialog(type);
 
@@ -285,8 +284,9 @@
 			submitButton.textContent = editKnowledgeElementText;
 			submitButton.onclick = function() {
 				var type = $("select[name='form-select-type']").val();
-				// TODO Add changeKnowledgeType function to conDecAPI 
-				conDecAPI.updateDecisionKnowledgeElementAsChild(id, summary, description, type, "");
+				conDecAPI.changeKnowledgeType(id, type, documentationLocation, function() {
+					conDecObservable.notify();
+				});
 				AJS.dialog2("#dialog").hide();
 			};
 		});
@@ -364,7 +364,7 @@
 			conDecAPI.editSentenceBody(id, description, type, function() {
 				AJS.dialog2("#dialog").hide();
 				conDecObservable.notify();
-				JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
+				JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [ JIRA.Issue.getIssueId() ]);
 			});
 		};
 		AJS.$("#form-select-type").auiSelect2();

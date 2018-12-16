@@ -2,7 +2,7 @@
  This module implements the communication with the ConDec Java REST API and the JIRA API.
 
  Requires
- * conDecTreant.findParentId
+ * conDecTreant.findParentElement
     
  Is required by
  * conDecContextMenu
@@ -222,10 +222,10 @@
 	ConDecAPI.prototype.updateDecisionKnowledgeElementAsChild = function updateDecisionKnowledgeElementAsChild(childId,
 			summary, description, type, documentationLocation) {
 		this.getDecisionKnowledgeElement(childId, documentationLocation, (function(childElement) {
-			var parentDocumentationLocation = conDecTreant.findDocumentationLocationOfParent(childId);
+			var parentDocumentationLocation = conDecTreant.findParentElement(childId)[1];
 			updateDecisionKnowledgeElement(childId, summary, description, type, documentationLocation, (function() {
 				if (childElement.type !== type) {
-					var parentId = conDecTreant.findParentId(childId);
+					var parentId = conDecTreant.findParentElement(childId)[0];
 					switchLinkTypes(type, parentId, childId, parentDocumentationLocation, documentationLocation,
 							(function(linkType, parentId, childId) {
 								this.deleteLink(parentId, childId, parentDocumentationLocation,
@@ -261,7 +261,7 @@
 	};
 
 	/*
-	 * external references: condec.dialog
+	 * external references: condec.context.menu, condec.dialog
 	 */
 	ConDecAPI.prototype.changeKnowledgeType = function changeKnowledgeType(id, type, documentationLocation, callback) {
 		var element = {
@@ -270,16 +270,15 @@
 			"projectKey" : projectKey,
 			"documentationLocation" : documentationLocation
 		};
-		var idOfParentElement = conDecTreant.findParentId(id);
-		var documentationLocationOfParentElement = conDecTreant.findDocumentationLocationOfParent(id);
+		var parentElement = conDecTreant.findParentElement(id);
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/changeKnowledgeType.json?idOfParentElement="
-				+ idOfParentElement + "&documentationLocationOfParentElement=" + documentationLocationOfParentElement,
-				element, function(error, response) {
-					if (error === null) {
-						showFlag("success", "Knowledge type has been changed.");
-						callback();
-					}
-				});
+				+ parentElement["id"] + "&documentationLocationOfParentElement="
+				+ parentElement["documentationLocation"], element, function(error, response) {
+			if (error === null) {
+				showFlag("success", "Knowledge type has been changed.");
+				callback();
+			}
+		});
 	};
 
 	/*

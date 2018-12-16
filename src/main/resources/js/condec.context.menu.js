@@ -51,7 +51,7 @@
 		};
 
 		document.getElementById("condec-context-menu-change-type-item").onclick = function() {
-			conDecDialog.showChangeTypeDialog(id);
+			conDecDialog.showChangeTypeDialog(id, "");
 		};
 
 		document.getElementById("condec-context-menu-link-item").onclick = function() {

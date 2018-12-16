@@ -405,6 +405,7 @@ public abstract class AbstractPersistenceManager {
 		} else {
 			linkId = GenericLinkManager.insertLink(link, user);
 		}
+		System.out.println("Creation: " + linkId);
 		return linkId;
 	}
 
@@ -424,6 +425,7 @@ public abstract class AbstractPersistenceManager {
 				isDeleted = GenericLinkManager.deleteLink(link.flip());
 			}
 		}
+		System.out.println("Deletion: " + isDeleted);
 		return isDeleted;
 	}
 
@@ -434,7 +436,7 @@ public abstract class AbstractPersistenceManager {
 		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
 
 		if (formerLinkType == linkType || idOfParentElement == 0) {
-			return 0;
+			return -1;
 		}
 
 		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();

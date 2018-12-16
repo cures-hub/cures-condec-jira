@@ -273,8 +273,6 @@ public class KnowledgeRest {
 		if (!isUpdated) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error",
 					"Knowledge type of element could not be updated due to an internal server error.")).build();
-		} else if (idOfParentElement == 0) {
-			return Response.status(Status.OK).build();
 		}
 
 		long linkId = persistenceManager.updateLink(element, formerElement.getType(), idOfParentElement,
