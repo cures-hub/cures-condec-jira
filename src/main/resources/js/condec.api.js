@@ -261,24 +261,25 @@
 	};
 
 	/*
-	 * external references: condec.context.menu
+	 * external references: condec.dialog
 	 */
-	ConDecAPI.prototype.changeKnowledgeTypeOfSentence = function changeKnowledgeTypeOfSentence(id, type, callback) {
-		var jsondata = {
+	ConDecAPI.prototype.changeKnowledgeType = function changeKnowledgeType(id, type, documentationLocation, callback) {
+		var element = {
 			"id" : id,
-			"type" : type
+			"type" : type,
+			"projectKey" : projectKey,
+			"documentationLocation" : documentationLocation
 		};
-		var argument = "";// Important to be empty!
-		if (type.includes("Pro") || type.includes("Con")) {
-			argument = type;
-		}
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/changeKnowledgeTypeOfSentence.json?projectKey="
-				+ projectKey + "&argument=" + argument, jsondata, function(error, link) {
-			if (error === null) {
-				showFlag("success", "Knowledge type has been changed.");
-				callback(link);
-			}
-		});
+		var idOfParentElement = conDecTreant.findParentId(id);
+		var documentationLocationOfParentElement = conDecTreant.findDocumentationLocationOfParent(id);
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/changeKnowledgeType.json?idOfParentElement="
+				+ idOfParentElement + "&documentationLocationOfParentElement=" + documentationLocationOfParentElement,
+				element, function(error, element) {
+					if (error === null) {
+						showFlag("success", "Knowledge type has been changed.");
+						callback(element);
+					}
+				});
 	};
 
 	/*

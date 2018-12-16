@@ -4,8 +4,10 @@ import java.util.List;
 
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
@@ -26,7 +28,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
 		return ActiveObjectsManager.deleteSentenceObject(element.getId());
 	}
-	
+
 	@Override
 	public boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user) {
 		return ActiveObjectsManager.deleteSentenceObject(id);
@@ -98,4 +100,18 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		return false;
 	}
 
+	@Override
+	public boolean changeKnowledgeType(DecisionKnowledgeElement element, ApplicationUser user) {
+		String argument = "";
+		if (element.getType() == KnowledgeType.PRO || element.getType() == KnowledgeType.CON) {
+			argument = element.getType().toString();
+		}
+		System.out.println(argument);
+		DecXtractEventListener.editCommentLock = true;
+		boolean isUpdated = ActiveObjectsManager.updateKnowledgeTypeOfSentence(element.getId(), element.getType(),
+				argument);
+		//isUpdated = isUpdated & ActiveObjectsManager.updateLinkTypeOfSentence(element, argument);
+		DecXtractEventListener.editCommentLock = false;
+		return isUpdated;
+	}
 }

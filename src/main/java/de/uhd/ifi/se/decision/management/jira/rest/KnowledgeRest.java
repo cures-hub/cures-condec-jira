@@ -36,7 +36,6 @@ import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImplFiltered;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
@@ -138,8 +137,7 @@ public class KnowledgeRest {
 				return Response.status(Status.OK).entity(newElementWithId).build();
 			}
 
-			LinkType linkType = LinkType.getLinkTypeForKnowledgeType(newElement.getType());
-			Link link = Link.instantiateDirectedLink(existingElement, newElementWithId, linkType);
+			Link link = Link.instantiateDirectedLink(existingElement, newElementWithId);
 
 			createLink(projectKey, request, link);
 
@@ -276,26 +274,32 @@ public class KnowledgeRest {
 		}
 	}
 
-	@Path("/changeKnowledgeTypeOfSentence")
+	@Path("/changeKnowledgeType")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response changeKnowledgeTypeOfSentence(@QueryParam("projectKey") String projectKey,
-			@Context HttpServletRequest request, DecisionKnowledgeElement newElement,
-			@QueryParam("argument") String argument) {
-		if (projectKey != null && request != null && newElement != null) {
-			DecXtractEventListener.editCommentLock = true;
-			Boolean result = ActiveObjectsManager.updateKnowledgeTypeOfSentence(newElement.getId(),
-					newElement.getType(), argument);
-			result = result & ActiveObjectsManager.updateLinkTypeOfSentence(newElement, argument);
-			DecXtractEventListener.editCommentLock = false;
-			if (!result) {
-				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", "Update of element failed.")).build();
-			}
-			return Response.status(Status.OK).entity(ImmutableMap.of("id", newElement.getId())).build();
+	public Response changeKnowledgeType(@Context HttpServletRequest request, DecisionKnowledgeElement element,
+			@QueryParam("idOfParentElement") long idOfParentElement,
+			@QueryParam("documentationLocationOfParentElement") String documentationLocationOfParentElement) {
+		if (request == null || element == null) {
+			return Response.status(Status.BAD_REQUEST).entity(
+					ImmutableMap.of("error", "Knowledge type of element could not be updated due to a bad request."))
+					.build();
 		}
-		return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Update of element failed."))
-				.build();
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(element);
+		boolean isUpdated = persistenceManager.changeKnowledgeType(element, user);
+
+		if (!isUpdated) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Knowledge type of element could not be updated due to an internal server error.")).build();
+		}
+
+		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
+		parentElement.setId(idOfParentElement);
+		parentElement.setDocumentationLocation(documentationLocationOfParentElement);
+
+		Link.instantiateDirectedLink(parentElement, element);
+		return Response.status(Status.OK).entity(ImmutableMap.of("element", element)).build();
 	}
 
 	@Path("/setSentenceIrrelevant")
