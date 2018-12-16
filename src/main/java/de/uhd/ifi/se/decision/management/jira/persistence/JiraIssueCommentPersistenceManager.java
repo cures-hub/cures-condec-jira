@@ -103,8 +103,6 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	public boolean changeKnowledgeType(DecisionKnowledgeElement element, ApplicationUser user) {
 		DecXtractEventListener.editCommentLock = true;
 		boolean isUpdated = ActiveObjectsManager.updateKnowledgeTypeOfSentence(element.getId(), element.getType());
-		// isUpdated = isUpdated &
-		// ActiveObjectsManager.updateLinkTypeOfSentence(element, argument);
 		DecXtractEventListener.editCommentLock = false;
 		return isUpdated;
 	}

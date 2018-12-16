@@ -319,18 +319,6 @@ public class ActiveObjectsManager {
 		});
 	}
 
-	public static Boolean updateLinkTypeOfSentence(DecisionKnowledgeElement newElement, String argument) {
-		init();
-		List<Link> links = GenericLinkManager.getLinksForElement("s" + newElement.getId());
-		for (Link link : links) {
-			GenericLinkManager.deleteGenericLink(link);
-			link.setType(LinkType.getLinkTypeForKnowledgeType(argument).toString());
-			GenericLinkManager.insertLinkWithoutTransaction(link);
-			return true;
-		}
-		return false;
-	}
-
 	private static int getTextLengthOfAoElement(DecisionKnowledgeInCommentEntity sentence) {
 		return sentence.getEndSubstringCount() - sentence.getStartSubstringCount();
 	}

@@ -36,6 +36,7 @@ import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImplFiltered;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
@@ -131,20 +132,19 @@ public class KnowledgeRest {
 			newElementWithId = strategy.insertDecisionKnowledgeElement(newElement, user);
 		}
 
-		if (newElementWithId != null) {
-
-			if (idOfExistingElement == 0) {
-				return Response.status(Status.OK).entity(newElementWithId).build();
-			}
-
-			Link link = Link.instantiateDirectedLink(existingElement, newElementWithId);
-
-			createLink(projectKey, request, link);
-
+		if (newElementWithId == null) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
+		}
+		if (idOfExistingElement == 0) {
 			return Response.status(Status.OK).entity(newElementWithId).build();
 		}
-		return Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
+
+		Link link = Link.instantiateDirectedLink(existingElement, newElementWithId);
+
+		createLink(projectKey, request, link);
+
+		return Response.status(Status.OK).entity(newElementWithId).build();
 	}
 
 	@Path("/createIssueFromSentence")
@@ -287,18 +287,38 @@ public class KnowledgeRest {
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(element);
+
+		DecisionKnowledgeElement formerElement = persistenceManager.getDecisionKnowledgeElement(element.getId());
+		if (formerElement == null || formerElement.getType() == element.getType()) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error",
+							"Knowledge type of element was not updated since the knowledge type did not change."))
+					.build();
+		}
 		boolean isUpdated = persistenceManager.changeKnowledgeType(element, user);
 
 		if (!isUpdated) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error",
 					"Knowledge type of element could not be updated due to an internal server error.")).build();
 		}
+		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerElement.getType());
+		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
+
+		if (formerLinkType == linkType || idOfParentElement == 0) {
+			return Response.status(Status.OK).entity(element).build();
+		}
 
 		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
 		parentElement.setId(idOfParentElement);
 		parentElement.setDocumentationLocation(documentationLocationOfParentElement);
 
-		Link.instantiateDirectedLink(parentElement, element);
+		String projectKey = element.getProject().getProjectKey();
+		Link formerLink = Link.instantiateDirectedLink(parentElement, formerElement, formerLinkType);
+		deleteLink(projectKey, request, formerLink);
+
+		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
+		createLink(projectKey, request, link);
+
 		return Response.status(Status.OK).entity(ImmutableMap.of("element", element)).build();
 	}
 
