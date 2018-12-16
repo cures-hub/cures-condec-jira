@@ -228,7 +228,9 @@
 						var summary = document.getElementById("form-input-summary").value;
 						var description = document.getElementById("form-input-description").value;
 						var type = $("select[name='form-select-type']").val();
-						conDecAPI.updateDecisionKnowledgeElementAsChild(id, summary, description, type, "");
+						conDecAPI.updateDecisionKnowledgeElement(id, summary, description, type, "", function() {
+							conDecObservable.notify();
+						});
 						AJS.dialog2("#dialog").hide();
 					};
 				}

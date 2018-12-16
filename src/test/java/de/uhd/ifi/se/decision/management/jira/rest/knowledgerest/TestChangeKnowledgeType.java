@@ -24,7 +24,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 public class TestChangeKnowledgeType extends TestKnowledgeRestSetUp {
 
-	private final static String UPDATING_ERROR = "Knowledge type of element could not be updated due to a bad request.";
+	private final static String UPDATING_ERROR = "Element could not be updated due to a bad request.";
 
 	@Test
 	@NonTransactional
@@ -33,7 +33,7 @@ public class TestChangeKnowledgeType extends TestKnowledgeRestSetUp {
 		Comment comment = tc.getComment("This is a test sentence.");
 		decisionKnowledgeElement = comment.getSentences().get(0);
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", UPDATING_ERROR)).build()
-				.getEntity(), knowledgeRest.changeKnowledgeType(null, null, 0, null).getEntity());
+				.getEntity(), knowledgeRest.updateDecisionKnowledgeElement(null, null, 0, null).getEntity());
 	}
 
 	@Test
@@ -45,7 +45,7 @@ public class TestChangeKnowledgeType extends TestKnowledgeRestSetUp {
 		assertEquals(
 				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", UPDATING_ERROR)).build()
 						.getEntity(),
-				knowledgeRest.changeKnowledgeType(null, decisionKnowledgeElement, 0, null).getEntity());
+				knowledgeRest.updateDecisionKnowledgeElement(null, decisionKnowledgeElement, 0, null).getEntity());
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class TestChangeKnowledgeType extends TestKnowledgeRestSetUp {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", UPDATING_ERROR)).build()
-				.getEntity(), knowledgeRest.changeKnowledgeType(request, null, 0, null).getEntity());
+				.getEntity(), knowledgeRest.updateDecisionKnowledgeElement(request, null, 0, null).getEntity());
 	}
 
 	@Test
@@ -67,7 +67,7 @@ public class TestChangeKnowledgeType extends TestKnowledgeRestSetUp {
 		decisionKnowledgeElement = comment.getSentences().get(0);
 		decisionKnowledgeElement.setType(KnowledgeType.ALTERNATIVE);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
-		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.changeKnowledgeType(request, decisionKnowledgeElement, 0, null).getStatus());
+		assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+				knowledgeRest.updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, null).getStatus());
 	}
 }

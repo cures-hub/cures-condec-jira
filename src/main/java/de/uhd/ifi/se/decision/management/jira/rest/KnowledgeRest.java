@@ -147,46 +147,49 @@ public class KnowledgeRest {
 		return Response.status(Status.OK).entity(newElementWithId).build();
 	}
 
-	@Path("/createIssueFromSentence")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createIssueFromSentence(@Context HttpServletRequest request,
-			DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (decisionKnowledgeElement != null && request != null) {
-
-			ApplicationUser user = AuthenticationManager.getUser(request);
-			Issue issue = ActiveObjectsManager.createJIRAIssueFromSentenceObject(decisionKnowledgeElement.getId(),
-					user);
-
-			if (issue != null) {
-				return Response.status(Status.OK).entity(issue).build();
-			}
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
-		} else {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
-		}
-	}
-
 	@Path("/updateDecisionKnowledgeElement")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response updateDecisionKnowledgeElement(@Context HttpServletRequest request,
-			DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (decisionKnowledgeElement != null && request != null) {
-			String projectKey = decisionKnowledgeElement.getProject().getProjectKey();
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
-			ApplicationUser user = AuthenticationManager.getUser(request);
-			if (strategy.updateDecisionKnowledgeElement(decisionKnowledgeElement, user)) {
-				return Response.status(Status.OK).entity(decisionKnowledgeElement).build();
-			}
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build();
-		} else {
+			DecisionKnowledgeElement element, @QueryParam("idOfParentElement") long idOfParentElement,
+			@QueryParam("documentationLocationOfParentElement") String documentationLocationOfParentElement) {
+		if (request == null || element == null) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build();
+					.entity(ImmutableMap.of("error", "Element could not be updated due to a bad request.")).build();
 		}
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(element);
+
+		DecisionKnowledgeElement formerElement = persistenceManager.getDecisionKnowledgeElement(element.getId());
+		if (formerElement == null) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Decision knowledge element could not be found in database."))
+					.build();
+		}
+
+		boolean isUpdated = false;
+		
+		if (element.getSummary() != null) {
+			isUpdated = persistenceManager.updateDecisionKnowledgeElement(element, user);
+		} else if (formerElement.getType() != element.getType()) {
+			isUpdated = persistenceManager.changeKnowledgeType(element, user);			
+		} else {
+			return Response.status(Status.NOT_MODIFIED).build();
+		}
+
+		if (!isUpdated) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Element could not be updated due to an internal server error."))
+					.build();
+		}
+
+		long linkId = persistenceManager.updateLink(element, formerElement.getType(), idOfParentElement,
+				documentationLocationOfParentElement, user);
+		if (linkId == 0) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Link could not be updated.")).build();
+		}
+		return Response.status(Status.OK).build();
 	}
 
 	@Path("/deleteDecisionKnowledgeElement")
@@ -252,38 +255,26 @@ public class KnowledgeRest {
 				.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
 	}
 
-	@Path("/changeKnowledgeType")
+	@Path("/createIssueFromSentence")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response changeKnowledgeType(@Context HttpServletRequest request, DecisionKnowledgeElement element,
-			@QueryParam("idOfParentElement") long idOfParentElement,
-			@QueryParam("documentationLocationOfParentElement") String documentationLocationOfParentElement) {
-		if (request == null || element == null) {
-			return Response.status(Status.BAD_REQUEST).entity(
-					ImmutableMap.of("error", "Knowledge type of element could not be updated due to a bad request."))
-					.build();
-		}
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(element);
+	public Response createIssueFromSentence(@Context HttpServletRequest request,
+			DecisionKnowledgeElement decisionKnowledgeElement) {
+		if (decisionKnowledgeElement != null && request != null) {
 
-		DecisionKnowledgeElement formerElement = persistenceManager.getDecisionKnowledgeElement(element.getId());
-		if (formerElement == null || formerElement.getType() == element.getType()) {
-			return Response.status(Status.NOT_MODIFIED).build();
-		}
-		boolean isUpdated = persistenceManager.changeKnowledgeType(element, user);
+			ApplicationUser user = AuthenticationManager.getUser(request);
+			Issue issue = ActiveObjectsManager.createJIRAIssueFromSentenceObject(decisionKnowledgeElement.getId(),
+					user);
 
-		if (!isUpdated) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error",
-					"Knowledge type of element could not be updated due to an internal server error.")).build();
-		}
-
-		long linkId = persistenceManager.updateLink(element, formerElement.getType(), idOfParentElement,
-				documentationLocationOfParentElement, user);
-		if (linkId == 0) {
+			if (issue != null) {
+				return Response.status(Status.OK).entity(issue).build();
+			}
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Link could not be updated.")).build();
+					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
+		} else {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
 		}
-		return Response.status(Status.OK).build();
 	}
 
 	@Path("/setSentenceIrrelevant")
@@ -320,12 +311,13 @@ public class KnowledgeRest {
 
 			if ((newSentenceEnd - newSentenceStart) != newSentenceBody.length()) {
 				// Get JIRA Comment instance - Casting fails in unittesting with Mock
-				CommentManager cm = ComponentAccessor.getCommentManager();
-				MutableComment mc = (MutableComment) cm.getCommentById(databaseEntity.getCommentId());
+				CommentManager commentManager = ComponentAccessor.getCommentManager();
+				MutableComment mutableComment = (MutableComment) commentManager
+						.getCommentById(databaseEntity.getCommentId());
 
-				if (mc.getBody().length() >= databaseEntity.getEndSubstringCount()) {
-					String oldSentenceInComment = mc.getBody().substring(newSentenceStart, newSentenceEnd);
-					int indexOfOldSentence = mc.getBody().indexOf(oldSentenceInComment);
+				if (mutableComment.getBody().length() >= databaseEntity.getEndSubstringCount()) {
+					String oldSentenceInComment = mutableComment.getBody().substring(newSentenceStart, newSentenceEnd);
+					int indexOfOldSentence = mutableComment.getBody().indexOf(oldSentenceInComment);
 
 					String newType = decisionKnowledgeElement.getType().toString();
 					if (newType.equals(KnowledgeType.OTHER.toString()) && argument.length() > 0) {
@@ -339,12 +331,13 @@ public class KnowledgeRest {
 					} else if (CommentSplitter.isCommentIconTagged(oldSentenceInComment)) {
 						indexOfOldSentence = indexOfOldSentence + 3; // add icon to text.
 					}
-					String first = mc.getBody().substring(0, indexOfOldSentence);
+					String first = mutableComment.getBody().substring(0, indexOfOldSentence);
 					String second = tag + newSentenceBody + tag;
-					String third = mc.getBody().substring(indexOfOldSentence + oldSentenceInComment.length());
+					String third = mutableComment.getBody()
+							.substring(indexOfOldSentence + oldSentenceInComment.length());
 
-					mc.setBody(first + second + third);
-					cm.update(mc, true);
+					mutableComment.setBody(first + second + third);
+					commentManager.update(mutableComment, true);
 					ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(),
 							decisionKnowledgeElement.getId(), second);
 
@@ -352,10 +345,10 @@ public class KnowledgeRest {
 			}
 			ActiveObjectsManager.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),
 					decisionKnowledgeElement.getType());
-			Response r = Response.status(Status.OK).entity(ImmutableMap.of("id", decisionKnowledgeElement.getId()))
+			Response response = Response.status(Status.OK).entity(ImmutableMap.of("id", decisionKnowledgeElement.getId()))
 					.build();
 			DecXtractEventListener.editCommentLock = false;
-			return r;
+			return response;
 		} else {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build();
