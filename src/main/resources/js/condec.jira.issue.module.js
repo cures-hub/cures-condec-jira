@@ -22,8 +22,8 @@
 	var ConDecJiraIssueModule = function ConDecJiraIssueModule() {
 	};
 
-	ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog, _conDecContextMenu,
-			_treant, _i18n) {
+	ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog,
+			_conDecContextMenu, _treant, _i18n) {
 		console.log("ConDecJiraIssueModule init");
 
 		// TODO: Add i18n support and check i18n

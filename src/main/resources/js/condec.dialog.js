@@ -172,7 +172,9 @@
 			submitButton.onclick = function() {
 				var childId = $("select[name='form-select-component']").val();
 				var knowledgeTypeOfChild = $('input[name=form-radio-argument]:checked').val();
-				conDecAPI.createLinkToExistingElement(id, childId, knowledgeTypeOfChild);
+				conDecAPI.createLinkBetweenExistingElements(knowledgeTypeOfChild, id, childId, "i", "i", function() {
+					conDecObservable.notify();
+				});
 				AJS.dialog2("#dialog").hide();
 			};
 		});
@@ -363,7 +365,7 @@
 		submitButton.onclick = function() {
 			var description = document.getElementById("form-input-description").value;
 			var type = $("select[name='form-select-type']").val().split("-")[0];
-			conDecAPI.updateDecisionKnowledgeElement(id, "", description, type, "s", function() {				
+			conDecAPI.updateDecisionKnowledgeElement(id, "", description, type, "s", function() {
 				conDecObservable.notify();
 			});
 			AJS.dialog2("#dialog").hide();

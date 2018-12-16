@@ -246,6 +246,44 @@ public class KnowledgeRest {
 				.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
 	}
 
+	@Path("/createLinkBetweenExistingElements")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response createLinkBetweenExistingElements(@Context HttpServletRequest request,
+			@QueryParam("projectKey") String projectKey,
+			@QueryParam("knowledgeTypeOfChild") String knowledgeTypeOfChild, @QueryParam("idOfParent") long idOfParent,
+			@QueryParam("documentationLocationOfParent") String documentationLocationOfParent,
+			@QueryParam("idOfChild") long idOfChild,
+			@QueryParam("documentationLocationOfChild") String documentationLocationOfChild) {
+		if (request == null || projectKey == null || idOfChild == 0 || idOfParent == 0) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Link could not be created due to a bad request.")).build();
+		}
+		ApplicationUser user = AuthenticationManager.getUser(request);
+
+		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
+		parentElement.setId(idOfParent);
+		parentElement.setDocumentationLocation(documentationLocationOfParent);
+
+		DecisionKnowledgeElement childElement = new DecisionKnowledgeElementImpl();
+		childElement.setId(idOfChild);
+		childElement.setDocumentationLocation(documentationLocationOfChild);
+		childElement.setType(knowledgeTypeOfChild);
+
+		Link link = Link.instantiateDirectedLink(parentElement, childElement);
+
+		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager
+				.getDefaultPersistenceStrategy(projectKey);
+
+		long linkId = persistenceManager.createLink(link, user);
+
+		if (linkId == 0) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
+		}
+		return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
+	}
+
 	@Path("/createIssueFromSentence")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })

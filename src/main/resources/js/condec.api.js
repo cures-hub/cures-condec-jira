@@ -69,7 +69,8 @@
 	 */
 	ConDecAPI.prototype.getUnlinkedElements = function getUnlinkedElements(id, documentationLocation, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getUnlinkedElements.json?projectKey="
-				+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function(error, unlinkedElements) {
+				+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function(error,
+				unlinkedElements) {
 			if (error === null) {
 				callback(unlinkedElements);
 			}
@@ -105,7 +106,8 @@
 	/*
 	 * external references: condec.dialog
 	 */
-	ConDecAPI.prototype.updateDecisionKnowledgeElement = function updateDecisionKnowledgeElement(id, summary, description, type, documentationLocation, callback) {
+	ConDecAPI.prototype.updateDecisionKnowledgeElement = function updateDecisionKnowledgeElement(id, summary,
+			description, type, documentationLocation, callback) {
 		var element = {
 			"id" : id,
 			"summary" : summary,
@@ -115,17 +117,17 @@
 			"documentationLocation" : documentationLocation
 		};
 		var parentElement = conDecTreant.findParentElement(id);
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/updateDecisionKnowledgeElement.json?idOfParentElement="
+		postJSON(AJS.contextPath()
+				+ "/rest/decisions/latest/decisions/updateDecisionKnowledgeElement.json?idOfParentElement="
 				+ parentElement["id"] + "&documentationLocationOfParentElement="
-				+ parentElement["documentationLocation"], element,
-				function(error, response) {
-					if (error === null) {
-						showFlag("success", "Decision knowledge element has been updated.");
-						callback();
-					}
-				});
+				+ parentElement["documentationLocation"], element, function(error, response) {
+			if (error === null) {
+				showFlag("success", "Decision knowledge element has been updated.");
+				callback();
+			}
+		});
 	}
-	
+
 	/*
 	 * external references: condec.context.menu, condec.dialog
 	 */
@@ -198,33 +200,19 @@
 	/*
 	 * external references: condec.dialog
 	 */
-	ConDecAPI.prototype.createLinkToExistingElement = function createLinkToExistingElement(idOfExistingElement,
-			idOfNewElement, knowledgeTypeOfChild) {
-		switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, "i", "i", (function(linkType,
-				idOfExistingElement, idOfNewElement) {
-			this.linkElements(linkType, idOfExistingElement, idOfNewElement, "i", "i", function() {
-				conDecObservable.notify();
-			});
-		}).bind(this));
+	ConDecAPI.prototype.createLinkBetweenExistingElements = function createLinkBetweenExistingElements(
+			knowledgeTypeOfChild, idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, callback) {
+		postJSON(AJS.contextPath()
+				+ "/rest/decisions/latest/decisions/createLinkBetweenExistingElements.json?projectKey=" + projectKey
+				+ "&knowledgeTypeOfChild=" + knowledgeTypeOfChild + "&idOfParent=" + idOfParent
+				+ "&documentationLocationOfParent=" + documentationLocationOfParent + "&idOfChild=" + idOfChild
+				+ "&documentationLocationOfChild=" + documentationLocationOfChild, null, function(error, link) {
+			if (error === null) {
+				showFlag("success", "Link has been created.");
+				callback(link);
+			}
+		});
 	};
-
-	function switchLinkTypes(type, idOfExistingElement, idOfNewElement, documentationLocationOfExistingElement,
-			documentationLocationOfNewElement, linkTypeFunction) {
-		console.log("conDecAPI switchLinkTypes");
-		switch (type) {
-		case "Pro-argument":
-			linkTypeFunction("support", idOfExistingElement, idOfNewElement, documentationLocationOfExistingElement,
-					documentationLocationOfNewElement);
-			break;
-		case "Con-argument":
-			linkTypeFunction("attack", idOfExistingElement, idOfNewElement, documentationLocationOfExistingElement,
-					documentationLocationOfNewElement);
-			break;
-		default:
-			linkTypeFunction("contain", idOfNewElement, idOfExistingElement, documentationLocationOfNewElement,
-					documentationLocationOfExistingElement);
-		}
-	}
 
 	/*
 	 * external references: condec.context.menu

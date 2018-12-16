@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.IssueManager;
+
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 
@@ -196,12 +200,17 @@ public enum KnowledgeType {
 		if (element instanceof Sentence && !((Sentence) element).isRelevant()) {
 			return ComponentGetter.getUrlOfImageFolder() + "Other.png";
 		}
+		if (element.getType() == OTHER) {
+			IssueManager issueManager = ComponentAccessor.getIssueManager();
+			Issue issue = issueManager.getIssueByCurrentKey(element.getKey());
+			return issue.getIssueType().getCompleteIconUrl();
+		}
 		return element.getType().getIconUrl();
 	}
 
 	public static String getIconUrl(DecisionKnowledgeElement element, String linkType) {
-		if (element == null || linkType == null) {
-			return ComponentGetter.getUrlOfImageFolder() + "Other.png";
+		if (linkType == null) {
+			return getIconUrl(element);
 		}
 		switch (element.getType()) {
 		case ARGUMENT:
@@ -210,7 +219,6 @@ public enum KnowledgeType {
 			} else if (linkType.equals("attack")) {
 				return ComponentGetter.getUrlOfImageFolder() + "argument_con.png";
 			}
-
 		default:
 			return getIconUrl(element);
 		}
