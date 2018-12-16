@@ -36,9 +36,7 @@ import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImplFiltered;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 
 /**
@@ -215,29 +213,20 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
-		if (projectKey != null && request != null && link != null) {
-			ApplicationUser user = AuthenticationManager.getUser(request);
-
-			long linkId = 0;
-			// TODO Rework strategy
-			// @issue What happens when using AOStrategy?
-			if (GenericLinkManager.isIssueLink(link)) {
-				AbstractPersistenceManager strategy = AbstractPersistenceManager
-						.getDefaultPersistenceStrategy(projectKey);
-				linkId = strategy.insertLink(link, user);
-			} else {
-				linkId = GenericLinkManager.insertLink(link, user);
-			}
-
-			if (linkId == 0) {
-				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
-			}
-			return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
-		} else {
+		if (projectKey == null || request == null || link == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Creation of link failed."))
 					.build();
 		}
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager
+				.getDefaultPersistenceStrategy(projectKey);
+		long linkId = persistenceManager.createLink(link, user);
+
+		if (linkId == 0) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
+		}
+		return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
 	}
 
 	@Path("/deleteLink")
@@ -245,33 +234,20 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response deleteLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
 			Link link) {
-		if (projectKey != null && request != null && link != null) {
-			boolean isDeleted = false;
-
-			if (GenericLinkManager.isIssueLink(link)) {
-				AbstractPersistenceManager strategy = AbstractPersistenceManager
-						.getDefaultPersistenceStrategy(projectKey);
-				ApplicationUser user = AuthenticationManager.getUser(request);
-				isDeleted = strategy.deleteLink(link, user);
-				if (!isDeleted) {
-					isDeleted = strategy.deleteLink(link.flip(), user);
-				}
-			} else {
-				isDeleted = GenericLinkManager.deleteGenericLink(link);
-				if (!isDeleted) {
-					isDeleted = GenericLinkManager.deleteGenericLink(link.flip());
-				}
-			}
-
-			if (isDeleted) {
-				return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
-			}
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
-		} else {
+		if (projectKey == null || request == null || link == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
 					.build();
 		}
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager
+				.getDefaultPersistenceStrategy(projectKey);
+		boolean isDeleted = persistenceManager.destroyLink(link, user);
+
+		if (isDeleted) {
+			return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
+		}
+		return Response.status(Status.INTERNAL_SERVER_ERROR)
+				.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
 	}
 
 	@Path("/changeKnowledgeType")
@@ -290,36 +266,24 @@ public class KnowledgeRest {
 
 		DecisionKnowledgeElement formerElement = persistenceManager.getDecisionKnowledgeElement(element.getId());
 		if (formerElement == null || formerElement.getType() == element.getType()) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error",
-							"Knowledge type of element was not updated since the knowledge type did not change."))
-					.build();
+			return Response.status(Status.NOT_MODIFIED).build();
 		}
 		boolean isUpdated = persistenceManager.changeKnowledgeType(element, user);
 
 		if (!isUpdated) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error",
 					"Knowledge type of element could not be updated due to an internal server error.")).build();
-		}
-		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerElement.getType());
-		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
-
-		if (formerLinkType == linkType || idOfParentElement == 0) {
-			return Response.status(Status.OK).entity(element).build();
+		} else if (idOfParentElement == 0) {
+			return Response.status(Status.OK).build();
 		}
 
-		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
-		parentElement.setId(idOfParentElement);
-		parentElement.setDocumentationLocation(documentationLocationOfParentElement);
-
-		String projectKey = element.getProject().getProjectKey();
-		Link formerLink = Link.instantiateDirectedLink(parentElement, formerElement, formerLinkType);
-		deleteLink(projectKey, request, formerLink);
-
-		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
-		createLink(projectKey, request, link);
-
-		return Response.status(Status.OK).entity(ImmutableMap.of("element", element)).build();
+		long linkId = persistenceManager.updateLink(element, formerElement.getType(), idOfParentElement,
+				documentationLocationOfParentElement, user);
+		if (linkId == 0) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Link could not be updated.")).build();
+		}
+		return Response.status(Status.OK).build();
 	}
 
 	@Path("/setSentenceIrrelevant")

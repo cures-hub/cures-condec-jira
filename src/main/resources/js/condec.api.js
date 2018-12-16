@@ -274,10 +274,10 @@
 		var documentationLocationOfParentElement = conDecTreant.findDocumentationLocationOfParent(id);
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/changeKnowledgeType.json?idOfParentElement="
 				+ idOfParentElement + "&documentationLocationOfParentElement=" + documentationLocationOfParentElement,
-				element, function(error, element) {
+				element, function(error, response) {
 					if (error === null) {
 						showFlag("success", "Knowledge type has been changed.");
-						callback(element);
+						callback();
 					}
 				});
 	};

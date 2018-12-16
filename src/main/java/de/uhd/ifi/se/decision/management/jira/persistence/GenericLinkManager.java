@@ -25,7 +25,7 @@ public class GenericLinkManager {
 		}
 	}
 
-	public static boolean deleteGenericLink(Link link) {
+	public static boolean deleteLink(Link link) {
 		init();
 		return deleteLink(link.getIdOfSourceElementWithPrefix(), link.getIdOfDestinationElementWithPrefix());
 	}

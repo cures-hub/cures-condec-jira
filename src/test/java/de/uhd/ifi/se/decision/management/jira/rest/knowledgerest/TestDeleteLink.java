@@ -135,7 +135,6 @@ public class TestDeleteLink extends TestKnowledgeRestSetUp {
 	public void testProjectKeyFilledReqNullLinkNull() {
 		assertEquals(Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error", DELETION_ERROR))
 				.build().getEntity(), knowledgeRest.deleteLink("TEST", null, null).getEntity());
-
 	}
 
 	@Test
@@ -144,7 +143,6 @@ public class TestDeleteLink extends TestKnowledgeRestSetUp {
 		request.setAttribute("NoFails", true);
 		assertEquals(Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error", DELETION_ERROR))
 				.build().getEntity(), knowledgeRest.deleteLink(null, request, null).getEntity());
-
 	}
 
 	@Test
