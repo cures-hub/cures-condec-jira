@@ -363,11 +363,10 @@
 		submitButton.onclick = function() {
 			var description = document.getElementById("form-input-description").value;
 			var type = $("select[name='form-select-type']").val().split("-")[0];
-			conDecAPI.editSentenceBody(id, description, type, function() {
-				AJS.dialog2("#dialog").hide();
+			conDecAPI.updateDecisionKnowledgeElement(id, "", description, type, "s", function() {				
 				conDecObservable.notify();
-				JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [ JIRA.Issue.getIssueId() ]);
 			});
+			AJS.dialog2("#dialog").hide();
 		};
 		AJS.$("#form-select-type").auiSelect2();
 	}

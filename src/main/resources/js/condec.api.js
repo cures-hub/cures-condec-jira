@@ -244,13 +244,6 @@
 	};
 
 	/*
-	 * external references: condec.context.menu ..
-	 */
-	ConDecAPI.prototype.editSentenceBody = function editSentenceBody(id, body, type, callback) {
-		this.updateDecisionKnowledgeElement(id, "", body, type, "s", callback);
-	};
-
-	/*
 	 * external references: condec.context.menu
 	 */
 	ConDecAPI.prototype.createIssueFromSentence = function createIssueFromSentence(id, callback) {
