@@ -145,7 +145,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 
-		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE, "");
+		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE);
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(id);
 		assertTrue(element.getKnowledgeTypeString().equalsIgnoreCase("ALTERNATIVE"));
 	}
@@ -156,7 +156,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		Comment comment = getComment("{issue} testobject {issue}");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 
-		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE, "");
+		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE);
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(id);
 		// Important that sentence object has no tags
 		assertEquals("testobject", element.getBody().trim());
@@ -171,7 +171,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		Comment comment = getComment("some sentence in front. {issue} testobject {issue}");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
 
-		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE, "");
+		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE);
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(id);
 		assertEquals(element.getBody().trim(), "testobject");
 		assertEquals(element.getKnowledgeTypeString(), KnowledgeType.ALTERNATIVE.toString());
@@ -185,7 +185,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		Comment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
 
-		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE, "");
+		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE);
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(id);
 		assertEquals(element.getBody(), " testobject ");
 		assertEquals(element.getKnowledgeTypeString(), KnowledgeType.ALTERNATIVE.toString());
@@ -198,7 +198,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	public void testUpdateKnowledgeTypeWithManualTaggedAndMoreSentences2AndArgument() {
 		Comment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
-		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.OTHER, "Pro");
+		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.PRO);
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(id);
 		assertEquals(" testobject ", element.getBody());
 		assertEquals(element.getKnowledgeTypeString(), "Pro");
@@ -212,7 +212,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 
-		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ARGUMENT, "Pro");
+		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.PRO);
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(id);
 		assertTrue(element.getKnowledgeTypeString().equalsIgnoreCase("Pro"));
 		assertTrue(element.getArgument().equalsIgnoreCase("Pro"));

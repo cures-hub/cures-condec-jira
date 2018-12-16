@@ -261,7 +261,7 @@ public class ActiveObjectsManager {
 		return lengthDiff;
 	}
 
-	public static Boolean updateKnowledgeTypeOfSentence(long id, KnowledgeType knowledgeType, String argument) {
+	public static Boolean updateKnowledgeTypeOfSentence(long id, KnowledgeType knowledgeType) {
 		init();
 		return ActiveObjects.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
@@ -269,6 +269,11 @@ public class ActiveObjectsManager {
 				for (DecisionKnowledgeInCommentEntity sentenceEntity : ActiveObjects
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
+						
+						String argument = "";
+						if (knowledgeType == KnowledgeType.PRO || knowledgeType == KnowledgeType.CON) {
+							argument = knowledgeType.toString();
+						}
 						// Knowledgetype is an Argument
 
 						String oldKnowledgeType = sentenceEntity.getKnowledgeTypeString();

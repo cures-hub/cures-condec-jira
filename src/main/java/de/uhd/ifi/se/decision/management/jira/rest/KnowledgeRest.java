@@ -290,8 +290,8 @@ public class KnowledgeRest {
 		boolean isUpdated = persistenceManager.changeKnowledgeType(element, user);
 
 		if (!isUpdated) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Knowledge type of element could not be updated due to an internal server error.")).build();
+			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error",
+					"Knowledge type of element could not be updated due to an internal server error.")).build();
 		}
 
 		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
@@ -367,7 +367,7 @@ public class KnowledgeRest {
 				}
 			}
 			ActiveObjectsManager.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),
-					decisionKnowledgeElement.getType(), argument);
+					decisionKnowledgeElement.getType());
 			Response r = Response.status(Status.OK).entity(ImmutableMap.of("id", decisionKnowledgeElement.getId()))
 					.build();
 			DecXtractEventListener.editCommentLock = false;

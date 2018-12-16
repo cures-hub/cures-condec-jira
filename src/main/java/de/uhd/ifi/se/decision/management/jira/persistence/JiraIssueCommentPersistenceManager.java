@@ -7,7 +7,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
@@ -102,15 +101,10 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 	@Override
 	public boolean changeKnowledgeType(DecisionKnowledgeElement element, ApplicationUser user) {
-		String argument = "";
-		if (element.getType() == KnowledgeType.PRO || element.getType() == KnowledgeType.CON) {
-			argument = element.getType().toString();
-		}
-		System.out.println(argument);
 		DecXtractEventListener.editCommentLock = true;
-		boolean isUpdated = ActiveObjectsManager.updateKnowledgeTypeOfSentence(element.getId(), element.getType(),
-				argument);
-		//isUpdated = isUpdated & ActiveObjectsManager.updateLinkTypeOfSentence(element, argument);
+		boolean isUpdated = ActiveObjectsManager.updateKnowledgeTypeOfSentence(element.getId(), element.getType());
+		// isUpdated = isUpdated &
+		// ActiveObjectsManager.updateLinkTypeOfSentence(element, argument);
 		DecXtractEventListener.editCommentLock = false;
 		return isUpdated;
 	}
