@@ -167,8 +167,7 @@ public class KnowledgeRest {
 					.build();
 		}
 
-		boolean isUpdated = false;
-		
+		boolean isUpdated = false;		
 		if (element.getSummary() != null) {
 			isUpdated = persistenceManager.updateDecisionKnowledgeElement(element, user);
 		} else if (formerElement.getType() != element.getType()) {
@@ -292,66 +291,6 @@ public class KnowledgeRest {
 		} else {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
-		}
-	}
-
-	@Path("/editSentenceBody")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response editSentenceBody(@Context HttpServletRequest request,
-			DecisionKnowledgeElement decisionKnowledgeElement, @QueryParam("argument") String argument) {
-		if (decisionKnowledgeElement != null && request != null) {
-			DecXtractEventListener.editCommentLock = true;
-			// Get corresponding element from ao database
-			Sentence databaseEntity = (Sentence) ActiveObjectsManager
-					.getElementFromAO(decisionKnowledgeElement.getId());
-			int newSentenceEnd = databaseEntity.getEndSubstringCount();
-			int newSentenceStart = databaseEntity.getStartSubstringCount();
-			String newSentenceBody = decisionKnowledgeElement.getDescription();
-
-			if ((newSentenceEnd - newSentenceStart) != newSentenceBody.length()) {
-				// Get JIRA Comment instance - Casting fails in unittesting with Mock
-				CommentManager commentManager = ComponentAccessor.getCommentManager();
-				MutableComment mutableComment = (MutableComment) commentManager
-						.getCommentById(databaseEntity.getCommentId());
-
-				if (mutableComment.getBody().length() >= databaseEntity.getEndSubstringCount()) {
-					String oldSentenceInComment = mutableComment.getBody().substring(newSentenceStart, newSentenceEnd);
-					int indexOfOldSentence = mutableComment.getBody().indexOf(oldSentenceInComment);
-
-					String newType = decisionKnowledgeElement.getType().toString();
-					if (newType.equals(KnowledgeType.OTHER.toString()) && argument.length() > 0) {
-						newType = argument;
-					}
-					String tag = "";
-					// Allow changing of manual tags, but no tags for icons
-					if (databaseEntity.isTaggedManually()
-							&& !CommentSplitter.isCommentIconTagged(oldSentenceInComment)) {
-						tag = "{" + WordUtils.capitalize(newType) + "}";
-					} else if (CommentSplitter.isCommentIconTagged(oldSentenceInComment)) {
-						indexOfOldSentence = indexOfOldSentence + 3; // add icon to text.
-					}
-					String first = mutableComment.getBody().substring(0, indexOfOldSentence);
-					String second = tag + newSentenceBody + tag;
-					String third = mutableComment.getBody()
-							.substring(indexOfOldSentence + oldSentenceInComment.length());
-
-					mutableComment.setBody(first + second + third);
-					commentManager.update(mutableComment, true);
-					ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(databaseEntity.getCommentId(),
-							decisionKnowledgeElement.getId(), second);
-
-				}
-			}
-			ActiveObjectsManager.updateKnowledgeTypeOfSentence(decisionKnowledgeElement.getId(),
-					decisionKnowledgeElement.getType());
-			Response response = Response.status(Status.OK).entity(ImmutableMap.of("id", decisionKnowledgeElement.getId()))
-					.build();
-			DecXtractEventListener.editCommentLock = false;
-			return response;
-		} else {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Update of decision knowledge element failed.")).build();
 		}
 	}
 

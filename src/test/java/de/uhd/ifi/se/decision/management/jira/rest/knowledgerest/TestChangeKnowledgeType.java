@@ -67,7 +67,7 @@ public class TestChangeKnowledgeType extends TestKnowledgeRestSetUp {
 		decisionKnowledgeElement = comment.getSentences().get(0);
 		decisionKnowledgeElement.setType(KnowledgeType.ALTERNATIVE);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
-		assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, null).getStatus());
 	}
 }

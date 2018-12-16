@@ -247,20 +247,7 @@
 	 * external references: condec.context.menu ..
 	 */
 	ConDecAPI.prototype.editSentenceBody = function editSentenceBody(id, body, type, callback) {
-		var jsondata = {
-			"id" : id,
-			"summary" : "",
-			"type" : type,
-			"projectKey" : projectKey,
-			"description" : body
-		};
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/editSentenceBody.json?argument=" + type,
-				jsondata, function(error, id, type) {
-					if (error === null) {
-						showFlag("success", "Decision knowledge element has been updated.");
-						callback(id, type);
-					}
-				});
+		this.updateDecisionKnowledgeElement(id, "", body, type, "s", callback);
 	};
 
 	/*
