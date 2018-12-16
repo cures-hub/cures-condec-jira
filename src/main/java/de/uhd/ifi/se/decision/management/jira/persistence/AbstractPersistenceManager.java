@@ -7,10 +7,12 @@ import java.util.List;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 
 /**
  * Abstract class to create, edit, delete and retrieve decision knowledge
@@ -26,6 +28,8 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  * @see PersistenceProvider
  */
 public abstract class AbstractPersistenceManager {
+
+	public abstract boolean changeKnowledgeType(DecisionKnowledgeElement element, ApplicationUser user);
 
 	/**
 	 * Delete an existing decision knowledge element in database.
@@ -389,5 +393,60 @@ public abstract class AbstractPersistenceManager {
 			return new JiraIssuePersistenceManager(projectKey);
 		}
 		return new ActiveObjectPersistenceManager(projectKey);
+	}
+
+	public long createLink(Link link, ApplicationUser user) {
+		long linkId = 0;
+		// TODO Rework strategy
+		// @issue What happens when using AOStrategy?
+		// @decision Add method "isIntraPersistenceMethodLink"
+		if (GenericLinkManager.isIssueLink(link)) {
+			linkId = this.insertLink(link, user);
+		} else {
+			linkId = GenericLinkManager.insertLink(link, user);
+		}
+		return linkId;
+	}
+
+	public boolean destroyLink(Link link, ApplicationUser user) {
+		boolean isDeleted = false;
+		// TODO Rework strategy
+		// @issue What happens when using AOStrategy?
+		// @decision Add method "isIntraPersistenceMethodLink"
+		if (GenericLinkManager.isIssueLink(link)) {
+			isDeleted = this.deleteLink(link, user);
+			if (!isDeleted) {
+				isDeleted = this.deleteLink(link.flip(), user);
+			}
+		} else {
+			isDeleted = GenericLinkManager.deleteLink(link);
+			if (!isDeleted) {
+				isDeleted = GenericLinkManager.deleteLink(link.flip());
+			}
+		}
+		return isDeleted;
+	}
+
+	public long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType, long idOfParentElement,
+			String documentationLocationOfParentElement, ApplicationUser user) {
+
+		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerKnowledgeType);
+		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
+
+		if (formerLinkType.equals(linkType) || idOfParentElement == 0) {
+			return -1;
+		}
+
+		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
+		parentElement.setId(idOfParentElement);
+		parentElement.setDocumentationLocation(documentationLocationOfParentElement);
+
+		Link formerLink = Link.instantiateDirectedLink(parentElement, element, formerLinkType);
+		if (!this.destroyLink(formerLink, user)) {
+			return 0;
+		}
+
+		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
+		return this.createLink(link, user);
 	}
 }

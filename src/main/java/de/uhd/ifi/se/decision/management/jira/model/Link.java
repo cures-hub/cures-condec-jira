@@ -198,6 +198,28 @@ public interface Link {
 		}
 	}
 
+	/**
+	 * Get a link object with the correct direction: In case the child element is a
+	 * pro- or con-argument, the link points from the child towards the parent
+	 * element. In case the child element is NOT a pro- or con-argument, the link
+	 * points from the parent towards the child element.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see LinkType
+	 * @param childElement
+	 *            a decision knowledge element that is on one end of the link.
+	 * @param parentElement
+	 *            a decision knowledge element that is on one end of the link.
+	 * 
+	 * @return a link object.
+	 */
+	public static Link instantiateDirectedLink(DecisionKnowledgeElement parentElement,
+			DecisionKnowledgeElement childElement) {
+		KnowledgeType knowledgeTypeOfChildElement = childElement.getType();
+		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(knowledgeTypeOfChildElement);
+		return instantiateDirectedLink(parentElement, childElement, linkType);
+	}
+
 	String getIdOfSourceElementWithPrefix();
 
 	void setSourceElement(String idWithPrefix);

@@ -51,11 +51,11 @@
 		};
 
 		document.getElementById("condec-context-menu-change-type-item").onclick = function() {
-			conDecDialog.showChangeTypeDialog(id);
+			conDecDialog.showChangeTypeDialog(id, "");
 		};
 
 		document.getElementById("condec-context-menu-link-item").onclick = function() {
-			conDecDialog.showLinkDialog(id);
+			conDecDialog.showLinkDialog(id, "");
 		};
 
 		document.getElementById("condec-context-menu-delete-link-item").onclick = function() {
@@ -123,31 +123,31 @@
 		};
 
 		document.getElementById("condec-context-menu-sentence-issue-item").onclick = function() {
-			conDecAPI.changeKnowledgeTypeOfSentence(id, "Issue", function() {
+			conDecAPI.changeKnowledgeType(id, "Issue", "s", function() {
 				conDecObservable.notify();
 			});
 		};
 
 		document.getElementById("condec-context-menu-sentence-decision-item").onclick = function() {
-			conDecAPI.changeKnowledgeTypeOfSentence(id, "Decision", function() {
+			conDecAPI.changeKnowledgeType(id, "Decision", "s", function() {
 				conDecObservable.notify();
 			});
 		};
 
 		document.getElementById("condec-context-menu-sentence-alternative-item").onclick = function() {
-			conDecAPI.changeKnowledgeTypeOfSentence(id, "Alternative", function() {
+			conDecAPI.changeKnowledgeType(id, "Alternative", "s", function() {
 				conDecObservable.notify();
 			});
 		};
 
 		document.getElementById("condec-context-menu-sentence-pro-item").onclick = function() {
-			conDecAPI.changeKnowledgeTypeOfSentence(id, "Pro", function() {
+			conDecAPI.changeKnowledgeType(id, "Pro", "s", function() {
 				conDecObservable.notify();
 			});
 		};
 
 		document.getElementById("condec-context-menu-sentence-con-item").onclick = function() {
-			conDecAPI.changeKnowledgeTypeOfSentence(id, "Con", function() {
+			conDecAPI.changeKnowledgeType(id, "Con", "s", function() {
 				conDecObservable.notify();
 			});
 		};

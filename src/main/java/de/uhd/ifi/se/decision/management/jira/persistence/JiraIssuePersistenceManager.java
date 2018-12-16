@@ -307,4 +307,25 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		issueService.update(user, result);
 		return true;
 	}
+	
+	@Override
+	public boolean changeKnowledgeType(DecisionKnowledgeElement element, ApplicationUser user) {
+		IssueService issueService = ComponentAccessor.getIssueService();
+		IssueResult issueResult = issueService.getIssue(user, element.getId());
+		MutableIssue issueToBeUpdated = issueResult.getIssue();
+		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
+		String issueTypeId = getIssueTypeId(element.getType());
+		issueInputParameters.setIssueTypeId(issueTypeId);
+		IssueService.UpdateValidationResult result = issueService.validateUpdate(user, issueToBeUpdated.getId(),
+				issueInputParameters);
+		if (result.getErrorCollection().hasAnyErrors()) {
+			for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
+				LOGGER.error("Updating decision knowledge element in database failed. " + entry.getKey() + ": "
+						+ entry.getValue());
+			}
+			return false;
+		}
+		issueService.update(user, result);
+		return true;
+	}
 }

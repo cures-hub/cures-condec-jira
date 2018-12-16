@@ -38,22 +38,22 @@ public class TestGetUnlinkedElements extends TestSetUpWithIssues {
 	@Test
 	public void testElementIdZeroProjectKeyNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", UNLINKED_ERRROR)).build()
-				.getEntity(), knowledgeRest.getUnlinkedElements(0, null).getEntity());
+				.getEntity(), knowledgeRest.getUnlinkedElements(0, null, "").getEntity());
 	}
 
 	@Test
 	public void testElementIdFilledProjectKeyNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", UNLINKED_ERRROR)).build()
-				.getEntity(), knowledgeRest.getUnlinkedElements(7, null).getEntity());
+				.getEntity(), knowledgeRest.getUnlinkedElements(7, null, "").getEntity());
 	}
 
 	@Test
 	public void testIssueIdFilledProjectKeyDontExist() {
-		assertEquals(Status.OK.getStatusCode(), knowledgeRest.getUnlinkedElements(7, "NotTEST").getStatus());
+		assertEquals(Status.OK.getStatusCode(), knowledgeRest.getUnlinkedElements(7, "NotTEST", "").getStatus());
 	}
 
 	@Test
 	public void testIssueIdFilledProjectKeyExist() {
-		assertEquals(Status.OK.getStatusCode(), knowledgeRest.getUnlinkedElements(7, "TEST").getStatus());
+		assertEquals(Status.OK.getStatusCode(), knowledgeRest.getUnlinkedElements(7, "TEST", "").getStatus());
 	}
 }

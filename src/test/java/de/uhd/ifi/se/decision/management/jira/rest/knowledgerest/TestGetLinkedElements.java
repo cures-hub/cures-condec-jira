@@ -37,22 +37,22 @@ public class TestGetLinkedElements extends TestKnowledgeRestSetUp {
 	@Test
 	public void testElementIdZeroProjectKeyNull() {
 		assertEquals(Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error", LINKED_ERRROR))
-				.build().getEntity(), knowledgeRest.getLinkedElements(0, null).getEntity());
+				.build().getEntity(), knowledgeRest.getLinkedElements(0, null, "").getEntity());
 	}
 
 	@Test
 	public void testElementIdFilledProjectKeyNull() {
 		assertEquals(Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error", LINKED_ERRROR))
-				.build().getEntity(), knowledgeRest.getLinkedElements(7, null).getEntity());
+				.build().getEntity(), knowledgeRest.getLinkedElements(7, null, "").getEntity());
 	}
 
 	@Test
 	public void testElementIdFilledProjectKeyNonExistent() {
-		assertEquals(200, knowledgeRest.getLinkedElements(7, "NotTEST").getStatus());
+		assertEquals(200, knowledgeRest.getLinkedElements(7, "NotTEST", "").getStatus());
 	}
 
 	@Test
 	public void testElementIdFilledProjectKeyExistent() {
-		assertEquals(Response.Status.OK.getStatusCode(), knowledgeRest.getLinkedElements(7, "TEST").getStatus());
+		assertEquals(Response.Status.OK.getStatusCode(), knowledgeRest.getLinkedElements(7, "TEST", "").getStatus());
 	}
 }

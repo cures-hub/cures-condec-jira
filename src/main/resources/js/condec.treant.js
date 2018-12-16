@@ -64,38 +64,35 @@
 		dragId = event.target.id;
 		draggedElement = event.target;
 		event.dataTransfer.setData("text", dragId);
-		oldParentId = findParentId(dragId);
+		oldParentId = findParentElement(dragId)["id"];
 	}
 
-	function findParentId(elementId) {
-		var nodes = treantTree.tree.nodeDB.db;
-		var i;
-		for (i = 0; i < nodes.length; i++) {
-			//necessary to have ==, not ===
-			if (nodes[i].nodeHTMLid == elementId) {
-				var parentNode = treantTree.tree.getNodeDb().get(nodes[i].parentId);
-				var parentId = parentNode.nodeHTMLid;
-				return parentId;
+	function findParentElement(elementId) {
+		try {
+			var nodes = treantTree.tree.nodeDB.db;
+			var i;
+			for (i = 0; i < nodes.length; i++) {
+				// necessary to have ==, not ===
+				if (nodes[i].nodeHTMLid == elementId) {
+					var parentNode = treantTree.tree.getNodeDb().get(nodes[i].parentId);
+					return {
+						id : parentNode.nodeHTMLid,
+						documentationLocation : parentNode.text.documentationLocation
+					};
+				}
 			}
+		} catch (error) {
+			return {
+				id : 0,
+				documentationLocation : ""
+			};
 		}
 	}
-	
-	ConDecTreant.prototype.findParentId = findParentId;
-	
-	ConDecTreant.prototype.findDocumentationLocationOfParent = function findDocumentationLocationOfParent(elementId) {
-		var nodes = treantTree.tree.nodeDB.db;
-		var i;
-		for (i = 0; i < nodes.length; i++) {
-			//necessary to have ==, not ===
-			if (nodes[i].nodeHTMLid == elementId) {
-				var parentNode = treantTree.tree.getNodeDb().get(nodes[i].parentId);
-				var parentDocuLoc = parentNode.text;
-				console.log(parentDocuLoc);
-				console.log(parentDocuLoc.documentationLocation);
-				return parentDocuLoc.documentationLocation;
-			}
-		}
-	};	
+
+	/*
+	 * external references: condec.api
+	 */
+	ConDecTreant.prototype.findParentElement = findParentElement;
 
 	function drop(event, target) {
 		event.preventDefault();
@@ -103,16 +100,15 @@
 		var childId = dragId;
 
 		var sourceType = extractTypeFromHTMLElement(draggedElement);
-		var oldParentType = extractTypeFromHTMLId(findParentId(draggedElement.id));
+		var oldParentType = extractTypeFromHTMLId(findParentElement(draggedElement.id)["id"]);
 		var newParentType = extractTypeFromHTMLElement(target);
 
-		conDecAPI.deleteLink(oldParentId, childId,oldParentType,sourceType, function() {
-				conDecAPI.linkElements("contain", target.id, draggedElement.id, newParentType, sourceType, function() {
-					conDecObservable.notify();
-				});
+		conDecAPI.deleteLink(oldParentId, childId, oldParentType, sourceType, function() {
+			conDecAPI.linkElements("contain", target.id, draggedElement.id, newParentType, sourceType, function() {
+				conDecObservable.notify();
 			});
+		});
 	}
-
 
 	function allowDrop(event) {
 		event.preventDefault();

@@ -2,7 +2,7 @@
  This module implements the communication with the ConDec Java REST API and the JIRA API.
 
  Requires
- * conDecTreant.findParentId
+ * conDecTreant.findParentElement
     
  Is required by
  * conDecContextMenu
@@ -55,9 +55,9 @@
 	/*
 	 * external references: condec.jira.issue.module
 	 */
-	ConDecAPI.prototype.getLinkedElements = function getLinkedElements(id, callback) {
+	ConDecAPI.prototype.getLinkedElements = function getLinkedElements(id, documentationLocation, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getLinkedElements.json?projectKey=" + projectKey
-				+ "&id=" + id, function(error, linkedElements) {
+				+ "&id=" + id + "&documentationLocation=" + documentationLocation, function(error, linkedElements) {
 			if (error === null) {
 				callback(linkedElements);
 			}
@@ -67,9 +67,10 @@
 	/*
 	 * external references: condec.dialog
 	 */
-	ConDecAPI.prototype.getUnlinkedElements = function getUnlinkedElements(id, callback) {
+	ConDecAPI.prototype.getUnlinkedElements = function getUnlinkedElements(id, documentationLocation, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getUnlinkedElements.json?projectKey="
-				+ projectKey + "&id=" + id, function(error, unlinkedElements) {
+				+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function(error,
+				unlinkedElements) {
 			if (error === null) {
 				callback(unlinkedElements);
 			}
@@ -103,9 +104,10 @@
 	};
 
 	/*
-	 * internal references: updateDecisionKnowledgeElementAsChild
+	 * external references: condec.dialog
 	 */
-	function updateDecisionKnowledgeElement(id, summary, description, type, documentationLocation, callback) {
+	ConDecAPI.prototype.updateDecisionKnowledgeElement = function updateDecisionKnowledgeElement(id, summary,
+			description, type, documentationLocation, callback) {
 		var element = {
 			"id" : id,
 			"summary" : summary,
@@ -114,14 +116,24 @@
 			"description" : description,
 			"documentationLocation" : documentationLocation
 		};
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/updateDecisionKnowledgeElement.json", element,
-				function(error, decisionKnowledgeElement) {
-					if (error === null) {
-						showFlag("success", "Decision knowledge element has been updated.");
-						callback(decisionKnowledgeElement);
-					}
-				});
-	}
+		var parentElement = conDecTreant.findParentElement(id);
+		postJSON(AJS.contextPath()
+				+ "/rest/decisions/latest/decisions/updateDecisionKnowledgeElement.json?idOfParentElement="
+				+ parentElement["id"] + "&documentationLocationOfParentElement="
+				+ parentElement["documentationLocation"], element, function(error, response) {
+			if (error === null) {
+				showFlag("success", "Decision knowledge element has been updated.");
+				callback();
+			}
+		});
+	};
+
+	/*
+	 * external references: condec.context.menu, condec.dialog
+	 */
+	ConDecAPI.prototype.changeKnowledgeType = function changeKnowledgeType(id, type, documentationLocation, callback) {
+		this.updateDecisionKnowledgeElement(id, null, null, type, documentationLocation, callback);
+	};
 
 	/*
 	 * external references: condec.dialog
@@ -188,59 +200,18 @@
 	/*
 	 * external references: condec.dialog
 	 */
-	ConDecAPI.prototype.createLinkToExistingElement = function createLinkToExistingElement(idOfExistingElement,
-			idOfNewElement, knowledgeTypeOfChild) {
-		switchLinkTypes(knowledgeTypeOfChild, idOfExistingElement, idOfNewElement, "i", "i", (function(linkType,
-				idOfExistingElement, idOfNewElement) {
-			this.linkElements(linkType, idOfExistingElement, idOfNewElement, "i", "i", function() {
-				conDecObservable.notify();
-			});
-		}).bind(this));
-	};
-
-	function switchLinkTypes(type, idOfExistingElement, idOfNewElement, documentationLocationOfExistingElement,
-			documentationLocationOfNewElement, linkTypeFunction) {
-		console.log("conDecAPI switchLinkTypes");
-		switch (type) {
-		case "Pro-argument":
-			linkTypeFunction("support", idOfExistingElement, idOfNewElement, documentationLocationOfExistingElement,
-					documentationLocationOfNewElement);
-			break;
-		case "Con-argument":
-			linkTypeFunction("attack", idOfExistingElement, idOfNewElement, documentationLocationOfExistingElement,
-					documentationLocationOfNewElement);
-			break;
-		default:
-			linkTypeFunction("contain", idOfNewElement, idOfExistingElement, documentationLocationOfNewElement,
-					documentationLocationOfExistingElement);
-		}
-	}
-
-	/*
-	 * external references: condec.dialog
-	 */
-	ConDecAPI.prototype.updateDecisionKnowledgeElementAsChild = function updateDecisionKnowledgeElementAsChild(childId,
-			summary, description, type, documentationLocation) {
-		this.getDecisionKnowledgeElement(childId, documentationLocation, (function(childElement) {
-			var parentDocumentationLocation = conDecTreant.findDocumentationLocationOfParent(childId);
-			updateDecisionKnowledgeElement(childId, summary, description, type, documentationLocation, (function() {
-				if (childElement.type !== type) {
-					var parentId = conDecTreant.findParentId(childId);
-					switchLinkTypes(type, parentId, childId, parentDocumentationLocation, documentationLocation,
-							(function(linkType, parentId, childId) {
-								this.deleteLink(parentId, childId, parentDocumentationLocation,
-										childElement.documentationLocation, (function() {
-											this.linkElements(linkType, parentId, childId, parentDocumentationLocation,
-													documentationLocation, function() {
-														conDecObservable.notify();
-													});
-										}).bind(this));
-							}).bind(this));
-				} else {
-					conDecObservable.notify();
-				}
-			}).bind(this));
-		}).bind(this));
+	ConDecAPI.prototype.createLinkBetweenExistingElements = function createLinkBetweenExistingElements(
+			knowledgeTypeOfChild, idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, callback) {
+		postJSON(AJS.contextPath()
+				+ "/rest/decisions/latest/decisions/createLinkBetweenExistingElements.json?projectKey=" + projectKey
+				+ "&knowledgeTypeOfChild=" + knowledgeTypeOfChild + "&idOfParent=" + idOfParent
+				+ "&documentationLocationOfParent=" + documentationLocationOfParent + "&idOfChild=" + idOfChild
+				+ "&documentationLocationOfChild=" + documentationLocationOfChild, null, function(error, link) {
+			if (error === null) {
+				showFlag("success", "Link has been created.");
+				callback(link);
+			}
+		});
 	};
 
 	/*
@@ -258,47 +229,6 @@
 				callback();
 			}
 		});
-	};
-
-	/*
-	 * external references: condec.context.menu
-	 */
-	ConDecAPI.prototype.changeKnowledgeTypeOfSentence = function changeKnowledgeTypeOfSentence(id, type, callback) {
-		var jsondata = {
-			"id" : id,
-			"type" : type
-		};
-		var argument = "";// Important to be empty!
-		if (type.includes("Pro") || type.includes("Con")) {
-			argument = type;
-		}
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/changeKnowledgeTypeOfSentence.json?projectKey="
-				+ projectKey + "&argument=" + argument, jsondata, function(error, link) {
-			if (error === null) {
-				showFlag("success", "Knowledge type has been changed.");
-				callback(link);
-			}
-		});
-	};
-
-	/*
-	 * external references: condec.context.menu ..
-	 */
-	ConDecAPI.prototype.editSentenceBody = function editSentenceBody(id, body, type, callback) {
-		var jsondata = {
-			"id" : id,
-			"summary" : "",
-			"type" : type,
-			"projectKey" : projectKey,
-			"description" : body
-		};
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/editSentenceBody.json?argument=" + type,
-				jsondata, function(error, id, type) {
-					if (error === null) {
-						showFlag("success", "Decision knowledge element has been updated.");
-						callback(id, type);
-					}
-				});
 	};
 
 	/*

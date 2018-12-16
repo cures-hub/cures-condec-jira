@@ -287,4 +287,29 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		new WebhookConnector(projectKey).sendElementChanges(element);
 		return true;
 	}
+
+	@Override
+	public boolean changeKnowledgeType(DecisionKnowledgeElement element, ApplicationUser user) {
+		DecisionKnowledgeElementInDatabase databaseEntry = ACTIVE_OBJECTS
+				.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementInDatabase>() {
+					@Override
+					public DecisionKnowledgeElementInDatabase doInTransaction() {
+						for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
+								.find(DecisionKnowledgeElementInDatabase.class)) {
+							if (databaseEntry.getId() == element.getId()) {
+								databaseEntry.setType(element.getType().toString());
+								databaseEntry.save();
+								return databaseEntry;
+							}
+						}
+						return null;
+					}
+				});
+		if (databaseEntry == null) {
+			LOGGER.error("Updating of decision knowledge element in database failed.");
+			return false;
+		}
+		new WebhookConnector(projectKey).sendElementChanges(element);
+		return true;
+	}
 }

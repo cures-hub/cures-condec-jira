@@ -22,64 +22,52 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
-public class TestChangeKnowledgeTypeOfSentences extends TestKnowledgeRestSetUp{
-	
-	private final static String CREATION_ERROR = "Update of element failed.";
-	
+public class TestChangeKnowledgeType extends TestKnowledgeRestSetUp {
+
+	private final static String UPDATING_ERROR = "Element could not be updated due to a bad request.";
 
 	@Test
 	@NonTransactional
 	public void testRequestNullElementNull() {
 		TestComment tc = new TestComment();
-		Comment comment = tc.getComment("this is atest sentence");
+		Comment comment = tc.getComment("This is a test sentence.");
 		decisionKnowledgeElement = comment.getSentences().get(0);
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.changeKnowledgeTypeOfSentence(null, null, null, null).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", UPDATING_ERROR)).build()
+				.getEntity(), knowledgeRest.updateDecisionKnowledgeElement(null, null, 0, null).getEntity());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testRequestNullElementFilled() {
 		TestComment tc = new TestComment();
-		Comment comment = tc.getComment("this is atest sentence");
+		Comment comment = tc.getComment("This is a test sentence.");
 		decisionKnowledgeElement = comment.getSentences().get(0);
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.changeKnowledgeTypeOfSentence(null, null, decisionKnowledgeElement, null).getEntity());
+		assertEquals(
+				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", UPDATING_ERROR)).build()
+						.getEntity(),
+				knowledgeRest.updateDecisionKnowledgeElement(null, decisionKnowledgeElement, 0, null).getEntity());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementNull() {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.changeKnowledgeTypeOfSentence(null, request, decisionKnowledgeElement, null).getEntity());
+		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", UPDATING_ERROR)).build()
+				.getEntity(), knowledgeRest.updateDecisionKnowledgeElement(request, null, 0, null).getEntity());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilled() {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
 		TestComment tc = new TestComment();
-		Comment comment = tc.getComment("this is atest sentence");
+		Comment comment = tc.getComment("This is a test sentence.");
 		decisionKnowledgeElement = comment.getSentences().get(0);
 		decisionKnowledgeElement.setType(KnowledgeType.ALTERNATIVE);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.changeKnowledgeTypeOfSentence("TEST",request, decisionKnowledgeElement,"pro").getStatus());
+				knowledgeRest.updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, null).getStatus());
 	}
-	
-	@Test
-	@NonTransactional
-	public void testRequestFilledElementFilledButNotExisting() {
-		request.setAttribute("WithFails", false);
-		request.setAttribute("NoFails", true);
-		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
-		assertEquals(500,
-				knowledgeRest.changeKnowledgeTypeOfSentence("TEST",request, decisionKnowledgeElement,"pro").getStatus());
-	}
-	
-
-
 }
