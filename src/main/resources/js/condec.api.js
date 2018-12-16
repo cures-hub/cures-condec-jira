@@ -126,7 +126,7 @@
 				callback();
 			}
 		});
-	}
+	};
 
 	/*
 	 * external references: condec.context.menu, condec.dialog
