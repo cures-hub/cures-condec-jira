@@ -70,31 +70,33 @@ public class KnowledgeRest {
 	@Path("/getLinkedElements")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getLinkedElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey) {
-		if (projectKey != null) {
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
-			List<DecisionKnowledgeElement> linkedDecisionKnowledgeElements = strategy.getLinkedElements(id);
-			return Response.ok(linkedDecisionKnowledgeElements).build();
-		} else {
+	public Response getLinkedElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
+			@QueryParam("documentationLocation") String documentationLocation) {
+		if (projectKey == null || id == 0) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Linked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
 					.build();
 		}
+		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(projectKey,
+				documentationLocation);
+		List<DecisionKnowledgeElement> linkedDecisionKnowledgeElements = persistenceManager.getLinkedElements(id);
+		return Response.ok(linkedDecisionKnowledgeElements).build();
 	}
 
 	@Path("/getUnlinkedElements")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getUnlinkedElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey) {
-		if (projectKey != null) {
-			AbstractPersistenceManager strategy = AbstractPersistenceManager.getDefaultPersistenceStrategy(projectKey);
-			List<DecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = strategy.getUnlinkedElements(id);
-			return Response.ok(unlinkedDecisionKnowledgeElements).build();
-		} else {
+	public Response getUnlinkedElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
+			@QueryParam("documentationLocation") String documentationLocation) {
+		if (projectKey == null || id == 0) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Unlinked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
 					.build();
 		}
+		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(projectKey,
+				documentationLocation);
+		List<DecisionKnowledgeElement> unlinkedDecisionKnowledgeElements = persistenceManager.getUnlinkedElements(id);
+		return Response.ok(unlinkedDecisionKnowledgeElements).build();
 	}
 
 	@Path("/createDecisionKnowledgeElement")

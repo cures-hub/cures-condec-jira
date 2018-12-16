@@ -55,9 +55,9 @@
 	/*
 	 * external references: condec.jira.issue.module
 	 */
-	ConDecAPI.prototype.getLinkedElements = function getLinkedElements(id, callback) {
+	ConDecAPI.prototype.getLinkedElements = function getLinkedElements(id, documentationLocation, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getLinkedElements.json?projectKey=" + projectKey
-				+ "&id=" + id, function(error, linkedElements) {
+				+ "&id=" + id + "&documentationLocation=" + documentationLocation, function(error, linkedElements) {
 			if (error === null) {
 				callback(linkedElements);
 			}
@@ -67,9 +67,9 @@
 	/*
 	 * external references: condec.dialog
 	 */
-	ConDecAPI.prototype.getUnlinkedElements = function getUnlinkedElements(id, callback) {
+	ConDecAPI.prototype.getUnlinkedElements = function getUnlinkedElements(id, documentationLocation, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getUnlinkedElements.json?projectKey="
-				+ projectKey + "&id=" + id, function(error, unlinkedElements) {
+				+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function(error, unlinkedElements) {
 			if (error === null) {
 				callback(unlinkedElements);
 			}

@@ -135,7 +135,7 @@
 	function exportLinkedElements() {
 		var myJql = getQueryFromUrl();
 		var issueKey = conDecAPI.getIssueKey();
-		conDecAPI.getLinkedElementsByQuery(myJql, issueKey, function(res) {
+		conDecAPI.getLinkedElementsByQuery(myJql, issueKey, "i", function(res) {
 			console.log("noResult", res);
 			if (res) {
 				console.log("linked", res);

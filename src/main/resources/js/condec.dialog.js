@@ -143,13 +143,13 @@
 		return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase();
 	}
 
-	ConDecDialog.prototype.showLinkDialog = function showLinkDialog(id) {
+	ConDecDialog.prototype.showLinkDialog = function showLinkDialog(id, documentationLocation) {
 		console.log("conDecDialog setUpDialogForLinkAction");
 		console.log(id);
 		setUpDialog();
 		setHeaderText(linkKnowledgeElementText);
 
-		conDecAPI.getUnlinkedElements(id, function(unlinkedElements) {
+		conDecAPI.getUnlinkedElements(id, documentationLocation, function(unlinkedElements) {
 			var insertString = "<form class='aui'><div class='field-group' id='select-field-group'></div>"
 					+ "<div class='field-group' id='argument-field-group'></div></form>";
 			var content = document.getElementById("dialog-content");

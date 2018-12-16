@@ -55,7 +55,7 @@
 		};
 
 		document.getElementById("condec-context-menu-link-item").onclick = function() {
-			conDecDialog.showLinkDialog(id);
+			conDecDialog.showLinkDialog(id, "");
 		};
 
 		document.getElementById("condec-context-menu-delete-link-item").onclick = function() {
