@@ -291,10 +291,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		IssueResult issueResult = issueService.getIssue(user, element.getId());
 		MutableIssue issueToBeUpdated = issueResult.getIssue();
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
-		issueInputParameters.setSummary(element.getSummary());
-		issueInputParameters.setDescription(element.getDescription());
-		String issueTypeId = getIssueTypeId(element.getType());
-		issueInputParameters.setIssueTypeId(issueTypeId);
+		issueInputParameters = setParameters(element, issueInputParameters);
 		IssueService.UpdateValidationResult result = issueService.validateUpdate(user, issueToBeUpdated.getId(),
 				issueInputParameters);
 		if (result.getErrorCollection().hasAnyErrors()) {
@@ -307,25 +304,18 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		issueService.update(user, result);
 		return true;
 	}
-	
-	@Override
-	public boolean changeKnowledgeType(DecisionKnowledgeElement element, ApplicationUser user) {
-		IssueService issueService = ComponentAccessor.getIssueService();
-		IssueResult issueResult = issueService.getIssue(user, element.getId());
-		MutableIssue issueToBeUpdated = issueResult.getIssue();
-		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
+
+	private static IssueInputParameters setParameters(DecisionKnowledgeElement element, IssueInputParameters issueInputParameters) {
+		String summary = element.getSummary();
+		if (summary != null) {
+			issueInputParameters.setSummary(summary);
+		}
+		String description = element.getDescription();
+		if (description != null) {
+			issueInputParameters.setDescription(description);
+		}
 		String issueTypeId = getIssueTypeId(element.getType());
 		issueInputParameters.setIssueTypeId(issueTypeId);
-		IssueService.UpdateValidationResult result = issueService.validateUpdate(user, issueToBeUpdated.getId(),
-				issueInputParameters);
-		if (result.getErrorCollection().hasAnyErrors()) {
-			for (Map.Entry<String, String> entry : result.getErrorCollection().getErrors().entrySet()) {
-				LOGGER.error("Updating decision knowledge element in database failed. " + entry.getKey() + ": "
-						+ entry.getValue());
-			}
-			return false;
-		}
-		issueService.update(user, result);
-		return true;
+		return issueInputParameters;
 	}
 }

@@ -29,8 +29,6 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
  */
 public abstract class AbstractPersistenceManager {
 
-	public abstract boolean changeKnowledgeType(DecisionKnowledgeElement element, ApplicationUser user);
-
 	/**
 	 * Delete an existing decision knowledge element in database.
 	 *

@@ -270,9 +270,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 						for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
 								.find(DecisionKnowledgeElementInDatabase.class)) {
 							if (databaseEntry.getId() == element.getId()) {
-								databaseEntry.setSummary(element.getSummary());
-								databaseEntry.setDescription(element.getDescription());
-								databaseEntry.setType(element.getType().toString());
+								databaseEntry = setParameters(element, databaseEntry);
 								databaseEntry.save();
 								return databaseEntry;
 							}
@@ -288,28 +286,17 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		return true;
 	}
 
-	@Override
-	public boolean changeKnowledgeType(DecisionKnowledgeElement element, ApplicationUser user) {
-		DecisionKnowledgeElementInDatabase databaseEntry = ACTIVE_OBJECTS
-				.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementInDatabase>() {
-					@Override
-					public DecisionKnowledgeElementInDatabase doInTransaction() {
-						for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
-								.find(DecisionKnowledgeElementInDatabase.class)) {
-							if (databaseEntry.getId() == element.getId()) {
-								databaseEntry.setType(element.getType().toString());
-								databaseEntry.save();
-								return databaseEntry;
-							}
-						}
-						return null;
-					}
-				});
-		if (databaseEntry == null) {
-			LOGGER.error("Updating of decision knowledge element in database failed.");
-			return false;
+	private static DecisionKnowledgeElementInDatabase setParameters(DecisionKnowledgeElement element,
+			DecisionKnowledgeElementInDatabase databaseEntry) {
+		String summary = element.getSummary();
+		if (summary != null) {
+			databaseEntry.setSummary(summary);
 		}
-		new WebhookConnector(projectKey).sendElementChanges(element);
-		return true;
+		String description = element.getDescription();
+		if (description != null) {
+			databaseEntry.setSummary(description);
+		}
+		databaseEntry.setType(element.getType().toString());
+		return databaseEntry;
 	}
 }

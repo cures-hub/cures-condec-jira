@@ -159,14 +159,7 @@ public class KnowledgeRest {
 					.build();
 		}
 
-		boolean isUpdated = false;
-		if (element.getSummary() != null) {
-			isUpdated = persistenceManager.updateDecisionKnowledgeElement(element, user);
-		} else if (formerElement.getType() != element.getType()) {
-			isUpdated = persistenceManager.changeKnowledgeType(element, user);
-		} else {
-			return Response.status(Status.NOT_MODIFIED).build();
-		}
+		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(element, user);
 
 		if (!isUpdated) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
