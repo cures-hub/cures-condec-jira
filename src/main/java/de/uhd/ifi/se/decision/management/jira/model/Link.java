@@ -220,6 +220,28 @@ public interface Link {
 		return instantiateDirectedLink(parentElement, childElement, linkType);
 	}
 
+	/**
+	 * Determine if both source and destination element of the link are documented
+	 * as JIRA issues.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * 
+	 * @return true if both source and destination element of the link are
+	 *         documented as JIRA issues.
+	 */
+	public boolean isIssueLink();
+
+	/**
+	 * Determine if both source and destination element of the link have an unknown
+	 * documentation location.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * 
+	 * @return true if both source and destination element of the link have an
+	 *         unknown documentation location.
+	 */
+	public boolean isDefaultLink();
+
 	String getIdOfSourceElementWithPrefix();
 
 	void setSourceElement(String idWithPrefix);

@@ -28,7 +28,7 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
  * @see JiraIssueCommentPersistenceManager
  * @see PersistenceProvider
  */
-public abstract class AbstractPersistenceManager {	
+public abstract class AbstractPersistenceManager {
 
 	protected String projectKey;
 
@@ -73,7 +73,7 @@ public abstract class AbstractPersistenceManager {
 	public static boolean deleteLink(Link link, ApplicationUser user) {
 		boolean isDeleted = false;
 		String projectKey = link.getSourceElement().getProject().getProjectKey();
-		if (GenericLinkManager.isIssueLink(link) || GenericLinkManager.isDefaultLink(link)) {
+		if (link.isIssueLink() || link.isDefaultLink()) {
 			if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
 				isDeleted = JiraIssuePersistenceManager.deleteIssueLink(link, user);
 				if (!isDeleted) {
@@ -308,7 +308,7 @@ public abstract class AbstractPersistenceManager {
 	 */
 	public static long insertLink(Link link, ApplicationUser user) {
 		String projectKey = link.getSourceElement().getProject().getProjectKey();
-		if (GenericLinkManager.isIssueLink(link) || GenericLinkManager.isDefaultLink(link)) {
+		if (link.isIssueLink() || link.isDefaultLink()) {
 			if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
 				return JiraIssuePersistenceManager.insertIssueLink(link, user);
 			}

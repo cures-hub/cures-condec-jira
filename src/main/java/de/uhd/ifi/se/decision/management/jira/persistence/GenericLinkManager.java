@@ -10,7 +10,6 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import net.java.ao.Query;
@@ -123,7 +122,7 @@ public class GenericLinkManager {
 		}
 		return links;
 	}
-	
+
 	public static List<Link> getLinksForElement(DecisionKnowledgeElement element) {
 		String elementIdWithPrefix = element.getDocumentationLocationAsString() + element.getId();
 		init();
@@ -187,16 +186,6 @@ public class GenericLinkManager {
 	public static DecisionKnowledgeElement getIssueFromAOTable(long dkeId) {
 		ActiveObjectPersistenceManager aos = new ActiveObjectPersistenceManager("");
 		return aos.getDecisionKnowledgeElement(dkeId);
-	}
-
-	public static boolean isIssueLink(Link link) {
-		return link.getSourceElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUE
-				&& link.getDestinationElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUE;
-	}
-
-	public static boolean isDefaultLink(Link link) {
-		return link.getSourceElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN
-				&& link.getDestinationElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN;
 	}
 
 	public static long getId(String idWithPrefix) {

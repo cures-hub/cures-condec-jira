@@ -90,7 +90,7 @@ public class LinkImpl implements Link {
 
 	@Override
 	public String getType() {
-		if(type == null|| type.equals("")) {
+		if (type == null || type.equals("")) {
 			return "contain";
 		}
 		return type;
@@ -264,5 +264,17 @@ public class LinkImpl implements Link {
 	@JsonProperty("documentationLocationOfDestinationElement")
 	public void setDocumentationLocationOfDestinationElement(String documentationLocation) {
 		this.getDestinationElement().setDocumentationLocation(documentationLocation);
+	}
+
+	@Override
+	public boolean isIssueLink() {
+		return this.getSourceElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUE
+				&& this.getDestinationElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUE;
+	}
+
+	@Override
+	public boolean isDefaultLink() {
+		return this.getSourceElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN
+				&& this.getDestinationElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN;
 	}
 }
