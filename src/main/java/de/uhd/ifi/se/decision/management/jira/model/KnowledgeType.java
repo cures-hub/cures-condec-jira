@@ -87,7 +87,7 @@ public enum KnowledgeType {
 	/**
 	 * Return the argument knowledge type instead of pro-argument or con-argument.
 	 */
-	public KnowledgeType getSimpleKnowledgeType() {
+	public KnowledgeType replaceProAndConWithArgument() {
 		return getSimpleKnowledgeType(this);
 	}
 

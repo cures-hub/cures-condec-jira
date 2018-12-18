@@ -214,21 +214,11 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 			ApplicationUser user) {
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
 
-		if (element.getSummary().length() > 255) {
-			issueInputParameters.setSummary(element.getSummary().substring(0, 254));
-		} else {
-			issueInputParameters.setSummary(element.getSummary());
-		}
-		issueInputParameters.setDescription(element.getDescription());
-		issueInputParameters.setAssigneeId(user.getName());
-		issueInputParameters.setReporterId(user.getName());
-
+		issueInputParameters = setParameters(element, issueInputParameters);
+		issueInputParameters.setReporterId(user.getName());		
 		Project project = ComponentAccessor.getProjectManager()
 				.getProjectByCurrentKey(element.getProject().getProjectKey());
 		issueInputParameters.setProjectId(project.getId());
-
-		String issueTypeId = getIssueTypeId(element.getType());
-		issueInputParameters.setIssueTypeId(issueTypeId);
 
 		IssueService issueService = ComponentAccessor.getIssueService();
 		CreateValidationResult result = issueService.validateCreate(user, issueInputParameters);
@@ -246,11 +236,29 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		return element;
 	}
 
+	private static IssueInputParameters setParameters(DecisionKnowledgeElement element,
+			IssueInputParameters issueInputParameters) {
+		String summary = element.getSummary();
+		if (summary != null) {
+			if (summary.length() > 255) {
+				summary = summary.substring(0, 254);
+			}
+			issueInputParameters.setSummary(summary);
+		}
+		String description = element.getDescription();
+		if (description != null) {
+			issueInputParameters.setDescription(description);
+		}
+		String issueTypeId = getIssueTypeId(element.getType().replaceProAndConWithArgument());
+		issueInputParameters.setIssueTypeId(issueTypeId);
+		return issueInputParameters;
+	}
+
 	public static String getIssueTypeId(KnowledgeType type) {
 		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
 		Collection<IssueType> listOfIssueTypes = constantsManager.getAllIssueTypeObjects();
 		for (IssueType issueType : listOfIssueTypes) {
-			if (issueType.getName().equalsIgnoreCase(type.getSimpleKnowledgeType().toString())) {
+			if (issueType.getName().equalsIgnoreCase(type.toString())) {
 				return issueType.getId();
 			}
 		}
@@ -303,19 +311,5 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		}
 		issueService.update(user, result);
 		return true;
-	}
-
-	private static IssueInputParameters setParameters(DecisionKnowledgeElement element, IssueInputParameters issueInputParameters) {
-		String summary = element.getSummary();
-		if (summary != null) {
-			issueInputParameters.setSummary(summary);
-		}
-		String description = element.getDescription();
-		if (description != null) {
-			issueInputParameters.setDescription(description);
-		}
-		String issueTypeId = getIssueTypeId(element.getType());
-		issueInputParameters.setIssueTypeId(issueTypeId);
-		return issueInputParameters;
 	}
 }

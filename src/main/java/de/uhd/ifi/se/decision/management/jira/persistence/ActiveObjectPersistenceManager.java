@@ -223,9 +223,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 								.create(DecisionKnowledgeElementInDatabase.class);
 						databaseEntry.setKey(element.getProject().getProjectKey().toUpperCase(Locale.ENGLISH) + "-"
 								+ databaseEntry.getId());
-						databaseEntry.setSummary(element.getSummary());
-						databaseEntry.setDescription(element.getDescription());
-						databaseEntry.setType(element.getType().getSimpleKnowledgeType().toString());
+						databaseEntry = setParameters(element, databaseEntry);
 						databaseEntry.setProjectKey(element.getProject().getProjectKey());
 						databaseEntry.save();
 						return databaseEntry;
@@ -240,6 +238,20 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		new WebhookConnector(projectKey).sendElementChanges(element);
 		element.setDocumentationLocation(DocumentationLocation.ACTIVEOBJECT);
 		return element;
+	}
+	
+	private static DecisionKnowledgeElementInDatabase setParameters(DecisionKnowledgeElement element,
+			DecisionKnowledgeElementInDatabase databaseEntry) {
+		String summary = element.getSummary();
+		if (summary != null) {
+			databaseEntry.setSummary(summary);
+		}
+		String description = element.getDescription();
+		if (description != null) {
+			databaseEntry.setSummary(description);
+		}
+		databaseEntry.setType(element.getType().replaceProAndConWithArgument().toString());
+		return databaseEntry;
 	}
 
 	@Override
@@ -284,19 +296,5 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		}
 		new WebhookConnector(projectKey).sendElementChanges(element);
 		return true;
-	}
-
-	private static DecisionKnowledgeElementInDatabase setParameters(DecisionKnowledgeElement element,
-			DecisionKnowledgeElementInDatabase databaseEntry) {
-		String summary = element.getSummary();
-		if (summary != null) {
-			databaseEntry.setSummary(summary);
-		}
-		String description = element.getDescription();
-		if (description != null) {
-			databaseEntry.setSummary(description);
-		}
-		databaseEntry.setType(element.getType().toString());
-		return databaseEntry;
 	}
 }
