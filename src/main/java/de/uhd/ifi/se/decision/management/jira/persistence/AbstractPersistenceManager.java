@@ -30,6 +30,8 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
  */
 public abstract class AbstractPersistenceManager {
 
+	protected String projectKey;
+
 	/**
 	 * Delete an existing link in database.
 	 *
@@ -45,14 +47,12 @@ public abstract class AbstractPersistenceManager {
 	public static boolean deleteLink(Link link, ApplicationUser user) {
 		boolean isDeleted = false;
 		String projectKey = link.getSourceElement().getProject().getProjectKey();
-		if (link.isIssueLink() || link.isDefaultLink()) {
-			if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
-				isDeleted = JiraIssuePersistenceManager.deleteIssueLink(link, user);
-				if (!isDeleted) {
-					isDeleted = JiraIssuePersistenceManager.deleteIssueLink(link.flip(), user);
-				}
-				return isDeleted;
+		if ((link.isIssueLink() || link.isDefaultLink()) && ConfigPersistenceManager.isIssueStrategy(projectKey)) {
+			isDeleted = JiraIssuePersistenceManager.deleteIssueLink(link, user);
+			if (!isDeleted) {
+				isDeleted = JiraIssuePersistenceManager.deleteIssueLink(link.flip(), user);
 			}
+			return isDeleted;
 		}
 		DecisionKnowledgeElement sourceElement = link.getSourceElement();
 		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
@@ -171,10 +171,8 @@ public abstract class AbstractPersistenceManager {
 	 */
 	public static long insertLink(Link link, ApplicationUser user) {
 		String projectKey = link.getSourceElement().getProject().getProjectKey();
-		if (link.isIssueLink() || link.isDefaultLink()) {
-			if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
-				return JiraIssuePersistenceManager.insertIssueLink(link, user);
-			}
+		if ((link.isIssueLink() || link.isDefaultLink()) && ConfigPersistenceManager.isIssueStrategy(projectKey)) {
+			return JiraIssuePersistenceManager.insertIssueLink(link, user);
 		}
 		DecisionKnowledgeElement sourceElement = link.getSourceElement();
 		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
@@ -191,9 +189,12 @@ public abstract class AbstractPersistenceManager {
 	 * @see ApplicationUser
 	 * @param element
 	 *            child element of the link with the new knowledge type.
-	 * @param formerKnowledgeType former knowledge type of the child element before it was updated.
-	 * @param idOfParentElement id of the parent element.
-	 * @param documentationLocationOfParentElement documentation location of the parent element.
+	 * @param formerKnowledgeType
+	 *            former knowledge type of the child element before it was updated.
+	 * @param idOfParentElement
+	 *            id of the parent element.
+	 * @param documentationLocationOfParentElement
+	 *            documentation location of the parent element.
 	 * @param user
 	 *            authenticated JIRA application user
 	 * @return internal database id of updated link, zero if updating failed.
@@ -220,8 +221,6 @@ public abstract class AbstractPersistenceManager {
 		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
 		return insertLink(link, user);
 	}
-
-	protected String projectKey;
 
 	/**
 	 * Delete an existing decision knowledge element in database.
