@@ -30,34 +30,6 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
  */
 public abstract class AbstractPersistenceManager {
 
-	protected String projectKey;
-
-	/**
-	 * Delete an existing decision knowledge element in database.
-	 *
-	 * @see DecisionKnowledgeElement
-	 * @see ApplicationUser
-	 * @param element
-	 *            decision knowledge element with id in database.
-	 * @param user
-	 *            authenticated JIRA application user
-	 * @return true if deleting was successful.
-	 */
-	public abstract boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
-
-	/**
-	 * Delete an existing decision knowledge element in database.
-	 *
-	 * @see DecisionKnowledgeElement
-	 * @see ApplicationUser
-	 * @param id
-	 *            id of the decision knowledge element in database.
-	 * @param user
-	 *            authenticated JIRA application user
-	 * @return true if deleting was successful.
-	 */
-	public abstract boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user);
-
 	/**
 	 * Delete an existing link in database.
 	 *
@@ -90,6 +62,192 @@ public abstract class AbstractPersistenceManager {
 		}
 		return isDeleted;
 	}
+
+	/**
+	 * Get the persistence strategy for autarkical decision knowledge elements used
+	 * in a project. This elements are directly stored in JIRA and independent from
+	 * other JIRA issues. These elements are "first class" elements.
+	 *
+	 * @see AbstractPersistenceManager
+	 * @see JiraIssuePersistenceManager
+	 * @see ActiveObjectPersistenceManager
+	 * @param projectKey
+	 *            of the JIRA project.
+	 * @return persistence strategy for "first class" decision knowledge elements
+	 *         used in the given project, either issue strategy or active object
+	 *         strategy. The active object strategy is the default strategy.
+	 */
+	public static AbstractPersistenceManager getDefaultPersistenceStrategy(String projectKey) {
+		if (projectKey == null) {
+			throw new IllegalArgumentException("The project key cannot be null.");
+		}
+
+		boolean isIssueStrategy = ConfigPersistenceManager.isIssueStrategy(projectKey);
+		if (isIssueStrategy) {
+			return new JiraIssuePersistenceManager(projectKey);
+		}
+		return new ActiveObjectPersistenceManager(projectKey);
+	}
+
+	/**
+	 * Get the persistence manager of a given decision knowledge elements.
+	 *
+	 * @see AbstractPersistenceManager
+	 * @param element
+	 *            decision knowledge element with project and documentation
+	 *            location.
+	 * @return persistence manager of a given decision knowledge elements. Returns
+	 *         the default persistence manager in case the documentation location of
+	 *         the element cannot be found.
+	 */
+	public static AbstractPersistenceManager getPersistenceManager(DecisionKnowledgeElement element) {
+		if (element == null) {
+			throw new IllegalArgumentException("The element cannot be null.");
+		}
+		String projectKey = element.getProject().getProjectKey();
+		return getPersistenceManager(projectKey, element.getDocumentationLocation());
+	}
+
+	/**
+	 * Get the persistence manager for a given project and documentation location.
+	 *
+	 * @see AbstractPersistenceManager
+	 * @param projectKey
+	 *            of a JIRA project.
+	 * @param documentationLocation
+	 *            of knowledge.
+	 * @return persistence manager associated to a documentation location. Returns
+	 *         the default persistence manager in case the documentation location
+	 *         cannot be found.
+	 */
+	public static AbstractPersistenceManager getPersistenceManager(String projectKey,
+			DocumentationLocation documentationLocation) {
+		if (documentationLocation == null) {
+			return getDefaultPersistenceStrategy(projectKey);
+		}
+		switch (documentationLocation) {
+		case JIRAISSUE:
+			return new JiraIssuePersistenceManager(projectKey);
+		case JIRAISSUECOMMENT:
+			return new JiraIssueCommentPersistenceManager(projectKey);
+		case ACTIVEOBJECT:
+			return new ActiveObjectPersistenceManager(projectKey);
+		default:
+			return getDefaultPersistenceStrategy(projectKey);
+		}
+	}
+
+	/**
+	 * Get the persistence manager for a given project and documentation location.
+	 *
+	 * @see AbstractPersistenceManager
+	 * @param projectKey
+	 *            of a JIRA project.
+	 * @param documentationLocationIdentifier
+	 *            String identifier indicating the documentation location of
+	 *            knowledge (e.g., i for JIRA issue).
+	 * @return persistence manager associated to a documentation location. Returns
+	 *         the default persistence manager in case the documentation location
+	 *         cannot be found.
+	 */
+	public static AbstractPersistenceManager getPersistenceManager(String projectKey,
+			String documentationLocationIdentifier) {
+		DocumentationLocation documentationLocation = DocumentationLocation
+				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
+		return getPersistenceManager(projectKey, documentationLocation);
+	}
+
+	/**
+	 * Insert a new link into database.
+	 *
+	 * @see Link
+	 * @see ApplicationUser
+	 * @param link
+	 *            link between a source and a destination decision knowledge
+	 *            element.
+	 * @param user
+	 *            authenticated JIRA application user
+	 * @return internal database id of inserted link, zero if insertion failed.
+	 */
+	public static long insertLink(Link link, ApplicationUser user) {
+		String projectKey = link.getSourceElement().getProject().getProjectKey();
+		if (link.isIssueLink() || link.isDefaultLink()) {
+			if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
+				return JiraIssuePersistenceManager.insertIssueLink(link, user);
+			}
+		}
+		DecisionKnowledgeElement sourceElement = link.getSourceElement();
+		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
+		return GenericLinkManager.insertLink(link, user);
+	}
+
+	/**
+	 * Update new link in database.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see KnowledgeType
+	 * @see DocumentationLocation
+	 * @see Link
+	 * @see ApplicationUser
+	 * @param element
+	 *            child element of the link with the new knowledge type.
+	 * @param formerKnowledgeType former knowledge type of the child element before it was updated.
+	 * @param idOfParentElement id of the parent element.
+	 * @param documentationLocationOfParentElement documentation location of the parent element.
+	 * @param user
+	 *            authenticated JIRA application user
+	 * @return internal database id of updated link, zero if updating failed.
+	 */
+	public static long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType,
+			long idOfParentElement, String documentationLocationOfParentElement, ApplicationUser user) {
+
+		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerKnowledgeType);
+		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
+
+		if (formerLinkType.equals(linkType) || idOfParentElement == 0) {
+			return -1;
+		}
+
+		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
+		parentElement.setId(idOfParentElement);
+		parentElement.setDocumentationLocation(documentationLocationOfParentElement);
+
+		Link formerLink = Link.instantiateDirectedLink(parentElement, element, formerLinkType);
+		if (!deleteLink(formerLink, user)) {
+			return 0;
+		}
+
+		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
+		return insertLink(link, user);
+	}
+
+	protected String projectKey;
+
+	/**
+	 * Delete an existing decision knowledge element in database.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see ApplicationUser
+	 * @param element
+	 *            decision knowledge element with id in database.
+	 * @param user
+	 *            authenticated JIRA application user
+	 * @return true if deleting was successful.
+	 */
+	public abstract boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
+
+	/**
+	 * Delete an existing decision knowledge element in database.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see ApplicationUser
+	 * @param id
+	 *            id of the decision knowledge element in database.
+	 * @param user
+	 *            authenticated JIRA application user
+	 * @return true if deleting was successful.
+	 */
+	public abstract boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user);
 
 	/**
 	 * Get a decision knowledge element in database by its id.
@@ -295,30 +453,6 @@ public abstract class AbstractPersistenceManager {
 			ApplicationUser user);
 
 	/**
-	 * Insert a new link into database.
-	 *
-	 * @see Link
-	 * @see ApplicationUser
-	 * @param link
-	 *            link between a source and a destination decision knowledge
-	 *            element.
-	 * @param user
-	 *            authenticated JIRA application user
-	 * @return internal database id, zero if insertion failed.
-	 */
-	public static long insertLink(Link link, ApplicationUser user) {
-		String projectKey = link.getSourceElement().getProject().getProjectKey();
-		if (link.isIssueLink() || link.isDefaultLink()) {
-			if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
-				return JiraIssuePersistenceManager.insertIssueLink(link, user);
-			}
-		}
-		DecisionKnowledgeElement sourceElement = link.getSourceElement();
-		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
-		return GenericLinkManager.insertLink(link, user);
-	}
-
-	/**
 	 * Update an existing decision knowledge element in database.
 	 *
 	 * @see DecisionKnowledgeElement
@@ -330,121 +464,4 @@ public abstract class AbstractPersistenceManager {
 	 * @return true if updating was successful.
 	 */
 	public abstract boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
-
-	/**
-	 * Get the persistence manager of a given decision knowledge elements.
-	 *
-	 * @see AbstractPersistenceManager
-	 * @param element
-	 *            decision knowledge element with project and documentation
-	 *            location.
-	 * @return persistence manager of a given decision knowledge elements. Returns
-	 *         the default persistence manager in case the documentation location of
-	 *         the element cannot be found.
-	 */
-	public static AbstractPersistenceManager getPersistenceManager(DecisionKnowledgeElement element) {
-		if (element == null) {
-			throw new IllegalArgumentException("The element cannot be null.");
-		}
-		String projectKey = element.getProject().getProjectKey();
-		return getPersistenceManager(projectKey, element.getDocumentationLocation());
-	}
-
-	/**
-	 * Get the persistence manager for a given project and documentation location.
-	 *
-	 * @see AbstractPersistenceManager
-	 * @param projectKey
-	 *            of a JIRA project.
-	 * @param documentationLocation
-	 *            of knowledge.
-	 * @return persistence manager associated to a documentation location. Returns
-	 *         the default persistence manager in case the documentation location
-	 *         cannot be found.
-	 */
-	public static AbstractPersistenceManager getPersistenceManager(String projectKey,
-			DocumentationLocation documentationLocation) {
-		if (documentationLocation == null) {
-			return getDefaultPersistenceStrategy(projectKey);
-		}
-		switch (documentationLocation) {
-		case JIRAISSUE:
-			return new JiraIssuePersistenceManager(projectKey);
-		case JIRAISSUECOMMENT:
-			return new JiraIssueCommentPersistenceManager(projectKey);
-		case ACTIVEOBJECT:
-			return new ActiveObjectPersistenceManager(projectKey);
-		default:
-			return getDefaultPersistenceStrategy(projectKey);
-		}
-	}
-
-	/**
-	 * Get the persistence manager for a given project and documentation location.
-	 *
-	 * @see AbstractPersistenceManager
-	 * @param projectKey
-	 *            of a JIRA project.
-	 * @param documentationLocationIdentifier
-	 *            String identifier indicating the documentation location of
-	 *            knowledge (e.g., i for JIRA issue).
-	 * @return persistence manager associated to a documentation location. Returns
-	 *         the default persistence manager in case the documentation location
-	 *         cannot be found.
-	 */
-	public static AbstractPersistenceManager getPersistenceManager(String projectKey,
-			String documentationLocationIdentifier) {
-		DocumentationLocation documentationLocation = DocumentationLocation
-				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
-		return getPersistenceManager(projectKey, documentationLocation);
-	}
-
-	/**
-	 * Get the persistence strategy for autarkical decision knowledge elements used
-	 * in a project. This elements are directly stored in JIRA and independent from
-	 * other JIRA issues. These elements are "first class" elements.
-	 *
-	 * @see AbstractPersistenceManager
-	 * @see JiraIssuePersistenceManager
-	 * @see ActiveObjectPersistenceManager
-	 * @param projectKey
-	 *            of the JIRA project.
-	 * @return persistence strategy for "first class" decision knowledge elements
-	 *         used in the given project, either issue strategy or active object
-	 *         strategy. The active object strategy is the default strategy.
-	 */
-	public static AbstractPersistenceManager getDefaultPersistenceStrategy(String projectKey) {
-		if (projectKey == null) {
-			throw new IllegalArgumentException("The project key cannot be null.");
-		}
-
-		boolean isIssueStrategy = ConfigPersistenceManager.isIssueStrategy(projectKey);
-		if (isIssueStrategy) {
-			return new JiraIssuePersistenceManager(projectKey);
-		}
-		return new ActiveObjectPersistenceManager(projectKey);
-	}
-
-	public static long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType,
-			long idOfParentElement, String documentationLocationOfParentElement, ApplicationUser user) {
-
-		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerKnowledgeType);
-		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
-
-		if (formerLinkType.equals(linkType) || idOfParentElement == 0) {
-			return -1;
-		}
-
-		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
-		parentElement.setId(idOfParentElement);
-		parentElement.setDocumentationLocation(documentationLocationOfParentElement);
-
-		Link formerLink = Link.instantiateDirectedLink(parentElement, element, formerLinkType);
-		if (!deleteLink(formerLink, user)) {
-			return 0;
-		}
-
-		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
-		return insertLink(link, user);
-	}
 }

@@ -243,7 +243,7 @@ public class LinkImpl implements Link {
 
 	@Override
 	public LinkImpl flip() {
-		return new LinkImpl(this.getIdOfDestinationElementWithPrefix(), this.getIdOfSourceElementWithPrefix());
+		return new LinkImpl(this.getDestinationElement(), this.getSourceElement());
 	}
 
 	@Override
@@ -276,5 +276,21 @@ public class LinkImpl implements Link {
 	public boolean isDefaultLink() {
 		return this.getSourceElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN
 				&& this.getDestinationElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object == null) {
+			return false;
+		}
+		if (object == this) {
+			return true;
+		}
+		if (!(object instanceof Link)) {
+			return false;
+		}
+		Link link = (Link) object;
+		return this.sourceElement.getId() == link.getSourceElement().getId()
+				&& this.destinationElement.getId() == link.getDestinationElement().getId();
 	}
 }

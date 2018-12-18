@@ -34,6 +34,20 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 	private static final String PREFIX = DocumentationLocation.getIdentifier(DocumentationLocation.ACTIVEOBJECT);
 
+	private static DecisionKnowledgeElementInDatabase setParameters(DecisionKnowledgeElement element,
+			DecisionKnowledgeElementInDatabase databaseEntry) {
+		String summary = element.getSummary();
+		if (summary != null) {
+			databaseEntry.setSummary(summary);
+		}
+		String description = element.getDescription();
+		if (description != null) {
+			databaseEntry.setSummary(description);
+		}
+		databaseEntry.setType(element.getType().replaceProAndConWithArgument().toString());
+		return databaseEntry;
+	}
+
 	public ActiveObjectPersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
 	}
@@ -201,7 +215,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		}
 		return outwardLinks;
 	}
-
+	
 	@Override
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
 			ApplicationUser user) {
@@ -228,20 +242,6 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		new WebhookConnector(projectKey).sendElementChanges(element);
 		element.setDocumentationLocation(DocumentationLocation.ACTIVEOBJECT);
 		return element;
-	}
-	
-	private static DecisionKnowledgeElementInDatabase setParameters(DecisionKnowledgeElement element,
-			DecisionKnowledgeElementInDatabase databaseEntry) {
-		String summary = element.getSummary();
-		if (summary != null) {
-			databaseEntry.setSummary(summary);
-		}
-		String description = element.getDescription();
-		if (description != null) {
-			databaseEntry.setSummary(description);
-		}
-		databaseEntry.setType(element.getType().replaceProAndConWithArgument().toString());
-		return databaseEntry;
 	}
 
 	@Override

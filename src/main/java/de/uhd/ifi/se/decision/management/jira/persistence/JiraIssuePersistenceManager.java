@@ -46,6 +46,94 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssuePersistenceManager.class);
 
+	public static boolean deleteIssueLink(Link link, ApplicationUser user) {
+		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
+		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
+		Collection<IssueLinkType> issueLinkTypes = issueLinkTypeManager.getIssueLinkTypes();
+		for (IssueLinkType linkType : issueLinkTypes) {
+			long typeId = linkType.getId();
+			IssueLink issueLink = issueLinkManager.getIssueLink(link.getDestinationElement().getId(),
+					link.getSourceElement().getId(), typeId);
+			if (issueLink != null) {
+				issueLinkManager.removeIssueLink(issueLink, user);
+				return true;
+			}
+		}
+
+		LOGGER.error("Deletion of link in database failed.");
+		return false;
+	}
+
+	public static List<IssueLink> getInwardIssueLinks(DecisionKnowledgeElement element) {
+		if (element == null) {
+			return new ArrayList<IssueLink>();
+		}
+		return ComponentAccessor.getIssueLinkManager().getInwardLinks(element.getId());
+	}
+
+	public static String getIssueTypeId(KnowledgeType type) {
+		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
+		Collection<IssueType> listOfIssueTypes = constantsManager.getAllIssueTypeObjects();
+		for (IssueType issueType : listOfIssueTypes) {
+			if (issueType.getName().equalsIgnoreCase(type.toString())) {
+				return issueType.getId();
+			}
+		}
+		return "";
+	}
+
+	public static long getLinkTypeId(String linkTypeName) {
+		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
+		Collection<IssueLinkType> issueLinkTypeCollection = issueLinkTypeManager.getIssueLinkTypesByName(linkTypeName);
+		Iterator<IssueLinkType> issueLinkTypeIterator = issueLinkTypeCollection.iterator();
+		long typeId = 0;
+		while (issueLinkTypeIterator.hasNext()) {
+			IssueLinkType issueLinkType = issueLinkTypeIterator.next();
+			typeId = issueLinkType.getId();
+		}
+		return typeId;
+	}
+
+	public static List<IssueLink> getOutwardIssueLinks(DecisionKnowledgeElement element) {
+		if (element == null) {
+			return new ArrayList<IssueLink>();
+		}
+		return ComponentAccessor.getIssueLinkManager().getOutwardLinks(element.getId());
+	}
+
+	public static long insertIssueLink(Link link, ApplicationUser user) {
+		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
+		long linkTypeId = getLinkTypeId(link.getType());
+		try {
+			issueLinkManager.createIssueLink(link.getSourceElement().getId(), link.getDestinationElement().getId(),
+					linkTypeId, (long) 0, user);
+			IssueLink issueLink = issueLinkManager.getIssueLink(link.getSourceElement().getId(),
+					link.getDestinationElement().getId(), linkTypeId);
+			return issueLink.getId();
+		} catch (CreateException | NullPointerException e) {
+			LOGGER.error("Insertion of link into database failed.");
+		}
+		return 0;
+	}
+
+	private static IssueInputParameters setParameters(DecisionKnowledgeElement element,
+			IssueInputParameters issueInputParameters) {
+		String summary = element.getSummary();
+		if (summary != null) {
+			if (summary.length() > 255) {
+				summary = summary.substring(0, 254);
+			}
+			issueInputParameters.setSummary(summary);
+		}
+		String description = element.getDescription();
+		if (description != null) {
+			issueInputParameters.setDescription(description);
+		}
+		String issueTypeId = getIssueTypeId(element.getType().replaceProAndConWithArgument());
+		issueInputParameters.setIssueTypeId(issueTypeId);
+		return issueInputParameters;
+	}
+
 	public JiraIssuePersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
 	}
@@ -71,24 +159,6 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 			ErrorCollection errorCollection = issueService.delete(user, result);
 			return !errorCollection.hasAnyErrors();
 		}
-		return false;
-	}
-
-	public static boolean deleteIssueLink(Link link, ApplicationUser user) {
-		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
-		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
-		Collection<IssueLinkType> issueLinkTypes = issueLinkTypeManager.getIssueLinkTypes();
-		for (IssueLinkType linkType : issueLinkTypes) {
-			long typeId = linkType.getId();
-			IssueLink issueLink = issueLinkManager.getIssueLink(link.getDestinationElement().getId(),
-					link.getSourceElement().getId(), typeId);
-			if (issueLink != null) {
-				issueLinkManager.removeIssueLink(issueLink, user);
-				return true;
-			}
-		}
-
-		LOGGER.error("Deletion of link in database failed.");
 		return false;
 	}
 
@@ -182,13 +252,6 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		return inwardLinks;
 	}
 
-	public static List<IssueLink> getInwardIssueLinks(DecisionKnowledgeElement element) {
-		if (element == null) {
-			return new ArrayList<IssueLink>();
-		}
-		return ComponentAccessor.getIssueLinkManager().getInwardLinks(element.getId());
-	}
-
 	@Override
 	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
 		List<IssueLink> outwardIssueLinks = getOutwardIssueLinks(element);
@@ -197,13 +260,6 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 			outwardLinks.add(new LinkImpl(outwardIssueLink));
 		}
 		return outwardLinks;
-	}
-
-	public static List<IssueLink> getOutwardIssueLinks(DecisionKnowledgeElement element) {
-		if (element == null) {
-			return new ArrayList<IssueLink>();
-		}
-		return ComponentAccessor.getIssueLinkManager().getOutwardLinks(element.getId());
 	}
 
 	@Override
@@ -231,62 +287,6 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		element.setId(issue.getId());
 		element.setKey(issue.getKey());
 		return element;
-	}
-
-	private static IssueInputParameters setParameters(DecisionKnowledgeElement element,
-			IssueInputParameters issueInputParameters) {
-		String summary = element.getSummary();
-		if (summary != null) {
-			if (summary.length() > 255) {
-				summary = summary.substring(0, 254);
-			}
-			issueInputParameters.setSummary(summary);
-		}
-		String description = element.getDescription();
-		if (description != null) {
-			issueInputParameters.setDescription(description);
-		}
-		String issueTypeId = getIssueTypeId(element.getType().replaceProAndConWithArgument());
-		issueInputParameters.setIssueTypeId(issueTypeId);
-		return issueInputParameters;
-	}
-
-	public static String getIssueTypeId(KnowledgeType type) {
-		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
-		Collection<IssueType> listOfIssueTypes = constantsManager.getAllIssueTypeObjects();
-		for (IssueType issueType : listOfIssueTypes) {
-			if (issueType.getName().equalsIgnoreCase(type.toString())) {
-				return issueType.getId();
-			}
-		}
-		return "";
-	}
-
-	public static long insertIssueLink(Link link, ApplicationUser user) {
-		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
-		long linkTypeId = getLinkTypeId(link.getType());
-		try {
-			issueLinkManager.createIssueLink(link.getSourceElement().getId(), link.getDestinationElement().getId(),
-					linkTypeId, (long) 0, user);
-			IssueLink issueLink = issueLinkManager.getIssueLink(link.getSourceElement().getId(),
-					link.getDestinationElement().getId(), linkTypeId);
-			return issueLink.getId();
-		} catch (CreateException | NullPointerException e) {
-			LOGGER.error("Insertion of link into database failed.");
-		}
-		return 0;
-	}
-
-	public static long getLinkTypeId(String linkTypeName) {
-		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
-		Collection<IssueLinkType> issueLinkTypeCollection = issueLinkTypeManager.getIssueLinkTypesByName(linkTypeName);
-		Iterator<IssueLinkType> issueLinkTypeIterator = issueLinkTypeCollection.iterator();
-		long typeId = 0;
-		while (issueLinkTypeIterator.hasNext()) {
-			IssueLinkType issueLinkType = issueLinkTypeIterator.next();
-			typeId = issueLinkType.getId();
-		}
-		return typeId;
 	}
 
 	@Override

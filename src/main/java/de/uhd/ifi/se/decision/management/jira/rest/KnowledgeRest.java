@@ -255,11 +255,13 @@ public class KnowledgeRest {
 		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
 		parentElement.setId(idOfParent);
 		parentElement.setDocumentationLocation(documentationLocationOfParent);
+		parentElement.setProject(projectKey);
 
 		DecisionKnowledgeElement childElement = new DecisionKnowledgeElementImpl();
 		childElement.setId(idOfChild);
 		childElement.setDocumentationLocation(documentationLocationOfChild);
 		childElement.setType(knowledgeTypeOfChild);
+		childElement.setProject(projectKey);
 
 		Link link = Link.instantiateDirectedLink(parentElement, childElement);
 

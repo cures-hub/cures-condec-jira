@@ -130,15 +130,18 @@ public class TestCreateLink extends TestKnowledgeRestSetUp {
 				.getEntity(), knowledgeRest.createLink("TEST", request, null).getEntity());
 	}
 
-	// TODO
+	//TODO
 	@Ignore
 	@Test
 	@NonTransactional
 	public void testProjectKeyFilledRequestFilledLinkIdZero() {
 		link.setType("Zero");
 		link.setSourceElement(3);
+		link.getSourceElement().setProject("TEST");
 		link.setDocumentationLocationOfDestinationElement("s");
 		link.setDocumentationLocationOfDestinationElement("s");
+		link.getSourceElement().setType("Decision");
+		link.getDestinationElement().setType("Decision");
 		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", CREATION_ERROR))
 				.build().getEntity(), knowledgeRest.createLink("create", request, link).getEntity());
 	}
