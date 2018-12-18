@@ -13,6 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 
 /**
  * Abstract class to create, edit, delete and retrieve decision knowledge
@@ -27,7 +28,9 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkType;
  * @see JiraIssueCommentPersistenceManager
  * @see PersistenceProvider
  */
-public abstract class AbstractPersistenceManager {
+public abstract class AbstractPersistenceManager {	
+
+	protected String projectKey;
 
 	/**
 	 * Delete an existing decision knowledge element in database.
@@ -69,19 +72,21 @@ public abstract class AbstractPersistenceManager {
 	 */
 	public static boolean deleteLink(Link link, ApplicationUser user) {
 		boolean isDeleted = false;
-		// TODO Rework strategy
-		// @issue What happens when using AOStrategy?
-		// @decision Add method "isDefaultLink"
-		if (GenericLinkManager.isIssueLink(link)) {
-			isDeleted = JiraIssuePersistenceManager.deleteIssueLink(link, user);
-			if (!isDeleted) {
-				isDeleted = JiraIssuePersistenceManager.deleteIssueLink(link.flip(), user);
+		String projectKey = link.getSourceElement().getProject().getProjectKey();
+		if (GenericLinkManager.isIssueLink(link) || GenericLinkManager.isDefaultLink(link)) {
+			if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
+				isDeleted = JiraIssuePersistenceManager.deleteIssueLink(link, user);
+				if (!isDeleted) {
+					isDeleted = JiraIssuePersistenceManager.deleteIssueLink(link.flip(), user);
+				}
+				return isDeleted;
 			}
-		} else {
-			isDeleted = GenericLinkManager.deleteLink(link);
-			if (!isDeleted) {
-				isDeleted = GenericLinkManager.deleteLink(link.flip());
-			}
+		}
+		DecisionKnowledgeElement sourceElement = link.getSourceElement();
+		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
+		isDeleted = GenericLinkManager.deleteLink(link);
+		if (!isDeleted) {
+			isDeleted = GenericLinkManager.deleteLink(link.flip());
 		}
 		return isDeleted;
 	}
@@ -302,16 +307,15 @@ public abstract class AbstractPersistenceManager {
 	 * @return internal database id, zero if insertion failed.
 	 */
 	public static long insertLink(Link link, ApplicationUser user) {
-		long linkId = 0;
-		// TODO Rework strategy
-		// @issue What happens when using AOStrategy?
-		// @decision Add method "isDefaultLink"
-		if (GenericLinkManager.isIssueLink(link)) {
-			linkId = JiraIssuePersistenceManager.insertIssueLink(link, user);
-		} else {
-			linkId = GenericLinkManager.insertLink(link, user);
+		String projectKey = link.getSourceElement().getProject().getProjectKey();
+		if (GenericLinkManager.isIssueLink(link) || GenericLinkManager.isDefaultLink(link)) {
+			if (ConfigPersistenceManager.isIssueStrategy(projectKey)) {
+				return JiraIssuePersistenceManager.insertIssueLink(link, user);
+			}
 		}
-		return linkId;
+		DecisionKnowledgeElement sourceElement = link.getSourceElement();
+		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
+		return GenericLinkManager.insertLink(link, user);
 	}
 
 	/**
@@ -421,8 +425,8 @@ public abstract class AbstractPersistenceManager {
 		return new ActiveObjectPersistenceManager(projectKey);
 	}
 
-	public static long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType, long idOfParentElement,
-			String documentationLocationOfParentElement, ApplicationUser user) {
+	public static long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType,
+			long idOfParentElement, String documentationLocationOfParentElement, ApplicationUser user) {
 
 		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerKnowledgeType);
 		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());

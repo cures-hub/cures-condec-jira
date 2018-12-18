@@ -46,8 +46,6 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssuePersistenceManager.class);
 
-	private String projectKey;
-
 	public JiraIssuePersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
 	}

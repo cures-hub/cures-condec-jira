@@ -34,8 +34,6 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 	private static final String PREFIX = DocumentationLocation.getIdentifier(DocumentationLocation.ACTIVEOBJECT);
 
-	private String projectKey;
-
 	public ActiveObjectPersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
 	}
@@ -59,14 +57,6 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 			isDeleted = DecisionKnowledgeElementInDatabase.deleteElement(databaseEntry);
 		}
 		return isDeleted;
-	}
-
-	// TODO Method currently unused, bring Webhook to a good place
-	public boolean deleteAOLink(Link link, ApplicationUser user) {
-		DecisionKnowledgeElement sourceElement = link.getSourceElement();
-		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
-		return GenericLinkManager.deleteLink(PREFIX + link.getSourceElement().getId(),
-				PREFIX + link.getDestinationElement().getId());
 	}
 
 	@Override
@@ -252,25 +242,6 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		}
 		databaseEntry.setType(element.getType().replaceProAndConWithArgument().toString());
 		return databaseEntry;
-	}
-
-	// TODO Method currently unused, bring Webhook to a good place
-	public long insertAOLink(Link link, ApplicationUser user) {
-		DecisionKnowledgeElement sourceElement = link.getSourceElement();
-		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
-
-		// TODO Replace by checking the documentation location of both elements in
-		// GenericLinkManager
-		Link newLink = new LinkImpl(PREFIX + link.getDestinationElement().getId(),
-				PREFIX + link.getSourceElement().getId());
-		newLink.setType(link.getType());
-
-		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction() {
-				return GenericLinkManager.insertLinkWithoutTransaction(newLink);
-			}
-		});
 	}
 
 	@Override

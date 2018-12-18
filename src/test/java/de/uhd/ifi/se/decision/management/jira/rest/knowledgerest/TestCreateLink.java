@@ -190,6 +190,7 @@ public class TestCreateLink extends TestKnowledgeRestSetUp {
 				.getEntity(), knowledgeRest.createLink("TEST", request, null).getEntity());
 	}
 
+	@Ignore
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilled() {

@@ -24,8 +24,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  */
 public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManager {
 
-	// private String projectKey;
-
 	public JiraIssueCommentPersistenceManager(String projectKey) {
 		// this.projectKey = projectKey;
 	}

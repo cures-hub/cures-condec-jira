@@ -13,7 +13,6 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
-import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 import net.java.ao.Query;
 
 public class GenericLinkManager {
@@ -57,7 +56,7 @@ public class GenericLinkManager {
 		return false;
 	}
 
-	public static long insertLink(Link link, ApplicationUser user) {		
+	public static long insertLink(Link link, ApplicationUser user) {
 		init();
 		return activeObjects.executeInTransaction(new TransactionCallback<Long>() {
 			@Override
@@ -124,6 +123,20 @@ public class GenericLinkManager {
 		}
 		return links;
 	}
+	
+	public static List<Link> getLinksForElement(DecisionKnowledgeElement element) {
+		String elementIdWithPrefix = element.getDocumentationLocationAsString() + element.getId();
+		init();
+		LinkInDatabase[] linksInDatabase = activeObjects.find(LinkInDatabase.class, Query.select().where(
+				"ID_OF_DESTINATION_ELEMENT = ? OR ID_OF_SOURCE_ELEMENT = ?", elementIdWithPrefix, elementIdWithPrefix));
+
+		List<Link> links = new ArrayList<Link>();
+		for (LinkInDatabase linkInDatabase : linksInDatabase) {
+			Link link = new LinkImpl(linkInDatabase);
+			links.add(link);
+		}
+		return links;
+	}
 
 	public static void clearInvalidLinks() {
 		init();
@@ -179,6 +192,11 @@ public class GenericLinkManager {
 	public static boolean isIssueLink(Link link) {
 		return link.getSourceElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUE
 				&& link.getDestinationElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUE;
+	}
+
+	public static boolean isDefaultLink(Link link) {
+		return link.getSourceElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN
+				&& link.getDestinationElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN;
 	}
 
 	public static long getId(String idWithPrefix) {

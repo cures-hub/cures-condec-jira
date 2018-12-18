@@ -206,6 +206,7 @@ public class KnowledgeRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Creation of link failed."))
 					.build();
 		}
+		link.getSourceElement().setProject(projectKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		long linkId = AbstractPersistenceManager.insertLink(link, user);
 
@@ -225,6 +226,7 @@ public class KnowledgeRest {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
 					.build();
 		}
+		link.getSourceElement().setProject(projectKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		boolean isDeleted = AbstractPersistenceManager.deleteLink(link, user);
 
