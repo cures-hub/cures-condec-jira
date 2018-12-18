@@ -76,8 +76,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		return false;
 	}
 
-	@Override
-	public boolean deleteLink(Link link, ApplicationUser user) {
+	public static boolean deleteIssueLink(Link link, ApplicationUser user) {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		Collection<IssueLinkType> issueLinkTypes = issueLinkTypeManager.getIssueLinkTypes();
@@ -215,7 +214,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
 
 		issueInputParameters = setParameters(element, issueInputParameters);
-		issueInputParameters.setReporterId(user.getName());		
+		issueInputParameters.setReporterId(user.getName());
 		Project project = ComponentAccessor.getProjectManager()
 				.getProjectByCurrentKey(element.getProject().getProjectKey());
 		issueInputParameters.setProjectId(project.getId());
@@ -265,8 +264,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		return "";
 	}
 
-	@Override
-	public long insertLink(Link link, ApplicationUser user) {
+	public static long insertIssueLink(Link link, ApplicationUser user) {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		long linkTypeId = getLinkTypeId(link.getType());
 		try {

@@ -22,6 +22,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
@@ -96,19 +97,21 @@ public class TestGraph extends TestSetUpWithIssues {
 			if (type != KnowledgeType.DECISION) {
 				if (type.equals(KnowledgeType.ARGUMENT)) {
 					DecisionKnowledgeElementImpl decisionKnowledgeElement = new DecisionKnowledgeElementImpl(i,
-							"TESTSummary", "TestDescription", type, project.getKey(), "TEST-" + i, DocumentationLocation.JIRAISSUE);
+							"TESTSummary", "TestDescription", type, project.getKey(), "TEST-" + i,
+							DocumentationLocation.JIRAISSUE);
 					issueStrategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
-					link.setSourceElement(decision.getId());
-					link.setDestinationElement(decisionKnowledgeElement.getId());
-					issueStrategy.insertLink(link, user);
+					link.setSourceElement(decision);
+					link.setDestinationElement(decisionKnowledgeElement);
+					AbstractPersistenceManager.insertLink(link, user);
 				} else {
 					DecisionKnowledgeElementImpl decisionKnowledgeElement = new DecisionKnowledgeElementImpl(i,
-							"TESTSummary", "TestDescription", type, project.getKey(), "TEST-" + i, DocumentationLocation.JIRAISSUE);
+							"TESTSummary", "TestDescription", type, project.getKey(), "TEST-" + i,
+							DocumentationLocation.JIRAISSUE);
 					issueStrategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
 					link.setType("attack");
-					link.setDestinationElement(decision.getId());
-					link.setSourceElement(decisionKnowledgeElement.getId());
-					issueStrategy.insertLink(link, user);
+					link.setDestinationElement(decision);
+					link.setSourceElement(decisionKnowledgeElement);
+					AbstractPersistenceManager.insertLink(link, user);
 				}
 			}
 			i++;

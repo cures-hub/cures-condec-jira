@@ -167,7 +167,7 @@ public class KnowledgeRest {
 					.build();
 		}
 
-		long linkId = persistenceManager.updateLink(element, formerElement.getType(), idOfParentElement,
+		long linkId = AbstractPersistenceManager.updateLink(element, formerElement.getType(), idOfParentElement,
 				documentationLocationOfParentElement, user);
 		if (linkId == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -207,9 +207,7 @@ public class KnowledgeRest {
 					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager
-				.getDefaultPersistenceStrategy(projectKey);
-		long linkId = persistenceManager.createLink(link, user);
+		long linkId = AbstractPersistenceManager.insertLink(link, user);
 
 		if (linkId == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -228,9 +226,7 @@ public class KnowledgeRest {
 					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager
-				.getDefaultPersistenceStrategy(projectKey);
-		boolean isDeleted = persistenceManager.destroyLink(link, user);
+		boolean isDeleted = AbstractPersistenceManager.deleteLink(link, user);
 
 		if (isDeleted) {
 			return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
@@ -265,10 +261,7 @@ public class KnowledgeRest {
 
 		Link link = Link.instantiateDirectedLink(parentElement, childElement);
 
-		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager
-				.getDefaultPersistenceStrategy(projectKey);
-
-		long linkId = persistenceManager.createLink(link, user);
+		long linkId = AbstractPersistenceManager.insertLink(link, user);
 
 		if (linkId == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)

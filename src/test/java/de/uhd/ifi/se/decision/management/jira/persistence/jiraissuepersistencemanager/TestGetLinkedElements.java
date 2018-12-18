@@ -17,6 +17,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 
 public class TestGetLinkedElements extends TestJiraIssuePersistenceManagerSetUp {
 
@@ -37,8 +38,8 @@ public class TestGetLinkedElements extends TestJiraIssuePersistenceManagerSetUp 
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
 
 		long i = 2;
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(5000, "TESTSummary",
-				"TestDescription", KnowledgeType.DECISION, project.getKey(), "TEST-" + 5000, DocumentationLocation.JIRAISSUE);
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(5000, "TESTSummary", "TestDescription",
+				KnowledgeType.DECISION, project.getKey(), "TEST-" + 5000, DocumentationLocation.JIRAISSUE);
 		element.setId(5000);
 
 		issueStrategy.insertDecisionKnowledgeElement(element, user);
@@ -47,11 +48,12 @@ public class TestGetLinkedElements extends TestJiraIssuePersistenceManagerSetUp 
 			link.setType("support");
 			if (type != KnowledgeType.DECISION) {
 				DecisionKnowledgeElementImpl decisionKnowledgeElement = new DecisionKnowledgeElementImpl(i,
-						"TESTSummary", "TestDescription", type, project.getKey(), "TEST-" + i, DocumentationLocation.JIRAISSUE);
+						"TESTSummary", "TestDescription", type, project.getKey(), "TEST-" + i,
+						DocumentationLocation.JIRAISSUE);
 				issueStrategy.insertDecisionKnowledgeElement(decisionKnowledgeElement, user);
-				link.setDestinationElement(element.getId());
-				link.setSourceElement(decisionKnowledgeElement.getId());
-				issueStrategy.insertLink(link, user);
+				link.setDestinationElement(element);
+				link.setSourceElement(decisionKnowledgeElement);
+				AbstractPersistenceManager.insertLink(link, user);
 			}
 			i++;
 		}

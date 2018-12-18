@@ -41,12 +41,6 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	}
 
 	@Override
-	public boolean deleteLink(Link link, ApplicationUser user) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id) {
 		return ActiveObjectsManager.getElementFromAO(id);
 	}
@@ -92,12 +86,6 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			ApplicationUser user) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public long insertLink(Link link, ApplicationUser user) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 	@Override

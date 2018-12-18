@@ -61,8 +61,8 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		return isDeleted;
 	}
 
-	@Override
-	public boolean deleteLink(Link link, ApplicationUser user) {
+	// TODO Method currently unused, bring Webhook to a good place
+	public boolean deleteAOLink(Link link, ApplicationUser user) {
 		DecisionKnowledgeElement sourceElement = link.getSourceElement();
 		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
 		return GenericLinkManager.deleteLink(PREFIX + link.getSourceElement().getId(),
@@ -184,7 +184,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 
 	@Override
 	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
-		List<Link> inwardLinks = new ArrayList<>();
+		List<Link> inwardLinks = new ArrayList<Link>();
 		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class,
 				Query.select().where("ID_OF_DESTINATION_ELEMENT = ?", PREFIX + element.getId()));
 		for (LinkInDatabase link : links) {
@@ -199,7 +199,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 
 	@Override
 	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
-		List<Link> outwardLinks = new ArrayList<>();
+		List<Link> outwardLinks = new ArrayList<Link>();
 		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class,
 				Query.select().where("ID_OF_SOURCE_ELEMENT = ?", PREFIX + element.getId()));
 		for (LinkInDatabase link : links) {
@@ -254,8 +254,8 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		return databaseEntry;
 	}
 
-	@Override
-	public long insertLink(Link link, ApplicationUser user) {
+	// TODO Method currently unused, bring Webhook to a good place
+	public long insertAOLink(Link link, ApplicationUser user) {
 		DecisionKnowledgeElement sourceElement = link.getSourceElement();
 		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
 

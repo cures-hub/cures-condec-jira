@@ -67,7 +67,24 @@ public abstract class AbstractPersistenceManager {
 	 *            authenticated JIRA application user
 	 * @return true if insertion was successful.
 	 */
-	public abstract boolean deleteLink(Link link, ApplicationUser user);
+	public static boolean deleteLink(Link link, ApplicationUser user) {
+		boolean isDeleted = false;
+		// TODO Rework strategy
+		// @issue What happens when using AOStrategy?
+		// @decision Add method "isDefaultLink"
+		if (GenericLinkManager.isIssueLink(link)) {
+			isDeleted = JiraIssuePersistenceManager.deleteIssueLink(link, user);
+			if (!isDeleted) {
+				isDeleted = JiraIssuePersistenceManager.deleteIssueLink(link.flip(), user);
+			}
+		} else {
+			isDeleted = GenericLinkManager.deleteLink(link);
+			if (!isDeleted) {
+				isDeleted = GenericLinkManager.deleteLink(link.flip());
+			}
+		}
+		return isDeleted;
+	}
 
 	/**
 	 * Get a decision knowledge element in database by its id.
@@ -284,7 +301,18 @@ public abstract class AbstractPersistenceManager {
 	 *            authenticated JIRA application user
 	 * @return internal database id, zero if insertion failed.
 	 */
-	public abstract long insertLink(Link link, ApplicationUser user);
+	public static long insertLink(Link link, ApplicationUser user) {
+		long linkId = 0;
+		// TODO Rework strategy
+		// @issue What happens when using AOStrategy?
+		// @decision Add method "isDefaultLink"
+		if (GenericLinkManager.isIssueLink(link)) {
+			linkId = JiraIssuePersistenceManager.insertIssueLink(link, user);
+		} else {
+			linkId = GenericLinkManager.insertLink(link, user);
+		}
+		return linkId;
+	}
 
 	/**
 	 * Update an existing decision knowledge element in database.
@@ -393,39 +421,7 @@ public abstract class AbstractPersistenceManager {
 		return new ActiveObjectPersistenceManager(projectKey);
 	}
 
-	public long createLink(Link link, ApplicationUser user) {
-		long linkId = 0;
-		// TODO Rework strategy
-		// @issue What happens when using AOStrategy?
-		// @decision Add method "isIntraPersistenceMethodLink"
-		if (GenericLinkManager.isIssueLink(link)) {
-			linkId = this.insertLink(link, user);
-		} else {
-			linkId = GenericLinkManager.insertLink(link, user);
-		}
-		return linkId;
-	}
-
-	public boolean destroyLink(Link link, ApplicationUser user) {
-		boolean isDeleted = false;
-		// TODO Rework strategy
-		// @issue What happens when using AOStrategy?
-		// @decision Add method "isIntraPersistenceMethodLink"
-		if (GenericLinkManager.isIssueLink(link)) {
-			isDeleted = this.deleteLink(link, user);
-			if (!isDeleted) {
-				isDeleted = this.deleteLink(link.flip(), user);
-			}
-		} else {
-			isDeleted = GenericLinkManager.deleteLink(link);
-			if (!isDeleted) {
-				isDeleted = GenericLinkManager.deleteLink(link.flip());
-			}
-		}
-		return isDeleted;
-	}
-
-	public long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType, long idOfParentElement,
+	public static long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType, long idOfParentElement,
 			String documentationLocationOfParentElement, ApplicationUser user) {
 
 		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerKnowledgeType);
@@ -440,11 +436,11 @@ public abstract class AbstractPersistenceManager {
 		parentElement.setDocumentationLocation(documentationLocationOfParentElement);
 
 		Link formerLink = Link.instantiateDirectedLink(parentElement, element, formerLinkType);
-		if (!this.destroyLink(formerLink, user)) {
+		if (!deleteLink(formerLink, user)) {
 			return 0;
 		}
 
 		Link link = Link.instantiateDirectedLink(parentElement, element, linkType);
-		return this.createLink(link, user);
+		return insertLink(link, user);
 	}
 }
