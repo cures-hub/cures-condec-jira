@@ -48,7 +48,7 @@ public enum DocumentationLocation {
 		case ACTIVEOBJECT:
 			return "a";
 		default:
-			return "";
+			return "a";
 		}
 	}
 	

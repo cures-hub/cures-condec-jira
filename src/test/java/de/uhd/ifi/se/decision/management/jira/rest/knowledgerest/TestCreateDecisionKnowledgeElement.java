@@ -84,9 +84,10 @@ public class TestCreateDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
 		request.setAttribute("NoFails", true);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 2, "i").getStatus());
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "i").getStatus());
 	}
 	
+	// TODO set parent
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledParentIdZeroParentDocumentationLocationJiraIssue() {
@@ -97,6 +98,7 @@ public class TestCreateDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
 				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "i").getStatus());
 	}
 	
+	// TODO set parent
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledParentIdFilledParentDocumentationLocationEmpty() {
@@ -104,9 +106,10 @@ public class TestCreateDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
 		request.setAttribute("NoFails", true);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 2, "").getStatus());
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "").getStatus());
 	}
 	
+	// TODO set parent
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledParentIdFilledParentDocumentationLocationNull() {
@@ -114,9 +117,10 @@ public class TestCreateDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
 		request.setAttribute("NoFails", true);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 2, null).getStatus());
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, null).getStatus());
 	}
 	
+	// TODO set parent
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledParentIdFilledParentDocumentationLocationJiraIssueComment() {
@@ -124,6 +128,6 @@ public class TestCreateDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
 		request.setAttribute("NoFails", true);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 2, "s").getStatus());
+				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "s").getStatus());
 	}
 }

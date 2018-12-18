@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -11,9 +14,6 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 /**
  * Class to store and receive configuration settings
  */
@@ -21,6 +21,50 @@ public class ConfigPersistenceManager {
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentGetter.getPluginSettingsFactory();
 	private static TransactionTemplate transactionTemplate = ComponentGetter.getTransactionTemplate();
 	private static String pluginStorageKey = ComponentGetter.getPluginStorageKey();
+
+	public static String getAccessToken() {
+		return getValue("accessToken");
+	}
+
+	public static String getConsumerKey() {
+		return getValue("consumerKey");
+	}
+
+	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
+		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
+		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
+		Collection<String> issueTypeNames = new ArrayList<>();
+		for (IssueType issueType : issueTypes) {
+			if (isWebhookTypeEnabled(projectKey, issueType.getName())) {
+				issueTypeNames.add(issueType.getName());
+			}
+		}
+		return issueTypeNames;
+	}
+
+	public static String getOauthJiraHome() {
+		return getValue("oauthJiraHome");
+	}
+
+	public static String getPrivateKey() {
+		return getValue("privateKey");
+	}
+
+	public static String getRequestToken() {
+		return getValue("requestToken");
+	}
+
+	public static String getSecretForOAuth() {
+		return getValue("gitAuthSecret");
+	}
+
+	public static String getValue(String parameter) {
+		return getValue(parameter, null, true);
+	}
+
+	public static String getValue(String projectKey, String parameter) {
+		return getValue(parameter, projectKey, false);
+	}
 
 	public static String getValue(String parameter, String projectKey, boolean isGlobalSetting) {
 		PluginSettings settings;
@@ -47,30 +91,22 @@ public class ConfigPersistenceManager {
 		return "";
 	}
 
-	public static String getValue(String parameter) {
-		return getValue(parameter, null, true);
+	public static String getWebhookSecret(String projectKey) {
+		return getValue(projectKey, "webhookSecret");
 	}
 
-	public static String getValue(String projectKey, String parameter) {
-		return getValue(parameter, projectKey, false);
-	}
-
-	public static void setValue(String projectKey, String parameter, String value) {
-		if (projectKey == null || value == null) {
-			return;
-		}
-		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
-		settings.put(pluginStorageKey + "." + parameter, value);
-	}
-
-	public static void setValue(String parameter, String value) {
-		PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-		settings.put(pluginStorageKey + "." + parameter, value);
+	public static String getWebhookUrl(String projectKey) {
+		return getValue(projectKey, "webhookUrl");
 	}
 
 	public static boolean isActivated(String projectKey) {
 		String isActivated = getValue(projectKey, "isActivated");
 		return "true".equals(isActivated);
+	}
+
+	public static boolean isIconParsing(String projectKey) {
+		String isIconParsing = getValue(projectKey, "isIconParsing");
+		return "true".equals(isIconParsing);
 	}
 
 	public static boolean isIssueStrategy(String projectKey) {
@@ -97,8 +133,37 @@ public class ConfigPersistenceManager {
 		return "true".equals(isKnowledgeTypeEnabled);
 	}
 
+	public static boolean isUseClassiferForIssueComments(String projectKey) {
+		return getValue(projectKey, "setClassiferForIssueComments").equals("true");
+	}
+
+	public static boolean isWebhookEnabled(String projectKey) {
+		String isWebhookEnabled = getValue(projectKey, "isWebhookEnabled");
+		return "true".equals(isWebhookEnabled);
+	}
+
+	public static boolean isWebhookTypeEnabled(String projectKey, String webhookType) {
+		if (webhookType == null || webhookType.equals("")) {
+			return false;
+		}
+		String isWebhookTypeEnabled = getValue(projectKey, "webhookType" + "." + webhookType);
+		return "true".equals(isWebhookTypeEnabled);
+	}
+
+	public static void setAccessToken(String accessToken) {
+		setValue("accessToken", accessToken);
+	}
+
 	public static void setActivated(String projectKey, boolean isActivated) {
 		setValue(projectKey, "isActivated", Boolean.toString(isActivated));
+	}
+
+	public static void setConsumerKey(String consumerKey) {
+		setValue("consumerKey", consumerKey);
+	}
+
+	public static void setIconParsing(String projectKey, boolean isIconParsing) {
+		setValue(projectKey, "isIconParsing", Boolean.toString(isIconParsing));
 	}
 
 	public static void setIssueStrategy(String projectKey, boolean isIssueStrategy) {
@@ -113,51 +178,50 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, "isKnowledgeExtractedFromIssues", Boolean.toString(isKnowledgeExtractedFromIssues));
 	}
 
-	public static void setUseClassiferForIssueComments(String projectKey, boolean isActivated) {
-		setValue(projectKey, "setClassiferForIssueComments", Boolean.toString(isActivated));
-	}
-
-	public static boolean isUseClassiferForIssueComments(String projectKey) {
-		return getValue(projectKey, "setClassiferForIssueComments").equals("true");
-	}
-
-	public static boolean isIconParsing(String projectKey) {
-		String isIconParsing = getValue(projectKey, "isIconParsing");
-		return "true".equals(isIconParsing);
-	}
-
-	public static void setIconParsing(String projectKey, boolean isIconParsing) {
-		setValue(projectKey, "isIconParsing", Boolean.toString(isIconParsing));
-	}
-
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
 			boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
 	}
 
-	public static void setWebhookUrl(String projectKey, String webhookUrl) {
-		setValue(projectKey, "webhookUrl", webhookUrl);
+	public static void setOauthJiraHome(String oauthJiraHome) {
+		setValue("oauthJiraHome", oauthJiraHome);
 	}
 
-	public static String getWebhookUrl(String projectKey) {
-		return getValue(projectKey, "webhookUrl");
+	public static void setPrivateKey(String privateKey) {
+		setValue("privateKey", privateKey);
 	}
 
-	public static void setWebhookSecret(String projectKey, String webhookSecret) {
-		setValue(projectKey, "webhookSecret", webhookSecret);
+	public static void setRequestToken(String requestToken) {
+		setValue("requestToken", requestToken);
 	}
 
-	public static String getWebhookSecret(String projectKey) {
-		return getValue(projectKey, "webhookSecret");
+	public static void setSecretForOAuth(String gitAuthSecret) {
+		setValue("gitAuthSecret", gitAuthSecret);
+	}
+
+	public static void setUseClassiferForIssueComments(String projectKey, boolean isActivated) {
+		setValue(projectKey, "setClassiferForIssueComments", Boolean.toString(isActivated));
+	}
+
+	public static void setValue(String parameter, String value) {
+		PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
+		settings.put(pluginStorageKey + "." + parameter, value);
+	}
+
+	public static void setValue(String projectKey, String parameter, String value) {
+		if (projectKey == null || value == null) {
+			return;
+		}
+		PluginSettings settings = pluginSettingsFactory.createSettingsForKey(projectKey);
+		settings.put(pluginStorageKey + "." + parameter, value);
 	}
 
 	public static void setWebhookEnabled(String projectKey, boolean isWebhookEnabled) {
 		setValue(projectKey, "isWebhookEnabled", Boolean.toString(isWebhookEnabled));
 	}
 
-	public static boolean isWebhookEnabled(String projectKey) {
-		String isWebhookEnabled = getValue(projectKey, "isWebhookEnabled");
-		return "true".equals(isWebhookEnabled);
+	public static void setWebhookSecret(String projectKey, String webhookSecret) {
+		setValue(projectKey, "webhookSecret", webhookSecret);
 	}
 
 	public static void setWebhookType(String projectKey, String webhookType, boolean isWebhookTypeEnabled) {
@@ -167,71 +231,7 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, "webhookType" + "." + webhookType, Boolean.toString(isWebhookTypeEnabled));
 	}
 
-	public static boolean isWebhookTypeEnabled(String projectKey, String webhookType) {
-		if (webhookType == null || webhookType.equals("")) {
-			return false;
-		}
-		String isWebhookTypeEnabled = getValue(projectKey, "webhookType" + "." + webhookType);
-		return "true".equals(isWebhookTypeEnabled);
-	}
-
-	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
-		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
-		Collection<IssueType> issueTypes = issueTypeManager.getIssueTypes();
-		Collection<String> issueTypeNames = new ArrayList<>();
-		for (IssueType issueType : issueTypes) {
-			if (isWebhookTypeEnabled(projectKey, issueType.getName())) {
-				issueTypeNames.add(issueType.getName());
-			}
-		}
-		return issueTypeNames;
-	}
-
-	public static void setRequestToken(String requestToken) {
-		setValue("requestToken", requestToken);
-	}
-
-	public static String getRequestToken() {
-		return getValue("requestToken");
-	}
-
-	public static void setOauthJiraHome(String oauthJiraHome) {
-		setValue("oauthJiraHome", oauthJiraHome);
-	}
-
-	public static String getOauthJiraHome() {
-		return getValue("oauthJiraHome");
-	}
-
-	public static void setPrivateKey(String privateKey) {
-		setValue("privateKey", privateKey);
-	}
-
-	public static String getPrivateKey() {
-		return getValue("privateKey");
-	}
-
-	public static String getConsumerKey() {
-		return getValue("consumerKey");
-	}
-
-	public static void setConsumerKey(String consumerKey) {
-		setValue("consumerKey", consumerKey);
-	}
-
-	public static void setSecretForOAuth(String gitAuthSecret) {
-		setValue("gitAuthSecret", gitAuthSecret);
-	}
-
-	public static String getSecretForOAuth() {
-		return getValue("gitAuthSecret");
-	}
-
-	public static void setAccessToken(String accessToken) {
-		setValue("accessToken", accessToken);
-	}
-
-	public static String getAccessToken() {
-		return getValue("accessToken");
+	public static void setWebhookUrl(String projectKey, String webhookUrl) {
+		setValue(projectKey, "webhookUrl", webhookUrl);
 	}
 }

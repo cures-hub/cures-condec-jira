@@ -14,6 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
@@ -39,26 +40,26 @@ public class TestDeleteLink extends ActiveObjectPersistenceManagerTestSetUp {
 		DecisionKnowledgeElement linkedDecisionWithDatabaseId = aoStrategy
 				.insertDecisionKnowledgeElement(linkedDecisision, user);
 		Link link = new LinkImpl(linkedDecisionWithDatabaseId, elementWithDatabaseId);
-		aoStrategy.insertLink(link, user);
+		AbstractPersistenceManager.insertLink(link, user);
 	}
 
 	@Test(expected = NullPointerException.class)
 	@NonTransactional
 	public void testLinkNullUserNull() {
-		aoStrategy.deleteLink(null, null);
+		AbstractPersistenceManager.deleteLink(null, null);
 	}
 
 	@Test(expected = NullPointerException.class)
 	@NonTransactional
 	public void testLinkNullUserFilled() {
-		aoStrategy.deleteLink(null, user);
+		AbstractPersistenceManager.deleteLink(null, user);
 	}
 
 	@Test
 	@NonTransactional
 	public void testLinkFilledUserNull() {
 		List<Link> links = aoStrategy.getLinks(linkedDecisision);
-		Boolean bool = aoStrategy.deleteLink(links.get(0), user);
+		Boolean bool = AbstractPersistenceManager.deleteLink(links.get(0), user);
 		assertTrue(bool);
 	}
 
@@ -66,14 +67,14 @@ public class TestDeleteLink extends ActiveObjectPersistenceManagerTestSetUp {
 	@NonTransactional
 	public void testLinkFilledUserFilledLinkNotInTable() {
 		Link emptyLink = new LinkImpl(linkedDecisision, linkedDecisision);
-		assertFalse(aoStrategy.deleteLink(emptyLink, user));
+		assertFalse(AbstractPersistenceManager.deleteLink(emptyLink, user));
 	}
 
 	@Test
 	@NonTransactional
 	public void testLinkFilledUserFilledLinkInTable() {
 		List<Link> links = aoStrategy.getLinks(linkedDecisision);
-		Boolean bool = aoStrategy.deleteLink(links.get(0), user);
+		Boolean bool = AbstractPersistenceManager.deleteLink(links.get(0), user);
 		assertTrue(bool);
 	}
 }
