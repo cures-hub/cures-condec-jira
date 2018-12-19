@@ -103,7 +103,7 @@ public class Node {
 			break;
 		case "attack":
 			if (decisionKnowledgeElement.getId() == link.getSourceElement().getId()) {
-				this.htmlClass = "contra";
+				this.htmlClass = "con";
 			}
 			break;
 		default:

@@ -26,9 +26,9 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
@@ -92,7 +92,15 @@ public class ActiveObjectsManager {
 
 	private static void checkIfSentenceHasAValidLink(long sentenceId, long issueId, LinkType linkType) {
 		if (!isSentenceLinked(sentenceId)) {
-			Link link = new LinkImpl("i" + issueId, "s" + sentenceId, linkType.toString());// linkType.toString());
+			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
+			parentElement.setId(issueId);
+			parentElement.setDocumentationLocation("i");
+
+			DecisionKnowledgeElement childElement = new DecisionKnowledgeElementImpl();
+			childElement.setId(sentenceId);
+			childElement.setDocumentationLocation("s");
+			
+			Link link = Link.instantiateDirectedLink(parentElement, childElement, linkType);
 			GenericLinkManager.insertLinkWithoutTransaction(link);
 		}
 	}
@@ -130,8 +138,7 @@ public class ActiveObjectsManager {
 
 	private static boolean checkLastElementAndCreateLink(DecisionKnowledgeElement lastElement, Sentence sentence) {
 		if (lastElement != null) {
-			Link link = new LinkImpl("s" + lastElement.getId(), "s" + sentence.getId(),
-					LinkType.getLinkTypeForKnowledgeType(sentence.getArgument().toString()).toString());
+			Link link = Link.instantiateDirectedLink(lastElement, sentence);
 			GenericLinkManager.insertLink(link, null);
 			return true;
 		}

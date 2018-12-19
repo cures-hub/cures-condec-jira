@@ -423,6 +423,6 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	public void testSmartLinkingForBoringNonSmartLink() {
 		Comment comment = getComment("{issue}first sentence{issue} {pro}second sentence{pro}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement("s" + comment.getSentences().get(1).getId()).get(0);
-		assertEquals("i30 to s2", sentenceLink.toString());
+		assertEquals("s2 to i30", sentenceLink.toString());
 	}
 }
