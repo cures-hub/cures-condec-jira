@@ -48,7 +48,7 @@ public abstract class AbstractPersistenceManager {
 	public static boolean deleteLink(Link link, ApplicationUser user) {
 		String projectKey = link.getSourceElement().getProject().getProjectKey();
 		if (link.containsUnknownDocumentationLocation()) {
-			link = setDefaultDocumentationLocation(link, projectKey);
+			setDefaultDocumentationLocation(link, projectKey);
 		}
 
 		boolean isDeleted = false;
@@ -69,7 +69,7 @@ public abstract class AbstractPersistenceManager {
 		return isDeleted;
 	}
 
-	private static Link setDefaultDocumentationLocation(Link link, String projectKey) {
+	private static void setDefaultDocumentationLocation(Link link, String projectKey) {
 		AbstractPersistenceManager defaultPersistenceManager = getDefaultPersistenceStrategy(projectKey);
 		String defaultDocumentationLocation = DocumentationLocation
 				.getIdentifier(defaultPersistenceManager.getDocumentationLocation());
@@ -79,7 +79,6 @@ public abstract class AbstractPersistenceManager {
 		if (link.getSourceElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN) {
 			link.setDocumentationLocationOfSourceElement(defaultDocumentationLocation);
 		}
-		return link;
 	}
 
 	/**
@@ -191,7 +190,7 @@ public abstract class AbstractPersistenceManager {
 	public static long insertLink(Link link, ApplicationUser user) {
 		String projectKey = link.getSourceElement().getProject().getProjectKey();
 		if (link.containsUnknownDocumentationLocation()) {
-			link = setDefaultDocumentationLocation(link, projectKey);
+			setDefaultDocumentationLocation(link, projectKey);
 		}
 
 		if (link.isIssueLink()) {
@@ -225,7 +224,7 @@ public abstract class AbstractPersistenceManager {
 	public static long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType,
 			long idOfParentElement, String documentationLocationOfParentElement, ApplicationUser user) {
 
-		if (LinkType.equalLinkTypes(formerKnowledgeType, element.getType()) || idOfParentElement == 0) {
+		if (LinkType.linkTypesAreEqual(formerKnowledgeType, element.getType()) || idOfParentElement == 0) {
 			return -1;
 		}
 
