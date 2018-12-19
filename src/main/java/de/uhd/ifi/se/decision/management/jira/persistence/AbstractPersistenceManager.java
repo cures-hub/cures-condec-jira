@@ -31,6 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 public abstract class AbstractPersistenceManager {
 
 	protected String projectKey;
+	protected DocumentationLocation documentationLocation;
 
 	/**
 	 * Delete an existing link in database.
@@ -45,15 +46,20 @@ public abstract class AbstractPersistenceManager {
 	 * @return true if insertion was successful.
 	 */
 	public static boolean deleteLink(Link link, ApplicationUser user) {
-		boolean isDeleted = false;
 		String projectKey = link.getSourceElement().getProject().getProjectKey();
-		if ((link.isIssueLink() || link.isDefaultLink()) && ConfigPersistenceManager.isIssueStrategy(projectKey)) {
-			isDeleted = JiraIssuePersistenceManager.deleteIssueLink(link, user);
+		if (link.containsUnknownDocumentationLocation()) {
+			setDefaultDocumentationLocation(link, projectKey);
+		}
+
+		boolean isDeleted = false;
+		if (link.isIssueLink()) {
+			isDeleted = JiraIssuePersistenceManager.deleteLink(link, user);
 			if (!isDeleted) {
-				isDeleted = JiraIssuePersistenceManager.deleteIssueLink(link.flip(), user);
+				isDeleted = JiraIssuePersistenceManager.deleteLink(link.flip(), user);
 			}
 			return isDeleted;
 		}
+
 		DecisionKnowledgeElement sourceElement = link.getSourceElement();
 		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
 		isDeleted = GenericLinkManager.deleteLink(link);
@@ -61,6 +67,18 @@ public abstract class AbstractPersistenceManager {
 			isDeleted = GenericLinkManager.deleteLink(link.flip());
 		}
 		return isDeleted;
+	}
+
+	private static void setDefaultDocumentationLocation(Link link, String projectKey) {
+		AbstractPersistenceManager defaultPersistenceManager = getDefaultPersistenceStrategy(projectKey);
+		String defaultDocumentationLocation = DocumentationLocation
+				.getIdentifier(defaultPersistenceManager.getDocumentationLocation());
+		if (link.getDestinationElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN) {
+			link.setDocumentationLocationOfDestinationElement(defaultDocumentationLocation);
+		}
+		if (link.getSourceElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN) {
+			link.setDocumentationLocationOfSourceElement(defaultDocumentationLocation);
+		}
 	}
 
 	/**
@@ -171,8 +189,12 @@ public abstract class AbstractPersistenceManager {
 	 */
 	public static long insertLink(Link link, ApplicationUser user) {
 		String projectKey = link.getSourceElement().getProject().getProjectKey();
-		if ((link.isIssueLink() || link.isDefaultLink()) && ConfigPersistenceManager.isIssueStrategy(projectKey)) {
-			return JiraIssuePersistenceManager.insertIssueLink(link, user);
+		if (link.containsUnknownDocumentationLocation()) {
+			setDefaultDocumentationLocation(link, projectKey);
+		}
+
+		if (link.isIssueLink()) {
+			return JiraIssuePersistenceManager.insertLink(link, user);
 		}
 		DecisionKnowledgeElement sourceElement = link.getSourceElement();
 		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
@@ -202,16 +224,17 @@ public abstract class AbstractPersistenceManager {
 	public static long updateLink(DecisionKnowledgeElement element, KnowledgeType formerKnowledgeType,
 			long idOfParentElement, String documentationLocationOfParentElement, ApplicationUser user) {
 
-		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerKnowledgeType);
-		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
-
-		if (formerLinkType.equals(linkType) || idOfParentElement == 0) {
+		if (LinkType.linkTypesAreEqual(formerKnowledgeType, element.getType()) || idOfParentElement == 0) {
 			return -1;
 		}
 
+		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerKnowledgeType);
+		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
+		
 		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
 		parentElement.setId(idOfParentElement);
 		parentElement.setDocumentationLocation(documentationLocationOfParentElement);
+		parentElement.setProject(element.getProject().getProjectKey());
 
 		Link formerLink = Link.instantiateDirectedLink(parentElement, element, formerLinkType);
 		if (!deleteLink(formerLink, user)) {
@@ -463,4 +486,12 @@ public abstract class AbstractPersistenceManager {
 	 * @return true if updating was successful.
 	 */
 	public abstract boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
+
+	public DocumentationLocation getDocumentationLocation() {
+		return documentationLocation;
+	}
+
+	public void setDocumentationLocation(DocumentationLocation documentationLocation) {
+		this.documentationLocation = documentationLocation;
+	}
 }

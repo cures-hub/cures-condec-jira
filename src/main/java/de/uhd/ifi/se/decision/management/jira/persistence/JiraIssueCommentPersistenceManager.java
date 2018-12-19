@@ -14,6 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 
 /**
@@ -26,6 +27,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 	public JiraIssueCommentPersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
+		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
 
 	@Override

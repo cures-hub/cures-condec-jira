@@ -88,10 +88,10 @@ public enum KnowledgeType {
 	 * Return the argument knowledge type instead of pro-argument or con-argument.
 	 */
 	public KnowledgeType replaceProAndConWithArgument() {
-		return getSimpleKnowledgeType(this);
+		return replaceProAndConWithArgument(this);
 	}
 
-	public static KnowledgeType getSimpleKnowledgeType(KnowledgeType type) {
+	public static KnowledgeType replaceProAndConWithArgument(KnowledgeType type) {
 		switch (type) {
 		case PRO:
 			return KnowledgeType.ARGUMENT;
@@ -102,9 +102,9 @@ public enum KnowledgeType {
 		}
 	}
 
-	public static KnowledgeType getSimpleKnowledgeType(String type) {
+	public static KnowledgeType replaceProAndConWithArgument(String type) {
 		KnowledgeType knowledgeType = getKnowledgeType(type);
-		return getSimpleKnowledgeType(knowledgeType);
+		return replaceProAndConWithArgument(knowledgeType);
 	}
 
 	/**
