@@ -33,7 +33,7 @@
 		isContextMenuOpen = true;
 		console.log("contextmenu opened");
 
-		posY = getCorrectPosY(posY);
+		//posY = getCorrectPosY(posY);
 
 		$("#condec-context-menu").css({
 			left : posX,
@@ -82,7 +82,7 @@
 		isContextMenuOpen = true;
 		console.log("contextmenu opened");
 
-		posY = getCorrectPosY(posY);
+		//posY = getCorrectPosY(posY);
 
 		$("#condec-context-menu-sentence").css({
 			left : posX,

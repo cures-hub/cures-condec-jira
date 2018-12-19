@@ -31,8 +31,8 @@
 		console.log("conDecTreeViewer addContextMenuToTreeViewer");
 		jQueryConDec("#jstree").on("contextmenu.jstree", function(event) {
 			event.preventDefault();
-			var left = event.pageX;
-			var top = event.pageY;
+			var left = conDecAPI.getLeftPosition(event, "jstree");
+			var top = conDecAPI.getTopPosition(event, "jstree");
 			
 			var nodeId = event.target.parentNode.id;
 			var node = getTreeViewerNodeById(nodeId);

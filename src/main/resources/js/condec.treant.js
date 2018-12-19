@@ -129,15 +129,10 @@
 		for (i = 0; i < treantNodes.length; i++) {
 			treantNodes[i].addEventListener('contextmenu', function(event) {
 				event.preventDefault();
-				// TODO Find correct position in issue module
-                /*
-				var left = event.pageX;
-				var top = event.pageY;
-                */
-                var left =  getLeftPos(event.path);
-                var top =  getTopPos(event.path);
 
-				console.log(this.id);
+				var left = conDecAPI.getLeftPosition(event, "treant-container");
+				var top = conDecAPI.getTopPosition(event, "treant-container");
+				
 				if (this.getElementsByClassName("node-desc")[0].innerHTML.includes(":")) {
 					conDecContextMenu.createContextMenuForSentences(left, top, this.id);
 				} else {
@@ -146,32 +141,6 @@
 			});
 		}
 	}
-	
-	function getLeftPos(path) {
-	    var leftSum = 0;
-        for (var i = 0; i<path.length; i++){
-            if(path[i].offsetLeft !== undefined){
-                leftSum = leftSum + path[i].offsetLeft;
-            }
-            if(path[i].id == "treant-container"){
-                break;
-            }
-        }
-        return leftSum;
-    }
-
-    function getTopPos(path) {
-       var topSum = 0;
-        for (var i = 0; i<path.length; i++){
-            if(path[i].offsetTop !== undefined) {
-                topSum = topSum + path[i].offsetTop;
-            }
-            if(path[i].id == "treant-container"){
-                break;
-            }
-        }
-       return topSum
-    }
 
 	// differentiate between issue elements and sentence elements
 	// If you have to add commits here: add a commit class to your commit
