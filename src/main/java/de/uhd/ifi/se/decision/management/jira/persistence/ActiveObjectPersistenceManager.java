@@ -50,6 +50,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 
 	public ActiveObjectPersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
+		this.documentationLocation = DocumentationLocation.ACTIVEOBJECT;
 	}
 
 	@Override

@@ -32,6 +32,7 @@ import com.atlassian.jira.util.ErrorCollection;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
@@ -44,9 +45,14 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
  */
 @JsonAutoDetect
 public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
-	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssuePersistenceManager.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssuePersistenceManager.class);	
 
-	public static boolean deleteIssueLink(Link link, ApplicationUser user) {
+	public JiraIssuePersistenceManager(String projectKey) {
+		this.projectKey = projectKey;
+		this.documentationLocation = DocumentationLocation.JIRAISSUE;
+	}
+
+	public static boolean deleteLink(Link link, ApplicationUser user) {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		Collection<IssueLinkType> issueLinkTypes = issueLinkTypeManager.getIssueLinkTypes();
@@ -101,7 +107,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		return ComponentAccessor.getIssueLinkManager().getOutwardLinks(element.getId());
 	}
 
-	public static long insertIssueLink(Link link, ApplicationUser user) {
+	public static long insertLink(Link link, ApplicationUser user) {
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		long linkTypeId = getLinkTypeId(link.getType());
 		try {
@@ -132,10 +138,6 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		String issueTypeId = getIssueTypeId(element.getType().replaceProAndConWithArgument());
 		issueInputParameters.setIssueTypeId(issueTypeId);
 		return issueInputParameters;
-	}
-
-	public JiraIssuePersistenceManager(String projectKey) {
-		this.projectKey = projectKey;
 	}
 
 	@Override

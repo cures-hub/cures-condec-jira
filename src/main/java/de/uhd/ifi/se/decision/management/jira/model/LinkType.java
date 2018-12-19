@@ -66,6 +66,13 @@ public enum LinkType {
 		KnowledgeType type = KnowledgeType.getKnowledgeType(knowledgeTypeOfChildElement);
 		return getLinkTypeForKnowledgeType(type);
 	}
+	
+	public static boolean equalLinkTypes(KnowledgeType formerType, KnowledgeType type) {
+		LinkType formerLinkType = getLinkTypeForKnowledgeType(formerType);
+		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(type);
+		boolean bothAreArguments = formerType.replaceProAndConWithArgument() == type.replaceProAndConWithArgument();
+		return bothAreArguments && formerLinkType == linkType;
+	}
 
 	/**
 	 * Convert all link types to a list of String.

@@ -273,9 +273,9 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
-	public boolean isDefaultLink() {
-		return this.getSourceElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN
-				&& this.getDestinationElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN;
+	public boolean containsUnknownDocumentationLocation() {
+		return this.getDestinationElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN
+				|| this.getSourceElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN;
 	}
 
 	@Override
