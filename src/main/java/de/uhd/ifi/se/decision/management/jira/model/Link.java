@@ -232,15 +232,15 @@ public interface Link {
 	public boolean isIssueLink();
 
 	/**
-	 * Determine if both source and destination element of the link have an unknown
+	 * Determine if the source and/or destination element of the link have an unknown
 	 * documentation location.
 	 *
 	 * @see DecisionKnowledgeElement
 	 * 
-	 * @return true if both source and destination element of the link have an
+	 * @return true if the source and/or the destination element of the link have an
 	 *         unknown documentation location.
 	 */
-	public boolean isDefaultLink();
+	public boolean containsUnknownDocumentationLocation();
 
 	String getIdOfSourceElementWithPrefix();
 
