@@ -129,14 +129,12 @@
 		for (i = 0; i < treantNodes.length; i++) {
 			treantNodes[i].addEventListener('contextmenu', function(event) {
 				event.preventDefault();
-
-				var left = conDecAPI.getLeftPosition(event, "treant-container");
-				var top = conDecAPI.getTopPosition(event, "treant-container");
+//                console.log(event);
 				
 				if (this.getElementsByClassName("node-desc")[0].innerHTML.includes(":")) {
-					conDecContextMenu.createContextMenuForSentences(left, top, this.id);
+					conDecContextMenu.createContextMenuForSentences(event.target, this.id, "treant-container");
 				} else {
-					conDecContextMenu.createContextMenu(left, top, this.id);
+					conDecContextMenu.createContextMenu(event.target, this.id, "treant-container");
 				}
 			});
 		}

@@ -201,7 +201,8 @@
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.createLinkBetweenExistingElements = function createLinkBetweenExistingElements(
-			knowledgeTypeOfChild, idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, callback) {
+			knowledgeTypeOfChild, idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild,
+			callback) {
 		postJSON(AJS.contextPath()
 				+ "/rest/decisions/latest/decisions/createLinkBetweenExistingElements.json?projectKey=" + projectKey
 				+ "&knowledgeTypeOfChild=" + knowledgeTypeOfChild + "&idOfParent=" + idOfParent
@@ -701,67 +702,6 @@
 			global.open(baseUrl + "/browse/" + key, '_self');
 		});
 	};
-	
-	ConDecAPI.prototype.getLeftPosition = function getLeftPosition(event, container) {
-		var path = eventPath(event);
-		if (path === undefined || path === null) {
-			return event.pageX;
-		}
-		var leftSum = 0;
-		for (var i = 0; i < path.length; i++) {
-			if (path[i].offsetLeft !== undefined) {
-				leftSum = leftSum + path[i].offsetLeft;
-			}
-			if (path[i].id == container) {
-				break;
-			}
-		}
-		return leftSum;
-	};
-	
-	ConDecAPI.prototype.getTopPosition = function getTopPosition(event, container) {
-		var path = path = eventPath(event);
-		if (path === undefined || path === null) {
-			return event.pageY;
-		}
-		var topSum = 0;
-		for (var i = 0; i < path.length; i++) {
-			if (path[i].offsetTop !== undefined) {
-				topSum = topSum + path[i].offsetTop;
-			}
-			if (path[i].id == container) {
-				break;
-			}
-		}
-		return topSum
-	};
-	
-	function eventPath(event) {
-	    var path = (event.composedPath && event.composedPath()) || event.path,
-	        target = event.target;
-
-	    if (path != null) {
-	        // Safari doesn't include window, but it should.
-	        return (path.indexOf(window) < 0) ? path.concat(window) : path;
-	    }
-
-	    if (target === window) {
-	        return [window];
-	    }
-
-	    function getParents(node, memo) {
-	        memo = memo || [];
-	        var parentNode = node.parentNode;
-
-	        if (!parentNode) {
-	            return memo;
-	        }
-	        else {
-	            return getParents(parentNode, memo.concat(parentNode));
-	        }
-	    }
-	    return [target].concat(getParents(target), window);
-	}
 
 	// export ConDecAPI
 	global.conDecAPI = new ConDecAPI();

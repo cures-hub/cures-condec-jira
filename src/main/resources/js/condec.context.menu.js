@@ -29,11 +29,14 @@
 		isContextMenuOpen = false;
 	}
 
-	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(posX, posY, id) {
+	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(htmlElement, id, container) {
 		isContextMenuOpen = true;
 		console.log("contextmenu opened");
+//		console.log(htmlElement)
 
-		//posY = getCorrectPosY(posY);
+		var position = getPosition(htmlElement, container);
+		var posX = position["x"];
+		var posY = position["y"];
 
 		$("#condec-context-menu").css({
 			left : posX,
@@ -78,11 +81,15 @@
 		};
 	};
 
-	ConDecContextMenu.prototype.createContextMenuForSentences = function createContextMenuForSentences(posX, posY, id) {
+	ConDecContextMenu.prototype.createContextMenuForSentences = function createContextMenuForSentences(htmlElement, id,
+			container) {
 		isContextMenuOpen = true;
 		console.log("contextmenu opened");
+//		console.log(htmlElement)
 
-		//posY = getCorrectPosY(posY);
+		var position = getPosition(htmlElement, container);
+		var posX = position["x"];
+		var posY = position["y"];
 
 		$("#condec-context-menu-sentence").css({
 			left : posX,
@@ -157,17 +164,35 @@
 		};
 	};
 
-	function getCorrectPosY(posY) {
-		var view = null;
-		if (document.getElementsByClassName("aui-item detail-panel")[0] !== undefined) {// filtered
-			view = document.getElementsByClassName("aui-item detail-panel")[0];
-		} else if (document.getElementsByClassName("issue-view")[0] !== undefined) {// unfiltered
-			view = document.getElementsByClassName("issue-view")[0];
+	getPosition = function getPosition(el, container) {
+		var xPosition = 0;
+		var yPosition = 0;
+
+		while (el) {
+			if (el.tagName == "BODY") {
+				// deal with browser quirks with body/window/document and page
+				// scroll
+				var xScrollPos = el.scrollLeft || document.documentElement.scrollLeft;
+				var yScrollPos = el.scrollTop || document.documentElement.scrollTop;
+
+				xPosition += (el.offsetLeft - xScrollPos + el.clientLeft);
+				yPosition += (el.offsetTop - yScrollPos + el.clientTop);
+			} else {
+				xPosition += (el.offsetLeft - el.scrollLeft + el.clientLeft);
+				yPosition += (el.offsetTop - el.scrollTop + el.clientTop);
+			}
+
+			if (container !== null && (el.id == container || el.className == container)) {
+				console.log(container);
+				break;
+			}
+
+			el = el.offsetParent;
 		}
-		if (view !== null) {
-			posY = posY + view.scrollTop;
-		}
-		return posY;
+		return {
+			x : xPosition,
+			y : yPosition
+		};
 	}
 
 	// export ConDecContextMenu

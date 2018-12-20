@@ -94,8 +94,8 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 			// LOGGER.debug("No sentence object found for: " + body);
 			return "";
 		}
-		return "oncontextmenu=\"conDecContextMenu.createContextMenuForSentences(this.offsetLeft, this.offsetTop, " + id
-				+ "); return false;\"";
+		return "oncontextmenu=\"conDecContextMenu.createContextMenuForSentences(this, " + id
+				+ ", 'issue-container'); return false;\"";
 	}
 
 	protected String putTypeInBrackets(String type) {

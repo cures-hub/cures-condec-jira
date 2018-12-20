@@ -31,17 +31,16 @@
 		console.log("conDecTreeViewer addContextMenuToTreeViewer");
 		jQueryConDec("#jstree").on("contextmenu.jstree", function(event) {
 			event.preventDefault();
-			var left = conDecAPI.getLeftPosition(event, "jstree");
-			var top = conDecAPI.getTopPosition(event, "jstree");
+//			console.log(event);
 			
 			var nodeId = event.target.parentNode.id;
 			var node = getTreeViewerNodeById(nodeId);
 			var id = node.data.id;
 			
 			if (event.target.parentNode.classList.contains("sentence")) {
-				conDecContextMenu.createContextMenuForSentences(left, top, id);
+				conDecContextMenu.createContextMenuForSentences(event.target, id, "issue-container");
 			} else {
-				conDecContextMenu.createContextMenu(left, top, id);
+				conDecContextMenu.createContextMenu(event.target, id, "issue-container");
 			}
 		});
 	}
