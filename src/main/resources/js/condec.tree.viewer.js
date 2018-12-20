@@ -24,10 +24,10 @@
 			});
 		});
 		this.addDragAndDropSupportForTreeViewer();
-		this.addContextMenuToTreeViewer();
+		this.addContextMenuToTreeViewer("jstree");
 	};
 
-	ConDecTreeViewer.prototype.addContextMenuToTreeViewer = function addContextMenuToTreeViewer() {
+	ConDecTreeViewer.prototype.addContextMenuToTreeViewer = function addContextMenuToTreeViewer(container) {
 		console.log("conDecTreeViewer addContextMenuToTreeViewer");
 		jQueryConDec("#jstree").on("contextmenu.jstree", function(event) {
 			event.preventDefault();
@@ -38,9 +38,9 @@
 			var id = node.data.id;
 			
 			if (event.target.parentNode.classList.contains("sentence")) {
-				conDecContextMenu.createContextMenuForSentences(event.target, id, "issue-container");
+				conDecContextMenu.createContextMenuForSentences(event.target, id, container);
 			} else {
-				conDecContextMenu.createContextMenu(event.target, id, "issue-container");
+				conDecContextMenu.createContextMenu(event.target, id, container);
 			}
 		});
 	}
