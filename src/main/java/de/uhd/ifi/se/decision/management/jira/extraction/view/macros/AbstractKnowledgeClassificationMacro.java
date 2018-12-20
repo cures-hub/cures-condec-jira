@@ -95,7 +95,7 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 			return "";
 		}
 		return "oncontextmenu=\"conDecContextMenu.createContextMenuForSentences(this, " + id
-				+ ", 'issue-container'); return false;\"";
+				+ ", 'issue-container', null); return false;\"";
 	}
 
 	protected String putTypeInBrackets(String type) {

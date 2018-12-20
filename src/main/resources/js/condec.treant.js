@@ -129,12 +129,11 @@
 		for (i = 0; i < treantNodes.length; i++) {
 			treantNodes[i].addEventListener('contextmenu', function(event) {
 				event.preventDefault();
-//                console.log(event);
 				
 				if (this.getElementsByClassName("node-desc")[0].innerHTML.includes(":")) {
-					conDecContextMenu.createContextMenuForSentences(event.target, this.id, "treant-container");
+					conDecContextMenu.createContextMenuForSentences(event.target, this.id, "treant-container", event);
 				} else {
-					conDecContextMenu.createContextMenu(event.target, this.id, "treant-container");
+					conDecContextMenu.createContextMenu(event.target, this.id, "treant-container", event);
 				}
 			});
 		}

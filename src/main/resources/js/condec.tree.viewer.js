@@ -24,23 +24,22 @@
 			});
 		});
 		this.addDragAndDropSupportForTreeViewer();
-		this.addContextMenuToTreeViewer("jstree");
+		this.addContextMenuToTreeViewer(null);
 	};
 
 	ConDecTreeViewer.prototype.addContextMenuToTreeViewer = function addContextMenuToTreeViewer(container) {
 		console.log("conDecTreeViewer addContextMenuToTreeViewer");
 		jQueryConDec("#jstree").on("contextmenu.jstree", function(event) {
 			event.preventDefault();
-//			console.log(event);
 			
 			var nodeId = event.target.parentNode.id;
 			var node = getTreeViewerNodeById(nodeId);
 			var id = node.data.id;
 			
 			if (event.target.parentNode.classList.contains("sentence")) {
-				conDecContextMenu.createContextMenuForSentences(event.target, id, container);
+				conDecContextMenu.createContextMenuForSentences(event.target, id, container, event);
 			} else {
-				conDecContextMenu.createContextMenu(event.target, id, container);
+				conDecContextMenu.createContextMenu(event.target, id, container, event);
 			}
 		});
 	}

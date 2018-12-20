@@ -29,12 +29,12 @@
 		isContextMenuOpen = false;
 	}
 
-	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(htmlElement, id, container) {
+	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(htmlElement, id, container, event) {
 		isContextMenuOpen = true;
 		console.log("contextmenu opened");
-//		console.log(htmlElement)
+		// console.log(htmlElement)
 
-		var position = getPosition(htmlElement, container);
+		var position = getPosition(htmlElement, container, event);
 		var posX = position["x"];
 		var posY = position["y"];
 
@@ -82,12 +82,12 @@
 	};
 
 	ConDecContextMenu.prototype.createContextMenuForSentences = function createContextMenuForSentences(htmlElement, id,
-			container) {
+			container, event) {
 		isContextMenuOpen = true;
 		console.log("contextmenu opened");
-//		console.log(htmlElement)
+		// console.log(htmlElement)
 
-		var position = getPosition(htmlElement, container);
+		var position = getPosition(htmlElement, container, event);
 		var posX = position["x"];
 		var posY = position["y"];
 
@@ -164,7 +164,14 @@
 		};
 	};
 
-	getPosition = function getPosition(el, container) {
+	getPosition = function getPosition(el, container, event) {
+		console.log(el);
+		if (container === null && event !== null) {
+			return {
+				x : event.pageX,
+				y : event.pageY
+			};
+		}
 		var xPosition = 0;
 		var yPosition = 0;
 
