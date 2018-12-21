@@ -9,6 +9,7 @@
  Is required by
  * conDecTreant
  * conDecTreeViewer
+ * AbstractKnowledgeClassificationMacro in Java side
  */
 (function(global) {
 
@@ -28,7 +29,8 @@
 		 * what fires it Probably more and more onclick event handlers ges added
 		 * instead of just one
 		 * 
-		 * @decision On click and on blur event handlers are only set in the constructor (see above).
+		 * @decision On click and on blur event handlers are only set in the
+		 * constructor (see above).
 		 */
 		if (isContextMenuOpen) {
 			console.log("contextmenu closed");
@@ -46,7 +48,7 @@
 
 		if (!contextMenuNode) {
 			contextMenuNode = document.getElementById("condec-context-menu");
-			setContextMenuItemsEventHandlers();
+			setContextMenuItemsEventHandlers(id);
 		}
 		if (!contextMenuNode) {
 			console.error("contextmenu not found");
@@ -67,7 +69,7 @@
 		contextMenuNode.setAttribute('aria-hidden', 'false');
 	};
 
-	function setContextMenuItemsEventHandlers() {
+	function setContextMenuItemsEventHandlers(id) {
 		document.getElementById("condec-context-menu-create-item").onclick = function() {
 			conDecDialog.showCreateDialog(id, "i");
 		};
@@ -112,7 +114,7 @@
 
 		if (!contextMenuForSentencesNode) {
 			contextMenuForSentencesNode = document.getElementById("condec-context-menu-sentence");
-			setContextMenuItemsSentencesEventHandlers();
+			setContextMenuItemsSentencesEventHandlers(id);
 		}
 		if (!contextMenuForSentencesNode) {
 			console.error("contextmenu for sentences not found");
@@ -132,7 +134,7 @@
 		contextMenuForSentencesNode.setAttribute('aria-hidden', 'false');
 	};
 
-	function setContextMenuItemsSentencesEventHandlers() {
+	function setContextMenuItemsSentencesEventHandlers(id) {
 		document.getElementById("condec-context-menu-sentence-create-item").onclick = function() {
 			conDecDialog.showCreateDialog(id, "s");
 		};

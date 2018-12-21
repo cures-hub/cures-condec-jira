@@ -129,12 +129,24 @@
 		for (i = 0; i < treantNodes.length; i++) {
 			treantNodes[i].addEventListener('contextmenu', function(event) {
 				event.preventDefault();
-				
+
 				if (this.getElementsByClassName("node-desc")[0].innerHTML.includes(":")) {
 					conDecContextMenu.createContextMenuForSentences(event.target, this.id, "treant-container", event);
 				} else {
 					conDecContextMenu.createContextMenu(event.target, this.id, "treant-container", event);
 				}
+			});
+		}
+		addContextMenuToCommentTabPanel();
+	}
+	
+	addContextMenuToCommentTabPanel = function addContextMenuToCommentTabPanel() {
+		var comment = document.getElementById("commentnode-118");
+		console.log(comment);
+		if (comment) {
+			comment.addEventListener('contextmenu', function(event) {
+				event.preventDefault();
+				conDecContextMenu.createContextMenuForSentences(event.target, 118, "issue-container", event);
 			});
 		}
 	}
