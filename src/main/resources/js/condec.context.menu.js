@@ -13,6 +13,8 @@
 (function(global) {
 
 	var isContextMenuOpen = null;
+	var contextMenuNode = null;
+	var contextMenuForSentencesNode = null;
 
 	var ConDecContextMenu = function ConDecContextMenu() {
 		isContextMenuOpen = false;
@@ -21,30 +23,51 @@
 	};
 
 	function hideContextMenu() {
+		/*
+		 * @issue This event gets launched many times at the same time! Check
+		 * what fires it Probably more and more onclick event handlers ges added
+		 * instead of just one
+		 * 
+		 * @decision On click and on blur event handlers are only set in the constructor (see above).
+		 */
 		if (isContextMenuOpen) {
 			console.log("contextmenu closed");
-			document.querySelector("#condec-context-menu").setAttribute('aria-hidden', 'true');
-			document.querySelector("#condec-context-menu-sentence").setAttribute('aria-hidden', 'true');
+			if (contextMenuNode)
+				contextMenuNode.setAttribute('aria-hidden', 'true');
+			if (contextMenuForSentencesNode)
+				contextMenuForSentencesNode.setAttribute('aria-hidden', 'true');
 		}
 		isContextMenuOpen = false;
 	}
 
 	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(htmlElement, id, container, event) {
-		isContextMenuOpen = true;
 		console.log("contextmenu opened");
+		isContextMenuOpen = true;
+
+		if (!contextMenuNode) {
+			contextMenuNode = document.getElementById("condec-context-menu");
+			setContextMenuItemsEventHandlers();
+		}
+		if (!contextMenuNode) {
+			console.error("contextmenu not found");
+			return;
+		}
 		// console.log(htmlElement)
 
 		var position = getPosition(htmlElement, container, event);
 		var posX = position["x"];
 		var posY = position["y"];
 
-		$("#condec-context-menu").css({
+		$(contextMenuNode).css({
 			left : posX,
 			top : posY
 		});
-		document.getElementById("condec-context-menu").style.zIndex = 9998;
-		document.querySelector("#condec-context-menu").setAttribute('aria-hidden', 'false');
 
+		contextMenuNode.style.zIndex = 9998; // why this number?
+		contextMenuNode.setAttribute('aria-hidden', 'false');
+	};
+
+	function setContextMenuItemsEventHandlers() {
 		document.getElementById("condec-context-menu-create-item").onclick = function() {
 			conDecDialog.showCreateDialog(id, "i");
 		};
@@ -79,7 +102,7 @@
 		document.getElementById("condec-context-menu-open-jira-issue-item").onclick = function() {
 			conDecAPI.openJiraIssue(id);
 		};
-	};
+	}
 
 	ConDecContextMenu.prototype.createContextMenuForSentences = function createContextMenuForSentences(htmlElement, id,
 			container, event) {
@@ -87,18 +110,29 @@
 		console.log("contextmenu opened");
 		// console.log(htmlElement)
 
+		if (!contextMenuForSentencesNode) {
+			contextMenuForSentencesNode = document.getElementById("condec-context-menu-sentence");
+			setContextMenuItemsSentencesEventHandlers();
+		}
+		if (!contextMenuForSentencesNode) {
+			console.error("contextmenu for sentences not found");
+			return;
+		}
+
 		var position = getPosition(htmlElement, container, event);
 		var posX = position["x"];
 		var posY = position["y"];
 
-		$("#condec-context-menu-sentence").css({
+		$(contextMenuForSentencesNode).css({
 			left : posX,
 			top : posY
 		});
 
-		document.getElementById("condec-context-menu-sentence").style.zIndex = 9998;
-		document.querySelector("#condec-context-menu-sentence").setAttribute('aria-hidden', 'false');
+		contextMenuForSentencesNode.style.zIndex = 9998;
+		contextMenuForSentencesNode.setAttribute('aria-hidden', 'false');
+	};
 
+	function setContextMenuItemsSentencesEventHandlers() {
 		document.getElementById("condec-context-menu-sentence-create-item").onclick = function() {
 			conDecDialog.showCreateDialog(id, "s");
 		};
@@ -162,9 +196,9 @@
 		document.getElementById("condec-context-menu-sentence-delete-item").onclick = function() {
 			conDecDialog.showDeleteDialog(id, "s");
 		};
-	};
+	}
 
-	getPosition = function getPosition(el, container, event) {
+	function getPosition(el, container, event) {
 		console.log(el);
 		if (container === null && event !== null) {
 			return {
