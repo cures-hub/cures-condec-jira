@@ -552,7 +552,8 @@
 	/*
 	 * external references: condec.jira.issue.module
 	 */
-	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, elementKey, callback) {
+	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, elementKey,
+			documentationLocation, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsLinkedToElement.json?elementKey="
 				+ elementKey + "&URISearch=" + query, function(error, result) {
 			if (error === null) {

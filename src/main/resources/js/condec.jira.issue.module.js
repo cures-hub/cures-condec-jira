@@ -153,11 +153,7 @@
 	function exportLinkedElements(exportType) {
 		var myJql = getQueryFromUrl();
 		var issueKey = conDecAPI.getIssueKey();
-<<<<<<< HEAD
-		conDecAPI.getLinkedElementsByQuery(myJql, issueKey, function (res) {
-=======
 		conDecAPI.getLinkedElementsByQuery(myJql, issueKey, "i", function(res) {
->>>>>>> CONDEC-428
 			console.log("noResult", res);
 			if (res) {
 				console.log("linked", res);
