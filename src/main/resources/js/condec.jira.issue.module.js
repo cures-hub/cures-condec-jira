@@ -20,6 +20,7 @@
 	var treant = null;
 
 	var ConDecJiraIssueModule = function ConDecJiraIssueModule() {
+		console.log("conDecJiraIssueModule constructor");
 	};
 
 	ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog,

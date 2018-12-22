@@ -201,7 +201,8 @@
 	 * external references: condec.dialog
 	 */
 	ConDecAPI.prototype.createLinkBetweenExistingElements = function createLinkBetweenExistingElements(
-			knowledgeTypeOfChild, idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild, callback) {
+			knowledgeTypeOfChild, idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild,
+			callback) {
 		postJSON(AJS.contextPath()
 				+ "/rest/decisions/latest/decisions/createLinkBetweenExistingElements.json?projectKey=" + projectKey
 				+ "&knowledgeTypeOfChild=" + knowledgeTypeOfChild + "&idOfParent=" + idOfParent

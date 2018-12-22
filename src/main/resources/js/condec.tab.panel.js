@@ -88,7 +88,7 @@
 			});
 			console.log(treeViewer)
 			treeViewer.addDragAndDropSupportForTreeViewer();
-			treeViewer.addContextMenuToTreeViewer();
+			treeViewer.addContextMenuToTreeViewer("issue-container");
 		});
 	}
 
