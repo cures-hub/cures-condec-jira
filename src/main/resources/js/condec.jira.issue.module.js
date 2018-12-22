@@ -20,6 +20,7 @@
 	var treant = null;
 
 	var ConDecJiraIssueModule = function ConDecJiraIssueModule() {
+		console.log("conDecJiraIssueModule constructor");
 	};
 
 	ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog,
@@ -57,7 +58,7 @@
 
 	ConDecJiraIssueModule.prototype.updateView = function() {
 		console.log("ConDecJiraIssueModule updateView");
-		JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [ JIRA.Issue.getIssueId(), conDecContextMenu ]);
+		JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [ JIRA.Issue.getIssueId() ]);
 	};
 
 	function addOnClickEventToExportAsTable() {

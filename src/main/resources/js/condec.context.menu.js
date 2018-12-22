@@ -9,7 +9,6 @@
  Is required by
  * conDecTreant
  * conDecTreeViewer
- * AbstractKnowledgeClassificationMacro in Java side
  */
 (function(global) {
 
@@ -18,6 +17,7 @@
 	var contextMenuForSentencesNode = null;
 
 	var ConDecContextMenu = function ConDecContextMenu() {
+		console.log("conDecContextMenu constructor");
 		isContextMenuOpen = false;
 		jQueryConDec(global).blur(hideContextMenu);
 		jQueryConDec(document).click(hideContextMenu);
@@ -48,14 +48,12 @@
 		console.log("contextmenu opened");
 		isContextMenuOpen = true;
 
-		if (!contextMenuNode) {
-			contextMenuNode = document.getElementById("condec-context-menu");
-		}
+		contextMenuNode = document.getElementById("condec-context-menu");
 		if (!contextMenuNode) {
 			console.error("contextmenu not found");
 			return;
 		}
-		
+
 		setContextMenuItemsEventHandlers(id);
 
 		var position = getPosition(event, container);
@@ -113,14 +111,12 @@
 		isContextMenuOpen = true;
 		console.log("contextmenu opened");
 
-		if (!contextMenuForSentencesNode) {
-			contextMenuForSentencesNode = document.getElementById("condec-context-menu-sentence");
-		}
+		contextMenuForSentencesNode = document.getElementById("condec-context-menu-sentence");
 		if (!contextMenuForSentencesNode) {
 			console.error("contextmenu for sentences not found");
 			return;
 		}
-		
+
 		setContextMenuItemsSentencesEventHandlers(id);
 
 		var position = getPosition(event, container);
@@ -133,7 +129,7 @@
 		});
 
 		contextMenuForSentencesNode.style.zIndex = 9998;
-		contextMenuForSentencesNode.setAttribute('aria-hidden', 'false');		
+		contextMenuForSentencesNode.setAttribute('aria-hidden', 'false');
 	};
 
 	function setContextMenuItemsSentencesEventHandlers(id) {
