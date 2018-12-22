@@ -13,7 +13,7 @@ if (dialog) {
 var exportDialog = document.getElementById("export-dialog");
 if (exportDialog) {
 	console.log("export dialog exists");
-	//exportDialog.parentNode.removeChild(exportDialog);
+	exportDialog.parentNode.removeChild(exportDialog);
 }
 </script>
 #include("templates/dialog.vm")
