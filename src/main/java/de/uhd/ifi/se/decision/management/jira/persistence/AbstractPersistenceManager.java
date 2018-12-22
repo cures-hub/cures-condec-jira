@@ -59,12 +59,14 @@ public abstract class AbstractPersistenceManager {
 			}
 			return isDeleted;
 		}
-
-		DecisionKnowledgeElement sourceElement = link.getSourceElement();
-		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
 		isDeleted = GenericLinkManager.deleteLink(link);
 		if (!isDeleted) {
 			isDeleted = GenericLinkManager.deleteLink(link.flip());
+		}
+
+		if (isDeleted && ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
+			DecisionKnowledgeElement sourceElement = link.getSourceElement();
+			new WebhookConnector(projectKey).sendElementChanges(sourceElement);
 		}
 		return isDeleted;
 	}
@@ -196,8 +198,10 @@ public abstract class AbstractPersistenceManager {
 		if (link.isIssueLink()) {
 			return JiraIssuePersistenceManager.insertLink(link, user);
 		}
-		DecisionKnowledgeElement sourceElement = link.getSourceElement();
-		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
+		if (ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
+			DecisionKnowledgeElement sourceElement = link.getSourceElement();
+			new WebhookConnector(projectKey).sendElementChanges(sourceElement);
+		}
 		return GenericLinkManager.insertLink(link, user);
 	}
 
@@ -230,7 +234,7 @@ public abstract class AbstractPersistenceManager {
 
 		LinkType formerLinkType = LinkType.getLinkTypeForKnowledgeType(formerKnowledgeType);
 		LinkType linkType = LinkType.getLinkTypeForKnowledgeType(element.getType());
-		
+
 		DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
 		parentElement.setId(idOfParentElement);
 		parentElement.setDocumentationLocation(documentationLocationOfParentElement);
