@@ -326,7 +326,7 @@ public class TestComment extends TestSetUpWithIssues {
 		assertEquals(false, comment.getSentences().get(0).isPlainText());
 		assertEquals(true, comment.getSentences().get(0).isTagged());
 		assertEquals(true, comment.getSentences().get(0).isTaggedManually());
-		assertEquals(KnowledgeType.ARGUMENT, comment.getSentences().get(0).getType());
+		assertEquals(KnowledgeType.PRO, comment.getSentences().get(0).getType());
 	}
 
 	@Test

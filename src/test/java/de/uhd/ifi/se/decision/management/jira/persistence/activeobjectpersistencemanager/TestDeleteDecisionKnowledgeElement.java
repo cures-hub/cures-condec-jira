@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectpersistencemanager;
 
 import de.uhd.ifi.se.decision.management.jira.model.*;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
@@ -68,7 +69,7 @@ public class TestDeleteDecisionKnowledgeElement extends ActiveObjectPersistenceM
 		DecisionKnowledgeElement linkedDecisionWithDatabaseId = aoStrategy
 				.insertDecisionKnowledgeElement(linkedDecisision, user);
 		Link link = new LinkImpl(linkedDecisionWithDatabaseId, elementWithDatabaseId);
-		aoStrategy.insertLink(link, user);
+		AbstractPersistenceManager.insertLink(link, user);
 		assertTrue(aoStrategy.deleteDecisionKnowledgeElement(elementWithDatabaseId, user));
 	}
 }

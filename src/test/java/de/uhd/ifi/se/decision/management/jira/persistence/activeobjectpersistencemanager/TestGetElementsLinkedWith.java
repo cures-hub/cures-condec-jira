@@ -8,9 +8,11 @@ import org.junit.runner.RunWith;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
@@ -29,17 +31,19 @@ public class TestGetElementsLinkedWith extends ActiveObjectPersistenceManagerTes
 		element.setProject("TEST");
 		element.setId(13);
 		element.setType(KnowledgeType.ASSESSMENT);
+		element.setDocumentationLocation(DocumentationLocation.ACTIVEOBJECT);
 
 		DecisionKnowledgeElement linkedDecision = new DecisionKnowledgeElementImpl();
 		linkedDecision.setProject("TEST");
 		linkedDecision.setId(14);
 		linkedDecision.setType(KnowledgeType.DECISION);
+		linkedDecision.setDocumentationLocation(DocumentationLocation.ACTIVEOBJECT);
 
 		DecisionKnowledgeElement elementWithDatabaseId = aoStrategy.insertDecisionKnowledgeElement(element, user);
 		DecisionKnowledgeElement linkedDecisionWithDatabaseId = aoStrategy
 				.insertDecisionKnowledgeElement(linkedDecision, user);
 		link = new LinkImpl(elementWithDatabaseId, linkedDecisionWithDatabaseId);
-		aoStrategy.insertLink(link, user);
+		AbstractPersistenceManager.insertLink(link, user);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -51,14 +55,14 @@ public class TestGetElementsLinkedWith extends ActiveObjectPersistenceManagerTes
 	@Test
 	@NonTransactional
 	public void testElementNotInTableInward() {
-		assertEquals(0, aoStrategy.getElementsLinkedWithInwardLinks(link.getDestinationElement()).size(), 0.0);
+		assertEquals(1, aoStrategy.getElementsLinkedWithInwardLinks(link.getDestinationElement()).size(), 0.0);
 	}
 
 	@Test
 	@NonTransactional
 	public void testElementInTableInward() {
-		aoStrategy.insertLink(link, user);
-		assertEquals(1, aoStrategy.getElementsLinkedWithInwardLinks(link.getSourceElement()).size(), 0.0);
+		AbstractPersistenceManager.insertLink(link, user);
+		assertEquals(0, aoStrategy.getElementsLinkedWithInwardLinks(link.getSourceElement()).size(), 0.0);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -70,13 +74,13 @@ public class TestGetElementsLinkedWith extends ActiveObjectPersistenceManagerTes
 	@Test
 	@NonTransactional
 	public void testElementNotInTableOutward() {
-		assertEquals(0, aoStrategy.getElementsLinkedWithOutwardLinks(link.getSourceElement()).size(), 0.0);
+		assertEquals(1, aoStrategy.getElementsLinkedWithOutwardLinks(link.getSourceElement()).size(), 0.0);
 	}
 
 	@Test
 	@NonTransactional
 	public void testElementInTableOutward() {
-		aoStrategy.insertLink(link, user);
-		assertEquals(1, aoStrategy.getElementsLinkedWithOutwardLinks(link.getDestinationElement()).size(), 0.0);
+		AbstractPersistenceManager.insertLink(link, user);
+		assertEquals(0, aoStrategy.getElementsLinkedWithOutwardLinks(link.getDestinationElement()).size(), 0.0);
 	}
 }

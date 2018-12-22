@@ -200,10 +200,10 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		if (type == null) {
 			super.type = KnowledgeType.OTHER;
 		} else if (type.equalsIgnoreCase("pro")) {
-			super.type = KnowledgeType.ARGUMENT;
+			super.type = KnowledgeType.PRO;
 			this.argument = "Pro";
 		} else if (type.equalsIgnoreCase("con")) {
-			super.type = KnowledgeType.ARGUMENT;
+			super.type = KnowledgeType.CON;
 			this.argument = "Con";
 		} else {
 			super.type = KnowledgeType.getKnowledgeType(type);

@@ -10,7 +10,6 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import net.java.ao.Query;
@@ -19,15 +18,37 @@ public class GenericLinkManager {
 
 	private static ActiveObjects activeObjects;
 
-	public static void init() {
-		if (activeObjects == null) {
-			activeObjects = ComponentGetter.getActiveObjects();
-		}
+	public static void clearInvalidLinks() {
+		init();
+		activeObjects.executeInTransaction(new TransactionCallback<LinkInDatabase>() {
+			@Override
+			public LinkInDatabase doInTransaction() {
+				LinkInDatabase[] linkElements = activeObjects.find(LinkInDatabase.class);
+				for (LinkInDatabase linkElement : linkElements) {
+					try {
+						Link link = new LinkImpl(linkElement.getIdOfSourceElement(),
+								linkElement.getIdOfDestinationElement());
+						if (!link.isValid()) {
+							deleteLinkElementFromDatabase(linkElement);
+						}
+					} catch (Exception e) {
+						deleteLinkElementFromDatabase(linkElement);
+					}
+				}
+				return null;
+			}
+		});
 	}
 
-	public static boolean deleteGenericLink(Link link) {
+	public static boolean deleteLink(Link link) {
 		init();
-		return deleteLink(link.getIdOfSourceElementWithPrefix(), link.getIdOfDestinationElementWithPrefix());
+		DecisionKnowledgeElement sourceElement = link.getSourceElement();
+		String sourceIdWithPrefix = sourceElement.getDocumentationLocation().getIdentifier() + sourceElement.getId();
+		DecisionKnowledgeElement destinationElement = link.getDestinationElement();
+		String destinationIdWithPrefix = destinationElement.getDocumentationLocation().getIdentifier()
+				+ destinationElement.getId();
+
+		return deleteLink(sourceIdWithPrefix, destinationIdWithPrefix);
 	}
 
 	public static boolean deleteLink(String sourceIdWithPrefix, String targetIdWithPrefix) {
@@ -38,6 +59,39 @@ public class GenericLinkManager {
 				return deleteLinkWithoutTransaction(sourceIdWithPrefix, targetIdWithPrefix);
 			}
 		});
+	}
+
+	private static void deleteLinkElementFromDatabase(LinkInDatabase linkElement) {
+		try {
+			linkElement.getEntityManager().delete(linkElement);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public static void deleteLinksForElement(String elementIdWithPrefix) {
+		init();
+		activeObjects.executeInTransaction(new TransactionCallback<LinkInDatabase>() {
+			@Override
+			public LinkInDatabase doInTransaction() {
+				deleteLinksForElementWithoutTransaction(elementIdWithPrefix);
+				return null;
+			}
+		});
+	}
+
+	public static void deleteLinksForElementWithoutTransaction(String elementIdWithPrefix) {
+		LinkInDatabase[] linksInDatabase = activeObjects.find(LinkInDatabase.class);
+		for (LinkInDatabase linkInDatabase : linksInDatabase) {
+			if (linkInDatabase.getIdOfDestinationElement().equals(elementIdWithPrefix)
+					|| linkInDatabase.getIdOfSourceElement().equals(elementIdWithPrefix)) {
+				try {
+					linkInDatabase.getEntityManager().delete(linkInDatabase);
+				} catch (SQLException e) {
+				}
+			}
+		}
 	}
 
 	private static Boolean deleteLinkWithoutTransaction(String sourceIdWithPrefix, String targetIdWithPrefix) {
@@ -54,6 +108,56 @@ public class GenericLinkManager {
 			}
 		}
 		return false;
+	}
+
+	public static long getId(String idWithPrefix) {
+		return (long) Integer.parseInt(idWithPrefix.substring(1));
+	}
+
+	public static DecisionKnowledgeElement getIssueFromAOTable(long dkeId) {
+		ActiveObjectPersistenceManager aos = new ActiveObjectPersistenceManager("");
+		return aos.getDecisionKnowledgeElement(dkeId);
+	}
+
+	public static List<Link> getLinksForElement(DecisionKnowledgeElement element) {
+		String elementIdWithPrefix = element.getDocumentationLocationAsString() + element.getId();
+		init();
+		LinkInDatabase[] linksInDatabase = activeObjects.find(LinkInDatabase.class, Query.select().where(
+				"ID_OF_DESTINATION_ELEMENT = ? OR ID_OF_SOURCE_ELEMENT = ?", elementIdWithPrefix, elementIdWithPrefix));
+
+		List<Link> links = new ArrayList<Link>();
+		for (LinkInDatabase linkInDatabase : linksInDatabase) {
+			Link link = new LinkImpl(linkInDatabase);
+			links.add(link);
+		}
+		return links;
+	}
+
+	/**
+	 * Gets all links from an element.
+	 *
+	 * @param elementIdWithPrefix
+	 *            the id of an decision knowledge element with identifier. Example:
+	 *            "i1234" for Issue, "s1337" for sentence. "1337" will not work
+	 * @return the generic links for element
+	 */
+	public static List<Link> getLinksForElement(String elementIdWithPrefix) {
+		init();
+		LinkInDatabase[] linksInDatabase = activeObjects.find(LinkInDatabase.class, Query.select().where(
+				"ID_OF_DESTINATION_ELEMENT = ? OR ID_OF_SOURCE_ELEMENT = ?", elementIdWithPrefix, elementIdWithPrefix));
+
+		List<Link> links = new ArrayList<Link>();
+		for (LinkInDatabase linkInDatabase : linksInDatabase) {
+			Link link = new LinkImpl(linkInDatabase);
+			links.add(link);
+		}
+		return links;
+	}
+
+	public static void init() {
+		if (activeObjects == null) {
+			activeObjects = ComponentGetter.getActiveObjects();
+		}
 	}
 
 	public static long insertLink(Link link, ApplicationUser user) {
@@ -101,95 +205,5 @@ public class GenericLinkManager {
 			}
 		}
 		return -1;
-	}
-
-	/**
-	 * Gets all links from an element.
-	 *
-	 * @param elementIdWithPrefix
-	 *            the id of an decision knowledge element with identifier. Example:
-	 *            "i1234" for Issue, "s1337" for sentence. "1337" will not work
-	 * @return the generic links for element
-	 */
-	public static List<Link> getLinksForElement(String elementIdWithPrefix) {
-		init();
-		LinkInDatabase[] linksInDatabase = activeObjects.find(LinkInDatabase.class, Query.select().where(
-				"ID_OF_DESTINATION_ELEMENT = ? OR ID_OF_SOURCE_ELEMENT = ?", elementIdWithPrefix, elementIdWithPrefix));
-
-		List<Link> links = new ArrayList<Link>();
-		for (LinkInDatabase linkInDatabase : linksInDatabase) {
-			Link link = new LinkImpl(linkInDatabase);
-			links.add(link);
-		}
-		return links;
-	}
-
-	public static void clearInvalidLinks() {
-		init();
-		activeObjects.executeInTransaction(new TransactionCallback<LinkInDatabase>() {
-			@Override
-			public LinkInDatabase doInTransaction() {
-				LinkInDatabase[] linkElements = activeObjects.find(LinkInDatabase.class);
-				for (LinkInDatabase linkElement : linkElements) {
-					try {
-						Link link = new LinkImpl(linkElement.getIdOfSourceElement(),
-								linkElement.getIdOfDestinationElement());
-						if (!link.isValid()) {
-							deleteLinkElementFromDatabase(linkElement);
-						}
-					} catch (Exception e) {
-						deleteLinkElementFromDatabase(linkElement);
-					}
-				}
-				return null;
-			}
-		});
-	}
-
-	public static void deleteLinksForElement(String elementIdWithPrefix) {
-		init();
-		activeObjects.executeInTransaction(new TransactionCallback<LinkInDatabase>() {
-			@Override
-			public LinkInDatabase doInTransaction() {
-				deleteLinksForElementWithoutTransaction(elementIdWithPrefix);
-				return null;
-			}
-		});
-	}
-
-	public static void deleteLinksForElementWithoutTransaction(String elementIdWithPrefix) {
-		LinkInDatabase[] linksInDatabase = activeObjects.find(LinkInDatabase.class);
-		for (LinkInDatabase linkInDatabase : linksInDatabase) {
-			if (linkInDatabase.getIdOfDestinationElement().equals(elementIdWithPrefix)
-					|| linkInDatabase.getIdOfSourceElement().equals(elementIdWithPrefix)) {
-				try {
-					linkInDatabase.getEntityManager().delete(linkInDatabase);
-				} catch (SQLException e) {
-				}
-			}
-		}
-	}
-
-	public static DecisionKnowledgeElement getIssueFromAOTable(long dkeId) {
-		ActiveObjectPersistenceManager aos = new ActiveObjectPersistenceManager("");
-		return aos.getDecisionKnowledgeElement(dkeId);
-	}
-
-	public static boolean isIssueLink(Link link) {
-		return link.getSourceElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUE
-				&& link.getDestinationElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUE;
-	}
-
-	public static long getId(String idWithPrefix) {
-		return (long) Integer.parseInt(idWithPrefix.substring(1));
-	}
-
-	private static void deleteLinkElementFromDatabase(LinkInDatabase linkElement) {
-		try {
-			linkElement.getEntityManager().delete(linkElement);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 }

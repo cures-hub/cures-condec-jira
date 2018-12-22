@@ -13,35 +13,63 @@
 (function(global) {
 
 	var isContextMenuOpen = null;
+	var contextMenuNode = null;
+	var contextMenuForSentencesNode = null;
 
 	var ConDecContextMenu = function ConDecContextMenu() {
+		console.log("conDecContextMenu constructor");
 		isContextMenuOpen = false;
 		jQueryConDec(global).blur(hideContextMenu);
 		jQueryConDec(document).click(hideContextMenu);
 	};
 
 	function hideContextMenu() {
+		/*
+		 * @issue This event gets launched many times at the same time! Check
+		 * what fires it Probably more and more onclick event handlers ges added
+		 * instead of just one
+		 * 
+		 * @decision On click and on blur event handlers are only set in the
+		 * constructor (see above).
+		 */
 		if (isContextMenuOpen) {
 			console.log("contextmenu closed");
-			document.querySelector("#condec-context-menu").setAttribute('aria-hidden', 'true');
-			document.querySelector("#condec-context-menu-sentence").setAttribute('aria-hidden', 'true');
+			if (contextMenuNode) {
+				contextMenuNode.setAttribute('aria-hidden', 'true');
+			}
+			if (contextMenuForSentencesNode) {
+				contextMenuForSentencesNode.setAttribute('aria-hidden', 'true');
+			}
 		}
 		isContextMenuOpen = false;
 	}
 
-	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(posX, posY, id) {
-		isContextMenuOpen = true;
+	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(event, id, container) {
 		console.log("contextmenu opened");
+		isContextMenuOpen = true;
 
-		posY = getCorrectPosY(posY);
+		contextMenuNode = document.getElementById("condec-context-menu");
+		if (!contextMenuNode) {
+			console.error("contextmenu not found");
+			return;
+		}
 
-		$("#condec-context-menu").css({
+		setContextMenuItemsEventHandlers(id);
+
+		var position = getPosition(event, container);
+		var posX = position["x"];
+		var posY = position["y"];
+
+		$(contextMenuNode).css({
 			left : posX,
 			top : posY
 		});
-		document.getElementById("condec-context-menu").style.zIndex = 9998;
-		document.querySelector("#condec-context-menu").setAttribute('aria-hidden', 'false');
 
+		contextMenuNode.style.zIndex = 9998; // why this number?
+		contextMenuNode.setAttribute('aria-hidden', 'false');
+	};
+
+	function setContextMenuItemsEventHandlers(id) {
 		document.getElementById("condec-context-menu-create-item").onclick = function() {
 			conDecDialog.showCreateDialog(id, "i");
 		};
@@ -51,11 +79,11 @@
 		};
 
 		document.getElementById("condec-context-menu-change-type-item").onclick = function() {
-			conDecDialog.showChangeTypeDialog(id);
+			conDecDialog.showChangeTypeDialog(id, "");
 		};
 
 		document.getElementById("condec-context-menu-link-item").onclick = function() {
-			conDecDialog.showLinkDialog(id);
+			conDecDialog.showLinkDialog(id, "");
 		};
 
 		document.getElementById("condec-context-menu-delete-link-item").onclick = function() {
@@ -76,22 +104,35 @@
 		document.getElementById("condec-context-menu-open-jira-issue-item").onclick = function() {
 			conDecAPI.openJiraIssue(id);
 		};
-	};
+	}
 
-	ConDecContextMenu.prototype.createContextMenuForSentences = function createContextMenuForSentences(posX, posY, id) {
+	ConDecContextMenu.prototype.createContextMenuForSentences = function createContextMenuForSentences(event, id,
+			container) {
 		isContextMenuOpen = true;
 		console.log("contextmenu opened");
 
-		posY = getCorrectPosY(posY);
+		contextMenuForSentencesNode = document.getElementById("condec-context-menu-sentence");
+		if (!contextMenuForSentencesNode) {
+			console.error("contextmenu for sentences not found");
+			return;
+		}
 
-		$("#condec-context-menu-sentence").css({
+		setContextMenuItemsSentencesEventHandlers(id);
+
+		var position = getPosition(event, container);
+		var posX = position["x"];
+		var posY = position["y"];
+
+		$(contextMenuForSentencesNode).css({
 			left : posX,
 			top : posY
 		});
 
-		document.getElementById("condec-context-menu-sentence").style.zIndex = 9998;
-		document.querySelector("#condec-context-menu-sentence").setAttribute('aria-hidden', 'false');
+		contextMenuForSentencesNode.style.zIndex = 9998;
+		contextMenuForSentencesNode.setAttribute('aria-hidden', 'false');
+	};
 
+	function setContextMenuItemsSentencesEventHandlers(id) {
 		document.getElementById("condec-context-menu-sentence-create-item").onclick = function() {
 			conDecDialog.showCreateDialog(id, "s");
 		};
@@ -123,31 +164,31 @@
 		};
 
 		document.getElementById("condec-context-menu-sentence-issue-item").onclick = function() {
-			conDecAPI.changeKnowledgeTypeOfSentence(id, "Issue", function() {
+			conDecAPI.changeKnowledgeType(id, "Issue", "s", function() {
 				conDecObservable.notify();
 			});
 		};
 
 		document.getElementById("condec-context-menu-sentence-decision-item").onclick = function() {
-			conDecAPI.changeKnowledgeTypeOfSentence(id, "Decision", function() {
+			conDecAPI.changeKnowledgeType(id, "Decision", "s", function() {
 				conDecObservable.notify();
 			});
 		};
 
 		document.getElementById("condec-context-menu-sentence-alternative-item").onclick = function() {
-			conDecAPI.changeKnowledgeTypeOfSentence(id, "Alternative", function() {
+			conDecAPI.changeKnowledgeType(id, "Alternative", "s", function() {
 				conDecObservable.notify();
 			});
 		};
 
 		document.getElementById("condec-context-menu-sentence-pro-item").onclick = function() {
-			conDecAPI.changeKnowledgeTypeOfSentence(id, "Pro", function() {
+			conDecAPI.changeKnowledgeType(id, "Pro", "s", function() {
 				conDecObservable.notify();
 			});
 		};
 
 		document.getElementById("condec-context-menu-sentence-con-item").onclick = function() {
-			conDecAPI.changeKnowledgeTypeOfSentence(id, "Con", function() {
+			conDecAPI.changeKnowledgeType(id, "Con", "s", function() {
 				conDecObservable.notify();
 			});
 		};
@@ -155,19 +196,43 @@
 		document.getElementById("condec-context-menu-sentence-delete-item").onclick = function() {
 			conDecDialog.showDeleteDialog(id, "s");
 		};
-	};
+	}
 
-	function getCorrectPosY(posY) {
-		var view = null;
-		if (document.getElementsByClassName("aui-item detail-panel")[0] !== undefined) {// filtered
-			view = document.getElementsByClassName("aui-item detail-panel")[0];
-		} else if (document.getElementsByClassName("issue-view")[0] !== undefined) {// unfiltered
-			view = document.getElementsByClassName("issue-view")[0];
+	function getPosition(event, container) {
+		var element = event.target;
+		if (container === null && event !== null) {
+			return {
+				x : event.pageX,
+				y : event.pageY
+			};
 		}
-		if (view !== null) {
-			posY = posY + view.scrollTop;
+		var xPosition = 0;
+		var yPosition = 0;
+
+		while (element) {
+			if (element.tagName === "BODY") {
+				// deal with browser quirks with body/window/document and page
+				// scroll
+				var xScrollPos = element.scrollLeft || document.documentElement.scrollLeft;
+				var yScrollPos = element.scrollTop || document.documentElement.scrollTop;
+
+				xPosition += (element.offsetLeft - xScrollPos + element.clientLeft);
+				yPosition += (element.offsetTop - yScrollPos + element.clientTop);
+			} else {
+				xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
+				yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
+			}
+
+			if (container !== null && (element.id === container || element.className === container)) {
+				break;
+			}
+
+			element = element.offsetParent;
 		}
-		return posY;
+		return {
+			x : xPosition,
+			y : yPosition
+		};
 	}
 
 	// export ConDecContextMenu

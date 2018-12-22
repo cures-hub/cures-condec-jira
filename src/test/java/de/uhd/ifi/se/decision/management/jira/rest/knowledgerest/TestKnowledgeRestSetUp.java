@@ -16,6 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import net.java.ao.EntityManager;
@@ -39,6 +40,9 @@ public class TestKnowledgeRestSetUp extends TestSetUpWithIssues {
 		decisionKnowledgeElement.setId(3);
 		decisionKnowledgeElement.setProject("TEST");
 		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
+		decisionKnowledgeElement.setDocumentationLocation(DocumentationLocation.JIRAISSUE);
 		request = new MockHttpServletRequest();
+		// sentence = new SentenceImpl();
+		// sentence.setProject("TEST");
 	}
 }

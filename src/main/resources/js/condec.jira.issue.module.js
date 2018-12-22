@@ -20,10 +20,12 @@
 	var treant = null;
 
 	var ConDecJiraIssueModule = function ConDecJiraIssueModule() {
+		console.log("conDecJiraIssueModule constructor");
 	};
 
-	ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog, _conDecContextMenu,
-													 _treant, _i18n) {
+	ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog,
+			_conDecContextMenu, _treant, _i18n) {
+
 		console.log("ConDecJiraIssueModule init");
 
 		// TODO: Add i18n support and check i18n
@@ -151,7 +153,11 @@
 	function exportLinkedElements(exportType) {
 		var myJql = getQueryFromUrl();
 		var issueKey = conDecAPI.getIssueKey();
+<<<<<<< HEAD
 		conDecAPI.getLinkedElementsByQuery(myJql, issueKey, function (res) {
+=======
+		conDecAPI.getLinkedElementsByQuery(myJql, issueKey, "i", function(res) {
+>>>>>>> CONDEC-428
 			console.log("noResult", res);
 			if (res) {
 				console.log("linked", res);

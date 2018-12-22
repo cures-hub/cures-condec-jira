@@ -34,10 +34,23 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 	private static final String PREFIX = DocumentationLocation.getIdentifier(DocumentationLocation.ACTIVEOBJECT);
 
-	private String projectKey;
+	private static DecisionKnowledgeElementInDatabase setParameters(DecisionKnowledgeElement element,
+			DecisionKnowledgeElementInDatabase databaseEntry) {
+		String summary = element.getSummary();
+		if (summary != null) {
+			databaseEntry.setSummary(summary);
+		}
+		String description = element.getDescription();
+		if (description != null) {
+			databaseEntry.setSummary(description);
+		}
+		databaseEntry.setType(element.getType().replaceProAndConWithArgument().toString());
+		return databaseEntry;
+	}
 
 	public ActiveObjectPersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
+		this.documentationLocation = DocumentationLocation.ACTIVEOBJECT;
 	}
 
 	@Override
@@ -59,14 +72,6 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 			isDeleted = DecisionKnowledgeElementInDatabase.deleteElement(databaseEntry);
 		}
 		return isDeleted;
-	}
-
-	@Override
-	public boolean deleteLink(Link link, ApplicationUser user) {
-		DecisionKnowledgeElement sourceElement = link.getSourceElement();
-		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
-		return GenericLinkManager.deleteLink(PREFIX + link.getSourceElement().getId(),
-				PREFIX + link.getDestinationElement().getId());
 	}
 
 	@Override
@@ -184,7 +189,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 
 	@Override
 	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
-		List<Link> inwardLinks = new ArrayList<>();
+		List<Link> inwardLinks = new ArrayList<Link>();
 		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class,
 				Query.select().where("ID_OF_DESTINATION_ELEMENT = ?", PREFIX + element.getId()));
 		for (LinkInDatabase link : links) {
@@ -199,7 +204,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 
 	@Override
 	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
-		List<Link> outwardLinks = new ArrayList<>();
+		List<Link> outwardLinks = new ArrayList<Link>();
 		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class,
 				Query.select().where("ID_OF_SOURCE_ELEMENT = ?", PREFIX + element.getId()));
 		for (LinkInDatabase link : links) {
@@ -211,7 +216,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		}
 		return outwardLinks;
 	}
-
+	
 	@Override
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
 			ApplicationUser user) {
@@ -223,9 +228,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 								.create(DecisionKnowledgeElementInDatabase.class);
 						databaseEntry.setKey(element.getProject().getProjectKey().toUpperCase(Locale.ENGLISH) + "-"
 								+ databaseEntry.getId());
-						databaseEntry.setSummary(element.getSummary());
-						databaseEntry.setDescription(element.getDescription());
-						databaseEntry.setType(element.getType().getSimpleKnowledgeType().toString());
+						databaseEntry = setParameters(element, databaseEntry);
 						databaseEntry.setProjectKey(element.getProject().getProjectKey());
 						databaseEntry.save();
 						return databaseEntry;
@@ -243,25 +246,6 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	@Override
-	public long insertLink(Link link, ApplicationUser user) {
-		DecisionKnowledgeElement sourceElement = link.getSourceElement();
-		new WebhookConnector(projectKey).sendElementChanges(sourceElement);
-
-		// TODO Replace by checking the documentation location of both elements in
-		// GenericLinkManager
-		Link newLink = new LinkImpl(PREFIX + link.getDestinationElement().getId(),
-				PREFIX + link.getSourceElement().getId());
-		newLink.setType(link.getType());
-
-		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction() {
-				return GenericLinkManager.insertLinkWithoutTransaction(newLink);
-			}
-		});
-	}
-
-	@Override
 	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
 		DecisionKnowledgeElementInDatabase databaseEntry = ACTIVE_OBJECTS
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementInDatabase>() {
@@ -270,9 +254,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 						for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
 								.find(DecisionKnowledgeElementInDatabase.class)) {
 							if (databaseEntry.getId() == element.getId()) {
-								databaseEntry.setSummary(element.getSummary());
-								databaseEntry.setDescription(element.getDescription());
-								databaseEntry.setType(element.getType().toString());
+								databaseEntry = setParameters(element, databaseEntry);
 								databaseEntry.save();
 								return databaseEntry;
 							}

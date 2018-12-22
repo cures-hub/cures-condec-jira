@@ -32,6 +32,7 @@ import com.atlassian.jira.util.ErrorCollection;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
@@ -44,12 +45,99 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
  */
 @JsonAutoDetect
 public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
-	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssuePersistenceManager.class);
-
-	private String projectKey;
+	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssuePersistenceManager.class);	
 
 	public JiraIssuePersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
+		this.documentationLocation = DocumentationLocation.JIRAISSUE;
+	}
+
+	public static boolean deleteLink(Link link, ApplicationUser user) {
+		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
+		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
+		Collection<IssueLinkType> issueLinkTypes = issueLinkTypeManager.getIssueLinkTypes();
+		for (IssueLinkType linkType : issueLinkTypes) {
+			long typeId = linkType.getId();
+			IssueLink issueLink = issueLinkManager.getIssueLink(link.getDestinationElement().getId(),
+					link.getSourceElement().getId(), typeId);
+			if (issueLink != null) {
+				issueLinkManager.removeIssueLink(issueLink, user);
+				return true;
+			}
+		}
+
+		LOGGER.error("Deletion of link in database failed.");
+		return false;
+	}
+
+	public static List<IssueLink> getInwardIssueLinks(DecisionKnowledgeElement element) {
+		if (element == null) {
+			return new ArrayList<IssueLink>();
+		}
+		return ComponentAccessor.getIssueLinkManager().getInwardLinks(element.getId());
+	}
+
+	public static String getIssueTypeId(KnowledgeType type) {
+		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
+		Collection<IssueType> listOfIssueTypes = constantsManager.getAllIssueTypeObjects();
+		for (IssueType issueType : listOfIssueTypes) {
+			if (issueType.getName().equalsIgnoreCase(type.toString())) {
+				return issueType.getId();
+			}
+		}
+		return "";
+	}
+
+	public static long getLinkTypeId(String linkTypeName) {
+		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
+		Collection<IssueLinkType> issueLinkTypeCollection = issueLinkTypeManager.getIssueLinkTypesByName(linkTypeName);
+		Iterator<IssueLinkType> issueLinkTypeIterator = issueLinkTypeCollection.iterator();
+		long typeId = 0;
+		while (issueLinkTypeIterator.hasNext()) {
+			IssueLinkType issueLinkType = issueLinkTypeIterator.next();
+			typeId = issueLinkType.getId();
+		}
+		return typeId;
+	}
+
+	public static List<IssueLink> getOutwardIssueLinks(DecisionKnowledgeElement element) {
+		if (element == null) {
+			return new ArrayList<IssueLink>();
+		}
+		return ComponentAccessor.getIssueLinkManager().getOutwardLinks(element.getId());
+	}
+
+	public static long insertLink(Link link, ApplicationUser user) {
+		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
+		long linkTypeId = getLinkTypeId(link.getType());
+		try {
+			issueLinkManager.createIssueLink(link.getSourceElement().getId(), link.getDestinationElement().getId(),
+					linkTypeId, (long) 0, user);
+			IssueLink issueLink = issueLinkManager.getIssueLink(link.getSourceElement().getId(),
+					link.getDestinationElement().getId(), linkTypeId);
+			return issueLink.getId();
+		} catch (CreateException | NullPointerException e) {
+			LOGGER.error("Insertion of link into database failed.");
+		}
+		return 0;
+	}
+
+	private static IssueInputParameters setParameters(DecisionKnowledgeElement element,
+			IssueInputParameters issueInputParameters) {
+		String summary = element.getSummary();
+		if (summary != null) {
+			if (summary.length() > 255) {
+				summary = summary.substring(0, 254);
+			}
+			issueInputParameters.setSummary(summary);
+		}
+		String description = element.getDescription();
+		if (description != null) {
+			issueInputParameters.setDescription(description);
+		}
+		String issueTypeId = getIssueTypeId(element.getType().replaceProAndConWithArgument());
+		issueInputParameters.setIssueTypeId(issueTypeId);
+		return issueInputParameters;
 	}
 
 	@Override
@@ -73,25 +161,6 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 			ErrorCollection errorCollection = issueService.delete(user, result);
 			return !errorCollection.hasAnyErrors();
 		}
-		return false;
-	}
-
-	@Override
-	public boolean deleteLink(Link link, ApplicationUser user) {
-		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
-		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
-		Collection<IssueLinkType> issueLinkTypes = issueLinkTypeManager.getIssueLinkTypes();
-		for (IssueLinkType linkType : issueLinkTypes) {
-			long typeId = linkType.getId();
-			IssueLink issueLink = issueLinkManager.getIssueLink(link.getDestinationElement().getId(),
-					link.getSourceElement().getId(), typeId);
-			if (issueLink != null) {
-				issueLinkManager.removeIssueLink(issueLink, user);
-				return true;
-			}
-		}
-
-		LOGGER.error("Deletion of link in database failed.");
 		return false;
 	}
 
@@ -185,13 +254,6 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		return inwardLinks;
 	}
 
-	public static List<IssueLink> getInwardIssueLinks(DecisionKnowledgeElement element) {
-		if (element == null) {
-			return new ArrayList<IssueLink>();
-		}
-		return ComponentAccessor.getIssueLinkManager().getInwardLinks(element.getId());
-	}
-
 	@Override
 	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
 		List<IssueLink> outwardIssueLinks = getOutwardIssueLinks(element);
@@ -202,33 +264,16 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		return outwardLinks;
 	}
 
-	public static List<IssueLink> getOutwardIssueLinks(DecisionKnowledgeElement element) {
-		if (element == null) {
-			return new ArrayList<IssueLink>();
-		}
-		return ComponentAccessor.getIssueLinkManager().getOutwardLinks(element.getId());
-	}
-
 	@Override
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
 			ApplicationUser user) {
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
 
-		if (element.getSummary().length() > 255) {
-			issueInputParameters.setSummary(element.getSummary().substring(0, 254));
-		} else {
-			issueInputParameters.setSummary(element.getSummary());
-		}
-		issueInputParameters.setDescription(element.getDescription());
-		issueInputParameters.setAssigneeId(user.getName());
+		issueInputParameters = setParameters(element, issueInputParameters);
 		issueInputParameters.setReporterId(user.getName());
-
 		Project project = ComponentAccessor.getProjectManager()
 				.getProjectByCurrentKey(element.getProject().getProjectKey());
 		issueInputParameters.setProjectId(project.getId());
-
-		String issueTypeId = getIssueTypeId(element.getType());
-		issueInputParameters.setIssueTypeId(issueTypeId);
 
 		IssueService issueService = ComponentAccessor.getIssueService();
 		CreateValidationResult result = issueService.validateCreate(user, issueInputParameters);
@@ -246,55 +291,13 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		return element;
 	}
 
-	public static String getIssueTypeId(KnowledgeType type) {
-		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
-		Collection<IssueType> listOfIssueTypes = constantsManager.getAllIssueTypeObjects();
-		for (IssueType issueType : listOfIssueTypes) {
-			if (issueType.getName().equalsIgnoreCase(type.getSimpleKnowledgeType().toString())) {
-				return issueType.getId();
-			}
-		}
-		return "";
-	}
-
-	@Override
-	public long insertLink(Link link, ApplicationUser user) {
-		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
-		long linkTypeId = getLinkTypeId(link.getType());
-		try {
-			issueLinkManager.createIssueLink(link.getSourceElement().getId(), link.getDestinationElement().getId(),
-					linkTypeId, (long) 0, user);
-			IssueLink issueLink = issueLinkManager.getIssueLink(link.getSourceElement().getId(),
-					link.getDestinationElement().getId(), linkTypeId);
-			return issueLink.getId();
-		} catch (CreateException | NullPointerException e) {
-			LOGGER.error("Insertion of link into database failed.");
-		}
-		return 0;
-	}
-
-	public static long getLinkTypeId(String linkTypeName) {
-		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
-		Collection<IssueLinkType> issueLinkTypeCollection = issueLinkTypeManager.getIssueLinkTypesByName(linkTypeName);
-		Iterator<IssueLinkType> issueLinkTypeIterator = issueLinkTypeCollection.iterator();
-		long typeId = 0;
-		while (issueLinkTypeIterator.hasNext()) {
-			IssueLinkType issueLinkType = issueLinkTypeIterator.next();
-			typeId = issueLinkType.getId();
-		}
-		return typeId;
-	}
-
 	@Override
 	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
 		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueResult issueResult = issueService.getIssue(user, element.getId());
 		MutableIssue issueToBeUpdated = issueResult.getIssue();
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
-		issueInputParameters.setSummary(element.getSummary());
-		issueInputParameters.setDescription(element.getDescription());
-		String issueTypeId = getIssueTypeId(element.getType());
-		issueInputParameters.setIssueTypeId(issueTypeId);
+		issueInputParameters = setParameters(element, issueInputParameters);
 		IssueService.UpdateValidationResult result = issueService.validateUpdate(user, issueToBeUpdated.getId(),
 				issueInputParameters);
 		if (result.getErrorCollection().hasAnyErrors()) {

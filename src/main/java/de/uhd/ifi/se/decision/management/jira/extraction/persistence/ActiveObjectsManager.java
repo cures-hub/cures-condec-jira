@@ -26,9 +26,9 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
@@ -92,7 +92,15 @@ public class ActiveObjectsManager {
 
 	private static void checkIfSentenceHasAValidLink(long sentenceId, long issueId, LinkType linkType) {
 		if (!isSentenceLinked(sentenceId)) {
-			Link link = new LinkImpl("i" + issueId, "s" + sentenceId, linkType.toString());// linkType.toString());
+			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
+			parentElement.setId(issueId);
+			parentElement.setDocumentationLocation("i");
+
+			DecisionKnowledgeElement childElement = new DecisionKnowledgeElementImpl();
+			childElement.setId(sentenceId);
+			childElement.setDocumentationLocation("s");
+			
+			Link link = Link.instantiateDirectedLink(parentElement, childElement, linkType);
 			GenericLinkManager.insertLinkWithoutTransaction(link);
 		}
 	}
@@ -111,13 +119,14 @@ public class ActiveObjectsManager {
 			return;
 		}
 		boolean smartLinkCreated = false;
-		if (sentence.getType().equals(KnowledgeType.ARGUMENT)) {
+		KnowledgeType knowledgeType = sentence.getType();
+		if (knowledgeType == KnowledgeType.ARGUMENT || knowledgeType == KnowledgeType.PRO
+				|| knowledgeType == KnowledgeType.CON) {
 			DecisionKnowledgeElement lastElement = compareForLaterElement(
 					searchForLast(sentence, KnowledgeType.ALTERNATIVE),
 					searchForLast(sentence, KnowledgeType.DECISION));
 			smartLinkCreated = checkLastElementAndCreateLink(lastElement, sentence);
-		} else if (sentence.getType().equals(KnowledgeType.DECISION)
-				|| sentence.getType().equals(KnowledgeType.ALTERNATIVE)) {
+		} else if (knowledgeType == KnowledgeType.DECISION || knowledgeType == KnowledgeType.ALTERNATIVE) {
 			DecisionKnowledgeElement lastElement = searchForLast(sentence, KnowledgeType.ISSUE);
 			smartLinkCreated = checkLastElementAndCreateLink(lastElement, sentence);
 		}
@@ -129,8 +138,7 @@ public class ActiveObjectsManager {
 
 	private static boolean checkLastElementAndCreateLink(DecisionKnowledgeElement lastElement, Sentence sentence) {
 		if (lastElement != null) {
-			Link link = new LinkImpl("s" + lastElement.getId(), "s" + sentence.getId(),
-					LinkType.getLinkTypeForKnowledgeType(sentence.getArgument().toString()).toString());
+			Link link = Link.instantiateDirectedLink(lastElement, sentence);
 			GenericLinkManager.insertLink(link, null);
 			return true;
 		}
@@ -261,7 +269,7 @@ public class ActiveObjectsManager {
 		return lengthDiff;
 	}
 
-	public static Boolean updateKnowledgeTypeOfSentence(long id, KnowledgeType knowledgeType, String argument) {
+	public static Boolean updateKnowledgeTypeOfSentence(long id, KnowledgeType knowledgeType) {
 		init();
 		return ActiveObjects.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
@@ -269,6 +277,11 @@ public class ActiveObjectsManager {
 				for (DecisionKnowledgeInCommentEntity sentenceEntity : ActiveObjects
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (sentenceEntity.getId() == id) {
+
+						String argument = "";
+						if (knowledgeType == KnowledgeType.PRO || knowledgeType == KnowledgeType.CON) {
+							argument = knowledgeType.toString();
+						}
 						// Knowledgetype is an Argument
 
 						String oldKnowledgeType = sentenceEntity.getKnowledgeTypeString();
@@ -312,18 +325,6 @@ public class ActiveObjectsManager {
 				return false;
 			}
 		});
-	}
-
-	public static Boolean updateLinkTypeOfSentence(DecisionKnowledgeElement newElement, String argument) {
-		init();
-		List<Link> links = GenericLinkManager.getLinksForElement("s" + newElement.getId());
-		for (Link link : links) {
-			GenericLinkManager.deleteGenericLink(link);
-			link.setType(LinkType.getLinkTypeForKnowledgeType(argument).toString());
-			GenericLinkManager.insertLinkWithoutTransaction(link);
-			return true;
-		}
-		return false;
 	}
 
 	private static int getTextLengthOfAoElement(DecisionKnowledgeInCommentEntity sentence) {
@@ -769,7 +770,7 @@ public class ActiveObjectsManager {
 				List<Link> links = GenericLinkManager.getLinksForElement("s" + dbEntry.getId());
 				for (Link link : links) {
 					if (link.getType() == null || link.getType() == "" || link.getType().equalsIgnoreCase("contain")) {
-						GenericLinkManager.deleteGenericLink(link);
+						GenericLinkManager.deleteLink(link);
 						link.setType(LinkType.getLinkTypeForKnowledgeType(dbEntry.getKnowledgeTypeString()).toString());
 						GenericLinkManager.insertLinkWithoutTransaction(link);
 					}

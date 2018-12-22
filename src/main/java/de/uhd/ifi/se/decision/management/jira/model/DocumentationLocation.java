@@ -17,7 +17,7 @@ public enum DocumentationLocation {
 	 *            as a String.
 	 */
 	public static DocumentationLocation getDocumentationLocationFromIdentifier(String identifier) {
-		if(identifier == null) {
+		if (identifier == null) {
 			return DocumentationLocation.UNKNOWN;
 		}
 		switch (identifier.toLowerCase(Locale.ENGLISH)) {
@@ -37,8 +37,8 @@ public enum DocumentationLocation {
 	}
 
 	public static String getIdentifier(DocumentationLocation documentationLocation) {
-		if(documentationLocation == null) {
-			return "i";
+		if (documentationLocation == null) {
+			return "";
 		}
 		switch (documentationLocation) {
 		case JIRAISSUE:
@@ -51,7 +51,7 @@ public enum DocumentationLocation {
 			return "";
 		}
 	}
-	
+
 	public String getIdentifier() {
 		return getIdentifier(this);
 	}

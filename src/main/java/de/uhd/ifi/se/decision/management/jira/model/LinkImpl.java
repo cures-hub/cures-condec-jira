@@ -90,7 +90,7 @@ public class LinkImpl implements Link {
 
 	@Override
 	public String getType() {
-		if(type == null|| type.equals("")) {
+		if (type == null || type.equals("")) {
 			return "contain";
 		}
 		return type;
@@ -243,7 +243,7 @@ public class LinkImpl implements Link {
 
 	@Override
 	public LinkImpl flip() {
-		return new LinkImpl(this.getIdOfDestinationElementWithPrefix(), this.getIdOfSourceElementWithPrefix());
+		return new LinkImpl(this.getDestinationElement(), this.getSourceElement());
 	}
 
 	@Override
@@ -264,5 +264,33 @@ public class LinkImpl implements Link {
 	@JsonProperty("documentationLocationOfDestinationElement")
 	public void setDocumentationLocationOfDestinationElement(String documentationLocation) {
 		this.getDestinationElement().setDocumentationLocation(documentationLocation);
+	}
+
+	@Override
+	public boolean isIssueLink() {
+		return this.getSourceElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUE
+				&& this.getDestinationElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUE;
+	}
+
+	@Override
+	public boolean containsUnknownDocumentationLocation() {
+		return this.getDestinationElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN
+				|| this.getSourceElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object == null) {
+			return false;
+		}
+		if (object == this) {
+			return true;
+		}
+		if (!(object instanceof Link)) {
+			return false;
+		}
+		Link link = (Link) object;
+		return this.sourceElement.getId() == link.getSourceElement().getId()
+				&& this.destinationElement.getId() == link.getDestinationElement().getId();
 	}
 }
