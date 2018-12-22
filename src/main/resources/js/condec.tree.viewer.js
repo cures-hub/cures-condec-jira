@@ -31,15 +31,15 @@
 		console.log("conDecTreeViewer addContextMenuToTreeViewer");
 		jQueryConDec("#jstree").on("contextmenu.jstree", function(event) {
 			event.preventDefault();
-			
+
 			var nodeId = event.target.parentNode.id;
 			var node = getTreeViewerNodeById(nodeId);
 			var id = node.data.id;
-			
+
 			if (event.target.parentNode.classList.contains("sentence")) {
-				conDecContextMenu.createContextMenuForSentences(event.target, id, container, event);
+				conDecContextMenu.createContextMenuForSentences(event, id, container);
 			} else {
-				conDecContextMenu.createContextMenu(event.target, id, container, event);
+				conDecContextMenu.createContextMenu(event, id, container);
 			}
 		});
 	}
@@ -83,34 +83,38 @@
 	 */
 	ConDecTreeViewer.prototype.addDragAndDropSupportForTreeViewer = function addDragAndDropSupportForTreeViewer() {
 		console.log("conDecTreeViewer addDragAndDropSupportForTreeViewer");
-		jQueryConDec("#jstree").on('move_node.jstree', function(object, nodeInContext) {
-			var node = nodeInContext.node;
-			var parentNode = getTreeViewerNodeById(nodeInContext.parent);
-			var oldParentNode = getTreeViewerNodeById(nodeInContext.old_parent);
-			var nodeId = node.data.id;
+		jQueryConDec("#jstree").on(
+				'move_node.jstree',
+				function(object, nodeInContext) {
+					var node = nodeInContext.node;
+					var parentNode = getTreeViewerNodeById(nodeInContext.parent);
+					var oldParentNode = getTreeViewerNodeById(nodeInContext.old_parent);
+					var nodeId = node.data.id;
 
-			var sourceType = (node.li_attr['class'] === "sentence") ? "s" : "i";
-			var oldParentType = (oldParentNode.li_attr['class'] === "sentence") ? "s" : "i";
-			var newParentType = (parentNode.li_attr['class'] === "sentence") ? "s" : "i";
+					var sourceType = (node.li_attr['class'] === "sentence") ? "s" : "i";
+					var oldParentType = (oldParentNode.li_attr['class'] === "sentence") ? "s" : "i";
+					var newParentType = (parentNode.li_attr['class'] === "sentence") ? "s" : "i";
 
-			if (oldParentNode === "#" && parentNode !== "#") {
-				conDecAPI.linkElements("contain", parentNode.data.id, nodeId, newParentType, sourceType, function() {
-					conDecObservable.notify();
+					if (oldParentNode === "#" && parentNode !== "#") {
+						conDecAPI.linkElements("contain", parentNode.data.id, nodeId, newParentType, sourceType,
+								function() {
+									conDecObservable.notify();
+								});
+					}
+					if (parentNode === "#" && oldParentNode !== "#") {
+						conDecAPI.deleteLink(oldParentNode.data.id, nodeId, oldParentType, sourceType, function() {
+							conDecObservable.notify();
+						});
+					}
+					if (parentNode !== '#' && oldParentNode !== '#') {
+						conDecAPI.deleteLink(oldParentNode.data.id, nodeId, oldParentType, sourceType, function() {
+							conDecAPI.linkElements("contain", parentNode.data.id, nodeId, newParentType, sourceType,
+									function() {
+										conDecObservable.notify();
+									});
+						});
+					}
 				});
-			}
-			if (parentNode === "#" && oldParentNode !== "#") {
-				conDecAPI.deleteLink(oldParentNode.data.id, nodeId, oldParentType, sourceType, function() {
-					conDecObservable.notify();
-				});
-			}
-			if (parentNode !== '#' && oldParentNode !== '#') {
-				conDecAPI.deleteLink(oldParentNode.data.id, nodeId, oldParentType, sourceType, function() {
-					conDecAPI.linkElements("contain",parentNode.data.id, nodeId, newParentType, sourceType, function() {
-						conDecObservable.notify();
-					});
-				});
-			}
-		});
 	}
 
 	// export ConDecTreeViewer

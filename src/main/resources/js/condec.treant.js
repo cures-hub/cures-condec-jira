@@ -131,23 +131,27 @@
 				event.preventDefault();
 
 				if (this.getElementsByClassName("node-desc")[0].innerHTML.includes(":")) {
-					conDecContextMenu.createContextMenuForSentences(event.target, this.id, "treant-container", event);
+					conDecContextMenu.createContextMenuForSentences(event, this.id, "treant-container");
 				} else {
-					conDecContextMenu.createContextMenu(event.target, this.id, "treant-container", event);
+					conDecContextMenu.createContextMenu(event, this.id, "treant-container");
 				}
 			});
 		}
 		addContextMenuToCommentTabPanel();
 	}
-	
+
 	addContextMenuToCommentTabPanel = function addContextMenuToCommentTabPanel() {
-		var comment = document.getElementById("commentnode-118");
-		console.log(comment);
-		if (comment) {
-			comment.addEventListener('contextmenu', function(event) {
-				event.preventDefault();
-				conDecContextMenu.createContextMenuForSentences(event.target, 118, "issue-container", event);
-			});
+		var comments = document.querySelectorAll('[id^="commentnode-"]');
+		if (comments) {
+			for (i = 0; i < comments.length; i++) {				
+				comments[i].addEventListener('contextmenu', function(event) {
+					var id = this.id.split("-")[1];
+					console.log(id);
+					console.log(event.target.id.split("-")[1]);
+					event.preventDefault();
+					conDecContextMenu.createContextMenuForSentences(event, id, "issue-container");
+				});
+			}
 		}
 	}
 

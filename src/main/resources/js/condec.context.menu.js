@@ -34,15 +34,17 @@
 		 */
 		if (isContextMenuOpen) {
 			console.log("contextmenu closed");
-			if (contextMenuNode)
+			if (contextMenuNode) {
 				contextMenuNode.setAttribute('aria-hidden', 'true');
-			if (contextMenuForSentencesNode)
+			}
+			if (contextMenuForSentencesNode) {
 				contextMenuForSentencesNode.setAttribute('aria-hidden', 'true');
+			}
 		}
 		isContextMenuOpen = false;
 	}
 
-	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(htmlElement, id, container, event) {
+	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(event, id, container) {
 		console.log("contextmenu opened");
 		isContextMenuOpen = true;
 
@@ -54,9 +56,8 @@
 			console.error("contextmenu not found");
 			return;
 		}
-		// console.log(htmlElement)
 
-		var position = getPosition(htmlElement, container, event);
+		var position = getPosition(event, container);
 		var posX = position["x"];
 		var posY = position["y"];
 
@@ -106,11 +107,10 @@
 		};
 	}
 
-	ConDecContextMenu.prototype.createContextMenuForSentences = function createContextMenuForSentences(htmlElement, id,
-			container, event) {
+	ConDecContextMenu.prototype.createContextMenuForSentences = function createContextMenuForSentences(event, id,
+			container) {
 		isContextMenuOpen = true;
 		console.log("contextmenu opened");
-		// console.log(htmlElement)
 
 		if (!contextMenuForSentencesNode) {
 			contextMenuForSentencesNode = document.getElementById("condec-context-menu-sentence");
@@ -121,7 +121,7 @@
 			return;
 		}
 
-		var position = getPosition(htmlElement, container, event);
+		var position = getPosition(event, container);
 		var posX = position["x"];
 		var posY = position["y"];
 
@@ -200,7 +200,8 @@
 		};
 	}
 
-	function getPosition(el, container, event) {
+	function getPosition(event, container) {
+		var el = event.target;
 		console.log(el);
 		if (container === null && event !== null) {
 			return {
@@ -212,7 +213,7 @@
 		var yPosition = 0;
 
 		while (el) {
-			if (el.tagName == "BODY") {
+			if (el.tagName === "BODY") {
 				// deal with browser quirks with body/window/document and page
 				// scroll
 				var xScrollPos = el.scrollLeft || document.documentElement.scrollLeft;
@@ -225,7 +226,7 @@
 				yPosition += (el.offsetTop - el.scrollTop + el.clientTop);
 			}
 
-			if (container !== null && (el.id == container || el.className == container)) {
+			if (container !== null && (el.id === container || el.className === container)) {
 				console.log(container);
 				break;
 			}
