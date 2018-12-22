@@ -50,12 +50,13 @@
 
 		if (!contextMenuNode) {
 			contextMenuNode = document.getElementById("condec-context-menu");
-			setContextMenuItemsEventHandlers(id);
 		}
 		if (!contextMenuNode) {
 			console.error("contextmenu not found");
 			return;
 		}
+		
+		setContextMenuItemsEventHandlers(id);
 
 		var position = getPosition(event, container);
 		var posX = position["x"];
@@ -114,12 +115,13 @@
 
 		if (!contextMenuForSentencesNode) {
 			contextMenuForSentencesNode = document.getElementById("condec-context-menu-sentence");
-			setContextMenuItemsSentencesEventHandlers(id);
 		}
 		if (!contextMenuForSentencesNode) {
 			console.error("contextmenu for sentences not found");
 			return;
 		}
+		
+		setContextMenuItemsSentencesEventHandlers(id);
 
 		var position = getPosition(event, container);
 		var posX = position["x"];
@@ -131,7 +133,7 @@
 		});
 
 		contextMenuForSentencesNode.style.zIndex = 9998;
-		contextMenuForSentencesNode.setAttribute('aria-hidden', 'false');
+		contextMenuForSentencesNode.setAttribute('aria-hidden', 'false');		
 	};
 
 	function setContextMenuItemsSentencesEventHandlers(id) {
@@ -201,8 +203,7 @@
 	}
 
 	function getPosition(event, container) {
-		var el = event.target;
-		console.log(el);
+		var element = event.target;
 		if (container === null && event !== null) {
 			return {
 				x : event.pageX,
@@ -212,26 +213,25 @@
 		var xPosition = 0;
 		var yPosition = 0;
 
-		while (el) {
-			if (el.tagName === "BODY") {
+		while (element) {
+			if (element.tagName === "BODY") {
 				// deal with browser quirks with body/window/document and page
 				// scroll
-				var xScrollPos = el.scrollLeft || document.documentElement.scrollLeft;
-				var yScrollPos = el.scrollTop || document.documentElement.scrollTop;
+				var xScrollPos = element.scrollLeft || document.documentElement.scrollLeft;
+				var yScrollPos = element.scrollTop || document.documentElement.scrollTop;
 
-				xPosition += (el.offsetLeft - xScrollPos + el.clientLeft);
-				yPosition += (el.offsetTop - yScrollPos + el.clientTop);
+				xPosition += (element.offsetLeft - xScrollPos + element.clientLeft);
+				yPosition += (element.offsetTop - yScrollPos + element.clientTop);
 			} else {
-				xPosition += (el.offsetLeft - el.scrollLeft + el.clientLeft);
-				yPosition += (el.offsetTop - el.scrollTop + el.clientTop);
+				xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
+				yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
 			}
 
-			if (container !== null && (el.id === container || el.className === container)) {
-				console.log(container);
+			if (container !== null && (element.id === container || element.className === container)) {
 				break;
 			}
 
-			el = el.offsetParent;
+			element = element.offsetParent;
 		}
 		return {
 			x : xPosition,

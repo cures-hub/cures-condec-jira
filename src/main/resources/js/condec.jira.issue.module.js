@@ -57,7 +57,7 @@
 
 	ConDecJiraIssueModule.prototype.updateView = function() {
 		console.log("ConDecJiraIssueModule updateView");
-		JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [ JIRA.Issue.getIssueId() ]);
+		JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [ JIRA.Issue.getIssueId(), conDecContextMenu ]);
 	};
 
 	function addOnClickEventToExportAsTable() {

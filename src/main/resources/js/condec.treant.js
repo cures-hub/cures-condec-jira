@@ -11,7 +11,7 @@
 	};
 
 	ConDecTreant.prototype.buildTreant = function buildTreant(elementKey, isInteractive, searchTerm) {
-		console.log("view.treant.js buildTreant");
+		console.log("conDecTreant buildTreant");
 		var depthOfTree = getDepthOfTree();
 		conDecAPI.getTreant(elementKey, depthOfTree, searchTerm, function(treeStructure) {
 			document.getElementById("treant-container").innerHTML = "";
@@ -25,7 +25,7 @@
 	};
 
 	function getDepthOfTree() {
-		console.log("view.treant.js getDepthOfTree");
+		console.log("conDecTreant getDepthOfTree");
 		var depthOfTreeInput = document.getElementById("depth-of-tree-input");
 		var depthOfTree = 4;
 		if (depthOfTreeInput !== null) {
@@ -35,7 +35,7 @@
 	}
 
 	function addDragAndDropSupportForTreant() {
-		console.log("view.treant.js addDragAndDropSupportForTreant");
+		console.log("conDecTreant addDragAndDropSupportForTreant");
 		var treantNodes = document.getElementsByClassName("node");
 		var i;
 		for (i = 0; i < treantNodes.length; i++) {
@@ -54,7 +54,7 @@
 	}
 
 	function getCurrentRootElement() {
-		console.log("view.treant.js getCurrentRootElement");
+		console.log("conDecTreant getCurrentRootElement");
 		if (treantTree) {
 			return treantTree.tree.initJsonConfig.graph.rootElement;
 		}
@@ -115,7 +115,7 @@
 	}
 
 	function addTooltip() {
-		console.log("view.treant.js addTooltip");
+		console.log("conDecTreant addTooltip");
 		var nodes = treantTree.tree.nodeDB.db;
 		for (i = 0; i < nodes.length; i++) {
 			AJS.$("#" + nodes[i].id).tooltip();
@@ -123,13 +123,12 @@
 	}
 
 	function addContextMenuToTreant() {
-		console.log("view.treant.js addContextMenuToTreant");
+		console.log("conDecTreant addContextMenuToTreant");
 		var treantNodes = document.getElementsByClassName("node");
 		var i;
 		for (i = 0; i < treantNodes.length; i++) {
 			treantNodes[i].addEventListener('contextmenu', function(event) {
 				event.preventDefault();
-
 				if (this.getElementsByClassName("node-desc")[0].innerHTML.includes(":")) {
 					conDecContextMenu.createContextMenuForSentences(event, this.id, "treant-container");
 				} else {
@@ -141,15 +140,13 @@
 	}
 
 	addContextMenuToCommentTabPanel = function addContextMenuToCommentTabPanel() {
+		console.log("conDecTreant addContextMenuToCommentTabPanel");
 		var comments = document.querySelectorAll('[id^="commentnode-"]');
 		if (comments) {
-			for (i = 0; i < comments.length; i++) {				
+			for (i = 0; i < comments.length; i++) {
 				comments[i].addEventListener('contextmenu', function(event) {
-					var id = this.id.split("-")[1];
-					console.log(id);
-					console.log(event.target.id.split("-")[1]);
 					event.preventDefault();
-					conDecContextMenu.createContextMenuForSentences(event, id, "issue-container");
+					conDecContextMenu.createContextMenuForSentences(event, this.id.split("-")[1], "issue-container");
 				});
 			}
 		}
@@ -160,7 +157,7 @@
 	// objects in
 	// the method "createcontextMenuForTreant"
 	function extractTypeFromHTMLElement(element) {
-		console.log("view.treant.js extractTypeFromHTMLElement");
+		console.log("conDecTreant extractTypeFromHTMLElement");
 		// Sentences have the node desc shape "ProjectId-IssueID:SentenceID"
 		if (element.getElementsByClassName("node-desc").length === 0) {
 			return "i";
@@ -173,7 +170,7 @@
 	}
 
 	function extractTypeFromHTMLId(id) {
-		console.log("view.treant.js extractTypeFromHTMLId");
+		console.log("conDecTreant extractTypeFromHTMLId");
 		var element = document.getElementById(id);
 		console.log(id);
 		return extractTypeFromHTMLElement(element);
