@@ -153,15 +153,15 @@
 	function exportLinkedElements(exportType) {
 		var myJql = getQueryFromUrl();
 		var issueKey = conDecAPI.getIssueKey();
-		conDecAPI.getLinkedElementsByQuery(myJql, issueKey, "i", function(res) {
+		conDecAPI.getLinkedElementsByQuery(myJql, issueKey, "i", function (res) {
 			console.log("noResult", res);
 			if (res) {
 				console.log("linked", res);
-				if (res.length > 0) {
+				if (res.length > 0 && res[0]!==null) {
 					var obj = getArrayAndTransformToConfluenceObject(res);
 					download("decisionKnowledgeGraph", obj, exportType);
 				} else {
-					showFlag("error", "The Element was not found.");
+					showFlag("error", "No linked elements were found.");
 				}
 			}
 		});
@@ -206,7 +206,7 @@
 					el["link"] = baseLink + el["key"];
 					elementsWithLinkArray.push(el);
 				});
-				if (elementsWithLinkArray.length > 0) {
+				if (elementsWithLinkArray.length > 0 && elementsWithLinkArray[0]!==null) {
 					var obj = getArrayAndTransformToConfluenceObject(elementsWithLinkArray);
 					download("decisionKnowledge", obj, exportType);
 				} else {
@@ -247,25 +247,58 @@
 	}
 
 	function createHtmlStringForWordDocument(jsonObj) {
-		var contentString="";
+		var contentString = "";
 
-		var sTable="<table><tr><th>Key</th><th>Summary</th><th>Description</th><th>Type</th></tr>";
-		jsonObj.data.map(function(el){
-			var row="<tr>";
-			row+="<td><a href='"+el["link"]+"'>"+el["key"]+"</a></td>";
-			row+="<td>"+el["summary"]+"</td>";
-			row+="<td>"+el["description"]+"</td>";
-			row+="<td>"+el["type"]+"</td>";
-			row+="</tr>";
-
-			sTable+=row;
+		var sTable = "<table><tr><th>Key</th><th>Summary</th><th>Description</th><th>Type</th></tr>";
+		jsonObj.data.map(function (el) {
+			if (el) {
+				var sLink = "";
+				var sKey = "";
+				var sSummary = "";
+				var sDescription = "";
+				var sType = "";
+				if (el["link"]) {
+					sLink = el["link"];
+				}
+				if (el["key"]) {
+					sKey = el["key"];
+				}
+				if (el["summary"]) {
+					sSummary = el["summary"];
+				}
+				if (el["description"]) {
+					sDescription = el["description"];
+				}
+				if (el["type"]) {
+					sType = el["type"];
+				}
+				var row = "<tr>";
+				row += "<td><a href='" + sLink + "'>" + sKey + "</a></td>";
+				row += "<td>" + sSummary + "</td>";
+				row += "<td>" + sDescription + "</td>";
+				row += "<td>" + sType + "</td>";
+				row += "</tr>";
+			}
+			sTable += row;
 		});
 
-		contentString+=sTable+"</table>";
-		var styleString="table{font-family:arial,sans-serif;border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;text-align:left;padding:8px}tr:nth-child(even){background-color:#ddd}";
-		var htmlString=$("<html>").html("<head><style>"+styleString+
-			"</style></head><body>"+contentString+"</body>").html();
+		contentString += sTable + "</table>";
+		var styleString = "table{font-family:arial,sans-serif;border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;text-align:left;padding:8px}tr:nth-child(even){background-color:#ddd}";
+		var htmlString = $("<html>").html("<head><style>" + styleString +
+			"</style></head><body>" + contentString + "</body>").html();
 		return htmlString;
+	}
+
+	function showFlag(type, message, status) {
+		if (status === null || status === undefined) {
+			status = "";
+		}
+		AJS.flag({
+			type: type,
+			close: "auto",
+			title: type.charAt(0).toUpperCase() + type.slice(1) + " " + status,
+			body: message
+		});
 	}
 
 	// export ConDecJiraIssueModule
