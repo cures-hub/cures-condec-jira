@@ -213,9 +213,7 @@ public class KnowledgeRest {
 		childElement.setProject(projectKey);
 
 		Link link = Link.instantiateDirectedLink(parentElement, childElement);
-
 		long linkId = AbstractPersistenceManager.insertLink(link, user);
-
 		if (linkId == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();

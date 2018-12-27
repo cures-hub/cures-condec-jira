@@ -20,7 +20,9 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import net.java.ao.EntityManager;
+import net.java.ao.test.jdbc.Data;
 
+@Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 public class TestKnowledgeRestSetUp extends TestSetUpWithIssues {
 	protected EntityManager entityManager;
 	protected KnowledgeRest knowledgeRest;
@@ -41,8 +43,7 @@ public class TestKnowledgeRestSetUp extends TestSetUpWithIssues {
 		decisionKnowledgeElement.setProject("TEST");
 		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 		decisionKnowledgeElement.setDocumentationLocation(DocumentationLocation.JIRAISSUE);
+
 		request = new MockHttpServletRequest();
-		// sentence = new SentenceImpl();
-		// sentence.setProject("TEST");
 	}
 }
