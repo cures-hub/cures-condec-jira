@@ -83,9 +83,14 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 	@Override
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
-			ApplicationUser user) {
-		// TODO Auto-generated method stub
-		return null;
+			ApplicationUser user, DecisionKnowledgeElement parentElement) {
+		if (parentElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
+			Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(parentElement.getId());
+			element.setId(sentence.getIssueId());
+		} else {
+			element.setId(parentElement.getId());
+		}
+		return ActiveObjectsManager.addNewCommentToJIRAIssue(element, user);
 	}
 
 	@Override

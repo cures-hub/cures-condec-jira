@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.rest.knowledgerest;
 import static org.junit.Assert.assertEquals;
 
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +24,7 @@ public class TestGetUnlinkedElements extends TestSetUpWithIssues {
 	private EntityManager entityManager;
 	private KnowledgeRest knowledgeRest;
 
-	private final static String UNLINKED_ERRROR = "Unlinked decision knowledge elements could not be received due to a bad request (element id or project key was missing).";
+	private final static String BAD_REQUEST_ERRROR = "Unlinked decision knowledge elements could not be received due to a bad request (element id or project key was missing).";
 
 	@Before
 	public void setUp() {
@@ -36,24 +35,30 @@ public class TestGetUnlinkedElements extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testElementIdZeroProjectKeyNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", UNLINKED_ERRROR)).build()
-				.getEntity(), knowledgeRest.getUnlinkedElements(0, null, "").getEntity());
+	public void testElementIdFilledProjectExistentDocumentationLocationEmpty() {
+		assertEquals(Response.Status.OK.getStatusCode(), knowledgeRest.getUnlinkedElements(7, "TEST", "").getStatus());
 	}
 
 	@Test
-	public void testElementIdFilledProjectKeyNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", UNLINKED_ERRROR)).build()
-				.getEntity(), knowledgeRest.getUnlinkedElements(7, null, "").getEntity());
+	public void testElementIdFilledProjectExistentDocumentationLocationJiraIssue() {
+		assertEquals(Response.Status.OK.getStatusCode(), knowledgeRest.getUnlinkedElements(7, "TEST", "i").getStatus());
 	}
 
 	@Test
-	public void testIssueIdFilledProjectKeyDontExist() {
-		assertEquals(Status.OK.getStatusCode(), knowledgeRest.getUnlinkedElements(7, "NotTEST", "").getStatus());
+	public void testElementIdZeroProjectExistentDocumentationLocationEmpty() {
+		assertEquals(Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERRROR))
+				.build().getEntity(), knowledgeRest.getUnlinkedElements(0, "TEST", "").getEntity());
 	}
 
 	@Test
-	public void testIssueIdFilledProjectKeyExist() {
-		assertEquals(Status.OK.getStatusCode(), knowledgeRest.getUnlinkedElements(7, "TEST", "").getStatus());
+	public void testElementIdZeroProjectKeyNullDocumentationLocationEmpty() {
+		assertEquals(Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERRROR))
+				.build().getEntity(), knowledgeRest.getUnlinkedElements(0, null, "").getEntity());
+	}
+
+	@Test
+	public void testElementIdFilledProjectKeyNullDocumentationLocationEmpty() {
+		assertEquals(Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERRROR))
+				.build().getEntity(), knowledgeRest.getUnlinkedElements(7, null, "").getEntity());
 	}
 }

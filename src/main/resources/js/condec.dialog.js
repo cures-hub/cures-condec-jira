@@ -172,7 +172,7 @@
 			submitButton.onclick = function() {
 				var childId = $("select[name='form-select-component']").val();
 				var knowledgeTypeOfChild = $('input[name=form-radio-argument]:checked').val();
-				conDecAPI.createLinkBetweenExistingElements(knowledgeTypeOfChild, id, childId, "i", "i", function() {
+				conDecAPI.createLink(knowledgeTypeOfChild, id, childId, "i", "i", function() {
 					conDecObservable.notify();
 				});
 				AJS.dialog2("#dialog").hide();
