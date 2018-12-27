@@ -38,10 +38,9 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 public class TestSetSentenceIrrelevant extends TestSetUpWithIssues {
 
 	private final static String BAD_REQUEST_ERROR = "Setting sentence irrelevant failed due to a bad request.";
-	
+
 	private EntityManager entityManager;
 	private KnowledgeRest knowledgeRest;
-	private DecisionKnowledgeElement decisionKnowledgeElement;
 	private HttpServletRequest request;
 
 	@Before
@@ -50,10 +49,6 @@ public class TestSetSentenceIrrelevant extends TestSetUpWithIssues {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
-
-		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
-		decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);
-		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 
 		request = new MockHttpServletRequest();
 		request.setAttribute("WithFails", false);
@@ -72,7 +67,7 @@ public class TestSetSentenceIrrelevant extends TestSetUpWithIssues {
 	public void testRequestNullElementFilled() {
 		TestComment tc = new TestComment();
 		Comment comment = tc.getComment("This is a test sentence.");
-		decisionKnowledgeElement = comment.getSentences().get(0);
+		DecisionKnowledgeElement decisionKnowledgeElement = comment.getSentences().get(0);
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERROR)).build()
 				.getEntity(), knowledgeRest.setSentenceIrrelevant(null, decisionKnowledgeElement).getEntity());
 	}
@@ -93,7 +88,7 @@ public class TestSetSentenceIrrelevant extends TestSetUpWithIssues {
 		request.setAttribute("NoFails", true);
 		TestComment tc = new TestComment();
 		Comment comment = tc.getComment("This is a test sentence.");
-		decisionKnowledgeElement = comment.getSentences().get(0);
+		DecisionKnowledgeElement decisionKnowledgeElement = comment.getSentences().get(0);
 		decisionKnowledgeElement.setType(KnowledgeType.ALTERNATIVE);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
 		assertEquals(Status.OK.getStatusCode(),
@@ -103,8 +98,9 @@ public class TestSetSentenceIrrelevant extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledButNotExisting() {
-		request.setAttribute("WithFails", false);
-		request.setAttribute("NoFails", true);
+		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
+		DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);
+		
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
 		assertEquals(500, knowledgeRest.setSentenceIrrelevant(request, decisionKnowledgeElement).getStatus());
 	}

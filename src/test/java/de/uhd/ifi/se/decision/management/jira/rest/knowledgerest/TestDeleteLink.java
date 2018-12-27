@@ -42,7 +42,6 @@ public class TestDeleteLink extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
 	private KnowledgeRest knowledgeRest;
-	private DecisionKnowledgeElement decisionKnowledgeElement;
 	private HttpServletRequest request;
 
 	@Before
@@ -51,10 +50,6 @@ public class TestDeleteLink extends TestSetUpWithIssues {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
-
-		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
-		decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);
-		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 
 		request = new MockHttpServletRequest();
 		request.setAttribute("WithFails", false);
@@ -67,6 +62,10 @@ public class TestDeleteLink extends TestSetUpWithIssues {
 		TestComment testComment = new TestComment();
 		Comment comment = testComment.getComment("This is a test sentence.");
 		DecisionKnowledgeElement sentence = comment.getSentences().get(0);
+		
+		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
+		DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);
+		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
 
 		Link link = new LinkImpl(sentence, decisionKnowledgeElement);
 		GenericLinkManager.insertLink(link, null);
@@ -122,7 +121,7 @@ public class TestDeleteLink extends TestSetUpWithIssues {
 		assertEquals(
 				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", DELETION_ERROR)).build()
 						.getEntity(),
-				knowledgeRest.deleteLink("TEST", null, new LinkImpl(decisionKnowledgeElement, null)).getEntity());
+				knowledgeRest.deleteLink("TEST", null, new LinkImpl(new DecisionKnowledgeElementImpl(), null)).getEntity());
 	}
 
 	@Test
