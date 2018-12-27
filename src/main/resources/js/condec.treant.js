@@ -1,11 +1,9 @@
 (function(global) {
 
 	// closure locals variable for DnD
-	var dragId;
-	var oldParentId;
-	var treantTree;
-
 	var draggedElement;
+	var oldParentElement;
+	var treantTree;	
 
 	var ConDecTreant = function ConDecTreant() {
 	};
@@ -61,10 +59,8 @@
 	}
 
 	function drag(event) {
-		dragId = event.target.id;
 		draggedElement = event.target;
-		event.dataTransfer.setData("text", dragId);
-		oldParentId = findParentElement(dragId)["id"];
+		oldParentElement = findParentElement(event.target.id);
 	}
 
 	function findParentElement(elementId) {
@@ -96,15 +92,14 @@
 
 	function drop(event, target) {
 		event.preventDefault();
-		var parentId = target.id;
-		var childId = dragId;
+		var childId = draggedElement.id;
 
-		var sourceType = extractTypeFromHTMLElement(draggedElement);
-		var oldParentType = extractTypeFromHTMLId(findParentElement(draggedElement.id)["id"]);
-		var newParentType = extractTypeFromHTMLElement(target);
+		var documentationLocationOfChild = extractDocumentationLocationFromHTMLElement(draggedElement);
+		var documentationLocationOfOldParent = extractDocumentationLocationFromHTMLId(findParentElement(childId)["id"]);
+		var documentationLocationOfNewParent = extractDocumentationLocationFromHTMLElement(target);
 
-		conDecAPI.deleteLink(oldParentId, childId, oldParentType, sourceType, function() {
-			conDecAPI.linkElements("contain", target.id, draggedElement.id, newParentType, sourceType, function() {
+		conDecAPI.deleteLink(oldParentElement.id, childId, documentationLocationOfOldParent, documentationLocationOfChild, function() {
+			conDecAPI.createLink(null, target.id, draggedElement.id, documentationLocationOfNewParent, documentationLocationOfChild, function() {
 				conDecObservable.notify();
 			});
 		});
@@ -157,8 +152,8 @@
 	// If you have to add commits here: add a commit class to your commit
 	// objects in
 	// the method "createcontextMenuForTreant"
-	function extractTypeFromHTMLElement(element) {
-		console.log("conDecTreant extractTypeFromHTMLElement");
+	function extractDocumentationLocationFromHTMLElement(element) {
+		console.log("conDecTreant extractDocumentationLocationFromHTMLElement");
 		// Sentences have the node desc shape "ProjectId-IssueID:SentenceID"
 		if (element.getElementsByClassName("node-desc").length === 0) {
 			return "i";
@@ -170,11 +165,11 @@
 		}
 	}
 
-	function extractTypeFromHTMLId(id) {
-		console.log("conDecTreant extractTypeFromHTMLId");
+	function extractDocumentationLocationFromHTMLId(id) {
+		console.log("conDecTreant extractDocumentationLocationFromHTMLId");
 		var element = document.getElementById(id);
 		console.log(id);
-		return extractTypeFromHTMLElement(element);
+		return extractDocumentationLocationFromHTMLElement(element);
 	}
 
 	// export ConDecTreant

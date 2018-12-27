@@ -39,7 +39,7 @@ public class TestCreateLink extends TestKnowledgeRestSetUp {
 	private HttpServletRequest request;
 	private LinkImpl link;
 
-	private final static String CREATION_ERROR = "Creation of link failed.";
+	private final static String CREATION_ERROR = "Link could not be created due to a bad request.";
 
 	@Before
 	public void setUp() {
@@ -68,69 +68,69 @@ public class TestCreateLink extends TestKnowledgeRestSetUp {
 	@Test
 	public void testProjectKeyNullRequestNullLinkNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink(null, null, null).getEntity());
+				.getEntity(), knowledgeRest.createLink(null, null, null, 4, "i", 1, "i").getEntity());
 	}
 
 	@Test
 	public void testProjectKeyNullRequestNullLinkIdZero() {
 		link.setType("Zero");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink(null, null, link).getEntity());
+				.getEntity(), knowledgeRest.createLink(null, null, null, 4, "i", 1, "i").getEntity());
 	}
 
 	public void testProjectKeyNullRequestNullLinkIdFilled() {
 		link.setType("Ok");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink(null, null, link).getEntity());
+				.getEntity(), knowledgeRest.createLink(null, null, null, 4, "i", 1, "i").getEntity());
 	}
 
 	@Test
 	public void testProjectKeyNullRequestFilledLinkNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink(null, request, null).getEntity());
+				.getEntity(), knowledgeRest.createLink(request, null, null, 4, "i", 1, "i").getEntity());
 	}
 
 	@Test
 	public void testProjectKeyNullRequestFilledLinkIdZero() {
 		link.setType("Zero");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink(null, request, link).getEntity());
+				.getEntity(), knowledgeRest.createLink(request, null, null, 4, "i", 1, "i").getEntity());
 	}
 
 	@Test
 	public void testProjectKeyNullRequestFilledLinkIdFilled() {
 		link.setType("Ok");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink(null, request, link).getEntity());
+				.getEntity(), knowledgeRest.createLink(request, null, null, 4, "i", 1, "i").getEntity());
 	}
 
 	@Test
 	public void testProjectKeyFilledRequestNullLinkNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink("TEST", null, null).getEntity());
+				.getEntity(), knowledgeRest.createLink(null, "TEST", null, 4, "i", 1, "i").getEntity());
 	}
 
 	@Test
 	public void testProjectKeyFilledRequestNullLinkIdZero() {
 		link.setType("Zero");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink("TEST", null, link).getEntity());
+				.getEntity(), knowledgeRest.createLink(null, "TEST", null, 4, "i", 1, "i").getEntity());
 	}
 
 	@Test
 	public void testProjectKeyFilledRequestNullLinkIdFilled() {
 		link.setType("Ok");
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink("TEST", null, link).getEntity());
+				.getEntity(), knowledgeRest.createLink(null, "TEST", null, 4, "i", 1, "i").getEntity());
 	}
 
 	@Test
 	public void testProjectKeyFilledRequestFilledLinkNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink("TEST", request, null).getEntity());
+				.getEntity(), knowledgeRest.createLink(request, "TEST", null, 0, "i", 1, "i").getEntity());
 	}
 
-	//TODO
+	// TODO
 	@Ignore
 	@Test
 	@NonTransactional
@@ -142,21 +142,27 @@ public class TestCreateLink extends TestKnowledgeRestSetUp {
 		link.setDocumentationLocationOfDestinationElement("s");
 		link.getSourceElement().setType("Decision");
 		link.getDestinationElement().setType("Decision");
-		assertEquals(Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", CREATION_ERROR))
-				.build().getEntity(), knowledgeRest.createLink("create", request, link).getEntity());
+		assertEquals(
+				Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
+						.getEntity(),
+				knowledgeRest.createLink(request, "create", "Decision", 4, "s", 3, "s").getEntity());
 	}
 
 	@Test
 	public void testProjectKeyNonExistentRequestNullLinkNull() {
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink("notCreate", null, null).getEntity());
+		assertEquals(
+				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
+						.getEntity(),
+				knowledgeRest.createLink(null, "notCreate", "Decision", 4, "s", 3, "s").getEntity());
 	}
 
 	@Test
 	public void testProjectKeyNonExistentRequestNullLinkIdZero() {
 		link.setType("Zero");
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink("notCreate", null, link).getEntity());
+		assertEquals(
+				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
+						.getEntity(),
+				knowledgeRest.createLink(null, "notCreate", "Decision", 4, "s", 3, "s").getEntity());
 	}
 
 	private Link newGenericLink() {
@@ -171,17 +177,19 @@ public class TestCreateLink extends TestKnowledgeRestSetUp {
 	@NonTransactional
 	public void testRequestNullElementNull() {
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink(null, null, null).getEntity());
+				.getEntity(), knowledgeRest.createLink(null, null, "Decision", 4, "s", 3, "s").getEntity());
 	}
 
 	@Test
 	@NonTransactional
 	public void testRequestNullElementFilled() {
 		TestComment tc = new TestComment();
-		Comment comment = tc.getComment("this is atest sentence");
+		Comment comment = tc.getComment("This is a test sentence.");
 		decisionKnowledgeElement = comment.getSentences().get(0);
-		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink("TEST", null, newGenericLink()).getEntity());
+		assertEquals(
+				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
+						.getEntity(),
+				knowledgeRest.createLink(null, "TEST", "Decision", comment.getIssueId(), "s", 3, "s").getEntity());
 	}
 
 	@Test
@@ -190,7 +198,7 @@ public class TestCreateLink extends TestKnowledgeRestSetUp {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", CREATION_ERROR)).build()
-				.getEntity(), knowledgeRest.createLink("TEST", request, null).getEntity());
+				.getEntity(), knowledgeRest.createLink(request, "TEST", null, 0, "s", 3, "s").getEntity());
 	}
 
 	@Ignore
@@ -203,6 +211,6 @@ public class TestCreateLink extends TestKnowledgeRestSetUp {
 		gl.setId(0);
 		GenericLinkManager.insertLink(gl, null);
 		assertEquals(Status.OK.getStatusCode(),
-				knowledgeRest.createLink("TEST", request, newGenericLink()).getStatus());
+				knowledgeRest.createLink(request, "TEST", "Decision", 0, "s", 3, "s").getStatus());
 	}
 }

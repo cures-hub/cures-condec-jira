@@ -101,8 +101,6 @@ public class KnowledgeRest {
 					.build();
 		}
 
-		String projectKey = element.getProject().getProjectKey();
-
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
 		DecisionKnowledgeElement existingElement = new DecisionKnowledgeElementImpl();
@@ -122,7 +120,11 @@ public class KnowledgeRest {
 			return Response.status(Status.OK).entity(elementWithId).build();
 		}
 		Link link = Link.instantiateDirectedLink(existingElement, elementWithId);
-		createLink(projectKey, request, link);
+		long linkId = AbstractPersistenceManager.insertLink(link, user);
+		if (linkId == 0) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
+					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
+		}
 
 		return Response.status(Status.OK).entity(elementWithId).build();
 	}
@@ -188,48 +190,7 @@ public class KnowledgeRest {
 	@Path("/createLink")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
-			Link link) {
-		if (projectKey == null || request == null || link == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Creation of link failed."))
-					.build();
-		}
-		link.getSourceElement().setProject(projectKey);
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		long linkId = AbstractPersistenceManager.insertLink(link, user);
-
-		if (linkId == 0) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
-		}
-		return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
-	}
-
-	@Path("/deleteLink")
-	@DELETE
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response deleteLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
-			Link link) {
-		if (projectKey == null || request == null || link == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
-					.build();
-		}
-		link.getSourceElement().setProject(projectKey);
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		boolean isDeleted = AbstractPersistenceManager.deleteLink(link, user);
-
-		if (isDeleted) {
-			return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
-		}
-		return Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
-	}
-
-	@Path("/createLinkBetweenExistingElements")
-	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response createLinkBetweenExistingElements(@Context HttpServletRequest request,
-			@QueryParam("projectKey") String projectKey,
+	public Response createLink(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("knowledgeTypeOfChild") String knowledgeTypeOfChild, @QueryParam("idOfParent") long idOfParent,
 			@QueryParam("documentationLocationOfParent") String documentationLocationOfParent,
 			@QueryParam("idOfChild") long idOfChild,
@@ -260,6 +221,26 @@ public class KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Creation of link failed.")).build();
 		}
 		return Response.status(Status.OK).entity(ImmutableMap.of("id", linkId)).build();
+	}
+
+	@Path("/deleteLink")
+	@DELETE
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response deleteLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
+			Link link) {
+		if (projectKey == null || request == null || link == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
+					.build();
+		}
+		link.getSourceElement().setProject(projectKey);
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		boolean isDeleted = AbstractPersistenceManager.deleteLink(link, user);
+
+		if (isDeleted) {
+			return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
+		}
+		return Response.status(Status.INTERNAL_SERVER_ERROR)
+				.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
 	}
 
 	@Path("/createIssueFromSentence")
