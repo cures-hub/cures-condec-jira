@@ -45,7 +45,7 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
  */
 @JsonAutoDetect
 public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
-	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssuePersistenceManager.class);	
+	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssuePersistenceManager.class);
 
 	public JiraIssuePersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
@@ -310,4 +310,5 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		issueService.update(user, result);
 		return true;
 	}
+
 }

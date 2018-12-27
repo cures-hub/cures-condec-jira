@@ -21,7 +21,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 public class TestCreateDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
 
-	private final static String CREATION_ERROR = "Creation of decision knowledge element failed.";
+	private final static String CREATION_ERROR = "Creation of decision knowledge element failed due to a bad request (element or request is null).";
 
 	@Test
 	public void testRequestNullElementNullParentIdZeroParentDocumentationLocationNull() {
@@ -54,7 +54,7 @@ public class TestCreateDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, null).getStatus());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledWithProArgumentParentIdZeroParentDocumentationLocationNull() {
@@ -76,7 +76,7 @@ public class TestCreateDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, null).getStatus());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledParentIdFilledParentDocumentationLocationFilled() {
@@ -86,7 +86,7 @@ public class TestCreateDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "i").getStatus());
 	}
-	
+
 	// TODO set parent
 	@Test
 	@NonTransactional
@@ -97,7 +97,7 @@ public class TestCreateDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "i").getStatus());
 	}
-	
+
 	// TODO set parent
 	@Test
 	@NonTransactional
@@ -108,7 +108,7 @@ public class TestCreateDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "").getStatus());
 	}
-	
+
 	// TODO set parent
 	@Test
 	@NonTransactional
@@ -119,7 +119,7 @@ public class TestCreateDecisionKnowledgeElement extends TestKnowledgeRestSetUp {
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.createDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, null).getStatus());
 	}
-	
+
 	// TODO set parent
 	@Test
 	@NonTransactional
