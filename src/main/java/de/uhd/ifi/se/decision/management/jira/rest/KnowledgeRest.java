@@ -41,7 +41,7 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDecisionKnowledgeElement(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
 			@QueryParam("documentationLocation") String documentationLocation) {
-		if (projectKey == null) {
+		if (projectKey == null || id <= 0) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Decision knowledge element could not be received due to a bad request (element id or project key was missing)."))
 					.build();
@@ -62,7 +62,7 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getLinkedElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
 			@QueryParam("documentationLocation") String documentationLocation) {
-		if (projectKey == null || id == 0) {
+		if (projectKey == null || id <= 0) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Linked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
 					.build();
@@ -78,7 +78,7 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getUnlinkedElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
 			@QueryParam("documentationLocation") String documentationLocation) {
-		if (projectKey == null || id == 0) {
+		if (projectKey == null || id <= 0) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Unlinked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
 					.build();
@@ -106,6 +106,7 @@ public class KnowledgeRest {
 		DecisionKnowledgeElement existingElement = new DecisionKnowledgeElementImpl();
 		existingElement.setId(idOfExistingElement);
 		existingElement.setDocumentationLocation(documentationLocationOfExistingElement);
+		existingElement.setProject(element.getProject().getProjectKey());
 
 		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(element);
 		DecisionKnowledgeElement elementWithId = persistenceManager.insertDecisionKnowledgeElement(element, user,
@@ -144,7 +145,7 @@ public class KnowledgeRest {
 
 		DecisionKnowledgeElement formerElement = persistenceManager.getDecisionKnowledgeElement(element.getId());
 		if (formerElement == null) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
+			return Response.status(Status.NOT_FOUND)
 					.entity(ImmutableMap.of("error", "Decision knowledge element could not be found in database."))
 					.build();
 		}
@@ -195,7 +196,7 @@ public class KnowledgeRest {
 			@QueryParam("documentationLocationOfParent") String documentationLocationOfParent,
 			@QueryParam("idOfChild") long idOfChild,
 			@QueryParam("documentationLocationOfChild") String documentationLocationOfChild) {
-		if (request == null || projectKey == null || idOfChild == 0 || idOfParent == 0) {
+		if (request == null || projectKey == null || idOfChild <= 0 || idOfParent <= 0) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Link could not be created due to a bad request.")).build();
 		}
@@ -269,7 +270,7 @@ public class KnowledgeRest {
 	public Response setSentenceIrrelevant(@Context HttpServletRequest request,
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (request == null || decisionKnowledgeElement == null || decisionKnowledgeElement.getId() <= 0) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Setting sentence irrelevant failed due to a bad request."))
 					.build();
 		}
 		boolean isDeleted = ActiveObjectsManager.setSentenceIrrelevant(decisionKnowledgeElement.getId(), false);
