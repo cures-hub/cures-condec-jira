@@ -11,7 +11,7 @@ import com.atlassian.jira.issue.link.IssueLink;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 
 /**
  * Model class for links between decision knowledge elements

@@ -88,7 +88,7 @@
     </display>  
   </class>  
   <interface id="9" language="java" 
-    name="de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity" project="git" 
+    name="de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity" project="git" 
     file="/git/src/main/java/de/uhd/ifi/se/decision/management/jira/extraction/persistence/DecisionKnowledgeInCommentEntity.java" 
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="878" y="863"/>    
