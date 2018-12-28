@@ -12,7 +12,6 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
 
 /**
@@ -30,9 +29,9 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	private Date created;
 
 	public DecisionKnowledgeElementImpl() {
-		// prevent nullPointers later
 		this.description = "";
 		this.summary = "";
+		this.type = KnowledgeType.OTHER;
 	}
 
 	public DecisionKnowledgeElementImpl(long id, String summary, String description, KnowledgeType type,
@@ -119,19 +118,20 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	@Override
 	@XmlElement(name = "type")
 	public String getTypeAsString() {
-		if (this.getType() == KnowledgeType.OTHER) {
-			if (this instanceof Sentence) {
-				return ((Sentence) this).getKnowledgeTypeString();
-			}
+		if (this.getType() == KnowledgeType.OTHER
+				&& this.getDocumentationLocation() == DocumentationLocation.JIRAISSUE) {
 			IssueManager issueManager = ComponentAccessor.getIssueManager();
 			Issue issue = issueManager.getIssueByCurrentKey(this.getKey());
 			return issue.getIssueType().getName();
 		}
-		return type.toString();
+		return this.getType().toString();
 	}
 
 	@Override
 	public void setType(KnowledgeType type) {
+		if (type == null) {
+			this.type = KnowledgeType.OTHER;
+		}
 		this.type = type;
 	}
 

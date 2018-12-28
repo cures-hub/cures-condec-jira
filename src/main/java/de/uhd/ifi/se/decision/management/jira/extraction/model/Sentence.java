@@ -60,13 +60,7 @@ public interface Sentence extends DecisionKnowledgeElement {
 	void setEndSubstringCount(int count);
 
 	@JsonIgnore
-	String getKnowledgeTypeString();
-
-	@JsonIgnore
-	void setKnowledgeType(String type);
-
-	@JsonIgnore
-	void setKnowledgeType(double[] prediction);
+	void setType(double[] prediction);
 
 	@JsonIgnore
 	String getProjectKey();

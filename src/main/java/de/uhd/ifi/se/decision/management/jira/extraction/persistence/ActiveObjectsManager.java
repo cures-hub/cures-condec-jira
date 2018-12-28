@@ -132,7 +132,7 @@ public class ActiveObjectsManager {
 		}
 		if (!smartLinkCreated) {
 			checkIfSentenceHasAValidLink(sentence.getId(), sentence.getIssueId(),
-					LinkType.getLinkTypeForKnowledgeType(sentence.getKnowledgeTypeString()));
+					LinkType.getLinkTypeForKnowledgeType(sentence.getTypeAsString()));
 		}
 	}
 
@@ -184,7 +184,7 @@ public class ActiveObjectsManager {
 						databaseEntry.setTagged(sentence.isTagged());
 						databaseEntry.setTaggedFineGrained(sentence.isTaggedFineGrained());
 						databaseEntry.setTaggedManually(sentence.isTaggedManually());
-						databaseEntry.setType(sentence.getKnowledgeTypeString());
+						databaseEntry.setType(sentence.getTypeAsString());
 						databaseEntry.setStartSubstringCount(sentence.getStartSubstringCount());
 						databaseEntry.save();
 					}
@@ -234,7 +234,7 @@ public class ActiveObjectsManager {
 				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (databaseEntry.getId() == sentence.getId()) {
-						databaseEntry.setType(sentence.getKnowledgeTypeString());
+						databaseEntry.setType(sentence.getTypeAsString());
 						int additionalLength = addTagsToCommentWhenAutoClassified(databaseEntry);
 						databaseEntry.setTaggedFineGrained(true);
 						databaseEntry.setEndSubstringCount(databaseEntry.getEndSubstringCount() + additionalLength);
@@ -255,8 +255,7 @@ public class ActiveObjectsManager {
 		MutableComment mc = (MutableComment) cm.getMutableComment(sentence.getCommentId());
 		String newBody = mc.getBody().substring(sentence.getStartSubstringCount(), sentence.getEndSubstringCount());
 
-		newBody = "{" + sentence.getType() + "}" + newBody + "{" + sentence.getType()
-				+ "}";
+		newBody = "{" + sentence.getType() + "}" + newBody + "{" + sentence.getType() + "}";
 		int lengthDiff = (sentence.getType().length() + 2) * 2;
 
 		DecXtractEventListener.editCommentLock = true;
@@ -290,8 +289,7 @@ public class ActiveObjectsManager {
 						}
 						sentenceEntity.setRelevant(true);
 						sentenceEntity.setTaggedFineGrained(true);
-						if (!sentenceEntity.getType().equals("Pro")
-								&& !sentenceEntity.getType().equals("Con")) {
+						if (!sentenceEntity.getType().equals("Pro") && !sentenceEntity.getType().equals("Con")) {
 							if (knowledgeType.equals(KnowledgeType.OTHER)) {
 								sentenceEntity.setRelevant(false);
 							}
@@ -420,8 +418,7 @@ public class ActiveObjectsManager {
 		int oldEnd = sentence.getEndSubstringCount();
 		newBody = newBody.replaceAll("\\{.*?\\}", "");
 
-		sentence.setEndSubstringCount(
-				sentence.getEndSubstringCount() - (2 * (sentence.getType().length() + 2)));
+		sentence.setEndSubstringCount(sentence.getEndSubstringCount() - (2 * (sentence.getType().length() + 2)));
 		sentence.save();
 
 		int lengthDiff = newBody.length() - oldlength;
@@ -603,10 +600,9 @@ public class ActiveObjectsManager {
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
 				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
 						DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
-					if (databaseEntry.getType() != null
-							&& (databaseEntry.getType().equals(rootElementType.toString())
-									|| (databaseEntry.getType().length() == 3 // its either Pro or con
-											&& rootElementType.equals(KnowledgeType.ARGUMENT)))) {
+					if (databaseEntry.getType() != null && (databaseEntry.getType().equals(rootElementType.toString())
+							|| (databaseEntry.getType().length() == 3 // its either Pro or con
+									&& rootElementType.equals(KnowledgeType.ARGUMENT)))) {
 						try {
 							listOfDbEntries.add(databaseEntry);
 						} catch (NullPointerException e) {

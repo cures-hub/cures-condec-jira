@@ -53,7 +53,7 @@ public class TestSentence extends TestSetUpWithIssues {
 	public void testSetKnowledgeTypeDoubleAlternative() {
 		Sentence sentence = new SentenceImpl();
 		double[] classification = { 1.0, 0.0, 0.0, 0.0, 0.0 };
-		sentence.setKnowledgeType(classification);
+		sentence.setType(classification);
 		assertEquals(KnowledgeType.ALTERNATIVE, sentence.getType());
 	}
 
@@ -62,7 +62,7 @@ public class TestSentence extends TestSetUpWithIssues {
 	public void testSetKnowledgeTypeDoubleArgumentPro() {
 		Sentence sentence = new SentenceImpl();
 		double[] classification = { .0, 1.0, 0.0, 0.0, 0.0 };
-		sentence.setKnowledgeType(classification);
+		sentence.setType(classification);
 		assertEquals(KnowledgeType.PRO, sentence.getType());
 		assertEquals("pro", sentence.getTypeAsString().toLowerCase());
 	}
@@ -72,7 +72,7 @@ public class TestSentence extends TestSetUpWithIssues {
 	public void testSetKnowledgeTypeDoubleArgumentCon() {
 		Sentence sentence = new SentenceImpl();
 		double[] classification = { .0, .0, 1.0, 0.0, 0.0 };
-		sentence.setKnowledgeType(classification);
+		sentence.setType(classification);
 		assertEquals(KnowledgeType.CON, sentence.getType());
 		assertEquals("con", sentence.getTypeAsString().toLowerCase());
 	}
@@ -82,7 +82,7 @@ public class TestSentence extends TestSetUpWithIssues {
 	public void testSetKnowledgeTypeDoubleDecision() {
 		Sentence sentence = new SentenceImpl();
 		double[] classification = { .0, 0.0, 0.0, 1.0, 0.0 };
-		sentence.setKnowledgeType(classification);
+		sentence.setType(classification);
 		assertEquals(KnowledgeType.DECISION, sentence.getType());
 	}
 
@@ -91,7 +91,7 @@ public class TestSentence extends TestSetUpWithIssues {
 	public void testSetKnowledgeTypeDoubleIssue() {
 		Sentence sentence = new SentenceImpl();
 		double[] classification = { .0, 0.0, 0.0, .0, 1.0 };
-		sentence.setKnowledgeType(classification);
+		sentence.setType(classification);
 		assertEquals(KnowledgeType.ISSUE, sentence.getType());
 	}
 
@@ -99,13 +99,13 @@ public class TestSentence extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testSetKnowledgeTypeString() {
 		Sentence sentence = new SentenceImpl();
-		sentence.setKnowledgeType(KnowledgeType.ALTERNATIVE.toString());
-		assertEquals(KnowledgeType.ALTERNATIVE.toString(), sentence.getKnowledgeTypeString());
-		sentence.setKnowledgeType("pro");
-		assertEquals("Pro", sentence.getKnowledgeTypeString());
+		sentence.setType(KnowledgeType.ALTERNATIVE.toString());
+		assertEquals(KnowledgeType.ALTERNATIVE.toString(), sentence.getTypeAsString());
+		sentence.setType("pro");
+		assertEquals("Pro", sentence.getTypeAsString());
 		assertEquals("pro", sentence.getTypeAsString().toLowerCase());
-		sentence.setKnowledgeType("con");
-		assertEquals("Con", sentence.getKnowledgeTypeString());
+		sentence.setType("con");
+		assertEquals("Con", sentence.getTypeAsString());
 		assertEquals("con", sentence.getTypeAsString().toLowerCase());
 	}
 
@@ -125,24 +125,23 @@ public class TestSentence extends TestSetUpWithIssues {
 		Sentence sentence = new SentenceImpl();
 		assertNotNull(sentence.toString());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testGetKnowledgeTypeString() {
 		Sentence sentence = new SentenceImpl();
-		sentence.setKnowledgeType("");
-		assertEquals("Other", sentence.getKnowledgeTypeString());
+		sentence.setType("");
+		assertEquals("Other", sentence.getTypeAsString());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testGetUserId() {
 		Sentence sentence = new SentenceImpl();
-		sentence.setUserId((long)1337);
-		assertEquals((long)1337, sentence.getUserId());
+		sentence.setUserId((long) 1337);
+		assertEquals((long) 1337, sentence.getUserId());
 	}
 
-	
 	@Test
 	@NonTransactional
 	public void testGetCreated() {
@@ -150,6 +149,7 @@ public class TestSentence extends TestSetUpWithIssues {
 		sentence.setCreated(new Date());
 		assertNotNull(sentence.getCreated());
 	}
+
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater // (2)
 	{
 		@SuppressWarnings("unchecked")
