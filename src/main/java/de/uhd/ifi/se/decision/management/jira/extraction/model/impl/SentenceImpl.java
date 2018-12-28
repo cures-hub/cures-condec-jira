@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.MutableIssue;
+
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
@@ -29,8 +30,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	private boolean isTaggedManually;
 
 	private boolean isTaggedFineGrained;
-
-	private String argument = "";
 
 	private boolean isPlainText;
 
@@ -56,13 +55,12 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this(databaseEntry.getId(), databaseEntry.getEndSubstringCount(), databaseEntry.getStartSubstringCount(),
 				databaseEntry.getUserId(), databaseEntry.isTagged(), databaseEntry.isRelevant(),
 				databaseEntry.isTaggedFineGrained(), databaseEntry.isTaggedManually(), databaseEntry.getProjectKey(),
-				databaseEntry.getArgument(), databaseEntry.getCommentId(), databaseEntry.getIssueId(),
-				databaseEntry.getKnowledgeTypeString());
+				databaseEntry.getCommentId(), databaseEntry.getIssueId(), databaseEntry.getKnowledgeTypeString());
 	}
 
 	public SentenceImpl(long id, int endSubstringCount, int startSubstringCount, long userId, boolean isTagged,
 			boolean isRelevant, boolean isTaggedFineGrained, boolean isTaggedManually, String projectKey,
-			String argument, long commentId, long issueId, String knowledgeTypeString) {
+			long commentId, long issueId, String knowledgeTypeString) {
 		this();
 		super.setId(id);
 		this.setEndSubstringCount(endSubstringCount);
@@ -73,7 +71,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.setTaggedFineGrained(isTaggedFineGrained);
 		this.setTaggedManually(isTaggedManually);
 		this.setProjectKey(projectKey);
-		this.setArgument(argument);
 		this.setCommentId(commentId);
 		this.setIssueId(issueId);
 		super.setProject(new DecisionKnowledgeProjectImpl(projectKey));
@@ -189,9 +186,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		if (this.knowledgeTypeString == null) {
 			return "";
 		}
-		if (super.type.equals(KnowledgeType.ARGUMENT)) {
-			return this.argument;
-		}
 		return this.knowledgeTypeString;
 	}
 
@@ -201,10 +195,8 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 			super.type = KnowledgeType.OTHER;
 		} else if (type.equalsIgnoreCase("pro")) {
 			super.type = KnowledgeType.PRO;
-			this.argument = "Pro";
 		} else if (type.equalsIgnoreCase("con")) {
 			super.type = KnowledgeType.CON;
-			this.argument = "Con";
 		} else {
 			super.type = KnowledgeType.getKnowledgeType(type);
 		}
@@ -219,26 +211,11 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		} else if (prediction[4] == 1.) {
 			super.type = KnowledgeType.ISSUE;
 		} else if (prediction[1] == 1.) {
-			super.type = KnowledgeType.ARGUMENT;
-			this.argument = "Pro";
+			super.type = KnowledgeType.PRO;
 		} else if (prediction[2] == 1.) {
-			super.type = KnowledgeType.ARGUMENT;
-			this.argument = "Con";
+			super.type = KnowledgeType.CON;
 		}
 		this.setKnowledgeType(super.type.toString());
-	}
-
-	@Override
-	public void setArgument(String argument) {
-		this.argument = argument;
-	}
-
-	@Override
-	public String getArgument() {
-		if (this.argument == null) {
-			return "";
-		}
-		return this.argument;
 	}
 
 	@Override
@@ -269,8 +246,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisintg(body, this.projectKey)
 				|| (ConfigPersistenceManager.isIconParsing(projectKey)
 						&& StringUtils.indexOfAny(body, CommentSplitter.manualRationalIconList) >= 0)) {
-			this.setKnowledgeType(
-					CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey, true));
+			this.setKnowledgeType(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey, true));
 			setManuallyTagged();
 			stripTagsFromBody(body);
 		}
@@ -317,7 +293,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 				this.setBody(text);
 				this.created = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getCreated();
 			}
-		}catch(StringIndexOutOfBoundsException e) {
+		} catch (StringIndexOutOfBoundsException e) {
 			this.setBody("");
 		}
 	}

@@ -16,10 +16,6 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long> {
 
 	void setId(long id);
 
-	String getArgument();
-
-	void setArgument(String argument);
-
 	long getCommentId();
 
 	void setCommentId(long id);

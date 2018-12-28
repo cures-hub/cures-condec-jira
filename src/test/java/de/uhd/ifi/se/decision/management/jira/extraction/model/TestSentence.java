@@ -63,8 +63,8 @@ public class TestSentence extends TestSetUpWithIssues {
 		Sentence sentence = new SentenceImpl();
 		double[] classification = { .0, 1.0, 0.0, 0.0, 0.0 };
 		sentence.setKnowledgeType(classification);
-		assertEquals(KnowledgeType.ARGUMENT, sentence.getType());
-		assertEquals("pro", sentence.getArgument().toLowerCase());
+		assertEquals(KnowledgeType.PRO, sentence.getType());
+		assertEquals("pro", sentence.getTypeAsString().toLowerCase());
 	}
 
 	@Test
@@ -73,8 +73,8 @@ public class TestSentence extends TestSetUpWithIssues {
 		Sentence sentence = new SentenceImpl();
 		double[] classification = { .0, .0, 1.0, 0.0, 0.0 };
 		sentence.setKnowledgeType(classification);
-		assertEquals(KnowledgeType.ARGUMENT, sentence.getType());
-		assertEquals("con", sentence.getArgument().toLowerCase());
+		assertEquals(KnowledgeType.CON, sentence.getType());
+		assertEquals("con", sentence.getTypeAsString().toLowerCase());
 	}
 
 	@Test
@@ -103,10 +103,10 @@ public class TestSentence extends TestSetUpWithIssues {
 		assertEquals(KnowledgeType.ALTERNATIVE.toString(), sentence.getKnowledgeTypeString());
 		sentence.setKnowledgeType("pro");
 		assertEquals("Pro", sentence.getKnowledgeTypeString());
-		assertEquals("pro", sentence.getArgument().toLowerCase());
+		assertEquals("pro", sentence.getTypeAsString().toLowerCase());
 		sentence.setKnowledgeType("con");
 		assertEquals("Con", sentence.getKnowledgeTypeString());
-		assertEquals("con", sentence.getArgument().toLowerCase());
+		assertEquals("con", sentence.getTypeAsString().toLowerCase());
 	}
 
 	@Test

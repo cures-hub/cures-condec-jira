@@ -81,7 +81,6 @@ public class ActiveObjectsManager {
 						todo.setProjectKey(projectKey);
 						todo.setIssueId(issueId);
 						todo.setKnowledgeTypeString("");
-						todo.setArgument("");
 						todo.save();
 						LOGGER.debug("\naddNewSentenceintoAo:\nInsert Sentence " + todo.getId()
 								+ " into AO from comment " + todo.getCommentId());
@@ -100,7 +99,7 @@ public class ActiveObjectsManager {
 			DecisionKnowledgeElement childElement = new DecisionKnowledgeElementImpl();
 			childElement.setId(sentenceId);
 			childElement.setDocumentationLocation("s");
-			
+
 			Link link = Link.instantiateDirectedLink(parentElement, childElement, linkType);
 			GenericLinkManager.insertLinkWithoutTransaction(link);
 		}
@@ -180,7 +179,6 @@ public class ActiveObjectsManager {
 						DecisionKnowledgeInCommentEntity.class,
 						Query.select().where("PROJECT_KEY = ?", sentence.getProjectKey()))) {
 					if (databaseEntry.getId() == sentence.getId()) {
-						databaseEntry.setArgument(sentence.getArgument());
 						databaseEntry.setEndSubstringCount(sentence.getEndSubstringCount());
 						databaseEntry.setRelevant(sentence.isRelevant());
 						databaseEntry.setTagged(sentence.isTagged());
@@ -239,7 +237,6 @@ public class ActiveObjectsManager {
 						databaseEntry.setKnowledgeTypeString(sentence.getKnowledgeTypeString());
 						int additionalLength = addTagsToCommentWhenAutoClassified(databaseEntry);
 						databaseEntry.setTaggedFineGrained(true);
-						databaseEntry.setArgument(sentence.getArgument());
 						databaseEntry.setEndSubstringCount(databaseEntry.getEndSubstringCount() + additionalLength);
 						updateSentenceLengthForOtherSentencesInSameComment(sentence.getCommentId(),
 								sentence.getStartSubstringCount(), additionalLength, sentence.getId());
@@ -288,7 +285,6 @@ public class ActiveObjectsManager {
 						String oldKnowledgeType = sentenceEntity.getKnowledgeTypeString();
 						if (knowledgeType.equals(KnowledgeType.OTHER) || knowledgeType.equals(KnowledgeType.ARGUMENT)) {
 							sentenceEntity.setKnowledgeTypeString(argument);
-							sentenceEntity.setArgument(argument);
 						} else {
 							sentenceEntity.setKnowledgeTypeString(knowledgeType.toString());
 						}
@@ -296,7 +292,6 @@ public class ActiveObjectsManager {
 						sentenceEntity.setTaggedFineGrained(true);
 						if (!sentenceEntity.getKnowledgeTypeString().equals("Pro")
 								&& !sentenceEntity.getKnowledgeTypeString().equals("Con")) {
-							sentenceEntity.setArgument("");
 							if (knowledgeType.equals(KnowledgeType.OTHER)) {
 								sentenceEntity.setRelevant(false);
 							}
@@ -399,7 +394,6 @@ public class ActiveObjectsManager {
 						sentenceEntity.setRelevant(false);
 						sentenceEntity.setTaggedManually(isTaggedManually);
 						sentenceEntity.setKnowledgeTypeString(KnowledgeType.OTHER.toString());
-						sentenceEntity.setArgument("");
 						sentenceEntity.save();
 						return true;
 					}
@@ -571,9 +565,6 @@ public class ActiveObjectsManager {
 					}
 					if (databaseEntry.isTaggedFineGrained() == null) {
 						databaseEntry.setTaggedFineGrained(false);
-					}
-					if (databaseEntry.getArgument() == null) {
-						databaseEntry.setArgument("");
 					}
 					if (databaseEntry.getKnowledgeTypeString() == null) {
 						databaseEntry.setKnowledgeTypeString("");

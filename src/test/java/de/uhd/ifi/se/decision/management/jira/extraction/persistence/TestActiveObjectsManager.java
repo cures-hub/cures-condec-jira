@@ -215,7 +215,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.PRO);
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(id);
 		assertTrue(element.getKnowledgeTypeString().equalsIgnoreCase("Pro"));
-		assertTrue(element.getArgument().equalsIgnoreCase("Pro"));
+		assertTrue(element.getTypeAsString().equalsIgnoreCase("Pro"));
 	}
 
 	@Test
@@ -273,7 +273,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 
 		ActiveObjectsManager.setSentenceIrrelevant(id, true);
 		element = (Sentence) ActiveObjectsManager.getElementFromAO(id);
-		assertTrue(element.getArgument().equals(""));
+		assertTrue(element.getTypeAsString().equals("Other"));
 		assertFalse(element.isRelevant());
 		assertTrue(element.isTaggedManually());
 		assertTrue(element.getKnowledgeTypeString().equalsIgnoreCase("Other"));
