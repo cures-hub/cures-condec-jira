@@ -49,15 +49,15 @@ public class ActiveObjectsManager {
 
 	public static long addNewSentenceintoAo(Comment comment, long issueId, int index) {
 		return addNewSentenceintoAo(comment.getJiraCommentId(), comment.getEndSubstringCount().get(index),
-				comment.getStartSubstringCount().get(index), comment.getAuthorId(), issueId, comment.getProjectKey());
+				comment.getStartSubstringCount().get(index), issueId, comment.getProjectKey());
 	}
 
-	public static long addNewSentenceintoAo(long commentId, int endSubStringCount, int startSubstringCount, long userId,
+	public static long addNewSentenceintoAo(long commentId, int endSubStringCount, int startSubstringCount,
 			long issueId, String projectKey) {
 		init();
 
 		DecisionKnowledgeInCommentEntity existingElement = getElementFromAO(commentId, endSubStringCount,
-				startSubstringCount, userId, projectKey);
+				startSubstringCount, projectKey);
 		if (existingElement != null) {
 			checkIfSentenceHasAValidLink(existingElement.getId(), issueId,
 					LinkType.getLinkTypeForKnowledgeType(existingElement.getType()));
@@ -73,7 +73,6 @@ public class ActiveObjectsManager {
 						todo.setCommentId(commentId);
 						todo.setEndSubstringCount(endSubStringCount);
 						todo.setStartSubstringCount(startSubstringCount);
-						todo.setUserId(userId);
 						todo.setTagged(false);
 						todo.setRelevant(false);
 						todo.setTaggedFineGrained(false);
@@ -195,7 +194,7 @@ public class ActiveObjectsManager {
 	}
 
 	public static DecisionKnowledgeInCommentEntity getElementFromAO(long commentId, int endSubtringCount,
-			int startSubstringCount, long userId, String projectKey) {
+			int startSubstringCount, String projectKey) {
 		init();
 		DecisionKnowledgeInCommentEntity element = ActiveObjects
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {

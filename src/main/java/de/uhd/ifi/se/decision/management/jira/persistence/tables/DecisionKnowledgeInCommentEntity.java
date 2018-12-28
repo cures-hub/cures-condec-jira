@@ -56,10 +56,6 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long> {
 
 	void setTaggedManually(Boolean tagged);
 
-	long getUserId();
-
-	void setUserId(long id);
-
 	static boolean deleteElement(DecisionKnowledgeInCommentEntity elementToDelete) {
 		try {
 			elementToDelete.getEntityManager().delete(elementToDelete);

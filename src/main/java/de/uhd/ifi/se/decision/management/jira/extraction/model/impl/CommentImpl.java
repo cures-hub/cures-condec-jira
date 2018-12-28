@@ -64,7 +64,7 @@ public class CommentImpl implements Comment {
 			int endIndex = this.splitter.getEndSubstringCount().get(i);
 			if (insertSentencesIntoAO && startAndEndIndexRules(startIndex, endIndex)) {
 				long aoId2 = ActiveObjectsManager.addNewSentenceintoAo(this.jiraCommentId, endIndex, startIndex,
-						this.authorId, this.issueId, this.projectKey);
+						this.issueId, this.projectKey);
 				Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(aoId2);
 				ActiveObjectsManager.createSmartLinkForSentence(sentence);
 				sentence.setCreated(this.created);
@@ -74,8 +74,9 @@ public class CommentImpl implements Comment {
 	}
 
 	/**
-	 * Checks: Start Index >=0, End Index >= 0, End Index - Start Index > 0, Body not
-	 * only whitespaces
+	 * Checks: Start Index >=0, End Index >= 0, End Index - Start Index > 0, Body
+	 * not only whitespaces
+	 * 
 	 * @param startIndex
 	 * @param endIndex
 	 * @return

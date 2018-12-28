@@ -42,10 +42,7 @@ public interface Sentence extends DecisionKnowledgeElement {
 	void setCommentId(long id);
 
 	@JsonIgnore
-	long getUserId();
-
-	@JsonIgnore
-	void setUserId(long id);
+	long getAuthorId();
 
 	@JsonIgnore
 	int getStartSubstringCount();

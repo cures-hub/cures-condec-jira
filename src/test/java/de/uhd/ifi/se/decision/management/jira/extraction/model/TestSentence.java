@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Date;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -132,14 +133,6 @@ public class TestSentence extends TestSetUpWithIssues {
 		Sentence sentence = new SentenceImpl();
 		sentence.setType("");
 		assertEquals("Other", sentence.getTypeAsString());
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetUserId() {
-		Sentence sentence = new SentenceImpl();
-		sentence.setUserId((long) 1337);
-		assertEquals((long) 1337, sentence.getUserId());
 	}
 
 	@Test

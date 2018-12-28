@@ -37,8 +37,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	private long commentId;
 
-	private long userId;
-
 	private long issueId;
 
 	private Date created;
@@ -48,14 +46,13 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
 
-	public SentenceImpl(long id, int endSubstringCount, int startSubstringCount, long userId, boolean isTagged,
+	public SentenceImpl(long id, int endSubstringCount, int startSubstringCount, boolean isTagged,
 			boolean isRelevant, boolean isTaggedFineGrained, boolean isTaggedManually, String projectKey,
 			long commentId, long issueId, String type) {
 		this();
 		this.setId(id);
 		this.setEndSubstringCount(endSubstringCount);
 		this.setStartSubstringCount(startSubstringCount);
-		this.setUserId(userId);
 		this.setTagged(isTagged);
 		this.setRelevant(isRelevant);
 		this.setTaggedFineGrained(isTaggedFineGrained);
@@ -74,7 +71,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	public SentenceImpl(DecisionKnowledgeInCommentEntity databaseEntry) {
 		this(databaseEntry.getId(), databaseEntry.getEndSubstringCount(), databaseEntry.getStartSubstringCount(),
-				databaseEntry.getUserId(), databaseEntry.isTagged(), databaseEntry.isRelevant(),
+				databaseEntry.isTagged(), databaseEntry.isRelevant(),
 				databaseEntry.isTaggedFineGrained(), databaseEntry.isTaggedManually(), databaseEntry.getProjectKey(),
 				databaseEntry.getCommentId(), databaseEntry.getIssueId(), databaseEntry.getType());
 	}
@@ -140,13 +137,10 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	@Override
-	public long getUserId() {
-		return this.userId;
-	}
-
-	@Override
-	public void setUserId(long id) {
-		this.userId = id;
+	public long getAuthorId() {
+		return 0;
+		// TODO Implement
+		//return this.getComment().getAuthorId();
 	}
 
 	@Override
