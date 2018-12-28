@@ -15,7 +15,7 @@ public interface Sentence extends DecisionKnowledgeElement {
 	void setRelevant(boolean isRelevant);
 
 	@JsonIgnore
-	void setRelevant(Double prediction);
+	void setRelevant(double prediction);
 
 	@JsonIgnore
 	boolean isTagged();
@@ -24,16 +24,7 @@ public interface Sentence extends DecisionKnowledgeElement {
 	void setTagged(boolean isTagged);
 
 	@JsonIgnore
-	boolean isTaggedManually();
-
-	@JsonIgnore
-	void setTaggedManually(boolean isTaggedManually);
-
-	@JsonIgnore
 	boolean isTaggedFineGrained();
-
-	@JsonIgnore
-	void setTaggedFineGrained(boolean isTaggedFineGrained);
 
 	@JsonIgnore
 	long getCommentId();
@@ -42,10 +33,7 @@ public interface Sentence extends DecisionKnowledgeElement {
 	void setCommentId(long id);
 
 	@JsonIgnore
-	long getUserId();
-
-	@JsonIgnore
-	void setUserId(long id);
+	long getAuthorId();
 
 	@JsonIgnore
 	int getStartSubstringCount();
@@ -60,25 +48,7 @@ public interface Sentence extends DecisionKnowledgeElement {
 	void setEndSubstringCount(int count);
 
 	@JsonIgnore
-	String getKnowledgeTypeString();
-
-	@JsonIgnore
-	void setKnowledgeType(String type);
-
-	@JsonIgnore
-	void setKnowledgeType(double[] prediction);
-
-	@JsonIgnore
-	void setArgument(String argument);
-
-	@JsonIgnore
-	String getArgument();
-
-	@JsonIgnore
-	String getProjectKey();
-
-	@JsonIgnore
-	void setProjectKey(String key);
+	void setType(double[] prediction);
 
 	@JsonIgnore
 	void setIssueId(long issueid);

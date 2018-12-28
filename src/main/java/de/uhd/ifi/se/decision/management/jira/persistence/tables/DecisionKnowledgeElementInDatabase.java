@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence;
+package de.uhd.ifi.se.decision.management.jira.persistence.tables;
 
 import java.sql.SQLException;
 

@@ -155,25 +155,20 @@
 	};
 
 	/*
-	 * external references: condec.treant, condec.tree.viewer
+	 * external references: condec.dialog, condec.treant, condec.tree.viewer
 	 */
-	ConDecAPI.prototype.linkElements = function linkElements(linkType, idOfDestinationElement, idOfSourceElement,
-			documentationLocationOfDestinationElement, documentationLocationOfSourceElement, callback) {
-		console.log("conDecAPI linkElements");
-		var link = {
-			"type" : linkType,
-			"idOfSourceElement" : idOfSourceElement,
-			"idOfDestinationElement" : idOfDestinationElement,
-			"documentationLocationOfSourceElement" : documentationLocationOfSourceElement,
-			"documentationLocationOfDestinationElement" : documentationLocationOfDestinationElement
-		};
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLink.json?projectKey=" + projectKey, link,
-				function(error, link) {
-					if (error === null) {
-						showFlag("success", "Link has been created.");
-						callback(link);
-					}
-				});
+	ConDecAPI.prototype.createLink = function createLink(knowledgeTypeOfChild, idOfParent, idOfChild,
+			documentationLocationOfParent, documentationLocationOfChild, callback) {
+		postJSON(AJS.contextPath()
+				+ "/rest/decisions/latest/decisions/createLink.json?projectKey=" + projectKey
+				+ "&knowledgeTypeOfChild=" + knowledgeTypeOfChild + "&idOfParent=" + idOfParent
+				+ "&documentationLocationOfParent=" + documentationLocationOfParent + "&idOfChild=" + idOfChild
+				+ "&documentationLocationOfChild=" + documentationLocationOfChild, null, function(error, link) {
+			if (error === null) {
+				showFlag("success", "Link has been created.");
+				callback(link);
+			}
+		});
 	};
 
 	/*
@@ -195,24 +190,6 @@
 						callback();
 					}
 				});
-	};
-
-	/*
-	 * external references: condec.dialog
-	 */
-	ConDecAPI.prototype.createLinkBetweenExistingElements = function createLinkBetweenExistingElements(
-			knowledgeTypeOfChild, idOfParent, idOfChild, documentationLocationOfParent, documentationLocationOfChild,
-			callback) {
-		postJSON(AJS.contextPath()
-				+ "/rest/decisions/latest/decisions/createLinkBetweenExistingElements.json?projectKey=" + projectKey
-				+ "&knowledgeTypeOfChild=" + knowledgeTypeOfChild + "&idOfParent=" + idOfParent
-				+ "&documentationLocationOfParent=" + documentationLocationOfParent + "&idOfChild=" + idOfChild
-				+ "&documentationLocationOfChild=" + documentationLocationOfChild, null, function(error, link) {
-			if (error === null) {
-				showFlag("success", "Link has been created.");
-				callback(link);
-			}
-		});
 	};
 
 	/*

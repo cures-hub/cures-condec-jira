@@ -470,13 +470,37 @@ public abstract class AbstractPersistenceManager {
 	 * @param element
 	 *            decision knowledge element with attributes such as a summary, the
 	 *            knowledge type, and an optional description.
+	 * @param parentElement
+	 *            (optional) decision knowledge element that is the parent of this
+	 *            element. The parent element is necessary for decision knowledge
+	 *            stored in JIRA issue description and comments.
 	 * @param user
 	 *            authenticated JIRA application user
 	 * @return decision knowledge element that is now filled with internal database
 	 *         id and key, null if insertion failed.
 	 */
-	public abstract DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
-			ApplicationUser user);
+	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
+			ApplicationUser user, DecisionKnowledgeElement parentElement) {
+		return insertDecisionKnowledgeElement(element, user);
+	}
+
+	/**
+	 * Insert a new decision knowledge element into database.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see ApplicationUser
+	 * @param element
+	 *            decision knowledge element with attributes such as a summary, the
+	 *            knowledge type, and an optional description.
+	 * @param user
+	 *            authenticated JIRA application user
+	 * @return decision knowledge element that is now filled with internal database
+	 *         id and key, null if insertion failed.
+	 */
+	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
+			ApplicationUser user) {
+		return null;
+	}
 
 	/**
 	 * Update an existing decision knowledge element in database.

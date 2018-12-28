@@ -23,11 +23,11 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.persistence.LinkInDatabase;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.DatabaseUpdater;
@@ -280,7 +280,6 @@ public class TestComment extends TestSetUpWithIssues {
 		assertEquals(false, comment.getSentences().get(0).isRelevant());
 		assertEquals(false, comment.getSentences().get(0).isPlainText());
 		assertEquals(false, comment.getSentences().get(0).isTagged());
-		assertEquals(false, comment.getSentences().get(0).isTaggedManually());
 	}
 
 	@Test
@@ -291,7 +290,6 @@ public class TestComment extends TestSetUpWithIssues {
 		assertEquals(false, comment.getSentences().get(0).isRelevant());
 		assertEquals(false, comment.getSentences().get(0).isPlainText());
 		assertEquals(false, comment.getSentences().get(0).isTagged());
-		assertEquals(false, comment.getSentences().get(0).isTaggedManually());
 	}
 
 	@Test
@@ -302,7 +300,6 @@ public class TestComment extends TestSetUpWithIssues {
 		assertEquals(false, comment.getSentences().get(0).isRelevant());
 		assertEquals(false, comment.getSentences().get(0).isPlainText());
 		assertEquals(false, comment.getSentences().get(0).isTagged());
-		assertEquals(false, comment.getSentences().get(0).isTaggedManually());
 	}
 
 	@Test
@@ -314,7 +311,6 @@ public class TestComment extends TestSetUpWithIssues {
 		assertEquals(true, comment.getSentences().get(0).isRelevant());
 		assertEquals(false, comment.getSentences().get(0).isPlainText());
 		assertEquals(true, comment.getSentences().get(0).isTagged());
-		assertEquals(true, comment.getSentences().get(0).isTaggedManually());
 	}
 
 	@Test
@@ -325,7 +321,6 @@ public class TestComment extends TestSetUpWithIssues {
 		assertEquals(true, comment.getSentences().get(0).isRelevant());
 		assertEquals(false, comment.getSentences().get(0).isPlainText());
 		assertEquals(true, comment.getSentences().get(0).isTagged());
-		assertEquals(true, comment.getSentences().get(0).isTaggedManually());
 		assertEquals(KnowledgeType.PRO, comment.getSentences().get(0).getType());
 	}
 
