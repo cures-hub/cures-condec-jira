@@ -546,32 +546,6 @@ public class ActiveObjectsManager {
 
 	}
 
-	public static void setDefaultValuesToExistingElements() {
-		init();
-		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-			@Override
-			public DecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects
-						.find(DecisionKnowledgeInCommentEntity.class)) {
-					if (databaseEntry.isRelevant() == null) {
-						databaseEntry.setRelevant(false);
-					}
-					if (databaseEntry.isTagged() == null) {
-						databaseEntry.setTagged(false);
-					}
-					if (databaseEntry.isTaggedFineGrained() == null) {
-						databaseEntry.setTaggedFineGrained(false);
-					}
-					if (databaseEntry.getType() == null) {
-						databaseEntry.setType("");
-					}
-					databaseEntry.save();
-				}
-				return null;
-			}
-		});
-	}
-
 	public static void createLinksForNonLinkedElementsForProject(String projectKey) {
 		init();
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,

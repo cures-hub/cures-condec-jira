@@ -36,25 +36,25 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long> {
 
 	void setProjectKey(String projectKey);
 
-	Boolean isRelevant();
+	boolean isRelevant();
 
-	void setRelevant(Boolean isRelevant);
+	void setRelevant(boolean isRelevant);
 
 	int getStartSubstringCount();
 
 	void setStartSubstringCount(int count);
 
-	Boolean isTagged();
+	boolean isTagged();
 
-	void setTagged(Boolean tagged);
+	void setTagged(boolean tagged);
 
-	Boolean isTaggedFineGrained();
+	boolean isTaggedFineGrained();
 
-	void setTaggedFineGrained(Boolean tagged);
+	void setTaggedFineGrained(boolean tagged);
 
-	Boolean isTaggedManually();
+	boolean isTaggedManually();
 
-	void setTaggedManually(Boolean tagged);
+	void setTaggedManually(boolean tagged);
 
 	static boolean deleteElement(DecisionKnowledgeInCommentEntity elementToDelete) {
 		try {
