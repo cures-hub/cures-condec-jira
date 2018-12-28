@@ -48,13 +48,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
 
-	public SentenceImpl(DecisionKnowledgeInCommentEntity databaseEntry) throws NullPointerException {
-		this(databaseEntry.getId(), databaseEntry.getEndSubstringCount(), databaseEntry.getStartSubstringCount(),
-				databaseEntry.getUserId(), databaseEntry.isTagged(), databaseEntry.isRelevant(),
-				databaseEntry.isTaggedFineGrained(), databaseEntry.isTaggedManually(), databaseEntry.getProjectKey(),
-				databaseEntry.getCommentId(), databaseEntry.getIssueId(), databaseEntry.getType());
-	}
-
 	public SentenceImpl(long id, int endSubstringCount, int startSubstringCount, long userId, boolean isTagged,
 			boolean isRelevant, boolean isTaggedFineGrained, boolean isTaggedManually, String projectKey,
 			long commentId, long issueId, String type) {
@@ -71,12 +64,19 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.setCommentId(commentId);
 		this.setIssueId(issueId);
 		this.setProject(new DecisionKnowledgeProjectImpl(projectKey));
-		this.type = KnowledgeType.getKnowledgeType(type);
+		this.setType(type);
 		MutableIssue mutableIssue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
 		if (mutableIssue != null) {
 			this.setKey(mutableIssue.getKey() + ":" + this.getId());
 		}
 		retrieveBodyFromJiraComment();
+	}
+
+	public SentenceImpl(DecisionKnowledgeInCommentEntity databaseEntry) {
+		this(databaseEntry.getId(), databaseEntry.getEndSubstringCount(), databaseEntry.getStartSubstringCount(),
+				databaseEntry.getUserId(), databaseEntry.isTagged(), databaseEntry.isRelevant(),
+				databaseEntry.isTaggedFineGrained(), databaseEntry.isTaggedManually(), databaseEntry.getProjectKey(),
+				databaseEntry.getCommentId(), databaseEntry.getIssueId(), databaseEntry.getType());
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	@Override
-	public void setRelevant(Double prediction) {
+	public void setRelevant(double prediction) {
 		if (prediction == 1.) {
 			this.setRelevant(true);
 		} else {

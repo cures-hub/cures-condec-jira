@@ -15,7 +15,7 @@ public interface Sentence extends DecisionKnowledgeElement {
 	void setRelevant(boolean isRelevant);
 
 	@JsonIgnore
-	void setRelevant(Double prediction);
+	void setRelevant(double prediction);
 
 	@JsonIgnore
 	boolean isTagged();
