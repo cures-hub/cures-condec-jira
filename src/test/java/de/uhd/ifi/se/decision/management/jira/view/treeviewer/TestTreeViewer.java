@@ -45,7 +45,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	private Map<String, Boolean> themes;
 	private Set<Data> data;
 	private TreeViewer treeViewer;
-	private Boolean[] selectedKnowledgeTypes = {true,true,true,true,true};
+	private Boolean[] selectedKnowledgeTypes = { true, true, true, true, true };
 
 	@Before
 	public void setUp() {
@@ -160,7 +160,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		TreeViewer tree = new TreeViewer();
 		TestComment tc = new TestComment();
 		Comment comment = tc.getComment("This is a testcomment with some text");
-		comment.getSentences().get(0).setKnowledgeType(KnowledgeType.ALTERNATIVE.toString());
+		comment.getSentences().get(0).setType(KnowledgeType.ALTERNATIVE);
 		assertNotNull(tree.getDataStructure(comment.getSentences().get(0)));
 	}
 
@@ -168,27 +168,28 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testTreeViewerCalledFromTabpanel() {
-		//1) Check if Tree Element has no Children - Important! 
+		// 1) Check if Tree Element has no Children - Important!
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
 		TreeViewer tv = new TreeViewer(element.getKey(), selectedKnowledgeTypes);
 		assertNotNull(tv);
 		assertEquals(0, tv.getDataStructure(element).getChildren().size());
-		
-		//2) Add comment to issue
+
+		// 2) Add comment to issue
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("14");
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
-		com.atlassian.jira.issue.comments.Comment comment1 = commentManager.create(issue, currentUser, "This is a testsentence for test purposes", true);
-		
-		//3) Manipulate Sentence object so it will be shown in the tree viewer
-		Comment comment = new CommentImpl(comment1,true);
+		com.atlassian.jira.issue.comments.Comment comment1 = commentManager.create(issue, currentUser,
+				"This is a testsentence for test purposes", true);
+
+		// 3) Manipulate Sentence object so it will be shown in the tree viewer
+		Comment comment = new CommentImpl(comment1, true);
 		comment.getSentences().get(0).setRelevant(true);
-		comment.getSentences().get(0).setKnowledgeType(KnowledgeType.ALTERNATIVE.toString());
+		comment.getSentences().get(0).setType(KnowledgeType.ALTERNATIVE);
 		element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
 		tv = new TreeViewer(element.getKey(), selectedKnowledgeTypes);
-		
-		//4) Check if TreeViewer has one element
+
+		// 4) Check if TreeViewer has one element
 		assertNotNull(tv);
 		assertEquals(1, tv.getData().size());
 

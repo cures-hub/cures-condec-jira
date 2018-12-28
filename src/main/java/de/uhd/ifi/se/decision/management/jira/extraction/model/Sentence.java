@@ -15,7 +15,7 @@ public interface Sentence extends DecisionKnowledgeElement {
 	void setRelevant(boolean isRelevant);
 
 	@JsonIgnore
-	void setRelevant(Double prediction);
+	void setRelevant(double prediction);
 
 	@JsonIgnore
 	boolean isTagged();
@@ -60,19 +60,7 @@ public interface Sentence extends DecisionKnowledgeElement {
 	void setEndSubstringCount(int count);
 
 	@JsonIgnore
-	String getKnowledgeTypeString();
-
-	@JsonIgnore
-	void setKnowledgeType(String type);
-
-	@JsonIgnore
-	void setKnowledgeType(double[] prediction);
-
-	@JsonIgnore
-	void setArgument(String argument);
-
-	@JsonIgnore
-	String getArgument();
+	void setType(double[] prediction);
 
 	@JsonIgnore
 	String getProjectKey();

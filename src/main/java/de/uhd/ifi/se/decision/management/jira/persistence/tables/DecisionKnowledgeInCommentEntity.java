@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
+package de.uhd.ifi.se.decision.management.jira.persistence.tables;
 
 import java.sql.SQLException;
 
@@ -16,10 +16,6 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long> {
 
 	void setId(long id);
 
-	String getArgument();
-
-	void setArgument(String argument);
-
 	long getCommentId();
 
 	void setCommentId(long id);
@@ -32,9 +28,9 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long> {
 
 	void setIssueId(long id);
 
-	String getKnowledgeTypeString();
+	String getType();
 
-	void setKnowledgeTypeString(String type);
+	void setType(String type);
 
 	String getProjectKey();
 

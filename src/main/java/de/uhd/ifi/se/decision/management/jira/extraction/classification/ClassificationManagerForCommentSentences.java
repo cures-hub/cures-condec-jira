@@ -15,11 +15,14 @@ public class ClassificationManagerForCommentSentences {
 
 	private DecisionKnowledgeClassifier classifier;
 	// TODO: Update knowledge types if classifer changes
-	/** The knowledge types need to be present in the weka classifer. They do not relate to tags like [Issue]  */
+	/**
+	 * The knowledge types need to be present in the weka classifer. They do not
+	 * relate to tags like [Issue]
+	 */
 	private final String[] knowledgeTypes = { "isAlternative", "isPro", "isCon", "isDecision", "isIssue" };
 
 	public List<Comment> classifySentenceBinary(List<Comment> commentsList) {
-		if(commentsList == null) {
+		if (commentsList == null) {
 			return new ArrayList<Comment>();
 		}
 		Instances data = createDatasetForBinaryClassification(commentsList);
@@ -39,7 +42,7 @@ public class ClassificationManagerForCommentSentences {
 	}
 
 	public List<Comment> classifySentenceFineGrained(List<Comment> commentsList) {
-		if(commentsList == null) {
+		if (commentsList == null) {
 			return new ArrayList<Comment>();
 		}
 		Instances data = createDatasetForfineGrainedClassification(commentsList);
@@ -58,14 +61,14 @@ public class ClassificationManagerForCommentSentences {
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
-					sentence.setKnowledgeType(classificationResult.get(i));
+					sentence.setType(classificationResult.get(i));
 					ActiveObjectsManager.setSentenceKnowledgeType(sentence);
 
 					sentence.setTaggedFineGrained(true);
 					i++;
 				} else if (sentence.isRelevant() && sentence.isTaggedFineGrained() && sentence.isPlainText()) {
 					Sentence aosentence = (Sentence) ActiveObjectsManager.getElementFromAO(sentence.getId());
-					sentence.setKnowledgeType(aosentence.getKnowledgeTypeString());
+					sentence.setType(aosentence.getType());
 				}
 			}
 		}
@@ -78,7 +81,7 @@ public class ClassificationManagerForCommentSentences {
 			for (Sentence sentence : comment.getSentences()) {
 				if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {
 					Sentence aosentence = (Sentence) ActiveObjectsManager.getElementFromAO(sentence.getId());
-					sentence.setKnowledgeType(aosentence.getKnowledgeTypeString());
+					sentence.setType(aosentence.getType());
 				}
 			}
 		}
