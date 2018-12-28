@@ -27,8 +27,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	private int endSubstringCount;
 
-	private boolean isTaggedManually;
-
 	private boolean isPlainText;
 
 	private long commentId;
@@ -43,14 +41,13 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	public SentenceImpl(long id, int endSubstringCount, int startSubstringCount, boolean isTagged, boolean isRelevant,
-			boolean isTaggedManually, String projectKey, long commentId, long issueId, String type) {
+			String projectKey, long commentId, long issueId, String type) {
 		this();
 		this.setId(id);
 		this.setEndSubstringCount(endSubstringCount);
 		this.setStartSubstringCount(startSubstringCount);
 		this.setTagged(isTagged);
 		this.setRelevant(isRelevant);
-		this.setTaggedManually(isTaggedManually);
 		this.setProject(projectKey);
 		this.setCommentId(commentId);
 		this.setIssueId(issueId);
@@ -65,9 +62,8 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	public SentenceImpl(DecisionKnowledgeInCommentEntity databaseEntry) {
 		this(databaseEntry.getId(), databaseEntry.getEndSubstringCount(), databaseEntry.getStartSubstringCount(),
-				databaseEntry.isTagged(), databaseEntry.isRelevant(), databaseEntry.isTaggedManually(),
-				databaseEntry.getProjectKey(), databaseEntry.getCommentId(), databaseEntry.getIssueId(),
-				databaseEntry.getType());
+				databaseEntry.isTagged(), databaseEntry.isRelevant(), databaseEntry.getProjectKey(),
+				databaseEntry.getCommentId(), databaseEntry.getIssueId(), databaseEntry.getType());
 	}
 
 	@Override
@@ -97,16 +93,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	@Override
 	public void setTagged(boolean isTagged) {
 		this.isTagged = isTagged;
-	}
-
-	@Override
-	public boolean isTaggedManually() {
-		return this.isTaggedManually;
-	}
-
-	@Override
-	public void setTaggedManually(boolean isTaggedManually) {
-		this.isTaggedManually = isTaggedManually;
 	}
 
 	@Override
@@ -207,7 +193,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.setPlainText(false);
 		this.setRelevant(true);
 		this.setTagged(true);
-		this.setTaggedManually(true);
 		ActiveObjectsManager.updateSentenceElement(this);
 	}
 

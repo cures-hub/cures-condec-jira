@@ -192,7 +192,7 @@ public class ClassificationManagerForCommentSentences {
 
 	private static boolean isSentenceQualifiedForFineGrainedClassification(Sentence sentence) {
 		return sentence.isRelevant() && !sentence.isTaggedFineGrained() && sentence.isPlainText()
-				&& !sentence.isTaggedManually();
+				&& !sentence.isTagged();
 	}
 
 	public DecisionKnowledgeClassifier getClassifier() {

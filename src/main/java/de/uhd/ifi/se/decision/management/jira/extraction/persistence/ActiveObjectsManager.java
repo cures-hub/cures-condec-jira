@@ -75,7 +75,6 @@ public class ActiveObjectsManager {
 						todo.setStartSubstringCount(startSubstringCount);
 						todo.setTagged(false);
 						todo.setRelevant(false);
-						todo.setTaggedManually(false);
 						todo.setProjectKey(projectKey);
 						todo.setIssueId(issueId);
 						todo.setType("");
@@ -180,7 +179,6 @@ public class ActiveObjectsManager {
 						databaseEntry.setEndSubstringCount(sentence.getEndSubstringCount());
 						databaseEntry.setRelevant(sentence.isRelevant());
 						databaseEntry.setTagged(sentence.isTagged());
-						databaseEntry.setTaggedManually(sentence.isTaggedManually());
 						databaseEntry.setType(sentence.getTypeAsString());
 						databaseEntry.setStartSubstringCount(sentence.getStartSubstringCount());
 						databaseEntry.save();
@@ -293,7 +291,8 @@ public class ActiveObjectsManager {
 								sentenceEntity.setRelevant(false);
 							}
 						}
-						if (sentenceEntity.isTaggedManually()) {
+						// TODO used to be if (sentenceEntity.isTaggedManually())
+						if (sentenceEntity.isTagged()) {
 							int oldTextLength = getTextLengthOfAoElement(sentenceEntity);
 							int newTextLength = updateTagsInComment(sentenceEntity, knowledgeType, argument,
 									oldKnowledgeType);
@@ -304,7 +303,7 @@ public class ActiveObjectsManager {
 									newTextLength - oldTextLength, sentenceEntity.getId());
 							sentenceEntity.save();
 						} else {
-							sentenceEntity.setTaggedManually(true);
+							sentenceEntity.setTagged(true);
 							int newLength = addTagsToCommentWhenAutoClassified(sentenceEntity);
 							sentenceEntity.setEndSubstringCount(sentenceEntity.getEndSubstringCount() + newLength);
 							updateSentenceLengthForOtherSentencesInSameComment(sentenceEntity.getCommentId(),
@@ -376,7 +375,7 @@ public class ActiveObjectsManager {
 		return true;
 	}
 
-	public static boolean setSentenceIrrelevant(long id, boolean isTaggedManually) {
+	public static boolean setSentenceIrrelevant(long id, boolean isTagged) {
 		init();
 		return ActiveObjects.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
@@ -389,7 +388,7 @@ public class ActiveObjectsManager {
 
 						ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(sentenceEntity.getIssueId());
 						sentenceEntity.setRelevant(false);
-						sentenceEntity.setTaggedManually(isTaggedManually);
+						sentenceEntity.setTagged(isTagged);
 						sentenceEntity.setType(KnowledgeType.OTHER.toString());
 						sentenceEntity.save();
 						return true;

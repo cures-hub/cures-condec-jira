@@ -117,7 +117,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 					String newType = element.getType().toString();
 					String tag = "";
 					// Allow changing of manual tags, but no tags for icons
-					if (databaseEntity.isTaggedManually()
+					if (databaseEntity.isTagged()
 							&& !CommentSplitter.isCommentIconTagged(oldSentenceInComment)) {
 						tag = "{" + WordUtils.capitalize(newType) + "}";
 					} else if (CommentSplitter.isCommentIconTagged(oldSentenceInComment)) {

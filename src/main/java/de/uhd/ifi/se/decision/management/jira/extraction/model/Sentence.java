@@ -24,12 +24,6 @@ public interface Sentence extends DecisionKnowledgeElement {
 	void setTagged(boolean isTagged);
 
 	@JsonIgnore
-	boolean isTaggedManually();
-
-	@JsonIgnore
-	void setTaggedManually(boolean isTaggedManually);
-
-	@JsonIgnore
 	boolean isTaggedFineGrained();
 
 	@JsonIgnore
