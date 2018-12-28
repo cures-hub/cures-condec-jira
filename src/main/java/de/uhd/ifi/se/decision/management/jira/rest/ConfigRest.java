@@ -301,8 +301,6 @@ public class ConfigRest {
 		try {
 			// Deletion is only useful during development, do not ship to enduser!!
 			// ActiveObjectsManager.clearSentenceDatabaseForProject(projectKey);
-			// find possible null values in AO Table, set them to default
-			ActiveObjectsManager.setDefaultValuesToExistingElements();
 			// If still something is wrong, delete an elements and its links
 			ActiveObjectsManager.cleanSentenceDatabaseForProject(projectKey);
 			// If some links ar bad, delete those links

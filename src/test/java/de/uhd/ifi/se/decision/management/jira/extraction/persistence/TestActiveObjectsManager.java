@@ -273,7 +273,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		ActiveObjectsManager.setSentenceIrrelevant(id, true);
 		element = (Sentence) ActiveObjectsManager.getElementFromAO(id);
 		assertFalse(element.isRelevant());
-		assertTrue(element.isTaggedManually());
+		assertTrue(element.isTagged());
 		assertTrue(element.getTypeAsString().equalsIgnoreCase("Other"));
 	}
 

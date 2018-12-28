@@ -49,15 +49,15 @@ public class ActiveObjectsManager {
 
 	public static long addNewSentenceintoAo(Comment comment, long issueId, int index) {
 		return addNewSentenceintoAo(comment.getJiraCommentId(), comment.getEndSubstringCount().get(index),
-				comment.getStartSubstringCount().get(index), comment.getAuthorId(), issueId, comment.getProjectKey());
+				comment.getStartSubstringCount().get(index), issueId, comment.getProjectKey());
 	}
 
-	public static long addNewSentenceintoAo(long commentId, int endSubStringCount, int startSubstringCount, long userId,
+	public static long addNewSentenceintoAo(long commentId, int endSubStringCount, int startSubstringCount,
 			long issueId, String projectKey) {
 		init();
 
 		DecisionKnowledgeInCommentEntity existingElement = getElementFromAO(commentId, endSubStringCount,
-				startSubstringCount, userId, projectKey);
+				startSubstringCount, projectKey);
 		if (existingElement != null) {
 			checkIfSentenceHasAValidLink(existingElement.getId(), issueId,
 					LinkType.getLinkTypeForKnowledgeType(existingElement.getType()));
@@ -73,11 +73,8 @@ public class ActiveObjectsManager {
 						todo.setCommentId(commentId);
 						todo.setEndSubstringCount(endSubStringCount);
 						todo.setStartSubstringCount(startSubstringCount);
-						todo.setUserId(userId);
 						todo.setTagged(false);
 						todo.setRelevant(false);
-						todo.setTaggedFineGrained(false);
-						todo.setTaggedManually(false);
 						todo.setProjectKey(projectKey);
 						todo.setIssueId(issueId);
 						todo.setType("");
@@ -177,13 +174,11 @@ public class ActiveObjectsManager {
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
 				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
 						DecisionKnowledgeInCommentEntity.class,
-						Query.select().where("PROJECT_KEY = ?", sentence.getProjectKey()))) {
+						Query.select().where("PROJECT_KEY = ?", sentence.getProject().getProjectKey()))) {
 					if (databaseEntry.getId() == sentence.getId()) {
 						databaseEntry.setEndSubstringCount(sentence.getEndSubstringCount());
 						databaseEntry.setRelevant(sentence.isRelevant());
 						databaseEntry.setTagged(sentence.isTagged());
-						databaseEntry.setTaggedFineGrained(sentence.isTaggedFineGrained());
-						databaseEntry.setTaggedManually(sentence.isTaggedManually());
 						databaseEntry.setType(sentence.getTypeAsString());
 						databaseEntry.setStartSubstringCount(sentence.getStartSubstringCount());
 						databaseEntry.save();
@@ -195,7 +190,7 @@ public class ActiveObjectsManager {
 	}
 
 	public static DecisionKnowledgeInCommentEntity getElementFromAO(long commentId, int endSubtringCount,
-			int startSubstringCount, long userId, String projectKey) {
+			int startSubstringCount, String projectKey) {
 		init();
 		DecisionKnowledgeInCommentEntity element = ActiveObjects
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
@@ -236,7 +231,8 @@ public class ActiveObjectsManager {
 					if (databaseEntry.getId() == sentence.getId()) {
 						databaseEntry.setType(sentence.getTypeAsString());
 						int additionalLength = addTagsToCommentWhenAutoClassified(databaseEntry);
-						databaseEntry.setTaggedFineGrained(true);
+						// TODO used to be setTaggedFinegrained
+						databaseEntry.setTagged(true);
 						databaseEntry.setEndSubstringCount(databaseEntry.getEndSubstringCount() + additionalLength);
 						updateSentenceLengthForOtherSentencesInSameComment(sentence.getCommentId(),
 								sentence.getStartSubstringCount(), additionalLength, sentence.getId());
@@ -288,13 +284,15 @@ public class ActiveObjectsManager {
 							sentenceEntity.setType(knowledgeType.toString());
 						}
 						sentenceEntity.setRelevant(true);
-						sentenceEntity.setTaggedFineGrained(true);
+						// TODO used to be setTaggedFinegrained
+						sentenceEntity.setTagged(true);
 						if (!sentenceEntity.getType().equals("Pro") && !sentenceEntity.getType().equals("Con")) {
 							if (knowledgeType.equals(KnowledgeType.OTHER)) {
 								sentenceEntity.setRelevant(false);
 							}
 						}
-						if (sentenceEntity.isTaggedManually()) {
+						// TODO used to be if (sentenceEntity.isTaggedManually())
+						if (sentenceEntity.isTagged()) {
 							int oldTextLength = getTextLengthOfAoElement(sentenceEntity);
 							int newTextLength = updateTagsInComment(sentenceEntity, knowledgeType, argument,
 									oldKnowledgeType);
@@ -305,7 +303,7 @@ public class ActiveObjectsManager {
 									newTextLength - oldTextLength, sentenceEntity.getId());
 							sentenceEntity.save();
 						} else {
-							sentenceEntity.setTaggedManually(true);
+							sentenceEntity.setTagged(true);
 							int newLength = addTagsToCommentWhenAutoClassified(sentenceEntity);
 							sentenceEntity.setEndSubstringCount(sentenceEntity.getEndSubstringCount() + newLength);
 							updateSentenceLengthForOtherSentencesInSameComment(sentenceEntity.getCommentId(),
@@ -377,7 +375,7 @@ public class ActiveObjectsManager {
 		return true;
 	}
 
-	public static boolean setSentenceIrrelevant(long id, boolean isTaggedManually) {
+	public static boolean setSentenceIrrelevant(long id, boolean isTagged) {
 		init();
 		return ActiveObjects.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
@@ -390,7 +388,7 @@ public class ActiveObjectsManager {
 
 						ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(sentenceEntity.getIssueId());
 						sentenceEntity.setRelevant(false);
-						sentenceEntity.setTaggedManually(isTaggedManually);
+						sentenceEntity.setTagged(isTagged);
 						sentenceEntity.setType(KnowledgeType.OTHER.toString());
 						sentenceEntity.save();
 						return true;
@@ -493,8 +491,7 @@ public class ActiveObjectsManager {
 		init();
 		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ? AND TYPE = ?", projectKey,
-						issueId, type))) {
+				Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ? AND TYPE = ?", projectKey, issueId, type))) {
 			elements.add(new SentenceImpl(databaseEntry));
 		}
 		return elements;
@@ -545,32 +542,6 @@ public class ActiveObjectsManager {
 			}
 		}
 
-	}
-
-	public static void setDefaultValuesToExistingElements() {
-		init();
-		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-			@Override
-			public DecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects
-						.find(DecisionKnowledgeInCommentEntity.class)) {
-					if (databaseEntry.isRelevant() == null) {
-						databaseEntry.setRelevant(false);
-					}
-					if (databaseEntry.isTagged() == null) {
-						databaseEntry.setTagged(false);
-					}
-					if (databaseEntry.isTaggedFineGrained() == null) {
-						databaseEntry.setTaggedFineGrained(false);
-					}
-					if (databaseEntry.getType() == null) {
-						databaseEntry.setType("");
-					}
-					databaseEntry.save();
-				}
-				return null;
-			}
-		});
 	}
 
 	public static void createLinksForNonLinkedElementsForProject(String projectKey) {
@@ -624,7 +595,7 @@ public class ActiveObjectsManager {
 
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(aoId);
 
-		JiraIssuePersistenceManager s = new JiraIssuePersistenceManager(element.getProjectKey());
+		JiraIssuePersistenceManager s = new JiraIssuePersistenceManager(element.getProject().getProjectKey());
 		DecisionKnowledgeElement decElement = s.insertDecisionKnowledgeElement(element, user);
 
 		MutableIssue issue = ComponentAccessor.getIssueService().getIssue(user, decElement.getId()).getIssue();

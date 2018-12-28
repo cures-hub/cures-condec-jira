@@ -136,14 +136,6 @@ public class TestSentence extends TestSetUpWithIssues {
 
 	@Test
 	@NonTransactional
-	public void testGetUserId() {
-		Sentence sentence = new SentenceImpl();
-		sentence.setUserId((long) 1337);
-		assertEquals((long) 1337, sentence.getUserId());
-	}
-
-	@Test
-	@NonTransactional
 	public void testGetCreated() {
 		Sentence sentence = new SentenceImpl();
 		sentence.setCreated(new Date());

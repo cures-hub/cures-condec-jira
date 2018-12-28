@@ -120,7 +120,6 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 	@NonTransactional
 	public void testFineGrainedClassificationWithValidDataInAO() throws Exception {
 		list.get(0).getSentences().get(0).setRelevant(true);
-		list.get(0).getSentences().get(0).setTaggedFineGrained(true);
 		list.get(0).getSentences().get(0).setBody("[issue]nonplaintext[/issue]");
 
 		list = classificationManager.classifySentenceFineGrained(list);

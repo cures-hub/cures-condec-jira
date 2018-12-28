@@ -24,16 +24,7 @@ public interface Sentence extends DecisionKnowledgeElement {
 	void setTagged(boolean isTagged);
 
 	@JsonIgnore
-	boolean isTaggedManually();
-
-	@JsonIgnore
-	void setTaggedManually(boolean isTaggedManually);
-
-	@JsonIgnore
 	boolean isTaggedFineGrained();
-
-	@JsonIgnore
-	void setTaggedFineGrained(boolean isTaggedFineGrained);
 
 	@JsonIgnore
 	long getCommentId();
@@ -42,10 +33,7 @@ public interface Sentence extends DecisionKnowledgeElement {
 	void setCommentId(long id);
 
 	@JsonIgnore
-	long getUserId();
-
-	@JsonIgnore
-	void setUserId(long id);
+	long getAuthorId();
 
 	@JsonIgnore
 	int getStartSubstringCount();
@@ -61,12 +49,6 @@ public interface Sentence extends DecisionKnowledgeElement {
 
 	@JsonIgnore
 	void setType(double[] prediction);
-
-	@JsonIgnore
-	String getProjectKey();
-
-	@JsonIgnore
-	void setProjectKey(String key);
 
 	@JsonIgnore
 	void setIssueId(long issueid);
