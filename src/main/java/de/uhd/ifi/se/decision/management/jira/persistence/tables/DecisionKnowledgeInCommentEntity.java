@@ -28,9 +28,9 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long> {
 
 	void setIssueId(long id);
 
-	String getKnowledgeTypeString();
+	String getType();
 
-	void setKnowledgeTypeString(String type);
+	void setType(String type);
 
 	String getProjectKey();
 

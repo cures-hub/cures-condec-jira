@@ -55,7 +55,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this(databaseEntry.getId(), databaseEntry.getEndSubstringCount(), databaseEntry.getStartSubstringCount(),
 				databaseEntry.getUserId(), databaseEntry.isTagged(), databaseEntry.isRelevant(),
 				databaseEntry.isTaggedFineGrained(), databaseEntry.isTaggedManually(), databaseEntry.getProjectKey(),
-				databaseEntry.getCommentId(), databaseEntry.getIssueId(), databaseEntry.getKnowledgeTypeString());
+				databaseEntry.getCommentId(), databaseEntry.getIssueId(), databaseEntry.getType());
 	}
 
 	public SentenceImpl(long id, int endSubstringCount, int startSubstringCount, long userId, boolean isTagged,
