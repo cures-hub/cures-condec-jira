@@ -33,9 +33,6 @@ public interface Sentence extends DecisionKnowledgeElement {
 	boolean isTaggedFineGrained();
 
 	@JsonIgnore
-	void setTaggedFineGrained(boolean isTaggedFineGrained);
-
-	@JsonIgnore
 	long getCommentId();
 
 	@JsonIgnore

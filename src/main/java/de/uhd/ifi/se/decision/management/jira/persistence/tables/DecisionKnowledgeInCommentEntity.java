@@ -48,10 +48,6 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long> {
 
 	void setTagged(boolean tagged);
 
-	boolean isTaggedFineGrained();
-
-	void setTaggedFineGrained(boolean tagged);
-
 	boolean isTaggedManually();
 
 	void setTaggedManually(boolean tagged);

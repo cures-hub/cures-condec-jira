@@ -29,8 +29,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	private boolean isTaggedManually;
 
-	private boolean isTaggedFineGrained;
-
 	private boolean isPlainText;
 
 	private long commentId;
@@ -45,15 +43,13 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	public SentenceImpl(long id, int endSubstringCount, int startSubstringCount, boolean isTagged, boolean isRelevant,
-			boolean isTaggedFineGrained, boolean isTaggedManually, String projectKey, long commentId, long issueId,
-			String type) {
+			boolean isTaggedManually, String projectKey, long commentId, long issueId, String type) {
 		this();
 		this.setId(id);
 		this.setEndSubstringCount(endSubstringCount);
 		this.setStartSubstringCount(startSubstringCount);
 		this.setTagged(isTagged);
 		this.setRelevant(isRelevant);
-		this.setTaggedFineGrained(isTaggedFineGrained);
 		this.setTaggedManually(isTaggedManually);
 		this.setProject(projectKey);
 		this.setCommentId(commentId);
@@ -69,9 +65,9 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	public SentenceImpl(DecisionKnowledgeInCommentEntity databaseEntry) {
 		this(databaseEntry.getId(), databaseEntry.getEndSubstringCount(), databaseEntry.getStartSubstringCount(),
-				databaseEntry.isTagged(), databaseEntry.isRelevant(), databaseEntry.isTaggedFineGrained(),
-				databaseEntry.isTaggedManually(), databaseEntry.getProjectKey(), databaseEntry.getCommentId(),
-				databaseEntry.getIssueId(), databaseEntry.getType());
+				databaseEntry.isTagged(), databaseEntry.isRelevant(), databaseEntry.isTaggedManually(),
+				databaseEntry.getProjectKey(), databaseEntry.getCommentId(), databaseEntry.getIssueId(),
+				databaseEntry.getType());
 	}
 
 	@Override
@@ -115,13 +111,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	@Override
 	public boolean isTaggedFineGrained() {
-		return this.isTaggedFineGrained;
-	}
-
-	@Override
-	public void setTaggedFineGrained(boolean isTaggedFineGrained) {
-		this.isTaggedFineGrained = isTaggedFineGrained;
-
+		return this.getType() != KnowledgeType.OTHER;
 	}
 
 	@Override
@@ -218,7 +208,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.setRelevant(true);
 		this.setTagged(true);
 		this.setTaggedManually(true);
-		this.setTaggedFineGrained(true);
 		ActiveObjectsManager.updateSentenceElement(this);
 	}
 

@@ -75,7 +75,6 @@ public class ActiveObjectsManager {
 						todo.setStartSubstringCount(startSubstringCount);
 						todo.setTagged(false);
 						todo.setRelevant(false);
-						todo.setTaggedFineGrained(false);
 						todo.setTaggedManually(false);
 						todo.setProjectKey(projectKey);
 						todo.setIssueId(issueId);
@@ -181,7 +180,6 @@ public class ActiveObjectsManager {
 						databaseEntry.setEndSubstringCount(sentence.getEndSubstringCount());
 						databaseEntry.setRelevant(sentence.isRelevant());
 						databaseEntry.setTagged(sentence.isTagged());
-						databaseEntry.setTaggedFineGrained(sentence.isTaggedFineGrained());
 						databaseEntry.setTaggedManually(sentence.isTaggedManually());
 						databaseEntry.setType(sentence.getTypeAsString());
 						databaseEntry.setStartSubstringCount(sentence.getStartSubstringCount());
@@ -235,7 +233,8 @@ public class ActiveObjectsManager {
 					if (databaseEntry.getId() == sentence.getId()) {
 						databaseEntry.setType(sentence.getTypeAsString());
 						int additionalLength = addTagsToCommentWhenAutoClassified(databaseEntry);
-						databaseEntry.setTaggedFineGrained(true);
+						// TODO used to be setTaggedFinegrained
+						databaseEntry.setTagged(true);
 						databaseEntry.setEndSubstringCount(databaseEntry.getEndSubstringCount() + additionalLength);
 						updateSentenceLengthForOtherSentencesInSameComment(sentence.getCommentId(),
 								sentence.getStartSubstringCount(), additionalLength, sentence.getId());
@@ -287,7 +286,8 @@ public class ActiveObjectsManager {
 							sentenceEntity.setType(knowledgeType.toString());
 						}
 						sentenceEntity.setRelevant(true);
-						sentenceEntity.setTaggedFineGrained(true);
+						// TODO used to be setTaggedFinegrained
+						sentenceEntity.setTagged(true);
 						if (!sentenceEntity.getType().equals("Pro") && !sentenceEntity.getType().equals("Con")) {
 							if (knowledgeType.equals(KnowledgeType.OTHER)) {
 								sentenceEntity.setRelevant(false);
@@ -492,8 +492,7 @@ public class ActiveObjectsManager {
 		init();
 		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ? AND TYPE = ?", projectKey,
-						issueId, type))) {
+				Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ? AND TYPE = ?", projectKey, issueId, type))) {
 			elements.add(new SentenceImpl(databaseEntry));
 		}
 		return elements;

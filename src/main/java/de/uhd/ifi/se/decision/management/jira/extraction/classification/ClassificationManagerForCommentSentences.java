@@ -64,7 +64,8 @@ public class ClassificationManagerForCommentSentences {
 					sentence.setType(classificationResult.get(i));
 					ActiveObjectsManager.setSentenceKnowledgeType(sentence);
 
-					sentence.setTaggedFineGrained(true);
+					// TODO used to be setTaggedFinegrained
+					sentence.setTagged(true);
 					i++;
 				} else if (sentence.isRelevant() && sentence.isTaggedFineGrained() && sentence.isPlainText()) {
 					Sentence aosentence = (Sentence) ActiveObjectsManager.getElementFromAO(sentence.getId());
