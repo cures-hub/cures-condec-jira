@@ -491,9 +491,9 @@ public class ActiveObjectsManager {
 	public static List<DecisionKnowledgeElement> getElementsForIssueWithType(long issueId, String projectKey,
 			String type) {
 		init();
-		List<DecisionKnowledgeElement> elements = new ArrayList<>();
+		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ? AND KNOWLEDGE_TYPE_STRING = ?", projectKey,
+				Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ? AND TYPE = ?", projectKey,
 						issueId, type))) {
 			elements.add(new SentenceImpl(databaseEntry));
 		}
