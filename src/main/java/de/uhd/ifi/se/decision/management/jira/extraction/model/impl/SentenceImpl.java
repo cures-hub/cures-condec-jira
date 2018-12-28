@@ -33,8 +33,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	private boolean isPlainText;
 
-	private String projectKey;
-
 	private long commentId;
 
 	private long issueId;
@@ -46,9 +44,9 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
 
-	public SentenceImpl(long id, int endSubstringCount, int startSubstringCount, boolean isTagged,
-			boolean isRelevant, boolean isTaggedFineGrained, boolean isTaggedManually, String projectKey,
-			long commentId, long issueId, String type) {
+	public SentenceImpl(long id, int endSubstringCount, int startSubstringCount, boolean isTagged, boolean isRelevant,
+			boolean isTaggedFineGrained, boolean isTaggedManually, String projectKey, long commentId, long issueId,
+			String type) {
 		this();
 		this.setId(id);
 		this.setEndSubstringCount(endSubstringCount);
@@ -57,7 +55,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.setRelevant(isRelevant);
 		this.setTaggedFineGrained(isTaggedFineGrained);
 		this.setTaggedManually(isTaggedManually);
-		this.setProjectKey(projectKey);
+		this.setProject(projectKey);
 		this.setCommentId(commentId);
 		this.setIssueId(issueId);
 		this.setProject(new DecisionKnowledgeProjectImpl(projectKey));
@@ -71,9 +69,9 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	public SentenceImpl(DecisionKnowledgeInCommentEntity databaseEntry) {
 		this(databaseEntry.getId(), databaseEntry.getEndSubstringCount(), databaseEntry.getStartSubstringCount(),
-				databaseEntry.isTagged(), databaseEntry.isRelevant(),
-				databaseEntry.isTaggedFineGrained(), databaseEntry.isTaggedManually(), databaseEntry.getProjectKey(),
-				databaseEntry.getCommentId(), databaseEntry.getIssueId(), databaseEntry.getType());
+				databaseEntry.isTagged(), databaseEntry.isRelevant(), databaseEntry.isTaggedFineGrained(),
+				databaseEntry.isTaggedManually(), databaseEntry.getProjectKey(), databaseEntry.getCommentId(),
+				databaseEntry.getIssueId(), databaseEntry.getType());
 	}
 
 	@Override
@@ -140,7 +138,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	public long getAuthorId() {
 		return 0;
 		// TODO Implement
-		//return this.getComment().getAuthorId();
+		// return this.getComment().getAuthorId();
 	}
 
 	@Override
@@ -178,16 +176,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		}
 	}
 
-	@Override
-	public String getProjectKey() {
-		return this.projectKey;
-	}
-
-	@Override
-	public void setProjectKey(String key) {
-		this.projectKey = key;
-	}
-
 	public String getBody() {
 		return super.getSummary();
 	}
@@ -203,19 +191,20 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.excludedTagList) >= 0) {
 			this.isPlainText = false;
 		}
-		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisintg(body, this.projectKey)
+		String projectKey = this.getProject().getProjectKey();
+		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisintg(body, projectKey)
 				|| (ConfigPersistenceManager.isIconParsing(projectKey)
 						&& StringUtils.indexOfAny(body, CommentSplitter.manualRationalIconList) >= 0)) {
-			this.setType(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey, true));
+			this.setType(CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, projectKey, true));
 			setManuallyTagged();
 			stripTagsFromBody(body);
 		}
 	}
 
 	private void stripTagsFromBody(String body) {
-		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisintg(body, this.projectKey)) {
-			int tagLength = 2
-					+ CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, this.projectKey, true).length();
+		String projectKey = this.getProject().getProjectKey();
+		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisintg(body, projectKey)) {
+			int tagLength = 2 + CommentSplitter.getKnowledgeTypeFromManuallIssueTag(body, projectKey, true).length();
 			super.setDescription(body.substring(tagLength, body.length() - (tagLength)));
 			super.setSummary(super.getDescription());
 		} else {

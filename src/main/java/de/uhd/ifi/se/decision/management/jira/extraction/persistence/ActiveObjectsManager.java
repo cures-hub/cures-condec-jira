@@ -176,7 +176,7 @@ public class ActiveObjectsManager {
 			public DecisionKnowledgeInCommentEntity doInTransaction() {
 				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
 						DecisionKnowledgeInCommentEntity.class,
-						Query.select().where("PROJECT_KEY = ?", sentence.getProjectKey()))) {
+						Query.select().where("PROJECT_KEY = ?", sentence.getProject().getProjectKey()))) {
 					if (databaseEntry.getId() == sentence.getId()) {
 						databaseEntry.setEndSubstringCount(sentence.getEndSubstringCount());
 						databaseEntry.setRelevant(sentence.isRelevant());
@@ -597,7 +597,7 @@ public class ActiveObjectsManager {
 
 		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(aoId);
 
-		JiraIssuePersistenceManager s = new JiraIssuePersistenceManager(element.getProjectKey());
+		JiraIssuePersistenceManager s = new JiraIssuePersistenceManager(element.getProject().getProjectKey());
 		DecisionKnowledgeElement decElement = s.insertDecisionKnowledgeElement(element, user);
 
 		MutableIssue issue = ComponentAccessor.getIssueService().getIssue(user, decElement.getId()).getIssue();

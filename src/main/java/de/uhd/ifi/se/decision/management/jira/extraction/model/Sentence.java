@@ -60,12 +60,6 @@ public interface Sentence extends DecisionKnowledgeElement {
 	void setType(double[] prediction);
 
 	@JsonIgnore
-	String getProjectKey();
-
-	@JsonIgnore
-	void setProjectKey(String key);
-
-	@JsonIgnore
 	void setIssueId(long issueid);
 
 	@JsonIgnore
