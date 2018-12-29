@@ -270,7 +270,8 @@ public class KnowledgeRest {
 	public Response setSentenceIrrelevant(@Context HttpServletRequest request,
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (request == null || decisionKnowledgeElement == null || decisionKnowledgeElement.getId() <= 0) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Setting sentence irrelevant failed due to a bad request."))
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Setting sentence irrelevant failed due to a bad request."))
 					.build();
 		}
 		boolean isDeleted = ActiveObjectsManager.setSentenceIrrelevant(decisionKnowledgeElement.getId(), false);
@@ -287,20 +288,21 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getAllElementsMatchingQuery(@QueryParam("projectKey") String projectKey,
 			@QueryParam("query") String query, @Context HttpServletRequest request) {
-		if (projectKey != null && query != null && request != null) {
-			ApplicationUser user = AuthenticationManager.getUser(request);
-			GraphFiltering filter = new GraphFiltering(projectKey, query, user);
-			filter.produceResultsFromQuery();
-			List<DecisionKnowledgeElement> queryResult = filter.getAllElementsMatchingQuery();
-			if (queryResult == null) {
-				return Response.status(Status.INTERNAL_SERVER_ERROR)
-						.entity(ImmutableMap.of("error", "Getting elements matching the query failed.")).build();
-			}
-			return Response.ok(queryResult).build();
-		} else {
-			return Response.status(Status.BAD_REQUEST)
+		if (projectKey == null || query == null || request == null) {
+			return Response.status(Status.BAD_REQUEST).entity(
+					ImmutableMap.of("error", "Getting elements matching the query failed due to a bad request."))
+					.build();
+		}
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		GraphFiltering filter = new GraphFiltering(projectKey, query, user);
+		filter.produceResultsFromQuery();
+		List<DecisionKnowledgeElement> queryResult = filter.getAllElementsMatchingQuery();
+		if (queryResult == null) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Getting elements matching the query failed.")).build();
 		}
+		return Response.ok(queryResult).build();
+
 	}
 
 	@Path("/getAllElementsLinkedToElement")
@@ -308,6 +310,11 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getAllElementsLinkedToElement(@QueryParam("elementKey") String elementKey,
 			@QueryParam("URISearch") String uriSearch, @Context HttpServletRequest request) {
+		if (request == null) {
+			return Response.status(Status.BAD_REQUEST).entity(
+					ImmutableMap.of("error", "Getting elements matching the query failed due to a bad request."))
+					.build();
+		}
 		String projectKey = getProjectKey(elementKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
 

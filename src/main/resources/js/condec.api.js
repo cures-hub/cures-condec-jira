@@ -196,7 +196,6 @@
 	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getElementsByQuery = function getElementsByQuery(query, callback) {
-		var projectKey = projectKey || "";
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?projectKey="
 				+ projectKey + "&query=" + query, null, function(error, result) {
 			if (error === null) {

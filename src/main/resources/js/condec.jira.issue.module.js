@@ -57,6 +57,12 @@
 		treant.buildTreant(issueKey, true, search);
 	};
 
+	function getURLsSearch() {
+		var search = global.location.search.toString();
+		search = search.toString().replace("&", "§");
+		return search;
+	}
+
 	ConDecJiraIssueModule.prototype.updateView = function() {
 		console.log("ConDecJiraIssueModule updateView");
 		JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [ JIRA.Issue.getIssueId() ]);
@@ -87,12 +93,6 @@
 		});
 	}
 
-	function getURLsSearch() {
-		var search = global.location.search.toString();
-		search = search.toString().replace("&", "§");
-		return search;
-	}
-
 	/*
 	 * OUT of scope for Restructing: ExportAsTable functions
 	 */
@@ -114,8 +114,6 @@
 				if (res.length > 0 && res[0] !== null) {
 					var obj = getArrayAndTransformToConfluenceObject(res);
 					download("decisionKnowledgeGraph", obj, exportType);
-				} else {
-					showFlag("error", "No linked elements were found.");
 				}
 			}
 		});
@@ -163,8 +161,6 @@
 				if (elementsWithLinkArray.length > 0 && elementsWithLinkArray[0] !== null) {
 					var obj = getArrayAndTransformToConfluenceObject(elementsWithLinkArray);
 					download("decisionKnowledge", obj, exportType);
-				} else {
-					showFlag("error", "No Elements were found.");
 				}
 			}
 		});
@@ -241,18 +237,6 @@
 		var htmlString = $("<html>").html(
 				"<head><style>" + styleString + "</style></head><body>" + contentString + "</body>").html();
 		return htmlString;
-	}
-
-	function showFlag(type, message, status) {
-		if (status === null || status === undefined) {
-			status = "";
-		}
-		AJS.flag({
-			type : type,
-			close : "auto",
-			title : type.charAt(0).toUpperCase() + type.slice(1) + " " + status,
-			body : message
-		});
 	}
 
 	/*
