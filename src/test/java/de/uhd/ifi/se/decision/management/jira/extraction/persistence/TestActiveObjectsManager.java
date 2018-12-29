@@ -146,7 +146,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 
-		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE);
+		JiraIssueCommentPersistenceManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertTrue(element.getTypeAsString().equalsIgnoreCase("ALTERNATIVE"));
 	}
@@ -157,7 +157,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		Comment comment = getComment("{issue} testobject {issue}");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 
-		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE);
+		JiraIssueCommentPersistenceManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		// Important that sentence object has no tags
 		assertEquals("testobject", element.getBody().trim());
@@ -172,7 +172,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		Comment comment = getComment("some sentence in front. {issue} testobject {issue}");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
 
-		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE);
+		JiraIssueCommentPersistenceManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertEquals(element.getBody().trim(), "testobject");
 		assertEquals(element.getTypeAsString(), KnowledgeType.ALTERNATIVE.toString());
@@ -186,7 +186,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		Comment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
 
-		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE);
+		JiraIssueCommentPersistenceManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.ALTERNATIVE);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertEquals(element.getBody(), " testobject ");
 		assertEquals(element.getTypeAsString(), KnowledgeType.ALTERNATIVE.toString());
@@ -199,7 +199,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	public void testUpdateKnowledgeTypeWithManualTaggedAndMoreSentences2AndArgument() {
 		Comment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
-		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.PRO);
+		JiraIssueCommentPersistenceManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.PRO);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertEquals(" testobject ", element.getBody());
 		assertEquals(element.getTypeAsString(), "Pro");
@@ -213,7 +213,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		Comment comment = getComment("first Comment");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 
-		ActiveObjectsManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.PRO);
+		JiraIssueCommentPersistenceManager.updateKnowledgeTypeOfSentence(id, KnowledgeType.PRO);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertTrue(element.getTypeAsString().equalsIgnoreCase("Pro"));
 	}
@@ -285,7 +285,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
 		long id2 = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
 
-		ActiveObjectsManager.updateSentenceBodyWhenCommentChanged(comment.getJiraCommentId(), id,
+		JiraIssueCommentPersistenceManager.updateSentenceBodyWhenCommentChanged(comment.getJiraCommentId(), id,
 				"secondComment with more text");
 
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id2);

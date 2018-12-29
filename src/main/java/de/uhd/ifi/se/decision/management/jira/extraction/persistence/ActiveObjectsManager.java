@@ -220,11 +220,11 @@ public class ActiveObjectsManager {
 						.find(DecisionKnowledgeInCommentEntity.class)) {
 					if (databaseEntry.getId() == sentence.getId()) {
 						databaseEntry.setType(sentence.getTypeAsString());
-						int additionalLength = addTagsToCommentWhenAutoClassified(databaseEntry);
+						int additionalLength = JiraIssueCommentPersistenceManager.addTagsToCommentWhenAutoClassified(databaseEntry);
 						// TODO used to be setTaggedFinegrained
 						databaseEntry.setTagged(true);
 						databaseEntry.setEndSubstringCount(databaseEntry.getEndSubstringCount() + additionalLength);
-						updateSentenceLengthForOtherSentencesInSameComment(sentence.getCommentId(),
+						JiraIssueCommentPersistenceManager.updateSentenceLengthForOtherSentencesInSameComment(sentence.getCommentId(),
 								sentence.getStartSubstringCount(), additionalLength, sentence.getId());
 						databaseEntry.save();
 						return databaseEntry;
@@ -233,113 +233,9 @@ public class ActiveObjectsManager {
 				return null;
 			}
 		});
-
 	}
 
-	protected static int addTagsToCommentWhenAutoClassified(DecisionKnowledgeInCommentEntity sentence) {
-		CommentManager cm = ComponentAccessor.getCommentManager();
-		MutableComment mc = (MutableComment) cm.getMutableComment(sentence.getCommentId());
-		String newBody = mc.getBody().substring(sentence.getStartSubstringCount(), sentence.getEndSubstringCount());
-
-		newBody = "{" + sentence.getType() + "}" + newBody + "{" + sentence.getType() + "}";
-		int lengthDiff = (sentence.getType().length() + 2) * 2;
-
-		DecXtractEventListener.editCommentLock = true;
-		mc.setBody(mc.getBody().substring(0, sentence.getStartSubstringCount()) + newBody
-				+ mc.getBody().substring(sentence.getEndSubstringCount()));
-		cm.update(mc, true);
-		DecXtractEventListener.editCommentLock = false;
-		return lengthDiff;
-	}
-
-	public static Boolean updateKnowledgeTypeOfSentence(long id, KnowledgeType knowledgeType) {
-		init();
-		return ActiveObjects.executeInTransaction(new TransactionCallback<Boolean>() {
-			@Override
-			public Boolean doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity sentenceEntity : ActiveObjects
-						.find(DecisionKnowledgeInCommentEntity.class)) {
-					if (sentenceEntity.getId() == id) {
-
-						String argument = "";
-						if (knowledgeType == KnowledgeType.PRO || knowledgeType == KnowledgeType.CON) {
-							argument = knowledgeType.toString();
-						}
-						// Knowledgetype is an Argument
-
-						String oldKnowledgeType = sentenceEntity.getType();
-						if (knowledgeType.equals(KnowledgeType.OTHER) || knowledgeType.equals(KnowledgeType.ARGUMENT)) {
-							sentenceEntity.setType(argument);
-						} else {
-							sentenceEntity.setType(knowledgeType.toString());
-						}
-						sentenceEntity.setRelevant(true);
-						// TODO used to be setTaggedFinegrained
-						sentenceEntity.setTagged(true);
-						if (!sentenceEntity.getType().equals("Pro") && !sentenceEntity.getType().equals("Con")) {
-							if (knowledgeType.equals(KnowledgeType.OTHER)) {
-								sentenceEntity.setRelevant(false);
-							}
-						}
-						// TODO used to be if (sentenceEntity.isTaggedManually())
-						if (sentenceEntity.isTagged()) {
-							int oldTextLength = getTextLengthOfAoElement(sentenceEntity);
-							int newTextLength = updateTagsInComment(sentenceEntity, knowledgeType, argument,
-									oldKnowledgeType);
-							sentenceEntity
-									.setEndSubstringCount(sentenceEntity.getStartSubstringCount() + newTextLength);
-							ActiveObjectsManager.updateSentenceLengthForOtherSentencesInSameComment(
-									sentenceEntity.getCommentId(), sentenceEntity.getStartSubstringCount(),
-									newTextLength - oldTextLength, sentenceEntity.getId());
-							sentenceEntity.save();
-						} else {
-							sentenceEntity.setTagged(true);
-							int newLength = addTagsToCommentWhenAutoClassified(sentenceEntity);
-							sentenceEntity.setEndSubstringCount(sentenceEntity.getEndSubstringCount() + newLength);
-							updateSentenceLengthForOtherSentencesInSameComment(sentenceEntity.getCommentId(),
-									sentenceEntity.getStartSubstringCount(), newLength, sentenceEntity.getId());
-							sentenceEntity.save();
-						}
-						sentenceEntity.save();
-						return true;
-					}
-				}
-				return false;
-			}
-		});
-	}
-
-	private static int getTextLengthOfAoElement(DecisionKnowledgeInCommentEntity sentence) {
-		return sentence.getEndSubstringCount() - sentence.getStartSubstringCount();
-	}
-
-	private static int updateTagsInComment(DecisionKnowledgeInCommentEntity sentenceEntity, KnowledgeType knowledgeType,
-			String argument, String oldKnowledgeType) {
-		CommentManager cm = ComponentAccessor.getCommentManager();
-		MutableComment mc = (MutableComment) cm.getMutableComment(sentenceEntity.getCommentId());
-		String oldBody = mc.getBody();
-
-		String newBody = oldBody.substring(sentenceEntity.getStartSubstringCount(),
-				sentenceEntity.getEndSubstringCount());
-		if (knowledgeType.toString().equalsIgnoreCase("other")
-				|| knowledgeType.toString().equalsIgnoreCase("argument")) {
-			newBody = newBody.replaceAll("(?i)" + oldKnowledgeType + "}", argument + "}");
-		} else {
-			newBody = newBody.replaceAll("(?i)" + oldKnowledgeType + "}", knowledgeType.toString() + "}");
-		}
-		// build body with first text and changed text
-		int newEndSubstringCount = newBody.length();
-		newBody = oldBody.substring(0, sentenceEntity.getStartSubstringCount()) + newBody;
-		// If Changed sentence is in the middle of a sentence
-		if (oldBody.length() > sentenceEntity.getEndSubstringCount()) {
-			newBody = newBody + oldBody.substring(sentenceEntity.getEndSubstringCount());
-		}
-
-		mc.setBody(newBody);
-		cm.update(mc, true);
-		return newEndSubstringCount;
-	}
-
+	
 	public static boolean setIsRelevantIntoAo(long activeObjectId, boolean isRelevant) {
 		init();
 		DecisionKnowledgeInCommentEntity databaseEntry = ActiveObjects
@@ -417,44 +313,8 @@ public class ActiveObjectsManager {
 		mutableComment.setBody(first + second + third);
 		commentManager.update(mutableComment, true);
 		DecXtractEventListener.editCommentLock = false;
-		updateSentenceLengthForOtherSentencesInSameComment(sentence.getCommentId(), sentence.getStartSubstringCount(),
+		JiraIssueCommentPersistenceManager.updateSentenceLengthForOtherSentencesInSameComment(sentence.getCommentId(), sentence.getStartSubstringCount(),
 				lengthDiff, sentence.getId());
-	}
-
-	public static boolean updateSentenceBodyWhenCommentChanged(long commentId, long aoId, String description) {
-		init();
-		return ActiveObjects.executeInTransaction(new TransactionCallback<Boolean>() {
-			@Override
-			public Boolean doInTransaction() {
-				int lengthDifference = 0;
-				int oldStart = 0;
-				for (DecisionKnowledgeInCommentEntity sentenceEntity : ActiveObjects
-						.find(DecisionKnowledgeInCommentEntity.class, "ID = ?", aoId)) {
-					int oldLength = sentenceEntity.getEndSubstringCount() - sentenceEntity.getStartSubstringCount();
-					lengthDifference = (oldLength - description.length()) * -1;
-					sentenceEntity.setEndSubstringCount(sentenceEntity.getEndSubstringCount() + lengthDifference);
-					sentenceEntity.save();
-					oldStart = sentenceEntity.getStartSubstringCount();
-				}
-				updateSentenceLengthForOtherSentencesInSameComment(commentId, oldStart, lengthDifference, aoId);
-				return true;
-			}
-		});
-	}
-
-	private static void updateSentenceLengthForOtherSentencesInSameComment(long commentId, int oldStart,
-			int lengthDifference, long aoId) {
-		for (DecisionKnowledgeInCommentEntity otherSentenceInComment : ActiveObjects
-				.find(DecisionKnowledgeInCommentEntity.class, "COMMENT_ID = ?", commentId)) {
-			if (otherSentenceInComment.getStartSubstringCount() > oldStart && otherSentenceInComment.getId() != aoId
-					&& otherSentenceInComment.getCommentId() == commentId) {
-				otherSentenceInComment
-						.setStartSubstringCount(otherSentenceInComment.getStartSubstringCount() + lengthDifference);
-				otherSentenceInComment
-						.setEndSubstringCount(otherSentenceInComment.getEndSubstringCount() + lengthDifference);
-				otherSentenceInComment.save();
-			}
-		}
 	}
 
 	public static List<DecisionKnowledgeElement> getElementsForIssue(long issueId, String projectKey) {
@@ -601,7 +461,7 @@ public class ActiveObjectsManager {
 
 		// delete sentence in comment
 		int length = removeSentenceFromComment(element) * -1; // -1 because we decrease the total number of letters
-		updateSentenceLengthForOtherSentencesInSameComment(element.getCommentId(), element.getStartSubstringCount(),
+		JiraIssueCommentPersistenceManager.updateSentenceLengthForOtherSentencesInSameComment(element.getCommentId(), element.getStartSubstringCount(),
 				length, aoId);
 
 		// delete ao sentence entry

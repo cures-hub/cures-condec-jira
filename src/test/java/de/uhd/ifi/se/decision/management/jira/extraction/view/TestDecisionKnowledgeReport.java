@@ -25,7 +25,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockSearchService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
@@ -35,6 +34,7 @@ import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -99,7 +99,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 	public void testWithObjects() {
 		TestComment tc = new TestComment();
 		Sentence sentence2 = tc.getComment("More Comment with some text").getSentences().get(0);
-		ActiveObjectsManager.updateKnowledgeTypeOfSentence(sentence2.getId(), KnowledgeType.ALTERNATIVE);
+		JiraIssueCommentPersistenceManager.updateKnowledgeTypeOfSentence(sentence2.getId(), KnowledgeType.ALTERNATIVE);
 
 		assertNotNull(this.report.createValues(new MockProjectActionSupport()));
 	}
@@ -139,7 +139,8 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		MutableIssue issue = createCommentStructureWithTestIssue("This is a testsentence for test purposes");
 		Link link = new LinkImpl(comment.getSentences().get(0), comment.getSentences().get(0), LinkType.CONTAIN);
 		GenericLinkManager.insertLink(link, null);
-		ActiveObjectsManager.updateKnowledgeTypeOfSentence(comment.getSentences().get(0).getId(), KnowledgeType.ISSUE);
+		JiraIssueCommentPersistenceManager.updateKnowledgeTypeOfSentence(comment.getSentences().get(0).getId(),
+				KnowledgeType.ISSUE);
 
 		Map<String, Object> reportResult = this.report.createValues(new MockProjectActionSupport());
 		assertTrue(reportResult.get("numKnowledgeTypesPerIssue").toString()
