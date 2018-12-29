@@ -99,7 +99,7 @@
 		var elementsWithLinkArray = [];
 		conDecAPI.getElementsByQuery(jql, function(elements) {
 			if (elements && elements.length > 0 && elements[0] !== null) {
-				download("decisionKnowledge", elements, exportType);
+				download(elements, "decisionKnowledge", exportType);
 			}
 		});
 	}
@@ -109,13 +109,12 @@
 		var issueKey = conDecAPI.getIssueKey();
 		conDecAPI.getLinkedElementsByQuery(jql, issueKey, "i", function(elements) {
 			if (elements && elements.length > 0 && elements[0] !== null) {
-				download("decisionKnowledgeGraph", elements, exportType);
+				download(elements, "decisionKnowledgeGraph", exportType);
 			}
 		});
 	}
 
-	function download(filename, elements, exportType) {
-		var element = document.createElement('a');
+	function download(elements, filename, exportType) {
 		var dataString = "";
 		switch (exportType) {
 		case "document":
@@ -124,58 +123,35 @@
 			dataString = "data:text/html," + encodeURIComponent(htmlString);
 			break;
 		case "json":
-			dataString = 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(elements));
+			dataString = "data:text/plain;charset=utf-8," + encodeURIComponent(JSON.stringify(elements));
 			filename += ".json";
 			break;
 		}
-		element.setAttribute('href', dataString);
-		element.setAttribute('download', filename);
-		element.style.display = 'none';
-		document.body.appendChild(element);
-		element.click();
-		document.body.removeChild(element);
+
+		var link = document.createElement('a');
+		link.style.display = 'none';
+		link.setAttribute('href', dataString);
+		link.setAttribute('download', filename);
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
 	}
 
 	function createHtmlStringForWordDocument(elements) {
-		var contentString = "";
-
-		var sTable = "<table><tr><th>Key</th><th>Summary</th><th>Description</th><th>Type</th></tr>";
-		elements.map(function(el) {
-			if (el) {
-				var sLink = "";
-				var sKey = "";
-				var sSummary = "";
-				var sDescription = "";
-				var sType = "";
-				if (el["url"]) {
-					sLink = el["url"];
-				}
-				if (el["key"]) {
-					sKey = el["key"];
-				}
-				if (el["summary"]) {
-					sSummary = el["summary"];
-				}
-				if (el["description"]) {
-					sDescription = el["description"];
-				}
-				if (el["type"]) {
-					sType = el["type"];
-				}
-				var row = "<tr>";
-				row += "<td><a href='" + sLink + "'>" + sKey + "</a></td>";
-				row += "<td>" + sSummary + "</td>";
-				row += "<td>" + sDescription + "</td>";
-				row += "<td>" + sType + "</td>";
-				row += "</tr>";
-			}
-			sTable += row;
+		var table = "<table><tr><th>Key</th><th>Summary</th><th>Description</th><th>Type</th></tr>";
+		elements.map(function(element) {
+			table += "<tr>";
+			table += "<td><a href='" + element["url"] + "'>" + element["key"] + "</a></td>";
+			table += "<td>" + element["summary"] + "</td>";
+			table += "<td>" + element["description"] + "</td>";
+			table += "<td>" + element["type"] + "</td>";
+			table += "</tr>";
 		});
+		table += "</table>";
 
-		contentString += sTable + "</table>";
 		var styleString = "table{font-family:arial,sans-serif;border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;text-align:left;padding:8px}tr:nth-child(even){background-color:#ddd}";
-		var htmlString = $("<html>").html(
-				"<head><style>" + styleString + "</style></head><body>" + contentString + "</body>").html();
+		var htmlString = $("<html>").html("<head><style>" + styleString + "</style></head><body>" + table + "</body>")
+				.html();
 		return htmlString;
 	}
 
