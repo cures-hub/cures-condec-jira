@@ -44,7 +44,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		}
 		String description = element.getDescription();
 		if (description != null) {
-			databaseEntry.setSummary(description);
+			databaseEntry.setDescription(description);
 		}
 		databaseEntry.setType(element.getType().replaceProAndConWithArgument().toString());
 		return databaseEntry;
@@ -56,8 +56,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	@Override
-	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element,
-			ApplicationUser user) {
+	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
 		if (element == null) {
 			return false;
 		}
@@ -218,7 +217,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		}
 		return outwardLinks;
 	}
-	
+
 	@Override
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
 			ApplicationUser user) {

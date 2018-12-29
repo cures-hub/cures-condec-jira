@@ -112,8 +112,8 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		if (issue == null) {
 			return null;
 		}
-		String macro = getMacro(element);
-		String text = macro + element.getSummary() + "\n" + element.getDescription() + macro;
+		String tag = getTag(element);
+		String text = tag + element.getSummary() + "\n" + element.getDescription() + tag;
 		com.atlassian.jira.issue.comments.Comment comment = ComponentAccessor.getCommentManager().create(issue, user,
 				text, false);
 		Comment com = new CommentImpl(comment, true);
@@ -123,15 +123,28 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		return com.getSentences().get(0);
 	}
 
-	private static String getMacro(DecisionKnowledgeElement element) {
-		KnowledgeType knowledgeType = element.getType();
-		String macro = "{" + knowledgeType.toString() + "}";
-		return macro;
+	private static String getTag(DecisionKnowledgeElement element) {
+		return "{" + element.getType().toString() + "}";
+	}
+
+	private static DecisionKnowledgeInCommentEntity setParameters(DecisionKnowledgeElement element,
+			DecisionKnowledgeInCommentEntity databaseEntry) {
+		// String summary = element.getSummary();
+		// if (summary != null) {
+		// databaseEntry.setSummary(summary);
+		// }
+		// String description = element.getDescription();
+		// if (description != null) {
+		// databaseEntry.setSummary(description);
+		// }
+		// databaseEntry.setType(element.getType().replaceProAndConWithArgument().toString());
+		return databaseEntry;
 	}
 
 	@Override
 	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
 		DecXtractEventListener.editCommentLock = true;
+		boolean isUpdated = updateKnowledgeTypeOfSentence(element.getId(), element.getType());
 
 		if (element.getSummary() != null) {
 			// Get corresponding element from ao database
@@ -170,9 +183,35 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 				}
 			}
 		}
-		boolean isUpdated = updateKnowledgeTypeOfSentence(element.getId(), element.getType());
 		DecXtractEventListener.editCommentLock = false;
 		return isUpdated;
+	}
+
+	public static boolean updateKnowledgeTypeOfSentence(long id, KnowledgeType knowledgeType) {
+		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Boolean>() {
+			@Override
+			public Boolean doInTransaction() {
+				for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
+						.find(DecisionKnowledgeInCommentEntity.class)) {
+					if (databaseEntry.getId() == id) {
+						String oldKnowledgeType = databaseEntry.getType();
+						databaseEntry.setType(knowledgeType.toString());
+						databaseEntry.setRelevant(true);
+						databaseEntry.setTagged(true);
+						int oldTextLength = getTextLengthOfAoElement(databaseEntry);
+						int newTextLength = updateTagsInComment(databaseEntry, knowledgeType, knowledgeType.toString(),
+								oldKnowledgeType);
+						databaseEntry.setEndSubstringCount(databaseEntry.getStartSubstringCount() + newTextLength);
+						updateSentenceLengthForOtherSentencesInSameComment(databaseEntry.getCommentId(),
+								databaseEntry.getStartSubstringCount(), newTextLength - oldTextLength,
+								databaseEntry.getId());
+						databaseEntry.save();
+						return true;
+					}
+				}
+				return false;
+			}
+		});
 	}
 
 	public static boolean updateSentenceBodyWhenCommentChanged(long commentId, long aoId, String description) {
@@ -210,62 +249,6 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		}
 	}
 
-	public static Boolean updateKnowledgeTypeOfSentence(long id, KnowledgeType knowledgeType) {
-		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Boolean>() {
-			@Override
-			public Boolean doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity sentenceEntity : ACTIVE_OBJECTS
-						.find(DecisionKnowledgeInCommentEntity.class)) {
-					if (sentenceEntity.getId() == id) {
-
-						String argument = "";
-						if (knowledgeType == KnowledgeType.PRO || knowledgeType == KnowledgeType.CON) {
-							argument = knowledgeType.toString();
-						}
-						// Knowledgetype is an Argument
-
-						String oldKnowledgeType = sentenceEntity.getType();
-						if (knowledgeType.equals(KnowledgeType.OTHER) || knowledgeType.equals(KnowledgeType.ARGUMENT)) {
-							sentenceEntity.setType(argument);
-						} else {
-							sentenceEntity.setType(knowledgeType.toString());
-						}
-						sentenceEntity.setRelevant(true);
-						// TODO used to be setTaggedFinegrained
-						sentenceEntity.setTagged(true);
-						if (!sentenceEntity.getType().equals("Pro") && !sentenceEntity.getType().equals("Con")) {
-							if (knowledgeType.equals(KnowledgeType.OTHER)) {
-								sentenceEntity.setRelevant(false);
-							}
-						}
-						// TODO used to be if (sentenceEntity.isTaggedManually())
-						if (sentenceEntity.isTagged()) {
-							int oldTextLength = getTextLengthOfAoElement(sentenceEntity);
-							int newTextLength = updateTagsInComment(sentenceEntity, knowledgeType, argument,
-									oldKnowledgeType);
-							sentenceEntity
-									.setEndSubstringCount(sentenceEntity.getStartSubstringCount() + newTextLength);
-							updateSentenceLengthForOtherSentencesInSameComment(sentenceEntity.getCommentId(),
-									sentenceEntity.getStartSubstringCount(), newTextLength - oldTextLength,
-									sentenceEntity.getId());
-							sentenceEntity.save();
-						} else {
-							sentenceEntity.setTagged(true);
-							int newLength = addTagsToCommentWhenAutoClassified(sentenceEntity);
-							sentenceEntity.setEndSubstringCount(sentenceEntity.getEndSubstringCount() + newLength);
-							updateSentenceLengthForOtherSentencesInSameComment(sentenceEntity.getCommentId(),
-									sentenceEntity.getStartSubstringCount(), newLength, sentenceEntity.getId());
-							sentenceEntity.save();
-						}
-						sentenceEntity.save();
-						return true;
-					}
-				}
-				return false;
-			}
-		});
-	}
-
 	private static int getTextLengthOfAoElement(DecisionKnowledgeInCommentEntity sentence) {
 		return sentence.getEndSubstringCount() - sentence.getStartSubstringCount();
 	}
@@ -297,18 +280,19 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		return newEndSubstringCount;
 	}
 
-	public static int addTagsToCommentWhenAutoClassified(DecisionKnowledgeInCommentEntity sentence) {
-		CommentManager cm = ComponentAccessor.getCommentManager();
-		MutableComment mc = (MutableComment) cm.getMutableComment(sentence.getCommentId());
-		String newBody = mc.getBody().substring(sentence.getStartSubstringCount(), sentence.getEndSubstringCount());
+	public static int addTagsToCommentWhenAutoClassified(DecisionKnowledgeInCommentEntity sentenceEntity) {
+		Sentence sentence = new SentenceImpl(sentenceEntity);
+		MutableComment mutableComment = sentence.getComment();
+		String newBody = mutableComment.getBody().substring(sentenceEntity.getStartSubstringCount(),
+				sentenceEntity.getEndSubstringCount());
 
-		newBody = "{" + sentence.getType() + "}" + newBody + "{" + sentence.getType() + "}";
-		int lengthDiff = (sentence.getType().length() + 2) * 2;
+		newBody = "{" + sentenceEntity.getType() + "}" + newBody + "{" + sentenceEntity.getType() + "}";
+		int lengthDiff = (sentenceEntity.getType().length() + 2) * 2;
 
 		DecXtractEventListener.editCommentLock = true;
-		mc.setBody(mc.getBody().substring(0, sentence.getStartSubstringCount()) + newBody
-				+ mc.getBody().substring(sentence.getEndSubstringCount()));
-		cm.update(mc, true);
+		mutableComment.setBody(mutableComment.getBody().substring(0, sentenceEntity.getStartSubstringCount()) + newBody
+				+ mutableComment.getBody().substring(sentenceEntity.getEndSubstringCount()));
+		ComponentAccessor.getCommentManager().update(mutableComment, true);
 		DecXtractEventListener.editCommentLock = false;
 		return lengthDiff;
 	}

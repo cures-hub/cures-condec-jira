@@ -6,6 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.issue.comments.CommentManager;
+import com.atlassian.jira.issue.comments.MutableComment;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
@@ -111,10 +113,14 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	@Override
+	public MutableComment getComment() {
+		CommentManager commentManager = ComponentAccessor.getCommentManager();
+		return (MutableComment) commentManager.getMutableComment(this.getCommentId());
+	}
+
+	@Override
 	public long getAuthorId() {
-		return 0;
-		// TODO Implement
-		// return this.getComment().getAuthorId();
+		return this.getComment().getAuthorApplicationUser().getId();
 	}
 
 	@Override
