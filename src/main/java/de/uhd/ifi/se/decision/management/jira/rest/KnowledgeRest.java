@@ -284,7 +284,7 @@ public class KnowledgeRest {
 	}
 
 	@Path("getAllElementsMatchingQuery")
-	@POST
+	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getAllElementsMatchingQuery(@QueryParam("projectKey") String projectKey,
 			@QueryParam("query") String query, @Context HttpServletRequest request) {

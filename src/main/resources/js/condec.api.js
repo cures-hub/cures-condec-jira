@@ -196,10 +196,10 @@
 	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getElementsByQuery = function getElementsByQuery(query, callback) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?projectKey="
-				+ projectKey + "&query=" + query, null, function(error, result) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?projectKey="
+				+ projectKey + "&query=" + query, function(error, elements) {
 			if (error === null) {
-				callback(result);
+				callback(elements);
 			}
 		});
 	};
@@ -210,9 +210,9 @@
 	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, elementKey,
 			documentationLocation, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsLinkedToElement.json?elementKey="
-				+ elementKey + "&URISearch=" + query, function(error, result) {
+				+ elementKey + "&URISearch=" + query, function(error, elements) {
 			if (error === null) {
-				callback(result);
+				callback(elements);
 			}
 		});
 	};
