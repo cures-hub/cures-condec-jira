@@ -100,7 +100,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		TestComment tc = new TestComment();
 		Sentence sentence2 = tc.getComment("More Comment with some text").getSentences().get(0);
 		sentence2.setType(KnowledgeType.ALTERNATIVE);
-		JiraIssueCommentPersistenceManager.updateKnowledgeTypeOfSentence(sentence2);
+		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence2, null);
 
 		assertNotNull(this.report.createValues(new MockProjectActionSupport()));
 	}
@@ -142,7 +142,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		GenericLinkManager.insertLink(link, null);
 		Sentence sentence = comment.getSentences().get(0);
 		sentence.setType(KnowledgeType.ISSUE);
-		JiraIssueCommentPersistenceManager.updateKnowledgeTypeOfSentence(sentence);
+		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence, null);
 
 		Map<String, Object> reportResult = this.report.createValues(new MockProjectActionSupport());
 		assertTrue(reportResult.get("numKnowledgeTypesPerIssue").toString()

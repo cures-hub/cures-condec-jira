@@ -148,7 +148,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 
 		Sentence oldElement = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		oldElement.setType(KnowledgeType.ALTERNATIVE);
-		JiraIssueCommentPersistenceManager.updateKnowledgeTypeOfSentence(oldElement);
+		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(oldElement, null);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertTrue(element.getTypeAsString().equalsIgnoreCase("ALTERNATIVE"));
 	}
@@ -161,7 +161,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 
 		Sentence oldElement = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		oldElement.setType(KnowledgeType.ALTERNATIVE);
-		JiraIssueCommentPersistenceManager.updateKnowledgeTypeOfSentence(oldElement);
+		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(oldElement, null);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		// Important that sentence object has no tags
 		assertEquals("testobject", element.getBody().trim());
@@ -178,7 +178,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 
 		Sentence oldElement = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		oldElement.setType(KnowledgeType.ALTERNATIVE);
-		JiraIssueCommentPersistenceManager.updateKnowledgeTypeOfSentence(oldElement);
+		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(oldElement, null);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertEquals(element.getBody().trim(), "testobject");
 		assertEquals(element.getTypeAsString(), KnowledgeType.ALTERNATIVE.toString());
@@ -193,7 +193,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
 		Sentence oldElement = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		oldElement.setType(KnowledgeType.ALTERNATIVE);
-		JiraIssueCommentPersistenceManager.updateKnowledgeTypeOfSentence(oldElement);
+		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(oldElement, null);
 		
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertEquals(element.getBody(), " testobject ");
@@ -210,7 +210,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		Sentence oldElement = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		
 		oldElement.setType(KnowledgeType.PRO);
-		JiraIssueCommentPersistenceManager.updateKnowledgeTypeOfSentence(oldElement);
+		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(oldElement, null);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertEquals(" testobject ", element.getBody());
 		assertEquals(element.getTypeAsString(), "Pro");
@@ -226,7 +226,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 
 		Sentence oldElement = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		oldElement.setType(KnowledgeType.PRO);
-		JiraIssueCommentPersistenceManager.updateKnowledgeTypeOfSentence(oldElement);
+		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(oldElement, null);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertTrue(element.getTypeAsString().equalsIgnoreCase("Pro"));
 	}

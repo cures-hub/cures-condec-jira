@@ -131,12 +131,12 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		databaseEntry.setType(element.getTypeAsString());
 		databaseEntry.setRelevant(true);
 		databaseEntry.setTagged(true);
-		int oldTextLength = getTextLengthOfAoElement(databaseEntry);
 		int newTextLength = updateTagsInComment(databaseEntry, element.getType(), oldKnowledgeType);
 		databaseEntry.setEndSubstringCount(databaseEntry.getStartSubstringCount() + newTextLength);
+
+		int oldTextLength = getTextLengthOfAoElement(databaseEntry);
 		updateSentenceLengthForOtherSentencesInSameComment(databaseEntry.getCommentId(),
-				databaseEntry.getStartSubstringCount(), newTextLength - oldTextLength,
-				databaseEntry.getId());
+				databaseEntry.getStartSubstringCount(), newTextLength - oldTextLength, databaseEntry.getId());
 		return databaseEntry;
 	}
 
@@ -177,26 +177,24 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			}
 		}
 
-		boolean isUpdated = updateKnowledgeTypeOfSentence(element);
-		DecXtractEventListener.editCommentLock = false;
-		return isUpdated;
-	}
-
-	public static boolean updateKnowledgeTypeOfSentence(DecisionKnowledgeElement element) {
-		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Boolean>() {
-			@Override
-			public Boolean doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
-						.find(DecisionKnowledgeInCommentEntity.class)) {
-					if (databaseEntry.getId() == element.getId()) {
-						databaseEntry = setParameters(element, databaseEntry);
-						databaseEntry.save();
-						return true;
+		DecisionKnowledgeInCommentEntity databaseEntry = ACTIVE_OBJECTS
+				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+					@Override
+					public DecisionKnowledgeInCommentEntity doInTransaction() {
+						for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
+								.find(DecisionKnowledgeInCommentEntity.class)) {
+							if (databaseEntry.getId() == element.getId()) {
+								databaseEntry = setParameters(element, databaseEntry);
+								databaseEntry.save();
+								return databaseEntry;
+							}
+						}
+						return null;
 					}
-				}
-				return false;
-			}
-		});
+				});
+
+		DecXtractEventListener.editCommentLock = false;
+		return databaseEntry != null;
 	}
 
 	public static boolean updateSentenceBodyWhenCommentChanged(long commentId, long aoId, String description) {
@@ -207,7 +205,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 				int oldStart = 0;
 				for (DecisionKnowledgeInCommentEntity sentenceEntity : ACTIVE_OBJECTS
 						.find(DecisionKnowledgeInCommentEntity.class, "ID = ?", aoId)) {
-					int oldLength = sentenceEntity.getEndSubstringCount() - sentenceEntity.getStartSubstringCount();
+					int oldLength = getTextLengthOfAoElement(sentenceEntity);
 					lengthDifference = (oldLength - description.length()) * -1;
 					sentenceEntity.setEndSubstringCount(sentenceEntity.getEndSubstringCount() + lengthDifference);
 					sentenceEntity.save();
