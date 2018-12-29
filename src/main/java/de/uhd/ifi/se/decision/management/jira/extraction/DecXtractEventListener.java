@@ -18,6 +18,7 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
@@ -139,12 +140,12 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		return (MutableComment) ComponentAccessor.getCommentManager().getCommentById(issueEvent.getComment().getId());
 	}
 
-	private void handleDeleteIssue(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
+	private void handleDeleteIssue(DecisionKnowledgeElement decisionKnowledgeElement) {
 		ActiveObjectsManager.cleanSentenceDatabaseForProject(this.projectKey);
 		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
 	}
 
-	private void handleEditComment(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
+	private void handleEditComment(DecisionKnowledgeElement decisionKnowledgeElement) {
 		// If locked, a REST service is manipulating the comment and should not be
 		// handled by this event listener.
 		if (!DecXtractEventListener.editCommentLock) {
@@ -156,12 +157,12 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		}
 	}
 
-	private void handleDeleteComment(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
+	private void handleDeleteComment(DecisionKnowledgeElement decisionKnowledgeElement) {
 		ActiveObjectsManager.cleanSentenceDatabaseForProject(this.projectKey);
 		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
 	}
 
-	private void handleNewComment(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
+	private void handleNewComment(DecisionKnowledgeElement decisionKnowledgeElement) {
 		new ViewConnector(this.issueEvent.getIssue(), false);
 		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
 	}

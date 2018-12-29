@@ -99,7 +99,8 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 	public void testWithObjects() {
 		TestComment tc = new TestComment();
 		Sentence sentence2 = tc.getComment("More Comment with some text").getSentences().get(0);
-		JiraIssueCommentPersistenceManager.updateKnowledgeTypeOfSentence(sentence2.getId(), KnowledgeType.ALTERNATIVE);
+		sentence2.setType(KnowledgeType.ALTERNATIVE);
+		JiraIssueCommentPersistenceManager.updateKnowledgeTypeOfSentence(sentence2);
 
 		assertNotNull(this.report.createValues(new MockProjectActionSupport()));
 	}
@@ -139,8 +140,9 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		MutableIssue issue = createCommentStructureWithTestIssue("This is a testsentence for test purposes");
 		Link link = new LinkImpl(comment.getSentences().get(0), comment.getSentences().get(0), LinkType.CONTAIN);
 		GenericLinkManager.insertLink(link, null);
-		JiraIssueCommentPersistenceManager.updateKnowledgeTypeOfSentence(comment.getSentences().get(0).getId(),
-				KnowledgeType.ISSUE);
+		Sentence sentence = comment.getSentences().get(0);
+		sentence.setType(KnowledgeType.ISSUE);
+		JiraIssueCommentPersistenceManager.updateKnowledgeTypeOfSentence(sentence);
 
 		Map<String, Object> reportResult = this.report.createValues(new MockProjectActionSupport());
 		assertTrue(reportResult.get("numKnowledgeTypesPerIssue").toString()
