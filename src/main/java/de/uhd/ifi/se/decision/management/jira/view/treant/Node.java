@@ -9,13 +9,9 @@ import javax.xml.bind.annotation.XmlElement;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.properties.APKeys;
-import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -79,7 +75,8 @@ public class Node {
 			this.link.put("title", decisionKnowledgeElement.getDescription());
 		}
 		if (project.isIssueStrategy() && isHyperlinked) {
-			makeLinkToElement(decisionKnowledgeElement.getKey());
+			this.link.put("href", decisionKnowledgeElement.getUrl());
+			this.link.put("target", "_blank");
 		}
 		if (isCollapsed) {
 			this.collapsed = ImmutableMap.of("collapsed", isCollapsed);
@@ -109,15 +106,6 @@ public class Node {
 		default:
 			break;
 		}
-		if (decisionKnowledgeElement instanceof Sentence && isHyperlinked) {
-			makeLinkToElement(decisionKnowledgeElement.getKey().split(":")[0]);
-		}
-	}
-
-	private void makeLinkToElement(String key) {
-		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
-		this.link.put("href", applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/" + key);
-		this.link.put("target", "_blank");
 	}
 
 	public Map<String, String> getNodeContent() {

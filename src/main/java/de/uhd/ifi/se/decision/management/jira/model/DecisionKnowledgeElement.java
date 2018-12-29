@@ -223,6 +223,13 @@ public interface DecisionKnowledgeElement {
 	 *            of the decision knowledge element.
 	 */
 	void setDocumentationLocation(String documentationLocation);
+	
+	/**
+	 * Get the URL to the decision knowledge element.
+	 *
+	 * @return an URL as String.
+	 */
+	String getUrl();
 
 	/**
 	 * Get the creation date of the decision knowledge element.

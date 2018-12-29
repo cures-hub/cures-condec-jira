@@ -191,6 +191,31 @@
 					}
 				});
 	};
+	
+	/*
+	 * external references: condec.jira.issue.module
+	 */
+	ConDecAPI.prototype.getElementsByQuery = function getElementsByQuery(query, callback) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?projectKey="
+				+ projectKey + "&query=" + query, function(error, elements) {
+			if (error === null) {
+				callback(elements);
+			}
+		});
+	};
+
+	/*
+	 * external references: condec.jira.issue.module
+	 */
+	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, elementKey,
+			documentationLocation, callback) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsLinkedToElement.json?elementKey="
+				+ elementKey + "&URISearch=" + query, function(error, elements) {
+			if (error === null) {
+				callback(elements);
+			}
+		});
+	};
 
 	/*
 	 * external references: condec.context.menu
@@ -513,31 +538,6 @@
 		});
 	};
 
-	/*
-	 * external references: condec.jira.issue.module
-	 */
-	ConDecAPI.prototype.getElementsByQuery = function getElementsByQuery(query, callback) {
-		var projectKey = projectKey || "";
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?projectKey="
-				+ projectKey + "&query=" + query, null, function(error, result) {
-			if (error === null) {
-				callback(result);
-			}
-		});
-	};
-
-	/*
-	 * external references: condec.jira.issue.module
-	 */
-	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, elementKey, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsLinkedToElement.json?elementKey="
-				+ elementKey + "&URISearch=" + query, function(error, result) {
-			if (error === null) {
-				callback(result);
-			}
-		});
-	};
-
 	function getJSON(url, callback) {
 		var xhr = new XMLHttpRequest();
 		xhr.open("GET", url, true);
@@ -674,9 +674,7 @@
 		console.log("conDecAPI openJiraIssue");
 
 		this.getDecisionKnowledgeElement(nodeId, "i", function(decisionKnowledgeElement) {
-			var baseUrl = AJS.params.baseURL;
-			var key = decisionKnowledgeElement.key;
-			global.open(baseUrl + "/browse/" + key, '_self');
+			global.open(decisionKnowledgeElement.url, '_self');
 		});
 	};
 
