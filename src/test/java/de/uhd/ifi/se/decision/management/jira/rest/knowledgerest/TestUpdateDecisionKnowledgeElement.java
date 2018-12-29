@@ -23,7 +23,6 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplateWebhook;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
@@ -137,7 +136,8 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "").getStatus());
-		Sentence sentence = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
+		Sentence sentence = (Sentence) new JiraIssueCommentPersistenceManager("")
+				.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 		assertEquals(newText, sentence.getBody());
 	}
 
@@ -154,7 +154,8 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 		decisionKnowledgeElement.setType(KnowledgeType.ISSUE);
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "s").getStatus());
-		Sentence sentence = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
+		Sentence sentence = (Sentence) new JiraIssueCommentPersistenceManager("")
+				.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 		assertEquals(newText, sentence.getBody());
 
 		MutableComment mutableComment = (MutableComment) ComponentAccessor.getCommentManager()

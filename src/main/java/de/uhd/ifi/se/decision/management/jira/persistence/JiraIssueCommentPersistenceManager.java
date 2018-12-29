@@ -6,18 +6,22 @@ import org.apache.commons.lang3.text.WordUtils;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
 import net.java.ao.Query;
@@ -97,13 +101,32 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	@Override
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
 			ApplicationUser user, DecisionKnowledgeElement parentElement) {
+		long issueId;
 		if (parentElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
 			Sentence sentence = (Sentence) this.getDecisionKnowledgeElement(parentElement.getId());
-			element.setId(sentence.getIssueId());
+			issueId = sentence.getIssueId();
 		} else {
-			element.setId(parentElement.getId());
+			issueId = parentElement.getId();
 		}
-		return ActiveObjectsManager.addNewCommentToJIRAIssue(element, user);
+		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
+		if (issue == null) {
+			return null;
+		}
+		String macro = getMacro(element);
+		String text = macro + element.getSummary() + "\n" + element.getDescription() + macro;
+		com.atlassian.jira.issue.comments.Comment comment = ComponentAccessor.getCommentManager().create(issue, user,
+				text, false);
+		Comment com = new CommentImpl(comment, true);
+		for (Sentence sentence : com.getSentences()) {
+			GenericLinkManager.deleteLinksForElement("s" + sentence.getId());
+		}
+		return com.getSentences().get(0);
+	}
+	
+	private static String getMacro(DecisionKnowledgeElement element) {
+		KnowledgeType knowledgeType = element.getType();
+		String macro = "{" + knowledgeType.toString() + "}";
+		return macro;
 	}
 
 	@Override
