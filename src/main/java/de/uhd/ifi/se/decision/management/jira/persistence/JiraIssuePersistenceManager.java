@@ -141,11 +141,6 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 	}
 
 	@Override
-	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
-		return deleteDecisionKnowledgeElement(element.getId(), user);
-	}
-
-	@Override
 	public boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user) {
 		IssueService issueService = ComponentAccessor.getIssueService();
 		IssueService.IssueResult issue = issueService.getIssue(user, id);

@@ -13,6 +13,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -28,27 +29,19 @@ import net.java.ao.Query;
  * @see AbstractPersistenceManager
  */
 public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManager {
-	
+
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
 	public JiraIssueCommentPersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
 		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
-	
-	/**
-	 * Proper way to delete sentences from ao. Also deletes their links
-	 */
-	@Override
-	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
-		return this.deleteDecisionKnowledgeElement(element.getId(), user);
-	}
 
 	@Override
 	public boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user) {
 		boolean isDeleted = false;
-		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS.find(DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("ID = ?", id))) {
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
+				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("ID = ?", id))) {
 			GenericLinkManager.deleteLinksForElement("s" + id);
 			isDeleted = DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
 		}
@@ -57,7 +50,12 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id) {
-		return ActiveObjectsManager.getElementFromAO(id);
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
+				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("ID = ?", id))) {
+			return new SentenceImpl(databaseEntry);
+
+		}
+		return null;
 	}
 
 	@Override
@@ -100,7 +98,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
 			ApplicationUser user, DecisionKnowledgeElement parentElement) {
 		if (parentElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
-			Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(parentElement.getId());
+			Sentence sentence = (Sentence) this.getDecisionKnowledgeElement(parentElement.getId());
 			element.setId(sentence.getIssueId());
 		} else {
 			element.setId(parentElement.getId());
@@ -114,7 +112,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 		if (element.getSummary() != null) {
 			// Get corresponding element from ao database
-			Sentence databaseEntity = (Sentence) ActiveObjectsManager.getElementFromAO(element.getId());
+			Sentence databaseEntity = (Sentence) this.getDecisionKnowledgeElement(element.getId());
 			int newSentenceEnd = databaseEntity.getEndSubstringCount();
 			int newSentenceStart = databaseEntity.getStartSubstringCount();
 			String newSentenceBody = element.getDescription();
@@ -132,8 +130,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 					String newType = element.getType().toString();
 					String tag = "";
 					// Allow changing of manual tags, but no tags for icons
-					if (databaseEntity.isTagged()
-							&& !CommentSplitter.isCommentIconTagged(oldSentenceInComment)) {
+					if (databaseEntity.isTagged() && !CommentSplitter.isCommentIconTagged(oldSentenceInComment)) {
 						tag = "{" + WordUtils.capitalize(newType) + "}";
 					} else if (CommentSplitter.isCommentIconTagged(oldSentenceInComment)) {
 						indexOfOldSentence = indexOfOldSentence + 3; // add icon to text.

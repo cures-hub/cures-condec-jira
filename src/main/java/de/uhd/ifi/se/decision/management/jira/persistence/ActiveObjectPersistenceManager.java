@@ -56,13 +56,13 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	@Override
-	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement decisionKnowledgeElement,
+	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element,
 			ApplicationUser user) {
-		if (decisionKnowledgeElement == null) {
+		if (element == null) {
 			return false;
 		}
-		new WebhookConnector(projectKey).sendElementChanges(decisionKnowledgeElement);
-		return deleteDecisionKnowledgeElement(decisionKnowledgeElement.getId(), user);
+		new WebhookConnector(projectKey).sendElementChanges(element);
+		return deleteDecisionKnowledgeElement(element.getId(), user);
 	}
 
 	@Override

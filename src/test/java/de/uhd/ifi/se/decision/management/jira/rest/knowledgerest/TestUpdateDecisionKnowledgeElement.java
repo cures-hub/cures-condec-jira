@@ -33,6 +33,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
@@ -136,7 +137,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "").getStatus());
-		Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(decisionKnowledgeElement.getId());
+		Sentence sentence = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 		assertEquals(newText, sentence.getBody());
 	}
 
@@ -153,7 +154,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 		decisionKnowledgeElement.setType(KnowledgeType.ISSUE);
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "s").getStatus());
-		Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(decisionKnowledgeElement.getId());
+		Sentence sentence = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 		assertEquals(newText, sentence.getBody());
 
 		MutableComment mutableComment = (MutableComment) ComponentAccessor.getCommentManager()

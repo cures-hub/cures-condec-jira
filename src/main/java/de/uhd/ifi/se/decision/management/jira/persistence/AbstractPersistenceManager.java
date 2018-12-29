@@ -260,7 +260,9 @@ public abstract class AbstractPersistenceManager {
 	 *            authenticated JIRA application user
 	 * @return true if deleting was successful.
 	 */
-	public abstract boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
+	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
+		return this.deleteDecisionKnowledgeElement(element.getId(), user);
+	}
 
 	/**
 	 * Delete an existing decision knowledge element in database.

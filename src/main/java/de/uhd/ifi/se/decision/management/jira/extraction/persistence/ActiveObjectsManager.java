@@ -211,16 +211,6 @@ public class ActiveObjectsManager {
 
 	}
 
-	public static DecisionKnowledgeElement getElementFromAO(long aoId) {
-		init();
-		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("ID = ?", aoId))) {
-			return new SentenceImpl(databaseEntry);
-
-		}
-		return null;
-	}
-
 	public static void setSentenceKnowledgeType(Sentence sentence) {
 		init();
 		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
@@ -594,7 +584,7 @@ public class ActiveObjectsManager {
 
 	public static Issue createJIRAIssueFromSentenceObject(long aoId, ApplicationUser user) {
 
-		Sentence element = (Sentence) ActiveObjectsManager.getElementFromAO(aoId);
+		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(aoId);
 
 		JiraIssuePersistenceManager s = new JiraIssuePersistenceManager(element.getProject().getProjectKey());
 		DecisionKnowledgeElement decElement = s.insertDecisionKnowledgeElement(element, user);

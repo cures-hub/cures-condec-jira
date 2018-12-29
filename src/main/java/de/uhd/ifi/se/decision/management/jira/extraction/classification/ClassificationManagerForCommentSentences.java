@@ -6,6 +6,7 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -68,7 +69,8 @@ public class ClassificationManagerForCommentSentences {
 					sentence.setTagged(true);
 					i++;
 				} else if (sentence.isRelevant() && sentence.isTaggedFineGrained() && sentence.isPlainText()) {
-					Sentence aosentence = (Sentence) ActiveObjectsManager.getElementFromAO(sentence.getId());
+					Sentence aosentence = (Sentence) new JiraIssueCommentPersistenceManager("")
+							.getDecisionKnowledgeElement(sentence.getId());
 					sentence.setType(aosentence.getType());
 				}
 			}
@@ -81,7 +83,7 @@ public class ClassificationManagerForCommentSentences {
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
 				if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {
-					Sentence aosentence = (Sentence) ActiveObjectsManager.getElementFromAO(sentence.getId());
+					Sentence aosentence = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(sentence.getId());
 					sentence.setType(aosentence.getType());
 				}
 			}
@@ -108,7 +110,7 @@ public class ClassificationManagerForCommentSentences {
 	public List<Comment> writeDataFromActiveObjectsToSentences(List<Comment> commentsList) {
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
-				Sentence aoSentence = (Sentence) ActiveObjectsManager.getElementFromAO(sentence.getId());
+				Sentence aoSentence = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(sentence.getId());
 				sentence.setRelevant(aoSentence.isRelevant());
 			}
 		}
