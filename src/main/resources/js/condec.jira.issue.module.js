@@ -95,8 +95,6 @@
 
 	function exportAllElementsMatchingQuery(exportType) {
 		var jql = getURLsSearch();
-		var baseLink = global.location.origin + "/browse/";
-		var elementsWithLinkArray = [];
 		conDecAPI.getElementsByQuery(jql, function(elements) {
 			if (elements && elements.length > 0 && elements[0] !== null) {
 				download(elements, "decisionKnowledge", exportType);

@@ -4,11 +4,13 @@ import java.util.List;
 
 import org.apache.commons.lang3.text.WordUtils;
 
+import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
@@ -16,6 +18,8 @@ import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjec
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
+import net.java.ao.Query;
 
 /**
  * Extends the abstract class AbstractPersistenceManager. Uses JIRA issue
@@ -24,20 +28,31 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
  * @see AbstractPersistenceManager
  */
 public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManager {
+	
+	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
 	public JiraIssueCommentPersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
 		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
-
+	
+	/**
+	 * Proper way to delete sentences from ao. Also deletes their links
+	 */
 	@Override
 	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
-		return ActiveObjectsManager.deleteSentenceObject(element.getId());
+		return this.deleteDecisionKnowledgeElement(element.getId(), user);
 	}
 
 	@Override
 	public boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user) {
-		return ActiveObjectsManager.deleteSentenceObject(id);
+		boolean isDeleted = false;
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS.find(DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("ID = ?", id))) {
+			GenericLinkManager.deleteLinksForElement("s" + id);
+			isDeleted = DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
+		}
+		return isDeleted;
 	}
 
 	@Override

@@ -31,6 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
 import net.java.ao.Query;
@@ -615,7 +616,7 @@ public class ActiveObjectsManager {
 				length, aoId);
 
 		// delete ao sentence entry
-		deleteSentenceObject(aoId);
+		new JiraIssueCommentPersistenceManager("").deleteDecisionKnowledgeElement(aoId, null);
 
 		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(element.getIssueId());
 
@@ -636,29 +637,12 @@ public class ActiveObjectsManager {
 		return element.getEndSubstringCount() - element.getStartSubstringCount();
 	}
 
-	/**
-	 * Proper way to delete sentences from ao. Also deletes their links
-	 * 
-	 * @param id
-	 * @return
-	 */
-	public static boolean deleteSentenceObject(long id) {
-		init();
-		boolean isDeleted = false;
-		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("ID = ?", id))) {
-			GenericLinkManager.deleteLinksForElement("s" + id);
-			isDeleted = DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
-		}
-		return isDeleted;
-	}
-
 	public static void deleteCommentsSentences(com.atlassian.jira.issue.comments.Comment comment) {
 		init();
 		DecisionKnowledgeInCommentEntity[] commentSentences = ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("ISSUE_ID = ? AND COMMENT_ID = ?", comment.getIssue().getId(), comment.getId()));
 		for (DecisionKnowledgeInCommentEntity entity : commentSentences) {
-			deleteSentenceObject(entity.getId());
+			new JiraIssueCommentPersistenceManager("").deleteDecisionKnowledgeElement(entity.getId(), null);
 		}
 	}
 
