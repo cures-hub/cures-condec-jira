@@ -143,6 +143,11 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	public void setEndSubstringCount(int count) {
 		this.endSubstringCount = count;
 	}
+	
+	@Override
+	public int getLength() {
+		return this.endSubstringCount - this.startSubstringCount;
+	}
 
 	public void setType(double[] prediction) {
 		if (prediction[0] == 1.) {

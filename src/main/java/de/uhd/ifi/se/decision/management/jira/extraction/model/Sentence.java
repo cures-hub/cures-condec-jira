@@ -51,6 +51,8 @@ public interface Sentence extends DecisionKnowledgeElement {
 
 	@JsonIgnore
 	void setEndSubstringCount(int count);
+	
+	int getLength();
 
 	@JsonIgnore
 	void setType(double[] prediction);

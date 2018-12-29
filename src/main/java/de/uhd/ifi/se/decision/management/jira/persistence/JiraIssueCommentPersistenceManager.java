@@ -55,7 +55,6 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("ID = ?", id))) {
 			return new SentenceImpl(databaseEntry);
-
 		}
 		return null;
 	}
@@ -131,7 +130,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		databaseEntry.setType(element.getTypeAsString());
 		databaseEntry.setRelevant(true);
 		databaseEntry.setTagged(true);
-		int newTextLength = updateTagsInComment(databaseEntry, element.getType(), oldKnowledgeType);
+		int newTextLength = updateTagsInComment(databaseEntry, oldKnowledgeType);
 		databaseEntry.setEndSubstringCount(databaseEntry.getStartSubstringCount() + newTextLength);
 
 		int oldTextLength = getTextLengthOfAoElement(databaseEntry);
@@ -151,7 +150,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			int oldStartPosition = oldElement.getStartSubstringCount();
 			String newBody = element.getDescription();
 
-			if ((oldEndPosition - oldStartPosition) != newBody.length()) {
+			if (oldElement.getLength() != newBody.length()) {
 				MutableComment mutableComment = oldElement.getComment();
 
 				if (mutableComment.getBody().length() >= oldElement.getEndSubstringCount()) {
@@ -172,7 +171,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 					mutableComment.setBody(first + second + third);
 					ComponentAccessor.getCommentManager().update(mutableComment, true);
-					updateSentenceBodyWhenCommentChanged(oldElement.getCommentId(), element.getId(), second);
+					updateSentenceBodyWhenCommentChanged(oldElement, second);
 				}
 			}
 		}
@@ -197,21 +196,21 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		return databaseEntry != null;
 	}
 
-	public static boolean updateSentenceBodyWhenCommentChanged(long commentId, long aoId, String description) {
+	public static boolean updateSentenceBodyWhenCommentChanged(Sentence element, String description) {
 		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction() {
 				int lengthDifference = 0;
 				int oldStart = 0;
 				for (DecisionKnowledgeInCommentEntity sentenceEntity : ACTIVE_OBJECTS
-						.find(DecisionKnowledgeInCommentEntity.class, "ID = ?", aoId)) {
+						.find(DecisionKnowledgeInCommentEntity.class, "ID = ?", element.getId())) {
 					int oldLength = getTextLengthOfAoElement(sentenceEntity);
 					lengthDifference = (oldLength - description.length()) * -1;
 					sentenceEntity.setEndSubstringCount(sentenceEntity.getEndSubstringCount() + lengthDifference);
 					sentenceEntity.save();
 					oldStart = sentenceEntity.getStartSubstringCount();
 				}
-				updateSentenceLengthForOtherSentencesInSameComment(commentId, oldStart, lengthDifference, aoId);
+				updateSentenceLengthForOtherSentencesInSameComment(element.getCommentId(), oldStart, lengthDifference, element.getId());
 				return true;
 			}
 		});
@@ -237,21 +236,21 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		return sentence.getEndSubstringCount() - sentence.getStartSubstringCount();
 	}
 
-	private static int updateTagsInComment(DecisionKnowledgeInCommentEntity sentenceEntity, KnowledgeType knowledgeType,
+	private static int updateTagsInComment(DecisionKnowledgeInCommentEntity newSentenceEntity,
 			String oldKnowledgeType) {
 		CommentManager cm = ComponentAccessor.getCommentManager();
-		MutableComment mc = (MutableComment) cm.getMutableComment(sentenceEntity.getCommentId());
+		MutableComment mc = (MutableComment) cm.getMutableComment(newSentenceEntity.getCommentId());
 		String oldBody = mc.getBody();
 
-		String newBody = oldBody.substring(sentenceEntity.getStartSubstringCount(),
-				sentenceEntity.getEndSubstringCount());
-		newBody = newBody.replaceAll("(?i)" + oldKnowledgeType + "}", knowledgeType.toString() + "}");
+		String newBody = oldBody.substring(newSentenceEntity.getStartSubstringCount(),
+				newSentenceEntity.getEndSubstringCount());
+		newBody = newBody.replaceAll("(?i)" + oldKnowledgeType + "}", newSentenceEntity.getType().toString() + "}");
 		// build body with first text and changed text
 		int newEndSubstringCount = newBody.length();
-		newBody = oldBody.substring(0, sentenceEntity.getStartSubstringCount()) + newBody;
+		newBody = oldBody.substring(0, newSentenceEntity.getStartSubstringCount()) + newBody;
 		// If Changed sentence is in the middle of a sentence
-		if (oldBody.length() > sentenceEntity.getEndSubstringCount()) {
-			newBody = newBody + oldBody.substring(sentenceEntity.getEndSubstringCount());
+		if (oldBody.length() > newSentenceEntity.getEndSubstringCount()) {
+			newBody = newBody + oldBody.substring(newSentenceEntity.getEndSubstringCount());
 		}
 
 		mc.setBody(newBody);
