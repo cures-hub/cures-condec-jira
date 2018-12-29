@@ -98,6 +98,10 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	}
 
 	protected String putTypeInBrackets(String type) {
-		return "\\{" + type + "}";
+		return "\\" + getTag(type);
+	}
+	
+	public static String getTag(String type) {
+		return "{" + type + "}";
 	}
 }
