@@ -58,6 +58,7 @@
 	};
 
 	function getURLsSearch() {
+		// get jql from url
 		var search = global.location.search.toString();
 		search = search.toString().replace("&", "§");
 		return search;
@@ -75,8 +76,8 @@
 		exportMenuItem.addEventListener("click", function(e) {
 			e.preventDefault();
 			e.stopPropagation();
-			console.log("view.condec.issue.module exportDecisionKnowledge");
 			AJS.dialog2("#export-dialog").show();
+
 			document.getElementById("exportAllElementsMatchingQueryJson").onclick = function() {
 				exportAllElementsMatchingQuery("json");
 			};
@@ -94,69 +95,26 @@
 	}
 
 	function exportAllElementsMatchingQuery(exportType) {
-		// get jql from url
-		var myJql = getURLsSearch();
-		console.log("query", myJql);
+		var jql = getURLsSearch();
 		var baseLink = global.location.origin + "/browse/";
-		callGetElementsByQueryAndDownload(myJql, baseLink, exportType);
-	}
-
-	function exportLinkedElements(exportType) {
-		var myJql = getURLsSearch();
-		var issueKey = conDecAPI.getIssueKey();
-		conDecAPI.getLinkedElementsByQuery(myJql, issueKey, "i", function(res) {
-			console.log("noResult", res);
-			if (res && res.length > 0 && res[0] !== null) {
-				var obj = getArrayAndTransformToConfluenceObject(res);
-				download("decisionKnowledgeGraph", obj, exportType);
+		var elementsWithLinkArray = [];
+		conDecAPI.getElementsByQuery(jql, function(response) {
+			console.log("byQuery", response);
+			if (response && response.length > 0 && response[0] !== null) {
+				var obj = getArrayAndTransformToConfluenceObject(response);
+				download("decisionKnowledge", obj, exportType);
 			}
 		});
 	}
 
-	/**
-	 * TODO: This should be handled in backend
-	 * returns jql if empty or nonexistent create it returning jql for one issue
-	 * 
-	 * @returns {string}
-	 */
-	function getQueryFromUrl() {
-		var userInputJql = getURLsSearch();
-		var baseUrl = AJS.params.baseURL;
-		var sPathName = document.location.href;
-		var sPathWithoutBaseUrl = sPathName.split(baseUrl)[1];
-
-		// check if jql is empty or non existent
-		var myJql = "";
-		if (userInputJql && userInputJql.indexOf("?jql=") > -1 && userInputJql.split("?jql=")[1]) {
-			myJql = userInputJql;
-		} else if (userInputJql && userInputJql.indexOf("?filter=") > -1 && userInputJql.split("?filter=")[1]) {
-			myJql = userInputJql;
-		} else if (sPathWithoutBaseUrl && sPathWithoutBaseUrl.indexOf("/browse/") > -1) {
-			var issueKey = sPathWithoutBaseUrl.split("/browse/")[1];
-			if (issueKey.indexOf("?jql=")) {
-				issueKey = issueKey.split("?jql=")[0];
-			}
-			if (issueKey.indexOf("?filter=")) {
-				issueKey = issueKey.split("?filter=")[0];
-			}
-			myJql = "?jql=issue=" + issueKey;
-		}
-		return myJql;
-	}
-
-	function callGetElementsByQueryAndDownload(jql, baseLink, exportType) {
-		var elementsWithLinkArray = [];
-		conDecAPI.getElementsByQuery(jql, function(response) {
-			console.log("byQuery", response);
-			if (response) {
-				response.map(function(el) {
-					el["link"] = baseLink + el["key"];
-					elementsWithLinkArray.push(el);
-				});
-				if (elementsWithLinkArray.length > 0 && elementsWithLinkArray[0] !== null) {
-					var obj = getArrayAndTransformToConfluenceObject(elementsWithLinkArray);
-					download("decisionKnowledge", obj, exportType);
-				}
+	function exportLinkedElements(exportType) {
+		var jql = getURLsSearch();
+		var issueKey = conDecAPI.getIssueKey();
+		conDecAPI.getLinkedElementsByQuery(jql, issueKey, "i", function(res) {
+			console.log("noResult", res);
+			if (res && res.length > 0 && res[0] !== null) {
+				var obj = getArrayAndTransformToConfluenceObject(res);
+				download("decisionKnowledgeGraph", obj, exportType);
 			}
 		});
 	}
@@ -191,19 +149,19 @@
 		document.body.removeChild(element);
 	}
 
-	function createHtmlStringForWordDocument(jsonObj) {
+	function createHtmlStringForWordDocument(jsonObject) {
 		var contentString = "";
 
 		var sTable = "<table><tr><th>Key</th><th>Summary</th><th>Description</th><th>Type</th></tr>";
-		jsonObj.data.map(function(el) {
+		jsonObject.data.map(function(el) {
 			if (el) {
 				var sLink = "";
 				var sKey = "";
 				var sSummary = "";
 				var sDescription = "";
 				var sType = "";
-				if (el["link"]) {
-					sLink = el["link"];
+				if (el["url"]) {
+					sLink = el["url"];
 				}
 				if (el["key"]) {
 					sKey = el["key"];

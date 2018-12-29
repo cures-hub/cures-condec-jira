@@ -9,6 +9,8 @@ import javax.xml.bind.annotation.XmlElement;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.properties.APKeys;
+import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 
@@ -214,6 +216,16 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 		}
 		this.documentationLocation = DocumentationLocation
 				.getDocumentationLocationFromIdentifier(documentationLocation);
+	}
+
+	@XmlElement(name = "url")
+	public String getUrl() {
+		String key = this.getKey();
+		if (this.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
+			key = key.split(":")[0];
+		}
+		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();		
+		return applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/" + key;
 	}
 
 	@Override

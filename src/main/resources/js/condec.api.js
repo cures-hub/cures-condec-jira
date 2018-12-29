@@ -674,9 +674,7 @@
 		console.log("conDecAPI openJiraIssue");
 
 		this.getDecisionKnowledgeElement(nodeId, "i", function(decisionKnowledgeElement) {
-			var baseUrl = AJS.params.baseURL;
-			var key = decisionKnowledgeElement.key;
-			global.open(baseUrl + "/browse/" + key, '_self');
+			global.open(decisionKnowledgeElement.url, '_self');
 		});
 	};
 
