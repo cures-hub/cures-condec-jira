@@ -191,6 +191,32 @@
 					}
 				});
 	};
+	
+	/*
+	 * external references: condec.jira.issue.module
+	 */
+	ConDecAPI.prototype.getElementsByQuery = function getElementsByQuery(query, callback) {
+		var projectKey = projectKey || "";
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?projectKey="
+				+ projectKey + "&query=" + query, null, function(error, result) {
+			if (error === null) {
+				callback(result);
+			}
+		});
+	};
+
+	/*
+	 * external references: condec.jira.issue.module
+	 */
+	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, elementKey,
+			documentationLocation, callback) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsLinkedToElement.json?elementKey="
+				+ elementKey + "&URISearch=" + query, function(error, result) {
+			if (error === null) {
+				callback(result);
+			}
+		});
+	};
 
 	/*
 	 * external references: condec.context.menu
@@ -507,32 +533,6 @@
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/getAccessToken.json?projectKey=" + projectKey
 				+ "&baseURL=" + baseURL + "&privateKey=" + privateKey + "&consumerKey=" + consumerKey
 				+ "&requestToken=" + requestToken + "&secret=" + secret, function(error, result) {
-			if (error === null) {
-				callback(result);
-			}
-		});
-	};
-
-	/*
-	 * external references: condec.jira.issue.module
-	 */
-	ConDecAPI.prototype.getElementsByQuery = function getElementsByQuery(query, callback) {
-		var projectKey = projectKey || "";
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?projectKey="
-				+ projectKey + "&query=" + query, null, function(error, result) {
-			if (error === null) {
-				callback(result);
-			}
-		});
-	};
-
-	/*
-	 * external references: condec.jira.issue.module
-	 */
-	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, elementKey,
-			documentationLocation, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsLinkedToElement.json?elementKey="
-				+ elementKey + "&URISearch=" + query, function(error, result) {
 			if (error === null) {
 				callback(result);
 			}
