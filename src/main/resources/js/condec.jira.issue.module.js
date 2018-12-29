@@ -93,33 +93,28 @@
 		});
 	}
 
-	/*
-	 * OUT of scope for Restructing: ExportAsTable functions
-	 */
 	function exportAllElementsMatchingQuery(exportType) {
 		// get jql from url
-		var myJql = getQueryFromUrl();
+		var myJql = getURLsSearch();
 		console.log("query", myJql);
 		var baseLink = global.location.origin + "/browse/";
 		callGetElementsByQueryAndDownload(myJql, baseLink, exportType);
 	}
 
 	function exportLinkedElements(exportType) {
-		var myJql = getQueryFromUrl();
+		var myJql = getURLsSearch();
 		var issueKey = conDecAPI.getIssueKey();
 		conDecAPI.getLinkedElementsByQuery(myJql, issueKey, "i", function(res) {
 			console.log("noResult", res);
-			if (res) {
-				console.log("linked", res);
-				if (res.length > 0 && res[0] !== null) {
-					var obj = getArrayAndTransformToConfluenceObject(res);
-					download("decisionKnowledgeGraph", obj, exportType);
-				}
+			if (res && res.length > 0 && res[0] !== null) {
+				var obj = getArrayAndTransformToConfluenceObject(res);
+				download("decisionKnowledgeGraph", obj, exportType);
 			}
 		});
 	}
 
 	/**
+	 * TODO: This should be handled in backend
 	 * returns jql if empty or nonexistent create it returning jql for one issue
 	 * 
 	 * @returns {string}
