@@ -73,9 +73,9 @@
 		console.log("ConDecJiraIssueModule addOnClickEventToExportAsTable");
 
 		var exportMenuItem = document.getElementById("export-as-table-link");
-		exportMenuItem.addEventListener("click", function(e) {
-			e.preventDefault();
-			e.stopPropagation();
+		exportMenuItem.addEventListener("click", function(event) {
+			event.preventDefault();
+			event.stopPropagation();
 			AJS.dialog2("#export-dialog").show();
 
 			document.getElementById("exportAllElementsMatchingQueryJson").onclick = function() {
@@ -87,7 +87,6 @@
 			document.getElementById("exportLinkedElementsJson").onclick = function() {
 				exportLinkedElements("json");
 			};
-
 			document.getElementById("exportLinkedElementsDocument").onclick = function() {
 				exportLinkedElements("document");
 			};
@@ -98,11 +97,9 @@
 		var jql = getURLsSearch();
 		var baseLink = global.location.origin + "/browse/";
 		var elementsWithLinkArray = [];
-		conDecAPI.getElementsByQuery(jql, function(response) {
-			console.log("byQuery", response);
-			if (response && response.length > 0 && response[0] !== null) {
-				var obj = getArrayAndTransformToConfluenceObject(response);
-				download("decisionKnowledge", obj, exportType);
+		conDecAPI.getElementsByQuery(jql, function(elements) {
+			if (elements && elements.length > 0 && elements[0] !== null) {
+				download("decisionKnowledge", elements, exportType);
 			}
 		});
 	}
@@ -110,34 +107,24 @@
 	function exportLinkedElements(exportType) {
 		var jql = getURLsSearch();
 		var issueKey = conDecAPI.getIssueKey();
-		conDecAPI.getLinkedElementsByQuery(jql, issueKey, "i", function(res) {
-			console.log("noResult", res);
-			if (res && res.length > 0 && res[0] !== null) {
-				var obj = getArrayAndTransformToConfluenceObject(res);
-				download("decisionKnowledgeGraph", obj, exportType);
+		conDecAPI.getLinkedElementsByQuery(jql, issueKey, "i", function(elements) {
+			if (elements && elements.length > 0 && elements[0] !== null) {
+				download("decisionKnowledgeGraph", elements, exportType);
 			}
 		});
 	}
 
-	function getArrayAndTransformToConfluenceObject(jsonArray) {
-		var baseUrl = AJS.params.baseURL + "/browse/";
-		return {
-			url : baseUrl,
-			data : jsonArray
-		};
-	}
-
-	function download(filename, jsonObject, exportType) {
+	function download(filename, elements, exportType) {
 		var element = document.createElement('a');
 		var dataString = "";
 		switch (exportType) {
 		case "document":
 			filename += ".doc";
-			var htmlString = createHtmlStringForWordDocument(jsonObject);
+			var htmlString = createHtmlStringForWordDocument(elements);
 			dataString = "data:text/html," + encodeURIComponent(htmlString);
 			break;
 		case "json":
-			dataString = 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(jsonObject));
+			dataString = 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(elements));
 			filename += ".json";
 			break;
 		}
@@ -149,11 +136,11 @@
 		document.body.removeChild(element);
 	}
 
-	function createHtmlStringForWordDocument(jsonObject) {
+	function createHtmlStringForWordDocument(elements) {
 		var contentString = "";
 
 		var sTable = "<table><tr><th>Key</th><th>Summary</th><th>Description</th><th>Type</th></tr>";
-		jsonObject.data.map(function(el) {
+		elements.map(function(el) {
 			if (el) {
 				var sLink = "";
 				var sKey = "";
