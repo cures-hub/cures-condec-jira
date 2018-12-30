@@ -67,18 +67,16 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			return this.getDecisionKnowledgeElement(sentence.getId());
 		}
 
+		Sentence sentenceInDatabase = null;
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS.find(
 				DecisionKnowledgeInCommentEntity.class,
 				Query.select().where(
 						"PROJECT_KEY = ? AND COMMENT_ID = ? AND END_SUBSTRING_COUNT = ? AND START_SUBSTRING_COUNT = ?",
 						sentence.getProject().getProjectKey(), sentence.getCommentId(), sentence.getEndSubstringCount(),
 						sentence.getStartSubstringCount()))) {
-			sentence = new SentenceImpl(databaseEntry);
+			sentenceInDatabase = new SentenceImpl(databaseEntry);
 		}
-		if (sentence.getId() > 0) {
-			return sentence;
-		}
-		return null;
+		return sentenceInDatabase;
 	}
 
 	@Override
@@ -176,8 +174,6 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 	@Override
 	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
-		DecXtractEventListener.editCommentLock = true;
-
 		// Get corresponding element from database
 		Sentence sentence = (Sentence) this.getDecisionKnowledgeElement(element.getId());
 		if (sentence == null) {
@@ -203,8 +199,11 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 		String firstPartOfComment = mutableComment.getBody().substring(0, sentence.getStartSubstringCount());
 		String lastPartOfComment = mutableComment.getBody().substring(sentence.getEndSubstringCount());
+		
+		DecXtractEventListener.editCommentLock = true;
 		mutableComment.setBody(firstPartOfComment + changedPartOfComment + lastPartOfComment);
 		ComponentAccessor.getCommentManager().update(mutableComment, true);
+		DecXtractEventListener.editCommentLock = false;
 
 		int lengthDifference = changedPartOfComment.length() - sentence.getLength();
 		updateSentenceLengthForOtherSentencesInSameComment(sentence, lengthDifference);
@@ -214,8 +213,6 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		sentence.setTagged(true);
 
 		boolean isUpdated = updateInDatabase(sentence);
-
-		DecXtractEventListener.editCommentLock = false;
 		return isUpdated;
 	}
 
