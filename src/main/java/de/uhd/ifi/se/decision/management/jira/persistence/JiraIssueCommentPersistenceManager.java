@@ -229,29 +229,23 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		sentence.setRelevant(true);
 		sentence.setTagged(true);
 
-		DecisionKnowledgeInCommentEntity databaseEntry = updateSentenceElement(sentence);
+		boolean isUpdated = updateInDatabase(sentence);
 
 		DecXtractEventListener.editCommentLock = false;
-		return databaseEntry != null;
+		return isUpdated;
 	}
 
-	public static DecisionKnowledgeInCommentEntity updateSentenceElement(Sentence sentence) {
-		DecisionKnowledgeInCommentEntity databaseEntry = ACTIVE_OBJECTS
-				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-					@Override
-					public DecisionKnowledgeInCommentEntity doInTransaction() {
-						for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
-								.find(DecisionKnowledgeInCommentEntity.class)) {
-							if (databaseEntry.getId() == sentence.getId()) {
-								setParameters(sentence, databaseEntry);
-								databaseEntry.save();
-								return databaseEntry;
-							}
-						}
-						return null;
-					}
-				});
-		return databaseEntry;
+	public static boolean updateInDatabase(Sentence sentence) {
+		boolean isUpdated = false;
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
+				.find(DecisionKnowledgeInCommentEntity.class)) {
+			if (databaseEntry.getId() == sentence.getId()) {
+				setParameters(sentence, databaseEntry);
+				databaseEntry.save();
+				isUpdated = true;
+			}
+		}
+		return isUpdated;
 	}
 
 	public static void updateSentenceLengthForOtherSentencesInSameComment(Sentence sentence, int lengthDifference) {
