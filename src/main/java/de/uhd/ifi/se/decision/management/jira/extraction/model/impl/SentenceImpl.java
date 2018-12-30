@@ -214,7 +214,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		// new
 		// JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(this,
 		// null);
-		JiraIssueCommentPersistenceManager.updateInDatabase(this);
+		JiraIssueCommentPersistenceManager.updateSentenceElement(this);
 	}
 
 	public boolean isPlainText() {
