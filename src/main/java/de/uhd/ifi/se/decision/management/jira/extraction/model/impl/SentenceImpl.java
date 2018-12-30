@@ -12,7 +12,6 @@ import com.atlassian.jira.issue.comments.MutableComment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.view.macros.AbstractKnowledgeClassificationMacro;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -165,9 +164,9 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	public void setType(KnowledgeType type) {
-//		if (this.type != type) {
-//			this.updateTagsInComment(type);
-//		}
+		// if (this.type != type) {
+		// this.updateTagsInComment(type);
+		// }
 		super.setType(type);
 	}
 
@@ -259,54 +258,5 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	@Override
 	public void setCreated(Date date) {
 		this.created = date;
-	}
-	
-	public String updateTagsWithoutSaving(KnowledgeType newType, String body) {
-		return body.replaceAll("(?i)" + this.getType().toString() + "}", newType.toString() + "}");
-	}
-
-	@Override
-	public void updateTagsInComment(KnowledgeType newType) {
-		CommentManager cm = ComponentAccessor.getCommentManager();
-		MutableComment mc = (MutableComment) cm.getMutableComment(this.getCommentId());
-		String oldBody = mc.getBody();
-
-		String newBody = oldBody.substring(this.getStartSubstringCount(), this.getEndSubstringCount());
-		
-		newBody = updateTagsWithoutSaving(newType, newBody);
-
-		// build body with first text and changed text
-		int newLength = newBody.length();
-
-		newBody = oldBody.substring(0, this.getStartSubstringCount()) + newBody;
-		// If Changed sentence is in the middle of a sentence
-		if (oldBody.length() > this.getEndSubstringCount()) {
-			newBody = newBody + oldBody.substring(this.getEndSubstringCount());
-		}
-
-		this.setEndSubstringCount(this.getStartSubstringCount() + newLength);
-
-		mc.setBody(newBody);
-		cm.update(mc, true);
-	}
-
-	@Override
-	public void updateInComment() {
-		String newBody = this.getDescription();
-
-		MutableComment mutableComment = this.getComment();
-
-		String oldSentenceInComment = mutableComment.getBody().substring(this.getStartSubstringCount(), this.getEndSubstringCount());
-		int indexOfOldSentence = mutableComment.getBody().indexOf(oldSentenceInComment);
-
-		String tag = AbstractKnowledgeClassificationMacro.getTag(this.getTypeAsString());
-
-		String first = mutableComment.getBody().substring(0, indexOfOldSentence);
-		String second = tag + newBody + tag;
-		String third = mutableComment.getBody().substring(indexOfOldSentence + oldSentenceInComment.length());
-
-		mutableComment.setBody(first + second + third);
-		ComponentAccessor.getCommentManager().update(mutableComment, true);
-		
 	}
 }

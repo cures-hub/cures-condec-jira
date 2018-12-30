@@ -15,7 +15,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.view.macros.AbstractKnowledgeClassificationMacro;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -125,8 +124,6 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		databaseEntry.setRelevant(true);
 		databaseEntry.setTagged(true);
 		databaseEntry.setEndSubstringCount(element.getEndSubstringCount());
-		int lengthDifference = (element.getLength() - element.getDescription().length()) * -1;
-		databaseEntry.setEndSubstringCount(databaseEntry.getEndSubstringCount() + lengthDifference);
 		return databaseEntry;
 	}
 
@@ -140,48 +137,31 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			return false;
 		}
 
-		int oldTextLength = sentence.getLength();
-		sentence.updateTagsInComment(element.getType());
+		MutableComment mutableComment = sentence.getComment();		
+
+		String body = "";
+		if (element.getSummary() == null) {
+			// only knowledge type is changed
+			body = mutableComment.getBody().substring(sentence.getStartSubstringCount(),
+					sentence.getEndSubstringCount());
+			body = body.replaceAll("(?i)" + sentence.getType().toString() + "}", element.getType().toString() + "}");
+		} else {
+			// description and maybe knowledge type are changed
+			String tag = AbstractKnowledgeClassificationMacro.getTag(element.getType());
+			body = tag + element.getDescription() + tag;
+		}
+
 		sentence.setType(element.getType());
 
-		int newTextLength = sentence.getLength();
+		String firstPartOfComment = mutableComment.getBody().substring(0, sentence.getStartSubstringCount());
+		String lastPartOfComment = mutableComment.getBody().substring(sentence.getEndSubstringCount());
+		mutableComment.setBody(firstPartOfComment + body + lastPartOfComment);
+		ComponentAccessor.getCommentManager().update(mutableComment, true);
 
-		updateSentenceLengthForOtherSentencesInSameComment(sentence.getCommentId(), sentence.getStartSubstringCount(),
-				newTextLength - oldTextLength, sentence.getId());
+		int lengthDifference = body.length() - sentence.getLength();
+		updateSentenceLengthForOtherSentencesInSameComment(sentence, lengthDifference);
 
-		int oldEndPosition = sentence.getEndSubstringCount();
-		int oldStartPosition = sentence.getStartSubstringCount();
-
-		if (element.getSummary() != null) {
-			sentence.setSummary(element.getSummary());
-			sentence.setDescription(element.getDescription());
-
-			String newBody = sentence.getDescription();
-
-			MutableComment mutableComment = sentence.getComment();
-
-			String oldSentenceInComment = mutableComment.getBody().substring(oldStartPosition, oldEndPosition);
-			int indexOfOldSentence = mutableComment.getBody().indexOf(oldSentenceInComment);
-
-			String tag = "";
-			// Allow changing of manual tags, but no tags for icons
-			if (sentence.isTagged() && !CommentSplitter.isCommentIconTagged(oldSentenceInComment)) {
-				tag = AbstractKnowledgeClassificationMacro.getTag(sentence.getType());
-			} else if (CommentSplitter.isCommentIconTagged(oldSentenceInComment)) {
-				indexOfOldSentence = indexOfOldSentence + 3; // add icon to text.
-			}
-			String first = mutableComment.getBody().substring(0, indexOfOldSentence);
-			String second = tag + newBody + tag;
-			String third = mutableComment.getBody().substring(indexOfOldSentence + oldSentenceInComment.length());
-
-			mutableComment.setBody(first + second + third);
-			ComponentAccessor.getCommentManager().update(mutableComment, true);
-
-			sentence.setDescription(second);
-			int lengthDifference = (sentence.getLength() - sentence.getDescription().length()) * -1;
-			updateSentenceLengthForOtherSentencesInSameComment(sentence.getCommentId(), oldStartPosition,
-					lengthDifference, element.getId());
-		}
+		sentence.setEndSubstringCount(sentence.getStartSubstringCount() + body.length());
 
 		DecisionKnowledgeInCommentEntity databaseEntry = ACTIVE_OBJECTS
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
@@ -203,13 +183,11 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		return databaseEntry != null;
 	}
 
-	public static void updateSentenceLengthForOtherSentencesInSameComment(long commentId, int oldStart,
-			int lengthDifference, long elementId) {
+	public static void updateSentenceLengthForOtherSentencesInSameComment(Sentence sentence, int lengthDifference) {
 		for (DecisionKnowledgeInCommentEntity otherSentenceInComment : ACTIVE_OBJECTS
-				.find(DecisionKnowledgeInCommentEntity.class, "COMMENT_ID = ?", commentId)) {
-			if (otherSentenceInComment.getStartSubstringCount() > oldStart
-					&& otherSentenceInComment.getId() != elementId
-					&& otherSentenceInComment.getCommentId() == commentId) {
+				.find(DecisionKnowledgeInCommentEntity.class, "COMMENT_ID = ?", sentence.getCommentId())) {
+			if (otherSentenceInComment.getStartSubstringCount() > sentence.getStartSubstringCount()
+					&& otherSentenceInComment.getId() != sentence.getId()) {
 				otherSentenceInComment
 						.setStartSubstringCount(otherSentenceInComment.getStartSubstringCount() + lengthDifference);
 				otherSentenceInComment
