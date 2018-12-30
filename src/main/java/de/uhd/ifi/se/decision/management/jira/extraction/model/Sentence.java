@@ -84,4 +84,7 @@ public interface Sentence extends DecisionKnowledgeElement {
 	
 	@JsonIgnore
 	void updateTagsInComment(KnowledgeType knowledgeType);
+	
+	@JsonIgnore
+	void updateInComment();
 }

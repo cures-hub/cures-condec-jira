@@ -104,4 +104,8 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	public static String getTag(String type) {
 		return "{" + type + "}";
 	}
+	
+	public static String getTag(KnowledgeType type) {
+		return getTag(type.toString());
+	}
 }

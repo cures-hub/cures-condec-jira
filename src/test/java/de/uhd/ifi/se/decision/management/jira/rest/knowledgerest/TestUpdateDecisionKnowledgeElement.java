@@ -128,6 +128,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 		TestComment testComment = new TestComment();
 		Comment comment = testComment.getComment("This is a test sentence.");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.getSentences().get(0);
+		assertEquals(decisionKnowledgeElement.getType(), KnowledgeType.OTHER);
 
 		String newText = "some fancy new text";
 		decisionKnowledgeElement.setDescription(newText);

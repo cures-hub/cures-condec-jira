@@ -208,12 +208,14 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		Comment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
 		Sentence oldElement = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
-
+		assertEquals(oldElement.getType(), KnowledgeType.ISSUE);
+		
 		oldElement.setType(KnowledgeType.PRO);
 		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(oldElement, null);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertEquals(" testobject ", element.getBody());
 		assertEquals(element.getTypeAsString(), "Pro");
+		
 		assertEquals("some sentence in front. {Pro} testobject {Pro} some sentence in the back.",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
 	}
@@ -300,8 +302,8 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 
 		Sentence sentence = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 
-		JiraIssueCommentPersistenceManager.updateSentenceBodyWhenCommentChanged(sentence,
-				"secondComment with more text");
+		sentence.setDescription("secondComment with more text");
+		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence, null);
 
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id2);
 		assertTrue(element.getEndSubstringCount() != comment.getEndSubstringCount().get(1));
