@@ -59,12 +59,12 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		return null;
 	}
 
-	public Sentence getDecisionKnowledgeElement(Sentence sentence) {
+	public DecisionKnowledgeElement getDecisionKnowledgeElement(Sentence sentence) {
 		if (sentence == null) {
 			return null;
 		}
 		if (sentence.getId() > 0) {
-			return (Sentence) this.getDecisionKnowledgeElement(sentence.getId());
+			return this.getDecisionKnowledgeElement(sentence.getId());
 		}
 		DecisionKnowledgeInCommentEntity databaseEntry = ACTIVE_OBJECTS
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
@@ -150,7 +150,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	}
 
 	public static long insertDecisionKnowledgeElement(Sentence sentence, ApplicationUser user) {
-		Sentence existingElement = new JiraIssueCommentPersistenceManager("")
+		DecisionKnowledgeElement existingElement = new JiraIssueCommentPersistenceManager("")
 				.getDecisionKnowledgeElement(sentence);
 		if (existingElement != null) {
 			ActiveObjectsManager.checkIfSentenceHasAValidLink(existingElement.getId(), sentence.getIssueId(),
@@ -210,7 +210,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			changedPartOfComment = changedPartOfComment.replaceAll("(?i)" + sentence.getType().toString() + "}",
 					element.getType().toString() + "}");
 		} else {
-			// description and maybe knowledge type are changed
+			// description and maybe also knowledge type are changed
 			String tag = AbstractKnowledgeClassificationMacro.getTag(element.getType());
 			changedPartOfComment = tag + element.getDescription() + tag;
 		}
@@ -229,13 +229,20 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		sentence.setRelevant(true);
 		sentence.setTagged(true);
 
+		DecisionKnowledgeInCommentEntity databaseEntry = updateSentenceElement(sentence);
+
+		DecXtractEventListener.editCommentLock = false;
+		return databaseEntry != null;
+	}
+
+	public static DecisionKnowledgeInCommentEntity updateSentenceElement(Sentence sentence) {
 		DecisionKnowledgeInCommentEntity databaseEntry = ACTIVE_OBJECTS
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
 					@Override
 					public DecisionKnowledgeInCommentEntity doInTransaction() {
 						for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
 								.find(DecisionKnowledgeInCommentEntity.class)) {
-							if (databaseEntry.getId() == element.getId()) {
+							if (databaseEntry.getId() == sentence.getId()) {
 								setParameters(sentence, databaseEntry);
 								databaseEntry.save();
 								return databaseEntry;
@@ -244,9 +251,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 						return null;
 					}
 				});
-
-		DecXtractEventListener.editCommentLock = false;
-		return databaseEntry != null;
+		return databaseEntry;
 	}
 
 	public static void updateSentenceLengthForOtherSentencesInSameComment(Sentence sentence, int lengthDifference) {

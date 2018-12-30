@@ -122,7 +122,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
 		Sentence sentence = comment.getSentences().get(0);
 		sentence.setType("ALTERNATIVE");
-		ActiveObjectsManager.updateSentenceElement(sentence);
+		JiraIssueCommentPersistenceManager.updateSentenceElement(sentence);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertTrue(element.getTypeAsString().equalsIgnoreCase("ALTERNATIVE"));
 	}
@@ -134,7 +134,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
 		Sentence sentence = comment.getSentences().get(0);
 		sentence.setType(KnowledgeType.ALTERNATIVE);
-		ActiveObjectsManager.updateSentenceElement(sentence);
+		JiraIssueCommentPersistenceManager.updateSentenceElement(sentence);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertTrue(element.getTypeAsString().equalsIgnoreCase("ALTERNATIVE"));
 	}

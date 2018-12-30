@@ -11,12 +11,12 @@ import com.atlassian.jira.issue.comments.MutableComment;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
 
 public class SentenceImpl extends DecisionKnowledgeElementImpl implements Sentence {
@@ -211,7 +211,10 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.setPlainText(false);
 		this.setRelevant(true);
 		this.setTagged(true);
-		ActiveObjectsManager.updateSentenceElement(this);
+		// new
+		// JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(this,
+		// null);
+		JiraIssueCommentPersistenceManager.updateSentenceElement(this);
 	}
 
 	public boolean isPlainText() {

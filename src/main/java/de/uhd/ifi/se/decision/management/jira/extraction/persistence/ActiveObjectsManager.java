@@ -126,28 +126,6 @@ public class ActiveObjectsManager {
 		return null;
 	}
 
-	public static void updateSentenceElement(Sentence sentence) {
-		init();
-		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-			@Override
-			public DecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
-						DecisionKnowledgeInCommentEntity.class,
-						Query.select().where("PROJECT_KEY = ?", sentence.getProject().getProjectKey()))) {
-					if (databaseEntry.getId() == sentence.getId()) {
-						databaseEntry.setEndSubstringCount(sentence.getEndSubstringCount());
-						databaseEntry.setRelevant(sentence.isRelevant());
-						databaseEntry.setTagged(sentence.isTagged());
-						databaseEntry.setType(sentence.getTypeAsString());
-						databaseEntry.setStartSubstringCount(sentence.getStartSubstringCount());
-						databaseEntry.save();
-					}
-				}
-				return null;
-			}
-		});
-	}
-
 	public static void setSentenceKnowledgeType(Sentence sentence) {
 		init();
 		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
