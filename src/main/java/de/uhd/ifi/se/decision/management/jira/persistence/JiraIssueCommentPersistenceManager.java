@@ -59,6 +59,35 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		return null;
 	}
 
+	public Sentence getDecisionKnowledgeElement(Sentence sentence) {
+		if (sentence == null) {
+			return null;
+		}
+		if (sentence.getId() > 0) {
+			return (Sentence) this.getDecisionKnowledgeElement(sentence.getId());
+		}
+		DecisionKnowledgeInCommentEntity databaseEntry = ACTIVE_OBJECTS
+				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+					@Override
+					public DecisionKnowledgeInCommentEntity doInTransaction() {
+						for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS.find(
+								DecisionKnowledgeInCommentEntity.class,
+								Query.select().where(
+										"PROJECT_KEY = ? AND COMMENT_ID = ? AND END_SUBSTRING_COUNT = ? AND START_SUBSTRING_COUNT = ?",
+										sentence.getProject().getProjectKey(), sentence.getCommentId(),
+										sentence.getEndSubstringCount(), sentence.getStartSubstringCount()))) {
+							return databaseEntry;
+						}
+						return null;
+					}
+				});
+		if (databaseEntry != null) {
+			return new SentenceImpl(databaseEntry);
+		}
+		return null;
+
+	}
+
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
 		// TODO Auto-generated method stub
@@ -121,13 +150,12 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	}
 
 	public static long insertDecisionKnowledgeElement(Sentence sentence, ApplicationUser user) {
-		DecisionKnowledgeInCommentEntity existingElementEntity = ActiveObjectsManager.getElementFromAO(
-				sentence.getCommentId(), sentence.getEndSubstringCount(), sentence.getStartSubstringCount(),
-				sentence.getProject().getProjectKey());
-		if (existingElementEntity != null) {
-			ActiveObjectsManager.checkIfSentenceHasAValidLink(existingElementEntity.getId(), sentence.getIssueId(),
-					LinkType.getLinkTypeForKnowledgeType(existingElementEntity.getType()));
-			return existingElementEntity.getId();
+		Sentence existingElement = new JiraIssueCommentPersistenceManager("")
+				.getDecisionKnowledgeElement(sentence);
+		if (existingElement != null) {
+			ActiveObjectsManager.checkIfSentenceHasAValidLink(existingElement.getId(), sentence.getIssueId(),
+					LinkType.getLinkTypeForKnowledgeType(existingElement.getType()));
+			return existingElement.getId();
 		}
 
 		sentence.setTagged(false);

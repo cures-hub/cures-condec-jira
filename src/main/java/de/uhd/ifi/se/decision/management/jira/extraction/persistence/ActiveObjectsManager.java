@@ -148,27 +148,6 @@ public class ActiveObjectsManager {
 		});
 	}
 
-	public static DecisionKnowledgeInCommentEntity getElementFromAO(long commentId, int endSubtringCount,
-			int startSubstringCount, String projectKey) {
-		init();
-		DecisionKnowledgeInCommentEntity element = ActiveObjects
-				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-					@Override
-					public DecisionKnowledgeInCommentEntity doInTransaction() {
-						for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
-								DecisionKnowledgeInCommentEntity.class,
-								Query.select().where(
-										"PROJECT_KEY = ? AND COMMENT_ID = ? AND END_SUBSTRING_COUNT = ? AND START_SUBSTRING_COUNT = ?",
-										projectKey, commentId, endSubtringCount, startSubstringCount))) {
-							return databaseEntry;
-						}
-						return null;
-					}
-				});
-		return element;
-
-	}
-
 	public static void setSentenceKnowledgeType(Sentence sentence) {
 		init();
 		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
