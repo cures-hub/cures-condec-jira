@@ -15,10 +15,12 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.view.macros.AbstractKnowledgeClassificationMacro;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
 import net.java.ao.Query;
 
@@ -118,13 +120,46 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		return com.getSentences().get(0);
 	}
 
-	private static DecisionKnowledgeInCommentEntity setParameters(Sentence element,
-			DecisionKnowledgeInCommentEntity databaseEntry) {
+	public static long insertDecisionKnowledgeElement(Sentence sentence, ApplicationUser user) {
+		DecisionKnowledgeInCommentEntity existingElementEntity = ActiveObjectsManager.getElementFromAO(
+				sentence.getCommentId(), sentence.getEndSubstringCount(), sentence.getStartSubstringCount(),
+				sentence.getProject().getProjectKey());
+		if (existingElementEntity != null) {
+			ActiveObjectsManager.checkIfSentenceHasAValidLink(existingElementEntity.getId(), sentence.getIssueId(),
+					LinkType.getLinkTypeForKnowledgeType(existingElementEntity.getType()));
+			return existingElementEntity.getId();
+		}
+
+		sentence.setTagged(false);
+		sentence.setRelevant(false);
+		sentence.setType("");
+
+		DecisionKnowledgeInCommentEntity databaseEntry = ACTIVE_OBJECTS
+				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
+					@Override
+					public DecisionKnowledgeInCommentEntity doInTransaction() {
+						DecisionKnowledgeInCommentEntity databaseEntry = ACTIVE_OBJECTS
+								.create(DecisionKnowledgeInCommentEntity.class);
+						setParameters(sentence, databaseEntry);
+						databaseEntry.save();
+						ActiveObjectsManager.LOGGER
+								.debug("\naddNewSentenceintoAo:\nInsert Sentence " + databaseEntry.getId()
+										+ " into database from comment " + databaseEntry.getCommentId());
+						return databaseEntry;
+					}
+				});
+		return databaseEntry.getId();
+	}
+
+	private static void setParameters(Sentence element, DecisionKnowledgeInCommentEntity databaseEntry) {
+		databaseEntry.setProjectKey(element.getProject().getProjectKey());
+		databaseEntry.setCommentId(element.getCommentId());
 		databaseEntry.setType(element.getTypeAsString());
-		databaseEntry.setRelevant(true);
-		databaseEntry.setTagged(true);
+		databaseEntry.setRelevant(element.isRelevant());
+		databaseEntry.setTagged(element.isTagged());
+		databaseEntry.setStartSubstringCount(element.getStartSubstringCount());
 		databaseEntry.setEndSubstringCount(element.getEndSubstringCount());
-		return databaseEntry;
+		databaseEntry.setIssueId(element.getIssueId());
 	}
 
 	@Override
@@ -137,31 +172,34 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			return false;
 		}
 
-		MutableComment mutableComment = sentence.getComment();		
+		MutableComment mutableComment = sentence.getComment();
 
-		String body = "";
+		String changedPartOfComment = "";
 		if (element.getSummary() == null) {
 			// only knowledge type is changed
-			body = mutableComment.getBody().substring(sentence.getStartSubstringCount(),
+			changedPartOfComment = mutableComment.getBody().substring(sentence.getStartSubstringCount(),
 					sentence.getEndSubstringCount());
-			body = body.replaceAll("(?i)" + sentence.getType().toString() + "}", element.getType().toString() + "}");
+			changedPartOfComment = changedPartOfComment.replaceAll("(?i)" + sentence.getType().toString() + "}",
+					element.getType().toString() + "}");
 		} else {
 			// description and maybe knowledge type are changed
 			String tag = AbstractKnowledgeClassificationMacro.getTag(element.getType());
-			body = tag + element.getDescription() + tag;
+			changedPartOfComment = tag + element.getDescription() + tag;
 		}
 
 		sentence.setType(element.getType());
 
 		String firstPartOfComment = mutableComment.getBody().substring(0, sentence.getStartSubstringCount());
 		String lastPartOfComment = mutableComment.getBody().substring(sentence.getEndSubstringCount());
-		mutableComment.setBody(firstPartOfComment + body + lastPartOfComment);
+		mutableComment.setBody(firstPartOfComment + changedPartOfComment + lastPartOfComment);
 		ComponentAccessor.getCommentManager().update(mutableComment, true);
 
-		int lengthDifference = body.length() - sentence.getLength();
+		int lengthDifference = changedPartOfComment.length() - sentence.getLength();
 		updateSentenceLengthForOtherSentencesInSameComment(sentence, lengthDifference);
 
-		sentence.setEndSubstringCount(sentence.getStartSubstringCount() + body.length());
+		sentence.setEndSubstringCount(sentence.getStartSubstringCount() + changedPartOfComment.length());
+		sentence.setRelevant(true);
+		sentence.setTagged(true);
 
 		DecisionKnowledgeInCommentEntity databaseEntry = ACTIVE_OBJECTS
 				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
@@ -170,7 +208,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 						for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
 								.find(DecisionKnowledgeInCommentEntity.class)) {
 							if (databaseEntry.getId() == element.getId()) {
-								databaseEntry = setParameters(sentence, databaseEntry);
+								setParameters(sentence, databaseEntry);
 								databaseEntry.save();
 								return databaseEntry;
 							}

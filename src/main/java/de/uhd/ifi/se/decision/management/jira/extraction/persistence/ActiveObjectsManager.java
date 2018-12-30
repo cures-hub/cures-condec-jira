@@ -21,7 +21,6 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -39,7 +38,7 @@ public class ActiveObjectsManager {
 
 	public static ActiveObjects ActiveObjects;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectsManager.class);
+	public static final Logger LOGGER = LoggerFactory.getLogger(ActiveObjectsManager.class);
 
 	public static void init() {
 		if (ActiveObjects == null) {
@@ -47,47 +46,7 @@ public class ActiveObjectsManager {
 		}
 	}
 
-	public static long addNewSentenceintoAo(Comment comment, long issueId, int index) {
-		return addNewSentenceintoAo(comment.getJiraCommentId(), comment.getEndSubstringCount().get(index),
-				comment.getStartSubstringCount().get(index), issueId, comment.getProjectKey());
-	}
-
-	public static long addNewSentenceintoAo(long commentId, int endSubStringCount, int startSubstringCount,
-			long issueId, String projectKey) {
-		init();
-
-		DecisionKnowledgeInCommentEntity existingElement = getElementFromAO(commentId, endSubStringCount,
-				startSubstringCount, projectKey);
-		if (existingElement != null) {
-			checkIfSentenceHasAValidLink(existingElement.getId(), issueId,
-					LinkType.getLinkTypeForKnowledgeType(existingElement.getType()));
-			return existingElement.getId();
-		}
-
-		DecisionKnowledgeInCommentEntity newElement = ActiveObjects
-				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-					@Override
-					public DecisionKnowledgeInCommentEntity doInTransaction() {
-						DecisionKnowledgeInCommentEntity todo = ActiveObjects
-								.create(DecisionKnowledgeInCommentEntity.class); // (2)
-						todo.setCommentId(commentId);
-						todo.setEndSubstringCount(endSubStringCount);
-						todo.setStartSubstringCount(startSubstringCount);
-						todo.setTagged(false);
-						todo.setRelevant(false);
-						todo.setProjectKey(projectKey);
-						todo.setIssueId(issueId);
-						todo.setType("");
-						todo.save();
-						LOGGER.debug("\naddNewSentenceintoAo:\nInsert Sentence " + todo.getId()
-								+ " into AO from comment " + todo.getCommentId());
-						return todo;
-					}
-				});
-		return newElement.getId();
-	}
-
-	private static void checkIfSentenceHasAValidLink(long sentenceId, long issueId, LinkType linkType) {
+	public static void checkIfSentenceHasAValidLink(long sentenceId, long issueId, LinkType linkType) {
 		if (!isSentenceLinked(sentenceId)) {
 			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
 			parentElement.setId(issueId);

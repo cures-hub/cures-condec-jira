@@ -64,9 +64,14 @@ public class CommentImpl implements Comment {
 			int startIndex = this.splitter.getStartSubstringCount().get(i);
 			int endIndex = this.splitter.getEndSubstringCount().get(i);
 			if (insertSentencesIntoAO && startAndEndIndexRules(startIndex, endIndex)) {
-				long aoId2 = ActiveObjectsManager.addNewSentenceintoAo(this.jiraCommentId, endIndex, startIndex,
-						this.issueId, this.projectKey);
-				Sentence sentence = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(aoId2);
+				Sentence sentence = new SentenceImpl();
+				sentence.setCommentId(this.jiraCommentId);
+				sentence.setEndSubstringCount(endIndex);
+				sentence.setStartSubstringCount(startIndex);
+				sentence.setIssueId(this.issueId);
+				sentence.setProject(this.projectKey);
+				long aoId2 = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(sentence, null);
+				sentence = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(aoId2);
 				ActiveObjectsManager.createSmartLinkForSentence(sentence);
 				sentence.setCreated(this.created);
 				this.sentences.add(sentence);

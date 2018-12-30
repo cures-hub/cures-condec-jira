@@ -29,6 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -49,6 +50,16 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	private MockIssue issue;
 
 	private com.atlassian.jira.issue.comments.Comment comment1;
+	
+	public static long insertDecisionKnowledgeElement(Comment comment, long issueId, int index) {
+		Sentence sentence = new SentenceImpl();
+		sentence.setCommentId(comment.getJiraCommentId());
+		sentence.setEndSubstringCount(comment.getEndSubstringCount().get(index));
+		sentence.setStartSubstringCount(comment.getStartSubstringCount().get(index));
+		sentence.setIssueId(issueId);
+		sentence.setProject(comment.getProjectKey());
+		return JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(sentence, null);
+	}
 
 	@Before
 	public void setUp() {
@@ -90,7 +101,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testElementExistingInAo() {
 		Comment comment = getComment("first Comment");
-		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
+		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
 		assertNotNull(new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id));
 	}
 
@@ -98,8 +109,8 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testElementInsertedTwice() {
 		Comment comment = getComment("first Comment");
-		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
-		long id2 = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
+		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
+		long id2 = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
 		assertNotNull(new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id));
 		assertTrue(id == id2);
 	}
@@ -108,7 +119,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testUpdateSentenceElement() {
 		Comment comment = getComment("first Comment");
-		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
+		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
 		Sentence sentence = comment.getSentences().get(0);
 		sentence.setType("ALTERNATIVE");
 		ActiveObjectsManager.updateSentenceElement(sentence);
@@ -120,7 +131,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testUpdateKnowledgeType() {
 		Comment comment = getComment("first Comment");
-		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
+		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
 		Sentence sentence = comment.getSentences().get(0);
 		sentence.setType(KnowledgeType.ALTERNATIVE);
 		ActiveObjectsManager.updateSentenceElement(sentence);
@@ -132,7 +143,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testUpdateKnowledgeType2() {
 		Comment comment = getComment("first Comment");
-		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
+		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
 		Sentence sentence = comment.getSentences().get(0);
 		sentence.setType(KnowledgeType.ALTERNATIVE);
 		ActiveObjectsManager.setSentenceKnowledgeType(sentence);
@@ -144,7 +155,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testUpdateKnowledgeType3() {
 		Comment comment = getComment("first Comment");
-		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
+		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
 
 		Sentence oldElement = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		oldElement.setType(KnowledgeType.ALTERNATIVE);
@@ -157,7 +168,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testUpdateKnowledgeTypeWithManualTagged() {
 		Comment comment = getComment("{issue} testobject {issue}");
-		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
+		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
 
 		Sentence oldElement = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		oldElement.setType(KnowledgeType.ALTERNATIVE);
@@ -174,7 +185,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testUpdateKnowledgeTypeWithManualTaggedAndMoreSentences() {
 		Comment comment = getComment("some sentence in front. {issue} testobject {issue}");
-		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
+		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
 
 		Sentence oldElement = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		oldElement.setType(KnowledgeType.ALTERNATIVE);
@@ -190,7 +201,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testUpdateKnowledgeTypeWithManualTaggedAndMoreSentences2() {
 		Comment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
-		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
+		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
 		Sentence oldElement = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		oldElement.setType(KnowledgeType.ALTERNATIVE);
 		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(oldElement, null);
@@ -206,7 +217,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testUpdateKnowledgeTypeWithManualTaggedAndMoreSentences2AndArgument() {
 		Comment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
-		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
+		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
 		Sentence oldElement = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertEquals(oldElement.getType(), KnowledgeType.ISSUE);
 		
@@ -224,7 +235,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testUpdateKnowledgeType3WithArgument() {
 		Comment comment = getComment("first Comment");
-		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
+		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
 
 		Sentence oldElement = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		oldElement.setType(KnowledgeType.PRO);
@@ -237,7 +248,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testSetRelevantIntoAO() {
 		Comment comment = getComment("first Comment");
-		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
+		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
 
 		ActiveObjectsManager.setIsRelevantIntoAo(id, true);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
@@ -252,7 +263,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testSetRelevantIntoAOForNonExistingElement() {
 		Comment comment = getComment("first Comment");
-		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
+		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
 
 		assertFalse(ActiveObjectsManager.setIsRelevantIntoAo(id + 2, true));
 
@@ -263,7 +274,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testCommentHasChanged() {
 		Comment comment = getComment("first Comment");
-		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
+		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
 
 		Comment comment2 = getComment("secondComment with more text");
 
@@ -280,7 +291,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testSetSentenceIrrlevant() {
 		Comment comment = getComment("first Comment");
-		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
+		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
 
 		ActiveObjectsManager.setIsRelevantIntoAo(id, true);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
@@ -297,8 +308,8 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testUpdateSentenceBodyWhenCommentChanged() {
 		Comment comment = getComment("First sentences of two. Sencond sentences of two.");
-		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 0);
-		long id2 = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
+		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
+		long id2 = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
 
 		Sentence sentence = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 
@@ -313,7 +324,9 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testGetElementsForIssue() {
 		Comment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
-		ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
+		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
+		
+		assertEquals(2, id);
 
 		List<DecisionKnowledgeElement> listWithObjects = ActiveObjectsManager.getElementsForIssue(comment.getIssueId(),
 				"TEST");
@@ -324,7 +337,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testGetAllElementsFromAoByType() {
 		Comment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
-		ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
+		TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
 
 		List<DecisionKnowledgeElement> listWithObjects = ActiveObjectsManager.getAllElementsFromAoByType("TEST",
 				KnowledgeType.ISSUE);
@@ -335,7 +348,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testGetAllElementsFromAoByArgumentType() {
 		Comment comment = getComment("some sentence in front. {pro} testobject {pro} some sentence in the back.");
-		ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
+		TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
 
 		List<DecisionKnowledgeElement> listWithObjects = ActiveObjectsManager.getAllElementsFromAoByType("TEST",
 				KnowledgeType.ARGUMENT);
@@ -346,18 +359,18 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testGetAllElementsFromAoByEmptyType() {
 		Comment comment = getComment("some sentence in front.  {pro} testobject {pro} some sentence in the back.");
-		ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
+		TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
 
 		List<DecisionKnowledgeElement> listWithObjects = ActiveObjectsManager.getAllElementsFromAoByType("TEST",
 				KnowledgeType.OTHER);
-		assertEquals(0, listWithObjects.size());
+		assertEquals(2, listWithObjects.size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testCleanSentenceDatabaseForProject() {
 		Comment comment = getComment("some sentence in front.  {pro} testobject {pro} some sentence in the back.");
-		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
+		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
 
 		MutableComment comment2 = ComponentAccessor.getCommentManager().getMutableComment(comment.getIssueId());
 		ComponentAccessor.getCommentManager().delete(comment2);
@@ -372,7 +385,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testLinkAllUnlikedSentence() {
 		Comment comment = getComment("some sentence in front.  {pro} testobject {pro} some sentence in the back.");
-		long id = ActiveObjectsManager.addNewSentenceintoAo(comment, comment.getIssueId(), 1);
+		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
 		assertEquals(1, GenericLinkManager.getLinksForElement("s" + id).size());
 		GenericLinkManager.deleteLinksForElement("s" + id);
 		assertEquals(0, GenericLinkManager.getLinksForElement("s" + id).size());

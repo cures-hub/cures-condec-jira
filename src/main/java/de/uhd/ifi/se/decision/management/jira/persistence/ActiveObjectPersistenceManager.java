@@ -36,7 +36,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 	private static final String PREFIX = DocumentationLocation.getIdentifier(DocumentationLocation.ACTIVEOBJECT);
 
-	private static DecisionKnowledgeElementInDatabase setParameters(DecisionKnowledgeElement element,
+	private static void setParameters(DecisionKnowledgeElement element,
 			DecisionKnowledgeElementInDatabase databaseEntry) {
 		String summary = element.getSummary();
 		if (summary != null) {
@@ -47,7 +47,6 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 			databaseEntry.setDescription(description);
 		}
 		databaseEntry.setType(element.getType().replaceProAndConWithArgument().toString());
-		return databaseEntry;
 	}
 
 	public ActiveObjectPersistenceManager(String projectKey) {
@@ -229,7 +228,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 								.create(DecisionKnowledgeElementInDatabase.class);
 						databaseEntry.setKey(element.getProject().getProjectKey().toUpperCase(Locale.ENGLISH) + "-"
 								+ databaseEntry.getId());
-						databaseEntry = setParameters(element, databaseEntry);
+						setParameters(element, databaseEntry);
 						databaseEntry.setProjectKey(element.getProject().getProjectKey());
 						databaseEntry.save();
 						return databaseEntry;
@@ -255,7 +254,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 						for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
 								.find(DecisionKnowledgeElementInDatabase.class)) {
 							if (databaseEntry.getId() == element.getId()) {
-								databaseEntry = setParameters(element, databaseEntry);
+								setParameters(element, databaseEntry);
 								databaseEntry.save();
 								return databaseEntry;
 							}

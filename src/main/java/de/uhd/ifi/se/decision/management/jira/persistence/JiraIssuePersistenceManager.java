@@ -122,8 +122,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		return 0;
 	}
 
-	private static IssueInputParameters setParameters(DecisionKnowledgeElement element,
-			IssueInputParameters issueInputParameters) {
+	private static void setParameters(DecisionKnowledgeElement element, IssueInputParameters issueInputParameters) {
 		String summary = element.getSummary();
 		if (summary != null) {
 			if (summary.length() > 255) {
@@ -137,7 +136,6 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		}
 		String issueTypeId = getIssueTypeId(element.getType().replaceProAndConWithArgument());
 		issueInputParameters.setIssueTypeId(issueTypeId);
-		return issueInputParameters;
 	}
 
 	@Override
@@ -264,7 +262,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 			ApplicationUser user) {
 		IssueInputParameters issueInputParameters = ComponentAccessor.getIssueService().newIssueInputParameters();
 
-		issueInputParameters = setParameters(element, issueInputParameters);
+		setParameters(element, issueInputParameters);
 		issueInputParameters.setReporterId(user.getName());
 		Project project = ComponentAccessor.getProjectManager()
 				.getProjectByCurrentKey(element.getProject().getProjectKey());
@@ -292,7 +290,7 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		IssueResult issueResult = issueService.getIssue(user, element.getId());
 		MutableIssue issueToBeUpdated = issueResult.getIssue();
 		IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
-		issueInputParameters = setParameters(element, issueInputParameters);
+		setParameters(element, issueInputParameters);
 		IssueService.UpdateValidationResult result = issueService.validateUpdate(user, issueToBeUpdated.getId(),
 				issueInputParameters);
 		if (result.getErrorCollection().hasAnyErrors()) {
