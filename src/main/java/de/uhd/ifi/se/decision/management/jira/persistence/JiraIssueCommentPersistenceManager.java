@@ -7,7 +7,6 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.sal.api.transaction.TransactionCallback;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
@@ -52,11 +51,12 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id) {
+		Sentence sentence = null;
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("ID = ?", id))) {
-			return new SentenceImpl(databaseEntry);
+			sentence = new SentenceImpl(databaseEntry);
 		}
-		return null;
+		return sentence;
 	}
 
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(Sentence sentence) {
@@ -66,26 +66,19 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		if (sentence.getId() > 0) {
 			return this.getDecisionKnowledgeElement(sentence.getId());
 		}
-		DecisionKnowledgeInCommentEntity databaseEntry = ACTIVE_OBJECTS
-				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-					@Override
-					public DecisionKnowledgeInCommentEntity doInTransaction() {
-						for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS.find(
-								DecisionKnowledgeInCommentEntity.class,
-								Query.select().where(
-										"PROJECT_KEY = ? AND COMMENT_ID = ? AND END_SUBSTRING_COUNT = ? AND START_SUBSTRING_COUNT = ?",
-										sentence.getProject().getProjectKey(), sentence.getCommentId(),
-										sentence.getEndSubstringCount(), sentence.getStartSubstringCount()))) {
-							return databaseEntry;
-						}
-						return null;
-					}
-				});
-		if (databaseEntry != null) {
-			return new SentenceImpl(databaseEntry);
+
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS.find(
+				DecisionKnowledgeInCommentEntity.class,
+				Query.select().where(
+						"PROJECT_KEY = ? AND COMMENT_ID = ? AND END_SUBSTRING_COUNT = ? AND START_SUBSTRING_COUNT = ?",
+						sentence.getProject().getProjectKey(), sentence.getCommentId(), sentence.getEndSubstringCount(),
+						sentence.getStartSubstringCount()))) {
+			sentence = new SentenceImpl(databaseEntry);
+		}
+		if (sentence.getId() > 0) {
+			return sentence;
 		}
 		return null;
-
 	}
 
 	@Override
@@ -162,20 +155,11 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		sentence.setRelevant(false);
 		sentence.setType("");
 
-		DecisionKnowledgeInCommentEntity databaseEntry = ACTIVE_OBJECTS
-				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-					@Override
-					public DecisionKnowledgeInCommentEntity doInTransaction() {
-						DecisionKnowledgeInCommentEntity databaseEntry = ACTIVE_OBJECTS
-								.create(DecisionKnowledgeInCommentEntity.class);
-						setParameters(sentence, databaseEntry);
-						databaseEntry.save();
-						ActiveObjectsManager.LOGGER
-								.debug("\naddNewSentenceintoAo:\nInsert Sentence " + databaseEntry.getId()
-										+ " into database from comment " + databaseEntry.getCommentId());
-						return databaseEntry;
-					}
-				});
+		DecisionKnowledgeInCommentEntity databaseEntry = ACTIVE_OBJECTS.create(DecisionKnowledgeInCommentEntity.class);
+		setParameters(sentence, databaseEntry);
+		databaseEntry.save();
+		ActiveObjectsManager.LOGGER.debug("\naddNewSentenceintoAo:\nInsert Sentence " + databaseEntry.getId()
+				+ " into database from comment " + databaseEntry.getCommentId());
 		return databaseEntry.getId();
 	}
 
