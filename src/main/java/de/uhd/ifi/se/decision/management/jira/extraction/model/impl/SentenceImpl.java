@@ -143,7 +143,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	public void setEndSubstringCount(int count) {
 		this.endSubstringCount = count;
 	}
-	
+
 	@Override
 	public int getLength() {
 		return this.endSubstringCount - this.startSubstringCount;
@@ -161,6 +161,13 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		} else if (prediction[2] == 1.) {
 			this.type = KnowledgeType.CON;
 		}
+	}
+
+	public void setType(KnowledgeType type) {
+//		if (this.type != type) {
+//			this.updateTagsInComment(type);
+//		}
+		super.setType(type);
 	}
 
 	public String getBody() {
@@ -251,5 +258,29 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	@Override
 	public void setCreated(Date date) {
 		this.created = date;
+	}
+
+	@Override
+	public void updateTagsInComment(KnowledgeType newType) {
+		CommentManager cm = ComponentAccessor.getCommentManager();
+		MutableComment mc = (MutableComment) cm.getMutableComment(this.getCommentId());
+		String oldBody = mc.getBody();
+
+		String newBody = oldBody.substring(this.getStartSubstringCount(), this.getEndSubstringCount());
+		newBody = newBody.replaceAll("(?i)" + this.getType().toString() + "}", newType.toString() + "}");
+
+		// build body with first text and changed text
+		int newLength = newBody.length();
+
+		newBody = oldBody.substring(0, this.getStartSubstringCount()) + newBody;
+		// If Changed sentence is in the middle of a sentence
+		if (oldBody.length() > this.getEndSubstringCount()) {
+			newBody = newBody + oldBody.substring(this.getEndSubstringCount());
+		}
+
+		this.setEndSubstringCount(this.getStartSubstringCount() + newLength);
+
+		mc.setBody(newBody);
+		cm.update(mc, true);
 	}
 }

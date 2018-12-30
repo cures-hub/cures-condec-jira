@@ -7,6 +7,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import com.atlassian.jira.issue.comments.MutableComment;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public interface Sentence extends DecisionKnowledgeElement {
 
@@ -80,4 +81,7 @@ public interface Sentence extends DecisionKnowledgeElement {
 
 	@JsonIgnore
 	void setCreated(Date date);
+	
+	@JsonIgnore
+	void updateTagsInComment(KnowledgeType knowledgeType);
 }

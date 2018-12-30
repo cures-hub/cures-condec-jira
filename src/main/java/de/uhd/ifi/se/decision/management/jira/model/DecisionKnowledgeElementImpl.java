@@ -139,8 +139,9 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 
 	@Override
 	@JsonProperty("type")
-	public void setType(String type) {
-		this.type = KnowledgeType.getKnowledgeType(type);
+	public void setType(String typeAsString) {
+		KnowledgeType type = KnowledgeType.getKnowledgeType(typeAsString);
+		this.setType(type);
 	}
 
 	@Override
