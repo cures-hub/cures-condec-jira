@@ -98,7 +98,8 @@ public class ClassificationManagerForCommentSentences {
 			for (Sentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForBinaryClassification(sentence)) {
 					sentence.setRelevant(classificationResult.get(i));
-					ActiveObjectsManager.setIsRelevantIntoAo(sentence.getId(), sentence.isRelevant());
+					JiraIssueCommentPersistenceManager.updateInDatabase(sentence);
+					//ActiveObjectsManager.setIsRelevantIntoAo(sentence.getId(), sentence.isRelevant());
 					sentence.setTagged(true);
 					i++;
 				}

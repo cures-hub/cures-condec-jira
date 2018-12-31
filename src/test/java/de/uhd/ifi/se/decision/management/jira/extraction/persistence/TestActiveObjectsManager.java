@@ -250,11 +250,16 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		Comment comment = getComment("first Comment");
 		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
 
-		ActiveObjectsManager.setIsRelevantIntoAo(id, true);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
+		assertFalse(element.isRelevant());
+		
+		element.setRelevant(true);
+		JiraIssueCommentPersistenceManager.updateInDatabase(element);		
+		element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertTrue(element.isRelevant());
 
-		ActiveObjectsManager.setIsRelevantIntoAo(id, false);
+		element.setRelevant(false);
+		JiraIssueCommentPersistenceManager.updateInDatabase(element);
 		element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertFalse(element.isRelevant());
 	}
@@ -265,8 +270,11 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		Comment comment = getComment("first Comment");
 		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
 
-		assertFalse(ActiveObjectsManager.setIsRelevantIntoAo(id + 2, true));
-
+		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
+		element.setRelevant(true);
+		element.setId(id + 2);
+		
+		assertFalse(JiraIssueCommentPersistenceManager.updateInDatabase(element));
 	}
 
 	@Test
@@ -292,12 +300,16 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	public void testSetSentenceIrrlevant() {
 		Comment comment = getComment("first Comment");
 		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
-
-		ActiveObjectsManager.setIsRelevantIntoAo(id, true);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
+		element.setRelevant(true);
+
+		JiraIssueCommentPersistenceManager.updateInDatabase(element);
+		element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertTrue(element.isRelevant());
 
-		ActiveObjectsManager.setSentenceIrrelevant(id, true);
+		element.setRelevant(false);
+		element.setTagged(true);
+		JiraIssueCommentPersistenceManager.updateInDatabase(element);
 		element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertFalse(element.isRelevant());
 		assertTrue(element.isTagged());

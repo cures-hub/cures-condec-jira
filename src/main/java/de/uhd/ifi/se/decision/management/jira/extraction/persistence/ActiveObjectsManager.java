@@ -152,31 +152,6 @@ public class ActiveObjectsManager {
 		});
 	}
 
-	public static boolean setIsRelevantIntoAo(long activeObjectId, boolean isRelevant) {
-		init();
-		DecisionKnowledgeInCommentEntity databaseEntry = ActiveObjects
-				.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-					@Override
-					public DecisionKnowledgeInCommentEntity doInTransaction() {
-						for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects
-								.find(DecisionKnowledgeInCommentEntity.class)) {
-							if (databaseEntry.getId() == activeObjectId) {
-								databaseEntry.setRelevant(isRelevant);
-								// If relevant is true or false, it's tagged, so set it on true
-								databaseEntry.setTagged(true);
-								databaseEntry.save();
-								return databaseEntry;
-							}
-						}
-						return null;
-					}
-				});
-		if (databaseEntry == null) {
-			return false;
-		}
-		return true;
-	}
-
 	public static boolean setSentenceIrrelevant(long id, boolean isTagged) {
 		init();
 		return ActiveObjects.executeInTransaction(new TransactionCallback<Boolean>() {
