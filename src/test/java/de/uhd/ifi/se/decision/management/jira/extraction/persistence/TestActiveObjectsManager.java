@@ -387,7 +387,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		MutableComment comment2 = ComponentAccessor.getCommentManager().getMutableComment(comment.getIssueId());
 		ComponentAccessor.getCommentManager().delete(comment2);
 
-		ActiveObjectsManager.cleanSentenceDatabaseForProject("TEST");
+		JiraIssueCommentPersistenceManager.cleanSentenceDatabaseForProject("TEST");
 
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertNull(element);

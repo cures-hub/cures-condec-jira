@@ -230,7 +230,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		sentence.setDescription(element.getDescription());
 		sentence.setProject(element.getProject());
 		sentence.setTagged(true);
-		
+
 		return this.updateDecisionKnowledgeElement(sentence, user);
 	}
 
@@ -251,8 +251,8 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			if (element.getType() == KnowledgeType.OTHER) {
 				changedPartOfComment = changedPartOfComment.replaceAll("\\{.*?\\}", "");
 			} else {
-				changedPartOfComment = changedPartOfComment.replaceAll(
-						"(?i)" + sentence.getType().toString() + "}", element.getType().toString() + "}");
+				changedPartOfComment = changedPartOfComment.replaceAll("(?i)" + sentence.getType().toString() + "}",
+						element.getType().toString() + "}");
 			}
 		} else {
 			// description and maybe also knowledge type are changed
@@ -271,11 +271,11 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		int lengthDifference = changedPartOfComment.length() - sentence.getLength();
 		updateSentenceLengthForOtherSentencesInSameComment(sentence, lengthDifference);
 
-		sentence.setEndSubstringCount(sentence.getStartSubstringCount() + changedPartOfComment.length());		
+		sentence.setEndSubstringCount(sentence.getStartSubstringCount() + changedPartOfComment.length());
 		sentence.setType(element.getType());
 		sentence.setTagged(element.isTagged());
 		sentence.setRelevant(element.isRelevant());
-		
+
 		boolean isUpdated = updateInDatabase(sentence);
 		return isUpdated;
 	}
@@ -391,6 +391,27 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		ComponentAccessor.getCommentManager().update(mutableComment, true);
 		DecXtractEventListener.editCommentLock = false;
 		return lengthDiff;
+	}
+
+	public static void cleanSentenceDatabaseForProject(String projectKey) {
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
+				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
+			Sentence sentence = null;
+			boolean deleteFlag = false;
+			try {
+				sentence = new SentenceImpl(databaseEntry);
+				ComponentAccessor.getCommentManager().getCommentById(sentence.getCommentId());
+				if (sentence.getEndSubstringCount() == 0 && sentence.getStartSubstringCount() == 0) {
+					deleteFlag = true;
+				}
+			} catch (Exception e) {
+				deleteFlag = true;
+			}
+			if (deleteFlag) {
+				DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
+				GenericLinkManager.deleteLinksForElementWithoutTransaction("s" + databaseEntry.getId());
+			}
+		}
 	}
 
 }

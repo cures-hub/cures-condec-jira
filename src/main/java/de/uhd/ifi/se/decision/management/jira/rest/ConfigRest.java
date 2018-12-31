@@ -33,6 +33,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
 /**
  * REST resource for plug-in configuration
@@ -302,7 +303,7 @@ public class ConfigRest {
 			// Deletion is only useful during development, do not ship to enduser!!
 			// ActiveObjectsManager.clearSentenceDatabaseForProject(projectKey);
 			// If still something is wrong, delete an elements and its links
-			ActiveObjectsManager.cleanSentenceDatabaseForProject(projectKey);
+			JiraIssueCommentPersistenceManager.cleanSentenceDatabaseForProject(projectKey);
 			// If some links ar bad, delete those links
 			GenericLinkManager.clearInvalidLinks();
 			// If there are now some "lonely" sentences, link them to their issues.

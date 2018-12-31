@@ -21,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjec
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
 /**
  * Triggers the decXtract related function when some changes to comments are
@@ -141,7 +142,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	}
 
 	private void handleDeleteIssue(DecisionKnowledgeElement decisionKnowledgeElement) {
-		ActiveObjectsManager.cleanSentenceDatabaseForProject(this.projectKey);
+		JiraIssueCommentPersistenceManager.cleanSentenceDatabaseForProject(this.projectKey);
 		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
 	}
 
@@ -158,7 +159,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	}
 
 	private void handleDeleteComment(DecisionKnowledgeElement decisionKnowledgeElement) {
-		ActiveObjectsManager.cleanSentenceDatabaseForProject(this.projectKey);
+		JiraIssueCommentPersistenceManager.cleanSentenceDatabaseForProject(this.projectKey);
 		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
 	}
 

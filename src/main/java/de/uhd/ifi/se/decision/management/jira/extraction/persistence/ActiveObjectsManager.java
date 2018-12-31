@@ -68,30 +68,6 @@ public class ActiveObjectsManager {
 		});
 	}
 
-	public static void cleanSentenceDatabaseForProject(String projectKey) {
-		init();
-		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			Sentence sentence = null;
-			boolean deleteFlag = false;
-			try {
-				sentence = new SentenceImpl(databaseEntry);
-				ComponentAccessor.getCommentManager().getCommentById(sentence.getCommentId());
-				if (sentence.getEndSubstringCount() == 0 && sentence.getStartSubstringCount() == 0) {
-					deleteFlag = true;
-				}
-			} catch (Exception e) {
-				deleteFlag = true;
-			}
-			if (deleteFlag) {
-				DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
-				GenericLinkManager.deleteLinksForElementWithoutTransaction("s" + databaseEntry.getId());
-				// GenericLinkManager.deleteLinksForElement("s" + databaseEntry.getId());
-			}
-		}
-
-	}
-
 	public static void createLinksForNonLinkedElementsForProject(String projectKey) {
 		init();
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
