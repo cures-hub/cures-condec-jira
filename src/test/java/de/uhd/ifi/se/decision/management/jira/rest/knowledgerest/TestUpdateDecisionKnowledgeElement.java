@@ -139,6 +139,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 				knowledgeRest.updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "").getStatus());
 		Sentence sentence = (Sentence) new JiraIssueCommentPersistenceManager("")
 				.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
+		assertEquals(sentence.getType(), KnowledgeType.PRO);
 		assertEquals(newText, sentence.getBody());
 	}
 
@@ -157,6 +158,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 				knowledgeRest.updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "s").getStatus());
 		Sentence sentence = (Sentence) new JiraIssueCommentPersistenceManager("")
 				.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
+		assertEquals(sentence.getType(), KnowledgeType.ISSUE);
 		assertEquals(newText, sentence.getBody());
 
 		MutableComment mutableComment = (MutableComment) ComponentAccessor.getCommentManager()

@@ -20,8 +20,8 @@ import com.atlassian.jira.util.VelocityParamFactory;
 import com.atlassian.velocity.VelocityManager;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
 /**
  * Renders the issue tab panel
@@ -37,7 +37,7 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 		}
 		// Initialize viewConnector with the current shown Issue, only if there are more
 		// comments than saved
-		if (ActiveObjectsManager.countCommentsForIssue(issue.getId()) != ComponentAccessor.getCommentManager()
+		if (JiraIssueCommentPersistenceManager.countCommentsForIssue(issue.getId()) != ComponentAccessor.getCommentManager()
 				.getComments(issue).size()) {
 			new ViewConnector(issue, true);
 		}

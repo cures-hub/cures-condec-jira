@@ -2,8 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +11,6 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
-import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.user.ApplicationUser;
@@ -71,65 +68,6 @@ public class ActiveObjectsManager {
 		});
 	}
 
-	public static boolean setSentenceIrrelevant(long id, boolean isTagged) {
-		init();
-		return ActiveObjects.executeInTransaction(new TransactionCallback<Boolean>() {
-			@Override
-			public Boolean doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity sentenceEntity : ActiveObjects
-						.find(DecisionKnowledgeInCommentEntity.class)) {
-					if (sentenceEntity.getId() == id) {
-						ActiveObjectsManager.stripTagsOutOfComment(sentenceEntity);
-						GenericLinkManager.deleteLinksForElementWithoutTransaction("s" + id);
-
-						ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(sentenceEntity.getIssueId());
-						sentenceEntity.setRelevant(false);
-						sentenceEntity.setTagged(isTagged);
-						sentenceEntity.setType(KnowledgeType.OTHER.toString());
-						sentenceEntity.save();
-						return true;
-					}
-				}
-				return false;
-			}
-		});
-	}
-
-	protected static void stripTagsOutOfComment(DecisionKnowledgeInCommentEntity sentenceEntity) {
-		if (sentenceEntity.getType() == null || sentenceEntity.getType().equalsIgnoreCase("Other")) {
-			return;
-		}
-		CommentManager commentManager = ComponentAccessor.getCommentManager();
-		MutableComment mutableComment = (MutableComment) commentManager
-				.getMutableComment(sentenceEntity.getCommentId());
-		String newBody = "";
-		try {
-			newBody = mutableComment.getBody().substring(sentenceEntity.getStartSubstringCount(),
-					sentenceEntity.getEndSubstringCount());
-		} catch (StringIndexOutOfBoundsException e) {
-			return;
-		}
-		int oldlength = newBody.length();
-		int oldEnd = sentenceEntity.getEndSubstringCount();
-		newBody = newBody.replaceAll("\\{.*?\\}", "");
-
-		sentenceEntity.setEndSubstringCount(
-				sentenceEntity.getEndSubstringCount() - (2 * (sentenceEntity.getType().length() + 2)));
-		sentenceEntity.save();
-
-		int lengthDiff = newBody.length() - oldlength;
-		DecXtractEventListener.editCommentLock = true;
-		String first = mutableComment.getBody().substring(0, sentenceEntity.getStartSubstringCount());
-		String second = newBody;
-		String third = mutableComment.getBody().substring(oldEnd);
-		mutableComment.setBody(first + second + third);
-		commentManager.update(mutableComment, true);
-		DecXtractEventListener.editCommentLock = false;
-
-		JiraIssueCommentPersistenceManager
-				.updateSentenceLengthForOtherSentencesInSameComment(new SentenceImpl(sentenceEntity), lengthDiff);
-	}
-
 	/**
 	 * Deletes all sentences in ao tables for this project and all links to and from
 	 * sentences. Currently not used. Useful for developing and system testing.
@@ -181,8 +119,8 @@ public class ActiveObjectsManager {
 		init();
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			JiraIssueCommentPersistenceManager.checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getIssueId(),
-					LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()));
+			JiraIssueCommentPersistenceManager.checkIfSentenceHasAValidLink(databaseEntry.getId(),
+					databaseEntry.getIssueId(), LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()));
 		}
 	}
 
@@ -190,8 +128,8 @@ public class ActiveObjectsManager {
 		init();
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("ISSUE_ID = ?", issueId))) {
-			JiraIssueCommentPersistenceManager.checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getIssueId(),
-					LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()));
+			JiraIssueCommentPersistenceManager.checkIfSentenceHasAValidLink(databaseEntry.getId(),
+					databaseEntry.getIssueId(), LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()));
 		}
 	}
 
@@ -255,15 +193,14 @@ public class ActiveObjectsManager {
 	}
 
 	private static int removeSentenceFromComment(Sentence element) {
-		CommentManager cm = ComponentAccessor.getCommentManager();
-		MutableComment mc = (MutableComment) cm.getMutableComment(element.getCommentId());
-		String newBody = mc.getBody();
+		MutableComment mutableComment = element.getComment();
+		String newBody = mutableComment.getBody();
 		newBody = newBody.substring(0, element.getStartSubstringCount())
 				+ newBody.substring(element.getEndSubstringCount());
 
 		DecXtractEventListener.editCommentLock = true;
-		mc.setBody(newBody);
-		cm.update(mc, true);
+		mutableComment.setBody(newBody);
+		ComponentAccessor.getCommentManager().update(mutableComment, true);
 		DecXtractEventListener.editCommentLock = false;
 		return element.getEndSubstringCount() - element.getStartSubstringCount();
 	}
@@ -277,23 +214,10 @@ public class ActiveObjectsManager {
 		}
 	}
 
-	public static int countCommentsForIssue(long issueId) {
-		init();
-		DecisionKnowledgeInCommentEntity[] commentSentences = ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("ISSUE_ID = ?", issueId));
-		Set<Long> treeSet = new TreeSet<>();
-
-		for (DecisionKnowledgeInCommentEntity sentence : commentSentences) {
-			treeSet.add(sentence.getCommentId());
-		}
-
-		return treeSet.size();
-	}
-
 	public static long getIdOfSentenceForMacro(String body, Long issueId, String typeString, String projectKey) {
 		init();
-		List<DecisionKnowledgeElement> sentences = JiraIssueCommentPersistenceManager.getElementsForIssueWithType(issueId, projectKey,
-				typeString);
+		List<DecisionKnowledgeElement> sentences = JiraIssueCommentPersistenceManager
+				.getElementsForIssueWithType(issueId, projectKey, typeString);
 		for (DecisionKnowledgeElement sentence : sentences) {
 			if (sentence.getDescription().trim().equals(body.trim().replaceAll("<[^>]*>", ""))) {
 				return sentence.getId();

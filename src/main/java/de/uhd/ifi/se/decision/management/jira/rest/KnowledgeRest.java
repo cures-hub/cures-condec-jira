@@ -19,14 +19,18 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImplFiltered;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 
 /**
@@ -236,7 +240,7 @@ public class KnowledgeRest {
 		boolean isDeleted = AbstractPersistenceManager.deleteLink(link, user);
 
 		if (isDeleted) {
-			return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
+			return Response.status(Status.OK).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
@@ -247,21 +251,21 @@ public class KnowledgeRest {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response createIssueFromSentence(@Context HttpServletRequest request,
 			DecisionKnowledgeElement decisionKnowledgeElement) {
-		if (decisionKnowledgeElement != null && request != null) {
-
-			ApplicationUser user = AuthenticationManager.getUser(request);
-			Issue issue = ActiveObjectsManager.createJIRAIssueFromSentenceObject(decisionKnowledgeElement.getId(),
-					user);
-
-			if (issue != null) {
-				return Response.status(Status.OK).entity(issue).build();
-			}
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
-		} else {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Creation of decision knowledge element failed.")).build();
+		if (decisionKnowledgeElement == null || request == null) {
+			return Response.status(Status.BAD_REQUEST).entity(
+					ImmutableMap.of("error", "The documentation location could not be changed due to a bad request."))
+					.build();
 		}
+
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		Issue issue = ActiveObjectsManager.createJIRAIssueFromSentenceObject(decisionKnowledgeElement.getId(), user);
+
+		if (issue != null) {
+			return Response.status(Status.OK).entity(issue).build();
+		}
+		return Response.status(Status.INTERNAL_SERVER_ERROR)
+				.entity(ImmutableMap.of("error", "The documentation location could not be changed.")).build();
+
 	}
 
 	@Path("/setSentenceIrrelevant")
@@ -271,16 +275,33 @@ public class KnowledgeRest {
 			DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (request == null || decisionKnowledgeElement == null || decisionKnowledgeElement.getId() <= 0) {
 			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Setting sentence irrelevant failed due to a bad request."))
+					.entity(ImmutableMap.of("error", "Setting element irrelevant failed due to a bad request."))
 					.build();
 		}
-		boolean isDeleted = ActiveObjectsManager.setSentenceIrrelevant(decisionKnowledgeElement.getId(), false);
-		if (isDeleted) {
-			return Response.status(Status.OK).entity(ImmutableMap.of("id", isDeleted)).build();
-		} else {
-			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
+		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager
+				.getPersistenceManager(decisionKnowledgeElement);
+		if (decisionKnowledgeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUECOMMENT) {
+			return Response.status(Status.SERVICE_UNAVAILABLE)
+					.entity(ImmutableMap.of("error", "Only sentence elements can be set to irrelevant.")).build();
 		}
+		Sentence sentence = (Sentence) persistenceManager.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
+		if (sentence == null) {
+			return Response.status(Status.NOT_FOUND)
+					.entity(ImmutableMap.of("error", "Element could not be found in database.")).build();
+		}
+
+		sentence.setRelevant(false);
+		sentence.setType(KnowledgeType.OTHER);
+		sentence.setSummary(null);
+		sentence.setTagged(false);
+		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(sentence, null);
+		if (isUpdated) {
+			GenericLinkManager.deleteLinksForElementWithoutTransaction("s" + sentence.getId());
+			ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(sentence.getIssueId());
+			return Response.status(Status.OK).build();
+		}
+		return Response.status(Status.INTERNAL_SERVER_ERROR)
+				.entity(ImmutableMap.of("error", "Setting element irrelevant failed.")).build();
 	}
 
 	@Path("getAllElementsMatchingQuery")
