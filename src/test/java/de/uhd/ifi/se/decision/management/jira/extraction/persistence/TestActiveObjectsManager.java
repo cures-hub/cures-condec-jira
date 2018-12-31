@@ -340,7 +340,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		
 		assertEquals(2, id);
 
-		List<DecisionKnowledgeElement> listWithObjects = ActiveObjectsManager.getElementsForIssue(comment.getIssueId(),
+		List<DecisionKnowledgeElement> listWithObjects = JiraIssueCommentPersistenceManager.getElementsForIssue(comment.getIssueId(),
 				"TEST");
 		assertEquals(3, listWithObjects.size());
 	}

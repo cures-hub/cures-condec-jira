@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
 public class CommentImpl implements Comment {
@@ -72,7 +71,7 @@ public class CommentImpl implements Comment {
 				sentence.setProject(this.projectKey);
 				long aoId2 = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(sentence, null);
 				sentence = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(aoId2);
-				ActiveObjectsManager.createSmartLinkForSentence(sentence);
+				JiraIssueCommentPersistenceManager.createSmartLinkForSentence(sentence);
 				sentence.setCreated(this.created);
 				this.sentences.add(sentence);
 			}

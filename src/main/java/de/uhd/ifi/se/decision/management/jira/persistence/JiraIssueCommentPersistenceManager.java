@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
@@ -17,7 +18,9 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl
 import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.view.macros.AbstractKnowledgeClassificationMacro;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
@@ -77,7 +80,22 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			sentenceInDatabase = new SentenceImpl(databaseEntry);
 		}
 		return sentenceInDatabase;
+	}	
+
+	public static DecisionKnowledgeElement searchForLast(Sentence sentence, KnowledgeType typeToSearch) {
+		Sentence lastSentence = null;
+		DecisionKnowledgeInCommentEntity[] sententenceList = ACTIVE_OBJECTS.find(DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("ISSUE_ID = ?", sentence.getIssueId()).order("ID DESC"));
+	
+		for (DecisionKnowledgeInCommentEntity databaseEntry : sententenceList) {
+			if (databaseEntry.getType().equals(typeToSearch.toString())) {
+				lastSentence = new SentenceImpl(databaseEntry);
+				break;
+			}
+		}
+		return lastSentence;
 	}
+
 
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(String key) {
@@ -89,6 +107,34 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public static List<DecisionKnowledgeElement> getElementsForIssue(long issueId, String projectKey) {
+		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS.find(DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ?", projectKey, issueId))) {
+			elements.add(new SentenceImpl(databaseEntry));
+		}
+		return elements;
+	}
+	
+	/**
+	 * Works more efficient than "getElementsForIssue" for Sentence ID searching in
+	 * Macros
+	 * 
+	 * @param issueId
+	 * @param projectKey
+	 * @param type
+	 * @return A list of all fitting Sentence objects
+	 */
+	public static List<DecisionKnowledgeElement> getElementsForIssueWithType(long issueId, String projectKey,
+			String type) {
+		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS.find(DecisionKnowledgeInCommentEntity.class,
+				Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ? AND TYPE = ?", projectKey, issueId, type))) {
+			elements.add(new SentenceImpl(databaseEntry));
+		}
+		return elements;
 	}
 
 	@Override
@@ -144,7 +190,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		DecisionKnowledgeElement existingElement = new JiraIssueCommentPersistenceManager("")
 				.getDecisionKnowledgeElement(sentence);
 		if (existingElement != null) {
-			ActiveObjectsManager.checkIfSentenceHasAValidLink(existingElement.getId(), sentence.getIssueId(),
+			JiraIssueCommentPersistenceManager.checkIfSentenceHasAValidLink(existingElement.getId(), sentence.getIssueId(),
 					LinkType.getLinkTypeForKnowledgeType(existingElement.getType()));
 			return existingElement.getId();
 		}
@@ -214,6 +260,66 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 		boolean isUpdated = updateInDatabase(sentence);
 		return isUpdated;
+	}
+
+	public static DecisionKnowledgeElement compareForLaterElement(DecisionKnowledgeElement first,
+			DecisionKnowledgeElement second) {
+		if (first == null) {
+			return second;
+		} else if (second == null) {
+			return first;
+		} else if (first.getId() > second.getId()) {
+			return first;
+		} else {
+			return second;
+		}
+	}
+
+	public static boolean checkLastElementAndCreateLink(DecisionKnowledgeElement lastElement, Sentence sentence) {
+		if (lastElement == null) {
+			return false;
+		}
+		Link link = Link.instantiateDirectedLink(lastElement, sentence);
+		GenericLinkManager.insertLink(link, null);
+		return true;
+	}
+
+	public static void createSmartLinkForSentence(Sentence sentence) {
+		if (sentence == null || AbstractPersistenceManager.isElementLinked(sentence)) {
+			return;
+		}
+		boolean smartLinkCreated = false;
+		KnowledgeType knowledgeType = sentence.getType();
+		if (knowledgeType == KnowledgeType.ARGUMENT || knowledgeType == KnowledgeType.PRO
+				|| knowledgeType == KnowledgeType.CON) {
+			DecisionKnowledgeElement lastElement = JiraIssueCommentPersistenceManager.compareForLaterElement(
+					searchForLast(sentence, KnowledgeType.ALTERNATIVE),
+					searchForLast(sentence, KnowledgeType.DECISION));
+			smartLinkCreated = JiraIssueCommentPersistenceManager.checkLastElementAndCreateLink(lastElement, sentence);
+		} else if (knowledgeType == KnowledgeType.DECISION || knowledgeType == KnowledgeType.ALTERNATIVE) {
+			DecisionKnowledgeElement lastElement = searchForLast(sentence,
+					KnowledgeType.ISSUE);
+			smartLinkCreated = JiraIssueCommentPersistenceManager.checkLastElementAndCreateLink(lastElement, sentence);
+		}
+		if (!smartLinkCreated) {
+			checkIfSentenceHasAValidLink(sentence.getId(), sentence.getIssueId(),
+					LinkType.getLinkTypeForKnowledgeType(sentence.getTypeAsString()));
+		}
+	}
+
+	public static void checkIfSentenceHasAValidLink(long sentenceId, long issueId, LinkType linkType) {
+		if (!AbstractPersistenceManager.isElementLinked(sentenceId, DocumentationLocation.JIRAISSUECOMMENT)) {
+			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
+			parentElement.setId(issueId);
+			parentElement.setDocumentationLocation("i");
+	
+			DecisionKnowledgeElement childElement = new DecisionKnowledgeElementImpl();
+			childElement.setId(sentenceId);
+			childElement.setDocumentationLocation("s");
+	
+			Link link = Link.instantiateDirectedLink(parentElement, childElement, linkType);
+			GenericLinkManager.insertLinkWithoutTransaction(link);
+		}
 	}
 
 	public static boolean updateInDatabase(Sentence sentence) {

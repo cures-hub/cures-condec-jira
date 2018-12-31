@@ -24,7 +24,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
@@ -44,86 +43,6 @@ public class ActiveObjectsManager {
 		if (ActiveObjects == null) {
 			ActiveObjects = ComponentGetter.getActiveObjects();
 		}
-	}
-
-	public static void checkIfSentenceHasAValidLink(long sentenceId, long issueId, LinkType linkType) {
-		if (!isSentenceLinked(sentenceId)) {
-			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
-			parentElement.setId(issueId);
-			parentElement.setDocumentationLocation("i");
-
-			DecisionKnowledgeElement childElement = new DecisionKnowledgeElementImpl();
-			childElement.setId(sentenceId);
-			childElement.setDocumentationLocation("s");
-
-			Link link = Link.instantiateDirectedLink(parentElement, childElement, linkType);
-			GenericLinkManager.insertLinkWithoutTransaction(link);
-		}
-	}
-
-	private static boolean isSentenceLinked(long sentenceId) {
-		List<Link> links = GenericLinkManager.getLinksForElement("s" + sentenceId);
-		if (links == null || links.size() == 0) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-	public static void createSmartLinkForSentence(Sentence sentence) {
-		if (sentence == null || isSentenceLinked(sentence.getId())) {
-			return;
-		}
-		boolean smartLinkCreated = false;
-		KnowledgeType knowledgeType = sentence.getType();
-		if (knowledgeType == KnowledgeType.ARGUMENT || knowledgeType == KnowledgeType.PRO
-				|| knowledgeType == KnowledgeType.CON) {
-			DecisionKnowledgeElement lastElement = compareForLaterElement(
-					searchForLast(sentence, KnowledgeType.ALTERNATIVE),
-					searchForLast(sentence, KnowledgeType.DECISION));
-			smartLinkCreated = checkLastElementAndCreateLink(lastElement, sentence);
-		} else if (knowledgeType == KnowledgeType.DECISION || knowledgeType == KnowledgeType.ALTERNATIVE) {
-			DecisionKnowledgeElement lastElement = searchForLast(sentence, KnowledgeType.ISSUE);
-			smartLinkCreated = checkLastElementAndCreateLink(lastElement, sentence);
-		}
-		if (!smartLinkCreated) {
-			checkIfSentenceHasAValidLink(sentence.getId(), sentence.getIssueId(),
-					LinkType.getLinkTypeForKnowledgeType(sentence.getTypeAsString()));
-		}
-	}
-
-	private static boolean checkLastElementAndCreateLink(DecisionKnowledgeElement lastElement, Sentence sentence) {
-		if (lastElement != null) {
-			Link link = Link.instantiateDirectedLink(lastElement, sentence);
-			GenericLinkManager.insertLink(link, null);
-			return true;
-		}
-		return false;
-	}
-
-	private static DecisionKnowledgeElement compareForLaterElement(DecisionKnowledgeElement first,
-			DecisionKnowledgeElement second) {
-		if (first == null) {
-			return second;
-		} else if (second == null) {
-			return first;
-		} else if (first.getId() > second.getId()) {
-			return first;
-		} else {
-			return second;
-		}
-	}
-
-	private static DecisionKnowledgeElement searchForLast(Sentence sentence, KnowledgeType typeToSearch) {
-		DecisionKnowledgeInCommentEntity[] sententenceList = ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("ISSUE_ID = ?", sentence.getIssueId()).order("ID DESC"));
-
-		for (DecisionKnowledgeInCommentEntity aoElement : sententenceList) {
-			if (aoElement.getType().equals(typeToSearch.toString())) {
-				return new SentenceImpl(aoElement);
-			}
-		}
-		return null;
 	}
 
 	public static void setSentenceKnowledgeType(Sentence sentence) {
@@ -181,7 +100,8 @@ public class ActiveObjectsManager {
 			return;
 		}
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
-		MutableComment mutableComment = (MutableComment) commentManager.getMutableComment(sentenceEntity.getCommentId());
+		MutableComment mutableComment = (MutableComment) commentManager
+				.getMutableComment(sentenceEntity.getCommentId());
 		String newBody = "";
 		try {
 			newBody = mutableComment.getBody().substring(sentenceEntity.getStartSubstringCount(),
@@ -193,7 +113,8 @@ public class ActiveObjectsManager {
 		int oldEnd = sentenceEntity.getEndSubstringCount();
 		newBody = newBody.replaceAll("\\{.*?\\}", "");
 
-		sentenceEntity.setEndSubstringCount(sentenceEntity.getEndSubstringCount() - (2 * (sentenceEntity.getType().length() + 2)));
+		sentenceEntity.setEndSubstringCount(
+				sentenceEntity.getEndSubstringCount() - (2 * (sentenceEntity.getType().length() + 2)));
 		sentenceEntity.save();
 
 		int lengthDiff = newBody.length() - oldlength;
@@ -204,38 +125,9 @@ public class ActiveObjectsManager {
 		mutableComment.setBody(first + second + third);
 		commentManager.update(mutableComment, true);
 		DecXtractEventListener.editCommentLock = false;
-		
-		JiraIssueCommentPersistenceManager.updateSentenceLengthForOtherSentencesInSameComment(new SentenceImpl(sentenceEntity), lengthDiff);
-	}
 
-	public static List<DecisionKnowledgeElement> getElementsForIssue(long issueId, String projectKey) {
-		init();
-		List<DecisionKnowledgeElement> elements = new ArrayList<>();
-		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ?", projectKey, issueId))) {
-			elements.add(new SentenceImpl(databaseEntry));
-		}
-		return elements;
-	}
-
-	/**
-	 * Works more efficient than "getElementsForIssue" for Sentence ID searching in
-	 * Macros
-	 * 
-	 * @param issueId
-	 * @param projectKey
-	 * @param type
-	 * @return A list of all fitting Sentence objects
-	 */
-	public static List<DecisionKnowledgeElement> getElementsForIssueWithType(long issueId, String projectKey,
-			String type) {
-		init();
-		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
-		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ? AND TYPE = ?", projectKey, issueId, type))) {
-			elements.add(new SentenceImpl(databaseEntry));
-		}
-		return elements;
+		JiraIssueCommentPersistenceManager
+				.updateSentenceLengthForOtherSentencesInSameComment(new SentenceImpl(sentenceEntity), lengthDiff);
 	}
 
 	/**
@@ -289,7 +181,7 @@ public class ActiveObjectsManager {
 		init();
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getIssueId(),
+			JiraIssueCommentPersistenceManager.checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getIssueId(),
 					LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()));
 		}
 	}
@@ -298,7 +190,7 @@ public class ActiveObjectsManager {
 		init();
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("ISSUE_ID = ?", issueId))) {
-			checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getIssueId(),
+			JiraIssueCommentPersistenceManager.checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getIssueId(),
 					LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()));
 		}
 	}
@@ -400,7 +292,7 @@ public class ActiveObjectsManager {
 
 	public static long getIdOfSentenceForMacro(String body, Long issueId, String typeString, String projectKey) {
 		init();
-		List<DecisionKnowledgeElement> sentences = ActiveObjectsManager.getElementsForIssueWithType(issueId, projectKey,
+		List<DecisionKnowledgeElement> sentences = JiraIssueCommentPersistenceManager.getElementsForIssueWithType(issueId, projectKey,
 				typeString);
 		for (DecisionKnowledgeElement sentence : sentences) {
 			if (sentence.getDescription().trim().equals(body.trim().replaceAll("<[^>]*>", ""))) {

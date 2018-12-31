@@ -35,6 +35,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
 
 public class DecisionKnowledgeReport extends AbstractReport {
@@ -192,7 +193,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 		String projectKey = ComponentAccessor.getProjectManager().getProjectObj(this.projectId).getKey();
 		for (Issue currentIssue : projectIssues.getIssues()) {
-			List<DecisionKnowledgeElement> elements = ActiveObjectsManager.getElementsForIssue(currentIssue.getId(),
+			List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager.getElementsForIssue(currentIssue.getId(),
 					projectKey);
 			for (DecisionKnowledgeElement currentElement : elements) {
 				if (currentElement instanceof Sentence && ((Sentence) currentElement).isRelevant()) {
@@ -218,7 +219,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		String projectKey = ComponentAccessor.getProjectManager().getProjectObj(this.projectId).getKey();
 		for (Issue currentIssue : projectIssues.getIssues()) {
 			int count = 0;
-			List<DecisionKnowledgeElement> elements = ActiveObjectsManager.getElementsForIssue(currentIssue.getId(),
+			List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager.getElementsForIssue(currentIssue.getId(),
 					projectKey);
 			for (DecisionKnowledgeElement dke : elements) {
 				if (dke.getType().equals(type)) {
