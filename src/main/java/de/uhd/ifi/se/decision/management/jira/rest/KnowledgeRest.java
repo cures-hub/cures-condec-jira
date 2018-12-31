@@ -293,7 +293,6 @@ public class KnowledgeRest {
 		sentence.setRelevant(false);
 		sentence.setType(KnowledgeType.OTHER);
 		sentence.setSummary(null);
-		sentence.setTagged(false);
 		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(sentence, null);
 		if (isUpdated) {
 			GenericLinkManager.deleteLinksForElementWithoutTransaction("s" + sentence.getId());

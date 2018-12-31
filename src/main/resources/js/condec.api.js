@@ -223,7 +223,8 @@
 	ConDecAPI.prototype.setSentenceIrrelevant = function setSentenceIrrelevant(id, callback) {
 		var jsondata = {
 			"id" : id,
-			"documentationLocation" : "s"
+			"documentationLocation" : "s",
+			"projectKey" : projectKey
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/setSentenceIrrelevant.json", jsondata, function(
 				error) {

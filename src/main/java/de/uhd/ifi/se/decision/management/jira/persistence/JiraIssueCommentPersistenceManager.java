@@ -241,7 +241,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			return false;
 		}
 
-		MutableComment mutableComment = element.getComment();
+		MutableComment mutableComment = sentence.getComment();
 
 		String changedPartOfComment = "";
 		if (element.getSummary() == null) {
@@ -274,10 +274,37 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		sentence.setEndSubstringCount(sentence.getStartSubstringCount() + changedPartOfComment.length());
 		sentence.setType(element.getType());
 		sentence.setTagged(element.isTagged());
-		sentence.setRelevant(element.isRelevant());
+		sentence.setRelevant(element.getType() != KnowledgeType.OTHER);
 
 		boolean isUpdated = updateInDatabase(sentence);
 		return isUpdated;
+	}
+	
+	public static boolean updateInDatabase(Sentence sentence) {
+		boolean isUpdated = false;
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
+				.find(DecisionKnowledgeInCommentEntity.class)) {
+			if (databaseEntry.getId() == sentence.getId()) {
+				setParameters(sentence, databaseEntry);
+				databaseEntry.save();
+				isUpdated = true;
+			}
+		}
+		return isUpdated;
+	}
+
+	public static void updateSentenceLengthForOtherSentencesInSameComment(Sentence sentence, int lengthDifference) {
+		for (DecisionKnowledgeInCommentEntity otherSentenceInComment : ACTIVE_OBJECTS
+				.find(DecisionKnowledgeInCommentEntity.class, "COMMENT_ID = ?", sentence.getCommentId())) {
+			if (otherSentenceInComment.getStartSubstringCount() > sentence.getStartSubstringCount()
+					&& otherSentenceInComment.getId() != sentence.getId()) {
+				otherSentenceInComment
+						.setStartSubstringCount(otherSentenceInComment.getStartSubstringCount() + lengthDifference);
+				otherSentenceInComment
+						.setEndSubstringCount(otherSentenceInComment.getEndSubstringCount() + lengthDifference);
+				otherSentenceInComment.save();
+			}
+		}
 	}
 
 	public static int countCommentsForIssue(long issueId) {
@@ -348,51 +375,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			GenericLinkManager.insertLinkWithoutTransaction(link);
 		}
 	}
-
-	public static boolean updateInDatabase(Sentence sentence) {
-		boolean isUpdated = false;
-		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
-				.find(DecisionKnowledgeInCommentEntity.class)) {
-			if (databaseEntry.getId() == sentence.getId()) {
-				setParameters(sentence, databaseEntry);
-				databaseEntry.save();
-				isUpdated = true;
-			}
-		}
-		return isUpdated;
-	}
-
-	public static void updateSentenceLengthForOtherSentencesInSameComment(Sentence sentence, int lengthDifference) {
-		for (DecisionKnowledgeInCommentEntity otherSentenceInComment : ACTIVE_OBJECTS
-				.find(DecisionKnowledgeInCommentEntity.class, "COMMENT_ID = ?", sentence.getCommentId())) {
-			if (otherSentenceInComment.getStartSubstringCount() > sentence.getStartSubstringCount()
-					&& otherSentenceInComment.getId() != sentence.getId()) {
-				otherSentenceInComment
-						.setStartSubstringCount(otherSentenceInComment.getStartSubstringCount() + lengthDifference);
-				otherSentenceInComment
-						.setEndSubstringCount(otherSentenceInComment.getEndSubstringCount() + lengthDifference);
-				otherSentenceInComment.save();
-			}
-		}
-	}
-
-	public static int addTagsToCommentWhenAutoClassified(DecisionKnowledgeInCommentEntity sentenceEntity) {
-		Sentence sentence = new SentenceImpl(sentenceEntity);
-		MutableComment mutableComment = sentence.getComment();
-		String newBody = mutableComment.getBody().substring(sentenceEntity.getStartSubstringCount(),
-				sentenceEntity.getEndSubstringCount());
-
-		newBody = "{" + sentenceEntity.getType() + "}" + newBody + "{" + sentenceEntity.getType() + "}";
-		int lengthDiff = (sentenceEntity.getType().length() + 2) * 2;
-
-		DecXtractEventListener.editCommentLock = true;
-		mutableComment.setBody(mutableComment.getBody().substring(0, sentenceEntity.getStartSubstringCount()) + newBody
-				+ mutableComment.getBody().substring(sentenceEntity.getEndSubstringCount()));
-		ComponentAccessor.getCommentManager().update(mutableComment, true);
-		DecXtractEventListener.editCommentLock = false;
-		return lengthDiff;
-	}
-
+	
 	public static void cleanSentenceDatabaseForProject(String projectKey) {
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {

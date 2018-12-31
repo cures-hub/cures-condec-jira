@@ -42,32 +42,6 @@ public class ActiveObjectsManager {
 		}
 	}
 
-	public static void setSentenceKnowledgeType(Sentence sentence) {
-		init();
-		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-			@Override
-			public DecisionKnowledgeInCommentEntity doInTransaction() {
-
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects
-						.find(DecisionKnowledgeInCommentEntity.class)) {
-					if (databaseEntry.getId() == sentence.getId()) {
-						databaseEntry.setType(sentence.getTypeAsString());
-						int additionalLength = JiraIssueCommentPersistenceManager
-								.addTagsToCommentWhenAutoClassified(databaseEntry);
-						// TODO used to be setTaggedFinegrained
-						databaseEntry.setTagged(true);
-						databaseEntry.setEndSubstringCount(databaseEntry.getEndSubstringCount() + additionalLength);
-						JiraIssueCommentPersistenceManager.updateSentenceLengthForOtherSentencesInSameComment(sentence,
-								additionalLength);
-						databaseEntry.save();
-						return databaseEntry;
-					}
-				}
-				return null;
-			}
-		});
-	}
-
 	public static void createLinksForNonLinkedElementsForProject(String projectKey) {
 		init();
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,

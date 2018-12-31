@@ -144,9 +144,9 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	public void testUpdateKnowledgeType2() {
 		Comment comment = getComment("first Comment");
 		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
-		Sentence sentence = comment.getSentences().get(0);
+		Sentence sentence = comment.getSentences().get(0);		
 		sentence.setType(KnowledgeType.ALTERNATIVE);
-		ActiveObjectsManager.setSentenceKnowledgeType(sentence);
+		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence, null);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertTrue(element.getTypeAsString().equalsIgnoreCase("ALTERNATIVE"));
 	}

@@ -63,10 +63,9 @@ public class ClassificationManagerForCommentSentences {
 			for (Sentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 					sentence.setType(classificationResult.get(i));
-					ActiveObjectsManager.setSentenceKnowledgeType(sentence);
-
-					// TODO used to be setTaggedFinegrained
+					sentence.setSummary(null);
 					sentence.setTagged(true);
+					new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence, null);					
 					i++;
 				} else if (sentence.isRelevant() && sentence.isTaggedFineGrained() && sentence.isPlainText()) {
 					Sentence aosentence = (Sentence) new JiraIssueCommentPersistenceManager("")
@@ -99,7 +98,6 @@ public class ClassificationManagerForCommentSentences {
 				if (isSentenceQualifiedForBinaryClassification(sentence)) {
 					sentence.setRelevant(classificationResult.get(i));
 					JiraIssueCommentPersistenceManager.updateInDatabase(sentence);
-					//ActiveObjectsManager.setIsRelevantIntoAo(sentence.getId(), sentence.isRelevant());
 					sentence.setTagged(true);
 					i++;
 				}
