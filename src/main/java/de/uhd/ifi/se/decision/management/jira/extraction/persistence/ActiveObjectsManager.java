@@ -68,29 +68,6 @@ public class ActiveObjectsManager {
 		});
 	}
 
-	/**
-	 * Deletes all sentences in ao tables for this project and all links to and from
-	 * sentences. Currently not used. Useful for developing and system testing.
-	 * 
-	 * @param projectKey
-	 *            the project to clear
-	 */
-	@Deprecated
-	public static void clearSentenceDatabaseForProject(String projectKey) {
-		init();
-		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-			@Override
-			public DecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
-						DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
-					GenericLinkManager.deleteLinksForElement("s" + databaseEntry.getId());
-					DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
-				}
-				return null;
-			}
-		});
-	}
-
 	public static void cleanSentenceDatabaseForProject(String projectKey) {
 		init();
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
