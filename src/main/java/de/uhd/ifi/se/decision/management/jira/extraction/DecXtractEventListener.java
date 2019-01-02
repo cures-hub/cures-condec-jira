@@ -17,7 +17,6 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -150,7 +149,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		// If locked, a REST service is manipulating the comment and should not be
 		// handled by this event listener.
 		if (!DecXtractEventListener.editCommentLock) {
-			ActiveObjectsManager.deleteCommentsSentences(issueEvent.getComment());
+			JiraIssueCommentPersistenceManager.deleteCommentsSentences(issueEvent.getComment());
 			new ViewConnector(this.issueEvent.getIssue(), false);
 			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
 		} else {

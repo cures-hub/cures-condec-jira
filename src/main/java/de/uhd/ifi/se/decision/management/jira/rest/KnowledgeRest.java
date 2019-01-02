@@ -20,7 +20,6 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -259,7 +258,7 @@ public class KnowledgeRest {
 		}
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		Issue issue = ActiveObjectsManager.createJIRAIssueFromSentenceObject(decisionKnowledgeElement.getId(), user);
+		Issue issue = JiraIssueCommentPersistenceManager.createJIRAIssueFromSentenceObject(decisionKnowledgeElement.getId(), user);
 
 		if (issue != null) {
 			return Response.status(Status.OK).entity(issue).build();

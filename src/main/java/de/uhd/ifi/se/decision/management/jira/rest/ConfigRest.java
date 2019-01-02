@@ -28,7 +28,6 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -309,7 +308,7 @@ public class ConfigRest {
 			// If there are now some "lonely" sentences, link them to their issues.
 			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForProject(projectKey);
 			//
-			ActiveObjectsManager.migrateArgumentTypesInLinks(projectKey);
+			JiraIssueCommentPersistenceManager.migrateArgumentTypesInLinks(projectKey);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
