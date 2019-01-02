@@ -26,19 +26,31 @@ public interface LinkInDatabase extends RawEntity<Integer> {
 
 	void setType(String type);
 
+	long getSourceId();
+
+	void setSourceId(long id);
+
+	long getDestinationId();
+
+	void setDestinationId(long id);
+
+	String getSourceDocumentationLocation();
+
+	void setSourceDocumentationLocation(String documentationLocation);
+
+	String getDestDocumentationLocation();
+
+	void setDestDocumentationLocation(String documentationLocation);
+
+	@Deprecated
 	String getIdOfSourceElement();
 
+	@Deprecated
 	void setIdOfSourceElement(String id);
 
+	@Deprecated
 	String getIdOfDestinationElement();
 
+	@Deprecated
 	void setIdOfDestinationElement(String id);
-	
-	String getSourceDocumentationLocation();
-	
-	void setSourceDocumentationLocation(String documentationLocation);
-	
-	String getDestDocumentationLocation();
-	
-	void setDestDocumentationLocation(String documentationLocation);
 }

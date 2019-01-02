@@ -27,6 +27,8 @@ public class GraphImpl implements Graph {
 	public GraphImpl() {
 		linkIds = new ArrayList<Long>();
 		genericLinkIds = new ArrayList<Long>();
+		
+		GenericLinkManager.migrateOldLinkIdColumn();
 	}
 
 	public GraphImpl(String projectKey) {

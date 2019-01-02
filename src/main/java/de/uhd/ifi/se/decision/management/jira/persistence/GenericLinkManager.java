@@ -11,6 +11,8 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import net.java.ao.Query;
 
@@ -135,12 +137,15 @@ public class GenericLinkManager {
 		String documentationLocationOfSourceElement = sourceElement.getDocumentationLocation().getIdentifier();
 		linkInDatabase.setIdOfSourceElement(documentationLocationOfSourceElement + sourceElement.getId());
 		linkInDatabase.setSourceDocumentationLocation(documentationLocationOfSourceElement);
+		linkInDatabase.setSourceId(sourceElement.getId());
 
 		DecisionKnowledgeElement destinationElement = link.getDestinationElement();
 		String documentationLocationOfDestinationElement = destinationElement.getDocumentationLocation()
 				.getIdentifier();
 		linkInDatabase
 				.setIdOfDestinationElement(documentationLocationOfDestinationElement + destinationElement.getId());
+		linkInDatabase.setDestinationId(destinationElement.getId());
+
 		linkInDatabase.setDestDocumentationLocation(documentationLocationOfDestinationElement);
 		linkInDatabase.setType(link.getType());
 		linkInDatabase.save();
@@ -160,5 +165,28 @@ public class GenericLinkManager {
 			}
 		}
 		return -1;
+	}
+
+	/**
+	 * Migration method to separate documentation location and id.
+	 */
+	public static void migrateOldLinkIdColumn() {
+		LinkInDatabase[] linksInDatabase = GenericLinkManager.ACTIVE_OBJECTS.find(LinkInDatabase.class);
+		for (LinkInDatabase link : linksInDatabase) {
+			if (link.getIdOfDestinationElement() != null && link.getDestDocumentationLocation() == null) {
+				String idOfDestinationElementWithPrefix = link.getIdOfDestinationElement();
+				long id = GenericLinkManager.getId(idOfDestinationElementWithPrefix);
+				link.setDestinationId(id);
+				link.setDestDocumentationLocation(idOfDestinationElementWithPrefix.substring(0, 1));
+				link.save();
+			}
+			if (link.getIdOfSourceElement() != null && link.getSourceDocumentationLocation() == null) {
+				String idOfSourceElementWithPrefix = link.getIdOfSourceElement();
+				long id = GenericLinkManager.getId(idOfSourceElementWithPrefix);
+				link.setSourceId(id);
+				link.setSourceDocumentationLocation(idOfSourceElementWithPrefix.substring(0, 1));
+				link.save();
+			}
+		}
 	}
 }
