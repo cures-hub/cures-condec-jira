@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.persistence;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -14,14 +13,11 @@ import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.sal.api.transaction.TransactionCallback;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -40,53 +36,6 @@ public class ActiveObjectsManager {
 		if (ActiveObjects == null) {
 			ActiveObjects = ComponentGetter.getActiveObjects();
 		}
-	}
-
-	public static void createLinksForNonLinkedElementsForProject(String projectKey) {
-		init();
-		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			JiraIssueCommentPersistenceManager.checkIfSentenceHasAValidLink(databaseEntry.getId(),
-					databaseEntry.getIssueId(), LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()));
-		}
-	}
-
-	public static void createLinksForNonLinkedElementsForIssue(long issueId) {
-		init();
-		for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("ISSUE_ID = ?", issueId))) {
-			JiraIssueCommentPersistenceManager.checkIfSentenceHasAValidLink(databaseEntry.getId(),
-					databaseEntry.getIssueId(), LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()));
-		}
-	}
-
-	public static List<DecisionKnowledgeElement> getAllElementsFromAoByType(String projectKey,
-			KnowledgeType rootElementType) {
-		init();
-		List<DecisionKnowledgeInCommentEntity> listOfDbEntries = new ArrayList<>();
-		ActiveObjects.executeInTransaction(new TransactionCallback<DecisionKnowledgeInCommentEntity>() {
-			@Override
-			public DecisionKnowledgeInCommentEntity doInTransaction() {
-				for (DecisionKnowledgeInCommentEntity databaseEntry : ActiveObjects.find(
-						DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
-					if (databaseEntry.getType() != null && (databaseEntry.getType().equals(rootElementType.toString())
-							|| (databaseEntry.getType().length() == 3 // its either Pro or con
-									&& rootElementType.equals(KnowledgeType.ARGUMENT)))) {
-						try {
-							listOfDbEntries.add(databaseEntry);
-						} catch (NullPointerException e) {
-							continue;
-						}
-					}
-				}
-				return null;
-			}
-		});
-		List<DecisionKnowledgeElement> listOfDKE = new ArrayList<>();
-		for (DecisionKnowledgeInCommentEntity dke : listOfDbEntries) {
-			listOfDKE.add(new SentenceImpl(dke));
-		}
-		return listOfDKE;
 	}
 
 	public static Issue createJIRAIssueFromSentenceObject(long aoId, ApplicationUser user) {
@@ -114,7 +63,7 @@ public class ActiveObjectsManager {
 		// delete ao sentence entry
 		new JiraIssueCommentPersistenceManager("").deleteDecisionKnowledgeElement(aoId, null);
 
-		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(element.getIssueId());
+		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(element.getIssueId());
 
 		return issue;
 	}

@@ -50,7 +50,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	private MockIssue issue;
 
 	private com.atlassian.jira.issue.comments.Comment comment1;
-	
+
 	public static long insertDecisionKnowledgeElement(Comment comment, long issueId, int index) {
 		Sentence sentence = new SentenceImpl();
 		sentence.setCommentId(comment.getJiraCommentId());
@@ -144,7 +144,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	public void testUpdateKnowledgeType2() {
 		Comment comment = getComment("first Comment");
 		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 0);
-		Sentence sentence = comment.getSentences().get(0);		
+		Sentence sentence = comment.getSentences().get(0);
 		sentence.setType(KnowledgeType.ALTERNATIVE);
 		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence, null);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
@@ -220,13 +220,13 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
 		Sentence oldElement = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertEquals(oldElement.getType(), KnowledgeType.ISSUE);
-		
+
 		oldElement.setType(KnowledgeType.PRO);
 		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(oldElement, null);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertEquals(" testobject ", element.getBody());
 		assertEquals(element.getTypeAsString(), "Pro");
-		
+
 		assertEquals("some sentence in front. {Pro} testobject {Pro} some sentence in the back.",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
 	}
@@ -252,9 +252,9 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertFalse(element.isRelevant());
-		
+
 		element.setRelevant(true);
-		JiraIssueCommentPersistenceManager.updateInDatabase(element);		
+		JiraIssueCommentPersistenceManager.updateInDatabase(element);
 		element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertTrue(element.isRelevant());
 
@@ -273,7 +273,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		element.setRelevant(true);
 		element.setId(id + 2);
-		
+
 		assertFalse(JiraIssueCommentPersistenceManager.updateInDatabase(element));
 	}
 
@@ -337,11 +337,11 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 	public void testGetElementsForIssue() {
 		Comment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
-		
+
 		assertEquals(2, id);
 
-		List<DecisionKnowledgeElement> listWithObjects = JiraIssueCommentPersistenceManager.getElementsForIssue(comment.getIssueId(),
-				"TEST");
+		List<DecisionKnowledgeElement> listWithObjects = JiraIssueCommentPersistenceManager
+				.getElementsForIssue(comment.getIssueId(), "TEST");
 		assertEquals(3, listWithObjects.size());
 	}
 
@@ -351,8 +351,8 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		Comment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
 
-		List<DecisionKnowledgeElement> listWithObjects = ActiveObjectsManager.getAllElementsFromAoByType("TEST",
-				KnowledgeType.ISSUE);
+		List<DecisionKnowledgeElement> listWithObjects = new JiraIssueCommentPersistenceManager("TEST")
+				.getDecisionKnowledgeElements(KnowledgeType.ISSUE);
 		assertEquals(1, listWithObjects.size());
 	}
 
@@ -362,8 +362,8 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		Comment comment = getComment("some sentence in front. {pro} testobject {pro} some sentence in the back.");
 		TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
 
-		List<DecisionKnowledgeElement> listWithObjects = ActiveObjectsManager.getAllElementsFromAoByType("TEST",
-				KnowledgeType.ARGUMENT);
+		List<DecisionKnowledgeElement> listWithObjects = new JiraIssueCommentPersistenceManager("TEST")
+				.getDecisionKnowledgeElements(KnowledgeType.PRO);
 		assertEquals(1, listWithObjects.size());
 	}
 
@@ -373,8 +373,8 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		Comment comment = getComment("some sentence in front.  {pro} testobject {pro} some sentence in the back.");
 		TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
 
-		List<DecisionKnowledgeElement> listWithObjects = ActiveObjectsManager.getAllElementsFromAoByType("TEST",
-				KnowledgeType.OTHER);
+		List<DecisionKnowledgeElement> listWithObjects = new JiraIssueCommentPersistenceManager("TEST")
+				.getDecisionKnowledgeElements(KnowledgeType.OTHER);
 		assertEquals(2, listWithObjects.size());
 	}
 
@@ -401,7 +401,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		assertEquals(1, GenericLinkManager.getLinksForElement("s" + id).size());
 		GenericLinkManager.deleteLinksForElement("s" + id);
 		assertEquals(0, GenericLinkManager.getLinksForElement("s" + id).size());
-		ActiveObjectsManager.createLinksForNonLinkedElementsForProject("TEST");
+		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForProject("TEST");
 		assertEquals(1, GenericLinkManager.getLinksForElement("s" + id).size());
 	}
 

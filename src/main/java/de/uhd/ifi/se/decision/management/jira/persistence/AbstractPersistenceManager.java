@@ -313,11 +313,12 @@ public abstract class AbstractPersistenceManager {
 	 *         knowledge type.
 	 */
 	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type) {
+		KnowledgeType simpleType = type.replaceProAndConWithArgument();
 		List<DecisionKnowledgeElement> elements = this.getDecisionKnowledgeElements();
 		Iterator<DecisionKnowledgeElement> iterator = elements.iterator();
 		while (iterator.hasNext()) {
 			DecisionKnowledgeElement element = iterator.next();
-			if (element.getType() != type) {
+			if (element.getType().replaceProAndConWithArgument() != simpleType) {
 				iterator.remove();
 			}
 		}

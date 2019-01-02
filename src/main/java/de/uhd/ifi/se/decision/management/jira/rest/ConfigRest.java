@@ -307,7 +307,7 @@ public class ConfigRest {
 			// If some links ar bad, delete those links
 			GenericLinkManager.clearInvalidLinks();
 			// If there are now some "lonely" sentences, link them to their issues.
-			ActiveObjectsManager.createLinksForNonLinkedElementsForProject(projectKey);
+			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForProject(projectKey);
 			//
 			ActiveObjectsManager.migrateArgumentTypesInLinks(projectKey);
 			return Response.ok(Status.ACCEPTED).build();

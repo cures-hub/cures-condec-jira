@@ -106,8 +106,12 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 	@Override
 	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements() {
-		// TODO Auto-generated method stub
-		return null;
+		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
+				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
+			decisionKnowledgeElements.add(new SentenceImpl(databaseEntry));
+		}
+		return decisionKnowledgeElements;
 	}
 
 	public static List<DecisionKnowledgeElement> getElementsForIssue(long issueId, String projectKey) {
@@ -239,14 +243,14 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		Sentence sentence = (Sentence) this.getDecisionKnowledgeElement(element.getId());
 		if (sentence == null) {
 			return false;
-		}		
+		}
 
 		// only knowledge type changed
 		if (element.getSummary() == null) {
 			element.setDescription(sentence.getBody());
 		}
-		
-		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getType());		
+
+		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getType());
 		String changedPartOfComment = tag + element.getDescription() + tag;
 
 		MutableComment mutableComment = sentence.getComment();
@@ -348,6 +352,22 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		if (!smartLinkCreated) {
 			checkIfSentenceHasAValidLink(sentence.getId(), sentence.getIssueId(),
 					LinkType.getLinkTypeForKnowledgeType(sentence.getTypeAsString()));
+		}
+	}
+
+	public static void createLinksForNonLinkedElementsForIssue(long issueId) {
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
+				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("ISSUE_ID = ?", issueId))) {
+			checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getIssueId(),
+					LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()));
+		}
+	}
+
+	public static void createLinksForNonLinkedElementsForProject(String projectKey) {
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
+				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
+			checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getIssueId(),
+					LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()));
 		}
 	}
 

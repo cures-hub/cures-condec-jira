@@ -15,7 +15,6 @@ import com.atlassian.jira.issue.Issue;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -25,6 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
 /**
  * Creates tree viewer content
@@ -69,8 +69,11 @@ public class TreeViewer {
 			for (DecisionKnowledgeElement element : elements) {
 				dataSet.add(this.getDataStructure(element));
 			}
-			for (DecisionKnowledgeElement sentenceElement : ActiveObjectsManager.getAllElementsFromAoByType(projectKey,
-					rootElementType)) {
+
+			AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueCommentPersistenceManager(
+					projectKey);
+			for (DecisionKnowledgeElement sentenceElement : jiraIssueCommentPersistenceManager
+					.getDecisionKnowledgeElements(rootElementType)) {
 				dataSet.add(this.makeIdUnique(new Data(sentenceElement)));
 			}
 			this.data = dataSet;
