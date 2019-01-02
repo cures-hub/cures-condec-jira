@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.sal.api.transaction.TransactionCallback;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -76,23 +75,12 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id) {
-		DecisionKnowledgeElementInDatabase decisionKnowledgeElement = ACTIVE_OBJECTS
-				.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementInDatabase>() {
-					@Override
-					public DecisionKnowledgeElementInDatabase doInTransaction() {
-						DecisionKnowledgeElementInDatabase[] decisionKnowledgeElement = ACTIVE_OBJECTS
-								.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", id));
-						// 0 or 1 decision knowledge elements might be returned by this query
-						if (decisionKnowledgeElement.length == 1) {
-							return decisionKnowledgeElement[0];
-						}
-						return null;
-					}
-				});
-		if (decisionKnowledgeElement != null) {
-			return new DecisionKnowledgeElementImpl(decisionKnowledgeElement);
+		DecisionKnowledgeElement element = null;
+		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
+				.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", id))) {
+			element = new DecisionKnowledgeElementImpl(databaseEntry);
 		}
-		return null;
+		return element;
 	}
 
 	@Override
@@ -117,22 +105,11 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 
 	@Override
 	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements() {
-		List<DecisionKnowledgeElement> decisionKnowledgeElements = null;
-		if (this.projectKey != null) {
-			decisionKnowledgeElements = ACTIVE_OBJECTS
-					.executeInTransaction(new TransactionCallback<List<DecisionKnowledgeElement>>() {
-						@Override
-						public List<DecisionKnowledgeElement> doInTransaction() {
-							final List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
-							DecisionKnowledgeElementInDatabase[] decisionArray = ACTIVE_OBJECTS.find(
-									DecisionKnowledgeElementInDatabase.class,
-									Query.select().where("PROJECT_KEY = ?", projectKey));
-							for (DecisionKnowledgeElementInDatabase entity : decisionArray) {
-								decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(entity));
-							}
-							return decisionKnowledgeElements;
-						}
-					});
+		List<DecisionKnowledgeElement> decisionKnowledgeElements = new ArrayList<DecisionKnowledgeElement>();
+		DecisionKnowledgeElementInDatabase[] databaseEntries = ACTIVE_OBJECTS
+				.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("PROJECT_KEY = ?", projectKey));
+		for (DecisionKnowledgeElementInDatabase databaseEntry : databaseEntries) {
+			decisionKnowledgeElements.add(new DecisionKnowledgeElementImpl(databaseEntry));
 		}
 		return decisionKnowledgeElements;
 	}
@@ -143,20 +120,12 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		List<Link> inwardLinks = this.getInwardLinks(decisionKnowledgeElement);
 		List<DecisionKnowledgeElement> sourceElements = new ArrayList<DecisionKnowledgeElement>();
 		for (Link link : inwardLinks) {
-			sourceElements.add(new DecisionKnowledgeElementImpl(
-					ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementInDatabase>() {
-						@Override
-						public DecisionKnowledgeElementInDatabase doInTransaction() {
-							DecisionKnowledgeElementInDatabase[] entityList = ACTIVE_OBJECTS.find(
-									DecisionKnowledgeElementInDatabase.class,
-									Query.select().where("ID = ?", link.getSourceElement().getId()));
-							if (entityList.length == 1) {
-								return entityList[0];
-							}
-							LOGGER.error("Inward link has no element to return.");
-							return null;
-						}
-					})));
+			DecisionKnowledgeElementInDatabase[] entityList = ACTIVE_OBJECTS.find(
+					DecisionKnowledgeElementInDatabase.class,
+					Query.select().where("ID = ?", link.getSourceElement().getId()));
+			if (entityList.length == 1) {
+				sourceElements.add(new DecisionKnowledgeElementImpl(entityList[0]));
+			}
 		}
 		return sourceElements;
 	}
@@ -169,20 +138,12 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 
 		ACTIVE_OBJECTS.find(LinkInDatabase.class);
 		for (Link link : outwardLinks) {
-			destinationElements.add(new DecisionKnowledgeElementImpl(
-					ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementInDatabase>() {
-						@Override
-						public DecisionKnowledgeElementInDatabase doInTransaction() {
-							DecisionKnowledgeElementInDatabase[] entityList = ACTIVE_OBJECTS.find(
-									DecisionKnowledgeElementInDatabase.class,
-									Query.select().where("ID = ?", link.getDestinationElement().getId()));
-							if (entityList.length == 1) {
-								return entityList[0];
-							}
-							LOGGER.error("Outward link has no element to return.");
-							return null;
-						}
-					})));
+			DecisionKnowledgeElementInDatabase[] entityList = ACTIVE_OBJECTS.find(
+					DecisionKnowledgeElementInDatabase.class,
+					Query.select().where("ID = ?", link.getDestinationElement().getId()));
+			if (entityList.length == 1) {
+				destinationElements.add(new DecisionKnowledgeElementImpl(entityList[0]));
+			}
 		}
 		return destinationElements;
 	}
@@ -221,23 +182,12 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
 			ApplicationUser user) {
 		DecisionKnowledgeElementInDatabase databaseEntry = ACTIVE_OBJECTS
-				.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementInDatabase>() {
-					@Override
-					public DecisionKnowledgeElementInDatabase doInTransaction() {
-						DecisionKnowledgeElementInDatabase databaseEntry = ACTIVE_OBJECTS
-								.create(DecisionKnowledgeElementInDatabase.class);
-						databaseEntry.setKey(element.getProject().getProjectKey().toUpperCase(Locale.ENGLISH) + "-"
-								+ databaseEntry.getId());
-						setParameters(element, databaseEntry);
-						databaseEntry.setProjectKey(element.getProject().getProjectKey());
-						databaseEntry.save();
-						return databaseEntry;
-					}
-				});
-		if (databaseEntry == null) {
-			LOGGER.error("Insertion of decision knowledge element into database failed.");
-			return null;
-		}
+				.create(DecisionKnowledgeElementInDatabase.class);
+		databaseEntry
+				.setKey(element.getProject().getProjectKey().toUpperCase(Locale.ENGLISH) + "-" + databaseEntry.getId());
+		setParameters(element, databaseEntry);
+		databaseEntry.setProjectKey(element.getProject().getProjectKey());
+		databaseEntry.save();
 		element.setId(databaseEntry.getId());
 		element.setKey(databaseEntry.getKey());
 		new WebhookConnector(projectKey).sendElementChanges(element);
@@ -247,26 +197,16 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 
 	@Override
 	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
-		DecisionKnowledgeElementInDatabase databaseEntry = ACTIVE_OBJECTS
-				.executeInTransaction(new TransactionCallback<DecisionKnowledgeElementInDatabase>() {
-					@Override
-					public DecisionKnowledgeElementInDatabase doInTransaction() {
-						for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
-								.find(DecisionKnowledgeElementInDatabase.class)) {
-							if (databaseEntry.getId() == element.getId()) {
-								setParameters(element, databaseEntry);
-								databaseEntry.save();
-								return databaseEntry;
-							}
-						}
-						return null;
-					}
-				});
-		if (databaseEntry == null) {
-			LOGGER.error("Updating of decision knowledge element in database failed.");
-			return false;
+		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
+				.find(DecisionKnowledgeElementInDatabase.class)) {
+			if (databaseEntry.getId() == element.getId()) {
+				setParameters(element, databaseEntry);
+				databaseEntry.save();
+				new WebhookConnector(projectKey).sendElementChanges(element);
+				return true;
+			}
 		}
-		new WebhookConnector(projectKey).sendElementChanges(element);
-		return true;
+		LOGGER.error("Updating of decision knowledge element in database failed.");
+		return false;
 	}
 }

@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.sal.api.transaction.TransactionCallback;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -20,24 +19,18 @@ public class GenericLinkManager {
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
 	public static void clearInvalidLinks() {
-		ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<LinkInDatabase>() {
-			@Override
-			public LinkInDatabase doInTransaction() {
-				LinkInDatabase[] linkElements = ACTIVE_OBJECTS.find(LinkInDatabase.class);
-				for (LinkInDatabase linkElement : linkElements) {
-					try {
-						Link link = new LinkImpl(linkElement.getIdOfSourceElement(),
-								linkElement.getIdOfDestinationElement());
-						if (!link.isValid()) {
-							deleteLinkElementFromDatabase(linkElement);
-						}
-					} catch (Exception e) {
-						deleteLinkElementFromDatabase(linkElement);
-					}
+
+		LinkInDatabase[] linkElements = ACTIVE_OBJECTS.find(LinkInDatabase.class);
+		for (LinkInDatabase linkElement : linkElements) {
+			try {
+				Link link = new LinkImpl(linkElement.getIdOfSourceElement(), linkElement.getIdOfDestinationElement());
+				if (!link.isValid()) {
+					deleteLinkElementFromDatabase(linkElement);
 				}
-				return null;
+			} catch (Exception e) {
+				deleteLinkElementFromDatabase(linkElement);
 			}
-		});
+		}
 	}
 
 	public static boolean deleteLink(Link link) {
@@ -48,15 +41,6 @@ public class GenericLinkManager {
 				+ destinationElement.getId();
 
 		return deleteLink(sourceIdWithPrefix, destinationIdWithPrefix);
-	}
-
-	public static boolean deleteLink(String sourceIdWithPrefix, String targetIdWithPrefix) {
-		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Boolean>() {
-			@Override
-			public Boolean doInTransaction() {
-				return deleteLinkWithoutTransaction(sourceIdWithPrefix, targetIdWithPrefix);
-			}
-		});
 	}
 
 	private static void deleteLinkElementFromDatabase(LinkInDatabase linkElement) {
@@ -81,7 +65,7 @@ public class GenericLinkManager {
 		}
 	}
 
-	private static Boolean deleteLinkWithoutTransaction(String sourceIdWithPrefix, String targetIdWithPrefix) {
+	private static boolean deleteLink(String sourceIdWithPrefix, String targetIdWithPrefix) {
 		for (LinkInDatabase linkInDatabase : ACTIVE_OBJECTS.find(LinkInDatabase.class)) {
 			if (linkInDatabase.getIdOfDestinationElement().equals(targetIdWithPrefix)
 					&& linkInDatabase.getIdOfSourceElement().equals(sourceIdWithPrefix)) {
@@ -146,17 +130,17 @@ public class GenericLinkManager {
 			return -1;
 		}
 
-		final LinkInDatabase linkInDatabase = ACTIVE_OBJECTS.create(LinkInDatabase.class);		
+		final LinkInDatabase linkInDatabase = ACTIVE_OBJECTS.create(LinkInDatabase.class);
 		DecisionKnowledgeElement sourceElement = link.getSourceElement();
 		String documentationLocationOfSourceElement = sourceElement.getDocumentationLocation().getIdentifier();
-		linkInDatabase
-				.setIdOfSourceElement(documentationLocationOfSourceElement + sourceElement.getId());
+		linkInDatabase.setIdOfSourceElement(documentationLocationOfSourceElement + sourceElement.getId());
 		linkInDatabase.setSourceDocumentationLocation(documentationLocationOfSourceElement);
-		
+
 		DecisionKnowledgeElement destinationElement = link.getDestinationElement();
-		String documentationLocationOfDestinationElement = destinationElement.getDocumentationLocation().getIdentifier();
-		linkInDatabase.setIdOfDestinationElement(
-				documentationLocationOfDestinationElement + destinationElement.getId());		
+		String documentationLocationOfDestinationElement = destinationElement.getDocumentationLocation()
+				.getIdentifier();
+		linkInDatabase
+				.setIdOfDestinationElement(documentationLocationOfDestinationElement + destinationElement.getId());
 		linkInDatabase.setDestDocumentationLocation(documentationLocationOfDestinationElement);
 		linkInDatabase.setType(link.getType());
 		linkInDatabase.save();
