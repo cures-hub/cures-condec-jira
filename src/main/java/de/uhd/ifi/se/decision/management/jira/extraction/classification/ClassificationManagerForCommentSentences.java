@@ -5,7 +5,6 @@ import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -15,10 +14,10 @@ import weka.core.Instances;
 public class ClassificationManagerForCommentSentences {
 
 	private DecisionKnowledgeClassifier classifier;
-	// TODO: Update knowledge types if classifer changes
+
 	/**
-	 * The knowledge types need to be present in the weka classifer. They do not
-	 * relate to tags like [Issue]
+	 * The knowledge types need to be present in the weka classifier. They do not
+	 * relate to tags like [Issue].
 	 */
 	private final String[] knowledgeTypes = { "isAlternative", "isPro", "isCon", "isDecision", "isIssue" };
 
@@ -63,9 +62,10 @@ public class ClassificationManagerForCommentSentences {
 			for (Sentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 					sentence.setType(classificationResult.get(i));
+					System.out.println(sentence.getTypeAsString());
 					sentence.setSummary(null);
 					sentence.setTagged(true);
-					new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence, null);					
+					new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence, null);
 					i++;
 				} else if (sentence.isRelevant() && sentence.isTaggedFineGrained() && sentence.isPlainText()) {
 					Sentence aosentence = (Sentence) new JiraIssueCommentPersistenceManager("")
@@ -82,7 +82,8 @@ public class ClassificationManagerForCommentSentences {
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
 				if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {
-					Sentence aosentence = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(sentence.getId());
+					Sentence aosentence = (Sentence) new JiraIssueCommentPersistenceManager("")
+							.getDecisionKnowledgeElement(sentence.getId());
 					sentence.setType(aosentence.getType());
 				}
 			}
@@ -109,7 +110,8 @@ public class ClassificationManagerForCommentSentences {
 	public List<Comment> writeDataFromActiveObjectsToSentences(List<Comment> commentsList) {
 		for (Comment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
-				Sentence aoSentence = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(sentence.getId());
+				Sentence aoSentence = (Sentence) new JiraIssueCommentPersistenceManager("")
+						.getDecisionKnowledgeElement(sentence.getId());
 				sentence.setRelevant(aoSentence.isRelevant());
 			}
 		}
@@ -184,7 +186,7 @@ public class ClassificationManagerForCommentSentences {
 	/**
 	 * @param sentence
 	 *            Sentence to check if its qualified for classification. It is
-	 *            qualified if its plain text, and not yet tagged.
+	 *            qualified if it's plain text, and not yet tagged.
 	 * @return boolean identifier
 	 */
 	private static boolean isSentenceQualifiedForBinaryClassification(Sentence sentence) {
@@ -192,8 +194,7 @@ public class ClassificationManagerForCommentSentences {
 	}
 
 	private static boolean isSentenceQualifiedForFineGrainedClassification(Sentence sentence) {
-		return sentence.isRelevant() && !sentence.isTaggedFineGrained() && sentence.isPlainText()
-				&& !sentence.isTagged();
+		return sentence.isRelevant() && !sentence.isTaggedFineGrained() && sentence.isPlainText();
 	}
 
 	public DecisionKnowledgeClassifier getClassifier() {

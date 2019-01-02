@@ -100,12 +100,18 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	protected String putTypeInBrackets(String type) {
 		return "\\" + getTag(type);
 	}
-	
+
 	public static String getTag(String type) {
+		if (type == null || type.equals("") || type.equalsIgnoreCase("other")) {
+			return "";
+		}
 		return "{" + type + "}";
 	}
-	
+
 	public static String getTag(KnowledgeType type) {
+		if (type == KnowledgeType.OTHER) {
+			return "";
+		}
 		return getTag(type.toString());
 	}
 }

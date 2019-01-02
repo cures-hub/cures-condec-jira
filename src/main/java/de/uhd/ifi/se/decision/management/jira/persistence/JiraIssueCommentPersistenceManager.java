@@ -239,27 +239,17 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		Sentence sentence = (Sentence) this.getDecisionKnowledgeElement(element.getId());
 		if (sentence == null) {
 			return false;
+		}		
+
+		// only knowledge type changed
+		if (element.getSummary() == null) {
+			element.setDescription(sentence.getBody());
 		}
+		
+		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getType());		
+		String changedPartOfComment = tag + element.getDescription() + tag;
 
 		MutableComment mutableComment = sentence.getComment();
-
-		String changedPartOfComment = "";
-		if (element.getSummary() == null) {
-			// only knowledge type is changed
-			changedPartOfComment = mutableComment.getBody().substring(sentence.getStartSubstringCount(),
-					sentence.getEndSubstringCount());
-			if (element.getType() == KnowledgeType.OTHER) {
-				changedPartOfComment = changedPartOfComment.replaceAll("\\{.*?\\}", "");
-			} else {
-				changedPartOfComment = changedPartOfComment.replaceAll("(?i)" + sentence.getType().toString() + "}",
-						element.getType().toString() + "}");
-			}
-		} else {
-			// description and maybe also knowledge type are changed
-			String tag = AbstractKnowledgeClassificationMacro.getTag(element.getType());
-			changedPartOfComment = tag + element.getDescription() + tag;
-		}
-
 		String firstPartOfComment = mutableComment.getBody().substring(0, sentence.getStartSubstringCount());
 		String lastPartOfComment = mutableComment.getBody().substring(sentence.getEndSubstringCount());
 
@@ -279,7 +269,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		boolean isUpdated = updateInDatabase(sentence);
 		return isUpdated;
 	}
-	
+
 	public static boolean updateInDatabase(Sentence sentence) {
 		boolean isUpdated = false;
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
@@ -375,7 +365,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			GenericLinkManager.insertLinkWithoutTransaction(link);
 		}
 	}
-	
+
 	public static void cleanSentenceDatabaseForProject(String projectKey) {
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {

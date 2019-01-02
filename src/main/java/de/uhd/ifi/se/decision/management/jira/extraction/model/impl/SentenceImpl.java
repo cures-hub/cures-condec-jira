@@ -171,7 +171,13 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	public String getBody() {
-		return super.getSummary();
+		MutableComment mutableComment = this.getComment();
+		if (mutableComment == null) {
+			return super.getSummary();
+		}
+		String body = mutableComment.getBody().substring(this.getStartSubstringCount(), this.getEndSubstringCount());
+		body = body.replaceAll("\\{.*?\\}", "");
+		return body;
 	}
 
 	public void setBody(String body) {
