@@ -61,13 +61,13 @@ public class TestLink {
 
 	@Test
 	public void testSetSourceElementById() {
-		link.setSourceElement(idOfSourceElement + 1);
+		link.setSourceElement(idOfSourceElement + 1, "i");
 		assertEquals(idOfSourceElement + 1, link.getSourceElement().getId(), 0.0);
 	}
 
 	@Test
 	public void testSetDestinationElementById() {
-		link.setDestinationElement(idOfDestinationElement + 1);
+		link.setDestinationElement(idOfDestinationElement + 1, "i");
 		assertEquals(idOfDestinationElement + 1, link.getDestinationElement().getId(), 0.0);
 	}
 

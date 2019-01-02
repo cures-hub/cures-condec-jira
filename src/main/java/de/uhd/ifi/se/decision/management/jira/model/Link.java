@@ -65,10 +65,15 @@ public interface Link {
 	 * Set the source element of this link by its id.
 	 *
 	 * @see DecisionKnowledgeElement
+	 * @see DocumentationLocation
 	 * @param id
 	 *            of the source element of this link.
+	 * @param documenationLocation
+	 *            of the decision knowledge element.
 	 */
-	void setSourceElement(long id);
+	void setSourceElement(long id, DocumentationLocation documentationLocation);
+
+	void setSourceElement(long id, String documentationLocation);
 
 	/**
 	 * Get the destination element of this link.
@@ -91,10 +96,15 @@ public interface Link {
 	 * Set the destination element of this link by its id.
 	 *
 	 * @see DecisionKnowledgeElement
+	 * @see DocumentationLocation
 	 * @param id
 	 *            of the destination element of this link.
+	 * @param documenationLocation
+	 *            of the decision knowledge element.
 	 */
-	void setDestinationElement(long id);
+	void setDestinationElement(long id, DocumentationLocation documentationLocation);
+
+	void setDestinationElement(long id, String documentationLocation);
 
 	/**
 	 * Get the opposite element of this link.
@@ -232,8 +242,8 @@ public interface Link {
 	public boolean isIssueLink();
 
 	/**
-	 * Determine if the source and/or destination element of the link have an unknown
-	 * documentation location.
+	 * Determine if the source and/or destination element of the link have an
+	 * unknown documentation location.
 	 *
 	 * @see DecisionKnowledgeElement
 	 * 

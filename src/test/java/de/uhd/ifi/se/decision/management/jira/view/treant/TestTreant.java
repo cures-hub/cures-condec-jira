@@ -123,8 +123,8 @@ public class TestTreant extends TestSetUpWithIssues {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
 		Link link = new LinkImpl();
 		link.setType("support");
-		link.setSourceElement(10);
-		link.setDestinationElement(14);
+		link.setSourceElement(10, "i");
+		link.setDestinationElement(14, "i");
 		link.setDestinationElement(persistenceStrategy.getDecisionKnowledgeElement(14));
 		link.setSourceElement(persistenceStrategy.getDecisionKnowledgeElement(10));
 		link.setId((long) 23);

@@ -11,8 +11,6 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
-import de.uhd.ifi.se.decision.management.jira.model.LinkType;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import net.java.ao.Query;
 
@@ -21,16 +19,15 @@ public class GenericLinkManager {
 	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
 	public static void clearInvalidLinks() {
-
-		LinkInDatabase[] linkElements = ACTIVE_OBJECTS.find(LinkInDatabase.class);
-		for (LinkInDatabase linkElement : linkElements) {
+		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class);
+		for (LinkInDatabase databaseEntry : linksInDatabase) {
 			try {
-				Link link = new LinkImpl(linkElement.getIdOfSourceElement(), linkElement.getIdOfDestinationElement());
+				Link link = new LinkImpl(databaseEntry.getIdOfSourceElement(), databaseEntry.getIdOfDestinationElement());
 				if (!link.isValid()) {
-					deleteLinkElementFromDatabase(linkElement);
+					deleteLinkElementFromDatabase(databaseEntry);
 				}
 			} catch (Exception e) {
-				deleteLinkElementFromDatabase(linkElement);
+				deleteLinkElementFromDatabase(databaseEntry);
 			}
 		}
 	}

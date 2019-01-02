@@ -37,9 +37,10 @@ public class LinkImpl implements Link {
 		this.type = linkType.toString();
 	}
 
-	public LinkImpl(long idOfSourceElement, long idOfDestinationElement) {
-		this.setSourceElement(idOfSourceElement);
-		this.setDestinationElement(idOfDestinationElement);
+	public LinkImpl(long idOfSourceElement, long idOfDestinationElement,
+			DocumentationLocation sourceDocumentationLocation, DocumentationLocation destDocumentationLocation) {
+		this.setSourceElement(idOfSourceElement, sourceDocumentationLocation);
+		this.setDestinationElement(idOfDestinationElement, destDocumentationLocation);
 	}
 
 	public LinkImpl(IssueLink issueLink) {
@@ -74,6 +75,8 @@ public class LinkImpl implements Link {
 		if (linkInDatabase.getIdOfDestinationElement() != null) {
 			this.setDestinationElement(linkInDatabase.getIdOfDestinationElement());
 		}
+//		this.setSourceElement(linkInDatabase.getSourceId(), linkInDatabase.getSourceDocumentationLocation());
+//		this.setDestinationElement(linkInDatabase.getDestinationId(), linkInDatabase.getDestDocumentationLocation());
 		this.id = linkInDatabase.getId();
 		this.type = linkInDatabase.getType();
 	}
@@ -102,11 +105,17 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
-	public void setSourceElement(long id) {
+	public void setSourceElement(long id, DocumentationLocation documentationLocation) {
 		if (this.sourceElement == null) {
 			this.sourceElement = new DecisionKnowledgeElementImpl();
 		}
 		this.sourceElement.setId(id);
+		this.sourceElement.setDocumentationLocation(documentationLocation);
+	}
+
+	@Override
+	public void setSourceElement(long id, String documentationLocation) {
+		this.setSourceElement(id, DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation));
 	}
 
 	@Override
@@ -120,11 +129,18 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
-	public void setDestinationElement(long id) {
+	public void setDestinationElement(long id, DocumentationLocation documentationLocation) {
 		if (this.destinationElement == null) {
 			this.destinationElement = new DecisionKnowledgeElementImpl();
 		}
 		this.destinationElement.setId(id);
+		this.destinationElement.setDocumentationLocation(documentationLocation);
+	}
+
+	@Override
+	public void setDestinationElement(long id, String documentationLocation) {
+		this.setDestinationElement(id,
+				DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation));
 	}
 
 	@Override
@@ -147,7 +163,7 @@ public class LinkImpl implements Link {
 	@JsonProperty("idOfSourceElement")
 	public void setSourceElement(String idWithPrefix) {
 		if (Character.isDigit(idWithPrefix.charAt(0))) {
-			setSourceElement(Long.parseLong(idWithPrefix));
+			setSourceElement(Long.parseLong(idWithPrefix), "");
 			return;
 		}
 		if (this.sourceElement == null) {
@@ -184,7 +200,7 @@ public class LinkImpl implements Link {
 	@JsonProperty("idOfDestinationElement")
 	public void setDestinationElement(String idWithPrefix) {
 		if (Character.isDigit(idWithPrefix.charAt(0))) {
-			setDestinationElement(Long.parseLong(idWithPrefix));
+			setDestinationElement(Long.parseLong(idWithPrefix), "");
 			return;
 		}
 		if (this.destinationElement == null) {

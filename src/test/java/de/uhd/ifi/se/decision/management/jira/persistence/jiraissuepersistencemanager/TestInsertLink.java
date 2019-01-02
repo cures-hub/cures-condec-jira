@@ -24,9 +24,9 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 	@Ignore
 	public void testLinkFilledUserNull() {
 		Link link = new LinkImpl();
-		link.setSourceElement(1);
+		link.setSourceElement(1, "i");
 		link.setType("Contains");
-		link.setDestinationElement(2);
+		link.setDestinationElement(2, "i");
 		assertEquals(0, AbstractPersistenceManager.insertLink(link, null), 0.0);
 	}
 
@@ -40,9 +40,9 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 	@Ignore
 	public void testLinkFilledUserFilled() {
 		Link link = new LinkImpl();
-		link.setSourceElement(1);
+		link.setSourceElement(1, "i");
 		link.setType("Contains");
-		link.setDestinationElement(2);
+		link.setDestinationElement(2, "i");
 		ApplicationUser user = new MockApplicationUser("Test");
 		long linkId = AbstractPersistenceManager.insertLink(link, user);
 		assertNotNull(linkId);
@@ -52,10 +52,10 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 	@Ignore
 	public void testLinkFilledUserFilledIssueLinkNull() {
 		Link link = new LinkImpl();
-		link.setSourceElement(2);
+		link.setSourceElement(2, "i");
 		link.setDocumentationLocationOfSourceElement("a");
 		link.setType("Contains");
-		link.setDestinationElement(3);
+		link.setDestinationElement(3, "i");
 		link.setDocumentationLocationOfDestinationElement("a");
 		ApplicationUser user = new MockApplicationUser("Test");
 		assertEquals(0, AbstractPersistenceManager.insertLink(link, user));
@@ -65,9 +65,9 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 	@Ignore
 	public void testCreateException() {
 		Link link = new LinkImpl();
-		link.setSourceElement(2);
+		link.setSourceElement(2, "i");
 		link.setType("Contains");
-		link.setDestinationElement(3);
+		link.setDestinationElement(3, "i");
 		ApplicationUser user = new MockApplicationUser("CreateExecption");
 		assertEquals(0, AbstractPersistenceManager.insertLink(link, user));
 	}
@@ -76,9 +76,9 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 	@Ignore
 	public void testMoreInwardLinks() {
 		Link link = new LinkImpl();
-		link.setSourceElement(30);
+		link.setSourceElement(30, "i");
 		link.setType("Contains");
-		link.setDestinationElement(3);
+		link.setDestinationElement(3, "i");
 		ApplicationUser user = new MockApplicationUser("Test");
 		assertEquals(0, AbstractPersistenceManager.insertLink(link, user));
 	}
@@ -87,9 +87,9 @@ public class TestInsertLink extends TestJiraIssuePersistenceManagerSetUp {
 	@Ignore
 	public void testMoreOutwardLinks() {
 		Link link = new LinkImpl();
-		link.setSourceElement(10);
+		link.setSourceElement(10, "i");
 		link.setType("Contains");
-		link.setDestinationElement(30);
+		link.setDestinationElement(30, "i");
 		ApplicationUser user = new MockApplicationUser("Test");
 		assertEquals(0, AbstractPersistenceManager.insertLink(link, user));
 	}
