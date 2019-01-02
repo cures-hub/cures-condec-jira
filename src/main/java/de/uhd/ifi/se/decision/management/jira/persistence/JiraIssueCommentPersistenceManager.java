@@ -445,7 +445,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			if (databaseEntry.getType().length() == 3) {// Equals Argument
 				List<Link> links = GenericLinkManager.getLinksForElement("s" + databaseEntry.getId());
 				for (Link link : links) {
-					if (link.getType() == null || link.getType() == "" || link.getType().equalsIgnoreCase("contain")) {
+					if (link.getType().equalsIgnoreCase("contain")) {
 						GenericLinkManager.deleteLink(link);
 						link.setType(LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()).toString());
 						GenericLinkManager.insertLinkWithoutTransaction(link);
