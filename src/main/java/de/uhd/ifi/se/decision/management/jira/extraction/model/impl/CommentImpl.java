@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
 public class CommentImpl implements Comment {
 
@@ -63,10 +63,15 @@ public class CommentImpl implements Comment {
 			int startIndex = this.splitter.getStartSubstringCount().get(i);
 			int endIndex = this.splitter.getEndSubstringCount().get(i);
 			if (insertSentencesIntoAO && startAndEndIndexRules(startIndex, endIndex)) {
-				long aoId2 = ActiveObjectsManager.addNewSentenceintoAo(this.jiraCommentId, endIndex, startIndex,
-						this.issueId, this.projectKey);
-				Sentence sentence = (Sentence) ActiveObjectsManager.getElementFromAO(aoId2);
-				ActiveObjectsManager.createSmartLinkForSentence(sentence);
+				Sentence sentence = new SentenceImpl();
+				sentence.setCommentId(this.jiraCommentId);
+				sentence.setEndSubstringCount(endIndex);
+				sentence.setStartSubstringCount(startIndex);
+				sentence.setIssueId(this.issueId);
+				sentence.setProject(this.projectKey);
+				long aoId2 = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(sentence, null);
+				sentence = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(aoId2);
+				JiraIssueCommentPersistenceManager.createSmartLinkForSentence(sentence);
 				sentence.setCreated(this.created);
 				this.sentences.add(sentence);
 			}
@@ -120,7 +125,7 @@ public class CommentImpl implements Comment {
 	public void reloadSentencesFromAo() {
 		List<Sentence> newSentences = new ArrayList<>();
 		for (Sentence sentence : this.sentences) {
-			Sentence aoSentence = (Sentence) ActiveObjectsManager.getElementFromAO(sentence.getId());
+			Sentence aoSentence = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(sentence.getId());
 			newSentences.add(aoSentence);
 		}
 		this.sentences = newSentences;

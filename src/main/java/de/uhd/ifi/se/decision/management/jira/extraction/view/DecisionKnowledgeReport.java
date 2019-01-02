@@ -25,7 +25,6 @@ import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
@@ -33,8 +32,10 @@ import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
 
 public class DecisionKnowledgeReport extends AbstractReport {
@@ -192,8 +193,8 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 		String projectKey = ComponentAccessor.getProjectManager().getProjectObj(this.projectId).getKey();
 		for (Issue currentIssue : projectIssues.getIssues()) {
-			List<DecisionKnowledgeElement> elements = ActiveObjectsManager.getElementsForIssue(currentIssue.getId(),
-					projectKey);
+			List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager
+					.getElementsForIssue(currentIssue.getId(), projectKey);
 			for (DecisionKnowledgeElement currentElement : elements) {
 				if (currentElement instanceof Sentence && ((Sentence) currentElement).isRelevant()) {
 					isRelevant++;
@@ -218,8 +219,8 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		String projectKey = ComponentAccessor.getProjectManager().getProjectObj(this.projectId).getKey();
 		for (Issue currentIssue : projectIssues.getIssues()) {
 			int count = 0;
-			List<DecisionKnowledgeElement> elements = ActiveObjectsManager.getElementsForIssue(currentIssue.getId(),
-					projectKey);
+			List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager
+					.getElementsForIssue(currentIssue.getId(), projectKey);
 			for (DecisionKnowledgeElement dke : elements) {
 				if (dke.getType().equals(type)) {
 					count++;
@@ -233,8 +234,9 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	private List<Integer> getLinkDistance(KnowledgeType type) {
 		List<Integer> linkDistances = new ArrayList<>();
 
-		List<DecisionKnowledgeElement> listOfIssues = ActiveObjectsManager
-				.getAllElementsFromAoByType(projectManager.getProjectObj(this.projectId).getKey(), type);
+		AbstractPersistenceManager persistenceManager = new JiraIssueCommentPersistenceManager(
+				projectManager.getProjectObj(this.projectId).getKey());
+		List<DecisionKnowledgeElement> listOfIssues = persistenceManager.getDecisionKnowledgeElements(type);
 
 		for (DecisionKnowledgeElement currentAlternative : listOfIssues) {
 			int depth = graphRecursionBot(currentAlternative);
@@ -249,10 +251,12 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		int alternativesHaveNoArgument = 0;
 		String listOfElementsWithoutArgument = "";
 
-		List<DecisionKnowledgeElement> listOfIssues = ActiveObjectsManager.getAllElementsFromAoByType(
-				projectManager.getProjectObj(this.projectId).getKey(), KnowledgeType.ALTERNATIVE);
+		AbstractPersistenceManager persistenceManager = new JiraIssueCommentPersistenceManager(
+				projectManager.getProjectObj(this.projectId).getKey());
+		List<DecisionKnowledgeElement> alternatives = persistenceManager
+				.getDecisionKnowledgeElements(KnowledgeType.ALTERNATIVE);
 
-		for (DecisionKnowledgeElement currentAlternative : listOfIssues) {
+		for (DecisionKnowledgeElement currentAlternative : alternatives) {
 			List<Link> links = GenericLinkManager.getLinksForElement("s" + currentAlternative.getId());
 			boolean hasArgument = false;
 			for (Link link : links) {
@@ -285,8 +289,10 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		Integer[] statistics = new Integer[4];
 		Arrays.fill(statistics, 0);
 		String listOfElementsWithoutLink = " ";
-		List<DecisionKnowledgeElement> listOfIssues = ActiveObjectsManager
-				.getAllElementsFromAoByType(projectManager.getProjectObj(this.projectId).getKey(), linkFrom);
+
+		AbstractPersistenceManager persistenceManager = new JiraIssueCommentPersistenceManager(
+				projectManager.getProjectObj(this.projectId).getKey());
+		List<DecisionKnowledgeElement> listOfIssues = persistenceManager.getDecisionKnowledgeElements(linkFrom);
 
 		for (DecisionKnowledgeElement issue : listOfIssues) {
 			List<Link> links = GenericLinkManager.getLinksForElement("s" + issue.getId());
@@ -322,9 +328,11 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	private Map<String, Integer> getDecKnowElementsPerIssue() {
 		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
 
+		String projectKey = projectManager.getProjectObj(this.projectId).getKey();
+		AbstractPersistenceManager persistenceManager = new JiraIssueCommentPersistenceManager(projectKey);
+
 		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
-			String projectKey = projectManager.getProjectObj(this.projectId).getKey();
-			dkeCount.put(type.toString(), ActiveObjectsManager.getAllElementsFromAoByType(projectKey, type).size());
+			dkeCount.put(type.toString(), persistenceManager.getDecisionKnowledgeElements(type).size());
 		}
 		return dkeCount;
 	}

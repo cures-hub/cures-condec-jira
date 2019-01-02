@@ -4,9 +4,10 @@ import com.atlassian.jira.jql.builder.JqlClauseBuilder;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.query.clause.Clause;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+
 import com.atlassian.jira.bc.issue.search.*;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -337,7 +338,7 @@ public class GraphFiltering {
 		SearchResults projectIssues = getIssuesForThisProject(user);
 		if (projectIssues != null) {
 			for (Issue currentIssue : projectIssues.getIssues()) {
-				List<DecisionKnowledgeElement> elements = ActiveObjectsManager.getElementsForIssue(currentIssue.getId(),
+				List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager.getElementsForIssue(currentIssue.getId(),
 						projectKey);
 				for (DecisionKnowledgeElement currentElement : elements) {
 					if (!results.contains(currentElement)) {

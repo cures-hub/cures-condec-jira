@@ -99,7 +99,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testCommentWithOneQuote() {
-		CommentImpl comment = getComment("{quote} this is a quote {quote} and this is a test Sentence.");
+		Comment comment = getComment("{quote} this is a quote {quote} and this is a test Sentence.");
 		assertNotNull(comment);
 		assertEquals(2, comment.getSentences().size());
 	}
@@ -107,7 +107,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testCommentWithOneQuoteAtTheBack() {
-		CommentImpl comment = getComment("and this is a test Sentence. {quote} this is a quote {quote} ");
+		Comment comment = getComment("and this is a test Sentence. {quote} this is a quote {quote} ");
 		assertNotNull(comment);
 		assertEquals(2, comment.getSentences().size());
 	}
@@ -115,7 +115,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testCommentWithTwoQuotes() {
-		CommentImpl comment = getComment(
+		Comment comment = getComment(
 				"{quote} this is a quote {quote} and this is a test Sentence. {quote} this is a second quote {quote} ");
 		assertNotNull(comment);
 		assertEquals(3, comment.getSentences().size());
@@ -124,7 +124,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithDifferentQuotes() {
-		CommentImpl comment = getComment("{quote} this is a quote {quote} and this is a test Sentence.");
+		Comment comment = getComment("{quote} this is a quote {quote} and this is a test Sentence.");
 		assertEquals(2, comment.getSentences().size());
 
 		comment = getComment(
@@ -136,7 +136,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithDifferentQuotes2() {
-		CommentImpl comment = getComment(
+		Comment comment = getComment(
 				"{quote} this is a quote {quote} and this is a test Sentence. {quote} this is a second quote {quote} and a Sentence at the back");
 		assertEquals(4, comment.getSentences().size());
 
@@ -153,7 +153,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithNoformats() {
-		CommentImpl comment = getComment("{noformat} this is a noformat {noformat} and this is a test Sentence.");
+		Comment comment = getComment("{noformat} this is a noformat {noformat} and this is a test Sentence.");
 		assertEquals(2, comment.getSentences().size());
 
 		comment = getComment(
@@ -165,7 +165,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithNoformats2() {
-		CommentImpl comment = getComment(
+		Comment comment = getComment(
 				"{noformat} this is a noformat {noformat} and this is a test Sentence. {noformat} this is a second noformat {noformat} and a Sentence at the back");
 		assertEquals(4, comment.getSentences().size());
 
@@ -181,7 +181,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithNoformatsAndQuotes() {
-		CommentImpl comment = getComment(
+		Comment comment = getComment(
 				"{noformat} this is a noformat {noformat} {quote} and this is a test Sentence.{quote}");
 		assertEquals(2, comment.getSentences().size());
 
@@ -217,7 +217,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSentenceOrder() {
-		CommentImpl comment = getComment(
+		Comment comment = getComment(
 				"{noformat} this is a first noformat {noformat} and this is a second test Sentence. {quote} this is a also a third quote {quote}{quote} this is a also a fourth quote {quote} {noformat} this is a fifth noformat {noformat} and this is a sixth test Sentence.");
 		assertEquals(6, comment.getSentences().size());
 		assertTrue(comment.getSentences().get(0).getBody().contains("first"));
@@ -231,16 +231,16 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithUnknownTag() {
-		CommentImpl comment = getComment(
+		Comment comment = getComment(
 				"{noformat} this is a noformat {noformat} {wuzl} and this is a test Sentence {wuzl}");
 		assertEquals(2, comment.getSentences().size());
-		assertTrue(comment.getSentences().get(0).getBody().contains("{noformat} this is a noformat {noformat}"));
+		assertTrue(comment.getSentences().get(0).getBody().contains(" this is a noformat "));
 	}
 
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithCodeTag() {
-		CommentImpl comment = getComment("{code:Java} int i = 0 {code} and this is a test Sentence.");
+		Comment comment = getComment("{code:Java} int i = 0 {code} and this is a test Sentence.");
 		assertEquals(2, comment.getSentences().size());
 
 		comment = getComment(
@@ -275,7 +275,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testPropertiesOfCodeElementedText() {
-		CommentImpl comment = getComment("{code:Java} int i = 0 {code} and this is a test Sentence.");
+		Comment comment = getComment("{code:Java} int i = 0 {code} and this is a test Sentence.");
 		assertEquals(2, comment.getSentences().size());
 		assertEquals(false, comment.getSentences().get(0).isRelevant());
 		assertEquals(false, comment.getSentences().get(0).isPlainText());
@@ -285,7 +285,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testPropertiesOfNoFormatElementedText() {
-		CommentImpl comment = getComment("{noformat} int i = 0 {noformat} and this is a test Sentence.");
+		Comment comment = getComment("{noformat} int i = 0 {noformat} and this is a test Sentence.");
 		assertEquals(2, comment.getSentences().size());
 		assertEquals(false, comment.getSentences().get(0).isRelevant());
 		assertEquals(false, comment.getSentences().get(0).isPlainText());
@@ -295,7 +295,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testPropertiesOfQuotedElementedText() {
-		CommentImpl comment = getComment("{quote} int i = 0 {quote} and this is a test Sentence.");
+		Comment comment = getComment("{quote} int i = 0 {quote} and this is a test Sentence.");
 		assertEquals(2, comment.getSentences().size());
 		assertEquals(false, comment.getSentences().get(0).isRelevant());
 		assertEquals(false, comment.getSentences().get(0).isPlainText());
@@ -305,7 +305,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testPropertiesOfTaggedElementedText() {
-		CommentImpl comment = getComment(
+		Comment comment = getComment(
 				"{Alternative} this is a manually created alternative {Alternative} and this is a test Sentence.");
 		assertEquals(2, comment.getSentences().size());
 		assertEquals(true, comment.getSentences().get(0).isRelevant());
@@ -316,7 +316,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testPropertiesOfIconElementedText() {
-		CommentImpl comment = getComment("(y) this is a icon pro text. \r\n and this is a test Sentence.");
+		Comment comment = getComment("(y) this is a icon pro text. \r\n and this is a test Sentence.");
 		assertEquals(2, comment.getSentences().size());
 		assertEquals(true, comment.getSentences().get(0).isRelevant());
 		assertEquals(false, comment.getSentences().get(0).isPlainText());

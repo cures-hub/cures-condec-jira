@@ -6,15 +6,17 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.issue.comments.CommentManager;
+import com.atlassian.jira.issue.comments.MutableComment;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
 
 public class SentenceImpl extends DecisionKnowledgeElementImpl implements Sentence {
@@ -111,10 +113,14 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	@Override
+	public MutableComment getComment() {
+		CommentManager commentManager = ComponentAccessor.getCommentManager();
+		return (MutableComment) commentManager.getMutableComment(this.getCommentId());
+	}
+
+	@Override
 	public long getAuthorId() {
-		return 0;
-		// TODO Implement
-		// return this.getComment().getAuthorId();
+		return this.getComment().getAuthorApplicationUser().getId();
 	}
 
 	@Override
@@ -138,6 +144,11 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.endSubstringCount = count;
 	}
 
+	@Override
+	public int getLength() {
+		return this.endSubstringCount - this.startSubstringCount;
+	}
+
 	public void setType(double[] prediction) {
 		if (prediction[0] == 1.) {
 			this.type = KnowledgeType.ALTERNATIVE;
@@ -152,8 +163,21 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		}
 	}
 
+	public void setType(KnowledgeType type) {
+		// if (this.type != type) {
+		// this.updateTagsInComment(type);
+		// }
+		super.setType(type);
+	}
+
 	public String getBody() {
-		return super.getSummary();
+		MutableComment mutableComment = this.getComment();
+		if (mutableComment == null) {
+			return super.getSummary();
+		}
+		String body = mutableComment.getBody().substring(this.getStartSubstringCount(), this.getEndSubstringCount());
+		body = body.replaceAll("\\{.*?\\}", "");
+		return body;
 	}
 
 	public void setBody(String body) {
@@ -193,7 +217,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.setPlainText(false);
 		this.setRelevant(true);
 		this.setTagged(true);
-		ActiveObjectsManager.updateSentenceElement(this);
+		JiraIssueCommentPersistenceManager.updateInDatabase(this);
 	}
 
 	public boolean isPlainText() {

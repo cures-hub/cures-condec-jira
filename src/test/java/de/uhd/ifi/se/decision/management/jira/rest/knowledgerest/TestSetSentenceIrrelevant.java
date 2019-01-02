@@ -37,7 +37,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 public class TestSetSentenceIrrelevant extends TestSetUpWithIssues {
 
-	private final static String BAD_REQUEST_ERROR = "Setting sentence irrelevant failed due to a bad request.";
+	private final static String BAD_REQUEST_ERROR = "Setting element irrelevant failed due to a bad request.";
 
 	private EntityManager entityManager;
 	private KnowledgeRest knowledgeRest;
@@ -97,11 +97,11 @@ public class TestSetSentenceIrrelevant extends TestSetUpWithIssues {
 
 	@Test
 	@NonTransactional
-	public void testRequestFilledElementFilledButNotExisting() {
+	public void testRequestFilledElementFilledButNotDocumentedInJiraIssueComment() {
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
 		DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);
 		
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
-		assertEquals(500, knowledgeRest.setSentenceIrrelevant(request, decisionKnowledgeElement).getStatus());
+		assertEquals(503, knowledgeRest.setSentenceIrrelevant(request, decisionKnowledgeElement).getStatus());
 	}
 }

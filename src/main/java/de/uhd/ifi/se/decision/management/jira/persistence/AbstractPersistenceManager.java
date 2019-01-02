@@ -260,7 +260,9 @@ public abstract class AbstractPersistenceManager {
 	 *            authenticated JIRA application user
 	 * @return true if deleting was successful.
 	 */
-	public abstract boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user);
+	public boolean deleteDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
+		return this.deleteDecisionKnowledgeElement(element.getId(), user);
+	}
 
 	/**
 	 * Delete an existing decision knowledge element in database.
@@ -311,11 +313,12 @@ public abstract class AbstractPersistenceManager {
 	 *         knowledge type.
 	 */
 	public List<DecisionKnowledgeElement> getDecisionKnowledgeElements(KnowledgeType type) {
+		KnowledgeType simpleType = type.replaceProAndConWithArgument();
 		List<DecisionKnowledgeElement> elements = this.getDecisionKnowledgeElements();
 		Iterator<DecisionKnowledgeElement> iterator = elements.iterator();
 		while (iterator.hasNext()) {
 			DecisionKnowledgeElement element = iterator.next();
-			if (element.getType() != type) {
+			if (element.getType().replaceProAndConWithArgument() != simpleType) {
 				iterator.remove();
 			}
 		}
@@ -521,5 +524,25 @@ public abstract class AbstractPersistenceManager {
 
 	public void setDocumentationLocation(DocumentationLocation documentationLocation) {
 		this.documentationLocation = documentationLocation;
+	}
+
+	// TODO Move to DecisionKnowledgeElement class
+	/**
+	 * Determines whether an element is linked to at least one other decision knowledge element.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @param id
+	 *            id of a decision knowledge element in database. The id is
+	 *            different to the key.
+	 * @param documentation location of the element
+	 * @return list of linked elements.
+	 */
+	public static boolean isElementLinked(long id, DocumentationLocation documentationLocation) {
+		List<Link> links = GenericLinkManager.getLinksForElement(documentationLocation.getIdentifier() + id);
+		return links != null && links.size() > 0;
+	}
+	
+	public static boolean isElementLinked(DecisionKnowledgeElement element) {
+		return isElementLinked(element.getId(), element.getDocumentationLocation());
 	}
 }

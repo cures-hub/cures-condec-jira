@@ -201,6 +201,9 @@ public enum KnowledgeType {
 			return ComponentGetter.getUrlOfImageFolder() + "Other.png";
 		}
 		if (element.getType() == OTHER) {
+			if (element instanceof Sentence) {
+				return ComponentGetter.getUrlOfImageFolder() + "Other.png";
+			}
 			IssueManager issueManager = ComponentAccessor.getIssueManager();
 			Issue issue = issueManager.getIssueByCurrentKey(element.getKey());
 			return issue.getIssueType().getCompleteIconUrl();

@@ -4,6 +4,8 @@ import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
+import com.atlassian.jira.issue.comments.MutableComment;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 
 public interface Sentence extends DecisionKnowledgeElement {
@@ -30,6 +32,9 @@ public interface Sentence extends DecisionKnowledgeElement {
 	long getCommentId();
 
 	@JsonIgnore
+	MutableComment getComment();
+
+	@JsonIgnore
 	void setCommentId(long id);
 
 	@JsonIgnore
@@ -46,6 +51,8 @@ public interface Sentence extends DecisionKnowledgeElement {
 
 	@JsonIgnore
 	void setEndSubstringCount(int count);
+
+	int getLength();
 
 	@JsonIgnore
 	void setType(double[] prediction);

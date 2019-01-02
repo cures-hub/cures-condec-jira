@@ -17,9 +17,10 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
-import de.uhd.ifi.se.decision.management.jira.extraction.persistence.ActiveObjectsManager;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
 /**
  * Triggers the decXtract related function when some changes to comments are
@@ -139,31 +140,31 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		return (MutableComment) ComponentAccessor.getCommentManager().getCommentById(issueEvent.getComment().getId());
 	}
 
-	private void handleDeleteIssue(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
-		ActiveObjectsManager.cleanSentenceDatabaseForProject(this.projectKey);
-		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
+	private void handleDeleteIssue(DecisionKnowledgeElement decisionKnowledgeElement) {
+		JiraIssueCommentPersistenceManager.cleanSentenceDatabaseForProject(this.projectKey);
+		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
 	}
 
-	private void handleEditComment(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
+	private void handleEditComment(DecisionKnowledgeElement decisionKnowledgeElement) {
 		// If locked, a REST service is manipulating the comment and should not be
 		// handled by this event listener.
 		if (!DecXtractEventListener.editCommentLock) {
-			ActiveObjectsManager.deleteCommentsSentences(issueEvent.getComment());
+			JiraIssueCommentPersistenceManager.deleteCommentsSentences(issueEvent.getComment());
 			new ViewConnector(this.issueEvent.getIssue(), false);
-			ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
+			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
 		} else {
 			LOGGER.debug("\nDecXtract Event Listener:\nHandle Edit Comment is still locked");
 		}
 	}
 
-	private void handleDeleteComment(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
-		ActiveObjectsManager.cleanSentenceDatabaseForProject(this.projectKey);
-		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
+	private void handleDeleteComment(DecisionKnowledgeElement decisionKnowledgeElement) {
+		JiraIssueCommentPersistenceManager.cleanSentenceDatabaseForProject(this.projectKey);
+		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
 	}
 
-	private void handleNewComment(DecisionKnowledgeElementImpl decisionKnowledgeElement) {
+	private void handleNewComment(DecisionKnowledgeElement decisionKnowledgeElement) {
 		new ViewConnector(this.issueEvent.getIssue(), false);
-		ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
+		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
 	}
 
 }

@@ -24,20 +24,19 @@ public class DecisionKnowledgeClassifier {
 	public DecisionKnowledgeClassifier() {
 		String pathFineGrained = ComponentGetter.getUrlOfClassifierFolder() + "br.model";
 		String path = ComponentGetter.getUrlOfClassifierFolder() + "fc.model";
-		InputStream is;
+		InputStream inputStream;
 		try {
-			is = new URL(path).openStream();
-			binaryClassifier = (FilteredClassifier) weka.core.SerializationHelper.read(is);
+			inputStream = new URL(path).openStream();
+			binaryClassifier = (FilteredClassifier) weka.core.SerializationHelper.read(inputStream);
 		} catch (Exception e) {
 			binaryClassifier = new FilteredClassifier();
 		}
 		try {
-			is = new URL(pathFineGrained).openStream();
-			fineGrainedClassifier = (LC) weka.core.SerializationHelper.read(is);
+			inputStream = new URL(pathFineGrained).openStream();
+			fineGrainedClassifier = (LC) weka.core.SerializationHelper.read(inputStream);
 		} catch (Exception e) {
 			fineGrainedClassifier = new LC();
 		}
-
 	}
 
 	public List<Double> makeBinaryPredictions(Instances data) {
