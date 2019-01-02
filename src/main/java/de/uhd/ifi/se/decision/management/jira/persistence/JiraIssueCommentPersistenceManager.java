@@ -408,7 +408,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			childElement.setDocumentationLocation("s");
 
 			Link link = Link.instantiateDirectedLink(parentElement, childElement, linkType);
-			GenericLinkManager.insertLinkWithoutTransaction(link);
+			GenericLinkManager.insertLink(link, null);
 		}
 	}
 
@@ -428,7 +428,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			}
 			if (deleteFlag) {
 				DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
-				GenericLinkManager.deleteLinksForElementWithoutTransaction("s" + databaseEntry.getId());
+				GenericLinkManager.deleteLinksForElement("s" + databaseEntry.getId());
 			}
 		}
 	}
@@ -448,19 +448,19 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 					if (link.getType().equalsIgnoreCase("contain")) {
 						GenericLinkManager.deleteLink(link);
 						link.setType(LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()).toString());
-						GenericLinkManager.insertLinkWithoutTransaction(link);
+						GenericLinkManager.insertLink(link, null);
 					}
 				}
 			}
 		}
 	}
 
-	public static Issue createJIRAIssueFromSentenceObject(long aoId, ApplicationUser user) {
+	public Issue createJIRAIssueFromSentenceObject(long aoId, ApplicationUser user) {		
 
-		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(aoId);
-
-		JiraIssuePersistenceManager s = new JiraIssuePersistenceManager(element.getProject().getProjectKey());
-		DecisionKnowledgeElement decElement = s.insertDecisionKnowledgeElement(element, user);
+		Sentence element = (Sentence) this.getDecisionKnowledgeElement(aoId);
+		
+		JiraIssuePersistenceManager persistenceManager = new JiraIssuePersistenceManager(this.projectKey);		
+		DecisionKnowledgeElement decElement = persistenceManager.insertDecisionKnowledgeElement(element, user);
 
 		MutableIssue issue = ComponentAccessor.getIssueService().getIssue(user, decElement.getId()).getIssue();
 

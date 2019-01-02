@@ -33,4 +33,12 @@ public interface LinkInDatabase extends RawEntity<Integer> {
 	String getIdOfDestinationElement();
 
 	void setIdOfDestinationElement(String id);
+	
+	String getSourceDocumentationLocation();
+	
+	void setSourceDocumentationLocation(String documentationLocation);
+	
+	String getDestDocumentationLocation();
+	
+	void setDestDocumentationLocation(String documentationLocation);
 }

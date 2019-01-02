@@ -17,14 +17,13 @@ import net.java.ao.Query;
 
 public class GenericLinkManager {
 
-	private static ActiveObjects activeObjects;
+	private static final ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
 
 	public static void clearInvalidLinks() {
-		init();
-		activeObjects.executeInTransaction(new TransactionCallback<LinkInDatabase>() {
+		ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<LinkInDatabase>() {
 			@Override
 			public LinkInDatabase doInTransaction() {
-				LinkInDatabase[] linkElements = activeObjects.find(LinkInDatabase.class);
+				LinkInDatabase[] linkElements = ACTIVE_OBJECTS.find(LinkInDatabase.class);
 				for (LinkInDatabase linkElement : linkElements) {
 					try {
 						Link link = new LinkImpl(linkElement.getIdOfSourceElement(),
@@ -42,7 +41,6 @@ public class GenericLinkManager {
 	}
 
 	public static boolean deleteLink(Link link) {
-		init();
 		DecisionKnowledgeElement sourceElement = link.getSourceElement();
 		String sourceIdWithPrefix = sourceElement.getDocumentationLocation().getIdentifier() + sourceElement.getId();
 		DecisionKnowledgeElement destinationElement = link.getDestinationElement();
@@ -53,8 +51,7 @@ public class GenericLinkManager {
 	}
 
 	public static boolean deleteLink(String sourceIdWithPrefix, String targetIdWithPrefix) {
-		init();
-		return activeObjects.executeInTransaction(new TransactionCallback<Boolean>() {
+		return ACTIVE_OBJECTS.executeInTransaction(new TransactionCallback<Boolean>() {
 			@Override
 			public Boolean doInTransaction() {
 				return deleteLinkWithoutTransaction(sourceIdWithPrefix, targetIdWithPrefix);
@@ -72,18 +69,7 @@ public class GenericLinkManager {
 	}
 
 	public static void deleteLinksForElement(String elementIdWithPrefix) {
-		init();
-		activeObjects.executeInTransaction(new TransactionCallback<LinkInDatabase>() {
-			@Override
-			public LinkInDatabase doInTransaction() {
-				deleteLinksForElementWithoutTransaction(elementIdWithPrefix);
-				return null;
-			}
-		});
-	}
-
-	public static void deleteLinksForElementWithoutTransaction(String elementIdWithPrefix) {
-		LinkInDatabase[] linksInDatabase = activeObjects.find(LinkInDatabase.class);
+		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class);
 		for (LinkInDatabase linkInDatabase : linksInDatabase) {
 			if (linkInDatabase.getIdOfDestinationElement().equals(elementIdWithPrefix)
 					|| linkInDatabase.getIdOfSourceElement().equals(elementIdWithPrefix)) {
@@ -96,8 +82,7 @@ public class GenericLinkManager {
 	}
 
 	private static Boolean deleteLinkWithoutTransaction(String sourceIdWithPrefix, String targetIdWithPrefix) {
-		init();
-		for (LinkInDatabase linkInDatabase : activeObjects.find(LinkInDatabase.class)) {
+		for (LinkInDatabase linkInDatabase : ACTIVE_OBJECTS.find(LinkInDatabase.class)) {
 			if (linkInDatabase.getIdOfDestinationElement().equals(targetIdWithPrefix)
 					&& linkInDatabase.getIdOfSourceElement().equals(sourceIdWithPrefix)) {
 				try {
@@ -122,8 +107,7 @@ public class GenericLinkManager {
 
 	public static List<Link> getLinksForElement(DecisionKnowledgeElement element) {
 		String elementIdWithPrefix = element.getDocumentationLocationAsString() + element.getId();
-		init();
-		LinkInDatabase[] linksInDatabase = activeObjects.find(LinkInDatabase.class, Query.select().where(
+		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select().where(
 				"ID_OF_DESTINATION_ELEMENT = ? OR ID_OF_SOURCE_ELEMENT = ?", elementIdWithPrefix, elementIdWithPrefix));
 
 		List<Link> links = new ArrayList<Link>();
@@ -143,8 +127,7 @@ public class GenericLinkManager {
 	 * @return the generic links for element
 	 */
 	public static List<Link> getLinksForElement(String elementIdWithPrefix) {
-		init();
-		LinkInDatabase[] linksInDatabase = activeObjects.find(LinkInDatabase.class, Query.select().where(
+		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select().where(
 				"ID_OF_DESTINATION_ELEMENT = ? OR ID_OF_SOURCE_ELEMENT = ?", elementIdWithPrefix, elementIdWithPrefix));
 
 		List<Link> links = new ArrayList<Link>();
@@ -155,24 +138,7 @@ public class GenericLinkManager {
 		return links;
 	}
 
-	public static void init() {
-		if (activeObjects == null) {
-			activeObjects = ComponentGetter.getActiveObjects();
-		}
-	}
-
 	public static long insertLink(Link link, ApplicationUser user) {
-		init();
-		return activeObjects.executeInTransaction(new TransactionCallback<Long>() {
-			@Override
-			public Long doInTransaction() {
-				return insertLinkWithoutTransaction(link);
-			}
-		});
-	}
-
-	public static long insertLinkWithoutTransaction(Link link) {
-		init();
 		if (isLinkAlreadyInDatabase(link) != -1) {
 			return isLinkAlreadyInDatabase(link);
 		}
@@ -180,22 +146,26 @@ public class GenericLinkManager {
 			return -1;
 		}
 
-		final LinkInDatabase linkInDatabase = activeObjects.create(LinkInDatabase.class);
+		final LinkInDatabase linkInDatabase = ACTIVE_OBJECTS.create(LinkInDatabase.class);		
 		DecisionKnowledgeElement sourceElement = link.getSourceElement();
+		String documentationLocationOfSourceElement = sourceElement.getDocumentationLocation().getIdentifier();
 		linkInDatabase
-				.setIdOfSourceElement(sourceElement.getDocumentationLocation().getIdentifier() + sourceElement.getId());
+				.setIdOfSourceElement(documentationLocationOfSourceElement + sourceElement.getId());
+		linkInDatabase.setSourceDocumentationLocation(documentationLocationOfSourceElement);
+		
 		DecisionKnowledgeElement destinationElement = link.getDestinationElement();
+		String documentationLocationOfDestinationElement = destinationElement.getDocumentationLocation().getIdentifier();
 		linkInDatabase.setIdOfDestinationElement(
-				destinationElement.getDocumentationLocation().getIdentifier() + destinationElement.getId());
+				documentationLocationOfDestinationElement + destinationElement.getId());		
+		linkInDatabase.setDestDocumentationLocation(documentationLocationOfDestinationElement);
 		linkInDatabase.setType(link.getType());
 		linkInDatabase.save();
-		activeObjects.find(LinkInDatabase.class);
+		ACTIVE_OBJECTS.find(LinkInDatabase.class);
 		return linkInDatabase.getId();
 	}
 
 	private static long isLinkAlreadyInDatabase(Link link) {
-		init();
-		for (LinkInDatabase linkInDatabase : activeObjects.find(LinkInDatabase.class)) {
+		for (LinkInDatabase linkInDatabase : ACTIVE_OBJECTS.find(LinkInDatabase.class)) {
 			// also checks the inverse link
 			if (linkInDatabase.getIdOfSourceElement().equals(link.getIdOfSourceElementWithPrefix())
 					&& linkInDatabase.getIdOfDestinationElement().equals(link.getIdOfDestinationElementWithPrefix())
