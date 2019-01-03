@@ -34,13 +34,13 @@ public class GenericLinkManager {
 	}
 
 	public static boolean deleteLink(Link link) {
-		DecisionKnowledgeElement sourceElement = link.getSourceElement();
-		String sourceIdWithPrefix = sourceElement.getDocumentationLocation().getIdentifier() + sourceElement.getId();
-		DecisionKnowledgeElement destinationElement = link.getDestinationElement();
-		String destinationIdWithPrefix = destinationElement.getDocumentationLocation().getIdentifier()
-				+ destinationElement.getId();
-
-		return deleteLink(sourceIdWithPrefix, destinationIdWithPrefix);
+		boolean isDeleted = false;
+		for (LinkInDatabase linkInDatabase : ACTIVE_OBJECTS.find(LinkInDatabase.class)) {
+			if (link.equals(linkInDatabase)) {
+				isDeleted = LinkInDatabase.deleteLink(linkInDatabase);
+			}
+		}
+		return isDeleted;
 	}
 
 	private static void deleteLinkElementFromDatabase(LinkInDatabase linkElement) {
@@ -61,36 +61,6 @@ public class GenericLinkManager {
 				LinkInDatabase.deleteLink(link);
 			}
 		}
-	}
-
-	@Deprecated
-	public static void deleteLinksForElement(String elementIdWithPrefix) {
-		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class);
-		for (LinkInDatabase linkInDatabase : linksInDatabase) {
-			if (linkInDatabase.getIdOfDestinationElement().equals(elementIdWithPrefix)
-					|| linkInDatabase.getIdOfSourceElement().equals(elementIdWithPrefix)) {
-				try {
-					linkInDatabase.getEntityManager().delete(linkInDatabase);
-				} catch (SQLException e) {
-				}
-			}
-		}
-	}
-
-	@Deprecated
-	private static boolean deleteLink(String sourceIdWithPrefix, String targetIdWithPrefix) {
-		for (LinkInDatabase linkInDatabase : ACTIVE_OBJECTS.find(LinkInDatabase.class)) {
-			if (linkInDatabase.getIdOfDestinationElement().equals(targetIdWithPrefix)
-					&& linkInDatabase.getIdOfSourceElement().equals(sourceIdWithPrefix)) {
-				try {
-					linkInDatabase.getEntityManager().delete(linkInDatabase);
-					return true;
-				} catch (SQLException e) {
-					return false;
-				}
-			}
-		}
-		return false;
 	}
 
 	public static long getId(String idWithPrefix) {
@@ -159,7 +129,7 @@ public class GenericLinkManager {
 		return linkInDatabase.getId();
 	}
 
-	private static long isLinkAlreadyInDatabase(Link link) {
+	public static long isLinkAlreadyInDatabase(Link link) {
 		long linkId = -1;
 		Link flippedLink = link.flip();
 		for (LinkInDatabase linkInDatabase : ACTIVE_OBJECTS.find(LinkInDatabase.class)) {
