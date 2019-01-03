@@ -137,7 +137,8 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		for (Issue issue : issues.getIssues()) {
 			boolean linkExisting = false;
 			if (checkEqualIssueTypeIssue(issue.getIssueType())) {
-				for (Link link : GenericLinkManager.getLinksForElement("i" + issue.getId())) {
+				for (Link link : GenericLinkManager.getLinksForElement(issue.getId(),
+						DocumentationLocation.JIRAISSUE)) {
 					if (link.isValid()) {
 						DecisionKnowledgeElement dke = link.getOppositeElement(new DecisionKnowledgeElementImpl(issue));
 						if (dke.getType().equals(knowledgeType)) {
@@ -258,7 +259,8 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				.getDecisionKnowledgeElements(KnowledgeType.ALTERNATIVE);
 
 		for (DecisionKnowledgeElement currentAlternative : alternatives) {
-			List<Link> links = GenericLinkManager.getLinksForElement("s" + currentAlternative.getId());
+			List<Link> links = GenericLinkManager.getLinksForElement(currentAlternative.getId(),
+					DocumentationLocation.JIRAISSUECOMMENT);
 			boolean hasArgument = false;
 			for (Link link : links) {
 				if (link.isValid()) {
@@ -296,7 +298,8 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		List<DecisionKnowledgeElement> listOfIssues = persistenceManager.getDecisionKnowledgeElements(linkFrom);
 
 		for (DecisionKnowledgeElement issue : listOfIssues) {
-			List<Link> links = GenericLinkManager.getLinksForElement("s" + issue.getId());
+			List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
+					DocumentationLocation.JIRAISSUECOMMENT);
 			boolean hastOtherElementLinked = false;
 
 			for (Link link : links) {

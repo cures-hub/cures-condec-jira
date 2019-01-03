@@ -78,7 +78,7 @@ public class GraphImpl implements Graph {
 	protected Map<DecisionKnowledgeElement, Link> getLinkedFirstClassElementsAndLinks(
 			DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
-		if(!element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUE)) {
+		if (!element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUE)) {
 			return linkedElementsAndLinks;
 		}
 		List<Link> links = this.project.getPersistenceStrategy().getLinks(element);
@@ -100,8 +100,7 @@ public class GraphImpl implements Graph {
 	protected Map<DecisionKnowledgeElement, Link> getLinkedSentencesAndLinks(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
-		String prefix = DocumentationLocation.getIdentifier(element);
-		List<Link> links = GenericLinkManager.getLinksForElement(prefix + element.getId());
+		List<Link> links = GenericLinkManager.getLinksForElement(element);
 
 		for (Link link : links) {
 			if (link.isInterProjectLink() || this.genericLinkIds.contains(link.getId())) {

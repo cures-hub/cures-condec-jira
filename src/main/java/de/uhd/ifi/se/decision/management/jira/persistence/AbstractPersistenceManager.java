@@ -565,7 +565,7 @@ public abstract class AbstractPersistenceManager {
 	 * @return list of linked elements.
 	 */
 	public static boolean isElementLinked(long id, DocumentationLocation documentationLocation) {
-		List<Link> links = GenericLinkManager.getLinksForElement(documentationLocation.getIdentifier() + id);
+		List<Link> links = GenericLinkManager.getLinksForElement(id, documentationLocation);
 		return links != null && links.size() > 0;
 	}
 

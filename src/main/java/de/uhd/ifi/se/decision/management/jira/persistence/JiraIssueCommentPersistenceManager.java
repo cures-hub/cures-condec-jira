@@ -443,7 +443,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey));
 		for (DecisionKnowledgeInCommentEntity databaseEntry : sentencesInProject) {
 			if (databaseEntry.getType().length() == 3) {// Equals Argument
-				List<Link> links = GenericLinkManager.getLinksForElement("s" + databaseEntry.getId());
+				List<Link> links = GenericLinkManager.getLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUECOMMENT);
 				for (Link link : links) {
 					if (link.getType().equalsIgnoreCase("contain")) {
 						GenericLinkManager.deleteLink(link);
