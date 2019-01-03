@@ -64,7 +64,7 @@ public interface Link {
 	void setSourceElement(DecisionKnowledgeElement decisionKnowledgeElement);
 
 	/**
-	 * Set the source element of this link by its id.
+	 * Set the source element of this link by its id and documentation location.
 	 *
 	 * @see DecisionKnowledgeElement
 	 * @see DocumentationLocation
@@ -75,7 +75,28 @@ public interface Link {
 	 */
 	void setSourceElement(long id, DocumentationLocation documentationLocation);
 
+	/**
+	 * Set the source element of this link by its id and documentation location.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see DocumentationLocation
+	 * @param id
+	 *            of the source element of this link.
+	 * @param documenationLocation
+	 *            of the decision knowledge element as a String, e.g. "i" for JIRA
+	 *            issue.
+	 */
 	void setSourceElement(long id, String documentationLocation);
+
+	/**
+	 * Set the id of the source element of this link. Instantiates a new decision
+	 * knowledge element if the source element is null.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @param id
+	 *            of the destination element of this link.
+	 */
+	void setIdOfSourceElement(long id);
 
 	/**
 	 * Get the destination element of this link.
@@ -95,7 +116,8 @@ public interface Link {
 	void setDestinationElement(DecisionKnowledgeElement decisionKnowledgeElement);
 
 	/**
-	 * Set the destination element of this link by its id.
+	 * Set the destination element of this link by its id and documentation
+	 * location.
 	 *
 	 * @see DecisionKnowledgeElement
 	 * @see DocumentationLocation
@@ -106,7 +128,29 @@ public interface Link {
 	 */
 	void setDestinationElement(long id, DocumentationLocation documentationLocation);
 
+	/**
+	 * Set the destination element of this link by its id and documentation
+	 * location.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see DocumentationLocation
+	 * @param id
+	 *            of the destination element of this link.
+	 * @param documenationLocation
+	 *            of the decision knowledge element as a String, e.g. "i" for JIRA
+	 *            issue.
+	 */
 	void setDestinationElement(long id, String documentationLocation);
+
+	/**
+	 * Set the id of the destination element of this link. Instantiates a new
+	 * decision knowledge element if the destination element is null.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @param id
+	 *            of the destination element of this link.
+	 */
+	void setIdOfDestinationElement(long id);
 
 	/**
 	 * Get the opposite element of this link.
@@ -241,19 +285,28 @@ public interface Link {
 	 */
 	public boolean containsUnknownDocumentationLocation();
 
-	@Deprecated
-	String getIdOfSourceElementWithPrefix();
-
-	
-	void setIdOfSourceElement(long id);
-
-	@Deprecated
-	String getIdOfDestinationElementWithPrefix();
-
-	void setIdOfDestinationElement(long id);
-
+	/**
+	 * Set the documentation location of the source element of this link. Retrieves
+	 * a new decision knowledge element from database if the source element
+	 * currently has a different documentation location.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see DocumentationLocation
+	 * @param documentationLocation
+	 *            of the source element of this link, e.g., "i" for JIRA issue.
+	 */
 	void setDocumentationLocationOfSourceElement(String documentationLocation);
 
+	/**
+	 * Set the documentation location of the destination element of this link.
+	 * Retrieves a new decision knowledge element from database if the destination
+	 * element currently has a different documentation location.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see DocumentationLocation
+	 * @param documentationLocation
+	 *            of the destination element of this link, e.g., "i" for JIRA issue.
+	 */
 	void setDocumentationLocationOfDestinationElement(String documentationLocation);
 
 	/**

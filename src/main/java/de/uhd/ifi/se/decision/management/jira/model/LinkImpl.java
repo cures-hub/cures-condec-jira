@@ -145,26 +145,12 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
-	@Deprecated
-	public String getIdOfSourceElementWithPrefix() {
-		String idPrefix = DocumentationLocation.getIdentifier(sourceElement);
-		return idPrefix + this.sourceElement.getId();
-	}
-
-	@Override
 	@JsonProperty("idOfSourceElement")
 	public void setIdOfSourceElement(long id) {
 		if (this.sourceElement == null) {
 			this.sourceElement = new DecisionKnowledgeElementImpl();
 		}
 		this.sourceElement.setId(id);
-	}
-
-	@Override
-	@Deprecated
-	public String getIdOfDestinationElementWithPrefix() {
-		String idPrefix = DocumentationLocation.getIdentifier(destinationElement);
-		return idPrefix + this.destinationElement.getId();
 	}
 
 	@Override
