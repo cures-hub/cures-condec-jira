@@ -159,6 +159,7 @@ public class LinkImpl implements Link {
 
 	@Override
 	@JsonProperty("idOfSourceElement")
+	@Deprecated
 	public void setSourceElement(String idWithPrefix) {
 		if (Character.isDigit(idWithPrefix.charAt(0))) {
 			setSourceElement(Long.parseLong(idWithPrefix), "");
@@ -176,6 +177,7 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
+	@Deprecated
 	public String getIdOfDestinationElementWithPrefix() {
 		String idPrefix = DocumentationLocation.getIdentifier(destinationElement);
 		return idPrefix + this.destinationElement.getId();
@@ -183,6 +185,7 @@ public class LinkImpl implements Link {
 
 	@Override
 	@JsonProperty("idOfDestinationElement")
+	@Deprecated
 	public void setDestinationElement(String idWithPrefix) {
 		if (Character.isDigit(idWithPrefix.charAt(0))) {
 			setDestinationElement(Long.parseLong(idWithPrefix), "");
@@ -219,6 +222,7 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
+	@Deprecated
 	public DecisionKnowledgeElement getOppositeElement(String elementIdWithPrefix) {
 		long elementId = GenericLinkManager.getId(elementIdWithPrefix);
 		return getOppositeElement(elementId);
