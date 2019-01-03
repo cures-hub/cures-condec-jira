@@ -22,7 +22,8 @@ public class GenericLinkManager {
 		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class);
 		for (LinkInDatabase databaseEntry : linksInDatabase) {
 			try {
-				Link link = new LinkImpl(databaseEntry.getIdOfSourceElement(), databaseEntry.getIdOfDestinationElement());
+				Link link = new LinkImpl(databaseEntry.getIdOfSourceElement(),
+						databaseEntry.getIdOfDestinationElement());
 				if (!link.isValid()) {
 					deleteLinkElementFromDatabase(databaseEntry);
 				}
@@ -81,11 +82,6 @@ public class GenericLinkManager {
 
 	public static long getId(String idWithPrefix) {
 		return (long) Integer.parseInt(idWithPrefix.substring(1));
-	}
-
-	public static DecisionKnowledgeElement getIssueFromAOTable(long dkeId) {
-		ActiveObjectPersistenceManager aos = new ActiveObjectPersistenceManager("");
-		return aos.getDecisionKnowledgeElement(dkeId);
 	}
 
 	public static List<Link> getLinksForElement(DecisionKnowledgeElement element) {

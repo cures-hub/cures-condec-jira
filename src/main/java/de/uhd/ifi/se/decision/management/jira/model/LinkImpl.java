@@ -5,12 +5,11 @@ import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLink;
 
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 
 /**
@@ -69,14 +68,13 @@ public class LinkImpl implements Link {
 
 	public LinkImpl(LinkInDatabase linkInDatabase) {
 		this();
-		if (linkInDatabase.getIdOfSourceElement() != null) {
-			this.setSourceElement(linkInDatabase.getIdOfSourceElement());
+		if (linkInDatabase.getSourceId() > 0) {
+			this.setSourceElement(linkInDatabase.getSourceId(), linkInDatabase.getSourceDocumentationLocation());
 		}
-		if (linkInDatabase.getIdOfDestinationElement() != null) {
-			this.setDestinationElement(linkInDatabase.getIdOfDestinationElement());
+		if (linkInDatabase.getDestinationId() > 0) {
+			this.setDestinationElement(linkInDatabase.getDestinationId(),
+					linkInDatabase.getDestDocumentationLocation());
 		}
-//		this.setSourceElement(linkInDatabase.getSourceId(), linkInDatabase.getSourceDocumentationLocation());
-//		this.setDestinationElement(linkInDatabase.getDestinationId(), linkInDatabase.getDestDocumentationLocation());
 		this.id = linkInDatabase.getId();
 		this.type = linkInDatabase.getType();
 	}
@@ -107,7 +105,7 @@ public class LinkImpl implements Link {
 	@Override
 	public void setSourceElement(long id, DocumentationLocation documentationLocation) {
 		if (this.sourceElement == null) {
-			this.sourceElement = new DecisionKnowledgeElementImpl();
+			this.sourceElement = AbstractPersistenceManager.getDecisionKnowledgeElement(id, documentationLocation);
 		}
 		this.sourceElement.setId(id);
 		this.sourceElement.setDocumentationLocation(documentationLocation);
@@ -131,7 +129,7 @@ public class LinkImpl implements Link {
 	@Override
 	public void setDestinationElement(long id, DocumentationLocation documentationLocation) {
 		if (this.destinationElement == null) {
-			this.destinationElement = new DecisionKnowledgeElementImpl();
+			this.destinationElement = AbstractPersistenceManager.getDecisionKnowledgeElement(id, documentationLocation);
 		}
 		this.destinationElement.setId(id);
 		this.destinationElement.setDocumentationLocation(documentationLocation);
@@ -166,28 +164,15 @@ public class LinkImpl implements Link {
 			setSourceElement(Long.parseLong(idWithPrefix), "");
 			return;
 		}
-		if (this.sourceElement == null) {
-			this.sourceElement = instantiateElement(idWithPrefix);
-		}
 		long id = GenericLinkManager.getId(idWithPrefix);
+		String documentationLocationIdentifier = idWithPrefix.substring(0, 1);
+		DocumentationLocation documentationLocation = DocumentationLocation
+				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
+		if (this.sourceElement == null) {
+			this.sourceElement = AbstractPersistenceManager.getDecisionKnowledgeElement(id, documentationLocation);
+		}
 		this.sourceElement.setId(id);
-		this.sourceElement.setDocumentationLocation(idWithPrefix.substring(0, 1));
-	}
-
-	private DecisionKnowledgeElement instantiateElement(String elementIdWithPrefix) {
-		if (elementIdWithPrefix.startsWith("s")) {
-			return new JiraIssueCommentPersistenceManager("")
-					.getDecisionKnowledgeElement(GenericLinkManager.getId(elementIdWithPrefix));
-		}
-		if (elementIdWithPrefix.startsWith("i")) {
-			Issue issue = ComponentAccessor.getIssueManager()
-					.getIssueObject(GenericLinkManager.getId(elementIdWithPrefix));
-			return new DecisionKnowledgeElementImpl(issue);
-		}
-		if (elementIdWithPrefix.startsWith("a")) {
-			return GenericLinkManager.getIssueFromAOTable(GenericLinkManager.getId(elementIdWithPrefix));
-		}
-		return new DecisionKnowledgeElementImpl();
+		this.sourceElement.setDocumentationLocation(documentationLocation);
 	}
 
 	@Override
@@ -203,12 +188,15 @@ public class LinkImpl implements Link {
 			setDestinationElement(Long.parseLong(idWithPrefix), "");
 			return;
 		}
-		if (this.destinationElement == null) {
-			this.destinationElement = instantiateElement(idWithPrefix);
-		}
 		long id = GenericLinkManager.getId(idWithPrefix);
+		String documentationLocationIdentifier = idWithPrefix.substring(0, 1);
+		DocumentationLocation documentationLocation = DocumentationLocation
+				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
+		if (this.destinationElement == null) {
+			this.destinationElement = AbstractPersistenceManager.getDecisionKnowledgeElement(id, documentationLocation);
+		}
 		this.destinationElement.setId(id);
-		this.destinationElement.setDocumentationLocation(idWithPrefix.substring(0, 1));
+		this.destinationElement.setDocumentationLocation(documentationLocation);
 	}
 
 	@Override
