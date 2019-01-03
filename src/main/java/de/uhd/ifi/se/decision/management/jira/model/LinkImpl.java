@@ -295,4 +295,9 @@ public class LinkImpl implements Link {
 		return this.sourceElement.getId() == link.getSourceElement().getId()
 				&& this.destinationElement.getId() == link.getDestinationElement().getId();
 	}
+
+	public boolean equals(LinkInDatabase linkInDatabase) {
+			return this.sourceElement.getId() == linkInDatabase.getSourceId()
+					&& this.destinationElement.getId() == linkInDatabase.getDestinationId();
+	}
 }

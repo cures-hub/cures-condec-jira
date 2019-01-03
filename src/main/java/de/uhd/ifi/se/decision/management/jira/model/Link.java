@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
+
 /**
  * Interface for links between knowledge elements. The links are directed, i.e.,
  * they are arrows starting from a source element and ending in a destination
@@ -239,15 +241,31 @@ public interface Link {
 	 */
 	public boolean containsUnknownDocumentationLocation();
 
+	@Deprecated
 	String getIdOfSourceElementWithPrefix();
 
+	@Deprecated
 	void setSourceElement(String idWithPrefix);
 
+	@Deprecated
 	String getIdOfDestinationElementWithPrefix();
 
+	@Deprecated
 	void setDestinationElement(String idWithPrefix);
 
 	void setDocumentationLocationOfSourceElement(String documentationLocation);
 
 	void setDocumentationLocationOfDestinationElement(String documentationLocation);
+
+	/**
+	 * Determine whether a link object has the same source and destination id as a
+	 * database object.
+	 * 
+	 * @see LinkInDatabase
+	 * 
+	 * @param linkInDatabase
+	 *            link stored in database
+	 * @return true if objects have the same source and destination id.
+	 */
+	boolean equals(LinkInDatabase linkInDatabase);
 }

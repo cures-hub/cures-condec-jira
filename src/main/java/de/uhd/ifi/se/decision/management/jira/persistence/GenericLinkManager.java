@@ -147,17 +147,14 @@ public class GenericLinkManager {
 	}
 
 	private static long isLinkAlreadyInDatabase(Link link) {
+		long linkId = -1;
+		Link flippedLink = link.flip();
 		for (LinkInDatabase linkInDatabase : ACTIVE_OBJECTS.find(LinkInDatabase.class)) {
-			// also checks the inverse link
-			if (linkInDatabase.getIdOfSourceElement().equals(link.getIdOfSourceElementWithPrefix())
-					&& linkInDatabase.getIdOfDestinationElement().equals(link.getIdOfDestinationElementWithPrefix())
-					|| linkInDatabase.getIdOfDestinationElement().equals(link.getIdOfSourceElementWithPrefix())
-							&& linkInDatabase.getIdOfSourceElement()
-									.equals(link.getIdOfDestinationElementWithPrefix())) {
-				return linkInDatabase.getId();
+			if (link.equals(linkInDatabase) || flippedLink.equals(linkInDatabase)) {
+				linkId = linkInDatabase.getId();
 			}
 		}
-		return -1;
+		return linkId;
 	}
 
 	/**
