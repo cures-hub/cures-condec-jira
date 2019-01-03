@@ -33,6 +33,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -399,7 +400,7 @@ public class TestActiveObjectsManager extends TestSetUpWithIssues {
 		Comment comment = getComment("some sentence in front.  {pro} testobject {pro} some sentence in the back.");
 		long id = TestActiveObjectsManager.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
 		assertEquals(1, GenericLinkManager.getLinksForElement("s" + id).size());
-		GenericLinkManager.deleteLinksForElement("s" + id);
+		GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.JIRAISSUECOMMENT);
 		assertEquals(0, GenericLinkManager.getLinksForElement("s" + id).size());
 		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForProject("TEST");
 		assertEquals(1, GenericLinkManager.getLinksForElement("s" + id).size());

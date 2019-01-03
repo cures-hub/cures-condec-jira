@@ -53,7 +53,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		boolean isDeleted = false;
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("ID = ?", id))) {
-			GenericLinkManager.deleteLinksForElement("s" + id);
+			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.JIRAISSUECOMMENT);
 			isDeleted = DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
 		}
 		return isDeleted;
@@ -64,7 +64,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 				DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("ISSUE_ID = ? AND COMMENT_ID = ?", comment.getIssue().getId(), comment.getId()));
 		for (DecisionKnowledgeInCommentEntity databaseEntry : commentSentences) {
-			GenericLinkManager.deleteLinksForElement("s" + databaseEntry.getId());
+			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUECOMMENT);
 			DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
 		}
 	}
@@ -214,7 +214,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 				text, false);
 		Comment com = new CommentImpl(comment, true);
 		for (Sentence sentence : com.getSentences()) {
-			GenericLinkManager.deleteLinksForElement("s" + sentence.getId());
+			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUECOMMENT);
 		}
 		return com.getSentences().get(0);
 	}
@@ -428,7 +428,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			}
 			if (deleteFlag) {
 				DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
-				GenericLinkManager.deleteLinksForElement("s" + databaseEntry.getId());
+				GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUECOMMENT);
 			}
 		}
 	}

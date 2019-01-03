@@ -9,6 +9,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
@@ -22,8 +23,7 @@ public class GenericLinkManager {
 		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class);
 		for (LinkInDatabase databaseEntry : linksInDatabase) {
 			try {
-				Link link = new LinkImpl(databaseEntry.getIdOfSourceElement(),
-						databaseEntry.getIdOfDestinationElement());
+				Link link = new LinkImpl(databaseEntry);
 				if (!link.isValid()) {
 					deleteLinkElementFromDatabase(databaseEntry);
 				}
@@ -52,6 +52,18 @@ public class GenericLinkManager {
 		}
 	}
 
+	public static void deleteLinksForElement(long elementId, DocumentationLocation documentationLocation) {
+		String identifier = documentationLocation.getIdentifier();
+		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class);
+		for (LinkInDatabase link : linksInDatabase) {
+			if (link.getDestinationId() == elementId && link.getDestDocumentationLocation().equals(identifier)
+					|| link.getSourceId() == elementId && link.getSourceDocumentationLocation().equals(identifier)) {
+				LinkInDatabase.deleteLink(link);
+			}
+		}
+	}
+
+	@Deprecated
 	public static void deleteLinksForElement(String elementIdWithPrefix) {
 		LinkInDatabase[] linksInDatabase = ACTIVE_OBJECTS.find(LinkInDatabase.class);
 		for (LinkInDatabase linkInDatabase : linksInDatabase) {
@@ -65,6 +77,7 @@ public class GenericLinkManager {
 		}
 	}
 
+	@Deprecated
 	private static boolean deleteLink(String sourceIdWithPrefix, String targetIdWithPrefix) {
 		for (LinkInDatabase linkInDatabase : ACTIVE_OBJECTS.find(LinkInDatabase.class)) {
 			if (linkInDatabase.getIdOfDestinationElement().equals(targetIdWithPrefix)

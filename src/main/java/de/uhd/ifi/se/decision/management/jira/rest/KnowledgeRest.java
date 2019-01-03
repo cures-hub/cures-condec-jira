@@ -297,7 +297,7 @@ public class KnowledgeRest {
 		sentence.setSummary(null);
 		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(sentence, null);
 		if (isUpdated) {
-			GenericLinkManager.deleteLinksForElement("s" + sentence.getId());
+			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUECOMMENT);
 			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(sentence.getIssueId());
 			return Response.status(Status.OK).build();
 		}

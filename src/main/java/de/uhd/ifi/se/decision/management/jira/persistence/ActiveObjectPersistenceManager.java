@@ -67,7 +67,7 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 		boolean isDeleted = false;
 		for (DecisionKnowledgeElementInDatabase databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeElementInDatabase.class, Query.select().where("ID = ?", id))) {
-			GenericLinkManager.deleteLinksForElement(PREFIX + id);
+			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.ACTIVEOBJECT);
 			isDeleted = DecisionKnowledgeElementInDatabase.deleteElement(databaseEntry);
 		}
 		return isDeleted;
@@ -151,12 +151,12 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 	@Override
 	public List<Link> getInwardLinks(DecisionKnowledgeElement element) {
 		List<Link> inwardLinks = new ArrayList<Link>();
-		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class,
-				Query.select().where("ID_OF_DESTINATION_ELEMENT = ?", PREFIX + element.getId()));
+		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class, Query.select()
+				.where("DESTINATION_ID = ? AND DEST_DOCUMENTATION_LOCATION = ?", element.getId(), PREFIX));
 		for (LinkInDatabase link : links) {
 			Link inwardLink = new LinkImpl(link);
 			inwardLink.setDestinationElement(element);
-			long elementId = (long) Integer.parseInt(link.getIdOfSourceElement().substring(1));
+			long elementId = link.getSourceId();
 			inwardLink.setSourceElement(this.getDecisionKnowledgeElement(elementId));
 			inwardLinks.add(inwardLink);
 		}
@@ -167,11 +167,11 @@ public class ActiveObjectPersistenceManager extends AbstractPersistenceManager {
 	public List<Link> getOutwardLinks(DecisionKnowledgeElement element) {
 		List<Link> outwardLinks = new ArrayList<Link>();
 		LinkInDatabase[] links = ACTIVE_OBJECTS.find(LinkInDatabase.class,
-				Query.select().where("ID_OF_SOURCE_ELEMENT = ?", PREFIX + element.getId()));
+				Query.select().where("SOURCE_ID = ? AND SOURCE_DOCUMENTATION_LOCATION = ?", element.getId(), PREFIX));
 		for (LinkInDatabase link : links) {
 			Link outwardLink = new LinkImpl(link);
 			outwardLink.setSourceElement(element);
-			long elementId = (long) Integer.parseInt(link.getIdOfDestinationElement().substring(1));
+			long elementId = link.getDestinationId();
 			outwardLink.setDestinationElement(this.getDecisionKnowledgeElement(elementId));
 			outwardLinks.add(outwardLink);
 		}
