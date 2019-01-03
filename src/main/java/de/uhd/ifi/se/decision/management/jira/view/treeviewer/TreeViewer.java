@@ -110,7 +110,7 @@ public class TreeViewer {
 		if (showKnowledgeTypes[4]) {
 			String identifier = DocumentationLocation.getIdentifier(DocumentationLocation.JIRAISSUE);
 			for (Link link : GenericLinkManager.getLinksForElement(identifier + issue.getId())) {
-				DecisionKnowledgeElement opposite = link.getOppositeElement(identifier + issue.getId());
+				DecisionKnowledgeElement opposite = link.getOppositeElement(issue.getId());
 				if (opposite instanceof Sentence && isSentenceShown(opposite)) {
 					issueNode.getChildren().add(new Data(opposite));
 				}

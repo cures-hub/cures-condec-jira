@@ -222,13 +222,6 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
-	@Deprecated
-	public DecisionKnowledgeElement getOppositeElement(String elementIdWithPrefix) {
-		long elementId = GenericLinkManager.getId(elementIdWithPrefix);
-		return getOppositeElement(elementId);
-	}
-
-	@Override
 	public List<DecisionKnowledgeElement> getBothElements() throws NullPointerException {
 		List<DecisionKnowledgeElement> bothElements = new ArrayList<DecisionKnowledgeElement>();
 		bothElements.add(destinationElement);

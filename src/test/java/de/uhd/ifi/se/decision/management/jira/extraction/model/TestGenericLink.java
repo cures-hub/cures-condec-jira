@@ -106,8 +106,8 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 		GenericLinkManager.insertLink(link, null);
 
-		assertNotNull(link.getOppositeElement("s" + s.getId()));
-		assertNotNull(link.getOppositeElement("i" + issue.getId()));
+		assertNotNull(link.getOppositeElement(s.getId()));
+		assertNotNull(link.getOppositeElement(issue.getId()));
 	}
 
 	@Test
@@ -122,8 +122,8 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 		GenericLinkManager.insertLink(link, null);
 
-		assertNotNull(link.getOppositeElement("s" + s.getId()));
-		assertNotNull(link.getOppositeElement("i" + issue.getId()));
+		assertNotNull(link.getOppositeElement(s.getId()));
+		assertNotNull(link.getOppositeElement(issue.getId()));
 	}
 
 	@Test
@@ -141,8 +141,8 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 		GenericLinkManager.insertLink(link, null);
 
-		assertNotNull(link.getOppositeElement("s" + s.getId()));
-		assertNotNull(link.getOppositeElement("s" + s1.getId()));
+		assertNotNull(link.getOppositeElement(s.getId()));
+		assertNotNull(link.getOppositeElement(s1.getId()));
 	}
 
 	@Test
@@ -155,8 +155,8 @@ public class TestGenericLink extends TestSetUpWithIssues {
 		link.setDestinationElement("i" + issue.getId());
 		GenericLinkManager.insertLink(link, null);
 
-		assertNotNull(link.getOppositeElement("i" + issue.getId()));
-		assertNotNull(link.getOppositeElement("i" + issue.getId()));
+		assertNotNull(link.getOppositeElement(issue.getId()));
+		assertNotNull(link.getOppositeElement(issue.getId()));
 	}
 
 	@Test

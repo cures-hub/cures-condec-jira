@@ -167,19 +167,6 @@ public interface Link {
 	Link flip();
 
 	/**
-	 * Get the opposite element of this link.
-	 *
-	 * @see DecisionKnowledgeElement
-	 * @see DocumentationLocation
-	 * @param elementIdWithPrefix
-	 *            of a decision knowledge element on one side of this link including
-	 *            the prefix to express documentation location.
-	 * 
-	 * @return opposite element of this link.
-	 */
-	DecisionKnowledgeElement getOppositeElement(String elementIdWithPrefix);
-
-	/**
 	 * Get a link object with the correct direction: In case the child element is a
 	 * pro- or con-argument, the link points from the child towards the parent
 	 * element. In case the child element is NOT a pro- or con-argument, the link
