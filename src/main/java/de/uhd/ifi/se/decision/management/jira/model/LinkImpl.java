@@ -55,12 +55,14 @@ public class LinkImpl implements Link {
 		}
 	}
 
+	@Deprecated
 	public LinkImpl(String idOfSourceElementWithPrefix, String idOfDestinationElementWithPrefix) {
 		this.type = "";
 		this.setDestinationElement(idOfDestinationElementWithPrefix);
 		this.setSourceElement(idOfSourceElementWithPrefix);
 	}
 
+	@Deprecated
 	public LinkImpl(String idOfSourceElementWithPrefix, String idOfDestinationElementWithPrefix, String type) {
 		this(idOfSourceElementWithPrefix, idOfDestinationElementWithPrefix);
 		setType(type);

@@ -156,27 +156,4 @@ public class GenericLinkManager {
 		}
 		return linkId;
 	}
-
-	/**
-	 * Migration method to separate documentation location and id.
-	 */
-	public static void migrateOldLinkIdColumn() {
-		LinkInDatabase[] linksInDatabase = GenericLinkManager.ACTIVE_OBJECTS.find(LinkInDatabase.class);
-		for (LinkInDatabase link : linksInDatabase) {
-			if (link.getIdOfDestinationElement() != null && link.getDestDocumentationLocation() == null) {
-				String idOfDestinationElementWithPrefix = link.getIdOfDestinationElement();
-				long id = GenericLinkManager.getId(idOfDestinationElementWithPrefix);
-				link.setDestinationId(id);
-				link.setDestDocumentationLocation(idOfDestinationElementWithPrefix.substring(0, 1));
-				link.save();
-			}
-			if (link.getIdOfSourceElement() != null && link.getSourceDocumentationLocation() == null) {
-				String idOfSourceElementWithPrefix = link.getIdOfSourceElement();
-				long id = GenericLinkManager.getId(idOfSourceElementWithPrefix);
-				link.setSourceId(id);
-				link.setSourceDocumentationLocation(idOfSourceElementWithPrefix.substring(0, 1));
-				link.save();
-			}
-		}
-	}
 }
