@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.tables;
 
+import java.sql.SQLException;
+
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import net.java.ao.RawEntity;
 import net.java.ao.schema.AutoIncrement;
@@ -26,11 +28,28 @@ public interface LinkInDatabase extends RawEntity<Integer> {
 
 	void setType(String type);
 
-	String getIdOfSourceElement();
+	long getSourceId();
 
-	void setIdOfSourceElement(String id);
+	void setSourceId(long id);
 
-	String getIdOfDestinationElement();
+	long getDestinationId();
 
-	void setIdOfDestinationElement(String id);
+	void setDestinationId(long id);
+
+	String getSourceDocumentationLocation();
+
+	void setSourceDocumentationLocation(String documentationLocation);
+
+	String getDestDocumentationLocation();
+
+	void setDestDocumentationLocation(String documentationLocation);
+	
+	static boolean deleteLink(LinkInDatabase linkToDelete) {
+		try {
+			linkToDelete.getEntityManager().delete(linkToDelete);
+			return true;
+		} catch (SQLException e) {
+			return false;
+		}
+	}
 }

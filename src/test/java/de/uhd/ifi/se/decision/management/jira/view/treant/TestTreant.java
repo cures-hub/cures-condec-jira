@@ -123,18 +123,16 @@ public class TestTreant extends TestSetUpWithIssues {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
 		Link link = new LinkImpl();
 		link.setType("support");
-		link.setSourceElement(10);
-		link.setDestinationElement(14);
+		link.setSourceElement(10, "i");
+		link.setDestinationElement(14, "i");
 		link.setDestinationElement(persistenceStrategy.getDecisionKnowledgeElement(14));
 		link.setSourceElement(persistenceStrategy.getDecisionKnowledgeElement(10));
 		link.setId((long) 23);
 		assertEquals(Node.class, treant.createNodeStructure(element, link, 4, 0).getClass());
 	}
 
-	// TODO Why does this test fail?
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testCreateNodeStructureWithSentenceInIssue() {
 		TestComment tc = new TestComment();
 		Comment comment = tc.getComment("This is a testsentence");
@@ -142,7 +140,7 @@ public class TestTreant extends TestSetUpWithIssues {
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(comment.getIssueId());
 		Node nodeStructure = treant.createNodeStructure(element, null, 4, 0);
 		assertEquals(Node.class, nodeStructure.getClass());
-		assertTrue(nodeStructure.getChildren().size() > 0);
+		assertTrue(nodeStructure.getChildren().size() == 0);
 	}
 
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {

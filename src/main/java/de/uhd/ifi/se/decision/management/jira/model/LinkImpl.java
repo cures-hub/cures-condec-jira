@@ -5,12 +5,10 @@ import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLink;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 
 /**
@@ -32,14 +30,20 @@ public class LinkImpl implements Link {
 	}
 
 	public LinkImpl(DecisionKnowledgeElement sourceElement, DecisionKnowledgeElement destinationElement,
-			LinkType linkType) {
+			String linkType) {
 		this(sourceElement, destinationElement);
-		this.type = linkType.toString();
+		this.type = linkType;
 	}
 
-	public LinkImpl(long idOfSourceElement, long idOfDestinationElement) {
-		this.setSourceElement(idOfSourceElement);
-		this.setDestinationElement(idOfDestinationElement);
+	public LinkImpl(DecisionKnowledgeElement sourceElement, DecisionKnowledgeElement destinationElement,
+			LinkType linkType) {
+		this(sourceElement, destinationElement, linkType.toString());
+	}
+
+	public LinkImpl(long idOfSourceElement, long idOfDestinationElement,
+			DocumentationLocation sourceDocumentationLocation, DocumentationLocation destDocumentationLocation) {
+		this.setSourceElement(idOfSourceElement, sourceDocumentationLocation);
+		this.setDestinationElement(idOfDestinationElement, destDocumentationLocation);
 	}
 
 	public LinkImpl(IssueLink issueLink) {
@@ -55,24 +59,14 @@ public class LinkImpl implements Link {
 		}
 	}
 
-	public LinkImpl(String idOfSourceElementWithPrefix, String idOfDestinationElementWithPrefix) {
-		this.type = "";
-		this.setDestinationElement(idOfDestinationElementWithPrefix);
-		this.setSourceElement(idOfSourceElementWithPrefix);
-	}
-
-	public LinkImpl(String idOfSourceElementWithPrefix, String idOfDestinationElementWithPrefix, String type) {
-		this(idOfSourceElementWithPrefix, idOfDestinationElementWithPrefix);
-		setType(type);
-	}
-
 	public LinkImpl(LinkInDatabase linkInDatabase) {
 		this();
-		if (linkInDatabase.getIdOfSourceElement() != null) {
-			this.setSourceElement(linkInDatabase.getIdOfSourceElement());
+		if (linkInDatabase.getSourceId() > 0) {
+			this.setSourceElement(linkInDatabase.getSourceId(), linkInDatabase.getSourceDocumentationLocation());
 		}
-		if (linkInDatabase.getIdOfDestinationElement() != null) {
-			this.setDestinationElement(linkInDatabase.getIdOfDestinationElement());
+		if (linkInDatabase.getDestinationId() > 0) {
+			this.setDestinationElement(linkInDatabase.getDestinationId(),
+					linkInDatabase.getDestDocumentationLocation());
 		}
 		this.id = linkInDatabase.getId();
 		this.type = linkInDatabase.getType();
@@ -102,11 +96,17 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
-	public void setSourceElement(long id) {
+	public void setSourceElement(long id, DocumentationLocation documentationLocation) {
 		if (this.sourceElement == null) {
-			this.sourceElement = new DecisionKnowledgeElementImpl();
+			this.sourceElement = AbstractPersistenceManager.getDecisionKnowledgeElement(id, documentationLocation);
 		}
 		this.sourceElement.setId(id);
+		this.sourceElement.setDocumentationLocation(documentationLocation);
+	}
+
+	@Override
+	public void setSourceElement(long id, String documentationLocation) {
+		this.setSourceElement(id, DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation));
 	}
 
 	@Override
@@ -120,11 +120,18 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
-	public void setDestinationElement(long id) {
+	public void setDestinationElement(long id, DocumentationLocation documentationLocation) {
 		if (this.destinationElement == null) {
-			this.destinationElement = new DecisionKnowledgeElementImpl();
+			this.destinationElement = AbstractPersistenceManager.getDecisionKnowledgeElement(id, documentationLocation);
 		}
 		this.destinationElement.setId(id);
+		this.destinationElement.setDocumentationLocation(documentationLocation);
+	}
+
+	@Override
+	public void setDestinationElement(long id, String documentationLocation) {
+		this.setDestinationElement(id,
+				DocumentationLocation.getDocumentationLocationFromIdentifier(documentationLocation));
 	}
 
 	@Override
@@ -138,61 +145,21 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
-	public String getIdOfSourceElementWithPrefix() {
-		String idPrefix = DocumentationLocation.getIdentifier(sourceElement);
-		return idPrefix + this.sourceElement.getId();
-	}
-
-	@Override
 	@JsonProperty("idOfSourceElement")
-	public void setSourceElement(String idWithPrefix) {
-		if (Character.isDigit(idWithPrefix.charAt(0))) {
-			setSourceElement(Long.parseLong(idWithPrefix));
-			return;
-		}
+	public void setIdOfSourceElement(long id) {
 		if (this.sourceElement == null) {
-			this.sourceElement = instantiateElement(idWithPrefix);
+			this.sourceElement = new DecisionKnowledgeElementImpl();
 		}
-		long id = GenericLinkManager.getId(idWithPrefix);
 		this.sourceElement.setId(id);
-		this.sourceElement.setDocumentationLocation(idWithPrefix.substring(0, 1));
-	}
-
-	private DecisionKnowledgeElement instantiateElement(String elementIdWithPrefix) {
-		if (elementIdWithPrefix.startsWith("s")) {
-			return new JiraIssueCommentPersistenceManager("")
-					.getDecisionKnowledgeElement(GenericLinkManager.getId(elementIdWithPrefix));
-		}
-		if (elementIdWithPrefix.startsWith("i")) {
-			Issue issue = ComponentAccessor.getIssueManager()
-					.getIssueObject(GenericLinkManager.getId(elementIdWithPrefix));
-			return new DecisionKnowledgeElementImpl(issue);
-		}
-		if (elementIdWithPrefix.startsWith("a")) {
-			return GenericLinkManager.getIssueFromAOTable(GenericLinkManager.getId(elementIdWithPrefix));
-		}
-		return new DecisionKnowledgeElementImpl();
-	}
-
-	@Override
-	public String getIdOfDestinationElementWithPrefix() {
-		String idPrefix = DocumentationLocation.getIdentifier(destinationElement);
-		return idPrefix + this.destinationElement.getId();
 	}
 
 	@Override
 	@JsonProperty("idOfDestinationElement")
-	public void setDestinationElement(String idWithPrefix) {
-		if (Character.isDigit(idWithPrefix.charAt(0))) {
-			setDestinationElement(Long.parseLong(idWithPrefix));
-			return;
-		}
+	public void setIdOfDestinationElement(long id) {
 		if (this.destinationElement == null) {
-			this.destinationElement = instantiateElement(idWithPrefix);
+			this.destinationElement = new DecisionKnowledgeElementImpl();
 		}
-		long id = GenericLinkManager.getId(idWithPrefix);
 		this.destinationElement.setId(id);
-		this.destinationElement.setDocumentationLocation(idWithPrefix.substring(0, 1));
 	}
 
 	@Override
@@ -212,12 +179,6 @@ public class LinkImpl implements Link {
 	@Override
 	public DecisionKnowledgeElement getOppositeElement(DecisionKnowledgeElement element) {
 		return getOppositeElement(element.getId());
-	}
-
-	@Override
-	public DecisionKnowledgeElement getOppositeElement(String elementIdWithPrefix) {
-		long elementId = GenericLinkManager.getId(elementIdWithPrefix);
-		return getOppositeElement(elementId);
 	}
 
 	@Override
@@ -243,7 +204,7 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
-	public LinkImpl flip() {
+	public Link flip() {
 		return new LinkImpl(this.getDestinationElement(), this.getSourceElement());
 	}
 
@@ -257,13 +218,25 @@ public class LinkImpl implements Link {
 
 	@Override
 	@JsonProperty("documentationLocationOfSourceElement")
-	public void setDocumentationLocationOfSourceElement(String documentationLocation) {
+	public void setDocumentationLocationOfSourceElement(String documentationLocationIdentifier) {
+		DocumentationLocation documentationLocation = DocumentationLocation
+				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
+		if (this.sourceElement.getDocumentationLocation() != documentationLocation) {
+			this.sourceElement = AbstractPersistenceManager.getDecisionKnowledgeElement(this.sourceElement.getId(),
+					documentationLocation);
+		}
 		this.getSourceElement().setDocumentationLocation(documentationLocation);
 	}
 
 	@Override
 	@JsonProperty("documentationLocationOfDestinationElement")
-	public void setDocumentationLocationOfDestinationElement(String documentationLocation) {
+	public void setDocumentationLocationOfDestinationElement(String documentationLocationIdentifier) {
+		DocumentationLocation documentationLocation = DocumentationLocation
+				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
+		if (this.destinationElement.getDocumentationLocation() != documentationLocation) {
+			this.destinationElement = AbstractPersistenceManager
+					.getDecisionKnowledgeElement(this.destinationElement.getId(), documentationLocation);
+		}
 		this.getDestinationElement().setDocumentationLocation(documentationLocation);
 	}
 
@@ -293,5 +266,10 @@ public class LinkImpl implements Link {
 		Link link = (Link) object;
 		return this.sourceElement.getId() == link.getSourceElement().getId()
 				&& this.destinationElement.getId() == link.getDestinationElement().getId();
+	}
+
+	public boolean equals(LinkInDatabase linkInDatabase) {
+		return this.sourceElement.getId() == linkInDatabase.getSourceId()
+				&& this.destinationElement.getId() == linkInDatabase.getDestinationId();
 	}
 }

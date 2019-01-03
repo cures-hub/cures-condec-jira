@@ -31,6 +31,9 @@ public enum DocumentationLocation {
 			return DocumentationLocation.COMMIT;
 		case "p":
 			return DocumentationLocation.PULLREQUEST;
+		case "" :
+			// TODO This should be the same as the default persistence strategy
+			return DocumentationLocation.JIRAISSUE;
 		default:
 			return DocumentationLocation.UNKNOWN;
 		}

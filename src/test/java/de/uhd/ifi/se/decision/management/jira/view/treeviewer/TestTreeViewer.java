@@ -164,7 +164,6 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		assertNotNull(tree.getDataStructure(comment.getSentences().get(0)));
 	}
 
-	// TODO Why does this test fail?
 	@Test
 	@NonTransactional
 	public void testTreeViewerCalledFromTabpanel() {

@@ -241,10 +241,7 @@
 	ConDecAPI.prototype.createIssueFromSentence = function createIssueFromSentence(id, callback) {
 		var jsondata = {
 			"id" : id,
-			"summary" : "",
-			"type" : "",
-			"projectKey" : "",
-			"description" : ""
+			"projectKey" : projectKey
 		};
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createIssueFromSentence.json", jsondata,
 				function(error, id, type) {

@@ -163,7 +163,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	@Override
 	@XmlElement(name = "key")
 	public String getKey() {
-		if (this.key == null) {
+		if (this.key == null && this.project != null) {
 			return this.project.getProjectKey() + "-" + this.id;
 		}
 		return this.key;

@@ -258,7 +258,9 @@ public class KnowledgeRest {
 		}
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		Issue issue = JiraIssueCommentPersistenceManager.createJIRAIssueFromSentenceObject(decisionKnowledgeElement.getId(), user);
+		
+		JiraIssueCommentPersistenceManager persistenceManager = new JiraIssueCommentPersistenceManager(decisionKnowledgeElement.getProject().getProjectKey());
+		Issue issue = persistenceManager.createJIRAIssueFromSentenceObject(decisionKnowledgeElement.getId(), user);
 
 		if (issue != null) {
 			return Response.status(Status.OK).entity(issue).build();
@@ -295,7 +297,7 @@ public class KnowledgeRest {
 		sentence.setSummary(null);
 		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(sentence, null);
 		if (isUpdated) {
-			GenericLinkManager.deleteLinksForElementWithoutTransaction("s" + sentence.getId());
+			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUECOMMENT);
 			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(sentence.getIssueId());
 			return Response.status(Status.OK).build();
 		}

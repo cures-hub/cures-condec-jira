@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -59,7 +58,6 @@ public class TestIssueTabPanelRenderer extends TestSetUpWithIssues {
 		assertEquals(0, renderer.getActions(null, user).size(), 0.0);
 	}
 
-	@Ignore
 	@Test(expected = NullPointerException.class)
 	public void testGetActionsFilledFilledTemplateNotProvided() {
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");

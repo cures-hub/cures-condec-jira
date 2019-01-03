@@ -27,6 +27,7 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -136,7 +137,8 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		for (Issue issue : issues.getIssues()) {
 			boolean linkExisting = false;
 			if (checkEqualIssueTypeIssue(issue.getIssueType())) {
-				for (Link link : GenericLinkManager.getLinksForElement("i" + issue.getId())) {
+				for (Link link : GenericLinkManager.getLinksForElement(issue.getId(),
+						DocumentationLocation.JIRAISSUE)) {
 					if (link.isValid()) {
 						DecisionKnowledgeElement dke = link.getOppositeElement(new DecisionKnowledgeElementImpl(issue));
 						if (dke.getType().equals(knowledgeType)) {
@@ -257,11 +259,12 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				.getDecisionKnowledgeElements(KnowledgeType.ALTERNATIVE);
 
 		for (DecisionKnowledgeElement currentAlternative : alternatives) {
-			List<Link> links = GenericLinkManager.getLinksForElement("s" + currentAlternative.getId());
+			List<Link> links = GenericLinkManager.getLinksForElement(currentAlternative.getId(),
+					DocumentationLocation.JIRAISSUECOMMENT);
 			boolean hasArgument = false;
 			for (Link link : links) {
 				if (link.isValid()) {
-					DecisionKnowledgeElement dke = link.getOppositeElement("s" + currentAlternative.getId());
+					DecisionKnowledgeElement dke = link.getOppositeElement(currentAlternative.getId());
 					if (dke instanceof Sentence && dke.getType().equals(KnowledgeType.ARGUMENT)) {
 						hasArgument = true;
 					}
@@ -295,12 +298,13 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		List<DecisionKnowledgeElement> listOfIssues = persistenceManager.getDecisionKnowledgeElements(linkFrom);
 
 		for (DecisionKnowledgeElement issue : listOfIssues) {
-			List<Link> links = GenericLinkManager.getLinksForElement("s" + issue.getId());
+			List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
+					DocumentationLocation.JIRAISSUECOMMENT);
 			boolean hastOtherElementLinked = false;
 
 			for (Link link : links) {
 				if (link.isValid()) {
-					DecisionKnowledgeElement dke = link.getOppositeElement("s" + issue.getId());
+					DecisionKnowledgeElement dke = link.getOppositeElement(issue.getId());
 					if (dke instanceof Sentence && dke.getType().equals(linkTo1)) { // alt
 						hastOtherElementLinked = true;
 					}

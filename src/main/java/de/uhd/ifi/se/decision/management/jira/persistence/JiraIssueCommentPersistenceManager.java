@@ -53,7 +53,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		boolean isDeleted = false;
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("ID = ?", id))) {
-			GenericLinkManager.deleteLinksForElement("s" + id);
+			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.JIRAISSUECOMMENT);
 			isDeleted = DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
 		}
 		return isDeleted;
@@ -64,7 +64,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 				DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("ISSUE_ID = ? AND COMMENT_ID = ?", comment.getIssue().getId(), comment.getId()));
 		for (DecisionKnowledgeInCommentEntity databaseEntry : commentSentences) {
-			GenericLinkManager.deleteLinksForElement("s" + databaseEntry.getId());
+			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUECOMMENT);
 			DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
 		}
 	}
@@ -214,7 +214,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 				text, false);
 		Comment com = new CommentImpl(comment, true);
 		for (Sentence sentence : com.getSentences()) {
-			GenericLinkManager.deleteLinksForElement("s" + sentence.getId());
+			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUECOMMENT);
 		}
 		return com.getSentences().get(0);
 	}
@@ -408,7 +408,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			childElement.setDocumentationLocation("s");
 
 			Link link = Link.instantiateDirectedLink(parentElement, childElement, linkType);
-			GenericLinkManager.insertLinkWithoutTransaction(link);
+			GenericLinkManager.insertLink(link, null);
 		}
 	}
 
@@ -428,7 +428,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			}
 			if (deleteFlag) {
 				DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
-				GenericLinkManager.deleteLinksForElementWithoutTransaction("s" + databaseEntry.getId());
+				GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUECOMMENT);
 			}
 		}
 	}
@@ -443,24 +443,24 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey));
 		for (DecisionKnowledgeInCommentEntity databaseEntry : sentencesInProject) {
 			if (databaseEntry.getType().length() == 3) {// Equals Argument
-				List<Link> links = GenericLinkManager.getLinksForElement("s" + databaseEntry.getId());
+				List<Link> links = GenericLinkManager.getLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUECOMMENT);
 				for (Link link : links) {
 					if (link.getType().equalsIgnoreCase("contain")) {
 						GenericLinkManager.deleteLink(link);
 						link.setType(LinkType.getLinkTypeForKnowledgeType(databaseEntry.getType()).toString());
-						GenericLinkManager.insertLinkWithoutTransaction(link);
+						GenericLinkManager.insertLink(link, null);
 					}
 				}
 			}
 		}
 	}
 
-	public static Issue createJIRAIssueFromSentenceObject(long aoId, ApplicationUser user) {
+	public Issue createJIRAIssueFromSentenceObject(long aoId, ApplicationUser user) {		
 
-		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(aoId);
-
-		JiraIssuePersistenceManager s = new JiraIssuePersistenceManager(element.getProject().getProjectKey());
-		DecisionKnowledgeElement decElement = s.insertDecisionKnowledgeElement(element, user);
+		Sentence element = (Sentence) this.getDecisionKnowledgeElement(aoId);
+		
+		JiraIssuePersistenceManager persistenceManager = new JiraIssuePersistenceManager(this.projectKey);		
+		DecisionKnowledgeElement decElement = persistenceManager.insertDecisionKnowledgeElement(element, user);
 
 		MutableIssue issue = ComponentAccessor.getIssueService().getIssue(user, decElement.getId()).getIssue();
 

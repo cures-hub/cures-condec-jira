@@ -116,8 +116,7 @@ public class GraphImplFiltered extends GraphImpl {
 		if (element == null) {
 			return linkedElementsAndLinks;
 		}
-		String prefix = DocumentationLocation.getIdentifier(element);
-		List<Link> links = GenericLinkManager.getLinksForElement(prefix + element.getId());
+		List<Link> links = GenericLinkManager.getLinksForElement(element);
 
 		boolean includeElementInGraph = false;
 

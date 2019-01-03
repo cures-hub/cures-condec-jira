@@ -108,9 +108,8 @@ public class TreeViewer {
 		Data issueNode = this.getDataStructure(new DecisionKnowledgeElementImpl(issue));
 		// Match irrelevant sentences back to list
 		if (showKnowledgeTypes[4]) {
-			String identifier = DocumentationLocation.getIdentifier(DocumentationLocation.JIRAISSUE);
-			for (Link link : GenericLinkManager.getLinksForElement(identifier + issue.getId())) {
-				DecisionKnowledgeElement opposite = link.getOppositeElement(identifier + issue.getId());
+			for (Link link : GenericLinkManager.getLinksForElement(issue.getId(), DocumentationLocation.JIRAISSUE)) {
+				DecisionKnowledgeElement opposite = link.getOppositeElement(issue.getId());
 				if (opposite instanceof Sentence && isSentenceShown(opposite)) {
 					issueNode.getChildren().add(new Data(opposite));
 				}

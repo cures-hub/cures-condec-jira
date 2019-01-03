@@ -83,10 +83,8 @@ public class TestDeleteLink extends TestSetUpWithIssues {
 	@Test
 	public void testProjectKeyFilledRequestFilledLinkNotExistentInDatabaseDocumentationLocationMixed() {
 		Link link = new LinkImpl();
-		link.setSourceElement(1);
-		link.setDestinationElement(15);
-		link.setDocumentationLocationOfDestinationElement("i");
-		link.setDocumentationLocationOfSourceElement("s");
+		link.setSourceElement(1, "s");
+		link.setDestinationElement(15, "i");
 		link.setType("contain");
 		assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
 				knowledgeRest.deleteLink("TEST", request, link).getStatus());
@@ -95,10 +93,8 @@ public class TestDeleteLink extends TestSetUpWithIssues {
 	@Test
 	public void testProjectKeyFilledRequestFilledLinkFilledDocumentationLocationJiraIssueComments() {
 		Link link = new LinkImpl();
-		link.setSourceElement(14);
-		link.setDestinationElement(15);
-		link.setDocumentationLocationOfDestinationElement("s");
-		link.setDocumentationLocationOfSourceElement("s");
+		link.setSourceElement(14, "s");
+		link.setDestinationElement(15, "s");
 		link.setType("contain");
 		assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
 				knowledgeRest.deleteLink("TEST", request, link).getStatus());
@@ -139,8 +135,8 @@ public class TestDeleteLink extends TestSetUpWithIssues {
 	@Test
 	public void testProjectKeyNullRequestNullLinkFilled() {
 		Link link = new LinkImpl();
-		link.setSourceElement(14);
-		link.setDestinationElement(15);
+		link.setSourceElement(14, "s");
+		link.setDestinationElement(15, "s");
 		link.setType("contain");
 		assertEquals(Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error", DELETION_ERROR))
 				.build().getEntity(), knowledgeRest.deleteLink(null, null, link).getEntity());

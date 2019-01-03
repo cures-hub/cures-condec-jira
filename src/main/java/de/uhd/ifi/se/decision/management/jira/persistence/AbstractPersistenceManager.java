@@ -81,7 +81,7 @@ public abstract class AbstractPersistenceManager {
 		if (link.getSourceElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN) {
 			link.setDocumentationLocationOfSourceElement(defaultDocumentationLocation);
 		}
-	}
+	}	
 
 	/**
 	 * Get the persistence strategy for autarkical decision knowledge elements used
@@ -281,9 +281,34 @@ public abstract class AbstractPersistenceManager {
 	 * Get a decision knowledge element in database by its id.
 	 *
 	 * @see DecisionKnowledgeElement
+	 * @param id
+	 *            id of the decision knowledge element in database.
 	 * @return decision knowledge element.
 	 */
 	public abstract DecisionKnowledgeElement getDecisionKnowledgeElement(long id);
+
+	/**
+	 * Get a decision knowledge element in database by its id and its documentation
+	 * location.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see DocumentationLocation
+	 * @param id
+	 *            id of the decision knowledge element in database.
+	 * @param documentationLocation
+	 *            of the element.
+	 * @return decision knowledge element.
+	 */
+	public static DecisionKnowledgeElement getDecisionKnowledgeElement(long id,
+			DocumentationLocation documentationLocation) {
+		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager("",
+				documentationLocation);
+		DecisionKnowledgeElement element = persistenceManager.getDecisionKnowledgeElement(id);
+		if (element == null) {
+			return new DecisionKnowledgeElementImpl();
+		}
+		return element;
+	}
 
 	/**
 	 * Get a decision knowledge element in database by its key.
@@ -528,20 +553,22 @@ public abstract class AbstractPersistenceManager {
 
 	// TODO Move to DecisionKnowledgeElement class
 	/**
-	 * Determines whether an element is linked to at least one other decision knowledge element.
+	 * Determines whether an element is linked to at least one other decision
+	 * knowledge element.
 	 *
 	 * @see DecisionKnowledgeElement
 	 * @param id
 	 *            id of a decision knowledge element in database. The id is
 	 *            different to the key.
-	 * @param documentation location of the element
+	 * @param documentation
+	 *            location of the element
 	 * @return list of linked elements.
 	 */
 	public static boolean isElementLinked(long id, DocumentationLocation documentationLocation) {
-		List<Link> links = GenericLinkManager.getLinksForElement(documentationLocation.getIdentifier() + id);
+		List<Link> links = GenericLinkManager.getLinksForElement(id, documentationLocation);
 		return links != null && links.size() > 0;
 	}
-	
+
 	public static boolean isElementLinked(DecisionKnowledgeElement element) {
 		return isElementLinked(element.getId(), element.getDocumentationLocation());
 	}

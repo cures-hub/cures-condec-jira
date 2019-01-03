@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
+
 /**
  * Interface for links between knowledge elements. The links are directed, i.e.,
  * they are arrows starting from a source element and ending in a destination
@@ -62,13 +64,39 @@ public interface Link {
 	void setSourceElement(DecisionKnowledgeElement decisionKnowledgeElement);
 
 	/**
-	 * Set the source element of this link by its id.
+	 * Set the source element of this link by its id and documentation location.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see DocumentationLocation
+	 * @param id
+	 *            of the source element of this link.
+	 * @param documenationLocation
+	 *            of the decision knowledge element.
+	 */
+	void setSourceElement(long id, DocumentationLocation documentationLocation);
+
+	/**
+	 * Set the source element of this link by its id and documentation location.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see DocumentationLocation
+	 * @param id
+	 *            of the source element of this link.
+	 * @param documenationLocation
+	 *            of the decision knowledge element as a String, e.g. "i" for JIRA
+	 *            issue.
+	 */
+	void setSourceElement(long id, String documentationLocation);
+
+	/**
+	 * Set the id of the source element of this link. Instantiates a new decision
+	 * knowledge element if the source element is null.
 	 *
 	 * @see DecisionKnowledgeElement
 	 * @param id
-	 *            of the source element of this link.
+	 *            of the destination element of this link.
 	 */
-	void setSourceElement(long id);
+	void setIdOfSourceElement(long id);
 
 	/**
 	 * Get the destination element of this link.
@@ -88,13 +116,41 @@ public interface Link {
 	void setDestinationElement(DecisionKnowledgeElement decisionKnowledgeElement);
 
 	/**
-	 * Set the destination element of this link by its id.
+	 * Set the destination element of this link by its id and documentation
+	 * location.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see DocumentationLocation
+	 * @param id
+	 *            of the destination element of this link.
+	 * @param documenationLocation
+	 *            of the decision knowledge element.
+	 */
+	void setDestinationElement(long id, DocumentationLocation documentationLocation);
+
+	/**
+	 * Set the destination element of this link by its id and documentation
+	 * location.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see DocumentationLocation
+	 * @param id
+	 *            of the destination element of this link.
+	 * @param documenationLocation
+	 *            of the decision knowledge element as a String, e.g. "i" for JIRA
+	 *            issue.
+	 */
+	void setDestinationElement(long id, String documentationLocation);
+
+	/**
+	 * Set the id of the destination element of this link. Instantiates a new
+	 * decision knowledge element if the destination element is null.
 	 *
 	 * @see DecisionKnowledgeElement
 	 * @param id
 	 *            of the destination element of this link.
 	 */
-	void setDestinationElement(long id);
+	void setIdOfDestinationElement(long id);
 
 	/**
 	 * Get the opposite element of this link.
@@ -155,19 +211,6 @@ public interface Link {
 	 * @return new link with swapped source and destination elements.
 	 */
 	Link flip();
-
-	/**
-	 * Get the opposite element of this link.
-	 *
-	 * @see DecisionKnowledgeElement
-	 * @see DocumentationLocation
-	 * @param elementIdWithPrefix
-	 *            of a decision knowledge element on one side of this link including
-	 *            the prefix to express documentation location.
-	 * 
-	 * @return opposite element of this link.
-	 */
-	DecisionKnowledgeElement getOppositeElement(String elementIdWithPrefix);
 
 	/**
 	 * Get a link object with the correct direction: In case the child element is a
@@ -232,8 +275,8 @@ public interface Link {
 	public boolean isIssueLink();
 
 	/**
-	 * Determine if the source and/or destination element of the link have an unknown
-	 * documentation location.
+	 * Determine if the source and/or destination element of the link have an
+	 * unknown documentation location.
 	 *
 	 * @see DecisionKnowledgeElement
 	 * 
@@ -242,15 +285,39 @@ public interface Link {
 	 */
 	public boolean containsUnknownDocumentationLocation();
 
-	String getIdOfSourceElementWithPrefix();
-
-	void setSourceElement(String idWithPrefix);
-
-	String getIdOfDestinationElementWithPrefix();
-
-	void setDestinationElement(String idWithPrefix);
-
+	/**
+	 * Set the documentation location of the source element of this link. Retrieves
+	 * a new decision knowledge element from database if the source element
+	 * currently has a different documentation location.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see DocumentationLocation
+	 * @param documentationLocation
+	 *            of the source element of this link, e.g., "i" for JIRA issue.
+	 */
 	void setDocumentationLocationOfSourceElement(String documentationLocation);
 
+	/**
+	 * Set the documentation location of the destination element of this link.
+	 * Retrieves a new decision knowledge element from database if the destination
+	 * element currently has a different documentation location.
+	 *
+	 * @see DecisionKnowledgeElement
+	 * @see DocumentationLocation
+	 * @param documentationLocation
+	 *            of the destination element of this link, e.g., "i" for JIRA issue.
+	 */
 	void setDocumentationLocationOfDestinationElement(String documentationLocation);
+
+	/**
+	 * Determine whether a link object has the same source and destination id as a
+	 * database object.
+	 * 
+	 * @see LinkInDatabase
+	 * 
+	 * @param linkInDatabase
+	 *            link stored in database
+	 * @return true if objects have the same source and destination id.
+	 */
+	boolean equals(LinkInDatabase linkInDatabase);
 }
