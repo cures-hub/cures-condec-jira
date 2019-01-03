@@ -244,14 +244,13 @@ public interface Link {
 	@Deprecated
 	String getIdOfSourceElementWithPrefix();
 
-	@Deprecated
-	void setSourceElement(String idWithPrefix);
+	
+	void setIdOfSourceElement(long id);
 
 	@Deprecated
 	String getIdOfDestinationElementWithPrefix();
 
-	@Deprecated
-	void setDestinationElement(String idWithPrefix);
+	void setIdOfDestinationElement(long id);
 
 	void setDocumentationLocationOfSourceElement(String documentationLocation);
 

@@ -9,7 +9,6 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.link.IssueLink;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 
 /**
@@ -146,6 +145,7 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
+	@Deprecated
 	public String getIdOfSourceElementWithPrefix() {
 		String idPrefix = DocumentationLocation.getIdentifier(sourceElement);
 		return idPrefix + this.sourceElement.getId();
@@ -153,21 +153,11 @@ public class LinkImpl implements Link {
 
 	@Override
 	@JsonProperty("idOfSourceElement")
-	@Deprecated
-	public void setSourceElement(String idWithPrefix) {
-		if (Character.isDigit(idWithPrefix.charAt(0))) {
-			setSourceElement(Long.parseLong(idWithPrefix), "");
-			return;
-		}
-		long id = GenericLinkManager.getId(idWithPrefix);
-		String documentationLocationIdentifier = idWithPrefix.substring(0, 1);
-		DocumentationLocation documentationLocation = DocumentationLocation
-				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
+	public void setIdOfSourceElement(long id) {
 		if (this.sourceElement == null) {
-			this.sourceElement = AbstractPersistenceManager.getDecisionKnowledgeElement(id, documentationLocation);
+			this.sourceElement = new DecisionKnowledgeElementImpl();
 		}
 		this.sourceElement.setId(id);
-		this.sourceElement.setDocumentationLocation(documentationLocation);
 	}
 
 	@Override
@@ -179,21 +169,11 @@ public class LinkImpl implements Link {
 
 	@Override
 	@JsonProperty("idOfDestinationElement")
-	@Deprecated
-	public void setDestinationElement(String idWithPrefix) {
-		if (Character.isDigit(idWithPrefix.charAt(0))) {
-			setDestinationElement(Long.parseLong(idWithPrefix), "");
-			return;
-		}
-		long id = GenericLinkManager.getId(idWithPrefix);
-		String documentationLocationIdentifier = idWithPrefix.substring(0, 1);
-		DocumentationLocation documentationLocation = DocumentationLocation
-				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
+	public void setIdOfDestinationElement(long id) {
 		if (this.destinationElement == null) {
-			this.destinationElement = AbstractPersistenceManager.getDecisionKnowledgeElement(id, documentationLocation);
+			this.destinationElement = new DecisionKnowledgeElementImpl();
 		}
 		this.destinationElement.setId(id);
-		this.destinationElement.setDocumentationLocation(documentationLocation);
 	}
 
 	@Override
@@ -238,7 +218,7 @@ public class LinkImpl implements Link {
 	}
 
 	@Override
-	public LinkImpl flip() {
+	public Link flip() {
 		return new LinkImpl(this.getDestinationElement(), this.getSourceElement());
 	}
 
@@ -252,13 +232,25 @@ public class LinkImpl implements Link {
 
 	@Override
 	@JsonProperty("documentationLocationOfSourceElement")
-	public void setDocumentationLocationOfSourceElement(String documentationLocation) {
+	public void setDocumentationLocationOfSourceElement(String documentationLocationIdentifier) {
+		DocumentationLocation documentationLocation = DocumentationLocation
+				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
+		if (this.sourceElement.getDocumentationLocation() != documentationLocation) {
+			this.sourceElement = AbstractPersistenceManager.getDecisionKnowledgeElement(this.sourceElement.getId(),
+					documentationLocation);
+		}
 		this.getSourceElement().setDocumentationLocation(documentationLocation);
 	}
 
 	@Override
 	@JsonProperty("documentationLocationOfDestinationElement")
-	public void setDocumentationLocationOfDestinationElement(String documentationLocation) {
+	public void setDocumentationLocationOfDestinationElement(String documentationLocationIdentifier) {
+		DocumentationLocation documentationLocation = DocumentationLocation
+				.getDocumentationLocationFromIdentifier(documentationLocationIdentifier);
+		if (this.destinationElement.getDocumentationLocation() != documentationLocation) {
+			this.destinationElement = AbstractPersistenceManager
+					.getDecisionKnowledgeElement(this.destinationElement.getId(), documentationLocation);
+		}
 		this.getDestinationElement().setDocumentationLocation(documentationLocation);
 	}
 

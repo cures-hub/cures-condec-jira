@@ -81,7 +81,7 @@ public abstract class AbstractPersistenceManager {
 		if (link.getSourceElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN) {
 			link.setDocumentationLocationOfSourceElement(defaultDocumentationLocation);
 		}
-	}
+	}	
 
 	/**
 	 * Get the persistence strategy for autarkical decision knowledge elements used

@@ -49,10 +49,6 @@ public class GenericLinkManager {
 		}
 	}
 
-	public static long getId(String idWithPrefix) {
-		return (long) Integer.parseInt(idWithPrefix.substring(1));
-	}
-
 	public static List<Link> getLinksForElement(DecisionKnowledgeElement element) {
 		return getLinksForElement(element.getId(), element.getDocumentationLocation());
 	}
