@@ -43,18 +43,6 @@ public interface LinkInDatabase extends RawEntity<Integer> {
 	String getDestDocumentationLocation();
 
 	void setDestDocumentationLocation(String documentationLocation);
-
-	@Deprecated
-	String getIdOfSourceElement();
-
-	@Deprecated
-	void setIdOfSourceElement(String id);
-
-	@Deprecated
-	String getIdOfDestinationElement();
-
-	@Deprecated
-	void setIdOfDestinationElement(String id);
 	
 	static boolean deleteLink(LinkInDatabase linkToDelete) {
 		try {
