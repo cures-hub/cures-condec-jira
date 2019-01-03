@@ -31,9 +31,14 @@ public class LinkImpl implements Link {
 	}
 
 	public LinkImpl(DecisionKnowledgeElement sourceElement, DecisionKnowledgeElement destinationElement,
-			LinkType linkType) {
+			String linkType) {
 		this(sourceElement, destinationElement);
-		this.type = linkType.toString();
+		this.type = linkType;
+	}
+
+	public LinkImpl(DecisionKnowledgeElement sourceElement, DecisionKnowledgeElement destinationElement,
+			LinkType linkType) {
+		this(sourceElement, destinationElement, linkType.toString());
 	}
 
 	public LinkImpl(long idOfSourceElement, long idOfDestinationElement,
@@ -53,19 +58,6 @@ public class LinkImpl implements Link {
 		if (destinationIssue != null) {
 			this.destinationElement = new DecisionKnowledgeElementImpl(destinationIssue);
 		}
-	}
-
-	@Deprecated
-	public LinkImpl(String idOfSourceElementWithPrefix, String idOfDestinationElementWithPrefix) {
-		this.type = "";
-		this.setDestinationElement(idOfDestinationElementWithPrefix);
-		this.setSourceElement(idOfSourceElementWithPrefix);
-	}
-
-	@Deprecated
-	public LinkImpl(String idOfSourceElementWithPrefix, String idOfDestinationElementWithPrefix, String type) {
-		this(idOfSourceElementWithPrefix, idOfDestinationElementWithPrefix);
-		setType(type);
 	}
 
 	public LinkImpl(LinkInDatabase linkInDatabase) {
@@ -299,7 +291,7 @@ public class LinkImpl implements Link {
 	}
 
 	public boolean equals(LinkInDatabase linkInDatabase) {
-			return this.sourceElement.getId() == linkInDatabase.getSourceId()
-					&& this.destinationElement.getId() == linkInDatabase.getDestinationId();
+		return this.sourceElement.getId() == linkInDatabase.getSourceId()
+				&& this.destinationElement.getId() == linkInDatabase.getDestinationId();
 	}
 }

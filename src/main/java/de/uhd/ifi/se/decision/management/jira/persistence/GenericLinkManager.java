@@ -53,7 +53,7 @@ public class GenericLinkManager {
 		return (long) Integer.parseInt(idWithPrefix.substring(1));
 	}
 
-	public static List<Link> getLinksForElement(DecisionKnowledgeElement element) {		
+	public static List<Link> getLinksForElement(DecisionKnowledgeElement element) {
 		return getLinksForElement(element.getId(), element.getDocumentationLocation());
 	}
 
@@ -82,15 +82,12 @@ public class GenericLinkManager {
 		final LinkInDatabase linkInDatabase = ACTIVE_OBJECTS.create(LinkInDatabase.class);
 		DecisionKnowledgeElement sourceElement = link.getSourceElement();
 		String documentationLocationOfSourceElement = sourceElement.getDocumentationLocation().getIdentifier();
-		linkInDatabase.setIdOfSourceElement(documentationLocationOfSourceElement + sourceElement.getId());
 		linkInDatabase.setSourceDocumentationLocation(documentationLocationOfSourceElement);
 		linkInDatabase.setSourceId(sourceElement.getId());
 
 		DecisionKnowledgeElement destinationElement = link.getDestinationElement();
 		String documentationLocationOfDestinationElement = destinationElement.getDocumentationLocation()
 				.getIdentifier();
-		linkInDatabase
-				.setIdOfDestinationElement(documentationLocationOfDestinationElement + destinationElement.getId());
 		linkInDatabase.setDestinationId(destinationElement.getId());
 
 		linkInDatabase.setDestDocumentationLocation(documentationLocationOfDestinationElement);

@@ -26,6 +26,9 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
@@ -50,7 +53,6 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 		createLocalIssue();
 		addCommentsToIssue("this is a testSentence. This a second one. And a third one");
-
 	}
 
 	private void createLocalIssue() {
@@ -76,53 +78,61 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSecondConstructor() {
-		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
-		Sentence s = c.getSentences().get(0);
-		Link link = new LinkImpl("s" + s.getId(), "i" + issue.getId());
-		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("i" + issue.getId()));
-		assertTrue(link.getIdOfSourceElementWithPrefix().equals("s" + s.getId()));
+		Comment comment = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
+		Sentence sentence = comment.getSentences().get(0);
+		Link link = new LinkImpl(sentence, element);
+		assertTrue(link.getDestinationElement().getId() == issue.getId());
+		assertTrue(link.getSourceElement().getId() == sentence.getId());
+
+		assertTrue(link.getDestinationElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUE);
+		assertTrue(link.getSourceElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT);
 	}
 
 	@Test
 	@NonTransactional
 	public void testThirdConstructor() {
-		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
-		Sentence s = c.getSentences().get(0);
-		Link link = new LinkImpl("i" + issue.getId(), "s" + s.getId(), "contain");
-		assertTrue(link.getIdOfSourceElementWithPrefix().equals("i" + issue.getId()));
-		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("s" + s.getId()));
+		Comment comment = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
+		Sentence sentence = comment.getSentences().get(0);
+		Link link = new LinkImpl(sentence, element, "contain");
+		assertTrue(link.getDestinationElement().getId() == issue.getId());
+		assertTrue(link.getSourceElement().getId() == sentence.getId());
+
+		assertTrue(link.getDestinationElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUE);
+		assertTrue(link.getSourceElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT);
 		assertTrue(link.getType().equals("contain"));
 	}
 
 	@Test
 	@NonTransactional
 	public void testSimpleLink() {
-
 		Link link = new LinkImpl();
-		link.setDestinationElement("i" + issue.getId());
-		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
-		Sentence s = c.getSentences().get(0);
-		link.setSourceElement("s" + s.getId());
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
+		link.setDestinationElement(element);
+		Comment comment = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
+		Sentence sentence = comment.getSentences().get(0);
+		link.setSourceElement(sentence);
 
 		GenericLinkManager.insertLink(link, null);
 
-		assertNotNull(link.getOppositeElement(s.getId()));
+		assertNotNull(link.getOppositeElement(sentence));
 		assertNotNull(link.getOppositeElement(issue.getId()));
 	}
 
 	@Test
 	@NonTransactional
 	public void testSimpleLinkFlipped() {
-
 		Link link = new LinkImpl();
-		link.setSourceElement("i" + issue.getId());
-		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
-		Sentence s = c.getSentences().get(0);
-		link.setDestinationElement("s" + s.getId());
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
+		link.setSourceElement(element);
+		Comment comment = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
+		Sentence sentence = comment.getSentences().get(0);
+		link.setDestinationElement(sentence);
 
 		GenericLinkManager.insertLink(link, null);
 
-		assertNotNull(link.getOppositeElement(s.getId()));
+		assertNotNull(link.getOppositeElement(sentence.getId()));
 		assertNotNull(link.getOppositeElement(issue.getId()));
 	}
 
@@ -132,12 +142,12 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 		Link link = new LinkImpl();
 
-		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
-		Sentence s = c.getSentences().get(0);
-		Sentence s1 = c.getSentences().get(1);
+		Comment comment = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
+		Sentence s = comment.getSentences().get(0);
+		Sentence s1 = comment.getSentences().get(1);
 
-		link.setSourceElement("s" + s1.getId());
-		link.setDestinationElement("s" + s.getId());
+		link.setSourceElement(s1);
+		link.setDestinationElement(s);
 
 		GenericLinkManager.insertLink(link, null);
 
@@ -151,8 +161,9 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 		Link link = new LinkImpl();
 
-		link.setSourceElement("i" + issue.getId());
-		link.setDestinationElement("i" + issue.getId());
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
+		link.setSourceElement(element);
+		link.setDestinationElement(element);
 		GenericLinkManager.insertLink(link, null);
 
 		assertNotNull(link.getOppositeElement(issue.getId()));
@@ -162,11 +173,10 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testLinkGetBothElements() {
-
 		Link link = new LinkImpl();
-
-		link.setSourceElement("i" + issue.getId());
-		link.setDestinationElement("i" + issue.getId());
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
+		link.setSourceElement(element);
+		link.setDestinationElement(element);
 		GenericLinkManager.insertLink(link, null);
 
 		assertTrue(link.getBothElements().size() == 2);
@@ -177,11 +187,10 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testIsValidWithValidLink() {
-
 		Link link = new LinkImpl();
-
-		link.setSourceElement("i" + issue.getId());
-		link.setDestinationElement("i" + issue.getId());
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
+		link.setSourceElement(element);
+		link.setDestinationElement(element);
 		GenericLinkManager.insertLink(link, null);
 
 		assertTrue(link.isValid());
@@ -190,12 +199,15 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testIsIssueLinkWithValidLink() {
+		Comment comment = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
+		Sentence sentence = comment.getSentences().get(0);
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
+		Link link = new LinkImpl(sentence, element);
+		assertTrue(link.getDestinationElement().getId() == issue.getId());
+		assertTrue(link.getSourceElement().getId() == sentence.getId());
 
-		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
-		Sentence s = c.getSentences().get(0);
-		Link link = new LinkImpl("s" + s.getId(), "i" + issue.getId());
-		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("i" + issue.getId()));
-		assertTrue(link.getIdOfSourceElementWithPrefix().equals("s" + s.getId()));
+		assertTrue(link.getDestinationElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUE);
+		assertTrue(link.getSourceElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT);
 
 		GenericLinkManager.insertLink(link, null);
 
@@ -206,12 +218,10 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testToStringToBeatCodeCoverage() {
-
-		CommentImpl c = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
-		Sentence s = c.getSentences().get(0);
-		Link link = new LinkImpl("s" + s.getId(), "i" + issue.getId());
-		assertTrue(link.getIdOfDestinationElementWithPrefix().equals("i" + issue.getId()));
-		assertTrue(link.getIdOfSourceElementWithPrefix().equals("s" + s.getId()));
+		Comment comment = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
+		Sentence sentence = comment.getSentences().get(0);
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
+		Link link = new LinkImpl(sentence, element);
 
 		assertTrue(link.toString().equals("s1 to i2"));
 	}
