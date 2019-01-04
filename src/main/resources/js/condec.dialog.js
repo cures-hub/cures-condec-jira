@@ -260,18 +260,18 @@
 		};
 	};
 
-	ConDecDialog.prototype.showDeleteLinkDialog = function showDeleteLinkDialog(id, parentId) {
+	ConDecDialog.prototype.showDeleteLinkDialog = function showDeleteLinkDialog(id, documentationLocation) {
 		console.log("conDecDialog showDeleteLinkDialog");
 		setUpDialog();
 		setHeaderText(deleteLinkToParentText);
-
 		var content = document.getElementById("dialog-content");
 		content.textContent = "Do you really want to delete the link to the parent element?";
 
 		var submitButton = document.getElementById("dialog-submit-button");
 		submitButton.textContent = deleteLinkToParentText;
 		submitButton.onclick = function() {
-			conDecAPI.deleteLink(parentId, id, "i", "i", function() {
+			var parentElement = conDecTreant.findParentElement(id);
+			conDecAPI.deleteLink(parentElement["id"], id, parentElement["documentationLocation"], documentationLocation, function() {
 				conDecObservable.notify();
 			});
 			AJS.dialog2("#dialog").hide();
