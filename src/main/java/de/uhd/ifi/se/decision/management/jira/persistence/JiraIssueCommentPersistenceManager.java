@@ -253,6 +253,9 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 	@Override
 	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
+	    if(element == null){
+	        return  false;
+        }
 		Sentence sentence = new SentenceImpl();
 		sentence.setId(element.getId());
 		sentence.setType(element.getType());
@@ -265,6 +268,9 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	}
 
 	public boolean updateDecisionKnowledgeElement(Sentence element, ApplicationUser user) {
+        if(element == null){
+            return  false;
+        }
 		// Get corresponding element from database
 		Sentence sentence = (Sentence) this.getDecisionKnowledgeElement(element.getId());
 		if (sentence == null) {
@@ -390,6 +396,10 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	}
 
 	public static void createLinksForNonLinkedElementsForProject(String projectKey) {
+	    if(projectKey == null || projectKey.equals(""))
+        {
+            return;
+        }
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
 			checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getIssueId(),

@@ -14,11 +14,11 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(ActiveObjectPersistenceManagerTestSetUp.AoSentenceTestDatabaseUpdater.class)
-public class TestGetDecisionKnowledgeElements extends ActiveObjectPersistenceManagerTestSetUp {
+public class TestGetDecisionKnowledgeElements extends  ActiveObjectPersistenceManagerTestSetUp {
 
-	@Before
+    @Before
 	public void setUp() {
-		initialisation();
+        initialisation();
 		DecisionKnowledgeElement insertElement = new DecisionKnowledgeElementImpl();
 		insertElement.setKey("TEST-13");
 		insertElement.setProject("TEST");
@@ -33,6 +33,8 @@ public class TestGetDecisionKnowledgeElements extends ActiveObjectPersistenceMan
 	@Test
 	@NonTransactional
 	public void testFunction() {
-		assertNotNull(aoStrategy.getDecisionKnowledgeElements());
+	    assertNotNull(aoStrategy.getDecisionKnowledgeElements());
 	}
+
+
 }
