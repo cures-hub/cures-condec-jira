@@ -668,10 +668,10 @@
 		});
 	}
 
-	ConDecAPI.prototype.openJiraIssue = function openJiraIssue(nodeId) {
+	ConDecAPI.prototype.openJiraIssue = function openJiraIssue(elementId, documentationLocation) {
 		console.log("conDecAPI openJiraIssue");
 
-		this.getDecisionKnowledgeElement(nodeId, "i", function(decisionKnowledgeElement) {
+		this.getDecisionKnowledgeElement(elementId, documentationLocation, function(decisionKnowledgeElement) {
 			global.open(decisionKnowledgeElement.url, '_self');
 		});
 	};

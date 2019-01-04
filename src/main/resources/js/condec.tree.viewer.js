@@ -37,9 +37,9 @@
 			var id = node.data.id;
 
 			if (event.target.parentNode.classList.contains("sentence")) {
-				conDecContextMenu.createContextMenuForSentences(event, id, container);
+				conDecContextMenu.createContextMenu(id, "s", event, container);
 			} else {
-				conDecContextMenu.createContextMenu(event, id, container);
+				conDecContextMenu.createContextMenu(id, "", event, container);
 			}
 		});
 	}
