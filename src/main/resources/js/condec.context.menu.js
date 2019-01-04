@@ -26,7 +26,7 @@
 	function hideContextMenu() {
 		/*
 		 * @issue This event gets launched many times at the same time! Check
-		 * what fires it Probably more and more onclick event handlers ges added
+		 * what fires it. Probably more and more onclick event handlers ges added
 		 * instead of just one
 		 * 
 		 * @decision On click and on blur event handlers are only set in the
@@ -76,10 +76,12 @@
 			document.getElementById("condec-context-menu-link-item").style.display = "none";
 			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "initial";
 			document.getElementById("condec-context-menu-sentence-convert-item").style.display = "initial";
+			document.getElementById("condec-context-menu-set-root-item").style.display = "none";
 		} else {
 			document.getElementById("condec-context-menu-link-item").style.display = "initial";
 			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "none";
 			document.getElementById("condec-context-menu-sentence-convert-item").style.display = "none";
+			document.getElementById("condec-context-menu-set-root-item").style.display = "initial";
 		}
 	};
 
@@ -141,6 +143,8 @@
 			conDecDialog.showDeleteDialog(id, documentationLocation);
 		};
 
+		// only default documentation location
+		// TODO set as root for sentences
 		document.getElementById("condec-context-menu-set-root-item").onclick = function() {
 			conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
 				conDecTreant.buildTreant(decisionKnowledgeElement.key, true, "");

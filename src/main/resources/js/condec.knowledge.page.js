@@ -63,7 +63,7 @@
 		var knowledgeTypes = conDecAPI.knowledgeTypes;
 		for (var index = 0; index < knowledgeTypes.length; index++) {
 			var isSelected = "";
-			if (knowledgeTypes[index] === "Decision") {
+			if (knowledgeTypes[index] === "Issue") {
 				isSelected = "selected ";
 			}
 			jQueryConDec("select[name='select-root-element-type']")[0].insertAdjacentHTML("beforeend", "<option "

@@ -15,8 +15,8 @@
 			document.getElementById("treant-container").innerHTML = "";
 			treantTree = new Treant(treeStructure);
 			if (isInteractive !== undefined && isInteractive) {
-				addContextMenuToTreant();
 				addDragAndDropSupportForTreant();
+				addContextMenuToTreant();				
 				addTooltip();
 			}
 		});
@@ -78,11 +78,11 @@
 				}
 			}
 		} catch (error) {
-			return {
-				id : 0,
-				documentationLocation : ""
-			};
 		}
+		return {
+			id : 0,
+			documentationLocation : ""
+		};
 	}
 
 	/*
@@ -144,8 +144,7 @@
 			for (i = 0; i < comments.length; i++) {
 				comments[i].addEventListener('contextmenu', function(event) {
 					event.preventDefault();
-					conDecContextMenu.createContextMenu(this.id.split("-")[1], "s", event,
-							"issue-container");
+					conDecContextMenu.createContextMenu(this.id.split("-")[1], "s", event, "issue-container");
 				});
 			}
 		}
