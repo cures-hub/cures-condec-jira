@@ -26,7 +26,7 @@
 	function hideContextMenu() {
 		/*
 		 * @issue This event gets launched many times at the same time! Check
-		 * what fires it Probably more and more onclick event handlers ges added
+		 * what fires it. Probably more and more onclick event handlers ges added
 		 * instead of just one
 		 * 
 		 * @decision On click and on blur event handlers are only set in the
@@ -44,7 +44,11 @@
 		isContextMenuOpen = false;
 	}
 
-	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(event, id, container) {
+	/*
+	 * external references: condec.treant, condec.tree.viewer
+	 */
+	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(id, documentationLocation, event,
+			container) {
 		console.log("contextmenu opened");
 		isContextMenuOpen = true;
 
@@ -54,7 +58,7 @@
 			return;
 		}
 
-		setContextMenuItemsEventHandlers(id);
+		setContextMenuItemsEventHandlers(id, documentationLocation);
 
 		var position = getPosition(event, container);
 		var posX = position["x"];
@@ -67,134 +71,101 @@
 
 		contextMenuNode.style.zIndex = 9998; // why this number?
 		contextMenuNode.setAttribute('aria-hidden', 'false');
+
+		if (documentationLocation === "s") {
+			document.getElementById("condec-context-menu-link-item").style.display = "none";
+			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "initial";
+			document.getElementById("condec-context-menu-sentence-convert-item").style.display = "initial";
+			document.getElementById("condec-context-menu-set-root-item").style.display = "none";
+		} else {
+			document.getElementById("condec-context-menu-link-item").style.display = "initial";
+			document.getElementById("condec-context-menu-sentence-irrelevant-item").style.display = "none";
+			document.getElementById("condec-context-menu-sentence-convert-item").style.display = "none";
+			document.getElementById("condec-context-menu-set-root-item").style.display = "initial";
+		}
 	};
 
-	function setContextMenuItemsEventHandlers(id) {
+	function setContextMenuItemsEventHandlers(id, documentationLocation) {
 		document.getElementById("condec-context-menu-create-item").onclick = function() {
-			conDecDialog.showCreateDialog(id, "i");
+			conDecDialog.showCreateDialog(id, documentationLocation);
 		};
 
 		document.getElementById("condec-context-menu-edit-item").onclick = function() {
-			conDecDialog.showEditDialog(id);
+			conDecDialog.showEditDialog(id, documentationLocation);
 		};
 
 		document.getElementById("condec-context-menu-change-type-item").onclick = function() {
-			conDecDialog.showChangeTypeDialog(id, "");
+			conDecDialog.showChangeTypeDialog(id, documentationLocation);
 		};
 
+		document.getElementById("condec-context-menu-issue-item").onclick = function() {
+			conDecAPI.changeKnowledgeType(id, "Issue", documentationLocation, function() {
+				conDecObservable.notify();
+			});
+		};
+
+		document.getElementById("condec-context-menu-decision-item").onclick = function() {
+			conDecAPI.changeKnowledgeType(id, "Decision", documentationLocation, function() {
+				conDecObservable.notify();
+			});
+		};
+
+		document.getElementById("condec-context-menu-alternative-item").onclick = function() {
+			conDecAPI.changeKnowledgeType(id, "Alternative", documentationLocation, function() {
+				conDecObservable.notify();
+			});
+		};
+
+		document.getElementById("condec-context-menu-pro-item").onclick = function() {
+			conDecAPI.changeKnowledgeType(id, "Pro", documentationLocation, function() {
+				conDecObservable.notify();
+			});
+		};
+
+		document.getElementById("condec-context-menu-con-item").onclick = function() {
+			conDecAPI.changeKnowledgeType(id, "Con", documentationLocation, function() {
+				conDecObservable.notify();
+			});
+		};
+
+		// only default documentation location
+		// TODO enable linking of existing elements for every documentation
+		// location
 		document.getElementById("condec-context-menu-link-item").onclick = function() {
-			conDecDialog.showLinkDialog(id, "");
+			conDecDialog.showLinkDialog(id, documentationLocation);
 		};
 
 		document.getElementById("condec-context-menu-delete-link-item").onclick = function() {
-			var parentId = conDecTreant.findParentId(id);
-			conDecDialog.showDeleteLinkDialog(id, parentId);
+			conDecDialog.showDeleteLinkDialog(id, documentationLocation);
 		};
 
 		document.getElementById("condec-context-menu-delete-item").onclick = function() {
-			conDecDialog.showDeleteDialog(id, "");
+			conDecDialog.showDeleteDialog(id, documentationLocation);
 		};
 
+		// only default documentation location
+		// TODO set as root for sentences
 		document.getElementById("condec-context-menu-set-root-item").onclick = function() {
-			conDecAPI.getDecisionKnowledgeElement(id, "i", function(decisionKnowledgeElement) {
+			conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
 				conDecTreant.buildTreant(decisionKnowledgeElement.key, true, "");
 			});
 		};
 
 		document.getElementById("condec-context-menu-open-jira-issue-item").onclick = function() {
-			conDecAPI.openJiraIssue(id);
-		};
-	}
-
-	ConDecContextMenu.prototype.createContextMenuForSentences = function createContextMenuForSentences(event, id,
-			container) {
-		isContextMenuOpen = true;
-		console.log("contextmenu opened");
-
-		contextMenuForSentencesNode = document.getElementById("condec-context-menu-sentence");
-		if (!contextMenuForSentencesNode) {
-			console.error("contextmenu for sentences not found");
-			return;
-		}
-
-		setContextMenuItemsSentencesEventHandlers(id);
-
-		var position = getPosition(event, container);
-		var posX = position["x"];
-		var posY = position["y"];
-
-		$(contextMenuForSentencesNode).css({
-			left : posX,
-			top : posY
-		});
-
-		contextMenuForSentencesNode.style.zIndex = 9998;
-		contextMenuForSentencesNode.setAttribute('aria-hidden', 'false');
-	};
-
-	function setContextMenuItemsSentencesEventHandlers(id) {
-		document.getElementById("condec-context-menu-sentence-create-item").onclick = function() {
-			conDecDialog.showCreateDialog(id, "s");
+			conDecAPI.openJiraIssue(id, documentationLocation);
 		};
 
-		document.getElementById("condec-context-menu-sentence-edit-item").onclick = function() {
-			conDecDialog.setUpDialogForEditSentenceAction(id);
-		};
-
-		document.getElementById("condec-context-menu-sentence-delete-link-item").onclick = function() {
-			var parentId = conDecTreant.findParentId(id);
-			conDecAPI.deleteLink(parentId, id, "i", "s", conDecAPI.setSentenceIrrelevant(id, function() {
-				conDecObservable.notify();
-			}), false);
-			conDecAPI.deleteLink(parentId, id, "s", "s", conDecAPI.setSentenceIrrelevant(id, function() {
-				conDecObservable.notify();
-			}), false);
-		};
-
-		document.getElementById("condec-context-menu-sentence-convert-item").onclick = function() {
-			conDecAPI.createIssueFromSentence(id, function() {
-				conDecObservable.notify();
-			});
-		};
-
+		// only for sentences
 		document.getElementById("condec-context-menu-sentence-irrelevant-item").onclick = function() {
 			conDecAPI.setSentenceIrrelevant(id, function() {
 				conDecObservable.notify();
 			});
 		};
 
-		document.getElementById("condec-context-menu-sentence-issue-item").onclick = function() {
-			conDecAPI.changeKnowledgeType(id, "Issue", "s", function() {
+		document.getElementById("condec-context-menu-sentence-convert-item").onclick = function() {
+			conDecAPI.createIssueFromSentence(id, function() {
 				conDecObservable.notify();
 			});
-		};
-
-		document.getElementById("condec-context-menu-sentence-decision-item").onclick = function() {
-			conDecAPI.changeKnowledgeType(id, "Decision", "s", function() {
-				conDecObservable.notify();
-			});
-		};
-
-		document.getElementById("condec-context-menu-sentence-alternative-item").onclick = function() {
-			conDecAPI.changeKnowledgeType(id, "Alternative", "s", function() {
-				conDecObservable.notify();
-			});
-		};
-
-		document.getElementById("condec-context-menu-sentence-pro-item").onclick = function() {
-			conDecAPI.changeKnowledgeType(id, "Pro", "s", function() {
-				conDecObservable.notify();
-			});
-		};
-
-		document.getElementById("condec-context-menu-sentence-con-item").onclick = function() {
-			conDecAPI.changeKnowledgeType(id, "Con", "s", function() {
-				conDecObservable.notify();
-			});
-		};
-
-		document.getElementById("condec-context-menu-sentence-delete-item").onclick = function() {
-			conDecDialog.showDeleteDialog(id, "s");
 		};
 	}
 

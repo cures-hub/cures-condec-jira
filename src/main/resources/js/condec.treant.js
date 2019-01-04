@@ -3,7 +3,7 @@
 	// closure locals variable for DnD
 	var draggedElement;
 	var oldParentElement;
-	var treantTree;	
+	var treantTree;
 
 	var ConDecTreant = function ConDecTreant() {
 	};
@@ -15,8 +15,8 @@
 			document.getElementById("treant-container").innerHTML = "";
 			treantTree = new Treant(treeStructure);
 			if (isInteractive !== undefined && isInteractive) {
-				addContextMenuToTreant();
 				addDragAndDropSupportForTreant();
+				addContextMenuToTreant();				
 				addTooltip();
 			}
 		});
@@ -61,6 +61,7 @@
 	function drag(event) {
 		draggedElement = event.target;
 		oldParentElement = findParentElement(event.target.id);
+        event.dataTransfer.setData("text", event.target.id);
 	}
 
 	function findParentElement(elementId) {
@@ -78,11 +79,11 @@
 				}
 			}
 		} catch (error) {
-			return {
-				id : 0,
-				documentationLocation : ""
-			};
 		}
+		return {
+			id : 0,
+			documentationLocation : ""
+		};
 	}
 
 	/*
@@ -98,11 +99,13 @@
 		var documentationLocationOfOldParent = extractDocumentationLocationFromHTMLId(findParentElement(childId)["id"]);
 		var documentationLocationOfNewParent = extractDocumentationLocationFromHTMLElement(target);
 
-		conDecAPI.deleteLink(oldParentElement.id, childId, documentationLocationOfOldParent, documentationLocationOfChild, function() {
-			conDecAPI.createLink(null, target.id, draggedElement.id, documentationLocationOfNewParent, documentationLocationOfChild, function() {
-				conDecObservable.notify();
-			});
-		});
+		conDecAPI.deleteLink(oldParentElement.id, childId, documentationLocationOfOldParent,
+				documentationLocationOfChild, function() {
+					conDecAPI.createLink(null, target.id, draggedElement.id, documentationLocationOfNewParent,
+							documentationLocationOfChild, function() {
+								conDecObservable.notify();
+							});
+				});
 	}
 
 	function allowDrop(event) {
@@ -125,9 +128,9 @@
 			treantNodes[i].addEventListener('contextmenu', function(event) {
 				event.preventDefault();
 				if (this.getElementsByClassName("node-desc")[0].innerHTML.includes(":")) {
-					conDecContextMenu.createContextMenuForSentences(event, this.id, "treant-container");
+					conDecContextMenu.createContextMenu(this.id, "s", event, "treant-container");
 				} else {
-					conDecContextMenu.createContextMenu(event, this.id, "treant-container");
+					conDecContextMenu.createContextMenu(this.id, "", event, "treant-container");
 				}
 			});
 		}
@@ -142,7 +145,7 @@
 			for (i = 0; i < comments.length; i++) {
 				comments[i].addEventListener('contextmenu', function(event) {
 					event.preventDefault();
-					conDecContextMenu.createContextMenuForSentences(event, this.id.split("-")[1], "issue-container");
+					conDecContextMenu.createContextMenu(this.id.split("-")[1], "s", event, "issue-container");
 				});
 			}
 		}
