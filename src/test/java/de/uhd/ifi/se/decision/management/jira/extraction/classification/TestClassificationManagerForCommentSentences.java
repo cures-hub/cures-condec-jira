@@ -44,8 +44,6 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 	private List<Comment> list = new ArrayList<Comment>();
 	private ClassificationManagerForCommentSentences classificationManager;
 
-	private MutableIssue issue;
-
 	@Before
 	public void setUp() {
 		initialization();
@@ -71,16 +69,6 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 		String comment = "This is a testentence without any purpose. We expect this to be irrelevant. I got a problem in this class. The previous sentence should be much more relevant";
 		commentManager.create(issue, currentUser, comment, true);
 
-	}
-
-	private void createLocalIssue() {
-		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
-		issue = new MockIssue(30, "TEST-" + 30);
-		((MockIssue) issue).setProjectId(project.getId());
-		issue.setProjectObject(project);
-		IssueType issueType = new MockIssueType(1, KnowledgeType.DECISION.toString().toLowerCase(Locale.ENGLISH));
-		issue.setIssueType(issueType);
-		issue.setSummary("Test");
 	}
 
 	private void fillCommentList() {

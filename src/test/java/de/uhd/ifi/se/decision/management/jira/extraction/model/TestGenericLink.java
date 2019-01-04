@@ -1,9 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Locale;
 
 import org.junit.Before;
@@ -37,13 +33,13 @@ import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
+import static org.junit.Assert.*;
+
 @RunWith(ActiveObjectsJUnitRunner.class)
 @net.java.ao.test.jdbc.Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 public class TestGenericLink extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
-
-	private MutableIssue issue;
 
 	@Before
 	public void setUp() {
@@ -53,17 +49,6 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 		createLocalIssue();
 		addCommentsToIssue("this is a testSentence. This a second one. And a third one");
-	}
-
-	private void createLocalIssue() {
-		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
-		issue = new MockIssue(2, "TEST-" + 2);
-		((MockIssue) issue).setProjectId(project.getId());
-		issue.setProjectObject(project);
-		IssueType issueType = new MockIssueType(1, KnowledgeType.DECISION.toString().toLowerCase(Locale.ENGLISH));
-		issue.setIssueType(issueType);
-		issue.setSummary("Test");
-		((MockIssueManagerSelfImpl) ComponentAccessor.getIssueManager()).addIssue(issue);
 	}
 
 	private void addCommentsToIssue(String comment) {
@@ -223,7 +208,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
 		Link link = new LinkImpl(sentence, element);
 
-		assertTrue(link.toString().equals("s1 to i2"));
+		assertEquals("s1 to i30", link.toString());
 	}
 
 }

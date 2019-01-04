@@ -35,8 +35,6 @@ public class TestViewConnector extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
 
-	private MutableIssue issue;
-
 	@Before
 	public void setUp() {
 		initialization();
@@ -46,15 +44,6 @@ public class TestViewConnector extends TestSetUpWithIssues {
 		createLocalIssue();
 	}
 
-	private void createLocalIssue() {
-		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
-		issue = new MockIssue(30, "TEST-" + 30);
-		((MockIssue) issue).setProjectId(project.getId());
-		issue.setProjectObject(project);
-		IssueType issueType = new MockIssueType(1, KnowledgeType.DECISION.toString().toLowerCase(Locale.ENGLISH));
-		issue.setIssueType(issueType);
-		issue.setSummary("Test");
-	}
 
 	private void addCommentsToIssue() {
 		// Get the current logged in user

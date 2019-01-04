@@ -39,7 +39,6 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 public class TestComment extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
-	private MockIssue issue;
 
 	private com.atlassian.jira.issue.comments.Comment comment1;
 
@@ -49,16 +48,6 @@ public class TestComment extends TestSetUpWithIssues {
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
 		createLocalIssue();
-	}
-
-	private void createLocalIssue() {
-		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
-		issue = new MockIssue(30, "TEST-" + 30);
-		((MockIssue) issue).setProjectId(project.getId());
-		issue.setProjectObject(project);
-		IssueType issueType = new MockIssueType(1, KnowledgeType.DECISION.toString().toLowerCase(Locale.ENGLISH));
-		issue.setIssueType(issueType);
-		issue.setSummary("Test");
 	}
 
 	private void addCommentsToIssue(String comment) {
