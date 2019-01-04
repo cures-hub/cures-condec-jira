@@ -203,9 +203,9 @@
 
 	ConDecDialog.prototype.addFormForArguments = addFormForArguments;
 
-	ConDecDialog.prototype.showEditDialog = function showEditDialog(id, type) {
+	ConDecDialog.prototype.showEditDialog = function showEditDialog(id, documentationLocation, type) {
 		console.log("conDecDialog setUpDialogForEditAction");
-		conDecAPI.getDecisionKnowledgeElement(id, "i", function(decisionKnowledgeElement) {
+		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
 			var summary = decisionKnowledgeElement.summary;
 			var description = decisionKnowledgeElement.description;
 			var type = decisionKnowledgeElement.type;

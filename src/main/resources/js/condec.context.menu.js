@@ -44,7 +44,11 @@
 		isContextMenuOpen = false;
 	}
 
-	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(event, id, container) {
+	/*
+	 * external references: condec.treant, condec.tree.viewer
+	 */
+	ConDecContextMenu.prototype.createContextMenu = function createContextMenu(id, documentationLocation, event,
+			container) {
 		console.log("contextmenu opened");
 		isContextMenuOpen = true;
 
@@ -71,19 +75,19 @@
 
 	function setContextMenuItemsEventHandlers(id) {
 		document.getElementById("condec-context-menu-create-item").onclick = function() {
-			conDecDialog.showCreateDialog(id, "i");
+			conDecDialog.showCreateDialog(id, documentationLocation);
 		};
 
 		document.getElementById("condec-context-menu-edit-item").onclick = function() {
-			conDecDialog.showEditDialog(id);
+			conDecDialog.showEditDialog(id, documentationLocation);
 		};
 
 		document.getElementById("condec-context-menu-change-type-item").onclick = function() {
-			conDecDialog.showChangeTypeDialog(id, "");
+			conDecDialog.showChangeTypeDialog(id, documentationLocation);
 		};
 
 		document.getElementById("condec-context-menu-link-item").onclick = function() {
-			conDecDialog.showLinkDialog(id, "");
+			conDecDialog.showLinkDialog(id, documentationLocation);
 		};
 
 		document.getElementById("condec-context-menu-delete-link-item").onclick = function() {
@@ -92,11 +96,11 @@
 		};
 
 		document.getElementById("condec-context-menu-delete-item").onclick = function() {
-			conDecDialog.showDeleteDialog(id, "");
+			conDecDialog.showDeleteDialog(id, documentationLocation);
 		};
 
 		document.getElementById("condec-context-menu-set-root-item").onclick = function() {
-			conDecAPI.getDecisionKnowledgeElement(id, "i", function(decisionKnowledgeElement) {
+			conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
 				conDecTreant.buildTreant(decisionKnowledgeElement.key, true, "");
 			});
 		};
@@ -106,8 +110,8 @@
 		};
 	}
 
-	ConDecContextMenu.prototype.createContextMenuForSentences = function createContextMenuForSentences(event, id,
-			container) {
+	ConDecContextMenu.prototype.createContextMenuForSentences = function createContextMenuForSentences(id,
+			documentationLocation, event, container) {
 		isContextMenuOpen = true;
 		console.log("contextmenu opened");
 
@@ -134,7 +138,7 @@
 
 	function setContextMenuItemsSentencesEventHandlers(id) {
 		document.getElementById("condec-context-menu-sentence-create-item").onclick = function() {
-			conDecDialog.showCreateDialog(id, "s");
+			conDecDialog.showCreateDialog(id, documentationLocation);
 		};
 
 		document.getElementById("condec-context-menu-sentence-edit-item").onclick = function() {
