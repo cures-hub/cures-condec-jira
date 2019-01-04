@@ -58,7 +58,7 @@
 			return;
 		}
 
-		setContextMenuItemsEventHandlers(id);
+		setContextMenuItemsEventHandlers(id, documentationLocation);
 
 		var position = getPosition(event, container);
 		var posX = position["x"];
@@ -73,7 +73,7 @@
 		contextMenuNode.setAttribute('aria-hidden', 'false');
 	};
 
-	function setContextMenuItemsEventHandlers(id) {
+	function setContextMenuItemsEventHandlers(id, documentationLocation) {
 		document.getElementById("condec-context-menu-create-item").onclick = function() {
 			conDecDialog.showCreateDialog(id, documentationLocation);
 		};
@@ -121,7 +121,7 @@
 			return;
 		}
 
-		setContextMenuItemsSentencesEventHandlers(id);
+		setContextMenuItemsSentencesEventHandlers(id, documentationLocation);
 
 		var position = getPosition(event, container);
 		var posX = position["x"];
@@ -136,7 +136,7 @@
 		contextMenuForSentencesNode.setAttribute('aria-hidden', 'false');
 	};
 
-	function setContextMenuItemsSentencesEventHandlers(id) {
+	function setContextMenuItemsSentencesEventHandlers(id, documentationLocation) {
 		document.getElementById("condec-context-menu-sentence-create-item").onclick = function() {
 			conDecDialog.showCreateDialog(id, documentationLocation);
 		};

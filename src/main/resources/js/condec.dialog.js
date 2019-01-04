@@ -140,7 +140,7 @@
 
 	function isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index) {
 		console.log("conDecDialog isKnowledgeTypeLocatedAtIndex");
-		return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase();
+		return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase().split("-")[0];
 	}
 
 	ConDecDialog.prototype.showLinkDialog = function showLinkDialog(id, documentationLocation) {
@@ -209,34 +209,36 @@
 			var summary = decisionKnowledgeElement.summary;
 			var description = decisionKnowledgeElement.description;
 			var type = decisionKnowledgeElement.type;
+			var documentationLocation = decisionKnowledgeElement.documentationLocation;
 
-			conDecAPI.isIssueStrategy(function(isDocumentedInJIRAIssue) {
-				if (isDocumentedInJIRAIssue) {
-					var createEditIssueForm = require('quick-edit/form/factory/edit-issue');
-					createEditIssueForm({
-						issueId : id
-					}).asDialog({
-						windowTitle : editKnowledgeElementText
-					}).show();
-					AJS.dialog2("#dialog").hide();
-				} else {
-					setUpDialog();
-					setHeaderText(editKnowledgeElementText);
-					setUpCreateOrEditDialog(summary, description, type, false);
-
-					var submitButton = document.getElementById("dialog-submit-button");
-					submitButton.textContent = editKnowledgeElementText;
-					submitButton.onclick = function() {
-						var summary = document.getElementById("form-input-summary").value;
-						var description = document.getElementById("form-input-description").value;
-						var type = $("select[name='form-select-type']").val();
-						conDecAPI.updateDecisionKnowledgeElement(id, summary, description, type, "", function() {
-							conDecObservable.notify();
-						});
-						AJS.dialog2("#dialog").hide();
-					};
+			if (documentationLocation === "i") {
+				var createEditIssueForm = require('quick-edit/form/factory/edit-issue');
+				createEditIssueForm({
+					issueId : id
+				}).asDialog({
+					windowTitle : editKnowledgeElementText
+				}).show();
+				AJS.dialog2("#dialog").hide();
+			} else {
+				setUpDialog();
+				setHeaderText(editKnowledgeElementText);
+				setUpCreateOrEditDialog(summary, description, type, false);
+				if (documentationLocation === "s") {
+					document.getElementById("form-input-summary").disabled = true;
 				}
-			});
+				var submitButton = document.getElementById("dialog-submit-button");
+				submitButton.textContent = editKnowledgeElementText;
+				submitButton.onclick = function() {
+					var summary = document.getElementById("form-input-summary").value;
+					var description = document.getElementById("form-input-description").value;
+					var type = $("select[name='form-select-type']").val();
+					conDecAPI.updateDecisionKnowledgeElement(id, summary, description, type, documentationLocation,
+							function() {
+								conDecObservable.notify();
+							});
+					AJS.dialog2("#dialog").hide();
+				};
+			}
 		});
 	};
 
@@ -308,81 +310,6 @@
 			dialog.classList.add("aui-dialog2-medium");
 		}
 	}
-
-	/**
-	 * fills HTML view-protion of dialog with contents
-	 */
-	function setUpEditSentenceDialogView(description, type, node) {
-		document.getElementById("dialog-content").innerHTML = "";
-		document.getElementById("dialog").classList.remove("aui-dialog2-large");
-		document.getElementById("dialog").classList.add("aui-dialog2-medium");
-		document.getElementById("dialog").style.zIndex = 9999;
-		document
-				.getElementById("dialog-content")
-				.insertAdjacentHTML(
-						"afterBegin",
-						"<form class='aui'>"
-								+ "<div class='field-group'><label for='form-input-description'>Sentence:</label>"
-								+ "<textarea id='form-input-description' placeholder='Description' value='"
-								+ description
-								+ "' class='textarea full-width-field'>"
-								+ description
-								+ "</textarea></div>"
-								+ "<div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
-								+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
-								+ "</form>");
-
-		var knowledgeTypes = conDecAPI.knowledgeTypes;
-		if (knowledgeTypes.includes("Issue") && knowledgeTypes.includes("Problem")) {
-			var index = knowledgeTypes.indexOf("Issue");
-			if (index > -1) {
-				knowledgeTypes.splice(index, 1);
-			}
-		}
-		if (!knowledgeTypes.includes("Pro") && !knowledgeTypes.includes("Con") && knowledgeTypes.includes("Argument")) {
-			knowledgeTypes.splice(knowledgeTypes.indexOf("Argument"), 1);
-			knowledgeTypes.push("Pro");
-			knowledgeTypes.push("Con");
-		}
-		for (index = 0; index < knowledgeTypes.length; index++) {
-			var isSelected = "";
-			// first clause for treant, second for tree viewer
-			if (node.includes(knowledgeTypes[index].toLowerCase()) || node === knowledgeTypes[index]) {
-				isSelected = "selected ";
-			}
-
-			$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
-					+ knowledgeTypes[index] + "'>" + knowledgeTypes[index] + "</option>");
-		}
-	}
-
-	/**
-	 * sets-up submit button
-	 */
-	function setUpEditSentenceDialogContext(id, description, type) {
-		var submitButton = document.getElementById("dialog-submit-button");
-		submitButton.textContent = "Change";
-		submitButton.onclick = function() {
-			var description = document.getElementById("form-input-description").value;
-			var type = $("select[name='form-select-type']").val().split("-")[0];
-			conDecAPI.updateDecisionKnowledgeElement(id, "", description, type, "s", function() {
-				conDecObservable.notify();
-			});
-			AJS.dialog2("#dialog").hide();
-		};
-		AJS.$("#form-select-type").auiSelect2();
-	}
-
-	ConDecDialog.prototype.setUpDialogForEditSentenceAction = function setUpDialogForEditSentenceAction(id) {
-		conDecAPI.getDecisionKnowledgeElement(id, "s", function(result) {
-			var description = result["description"];
-			var type = result["type"];
-			setUpDialog();
-			setHeaderText(editKnowledgeElementText);
-			setUpEditSentenceDialogView(description, type, type);
-			setUpEditSentenceDialogContext(id, description, type);
-		});
-	};
 
 	// export ConDecDialog
 	global.conDecDialog = new ConDecDialog();
