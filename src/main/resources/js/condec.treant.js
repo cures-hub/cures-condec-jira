@@ -61,6 +61,7 @@
 	function drag(event) {
 		draggedElement = event.target;
 		oldParentElement = findParentElement(event.target.id);
+        event.dataTransfer.setData("text", event.target.id);
 	}
 
 	function findParentElement(elementId) {
