@@ -6,6 +6,7 @@
 
 The CURES ConDec JIRA plug-in enables the user to capture and explore decision knowledge in [JIRA](https://de.atlassian.com/software/jira).
 Decision knowledge covers knowledge about decisions, the problems they address, solution proposals, their context, and justifications (rationale). The documented decision knowledge can be linked to JIRA issues such as features, tasks to implement a feature, or bug reports.
+The plug-in supports various documentation location for decision knowledge, such as JIRA issue comments and description or commit messages. 
 
 ## Installation
 
@@ -31,7 +32,10 @@ atlas-run
 The precompiled .jar-File for the latest release can be found here: https://github.com/cures-hub/cures-condec-jira/releases/latest
 
 ### Installation in JIRA
-The .jar file is installed by uploading it to your JIRA application:
+[The ConDec JIRA plug-in is available via the Atlassian Marketplace.](
+https://marketplace.atlassian.com/apps/1219690/decision-documentation-and-exploration)
+
+Alternatively, the plug-in can be installed via uploading the .jar file to your JIRA application:
 - As a system administrator, navigate to JIRA's administration console and click the "Add-ons" tab.
 - Select "Manage add-ons" on the side-bar.
 - Click on "Upload add-on" and select the previously compiled .jar file.
@@ -55,8 +59,8 @@ The tree view was implemented using the [Treant.js library](http://fperucic.gith
 
 The user can [filter the decision knowledge](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/example_radargrammetry_filter.png) and manage it using drag and drop and a [context menu](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/example_radargrammetry_context_menu.png).
 
-### Issue Module
-JIRA ConDec provides an [issue module that enables the user to explore decision knowledge related to JIRA issues such as feature tasks](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/example_radargrammetry_issue_module.png).
+### JIRA Issue Module
+JIRA ConDec provides a [JIRA issue module that enables the user to explore decision knowledge related to JIRA issues such as feature tasks](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/example_radargrammetry_issue_module.png).
 
 ### Configuration
 The [project setting page](https://github.com/cures-hub/cures-condec-jira/raw/master/doc/config_plugin.png) enables the user to:
@@ -90,4 +94,4 @@ These services can be accessed via the following link:
 
 **JIRA base URL**/rest/decisions/latest/**decisions|config|view**/**REST service**
 
-The JIRA ConDec plug-in uses the REST services in the [REST Java Script client](https://github.com/cures-hub/cures-condec-jira/blob/master/src/main/resources/js/rest.client.js) from the user interface.
+The JIRA ConDec plug-in uses the REST services in the [REST Java Script client](https://github.com/cures-hub/cures-condec-jira/blob/master/src/main/resources/js/condec.api.js) from the user interface.
