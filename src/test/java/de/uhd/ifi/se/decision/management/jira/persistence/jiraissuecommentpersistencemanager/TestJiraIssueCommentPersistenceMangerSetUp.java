@@ -122,6 +122,6 @@ public class TestJiraIssueCommentPersistenceMangerSetUp extends TestSetUpWithIss
 
 		List<DecisionKnowledgeElement> listWithObjects = new JiraIssueCommentPersistenceManager("TEST")
 				.getDecisionKnowledgeElements(KnowledgeType.OTHER);
-		assertEquals(2, listWithObjects.size());
+		assertEquals(3, listWithObjects.size());
 	}
 }

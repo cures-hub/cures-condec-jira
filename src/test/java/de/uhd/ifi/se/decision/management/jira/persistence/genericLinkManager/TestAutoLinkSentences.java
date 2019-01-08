@@ -70,6 +70,6 @@ public class TestAutoLinkSentences extends TestJiraIssueCommentPersistenceManger
     public void testSmartLinkingForBoringNonSmartLink() {
         Comment comment = getComment("{issue}first sentence{issue} {pro}second sentence{pro}");
         Link sentenceLink = GenericLinkManager.getLinksForElement(comment.getSentences().get(1)).get(0);
-        assertEquals("s2 to i30", sentenceLink.toString());
+        assertEquals("s3 to i30", sentenceLink.toString());
     }
 }
