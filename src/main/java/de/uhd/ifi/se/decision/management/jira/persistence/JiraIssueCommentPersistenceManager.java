@@ -64,6 +64,10 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	}
 
 	public static void deleteCommentsSentences(com.atlassian.jira.issue.comments.Comment comment) {
+	    if(comment == null){
+	        LOGGER.error("Comment is Null");
+	        return;
+	    }
 		DecisionKnowledgeInCommentEntity[] commentSentences = ACTIVE_OBJECTS.find(
 				DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("ISSUE_ID = ? AND COMMENT_ID = ?", comment.getIssue().getId(), comment.getId()));
