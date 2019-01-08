@@ -50,6 +50,10 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 	@Override
 	public boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user) {
+	    if(id<=0|| user == null){
+	        LOGGER.error("ID is to less then Zero or User is Null");
+	        return false;
+        }
 		boolean isDeleted = false;
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("ID = ?", id))) {

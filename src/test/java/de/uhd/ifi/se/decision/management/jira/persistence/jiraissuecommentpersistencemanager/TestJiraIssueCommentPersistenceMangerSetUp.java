@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,6 +37,9 @@ public class TestJiraIssueCommentPersistenceMangerSetUp extends TestSetUpWithIss
 
 	private EntityManager entityManager;
 
+    protected JiraIssueCommentPersistenceManager manager;
+    protected ApplicationUser user;
+    protected Sentence element;
 	protected com.atlassian.jira.issue.comments.Comment comment1;
 
 	public static long insertDecisionKnowledgeElement(Comment comment, long issueId, int index) {
@@ -54,7 +58,20 @@ public class TestJiraIssueCommentPersistenceMangerSetUp extends TestSetUpWithIss
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
 		createLocalIssue();
+		manager = new JiraIssueCommentPersistenceManager("TEST");
+		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+        addElementToDataBase();
 	}
+
+	private void addElementToDataBase(){
+        element = new SentenceImpl();
+        element.setId(12);
+        element.setKey("TEST-12");
+        element.setType(KnowledgeType.DECISION);
+        element.setProject("TEST");
+        element.setDescription("Old");
+        manager.insertDecisionKnowledgeElement(element,user);
+    }
 
 	protected void addCommentsToIssue(String comment) {
 
