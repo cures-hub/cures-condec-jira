@@ -158,7 +158,12 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	 */
 	public static List<DecisionKnowledgeElement> getElementsForIssueWithType(long issueId, String projectKey,
 			String type) {
+
 		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
+        if(issueId<=0|| projectKey == null || type == null){
+            LOGGER.error("Id, ProjectKey, Type are Invalid");
+            return elements;
+        }
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS.find(
 				DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ? AND TYPE = ?", projectKey, issueId, type))) {
