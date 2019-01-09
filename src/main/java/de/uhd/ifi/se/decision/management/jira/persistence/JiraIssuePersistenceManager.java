@@ -53,6 +53,9 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 	}
 
 	public static boolean deleteLink(Link link, ApplicationUser user) {
+	    if(link == null || user == null){
+	        return false;
+        }
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		Collection<IssueLinkType> issueLinkTypes = issueLinkTypeManager.getIssueLinkTypes();
