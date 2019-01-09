@@ -1,8 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuecommentpersistencemanager;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -75,11 +79,12 @@ public class TestGetElementsForIssueWithType extends TestJiraIssueCommentPersist
         assertEquals(0, manager.getElementsForIssueWithType(0, "TEST","decision").size());
     }
 
-
-    //TODO I don't know why there is no element in this
-    @Ignore
+    @Test
     @NonTransactional
     public void testIdMoreSProjectKeyFilledTypeFilled(){
-        assertEquals(1, manager.getElementsForIssueWithType(12, "TEST","DECISION").size());
+        Comment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
+        TestJiraIssueCommentPersistenceMangerSetUp.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
+
+        assertEquals(1, manager.getElementsForIssueWithType(comment.getIssueId(), "TEST","Issue").size());
     }
 }

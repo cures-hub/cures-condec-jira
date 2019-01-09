@@ -173,6 +173,9 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	}
 
 	public static long getIdOfSentenceForMacro(String body, long issueId, String typeString, String projectKey) {
+	    if(body == null || issueId <= 0|| typeString == null || projectKey == null){
+	        return 0;
+        }
 		List<DecisionKnowledgeElement> sentences = getElementsForIssueWithType(issueId, projectKey, typeString);
 		for (DecisionKnowledgeElement sentence : sentences) {
 			if (sentence.getDescription().trim().equals(body.trim().replaceAll("<[^>]*>", ""))) {
