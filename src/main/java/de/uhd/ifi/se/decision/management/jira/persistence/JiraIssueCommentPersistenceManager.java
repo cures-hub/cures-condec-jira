@@ -487,7 +487,11 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		}
 	}
 
-	public Issue createJIRAIssueFromSentenceObject(long aoId, ApplicationUser user) {		
+	public Issue createJIRAIssueFromSentenceObject(long aoId, ApplicationUser user) {
+	    if(aoId <= 0 || user == null){
+	        LOGGER.error("Parameter are Invalid");
+	        return null;
+        }
 
 		Sentence element = (Sentence) this.getDecisionKnowledgeElement(aoId);
 		
