@@ -213,6 +213,9 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	@Override
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
 			ApplicationUser user, DecisionKnowledgeElement parentElement) {
+	    if(element == null ||user == null || parentElement == null){
+	        return null;
+        }
 		long issueId;
 		if (parentElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
 			Sentence sentence = (Sentence) this.getDecisionKnowledgeElement(parentElement.getId());

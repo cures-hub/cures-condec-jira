@@ -6,6 +6,7 @@ import static org.junit.Assert.assertFalse;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +42,7 @@ public class TestJiraIssueCommentPersistenceMangerSetUp extends TestSetUpWithIss
     protected ApplicationUser user;
     protected Sentence element;
 	protected com.atlassian.jira.issue.comments.Comment comment1;
+	protected DecisionKnowledgeElement decisionKnowledgeElement;
 
 	public static long insertDecisionKnowledgeElement(Comment comment, long issueId, int index) {
 		Sentence sentence = new SentenceImpl();
@@ -61,18 +63,30 @@ public class TestJiraIssueCommentPersistenceMangerSetUp extends TestSetUpWithIss
 		manager = new JiraIssueCommentPersistenceManager("TEST");
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
         addElementToDataBase();
+        addDecisionKnowledgeElement();
 	}
 
 	private void addElementToDataBase(){
         element = new SentenceImpl();
         element.setProject("TEST");
         element.setIssueId(12);
-        element.setId(12231);
+        element.setId(1);
         element.setKey("TEST-12231");
         element.setType("DECISION");
         element.setProject("TEST");
         element.setDescription("Old");
+        element.setDocumentationLocation(DocumentationLocation.JIRAISSUECOMMENT);
         manager.insertDecisionKnowledgeElement(element,user);
+    }
+
+    private void addDecisionKnowledgeElement(){
+        decisionKnowledgeElement = new DecisionKnowledgeElementImpl();
+        decisionKnowledgeElement.setProject("TEST");
+        decisionKnowledgeElement.setId(1232);
+        decisionKnowledgeElement.setKey("TEST-1232");
+        decisionKnowledgeElement.setType("DECISION");
+        decisionKnowledgeElement.setProject("TEST");
+        decisionKnowledgeElement.setDescription("Old");
     }
 
 	protected void addCommentsToIssue(String comment) {
