@@ -72,7 +72,7 @@ public class TestJiraIssueCommentPersistenceMangerSetUp extends TestSetUpWithIss
         element.setIssueId(12);
         element.setId(1);
         element.setKey("TEST-12231");
-        element.setType("DECISION");
+        element.setType("Argument");
         element.setProject("TEST");
         element.setDescription("Old");
         element.setDocumentationLocation(DocumentationLocation.JIRAISSUECOMMENT);

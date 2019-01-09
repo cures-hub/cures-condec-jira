@@ -468,6 +468,9 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	 * 
 	 */
 	public static void migrateArgumentTypesInLinks(String projectKey) {
+	    if(projectKey == null || projectKey.equals("")){
+	        return;
+        }
 		DecisionKnowledgeInCommentEntity[] sentencesInProject = ACTIVE_OBJECTS
 				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey));
 		for (DecisionKnowledgeInCommentEntity databaseEntry : sentencesInProject) {
