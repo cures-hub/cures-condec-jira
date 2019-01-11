@@ -217,7 +217,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </interface>  
-  <class id="21" language="java" name="de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl" 
+  <class id="21" language="java" name="de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl" 
     project="git" 
     file="/git/src/main/java/de/uhd/ifi/se/decision/management/jira/model/DecisionKnowledgeElementImpl.java" 
     binary="false" corner="BOTTOM_RIGHT">    
@@ -248,7 +248,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </enumeration>  
-  <class id="24" language="java" name="de.uhd.ifi.se.decision.management.jira.model.GraphImpl" project="git" 
+  <class id="24" language="java" name="de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl" project="git" 
     file="/git/src/main/java/de/uhd/ifi/se/decision/management/jira/model/GraphImpl.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="591" y="-980"/>    
@@ -268,7 +268,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </interface>  
-  <class id="26" language="java" name="de.uhd.ifi.se.decision.management.jira.model.LinkImpl" project="git" 
+  <class id="26" language="java" name="de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl" project="git" 
     file="/git/src/main/java/de/uhd/ifi/se/decision/management/jira/model/LinkImpl.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="621" width="398" x="912" y="-1896"/>    
