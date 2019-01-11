@@ -151,7 +151,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="15" language="java" name="de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter" 
+  <class id="15" language="java" name="de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter" 
     project="git" 
     file="/git/src/main/java/de/uhd/ifi/se/decision/management/jira/extraction/model/util/CommentSplitter.java" 
     binary="false" corner="BOTTOM_RIGHT">    

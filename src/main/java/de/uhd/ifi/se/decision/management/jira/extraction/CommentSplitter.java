@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.model.util;
+package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
