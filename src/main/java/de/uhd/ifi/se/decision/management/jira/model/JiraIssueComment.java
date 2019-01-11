@@ -41,7 +41,4 @@ public interface JiraIssueComment {
 	public Long getIssueId();
 
 	public void setIssueId(Long issueId);
-
-	public void reloadSentencesFromAo();
-
 }

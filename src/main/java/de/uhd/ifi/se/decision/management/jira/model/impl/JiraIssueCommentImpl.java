@@ -126,15 +126,6 @@ public class JiraIssueCommentImpl implements JiraIssueComment  {
 		this.sentences = sentences;
 	}
 
-	public void reloadSentencesFromAo() {
-		List<Sentence> newSentences = new ArrayList<>();
-		for (Sentence sentence : this.sentences) {
-			Sentence aoSentence = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(sentence.getId());
-			newSentences.add(aoSentence);
-		}
-		this.sentences = newSentences;
-	}
-
 	public String getBody() {
 		return body;
 	}
