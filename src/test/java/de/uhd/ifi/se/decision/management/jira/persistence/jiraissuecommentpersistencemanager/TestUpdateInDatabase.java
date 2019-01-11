@@ -53,11 +53,11 @@ public class TestUpdateInDatabase extends TestJiraIssueCommentPersistenceMangerS
 		assertTrue(element.isRelevant());
 
 		element.setRelevant(false);
-		element.setTagged(true);
+		element.setValidated(true);
 		JiraIssueCommentPersistenceManager.updateInDatabase(element);
 		element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertFalse(element.isRelevant());
-		assertTrue(element.isTagged());
+		assertTrue(element.isValidated());
 		assertTrue(element.getTypeAsString().equalsIgnoreCase("Other"));
 	}
 }

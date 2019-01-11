@@ -46,7 +46,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.setId(id);
 		this.setEndSubstringCount(endSubstringCount);
 		this.setStartSubstringCount(startSubstringCount);
-		this.setTagged(isTagged);
+		this.setValidated(isTagged);
 		this.setRelevant(isRelevant);
 		this.setProject(projectKey);
 		this.setCommentId(commentId);
@@ -62,7 +62,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	public SentenceImpl(DecisionKnowledgeInCommentEntity databaseEntry) {
 		this(databaseEntry.getId(), databaseEntry.getEndSubstringCount(), databaseEntry.getStartSubstringCount(),
-				databaseEntry.isTagged(), databaseEntry.isRelevant(), databaseEntry.getProjectKey(),
+				databaseEntry.isValidated(), databaseEntry.isRelevant(), databaseEntry.getProjectKey(),
 				databaseEntry.getCommentId(), databaseEntry.getIssueId(), databaseEntry.getType());
 	}
 
@@ -86,12 +86,12 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	@Override
-	public boolean isTagged() {
+	public boolean isValidated() {
 		return this.isTagged;
 	}
 
 	@Override
-	public void setTagged(boolean isTagged) {
+	public void setValidated(boolean isTagged) {
 		this.isTagged = isTagged;
 	}
 
@@ -202,7 +202,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	private void setManuallyTagged() {
 		this.setPlainText(false);
 		this.setRelevant(true);
-		this.setTagged(true);
+		this.setValidated(true);
 		JiraIssueCommentPersistenceManager.updateInDatabase(this);
 	}
 

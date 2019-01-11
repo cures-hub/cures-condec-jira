@@ -64,7 +64,7 @@ public class ClassificationManagerForCommentSentences {
 					sentence.setType(classificationResult.get(i));
 					System.out.println(sentence.getTypeAsString());
 					sentence.setSummary(null);
-					sentence.setTagged(true);
+					sentence.setValidated(true);
 					new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence, null);
 					i++;
 				} else if (sentence.isRelevant() && sentence.isTaggedFineGrained() && sentence.isPlainText()) {
@@ -99,7 +99,7 @@ public class ClassificationManagerForCommentSentences {
 				if (isSentenceQualifiedForBinaryClassification(sentence)) {
 					sentence.setRelevant(classificationResult.get(i));
 					JiraIssueCommentPersistenceManager.updateInDatabase(sentence);
-					sentence.setTagged(true);
+					sentence.setValidated(true);
 					i++;
 				}
 			}
@@ -190,7 +190,7 @@ public class ClassificationManagerForCommentSentences {
 	 * @return boolean identifier
 	 */
 	private static boolean isSentenceQualifiedForBinaryClassification(Sentence sentence) {
-		return !sentence.isTagged() && sentence.isPlainText();
+		return !sentence.isValidated() && sentence.isPlainText();
 	}
 
 	private static boolean isSentenceQualifiedForFineGrainedClassification(Sentence sentence) {

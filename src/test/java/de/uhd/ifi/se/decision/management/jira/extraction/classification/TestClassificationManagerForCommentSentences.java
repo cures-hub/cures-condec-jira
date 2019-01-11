@@ -74,7 +74,7 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 	public void testBinaryClassification() throws Exception {
 		list = classificationManager.classifySentenceBinary(list);
 		assertNotNull(list.get(0).getSentences().get(0).isRelevant());
-		assertTrue(list.get(0).getSentences().get(0).isTagged());
+		assertTrue(list.get(0).getSentences().get(0).isValidated());
 	}
 
 	@Test
@@ -84,7 +84,7 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 		list = classificationManager.classifySentenceFineGrained(list);
 
 		assertNotNull(list.get(0).getSentences().get(0).isRelevant());
-		assertTrue(list.get(0).getSentences().get(0).isTagged());
+		assertTrue(list.get(0).getSentences().get(0).isValidated());
 	}
 
 	@Test

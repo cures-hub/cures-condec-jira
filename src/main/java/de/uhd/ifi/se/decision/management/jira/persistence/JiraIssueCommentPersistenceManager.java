@@ -251,7 +251,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			return existingElement.getId();
 		}
 
-		sentence.setTagged(false);
+		sentence.setValidated(false);
 		sentence.setRelevant(false);
 		sentence.setType("");
 
@@ -268,7 +268,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		databaseEntry.setCommentId(element.getCommentId());
 		databaseEntry.setType(element.getTypeAsString());
 		databaseEntry.setRelevant(element.isRelevant());
-		databaseEntry.setTagged(element.isTagged());
+		databaseEntry.setValidated(element.isValidated());
 		databaseEntry.setStartSubstringCount(element.getStartSubstringCount());
 		databaseEntry.setEndSubstringCount(element.getEndSubstringCount());
 		databaseEntry.setIssueId(element.getIssueId());
@@ -285,7 +285,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		sentence.setSummary(element.getSummary());
 		sentence.setDescription(element.getDescription());
 		sentence.setProject(element.getProject());
-		sentence.setTagged(true);
+		sentence.setValidated(true);
 
 		return this.updateDecisionKnowledgeElement(sentence, user);
 	}
@@ -322,7 +322,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 		sentence.setEndSubstringCount(sentence.getStartSubstringCount() + changedPartOfComment.length());
 		sentence.setType(element.getType());
-		sentence.setTagged(element.isTagged());
+		sentence.setValidated(element.isValidated());
 		sentence.setRelevant(element.getType() != KnowledgeType.OTHER);
 
 		boolean isUpdated = updateInDatabase(sentence);

@@ -18,10 +18,10 @@ public interface Sentence extends DecisionKnowledgeElement {
 	void setRelevant(double prediction);
 
 	@JsonIgnore
-	boolean isTagged();
+	boolean isValidated();
 
 	@JsonIgnore
-	void setTagged(boolean isTagged);
+	void setValidated(boolean isValidated);
 
 	@JsonIgnore
 	boolean isTaggedFineGrained();
