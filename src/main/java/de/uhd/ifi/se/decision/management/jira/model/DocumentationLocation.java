@@ -2,8 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.Locale;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-
 /**
  * Possible documentation locations of decision knowledge
  */

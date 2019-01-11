@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.model.Comment;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestCreateJIRAIssueFromSentenceObject extends TestJiraIssueCommentPersistenceMangerSetUp {

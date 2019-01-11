@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.model.impl;
+package de.uhd.ifi.se.decision.management.jira.model.impl;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;
@@ -7,9 +7,10 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
+import de.uhd.ifi.se.decision.management.jira.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
 public class CommentImpl implements Comment {

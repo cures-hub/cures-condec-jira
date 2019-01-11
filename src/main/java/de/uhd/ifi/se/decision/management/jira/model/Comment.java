@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.model;
+package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.ArrayList;
 import java.util.Date;

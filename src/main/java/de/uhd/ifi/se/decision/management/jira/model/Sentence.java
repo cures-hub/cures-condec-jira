@@ -1,12 +1,10 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.model;
+package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import com.atlassian.jira.issue.comments.MutableComment;
-
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 
 public interface Sentence extends DecisionKnowledgeElement {
 
