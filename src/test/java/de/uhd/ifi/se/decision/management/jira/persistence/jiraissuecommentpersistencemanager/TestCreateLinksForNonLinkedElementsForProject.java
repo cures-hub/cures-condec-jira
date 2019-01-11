@@ -8,7 +8,6 @@ import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class TestCreateLinksForNonLinkedElementsForProject extends TestJiraIssueCommentPersistenceMangerSetUp {
     @Test
@@ -27,13 +26,11 @@ public class TestCreateLinksForNonLinkedElementsForProject extends TestJiraIssue
     @NonTransactional
     public void testProjectKeyNull(){
         JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForProject(null);
-        assertTrue(true);
     }
 
     @Test
     @NonTransactional
     public void testProjectKeyEmpty(){
         JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForProject("");
-        assertTrue(true);
     }
 }

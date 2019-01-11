@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.genericLinkManager;
+package de.uhd.ifi.se.decision.management.jira.persistence.genericlinkmanager;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.model.Link;

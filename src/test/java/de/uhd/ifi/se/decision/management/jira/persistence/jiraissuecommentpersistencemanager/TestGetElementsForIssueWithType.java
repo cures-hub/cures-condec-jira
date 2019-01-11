@@ -1,12 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuecommentpersistencemanager;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import net.java.ao.test.jdbc.NonTransactional;
-import org.junit.Ignore;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
