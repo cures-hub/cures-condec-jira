@@ -109,16 +109,16 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 			return;
 		}
 		MutableComment comment = getCurrentEditedComment();
-		for (int i = 0; i < CommentSplitter.manualRationalIconList.length; i++) {
-			String icon = CommentSplitter.manualRationalIconList[i];
+		for (int i = 0; i < CommentSplitter.RATIONALE_ICONS.length; i++) {
+			String icon = CommentSplitter.RATIONALE_ICONS[i];
 			while (comment.getBody().contains(icon)) {
 				comment.setBody(comment.getBody().replaceFirst(icon.replace("(", "\\(").replace(")", "\\)"),
-						CommentSplitter.manualRationaleTagList[i]));
+						CommentSplitter.RATIONALE_TAGS[i]));
 				if (comment.getBody().split(System.getProperty("line.separator")).length == 1
 						&& !comment.getBody().endsWith("\r\n")) {
-					comment.setBody(comment.getBody() + CommentSplitter.manualRationaleTagList[i]);
+					comment.setBody(comment.getBody() + CommentSplitter.RATIONALE_TAGS[i]);
 				}
-				comment.setBody(comment.getBody().replaceFirst("\r\n", CommentSplitter.manualRationaleTagList[i]));
+				comment.setBody(comment.getBody().replaceFirst("\r\n", CommentSplitter.RATIONALE_TAGS[i]));
 				ComponentAccessor.getCommentManager().update(comment, true);
 			}
 		}

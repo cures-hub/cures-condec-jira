@@ -186,13 +186,13 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	private void checkForPlainText(String body) {
 		this.isPlainText = true;
-		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.excludedTagList) >= 0) {
+		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.EXCLUDED_TAGS) >= 0) {
 			this.isPlainText = false;
 		}
 		String projectKey = this.getProject().getProjectKey();
 		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisintg(body, projectKey)
 				|| (ConfigPersistenceManager.isIconParsing(projectKey)
-						&& StringUtils.indexOfAny(body, CommentSplitter.manualRationalIconList) >= 0)) {
+						&& StringUtils.indexOfAny(body, CommentSplitter.RATIONALE_ICONS) >= 0)) {
 			this.setType(CommentSplitter.getKnowledgeTypeFromManualIssueTag(body, projectKey, true));
 			setManuallyTagged();
 			stripTagsFromBody(body);

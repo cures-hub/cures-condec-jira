@@ -15,7 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
-public class JiraIssueCommentImpl implements JiraIssueComment  {
+public class JiraIssueCommentImpl implements JiraIssueComment {
 
 	private List<Sentence> sentences;
 
@@ -60,7 +60,7 @@ public class JiraIssueCommentImpl implements JiraIssueComment  {
 
 	// TODO das sollte statische Methode in CommentSplitter sein
 	private void splitCommentIntoParts() {
-		List<String> rawSentences = this.splitter.sliceCommentRecursionCommander(this.body, this.projectKey);
+		List<String> rawSentences = CommentSplitter.sliceCommentRecursionCommander(this.body, this.projectKey);
 		runBreakIterator(rawSentences);
 		// Create AO entries
 		for (int i = 0; i < this.splitter.getStartSubstringCount().size(); i++) {
@@ -99,7 +99,7 @@ public class JiraIssueCommentImpl implements JiraIssueComment  {
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
 
 		for (String currentSentence : rawSentences) {
-			if (StringUtils.indexOfAny(currentSentence, CommentSplitter.allExcluded) == -1) {
+			if (StringUtils.indexOfAny(currentSentence, CommentSplitter.EXCLUDED_STRINGS) == -1) {
 				iterator.setText(currentSentence);
 				int start = iterator.first();
 				for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
