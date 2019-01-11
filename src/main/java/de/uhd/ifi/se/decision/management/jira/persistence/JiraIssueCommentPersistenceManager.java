@@ -51,7 +51,8 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	@Override
 	public boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user) {
 		if (id <= 0 || user == null) {
-			LOGGER.error("Element cannot be deleted since it does not exist (id is less than zero) or the user is null.");
+			LOGGER.error(
+					"Element cannot be deleted since it does not exist (id is less than zero) or the user is null.");
 			return false;
 		}
 		boolean isDeleted = false;
@@ -63,18 +64,20 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		return isDeleted;
 	}
 
-	public static void deleteCommentsSentences(com.atlassian.jira.issue.comments.Comment comment) {
+	public static boolean deleteCommentsSentences(com.atlassian.jira.issue.comments.Comment comment) {
+		boolean isDeleted = false;
 		if (comment == null) {
-			LOGGER.error("Comment is Null");
-			return;
+			LOGGER.error("Sentences in comment cannot be deleted since the comment is null.");
+			return isDeleted;
 		}
 		DecisionKnowledgeInCommentEntity[] commentSentences = ACTIVE_OBJECTS.find(
 				DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("ISSUE_ID = ? AND COMMENT_ID = ?", comment.getIssue().getId(), comment.getId()));
+				Query.select().where("ISSUE_ID = ? AND COMMENT_ID = ?", comment.getIssue().getId(), comment.getId()));	
 		for (DecisionKnowledgeInCommentEntity databaseEntry : commentSentences) {
 			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUECOMMENT);
-			DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
+			isDeleted = DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
 		}
+		return isDeleted;
 	}
 
 	@Override

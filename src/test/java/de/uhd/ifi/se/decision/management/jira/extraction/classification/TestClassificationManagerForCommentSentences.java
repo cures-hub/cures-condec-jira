@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,12 +12,7 @@ import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.CommentManager;
-import com.atlassian.jira.issue.issuetype.IssueType;
-import com.atlassian.jira.issue.issuetype.MockIssueType;
-import com.atlassian.jira.mock.issue.MockIssue;
-import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
@@ -28,7 +22,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import meka.classifiers.multilabel.LC;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
@@ -72,7 +65,7 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 	}
 
 	private void fillCommentList() {
-		list.add(new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue),true));
+		list.add(new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true));
 
 	}
 

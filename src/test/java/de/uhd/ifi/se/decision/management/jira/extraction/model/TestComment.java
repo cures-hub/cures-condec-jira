@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,10 +13,6 @@ import org.junit.runner.RunWith;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.comments.CommentManager;
-import com.atlassian.jira.issue.issuetype.IssueType;
-import com.atlassian.jira.issue.issuetype.MockIssueType;
-import com.atlassian.jira.mock.issue.MockIssue;
-import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;

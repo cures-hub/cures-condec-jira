@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuecommentpersistencemanager;
 
+import static org.junit.Assert.assertFalse;
+
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
@@ -10,13 +12,13 @@ public class TestDeleteCommentsSentences extends TestJiraIssueCommentPersistence
 	@Test
 	@NonTransactional
 	public void testCommentNull() {
-		JiraIssueCommentPersistenceManager.deleteCommentsSentences(null);
+		assertFalse(JiraIssueCommentPersistenceManager.deleteCommentsSentences(null));
 	}
 
 	@Test
 	@NonTransactional
-	public void testCommentFilled() {
+	public void testCommentFilledButNotInAODatabase() {
 		addCommentsToIssue("This is a comment for test purposes");
-		JiraIssueCommentPersistenceManager.deleteCommentsSentences(comment1);
+		assertFalse(JiraIssueCommentPersistenceManager.deleteCommentsSentences(comment1));
 	}
 }

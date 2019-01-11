@@ -65,7 +65,7 @@ public class TestJiraIssueCommentPersistenceMangerSetUp extends TestSetUpWithIss
 		addDecisionKnowledgeElement();
 	}
 
-	private void addElementToDataBase() {
+	protected void addElementToDataBase() {
 		element = new SentenceImpl();
 		element.setProject("TEST");
 		element.setIssueId(12);
