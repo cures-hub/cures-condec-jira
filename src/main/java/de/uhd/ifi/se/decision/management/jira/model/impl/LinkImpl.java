@@ -64,7 +64,6 @@ public class LinkImpl implements Link {
 	}
 
 	public LinkImpl(LinkInDatabase linkInDatabase) {
-		this();
 		if (linkInDatabase.getSourceId() > 0) {
 			this.setSourceElement(linkInDatabase.getSourceId(), linkInDatabase.getSourceDocumentationLocation());
 		}
@@ -195,7 +194,7 @@ public class LinkImpl implements Link {
 
 	@Override
 	public boolean isValid() {
-		return sourceElement != null && destinationElement != null;
+		return sourceElement.existsInDatabase() && destinationElement.existsInDatabase();
 	}
 
 	@Override

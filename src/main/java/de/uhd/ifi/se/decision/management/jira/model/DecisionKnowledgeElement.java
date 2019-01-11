@@ -247,4 +247,11 @@ public interface DecisionKnowledgeElement {
 	 *            of creation.
 	 */
 	void setCreated(Date date);
+
+	/**
+	 * Check whether the element exists in database.
+	 * 
+	 * @return true if the element exists in database.
+	 */
+	boolean existsInDatabase();
 }
