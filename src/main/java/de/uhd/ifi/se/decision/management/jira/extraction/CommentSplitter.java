@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -9,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.extraction.view.macros.AbstractKnowledgeClassificationMacro;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -31,6 +32,9 @@ public class CommentSplitter {
 
 	public static final String[] EXCLUDED_STRINGS = (String[]) ArrayUtils
 			.addAll(ArrayUtils.addAll(EXCLUDED_TAGS, RATIONALE_TAGS), RATIONALE_ICONS);
+
+	public static final Set<KnowledgeType> KNOWLEDGE_TYPES = EnumSet.of(KnowledgeType.DECISION, KnowledgeType.ISSUE,
+			KnowledgeType.PRO, KnowledgeType.CON, KnowledgeType.ALTERNATIVE);
 
 	public CommentSplitter() {
 		this.setStartSubstringCount(new ArrayList<Integer>());
@@ -74,7 +78,6 @@ public class CommentSplitter {
 		}
 
 		return firstSplit;
-
 	}
 
 	private static ArrayList<String> searchForTagsRecursively(String commentPart, String openTag, String closeTag,
@@ -142,49 +145,21 @@ public class CommentSplitter {
 	 *            search also for icons
 	 * @return The manual tagged knowledge type of a given string
 	 */
-	public static String getKnowledgeTypeFromManualIssueTag(String body, String projectKey, boolean lookOutForIcons) {
+	public static KnowledgeType getKnowledgeTypeFromManualIssueTag(String body, String projectKey,
+			boolean lookOutForIcons) {
 		boolean checkIcons = lookOutForIcons && ConfigPersistenceManager.isIconParsing(projectKey);
-		if (body.toLowerCase().contains(RATIONALE_TAGS[0]) || (checkIcons && body.contains(RATIONALE_ICONS[0]))) {
-			return KnowledgeType.ISSUE.toString();
-		}
-		if (body.toLowerCase().contains(RATIONALE_TAGS[1]) || (checkIcons && body.contains(RATIONALE_ICONS[1]))) {
-			return KnowledgeType.ALTERNATIVE.toString();
-		}
-		if (body.toLowerCase().contains(RATIONALE_TAGS[2]) || (checkIcons && body.contains(RATIONALE_ICONS[2]))) {
-			return KnowledgeType.DECISION.toString();
-		}
-		if (body.toLowerCase().contains(RATIONALE_TAGS[3]) || (checkIcons && body.contains(RATIONALE_ICONS[3]))) {
-			return "pro";
-		}
-		if (body.toLowerCase().contains(RATIONALE_TAGS[4]) || (checkIcons && body.contains(RATIONALE_ICONS[4]))) {
-			return "con";
-		}
-		return matchSelectableKnowledgeTypes(body, projectKey);
-	}
-
-	private static String matchSelectableKnowledgeTypes(String body, String projectKey) {
-		DecisionKnowledgeProject dkp = new DecisionKnowledgeProjectImpl(projectKey);
-		for (KnowledgeType type : dkp.getKnowledgeTypes()) {
-			if (body.toLowerCase().contains("[" + type.toString().toLowerCase() + "]")) {
-				return type.toString();
+		for (KnowledgeType type : KNOWLEDGE_TYPES) {
+			if (body.toLowerCase().contains(AbstractKnowledgeClassificationMacro.getTag(type))
+					|| (checkIcons && body.contains(type.getIconString()))) {
+				return type;
 			}
 		}
-		return KnowledgeType.OTHER.toString();
+		return KnowledgeType.OTHER;
 	}
 
-	public static boolean containsOpenAndCloseTags(String body, String projectKey) {
-		for (int i = 0; i < getAllTagsUsedInProject(projectKey).length; i++) {
-			String tag = getAllTagsUsedInProject(projectKey)[i].toLowerCase();
-			if (body.toLowerCase().contains(tag) && body.toLowerCase().contains(tag.replace("[", "[/"))) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public static boolean isAnyKnowledgeTypeTwiceExisintg(String body, String projectKey) {
-		for (int i = 0; i < getAllTagsUsedInProject(projectKey).length; i++) {
-			String tag = getAllTagsUsedInProject(projectKey)[i].toLowerCase().replace("[", "{").replace("]", "}");
+	public static boolean isAnyKnowledgeTypeTwiceExisting(String body, String projectKey) {
+		List<String> knowledgeTypeTags = getAllTagsUsedInProject(projectKey);
+		for (String tag : knowledgeTypeTags) {
 			if (knowledgeTypeTagExistsTwice(body, tag)) {
 				return true;
 			}
@@ -192,16 +167,13 @@ public class CommentSplitter {
 		return false;
 	}
 
-	public static String[] getAllTagsUsedInProject(String projectKey) {
+	public static List<String> getAllTagsUsedInProject(String projectKey) {
 		Set<KnowledgeType> projectKnowledgeTypes = new DecisionKnowledgeProjectImpl(projectKey).getKnowledgeTypes();
-		ArrayList<String> projectList = new ArrayList<String>();
-		for (int i = 0; i < projectKnowledgeTypes.size(); i++) {
-			projectList.add("[" + projectKnowledgeTypes.toArray()[i].toString().toLowerCase() + "]");
+		List<String> knowledgeTypeTags = new ArrayList<String>();
+		for (KnowledgeType type : projectKnowledgeTypes) {
+			knowledgeTypeTags.add(AbstractKnowledgeClassificationMacro.getTag(type));
 		}
-		for (int i = 0; i < RATIONALE_TAGS.length; i++) {
-			projectList.add(RATIONALE_TAGS[i].toLowerCase());
-		}
-		return projectList.toArray(new String[0]);
+		return knowledgeTypeTags;
 	}
 
 	public static boolean isCommentIconTagged(String text) {

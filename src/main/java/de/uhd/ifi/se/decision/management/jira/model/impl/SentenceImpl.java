@@ -186,11 +186,11 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	private void checkForPlainText(String body) {
 		this.isPlainText = true;
-		if (StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.EXCLUDED_TAGS) >= 0) {
+		if (containsExcludedTag(body)) {
 			this.isPlainText = false;
 		}
 		String projectKey = this.getProject().getProjectKey();
-		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisintg(body, projectKey)
+		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisting(body, projectKey)
 				|| (ConfigPersistenceManager.isIconParsing(projectKey)
 						&& StringUtils.indexOfAny(body, CommentSplitter.RATIONALE_ICONS) >= 0)) {
 			this.setType(CommentSplitter.getKnowledgeTypeFromManualIssueTag(body, projectKey, true));
@@ -199,23 +199,28 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		}
 	}
 
+	private void setManuallyTagged() {
+		this.setPlainText(false);
+		this.setRelevant(true);
+		this.setTagged(true);
+		JiraIssueCommentPersistenceManager.updateInDatabase(this);
+	}
+
+	private boolean containsExcludedTag(String body) {
+		return StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.EXCLUDED_TAGS) >= 0;
+	}
+
 	private void stripTagsFromBody(String body) {
 		String projectKey = this.getProject().getProjectKey();
-		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisintg(body, projectKey)) {
-			int tagLength = 2 + CommentSplitter.getKnowledgeTypeFromManualIssueTag(body, projectKey, true).length();
+		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisting(body, projectKey)) {
+			int tagLength = 2
+					+ CommentSplitter.getKnowledgeTypeFromManualIssueTag(body, projectKey, true).toString().length();
 			super.setDescription(body.substring(tagLength, body.length() - (tagLength)));
 			super.setSummary(super.getDescription());
 		} else {
 			super.setDescription(body.replaceAll("\\(.*?\\)", ""));
 			super.setSummary(super.getDescription());
 		}
-	}
-
-	private void setManuallyTagged() {
-		this.setPlainText(false);
-		this.setRelevant(true);
-		this.setTagged(true);
-		JiraIssueCommentPersistenceManager.updateInDatabase(this);
 	}
 
 	public boolean isPlainText() {

@@ -163,6 +163,6 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 
 		MutableComment mutableComment = (MutableComment) ComponentAccessor.getCommentManager()
 				.getCommentById(sentence.getCommentId());
-		assertEquals("{Issue}some fancy new text{Issue}", mutableComment.getBody());
+		assertEquals("{issue}some fancy new text{issue}", mutableComment.getBody());
 	}
 }

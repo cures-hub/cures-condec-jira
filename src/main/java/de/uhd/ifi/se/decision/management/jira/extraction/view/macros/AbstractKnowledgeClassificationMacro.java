@@ -112,6 +112,6 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 		if (type == KnowledgeType.OTHER) {
 			return "";
 		}
-		return getTag(type.toString());
+		return getTag(type.name().toLowerCase());
 	}
 }

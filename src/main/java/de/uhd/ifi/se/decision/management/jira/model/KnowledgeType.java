@@ -181,6 +181,23 @@ public enum KnowledgeType {
 		return knowledgeTypes;
 	}
 
+	public String getIconString() {
+		switch (this) {
+		case PRO:
+			return "(y)";
+		case CON:
+			return "(n)";
+		case DECISION:
+			return "(/)";
+		case ISSUE:
+			return "(!)";
+		case ALTERNATIVE:
+			return "(?)";
+		default:
+			return "";
+		}
+	}
+
 	public String getIconUrl() {
 		switch (this) {
 		case PRO:

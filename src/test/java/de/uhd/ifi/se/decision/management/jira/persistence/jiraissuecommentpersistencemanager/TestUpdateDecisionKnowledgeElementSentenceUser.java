@@ -72,7 +72,7 @@ public class TestUpdateDecisionKnowledgeElementSentenceUser extends TestJiraIssu
 		// Important that sentence object has no tags
 		assertEquals("testobject", element.getBody().trim());
 		assertEquals(element.getTypeAsString(), KnowledgeType.ALTERNATIVE.toString());
-		assertEquals("{Alternative} testobject {Alternative}",
+		assertEquals("{alternative} testobject {alternative}",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
 	}
 
@@ -89,7 +89,7 @@ public class TestUpdateDecisionKnowledgeElementSentenceUser extends TestJiraIssu
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertEquals(element.getBody().trim(), "testobject");
 		assertEquals(element.getTypeAsString(), KnowledgeType.ALTERNATIVE.toString());
-		assertEquals("some sentence in front. {Alternative} testobject {Alternative}",
+		assertEquals("some sentence in front. {alternative} testobject {alternative}",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
 	}
 
@@ -106,7 +106,7 @@ public class TestUpdateDecisionKnowledgeElementSentenceUser extends TestJiraIssu
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertEquals(element.getBody(), " testobject ");
 		assertEquals(element.getTypeAsString(), KnowledgeType.ALTERNATIVE.toString());
-		assertEquals("some sentence in front. {Alternative} testobject {Alternative} some sentence in the back.",
+		assertEquals("some sentence in front. {alternative} testobject {alternative} some sentence in the back.",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
 	}
 
@@ -125,7 +125,7 @@ public class TestUpdateDecisionKnowledgeElementSentenceUser extends TestJiraIssu
 		assertEquals(" testobject ", element.getBody());
 		assertEquals(element.getTypeAsString(), "Pro");
 
-		assertEquals("some sentence in front. {Pro} testobject {Pro} some sentence in the back.",
+		assertEquals("some sentence in front. {pro} testobject {pro} some sentence in the back.",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
 	}
 
