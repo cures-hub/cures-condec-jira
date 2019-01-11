@@ -1,12 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuecommentpersistencemanager;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +22,8 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import net.java.ao.EntityManager;
@@ -38,9 +37,9 @@ public class TestJiraIssueCommentPersistenceMangerSetUp extends TestSetUpWithIss
 
 	private EntityManager entityManager;
 
-    protected JiraIssueCommentPersistenceManager manager;
-    protected ApplicationUser user;
-    protected Sentence element;
+	protected JiraIssueCommentPersistenceManager manager;
+	protected ApplicationUser user;
+	protected Sentence element;
 	protected com.atlassian.jira.issue.comments.Comment comment1;
 	protected DecisionKnowledgeElement decisionKnowledgeElement;
 
@@ -62,32 +61,32 @@ public class TestJiraIssueCommentPersistenceMangerSetUp extends TestSetUpWithIss
 		createLocalIssue();
 		manager = new JiraIssueCommentPersistenceManager("TEST");
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
-        addElementToDataBase();
-        addDecisionKnowledgeElement();
+		addElementToDataBase();
+		addDecisionKnowledgeElement();
 	}
 
-	private void addElementToDataBase(){
-        element = new SentenceImpl();
-        element.setProject("TEST");
-        element.setIssueId(12);
-        element.setId(1);
-        element.setKey("TEST-12231");
-        element.setType("Argument");
-        element.setProject("TEST");
-        element.setDescription("Old");
-        element.setDocumentationLocation(DocumentationLocation.JIRAISSUECOMMENT);
-        manager.insertDecisionKnowledgeElement(element,user);
-    }
+	private void addElementToDataBase() {
+		element = new SentenceImpl();
+		element.setProject("TEST");
+		element.setIssueId(12);
+		element.setId(1);
+		element.setKey("TEST-12231");
+		element.setType("Argument");
+		element.setProject("TEST");
+		element.setDescription("Old");
+		element.setDocumentationLocation(DocumentationLocation.JIRAISSUECOMMENT);
+		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(element, user);
+	}
 
-    private void addDecisionKnowledgeElement(){
-        decisionKnowledgeElement = new DecisionKnowledgeElementImpl();
-        decisionKnowledgeElement.setProject("TEST");
-        decisionKnowledgeElement.setId(1232);
-        decisionKnowledgeElement.setKey("TEST-1232");
-        decisionKnowledgeElement.setType("DECISION");
-        decisionKnowledgeElement.setProject("TEST");
-        decisionKnowledgeElement.setDescription("Old");
-    }
+	private void addDecisionKnowledgeElement() {
+		decisionKnowledgeElement = new DecisionKnowledgeElementImpl();
+		decisionKnowledgeElement.setProject("TEST");
+		decisionKnowledgeElement.setId(1232);
+		decisionKnowledgeElement.setKey("TEST-1232");
+		decisionKnowledgeElement.setType("DECISION");
+		decisionKnowledgeElement.setProject("TEST");
+		decisionKnowledgeElement.setDescription("Old");
+	}
 
 	protected void addCommentsToIssue(String comment) {
 
@@ -106,7 +105,6 @@ public class TestJiraIssueCommentPersistenceMangerSetUp extends TestSetUpWithIss
 		addCommentsToIssue(text);
 		return new CommentImpl(comment1, true);
 	}
-
 
 	@Test
 	@NonTransactional

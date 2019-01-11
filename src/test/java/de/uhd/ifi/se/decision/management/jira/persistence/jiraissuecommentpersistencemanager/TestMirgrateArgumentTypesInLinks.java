@@ -3,23 +3,25 @@ package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuecommentpersi
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Test;
 
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+
 public class TestMirgrateArgumentTypesInLinks extends TestJiraIssueCommentPersistenceMangerSetUp{
 
     @Test
     @NonTransactional
     public void testProjectKeyNull(){
-        manager.migrateArgumentTypesInLinks(null);
+    	JiraIssueCommentPersistenceManager.migrateArgumentTypesInLinks(null);
     }
 
     @Test
     @NonTransactional
     public void testProjectKeyEmpty(){
-        manager.migrateArgumentTypesInLinks("");
+    	JiraIssueCommentPersistenceManager.migrateArgumentTypesInLinks("");
     }
 
     @Test
     @NonTransactional
     public void testPrjectKeyFilled(){
-        manager.migrateArgumentTypesInLinks("TEST");
+    	JiraIssueCommentPersistenceManager.migrateArgumentTypesInLinks("TEST");
     }
 }

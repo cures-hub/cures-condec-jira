@@ -50,10 +50,10 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 	@Override
 	public boolean deleteDecisionKnowledgeElement(long id, ApplicationUser user) {
-	    if(id<=0|| user == null){
-	        LOGGER.error("ID is to less then Zero or User is Null");
-	        return false;
-        }
+		if (id <= 0 || user == null) {
+			LOGGER.error("Element cannot be deleted since it does not exist (id is less than zero) or the user is null.");
+			return false;
+		}
 		boolean isDeleted = false;
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("ID = ?", id))) {
@@ -64,10 +64,10 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	}
 
 	public static void deleteCommentsSentences(com.atlassian.jira.issue.comments.Comment comment) {
-	    if(comment == null){
-	        LOGGER.error("Comment is Null");
-	        return;
-	    }
+		if (comment == null) {
+			LOGGER.error("Comment is Null");
+			return;
+		}
 		DecisionKnowledgeInCommentEntity[] commentSentences = ACTIVE_OBJECTS.find(
 				DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("ISSUE_ID = ? AND COMMENT_ID = ?", comment.getIssue().getId(), comment.getId()));
@@ -160,10 +160,10 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			String type) {
 
 		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
-        if(issueId<=0|| projectKey == null || type == null){
-            LOGGER.error("Id, ProjectKey, Type are Invalid");
-            return elements;
-        }
+		if (issueId <= 0 || projectKey == null || type == null) {
+			LOGGER.error("Id, ProjectKey, Type are Invalid");
+			return elements;
+		}
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS.find(
 				DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ? AND TYPE = ?", projectKey, issueId, type))) {
@@ -173,9 +173,9 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	}
 
 	public static long getIdOfSentenceForMacro(String body, long issueId, String typeString, String projectKey) {
-	    if(body == null || issueId <= 0|| typeString == null || projectKey == null){
-	        return 0;
-        }
+		if (body == null || issueId <= 0 || typeString == null || projectKey == null) {
+			return 0;
+		}
 		List<DecisionKnowledgeElement> sentences = getElementsForIssueWithType(issueId, projectKey, typeString);
 		for (DecisionKnowledgeElement sentence : sentences) {
 			if (sentence.getDescription().trim().equals(body.trim().replaceAll("<[^>]*>", ""))) {
@@ -213,9 +213,9 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	@Override
 	public DecisionKnowledgeElement insertDecisionKnowledgeElement(DecisionKnowledgeElement element,
 			ApplicationUser user, DecisionKnowledgeElement parentElement) {
-	    if(element == null ||user == null || parentElement == null){
-	        return null;
-        }
+		if (element == null || user == null || parentElement == null) {
+			return null;
+		}
 		long issueId;
 		if (parentElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
 			Sentence sentence = (Sentence) this.getDecisionKnowledgeElement(parentElement.getId());
@@ -272,9 +272,9 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 	@Override
 	public boolean updateDecisionKnowledgeElement(DecisionKnowledgeElement element, ApplicationUser user) {
-	    if(element == null){
-	        return  false;
-        }
+		if (element == null) {
+			return false;
+		}
 		Sentence sentence = new SentenceImpl();
 		sentence.setId(element.getId());
 		sentence.setType(element.getType());
@@ -287,9 +287,9 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	}
 
 	public boolean updateDecisionKnowledgeElement(Sentence element, ApplicationUser user) {
-        if(element == null){
-            return  false;
-        }
+		if (element == null) {
+			return false;
+		}
 		// Get corresponding element from database
 		Sentence sentence = (Sentence) this.getDecisionKnowledgeElement(element.getId());
 		if (sentence == null) {
@@ -415,10 +415,9 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	}
 
 	public static void createLinksForNonLinkedElementsForProject(String projectKey) {
-	    if(projectKey == null || projectKey.equals(""))
-        {
-            return;
-        }
+		if (projectKey == null || projectKey.equals("")) {
+			return;
+		}
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
 				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey))) {
 			checkIfSentenceHasAValidLink(databaseEntry.getId(), databaseEntry.getIssueId(),
@@ -468,14 +467,15 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	 * 
 	 */
 	public static void migrateArgumentTypesInLinks(String projectKey) {
-	    if(projectKey == null || projectKey.equals("")){
-	        return;
-        }
+		if (projectKey == null || projectKey.equals("")) {
+			return;
+		}
 		DecisionKnowledgeInCommentEntity[] sentencesInProject = ACTIVE_OBJECTS
 				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("PROJECT_KEY = ?", projectKey));
 		for (DecisionKnowledgeInCommentEntity databaseEntry : sentencesInProject) {
 			if (databaseEntry.getType().length() == 3) {// Equals Argument
-				List<Link> links = GenericLinkManager.getLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUECOMMENT);
+				List<Link> links = GenericLinkManager.getLinksForElement(databaseEntry.getId(),
+						DocumentationLocation.JIRAISSUECOMMENT);
 				for (Link link : links) {
 					if (link.getType().equalsIgnoreCase("contain")) {
 						GenericLinkManager.deleteLink(link);
@@ -488,14 +488,14 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	}
 
 	public Issue createJIRAIssueFromSentenceObject(long aoId, ApplicationUser user) {
-	    if(aoId <= 0 || user == null){
-	        LOGGER.error("Parameter are Invalid");
-	        return null;
-        }
+		if (aoId <= 0 || user == null) {
+			LOGGER.error("Parameter are Invalid");
+			return null;
+		}
 
 		Sentence element = (Sentence) this.getDecisionKnowledgeElement(aoId);
-		
-		JiraIssuePersistenceManager persistenceManager = new JiraIssuePersistenceManager(this.projectKey);		
+
+		JiraIssuePersistenceManager persistenceManager = new JiraIssuePersistenceManager(this.projectKey);
 		DecisionKnowledgeElement decElement = persistenceManager.insertDecisionKnowledgeElement(element, user);
 
 		MutableIssue issue = ComponentAccessor.getIssueService().getIssue(user, decElement.getId()).getIssue();

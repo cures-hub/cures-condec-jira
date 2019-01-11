@@ -77,8 +77,8 @@ public interface DecisionKnowledgeElement {
 
 	/**
 	 * Get the type of the decision knowledge element as a String. For example,
-	 * prominent types are decision, alternative, issue, and argument. This methods returns
-	 * the type of JIRA issues that are no decision knowledge elements.
+	 * prominent types are decision, alternative, issue, and argument. This methods
+	 * returns the type of JIRA issues that are no decision knowledge elements.
 	 *
 	 * @see KnowledgeType
 	 * @return type of the decision knowledge element.
@@ -191,7 +191,7 @@ public interface DecisionKnowledgeElement {
 	 * @return documentation location of the decision knowledge element.
 	 */
 	DocumentationLocation getDocumentationLocation();
-	
+
 	/**
 	 * Get the documentation location of the decision knowledge element. For
 	 * example, decision knowledge can be documented in commit messages or in the
@@ -223,7 +223,7 @@ public interface DecisionKnowledgeElement {
 	 *            of the decision knowledge element.
 	 */
 	void setDocumentationLocation(String documentationLocation);
-	
+
 	/**
 	 * Get the URL to the decision knowledge element.
 	 *
