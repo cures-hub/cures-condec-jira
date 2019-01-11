@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public interface Comment {
+public interface JiraIssueComment {
 
 	public List<Sentence> getSentences();
 
@@ -41,7 +41,7 @@ public interface Comment {
 	public Long getIssueId();
 
 	public void setIssueId(Long issueId);
-	
+
 	public void reloadSentencesFromAo();
 
 }

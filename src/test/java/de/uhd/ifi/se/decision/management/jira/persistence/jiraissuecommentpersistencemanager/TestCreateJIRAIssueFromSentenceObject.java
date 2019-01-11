@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestCreateJIRAIssueFromSentenceObject extends TestJiraIssueCommentPersistenceMangerSetUp {
@@ -43,7 +43,7 @@ public class TestCreateJIRAIssueFromSentenceObject extends TestJiraIssueCommentP
 	@Test
 	@NonTransactional
 	public void testIdOkUserFilled() {
-		Comment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
+		JiraIssueComment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		TestJiraIssueCommentPersistenceMangerSetUp.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
 		assertNotNull(manager.createJIRAIssueFromSentenceObject(3, user));
 	}

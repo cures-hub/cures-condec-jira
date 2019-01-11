@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.jiraissuecommentpersistencemanager.TestJiraIssueCommentPersistenceMangerSetUp;
@@ -15,7 +15,7 @@ public class TestAutoLinkSentences extends TestJiraIssueCommentPersistenceManger
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForProAlternative() {
-		Comment comment = getComment("{alternative}first sentence{alternative} {pro}second sentence{pro}");
+		JiraIssueComment comment = getComment("{alternative}first sentence{alternative} {pro}second sentence{pro}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.getSentences().get(1)).get(0);
 		assertEquals(sentenceLink.getOppositeElement(comment.getSentences().get(0)).getId(),
 				comment.getSentences().get(1).getId());
@@ -24,7 +24,7 @@ public class TestAutoLinkSentences extends TestJiraIssueCommentPersistenceManger
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForConAlternative() {
-		Comment comment = getComment("{alternative}first sentence{alternative} {con}second sentence{con}");
+		JiraIssueComment comment = getComment("{alternative}first sentence{alternative} {con}second sentence{con}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.getSentences().get(1)).get(0);
 		assertEquals(sentenceLink.getOppositeElement(comment.getSentences().get(0)).getId(),
 				comment.getSentences().get(1).getId());
@@ -33,7 +33,7 @@ public class TestAutoLinkSentences extends TestJiraIssueCommentPersistenceManger
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForProDecision() {
-		Comment comment = getComment("{decision}first sentence{decision} {pro}second sentence{pro}");
+		JiraIssueComment comment = getComment("{decision}first sentence{decision} {pro}second sentence{pro}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.getSentences().get(1)).get(0);
 		assertEquals(sentenceLink.getOppositeElement(comment.getSentences().get(0)).getId(),
 				comment.getSentences().get(1).getId());
@@ -42,7 +42,7 @@ public class TestAutoLinkSentences extends TestJiraIssueCommentPersistenceManger
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForConDecision() {
-		Comment comment = getComment("{decision}first sentence{decision} {con}second sentence{con}");
+		JiraIssueComment comment = getComment("{decision}first sentence{decision} {con}second sentence{con}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.getSentences().get(1)).get(0);
 		assertEquals(sentenceLink.getOppositeElement(comment.getSentences().get(0)).getId(),
 				comment.getSentences().get(1).getId());
@@ -51,7 +51,7 @@ public class TestAutoLinkSentences extends TestJiraIssueCommentPersistenceManger
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForAlternativeIssue() {
-		Comment comment = getComment("{issue}first sentence{issue} {alternative}second sentence{alternative}");
+		JiraIssueComment comment = getComment("{issue}first sentence{issue} {alternative}second sentence{alternative}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.getSentences().get(1)).get(0);
 		assertEquals(sentenceLink.getOppositeElement(comment.getSentences().get(0)).getId(),
 				comment.getSentences().get(1).getId());
@@ -60,7 +60,7 @@ public class TestAutoLinkSentences extends TestJiraIssueCommentPersistenceManger
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForDecisionIssue() {
-		Comment comment = getComment("{issue}first sentence{issue} {decision}second sentence{decision}");
+		JiraIssueComment comment = getComment("{issue}first sentence{issue} {decision}second sentence{decision}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.getSentences().get(1)).get(0);
 		assertEquals(sentenceLink.getOppositeElement(comment.getSentences().get(0)).getId(),
 				comment.getSentences().get(1).getId());
@@ -69,7 +69,7 @@ public class TestAutoLinkSentences extends TestJiraIssueCommentPersistenceManger
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForBoringNonSmartLink() {
-		Comment comment = getComment("{issue}first sentence{issue} {pro}second sentence{pro}");
+		JiraIssueComment comment = getComment("{issue}first sentence{issue} {pro}second sentence{pro}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.getSentences().get(1)).get(0);
 		assertEquals("s3 to i30", sentenceLink.toString());
 	}

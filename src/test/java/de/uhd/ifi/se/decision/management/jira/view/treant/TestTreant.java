@@ -15,7 +15,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
@@ -134,7 +134,7 @@ public class TestTreant extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testCreateNodeStructureWithSentenceInIssue() {
 		TestComment tc = new TestComment();
-		Comment comment = tc.getComment("This is a testsentence");
+		JiraIssueComment comment = tc.getComment("This is a testsentence");
 		comment.getSentences().get(0).setRelevant(true);
 		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(comment.getIssueId());
 		Node nodeStructure = treant.createNodeStructure(element, null, 4, 0);

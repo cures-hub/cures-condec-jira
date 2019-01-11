@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.user.ApplicationUser;
 
@@ -19,10 +20,10 @@ import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.model.impl.CommentImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.JiraIssueCommentImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import net.java.ao.EntityManager;
@@ -37,7 +38,7 @@ public class TestComment extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
 
-	private com.atlassian.jira.issue.comments.Comment comment1;
+	private Comment comment1;
 
 	@Before
 	public void setUp() {
@@ -59,21 +60,21 @@ public class TestComment extends TestSetUpWithIssues {
 
 	}
 
-	public CommentImpl getComment(String text) {
+	public JiraIssueCommentImpl getComment(String text) {
 		createLocalIssue();
 
 		addCommentsToIssue(text);
-		return new CommentImpl(comment1, true);
+		return new JiraIssueCommentImpl(comment1);
 	}
 
 	@Test
 	public void testConstructor() {
-		assertNotNull(new CommentImpl());
+		assertNotNull(new JiraIssueCommentImpl());
 	}
 
 	@Test
 	public void testSentencesAreNotNull() {
-		assertNotNull(new CommentImpl().getSentences());
+		assertNotNull(new JiraIssueCommentImpl().getSentences());
 	}
 
 	@Test
@@ -85,7 +86,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testCommentWithOneQuote() {
-		Comment comment = getComment("{quote} this is a quote {quote} and this is a test Sentence.");
+		JiraIssueComment comment = getComment("{quote} this is a quote {quote} and this is a test Sentence.");
 		assertNotNull(comment);
 		assertEquals(2, comment.getSentences().size());
 	}
@@ -93,7 +94,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testCommentWithOneQuoteAtTheBack() {
-		Comment comment = getComment("and this is a test Sentence. {quote} this is a quote {quote} ");
+		JiraIssueComment comment = getComment("and this is a test Sentence. {quote} this is a quote {quote} ");
 		assertNotNull(comment);
 		assertEquals(2, comment.getSentences().size());
 	}
@@ -101,7 +102,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testCommentWithTwoQuotes() {
-		Comment comment = getComment(
+		JiraIssueComment comment = getComment(
 				"{quote} this is a quote {quote} and this is a test Sentence. {quote} this is a second quote {quote} ");
 		assertNotNull(comment);
 		assertEquals(3, comment.getSentences().size());
@@ -110,7 +111,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithDifferentQuotes() {
-		Comment comment = getComment("{quote} this is a quote {quote} and this is a test Sentence.");
+		JiraIssueComment comment = getComment("{quote} this is a quote {quote} and this is a test Sentence.");
 		assertEquals(2, comment.getSentences().size());
 
 		comment = getComment(
@@ -122,7 +123,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithDifferentQuotes2() {
-		Comment comment = getComment(
+		JiraIssueComment comment = getComment(
 				"{quote} this is a quote {quote} and this is a test Sentence. {quote} this is a second quote {quote} and a Sentence at the back");
 		assertEquals(4, comment.getSentences().size());
 
@@ -139,7 +140,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithNoformats() {
-		Comment comment = getComment("{noformat} this is a noformat {noformat} and this is a test Sentence.");
+		JiraIssueComment comment = getComment("{noformat} this is a noformat {noformat} and this is a test Sentence.");
 		assertEquals(2, comment.getSentences().size());
 
 		comment = getComment(
@@ -151,7 +152,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithNoformats2() {
-		Comment comment = getComment(
+		JiraIssueComment comment = getComment(
 				"{noformat} this is a noformat {noformat} and this is a test Sentence. {noformat} this is a second noformat {noformat} and a Sentence at the back");
 		assertEquals(4, comment.getSentences().size());
 
@@ -167,7 +168,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithNoformatsAndQuotes() {
-		Comment comment = getComment(
+		JiraIssueComment comment = getComment(
 				"{noformat} this is a noformat {noformat} {quote} and this is a test Sentence.{quote}");
 		assertEquals(2, comment.getSentences().size());
 
@@ -203,7 +204,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSentenceOrder() {
-		Comment comment = getComment(
+		JiraIssueComment comment = getComment(
 				"{noformat} this is a first noformat {noformat} and this is a second test Sentence. {quote} this is a also a third quote {quote}{quote} this is a also a fourth quote {quote} {noformat} this is a fifth noformat {noformat} and this is a sixth test Sentence.");
 		assertEquals(6, comment.getSentences().size());
 		assertTrue(comment.getSentences().get(0).getBody().contains("first"));
@@ -217,7 +218,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithUnknownTag() {
-		Comment comment = getComment(
+		JiraIssueComment comment = getComment(
 				"{noformat} this is a noformat {noformat} {wuzl} and this is a test Sentence {wuzl}");
 		assertEquals(2, comment.getSentences().size());
 		assertTrue(comment.getSentences().get(0).getBody().contains(" this is a noformat "));
@@ -226,7 +227,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithCodeTag() {
-		Comment comment = getComment("{code:Java} int i = 0 {code} and this is a test Sentence.");
+		JiraIssueComment comment = getComment("{code:Java} int i = 0 {code} and this is a test Sentence.");
 		assertEquals(2, comment.getSentences().size());
 
 		comment = getComment(
@@ -261,7 +262,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testPropertiesOfCodeElementedText() {
-		Comment comment = getComment("{code:Java} int i = 0 {code} and this is a test Sentence.");
+		JiraIssueComment comment = getComment("{code:Java} int i = 0 {code} and this is a test Sentence.");
 		assertEquals(2, comment.getSentences().size());
 		assertEquals(false, comment.getSentences().get(0).isRelevant());
 		assertEquals(false, comment.getSentences().get(0).isPlainText());
@@ -271,7 +272,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testPropertiesOfNoFormatElementedText() {
-		Comment comment = getComment("{noformat} int i = 0 {noformat} and this is a test Sentence.");
+		JiraIssueComment comment = getComment("{noformat} int i = 0 {noformat} and this is a test Sentence.");
 		assertEquals(2, comment.getSentences().size());
 		assertEquals(false, comment.getSentences().get(0).isRelevant());
 		assertEquals(false, comment.getSentences().get(0).isPlainText());
@@ -281,7 +282,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testPropertiesOfQuotedElementedText() {
-		Comment comment = getComment("{quote} int i = 0 {quote} and this is a test Sentence.");
+		JiraIssueComment comment = getComment("{quote} int i = 0 {quote} and this is a test Sentence.");
 		assertEquals(2, comment.getSentences().size());
 		assertEquals(false, comment.getSentences().get(0).isRelevant());
 		assertEquals(false, comment.getSentences().get(0).isPlainText());
@@ -291,7 +292,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testPropertiesOfTaggedElementedText() {
-		Comment comment = getComment(
+		JiraIssueComment comment = getComment(
 				"{Alternative} this is a manually created alternative {Alternative} and this is a test Sentence.");
 		assertEquals(2, comment.getSentences().size());
 		assertEquals(true, comment.getSentences().get(0).isRelevant());
@@ -302,7 +303,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testPropertiesOfIconElementedText() {
-		Comment comment = getComment("(y) this is a icon pro text. \r\n and this is a test Sentence.");
+		JiraIssueComment comment = getComment("(y) this is a icon pro text. \r\n and this is a test Sentence.");
 		assertEquals(2, comment.getSentences().size());
 		assertEquals(true, comment.getSentences().get(0).isRelevant());
 		assertEquals(false, comment.getSentences().get(0).isPlainText());
@@ -313,7 +314,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSetSentences() {
-		Comment comment = new CommentImpl();
+		JiraIssueComment comment = new JiraIssueCommentImpl();
 		comment.setSentences(new ArrayList<Sentence>());
 		assertNotNull(comment.getSentences());
 		assertEquals(0, comment.getSentences().size());
@@ -322,7 +323,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testGetSetBody() {
-		Comment comment = new CommentImpl();
+		JiraIssueComment comment = new JiraIssueCommentImpl();
 		comment.setBody("test");
 		assertEquals("test", comment.getBody());
 	}
@@ -330,7 +331,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testGetSetAuthorId() {
-		Comment comment = new CommentImpl();
+		JiraIssueComment comment = new JiraIssueCommentImpl();
 		comment.setAuthorId((long) 1337);
 		assertEquals(1337, comment.getAuthorId());
 	}
@@ -338,7 +339,7 @@ public class TestComment extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSetProjectKey() {
-		Comment comment = new CommentImpl();
+		JiraIssueComment comment = new JiraIssueCommentImpl();
 		comment.setProjectKey("Test");
 		assertEquals("Test", comment.getProjectKey());
 	}

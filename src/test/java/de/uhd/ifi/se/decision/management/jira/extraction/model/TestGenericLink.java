@@ -18,12 +18,12 @@ import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.model.impl.CommentImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.JiraIssueCommentImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -59,7 +59,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSecondConstructor() {
-		Comment comment = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
+		JiraIssueComment comment = new JiraIssueCommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
 		Sentence sentence = comment.getSentences().get(0);
 		Link link = new LinkImpl(sentence, element);
@@ -73,7 +73,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testThirdConstructor() {
-		Comment comment = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
+		JiraIssueComment comment = new JiraIssueCommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
 		Sentence sentence = comment.getSentences().get(0);
 		Link link = new LinkImpl(sentence, element, "contain");
@@ -91,7 +91,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 		Link link = new LinkImpl();
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
 		link.setDestinationElement(element);
-		Comment comment = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
+		JiraIssueComment comment = new JiraIssueCommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence sentence = comment.getSentences().get(0);
 		link.setSourceElement(sentence);
 
@@ -107,7 +107,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 		Link link = new LinkImpl();
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
 		link.setSourceElement(element);
-		Comment comment = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
+		JiraIssueComment comment = new JiraIssueCommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence sentence = comment.getSentences().get(0);
 		link.setDestinationElement(sentence);
 
@@ -123,7 +123,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 		Link link = new LinkImpl();
 
-		Comment comment = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
+		JiraIssueComment comment = new JiraIssueCommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence s = comment.getSentences().get(0);
 		Sentence s1 = comment.getSentences().get(1);
 
@@ -180,7 +180,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testIsIssueLinkWithValidLink() {
-		Comment comment = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
+		JiraIssueComment comment = new JiraIssueCommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence sentence = comment.getSentences().get(0);
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
 		Link link = new LinkImpl(sentence, element);
@@ -199,7 +199,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testToStringToBeatCodeCoverage() {
-		Comment comment = new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true);
+		JiraIssueComment comment = new JiraIssueCommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue));
 		Sentence sentence = comment.getSentences().get(0);
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
 		Link link = new LinkImpl(sentence, element);

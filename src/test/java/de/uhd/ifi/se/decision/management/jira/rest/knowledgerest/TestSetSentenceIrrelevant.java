@@ -23,7 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplateWebhook;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
@@ -66,7 +66,7 @@ public class TestSetSentenceIrrelevant extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testRequestNullElementFilled() {
 		TestComment tc = new TestComment();
-		Comment comment = tc.getComment("This is a test sentence.");
+		JiraIssueComment comment = tc.getComment("This is a test sentence.");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.getSentences().get(0);
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERROR)).build()
 				.getEntity(), knowledgeRest.setSentenceIrrelevant(null, decisionKnowledgeElement).getEntity());
@@ -87,7 +87,7 @@ public class TestSetSentenceIrrelevant extends TestSetUpWithIssues {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
 		TestComment tc = new TestComment();
-		Comment comment = tc.getComment("This is a test sentence.");
+		JiraIssueComment comment = tc.getComment("This is a test sentence.");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.getSentences().get(0);
 		decisionKnowledgeElement.setType(KnowledgeType.ALTERNATIVE);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());

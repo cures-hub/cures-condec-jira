@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
@@ -16,7 +16,7 @@ public class TestUpdateInDatabase extends TestJiraIssueCommentPersistenceMangerS
 	@Test
 	@NonTransactional
 	public void testUpdateSentenceElement() {
-		Comment comment = getComment("first Comment");
+		JiraIssueComment comment = getComment("first Comment");
 		long id = TestJiraIssueCommentPersistenceMangerSetUp.insertDecisionKnowledgeElement(comment,
 				comment.getIssueId(), 0);
 		Sentence sentence = comment.getSentences().get(0);
@@ -29,7 +29,7 @@ public class TestUpdateInDatabase extends TestJiraIssueCommentPersistenceMangerS
 	@Test
 	@NonTransactional
 	public void testUpdateKnowledgeType() {
-		Comment comment = getComment("first Comment");
+		JiraIssueComment comment = getComment("first Comment");
 		long id = TestJiraIssueCommentPersistenceMangerSetUp.insertDecisionKnowledgeElement(comment,
 				comment.getIssueId(), 0);
 		Sentence sentence = comment.getSentences().get(0);
@@ -42,7 +42,7 @@ public class TestUpdateInDatabase extends TestJiraIssueCommentPersistenceMangerS
 	@Test
 	@NonTransactional
 	public void testSetSentenceIrrlevant() {
-		Comment comment = getComment("first Comment");
+		JiraIssueComment comment = getComment("first Comment");
 		long id = TestJiraIssueCommentPersistenceMangerSetUp.insertDecisionKnowledgeElement(comment,
 				comment.getIssueId(), 0);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);

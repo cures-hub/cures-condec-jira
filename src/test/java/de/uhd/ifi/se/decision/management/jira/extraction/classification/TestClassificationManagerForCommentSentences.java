@@ -20,8 +20,8 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.model.Comment;
-import de.uhd.ifi.se.decision.management.jira.model.impl.CommentImpl;
+import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
+import de.uhd.ifi.se.decision.management.jira.model.impl.JiraIssueCommentImpl;
 import meka.classifiers.multilabel.LC;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
@@ -34,7 +34,7 @@ import weka.classifiers.meta.FilteredClassifier;
 public class TestClassificationManagerForCommentSentences extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
-	private List<Comment> list = new ArrayList<Comment>();
+	private List<JiraIssueComment> list = new ArrayList<JiraIssueComment>();
 	private ClassificationManagerForCommentSentences classificationManager;
 
 	@Before
@@ -65,7 +65,7 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 	}
 
 	private void fillCommentList() {
-		list.add(new CommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue), true));
+		list.add(new JiraIssueCommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue)));
 
 	}
 

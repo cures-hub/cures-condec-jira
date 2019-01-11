@@ -8,12 +8,14 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.atlassian.jira.issue.comments.Comment;
+
 import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
-import de.uhd.ifi.se.decision.management.jira.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
-public class CommentImpl implements Comment {
+public class JiraIssueCommentImpl implements JiraIssueComment  {
 
 	private List<Sentence> sentences;
 
@@ -33,7 +35,7 @@ public class CommentImpl implements Comment {
 
 	private Long issueId;
 
-	public CommentImpl() {
+	public JiraIssueCommentImpl() {
 		this.sentences = new ArrayList<Sentence>();
 		this.created = new Date();
 		this.authorFullName = " ";
@@ -44,7 +46,7 @@ public class CommentImpl implements Comment {
 		this.issueId = 0L;
 	}
 
-	public CommentImpl(com.atlassian.jira.issue.comments.Comment comment, boolean insertSentencesIntoAO) {
+	public JiraIssueCommentImpl(Comment comment) {
 		this();
 		this.projectKey = comment.getIssue().getProjectObject().getKey();
 		this.body = comment.getBody();
@@ -53,17 +55,18 @@ public class CommentImpl implements Comment {
 		this.jiraCommentId = comment.getId();
 		this.authorId = comment.getAuthorApplicationUser().getId();
 		this.setIssueId(comment.getIssue().getId());
-		splitCommentIntoSentences(insertSentencesIntoAO);
+		splitCommentIntoParts();
 	}
 
-	private void splitCommentIntoSentences(boolean insertSentencesIntoAO) {
+	// TODO das sollte statische Methode in CommentSplitter sein
+	private void splitCommentIntoParts() {
 		List<String> rawSentences = this.splitter.sliceCommentRecursionCommander(this.body, this.projectKey);
 		runBreakIterator(rawSentences);
 		// Create AO entries
 		for (int i = 0; i < this.splitter.getStartSubstringCount().size(); i++) {
 			int startIndex = this.splitter.getStartSubstringCount().get(i);
 			int endIndex = this.splitter.getEndSubstringCount().get(i);
-			if (insertSentencesIntoAO && startAndEndIndexRules(startIndex, endIndex)) {
+			if (startAndEndIndexRules(startIndex, endIndex)) {
 				Sentence sentence = new SentenceImpl();
 				sentence.setCommentId(this.jiraCommentId);
 				sentence.setEndSubstringCount(endIndex);

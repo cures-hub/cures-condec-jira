@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.model.Comment;
+import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
@@ -14,7 +14,7 @@ public class TestCreateLinksForNonLinkedElementsForProject extends TestJiraIssue
 	@Test
 	@NonTransactional
 	public void testLinkAllUnlikedSentence() {
-		Comment comment = getComment("some sentence in front.  {pro} testobject {pro} some sentence in the back.");
+		JiraIssueComment comment = getComment("some sentence in front.  {pro} testobject {pro} some sentence in the back.");
 		long id = TestJiraIssueCommentPersistenceMangerSetUp.insertDecisionKnowledgeElement(comment,
 				comment.getIssueId(), 1);
 		assertEquals(1, GenericLinkManager.getLinksForElement(id, DocumentationLocation.JIRAISSUECOMMENT).size());

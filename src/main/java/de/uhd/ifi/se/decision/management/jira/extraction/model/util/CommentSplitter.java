@@ -140,7 +140,7 @@ public class CommentSplitter {
 	 *            search also for icons
 	 * @return The manual tagged knowledge type of a given string
 	 */
-	public static String getKnowledgeTypeFromManuallIssueTag(String body, String projectKey, boolean lookOutForIcons) {
+	public static String getKnowledgeTypeFromManualIssueTag(String body, String projectKey, boolean lookOutForIcons) {
 		boolean checkIcons = lookOutForIcons && ConfigPersistenceManager.isIconParsing(projectKey);
 		if (body.toLowerCase().contains(manualRationaleTagList[0]) || (checkIcons && body.contains(manualRationalIconList[0]))) {
 			return KnowledgeType.ISSUE.toString();

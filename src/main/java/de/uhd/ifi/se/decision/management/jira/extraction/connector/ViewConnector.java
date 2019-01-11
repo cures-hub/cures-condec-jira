@@ -8,18 +8,19 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationManagerForCommentSentences;
-import de.uhd.ifi.se.decision.management.jira.model.Comment;
-import de.uhd.ifi.se.decision.management.jira.model.impl.CommentImpl;
+import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
+import de.uhd.ifi.se.decision.management.jira.model.impl.JiraIssueCommentImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class ViewConnector {
 
 	private Issue currentIssue;
 
-	private List<Comment> commentsList;
+	private List<JiraIssueComment> commentsList;
 
 	private CommentManager commentManager;
 
@@ -31,7 +32,7 @@ public class ViewConnector {
 		if (issue != null) {
 			this.setCurrentIssue(issue);
 			commentManager = ComponentAccessor.getCommentManager();
-			this.commentsList = new ArrayList<Comment>();
+			this.commentsList = new ArrayList<JiraIssueComment>();
 		}
 	}
 
@@ -40,8 +41,8 @@ public class ViewConnector {
 		if (!connectorInUseLock.contains(issue.getKey())) {
 			connectorInUseLock.add(issue.getKey());
 			if (issue != null && commentManager.getComments(issue) != null) {
-				for (com.atlassian.jira.issue.comments.Comment comment : commentManager.getComments(issue)) {
-					Comment comment2 = new CommentImpl(comment, true);
+				for (Comment comment : commentManager.getComments(issue)) {
+					JiraIssueComment comment2 = new JiraIssueCommentImpl(comment);
 					commentsList.add(comment2);
 				}
 			}
@@ -70,7 +71,7 @@ public class ViewConnector {
 
 	public List<String> getAllCommentsAuthorNames() {
 		List<String> authorNames = new ArrayList<String>();
-		for (Comment comment : commentsList) {
+		for (JiraIssueComment comment : commentsList) {
 			authorNames.add(comment.getAuthorFullName());
 		}
 		return authorNames;
@@ -78,7 +79,7 @@ public class ViewConnector {
 
 	public List<String> getAllCommentsDates() {
 		List<String> commentDates = new ArrayList<String>();
-		for (Comment comment : commentsList) {
+		for (JiraIssueComment comment : commentsList) {
 			commentDates.add(comment.getCreated().toString().replace("CEST", ""));
 		}
 		return commentDates;
