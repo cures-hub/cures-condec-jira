@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,10 +13,6 @@ import org.junit.runner.RunWith;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.comments.CommentManager;
-import com.atlassian.jira.issue.issuetype.IssueType;
-import com.atlassian.jira.issue.issuetype.MockIssueType;
-import com.atlassian.jira.mock.issue.MockIssue;
-import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
@@ -39,7 +34,6 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 public class TestComment extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
-	private MockIssue issue;
 
 	private com.atlassian.jira.issue.comments.Comment comment1;
 
@@ -49,16 +43,6 @@ public class TestComment extends TestSetUpWithIssues {
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
 		createLocalIssue();
-	}
-
-	private void createLocalIssue() {
-		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
-		issue = new MockIssue(30, "TEST-" + 30);
-		((MockIssue) issue).setProjectId(project.getId());
-		issue.setProjectObject(project);
-		IssueType issueType = new MockIssueType(1, KnowledgeType.DECISION.toString().toLowerCase(Locale.ENGLISH));
-		issue.setIssueType(issueType);
-		issue.setSummary("Test");
 	}
 
 	private void addCommentsToIssue(String comment) {

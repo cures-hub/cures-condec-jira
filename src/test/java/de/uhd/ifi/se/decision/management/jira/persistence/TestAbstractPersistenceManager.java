@@ -11,13 +11,13 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 
 public class TestAbstractPersistenceManager extends TestSetUpWithIssues {
-	
+
 	private DecisionKnowledgeElement element;
 
 	@Before
 	public void setUp() {
 		initialization();
-		element = new DecisionKnowledgeElementImpl();		
+		element = new DecisionKnowledgeElementImpl();
 		element.setProject("TEST");
 	}
 
@@ -28,29 +28,32 @@ public class TestAbstractPersistenceManager extends TestSetUpWithIssues {
 
 	@Test
 	public void testGetPersistenceStrategyProjectKeyNonExistent() {
-		assertTrue(AbstractPersistenceManager.getDefaultPersistenceStrategy("TESTNOT") instanceof JiraIssuePersistenceManager);
+		assertTrue(AbstractPersistenceManager
+				.getDefaultPersistenceStrategy("TESTNOT") instanceof JiraIssuePersistenceManager);
 	}
 
 	@Test
 	public void testGetPersistenceStrategyProjectKeyExistent() {
-		assertTrue(AbstractPersistenceManager.getDefaultPersistenceStrategy("TEST") instanceof JiraIssuePersistenceManager);
+		assertTrue(AbstractPersistenceManager
+				.getDefaultPersistenceStrategy("TEST") instanceof JiraIssuePersistenceManager);
 	}
-	
+
 	@Test
 	public void testGetPersistenceManagerElementExistentJiraIssue() {
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUE);
 		assertTrue(AbstractPersistenceManager.getPersistenceManager(element) instanceof JiraIssuePersistenceManager);
 	}
-	
+
 	@Test
 	public void testGetPersistenceManagerElementExistentActiveObject() {
 		element.setDocumentationLocation(DocumentationLocation.ACTIVEOBJECT);
 		assertTrue(AbstractPersistenceManager.getPersistenceManager(element) instanceof ActiveObjectPersistenceManager);
 	}
-	
+
 	@Test
 	public void testGetPersistenceManagerElementExistentJiraIssueComment() {
 		element.setDocumentationLocation(DocumentationLocation.JIRAISSUECOMMENT);
-		assertTrue(AbstractPersistenceManager.getPersistenceManager(element) instanceof JiraIssueCommentPersistenceManager);
+		assertTrue(AbstractPersistenceManager
+				.getPersistenceManager(element) instanceof JiraIssueCommentPersistenceManager);
 	}
 }

@@ -1,10 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.model;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
-import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,24 +11,17 @@ import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.CommentManager;
-import com.atlassian.jira.issue.issuetype.IssueType;
-import com.atlassian.jira.issue.issuetype.MockIssueType;
-import com.atlassian.jira.mock.issue.MockIssue;
-import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -43,8 +35,6 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
 
-	private MutableIssue issue;
-
 	@Before
 	public void setUp() {
 		initialization();
@@ -53,17 +43,6 @@ public class TestGenericLink extends TestSetUpWithIssues {
 
 		createLocalIssue();
 		addCommentsToIssue("this is a testSentence. This a second one. And a third one");
-	}
-
-	private void createLocalIssue() {
-		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
-		issue = new MockIssue(2, "TEST-" + 2);
-		((MockIssue) issue).setProjectId(project.getId());
-		issue.setProjectObject(project);
-		IssueType issueType = new MockIssueType(1, KnowledgeType.DECISION.toString().toLowerCase(Locale.ENGLISH));
-		issue.setIssueType(issueType);
-		issue.setSummary("Test");
-		((MockIssueManagerSelfImpl) ComponentAccessor.getIssueManager()).addIssue(issue);
 	}
 
 	private void addCommentsToIssue(String comment) {
@@ -223,7 +202,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl(issue);
 		Link link = new LinkImpl(sentence, element);
 
-		assertTrue(link.toString().equals("s1 to i2"));
+		assertEquals("s1 to i30", link.toString());
 	}
 
 }

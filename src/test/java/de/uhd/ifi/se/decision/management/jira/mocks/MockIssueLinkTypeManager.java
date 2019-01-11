@@ -37,7 +37,10 @@ public class MockIssueLinkTypeManager implements IssueLinkTypeManager {
 
 	@Override
 	public Collection<IssueLinkType> getIssueLinkTypes() {
-		return null;
+        Collection<IssueLinkType> linkTypes = new ArrayList<>();
+        IssueLinkType linkType = new MockIssueLinkType((long)1);
+        linkTypes.add(linkType);
+		return linkTypes;
 	}
 
 	@Override

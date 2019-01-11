@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import com.atlassian.jira.avatar.AvatarManager;
 import com.atlassian.jira.bc.issue.IssueService;
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.exception.CreateException;
@@ -45,6 +46,8 @@ public class TestSetUpWithIssues {
 	private ProjectManager projectManager;
 	private IssueManager issueManager;
 	private ConstantsManager constantsManager;
+    protected MockIssue issue;
+
 
 	public void initialization() {
 		projectManager = new MockProjectManager();
@@ -161,5 +164,15 @@ public class TestSetUpWithIssues {
         	entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
             entityManager.migrate(LinkInDatabase.class);
         }
+    }
+
+    protected void createLocalIssue() {
+        Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
+        issue = new MockIssue(30, "TEST-" + 30);
+        ((MockIssue) issue).setProjectId(project.getId());
+        issue.setProjectObject(project);
+        IssueType issueType = new MockIssueType(1, KnowledgeType.DECISION.toString().toLowerCase(Locale.ENGLISH));
+        issue.setIssueType(issueType);
+        issue.setSummary("Test");
     }
 }
