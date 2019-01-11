@@ -193,7 +193,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisting(body, projectKey)
 				|| (ConfigPersistenceManager.isIconParsing(projectKey)
 						&& StringUtils.indexOfAny(body, CommentSplitter.RATIONALE_ICONS) >= 0)) {
-			this.setType(CommentSplitter.getKnowledgeTypeFromManualIssueTag(body, projectKey, true));
+			this.setType(CommentSplitter.getKnowledgeTypeFromTag(body, projectKey));
 			setManuallyTagged();
 			stripTagsFromBody(body);
 		}
@@ -214,7 +214,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		String projectKey = this.getProject().getProjectKey();
 		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisting(body, projectKey)) {
 			int tagLength = 2
-					+ CommentSplitter.getKnowledgeTypeFromManualIssueTag(body, projectKey, true).toString().length();
+					+ CommentSplitter.getKnowledgeTypeFromTag(body, projectKey).toString().length();
 			super.setDescription(body.substring(tagLength, body.length() - (tagLength)));
 			super.setSummary(super.getDescription());
 		} else {

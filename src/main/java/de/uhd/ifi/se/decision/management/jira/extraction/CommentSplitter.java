@@ -143,11 +143,10 @@ public class CommentSplitter {
 	 * @param projectKey
 	 * @param lookOutForIcons
 	 *            search also for icons
-	 * @return The manual tagged knowledge type of a given string
+	 * @return tagged knowledge type of a given string
 	 */
-	public static KnowledgeType getKnowledgeTypeFromManualIssueTag(String body, String projectKey,
-			boolean lookOutForIcons) {
-		boolean checkIcons = lookOutForIcons && ConfigPersistenceManager.isIconParsing(projectKey);
+	public static KnowledgeType getKnowledgeTypeFromTag(String body, String projectKey) {
+		boolean checkIcons = ConfigPersistenceManager.isIconParsing(projectKey);
 		for (KnowledgeType type : KNOWLEDGE_TYPES) {
 			if (body.toLowerCase().contains(AbstractKnowledgeClassificationMacro.getTag(type))
 					|| (checkIcons && body.contains(type.getIconString()))) {
