@@ -43,7 +43,7 @@ public class ClassificationManagerForJiraIssueComments {
 		if (commentsList == null) {
 			return new ArrayList<JiraIssueComment>();
 		}
-		List<String> stringsToBeClassified = createDatasetForFineGrainedClassification(commentsList);
+		List<String> stringsToBeClassified = getStringsForFineGrainedClassification(commentsList);
 
 		if (stringsToBeClassified.isEmpty()) {
 			return loadSentencesFineGrainedKnowledgeTypesFromActiveObjects(commentsList);
@@ -123,10 +123,24 @@ public class ClassificationManagerForJiraIssueComments {
 		}
 		return stringsToBeClassified;
 	}
+	
+	/**
+	 * Determines whether a part of JIRA issue comment (substring) should be the
+	 * input for binary classification. It is qualified if it's plain text, and if
+	 * its type is not yet validated.
+	 * 
+	 * @param sentence
+	 *            part of JIRA issue comment (substring) to check if qualified for
+	 *            binary classification.
+	 * @return true if the part of JIRA issue comment (substring) should be the
+	 *         input for binary classification.
+	 */
+	private static boolean isSentenceQualifiedForBinaryClassification(Sentence sentence) {
+		return !sentence.isValidated() && sentence.isPlainText();
+	}
 
-	private List<String> createDatasetForFineGrainedClassification(List<JiraIssueComment> commentsList) {
+	private List<String> getStringsForFineGrainedClassification(List<JiraIssueComment> commentsList) {
 		List<String> stringsToBeClassified = new ArrayList<String>();
-
 		for (JiraIssueComment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
@@ -138,16 +152,17 @@ public class ClassificationManagerForJiraIssueComments {
 	}
 
 	/**
+	 * Determines whether a part of JIRA issue comment (substring) should be the
+	 * input for fine grained classification. It is qualified if it's plain text, if
+	 * its type is not yet validated and if it's classified as relevant decision
+	 * knowledge by the binary classifier.
+	 * 
 	 * @param sentence
-	 *            Sentence to check if its qualified for classification. It is
-	 *            qualified if it's plain text, and if its type is not yet
-	 *            validated.
-	 * @return boolean identifier
+	 *            part of JIRA issue comment (substring) to check if qualified for
+	 *            fine grained classification.
+	 * @return true if the part of JIRA issue comment (substring) should be the
+	 *         input for fine grained classification.
 	 */
-	private static boolean isSentenceQualifiedForBinaryClassification(Sentence sentence) {
-		return !sentence.isValidated() && sentence.isPlainText();
-	}
-
 	private static boolean isSentenceQualifiedForFineGrainedClassification(Sentence sentence) {
 		return sentence.isRelevant() && isSentenceQualifiedForBinaryClassification(sentence);
 	}
@@ -158,5 +173,4 @@ public class ClassificationManagerForJiraIssueComments {
 		}
 		return this.classifier;
 	}
-
 }

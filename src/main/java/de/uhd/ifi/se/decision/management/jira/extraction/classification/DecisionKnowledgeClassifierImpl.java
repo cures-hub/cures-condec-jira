@@ -65,6 +65,16 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 		return makeFineGrainedPredictions(data);
 	}
 
+	@Override
+	public void setFineGrainedClassifier(LC fineGrainedClassifier) {
+		this.fineGrainedClassifier = fineGrainedClassifier;
+	}
+
+	@Override
+	public void setBinaryClassifier(FilteredClassifier binaryClassifier) {
+		this.binaryClassifier = binaryClassifier;
+	}
+
 	private Instances createDatasetForBinaryClassification(List<String> stringsToBeClassified) {
 		List<Attribute> wekaAttributes = createBinaryAttributes();
 		Instances datasetForBinaryClassification = new Instances("sentences", (ArrayList<Attribute>) wekaAttributes,
@@ -120,38 +130,11 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 	 *            represent irrelevant text.
 	 * @return true if text is relevant decision knowledge.
 	 */
-	private static boolean isRelevant(double predictionResult) {
+	public static boolean isRelevant(double predictionResult) {
 		if (predictionResult == 1.) {
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * Get the knowledge type of the text if it is relevant decision knowledge. Uses
-	 * an array of estimated values for relevance. For example: double[]
-	 * classification = { 1.0, 0.0, 0.0, 0.0, 0.0 } for alternative. The order is
-	 * important: alternative, decision, issue, pro, and con.
-	 * 
-	 * @see KnowledgeType
-	 * @param prediction
-	 *            1.0 if the text is decision knowledge with a certain type. Values
-	 *            less than 1 represent irrelevant text.
-	 * @return knowledge type of the text.
-	 */
-	public static KnowledgeType getType(double[] prediction) {
-		if (prediction[0] == 1.) {
-			return KnowledgeType.ALTERNATIVE;
-		} else if (prediction[3] == 1.) {
-			return KnowledgeType.DECISION;
-		} else if (prediction[4] == 1.) {
-			return KnowledgeType.ISSUE;
-		} else if (prediction[1] == 1.) {
-			return KnowledgeType.PRO;
-		} else if (prediction[2] == 1.) {
-			return KnowledgeType.CON;
-		}
-		return KnowledgeType.OTHER;
 	}
 
 	public List<KnowledgeType> makeFineGrainedPredictions(Instances data) {
@@ -223,13 +206,30 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 		return tokenizer;
 	}
 
-	@Override
-	public void setFineGrainedClassifier(LC fineGrainedClassifier) {
-		this.fineGrainedClassifier = fineGrainedClassifier;
-	}
-
-	@Override
-	public void setBinaryClassifier(FilteredClassifier binaryClassifier) {
-		this.binaryClassifier = binaryClassifier;
+	/**
+	 * Get the knowledge type of the text if it is relevant decision knowledge. Uses
+	 * an array of estimated values for relevance. For example: double[]
+	 * classification = { 1.0, 0.0, 0.0, 0.0, 0.0 } for alternative. The order is
+	 * important: alternative, decision, issue, pro, and con.
+	 * 
+	 * @see KnowledgeType
+	 * @param prediction
+	 *            1.0 if the text is decision knowledge with a certain type. Values
+	 *            less than 1 represent irrelevant text.
+	 * @return knowledge type of the text.
+	 */
+	public static KnowledgeType getType(double[] prediction) {
+		if (prediction[0] == 1.) {
+			return KnowledgeType.ALTERNATIVE;
+		} else if (prediction[3] == 1.) {
+			return KnowledgeType.DECISION;
+		} else if (prediction[4] == 1.) {
+			return KnowledgeType.ISSUE;
+		} else if (prediction[1] == 1.) {
+			return KnowledgeType.PRO;
+		} else if (prediction[2] == 1.) {
+			return KnowledgeType.CON;
+		}
+		return KnowledgeType.OTHER;
 	}
 }

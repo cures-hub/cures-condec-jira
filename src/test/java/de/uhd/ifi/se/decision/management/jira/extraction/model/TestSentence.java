@@ -23,7 +23,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
 import net.java.ao.EntityManager;
-import net.java.ao.schema.Ignore;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -114,16 +113,14 @@ public class TestSentence extends TestSetUpWithIssues {
 
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testSetRelevantWithDouble() {
-		// TODO isRelevant is now a private method in DecisionKnowledgeClassifierImpl
-//		Sentence sentence = new SentenceImpl();
-//		sentence.setRelevant(1.0);
-//		assertTrue(sentence.isRelevant());
-//		sentence.setRelevant(.0);
-//		assertFalse(sentence.isRelevant());
-//		sentence.setRelevant(0.4);
-//		assertFalse(sentence.isRelevant());
+		Sentence sentence = new SentenceImpl();
+		sentence.setRelevant(DecisionKnowledgeClassifierImpl.isRelevant(1.0));
+		assertTrue(sentence.isRelevant());
+		sentence.setRelevant(DecisionKnowledgeClassifierImpl.isRelevant(0.));
+		assertFalse(sentence.isRelevant());
+		sentence.setRelevant(DecisionKnowledgeClassifierImpl.isRelevant(0.4));
+		assertFalse(sentence.isRelevant());
 	}
 
 	@Test
