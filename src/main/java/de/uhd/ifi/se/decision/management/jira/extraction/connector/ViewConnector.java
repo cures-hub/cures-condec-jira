@@ -68,20 +68,4 @@ public class ViewConnector {
 	public void setCurrentIssue(Issue currentIssue) {
 		this.currentIssue = currentIssue;
 	}
-
-	public List<String> getAllCommentsAuthorNames() {
-		List<String> authorNames = new ArrayList<String>();
-		for (JiraIssueComment comment : commentsList) {
-			authorNames.add(comment.getAuthorFullName());
-		}
-		return authorNames;
-	}
-
-	public List<String> getAllCommentsDates() {
-		List<String> commentDates = new ArrayList<String>();
-		for (JiraIssueComment comment : commentsList) {
-			commentDates.add(comment.getCreated().toString().replace("CEST", ""));
-		}
-		return commentDates;
-	}
 }
