@@ -31,11 +31,11 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 public class TestIssueTabPanelRenderer extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
-	private IssueTabPanelRenderer renderer;
+	private JiraIssueTabPanelRenderer renderer;
 
 	@Before
 	public void setUp() {
-		renderer = new IssueTabPanelRenderer();
+		renderer = new JiraIssueTabPanelRenderer();
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
@@ -58,14 +58,15 @@ public class TestIssueTabPanelRenderer extends TestSetUpWithIssues {
 		assertEquals(0, renderer.getActions(null, user).size(), 0.0);
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test
+	// TODO Is this the correct behaviour/name?
 	public void testGetActionsFilledFilledTemplateNotProvided() {
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
 		Issue issue = new MockIssue();
 		((MockIssue) issue).setProjectObject(project);
 		((MockIssue) issue).setKey("TEST-1");
 		ApplicationUser user = new MockApplicationUser("NoFails");
-		renderer.getActions(issue, user).size();
+		assertEquals(1, renderer.getActions(issue, user).size());
 	}
 
 	@Test

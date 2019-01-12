@@ -356,7 +356,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		}
 	}
 
-	public static int countCommentsForIssue(long issueId) {
+	public static int countCommentsForJiraIssue(long issueId) {
 		DecisionKnowledgeInCommentEntity[] commentSentences = ACTIVE_OBJECTS
 				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("ISSUE_ID = ?", issueId));
 		Set<Long> treeSet = new TreeSet<Long>();
