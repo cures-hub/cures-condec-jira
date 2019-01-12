@@ -1,81 +1,76 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
-import java.util.Date;
-
-import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import com.atlassian.jira.issue.comments.MutableComment;
 
+import de.uhd.ifi.se.decision.management.jira.model.impl.SentenceImpl;
+
+/**
+ * Interface for textual parts of JIRA issue comments. These parts can either be
+ * relevant decision knowledge elements or irrelevant text.
+ */
+@JsonDeserialize(as = SentenceImpl.class)
 public interface Sentence extends DecisionKnowledgeElement {
 
-	@JsonIgnore
-	boolean isRelevant();
-
-	@JsonIgnore
-	void setRelevant(boolean isRelevant);
-
-	@JsonIgnore
-	void setRelevant(double prediction);
-
-	@JsonIgnore
-	boolean isValidated();
-
-	@JsonIgnore
-	void setValidated(boolean isValidated);
-
-	@JsonIgnore
-	boolean isTaggedFineGrained();
-
-	@JsonIgnore
-	long getCommentId();
-
-	@JsonIgnore
-	MutableComment getComment();
-
-	@JsonIgnore
+	/**
+	 * Set the id of the JIRA issue comment that the decision knowledge element or
+	 * irrelevant text is part of.
+	 * 
+	 * @param id of the JIRA issue comment.
+	 */
 	void setCommentId(long id);
 
-	@JsonIgnore
-	long getAuthorId();
+	/**
+	 * Get the id of the JIRA issue comment that the decision knowledge element or
+	 * irrelevant text is part of.
+	 * 
+	 * @return id of the JIRA issue comment.
+	 */
+	long getCommentId();
+	
+	/**
+	 * Get the JIRA issue comment that the decision knowledge element or
+	 * irrelevant text is part of.
+	 * 
+	 * @see MutableComment
+	 * @return JIRA issue comment.
+	 */
+	MutableComment getComment();
 
-	@JsonIgnore
-	int getStartSubstringCount();
-
-	@JsonIgnore
 	void setStartSubstringCount(int count);
 
-	@JsonIgnore
+	int getStartSubstringCount();
+	
+	void setEndSubstringCount(int count);
+
 	int getEndSubstringCount();
 
-	@JsonIgnore
-	void setEndSubstringCount(int count);
+	boolean isRelevant();
+
+	void setRelevant(boolean isRelevant);
+
+	void setRelevant(double prediction);
+
+	boolean isValidated();
+
+	void setValidated(boolean isValidated);
+
+	boolean isTaggedFineGrained();
 
 	int getLength();
 
-	@JsonIgnore
 	void setType(double[] prediction);
 
-	@JsonIgnore
 	void setIssueId(long issueid);
 
-	@JsonIgnore
 	long getIssueId();
 
-	@JsonIgnore
 	boolean isPlainText();
 
-	@JsonIgnore
 	void setPlainText(boolean isPlainText);
 
-	@JsonIgnore
 	String getBody();
 
-	@JsonIgnore
 	void setBody(String body);
-
-	@JsonIgnore
-	Date getCreated();
-
-	@JsonIgnore
-	void setCreated(Date date);
 }

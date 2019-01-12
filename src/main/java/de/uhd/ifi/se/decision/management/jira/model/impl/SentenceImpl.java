@@ -117,11 +117,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	@Override
-	public long getAuthorId() {
-		return this.getComment().getAuthorApplicationUser().getId();
-	}
-
-	@Override
 	public int getStartSubstringCount() {
 		return this.startSubstringCount;
 	}
