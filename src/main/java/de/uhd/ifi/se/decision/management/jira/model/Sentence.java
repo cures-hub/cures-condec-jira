@@ -87,16 +87,6 @@ public interface Sentence extends DecisionKnowledgeElement {
 	void setRelevant(boolean isRelevant);
 
 	/**
-	 * Set whether the text within the JIRA issue comment is decision knowledge,
-	 * i.e., relevant. Uses an estimated value for relevance.
-	 * 
-	 * @param estimatedRelevance
-	 *            1.0 if the text is decision knowledge. Values less than 1
-	 *            represent irrelevant text.
-	 */
-	void setRelevant(double estimatedRelevance);
-
-	/**
 	 * Determine whether the text within the JIRA issue comment is decision
 	 * knowledge, i.e., relevant.
 	 * 
@@ -130,20 +120,6 @@ public interface Sentence extends DecisionKnowledgeElement {
 	 * @return end position - start position
 	 */
 	int getLength();
-
-	/**
-	 * Set the knowledge type of the text within the JIRA issue comment if it is
-	 * relevant decision knowledge. Uses an array of estimated values for relevance.
-	 * For example: double[] classification = { 1.0, 0.0, 0.0, 0.0, 0.0 } for
-	 * alternative. The order is important: alternative, decision, issue, pro, and
-	 * con.
-	 * 
-	 * @see KnowledgeType
-	 * @param prediction
-	 *            1.0 if the text is decision knowledge with a certain type. Values
-	 *            less than 1 represent irrelevant text.
-	 */
-	void setType(double[] prediction);
 
 	/**
 	 * Determine whether the text within the JIRA issue comment is relevant decision

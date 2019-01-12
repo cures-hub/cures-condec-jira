@@ -75,15 +75,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	@Override
-	public void setRelevant(double prediction) {
-		if (prediction == 1.) {
-			this.setRelevant(true);
-		} else {
-			this.setRelevant(false);
-		}
-	}
-
-	@Override
 	public boolean isValidated() {
 		return this.isValidated;
 	}
@@ -138,21 +129,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	@Override
 	public int getLength() {
 		return this.endSubstringCount - this.startSubstringCount;
-	}
-
-	@Override
-	public void setType(double[] prediction) {
-		if (prediction[0] == 1.) {
-			this.type = KnowledgeType.ALTERNATIVE;
-		} else if (prediction[3] == 1.) {
-			this.type = KnowledgeType.DECISION;
-		} else if (prediction[4] == 1.) {
-			this.type = KnowledgeType.ISSUE;
-		} else if (prediction[1] == 1.) {
-			this.type = KnowledgeType.PRO;
-		} else if (prediction[2] == 1.) {
-			this.type = KnowledgeType.CON;
-		}
 	}
 
 	@Override

@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.Instance;
-import weka.core.Instances;
 
 /**
  * Class to classify the text in JIRA issue comments as either irrelevant in
@@ -21,25 +18,19 @@ public class ClassificationManagerForJiraIssueComments {
 
 	private DecisionKnowledgeClassifier classifier;
 
-	/**
-	 * The knowledge types need to be present in the weka classifier. They do not
-	 * relate to tags like {Issue}.
-	 */
-	private static final String[] KNOWLEDGE_TYPES = { "isAlternative", "isPro", "isCon", "isDecision", "isIssue" };
-
 	public ClassificationManagerForJiraIssueComments() {
-		this.classifier = new DecisionKnowledgeClassifier();
+		this.classifier = new DecisionKnowledgeClassifierImpl();
 	}
 
 	public List<JiraIssueComment> classifySentenceBinary(List<JiraIssueComment> commentsList) {
 		if (commentsList == null) {
 			return new ArrayList<JiraIssueComment>();
 		}
-		Instances data = createDatasetForBinaryClassification(commentsList);
+		List<String> stringsToBeClassified = getStringsForBinaryClassification(commentsList);
 
 		List<Boolean> classificationResult;
-		if (!data.isEmpty()) {
-			classificationResult = classifier.makeBinaryPredictions(data);
+		if (!stringsToBeClassified.isEmpty()) {
+			classificationResult = classifier.makeBinaryPredictions(stringsToBeClassified);
 			commentsList = matchBinaryClassificationBackOnData(classificationResult, commentsList);
 		} else {
 			commentsList = writeDataFromActiveObjectsToSentences(commentsList);
@@ -52,12 +43,12 @@ public class ClassificationManagerForJiraIssueComments {
 		if (commentsList == null) {
 			return new ArrayList<JiraIssueComment>();
 		}
-		Instances data = createDatasetForFineGrainedClassification(commentsList);
+		List<String> stringsToBeClassified = createDatasetForFineGrainedClassification(commentsList);
 
-		if (data.isEmpty()) {
+		if (stringsToBeClassified.isEmpty()) {
 			return loadSentencesFineGrainedKnowledgeTypesFromActiveObjects(commentsList);
 		}
-		List<double[]> classificationResult = this.classifier.makeFineGrainedPredictions(data);
+		List<KnowledgeType> classificationResult = this.classifier.makeFineGrainedPredictions(stringsToBeClassified);
 
 		// Write classification results back to sentence objects
 		int i = 0;
@@ -121,69 +112,29 @@ public class ClassificationManagerForJiraIssueComments {
 		return commentsList;
 	}
 
-
-
-	private Instances createDatasetForBinaryClassification(List<JiraIssueComment> commentsList) {
-		List<Attribute> wekaAttributes = createBinaryAttributes();
-		Instances data = new Instances("sentences", (ArrayList<Attribute>) wekaAttributes, 1000000);
-
-		data.setClassIndex(data.numAttributes() - 1);
+	private List<String> getStringsForBinaryClassification(List<JiraIssueComment> commentsList) {
+		List<String> stringsToBeClassified = new ArrayList<String>();
 		for (JiraIssueComment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForBinaryClassification(sentence)) {
-					data.add(createInstance(2, wekaAttributes, sentence));
+					stringsToBeClassified.add(sentence.getBody());
 				}
 			}
 		}
-		return data;
-	}
-	
-	private List<Attribute> createBinaryAttributes() {
-		List<Attribute> wekaAttributes = new ArrayList<Attribute>();
-		wekaAttributes.add(new Attribute("sentence", (List<String>) null));
-		wekaAttributes.add(new Attribute("isRelevant", createClassAttributeList()));
-		return wekaAttributes;
-	}
-	
-	private List<String> createClassAttributeList() {
-		// Declare Class value with {0,1} as possible values
-		List<String> relevantAttribute = new ArrayList<String>();
-		relevantAttribute.add("0");
-		relevantAttribute.add("1");
-		return relevantAttribute;
-	}
-	
-	private DenseInstance createInstance(int size, List<Attribute> wekaAttributes, Sentence sentence) {
-		DenseInstance newInstance = new DenseInstance(size);
-		newInstance.setValue(wekaAttributes.get(0), sentence.getBody());
-		return newInstance;
+		return stringsToBeClassified;
 	}
 
-	private Instances createDatasetForFineGrainedClassification(List<JiraIssueComment> commentsList) {
-		List<Attribute> wekaAttributes = new ArrayList<Attribute>();
-
-		// Declare Class value with {0,1} as possible values
-		for (int i = 0; i < KNOWLEDGE_TYPES.length; i++) {
-			wekaAttributes.add(new Attribute(KNOWLEDGE_TYPES[i], createClassAttributeList(), i));
-		}
-
-		// Declare text attribute to hold the message (free form text)
-		Attribute attributeText = new Attribute("sentence", (List<String>) null, 5);
-
-		// Declare the feature vector
-		wekaAttributes.add(attributeText);
-		Instances data = new Instances("sentences: -C 5 ", (ArrayList<Attribute>) wekaAttributes, 1000000);
+	private List<String> createDatasetForFineGrainedClassification(List<JiraIssueComment> commentsList) {
+		List<String> stringsToBeClassified = new ArrayList<String>();
 
 		for (JiraIssueComment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
-					Instance newInstance = new DenseInstance(6);
-					newInstance.setValue(attributeText, sentence.getBody());
-					data.add(newInstance);
+					stringsToBeClassified.add(sentence.getBody());
 				}
 			}
 		}
-		return data;
+		return stringsToBeClassified;
 	}
 
 	/**
@@ -203,7 +154,7 @@ public class ClassificationManagerForJiraIssueComments {
 
 	public DecisionKnowledgeClassifier getClassifier() {
 		if (this.classifier == null) {
-			this.classifier = new DecisionKnowledgeClassifier();
+			this.classifier = new DecisionKnowledgeClassifierImpl();
 		}
 		return this.classifier;
 	}
