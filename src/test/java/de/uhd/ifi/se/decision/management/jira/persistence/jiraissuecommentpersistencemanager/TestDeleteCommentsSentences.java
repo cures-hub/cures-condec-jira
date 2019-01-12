@@ -12,13 +12,13 @@ public class TestDeleteCommentsSentences extends TestJiraIssueCommentPersistence
 	@Test
 	@NonTransactional
 	public void testCommentNull() {
-		assertFalse(JiraIssueCommentPersistenceManager.deleteCommentsSentences(null));
+		assertFalse(JiraIssueCommentPersistenceManager.deleteAllSentencesOfComments(null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testCommentFilledButNotInAODatabase() {
 		addCommentsToIssue("This is a comment for test purposes");
-		assertFalse(JiraIssueCommentPersistenceManager.deleteCommentsSentences(comment1));
+		assertFalse(JiraIssueCommentPersistenceManager.deleteAllSentencesOfComments(comment1));
 	}
 }

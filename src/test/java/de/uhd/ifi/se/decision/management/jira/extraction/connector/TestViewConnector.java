@@ -79,14 +79,4 @@ public class TestViewConnector extends TestSetUpWithIssues {
 		ViewConnector vc = new ViewConnector(issue, true);
 		assertNotNull(vc.getAllCommentsDates());
 	}
-
-	@Test
-	@NonTransactional
-	public void testGetStyle() {
-		addCommentsToIssue();
-
-		ViewConnector vc = new ViewConnector(issue, true);
-		assertNotNull(vc.getSentenceStyles());
-	}
-
 }

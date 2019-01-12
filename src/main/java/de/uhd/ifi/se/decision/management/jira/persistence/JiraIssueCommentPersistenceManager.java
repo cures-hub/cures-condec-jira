@@ -65,7 +65,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		return isDeleted;
 	}
 
-	public static boolean deleteCommentsSentences(com.atlassian.jira.issue.comments.Comment comment) {
+	public static boolean deleteAllSentencesOfComments(Comment comment) {
 		boolean isDeleted = false;
 		if (comment == null) {
 			LOGGER.error("Sentences in comment cannot be deleted since the comment is null.");

@@ -136,7 +136,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		// not be
 		// handled by this event listener.
 		if (!DecXtractEventListener.editCommentLock) {
-			JiraIssueCommentPersistenceManager.deleteCommentsSentences(issueEvent.getComment());
+			JiraIssueCommentPersistenceManager.deleteAllSentencesOfComments(issueEvent.getComment());
 			new ViewConnector(this.issueEvent.getIssue(), false);
 			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 		} else {
