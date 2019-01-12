@@ -118,6 +118,8 @@ public class TestSentence extends TestSetUpWithIssues {
 		assertTrue(sentence.isRelevant());
 		sentence.setRelevant(.0);
 		assertFalse(sentence.isRelevant());
+		sentence.setRelevant(0.4);
+		assertFalse(sentence.isRelevant());
 	}
 
 	@Test

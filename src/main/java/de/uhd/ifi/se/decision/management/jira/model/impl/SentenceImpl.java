@@ -17,22 +17,20 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
 
+/**
+ * Model class for textual parts (substrings) of JIRA issue comments. These
+ * parts can either be relevant decision knowledge elements or irrelevant text.
+ */
 public class SentenceImpl extends DecisionKnowledgeElementImpl implements Sentence {
 
+	private long commentId;
+	private int startSubstringCount;
+	private int endSubstringCount;
+	private boolean isRelevant;
 	private boolean isValidated;
 
-	private boolean isRelevant;
-
-	private int startSubstringCount;
-
-	private int endSubstringCount;
-
 	private boolean isPlainText;
-
-	private long commentId;
-
 	private long issueId;
-
 	private Date created;
 
 	public SentenceImpl() {
@@ -40,8 +38,8 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
 
-	public SentenceImpl(long id, int endSubstringCount, int startSubstringCount, boolean isValidated, boolean isRelevant,
-			String projectKey, long commentId, long issueId, String type) {
+	public SentenceImpl(long id, int endSubstringCount, int startSubstringCount, boolean isValidated,
+			boolean isRelevant, String projectKey, long commentId, long issueId, String type) {
 		this();
 		this.setId(id);
 		this.setEndSubstringCount(endSubstringCount);
@@ -113,7 +111,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	@Override
 	public MutableComment getComment() {
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
-		return (MutableComment) commentManager.getMutableComment(this.getCommentId());
+		return commentManager.getMutableComment(this.getCommentId());
 	}
 
 	@Override
@@ -142,6 +140,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		return this.endSubstringCount - this.startSubstringCount;
 	}
 
+	@Override
 	public void setType(double[] prediction) {
 		if (prediction[0] == 1.) {
 			this.type = KnowledgeType.ALTERNATIVE;
@@ -156,6 +155,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		}
 	}
 
+	@Override
 	public void setType(KnowledgeType type) {
 		// if (this.type != type) {
 		// this.updateTagsInComment(type);
@@ -163,6 +163,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		super.setType(type);
 	}
 
+	@Override
 	public String getBody() {
 		MutableComment mutableComment = this.getComment();
 		if (mutableComment == null) {
@@ -173,6 +174,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		return body;
 	}
 
+	@Override
 	public void setBody(String body) {
 		super.setDescription(body);
 		super.setSummary(body);
@@ -197,7 +199,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	private void setManuallyTagged() {
 		this.setPlainText(false);
 		this.setRelevant(true);
-		//this.setValidated(true);
+		// this.setValidated(true);
 		JiraIssueCommentPersistenceManager.updateInDatabase(this);
 	}
 
@@ -208,8 +210,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	private void stripTagsFromBody(String body) {
 		String projectKey = this.getProject().getProjectKey();
 		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisting(body, projectKey)) {
-			int tagLength = 2
-					+ CommentSplitter.getKnowledgeTypeFromTag(body, projectKey).toString().length();
+			int tagLength = 2 + CommentSplitter.getKnowledgeTypeFromTag(body, projectKey).toString().length();
 			super.setDescription(body.substring(tagLength, body.length() - (tagLength)));
 			super.setSummary(super.getDescription());
 		} else {
@@ -218,10 +219,12 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		}
 	}
 
+	@Override
 	public boolean isPlainText() {
 		return isPlainText;
 	}
 
+	@Override
 	public void setPlainText(boolean isPlainText) {
 		this.isPlainText = isPlainText;
 	}

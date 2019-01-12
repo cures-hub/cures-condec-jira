@@ -11,7 +11,7 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationManagerForCommentSentences;
+import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
 import de.uhd.ifi.se.decision.management.jira.model.impl.JiraIssueCommentImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -56,7 +56,7 @@ public class ViewConnector {
 	}
 
 	private void startClassification() {
-		ClassificationManagerForCommentSentences classifier = new ClassificationManagerForCommentSentences();
+		ClassificationManagerForJiraIssueComments classifier = new ClassificationManagerForJiraIssueComments();
 		this.commentsList = classifier.classifySentenceBinary(commentsList);
 		this.commentsList = classifier.classifySentenceFineGrained(commentsList);
 	}

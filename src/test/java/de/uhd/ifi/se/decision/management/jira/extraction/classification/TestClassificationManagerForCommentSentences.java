@@ -36,14 +36,14 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 
 	private EntityManager entityManager;
 	private List<JiraIssueComment> list = new ArrayList<JiraIssueComment>();
-	private ClassificationManagerForCommentSentences classificationManager;
+	private ClassificationManagerForJiraIssueComments classificationManager;
 
 	@Before
 	public void setUp() {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
-		classificationManager = new ClassificationManagerForCommentSentences();
+		classificationManager = new ClassificationManagerForJiraIssueComments();
 		FilteredClassifier binaryClassifier = new BinaryClassifierMock();
 		classificationManager.getClassifier().setBinaryClassifier(binaryClassifier);
 		LC lc = new FineGrainedClassifierMock(5);

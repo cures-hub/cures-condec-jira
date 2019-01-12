@@ -15,49 +15,54 @@ import weka.core.tokenizers.Tokenizer;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
+/**
+ * Class to initialize the binary and fine grained supervised classifiers to identify
+ * decision knowledge in natural language texts.
+ */
 public class DecisionKnowledgeClassifier {
 
 	private FilteredClassifier binaryClassifier;
-
 	private LC fineGrainedClassifier;
 
 	public DecisionKnowledgeClassifier() {
-		String pathFineGrained = ComponentGetter.getUrlOfClassifierFolder() + "br.model";
-		String path = ComponentGetter.getUrlOfClassifierFolder() + "fc.model";
+		String pathToBinaryModel = ComponentGetter.getUrlOfClassifierFolder() + "fc.model";
+		String pathToFineGrainedModel = ComponentGetter.getUrlOfClassifierFolder() + "br.model";
 		InputStream inputStream;
 		try {
-			inputStream = new URL(path).openStream();
+			inputStream = new URL(pathToBinaryModel).openStream();
 			binaryClassifier = (FilteredClassifier) weka.core.SerializationHelper.read(inputStream);
+			inputStream.close();
 		} catch (Exception e) {
 			binaryClassifier = new FilteredClassifier();
 		}
 		try {
-			inputStream = new URL(pathFineGrained).openStream();
+			inputStream = new URL(pathToFineGrainedModel).openStream();
 			fineGrainedClassifier = (LC) weka.core.SerializationHelper.read(inputStream);
+			inputStream.close();
 		} catch (Exception e) {
 			fineGrainedClassifier = new LC();
 		}
 	}
 
 	public List<Double> makeBinaryPredictions(Instances data) {
-		List<Double> areRelevant = new ArrayList<Double>();
+		List<Double> binaryPredictionResults = new ArrayList<Double>();
 
 		try {
 			for (int i = 0; i < data.numInstances(); i++) {
 				data.get(i).setClassMissing();
-				Double n = binaryClassifier.classifyInstance(data.get(i));
-				areRelevant.add(n);
+				Double predictionResult = binaryClassifier.classifyInstance(data.get(i));
+				binaryPredictionResults.add(predictionResult);
 			}
 		} catch (Exception e) {
 			System.err.println("Binary classification failed.");
 			return new ArrayList<Double>();
 		}
 
-		return areRelevant;
+		return binaryPredictionResults;
 	}
 
 	public List<double[]> makeFineGrainedPredictions(Instances data) {
-		List<double[]> results = new ArrayList<double[]>();
+		List<double[]> fineGrainedPredictionResults = new ArrayList<double[]>();
 		data.setClassIndex(5);
 
 		// Create and use filter
@@ -73,7 +78,7 @@ public class DecisionKnowledgeClassifier {
 			for (int n = 0; n < data.size(); n++) {
 				Instance predictionInstance = data.get(n);
 				double[] predictionResult = fineGrainedClassifier.distributionForInstance(predictionInstance);
-				results.add(predictionResult);
+				fineGrainedPredictionResults.add(predictionResult);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -81,7 +86,7 @@ public class DecisionKnowledgeClassifier {
 			return null;
 		}
 
-		return results;
+		return fineGrainedPredictionResults;
 
 	}
 
