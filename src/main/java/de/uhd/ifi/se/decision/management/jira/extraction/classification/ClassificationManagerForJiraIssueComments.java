@@ -37,7 +37,7 @@ public class ClassificationManagerForJiraIssueComments {
 		}
 		Instances data = createDatasetForBinaryClassification(commentsList);
 
-		List<Double> classificationResult;
+		List<Boolean> classificationResult;
 		if (!data.isEmpty()) {
 			classificationResult = classifier.makeBinaryPredictions(data);
 			commentsList = matchBinaryClassificationBackOnData(classificationResult, commentsList);
@@ -95,7 +95,7 @@ public class ClassificationManagerForJiraIssueComments {
 		return commentsList;
 	}
 
-	private List<JiraIssueComment> matchBinaryClassificationBackOnData(List<Double> classificationResult,
+	private List<JiraIssueComment> matchBinaryClassificationBackOnData(List<Boolean> classificationResult,
 			List<JiraIssueComment> commentsList) {
 		int i = 0;
 		for (JiraIssueComment comment : commentsList) {
@@ -121,28 +121,7 @@ public class ClassificationManagerForJiraIssueComments {
 		return commentsList;
 	}
 
-	private List<String> createClassAttributeList() {
-		// Declare Class value with {0,1} as possible values
-		List<String> relevantAttribute = new ArrayList<String>();
-		relevantAttribute.add("0");
-		relevantAttribute.add("1");
-		return relevantAttribute;
-	}
 
-	private List<Attribute> createBinaryAttributes() {
-		List<Attribute> wekaAttributes = new ArrayList<Attribute>();
-
-		wekaAttributes.add(new Attribute("sentence", (List<String>) null));
-		wekaAttributes.add(new Attribute("isRelevant", createClassAttributeList()));
-
-		return wekaAttributes;
-	}
-
-	private DenseInstance createInstance(int size, List<Attribute> wekaAttributes, Sentence sentence) {
-		DenseInstance newInstance = new DenseInstance(size);
-		newInstance.setValue(wekaAttributes.get(0), sentence.getBody());
-		return newInstance;
-	}
 
 	private Instances createDatasetForBinaryClassification(List<JiraIssueComment> commentsList) {
 		List<Attribute> wekaAttributes = createBinaryAttributes();
@@ -157,6 +136,27 @@ public class ClassificationManagerForJiraIssueComments {
 			}
 		}
 		return data;
+	}
+	
+	private List<Attribute> createBinaryAttributes() {
+		List<Attribute> wekaAttributes = new ArrayList<Attribute>();
+		wekaAttributes.add(new Attribute("sentence", (List<String>) null));
+		wekaAttributes.add(new Attribute("isRelevant", createClassAttributeList()));
+		return wekaAttributes;
+	}
+	
+	private List<String> createClassAttributeList() {
+		// Declare Class value with {0,1} as possible values
+		List<String> relevantAttribute = new ArrayList<String>();
+		relevantAttribute.add("0");
+		relevantAttribute.add("1");
+		return relevantAttribute;
+	}
+	
+	private DenseInstance createInstance(int size, List<Attribute> wekaAttributes, Sentence sentence) {
+		DenseInstance newInstance = new DenseInstance(size);
+		newInstance.setValue(wekaAttributes.get(0), sentence.getBody());
+		return newInstance;
 	}
 
 	private Instances createDatasetForFineGrainedClassification(List<JiraIssueComment> commentsList) {

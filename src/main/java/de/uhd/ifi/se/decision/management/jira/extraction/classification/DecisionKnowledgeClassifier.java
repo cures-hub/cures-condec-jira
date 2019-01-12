@@ -8,6 +8,8 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import meka.classifiers.multilabel.LC;
 import weka.classifiers.meta.FilteredClassifier;
+import weka.core.Attribute;
+import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.tokenizers.NGramTokenizer;
@@ -16,8 +18,8 @@ import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
 /**
- * Class to initialize the binary and fine grained supervised classifiers to identify
- * decision knowledge in natural language texts.
+ * Class to initialize the binary and fine grained supervised classifiers to
+ * identify decision knowledge in natural language texts.
  */
 public class DecisionKnowledgeClassifier {
 
@@ -44,21 +46,69 @@ public class DecisionKnowledgeClassifier {
 		}
 	}
 
-	public List<Double> makeBinaryPredictions(Instances data) {
-		List<Double> binaryPredictionResults = new ArrayList<Double>();
+	public List<Boolean> makeBinaryPredictions(List<String> stringsToBeClassified) {
+		Instances datasetForBinaryClassification = createDatasetForBinaryClassification(stringsToBeClassified);
+		return makeBinaryPredictions(datasetForBinaryClassification);
+	}
+
+	private Instances createDatasetForBinaryClassification(List<String> stringsToBeClassified) {
+		List<Attribute> wekaAttributes = createBinaryAttributes();
+		Instances datasetForBinaryClassification = new Instances("sentences", (ArrayList<Attribute>) wekaAttributes,
+				1000000);
+
+		datasetForBinaryClassification.setClassIndex(datasetForBinaryClassification.numAttributes() - 1);
+		for (String string : stringsToBeClassified) {
+			DenseInstance newInstance = new DenseInstance(2);
+			newInstance.setValue(wekaAttributes.get(0), string);
+		}
+		return datasetForBinaryClassification;
+	}
+
+	private List<Attribute> createBinaryAttributes() {
+		List<Attribute> wekaAttributes = new ArrayList<Attribute>();
+		wekaAttributes.add(new Attribute("sentence", (List<String>) null));
+		wekaAttributes.add(new Attribute("isRelevant", createClassAttributeList()));
+		return wekaAttributes;
+	}
+
+	private List<String> createClassAttributeList() {
+		// Declare Class value with {0,1} as possible values
+		List<String> relevantAttribute = new ArrayList<String>();
+		relevantAttribute.add("0");
+		relevantAttribute.add("1");
+		return relevantAttribute;
+	}
+
+	public List<Boolean> makeBinaryPredictions(Instances data) {
+		List<Boolean> binaryPredictionResults = new ArrayList<Boolean>();
 
 		try {
 			for (int i = 0; i < data.numInstances(); i++) {
 				data.get(i).setClassMissing();
-				Double predictionResult = binaryClassifier.classifyInstance(data.get(i));
-				binaryPredictionResults.add(predictionResult);
+				double predictionResult = binaryClassifier.classifyInstance(data.get(i));
+				binaryPredictionResults.add(isRelevant(predictionResult));
 			}
 		} catch (Exception e) {
 			System.err.println("Binary classification failed.");
-			return new ArrayList<Double>();
+			return new ArrayList<Boolean>();
 		}
 
 		return binaryPredictionResults;
+	}
+
+	/**
+	 * Determine whether the prediction result indicates that the text is decision
+	 * knowledge, i.e., relevant.
+	 * 
+	 * @param predictionResult
+	 *            1.0 if the text is decision knowledge. Values less than 1
+	 *            represent irrelevant text.
+	 */
+	private boolean isRelevant(double predictionResult) {
+		if (predictionResult == 1.) {
+			return true;
+		}
+		return false;
 	}
 
 	public List<double[]> makeFineGrainedPredictions(Instances data) {
@@ -87,7 +137,6 @@ public class DecisionKnowledgeClassifier {
 		}
 
 		return fineGrainedPredictionResults;
-
 	}
 
 	private StringToWordVector getStringToWordVector() throws Exception {
