@@ -269,9 +269,6 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	public boolean existsInDatabase() {
 		DecisionKnowledgeElement elementInDatabase = AbstractPersistenceManager.getDecisionKnowledgeElement(id,
 				documentationLocation);
-		if (elementInDatabase.getId() > 0) {
-			return true;
-		}
-		return false;
+		return elementInDatabase.getId() > 0;
 	}
 }

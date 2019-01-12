@@ -104,13 +104,13 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 		return relevantAttribute;
 	}
 
-	private List<Boolean> makeBinaryPredictions(Instances data) {
+	private List<Boolean> makeBinaryPredictions(Instances instances) {
 		List<Boolean> binaryPredictionResults = new ArrayList<Boolean>();
 
 		try {
-			for (int i = 0; i < data.numInstances(); i++) {
-				data.get(i).setClassMissing();
-				double predictionResult = binaryClassifier.classifyInstance(data.get(i));
+			for (Instance instance : instances) {
+				instance.setClassMissing();
+				double predictionResult = binaryClassifier.classifyInstance(instance);
 				binaryPredictionResults.add(isRelevant(predictionResult));
 			}
 		} catch (Exception e) {
@@ -131,29 +131,25 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 	 * @return true if text is relevant decision knowledge.
 	 */
 	public static boolean isRelevant(double predictionResult) {
-		if (predictionResult == 1.) {
-			return true;
-		}
-		return false;
+		return predictionResult == 1.;
 	}
 
-	public List<KnowledgeType> makeFineGrainedPredictions(Instances data) {
+	public List<KnowledgeType> makeFineGrainedPredictions(Instances instances) {
 		List<KnowledgeType> fineGrainedPredictionResults = new ArrayList<KnowledgeType>();
-		data.setClassIndex(5);
+		instances.setClassIndex(5);
 
 		// Create and use filter
 		Filter sringToWordVector;
 		try {
-			data.setClassIndex(5);
+			instances.setClassIndex(5);
 			sringToWordVector = getStringToWordVector();
-			sringToWordVector.setInputFormat(data);
-			data = Filter.useFilter(data, sringToWordVector);
-			data.setClassIndex(5);
+			sringToWordVector.setInputFormat(instances);
+			Instances filteredInstances = Filter.useFilter(instances, sringToWordVector);
+			filteredInstances.setClassIndex(5);
 
 			// Classify string instances
-			for (int n = 0; n < data.size(); n++) {
-				Instance predictionInstance = data.get(n);
-				double[] predictionResult = fineGrainedClassifier.distributionForInstance(predictionInstance);
+			for (Instance instance : filteredInstances) {
+				double[] predictionResult = fineGrainedClassifier.distributionForInstance(instance);
 				fineGrainedPredictionResults.add(getType(predictionResult));
 			}
 		} catch (Exception e) {
