@@ -49,7 +49,7 @@ public class DecisionKnowledgeClassifier {
 				areRelevant.add(n);
 			}
 		} catch (Exception e) {
-			System.err.println("Binary Classification failed");
+			System.err.println("Binary classification failed.");
 			return new ArrayList<Double>();
 		}
 
@@ -60,13 +60,13 @@ public class DecisionKnowledgeClassifier {
 		List<double[]> results = new ArrayList<double[]>();
 		data.setClassIndex(5);
 
-		// Create and use Filter
-		Filter stwv;
+		// Create and use filter
+		Filter sringToWordVector;
 		try {
 			data.setClassIndex(5);
-			stwv = getSTWV();
-			stwv.setInputFormat(data);
-			data = Filter.useFilter(data, stwv);
+			sringToWordVector = getStringToWordVector();
+			sringToWordVector.setInputFormat(data);
+			data = Filter.useFilter(data, sringToWordVector);
 			data.setClassIndex(5);
 
 			// Classify string instances
@@ -77,7 +77,7 @@ public class DecisionKnowledgeClassifier {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println(e.getStackTrace() + "Fine grained Classification failed");
+			System.err.println(e.getStackTrace() + "Fine grained classification failed.");
 			return null;
 		}
 
@@ -85,22 +85,22 @@ public class DecisionKnowledgeClassifier {
 
 	}
 
-	private StringToWordVector getSTWV() throws Exception {
-		StringToWordVector stwv = new StringToWordVector();
-		stwv.setLowerCaseTokens(true);
-		stwv.setIDFTransform(true);
-		stwv.setTFTransform(true);
-		stwv.setTokenizer(getTokenizer());
-		stwv.setWordsToKeep(1000000);
-		return stwv;
+	private StringToWordVector getStringToWordVector() throws Exception {
+		StringToWordVector stringToWordVector = new StringToWordVector();
+		stringToWordVector.setLowerCaseTokens(true);
+		stringToWordVector.setIDFTransform(true);
+		stringToWordVector.setTFTransform(true);
+		stringToWordVector.setTokenizer(getTokenizer());
+		stringToWordVector.setWordsToKeep(1000000);
+		return stringToWordVector;
 	}
 
 	private Tokenizer getTokenizer() throws Exception {
-		Tokenizer t = new NGramTokenizer();
+		Tokenizer tokenizer = new NGramTokenizer();
 		String[] options = weka.core.Utils.splitOptions(
 				"weka.core.tokenizers.NGramTokenizer -max 3 -min 1 -delimiters \" \\r\\n\\t.,;:\\'\\\"()?!\"");
-		t.setOptions(options);
-		return t;
+		tokenizer.setOptions(options);
+		return tokenizer;
 	}
 
 	public void setFineGrainedClassifier(LC fineGrainedClassifier) {

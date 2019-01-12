@@ -19,7 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowled
 
 public class SentenceImpl extends DecisionKnowledgeElementImpl implements Sentence {
 
-	private boolean isTagged;
+	private boolean isValidated;
 
 	private boolean isRelevant;
 
@@ -40,13 +40,13 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
 
-	public SentenceImpl(long id, int endSubstringCount, int startSubstringCount, boolean isTagged, boolean isRelevant,
+	public SentenceImpl(long id, int endSubstringCount, int startSubstringCount, boolean isValidated, boolean isRelevant,
 			String projectKey, long commentId, long issueId, String type) {
 		this();
 		this.setId(id);
 		this.setEndSubstringCount(endSubstringCount);
 		this.setStartSubstringCount(startSubstringCount);
-		this.setValidated(isTagged);
+		this.setValidated(isValidated);
 		this.setRelevant(isRelevant);
 		this.setProject(projectKey);
 		this.setCommentId(commentId);
@@ -87,12 +87,12 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	@Override
 	public boolean isValidated() {
-		return this.isTagged;
+		return this.isValidated;
 	}
 
 	@Override
-	public void setValidated(boolean isTagged) {
-		this.isTagged = isTagged;
+	public void setValidated(boolean isValidated) {
+		this.isValidated = isValidated;
 	}
 
 	@Override
@@ -202,7 +202,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	private void setManuallyTagged() {
 		this.setPlainText(false);
 		this.setRelevant(true);
-		this.setValidated(true);
+		//this.setValidated(true);
 		JiraIssueCommentPersistenceManager.updateInDatabase(this);
 	}
 

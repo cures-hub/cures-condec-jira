@@ -17,7 +17,7 @@ public class ClassificationManagerForCommentSentences {
 
 	/**
 	 * The knowledge types need to be present in the weka classifier. They do not
-	 * relate to tags like [Issue].
+	 * relate to tags like {Issue}.
 	 */
 	private final String[] knowledgeTypes = { "isAlternative", "isPro", "isCon", "isDecision", "isIssue" };
 
@@ -64,13 +64,13 @@ public class ClassificationManagerForCommentSentences {
 					sentence.setType(classificationResult.get(i));
 					System.out.println(sentence.getTypeAsString());
 					sentence.setSummary(null);
-					sentence.setValidated(true);
+					sentence.setValidated(false);
 					new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence, null);
 					i++;
 				} else if (sentence.isRelevant() && sentence.isTaggedFineGrained() && sentence.isPlainText()) {
-					Sentence aosentence = (Sentence) new JiraIssueCommentPersistenceManager("")
+					sentence = (Sentence) new JiraIssueCommentPersistenceManager("")
 							.getDecisionKnowledgeElement(sentence.getId());
-					sentence.setType(aosentence.getType());
+					sentence.setValidated(false);
 				}
 			}
 		}
@@ -78,13 +78,13 @@ public class ClassificationManagerForCommentSentences {
 		return commentsList;
 	}
 
-	private List<JiraIssueComment> loadSentencesFineGrainedKnowledgeTypesFromActiveObjects(List<JiraIssueComment> commentsList) {
+	private List<JiraIssueComment> loadSentencesFineGrainedKnowledgeTypesFromActiveObjects(
+			List<JiraIssueComment> commentsList) {
 		for (JiraIssueComment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
 				if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {
-					Sentence aosentence = (Sentence) new JiraIssueCommentPersistenceManager("")
+					sentence = (Sentence) new JiraIssueCommentPersistenceManager("")
 							.getDecisionKnowledgeElement(sentence.getId());
-					sentence.setType(aosentence.getType());
 				}
 			}
 		}
@@ -98,8 +98,8 @@ public class ClassificationManagerForCommentSentences {
 			for (Sentence sentence : comment.getSentences()) {
 				if (isSentenceQualifiedForBinaryClassification(sentence)) {
 					sentence.setRelevant(classificationResult.get(i));
+					sentence.setValidated(false);
 					JiraIssueCommentPersistenceManager.updateInDatabase(sentence);
-					sentence.setValidated(true);
 					i++;
 				}
 			}
@@ -110,24 +110,23 @@ public class ClassificationManagerForCommentSentences {
 	public List<JiraIssueComment> writeDataFromActiveObjectsToSentences(List<JiraIssueComment> commentsList) {
 		for (JiraIssueComment comment : commentsList) {
 			for (Sentence sentence : comment.getSentences()) {
-				Sentence aoSentence = (Sentence) new JiraIssueCommentPersistenceManager("")
+				sentence = (Sentence) new JiraIssueCommentPersistenceManager("")
 						.getDecisionKnowledgeElement(sentence.getId());
-				sentence.setRelevant(aoSentence.isRelevant());
 			}
 		}
 		return commentsList;
 	}
 
-	private ArrayList<String> createClassAttributeList() {
+	private List<String> createClassAttributeList() {
 		// Declare Class value with {0,1} as possible values
-		ArrayList<String> relevantAttribute = new ArrayList<String>();
+		List<String> relevantAttribute = new ArrayList<String>();
 		relevantAttribute.add("0");
 		relevantAttribute.add("1");
 		return relevantAttribute;
 	}
 
-	private ArrayList<Attribute> createBinaryAttributes() {
-		ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
+	private List<Attribute> createBinaryAttributes() {
+		List<Attribute> wekaAttributes = new ArrayList<Attribute>();
 
 		wekaAttributes.add(new Attribute("sentence", (List<String>) null));
 		wekaAttributes.add(new Attribute("isRelevant", createClassAttributeList()));
@@ -135,15 +134,15 @@ public class ClassificationManagerForCommentSentences {
 		return wekaAttributes;
 	}
 
-	private DenseInstance createInstance(int size, ArrayList<Attribute> wekaAttributes, Sentence sentence) {
+	private DenseInstance createInstance(int size, List<Attribute> wekaAttributes, Sentence sentence) {
 		DenseInstance newInstance = new DenseInstance(size);
 		newInstance.setValue(wekaAttributes.get(0), sentence.getBody());
 		return newInstance;
 	}
 
 	private Instances createDatasetForBinaryClassification(List<JiraIssueComment> commentsList) {
-		ArrayList<Attribute> wekaAttributes = createBinaryAttributes();
-		Instances data = new Instances("sentences", wekaAttributes, 1000000);
+		List<Attribute> wekaAttributes = createBinaryAttributes();
+		Instances data = new Instances("sentences", (ArrayList<Attribute>) wekaAttributes, 1000000);
 
 		data.setClassIndex(data.numAttributes() - 1);
 		for (JiraIssueComment comment : commentsList) {
@@ -186,7 +185,8 @@ public class ClassificationManagerForCommentSentences {
 	/**
 	 * @param sentence
 	 *            Sentence to check if its qualified for classification. It is
-	 *            qualified if it's plain text, and not yet tagged.
+	 *            qualified if it's plain text, and if its type is not yet
+	 *            validated.
 	 * @return boolean identifier
 	 */
 	private static boolean isSentenceQualifiedForBinaryClassification(Sentence sentence) {
@@ -194,7 +194,7 @@ public class ClassificationManagerForCommentSentences {
 	}
 
 	private static boolean isSentenceQualifiedForFineGrainedClassification(Sentence sentence) {
-		return sentence.isRelevant() && !sentence.isTaggedFineGrained() && sentence.isPlainText();
+		return sentence.isRelevant() && isSentenceQualifiedForBinaryClassification(sentence);
 	}
 
 	public DecisionKnowledgeClassifier getClassifier() {

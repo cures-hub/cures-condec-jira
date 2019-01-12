@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -61,12 +62,10 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 		// Get the last comment entered in on the issue to a String
 		String comment = "This is a testentence without any purpose. We expect this to be irrelevant. I got a problem in this class. The previous sentence should be much more relevant";
 		commentManager.create(issue, currentUser, comment, true);
-
 	}
 
 	private void fillCommentList() {
 		list.add(new JiraIssueCommentImpl(ComponentAccessor.getCommentManager().getLastComment(issue)));
-
 	}
 
 	@Test
@@ -74,7 +73,7 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 	public void testBinaryClassification() throws Exception {
 		list = classificationManager.classifySentenceBinary(list);
 		assertNotNull(list.get(0).getSentences().get(0).isRelevant());
-		assertTrue(list.get(0).getSentences().get(0).isValidated());
+		assertFalse(list.get(0).getSentences().get(0).isValidated());
 	}
 
 	@Test
@@ -84,7 +83,7 @@ public class TestClassificationManagerForCommentSentences extends TestSetUpWithI
 		list = classificationManager.classifySentenceFineGrained(list);
 
 		assertNotNull(list.get(0).getSentences().get(0).isRelevant());
-		assertTrue(list.get(0).getSentences().get(0).isValidated());
+		assertFalse(list.get(0).getSentences().get(0).isValidated());
 	}
 
 	@Test

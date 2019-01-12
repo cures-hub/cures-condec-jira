@@ -168,6 +168,8 @@ public class CommentSplitter {
 
 	public static List<String> getAllTagsUsedInProject(String projectKey) {
 		Set<KnowledgeType> projectKnowledgeTypes = new DecisionKnowledgeProjectImpl(projectKey).getKnowledgeTypes();
+		projectKnowledgeTypes.add(KnowledgeType.PRO);
+		projectKnowledgeTypes.add(KnowledgeType.CON);
 		List<String> knowledgeTypeTags = new ArrayList<String>();
 		for (KnowledgeType type : projectKnowledgeTypes) {
 			knowledgeTypeTags.add(AbstractKnowledgeClassificationMacro.getTag(type));
