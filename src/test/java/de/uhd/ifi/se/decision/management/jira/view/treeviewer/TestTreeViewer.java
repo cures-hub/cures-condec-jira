@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,13 +23,14 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.impl.JiraIssueCommentImpl;
+import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import net.java.ao.EntityManager;
@@ -179,13 +181,13 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
-		Comment comment1 = commentManager.create(issue, currentUser,
-				"This is a testsentence for test purposes", true);
+		Comment comment1 = commentManager.create(issue, currentUser, "This is a testsentence for test purposes", true);
 
 		// 3) Manipulate Sentence object so it will be shown in the tree viewer
-		JiraIssueComment comment = new JiraIssueCommentImpl(comment1);
-		comment.getSentences().get(0).setRelevant(true);
-		comment.getSentences().get(0).setType(KnowledgeType.ALTERNATIVE);
+		List<Sentence> sentences = new CommentSplitter().getSentences(comment1);
+		// JiraIssueComment comment = new JiraIssueCommentImpl(comment1);
+		sentences.get(0).setRelevant(true);
+		sentences.get(0).setType(KnowledgeType.ALTERNATIVE);
 		element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
 		tv = new TreeViewer(element.getKey(), selectedKnowledgeTypes);
 

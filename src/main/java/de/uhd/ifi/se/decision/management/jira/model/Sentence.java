@@ -133,7 +133,7 @@ public interface Sentence extends DecisionKnowledgeElement {
 	 */
 	boolean isTaggedFineGrained();
 
-	void setIssueId(long issueid);
+	void setIssueId(long issueId);
 
 	long getIssueId();
 

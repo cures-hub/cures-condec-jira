@@ -19,16 +19,15 @@ import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.extraction.view.macros.AbstractKnowledgeClassificationMacro;
-import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.model.impl.JiraIssueCommentImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
@@ -73,7 +72,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		}
 		DecisionKnowledgeInCommentEntity[] commentSentences = ACTIVE_OBJECTS.find(
 				DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("ISSUE_ID = ? AND COMMENT_ID = ?", comment.getIssue().getId(), comment.getId()));	
+				Query.select().where("ISSUE_ID = ? AND COMMENT_ID = ?", comment.getIssue().getId(), comment.getId()));
 		for (DecisionKnowledgeInCommentEntity databaseEntry : commentSentences) {
 			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUECOMMENT);
 			isDeleted = DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
@@ -233,13 +232,12 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		}
 		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getTypeAsString());
 		String text = tag + element.getSummary() + "\n" + element.getDescription() + tag;
-		Comment comment = ComponentAccessor.getCommentManager().create(issue, user,
-				text, false);
-		JiraIssueComment com = new JiraIssueCommentImpl(comment);
-		for (Sentence sentence : com.getSentences()) {
+		Comment comment = ComponentAccessor.getCommentManager().create(issue, user, text, false);
+		List<Sentence> sentences = new CommentSplitter().getSentences(comment);
+		for (Sentence sentence : sentences) {
 			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUECOMMENT);
 		}
-		return com.getSentences().get(0);
+		return sentences.get(0);
 	}
 
 	public static long insertDecisionKnowledgeElement(Sentence sentence, ApplicationUser user) {

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -22,16 +23,15 @@ import com.atlassian.jira.web.action.ProjectActionSupport;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockSearchService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.model.impl.JiraIssueCommentImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -51,7 +51,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 
 	private AbstractPersistenceManager persistenceStrategy;
 
-	private JiraIssueComment comment;
+	private List<Sentence> sentences;
 
 	@Before
 	public void setUp() {
@@ -83,7 +83,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		Comment comment1 = commentManager.create(issue, currentUser, text, true);
 
 		// 3) Manipulate Sentence object so it will be shown in the tree viewer
-		this.comment = new JiraIssueCommentImpl(comment1);
+		this.sentences = new CommentSplitter().getSentences(comment1);
 		return issue;
 
 	}
@@ -139,9 +139,9 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testWithLinkedSentences() {
 		MutableIssue issue = createCommentStructureWithTestIssue("This is a testsentence for test purposes");
-		Link link = new LinkImpl(comment.getSentences().get(0), comment.getSentences().get(0), LinkType.CONTAIN);
+		Link link = new LinkImpl(sentences.get(0), sentences.get(0), LinkType.CONTAIN);
 		GenericLinkManager.insertLink(link, null);
-		Sentence sentence = comment.getSentences().get(0);
+		Sentence sentence = sentences.get(0);
 		sentence.setType(KnowledgeType.ISSUE);
 		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence, null);
 

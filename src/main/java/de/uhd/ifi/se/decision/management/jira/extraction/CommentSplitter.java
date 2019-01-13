@@ -1,19 +1,25 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
+import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
+import com.atlassian.jira.issue.comments.Comment;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.view.macros.AbstractKnowledgeClassificationMacro;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
 public class CommentSplitter {
 
@@ -39,6 +45,68 @@ public class CommentSplitter {
 	public CommentSplitter() {
 		this.setStartSubstringCount(new ArrayList<Integer>());
 		this.setEndSubstringCount(new ArrayList<Integer>());
+	}
+
+	public List<Sentence> getSentences(Comment comment) {
+		List<Sentence> sentences = new ArrayList<Sentence>();
+		String projectKey = comment.getIssue().getProjectObject().getKey();
+		List<String> rawSentences = CommentSplitter.sliceCommentRecursionCommander(comment.getBody(), projectKey);
+		runBreakIterator(rawSentences, comment.getBody());
+		// Create AO entries
+		for (int i = 0; i < this.getStartSubstringCount().size(); i++) {
+			int startIndex = this.getStartSubstringCount().get(i);
+			int endIndex = this.getEndSubstringCount().get(i);
+			if (startAndEndIndexRules(startIndex, endIndex, comment.getBody())) {
+				Sentence sentence = new SentenceImpl();
+				sentence.setCommentId(comment.getId());
+				sentence.setEndSubstringCount(endIndex);
+				sentence.setStartSubstringCount(startIndex);
+				sentence.setIssueId(comment.getIssue().getId());
+				sentence.setProject(projectKey);
+				long aoId2 = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(sentence, null);
+				sentence = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(aoId2);
+				JiraIssueCommentPersistenceManager.createSmartLinkForSentence(sentence);
+				sentence.setCreated(comment.getCreated());
+				sentences.add(sentence);
+			}
+		}
+		return sentences;
+	}
+
+	/**
+	 * Checks: Start Index >=0, End Index >= 0, End Index - Start Index > 0, Body
+	 * not only whitespaces
+	 * 
+	 * @param startIndex
+	 * @param endIndex
+	 * @return
+	 */
+	private boolean startAndEndIndexRules(int startIndex, int endIndex, String body) {
+		return (startIndex >= 0 && endIndex >= 0 && (endIndex - startIndex) > 0
+				&& body.substring(startIndex, endIndex).replaceAll("\r\n", "").trim().length() > 1);
+	}
+
+	private void runBreakIterator(List<String> rawSentences, String body) {
+		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
+
+		for (String currentSentence : rawSentences) {
+			if (StringUtils.indexOfAny(currentSentence, CommentSplitter.EXCLUDED_STRINGS) == -1) {
+				iterator.setText(currentSentence);
+				int start = iterator.first();
+				for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
+					if (end - start > 1 && currentSentence.substring(start, end).trim().length() > 0) {
+						int startOfSentence = body.toLowerCase()
+								.indexOf(currentSentence.toLowerCase().substring(start, end));
+						int endOfSentence = currentSentence.substring(start, end).length() + startOfSentence;
+						this.addSentenceIndex(startOfSentence, endOfSentence);
+					}
+				}
+			} else {
+				int start1 = body.toLowerCase().indexOf(currentSentence.toLowerCase());
+				int end1 = currentSentence.length() + start1;
+				this.addSentenceIndex(start1, end1);
+			}
+		}
 	}
 
 	public List<String> splitSentence(String body) {

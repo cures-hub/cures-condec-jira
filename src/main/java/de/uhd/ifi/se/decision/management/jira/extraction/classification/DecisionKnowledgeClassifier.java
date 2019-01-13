@@ -13,13 +13,13 @@ import weka.classifiers.meta.FilteredClassifier;
 public interface DecisionKnowledgeClassifier {
 
 	/**
-	 * Determines for a list of strings whether each string is relvant decision
+	 * Determines for a list of strings whether each string is relevant decision
 	 * knowledge or not. The classifier needs a list of strings not just one string.
 	 * 
 	 * @param stringsToBeClassified
 	 *            list of strings to be checked for relevance.
 	 * @return list of boolean values in the same order as the input strings. Each
-	 *         value indicated whether a string is relevant (true) or not (false).
+	 *         value indicates whether a string is relevant (true) or not (false).
 	 */
 	List<Boolean> makeBinaryPredictions(List<String> stringsToBeClassified);
 
@@ -29,7 +29,7 @@ public interface DecisionKnowledgeClassifier {
 	 * 
 	 * @see KnowledgeType
 	 * @param stringsToBeClassified
-	 *            list of strings that should be classified in knowledge types.
+	 *            list of strings that should be classified into knowledge types.
 	 * @return list of knowledge types in the same order as the input strings. Each
 	 *         value in the list is the knowledge type of the respective string.
 	 */

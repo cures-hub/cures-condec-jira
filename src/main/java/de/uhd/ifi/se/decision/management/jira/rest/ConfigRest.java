@@ -334,6 +334,7 @@ public class ConfigRest {
 
 			searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
 			for (Issue issue : searchResults.getIssues()) {
+				//for (Comment comment :)
 				new ViewConnector(issue, false);
 			}
 
