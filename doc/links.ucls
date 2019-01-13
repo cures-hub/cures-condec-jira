@@ -34,7 +34,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="4" language="java" name="de.uhd.ifi.se.decision.management.jira.extraction.view.macros.AlternativeMacro" 
+  <class id="4" language="java" name="de.uhd.ifi.se.decision.management.jira.view.macros.AlternativeMacro" 
     project="git" 
     file="/git/src/main/java/de/uhd/ifi/se/decision/management/jira/extraction/view/macros/AlternativeMacro.java" 
     binary="false" corner="BOTTOM_RIGHT">    
@@ -45,7 +45,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="5" language="java" name="de.uhd.ifi.se.decision.management.jira.extraction.view.macros.ProMacro" 
+  <class id="5" language="java" name="de.uhd.ifi.se.decision.management.jira.view.macros.ProMacro" 
     project="git" file="/git/src/main/java/de/uhd/ifi/se/decision/management/jira/extraction/view/macros/ProMacro.java" 
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="957" y="1369"/>    
@@ -55,7 +55,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="6" language="java" name="de.uhd.ifi.se.decision.management.jira.extraction.view.macros.ConMacro" 
+  <class id="6" language="java" name="de.uhd.ifi.se.decision.management.jira.view.macros.ConMacro" 
     project="git" file="/git/src/main/java/de/uhd/ifi/se/decision/management/jira/extraction/view/macros/ConMacro.java" 
     binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1301" y="1369"/>    
@@ -65,7 +65,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="7" language="java" name="de.uhd.ifi.se.decision.management.jira.extraction.view.macros.IssueMacro" 
+  <class id="7" language="java" name="de.uhd.ifi.se.decision.management.jira.view.macros.IssueMacro" 
     project="git" 
     file="/git/src/main/java/de/uhd/ifi/se/decision/management/jira/extraction/view/macros/IssueMacro.java" 
     binary="false" corner="BOTTOM_RIGHT">    
@@ -76,7 +76,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="8" language="java" name="de.uhd.ifi.se.decision.management.jira.extraction.view.macros.DecisionMacro" 
+  <class id="8" language="java" name="de.uhd.ifi.se.decision.management.jira.view.macros.DecisionMacro" 
     project="git" 
     file="/git/src/main/java/de/uhd/ifi/se/decision/management/jira/extraction/view/macros/DecisionMacro.java" 
     binary="false" corner="BOTTOM_RIGHT">    

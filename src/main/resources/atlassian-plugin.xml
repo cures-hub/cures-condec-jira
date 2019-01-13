@@ -258,27 +258,27 @@
 	</issue-tabpanel>
 
 	<macro key='issue' name='ConDec Editor Macro for Issues'
-		class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.IssueMacro'>
+		class='de.uhd.ifi.se.decision.management.jira.view.macros.IssueMacro'>
 		<description>Highlights issue knowledge elements in comments.</description>
 	</macro>
 
 	<macro key='decision' name='ConDec Editor Macro for Decisions'
-		class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.DecisionMacro'>
+		class='de.uhd.ifi.se.decision.management.jira.view.macros.DecisionMacro'>
 		<description>Highlights decision knowledge elements in comments.</description>
 	</macro>
 
 	<macro key='alternative' name='ConDec Editor Macro for Alternatives'
-		class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.AlternativeMacro'>
+		class='de.uhd.ifi.se.decision.management.jira.view.macros.AlternativeMacro'>
 		<description>Highlights alternative knowledge elements in comments.</description>
 	</macro>
 
 	<macro key='pro' name='ConDec Editor Macro for Pro-arguments'
-		class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.ProMacro'>
+		class='de.uhd.ifi.se.decision.management.jira.view.macros.ProMacro'>
 		<description>Highlights pro knowledge elements in comments.</description>
 	</macro>
 
 	<macro key='con' name='ConDec Editor Macro for Con-arguments'
-		class='de.uhd.ifi.se.decision.management.jira.extraction.view.macros.ConMacro'>
+		class='de.uhd.ifi.se.decision.management.jira.view.macros.ConMacro'>
 		<description>Highlights con knowledge elements in comments.</description>
 	</macro>
 

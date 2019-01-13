@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.view.macros;
+package de.uhd.ifi.se.decision.management.jira.view.macros;
 
 import java.util.Map;
 
