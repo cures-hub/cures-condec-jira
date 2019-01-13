@@ -3,12 +3,16 @@ package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuecommentpersi
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.List;
+
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
+import de.uhd.ifi.se.decision.management.jira.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestCreateJIRAIssueFromSentenceObject extends TestJiraIssueCommentPersistenceMangerSetUp {
+public class TestCreateJIRAIssueFromSentenceObject extends TestJiraIssueCommentPersistenceManagerSetUp {
 
 	@Test
 	@NonTransactional
@@ -43,8 +47,10 @@ public class TestCreateJIRAIssueFromSentenceObject extends TestJiraIssueCommentP
 	@Test
 	@NonTransactional
 	public void testIdOkUserFilled() {
-		JiraIssueComment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
-		TestJiraIssueCommentPersistenceMangerSetUp.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
+		TestComment tc = new TestComment();
+		List<Sentence> comment = tc.getSentencesForCommentText(
+				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
+		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
 		assertNotNull(manager.createJIRAIssueFromSentenceObject(3, user));
 	}
 }

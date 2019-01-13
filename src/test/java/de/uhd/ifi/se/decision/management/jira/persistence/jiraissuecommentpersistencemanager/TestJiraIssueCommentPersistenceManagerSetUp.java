@@ -16,14 +16,13 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.model.impl.JiraIssueCommentImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
@@ -34,7 +33,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
-public class TestJiraIssueCommentPersistenceMangerSetUp extends TestSetUpWithIssues {
+public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
 
@@ -43,16 +42,6 @@ public class TestJiraIssueCommentPersistenceMangerSetUp extends TestSetUpWithIss
 	protected Sentence element;
 	protected Comment comment1;
 	protected DecisionKnowledgeElement decisionKnowledgeElement;
-
-	public static long insertDecisionKnowledgeElement(JiraIssueComment comment, long issueId, int index) {
-		Sentence sentence = new SentenceImpl();
-		sentence.setCommentId(comment.getJiraCommentId());
-		sentence.setEndSubstringCount(comment.getEndSubstringCount().get(index));
-		sentence.setStartSubstringCount(comment.getStartSubstringCount().get(index));
-		sentence.setIssueId(issueId);
-		sentence.setProject(comment.getProjectKey());
-		return JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(sentence, null);
-	}
 
 	@Before
 	public void setUp() {
@@ -100,18 +89,13 @@ public class TestJiraIssueCommentPersistenceMangerSetUp extends TestSetUpWithIss
 		comment1 = commentManager.create(issue, currentUser, comment, true);
 	}
 
-	protected JiraIssueCommentImpl getComment(String text) {
-		createLocalIssue();
-
-		addCommentsToIssue(text);
-		return new JiraIssueCommentImpl(comment1);
-	}
-
 	@Test
 	@NonTransactional
 	public void testGetAllElementsFromAoByType() {
-		JiraIssueComment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
-		TestJiraIssueCommentPersistenceMangerSetUp.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
+		TestComment tc = new TestComment();
+		List<Sentence> comment = tc.getSentencesForCommentText(
+				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
+		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
 
 		List<DecisionKnowledgeElement> listWithObjects = new JiraIssueCommentPersistenceManager("TEST")
 				.getDecisionKnowledgeElements(KnowledgeType.ISSUE);
@@ -121,8 +105,10 @@ public class TestJiraIssueCommentPersistenceMangerSetUp extends TestSetUpWithIss
 	@Test
 	@NonTransactional
 	public void testGetAllElementsFromAoByArgumentType() {
-		JiraIssueComment comment = getComment("some sentence in front. {pro} testobject {pro} some sentence in the back.");
-		TestJiraIssueCommentPersistenceMangerSetUp.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
+		TestComment tc = new TestComment();
+		List<Sentence> comment = tc.getSentencesForCommentText(
+				"some sentence in front. {pro} testobject {pro} some sentence in the back.");
+		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
 
 		List<DecisionKnowledgeElement> listWithObjects = new JiraIssueCommentPersistenceManager("TEST")
 				.getDecisionKnowledgeElements(KnowledgeType.PRO);
@@ -132,8 +118,10 @@ public class TestJiraIssueCommentPersistenceMangerSetUp extends TestSetUpWithIss
 	@Test
 	@NonTransactional
 	public void testGetAllElementsFromAoByEmptyType() {
-		JiraIssueComment comment = getComment("some sentence in front.  {pro} testobject {pro} some sentence in the back.");
-		TestJiraIssueCommentPersistenceMangerSetUp.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
+		TestComment tc = new TestComment();
+		List<Sentence> comment = tc.getSentencesForCommentText(
+				"some sentence in front.  {pro} testobject {pro} some sentence in the back.");
+		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
 
 		List<DecisionKnowledgeElement> listWithObjects = new JiraIssueCommentPersistenceManager("TEST")
 				.getDecisionKnowledgeElements(KnowledgeType.OTHER);

@@ -27,49 +27,7 @@ public class ClassificationManagerForJiraIssueComments {
 		}
 		List<String> stringsToBeClassified = getStringsForBinaryClassification(sentences);
 		List<Boolean> classificationResult = classifier.makeBinaryPredictions(stringsToBeClassified);
-		sentences = matchBinaryClassificationBackOnData(classificationResult, sentences);
-		return sentences;
-	}
-
-	public List<Sentence> classifySentencesFineGrained(List<Sentence> sentences) {
-		if (sentences == null) {
-			return new ArrayList<Sentence>();
-		}
-		List<String> stringsToBeClassified = getStringsForFineGrainedClassification(sentences);
-		List<KnowledgeType> classificationResult = this.classifier.makeFineGrainedPredictions(stringsToBeClassified);
-
-		// Write classification results back to sentence objects
-		int i = 0;
-
-		for (Sentence sentence : sentences) {
-			if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
-				sentence.setType(classificationResult.get(i));
-				System.out.println(sentence.getTypeAsString());
-				sentence.setSummary(null);
-				sentence.setValidated(false);
-				new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence, null);
-				i++;
-			} else if (sentence.isRelevant() && sentence.isTaggedFineGrained() && sentence.isPlainText()) {
-				sentence = (Sentence) new JiraIssueCommentPersistenceManager("")
-						.getDecisionKnowledgeElement(sentence.getId());
-				sentence.setValidated(false);
-			}
-		}
-
-		return sentences;
-	}
-
-	private List<Sentence> matchBinaryClassificationBackOnData(List<Boolean> classificationResult,
-			List<Sentence> sentences) {
-		int i = 0;
-		for (Sentence sentence : sentences) {
-			if (isSentenceQualifiedForBinaryClassification(sentence)) {
-				sentence.setRelevant(classificationResult.get(i));
-				sentence.setValidated(false);
-				JiraIssueCommentPersistenceManager.updateInDatabase(sentence);
-				i++;
-			}
-		}
+		updateSentencesWithBinaryClassificationResult(classificationResult, sentences);
 		return sentences;
 	}
 
@@ -98,6 +56,30 @@ public class ClassificationManagerForJiraIssueComments {
 		return !sentence.isValidated() && sentence.isPlainText();
 	}
 
+	private List<Sentence> updateSentencesWithBinaryClassificationResult(List<Boolean> classificationResult,
+			List<Sentence> sentences) {
+		int i = 0;
+		for (Sentence sentence : sentences) {
+			if (isSentenceQualifiedForBinaryClassification(sentence)) {
+				sentence.setRelevant(classificationResult.get(i));
+				sentence.setValidated(false);
+				JiraIssueCommentPersistenceManager.updateInDatabase(sentence);
+				i++;
+			}
+		}
+		return sentences;
+	}
+
+	public List<Sentence> classifySentencesFineGrained(List<Sentence> sentences) {
+		if (sentences == null) {
+			return new ArrayList<Sentence>();
+		}
+		List<String> stringsToBeClassified = getStringsForFineGrainedClassification(sentences);
+		List<KnowledgeType> classificationResult = this.classifier.makeFineGrainedPredictions(stringsToBeClassified);
+		updateSentencesWithFineGrainedClassificationResult(classificationResult, sentences);
+		return sentences;
+	}
+
 	private List<String> getStringsForFineGrainedClassification(List<Sentence> sentences) {
 		List<String> stringsToBeClassified = new ArrayList<String>();
 		for (Sentence sentence : sentences) {
@@ -122,6 +104,23 @@ public class ClassificationManagerForJiraIssueComments {
 	 */
 	private static boolean isSentenceQualifiedForFineGrainedClassification(Sentence sentence) {
 		return sentence.isRelevant() && isSentenceQualifiedForBinaryClassification(sentence);
+	}
+
+	private List<Sentence> updateSentencesWithFineGrainedClassificationResult(List<KnowledgeType> classificationResult,
+			List<Sentence> sentences) {
+		JiraIssueCommentPersistenceManager persistenceManager = new JiraIssueCommentPersistenceManager("");
+		int i = 0;
+		for (Sentence sentence : sentences) {
+			if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
+				sentence.setType(classificationResult.get(i));
+				System.out.println(sentence.getTypeAsString());
+				sentence.setSummary(null);
+				sentence.setValidated(false);
+				persistenceManager.updateDecisionKnowledgeElement(sentence, null);
+				i++;
+			}
+		}
+		return sentences;
 	}
 
 	public DecisionKnowledgeClassifier getClassifier() {

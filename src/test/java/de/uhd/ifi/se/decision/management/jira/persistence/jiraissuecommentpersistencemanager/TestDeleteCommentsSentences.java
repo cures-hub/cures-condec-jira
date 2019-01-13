@@ -7,7 +7,7 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestDeleteCommentsSentences extends TestJiraIssueCommentPersistenceMangerSetUp {
+public class TestDeleteCommentsSentences extends TestJiraIssueCommentPersistenceManagerSetUp {
 
 	@Test
 	@NonTransactional

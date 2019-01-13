@@ -3,23 +3,25 @@ package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuecommentpersi
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestUpdateInDatabase extends TestJiraIssueCommentPersistenceMangerSetUp {
+public class TestUpdateInDatabase extends TestJiraIssueCommentPersistenceManagerSetUp {
 
 	@Test
 	@NonTransactional
 	public void testUpdateSentenceElement() {
-		JiraIssueComment comment = getComment("first Comment");
-		long id = TestJiraIssueCommentPersistenceMangerSetUp.insertDecisionKnowledgeElement(comment,
-				comment.getIssueId(), 0);
-		Sentence sentence = comment.getSentences().get(0);
+		TestComment tc = new TestComment();
+		List<Sentence> comment = tc.getSentencesForCommentText("first Comment");
+		long id = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(0), null);
+		Sentence sentence = comment.get(0);
 		sentence.setType("ALTERNATIVE");
 		JiraIssueCommentPersistenceManager.updateInDatabase(sentence);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
@@ -29,10 +31,10 @@ public class TestUpdateInDatabase extends TestJiraIssueCommentPersistenceMangerS
 	@Test
 	@NonTransactional
 	public void testUpdateKnowledgeType() {
-		JiraIssueComment comment = getComment("first Comment");
-		long id = TestJiraIssueCommentPersistenceMangerSetUp.insertDecisionKnowledgeElement(comment,
-				comment.getIssueId(), 0);
-		Sentence sentence = comment.getSentences().get(0);
+		TestComment tc = new TestComment();
+		List<Sentence> comment = tc.getSentencesForCommentText("first Comment");
+		long id = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(0), null);
+		Sentence sentence = comment.get(0);
 		sentence.setType(KnowledgeType.ALTERNATIVE);
 		JiraIssueCommentPersistenceManager.updateInDatabase(sentence);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
@@ -42,9 +44,9 @@ public class TestUpdateInDatabase extends TestJiraIssueCommentPersistenceMangerS
 	@Test
 	@NonTransactional
 	public void testSetSentenceIrrlevant() {
-		JiraIssueComment comment = getComment("first Comment");
-		long id = TestJiraIssueCommentPersistenceMangerSetUp.insertDecisionKnowledgeElement(comment,
-				comment.getIssueId(), 0);
+		TestComment tc = new TestComment();
+		List<Sentence> comment = tc.getSentencesForCommentText("first Comment");
+		long id = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(0), null);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		element.setRelevant(true);
 

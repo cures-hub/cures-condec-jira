@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
-public class TestMirgrateArgumentTypesInLinks extends TestJiraIssueCommentPersistenceMangerSetUp{
+public class TestMirgrateArgumentTypesInLinks extends TestJiraIssueCommentPersistenceManagerSetUp{
 
     @Test
     @NonTransactional

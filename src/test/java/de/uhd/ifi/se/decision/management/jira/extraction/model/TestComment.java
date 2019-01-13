@@ -23,7 +23,6 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.model.impl.JiraIssueCommentImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import net.java.ao.EntityManager;
@@ -66,16 +65,6 @@ public class TestComment extends TestSetUpWithIssues {
 		addCommentsToIssue(text);
 		List<Sentence> sentences = new CommentSplitter().getSentences(comment1);
 		return sentences;
-	}
-
-	@Test
-	public void testConstructor() {
-		assertNotNull(new JiraIssueCommentImpl());
-	}
-
-	@Test
-	public void testSentencesAreNotNull() {
-		assertNotNull(new JiraIssueCommentImpl().getSentences());
 	}
 
 	@Test

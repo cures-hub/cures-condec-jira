@@ -2,13 +2,16 @@ package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuecommentpersi
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
+import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
+import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestGetIdOfSentenceForMacro extends TestJiraIssueCommentPersistenceMangerSetUp {
+public class TestGetIdOfSentenceForMacro extends TestJiraIssueCommentPersistenceManagerSetUp {
 
 	@Test
 	@NonTransactional
@@ -119,18 +122,22 @@ public class TestGetIdOfSentenceForMacro extends TestJiraIssueCommentPersistence
 	@Test
 	@NonTransactional
 	public void testBodyWrongIssueIdOkTypeFilledKeyFilled() {
-		JiraIssueComment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
-		TestJiraIssueCommentPersistenceMangerSetUp.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
+		TestComment tc = new TestComment();
+		List<Sentence> comment = tc.getSentencesForCommentText(
+				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
+		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
 		assertEquals(0, JiraIssueCommentPersistenceManager.getIdOfSentenceForMacro("Not the right Body",
-				comment.getIssueId(), "Issue", "TEST"));
+				comment.get(0).getIssueId(), "Issue", "TEST"));
 	}
 
 	@Test
 	@NonTransactional
 	public void testBodyFilledIssueIdOkTypeFilledKeyFilled() {
-		JiraIssueComment comment = getComment("some sentence in front. {issue} testobject {issue} some sentence in the back.");
-		TestJiraIssueCommentPersistenceMangerSetUp.insertDecisionKnowledgeElement(comment, comment.getIssueId(), 1);
-		assertEquals(3, JiraIssueCommentPersistenceManager.getIdOfSentenceForMacro("testobject", comment.getIssueId(),
-				"Issue", "TEST"));
+		TestComment tc = new TestComment();
+		List<Sentence> comment = tc.getSentencesForCommentText(
+				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
+		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
+		assertEquals(3, JiraIssueCommentPersistenceManager.getIdOfSentenceForMacro("testobject",
+				comment.get(0).getIssueId(), "Issue", "TEST"));
 	}
 }
