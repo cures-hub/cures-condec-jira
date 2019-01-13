@@ -247,7 +247,7 @@
 	<!-- Decision Knowledge Extraction From JIRA Issue Description and Comments -->
 	<issue-tabpanel key="condec-tab-panel"
 		name="Decision Knowledge Extraction Tab Panel"
-		class="de.uhd.ifi.se.decision.management.jira.extraction.view.JiraIssueTabPanelRenderer">
+		class="de.uhd.ifi.se.decision.management.jira.view.JiraIssueTabPanelRenderer">
 		<description>Tab panel to manage extraction of decision knowledge from JIRA issue description and
 			comments.
 		</description>
