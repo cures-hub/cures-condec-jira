@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.view.macros;
+package de.uhd.ifi.se.decision.management.jira.view.macros;
 
 import java.util.Map;
 
@@ -112,6 +112,6 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 		if (type == KnowledgeType.OTHER) {
 			return "";
 		}
-		return getTag(type.toString());
+		return getTag(type.name().toLowerCase());
 	}
 }

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -13,6 +14,7 @@ import org.junit.runner.RunWith;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
@@ -21,17 +23,16 @@ import com.atlassian.jira.web.action.ProjectActionSupport;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockSearchService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
@@ -50,7 +51,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 
 	private AbstractPersistenceManager persistenceStrategy;
 
-	private Comment comment;
+	private List<Sentence> sentences;
 
 	@Before
 	public void setUp() {
@@ -79,10 +80,10 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
-		com.atlassian.jira.issue.comments.Comment comment1 = commentManager.create(issue, currentUser, text, true);
+		Comment comment1 = commentManager.create(issue, currentUser, text, true);
 
 		// 3) Manipulate Sentence object so it will be shown in the tree viewer
-		this.comment = new CommentImpl(comment1, true);
+		this.sentences = new CommentSplitter().getSentences(comment1);
 		return issue;
 
 	}
@@ -98,7 +99,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testWithObjects() {
 		TestComment tc = new TestComment();
-		Sentence sentence2 = tc.getComment("More Comment with some text").getSentences().get(0);
+		Sentence sentence2 = tc.getSentencesForCommentText("More Comment with some text").get(0);
 		sentence2.setType(KnowledgeType.ALTERNATIVE);
 		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence2, null);
 
@@ -138,9 +139,9 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testWithLinkedSentences() {
 		MutableIssue issue = createCommentStructureWithTestIssue("This is a testsentence for test purposes");
-		Link link = new LinkImpl(comment.getSentences().get(0), comment.getSentences().get(0), LinkType.CONTAIN);
+		Link link = new LinkImpl(sentences.get(0), sentences.get(0), LinkType.CONTAIN);
 		GenericLinkManager.insertLink(link, null);
-		Sentence sentence = comment.getSentences().get(0);
+		Sentence sentence = sentences.get(0);
 		sentence.setType(KnowledgeType.ISSUE);
 		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence, null);
 

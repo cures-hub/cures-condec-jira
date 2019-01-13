@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.view;
+package de.uhd.ifi.se.decision.management.jira.view;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -21,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
+import de.uhd.ifi.se.decision.management.jira.view.JiraIssueTabPanelRenderer;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -28,14 +29,14 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
-public class TestIssueTabPanelRenderer extends TestSetUpWithIssues {
+public class TestJiraIssueTabPanelRenderer extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
-	private IssueTabPanelRenderer renderer;
+	private JiraIssueTabPanelRenderer renderer;
 
 	@Before
 	public void setUp() {
-		renderer = new IssueTabPanelRenderer();
+		renderer = new JiraIssueTabPanelRenderer();
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
@@ -58,14 +59,15 @@ public class TestIssueTabPanelRenderer extends TestSetUpWithIssues {
 		assertEquals(0, renderer.getActions(null, user).size(), 0.0);
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test
+	// TODO Is this the correct behaviour/name?
 	public void testGetActionsFilledFilledTemplateNotProvided() {
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
 		Issue issue = new MockIssue();
 		((MockIssue) issue).setProjectObject(project);
 		((MockIssue) issue).setKey("TEST-1");
 		ApplicationUser user = new MockApplicationUser("NoFails");
-		renderer.getActions(issue, user).size();
+		assertEquals(1, renderer.getActions(issue, user).size());
 	}
 
 	@Test

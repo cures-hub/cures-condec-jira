@@ -2,6 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.rest.knowledgerest;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -18,15 +20,15 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import net.java.ao.EntityManager;
@@ -60,9 +62,9 @@ public class TestDeleteLink extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testProjectExistentRequestFilledLinkFilled() {
 		TestComment testComment = new TestComment();
-		Comment comment = testComment.getComment("This is a test sentence.");
-		DecisionKnowledgeElement sentence = comment.getSentences().get(0);
-		
+		List<Sentence> comment = testComment.getSentencesForCommentText("This is a test sentence.");
+		DecisionKnowledgeElement sentence = comment.get(0);
+
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");
 		DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issue);
 		decisionKnowledgeElement.setType(KnowledgeType.SOLUTION);
@@ -117,7 +119,8 @@ public class TestDeleteLink extends TestSetUpWithIssues {
 		assertEquals(
 				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", DELETION_ERROR)).build()
 						.getEntity(),
-				knowledgeRest.deleteLink("TEST", null, new LinkImpl(new DecisionKnowledgeElementImpl(), null)).getEntity());
+				knowledgeRest.deleteLink("TEST", null, new LinkImpl(new DecisionKnowledgeElementImpl(), null))
+						.getEntity());
 	}
 
 	@Test

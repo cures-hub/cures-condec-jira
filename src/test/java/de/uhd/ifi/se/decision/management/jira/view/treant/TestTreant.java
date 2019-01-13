@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,14 +14,14 @@ import com.atlassian.activeobjects.test.TestActiveObjects;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
@@ -134,9 +136,10 @@ public class TestTreant extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testCreateNodeStructureWithSentenceInIssue() {
 		TestComment tc = new TestComment();
-		Comment comment = tc.getComment("This is a testsentence");
-		comment.getSentences().get(0).setRelevant(true);
-		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(comment.getIssueId());
+		List<Sentence> sentences = tc.getSentencesForCommentText("This is a testsentence");
+		sentences.get(0).setRelevant(true);
+		DecisionKnowledgeElement element = persistenceStrategy
+				.getDecisionKnowledgeElement(sentences.get(0).getJiraIssueId());
 		Node nodeStructure = treant.createNodeStructure(element, null, 4, 0);
 		assertEquals(Node.class, nodeStructure.getClass());
 		assertTrue(nodeStructure.getChildren().size() == 0);

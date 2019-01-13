@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestInsertDecisionKnowledgeElement extends TestJiraIssueCommentPersistenceMangerSetUp {
+public class TestInsertDecisionKnowledgeElement extends TestJiraIssueCommentPersistenceManagerSetUp {
 
 	@Test
 	@NonTransactional

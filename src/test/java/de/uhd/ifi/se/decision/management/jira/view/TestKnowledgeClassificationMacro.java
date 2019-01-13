@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.view;
+package de.uhd.ifi.se.decision.management.jira.view;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -15,14 +15,14 @@ import com.atlassian.renderer.v2.macro.MacroException;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.extraction.view.macros.AlternativeMacro;
-import de.uhd.ifi.se.decision.management.jira.extraction.view.macros.AbstractKnowledgeClassificationMacro;
-import de.uhd.ifi.se.decision.management.jira.extraction.view.macros.ConMacro;
-import de.uhd.ifi.se.decision.management.jira.extraction.view.macros.DecisionMacro;
-import de.uhd.ifi.se.decision.management.jira.extraction.view.macros.IssueMacro;
-import de.uhd.ifi.se.decision.management.jira.extraction.view.macros.ProMacro;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
+import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
+import de.uhd.ifi.se.decision.management.jira.view.macros.AlternativeMacro;
+import de.uhd.ifi.se.decision.management.jira.view.macros.ConMacro;
+import de.uhd.ifi.se.decision.management.jira.view.macros.DecisionMacro;
+import de.uhd.ifi.se.decision.management.jira.view.macros.IssueMacro;
+import de.uhd.ifi.se.decision.management.jira.view.macros.ProMacro;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;

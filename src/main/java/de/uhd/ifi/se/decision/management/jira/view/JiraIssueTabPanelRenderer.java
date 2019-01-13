@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.view;
+package de.uhd.ifi.se.decision.management.jira.view;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,33 +19,23 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.VelocityParamFactory;
 import com.atlassian.velocity.VelocityManager;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
 /**
- * Renders the issue tab panel
+ * Renders the JIRA issue tab panel.
  */
-public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements IssueTabPanel {
-	private static final Logger LOGGER = LoggerFactory.getLogger(IssueTabPanelRenderer.class);
+public class JiraIssueTabPanelRenderer extends AbstractIssueTabPanel implements IssueTabPanel {
+	private static final Logger LOGGER = LoggerFactory.getLogger(JiraIssueTabPanelRenderer.class);
 
 	@Override
 	public List<IssueAction> getActions(Issue issue, ApplicationUser remoteUser) {
+		List<IssueAction> issueActions = new ArrayList<IssueAction>();
 		if (issue == null || remoteUser == null) {
 			LOGGER.error("Issue tab panel cannot be rendered correctly since no issue or user are provided.");
-			return new ArrayList<>();
+			return issueActions;
 		}
-		// Initialize viewConnector with the current shown Issue, only if there are more
-		// comments than saved
-		if (JiraIssueCommentPersistenceManager.countCommentsForIssue(issue.getId()) != ComponentAccessor.getCommentManager()
-				.getComments(issue).size()) {
-			new ViewConnector(issue, true);
-		}
-
 		GenericMessageAction messageAction = new GenericMessageAction(getVelocityTemplate());
-		List<IssueAction> issueActions = new ArrayList<IssueAction>();
 		issueActions.add(messageAction);
-
 		return issueActions;
 	}
 
@@ -55,13 +45,10 @@ public class IssueTabPanelRenderer extends AbstractIssueTabPanel implements Issu
 			LOGGER.error("Issue tab panel cannot be rendered correctly since no issue or user are provided.");
 			return false;
 		}
-		String projectKey = this.getProjectKey(issue.getKey());
+
+		String projectKey = issue.getProjectObject().getKey();
 		return ConfigPersistenceManager.isActivated(projectKey)
 				&& ConfigPersistenceManager.isKnowledgeExtractedFromIssues(projectKey);
-	}
-
-	private String getProjectKey(String issueKey) {
-		return issueKey.split("-")[0];
 	}
 
 	private String getVelocityTemplate() {

@@ -13,24 +13,24 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Comment;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.SentenceImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.view.macros.AbstractKnowledgeClassificationMacro;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
+import de.uhd.ifi.se.decision.management.jira.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
+import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
 import net.java.ao.Query;
 
 /**
@@ -64,7 +64,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		return isDeleted;
 	}
 
-	public static boolean deleteCommentsSentences(com.atlassian.jira.issue.comments.Comment comment) {
+	public static boolean deleteAllSentencesOfComments(Comment comment) {
 		boolean isDeleted = false;
 		if (comment == null) {
 			LOGGER.error("Sentences in comment cannot be deleted since the comment is null.");
@@ -72,7 +72,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		}
 		DecisionKnowledgeInCommentEntity[] commentSentences = ACTIVE_OBJECTS.find(
 				DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("ISSUE_ID = ? AND COMMENT_ID = ?", comment.getIssue().getId(), comment.getId()));	
+				Query.select().where("ISSUE_ID = ? AND COMMENT_ID = ?", comment.getIssue().getId(), comment.getId()));
 		for (DecisionKnowledgeInCommentEntity databaseEntry : commentSentences) {
 			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUECOMMENT);
 			isDeleted = DecisionKnowledgeInCommentEntity.deleteElement(databaseEntry);
@@ -113,7 +113,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	public static DecisionKnowledgeElement searchForLast(Sentence sentence, KnowledgeType typeToSearch) {
 		Sentence lastSentence = null;
 		DecisionKnowledgeInCommentEntity[] sententenceList = ACTIVE_OBJECTS.find(DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("ISSUE_ID = ?", sentence.getIssueId()).order("ID DESC"));
+				Query.select().where("ISSUE_ID = ?", sentence.getJiraIssueId()).order("ID DESC"));
 
 		for (DecisionKnowledgeInCommentEntity databaseEntry : sententenceList) {
 			if (databaseEntry.getType().equals(typeToSearch.toString())) {
@@ -222,7 +222,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		long issueId;
 		if (parentElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
 			Sentence sentence = (Sentence) this.getDecisionKnowledgeElement(parentElement.getId());
-			issueId = sentence.getIssueId();
+			issueId = sentence.getJiraIssueId();
 		} else {
 			issueId = parentElement.getId();
 		}
@@ -232,13 +232,12 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		}
 		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getTypeAsString());
 		String text = tag + element.getSummary() + "\n" + element.getDescription() + tag;
-		com.atlassian.jira.issue.comments.Comment comment = ComponentAccessor.getCommentManager().create(issue, user,
-				text, false);
-		Comment com = new CommentImpl(comment, true);
-		for (Sentence sentence : com.getSentences()) {
+		Comment comment = ComponentAccessor.getCommentManager().create(issue, user, text, false);
+		List<Sentence> sentences = new CommentSplitter().getSentences(comment);
+		for (Sentence sentence : sentences) {
 			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUECOMMENT);
 		}
-		return com.getSentences().get(0);
+		return sentences.get(0);
 	}
 
 	public static long insertDecisionKnowledgeElement(Sentence sentence, ApplicationUser user) {
@@ -246,11 +245,11 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 				.getDecisionKnowledgeElement(sentence);
 		if (existingElement != null) {
 			JiraIssueCommentPersistenceManager.checkIfSentenceHasAValidLink(existingElement.getId(),
-					sentence.getIssueId(), LinkType.getLinkTypeForKnowledgeType(existingElement.getType()));
+					sentence.getJiraIssueId(), LinkType.getLinkTypeForKnowledgeType(existingElement.getType()));
 			return existingElement.getId();
 		}
 
-		sentence.setTagged(false);
+		sentence.setValidated(false);
 		sentence.setRelevant(false);
 		sentence.setType("");
 
@@ -267,10 +266,10 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		databaseEntry.setCommentId(element.getCommentId());
 		databaseEntry.setType(element.getTypeAsString());
 		databaseEntry.setRelevant(element.isRelevant());
-		databaseEntry.setTagged(element.isTagged());
+		databaseEntry.setValidated(element.isValidated());
 		databaseEntry.setStartSubstringCount(element.getStartSubstringCount());
 		databaseEntry.setEndSubstringCount(element.getEndSubstringCount());
-		databaseEntry.setIssueId(element.getIssueId());
+		databaseEntry.setIssueId(element.getJiraIssueId());
 	}
 
 	@Override
@@ -284,7 +283,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		sentence.setSummary(element.getSummary());
 		sentence.setDescription(element.getDescription());
 		sentence.setProject(element.getProject());
-		sentence.setTagged(true);
+		sentence.setValidated(true);
 
 		return this.updateDecisionKnowledgeElement(sentence, user);
 	}
@@ -301,7 +300,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 		// only knowledge type changed
 		if (element.getSummary() == null) {
-			element.setDescription(sentence.getBody());
+			element.setDescription(sentence.getDescription());
 		}
 
 		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getType());
@@ -321,7 +320,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 		sentence.setEndSubstringCount(sentence.getStartSubstringCount() + changedPartOfComment.length());
 		sentence.setType(element.getType());
-		sentence.setTagged(element.isTagged());
+		sentence.setValidated(element.isValidated());
 		sentence.setRelevant(element.getType() != KnowledgeType.OTHER);
 
 		boolean isUpdated = updateInDatabase(sentence);
@@ -355,7 +354,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		}
 	}
 
-	public static int countCommentsForIssue(long issueId) {
+	public static int countCommentsForJiraIssue(long issueId) {
 		DecisionKnowledgeInCommentEntity[] commentSentences = ACTIVE_OBJECTS
 				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("ISSUE_ID = ?", issueId));
 		Set<Long> treeSet = new TreeSet<Long>();
@@ -404,7 +403,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			smartLinkCreated = JiraIssueCommentPersistenceManager.checkLastElementAndCreateLink(lastElement, sentence);
 		}
 		if (!smartLinkCreated) {
-			checkIfSentenceHasAValidLink(sentence.getId(), sentence.getIssueId(),
+			checkIfSentenceHasAValidLink(sentence.getId(), sentence.getJiraIssueId(),
 					LinkType.getLinkTypeForKnowledgeType(sentence.getTypeAsString()));
 		}
 	}
@@ -507,7 +506,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		long linkTypeId = JiraIssuePersistenceManager.getLinkTypeId("contain");
 
 		try {
-			issueLinkManager.createIssueLink(element.getIssueId(), issue.getId(), linkTypeId, (long) 0, user);
+			issueLinkManager.createIssueLink(element.getJiraIssueId(), issue.getId(), linkTypeId, (long) 0, user);
 		} catch (CreateException e) {
 			return null;
 		}
@@ -522,7 +521,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		// delete ao sentence entry
 		new JiraIssueCommentPersistenceManager("").deleteDecisionKnowledgeElement(aoId, null);
 
-		createLinksForNonLinkedElementsForIssue(element.getIssueId());
+		createLinksForNonLinkedElementsForIssue(element.getJiraIssueId());
 
 		return issue;
 	}

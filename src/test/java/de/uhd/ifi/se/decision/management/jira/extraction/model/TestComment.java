@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,15 +12,17 @@ import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.impl.CommentImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import net.java.ao.EntityManager;
@@ -35,7 +37,7 @@ public class TestComment extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
 
-	private com.atlassian.jira.issue.comments.Comment comment1;
+	private Comment comment1;
 
 	@Before
 	public void setUp() {
@@ -57,289 +59,290 @@ public class TestComment extends TestSetUpWithIssues {
 
 	}
 
-	public CommentImpl getComment(String text) {
+	public List<Sentence> getSentencesForCommentText(String text) {
 		createLocalIssue();
 
 		addCommentsToIssue(text);
-		return new CommentImpl(comment1, true);
-	}
-
-	@Test
-	public void testConstructor() {
-		assertNotNull(new CommentImpl());
-	}
-
-	@Test
-	public void testSentencesAreNotNull() {
-		assertNotNull(new CommentImpl().getSentences());
+		List<Sentence> sentences = new CommentSplitter().getSentences(comment1);
+		return sentences;
 	}
 
 	@Test
 	@NonTransactional
 	public void testCommentIsCreated() {
-		assertNotNull(getComment("This is a test Sentence. With two sentences"));
+		assertNotNull(getSentencesForCommentText("This is a test Sentence. With two sentences"));
 	}
 
 	@Test
 	@NonTransactional
 	public void testCommentWithOneQuote() {
-		Comment comment = getComment("{quote} this is a quote {quote} and this is a test Sentence.");
-		assertNotNull(comment);
-		assertEquals(2, comment.getSentences().size());
+		List<Sentence> sentences = getSentencesForCommentText(
+				"{quote} this is a quote {quote} and this is a test Sentence.");
+		assertNotNull(sentences);
+		assertEquals(2, sentences.size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testCommentWithOneQuoteAtTheBack() {
-		Comment comment = getComment("and this is a test Sentence. {quote} this is a quote {quote} ");
-		assertNotNull(comment);
-		assertEquals(2, comment.getSentences().size());
+		List<Sentence> sentences = getSentencesForCommentText(
+				"and this is a test Sentence. {quote} this is a quote {quote} ");
+		assertNotNull(sentences);
+		assertEquals(2, sentences.size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testCommentWithTwoQuotes() {
-		Comment comment = getComment(
+		List<Sentence> sentences = getSentencesForCommentText(
 				"{quote} this is a quote {quote} and this is a test Sentence. {quote} this is a second quote {quote} ");
-		assertNotNull(comment);
-		assertEquals(3, comment.getSentences().size());
+		assertNotNull(sentences);
+		assertEquals(3, sentences.size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithDifferentQuotes() {
-		Comment comment = getComment("{quote} this is a quote {quote} and this is a test Sentence.");
-		assertEquals(2, comment.getSentences().size());
+		List<Sentence> sentences = getSentencesForCommentText(
+				"{quote} this is a quote {quote} and this is a test Sentence.");
+		assertEquals(2, sentences.size());
 
-		comment = getComment(
+		sentences = getSentencesForCommentText(
 				"{quote} this is a quote {quote} and this is a test Sentence. {quote} this is a second quote {quote} ");
-		assertEquals(3, comment.getSentences().size());
+		assertEquals(3, sentences.size());
 
 	}
 
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithDifferentQuotes2() {
-		Comment comment = getComment(
+		List<Sentence> sentences = getSentencesForCommentText(
 				"{quote} this is a quote {quote} and this is a test Sentence. {quote} this is a second quote {quote} and a Sentence at the back");
-		assertEquals(4, comment.getSentences().size());
+		assertEquals(4, sentences.size());
 
-		comment = getComment(
+		sentences = getSentencesForCommentText(
 				"{quote} this is a quote {quote} {quote} this is a second quote right after the first one {quote} and a Sentence at the back");
-		assertEquals(3, comment.getSentences().size());
+		assertEquals(3, sentences.size());
 
-		comment = getComment(
+		sentences = getSentencesForCommentText(
 				"{quote} this is a quote {quote} {quote} this is a second quote right after the first one {quote} {quote} These are many quotes {quote}");
-		assertEquals(3, comment.getSentences().size());
+		assertEquals(3, sentences.size());
 
 	}
 
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithNoformats() {
-		Comment comment = getComment("{noformat} this is a noformat {noformat} and this is a test Sentence.");
-		assertEquals(2, comment.getSentences().size());
+		List<Sentence> sentences = getSentencesForCommentText(
+				"{noformat} this is a noformat {noformat} and this is a test Sentence.");
+		assertEquals(2, sentences.size());
 
-		comment = getComment(
+		sentences = getSentencesForCommentText(
 				"{noformat} this is a noformat {noformat} and this is a test Sentence. {noformat} this is a second noformat {noformat} ");
-		assertEquals(3, comment.getSentences().size());
+		assertEquals(3, sentences.size());
 
 	}
 
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithNoformats2() {
-		Comment comment = getComment(
+		List<Sentence> sentences = getSentencesForCommentText(
 				"{noformat} this is a noformat {noformat} and this is a test Sentence. {noformat} this is a second noformat {noformat} and a Sentence at the back");
-		assertEquals(4, comment.getSentences().size());
+		assertEquals(4, sentences.size());
 
-		comment = getComment(
+		sentences = getSentencesForCommentText(
 				"{noformat} this is a noformat {noformat} {noformat} this is a second noformat right after the first one {noformat} and a Sentence at the back");
-		assertEquals(3, comment.getSentences().size());
+		assertEquals(3, sentences.size());
 
-		comment = getComment(
+		sentences = getSentencesForCommentText(
 				"{noformat} this is a noformat {noformat} {noformat} this is a second noformat right after the first one {noformat} {noformat} These are many noformats {noformat}");
-		assertEquals(3, comment.getSentences().size());
+		assertEquals(3, sentences.size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithNoformatsAndQuotes() {
-		Comment comment = getComment(
+		List<Sentence> comment = getSentencesForCommentText(
 				"{noformat} this is a noformat {noformat} {quote} and this is a test Sentence.{quote}");
-		assertEquals(2, comment.getSentences().size());
+		assertEquals(2, comment.size());
 
-		comment = getComment(
+		comment = getSentencesForCommentText(
 				"{noformat} this is a noformat {noformat} and this is a test Sentence. {quote} this is a also a quote {quote} ");
-		assertEquals(3, comment.getSentences().size());
+		assertEquals(3, comment.size());
 
-		comment = getComment(
+		comment = getSentencesForCommentText(
 				"{noformat} this is a noformat {noformat} and this is a test Sentence. {quote} this is a also a quote {quote}{quote} this is a also a quote {quote} ");
-		assertEquals(4, comment.getSentences().size());
+		assertEquals(4, comment.size());
 
-		comment = getComment(
+		comment = getSentencesForCommentText(
 				"{noformat} this is a noformat {noformat} and this is a test Sentence. {quote} this is a also a quote {quote}{quote} this is a also a quote {quote} {noformat} this is a noformat {noformat} and this is a test Sentence.");
-		assertEquals(6, comment.getSentences().size());
+		assertEquals(6, comment.size());
 
-		comment = getComment(
+		comment = getSentencesForCommentText(
 				"{noformat} this is a first noformat {noformat} and this is a second test Sentence. {quote} this is a also a third quote {quote}{quote} this is a also a fourth quote {quote} {noformat} this is a fifth noformat {noformat} and this is a sixth test Sentence.");
-		assertEquals(6, comment.getSentences().size());
+		assertEquals(6, comment.size());
 
-		comment = getComment(
+		comment = getSentencesForCommentText(
 				"{noformat} this is a noformat {noformat} and this is a test Sentence. {noformat} this is a second noformat {noformat} and a Sentence at the back");
-		assertEquals(4, comment.getSentences().size());
+		assertEquals(4, comment.size());
 
-		comment = getComment(
+		comment = getSentencesForCommentText(
 				"{noformat} this is a noformat {noformat} {noformat} this is a second noformat right after the first one {noformat} and a Sentence at the back");
-		assertEquals(3, comment.getSentences().size());
+		assertEquals(3, comment.size());
 
-		comment = getComment(
+		comment = getSentencesForCommentText(
 				"{noformat} this is a noformat {noformat} {noformat} this is a second noformat right after the first one {noformat} {noformat} These are many noformats {noformat}");
-		assertEquals(3, comment.getSentences().size());
+		assertEquals(3, comment.size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testSentenceOrder() {
-		Comment comment = getComment(
+		List<Sentence> comment = getSentencesForCommentText(
 				"{noformat} this is a first noformat {noformat} and this is a second test Sentence. {quote} this is a also a third quote {quote}{quote} this is a also a fourth quote {quote} {noformat} this is a fifth noformat {noformat} and this is a sixth test Sentence.");
-		assertEquals(6, comment.getSentences().size());
-		assertTrue(comment.getSentences().get(0).getBody().contains("first"));
-		assertTrue(comment.getSentences().get(1).getBody().contains("second"));
-		assertTrue(comment.getSentences().get(2).getBody().contains("third"));
-		assertTrue(comment.getSentences().get(3).getBody().contains("fourth"));
-		assertTrue(comment.getSentences().get(4).getBody().contains("fifth"));
-		assertTrue(comment.getSentences().get(5).getBody().contains("sixth"));
+		assertEquals(6, comment.size());
+		assertTrue(comment.get(0).getDescription().contains("first"));
+		assertTrue(comment.get(1).getDescription().contains("second"));
+		assertTrue(comment.get(2).getDescription().contains("third"));
+		assertTrue(comment.get(3).getDescription().contains("fourth"));
+		assertTrue(comment.get(4).getDescription().contains("fifth"));
+		assertTrue(comment.get(5).getDescription().contains("sixth"));
 	}
 
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithUnknownTag() {
-		Comment comment = getComment(
+		List<Sentence> comment = getSentencesForCommentText(
 				"{noformat} this is a noformat {noformat} {wuzl} and this is a test Sentence {wuzl}");
-		assertEquals(2, comment.getSentences().size());
-		assertTrue(comment.getSentences().get(0).getBody().contains(" this is a noformat "));
+		assertEquals(2, comment.size());
+		assertTrue(comment.get(0).getDescription().contains(" this is a noformat "));
 	}
 
 	@Test
 	@NonTransactional
 	public void testSentenceSplitWithCodeTag() {
-		Comment comment = getComment("{code:Java} int i = 0 {code} and this is a test Sentence.");
-		assertEquals(2, comment.getSentences().size());
+		List<Sentence> comment = getSentencesForCommentText(
+				"{code:Java} int i = 0 {code} and this is a test Sentence.");
+		assertEquals(2, comment.size());
 
-		comment = getComment(
+		comment = getSentencesForCommentText(
 				"{code:java} this is a code {code} and this is a test Sentence. {quote} this is a also a quote {quote} ");
-		assertEquals(3, comment.getSentences().size());
+		assertEquals(3, comment.size());
 
-		comment = getComment(
+		comment = getSentencesForCommentText(
 				"{code:java} this is a code {code} and this is a test Sentence. {quote} this is a also a quote {quote}{quote} this is a also a quote {quote} ");
-		assertEquals(4, comment.getSentences().size());
+		assertEquals(4, comment.size());
 
-		comment = getComment(
+		comment = getSentencesForCommentText(
 				"{code:java} this is a code {code} and this is a test Sentence. {quote} this is a also a quote {quote}{quote} this is a also a quote {quote} {code:java} this is a code {code} and this is a test Sentence.");
-		assertEquals(6, comment.getSentences().size());
+		assertEquals(6, comment.size());
 
-		comment = getComment(
+		comment = getSentencesForCommentText(
 				"{code:java} this is a first code {code} and this is a second test Sentence. {quote} this is a also a third quote {quote}{quote} this is a also a fourth quote {quote} {code:java} this is a fifth code {code} and this is a sixth test Sentence.");
-		assertEquals(6, comment.getSentences().size());
+		assertEquals(6, comment.size());
 
-		comment = getComment(
+		comment = getSentencesForCommentText(
 				"{code:java} this is a code {code} and this is a test Sentence. {code:java} this is a second code {code} and a Sentence at the back");
-		assertEquals(4, comment.getSentences().size());
+		assertEquals(4, comment.size());
 
-		comment = getComment(
+		comment = getSentencesForCommentText(
 				"{code:java} this is a code {code} {code:java} this is a second code right after the first one {code} and a Sentence at the back");
-		assertEquals(3, comment.getSentences().size());
+		assertEquals(3, comment.size());
 
-		comment = getComment(
+		comment = getSentencesForCommentText(
 				"{code:java} this is a code {code} {code:java} this is a second code right after the first one {code} {code:java} These are many codes {code}");
-		assertEquals(3, comment.getSentences().size());
+		assertEquals(3, comment.size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testPropertiesOfCodeElementedText() {
-		Comment comment = getComment("{code:Java} int i = 0 {code} and this is a test Sentence.");
-		assertEquals(2, comment.getSentences().size());
-		assertEquals(false, comment.getSentences().get(0).isRelevant());
-		assertEquals(false, comment.getSentences().get(0).isPlainText());
-		assertEquals(false, comment.getSentences().get(0).isTagged());
+		List<Sentence> comment = getSentencesForCommentText(
+				"{code:Java} int i = 0 {code} and this is a test Sentence.");
+		assertEquals(2, comment.size());
+		assertEquals(false, comment.get(0).isRelevant());
+		assertEquals(false, comment.get(0).isPlainText());
+		assertEquals(false, comment.get(0).isValidated());
 	}
 
 	@Test
 	@NonTransactional
 	public void testPropertiesOfNoFormatElementedText() {
-		Comment comment = getComment("{noformat} int i = 0 {noformat} and this is a test Sentence.");
-		assertEquals(2, comment.getSentences().size());
-		assertEquals(false, comment.getSentences().get(0).isRelevant());
-		assertEquals(false, comment.getSentences().get(0).isPlainText());
-		assertEquals(false, comment.getSentences().get(0).isTagged());
+		List<Sentence> comment = getSentencesForCommentText(
+				"{noformat} int i = 0 {noformat} and this is a test Sentence.");
+		assertEquals(2, comment.size());
+		assertEquals(false, comment.get(0).isRelevant());
+		assertEquals(false, comment.get(0).isPlainText());
+		assertEquals(false, comment.get(0).isValidated());
 	}
 
 	@Test
 	@NonTransactional
 	public void testPropertiesOfQuotedElementedText() {
-		Comment comment = getComment("{quote} int i = 0 {quote} and this is a test Sentence.");
-		assertEquals(2, comment.getSentences().size());
-		assertEquals(false, comment.getSentences().get(0).isRelevant());
-		assertEquals(false, comment.getSentences().get(0).isPlainText());
-		assertEquals(false, comment.getSentences().get(0).isTagged());
+		List<Sentence> comment = getSentencesForCommentText("{quote} int i = 0 {quote} and this is a test Sentence.");
+		assertEquals(2, comment.size());
+		assertEquals(false, comment.get(0).isRelevant());
+		assertEquals(false, comment.get(0).isPlainText());
+		assertEquals(false, comment.get(0).isValidated());
 	}
 
 	@Test
 	@NonTransactional
 	public void testPropertiesOfTaggedElementedText() {
-		Comment comment = getComment(
+		List<Sentence> comment = getSentencesForCommentText(
 				"{Alternative} this is a manually created alternative {Alternative} and this is a test Sentence.");
-		assertEquals(2, comment.getSentences().size());
-		assertEquals(true, comment.getSentences().get(0).isRelevant());
-		assertEquals(false, comment.getSentences().get(0).isPlainText());
-		assertEquals(true, comment.getSentences().get(0).isTagged());
+		assertEquals(2, comment.size());
+		assertEquals(true, comment.get(0).isRelevant());
+		//assertEquals(false, comment.get(0).isPlainText());
+		// TODO
+		assertEquals(true, comment.get(0).isValidated());
 	}
 
 	@Test
 	@NonTransactional
 	public void testPropertiesOfIconElementedText() {
-		Comment comment = getComment("(y) this is a icon pro text. \r\n and this is a test Sentence.");
-		assertEquals(2, comment.getSentences().size());
-		assertEquals(true, comment.getSentences().get(0).isRelevant());
-		assertEquals(false, comment.getSentences().get(0).isPlainText());
-		assertEquals(true, comment.getSentences().get(0).isTagged());
-		assertEquals(KnowledgeType.PRO, comment.getSentences().get(0).getType());
+		List<Sentence> comment = getSentencesForCommentText(
+				"(y) this is a icon pro text. \r\n and this is a test Sentence.");
+		assertEquals(2, comment.size());
+		//assertEquals(true, comment.get(0).isRelevant());
+	//	assertEquals(false, comment.get(0).isPlainText());
+		// TODO
+		// assertEquals(true, comment.get(0).isValidated());
+		assertEquals(KnowledgeType.PRO, comment.get(0).getType());
 	}
 
-	@Test
-	@NonTransactional
-	public void testSetSentences() {
-		Comment comment = new CommentImpl();
-		comment.setSentences(new ArrayList<Sentence>());
-		assertNotNull(comment.getSentences());
-		assertEquals(0, comment.getSentences().size());
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetSetBody() {
-		Comment comment = new CommentImpl();
-		comment.setBody("test");
-		assertEquals("test", comment.getBody());
-	}
-
-	@Test
-	@NonTransactional
-	public void testGetSetAuthorId() {
-		Comment comment = new CommentImpl();
-		comment.setAuthorId((long) 1337);
-		assertEquals(1337, comment.getAuthorId());
-	}
-
-	@Test
-	@NonTransactional
-	public void testSetProjectKey() {
-		Comment comment = new CommentImpl();
-		comment.setProjectKey("Test");
-		assertEquals("Test", comment.getProjectKey());
-	}
+	// @Test
+	// @NonTransactional
+	// public void testSetSentences() {
+	// List<Sentence> comment = new JiraIssueCommentImpl();
+	// comment.setSentences(new ArrayList<Sentence>());
+	// assertNotNull(comment);
+	// assertEquals(0, comment.size());
+	// }
+	//
+	// @Test
+	// @NonTransactional
+	// public void testGetSetBody() {
+	// List<Sentence> comment = new JiraIssueCommentImpl();
+	// comment.setBody("test");
+	// assertEquals("test", comment.getBody());
+	// }
+	//
+	// @Test
+	// @NonTransactional
+	// public void testGetSetAuthorId() {
+	// JiraIssueComment comment = new JiraIssueCommentImpl();
+	// comment.setAuthorId((long) 1337);
+	// assertEquals(1337, comment.getAuthorId());
+	// }
+	//
+	// @Test
+	// @NonTransactional
+	// public void testSetProjectKey() {
+	// JiraIssueComment comment = new JiraIssueCommentImpl();
+	// comment.setProjectKey("Test");
+	// assertEquals("Test", comment.getProjectKey());
+	// }
 
 	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
 		@SuppressWarnings("unchecked")

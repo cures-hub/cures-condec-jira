@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.model;
+package de.uhd.ifi.se.decision.management.jira.model.impl;
 
 import java.util.Date;
 import java.util.List;
@@ -14,6 +14,12 @@ import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
 
 /**
@@ -225,7 +231,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 		if (this.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
 			key = key.split(":")[0];
 		}
-		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();		
+		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();
 		return applicationProperties.getString(APKeys.JIRA_BASEURL) + "/browse/" + key;
 	}
 
@@ -257,5 +263,12 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	@Override
 	public void setCreated(Date date) {
 		this.created = date;
+	}
+
+	@Override
+	public boolean existsInDatabase() {
+		DecisionKnowledgeElement elementInDatabase = AbstractPersistenceManager.getDecisionKnowledgeElement(id,
+				documentationLocation);
+		return elementInDatabase.getId() > 0;
 	}
 }

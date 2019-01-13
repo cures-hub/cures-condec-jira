@@ -11,7 +11,7 @@ import com.atlassian.jira.util.VelocityParamFactory;
 /**
  * Provides content for the issue module (currently not used)
  */
-public class IssueModuleContextProvider extends AbstractJiraContextProvider {
+public class JiraIssueModuleContextProvider extends AbstractJiraContextProvider {
 
 	@Override
 	public Map<String, Object> getContextMap(ApplicationUser applicationUser, JiraHelper jiraHelper) {

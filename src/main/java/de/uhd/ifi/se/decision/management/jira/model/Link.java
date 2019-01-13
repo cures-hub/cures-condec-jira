@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
+import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 
 /**

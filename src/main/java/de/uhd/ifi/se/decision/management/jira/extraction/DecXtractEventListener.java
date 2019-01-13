@@ -15,10 +15,7 @@ import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.util.CommentSplitter;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
@@ -31,15 +28,12 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 
 	@JiraImport
 	private final EventPublisher eventPublisher;
-
 	private String projectKey;
-
 	private IssueEvent issueEvent;
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(DecXtractEventListener.class);
 
 	/**
-	 * Locks the editComment Event function if a rest service edites comments.
+	 * Locks the edit comment event function if a REST service edits comments.
 	 */
 	public static boolean editCommentLock;
 
@@ -70,37 +64,29 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 
 	@EventListener
 	public void onIssueEvent(IssueEvent issueEvent) {
-		LOGGER.debug("DecXtract Event Listener catched an event");
 		this.issueEvent = issueEvent;
 		this.projectKey = issueEvent.getProject().getKey();
+
 		if (!ConfigPersistenceManager.isActivated(this.projectKey)
 				&& !ConfigPersistenceManager.isKnowledgeExtractedFromIssues(this.projectKey)) {
 			return;
 		}
-		Long eventTypeId = issueEvent.getEventTypeId();
-		if (eventTypeId.equals(EventType.ISSUE_COMMENTED_ID) || eventTypeId.equals(EventType.ISSUE_COMMENT_EDITED_ID)) {
 
-			LOGGER.debug("\nDecXtract Event Listener:\nparseIconsToTags()\ncreateLinksForNonLinkedElementsForIssue");
+		long eventTypeId = issueEvent.getEventTypeId();
+		if (eventTypeId == EventType.ISSUE_COMMENTED_ID || eventTypeId == EventType.ISSUE_COMMENT_EDITED_ID) {
 			parseIconsToTags();
-			//ActiveObjectsManager.createLinksForNonLinkedElementsForIssue(
-				//	new DecisionKnowledgeElementImpl(issueEvent.getIssue()).getId());
 		}
-		if (eventTypeId.equals(EventType.ISSUE_COMMENTED_ID)) {
-			LOGGER.debug("\nDecXtract Event Listener:\nhandleNewComment()");
-			handleNewComment(new DecisionKnowledgeElementImpl(issueEvent.getIssue()));
+		if (eventTypeId == EventType.ISSUE_COMMENTED_ID) {
+			handleNewComment();
 		}
-		if (eventTypeId.equals(EventType.ISSUE_COMMENT_DELETED_ID)) {
-			LOGGER.debug("\nDecXtract Event Listener:\nhandleDeleteComment()");
-			handleDeleteComment(new DecisionKnowledgeElementImpl(issueEvent.getIssue()));
-
+		if (eventTypeId == EventType.ISSUE_COMMENT_DELETED_ID) {
+			handleDeleteComment();
 		}
-		if (eventTypeId.equals(EventType.ISSUE_COMMENT_EDITED_ID)) {
-			LOGGER.debug("\nDecXtract Event Listener:\nhandleEditComment()");
-			handleEditComment(new DecisionKnowledgeElementImpl(issueEvent.getIssue()));
+		if (eventTypeId == EventType.ISSUE_COMMENT_EDITED_ID) {
+			handleEditComment();
 		}
-		if (eventTypeId.equals(EventType.ISSUE_DELETED_ID)) {
-			LOGGER.debug("\nDecXtract Event Listener:\nhandleDeleteIssue()");
-			handleDeleteIssue(new DecisionKnowledgeElementImpl(issueEvent.getIssue()));
+		if (eventTypeId == EventType.ISSUE_DELETED_ID) {
+			handleDeleteIssue();
 		}
 		parseSlashTagsOutOfComment();
 	}
@@ -109,17 +95,17 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		if (!ConfigPersistenceManager.isIconParsing(issueEvent.getProject().getKey())) {
 			return;
 		}
-		MutableComment comment = getCurrentEditedComment();
-		for (int i = 0; i < CommentSplitter.manualRationalIconList.length; i++) {
-			String icon = CommentSplitter.manualRationalIconList[i];
+		MutableComment comment = getChangedComment();
+		for (int i = 0; i < CommentSplitter.RATIONALE_ICONS.length; i++) {
+			String icon = CommentSplitter.RATIONALE_ICONS[i];
 			while (comment.getBody().contains(icon)) {
 				comment.setBody(comment.getBody().replaceFirst(icon.replace("(", "\\(").replace(")", "\\)"),
-						CommentSplitter.manualRationaleTagList[i]));
+						CommentSplitter.RATIONALE_TAGS[i]));
 				if (comment.getBody().split(System.getProperty("line.separator")).length == 1
 						&& !comment.getBody().endsWith("\r\n")) {
-					comment.setBody(comment.getBody() + CommentSplitter.manualRationaleTagList[i]);
+					comment.setBody(comment.getBody() + CommentSplitter.RATIONALE_TAGS[i]);
 				}
-				comment.setBody(comment.getBody().replaceFirst("\r\n", CommentSplitter.manualRationaleTagList[i]));
+				comment.setBody(comment.getBody().replaceFirst("\r\n", CommentSplitter.RATIONALE_TAGS[i]));
 				ComponentAccessor.getCommentManager().update(comment, true);
 			}
 		}
@@ -130,41 +116,41 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	 */
 	private void parseSlashTagsOutOfComment() {
 		if (issueEvent.getComment() != null && issueEvent.getComment().getBody().contains("\\{")) {
-			MutableComment comment = getCurrentEditedComment();
+			MutableComment comment = getChangedComment();
 			comment.setBody(issueEvent.getComment().getBody().replace("\\{", "{"));
 			ComponentAccessor.getCommentManager().update(comment, true);
 		}
 	}
 
-	private MutableComment getCurrentEditedComment() {
+	private MutableComment getChangedComment() {
 		return (MutableComment) ComponentAccessor.getCommentManager().getCommentById(issueEvent.getComment().getId());
 	}
 
-	private void handleDeleteIssue(DecisionKnowledgeElement decisionKnowledgeElement) {
+	private void handleDeleteIssue() {
 		JiraIssueCommentPersistenceManager.cleanSentenceDatabaseForProject(this.projectKey);
-		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
+		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 
-	private void handleEditComment(DecisionKnowledgeElement decisionKnowledgeElement) {
-		// If locked, a REST service is manipulating the comment and should not be
+	private void handleEditComment() {
+		// If locked, a REST service is currently manipulating the comment and should
+		// not be
 		// handled by this event listener.
 		if (!DecXtractEventListener.editCommentLock) {
-			JiraIssueCommentPersistenceManager.deleteCommentsSentences(issueEvent.getComment());
-			new ViewConnector(this.issueEvent.getIssue(), false);
-			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
+			JiraIssueCommentPersistenceManager.deleteAllSentencesOfComments(issueEvent.getComment());
+			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
+			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 		} else {
-			LOGGER.debug("\nDecXtract Event Listener:\nHandle Edit Comment is still locked");
+			LOGGER.debug("DecXtract event listener:\nEditing comment is still locked.");
 		}
 	}
 
-	private void handleDeleteComment(DecisionKnowledgeElement decisionKnowledgeElement) {
+	private void handleDeleteComment() {
 		JiraIssueCommentPersistenceManager.cleanSentenceDatabaseForProject(this.projectKey);
-		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
+		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 
-	private void handleNewComment(DecisionKnowledgeElement decisionKnowledgeElement) {
-		new ViewConnector(this.issueEvent.getIssue(), false);
-		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(decisionKnowledgeElement.getId());
+	private void handleNewComment() {
+		new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
+		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
-
 }

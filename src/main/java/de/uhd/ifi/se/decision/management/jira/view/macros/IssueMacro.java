@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.view.macros;
+package de.uhd.ifi.se.decision.management.jira.view.macros;
 
 import java.util.Map;
 
@@ -7,13 +7,13 @@ import com.atlassian.renderer.v2.macro.MacroException;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
-public class DecisionMacro extends AbstractKnowledgeClassificationMacro {
+public class IssueMacro extends AbstractKnowledgeClassificationMacro {
 
-	private String knowledgeType = KnowledgeType.DECISION.toString().toLowerCase();
+	private String knowledgeType = KnowledgeType.ISSUE.toString().toLowerCase();
 
 	@Override
 	public String execute(Map<String, Object> parameters, String body, RenderContext renderContext)
 			throws MacroException {
-		return super.execute(parameters, body, renderContext, knowledgeType, "#c5f2f9");
+		return super.execute(parameters, body, renderContext, knowledgeType, "#F2F5A9");
 	}
 }

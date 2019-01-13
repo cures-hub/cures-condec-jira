@@ -52,9 +52,9 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long> {
 
 	void setStartSubstringCount(int count);
 
-	boolean isTagged();
+	boolean isValidated();
 
-	void setTagged(boolean tagged);
+	void setValidated(boolean validated);
 
 	static boolean deleteElement(DecisionKnowledgeInCommentEntity elementToDelete) {
 		try {

@@ -285,7 +285,7 @@
 	</build>
 	<properties>
 		<compressJs>false</compressJs>
-		<jira.version>7.5.0</jira.version>
+		<jira.version>7.13.0</jira.version>
 		<amps.version>6.3.6</amps.version>
 		<ao.version>1.5.0</ao.version>
 		<plugin.testrunner.version>1.2.3</plugin.testrunner.version>

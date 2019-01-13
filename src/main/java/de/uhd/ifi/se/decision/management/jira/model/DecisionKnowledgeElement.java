@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+
 /**
  * Interface for decision knowledge elements
  */
@@ -245,4 +247,11 @@ public interface DecisionKnowledgeElement {
 	 *            of creation.
 	 */
 	void setCreated(Date date);
+
+	/**
+	 * Check whether the element exists in database.
+	 * 
+	 * @return true if the element exists in database.
+	 */
+	boolean existsInDatabase();
 }

@@ -27,7 +27,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
-import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
+import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -324,6 +324,11 @@ public class ConfigRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
+
+		if (!ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey)) {
+			return Response.status(Status.FORBIDDEN)
+					.entity(ImmutableMap.of("error", "Automatic classification is disabled for this project.")).build();
+		}
 		try {
 			ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 			JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
@@ -333,8 +338,10 @@ public class ConfigRest {
 			com.atlassian.jira.issue.search.SearchResults searchResults = null;
 
 			searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
+
+			ClassificationManagerForJiraIssueComments classificationManager = new ClassificationManagerForJiraIssueComments();
 			for (Issue issue : searchResults.getIssues()) {
-				new ViewConnector(issue, false);
+				classificationManager.classifyAllCommentsOfJiraIssue(issue);
 			}
 
 			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();

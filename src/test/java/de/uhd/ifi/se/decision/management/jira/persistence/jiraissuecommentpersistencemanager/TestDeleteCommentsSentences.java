@@ -7,18 +7,18 @@ import org.junit.Test;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import net.java.ao.test.jdbc.NonTransactional;
 
-public class TestDeleteCommentsSentences extends TestJiraIssueCommentPersistenceMangerSetUp {
+public class TestDeleteCommentsSentences extends TestJiraIssueCommentPersistenceManagerSetUp {
 
 	@Test
 	@NonTransactional
 	public void testCommentNull() {
-		assertFalse(JiraIssueCommentPersistenceManager.deleteCommentsSentences(null));
+		assertFalse(JiraIssueCommentPersistenceManager.deleteAllSentencesOfComments(null));
 	}
 
 	@Test
 	@NonTransactional
 	public void testCommentFilledButNotInAODatabase() {
 		addCommentsToIssue("This is a comment for test purposes");
-		assertFalse(JiraIssueCommentPersistenceManager.deleteCommentsSentences(comment1));
+		assertFalse(JiraIssueCommentPersistenceManager.deleteAllSentencesOfComments(comment1));
 	}
 }

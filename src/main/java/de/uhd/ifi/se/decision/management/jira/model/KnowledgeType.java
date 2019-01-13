@@ -11,7 +11,6 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.model.Sentence;
 
 /**
  * Type of decision knowledge element
@@ -180,6 +179,23 @@ public enum KnowledgeType {
 			knowledgeTypes.add(knowledgeType.toString());
 		}
 		return knowledgeTypes;
+	}
+
+	public String getIconString() {
+		switch (this) {
+		case PRO:
+			return "(y)";
+		case CON:
+			return "(n)";
+		case DECISION:
+			return "(/)";
+		case ISSUE:
+			return "(!)";
+		case ALTERNATIVE:
+			return "(?)";
+		default:
+			return "";
+		}
 	}
 
 	public String getIconUrl() {
