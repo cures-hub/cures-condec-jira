@@ -3,6 +3,12 @@ package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.comments.Comment;
+import com.atlassian.jira.issue.comments.CommentManager;
+
+import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
@@ -19,6 +25,28 @@ public class ClassificationManagerForJiraIssueComments {
 
 	public ClassificationManagerForJiraIssueComments() {
 		this.classifier = new DecisionKnowledgeClassifierImpl();
+	}
+
+	public void classifyAllCommentsOfJiraIssue(Issue issue) {
+		if (issue == null) {
+			return;
+		}
+		List<Sentence> sentences = new ArrayList<Sentence>();
+		List<Comment> comments = getComments(issue);
+		for (Comment comment : comments) {
+			List<Sentence> sentencesOfComment = new CommentSplitter().getSentences(comment);
+			sentences.addAll(sentencesOfComment);
+		}
+		classifySentencesBinary(sentences);
+		classifySentencesFineGrained(sentences);
+	}
+
+	public static List<Comment> getComments(Issue issue) {
+		CommentManager commentManager = ComponentAccessor.getCommentManager();
+		if (issue != null && commentManager.getComments(issue) != null) {
+			return commentManager.getComments(issue);
+		}
+		return new ArrayList<Comment>();
 	}
 
 	public List<Sentence> classifySentencesBinary(List<Sentence> sentences) {

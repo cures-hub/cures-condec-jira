@@ -23,7 +23,6 @@ public class TestDecXtractEventListener extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
 
-
 	@Before
 	public void setUp() {
 		initialization();
@@ -31,13 +30,12 @@ public class TestDecXtractEventListener extends TestSetUpWithIssues {
 				new MockUserManager());
 
 	}
-	
-	
+
 	@Test
 	@NonTransactional
 	public void testCreation() {
 		DecXtractEventListener dxel = new DecXtractEventListener(null);
 		assertNotNull(dxel);
 	}
-	
+
 }

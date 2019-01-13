@@ -15,7 +15,7 @@ import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.connector.ViewConnector;
+import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
@@ -137,7 +137,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		// handled by this event listener.
 		if (!DecXtractEventListener.editCommentLock) {
 			JiraIssueCommentPersistenceManager.deleteAllSentencesOfComments(issueEvent.getComment());
-			new ViewConnector(this.issueEvent.getIssue(), false);
+			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
 			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 		} else {
 			LOGGER.debug("DecXtract event listener:\nEditing comment is still locked.");
@@ -150,7 +150,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	}
 
 	private void handleNewComment() {
-		new ViewConnector(this.issueEvent.getIssue(), false);
+		new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
 		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 }
