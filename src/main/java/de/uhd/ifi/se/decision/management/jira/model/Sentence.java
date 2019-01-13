@@ -131,7 +131,7 @@ public interface Sentence extends DecisionKnowledgeElement {
 	 * @return true if the text within the JIRA issue comment is relevant decision
 	 *         knowledge with a knowledge type different than KnowledgeType.OTHER.
 	 */
-	boolean isTaggedFineGrained();
+	boolean isTagged();
 
 	void setIssueId(long issueId);
 

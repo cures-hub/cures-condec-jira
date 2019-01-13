@@ -94,7 +94,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUpWith
 		sentences = classificationManager.classifySentencesFineGrained(sentences);
 
 		assertNotNull(sentences.get(0).isRelevant());
-		assertTrue(sentences.get(0).isTaggedFineGrained());
+		assertTrue(sentences.get(0).isTagged());
 	}
 
 	@Test
@@ -106,6 +106,6 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUpWith
 		sentences = classificationManager.classifySentencesFineGrained(sentences);
 
 		assertNotNull(sentences.get(0).isRelevant());
-		assertTrue(sentences.get(0).isTaggedFineGrained());
+		assertTrue(sentences.get(0).isTagged());
 	}
 }

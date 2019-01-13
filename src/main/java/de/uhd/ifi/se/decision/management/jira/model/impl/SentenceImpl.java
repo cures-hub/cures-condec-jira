@@ -85,7 +85,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	@Override
-	public boolean isTaggedFineGrained() {
+	public boolean isTagged() {
 		return this.getType() != KnowledgeType.OTHER;
 	}
 
