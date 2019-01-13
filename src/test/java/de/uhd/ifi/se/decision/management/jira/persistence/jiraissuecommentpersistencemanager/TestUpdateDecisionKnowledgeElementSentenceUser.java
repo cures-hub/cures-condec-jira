@@ -72,7 +72,7 @@ public class TestUpdateDecisionKnowledgeElementSentenceUser extends TestJiraIssu
 		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(oldElement, null);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		// Important that sentence object has no tags
-		assertEquals("testobject", element.getBody().trim());
+		assertEquals("testobject", element.getDescription().trim());
 		assertEquals(element.getTypeAsString(), KnowledgeType.ALTERNATIVE.toString());
 		assertEquals("{alternative} testobject {alternative}",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
@@ -89,7 +89,7 @@ public class TestUpdateDecisionKnowledgeElementSentenceUser extends TestJiraIssu
 		oldElement.setType(KnowledgeType.ALTERNATIVE);
 		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(oldElement, null);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
-		assertEquals(element.getBody().trim(), "testobject");
+		assertEquals(element.getDescription().trim(), "testobject");
 		assertEquals(element.getTypeAsString(), KnowledgeType.ALTERNATIVE.toString());
 		assertEquals("some sentence in front. {alternative} testobject {alternative}",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
@@ -107,7 +107,7 @@ public class TestUpdateDecisionKnowledgeElementSentenceUser extends TestJiraIssu
 		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(oldElement, null);
 
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
-		assertEquals(element.getBody(), " testobject ");
+		assertEquals(element.getDescription(), " testobject ");
 		assertEquals(element.getTypeAsString(), KnowledgeType.ALTERNATIVE.toString());
 		assertEquals("some sentence in front. {alternative} testobject {alternative} some sentence in the back.",
 				ComponentAccessor.getCommentManager().getMutableComment((long) 0).getBody());
@@ -126,7 +126,7 @@ public class TestUpdateDecisionKnowledgeElementSentenceUser extends TestJiraIssu
 		oldElement.setType(KnowledgeType.PRO);
 		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(oldElement, null);
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
-		assertEquals(" testobject ", element.getBody());
+		assertEquals(" testobject ", element.getDescription());
 		assertEquals(element.getTypeAsString(), "Pro");
 
 		assertEquals("some sentence in front. {pro} testobject {pro} some sentence in the back.",

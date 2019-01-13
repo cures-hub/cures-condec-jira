@@ -127,7 +127,7 @@ public class TestGetIdOfSentenceForMacro extends TestJiraIssueCommentPersistence
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
 		assertEquals(0, JiraIssueCommentPersistenceManager.getIdOfSentenceForMacro("Not the right Body",
-				comment.get(0).getIssueId(), "Issue", "TEST"));
+				comment.get(0).getJiraIssueId(), "Issue", "TEST"));
 	}
 
 	@Test
@@ -138,6 +138,6 @@ public class TestGetIdOfSentenceForMacro extends TestJiraIssueCommentPersistence
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
 		assertEquals(3, JiraIssueCommentPersistenceManager.getIdOfSentenceForMacro("testobject",
-				comment.get(0).getIssueId(), "Issue", "TEST"));
+				comment.get(0).getJiraIssueId(), "Issue", "TEST"));
 	}
 }

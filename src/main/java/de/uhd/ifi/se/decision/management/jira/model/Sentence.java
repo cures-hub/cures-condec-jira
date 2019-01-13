@@ -133,15 +133,46 @@ public interface Sentence extends DecisionKnowledgeElement {
 	 */
 	boolean isTagged();
 
-	void setIssueId(long issueId);
+	/**
+	 * Set the id of the JIRA issue that the decision knowledge element or
+	 * irrelevant text is part of.
+	 * 
+	 * @param id
+	 *            of the JIRA issue.
+	 */
+	void setJiraIssueId(long jiraIssueId);
 
-	long getIssueId();
+	/**
+	 * Get the id of the JIRA issue that the decision knowledge element or
+	 * irrelevant text is part of.
+	 * 
+	 * @return id of the JIRA issue.
+	 */
+	long getJiraIssueId();
 
-	boolean isPlainText();
-
+	/**
+	 * Set whether the text of the decision knowledge element or irrelevant text is
+	 * plain, e.g., does not contain any code or logger ouput.
+	 * 
+	 * @param isPlainText
+	 *            true if the text of the decision knowledge element or irrelevant
+	 *            text is plain, e.g., does not contain any code or logger ouput.
+	 */
 	void setPlainText(boolean isPlainText);
 
-	String getBody();
+	/**
+	 * Determine whether the text of the decision knowledge element or irrelevant
+	 * text is plain, e.g., does not contain any code or logger ouput.
+	 * 
+	 * @return true if the text of the decision knowledge element or irrelevant text
+	 *         is plain, e.g., does not contain any code or logger ouput.
+	 */
+	boolean isPlainText();
 
-	void setBody(String body);
+	/**
+	 * Receive the text from the JIRA issue comment.
+	 * 
+	 * @return text from the JIRA issue comment
+	 */
+	String getTextFromComment();
 }

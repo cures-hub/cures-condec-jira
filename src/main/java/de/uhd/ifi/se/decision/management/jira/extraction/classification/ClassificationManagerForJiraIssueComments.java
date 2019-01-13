@@ -63,7 +63,7 @@ public class ClassificationManagerForJiraIssueComments {
 		List<String> stringsToBeClassified = new ArrayList<String>();
 		for (Sentence sentence : sentences) {
 			if (isSentenceQualifiedForBinaryClassification(sentence)) {
-				stringsToBeClassified.add(sentence.getBody());
+				stringsToBeClassified.add(sentence.getDescription());
 			}
 		}
 		return stringsToBeClassified;
@@ -112,7 +112,7 @@ public class ClassificationManagerForJiraIssueComments {
 		List<String> stringsToBeClassified = new ArrayList<String>();
 		for (Sentence sentence : sentences) {
 			if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
-				stringsToBeClassified.add(sentence.getBody());
+				stringsToBeClassified.add(sentence.getDescription());
 			}
 		}
 		return stringsToBeClassified;

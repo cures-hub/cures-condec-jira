@@ -89,6 +89,6 @@ public class TestGetElementsForIssueWithType extends TestJiraIssueCommentPersist
 		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
 
 		assertEquals(1, JiraIssueCommentPersistenceManager
-				.getElementsForIssueWithType(comment.get(0).getIssueId(), "TEST", "Issue").size());
+				.getElementsForIssueWithType(comment.get(0).getJiraIssueId(), "TEST", "Issue").size());
 	}
 }

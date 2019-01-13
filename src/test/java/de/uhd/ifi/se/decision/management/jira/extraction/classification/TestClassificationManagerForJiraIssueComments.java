@@ -101,7 +101,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUpWith
 	@NonTransactional
 	public void testFineGrainedClassificationWithValidDataInAO() throws Exception {
 		sentences.get(0).setRelevant(true);
-		sentences.get(0).setBody("[issue]nonplaintext[/issue]");
+		sentences.get(0).setDescription("[issue]nonplaintext[/issue]");
 
 		sentences = classificationManager.classifySentencesFineGrained(sentences);
 

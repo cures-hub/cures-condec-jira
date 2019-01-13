@@ -143,7 +143,7 @@ public class TreeViewer {
 	}
 
 	private boolean isSentenceShown(DecisionKnowledgeElement element) {
-		return !((Sentence) element).isRelevant() && ((Sentence) element).getBody().length() > 0;
+		return !((Sentence) element).isRelevant() && ((Sentence) element).getDescription().length() > 0;
 	}
 
 	public Data getDataStructure(DecisionKnowledgeElement decisionKnowledgeElement) {

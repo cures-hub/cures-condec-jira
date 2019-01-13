@@ -141,17 +141,17 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 		Sentence sentence = (Sentence) new JiraIssueCommentPersistenceManager("")
 				.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 		assertEquals(sentence.getType(), KnowledgeType.PRO);
-		assertEquals(newText, sentence.getBody());
+		assertEquals(newText, sentence.getDescription());
 	}
 
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledWithCommentChangedCheckValidTextWithManuallTaggedComment() {
-		String newText = "some fancy new text";
 		TestComment testComment = new TestComment();
 		List<Sentence> comment = testComment.getSentencesForCommentText("{issue}This is a test sentence.{Issue}");
-
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
+		
+		String newText = "some fancy new text";
 		decisionKnowledgeElement.setDescription(newText);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
 		decisionKnowledgeElement.setType(KnowledgeType.ISSUE);
@@ -160,7 +160,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 		Sentence sentence = (Sentence) new JiraIssueCommentPersistenceManager("")
 				.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 		assertEquals(sentence.getType(), KnowledgeType.ISSUE);
-		assertEquals(newText, sentence.getBody());
+		assertEquals(newText, sentence.getDescription());
 
 		MutableComment mutableComment = (MutableComment) ComponentAccessor.getCommentManager()
 				.getCommentById(sentence.getCommentId());

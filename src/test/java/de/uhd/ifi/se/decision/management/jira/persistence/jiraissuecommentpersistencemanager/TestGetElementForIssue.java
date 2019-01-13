@@ -25,7 +25,7 @@ public class TestGetElementForIssue extends TestJiraIssueCommentPersistenceManag
 		assertEquals(3, id);
 
 		List<DecisionKnowledgeElement> listWithObjects = JiraIssueCommentPersistenceManager
-				.getElementsForIssue(comment.get(0).getIssueId(), "TEST");
+				.getElementsForIssue(comment.get(0).getJiraIssueId(), "TEST");
 		assertEquals(3, listWithObjects.size());
 	}
 }

@@ -61,7 +61,7 @@ public class CommentSplitter {
 				sentence.setCommentId(comment.getId());
 				sentence.setEndSubstringCount(endIndex);
 				sentence.setStartSubstringCount(startIndex);
-				sentence.setIssueId(comment.getIssue().getId());
+				sentence.setJiraIssueId(comment.getIssue().getId());
 				sentence.setProject(projectKey);
 				long aoId2 = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(sentence, null);
 				sentence = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(aoId2);
@@ -162,13 +162,13 @@ public class CommentSplitter {
 			String part = StringUtils.substringBetween(commentPart, openTag, closeTag);
 			part = openTag + part + closeTag;
 			slices.add(part);
-			commentPart = commentPart.substring(commentPart.indexOf(openTag) + part.length());
-			slices = searchForTagsRecursively(commentPart, openTag, closeTag, slices);
+			String commentPartSubstring = commentPart.substring(commentPart.indexOf(openTag) + part.length());
+			return searchForTagsRecursively(commentPartSubstring, openTag, closeTag, slices);
 		} else {// currently plain text
 			if (commentPart.contains(openTag)) {// comment block has special text later
 				slices.add(commentPart.substring(0, commentPart.indexOf(openTag)));
-				slices = searchForTagsRecursively(commentPart.substring(commentPart.indexOf(openTag)), openTag,
-						closeTag, slices);
+				return searchForTagsRecursively(commentPart.substring(commentPart.indexOf(openTag)), openTag, closeTag,
+						slices);
 			} else {// comment block has no more special text
 				slices.add(commentPart);
 			}
@@ -214,11 +214,15 @@ public class CommentSplitter {
 	 * @return tagged knowledge type of a given string
 	 */
 	public static KnowledgeType getKnowledgeTypeFromTag(String body, String projectKey) {
-		boolean checkIcons = ConfigPersistenceManager.isIconParsing(projectKey);
-		for (KnowledgeType type : KNOWLEDGE_TYPES) {
-			if (body.toLowerCase().contains(AbstractKnowledgeClassificationMacro.getTag(type))
-					|| (checkIcons && body.contains(type.getIconString()))) {
-				return type;
+		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisting(body, projectKey)
+				|| (ConfigPersistenceManager.isIconParsing(projectKey)
+						&& StringUtils.indexOfAny(body, CommentSplitter.RATIONALE_ICONS) >= 0)) {
+			boolean checkIcons = ConfigPersistenceManager.isIconParsing(projectKey);
+			for (KnowledgeType type : KNOWLEDGE_TYPES) {
+				if (body.toLowerCase().contains(AbstractKnowledgeClassificationMacro.getTag(type))
+						|| (checkIcons && body.contains(type.getIconString()))) {
+					return type;
+				}
 			}
 		}
 		return KnowledgeType.OTHER;

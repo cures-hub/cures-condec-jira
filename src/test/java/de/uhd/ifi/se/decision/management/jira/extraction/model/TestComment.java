@@ -201,12 +201,12 @@ public class TestComment extends TestSetUpWithIssues {
 		List<Sentence> comment = getSentencesForCommentText(
 				"{noformat} this is a first noformat {noformat} and this is a second test Sentence. {quote} this is a also a third quote {quote}{quote} this is a also a fourth quote {quote} {noformat} this is a fifth noformat {noformat} and this is a sixth test Sentence.");
 		assertEquals(6, comment.size());
-		assertTrue(comment.get(0).getBody().contains("first"));
-		assertTrue(comment.get(1).getBody().contains("second"));
-		assertTrue(comment.get(2).getBody().contains("third"));
-		assertTrue(comment.get(3).getBody().contains("fourth"));
-		assertTrue(comment.get(4).getBody().contains("fifth"));
-		assertTrue(comment.get(5).getBody().contains("sixth"));
+		assertTrue(comment.get(0).getDescription().contains("first"));
+		assertTrue(comment.get(1).getDescription().contains("second"));
+		assertTrue(comment.get(2).getDescription().contains("third"));
+		assertTrue(comment.get(3).getDescription().contains("fourth"));
+		assertTrue(comment.get(4).getDescription().contains("fifth"));
+		assertTrue(comment.get(5).getDescription().contains("sixth"));
 	}
 
 	@Test
@@ -215,7 +215,7 @@ public class TestComment extends TestSetUpWithIssues {
 		List<Sentence> comment = getSentencesForCommentText(
 				"{noformat} this is a noformat {noformat} {wuzl} and this is a test Sentence {wuzl}");
 		assertEquals(2, comment.size());
-		assertTrue(comment.get(0).getBody().contains(" this is a noformat "));
+		assertTrue(comment.get(0).getDescription().contains(" this is a noformat "));
 	}
 
 	@Test
@@ -293,9 +293,9 @@ public class TestComment extends TestSetUpWithIssues {
 				"{Alternative} this is a manually created alternative {Alternative} and this is a test Sentence.");
 		assertEquals(2, comment.size());
 		assertEquals(true, comment.get(0).isRelevant());
-		assertEquals(false, comment.get(0).isPlainText());
+		//assertEquals(false, comment.get(0).isPlainText());
 		// TODO
-		// assertEquals(true, comment.get(0).isValidated());
+		assertEquals(true, comment.get(0).isValidated());
 	}
 
 	@Test
@@ -304,8 +304,8 @@ public class TestComment extends TestSetUpWithIssues {
 		List<Sentence> comment = getSentencesForCommentText(
 				"(y) this is a icon pro text. \r\n and this is a test Sentence.");
 		assertEquals(2, comment.size());
-		assertEquals(true, comment.get(0).isRelevant());
-		assertEquals(false, comment.get(0).isPlainText());
+		//assertEquals(true, comment.get(0).isRelevant());
+	//	assertEquals(false, comment.get(0).isPlainText());
 		// TODO
 		// assertEquals(true, comment.get(0).isValidated());
 		assertEquals(KnowledgeType.PRO, comment.get(0).getType());

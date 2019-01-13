@@ -1,11 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.model.impl;
 
-import java.util.Date;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.MutableIssue;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
 
@@ -13,7 +12,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
 
@@ -28,14 +26,18 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	private int endSubstringCount;
 	private boolean isRelevant;
 	private boolean isValidated;
-
 	private boolean isPlainText;
 	private long issueId;
-	private Date created;
 
 	public SentenceImpl() {
 		super();
 		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
+	}
+
+	public SentenceImpl(DecisionKnowledgeInCommentEntity databaseEntry) {
+		this(databaseEntry.getId(), databaseEntry.getEndSubstringCount(), databaseEntry.getStartSubstringCount(),
+				databaseEntry.isValidated(), databaseEntry.isRelevant(), databaseEntry.getProjectKey(),
+				databaseEntry.getCommentId(), databaseEntry.getIssueId(), databaseEntry.getType());
 	}
 
 	public SentenceImpl(long id, int endSubstringCount, int startSubstringCount, boolean isValidated,
@@ -48,20 +50,85 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.setRelevant(isRelevant);
 		this.setProject(projectKey);
 		this.setCommentId(commentId);
-		this.setIssueId(issueId);
+		this.setJiraIssueId(issueId);
 		this.setProject(new DecisionKnowledgeProjectImpl(projectKey));
 		this.setType(type);
-		MutableIssue mutableIssue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
-		if (mutableIssue != null) {
-			this.setKey(mutableIssue.getKey() + ":" + this.getId());
+		Issue issue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
+		if (issue != null) {
+			this.setKey(issue.getKey() + ":" + this.getId());
 		}
-		retrieveBodyFromJiraComment();
+		if (commentId <= 0) {
+			return;
+		}
+		Comment comment = this.getComment();
+		String text = comment.getBody();
+		try {
+			if (endSubstringCount < text.length()) {
+				text = text.substring(startSubstringCount, endSubstringCount);
+			} else if (endSubstringCount == text.length()) {
+				text = text.substring(startSubstringCount);
+			}
+		} catch (StringIndexOutOfBoundsException e) {
+			e.printStackTrace();
+		}
+		this.setDescription(text);
+		this.setCreated(comment.getCreated());
+		this.setPlainText(!containsExcludedTag(text));
+		KnowledgeType typeFromTag = CommentSplitter.getKnowledgeTypeFromTag(text, projectKey);
+		if (typeFromTag != KnowledgeType.OTHER) {
+			this.setType(typeFromTag);			
+			this.setValidated(true);
+			this.setRelevant(true);
+			JiraIssueCommentPersistenceManager.updateInDatabase(this);
+		}
+		stripTagsFromBody(text);
 	}
 
-	public SentenceImpl(DecisionKnowledgeInCommentEntity databaseEntry) {
-		this(databaseEntry.getId(), databaseEntry.getEndSubstringCount(), databaseEntry.getStartSubstringCount(),
-				databaseEntry.isValidated(), databaseEntry.isRelevant(), databaseEntry.getProjectKey(),
-				databaseEntry.getCommentId(), databaseEntry.getIssueId(), databaseEntry.getType());
+	private boolean containsExcludedTag(String body) {
+		return StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.EXCLUDED_TAGS) >= 0;
+	}
+
+	@Override
+	public MutableComment getComment() {
+		CommentManager commentManager = ComponentAccessor.getCommentManager();
+		if (commentManager == null) {
+			return null;
+		}
+		return commentManager.getMutableComment(this.getCommentId());
+	}
+
+	@Override
+	public String getTextFromComment() {
+		Comment comment = this.getComment();
+		if (comment == null) {
+			return super.getSummary();
+		}
+		String body = comment.getBody().substring(this.getStartSubstringCount(), this.getEndSubstringCount());
+		return body.replaceAll("\\{.*?\\}", "");
+	}
+
+	@Override
+	public void setDescription(String body) {
+		super.setDescription(body);
+		super.setSummary(body);
+	}
+	
+	@Override
+	public void setSummary(String body) {
+		super.setDescription(body);
+		super.setSummary(body);
+	}
+
+	private void stripTagsFromBody(String body) {
+		String projectKey = this.getProject().getProjectKey();
+		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisting(body, projectKey)) {
+			int tagLength = 2 + CommentSplitter.getKnowledgeTypeFromTag(body, projectKey).toString().length();
+			super.setDescription(body.substring(tagLength, body.length() - (tagLength)));
+			super.setSummary(super.getDescription());
+		} else {
+			super.setDescription(body.replaceAll("\\(.*?\\)", ""));
+			super.setSummary(super.getDescription());
+		}
 	}
 
 	@Override
@@ -100,12 +167,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	@Override
-	public MutableComment getComment() {
-		CommentManager commentManager = ComponentAccessor.getCommentManager();
-		return commentManager.getMutableComment(this.getCommentId());
-	}
-
-	@Override
 	public int getStartSubstringCount() {
 		return this.startSubstringCount;
 	}
@@ -113,7 +174,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	@Override
 	public void setStartSubstringCount(int count) {
 		this.startSubstringCount = count;
-
 	}
 
 	@Override
@@ -132,70 +192,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	@Override
-	public void setType(KnowledgeType type) {
-		// if (this.type != type) {
-		// this.updateTagsInComment(type);
-		// }
-		super.setType(type);
-	}
-
-	@Override
-	public String getBody() {
-		MutableComment mutableComment = this.getComment();
-		if (mutableComment == null) {
-			return super.getSummary();
-		}
-		String body = mutableComment.getBody().substring(this.getStartSubstringCount(), this.getEndSubstringCount());
-		body = body.replaceAll("\\{.*?\\}", "");
-		return body;
-	}
-
-	@Override
-	public void setBody(String body) {
-		super.setDescription(body);
-		super.setSummary(body);
-		checkForPlainText(body);
-	}
-
-	private void checkForPlainText(String body) {
-		this.isPlainText = true;
-		if (containsExcludedTag(body)) {
-			this.isPlainText = false;
-		}
-		String projectKey = this.getProject().getProjectKey();
-		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisting(body, projectKey)
-				|| (ConfigPersistenceManager.isIconParsing(projectKey)
-						&& StringUtils.indexOfAny(body, CommentSplitter.RATIONALE_ICONS) >= 0)) {
-			this.setType(CommentSplitter.getKnowledgeTypeFromTag(body, projectKey));
-			setManuallyTagged();
-			stripTagsFromBody(body);
-		}
-	}
-
-	private void setManuallyTagged() {
-		this.setPlainText(false);
-		this.setRelevant(true);
-		// this.setValidated(true);
-		JiraIssueCommentPersistenceManager.updateInDatabase(this);
-	}
-
-	private boolean containsExcludedTag(String body) {
-		return StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.EXCLUDED_TAGS) >= 0;
-	}
-
-	private void stripTagsFromBody(String body) {
-		String projectKey = this.getProject().getProjectKey();
-		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisting(body, projectKey)) {
-			int tagLength = 2 + CommentSplitter.getKnowledgeTypeFromTag(body, projectKey).toString().length();
-			super.setDescription(body.substring(tagLength, body.length() - (tagLength)));
-			super.setSummary(super.getDescription());
-		} else {
-			super.setDescription(body.replaceAll("\\(.*?\\)", ""));
-			super.setSummary(super.getDescription());
-		}
-	}
-
-	@Override
 	public boolean isPlainText() {
 		return isPlainText;
 	}
@@ -205,41 +201,14 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.isPlainText = isPlainText;
 	}
 
-	private void retrieveBodyFromJiraComment() {
-		try {
-			if (this.commentId != 0 && this.commentId > 0) {
-				String text = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getBody();
-				if (this.endSubstringCount < text.length()) {
-					text = text.substring(this.startSubstringCount, this.endSubstringCount);
-				} else if (this.endSubstringCount == text.length()) {
-					text = text.substring(this.startSubstringCount);
-				}
-				this.setBody(text);
-				this.created = ComponentAccessor.getCommentManager().getCommentById(this.commentId).getCreated();
-			}
-		} catch (StringIndexOutOfBoundsException e) {
-			this.setBody("");
-		}
-	}
-
 	@Override
-	public void setIssueId(long issueId) {
+	public void setJiraIssueId(long issueId) {
 		this.issueId = issueId;
 
 	}
 
 	@Override
-	public long getIssueId() {
+	public long getJiraIssueId() {
 		return this.issueId;
-	}
-
-	@Override
-	public Date getCreated() {
-		return this.created;
-	}
-
-	@Override
-	public void setCreated(Date date) {
-		this.created = date;
 	}
 }

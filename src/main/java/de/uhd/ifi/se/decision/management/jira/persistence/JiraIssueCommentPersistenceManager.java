@@ -113,7 +113,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	public static DecisionKnowledgeElement searchForLast(Sentence sentence, KnowledgeType typeToSearch) {
 		Sentence lastSentence = null;
 		DecisionKnowledgeInCommentEntity[] sententenceList = ACTIVE_OBJECTS.find(DecisionKnowledgeInCommentEntity.class,
-				Query.select().where("ISSUE_ID = ?", sentence.getIssueId()).order("ID DESC"));
+				Query.select().where("ISSUE_ID = ?", sentence.getJiraIssueId()).order("ID DESC"));
 
 		for (DecisionKnowledgeInCommentEntity databaseEntry : sententenceList) {
 			if (databaseEntry.getType().equals(typeToSearch.toString())) {
@@ -222,7 +222,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		long issueId;
 		if (parentElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
 			Sentence sentence = (Sentence) this.getDecisionKnowledgeElement(parentElement.getId());
-			issueId = sentence.getIssueId();
+			issueId = sentence.getJiraIssueId();
 		} else {
 			issueId = parentElement.getId();
 		}
@@ -245,7 +245,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 				.getDecisionKnowledgeElement(sentence);
 		if (existingElement != null) {
 			JiraIssueCommentPersistenceManager.checkIfSentenceHasAValidLink(existingElement.getId(),
-					sentence.getIssueId(), LinkType.getLinkTypeForKnowledgeType(existingElement.getType()));
+					sentence.getJiraIssueId(), LinkType.getLinkTypeForKnowledgeType(existingElement.getType()));
 			return existingElement.getId();
 		}
 
@@ -269,7 +269,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		databaseEntry.setValidated(element.isValidated());
 		databaseEntry.setStartSubstringCount(element.getStartSubstringCount());
 		databaseEntry.setEndSubstringCount(element.getEndSubstringCount());
-		databaseEntry.setIssueId(element.getIssueId());
+		databaseEntry.setIssueId(element.getJiraIssueId());
 	}
 
 	@Override
@@ -300,7 +300,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 		// only knowledge type changed
 		if (element.getSummary() == null) {
-			element.setDescription(sentence.getBody());
+			element.setDescription(sentence.getDescription());
 		}
 
 		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getType());
@@ -403,7 +403,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			smartLinkCreated = JiraIssueCommentPersistenceManager.checkLastElementAndCreateLink(lastElement, sentence);
 		}
 		if (!smartLinkCreated) {
-			checkIfSentenceHasAValidLink(sentence.getId(), sentence.getIssueId(),
+			checkIfSentenceHasAValidLink(sentence.getId(), sentence.getJiraIssueId(),
 					LinkType.getLinkTypeForKnowledgeType(sentence.getTypeAsString()));
 		}
 	}
@@ -506,7 +506,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		long linkTypeId = JiraIssuePersistenceManager.getLinkTypeId("contain");
 
 		try {
-			issueLinkManager.createIssueLink(element.getIssueId(), issue.getId(), linkTypeId, (long) 0, user);
+			issueLinkManager.createIssueLink(element.getJiraIssueId(), issue.getId(), linkTypeId, (long) 0, user);
 		} catch (CreateException e) {
 			return null;
 		}
@@ -521,7 +521,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		// delete ao sentence entry
 		new JiraIssueCommentPersistenceManager("").deleteDecisionKnowledgeElement(aoId, null);
 
-		createLinksForNonLinkedElementsForIssue(element.getIssueId());
+		createLinksForNonLinkedElementsForIssue(element.getJiraIssueId());
 
 		return issue;
 	}

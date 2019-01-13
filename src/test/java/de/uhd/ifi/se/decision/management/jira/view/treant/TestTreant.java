@@ -139,7 +139,7 @@ public class TestTreant extends TestSetUpWithIssues {
 		List<Sentence> sentences = tc.getSentencesForCommentText("This is a testsentence");
 		sentences.get(0).setRelevant(true);
 		DecisionKnowledgeElement element = persistenceStrategy
-				.getDecisionKnowledgeElement(sentences.get(0).getIssueId());
+				.getDecisionKnowledgeElement(sentences.get(0).getJiraIssueId());
 		Node nodeStructure = treant.createNodeStructure(element, null, 4, 0);
 		assertEquals(Node.class, nodeStructure.getClass());
 		assertTrue(nodeStructure.getChildren().size() == 0);
