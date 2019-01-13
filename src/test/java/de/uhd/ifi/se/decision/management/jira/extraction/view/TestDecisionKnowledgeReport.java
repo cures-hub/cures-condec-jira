@@ -99,7 +99,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testWithObjects() {
 		TestComment tc = new TestComment();
-		Sentence sentence2 = tc.getComment("More Comment with some text").getSentences().get(0);
+		Sentence sentence2 = tc.getSentencesForCommentText("More Comment with some text").get(0);
 		sentence2.setType(KnowledgeType.ALTERNATIVE);
 		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence2, null);
 

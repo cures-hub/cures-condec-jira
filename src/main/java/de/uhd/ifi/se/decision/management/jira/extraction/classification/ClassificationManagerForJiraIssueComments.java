@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
@@ -22,108 +21,68 @@ public class ClassificationManagerForJiraIssueComments {
 		this.classifier = new DecisionKnowledgeClassifierImpl();
 	}
 
-	public List<JiraIssueComment> classifySentenceBinary(List<JiraIssueComment> commentsList) {
-		if (commentsList == null) {
-			return new ArrayList<JiraIssueComment>();
+	public List<Sentence> classifySentencesBinary(List<Sentence> sentences) {
+		if (sentences == null) {
+			return new ArrayList<Sentence>();
 		}
-		List<String> stringsToBeClassified = getStringsForBinaryClassification(commentsList);
-
-		List<Boolean> classificationResult;
-		if (!stringsToBeClassified.isEmpty()) {
-			classificationResult = classifier.makeBinaryPredictions(stringsToBeClassified);
-			commentsList = matchBinaryClassificationBackOnData(classificationResult, commentsList);
-		} else {
-			commentsList = writeDataFromActiveObjectsToSentences(commentsList);
-		}
-
-		return commentsList;
+		List<String> stringsToBeClassified = getStringsForBinaryClassification(sentences);
+		List<Boolean> classificationResult = classifier.makeBinaryPredictions(stringsToBeClassified);
+		sentences = matchBinaryClassificationBackOnData(classificationResult, sentences);
+		return sentences;
 	}
 
-	public List<JiraIssueComment> classifySentenceFineGrained(List<JiraIssueComment> commentsList) {
-		if (commentsList == null) {
-			return new ArrayList<JiraIssueComment>();
+	public List<Sentence> classifySentencesFineGrained(List<Sentence> sentences) {
+		if (sentences == null) {
+			return new ArrayList<Sentence>();
 		}
-		List<String> stringsToBeClassified = getStringsForFineGrainedClassification(commentsList);
-
-		if (stringsToBeClassified.isEmpty()) {
-			return loadSentencesFineGrainedKnowledgeTypesFromActiveObjects(commentsList);
-		}
+		List<String> stringsToBeClassified = getStringsForFineGrainedClassification(sentences);
 		List<KnowledgeType> classificationResult = this.classifier.makeFineGrainedPredictions(stringsToBeClassified);
 
 		// Write classification results back to sentence objects
 		int i = 0;
 
-		for (JiraIssueComment comment : commentsList) {
-			for (Sentence sentence : comment.getSentences()) {
-				if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
-					sentence.setType(classificationResult.get(i));
-					System.out.println(sentence.getTypeAsString());
-					sentence.setSummary(null);
-					sentence.setValidated(false);
-					new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence, null);
-					i++;
-				} else if (sentence.isRelevant() && sentence.isTaggedFineGrained() && sentence.isPlainText()) {
-					sentence = (Sentence) new JiraIssueCommentPersistenceManager("")
-							.getDecisionKnowledgeElement(sentence.getId());
-					sentence.setValidated(false);
-				}
-			}
-		}
-
-		return commentsList;
-	}
-
-	private List<JiraIssueComment> loadSentencesFineGrainedKnowledgeTypesFromActiveObjects(
-			List<JiraIssueComment> commentsList) {
-		for (JiraIssueComment comment : commentsList) {
-			for (Sentence sentence : comment.getSentences()) {
-				if (sentence.isRelevant() && sentence.isTaggedFineGrained()) {
-					sentence = (Sentence) new JiraIssueCommentPersistenceManager("")
-							.getDecisionKnowledgeElement(sentence.getId());
-				}
-			}
-		}
-		return commentsList;
-	}
-
-	private List<JiraIssueComment> matchBinaryClassificationBackOnData(List<Boolean> classificationResult,
-			List<JiraIssueComment> commentsList) {
-		int i = 0;
-		for (JiraIssueComment comment : commentsList) {
-			for (Sentence sentence : comment.getSentences()) {
-				if (isSentenceQualifiedForBinaryClassification(sentence)) {
-					sentence.setRelevant(classificationResult.get(i));
-					sentence.setValidated(false);
-					JiraIssueCommentPersistenceManager.updateInDatabase(sentence);
-					i++;
-				}
-			}
-		}
-		return commentsList;
-	}
-
-	public List<JiraIssueComment> writeDataFromActiveObjectsToSentences(List<JiraIssueComment> commentsList) {
-		for (JiraIssueComment comment : commentsList) {
-			for (Sentence sentence : comment.getSentences()) {
+		for (Sentence sentence : sentences) {
+			if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
+				sentence.setType(classificationResult.get(i));
+				System.out.println(sentence.getTypeAsString());
+				sentence.setSummary(null);
+				sentence.setValidated(false);
+				new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence, null);
+				i++;
+			} else if (sentence.isRelevant() && sentence.isTaggedFineGrained() && sentence.isPlainText()) {
 				sentence = (Sentence) new JiraIssueCommentPersistenceManager("")
 						.getDecisionKnowledgeElement(sentence.getId());
+				sentence.setValidated(false);
 			}
 		}
-		return commentsList;
+
+		return sentences;
 	}
 
-	private List<String> getStringsForBinaryClassification(List<JiraIssueComment> commentsList) {
+	private List<Sentence> matchBinaryClassificationBackOnData(List<Boolean> classificationResult,
+			List<Sentence> sentences) {
+		int i = 0;
+		for (Sentence sentence : sentences) {
+			if (isSentenceQualifiedForBinaryClassification(sentence)) {
+				sentence.setRelevant(classificationResult.get(i));
+				sentence.setValidated(false);
+				JiraIssueCommentPersistenceManager.updateInDatabase(sentence);
+				i++;
+			}
+		}
+		return sentences;
+	}
+
+	private List<String> getStringsForBinaryClassification(List<Sentence> sentences) {
 		List<String> stringsToBeClassified = new ArrayList<String>();
-		for (JiraIssueComment comment : commentsList) {
-			for (Sentence sentence : comment.getSentences()) {
-				if (isSentenceQualifiedForBinaryClassification(sentence)) {
-					stringsToBeClassified.add(sentence.getBody());
-				}
+		for (Sentence sentence : sentences) {
+			if (isSentenceQualifiedForBinaryClassification(sentence)) {
+				stringsToBeClassified.add(sentence.getBody());
 			}
 		}
 		return stringsToBeClassified;
 	}
-	
+
 	/**
 	 * Determines whether a part of JIRA issue comment (substring) should be the
 	 * input for binary classification. It is qualified if it's plain text, and if
@@ -139,13 +98,11 @@ public class ClassificationManagerForJiraIssueComments {
 		return !sentence.isValidated() && sentence.isPlainText();
 	}
 
-	private List<String> getStringsForFineGrainedClassification(List<JiraIssueComment> commentsList) {
+	private List<String> getStringsForFineGrainedClassification(List<Sentence> sentences) {
 		List<String> stringsToBeClassified = new ArrayList<String>();
-		for (JiraIssueComment comment : commentsList) {
-			for (Sentence sentence : comment.getSentences()) {
-				if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
-					stringsToBeClassified.add(sentence.getBody());
-				}
+		for (Sentence sentence : sentences) {
+			if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
+				stringsToBeClassified.add(sentence.getBody());
 			}
 		}
 		return stringsToBeClassified;

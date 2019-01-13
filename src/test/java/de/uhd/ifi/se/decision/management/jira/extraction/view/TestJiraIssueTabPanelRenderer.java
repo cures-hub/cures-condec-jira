@@ -28,7 +28,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
-public class TestIssueTabPanelRenderer extends TestSetUpWithIssues {
+public class TestJiraIssueTabPanelRenderer extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
 	private JiraIssueTabPanelRenderer renderer;

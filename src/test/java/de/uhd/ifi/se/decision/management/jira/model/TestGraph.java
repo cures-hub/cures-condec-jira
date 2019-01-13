@@ -155,8 +155,8 @@ public class TestGraph extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testGraphWithSentences() {
 		TestComment tc = new TestComment();
-		JiraIssueComment comment = tc.getComment("I got an issue in this testclass");
-		element = comment.getSentences().get(0);
+		List<Sentence> sentences = tc.getSentencesForCommentText("I got an issue in this testclass");
+		element = sentences.get(0);
 		graph.setRootElement(element);
 		assertNotNull(graph.getLinkedElementsAndLinks(element));
 		assertEquals(element.getSummary(), graph.getRootElement().getSummary());

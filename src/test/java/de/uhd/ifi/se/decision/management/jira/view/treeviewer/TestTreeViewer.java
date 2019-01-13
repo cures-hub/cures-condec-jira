@@ -28,7 +28,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
@@ -162,9 +161,9 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	public void testTreeViewerWithComment() {
 		TreeViewer tree = new TreeViewer();
 		TestComment tc = new TestComment();
-		JiraIssueComment comment = tc.getComment("This is a testcomment with some text");
-		comment.getSentences().get(0).setType(KnowledgeType.ALTERNATIVE);
-		assertNotNull(tree.getDataStructure(comment.getSentences().get(0)));
+		List<Sentence> comment = tc.getSentencesForCommentText("This is a testcomment with some text");
+		comment.get(0).setType(KnowledgeType.ALTERNATIVE);
+		assertNotNull(tree.getDataStructure(comment.get(0)));
 	}
 
 	@Test

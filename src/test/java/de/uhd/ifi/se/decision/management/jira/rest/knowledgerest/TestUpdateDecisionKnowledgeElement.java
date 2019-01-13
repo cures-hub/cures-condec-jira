@@ -2,6 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.rest.knowledgerest;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -24,7 +26,6 @@ import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplateWebhook;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
@@ -69,8 +70,8 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testRequestFilledElementFilledParentElementExistingParentDocumentationLocationJiraIssue() {
 		TestComment testComment = new TestComment();
-		JiraIssueComment comment = testComment.getComment("This is a test sentence.");
-		DecisionKnowledgeElement sentence = comment.getSentences().get(0);
+		List<Sentence> comment = testComment.getSentencesForCommentText("This is a test sentence.");
+		DecisionKnowledgeElement sentence = comment.get(0);
 
 		Link link = new LinkImpl(sentence, decisionKnowledgeElement);
 		GenericLinkManager.insertLink(link, null);
@@ -97,8 +98,8 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 	@Test
 	public void testRequestNullElementFilledParentIdZeroParentDocumentationLocationNull() {
 		TestComment testComment = new TestComment();
-		JiraIssueComment comment = testComment.getComment("This is a test sentence.");
-		DecisionKnowledgeElement decisionKnowledgeElement = comment.getSentences().get(0);
+		List<Sentence> comment = testComment.getSentencesForCommentText("This is a test sentence.");
+		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		assertEquals(
 				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERROR)).build()
 						.getEntity(),
@@ -115,8 +116,8 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testRequestFilledElementFilledParentIdZeroParentDocumentationLocationNull() {
 		TestComment testComment = new TestComment();
-		JiraIssueComment comment = testComment.getComment("This is a test sentence.");
-		DecisionKnowledgeElement decisionKnowledgeElement = comment.getSentences().get(0);
+		List<Sentence> comment = testComment.getSentencesForCommentText("This is a test sentence.");
+		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		decisionKnowledgeElement.setType(KnowledgeType.ALTERNATIVE);
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, null).getStatus());
@@ -126,8 +127,8 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testRequestFilledElementFilledWithCommentChangedParentIdZeroParentDocumentationLocationEmpty() {
 		TestComment testComment = new TestComment();
-		JiraIssueComment comment = testComment.getComment("This is a test sentence.");
-		DecisionKnowledgeElement decisionKnowledgeElement = comment.getSentences().get(0);
+		List<Sentence> comment = testComment.getSentencesForCommentText("This is a test sentence.");
+		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		assertEquals(decisionKnowledgeElement.getType(), KnowledgeType.OTHER);
 
 		String newText = "some fancy new text";
@@ -148,9 +149,9 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 	public void testRequestFilledElementFilledWithCommentChangedCheckValidTextWithManuallTaggedComment() {
 		String newText = "some fancy new text";
 		TestComment testComment = new TestComment();
-		JiraIssueComment comment = testComment.getComment("{issue}This is a test sentence.{Issue}");
+		List<Sentence> comment = testComment.getSentencesForCommentText("{issue}This is a test sentence.{Issue}");
 
-		DecisionKnowledgeElement decisionKnowledgeElement = comment.getSentences().get(0);
+		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		decisionKnowledgeElement.setDescription(newText);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());
 		decisionKnowledgeElement.setType(KnowledgeType.ISSUE);

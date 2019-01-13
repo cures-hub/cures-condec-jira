@@ -11,16 +11,16 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationManagerForJiraIssueComments;
-import de.uhd.ifi.se.decision.management.jira.model.JiraIssueComment;
-import de.uhd.ifi.se.decision.management.jira.model.impl.JiraIssueCommentImpl;
+import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class ViewConnector {
 
 	private Issue currentIssue;
 
-	private List<JiraIssueComment> commentsList;
+	private List<Sentence> sentences;
 
 	private CommentManager commentManager;
 
@@ -32,8 +32,16 @@ public class ViewConnector {
 		if (issue != null) {
 			this.setCurrentIssue(issue);
 			commentManager = ComponentAccessor.getCommentManager();
-			this.commentsList = new ArrayList<JiraIssueComment>();
+			this.sentences = new ArrayList<Sentence>();
 		}
+	}
+
+	public static List<Comment> getComments(Issue issue) {
+		CommentManager commentManager = ComponentAccessor.getCommentManager();
+		if (issue != null && commentManager.getComments(issue) != null) {
+			return commentManager.getComments(issue);
+		}
+		return new ArrayList<Comment>();
 	}
 
 	public ViewConnector(Issue issue, boolean doNotClassify) {
@@ -42,11 +50,12 @@ public class ViewConnector {
 			connectorInUseLock.add(issue.getKey());
 			if (issue != null && commentManager.getComments(issue) != null) {
 				for (Comment comment : commentManager.getComments(issue)) {
-					JiraIssueComment comment2 = new JiraIssueCommentImpl(comment);
-					commentsList.add(comment2);
+					List<Sentence> sentencesOfComment = new CommentSplitter().getSentences(comment);
+					sentences.addAll(sentencesOfComment);
 				}
 			}
-			if (!doNotClassify && ConfigPersistenceManager.isUseClassiferForIssueComments(issue.getProjectObject().getKey())) {
+			if (!doNotClassify
+					&& ConfigPersistenceManager.isUseClassiferForIssueComments(issue.getProjectObject().getKey())) {
 				this.startClassification();
 			}
 			connectorInUseLock.remove(issue.getKey());
@@ -57,8 +66,8 @@ public class ViewConnector {
 
 	private void startClassification() {
 		ClassificationManagerForJiraIssueComments classifier = new ClassificationManagerForJiraIssueComments();
-		this.commentsList = classifier.classifySentenceBinary(commentsList);
-		this.commentsList = classifier.classifySentenceFineGrained(commentsList);
+		this.sentences = classifier.classifySentencesBinary(sentences);
+		this.sentences = classifier.classifySentencesFineGrained(sentences);
 	}
 
 	public Issue getCurrentIssue() {
