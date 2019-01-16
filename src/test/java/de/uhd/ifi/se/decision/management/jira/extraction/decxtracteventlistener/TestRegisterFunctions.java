@@ -1,7 +1,10 @@
-package de.uhd.ifi.se.decision.management.jira.extraction;
+package de.uhd.ifi.se.decision.management.jira.extraction.decxtracteventlistener;
 
 import static org.junit.Assert.assertNotNull;
 
+import com.atlassian.event.api.EventPublisher;
+import com.atlassian.jira.event.MockEventPublisher;
+import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,23 +22,27 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
-public class TestDecXtractEventListener extends TestSetUpWithIssues {
-
-	private EntityManager entityManager;
-
-	@Before
-	public void setUp() {
-		initialization();
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
-
-	}
+public class TestRegisterFunctions extends TestSetUpEventListener {
 
 	@Test
 	@NonTransactional
 	public void testCreation() {
-		DecXtractEventListener dxel = new DecXtractEventListener(null);
-		assertNotNull(dxel);
+		assertNotNull(listener);
 	}
+
+	@Test
+    public void testAfterPropertiesSet() throws Exception {
+	    listener.afterPropertiesSet();
+    }
+
+    @Test
+    public void testDestroy() throws Exception {
+	    listener.destroy();
+    }
+
+    @Test
+    public void testIssueEventNull(){
+	    listener.onIssueEvent(null);
+    }
 
 }

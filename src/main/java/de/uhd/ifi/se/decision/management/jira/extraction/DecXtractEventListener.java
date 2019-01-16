@@ -64,6 +64,9 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 
 	@EventListener
 	public void onIssueEvent(IssueEvent issueEvent) {
+	    if(issueEvent == null){
+	        return;
+        }
 		this.issueEvent = issueEvent;
 		this.projectKey = issueEvent.getProject().getKey();
 
