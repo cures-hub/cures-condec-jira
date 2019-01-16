@@ -15,5 +15,5 @@ Software Engineering Research Group, Heidelberg University however does not guar
 
 ## Guarentees and Liablility
 
-- The software is supplied 'as is' and without warranty or representation regarding accuracy or the nonexistence of bugs. You use the software at your own risk.
-- Software Engineering Research Group, Heidelberg University will never deliberately include viruses, spyware, backdoors or malicious code.
+-  The software is supplied 'as is' and without warranty or representation regarding accuracy or the nonexistence of bugs. You use the software at your own risk.
+-  Software Engineering Research Group, Heidelberg University will never deliberately include viruses, spyware, backdoors or malicious code.
