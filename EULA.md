@@ -1,4 +1,4 @@
-#Software Engineering Resarch Group, Heidelberg University End User License Agreement
+# Software Engineering Resarch Group, Heidelberg University End User License Agreement
 
 ## Version 1.0
 
