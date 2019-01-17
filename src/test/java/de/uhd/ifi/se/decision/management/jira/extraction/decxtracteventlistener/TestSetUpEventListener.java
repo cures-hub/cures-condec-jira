@@ -6,7 +6,6 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.event.MockEventPublisher;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
-import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
@@ -20,6 +19,7 @@ import org.junit.Before;
 public class TestSetUpEventListener extends TestSetUpWithIssues {
 
     private EntityManager entityManager;
+
     protected DecXtractEventListener listener;
     protected EventPublisher publisher;
     protected Issue issue;
@@ -34,7 +34,6 @@ public class TestSetUpEventListener extends TestSetUpWithIssues {
         publisher = new MockEventPublisher();
         listener = new DecXtractEventListener(publisher);
         issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
-        comment = ComponentAccessor.getCommentManager().create(issue, user, comment, true);
         user = ComponentAccessor.getUserManager().getUserByName("NoFails");
     }
 }

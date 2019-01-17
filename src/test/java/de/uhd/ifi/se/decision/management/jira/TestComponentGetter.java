@@ -3,6 +3,9 @@ package de.uhd.ifi.se.decision.management.jira;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.properties.APKeys;
+import com.atlassian.jira.config.properties.ApplicationProperties;
 import org.junit.Before;
 import org.junit.Test;
 

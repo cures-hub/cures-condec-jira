@@ -8,6 +8,8 @@ import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
+import com.atlassian.jira.config.properties.APKeys;
+import com.atlassian.jira.config.properties.ApplicationProperties;
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
@@ -18,6 +20,7 @@ import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.issue.issuetype.MockIssueType;
 import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.issue.link.IssueLinkTypeManager;
+import com.atlassian.jira.mock.MockApplicationProperties;
 import com.atlassian.jira.mock.MockConstantsManager;
 import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.mock.component.MockComponentWorker;
@@ -53,6 +56,9 @@ public class TestSetUpWithIssues {
 		projectManager = new MockProjectManager();
 		issueManager = new MockIssueManagerSelfImpl();
 		constantsManager = new MockConstantsManager();
+		//With the Value we could add some kinde of real support of the classifier tests
+        MockApplicationProperties mockApplicationProperties = new MockApplicationProperties();
+        mockApplicationProperties.setString(APKeys.JIRA_BASEURL, "null");
 		IssueTypeManager issueTypeManager = new MockIssueTypeManager();
 		try {
 			((MockIssueTypeManager) issueTypeManager).addingAllIssueTypes();
@@ -82,7 +88,8 @@ public class TestSetUpWithIssues {
 				.addMock(AvatarManager.class, new MockAvatarManager()).addMock(IssueTypeManager.class, issueTypeManager)
 				.addMock(IssueTypeSchemeManager.class, new MockIssueTypeSchemeManager())
 				.addMock(PluginSettingsFactory.class, new MockPluginSettingsFactory())
-				.addMock(OptionSetManager.class, new MockOptionSetManager()).addMock(CommentManager.class, new MockCommentManager());
+				.addMock(OptionSetManager.class, new MockOptionSetManager())
+                .addMock(CommentManager.class, new MockCommentManager()).addMock(ApplicationProperties.class,mockApplicationProperties);
 
 		creatingProjectIssueStructure();
 	}
