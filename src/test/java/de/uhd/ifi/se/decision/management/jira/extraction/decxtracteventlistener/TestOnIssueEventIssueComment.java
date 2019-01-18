@@ -16,30 +16,33 @@ import java.util.HashMap;
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 public class TestOnIssueEventIssueComment extends TestSetUpEventListener {
 
-    private IssueEvent issueEvent = new IssueEvent(issue,user,comment,null, new MockGenericValue("test"),new HashMap(),EventType.ISSUE_COMMENTED_ID);
+
 
     @Test
     public void testNoCommentContain(){
         comment = ComponentAccessor.getCommentManager().create(issue, user, "", true);
+        IssueEvent issueEvent = new IssueEvent(issue,user,comment,null, new MockGenericValue("test"),new HashMap(),EventType.ISSUE_COMMENTED_ID);
         listener.onIssueEvent(issueEvent);
     }
 
     @Test
     public void testRationalTag(){
         comment = ComponentAccessor.getCommentManager().create(issue, user, "{issue} fewfwewf{/issue}", true);
+        IssueEvent issueEvent = new IssueEvent(issue,user,comment,null, new MockGenericValue("test"),new HashMap(),EventType.ISSUE_COMMENTED_ID);
         listener.onIssueEvent(issueEvent);
     }
 
     @Test
     public void testExclusindTags(){
-        IssueEvent issueEvent = new IssueEvent(issue,user,comment,null, new MockGenericValue("test"),new HashMap(),EventType.ISSUE_COMMENTED_ID);
         comment = ComponentAccessor.getCommentManager().create(issue, user, "{code}fviowerf{/code}", true);
+        IssueEvent issueEvent = new IssueEvent(issue,user,comment,null, new MockGenericValue("test"),new HashMap(),EventType.ISSUE_COMMENTED_ID);
         listener.onIssueEvent(issueEvent);
     }
 
     @Test
     public void testRationalIcons(){
         comment = ComponentAccessor.getCommentManager().create(issue, user, "(!) rtwefhowiuhf", true);
+        IssueEvent issueEvent = new IssueEvent(issue,user,comment,null, new MockGenericValue("test"),new HashMap(),EventType.ISSUE_COMMENTED_ID);
         listener.onIssueEvent(issueEvent);
     }
 }
