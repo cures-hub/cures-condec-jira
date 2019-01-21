@@ -54,7 +54,6 @@ public class TestComment extends TestSetUpWithIssues {
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
 		// Get the last comment entered in on the issue to a String
 		comment1 = commentManager.create(issue, currentUser, comment, true);
-
 	}
 
 	public List<Sentence> getSentencesForCommentText(String text) {
@@ -291,7 +290,7 @@ public class TestComment extends TestSetUpWithIssues {
 				"{Alternative} this is a manually created alternative {Alternative} and this is a test Sentence.");
 		assertEquals(2, comment.size());
 		assertEquals(true, comment.get(0).isRelevant());
-		//assertEquals(false, comment.get(0).isPlainText());
+		// assertEquals(false, comment.get(0).isPlainText());
 		// TODO
 		assertEquals(true, comment.get(0).isValidated());
 	}
@@ -302,8 +301,8 @@ public class TestComment extends TestSetUpWithIssues {
 		List<Sentence> comment = getSentencesForCommentText(
 				"(y) this is a icon pro text. \r\n and this is a test Sentence.");
 		assertEquals(2, comment.size());
-		//assertEquals(true, comment.get(0).isRelevant());
-	//	assertEquals(false, comment.get(0).isPlainText());
+		// assertEquals(true, comment.get(0).isRelevant());
+		// assertEquals(false, comment.get(0).isPlainText());
 		// TODO
 		// assertEquals(true, comment.get(0).isValidated());
 		assertEquals(KnowledgeType.PRO, comment.get(0).getType());
