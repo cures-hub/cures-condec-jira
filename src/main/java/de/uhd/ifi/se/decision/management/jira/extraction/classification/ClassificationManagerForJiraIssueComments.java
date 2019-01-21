@@ -89,10 +89,13 @@ public class ClassificationManagerForJiraIssueComments {
 		int i = 0;
 		for (Sentence sentence : sentences) {
 			if (isSentenceQualifiedForBinaryClassification(sentence)) {
-				sentence.setRelevant(classificationResult.get(i));
-				sentence.setValidated(false);
-				JiraIssueCommentPersistenceManager.updateInDatabase(sentence);
-				i++;
+			    //TODO Next line can cause bug check in live system
+                if(classificationResult.size() !=0) {
+                    sentence.setRelevant(classificationResult.get(i));
+                    sentence.setValidated(false);
+                    JiraIssueCommentPersistenceManager.updateInDatabase(sentence);
+                    i++;
+                }
 			}
 		}
 		return sentences;

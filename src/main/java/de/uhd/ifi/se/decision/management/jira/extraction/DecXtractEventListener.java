@@ -64,6 +64,9 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 
 	@EventListener
 	public void onIssueEvent(IssueEvent issueEvent) {
+	    if(issueEvent == null){
+	        return;
+        }
 		this.issueEvent = issueEvent;
 		this.projectKey = issueEvent.getProject().getKey();
 
@@ -137,7 +140,9 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		// handled by this event listener.
 		if (!DecXtractEventListener.editCommentLock) {
 			JiraIssueCommentPersistenceManager.deleteAllSentencesOfComments(issueEvent.getComment());
-			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
+			if(ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
+                new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
+            }
 			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 		} else {
 			LOGGER.debug("DecXtract event listener:\nEditing comment is still locked.");
@@ -150,7 +155,9 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	}
 
 	private void handleNewComment() {
-		new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
+	    if(ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
+            new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
+        }
 		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 }
