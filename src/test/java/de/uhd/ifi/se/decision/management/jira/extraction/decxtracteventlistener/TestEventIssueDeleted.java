@@ -22,14 +22,14 @@ public class TestEventIssueDeleted extends TestSetUpEventListener {
 
 	@Test
 	public void testRationaleTag() {
-		IssueEvent issueEvent = createIssueEvent("{issue}This is a very severe issue.{/issue}",
+		IssueEvent issueEvent = createIssueEvent("{issue}This is a very severe issue.{issue}",
 				EventType.ISSUE_DELETED_ID);
 		listener.onIssueEvent(issueEvent);
 	}
 
 	@Test
 	public void testExcludedTag() {
-		IssueEvent issueEvent = createIssueEvent("{code}public static class{/code}", EventType.ISSUE_DELETED_ID);
+		IssueEvent issueEvent = createIssueEvent("{code}public static class{code}", EventType.ISSUE_DELETED_ID);
 		listener.onIssueEvent(issueEvent);
 	}
 

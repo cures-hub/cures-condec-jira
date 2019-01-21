@@ -21,14 +21,14 @@ public class TestEventCommentEdited extends TestSetUpEventListener {
 
 	@Test
 	public void testRationaleTag() {
-		IssueEvent issueEvent = createIssueEvent("{issue}This is a very severe issue.{/issue}",
+		IssueEvent issueEvent = createIssueEvent("{issue}This is a very severe issue.{issue}",
 				EventType.ISSUE_COMMENT_EDITED_ID);
 		listener.onIssueEvent(issueEvent);
 	}
 
 	@Test
 	public void testExcludedTag() {
-		IssueEvent issueEvent = createIssueEvent("{code}public static class{/code}", EventType.ISSUE_COMMENT_EDITED_ID);
+		IssueEvent issueEvent = createIssueEvent("{code}public static class{code}", EventType.ISSUE_COMMENT_EDITED_ID);
 		listener.onIssueEvent(issueEvent);
 	}
 
