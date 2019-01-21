@@ -120,6 +120,7 @@ public class WebhookConnector {
 				LOGGER.info("Http response code: " + httpResponse);
 				return true;
 			}
+			LOGGER.info("Http response code: "+ httpResponse);
 		} catch (IOException e) {
 			LOGGER.error("Could not send webhook data because of " + e.getMessage());
 			e.printStackTrace();
