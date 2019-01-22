@@ -25,7 +25,6 @@ import net.java.ao.EntityManager;
 public class TestSetUpEventListener extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
-    private EventPublisher publisher;
     private Issue issue;
     private ApplicationUser user;
 
@@ -36,7 +35,7 @@ public class TestSetUpEventListener extends TestSetUpWithIssues {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
-		publisher = new MockEventPublisher();
+        EventPublisher publisher = new MockEventPublisher();
 		listener = new DecXtractEventListener(publisher);
 		issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
