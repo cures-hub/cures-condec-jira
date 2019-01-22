@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.decxtracteventlistener;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.junit.Before;
 
@@ -24,12 +25,11 @@ import net.java.ao.EntityManager;
 public class TestSetUpEventListener extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
+    private EventPublisher publisher;
+    private Issue issue;
+    private ApplicationUser user;
 
 	protected DecXtractEventListener listener;
-	protected EventPublisher publisher;
-	protected Issue issue;
-	protected Comment comment;
-	protected ApplicationUser user;
 
 	@Before
 	public void setUp() {
@@ -46,9 +46,21 @@ public class TestSetUpEventListener extends TestSetUpWithIssues {
 		Comment jiraComment = ComponentAccessor.getCommentManager().create(issue, user, comment, true);
 		return createIssueEvent(jiraComment, eventType);
 	}
+
+    protected boolean checkComment(String oldComment){
+        List<Comment> changedComments = ComponentAccessor.getCommentManager().getComments(issue);
+        for(Comment comment: changedComments){
+            if(comment.getBody().equalsIgnoreCase(oldComment)){
+                return true;
+            }
+        }
+        return false;
+    }
 	
 	private IssueEvent createIssueEvent(Comment comment, long eventType) {
 		return new IssueEvent(issue, user, comment, null, new MockGenericValue("test"), new HashMap<String, String>(),
 				eventType);
 	}
+
+
 }
