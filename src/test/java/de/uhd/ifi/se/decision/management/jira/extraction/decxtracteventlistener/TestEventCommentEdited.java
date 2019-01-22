@@ -19,6 +19,7 @@ public class TestEventCommentEdited extends TestSetUpEventListener {
 	public void testNoCommentContain() {
 		IssueEvent issueEvent = createIssueEvent("", EventType.ISSUE_COMMENT_EDITED_ID);
 		listener.onIssueEvent(issueEvent);
+		assertTrue(checkComment(""));
 	}
 
 	@Test
