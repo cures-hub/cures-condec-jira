@@ -128,15 +128,14 @@ public class TestTreant extends TestSetUpWithIssues {
 		link.setDestinationElement(14, "i");
 		link.setDestinationElement(persistenceStrategy.getDecisionKnowledgeElement(14));
 		link.setSourceElement(persistenceStrategy.getDecisionKnowledgeElement(10));
-		link.setId((long) 23);
+		link.setId(23);
 		assertEquals(Node.class, treant.createNodeStructure(element, link, 4, 0).getClass());
 	}
 
 	@Test
 	@NonTransactional
 	public void testCreateNodeStructureWithSentenceInIssue() {
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> sentences = tc.getSentencesForCommentText("This is a testsentence");
+		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("This is a testsentence");
 		sentences.get(0).setRelevant(true);
 		DecisionKnowledgeElement element = persistenceStrategy
 				.getDecisionKnowledgeElement(sentences.get(0).getJiraIssueId());

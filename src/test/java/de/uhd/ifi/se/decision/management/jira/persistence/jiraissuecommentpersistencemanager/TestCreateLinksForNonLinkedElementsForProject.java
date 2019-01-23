@@ -17,8 +17,7 @@ public class TestCreateLinksForNonLinkedElementsForProject extends TestJiraIssue
 	@Test
 	@NonTransactional
 	public void testLinkAllUnlikedSentence() {
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> comment = tc.getSentencesForCommentText(
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText(
 				"some sentence in front.  {pro} testobject {pro} some sentence in the back.");
 		long id = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
 		assertEquals(1, GenericLinkManager.getLinksForElement(id, DocumentationLocation.JIRAISSUECOMMENT).size());

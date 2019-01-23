@@ -47,8 +47,7 @@ public class TestCreateJIRAIssueFromSentenceObject extends TestJiraIssueCommentP
 	@Test
 	@NonTransactional
 	public void testIdOkUserFilled() {
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> comment = tc.getSentencesForCommentText(
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
 		assertNotNull(manager.createJIRAIssueFromSentenceObject(3, user));

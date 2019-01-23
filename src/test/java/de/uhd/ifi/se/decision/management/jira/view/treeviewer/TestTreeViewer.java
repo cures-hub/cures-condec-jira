@@ -138,7 +138,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testGetDataStructureFilled() {
-		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
 		assertEquals("tv14", treeViewer.getDataStructure(element).getId());
 	}
 
@@ -152,7 +152,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testEmptyGraphGetDataStructure() {
 		TreeViewer tree = new TreeViewer();
-		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
 		assertEquals("tv14", tree.getDataStructure(element).getId());
 	}
 
@@ -160,8 +160,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testTreeViewerWithComment() {
 		TreeViewer tree = new TreeViewer();
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> comment = tc.getSentencesForCommentText("This is a testcomment with some text");
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText("This is a testcomment with some text");
 		comment.get(0).setType(KnowledgeType.ALTERNATIVE);
 		assertNotNull(tree.getDataStructure(comment.get(0)));
 	}
@@ -170,7 +169,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testTreeViewerCalledFromTabpanel() {
 		// 1) Check if Tree Element has no Children - Important!
-		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		DecisionKnowledgeElement element = persistenceStrategy.getDecisionKnowledgeElement(14);
 		TreeViewer tv = new TreeViewer(element.getKey(), selectedKnowledgeTypes);
 		assertNotNull(tv);
 		assertEquals(0, tv.getDataStructure(element).getChildren().size());
@@ -187,7 +186,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		// JiraIssueComment comment = new JiraIssueCommentImpl(comment1);
 		sentences.get(0).setRelevant(true);
 		sentences.get(0).setType(KnowledgeType.ALTERNATIVE);
-		element = persistenceStrategy.getDecisionKnowledgeElement((long) 14);
+		element = persistenceStrategy.getDecisionKnowledgeElement(14);
 		tv = new TreeViewer(element.getKey(), selectedKnowledgeTypes);
 
 		// 4) Check if TreeViewer has one element

@@ -48,7 +48,7 @@ public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIs
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
-		createIssue();
+		createGlobalIssue();
 		manager = new JiraIssueCommentPersistenceManager("TEST");
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		addElementToDataBase();
@@ -92,8 +92,7 @@ public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIs
 	@Test
 	@NonTransactional
 	public void testGetAllElementsFromAoByType() {
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> comment = tc.getSentencesForCommentText(
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
 
@@ -105,8 +104,7 @@ public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIs
 	@Test
 	@NonTransactional
 	public void testGetAllElementsFromAoByArgumentType() {
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> comment = tc.getSentencesForCommentText(
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText(
 				"some sentence in front. {pro} testobject {pro} some sentence in the back.");
 		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
 
@@ -118,8 +116,7 @@ public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIs
 	@Test
 	@NonTransactional
 	public void testGetAllElementsFromAoByEmptyType() {
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> comment = tc.getSentencesForCommentText(
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText(
 				"some sentence in front.  {pro} testobject {pro} some sentence in the back.");
 		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
 

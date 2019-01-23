@@ -67,8 +67,7 @@ public class TestSetSentenceIrrelevant extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testRequestNullElementFilled() {
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> comment = tc.getSentencesForCommentText("This is a test sentence.");
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERROR)).build()
 				.getEntity(), knowledgeRest.setSentenceIrrelevant(null, decisionKnowledgeElement).getEntity());
@@ -88,8 +87,7 @@ public class TestSetSentenceIrrelevant extends TestSetUpWithIssues {
 	public void testRequestFilledElementFilled() {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> comment = tc.getSentencesForCommentText("This is a test sentence.");
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		decisionKnowledgeElement.setType(KnowledgeType.ALTERNATIVE);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());

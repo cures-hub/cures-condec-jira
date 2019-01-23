@@ -154,8 +154,7 @@ public class TestGraph extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testGraphWithSentences() {
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> sentences = tc.getSentencesForCommentText("I got an issue in this testclass");
+		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("I got an issue in this testclass");
 		element = sentences.get(0);
 		graph.setRootElement(element);
 		assertNotNull(graph.getLinkedElementsAndLinks(element));

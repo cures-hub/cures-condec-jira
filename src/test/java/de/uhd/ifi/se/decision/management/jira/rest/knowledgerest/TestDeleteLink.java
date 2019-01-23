@@ -61,8 +61,7 @@ public class TestDeleteLink extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testProjectExistentRequestFilledLinkFilled() {
-		TestCommentSplitter testComment = new TestCommentSplitter();
-		List<Sentence> comment = testComment.getSentencesForCommentText("This is a test sentence.");
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement sentence = comment.get(0);
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");

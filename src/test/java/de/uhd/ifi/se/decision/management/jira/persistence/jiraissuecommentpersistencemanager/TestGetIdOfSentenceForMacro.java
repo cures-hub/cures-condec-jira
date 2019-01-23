@@ -122,8 +122,7 @@ public class TestGetIdOfSentenceForMacro extends TestJiraIssueCommentPersistence
 	@Test
 	@NonTransactional
 	public void testBodyWrongIssueIdOkTypeFilledKeyFilled() {
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> comment = tc.getSentencesForCommentText(
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
 		assertEquals(0, JiraIssueCommentPersistenceManager.getIdOfSentenceForMacro("Not the right Body",
@@ -133,8 +132,7 @@ public class TestGetIdOfSentenceForMacro extends TestJiraIssueCommentPersistence
 	@Test
 	@NonTransactional
 	public void testBodyFilledIssueIdOkTypeFilledKeyFilled() {
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> comment = tc.getSentencesForCommentText(
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
 		assertEquals(3, JiraIssueCommentPersistenceManager.getIdOfSentenceForMacro("testobject",

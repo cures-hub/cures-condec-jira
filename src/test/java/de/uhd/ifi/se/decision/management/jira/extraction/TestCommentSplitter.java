@@ -39,8 +39,8 @@ public class TestCommentSplitter extends TestSetUpWithIssues {
 				new MockUserManager());
 	}
 
-	public List<Sentence> getSentencesForCommentText(String text) {
-		Issue issue = createIssue();
+	public static List<Sentence> getSentencesForCommentText(String text) {
+		Issue issue = TestSetUpWithIssues.createIssue();
 		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		Comment comment = ComponentAccessor.getCommentManager().create(issue, currentUser, text, true);
 		List<Sentence> sentences = new CommentSplitter().getSentences(comment);
@@ -193,10 +193,11 @@ public class TestCommentSplitter extends TestSetUpWithIssues {
 		List<Sentence> sentences = getSentencesForCommentText(
 				"{Alternative} this is a manually created alternative {Alternative} and this is a test Sentence.");
 		assertEquals(2, sentences.size());
-		assertEquals(true, sentences.get(0).isRelevant());
-		// assertEquals(false, comment.get(0).isPlainText());
-		// TODO
-		assertEquals(true, sentences.get(0).isValidated());
+		
+		Sentence sentence = sentences.get(0);
+		assertEquals(true, sentence.isRelevant());
+		assertEquals(true, sentence.isPlainText());
+		assertEquals(true, sentence.isValidated());
 	}
 
 	@Test
@@ -205,10 +206,11 @@ public class TestCommentSplitter extends TestSetUpWithIssues {
 		List<Sentence> sentences = getSentencesForCommentText(
 				"(y) this is a icon pro text. \r\n and this is a test Sentence.");
 		assertEquals(2, sentences.size());
-		// assertEquals(true, comment.get(0).isRelevant());
-		// assertEquals(false, comment.get(0).isPlainText());
-		// TODO
-		// assertEquals(true, comment.get(0).isValidated());
+		
+		Sentence sentence = sentences.get(0);
+		assertEquals(true, sentence.isRelevant());
+		assertEquals(true, sentence.isPlainText());
+		assertEquals(true, sentence.isValidated());
 		assertEquals(KnowledgeType.PRO, sentences.get(0).getType());
 	}
 }

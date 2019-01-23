@@ -88,8 +88,7 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testGetTextFromComment() {
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> sentences = tc.getSentencesForCommentText(
+		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		
 		Sentence sentence = sentences.get(0);
@@ -113,5 +112,29 @@ public class TestSentence extends TestSetUpWithIssues {
 		sentence.setType(KnowledgeType.CON);
 		assertTrue(sentence.isTagged());
 	}
+	
+	@Test
+	@NonTransactional
+	public void testIsPlainText() {
+		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText(
+				"{code:Java} int i = 0 {code} and this is a test Sentence.");
+		assertEquals(2, sentences.size());
+		
+		Sentence sentence = sentences.get(0);
+		assertEquals(false, sentence.isRelevant());
+		assertEquals(false, sentence.isPlainText());
+		assertEquals(false, sentence.isValidated());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testIsRelevant() {
+		//TODO
+	}
 
+	@Test
+	@NonTransactional
+	public void testIsValidated() {
+		//TODO
+	}
 }

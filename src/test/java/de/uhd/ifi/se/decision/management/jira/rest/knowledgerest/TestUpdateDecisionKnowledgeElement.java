@@ -69,8 +69,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledParentElementExistingParentDocumentationLocationJiraIssue() {
-		TestCommentSplitter testComment = new TestCommentSplitter();
-		List<Sentence> comment = testComment.getSentencesForCommentText("This is a test sentence.");
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement sentence = comment.get(0);
 
 		Link link = new LinkImpl(sentence, decisionKnowledgeElement);
@@ -97,8 +96,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 
 	@Test
 	public void testRequestNullElementFilledParentIdZeroParentDocumentationLocationNull() {
-		TestCommentSplitter testComment = new TestCommentSplitter();
-		List<Sentence> comment = testComment.getSentencesForCommentText("This is a test sentence.");
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		assertEquals(
 				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERROR)).build()
@@ -115,8 +113,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledParentIdZeroParentDocumentationLocationNull() {
-		TestCommentSplitter testComment = new TestCommentSplitter();
-		List<Sentence> comment = testComment.getSentencesForCommentText("This is a test sentence.");
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		decisionKnowledgeElement.setType(KnowledgeType.ALTERNATIVE);
 		assertEquals(Status.OK.getStatusCode(),
@@ -126,8 +123,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledWithCommentChangedParentIdZeroParentDocumentationLocationEmpty() {
-		TestCommentSplitter testComment = new TestCommentSplitter();
-		List<Sentence> comment = testComment.getSentencesForCommentText("This is a test sentence.");
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		assertEquals(decisionKnowledgeElement.getType(), KnowledgeType.OTHER);
 
@@ -147,8 +143,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledWithCommentChangedCheckValidTextWithManuallTaggedComment() {
-		TestCommentSplitter testComment = new TestCommentSplitter();
-		List<Sentence> comment = testComment.getSentencesForCommentText("{issue}This is a test sentence.{Issue}");
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText("{issue}This is a test sentence.{Issue}");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		
 		String newText = "some fancy new text";

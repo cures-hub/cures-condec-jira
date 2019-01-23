@@ -18,8 +18,7 @@ public class TestAutoLinkSentences extends TestJiraIssueCommentPersistenceManage
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForProAlternative() {
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> comment = tc
+		List<Sentence> comment = TestCommentSplitter
 				.getSentencesForCommentText("{alternative}first sentence{alternative} {pro}second sentence{pro}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.get(1)).get(0);
 		assertEquals(sentenceLink.getOppositeElement(comment.get(0)).getId(), comment.get(1).getId());
@@ -28,8 +27,7 @@ public class TestAutoLinkSentences extends TestJiraIssueCommentPersistenceManage
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForConAlternative() {
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> comment = tc
+		List<Sentence> comment = TestCommentSplitter
 				.getSentencesForCommentText("{alternative}first sentence{alternative} {con}second sentence{con}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.get(1)).get(0);
 		assertEquals(sentenceLink.getOppositeElement(comment.get(0)).getId(), comment.get(1).getId());
@@ -38,8 +36,7 @@ public class TestAutoLinkSentences extends TestJiraIssueCommentPersistenceManage
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForProDecision() {
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> comment = tc
+		List<Sentence> comment = TestCommentSplitter
 				.getSentencesForCommentText("{decision}first sentence{decision} {pro}second sentence{pro}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.get(1)).get(0);
 		assertEquals(sentenceLink.getOppositeElement(comment.get(0)).getId(), comment.get(1).getId());
@@ -48,8 +45,7 @@ public class TestAutoLinkSentences extends TestJiraIssueCommentPersistenceManage
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForConDecision() {
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> comment = tc
+		List<Sentence> comment = TestCommentSplitter
 				.getSentencesForCommentText("{decision}first sentence{decision} {con}second sentence{con}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.get(1)).get(0);
 		assertEquals(sentenceLink.getOppositeElement(comment.get(0)).getId(), comment.get(1).getId());
@@ -58,8 +54,7 @@ public class TestAutoLinkSentences extends TestJiraIssueCommentPersistenceManage
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForAlternativeIssue() {
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> comment = tc
+		List<Sentence> comment = TestCommentSplitter
 				.getSentencesForCommentText("{issue}first sentence{issue} {alternative}second sentence{alternative}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.get(1)).get(0);
 		assertEquals(sentenceLink.getOppositeElement(comment.get(0)).getId(), comment.get(1).getId());
@@ -68,8 +63,7 @@ public class TestAutoLinkSentences extends TestJiraIssueCommentPersistenceManage
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForDecisionIssue() {
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> comment = tc
+		List<Sentence> comment = TestCommentSplitter
 				.getSentencesForCommentText("{issue}first sentence{issue} {decision}second sentence{decision}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.get(1)).get(0);
 		assertEquals(sentenceLink.getOppositeElement(comment.get(0)).getId(), comment.get(1).getId());
@@ -78,8 +72,7 @@ public class TestAutoLinkSentences extends TestJiraIssueCommentPersistenceManage
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForBoringNonSmartLink() {
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> comment = tc
+		List<Sentence> comment = TestCommentSplitter
 				.getSentencesForCommentText("{issue}first sentence{issue} {pro}second sentence{pro}");
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.get(1)).get(0);
 		assertEquals("s3 to i30", sentenceLink.toString());

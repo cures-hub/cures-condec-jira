@@ -98,8 +98,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 	@Test(expected = Exception.class)
 	@NonTransactional
 	public void testWithObjects() {
-		TestCommentSplitter tc = new TestCommentSplitter();
-		Sentence sentence2 = tc.getSentencesForCommentText("More Comment with some text").get(0);
+		Sentence sentence2 = TestCommentSplitter.getSentencesForCommentText("More Comment with some text").get(0);
 		sentence2.setType(KnowledgeType.ALTERNATIVE);
 		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence2, null);
 

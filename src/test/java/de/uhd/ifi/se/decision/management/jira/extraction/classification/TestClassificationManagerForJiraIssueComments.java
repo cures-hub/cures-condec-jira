@@ -49,7 +49,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUpWith
 		LC lc = new FineGrainedClassifierMock(5);
 		classificationManager.getClassifier().setFineGrainedClassifier(lc);
 
-		createIssue();
+		createGlobalIssue();
 		addCommentsToIssue();
 		fillSentenceList();
 	}

@@ -82,9 +82,7 @@ public class TestGetElementsForIssueWithType extends TestJiraIssueCommentPersist
 	@Test
 	@NonTransactional
 	public void testIdMoreSProjectKeyFilledTypeFilled() {
-
-		TestCommentSplitter tc = new TestCommentSplitter();
-		List<Sentence> comment = tc.getSentencesForCommentText(
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
 
