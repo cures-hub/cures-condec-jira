@@ -1,9 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +16,7 @@ import com.atlassian.activeobjects.test.TestActiveObjects;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.impl.SentenceImpl;
@@ -80,4 +84,34 @@ public class TestSentence extends TestSetUpWithIssues {
 		sentence.setCreated(new Date());
 		assertNotNull(sentence.getCreated());
 	}
+
+	@Test
+	@NonTransactional
+	public void testGetTextFromComment() {
+		TestCommentSplitter tc = new TestCommentSplitter();
+		List<Sentence> sentences = tc.getSentencesForCommentText(
+				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
+		
+		Sentence sentence = sentences.get(0);
+		assertEquals(sentence.getTextFromComment(), "some sentence in front. ");
+	}
+	
+	@Test
+	@NonTransactional
+	public void testGetTextFromCommentThatIsNull() {
+		Sentence sentence = new SentenceImpl();
+		assertEquals(sentence.getTextFromComment(), "");
+		sentence.setDescription("This is a decision.");
+		assertEquals(sentence.getTextFromComment(), "This is a decision.");
+	}
+
+	@Test
+	@NonTransactional
+	public void testIsTagged() {
+		Sentence sentence = new SentenceImpl();
+		assertFalse(sentence.isTagged());
+		sentence.setType(KnowledgeType.CON);
+		assertTrue(sentence.isTagged());
+	}
+
 }

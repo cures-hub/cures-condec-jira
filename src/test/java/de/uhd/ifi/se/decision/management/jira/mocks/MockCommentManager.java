@@ -157,7 +157,10 @@ public class MockCommentManager implements CommentManager {
 
 	@Override
 	public MutableComment getMutableComment(Long aLong) {
-		return (MutableComment) this.comments.get(0);
+		if (this.comments != null && this.comments.size() > 0) {
+			return (MutableComment) this.comments.get(0);
+		}
+		return null;
 	}
 
 	@Override
