@@ -18,7 +18,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
+import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
@@ -66,7 +66,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUpWith
 
 	private void fillSentenceList() {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		sentences = new CommentSplitter().getSentences(comment);
+		sentences = new CommentSplitterImpl().getSentences(comment);
 	}
 
 	@Test

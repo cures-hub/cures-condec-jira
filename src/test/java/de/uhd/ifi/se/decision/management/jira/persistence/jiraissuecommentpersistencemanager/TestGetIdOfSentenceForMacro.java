@@ -65,8 +65,6 @@ public class TestGetIdOfSentenceForMacro extends TestJiraIssueCommentPersistence
 				.getIdOfSentenceForMacro("This is a comment for test purposes", 0, "ISSUE", null));
 	}
 
-	// (fewfwf
-
 	@Test
 	@NonTransactional
 	public void testBodyNullIssueIdLessTypeNullKeyFilled() {

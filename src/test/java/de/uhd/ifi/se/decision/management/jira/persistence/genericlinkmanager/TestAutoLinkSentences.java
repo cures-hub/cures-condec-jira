@@ -50,7 +50,7 @@ public class TestAutoLinkSentences extends TestJiraIssueCommentPersistenceManage
 		Link sentenceLink = GenericLinkManager.getLinksForElement(comment.get(1)).get(0);
 		assertEquals(sentenceLink.getOppositeElement(comment.get(0)).getId(), comment.get(1).getId());
 	}
-
+	
 	@Test
 	@NonTransactional
 	public void testSmartLinkingForAlternativeIssue() {

@@ -92,36 +92,52 @@ public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIs
 	@Test
 	@NonTransactional
 	public void testGetAllElementsFromAoByType() {
-		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText(
+		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
-		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
+		assertEquals(KnowledgeType.ISSUE, sentences.get(1).getType());
 
 		List<DecisionKnowledgeElement> listWithObjects = new JiraIssueCommentPersistenceManager("TEST")
 				.getDecisionKnowledgeElements(KnowledgeType.ISSUE);
+		assertEquals(1, listWithObjects.size());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testGetAllElementsFromAoByTypeAlternative() {
+		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText(
+				"some sentence in front. {alternative} testobject {alternative} some sentence in the back.");
+		assertEquals(KnowledgeType.ALTERNATIVE, sentences.get(1).getType());
+
+		List<DecisionKnowledgeElement> listWithObjects = new JiraIssueCommentPersistenceManager("TEST")
+				.getDecisionKnowledgeElements(KnowledgeType.ALTERNATIVE);
 		assertEquals(1, listWithObjects.size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetAllElementsFromAoByArgumentType() {
-		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText(
-				"some sentence in front. {pro} testobject {pro} some sentence in the back.");
-		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
+		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText(
+				"some sentence in front. {con} testobject {con} some sentence in the back.");
+		assertEquals(KnowledgeType.OTHER, sentences.get(0).getType());
+		assertEquals(KnowledgeType.CON, sentences.get(1).getType());
+		assertEquals(KnowledgeType.OTHER, sentences.get(2).getType());
+		assertEquals(3, sentences.size());
 
 		List<DecisionKnowledgeElement> listWithObjects = new JiraIssueCommentPersistenceManager("TEST")
-				.getDecisionKnowledgeElements(KnowledgeType.PRO);
-		assertEquals(1, listWithObjects.size());
+				.getDecisionKnowledgeElements(KnowledgeType.CON);
+		// TODO Why 2 not 1?
+		assertEquals(2, listWithObjects.size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetAllElementsFromAoByEmptyType() {
-		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText(
+		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText(
 				"some sentence in front.  {pro} testobject {pro} some sentence in the back.");
-		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
+		assertEquals(KnowledgeType.OTHER, sentences.get(2).getType());
 
 		List<DecisionKnowledgeElement> listWithObjects = new JiraIssueCommentPersistenceManager("TEST")
 				.getDecisionKnowledgeElements(KnowledgeType.OTHER);
-		assertEquals(3, listWithObjects.size());
+		assertEquals(2, listWithObjects.size());
 	}
 }

@@ -111,7 +111,7 @@ public class TestSentence extends TestSetUpWithIssues {
 		assertFalse(sentence.isTagged());
 		sentence.setType(KnowledgeType.CON);
 		assertTrue(sentence.isTagged());
-	}	
+	}
 
 	@Test
 	@NonTransactional
@@ -142,11 +142,12 @@ public class TestSentence extends TestSetUpWithIssues {
 		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("(y) this is a icon pro text.");
 		assertEquals(true, sentences.get(0).isPlainText());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testIsRelevantText() {
-		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("This is a text that is not classified.");
+		List<Sentence> sentences = TestCommentSplitter
+				.getSentencesForCommentText("This is a text that is not classified.");
 		assertEquals(false, sentences.get(0).isRelevant());
 	}
 
@@ -171,11 +172,12 @@ public class TestSentence extends TestSetUpWithIssues {
 		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("(y) this is a icon pro text.");
 		assertEquals(true, sentences.get(0).isRelevant());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testIsValidatedText() {
-		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("This is a text that is not classified.");
+		List<Sentence> sentences = TestCommentSplitter
+				.getSentencesForCommentText("This is a text that is not classified.");
 		assertEquals(false, sentences.get(0).isValidated());
 	}
 
@@ -185,12 +187,20 @@ public class TestSentence extends TestSetUpWithIssues {
 		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("{code:Java} int i = 0 {code}");
 		assertEquals(false, sentences.get(0).isValidated());
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testIsValidatedAlternative() {
 		List<Sentence> sentences = TestCommentSplitter
-				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative} ");
+				.getSentencesForCommentText("{alternative} This is an alternative. {alternative} ");
+		assertEquals(true, sentences.get(0).isValidated());
+	}
+
+	@Test
+	@NonTransactional
+	public void testIsValidatedIssue() {
+		List<Sentence> sentences = TestCommentSplitter
+				.getSentencesForCommentText("{issue} This is an alternative. {issue} ");
 		assertEquals(true, sentences.get(0).isValidated());
 	}
 
