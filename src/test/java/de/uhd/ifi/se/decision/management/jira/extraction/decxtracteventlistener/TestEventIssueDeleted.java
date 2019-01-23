@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.decxtracteventlistener
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,17 +21,21 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 public class TestEventIssueDeleted extends TestSetUpEventListener {
 
-	@Test
-	@NonTransactional
-	public void testNoCommentContained() {
-		Comment comment = createComment("");
+	private void testIssueDeleteEvent(String commentBody) {
+		Comment comment = createComment(commentBody);
 		ComponentAccessor.getCommentManager().delete(comment);
 		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_DELETED_ID);
 		listener.onIssueEvent(issueEvent);
-		
-		assertFalse(checkComment(""));
+
+		assertFalse(checkComment(commentBody));
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
 		assertNull(element);
+	}
+
+	@Test
+	@NonTransactional
+	public void testNoCommentContained() {
+		testIssueDeleteEvent("");
 	}
 
 	@Test
@@ -42,7 +45,7 @@ public class TestEventIssueDeleted extends TestSetUpEventListener {
 		ComponentAccessor.getCommentManager().delete(comment);
 		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_DELETED_ID);
 		listener.onIssueEvent(issueEvent);
-		
+
 		assertFalse(checkComment("{issue}This is a very severe issue.{issue}"));
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
 		assertNull(element);
