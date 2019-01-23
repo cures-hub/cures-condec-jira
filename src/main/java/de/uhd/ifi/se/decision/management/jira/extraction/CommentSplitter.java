@@ -53,9 +53,9 @@ public class CommentSplitter {
 		List<String> rawSentences = CommentSplitter.sliceCommentRecursionCommander(comment.getBody(), projectKey);
 		runBreakIterator(rawSentences, comment.getBody());
 		// Create AO entries
-		for (int i = 0; i < this.getStartSubstringCount().size(); i++) {
-			int startIndex = this.getStartSubstringCount().get(i);
-			int endIndex = this.getEndSubstringCount().get(i);
+		for (int i = 0; i < this.startSubstringCount.size(); i++) {
+			int startIndex = this.startSubstringCount.get(i);
+			int endIndex = this.endSubstringCount.get(i);
 			if (startAndEndIndexRules(startIndex, endIndex, comment.getBody())) {
 				Sentence sentence = new SentenceImpl();
 				sentence.setCommentId(comment.getId());
@@ -109,7 +109,7 @@ public class CommentSplitter {
 		}
 	}
 
-	public static List<String> sliceCommentRecursionCommander(String body, String projectKey) {
+	private static List<String> sliceCommentRecursionCommander(String body, String projectKey) {
 		List<String> firstSplit = searchForTagsRecursively(body, "{quote}", "{quote}", new ArrayList<String>());
 
 		firstSplit = searchForTags(firstSplit, "{noformat}", "{noformat}");
@@ -180,16 +180,8 @@ public class CommentSplitter {
 		return StringUtils.countMatches(body.toLowerCase(), knowledgeType.toLowerCase()) >= 2;
 	}
 
-	public List<Integer> getStartSubstringCount() {
-		return startSubstringCount;
-	}
-
 	public void setStartSubstringCount(List<Integer> startSubstringCount) {
 		this.startSubstringCount = startSubstringCount;
-	}
-
-	public List<Integer> getEndSubstringCount() {
-		return endSubstringCount;
 	}
 
 	public void setEndSubstringCount(List<Integer> endSubstringCount) {
