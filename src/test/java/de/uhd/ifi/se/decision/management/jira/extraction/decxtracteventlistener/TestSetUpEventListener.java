@@ -57,7 +57,7 @@ public class TestSetUpEventListener extends TestSetUpWithIssues {
 				eventType);
 	}
 
-	protected boolean checkComment(String oldComment) {
+	protected boolean isCommentExistent(String oldComment) {
 		List<Comment> changedComments = ComponentAccessor.getCommentManager().getComments(issue);
 		for (Comment comment : changedComments) {
 			if (comment.getBody().equalsIgnoreCase(oldComment)) {

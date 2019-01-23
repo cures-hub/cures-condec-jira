@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.decxtracteventlistener;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,59 +20,41 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 public class TestEventIssueDeleted extends TestSetUpEventListener {
 
-	private void testIssueDeleteEvent(String commentBody) {
+	private boolean testIssueDeleteEvent(String commentBody) {
 		Comment comment = createComment(commentBody);
 		ComponentAccessor.getCommentManager().delete(comment);
 		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_DELETED_ID);
 		listener.onIssueEvent(issueEvent);
 
-		assertFalse(checkComment(commentBody));
+		boolean isCommentDeleted = !isCommentExistent(commentBody);
+
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
-		assertNull(element);
+		boolean isElementDeletedInDatabase = (element == null);
+
+		return isCommentDeleted && isElementDeletedInDatabase;
 	}
 
 	@Test
 	@NonTransactional
 	public void testNoCommentContained() {
-		testIssueDeleteEvent("");
+		assertTrue(testIssueDeleteEvent(""));
 	}
 
 	@Test
 	@NonTransactional
 	public void testRationaleTag() {
-		Comment comment = createComment("{issue}This is a very severe issue.{issue}");
-		ComponentAccessor.getCommentManager().delete(comment);
-		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_DELETED_ID);
-		listener.onIssueEvent(issueEvent);
-
-		assertFalse(checkComment("{issue}This is a very severe issue.{issue}"));
-		DecisionKnowledgeElement element = getFirstElementInComment(comment);
-		assertNull(element);
+		assertTrue(testIssueDeleteEvent("{issue}This is a very severe issue.{issue}"));
 	}
 
 	@Test
 	@NonTransactional
 	public void testExcludedTag() {
-		Comment comment = createComment("{code}public static class{code}");
-		ComponentAccessor.getCommentManager().delete(comment);
-		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_DELETED_ID);
-		listener.onIssueEvent(issueEvent);
-
-		assertFalse(checkComment("{code}public static class{code}"));
-		DecisionKnowledgeElement element = getFirstElementInComment(comment);
-		assertNull(element);
+		assertTrue(testIssueDeleteEvent("{code}public static class{code}"));
 	}
 
 	@Test
 	@NonTransactional
 	public void testRationaleIcon() {
-		Comment comment = createComment("(!)This is a very severe issue.");
-		ComponentAccessor.getCommentManager().delete(comment);
-		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_DELETED_ID);
-		listener.onIssueEvent(issueEvent);
-
-		assertFalse(checkComment("(!)This is a very severe issue."));
-		DecisionKnowledgeElement element = getFirstElementInComment(comment);
-		assertNull(element);
+		assertTrue(testIssueDeleteEvent("(!)This is a very severe issue."));
 	}
 }

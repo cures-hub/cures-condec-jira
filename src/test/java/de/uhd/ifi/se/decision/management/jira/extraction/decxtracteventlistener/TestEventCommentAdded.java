@@ -21,14 +21,22 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 public class TestEventCommentAdded extends TestSetUpEventListener {
 
+	private Comment createCommentAndTestWhetherExistent(String inputBody, String outputBody) {
+		Comment comment = createComment(inputBody);
+		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_COMMENTED_ID);
+		listener.onIssueEvent(issueEvent);
+		assertTrue(isCommentExistent(outputBody));
+		return comment;
+	}
+
+	private Comment createCommentAndTestWhetherExistent(String commentBody) {
+		return createCommentAndTestWhetherExistent(commentBody, commentBody);
+	}
+
 	@Test
 	@NonTransactional
 	public void testNoCommentContained() {
-		Comment comment = createComment("");
-		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_COMMENTED_ID);
-		listener.onIssueEvent(issueEvent);
-
-		assertTrue(checkComment(""));
+		Comment comment = createCommentAndTestWhetherExistent("");
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
 		assertNull(element);
 	}
@@ -36,11 +44,7 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 	@Test
 	@NonTransactional
 	public void testRationaleTag() {
-		Comment comment = createComment("{issue}This is a very severe issue.{issue}");
-		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_COMMENTED_ID);
-		listener.onIssueEvent(issueEvent);
-
-		assertTrue(checkComment("{issue}This is a very severe issue.{issue}"));
+		Comment comment = createCommentAndTestWhetherExistent("{issue}This is a very severe issue.{issue}");
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
 		assertTrue(element.getDescription().equals("This is a very severe issue."));
 		assertTrue(element.getType() == KnowledgeType.ISSUE);
@@ -49,11 +53,7 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 	@Test
 	@NonTransactional
 	public void testExcludedTag() {
-		Comment comment = createComment("{code}public static class{code}");
-		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_COMMENTED_ID);
-		listener.onIssueEvent(issueEvent);
-
-		assertTrue(checkComment("{code}public static class{code}"));
+		Comment comment = createCommentAndTestWhetherExistent("{code}public static class{code}");
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
 		assertTrue(element.getDescription().equals("{code}public static class{code}"));
 		assertTrue(element.getType() == KnowledgeType.OTHER);
@@ -62,11 +62,8 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 	@Test
 	@NonTransactional
 	public void testRationaleIcon() {
-		Comment comment = createComment("(!)This is a very severe issue.");
-		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_COMMENTED_ID);
-		listener.onIssueEvent(issueEvent);
-
-		assertTrue(checkComment("{issue}This is a very severe issue.{issue}"));
+		Comment comment = createCommentAndTestWhetherExistent("(!)This is a very severe issue.",
+				"{issue}This is a very severe issue.{issue}");
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
 		assertTrue(element.getDescription().equals("This is a very severe issue."));
 		assertTrue(element.getType() == KnowledgeType.ISSUE);
