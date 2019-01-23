@@ -150,6 +150,15 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		return elements;
 	}
 
+	public static List<DecisionKnowledgeElement> getElementsForComment(long commentId) {
+		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
+				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("COMMENT_ID = ?", commentId))) {
+			elements.add(new SentenceImpl(databaseEntry));
+		}
+		return elements;
+	}
+
 	/**
 	 * Works more efficient than "getElementsForIssue" for Sentence ID searching in
 	 * Macros

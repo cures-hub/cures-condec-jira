@@ -16,7 +16,7 @@ import static org.junit.Assert.assertTrue;
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 public class TestEventCommentEdited extends TestSetUpEventListener {
 	@Test
-	public void testNoCommentContain() {
+	public void testNoCommentContained() {
 		IssueEvent issueEvent = createIssueEvent("", EventType.ISSUE_COMMENT_EDITED_ID);
 		listener.onIssueEvent(issueEvent);
 		assertTrue(checkComment(""));
@@ -34,13 +34,13 @@ public class TestEventCommentEdited extends TestSetUpEventListener {
 	public void testExcludedTag() {
 		IssueEvent issueEvent = createIssueEvent("{code}public static class{code}", EventType.ISSUE_COMMENT_EDITED_ID);
 		listener.onIssueEvent(issueEvent);
-        assertTrue(checkComment("{code}public static class{code}"));
+		assertTrue(checkComment("{code}public static class{code}"));
 	}
 
 	@Test
 	public void testRationaleIcon() {
 		IssueEvent issueEvent = createIssueEvent("(!) This is a very severe issue.", EventType.ISSUE_COMMENT_EDITED_ID);
 		listener.onIssueEvent(issueEvent);
-        assertTrue(checkComment("{issue} This is a very severe issue.{issue}"));
+		assertTrue(checkComment("{issue} This is a very severe issue.{issue}"));
 	}
 }

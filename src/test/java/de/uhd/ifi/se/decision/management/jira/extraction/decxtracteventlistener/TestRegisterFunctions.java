@@ -34,5 +34,4 @@ public class TestRegisterFunctions extends TestSetUpEventListener {
 	public void testIssueEventNull() {
 		listener.onIssueEvent(null);
 	}
-
 }

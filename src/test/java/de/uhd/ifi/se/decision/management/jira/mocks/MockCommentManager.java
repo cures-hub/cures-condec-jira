@@ -1,22 +1,26 @@
 package de.uhd.ifi.se.decision.management.jira.mocks;
 
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.comments.*;
-import com.atlassian.jira.issue.history.ChangeItemBean;
-import com.atlassian.jira.security.roles.ProjectRole;
-import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.util.json.JSONObject;
-import org.ofbiz.core.entity.GenericValue;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import org.ofbiz.core.entity.GenericValue;
+
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.comments.Comment;
+import com.atlassian.jira.issue.comments.CommentManager;
+import com.atlassian.jira.issue.comments.CommentSummary;
+import com.atlassian.jira.issue.comments.MutableComment;
+import com.atlassian.jira.issue.history.ChangeItemBean;
+import com.atlassian.jira.security.roles.ProjectRole;
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.util.json.JSONObject;
 
 public class MockCommentManager implements CommentManager {
 
@@ -52,21 +56,21 @@ public class MockCommentManager implements CommentManager {
 
 	@Override
 	public List<Comment> getComments(Issue issue) {
-		if(this.comments == null) {
+		if (this.comments == null) {
 			return new ArrayList<Comment>();
 		}
 		return this.comments;
 	}
 
 	@Override
-	public Comment create(Issue issue, ApplicationUser applicationUser, String s, boolean b) {
+	public Comment create(Issue issue, ApplicationUser applicationUser, String string, boolean dispatchEvent) {
 		if (this.comments == null) {
 			this.comments = new ArrayList<Comment>();
 		}
-		Comment c = new MockComment(issue, applicationUser, s);
+		Comment comment = new MockComment(issue, applicationUser, string);
 
-		this.comments.add(c);
-		return c;
+		this.comments.add(comment);
+		return comment;
 	}
 
 	@Override
@@ -142,7 +146,12 @@ public class MockCommentManager implements CommentManager {
 	}
 
 	@Override
-	public Comment getCommentById(Long aLong) {
+	public Comment getCommentById(Long id) {
+		for (Comment comment : comments) {
+			if (comment.getId() == id) {
+				return comment;
+			}
+		}
 		return this.comments.get(0);
 	}
 
@@ -153,9 +162,9 @@ public class MockCommentManager implements CommentManager {
 
 	@Override
 	public void update(Comment comment, boolean b) {
-		int index=0;
-		for(int i = 0; i < this.comments.size();i++) {
-			if(this.comments.get(i).getId() == comment.getId()) {
+		int index = 0;
+		for (int i = 0; i < this.comments.size(); i++) {
+			if (this.comments.get(i).getId() == comment.getId()) {
 				index = i;
 			}
 		}

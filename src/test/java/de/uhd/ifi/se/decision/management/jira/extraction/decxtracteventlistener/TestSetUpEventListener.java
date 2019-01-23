@@ -20,13 +20,15 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import net.java.ao.EntityManager;
 
 public class TestSetUpEventListener extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
-    private Issue issue;
-    private ApplicationUser user;
+	private Issue issue;
+	private ApplicationUser user;
 
 	protected DecXtractEventListener listener;
 
@@ -35,10 +37,14 @@ public class TestSetUpEventListener extends TestSetUpWithIssues {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
-        EventPublisher publisher = new MockEventPublisher();
+		EventPublisher publisher = new MockEventPublisher();
 		listener = new DecXtractEventListener(publisher);
 		issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
+	}
+
+	protected Comment createComment(String comment) {
+		return ComponentAccessor.getCommentManager().create(issue, user, comment, true);
 	}
 
 	protected IssueEvent createIssueEvent(String comment, long eventType) {
@@ -46,20 +52,35 @@ public class TestSetUpEventListener extends TestSetUpWithIssues {
 		return createIssueEvent(jiraComment, eventType);
 	}
 
-    protected boolean checkComment(String oldComment){
-        List<Comment> changedComments = ComponentAccessor.getCommentManager().getComments(issue);
-        for(Comment comment: changedComments){
-            if(comment.getBody().equalsIgnoreCase(oldComment)){
-                return true;
-            }
-        }
-        return false;
-    }
-	
-	private IssueEvent createIssueEvent(Comment comment, long eventType) {
+	protected IssueEvent createIssueEvent(Comment comment, long eventType) {
 		return new IssueEvent(issue, user, comment, null, new MockGenericValue("test"), new HashMap<String, String>(),
 				eventType);
 	}
 
+	protected boolean checkComment(String oldComment) {
+		List<Comment> changedComments = ComponentAccessor.getCommentManager().getComments(issue);
+		for (Comment comment : changedComments) {
+			if (comment.getBody().equalsIgnoreCase(oldComment)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
+	protected boolean getComment(Comment comment) {
+		Comment newComment = ComponentAccessor.getCommentManager().getCommentById(comment.getId());
+		if (comment.getBody().equalsIgnoreCase(newComment.getBody())) {
+			return true;
+		}
+		return false;
+	}
+
+	protected DecisionKnowledgeElement getFirstElementInComment(Comment comment) {
+		List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager
+				.getElementsForComment(comment.getId());
+		if (elements.size() > 0) {
+			return elements.get(0);
+		}
+		return null;
+	}
 }
