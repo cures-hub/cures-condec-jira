@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.model.TestComment;
+import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -17,7 +17,7 @@ public class TestCreateLinksForNonLinkedElementsForProject extends TestJiraIssue
 	@Test
 	@NonTransactional
 	public void testLinkAllUnlikedSentence() {
-		TestComment tc = new TestComment();
+		TestCommentSplitter tc = new TestCommentSplitter();
 		List<Sentence> comment = tc.getSentencesForCommentText(
 				"some sentence in front.  {pro} testobject {pro} some sentence in the back.");
 		long id = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);

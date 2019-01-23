@@ -173,7 +173,7 @@ public class TestSetUpWithIssues {
         }
     }
 
-    protected void createLocalIssue() {
+    protected MockIssue createIssue() {
         Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
         issue = new MockIssue(30, "TEST-" + 30);
         ((MockIssue) issue).setProjectId(project.getId());
@@ -181,5 +181,6 @@ public class TestSetUpWithIssues {
         IssueType issueType = new MockIssueType(1, KnowledgeType.DECISION.toString().toLowerCase(Locale.ENGLISH));
         issue.setIssueType(issueType);
         issue.setSummary("Test");
+        return issue;
     }
 }

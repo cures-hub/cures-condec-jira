@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.model;
+package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -12,8 +12,8 @@ import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
-import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
@@ -21,43 +21,33 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestComment.AoSentenceTestDatabaseUpdater.class)
-public class TestComment extends TestSetUpWithIssues {
+@Data(TestCommentSplitter.AoSentenceTestDatabaseUpdater.class)
+public class TestCommentSplitter extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
-
-	private Comment comment1;
 
 	@Before
 	public void setUp() {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
-		createLocalIssue();
-	}
-
-	private void addCommentsToIssue(String comment) {
-
-		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
-		// Get the current logged in user
-		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("NoFails");
-		// Get access to the Jira comment and component manager
-		CommentManager commentManager = ComponentAccessor.getCommentManager();
-		// Get the last comment entered in on the issue to a String
-		comment1 = commentManager.create(issue, currentUser, comment, true);
+		createIssue();
 	}
 
 	public List<Sentence> getSentencesForCommentText(String text) {
-		createLocalIssue();
-
-		addCommentsToIssue(text);
-		List<Sentence> sentences = new CommentSplitter().getSentences(comment1);
+		Issue issue = createIssue();
+		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
+		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("NoFails");
+		Comment comment = ComponentAccessor.getCommentManager().create(issue, currentUser, text, true);
+		List<Sentence> sentences = new CommentSplitter().getSentences(comment);
 		return sentences;
 	}
 

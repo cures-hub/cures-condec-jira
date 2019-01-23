@@ -18,6 +18,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
@@ -153,7 +154,7 @@ public class TestGraph extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testGraphWithSentences() {
-		TestComment tc = new TestComment();
+		TestCommentSplitter tc = new TestCommentSplitter();
 		List<Sentence> sentences = tc.getSentencesForCommentText("I got an issue in this testclass");
 		element = sentences.get(0);
 		graph.setRootElement(element);

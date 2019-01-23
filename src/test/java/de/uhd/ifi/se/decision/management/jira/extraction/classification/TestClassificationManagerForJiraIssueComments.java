@@ -19,10 +19,10 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
+import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.model.TestComment;
 import meka.classifiers.multilabel.LC;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
@@ -31,7 +31,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import weka.classifiers.meta.FilteredClassifier;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestComment.AoSentenceTestDatabaseUpdater.class)
+@Data(TestCommentSplitter.AoSentenceTestDatabaseUpdater.class)
 public class TestClassificationManagerForJiraIssueComments extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
@@ -49,7 +49,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUpWith
 		LC lc = new FineGrainedClassifierMock(5);
 		classificationManager.getClassifier().setFineGrainedClassifier(lc);
 
-		createLocalIssue();
+		createIssue();
 		addCommentsToIssue();
 		fillSentenceList();
 	}

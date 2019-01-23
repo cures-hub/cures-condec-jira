@@ -45,7 +45,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
 
-		createLocalIssue();
+		createIssue();
 		addCommentsToIssue("this is a testSentence. This a second one. And a third one");
 	}
 
