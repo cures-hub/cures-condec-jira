@@ -67,14 +67,6 @@ public class TestSetUpEventListener extends TestSetUpWithIssues {
 		return false;
 	}
 
-	protected boolean getComment(Comment comment) {
-		Comment newComment = ComponentAccessor.getCommentManager().getCommentById(comment.getId());
-		if (comment.getBody().equalsIgnoreCase(newComment.getBody())) {
-			return true;
-		}
-		return false;
-	}
-
 	protected DecisionKnowledgeElement getFirstElementInComment(Comment comment) {
 		List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager
 				.getElementsForComment(comment.getId());

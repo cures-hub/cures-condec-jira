@@ -21,11 +21,8 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
-import net.java.ao.test.jdbc.DatabaseUpdater;
 import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
@@ -306,47 +303,5 @@ public class TestComment extends TestSetUpWithIssues {
 		// TODO
 		// assertEquals(true, comment.get(0).isValidated());
 		assertEquals(KnowledgeType.PRO, comment.get(0).getType());
-	}
-
-	// @Test
-	// @NonTransactional
-	// public void testSetSentences() {
-	// List<Sentence> comment = new JiraIssueCommentImpl();
-	// comment.setSentences(new ArrayList<Sentence>());
-	// assertNotNull(comment);
-	// assertEquals(0, comment.size());
-	// }
-	//
-	// @Test
-	// @NonTransactional
-	// public void testGetSetBody() {
-	// List<Sentence> comment = new JiraIssueCommentImpl();
-	// comment.setBody("test");
-	// assertEquals("test", comment.getBody());
-	// }
-	//
-	// @Test
-	// @NonTransactional
-	// public void testGetSetAuthorId() {
-	// JiraIssueComment comment = new JiraIssueCommentImpl();
-	// comment.setAuthorId((long) 1337);
-	// assertEquals(1337, comment.getAuthorId());
-	// }
-	//
-	// @Test
-	// @NonTransactional
-	// public void testSetProjectKey() {
-	// JiraIssueComment comment = new JiraIssueCommentImpl();
-	// comment.setProjectKey("Test");
-	// assertEquals("Test", comment.getProjectKey());
-	// }
-
-	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
-		@SuppressWarnings("unchecked")
-		@Override
-		public void update(EntityManager entityManager) throws Exception {
-			entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
-			entityManager.migrate(LinkInDatabase.class);
-		}
 	}
 }
