@@ -90,11 +90,11 @@ public class TestSentence extends TestSetUpWithIssues {
 	public void testGetTextFromComment() {
 		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
-		
+
 		Sentence sentence = sentences.get(0);
 		assertEquals(sentence.getTextFromComment(), "some sentence in front. ");
 	}
-	
+
 	@Test
 	@NonTransactional
 	public void testGetTextFromCommentThatIsNull() {
@@ -111,30 +111,93 @@ public class TestSentence extends TestSetUpWithIssues {
 		assertFalse(sentence.isTagged());
 		sentence.setType(KnowledgeType.CON);
 		assertTrue(sentence.isTagged());
-	}
-	
+	}	
+
 	@Test
 	@NonTransactional
 	public void testIsPlainText() {
-		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText(
-				"{code:Java} int i = 0 {code} and this is a test Sentence.");
-		assertEquals(2, sentences.size());
-		
-		Sentence sentence = sentences.get(0);
-		assertEquals(false, sentence.isRelevant());
-		assertEquals(false, sentence.isPlainText());
-		assertEquals(false, sentence.isValidated());
-	}
-	
-	@Test
-	@NonTransactional
-	public void testIsRelevant() {
-		//TODO
+		List<Sentence> sentences = TestCommentSplitter
+				.getSentencesForCommentText("This is a text that is not classified.");
+		assertEquals(true, sentences.get(0).isPlainText());
 	}
 
 	@Test
 	@NonTransactional
-	public void testIsValidated() {
-		//TODO
+	public void testIsPlainTextCode() {
+		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("{code:Java} int i = 0 {code}");
+		assertEquals(false, sentences.get(0).isPlainText());
+	}
+
+	@Test
+	@NonTransactional
+	public void testIsPlainTextAlternative() {
+		List<Sentence> sentences = TestCommentSplitter
+				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative}");
+		assertEquals(true, sentences.get(0).isPlainText());
+	}
+
+	@Test
+	@NonTransactional
+	public void testIsPlainTextIcon() {
+		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("(y) this is a icon pro text.");
+		assertEquals(true, sentences.get(0).isPlainText());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testIsRelevantText() {
+		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("This is a text that is not classified.");
+		assertEquals(false, sentences.get(0).isRelevant());
+	}
+
+	@Test
+	@NonTransactional
+	public void testIsRelevantCode() {
+		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("{code:Java} int i = 0 {code}");
+		assertEquals(false, sentences.get(0).isRelevant());
+	}
+
+	@Test
+	@NonTransactional
+	public void testIsRelevantAlternative() {
+		List<Sentence> sentences = TestCommentSplitter
+				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative} ");
+		assertEquals(true, sentences.get(0).isRelevant());
+	}
+
+	@Test
+	@NonTransactional
+	public void testIsRelevantIcon() {
+		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("(y) this is a icon pro text.");
+		assertEquals(true, sentences.get(0).isRelevant());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testIsValidatedText() {
+		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("This is a text that is not classified.");
+		assertEquals(false, sentences.get(0).isValidated());
+	}
+
+	@Test
+	@NonTransactional
+	public void testIsValidatedCode() {
+		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("{code:Java} int i = 0 {code}");
+		assertEquals(false, sentences.get(0).isValidated());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testIsValidatedAlternative() {
+		List<Sentence> sentences = TestCommentSplitter
+				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative} ");
+		assertEquals(true, sentences.get(0).isValidated());
+	}
+
+	@Test
+	@NonTransactional
+	public void testIsValidatedIcon() {
+		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("(y) this is a icon pro text.");
+		assertEquals(true, sentences.get(0).isValidated());
 	}
 }
