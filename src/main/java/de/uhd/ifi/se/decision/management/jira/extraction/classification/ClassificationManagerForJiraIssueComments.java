@@ -8,7 +8,7 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
+import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
@@ -34,7 +34,7 @@ public class ClassificationManagerForJiraIssueComments {
 		List<Sentence> sentences = new ArrayList<Sentence>();
 		List<Comment> comments = getComments(issue);
 		for (Comment comment : comments) {
-			List<Sentence> sentencesOfComment = new CommentSplitter().getSentences(comment);
+			List<Sentence> sentencesOfComment = new CommentSplitterImpl().getSentences(comment);
 			sentences.addAll(sentencesOfComment);
 		}
 		classifySentencesBinary(sentences);

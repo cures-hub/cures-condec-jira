@@ -1,46 +1,60 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.decxtracteventlistener;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.event.issue.IssueEvent;
-import com.atlassian.jira.event.type.EventType;
-import com.atlassian.jira.mock.ofbiz.MockGenericValue;
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import net.java.ao.test.jdbc.Data;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.HashMap;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.event.issue.IssueEvent;
+import com.atlassian.jira.event.type.EventType;
+import com.atlassian.jira.issue.comments.Comment;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import net.java.ao.test.jdbc.Data;
+import net.java.ao.test.jdbc.NonTransactional;
+import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
-public class TestEventCommentDeleted extends TestSetUpEventListener{
+public class TestEventCommentDeleted extends TestSetUpEventListener {
 
-    @Test
-    public void testNoCommentContain(){
-        comment = ComponentAccessor.getCommentManager().create(issue, user, "", true);
-        IssueEvent issueEvent = new IssueEvent(issue,user,comment,null, new MockGenericValue("test"),new HashMap(), EventType.ISSUE_COMMENT_DELETED_ID);
-        listener.onIssueEvent(issueEvent);
-    }
+	private boolean testCommentDeleteEvent(String commentBody) {
+		Comment comment = createComment(commentBody);
+		ComponentAccessor.getCommentManager().delete(comment);
+		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_COMMENT_DELETED_ID);
+		listener.onIssueEvent(issueEvent);
 
-    @Test
-    public void testRationalTag(){
-        comment = ComponentAccessor.getCommentManager().create(issue, user, "{issue} fewfwewf{/issue}", true);
-        IssueEvent issueEvent = new IssueEvent(issue,user,comment,null, new MockGenericValue("test"),new HashMap(), EventType.ISSUE_COMMENT_DELETED_ID);
-        listener.onIssueEvent(issueEvent);
-    }
+		boolean isCommentDeleted = !isCommentExistent(commentBody);
 
-    @Test
-    public void testExclusindTags(){
-        comment = ComponentAccessor.getCommentManager().create(issue, user, "{code}fviowerf{/code}", true);
-        IssueEvent issueEvent = new IssueEvent(issue,user,comment,null, new MockGenericValue("test"),new HashMap(), EventType.ISSUE_COMMENT_DELETED_ID);
-        listener.onIssueEvent(issueEvent);
-    }
+		DecisionKnowledgeElement element = getFirstElementInComment(comment);
+		boolean isElementDeletedInDatabase = (element == null);
 
-    @Test
-    public void testRationalIcons(){
-        comment = ComponentAccessor.getCommentManager().create(issue, user, "(!) rtwefhowiuhf", true);
-        IssueEvent issueEvent = new IssueEvent(issue,user,comment,null, new MockGenericValue("test"),new HashMap(), EventType.ISSUE_COMMENT_DELETED_ID);
-        listener.onIssueEvent(issueEvent);
-    }
+		return isCommentDeleted && isElementDeletedInDatabase;
+	}
+
+	@Test
+	@NonTransactional
+	public void testNoCommentContained() {
+		assertTrue(testCommentDeleteEvent(""));
+	}
+
+	@Test
+	@NonTransactional
+	public void testRationaleTag() {
+		assertTrue(testCommentDeleteEvent("{issue}This is a very severe issue.{issue}"));
+	}
+
+	@Test
+	@NonTransactional
+	public void testExcludedTag() {
+		assertTrue(testCommentDeleteEvent("{code}public static class{code}"));
+	}
+
+	@Test
+	@NonTransactional
+	public void testRationaleIcon() {
+		assertTrue(testCommentDeleteEvent("(!)This is a very severe issue."));
+	}
 }

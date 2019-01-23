@@ -271,4 +271,9 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 				documentationLocation);
 		return elementInDatabase.getId() > 0;
 	}
+	
+	@Override
+	public String toString() {
+		return this.getDescription();
+	}
 }

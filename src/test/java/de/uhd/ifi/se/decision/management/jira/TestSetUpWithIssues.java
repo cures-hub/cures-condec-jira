@@ -37,7 +37,19 @@ import com.atlassian.jira.util.VelocityParamFactory;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.velocity.VelocityManager;
 
-import de.uhd.ifi.se.decision.management.jira.mocks.*;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockAvatarManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockCommentManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkTypeManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueService;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeSchemeManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockOptionSetManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockProjectRoleManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityParamFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
@@ -49,16 +61,16 @@ public class TestSetUpWithIssues {
 	private ProjectManager projectManager;
 	private IssueManager issueManager;
 	private ConstantsManager constantsManager;
-    protected MockIssue issue;
-
+	protected MockIssue issue;
 
 	public void initialization() {
 		projectManager = new MockProjectManager();
 		issueManager = new MockIssueManagerSelfImpl();
 		constantsManager = new MockConstantsManager();
-		//With the Value we could add some kinde of real support of the classifier tests
-        MockApplicationProperties mockApplicationProperties = new MockApplicationProperties();
-        mockApplicationProperties.setString(APKeys.JIRA_BASEURL, "null");
+		// With the Value we could add some kinde of real support of the classifier
+		// tests
+		MockApplicationProperties mockApplicationProperties = new MockApplicationProperties();
+		mockApplicationProperties.setString(APKeys.JIRA_BASEURL, "null");
 		IssueTypeManager issueTypeManager = new MockIssueTypeManager();
 		try {
 			((MockIssueTypeManager) issueTypeManager).addingAllIssueTypes();
@@ -89,7 +101,8 @@ public class TestSetUpWithIssues {
 				.addMock(IssueTypeSchemeManager.class, new MockIssueTypeSchemeManager())
 				.addMock(PluginSettingsFactory.class, new MockPluginSettingsFactory())
 				.addMock(OptionSetManager.class, new MockOptionSetManager())
-                .addMock(CommentManager.class, new MockCommentManager()).addMock(ApplicationProperties.class,mockApplicationProperties);
+				.addMock(CommentManager.class, new MockCommentManager())
+				.addMock(ApplicationProperties.class, mockApplicationProperties);
 
 		creatingProjectIssueStructure();
 	}
@@ -161,25 +174,35 @@ public class TestSetUpWithIssues {
 		((MockIssueManagerSelfImpl) issueManager).addIssue(cuuIssue);
 	}
 
-    public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater
-    {
-        @SuppressWarnings("unchecked")
-        @Override
-        public void update(EntityManager entityManager) throws Exception
-        {
-        	entityManager.migrate(DecisionKnowledgeElementInDatabase.class);
-        	entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
-            entityManager.migrate(LinkInDatabase.class);
-        }
-    }
+	public static final class AoSentenceTestDatabaseUpdater implements DatabaseUpdater {
+		@SuppressWarnings("unchecked")
+		@Override
+		public void update(EntityManager entityManager) throws Exception {
+			entityManager.migrate(DecisionKnowledgeElementInDatabase.class);
+			entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
+			entityManager.migrate(LinkInDatabase.class);
+		}
+	}
 
-    protected void createLocalIssue() {
-        Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
-        issue = new MockIssue(30, "TEST-" + 30);
-        ((MockIssue) issue).setProjectId(project.getId());
-        issue.setProjectObject(project);
-        IssueType issueType = new MockIssueType(1, KnowledgeType.DECISION.toString().toLowerCase(Locale.ENGLISH));
-        issue.setIssueType(issueType);
-        issue.setSummary("Test");
-    }
+	protected MockIssue createGlobalIssue() {
+		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
+		issue = new MockIssue(30, "TEST-" + 30);
+		((MockIssue) issue).setProjectId(project.getId());
+		issue.setProjectObject(project);
+		IssueType issueType = new MockIssueType(1, KnowledgeType.DECISION.toString().toLowerCase(Locale.ENGLISH));
+		issue.setIssueType(issueType);
+		issue.setSummary("Test");
+		return issue;
+	}
+
+	public static MockIssue createIssue() {
+		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
+		MockIssue issue = new MockIssue(30, "TEST-" + 30);
+		((MockIssue) issue).setProjectId(project.getId());
+		issue.setProjectObject(project);
+		IssueType issueType = new MockIssueType(1, KnowledgeType.DECISION.toString().toLowerCase(Locale.ENGLISH));
+		issue.setIssueType(issueType);
+		issue.setSummary("Test");
+		return issue;
+	}
 }

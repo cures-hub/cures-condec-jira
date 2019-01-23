@@ -9,7 +9,6 @@ import org.junit.runner.RunWith;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.comments.Comment;
-import com.atlassian.jira.issue.comments.MutableComment;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -20,27 +19,24 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
-public class TestEventCommentEdited extends TestSetUpEventListener {
+public class TestEventCommentAdded extends TestSetUpEventListener {
 
-	private Comment createAndChangeComment(String inputBody, String changedBody, String outputBody) {
+	private Comment createCommentAndTestWhetherExistent(String inputBody, String outputBody) {
 		Comment comment = createComment(inputBody);
-		((MutableComment) comment).setBody(changedBody);
-
-		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_COMMENT_EDITED_ID);
+		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_COMMENTED_ID);
 		listener.onIssueEvent(issueEvent);
-
 		assertTrue(isCommentExistent(outputBody));
 		return comment;
 	}
 
-	private Comment createAndChangeComment(String commentBody, String changedBody) {
-		return createAndChangeComment(commentBody, changedBody, changedBody);
+	private Comment createCommentAndTestWhetherExistent(String commentBody) {
+		return createCommentAndTestWhetherExistent(commentBody, commentBody);
 	}
 
 	@Test
 	@NonTransactional
 	public void testNoCommentContained() {
-		Comment comment = createAndChangeComment("", "");
+		Comment comment = createCommentAndTestWhetherExistent("");
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
 		assertNull(element);
 	}
@@ -48,30 +44,28 @@ public class TestEventCommentEdited extends TestSetUpEventListener {
 	@Test
 	@NonTransactional
 	public void testRationaleTag() {
-		Comment comment = createAndChangeComment("{issue}This is a very severe issue.{issue}",
-				"{decision}This is the decision.{decision}");
+		Comment comment = createCommentAndTestWhetherExistent("{issue}This is a very severe issue.{issue}");
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
-		assertTrue(element.getDescription().equals("This is the decision."));
-		assertTrue(element.getType() == KnowledgeType.DECISION);
+		assertTrue(element.getDescription().equals("This is a very severe issue."));
+		assertTrue(element.getType() == KnowledgeType.ISSUE);
 	}
 
 	@Test
 	@NonTransactional
 	public void testExcludedTag() {
-		Comment comment = createAndChangeComment("{code}public static class{code}",
-				"{noformat}This is a logger output.{notformat}");
+		Comment comment = createCommentAndTestWhetherExistent("{code}public static class{code}");
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
-		assertTrue(element.getDescription().equals("{noformat}This is a logger output.{notformat}"));
+		assertTrue(element.getDescription().equals("{code}public static class{code}"));
 		assertTrue(element.getType() == KnowledgeType.OTHER);
 	}
 
 	@Test
 	@NonTransactional
 	public void testRationaleIcon() {
-		Comment comment = createAndChangeComment("(!)This is a very severe issue.", "(/)This is the decision.",
-				"{decision}This is the decision.{decision}");
+		Comment comment = createCommentAndTestWhetherExistent("(!)This is a very severe issue.",
+				"{issue}This is a very severe issue.{issue}");
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
-		assertTrue(element.getDescription().equals("This is the decision."));
-		assertTrue(element.getType() == KnowledgeType.DECISION);
+		assertTrue(element.getDescription().equals("This is a very severe issue."));
+		assertTrue(element.getType() == KnowledgeType.ISSUE);
 	}
 }
