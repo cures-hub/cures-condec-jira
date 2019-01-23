@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.decxtracteventlistener;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -26,10 +27,10 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 		Comment comment = createComment("");
 		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_COMMENTED_ID);
 		listener.onIssueEvent(issueEvent);
-		assertTrue(checkComment(""));
 
+		assertTrue(checkComment(""));
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
-		assertTrue(element == null);
+		assertNull(element);
 	}
 
 	@Test
@@ -51,8 +52,8 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 		Comment comment = createComment("{code}public static class{code}");
 		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_COMMENTED_ID);
 		listener.onIssueEvent(issueEvent);
-		assertTrue(checkComment("{code}public static class{code}"));
 
+		assertTrue(checkComment("{code}public static class{code}"));
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
 		assertTrue(element.getDescription().equals("{code}public static class{code}"));
 		assertTrue(element.getType() == KnowledgeType.OTHER);
@@ -64,8 +65,8 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 		Comment comment = createComment("(!)This is a very severe issue.");
 		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_COMMENTED_ID);
 		listener.onIssueEvent(issueEvent);
-		assertTrue(checkComment("{issue}This is a very severe issue.{issue}"));
 
+		assertTrue(checkComment("{issue}This is a very severe issue.{issue}"));
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
 		assertTrue(element.getDescription().equals("This is a very severe issue."));
 		assertTrue(element.getType() == KnowledgeType.ISSUE);
