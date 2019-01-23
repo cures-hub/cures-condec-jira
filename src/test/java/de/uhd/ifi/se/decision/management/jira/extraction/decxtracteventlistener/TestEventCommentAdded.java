@@ -13,6 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import net.java.ao.test.jdbc.Data;
+import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
@@ -20,6 +21,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 public class TestEventCommentAdded extends TestSetUpEventListener {
 
 	@Test
+	@NonTransactional
 	public void testNoCommentContained() {
 		Comment comment = createComment("");
 		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_COMMENTED_ID);
@@ -31,6 +33,7 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 	}
 
 	@Test
+	@NonTransactional
 	public void testRationaleTag() {
 		Comment comment = createComment("{issue}This is a very severe issue.{issue}");
 		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_COMMENTED_ID);
@@ -43,6 +46,7 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 	}
 
 	@Test
+	@NonTransactional
 	public void testExcludedTag() {
 		Comment comment = createComment("{code}public static class{code}");
 		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_COMMENTED_ID);
@@ -51,19 +55,19 @@ public class TestEventCommentAdded extends TestSetUpEventListener {
 
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
 		assertTrue(element.getDescription().equals("{code}public static class{code}"));
-		// The following fails. Is it because the same comment id is used for every comment?
-		//assertTrue(element.getType() == KnowledgeType.OTHER);
+		assertTrue(element.getType() == KnowledgeType.OTHER);
 	}
 
 	@Test
+	@NonTransactional
 	public void testRationaleIcon() {
-		Comment comment = createComment("(!) This is a very severe issue.");
+		Comment comment = createComment("(!)This is a very severe issue.");
 		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_COMMENTED_ID);
 		listener.onIssueEvent(issueEvent);
-		assertTrue(checkComment("{issue} This is a very severe issue.{issue}"));
+		assertTrue(checkComment("{issue}This is a very severe issue.{issue}"));
 
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
-		assertTrue(element.getDescription().equals(" This is a very severe issue."));
+		assertTrue(element.getDescription().equals("This is a very severe issue."));
 		assertTrue(element.getType() == KnowledgeType.ISSUE);
 	}
 }
