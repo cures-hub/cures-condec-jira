@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.comments.Comment;
+import com.atlassian.jira.issue.comments.MutableComment;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -36,25 +37,29 @@ public class TestEventCommentEdited extends TestSetUpEventListener {
 	@NonTransactional
 	public void testRationaleTag() {
 		Comment comment = createComment("{issue}This is a very severe issue.{issue}");
+		((MutableComment) comment).setBody("{decision}This is the decision.{decision}");
+
 		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_COMMENT_EDITED_ID);
 		listener.onIssueEvent(issueEvent);
 
-		assertTrue(checkComment("{issue}This is a very severe issue.{issue}"));
+		assertTrue(checkComment("{decision}This is the decision.{decision}"));
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
-		assertTrue(element.getDescription().equals("This is a very severe issue."));
-		assertTrue(element.getType() == KnowledgeType.ISSUE);
+		assertTrue(element.getDescription().equals("This is the decision."));
+		assertTrue(element.getType() == KnowledgeType.DECISION);
 	}
 
 	@Test
 	@NonTransactional
 	public void testExcludedTag() {
 		Comment comment = createComment("{code}public static class{code}");
+		((MutableComment) comment).setBody("{noformat}This is a logger output.{notformat}");
+
 		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_COMMENT_EDITED_ID);
 		listener.onIssueEvent(issueEvent);
 
-		assertTrue(checkComment("{code}public static class{code}"));
+		assertTrue(checkComment("{noformat}This is a logger output.{notformat}"));
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
-		assertTrue(element.getDescription().equals("{code}public static class{code}"));
+		assertTrue(element.getDescription().equals("{noformat}This is a logger output.{notformat}"));
 		assertTrue(element.getType() == KnowledgeType.OTHER);
 	}
 
@@ -62,12 +67,14 @@ public class TestEventCommentEdited extends TestSetUpEventListener {
 	@NonTransactional
 	public void testRationaleIcon() {
 		Comment comment = createComment("(!)This is a very severe issue.");
+		((MutableComment) comment).setBody("(/)This is the decision.");
+
 		IssueEvent issueEvent = createIssueEvent(comment, EventType.ISSUE_COMMENT_EDITED_ID);
 		listener.onIssueEvent(issueEvent);
 
-		assertTrue(checkComment("{issue}This is a very severe issue.{issue}"));
+		assertTrue(checkComment("{decision}This is the decision.{decision}"));
 		DecisionKnowledgeElement element = getFirstElementInComment(comment);
-		assertTrue(element.getDescription().equals("This is a very severe issue."));
-		assertTrue(element.getType() == KnowledgeType.ISSUE);
+		assertTrue(element.getDescription().equals("This is the decision."));
+		assertTrue(element.getType() == KnowledgeType.DECISION);
 	}
 }
