@@ -41,7 +41,6 @@ public class TestCommentSplitter extends TestSetUpWithIssues {
 
 	public List<Sentence> getSentencesForCommentText(String text) {
 		Issue issue = createIssue();
-		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		Comment comment = ComponentAccessor.getCommentManager().create(issue, currentUser, text, true);
 		List<Sentence> sentences = new CommentSplitter().getSentences(comment);

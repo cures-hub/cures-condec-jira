@@ -109,10 +109,6 @@ public class CommentSplitter {
 		}
 	}
 
-	public List<String> splitSentence(String body) {
-		return sliceCommentRecursionCommander(body, "");
-	}
-
 	public static List<String> sliceCommentRecursionCommander(String body, String projectKey) {
 		List<String> firstSplit = searchForTagsRecursively(body, "{quote}", "{quote}", new ArrayList<String>());
 
@@ -215,8 +211,7 @@ public class CommentSplitter {
 	 */
 	public static KnowledgeType getKnowledgeTypeFromTag(String body, String projectKey) {
 		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisting(body, projectKey)
-				|| (ConfigPersistenceManager.isIconParsing(projectKey)
-						&& StringUtils.indexOfAny(body, CommentSplitter.RATIONALE_ICONS) >= 0)) {
+				|| (ConfigPersistenceManager.isIconParsing(projectKey) && isCommentIconTagged(body))) {
 			boolean checkIcons = ConfigPersistenceManager.isIconParsing(projectKey);
 			for (KnowledgeType type : KNOWLEDGE_TYPES) {
 				if (body.toLowerCase().contains(AbstractKnowledgeClassificationMacro.getTag(type))
@@ -250,6 +245,7 @@ public class CommentSplitter {
 	}
 
 	public static boolean isCommentIconTagged(String text) {
-		return StringUtils.indexOfAny(text, CommentSplitter.RATIONALE_ICONS) > 0;
+		// TODO WHY >=
+		return StringUtils.indexOfAny(text, CommentSplitter.RATIONALE_ICONS) >= 0;
 	}
 }
