@@ -4,6 +4,9 @@ import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,9 +26,6 @@ import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 public class TestWebhookConnector extends TestSetUpWithIssues {
@@ -39,7 +39,7 @@ public class TestWebhookConnector extends TestSetUpWithIssues {
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
 		initialization();
-		Collection rootTypes = new ArrayList();
+		Collection<String> rootTypes = new ArrayList<String>();
 		rootTypes.add("DECISION");
 		webhookConnector = new WebhookConnector("ConDec",
 				"https://cuu-staging.ase.in.tum.de/api/v1/projects/ConDecDev/integrations/conDec",
@@ -109,19 +109,19 @@ public class TestWebhookConnector extends TestSetUpWithIssues {
 		assertTrue(webhookConnector.sendElementChanges(element));
 	}
 
-    @Test
-    @NonTransactional
-    public void testSendElementChangesWrongHTTP() {
-	    webhookConnector.setUrl("https://wrong");
-        assertFalse(webhookConnector.sendElementChanges(element));
-    }
+	@Test
+	@NonTransactional
+	public void testSendElementChangesWrongHTTP() {
+		webhookConnector.setUrl("https://wrong");
+		assertFalse(webhookConnector.sendElementChanges(element));
+	}
 
-    @Test
-    @NonTransactional
-    public void testSendElementChangesWrongResponse() {
-        webhookConnector.setUrl("https://jira-se.ifi.uni-heidelberg.de/jira");
-        assertFalse(webhookConnector.sendElementChanges(element));
-    }
+	@Test
+	@NonTransactional
+	public void testSendElementChangesWrongResponse() {
+		webhookConnector.setUrl("https://jira-se.ifi.uni-heidelberg.de/jira");
+		assertFalse(webhookConnector.sendElementChanges(element));
+	}
 
 	@Test
 	public void testDeleteRootElementInTreeWorks() {
