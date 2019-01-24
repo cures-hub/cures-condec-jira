@@ -15,11 +15,13 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import org.springframework.stereotype.Component;
 
 /**
  * Triggers the webhook when JIRA issues are created, updated, or deleted or
  * when links between JIRA issues are created or deleted
  */
+@Component
 public class WebhookEventListener implements InitializingBean, DisposableBean {
 
 	@JiraImport
