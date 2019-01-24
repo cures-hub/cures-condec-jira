@@ -19,7 +19,7 @@ import com.atlassian.jira.issue.link.IssueLinkManager;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
+import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -112,10 +112,10 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 	public static DecisionKnowledgeElement searchForLast(Sentence sentence, KnowledgeType typeToSearch) {
 		Sentence lastSentence = null;
-		DecisionKnowledgeInCommentEntity[] sententenceList = ACTIVE_OBJECTS.find(DecisionKnowledgeInCommentEntity.class,
+		DecisionKnowledgeInCommentEntity[] databaseEntries = ACTIVE_OBJECTS.find(DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("ISSUE_ID = ?", sentence.getJiraIssueId()).order("ID DESC"));
 
-		for (DecisionKnowledgeInCommentEntity databaseEntry : sententenceList) {
+		for (DecisionKnowledgeInCommentEntity databaseEntry : databaseEntries) {
 			if (databaseEntry.getType().equals(typeToSearch.toString())) {
 				lastSentence = new SentenceImpl(databaseEntry);
 				break;
@@ -145,6 +145,15 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS.find(
 				DecisionKnowledgeInCommentEntity.class,
 				Query.select().where("PROJECT_KEY = ? AND ISSUE_ID = ?", projectKey, issueId))) {
+			elements.add(new SentenceImpl(databaseEntry));
+		}
+		return elements;
+	}
+
+	public static List<DecisionKnowledgeElement> getElementsForComment(long commentId) {
+		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
+				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("COMMENT_ID = ?", commentId))) {
 			elements.add(new SentenceImpl(databaseEntry));
 		}
 		return elements;
@@ -233,7 +242,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getTypeAsString());
 		String text = tag + element.getSummary() + "\n" + element.getDescription() + tag;
 		Comment comment = ComponentAccessor.getCommentManager().create(issue, user, text, false);
-		List<Sentence> sentences = new CommentSplitter().getSentences(comment);
+		List<Sentence> sentences = new CommentSplitterImpl().getSentences(comment);
 		for (Sentence sentence : sentences) {
 			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUECOMMENT);
 		}
@@ -249,10 +258,6 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			return existingElement.getId();
 		}
 
-		sentence.setValidated(false);
-		sentence.setRelevant(false);
-		sentence.setType("");
-
 		DecisionKnowledgeInCommentEntity databaseEntry = ACTIVE_OBJECTS.create(DecisionKnowledgeInCommentEntity.class);
 		setParameters(sentence, databaseEntry);
 		databaseEntry.save();
@@ -266,6 +271,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		databaseEntry.setCommentId(element.getCommentId());
 		databaseEntry.setType(element.getTypeAsString());
 		databaseEntry.setRelevant(element.isRelevant());
+		System.out.println(element.isValidated());
 		databaseEntry.setValidated(element.isValidated());
 		databaseEntry.setStartSubstringCount(element.getStartSubstringCount());
 		databaseEntry.setEndSubstringCount(element.getEndSubstringCount());
@@ -321,6 +327,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		sentence.setEndSubstringCount(sentence.getStartSubstringCount() + changedPartOfComment.length());
 		sentence.setType(element.getType());
 		sentence.setValidated(element.isValidated());
+		System.out.println(sentence.isValidated());
 		sentence.setRelevant(element.getType() != KnowledgeType.OTHER);
 
 		boolean isUpdated = updateInDatabase(sentence);

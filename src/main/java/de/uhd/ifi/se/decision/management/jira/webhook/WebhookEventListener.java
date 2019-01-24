@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.webhook;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.atlassian.event.api.EventListener;
 import com.atlassian.event.api.EventPublisher;
@@ -20,6 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * Triggers the webhook when JIRA issues are created, updated, or deleted or
  * when links between JIRA issues are created or deleted
  */
+@Component
 public class WebhookEventListener implements InitializingBean, DisposableBean {
 
 	@JiraImport
@@ -53,17 +55,18 @@ public class WebhookEventListener implements InitializingBean, DisposableBean {
 	@EventListener
 	public void onIssueEvent(IssueEvent issueEvent) {
 		String projectKey = issueEvent.getProject().getKey();
-		if (ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
-			Long eventTypeId = issueEvent.getEventTypeId();
-			DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issueEvent.getIssue());
-			if (eventTypeId.equals(EventType.ISSUE_CREATED_ID) || eventTypeId.equals(EventType.ISSUE_UPDATED_ID)) {
-				WebhookConnector connector = new WebhookConnector(projectKey);
-				connector.sendElementChanges(decisionKnowledgeElement);
-			}
-			if (eventTypeId.equals(EventType.ISSUE_DELETED_ID)) {
-				WebhookConnector webhookConnector = new WebhookConnector(projectKey);
-				webhookConnector.deleteElement(decisionKnowledgeElement, issueEvent.getUser());
-			}
+		if (!ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
+			return;
+		}
+		long eventTypeId = issueEvent.getEventTypeId();
+		DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(issueEvent.getIssue());
+		if (eventTypeId == EventType.ISSUE_CREATED_ID || eventTypeId == EventType.ISSUE_UPDATED_ID) {
+			WebhookConnector connector = new WebhookConnector(projectKey);
+			connector.sendElementChanges(decisionKnowledgeElement);
+		}
+		if (eventTypeId == EventType.ISSUE_DELETED_ID) {
+			WebhookConnector webhookConnector = new WebhookConnector(projectKey);
+			webhookConnector.deleteElement(decisionKnowledgeElement, issueEvent.getUser());
 		}
 	}
 
@@ -72,10 +75,11 @@ public class WebhookEventListener implements InitializingBean, DisposableBean {
 		String projectKey = linkCreatedEvent.getIssueLink().getSourceObject().getProjectObject().getKey();
 		DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(
 				linkCreatedEvent.getIssueLink().getSourceObject());
-		if (ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
-			WebhookConnector connector = new WebhookConnector(projectKey);
-			connector.sendElementChanges(decisionKnowledgeElement);
+		if (!ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
+			return;
 		}
+		WebhookConnector connector = new WebhookConnector(projectKey);
+		connector.sendElementChanges(decisionKnowledgeElement);
 	}
 
 	@EventListener
@@ -83,9 +87,10 @@ public class WebhookEventListener implements InitializingBean, DisposableBean {
 		String projectKey = linkDeletedEvent.getIssueLink().getSourceObject().getProjectObject().getKey();
 		DecisionKnowledgeElement decisionKnowledgeElement = new DecisionKnowledgeElementImpl(
 				linkDeletedEvent.getIssueLink().getSourceObject());
-		if (ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
-			WebhookConnector connector = new WebhookConnector(projectKey);
-			connector.sendElementChanges(decisionKnowledgeElement);
+		if (!ConfigPersistenceManager.isWebhookEnabled(projectKey)) {
+			return;
 		}
+		WebhookConnector connector = new WebhookConnector(projectKey);
+		connector.sendElementChanges(decisionKnowledgeElement);
 	}
 }

@@ -42,7 +42,8 @@ public class WebhookConnector {
 	}
 
 	public WebhookConnector(String projectKey) {
-		this(projectKey, ConfigPersistenceManager.getWebhookUrl(projectKey), ConfigPersistenceManager.getWebhookSecret(projectKey),
+		this(projectKey, ConfigPersistenceManager.getWebhookUrl(projectKey),
+				ConfigPersistenceManager.getWebhookSecret(projectKey),
 				ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
 	}
 
@@ -117,9 +118,9 @@ public class WebhookConnector {
 			postMethod.setURI(new HttpsURL(url));
 			int httpResponse = httpClient.executeMethod(postMethod);
 			if (httpResponse >= 200 && httpResponse < 300) {
-				LOGGER.info("Http response code: " + httpResponse);
 				return true;
 			}
+			LOGGER.error("Could not send webhook data. The HTTP response code is: " + httpResponse);
 		} catch (IOException e) {
 			LOGGER.error("Could not send webhook data because of " + e.getMessage());
 			e.printStackTrace();

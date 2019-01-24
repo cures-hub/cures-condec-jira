@@ -8,11 +8,11 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
 
 /**
@@ -74,13 +74,6 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		this.setDescription(text);
 		this.setCreated(comment.getCreated());
 		this.setPlainText(!containsExcludedTag(text));
-		KnowledgeType typeFromTag = CommentSplitter.getKnowledgeTypeFromTag(text, projectKey);
-		if (typeFromTag != KnowledgeType.OTHER) {
-			this.setType(typeFromTag);			
-			this.setValidated(true);
-			this.setRelevant(true);
-			JiraIssueCommentPersistenceManager.updateInDatabase(this);
-		}
 		stripTagsFromBody(text);
 	}
 
@@ -112,7 +105,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 		super.setDescription(body);
 		super.setSummary(body);
 	}
-	
+
 	@Override
 	public void setSummary(String body) {
 		super.setDescription(body);
@@ -121,8 +114,8 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 
 	private void stripTagsFromBody(String body) {
 		String projectKey = this.getProject().getProjectKey();
-		if (CommentSplitter.isAnyKnowledgeTypeTwiceExisting(body, projectKey)) {
-			int tagLength = 2 + CommentSplitter.getKnowledgeTypeFromTag(body, projectKey).toString().length();
+		if (CommentSplitterImpl.isAnyKnowledgeTypeTwiceExisting(body, projectKey)) {
+			int tagLength = 2 + CommentSplitterImpl.getKnowledgeTypeFromTag(body, projectKey).toString().length();
 			super.setDescription(body.substring(tagLength, body.length() - (tagLength)));
 			super.setSummary(super.getDescription());
 		} else {

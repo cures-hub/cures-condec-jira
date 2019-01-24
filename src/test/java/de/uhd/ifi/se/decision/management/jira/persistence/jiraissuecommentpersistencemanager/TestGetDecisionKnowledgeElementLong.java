@@ -12,7 +12,7 @@ import org.junit.Test;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.comments.MutableComment;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.model.TestComment;
+import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -22,8 +22,7 @@ public class TestGetDecisionKnowledgeElementLong extends TestJiraIssueCommentPer
 	@Test
 	@NonTransactional
 	public void testElementExistingInAo() {
-		TestComment tc = new TestComment();
-		List<Sentence> comment = tc.getSentencesForCommentText("first Comment");
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText("first Comment");
 		long id = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(0), null);
 		assertNotNull(new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id));
 	}
@@ -31,8 +30,7 @@ public class TestGetDecisionKnowledgeElementLong extends TestJiraIssueCommentPer
 	@Test
 	@NonTransactional
 	public void testElementInsertedTwice() {
-		TestComment tc = new TestComment();
-		List<Sentence> comment = tc.getSentencesForCommentText("first Comment");
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText("first Comment");
 		long id = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(0), null);
 		long id2 = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(0), null);
 		assertNotNull(new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id));
@@ -62,8 +60,7 @@ public class TestGetDecisionKnowledgeElementLong extends TestJiraIssueCommentPer
 	@Test
 	@NonTransactional
 	public void testCleanSentenceDatabaseForProject() {
-		TestComment tc = new TestComment();
-		List<Sentence> comment = tc.getSentencesForCommentText(
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText(
 				"some sentence in front.  {pro} testobject {pro} some sentence in the back.");
 		long id = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
 
@@ -80,8 +77,7 @@ public class TestGetDecisionKnowledgeElementLong extends TestJiraIssueCommentPer
 	@Test
 	@NonTransactional
 	public void testSetRelevantIntoAO() {
-		TestComment tc = new TestComment();
-		List<Sentence> comment = tc.getSentencesForCommentText("first Comment");
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText("first Comment");
 		long id = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(0), null);
 
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
@@ -101,8 +97,7 @@ public class TestGetDecisionKnowledgeElementLong extends TestJiraIssueCommentPer
 	@Test
 	@NonTransactional
 	public void testSetRelevantIntoAOForNonExistingElement() {
-		TestComment tc = new TestComment();
-		List<Sentence> comment = tc.getSentencesForCommentText("first Comment");
+		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText("first Comment");
 		long id = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(0), null);
 
 		Sentence element = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
