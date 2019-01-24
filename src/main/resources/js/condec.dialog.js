@@ -36,9 +36,8 @@
 			documentationLocationOfParentElement) {
 		console.log("conDecDialog setUpDialogForCreateAction");
 		console.log(idOfParentElement);
-		setHeaderText(createKnowledgeElementText);
-		setUpCreateOrEditDialog("", "", "Alternative", true);
-
+		//setHeaderText(createKnowledgeElementText);
+		//setUpCreateOrEditDialog("", "", "Alternative", true);
 		var submitButton = document.getElementById("dialog-submit-button");
 		submitButton.textContent = createKnowledgeElementText;
 		submitButton.onclick = function() {
@@ -50,7 +49,7 @@
 					idOfParentElement, documentationLocationOfParentElement, function() {
 						conDecObservable.notify();
 					});
-			AJS.dialog2("#dialog").hide();
+			AJS.dialog2("#create-dialog").hide();
 		};
 		setUpDialog();
 	};
@@ -61,9 +60,9 @@
 	 */
 	function setUpDialog() {
 		console.log("conDecDialog setUpDialog");
-		AJS.dialog2("#dialog").show();
+		AJS.dialog2("#create-dialog").show();
 		if (!conDecDialogOnHideSet) {
-			AJS.dialog2("#dialog").on("hide", function() {
+			AJS.dialog2("#create-dialog").on("hide", function() {
 				resetDialog();
 			});
 			conDecDialogOnHideSet = true;

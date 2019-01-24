@@ -16,7 +16,7 @@ if (exportDialog) {
 	exportDialog.parentNode.removeChild(exportDialog);
 }
 </script>
-#include("templates/dialog.vm")
+#include("templates/dialogs/createDialog.vm")
 #include("templates/contextMenu.vm")
 <script>
 /*
