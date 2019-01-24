@@ -26,17 +26,16 @@ public class MockComment implements MutableComment {
 		this.issue = issue;
 	}
 
-	public MockComment(Issue issue2, ApplicationUser applicationUser, String s) {
+	public MockComment(Issue issue, ApplicationUser applicationUser, String commentBody) {
 		super();
-		this.issue = issue2;
+		this.issue = issue;
 		this.user = applicationUser;
-		this.body = s;
-		this.issueID = issue2.getId();
+		this.body = commentBody;
+		this.issueID = issue.getId();
 	}
 
 	@Override
 	public String getAuthor() {
-		// TODO Auto-generated method stub
 		return this.author;
 	}
 
@@ -65,7 +64,6 @@ public class MockComment implements MutableComment {
 
 	@Override
 	public String getBody() {
-		// TODO Auto-generated method stub
 		return this.body;
 	}
 
@@ -89,7 +87,6 @@ public class MockComment implements MutableComment {
 
 	@Override
 	public Issue getIssue() {
-		// TODO Auto-generated method stub
 		return this.issue;
 	}
 
@@ -136,11 +133,11 @@ public class MockComment implements MutableComment {
 	}
 
 	public long getIssueID() {
-		return issueID;
+		return this.issueID;
 	}
 
-	public void setIssueID(long issueID) {
-		this.issueID = issueID;
+	public void setIssueID(long issueId) {
+		this.issueID = issueId;
 	}
 
 	@Override
