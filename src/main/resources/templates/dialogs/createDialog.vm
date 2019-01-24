@@ -8,28 +8,27 @@
 	<div id="dialog-content" class="aui-dialog2-content">
 		<form class="aui">
 			<div class="field-group">
-				<label for="form-input-summary">Summary:</label>
-				<input id="form-input-summary" type="text" placeholder="Summary" class="text full-width-field">
+				<label for="create-form-input-summary">Summary:</label>
+				<input id="create-form-input-summary" type="text" placeholder="Summary" class="text full-width-field" value="">
 			</div>
 			<div class="field-group">
-				<label for="form-input-description">Description:</label>
-				<textarea id="form-input-description" placeholder="Description" class="textarea full-width-field">
-				</textarea>
+				<label for="create-form-input-description">Description:</label>
+				<textarea id="create-form-input-description" placeholder="Description" class="textarea full-width-field"></textarea>
 			</div>
 			<div class="field-group">
-				<label for="form-select-type">Knowledge Type:</label>
-				<select id="form-select-type" name="form-select-type" class="select full-width-field"/>
+				<label for="create-form-select-type">Knowledge Type:</label>
+				<select id="create-form-select-type" name="create-form-select-type" class="select full-width-field"/>
 			</div>            			
 			<div class="field-group">
-				<label for="form-select-location">Documentation Location:</label>
-				<select id="form-select-location" name="form-select-location" class="select full-width-field"/>
+				<label for="create-form-select-location">Documentation Location:</label>
+				<select id="create-form-select-location" name="create-form-select-location" class="select full-width-field"/>
 			</div>
 		</form>
     </div>
 	<footer class="aui-dialog2-footer">
 		<div class="aui-dialog2-footer-actions">
-			<button id="dialog-submit-button" class="aui-button aui-button-primary">Add Element</button>
-			<button id="dialog-cancel-button" class="aui-button aui-button-link" onclick="AJS.dialog2('#create-dialog').hide()">Cancel</button>
+			<button id="create-dialog-submit-button" class="aui-button aui-button-primary">Add Element</button>
+			<button id="create-dialog-cancel-button" class="aui-button aui-button-link" onclick="AJS.dialog2('#create-dialog').hide()">Cancel</button>
 		</div>
 	</footer>
 </section>

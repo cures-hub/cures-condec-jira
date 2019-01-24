@@ -5,10 +5,14 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 	<p>No Element has been selected</p>
 </div>
 <script>
-var dialog = document.getElementById("dialog");
-if (dialog) {
+var createDialog = document.getElementById("create-dialog");
+if (createDialog) {
 	console.log("dialog exists");
-	dialog.parentNode.removeChild(dialog);
+	createDialog.parentNode.removeChild(createDialog);
+}
+var editDialog = document.getElementById("edit-dialog");
+if (editDialog) {
+	editDialog.parentNode.removeChild(editDialog);
 }
 var exportDialog = document.getElementById("export-dialog");
 if (exportDialog) {
@@ -17,6 +21,7 @@ if (exportDialog) {
 }
 </script>
 #include("templates/dialogs/createDialog.vm")
+#include("templates/dialogs/editDialog.vm")
 #include("templates/contextMenu.vm")
 <script>
 /*
