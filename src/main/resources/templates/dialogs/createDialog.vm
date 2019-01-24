@@ -1,68 +1,35 @@
 <section id="create-dialog" class="aui-dialog2 aui-dialog2-medium aui-layer" role="dialog" aria-hidden="true">
-    <header class="aui-dialog2-header">
-        <h2 id="dialog-header" class="aui-dialog2-header-main">Add Element</h2>
-        <a class="aui-dialog2-header-close"> <span
-                class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
-        </a>
-    </header>
-    <div id="dialog-content" class="aui-dialog2-content">
-        <form class="aui">
-            <div class="field-group"><label for="form-input-summary">Summary:</label><input id="form-input-summary"
-                                                                                            type="text"
-                                                                                            placeholder="Summary"
-                                                                                            value=""
-                                                                                            class="text full-width-field">
-            </div>
-            <div class="field-group"><label for="form-input-description">Description:</label><textarea
-                    id="form-input-description" placeholder="Description" value=""
-                    class="textarea full-width-field"></textarea></div>
-            <div class="field-group"><label for="s2id_autogen2">Documentation Location:</label>
-                <div class="select2-container select full-width-field aui-select2-container"
-                     id="s2id_form-select-location"><a href="javascript:void(0)" class="select2-choice" tabindex="-1">
-                    <span class="select2-chosen">JIRA Issue</span><abbr class="select2-search-choice-close"></abbr>
-                    <span class="select2-arrow"><b></b></span></a><input class="select2-focusser select2-offscreen"
-                                                                         type="text" id="s2id_autogen2" tabindex="0">
-                    <div class="select2-drop select2-display-none aui-select2-drop aui-dropdown2 aui-style-default select2-with-searchbox aui-layer"
-                         resolved="" aria-hidden="true">
-                        <div class="select2-search"><input type="text" autocomplete="off" autocorrect="off"
-                                                           autocapitalize="off" spellcheck="false"
-                                                           class="select2-input"></div>
-                        <ul class="select2-results"></ul>
-                    </div>
-                </div>
-                <select id="form-select-location" name="form-select-location"
-                        class="select full-width-field select2-offscreen" tabindex="-1">
-                    <option selected="" value="i">JIRA Issue</option>
-                    <option value="s">JIRA Issue Comment</option>
-                </select></div>
-            <div class="field-group"><label for="s2id_autogen1">Knowledge type:</label>
-                <div class="select2-container select full-width-field aui-select2-container" id="s2id_form-select-type">
-                    <a href="javascript:void(0)" class="select2-choice" tabindex="-1"> <span class="select2-chosen">Alternative</span><abbr
-                            class="select2-search-choice-close"></abbr> <span
-                            class="select2-arrow"><b></b></span></a><input class="select2-focusser select2-offscreen"
-                                                                           type="text" id="s2id_autogen1" tabindex="0">
-                    <div class="select2-drop select2-display-none aui-select2-drop aui-dropdown2 aui-style-default select2-with-searchbox aui-layer"
-                         resolved="" aria-hidden="true">
-                        <div class="select2-search"><input type="text" autocomplete="off" autocorrect="off"
-                                                           autocapitalize="off" spellcheck="false"
-                                                           class="select2-input"></div>
-                        <ul class="select2-results"></ul>
-                    </div>
-                </div>
-                <select id="form-select-type" name="form-select-type" class="select full-width-field select2-offscreen"
-                        tabindex="-1">
-                    #foreach( $knowledgeType in  $(conDecAPI.extendedKnowledgeTypes))
-                    <option value="$knowledgeType">$knowledgeType</option>
-                    #end
-                </select></div>
-        </form>
+	<header class="aui-dialog2-header">
+		<h2 id="dialog-header" class="aui-dialog2-header-main">Add Element</h2>
+		<a class="aui-dialog2-header-close"> 
+			<span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+		</a>
+	</header>
+	<div id="dialog-content" class="aui-dialog2-content">
+		<form class="aui">
+			<div class="field-group">
+				<label for="form-input-summary">Summary:</label>
+				<input id="form-input-summary" type="text" placeholder="Summary" class="text full-width-field">
+			</div>
+			<div class="field-group">
+				<label for="form-input-description">Description:</label>
+				<textarea id="form-input-description" placeholder="Description" class="textarea full-width-field">
+				</textarea>
+			</div>
+			<div class="field-group">
+				<label for="form-select-type">Knowledge Type:</label>
+				<select id="form-select-type" name="form-select-type" class="select full-width-field"/>
+			</div>            			
+			<div class="field-group">
+				<label for="form-select-location">Documentation Location:</label>
+				<select id="form-select-location" name="form-select-location" class="select full-width-field"/>
+			</div>
+		</form>
     </div>
-    <footer class="aui-dialog2-footer">
-        <div class="aui-dialog2-footer-actions">
-            <button id="dialog-submit-button" class="aui-button aui-button-primary">Add Element</button>
-            <button id="dialog-cancel-button" class="aui-button aui-button-link"
-                    onclick="AJS.dialog2('#dialog').hide()">Cancel
-            </button>
-        </div>
-    </footer>
+	<footer class="aui-dialog2-footer">
+		<div class="aui-dialog2-footer-actions">
+			<button id="dialog-submit-button" class="aui-button aui-button-primary">Add Element</button>
+			<button id="dialog-cancel-button" class="aui-button aui-button-link" onclick="AJS.dialog2('#create-dialog').hide()">Cancel</button>
+		</div>
+	</footer>
 </section>

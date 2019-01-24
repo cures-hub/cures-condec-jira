@@ -35,11 +35,7 @@
 	ConDecDialog.prototype.showCreateDialog = function showCreateDialog(idOfParentElement,
 			documentationLocationOfParentElement) {
 		console.log("conDecDialog setUpDialogForCreateAction");
-		console.log(idOfParentElement);
-		//setHeaderText(createKnowledgeElementText);
-		//setUpCreateOrEditDialog("", "", "Alternative", true);
 		var submitButton = document.getElementById("dialog-submit-button");
-		submitButton.textContent = createKnowledgeElementText;
 		submitButton.onclick = function() {
 			var summary = document.getElementById("form-input-summary").value;
 			var description = document.getElementById("form-input-description").value;
@@ -51,8 +47,25 @@
 					});
 			AJS.dialog2("#create-dialog").hide();
 		};
+		setUpKnowledgeTypeSelect("Alternative");
+		AJS.$("#form-select-location").auiSelect2();
 		setUpDialog();
 	};
+
+	function setUpKnowledgeTypeSelect(knowledgeType) {
+		//document.getElementById("form-select-type").innerHTML = "";
+		
+		var extendedKnowledgeTypes = conDecAPI.extendedKnowledgeTypes;
+		for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
+			var isSelected = "";
+			if (isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index)) {
+				isSelected = "selected ";
+			}
+			$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
+					+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
+		}
+		AJS.$("#form-select-type").auiSelect2();
+	}
 
 	/*
 	 * attaches cancel button handler shows(creates) the dialog TODO: attach
@@ -63,7 +76,7 @@
 		AJS.dialog2("#create-dialog").show();
 		if (!conDecDialogOnHideSet) {
 			AJS.dialog2("#create-dialog").on("hide", function() {
-				resetDialog();
+				// resetDialog();
 			});
 			conDecDialogOnHideSet = true;
 		}
@@ -174,7 +187,7 @@
 				conDecAPI.createLink(knowledgeTypeOfChild, id, childId, "i", "i", function() {
 					conDecObservable.notify();
 				});
-				AJS.dialog2("#dialog").hide();
+				AJS.dialog2("#create-dialog").hide();
 			};
 		});
 	};
@@ -217,7 +230,7 @@
 				}).asDialog({
 					windowTitle : editKnowledgeElementText
 				}).show();
-				AJS.dialog2("#dialog").hide();
+				AJS.dialog2("#create-dialog").hide();
 			} else {
 				setUpDialog();
 				setHeaderText(editKnowledgeElementText);
@@ -235,7 +248,7 @@
 							function() {
 								conDecObservable.notify();
 							});
-					AJS.dialog2("#dialog").hide();
+					AJS.dialog2("#create-dialog").hide();
 				};
 			}
 		});
@@ -255,7 +268,7 @@
 			conDecAPI.deleteDecisionKnowledgeElement(id, documentationLocation, function() {
 				conDecObservable.notify();
 			});
-			AJS.dialog2("#dialog").hide();
+			AJS.dialog2("#create-dialog").hide();
 		};
 	};
 
@@ -270,10 +283,11 @@
 		submitButton.textContent = deleteLinkToParentText;
 		submitButton.onclick = function() {
 			var parentElement = conDecTreant.findParentElement(id);
-			conDecAPI.deleteLink(parentElement["id"], id, parentElement["documentationLocation"], documentationLocation, function() {
-				conDecObservable.notify();
-			});
-			AJS.dialog2("#dialog").hide();
+			conDecAPI.deleteLink(parentElement["id"], id, parentElement["documentationLocation"],
+					documentationLocation, function() {
+						conDecObservable.notify();
+					});
+			AJS.dialog2("#create-dialog").hide();
 		};
 	};
 
@@ -292,7 +306,7 @@
 				conDecAPI.changeKnowledgeType(id, type, documentationLocation, function() {
 					conDecObservable.notify();
 				});
-				AJS.dialog2("#dialog").hide();
+				AJS.dialog2("#create-dialog").hide();
 			};
 		});
 	};
