@@ -15,10 +15,10 @@ import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 
 public class MockIssueLink implements IssueLink {
-	private Long id;
-	private Long sequenz;
+	private long id;
+	private long sequence;
 
-	public MockIssueLink(Long id) {
+	public MockIssueLink(long id) {
 		this.id = id;
 	}
 
@@ -85,11 +85,11 @@ public class MockIssueLink implements IssueLink {
 
 	@Override
 	public Long getSequence() {
-		return sequenz;
+		return sequence;
 	}
 
-	public void setSequence(Long seq) {
-		sequenz = seq;
+	public void setSequence(long sequence) {
+		this.sequence = sequence;
 	}
 
 	@Override

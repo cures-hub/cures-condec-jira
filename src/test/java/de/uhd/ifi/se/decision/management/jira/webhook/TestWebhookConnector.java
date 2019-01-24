@@ -4,6 +4,9 @@ import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,12 +39,14 @@ public class TestWebhookConnector extends TestSetUpWithIssues {
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
 		initialization();
+		Collection<String> rootTypes = new ArrayList<String>();
+		rootTypes.add("DECISION");
 		webhookConnector = new WebhookConnector("ConDec",
 				"https://cuu-staging.ase.in.tum.de/api/v1/projects/ConDecDev/integrations/conDec",
-				"03f90207-73bc-44d9-9848-d3f1f8c8254e", null);
+				"03f90207-73bc-44d9-9848-d3f1f8c8254e", rootTypes);
 		element = new DecisionKnowledgeElementImpl();
 		element.setProject("TEST");
-		element.setType("TASK");
+		element.setType("DECISION");
 		element.setId(14);
 		element.setDescription("Test description");
 		element.setKey("TEST-14");
@@ -102,6 +107,20 @@ public class TestWebhookConnector extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testSendElementChangesWorks() {
 		assertTrue(webhookConnector.sendElementChanges(element));
+	}
+
+	@Test
+	@NonTransactional
+	public void testSendElementChangesWrongHTTP() {
+		webhookConnector.setUrl("https://wrong");
+		assertFalse(webhookConnector.sendElementChanges(element));
+	}
+
+	@Test
+	@NonTransactional
+	public void testSendElementChangesWrongResponse() {
+		webhookConnector.setUrl("https://jira-se.ifi.uni-heidelberg.de/jira");
+		assertFalse(webhookConnector.sendElementChanges(element));
 	}
 
 	@Test
