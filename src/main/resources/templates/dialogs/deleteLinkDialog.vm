@@ -1,0 +1,16 @@
+<section id="delete-link-dialog" class="aui-dialog2 aui-dialog2-medium aui-layer" role="dialog" aria-hidden="true">
+	<header class="aui-dialog2-header">
+		<h2 id="delete-link-dialog-header" class="aui-dialog2-header-main">Delete Link to Parent</h2>
+		<a class="aui-dialog2-header-close"> 
+			<span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+		</a>
+	</header>
+	<div id="delete-link-dialog-content" class="aui-dialog2-content">
+    </div>
+	<footer class="aui-dialog2-footer">
+		<div class="aui-dialog2-footer-actions">
+			<button id="delete-link-dialog-submit-button" class="aui-button aui-button-primary">Delete Link</button>
+			<button id="delete-link-dialog-cancel-button" class="aui-button aui-button-link">Cancel</button>
+		</div>
+	</footer>
+</section>

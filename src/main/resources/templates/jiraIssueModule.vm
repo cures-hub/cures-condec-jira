@@ -4,19 +4,12 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 <div id="treant-container">
 	<p>No Element has been selected</p>
 </div>
-<script>
-var dialog = document.getElementById("dialog");
-if (dialog) {
-	console.log("dialog exists");
-	dialog.parentNode.removeChild(dialog);
-}
-var exportDialog = document.getElementById("export-dialog");
-if (exportDialog) {
-	console.log("export dialog exists");
-	exportDialog.parentNode.removeChild(exportDialog);
-}
-</script>
-#include("templates/dialog.vm")
+#include("templates/dialogs/createDialog.vm")
+#include("templates/dialogs/editDialog.vm")
+#include("templates/dialogs/deleteDialog.vm")
+#include("templates/dialogs/deleteLinkDialog.vm")
+#include("templates/dialogs/linkDialog.vm")
+#include("templates/dialogs/changeTypeDialog.vm")
 #include("templates/contextMenu.vm")
 <script>
 /*

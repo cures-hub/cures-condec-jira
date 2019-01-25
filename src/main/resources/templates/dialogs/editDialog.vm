@@ -1,0 +1,34 @@
+<section id="edit-dialog" class="aui-dialog2 aui-dialog2-medium aui-layer" role="dialog" aria-hidden="true">
+	<header class="aui-dialog2-header">
+		<h2 id="edit-dialog-header" class="aui-dialog2-header-main">Edit Element</h2>
+		<a class="aui-dialog2-header-close"> 
+			<span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+		</a>
+	</header>
+	<div id="edit-dialog-content" class="aui-dialog2-content">
+		<form class="aui">
+			<div class="field-group">
+				<label for="edit-form-input-summary">Summary:</label>
+				<input id="edit-form-input-summary" type="text" placeholder="Summary" class="text full-width-field" value="">
+			</div>
+			<div class="field-group">
+				<label for="edit-form-input-description">Description:</label>
+				<textarea id="edit-form-input-description" placeholder="Description" class="textarea full-width-field"></textarea>
+			</div>
+			<div class="field-group">
+				<label for="edit-form-select-type">Knowledge Type:</label>
+				<select id="edit-form-select-type" class="select full-width-field"></select>
+			</div>            			
+			<div class="field-group">
+				<label for="edit-form-select-location">Documentation Location:</label>
+				<select id="edit-form-select-location" class="select full-width-field"></select>
+			</div>
+		</form>
+    </div>
+	<footer class="aui-dialog2-footer">
+		<div class="aui-dialog2-footer-actions">
+			<button id="edit-dialog-submit-button" class="aui-button aui-button-primary">Update Element</button>
+			<button id="edit-dialog-cancel-button" class="aui-button aui-button-link">Cancel</button>
+		</div>
+	</footer>
+</section>
