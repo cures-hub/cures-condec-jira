@@ -360,7 +360,7 @@ public class KnowledgeRest {
 		}
 
         ApplicationUser user = AuthenticationManager.getUser(request);
-        List<DecisionKnowledgeElement>queryResult=this.getHelperMatchedQueryElements(user,projectKey,query);
+        List<DecisionKnowledgeElement>queryResult=getHelperMatchedQueryElements(user,projectKey,query);
 		List<DecisionKnowledgeElement> addedElements= new ArrayList<DecisionKnowledgeElement>();
 		List<List> elmentsToReturn= new ArrayList<List>();
 		//now iti over query result
