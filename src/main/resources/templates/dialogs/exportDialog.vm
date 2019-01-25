@@ -1,12 +1,12 @@
-<section id="export-dialog" class="aui-dialog2 aui-dialog2-small aui-layer" aria-hidden="true" role="dialog">
-    <header class="aui-dialog2-header">
-        <h2 class="aui-dialog2-header-main">Export Decision Knowledge</h2>
-        <a class="aui-dialog2-header-close">
-            <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
-        </a>
-    </header>
-    <div class="aui-dialog2-content">
-        <ul class="noDots listWithMargin">
+<section id="export-dialog" class="aui-dialog2 aui-dialog2-medium aui-layer" aria-hidden="true" role="dialog">
+	<header class="aui-dialog2-header">
+		<h2 class="aui-dialog2-header-main">Export Decision Knowledge</h2>
+		<a class="aui-dialog2-header-close">
+			<span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+		</a>
+	</header>
+	<div class="aui-dialog2-content">
+		<ul class="noDots listWithMargin">
             <li>
                 <Button class="aui-button" id="exportAllElementsMatchingQueryJson">Export Elements Matching Query (Json)</Button>
             </li>
@@ -20,13 +20,20 @@
             <li>
                 <Button class="aui-button" id="exportLinkedElementsDocument">Export Linked Elements (Document)</Button>
             </li>
-        </ul>
+            <hr>
+            <li>
+                <Button class="aui-button" id="exportLinkedAndMatchingQueryElementsJson">Export Elements Matching Query and Linked (Json)</Button>
+            </li>
+            <li>
+                <Button class="aui-button" id="exportLinkedAndMatchingQueryElementsDocument">Export Elements Matching Query and Linked (Document)</Button>
+            </li>
+		</ul>
     </div>
     <footer class="aui-dialog2-footer">
         <div class="aui-dialog2-footer-actions">
             <button id="export-dialog-cancel-button" class="aui-button aui-button-link"
                     onclick="AJS.dialog2('#export-dialog').hide()">Cancel
-            </button>
-        </div>
-    </footer>
+			</button>
+		</div>
+	</footer>
 </section>

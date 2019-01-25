@@ -216,6 +216,17 @@
 			}
 		});
 	};
+	/*
+	 * external references: condec.jira.issue.module
+	 */
+	ConDecAPI.prototype.getAllElementsByQueryAndLinked = function getAllElementsByQueryAndLinked(query, callback) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsLinkedToElementsMatchedByQuery.json?projectKey="
+			+ projectKey + "&query=" + query, function(error, elements) {
+			if (error === null) {
+				callback(elements);
+			}
+		});
+	};
 
 	/*
 	 * external references: condec.context.menu
