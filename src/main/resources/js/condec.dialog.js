@@ -128,31 +128,6 @@
 		AJS.dialog2(linkDialog).show();
 	};
 
-	function addFormForArguments(childId) {
-		console.log("conDecDialog addFormForArguments");
-		var argumentFieldGroup = document.getElementById("argument-field-group");
-		var radioPro = document.getElementById("link-form-radio-pro");
-		var radioCon = document.getElementById("link-form-radio-con");
-		
-		argumentFieldGroup.style.display = "none";
-		radioPro.checked = false;
-		radioCon.checked = false;
-		
-		console.log(childId);
-		if (childId === "" || childId === null || childId === undefined) {
-			return;
-		}
-
-		conDecAPI.getDecisionKnowledgeElement(childId, "i", function(decisionKnowledgeElement) {
-			if (decisionKnowledgeElement && decisionKnowledgeElement.type === "Argument") {
-				argumentFieldGroup.style.display = "inherit";
-				radioPro.checked = true;
-			}
-		});
-	}
-
-	ConDecDialog.prototype.addFormForArguments = addFormForArguments;
-
 	function fillSelectElementField(selectField, id, documentationLocation) {
 		if (selectField == null) {
 			return;
@@ -170,6 +145,33 @@
 		});
 		AJS.$(selectField).auiSelect2();
 	}
+
+	function addFormForArguments(childId) {
+		console.log("conDecDialog addFormForArguments");
+
+		// HTML elements
+		var argumentFieldGroup = document.getElementById("argument-field-group");
+		var radioPro = document.getElementById("link-form-radio-pro");
+		var radioCon = document.getElementById("link-form-radio-con");
+
+		// Fill HTML elements
+		argumentFieldGroup.style.display = "none";
+		radioPro.checked = false;
+		radioCon.checked = false;
+
+		if (childId === "" || childId === null || childId === undefined) {
+			return;
+		}
+
+		conDecAPI.getDecisionKnowledgeElement(childId, "i", function(decisionKnowledgeElement) {
+			if (decisionKnowledgeElement && decisionKnowledgeElement.type === "Argument") {
+				argumentFieldGroup.style.display = "inherit";
+				radioPro.checked = true;
+			}
+		});
+	}
+
+	ConDecDialog.prototype.addFormForArguments = addFormForArguments;
 
 	ConDecDialog.prototype.showEditDialog = function showEditDialog(id, documentationLocation, type) {
 		console.log("conDecDialog showEditDialog");
@@ -256,58 +258,31 @@
 		AJS.$(selectField).auiSelect2();
 	}
 
-	function setUpTypeChangeDialog(knowledgeType) {
-		console.log("conDecDialog setUpTypeChangeDialog");
-		document
-				.getElementById("dialog-content")
-				.insertAdjacentHTML(
-						"afterBegin",
-						"<form class='aui'><div class='field-group'><label for='form-select-type'>Knowledge type:</label>"
-								+ "<select id='form-select-type' name='form-select-type' class='select full-width-field'/></div>"
-								+ "</form>");
-		var extendedKnowledgeTypes = conDecAPI.extendedKnowledgeTypes;
-		for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
-			var isSelected = "";
-			if (isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index)) {
-				isSelected = "selected ";
-			}
-			$("select[name='form-select-type']")[0].insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
-					+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
-		}
-		AJS.$("#form-select-type").auiSelect2();
-	}
-
 	ConDecDialog.prototype.showChangeTypeDialog = function showChangeTypeDialog(id, documentationLocation) {
-		console.log("conDecDialog setUpDialogForChangeTypeAction");
+		console.log("conDecDialog showChangeTypeDialog");
 
+		// HTML elements
+		var changeTypeDialog = document.getElementById("change-type-dialog");
+		var submitButton = document.getElementById("change-type-dialog-submit-button");
+		var selectTypeField = document.getElementById("change-type-form-select-type");
+
+		// Fill HTML elements
 		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
-			var type = decisionKnowledgeElement.type;
-			setUpTypeChangeDialog(type);
-
-			var submitButton = document.getElementById("dialog-submit-button");
-			submitButton.textContent = editKnowledgeElementText;
-			submitButton.onclick = function() {
-				var type = $("select[name='form-select-type']").val();
-				conDecAPI.changeKnowledgeType(id, type, documentationLocation, function() {
-					conDecObservable.notify();
-				});
-				AJS.dialog2("#create-dialog").hide();
-			};
+			fillSelectTypeField(selectTypeField, decisionKnowledgeElement.type);
 		});
-	};
 
-	function resetDialog() {
-		console.log("conDecDialog resetDialog");
-		document.getElementById("dialog-header").innerHTML = "";
-		document.getElementById("dialog-content").innerHTML = "";
-		var dialog = document.getElementById("dialog");
-		if (dialog.classList.contains("aui-dialog2-large")) {
-			dialog.classList.remove("aui-dialog2-large");
-		}
-		if (!dialog.classList.contains("aui-dialog2-medium")) {
-			dialog.classList.add("aui-dialog2-medium");
-		}
-	}
+		// Set onclick listener on submit button
+		submitButton.onclick = function() {
+			var type = selectTypeField.value;
+			conDecAPI.changeKnowledgeType(id, type, documentationLocation, function() {
+				conDecObservable.notify();
+			});
+			AJS.dialog2(changeTypeDialog).hide();
+		};
+
+		// Show dialog
+		AJS.dialog2(changeTypeDialog).show();
+	};
 
 	// export ConDecDialog
 	global.conDecDialog = new ConDecDialog();

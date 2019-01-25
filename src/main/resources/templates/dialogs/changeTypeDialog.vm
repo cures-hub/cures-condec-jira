@@ -6,6 +6,12 @@
 		</a>
 	</header>
 	<div id="change-type-dialog-content" class="aui-dialog2-content">
+		<form class="aui">
+			<div class="field-group">
+				<label for="change-type-form-select-type">Knowledge Type:</label>
+				<select id="change-type-form-select-type" class="select full-width-field"></select>
+			</div>
+		</form>
     </div>
 	<footer class="aui-dialog2-footer">
 		<div class="aui-dialog2-footer-actions">
