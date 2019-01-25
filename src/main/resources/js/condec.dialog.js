@@ -30,6 +30,7 @@
 		var selectTypeField = document.getElementById("create-form-select-type");
 		var selectLocationField = document.getElementById("create-form-select-location");
 		var submitButton = document.getElementById("create-dialog-submit-button");
+		var cancelButton = document.getElementById("create-dialog-cancel-button");
 
 		// Fill HTML elements
 		inputSummaryField.value = "";
@@ -37,7 +38,7 @@
 		fillSelectTypeField(selectTypeField, "Alternative");
 		fillSelectLocationField(selectLocationField, documentationLocationOfParentElement);
 
-		// Set onclick listener on submit button
+		// Set onclick listener on buttons
 		submitButton.onclick = function() {
 			var summary = inputSummaryField.value;
 			var description = inputDescriptionField.value;
@@ -47,6 +48,10 @@
 					idOfParentElement, documentationLocationOfParentElement, function() {
 						conDecObservable.notify();
 					});
+			AJS.dialog2(createDialog).hide();
+		};
+
+		cancelButton.onclick = function() {
 			AJS.dialog2(createDialog).hide();
 		};
 
@@ -61,15 +66,20 @@
 		var deleteDialog = document.getElementById("delete-dialog");
 		var content = document.getElementById("delete-dialog-content");
 		var submitButton = document.getElementById("delete-dialog-submit-button");
+		var cancelButton = document.getElementById("delete-dialog-cancel-button");
 
 		// Fill HTML elements
 		content.textContent = "Do you really want to delete this element?";
 
-		// Set onclick listener on submit button
+		// Set onclick listener on buttons
 		submitButton.onclick = function() {
 			conDecAPI.deleteDecisionKnowledgeElement(id, documentationLocation, function() {
 				conDecObservable.notify();
 			});
+			AJS.dialog2(deleteDialog).hide();
+		};
+
+		cancelButton.onclick = function() {
 			AJS.dialog2(deleteDialog).hide();
 		};
 
@@ -84,17 +94,22 @@
 		var deleteLinkDialog = document.getElementById("delete-link-dialog");
 		var content = document.getElementById("delete-link-dialog-content");
 		var submitButton = document.getElementById("delete-link-dialog-submit-button");
+		var cancelButton = document.getElementById("delete-link-dialog-cancel-button");
 
 		// Fill HTML elements
 		content.textContent = "Do you really want to delete the link to the parent element?";
 
-		// Set onclick listener on submit button
+		// Set onclick listener on buttons
 		submitButton.onclick = function() {
 			var parentElement = conDecTreant.findParentElement(id);
 			conDecAPI.deleteLink(parentElement["id"], id, parentElement["documentationLocation"],
 					documentationLocation, function() {
 						conDecObservable.notify();
 					});
+			AJS.dialog2(deleteLinkDialog).hide();
+		};
+
+		cancelButton.onclick = function() {
 			AJS.dialog2(deleteLinkDialog).hide();
 		};
 
@@ -109,18 +124,37 @@
 		var linkDialog = document.getElementById("link-dialog");
 		var selectElementField = document.getElementById("link-form-select-element");
 		var submitButton = document.getElementById("link-dialog-submit-button");
+		var cancelButton = document.getElementById("link-dialog-cancel-button");
+		var argumentFieldGroup = document.getElementById("argument-field-group");
+		var radioPro = document.getElementById("link-form-radio-pro");
+		var radioCon = document.getElementById("link-form-radio-con");
 
 		// Fill HTML elements
 		fillSelectElementField(selectElementField, id, documentationLocation);
-		addFormForArguments(selectElementField.value);
+		argumentFieldGroup.style.display = "none";
+		radioPro.checked = false;
+		radioCon.checked = false;
 
-		// Set onclick listener on submit button
+		selectElementField.onchange = function() {
+			conDecAPI.getDecisionKnowledgeElement(this.value, "i", function(decisionKnowledgeElement) {
+				if (decisionKnowledgeElement && decisionKnowledgeElement.type === "Argument") {
+					argumentFieldGroup.style.display = "inherit";
+					radioPro.checked = true;
+				}
+			});
+		};
+
+		// Set onclick listener on buttons
 		submitButton.onclick = function() {
 			var childId = selectElementField.value;
 			var knowledgeTypeOfChild = $('input[name=form-radio-argument]:checked').val();
 			conDecAPI.createLink(knowledgeTypeOfChild, id, childId, "i", "i", function() {
 				conDecObservable.notify();
 			});
+			AJS.dialog2(linkDialog).hide();
+		};
+
+		cancelButton.onclick = function() {
 			AJS.dialog2(linkDialog).hide();
 		};
 
@@ -146,33 +180,6 @@
 		AJS.$(selectField).auiSelect2();
 	}
 
-	function addFormForArguments(childId) {
-		console.log("conDecDialog addFormForArguments");
-
-		// HTML elements
-		var argumentFieldGroup = document.getElementById("argument-field-group");
-		var radioPro = document.getElementById("link-form-radio-pro");
-		var radioCon = document.getElementById("link-form-radio-con");
-
-		// Fill HTML elements
-		argumentFieldGroup.style.display = "none";
-		radioPro.checked = false;
-		radioCon.checked = false;
-
-		if (childId === "" || childId === null || childId === undefined) {
-			return;
-		}
-
-		conDecAPI.getDecisionKnowledgeElement(childId, "i", function(decisionKnowledgeElement) {
-			if (decisionKnowledgeElement && decisionKnowledgeElement.type === "Argument") {
-				argumentFieldGroup.style.display = "inherit";
-				radioPro.checked = true;
-			}
-		});
-	}
-
-	ConDecDialog.prototype.addFormForArguments = addFormForArguments;
-
 	ConDecDialog.prototype.showEditDialog = function showEditDialog(id, documentationLocation, type) {
 		console.log("conDecDialog showEditDialog");
 
@@ -197,6 +204,7 @@
 			var selectTypeField = document.getElementById("edit-form-select-type");
 			var selectLocationField = document.getElementById("edit-form-select-location");
 			var submitButton = document.getElementById("edit-dialog-submit-button");
+			var cancelButton = document.getElementById("edit-dialog-cancel-button");
 
 			// Fill HTML elements
 			inputSummaryField.value = summary;
@@ -208,7 +216,7 @@
 				selectLocationField.disabled = true;
 			}
 
-			// Set onclick listener on submit button
+			// Set onclick listener on buttons
 			submitButton.onclick = function() {
 				var summary = inputSummaryField.value;
 				var description = inputDescriptionField.value;
@@ -217,6 +225,10 @@
 						function() {
 							conDecObservable.notify();
 						});
+				AJS.dialog2(editDialog).hide();
+			};
+
+			cancelButton.onclick = function() {
 				AJS.dialog2(editDialog).hide();
 			};
 
@@ -263,20 +275,25 @@
 
 		// HTML elements
 		var changeTypeDialog = document.getElementById("change-type-dialog");
-		var submitButton = document.getElementById("change-type-dialog-submit-button");
 		var selectTypeField = document.getElementById("change-type-form-select-type");
+		var submitButton = document.getElementById("change-type-dialog-submit-button");
+		var cancelButton = document.getElementById("change-type-dialog-cancel-button");
 
 		// Fill HTML elements
 		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
 			fillSelectTypeField(selectTypeField, decisionKnowledgeElement.type);
 		});
 
-		// Set onclick listener on submit button
+		// Set onclick listener on buttons
 		submitButton.onclick = function() {
 			var type = selectTypeField.value;
 			conDecAPI.changeKnowledgeType(id, type, documentationLocation, function() {
 				conDecObservable.notify();
 			});
+			AJS.dialog2(changeTypeDialog).hide();
+		};
+
+		cancelButton.onclick = function() {
 			AJS.dialog2(changeTypeDialog).hide();
 		};
 

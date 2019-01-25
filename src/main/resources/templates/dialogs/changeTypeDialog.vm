@@ -16,7 +16,7 @@
 	<footer class="aui-dialog2-footer">
 		<div class="aui-dialog2-footer-actions">
 			<button id="change-type-dialog-submit-button" class="aui-button aui-button-primary">Change Element Type</button>
-			<button id="change-type-dialog-cancel-button" class="aui-button aui-button-link" onclick="AJS.dialog2('#change-type-dialog').hide()">Cancel</button>
+			<button id="change-type-dialog-cancel-button" class="aui-button aui-button-link">Cancel</button>
 		</div>
 	</footer>
 </section>

@@ -10,7 +10,7 @@
 	<footer class="aui-dialog2-footer">
 		<div class="aui-dialog2-footer-actions">
 			<button id="delete-link-dialog-submit-button" class="aui-button aui-button-primary">Delete Link</button>
-			<button id="delete-link-dialog-cancel-button" class="aui-button aui-button-link" onclick="AJS.dialog2('#delete-link-dialog').hide()">Cancel</button>
+			<button id="delete-link-dialog-cancel-button" class="aui-button aui-button-link">Cancel</button>
 		</div>
 	</footer>
 </section>

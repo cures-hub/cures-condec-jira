@@ -28,7 +28,7 @@
 	<footer class="aui-dialog2-footer">
 		<div class="aui-dialog2-footer-actions">
 			<button id="edit-dialog-submit-button" class="aui-button aui-button-primary">Update Element</button>
-			<button id="edit-dialog-cancel-button" class="aui-button aui-button-link" onclick="AJS.dialog2('#edit-dialog').hide()">Cancel</button>
+			<button id="edit-dialog-cancel-button" class="aui-button aui-button-link">Cancel</button>
 		</div>
 	</footer>
 </section>

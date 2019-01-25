@@ -9,7 +9,7 @@
 		<form class="aui">
 			<div class="field-group">
 				<label for="link-form-select-element">Unlinked Element:</label>
-				<select id="link-form-select-element" onchange="conDecDialog.addFormForArguments(this.value)" class="select full-width-field"></select>			
+				<select id="link-form-select-element" class="select full-width-field"></select>			
 			</div>
 			<div class="field-group" id="argument-field-group">
 				<label for="form-radio-argument">Type of Argument:</label>
@@ -27,7 +27,7 @@
 	<footer class="aui-dialog2-footer">
 		<div class="aui-dialog2-footer-actions">
 			<button id="link-dialog-submit-button" class="aui-button aui-button-primary">Link Element</button>
-			<button id="link-dialog-cancel-button" class="aui-button aui-button-link" onclick="AJS.dialog2('#link-dialog').hide()">Cancel</button>
+			<button id="link-dialog-cancel-button" class="aui-button aui-button-link">Cancel</button>
 		</div>
 	</footer>
 </section>
