@@ -23,8 +23,6 @@
 	var makeRootText = "Set as Root";
 	var openIssueText = "Open JIRA Issue";
 	var linkKnowledgeElementText = "Link Existing Element";
-	var deleteLinkToParentText = "Delete Link to Parent";
-	var deleteKnowledgeElementText = "Delete Element";
 	var changeKnowledgeTypeText = "Change Element Type";
 
 	var ConDecDialog = function ConDecDialog() {
@@ -63,6 +61,54 @@
 
 		// Show dialog
 		AJS.dialog2(createDialog).show();
+	};
+	
+	ConDecDialog.prototype.showDeleteDialog = function showDeleteDialog(id, documentationLocation) {
+		console.log("conDecDialog showDeleteDialog");
+		
+		// HTML elements
+		var deleteDialog = document.getElementById("delete-dialog");		
+		var content = document.getElementById("delete-dialog-content");
+		var submitButton = document.getElementById("delete-dialog-submit-button");
+		
+		// Fill HTML elements
+		content.textContent = "Do you really want to delete this element?";
+
+		// Set onclick listener on submit button
+		submitButton.onclick = function() {
+			conDecAPI.deleteDecisionKnowledgeElement(id, documentationLocation, function() {
+				conDecObservable.notify();
+			});
+			AJS.dialog2(deleteDialog).hide();
+		};
+		
+		// Show dialog
+		AJS.dialog2(deleteDialog).show();
+	};
+	
+	ConDecDialog.prototype.showDeleteLinkDialog = function showDeleteLinkDialog(id, documentationLocation) {
+		console.log("conDecDialog showDeleteLinkDialog");
+		
+		// HTML elements
+		var deleteLinkDialog = document.getElementById("delete-link-dialog");		
+		var content = document.getElementById("delete-link-dialog-content");
+		var submitButton = document.getElementById("delete-link-dialog-submit-button");
+		
+		// Fill HTML elements
+		content.textContent = "Do you really want to delete the link to the parent element?";
+
+		// Set onclick listener on submit button
+		submitButton.onclick = function() {
+			var parentElement = conDecTreant.findParentElement(id);
+			conDecAPI.deleteLink(parentElement["id"], id, parentElement["documentationLocation"],
+					documentationLocation, function() {
+						conDecObservable.notify();
+					});
+			AJS.dialog2(deleteLinkDialog).hide();
+		};
+		
+		// Show dialog
+		AJS.dialog2(deleteLinkDialog).show();
 	};
 
 	ConDecDialog.prototype.showEditDialog = function showEditDialog(id, documentationLocation, type) {
@@ -117,6 +163,7 @@
 		});
 	};
 
+
 	function fillSelectTypeField(selectField, selectedKnowledgeType) {
 		if (selectField == null) {
 			return;
@@ -132,6 +179,11 @@
 					+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
 		}
 		AJS.$(selectField).auiSelect2();
+	}
+	
+	function isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index) {
+		console.log("conDecDialog isKnowledgeTypeLocatedAtIndex");
+		return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase().split("-")[0];
 	}
 
 	function fillSelectLocationField(selectField, documentationLocationOfParentElement) {
@@ -164,11 +216,6 @@
 					+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
 		}
 		AJS.$("#form-select-type").auiSelect2();
-	}
-
-	function isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index) {
-		console.log("conDecDialog isKnowledgeTypeLocatedAtIndex");
-		return knowledgeType.toLowerCase() === extendedKnowledgeTypes[index].toLowerCase().split("-")[0];
 	}
 
 	ConDecDialog.prototype.showLinkDialog = function showLinkDialog(id, documentationLocation) {
@@ -230,43 +277,6 @@
 	}
 
 	ConDecDialog.prototype.addFormForArguments = addFormForArguments;
-
-	ConDecDialog.prototype.showDeleteDialog = function showDeleteDialog(id, documentationLocation) {
-		console.log("conDecDialog showDeleteDialog");
-		setUpDialog();
-		setHeaderText(deleteKnowledgeElementText);
-
-		var content = document.getElementById("dialog-content");
-		content.textContent = "Do you really want to delete this element?";
-
-		var submitButton = document.getElementById("dialog-submit-button");
-		submitButton.textContent = deleteKnowledgeElementText;
-		submitButton.onclick = function() {
-			conDecAPI.deleteDecisionKnowledgeElement(id, documentationLocation, function() {
-				conDecObservable.notify();
-			});
-			AJS.dialog2("#create-dialog").hide();
-		};
-	};
-
-	ConDecDialog.prototype.showDeleteLinkDialog = function showDeleteLinkDialog(id, documentationLocation) {
-		console.log("conDecDialog showDeleteLinkDialog");
-		setUpDialog();
-		setHeaderText(deleteLinkToParentText);
-		var content = document.getElementById("dialog-content");
-		content.textContent = "Do you really want to delete the link to the parent element?";
-
-		var submitButton = document.getElementById("dialog-submit-button");
-		submitButton.textContent = deleteLinkToParentText;
-		submitButton.onclick = function() {
-			var parentElement = conDecTreant.findParentElement(id);
-			conDecAPI.deleteLink(parentElement["id"], id, parentElement["documentationLocation"],
-					documentationLocation, function() {
-						conDecObservable.notify();
-					});
-			AJS.dialog2("#create-dialog").hide();
-		};
-	};
 
 	ConDecDialog.prototype.showChangeTypeDialog = function showChangeTypeDialog(id, documentationLocation) {
 		console.log("conDecDialog setUpDialogForChangeTypeAction");

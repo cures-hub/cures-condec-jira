@@ -22,6 +22,8 @@ if (exportDialog) {
 </script>
 #include("templates/dialogs/createDialog.vm")
 #include("templates/dialogs/editDialog.vm")
+#include("templates/dialogs/deleteDialog.vm")
+#include("templates/dialogs/deleteLinkDialog.vm")
 #include("templates/contextMenu.vm")
 <script>
 /*
