@@ -135,7 +135,7 @@
 			if(multipleArrays){
 				elements.map(function(aElement){
 					htmlString+=createHtmlStringForWordDocument(aElement)+"<hr>";
-				})
+				});
 			}else{
 				htmlString = createHtmlStringForWordDocument(elements);
 			}
