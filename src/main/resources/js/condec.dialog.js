@@ -163,7 +163,7 @@
 	};
 
 	function fillSelectElementField(selectField, id, documentationLocation) {
-		if (selectField == null) {
+		if (selectField === null) {
 			return;
 		}
 		selectField.innerHTML = "";
@@ -238,7 +238,7 @@
 	};
 
 	function fillSelectTypeField(selectField, selectedKnowledgeType) {
-		if (selectField == null) {
+		if (selectField === null) {
 			return;
 		}
 		selectField.innerHTML = "";
@@ -260,7 +260,7 @@
 	}
 
 	function fillSelectLocationField(selectField, documentationLocationOfParentElement) {
-		if (selectField == null) {
+		if (selectField === null) {
 			return;
 		}
 		selectField.innerHTML = "";
