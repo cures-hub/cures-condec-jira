@@ -90,6 +90,12 @@
 			document.getElementById("exportLinkedElementsDocument").onclick = function() {
 				exportLinkedElements("document");
 			};
+			document.getElementById("exportLinkedAndMatchingQueryElementsJson").onclick = function() {
+				exportAllMatchedAndLinkedElements("json");
+			};
+			document.getElementById("exportLinkedAndMatchingQueryElementsDocument").onclick = function() {
+				exportAllMatchedAndLinkedElements("document");
+			};
 		});
 	}
 
@@ -111,13 +117,28 @@
 			}
 		});
 	}
+	function exportAllMatchedAndLinkedElements(exportType) {
+		var jql = getURLsSearch();
+		conDecAPI.getAllElementsByQueryAndLinked(jql, function(elements) {
+			if (elements && elements.length > 0 && elements[0] !== null) {
+				download(elements, "decisionKnowledgeGraphWithLinked", exportType,true);
+			}
+		});
+	}
 
-	function download(elements, filename, exportType) {
+	function download(elements, filename, exportType, multipleArrays) {
 		var dataString = "";
 		switch (exportType) {
 		case "document":
 			filename += ".doc";
-			var htmlString = createHtmlStringForWordDocument(elements);
+			var htmlString="";
+			if(multipleArrays){
+				elements.map(function(aElement){
+					htmlString+=createHtmlStringForWordDocument(aElement)+"<hr>";
+				});
+			}else{
+				htmlString = createHtmlStringForWordDocument(elements);
+			}
 			dataString = "data:text/html," + encodeURIComponent(htmlString);
 			break;
 		case "json":
@@ -138,11 +159,15 @@
 	function createHtmlStringForWordDocument(elements) {
 		var table = "<table><tr><th>Key</th><th>Summary</th><th>Description</th><th>Type</th></tr>";
 		elements.map(function(element) {
+			var summary= element["summary"] === undefined ? "" : element["summary"];
+			var description= element["description"] === undefined ? "" : element["description"];
+			var type=  element["type"] === undefined ? "" : element["type"];
+
 			table += "<tr>";
 			table += "<td><a href='" + element["url"] + "'>" + element["key"] + "</a></td>";
-			table += "<td>" + element["summary"] + "</td>";
-			table += "<td>" + element["description"] + "</td>";
-			table += "<td>" + element["type"] + "</td>";
+			table += "<td>" + summary + "</td>";
+			table += "<td>" + description + "</td>";
+			table += "<td>" + type + "</td>";
 			table += "</tr>";
 		});
 		table += "</table>";
