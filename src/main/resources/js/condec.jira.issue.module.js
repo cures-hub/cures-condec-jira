@@ -90,6 +90,12 @@
 			document.getElementById("exportLinkedElementsDocument").onclick = function() {
 				exportLinkedElements("document");
 			};
+			document.getElementById("exportLinkedAndMatchingQueryElementsJson").onclick = function() {
+				exportAllMatchedAndLinkedElements("json");
+			};
+			document.getElementById("exportLinkedAndMatchingQueryElementsDocument").onclick = function() {
+				exportAllMatchedAndLinkedElements("document");
+			};
 		});
 	}
 
@@ -108,6 +114,14 @@
 		conDecAPI.getLinkedElementsByQuery(jql, issueKey, "i", function(elements) {
 			if (elements && elements.length > 0 && elements[0] !== null) {
 				download(elements, "decisionKnowledgeGraph", exportType);
+			}
+		});
+	}
+	function exportAllMatchedAndLinkedElements(exportType) {
+		var jql = getURLsSearch();
+		conDecAPI.getAllElementsByQueryAndLinked(jql, function(elements) {
+			if (elements && elements.length > 0 && elements[0] !== null) {
+				download(elements, "decisionKnowledgeGraphWithLinked", exportType);
 			}
 		});
 	}
