@@ -112,7 +112,7 @@
 
 		// Fill HTML elements
 		fillSelectElementField(selectElementField, id, documentationLocation);
-		//addFormForArguments();
+		addFormForArguments(selectElementField.value);
 
 		// Set onclick listener on submit button
 		submitButton.onclick = function() {
@@ -128,16 +128,43 @@
 		AJS.dialog2(linkDialog).show();
 	};
 
+	function addFormForArguments(childId) {
+		console.log("conDecDialog addFormForArguments");
+		var argumentFieldGroup = document.getElementById("argument-field-group");
+		var radioPro = document.getElementById("link-form-radio-pro");
+		var radioCon = document.getElementById("link-form-radio-con");
+		
+		argumentFieldGroup.style.display = "none";
+		radioPro.checked = false;
+		radioCon.checked = false;
+		
+		console.log(childId);
+		if (childId === "" || childId === null || childId === undefined) {
+			return;
+		}
+
+		conDecAPI.getDecisionKnowledgeElement(childId, "i", function(decisionKnowledgeElement) {
+			if (decisionKnowledgeElement && decisionKnowledgeElement.type === "Argument") {
+				argumentFieldGroup.style.display = "inherit";
+				radioPro.checked = true;
+			}
+		});
+	}
+
+	ConDecDialog.prototype.addFormForArguments = addFormForArguments;
+
 	function fillSelectElementField(selectField, id, documentationLocation) {
 		if (selectField == null) {
 			return;
 		}
 		selectField.innerHTML = "";
 		conDecAPI.getUnlinkedElements(id, documentationLocation, function(unlinkedElements) {
-			insertString = "";
+			var insertString = "";
+			var isSelected = "selected";
 			for (var index = 0; index < unlinkedElements.length; index++) {
-				insertString += "<option value='" + unlinkedElements[index].id + "'>" + unlinkedElements[index].type
-						+ ' / ' + unlinkedElements[index].summary + "</option>";
+				insertString += "<option " + isSelected + " value='" + unlinkedElements[index].id + "'>"
+						+ unlinkedElements[index].type + ' / ' + unlinkedElements[index].summary + "</option>";
+				isSelected = "";
 			}
 			selectField.insertAdjacentHTML("afterBegin", insertString);
 		});
@@ -205,9 +232,9 @@
 		for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
 			var isSelected = "";
 			if (isKnowledgeTypeLocatedAtIndex(selectedKnowledgeType, extendedKnowledgeTypes, index)) {
-				isSelected = "selected ";
+				isSelected = "selected";
 			}
-			selectField.insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
+			selectField.insertAdjacentHTML("beforeend", "<option " + isSelected + " value='"
 					+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
 		}
 		AJS.$(selectField).auiSelect2();
@@ -249,29 +276,6 @@
 		}
 		AJS.$("#form-select-type").auiSelect2();
 	}
-
-	function addFormForArguments() {
-		console.log("conDecDialog addFormForArguments");
-		var childId = $("select[name='form-select-component']").val();
-		var argumentFieldGroup = document.getElementById("argument-field-group");
-		argumentFieldGroup.innerHTML = "";
-		conDecAPI
-				.getDecisionKnowledgeElement(
-						childId,
-						"i",
-						function(decisionKnowledgeElement) {
-							if (decisionKnowledgeElement && decisionKnowledgeElement.type === "Argument") {
-								insertString = "<label for='form-radio-argument'>Type of Argument:</label>"
-										+ "<div class='radio'><input type='radio' class='radio' name='form-radio-argument' id='Pro-argument' value='Pro-argument' checked='checked'>"
-										+ "<label for='Pro'>Pro-argument</label></div>"
-										+ "<div class='radio'><input type='radio' class='radio' name='form-radio-argument' id='Con-argument' value='Con-argument'>"
-										+ "<label for='Contra'>Con-argument</label></div>";
-								argumentFieldGroup.insertAdjacentHTML("afterBegin", insertString);
-							}
-						});
-	}
-
-	ConDecDialog.prototype.addFormForArguments = addFormForArguments;
 
 	ConDecDialog.prototype.showChangeTypeDialog = function showChangeTypeDialog(id, documentationLocation) {
 		console.log("conDecDialog setUpDialogForChangeTypeAction");

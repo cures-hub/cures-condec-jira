@@ -9,16 +9,16 @@
 		<form class="aui">
 			<div class="field-group">
 				<label for="link-form-select-element">Unlinked Element:</label>
-				<select id="link-form-select-element" onchange="conDecDialog.addFormForArguments()" class="select full-width-field"></select>			
+				<select id="link-form-select-element" onchange="conDecDialog.addFormForArguments(this.value)" class="select full-width-field"></select>			
 			</div>
-			<div class="field-group">
+			<div class="field-group" id="argument-field-group">
 				<label for="form-radio-argument">Type of Argument:</label>
 				<div class="radio">
-					<input type="radio" class="radio" name="form-radio-argument" id="Pro-argument" value="Pro-argument" checked="checked">
+					<input type="radio" class="radio" name="form-radio-argument" id="link-form-radio-pro" value="Pro-argument">
 					<label for="Pro">Pro-argument</label>
 				</div>
 				<div class="radio">
-					<input type="radio" class="radio" name="form-radio-argument" id="Con-argument" value="Con-argument">
+					<input type="radio" class="radio" name="form-radio-argument" id="link-form-radio-con" value="Con-argument">
 					<label for="Contra">Con-argument</label>
 				</div>
 			</div>
