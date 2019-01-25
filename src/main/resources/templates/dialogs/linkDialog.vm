@@ -15,11 +15,11 @@
 				<label for="form-radio-argument">Type of Argument:</label>
 				<div class="radio">
 					<input type="radio" class="radio" name="form-radio-argument" id="link-form-radio-pro" value="Pro-argument">
-					<label for="Pro">Pro-argument</label>
+					<label for="link-form-radio-pro">Pro-argument</label>
 				</div>
 				<div class="radio">
 					<input type="radio" class="radio" name="form-radio-argument" id="link-form-radio-con" value="Con-argument">
-					<label for="Contra">Con-argument</label>
+					<label for="link-form-radio-con">Con-argument</label>
 				</div>
 			</div>
 		</form>
