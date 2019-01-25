@@ -32,52 +32,41 @@
 
 	ConDecDialog.prototype.showCreateDialog = function showCreateDialog(idOfParentElement,
 			documentationLocationOfParentElement) {
-		console.log("conDecDialog setUpDialogForCreateAction");
+		console.log("conDecDialog showCreateDialog");
 
-		setUpKnowledgeTypeSelect("create", "Alternative");
-		setUpDocumentationLocationSelect("create", documentationLocationOfParentElement);
-
+		// HTML elements
+		var createDialog = document.getElementById("create-dialog");
+		var inputSummaryField = document.getElementById("create-form-input-summary");
+		var inputDescriptionField = document.getElementById("create-form-input-description");
+		var selectTypeField = document.getElementById("create-form-select-type");
+		var selectLocationField = document.getElementById("create-form-select-location");
 		var submitButton = document.getElementById("create-dialog-submit-button");
+
+		// Fill HTML elements
+		inputSummaryField.value = "";
+		inputDescriptionField.value = "";
+		fillSelectTypeField(selectTypeField, "Alternative");
+		fillSelectLocationField(selectLocationField, documentationLocationOfParentElement);
+
+		// Set onclick listener on submit button
 		submitButton.onclick = function() {
-			var summary = document.getElementById("create-form-input-summary").value;
-			var description = document.getElementById("create-form-input-description").value;
-			var type = $("select[name='create-form-select-type']").val();
-			var documentationLocation = $("select[name='create-form-select-location']").val();
+			var summary = inputSummaryField.value;
+			var description = inputDescriptionField.value;
+			var type = selectTypeField.value;
+			var documentationLocation = selectLocationField.value;
 			conDecAPI.createDecisionKnowledgeElement(summary, description, type, documentationLocation,
 					idOfParentElement, documentationLocationOfParentElement, function() {
 						conDecObservable.notify();
 					});
-			AJS.dialog2("#create-dialog").hide();
+			AJS.dialog2(createDialog).hide();
 		};
 
-		AJS.dialog2("#create-dialog").show();
+		// Show dialog
+		AJS.dialog2(createDialog).show();
 	};
 
-	function setUpKnowledgeTypeSelect(actionType, knowledgeType) {
-		document.getElementById(actionType + "-form-select-type").innerHTML = "";
-		var extendedKnowledgeTypes = conDecAPI.extendedKnowledgeTypes;
-		for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
-			var isSelected = "";
-			if (isKnowledgeTypeLocatedAtIndex(knowledgeType, extendedKnowledgeTypes, index)) {
-				isSelected = "selected ";
-			}
-			$("select[name='" + actionType + "-form-select-type']")[0].insertAdjacentHTML("beforeend", "<option "
-					+ isSelected + "value='" + extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index]
-					+ "</option>");
-		}
-		AJS.$("#" + actionType + "-form-select-type").auiSelect2();
-	}
-
-	function setUpDocumentationLocationSelect(actionType, documentationLocationOfParentElement) {
-		// document.getElementById("form-select-location").innerHTML = "";
-		$("select[name='" + actionType + "-form-select-location']")[0].insertAdjacentHTML("beforeend",
-				"<option selected value = 'i'>JIRA Issue</option>"
-						+ "<option value = 's'>JIRA Issue Comment</option></select></div>");
-		AJS.$("#" + actionType + "-form-select-location").auiSelect2();
-	}
-
 	ConDecDialog.prototype.showEditDialog = function showEditDialog(id, documentationLocation, type) {
-		console.log("conDecDialog setUpDialogForEditAction");
+		console.log("conDecDialog showEditDialog");
 
 		conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
 			var summary = decisionKnowledgeElement.summary;
@@ -89,49 +78,71 @@
 				var createEditIssueForm = require('quick-edit/form/factory/edit-issue');
 				createEditIssueForm({
 					issueId : id
-				}).asDialog({
-				}).show();
-			} else {
-				document.getElementById("edit-form-input-summary").value = summary;
-				document.getElementById("edit-form-input-description").value = description;
-
-				setUpKnowledgeTypeSelect("edit", type);
-				setUpDocumentationLocationSelect("edit", documentationLocation);
-
-				if (documentationLocation === "s") {
-					document.getElementById("edit-form-input-summary").disabled = true;
-					document.getElementById("edit-form-select-location").disabled = true;
-				}
-
-				var submitButton = document.getElementById("edit-dialog-submit-button");
-				submitButton.onclick = function() {
-					var summary = document.getElementById("edit-form-input-summary").value;
-					var description = document.getElementById("edit-form-input-description").value;
-					var type = $("select[name='edit-form-select-type']").val();
-					conDecAPI.updateDecisionKnowledgeElement(id, summary, description, type, documentationLocation,
-							function() {
-								conDecObservable.notify();
-							});
-					AJS.dialog2("#edit-dialog").hide();
-				};
-				AJS.dialog2("#edit-dialog").show();
+				}).asDialog({}).show();
+				return;
 			}
+			
+			// HTML elements
+			var editDialog = document.getElementById("edit-dialog");
+			var inputSummaryField = document.getElementById("edit-form-input-summary");
+			var inputDescriptionField = document.getElementById("edit-form-input-description");
+			var selectTypeField = document.getElementById("edit-form-select-type");
+			var selectLocationField = document.getElementById("edit-form-select-location");
+			var submitButton = document.getElementById("edit-dialog-submit-button");
+
+			// Fill HTML elements
+			inputSummaryField.value = summary;
+			inputDescriptionField.value = description;
+			fillSelectTypeField(selectTypeField, type);
+			fillSelectLocationField(selectLocationField, documentationLocation);
+			if (documentationLocation === "s") {
+				inputSummaryField.disabled = true;
+				selectLocationField.disabled = true;
+			}
+
+			// Set onclick listener on submit button
+			submitButton.onclick = function() {
+				var summary = inputSummaryField.value;
+				var description = inputDescriptionField.value;
+				var type = selectTypeField.value;
+				conDecAPI.updateDecisionKnowledgeElement(id, summary, description, type, documentationLocation,
+						function() {
+							conDecObservable.notify();
+						});
+				AJS.dialog2(editDialog).hide();
+			};
+			
+			// Show dialog
+			AJS.dialog2(editDialog).show();
 		});
 	};
 
-	/*
-	 * attaches cancel button handler shows(creates) the dialog TODO: attach
-	 * should be moved out from this function TODO: rename to maybe showDialog()
-	 */
-	function setUpDialog() {
-		console.log("conDecDialog setUpDialog");
-		AJS.dialog2("#create-dialog").show();
-		if (!conDecDialogOnHideSet) {
-			AJS.dialog2("#create-dialog").on("hide", function() {
-				// resetDialog();
-			});
-			conDecDialogOnHideSet = true;
+	function fillSelectTypeField(selectField, selectedKnowledgeType) {
+		if (selectField == null) {
+			return;
 		}
+		selectField.innerHTML = "";
+		var extendedKnowledgeTypes = conDecAPI.extendedKnowledgeTypes;
+		for (var index = 0; index < extendedKnowledgeTypes.length; index++) {
+			var isSelected = "";
+			if (isKnowledgeTypeLocatedAtIndex(selectedKnowledgeType, extendedKnowledgeTypes, index)) {
+				isSelected = "selected ";
+			}
+			selectField.insertAdjacentHTML("beforeend", "<option " + isSelected + "value='"
+					+ extendedKnowledgeTypes[index] + "'>" + extendedKnowledgeTypes[index] + "</option>");
+		}
+		AJS.$(selectField).auiSelect2();
+	}
+
+	function fillSelectLocationField(selectField, documentationLocationOfParentElement) {
+		if (selectField == null) {
+			return;
+		}
+		selectField.innerHTML = "";
+		selectField.insertAdjacentHTML("beforeend", "<option selected value = 'i'>JIRA Issue</option>"
+				+ "<option value = 's'>JIRA Issue Comment</option></select></div>");
+
+		AJS.$(selectField).auiSelect2();
 	}
 
 	function setUpTypeChangeDialog(knowledgeType) {

@@ -17,11 +17,11 @@
 			</div>
 			<div class="field-group">
 				<label for="edit-form-select-type">Knowledge Type:</label>
-				<select id="edit-form-select-type" name="edit-form-select-type" class="select full-width-field"/>
+				<select id="edit-form-select-type" class="select full-width-field"></select>
 			</div>            			
 			<div class="field-group">
 				<label for="edit-form-select-location">Documentation Location:</label>
-				<select id="edit-form-select-location" name="edit-form-select-location" class="select full-width-field"/>
+				<select id="edit-form-select-location" class="select full-width-field"></select>
 			</div>
 		</form>
     </div>
