@@ -68,9 +68,6 @@
 		var submitButton = document.getElementById("delete-dialog-submit-button");
 		var cancelButton = document.getElementById("delete-dialog-cancel-button");
 
-		// Fill HTML elements
-		content.textContent = "Do you really want to delete this element?";
-
 		// Set onclick listener on buttons
 		submitButton.onclick = function() {
 			conDecAPI.deleteDecisionKnowledgeElement(id, documentationLocation, function() {
@@ -95,9 +92,6 @@
 		var content = document.getElementById("delete-link-dialog-content");
 		var submitButton = document.getElementById("delete-link-dialog-submit-button");
 		var cancelButton = document.getElementById("delete-link-dialog-cancel-button");
-
-		// Fill HTML elements
-		content.textContent = "Do you really want to delete the link to the parent element?";
 
 		// Set onclick listener on buttons
 		submitButton.onclick = function() {
