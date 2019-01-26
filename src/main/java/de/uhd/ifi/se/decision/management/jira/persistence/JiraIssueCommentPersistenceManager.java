@@ -271,7 +271,6 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		databaseEntry.setCommentId(element.getCommentId());
 		databaseEntry.setType(element.getTypeAsString());
 		databaseEntry.setRelevant(element.isRelevant());
-		System.out.println(element.isValidated());
 		databaseEntry.setValidated(element.isValidated());
 		databaseEntry.setStartSubstringCount(element.getStartSubstringCount());
 		databaseEntry.setEndSubstringCount(element.getEndSubstringCount());
@@ -327,7 +326,6 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		sentence.setEndSubstringCount(sentence.getStartSubstringCount() + changedPartOfComment.length());
 		sentence.setType(element.getType());
 		sentence.setValidated(element.isValidated());
-		System.out.println(sentence.isValidated());
 		sentence.setRelevant(element.getType() != KnowledgeType.OTHER);
 
 		boolean isUpdated = updateInDatabase(sentence);
