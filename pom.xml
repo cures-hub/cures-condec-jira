@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.uhd.ifi.se.decision</groupId>
 	<artifactId>management.jira</artifactId>
-	<version>2.1.8</version>
+	<version>2.1.9</version>
 	<organization>
 		<name>Software Engineering Research Group, Heidelberg University</name>
 		<url>https://github.com/cures-hub</url>
@@ -18,13 +18,25 @@
 			<name>Tim Kuchenbuch</name>
 		</developer>
 		<developer>
+			<id>larstralle</id>
+			<name>Lars Tralle</name>
+		</developer>
+		<developer>
+			<id>ematios</id>
+			<name>Eleftherios Matios</name>
+		</developer>
+		<developer>
 			<id>Jcl15</id>
 			<name>Jochen Clormann</name>
 		</developer>
 		<developer>
-			<id>larstralle</id>
-			<name>Lars Tralle</name>
+			<id>vaman95</id>
+			<name>Vita Aman</name>
 		</developer>
+		<developer>
+			<id>fagro501</id>
+			<name>Fabian Gronert</name>
+		</developer>			
 		<developer>
 			<id>EwaldRode</id>
 			<name>Ewald Rode</name>
