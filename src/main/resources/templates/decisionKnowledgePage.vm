@@ -30,14 +30,14 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:deci
 #include("templates/dialogs/deleteLinkDialog.vm")
 #include("templates/dialogs/linkDialog.vm")
 #include("templates/dialogs/changeTypeDialog.vm")
-#include("templates/contextMenu.vm")
+#parse("templates/contextMenu.vm")
 <script>
 /*
  * Instantiate the ConDecKnowledgePage object controlling this view:
  */
 $(document).ready(function() {
 	conDecAPI.checkIfProjectKeyIsValid();
-    if ( window.conDecKnowledgePage.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant, conDecTreeViewer, window) )
+    if ( window.conDecKnowledgePage.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant, conDecTreeViewer) )
         window.conDecKnowledgePage.fetchAndRender();
     else {
         console.error("ConDecKnowledgePage could not get its dependencies.");

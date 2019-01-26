@@ -26,8 +26,8 @@
 	function hideContextMenu() {
 		/*
 		 * @issue This event gets launched many times at the same time! Check
-		 * what fires it. Probably more and more onclick event handlers ges added
-		 * instead of just one
+		 * what fires it. Probably more and more onclick event handlers get
+		 * added instead of just one.
 		 * 
 		 * @decision On click and on blur event handlers are only set in the
 		 * constructor (see above).
