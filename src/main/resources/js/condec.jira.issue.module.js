@@ -12,7 +12,6 @@
  */
 (function(global) {
 	/* private vars */
-	var i18n = null;
 	var conDecAPI = null;
 	var conDecObservable = null;
 	var conDecDialog = null;
@@ -24,21 +23,19 @@
 	};
 
 	ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog,
-			_conDecContextMenu, _treant, _i18n) {
+			_conDecContextMenu, _treant) {
 
 		console.log("ConDecJiraIssueModule init");
 
-		// TODO: Add i18n support and check i18n
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
 				&& isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
 				&& isConDecTreantType(_treant)) {
+			
 			conDecAPI = _conDecAPI;
-
 			conDecObservable = _conDecObservable;
 			conDecDialog = _conDecDialog;
 			conDecContextMenu = _conDecContextMenu;
 			treant = _treant;
-			i18n = _i18n;
 
 			// Register/subscribe this view as an observer
 			conDecObservable.subscribe(this);
