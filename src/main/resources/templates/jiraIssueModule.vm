@@ -10,6 +10,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 #include("templates/dialogs/deleteLinkDialog.vm")
 #include("templates/dialogs/linkDialog.vm")
 #include("templates/dialogs/changeTypeDialog.vm")
+#include("templates/dialogs/exportDialog.vm")
 #include("templates/contextMenu.vm")
 <script>
 /*

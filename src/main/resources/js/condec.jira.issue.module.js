@@ -73,6 +73,7 @@
 		console.log("ConDecJiraIssueModule addOnClickEventToExportAsTable");
 
 		var exportMenuItem = document.getElementById("export-as-table-link");
+
 		exportMenuItem.addEventListener("click", function(event) {
 			event.preventDefault();
 			event.stopPropagation();
@@ -117,11 +118,12 @@
 			}
 		});
 	}
+	
 	function exportAllMatchedAndLinkedElements(exportType) {
 		var jql = getURLsSearch();
 		conDecAPI.getAllElementsByQueryAndLinked(jql, function(elements) {
 			if (elements && elements.length > 0 && elements[0] !== null) {
-				download(elements, "decisionKnowledgeGraphWithLinked", exportType,true);
+				download(elements, "decisionKnowledgeGraphWithLinked", exportType, true);
 			}
 		});
 	}
@@ -131,12 +133,12 @@
 		switch (exportType) {
 		case "document":
 			filename += ".doc";
-			var htmlString="";
-			if(multipleArrays){
-				elements.map(function(aElement){
-					htmlString+=createHtmlStringForWordDocument(aElement)+"<hr>";
+			var htmlString = "";
+			if (multipleArrays) {
+				elements.map(function(element) {
+					htmlString += createHtmlStringForWordDocument(element) + "<hr>";
 				});
-			}else{
+			} else {
 				htmlString = createHtmlStringForWordDocument(elements);
 			}
 			dataString = "data:text/html," + encodeURIComponent(htmlString);
@@ -159,9 +161,9 @@
 	function createHtmlStringForWordDocument(elements) {
 		var table = "<table><tr><th>Key</th><th>Summary</th><th>Description</th><th>Type</th></tr>";
 		elements.map(function(element) {
-			var summary= element["summary"] === undefined ? "" : element["summary"];
-			var description= element["description"] === undefined ? "" : element["description"];
-			var type=  element["type"] === undefined ? "" : element["type"];
+			var summary = element["summary"] === undefined ? "" : element["summary"];
+			var description = element["description"] === undefined ? "" : element["description"];
+			var type = element["type"] === undefined ? "" : element["type"];
 
 			table += "<tr>";
 			table += "<td><a href='" + element["url"] + "'>" + element["key"] + "</a></td>";

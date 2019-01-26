@@ -260,7 +260,8 @@ public class KnowledgeRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		JiraIssueCommentPersistenceManager persistenceManager = new JiraIssueCommentPersistenceManager(decisionKnowledgeElement.getProject().getProjectKey());
+		JiraIssueCommentPersistenceManager persistenceManager = new JiraIssueCommentPersistenceManager(
+				decisionKnowledgeElement.getProject().getProjectKey());
 		Issue issue = persistenceManager.createJIRAIssueFromSentenceObject(decisionKnowledgeElement.getId(), user);
 
 		if (issue != null) {
@@ -317,7 +318,7 @@ public class KnowledgeRest {
 					.build();
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		List<DecisionKnowledgeElement> queryResult = getHelperMatchedQueryElements(user,projectKey,query);
+		List<DecisionKnowledgeElement> queryResult = getHelperMatchedQueryElements(user, projectKey, query);
 		if (queryResult == null) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
 					.entity(ImmutableMap.of("error", "Getting elements matching the query failed.")).build();
@@ -339,7 +340,8 @@ public class KnowledgeRest {
 		String projectKey = getProjectKey(elementKey);
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		List<DecisionKnowledgeElement> filteredElements = getHelperAllElementsLinkedToElement(projectKey,uriSearch,elementKey,user);
+		List<DecisionKnowledgeElement> filteredElements = getHelperAllElementsLinkedToElement(projectKey, uriSearch,
+				elementKey, user);
 
 		return Response.ok(filteredElements).build();
 	}
@@ -352,53 +354,57 @@ public class KnowledgeRest {
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getAllElementsLinkedToElementsMatchedByQuery(@QueryParam("projectKey") String projectKey,
-																 @QueryParam("query") String query, @Context HttpServletRequest request) {
+			@QueryParam("query") String query, @Context HttpServletRequest request) {
 		if (projectKey == null || query == null || request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "Getting elements matching the query failed due to a bad request."))
 					.build();
 		}
 
-        ApplicationUser user = AuthenticationManager.getUser(request);
-        List<DecisionKnowledgeElement>queryResult=getHelperMatchedQueryElements(user,projectKey,query);
-		List<DecisionKnowledgeElement> addedElements= new ArrayList<DecisionKnowledgeElement>();
-		List<List> elmentsToReturn= new ArrayList<List>();
-		//now iti over query result
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		List<DecisionKnowledgeElement> queryResult = getHelperMatchedQueryElements(user, projectKey, query);
+		List<DecisionKnowledgeElement> addedElements = new ArrayList<DecisionKnowledgeElement>();
+		List<List<DecisionKnowledgeElement>> elmentsToReturn = new ArrayList<List<DecisionKnowledgeElement>>();
+		// now iti over query result
 		for (DecisionKnowledgeElement current : queryResult) {
-            //check if in addedElements list
-			if(!addedElements.contains(current)){
-                //if not get the connected tree
-				String elementKey= current.getKey();
-                List<DecisionKnowledgeElement> filteredElements=getHelperAllElementsLinkedToElement(projectKey,query,elementKey,user);
-                //add each element to the list
-                addedElements.addAll(filteredElements);
-                //add list to the big list
+			// check if in addedElements list
+			if (!addedElements.contains(current)) {
+				// if not get the connected tree
+				String elementKey = current.getKey();
+				List<DecisionKnowledgeElement> filteredElements = getHelperAllElementsLinkedToElement(projectKey, query,
+						elementKey, user);
+				// add each element to the list
+				addedElements.addAll(filteredElements);
+				// add list to the big list
 				elmentsToReturn.add(filteredElements);
 			}
 		}
 		return Response.ok(elmentsToReturn).build();
 
 	}
+
 	/**
 	 * REST HELPERS to avoid doubled code:
 	 *
 	 **/
 
-	private List<DecisionKnowledgeElement> getHelperMatchedQueryElements(ApplicationUser user, String projectKey, String query){
+	private List<DecisionKnowledgeElement> getHelperMatchedQueryElements(ApplicationUser user, String projectKey,
+			String query) {
 		GraphFiltering filter = new GraphFiltering(projectKey, query, user);
 		filter.produceResultsFromQuery();
 		return filter.getAllElementsMatchingQuery();
 	}
-	private List<DecisionKnowledgeElement> getHelperAllElementsLinkedToElement(String projectKey,String query,String elementKey, ApplicationUser user){
-        Graph graph;
-        if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
-            GraphFiltering filter = new GraphFiltering(projectKey, query, user);
-            filter.produceResultsFromQuery();
-            graph = new GraphImplFiltered(projectKey, elementKey, filter);
-        } else {
-            graph = new GraphImpl(projectKey, elementKey);
-        }
-        return graph.getAllElements();
-    }
-}
 
+	private List<DecisionKnowledgeElement> getHelperAllElementsLinkedToElement(String projectKey, String query,
+			String elementKey, ApplicationUser user) {
+		Graph graph;
+		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
+			GraphFiltering filter = new GraphFiltering(projectKey, query, user);
+			filter.produceResultsFromQuery();
+			graph = new GraphImplFiltered(projectKey, elementKey, filter);
+		} else {
+			graph = new GraphImpl(projectKey, elementKey);
+		}
+		return graph.getAllElements();
+	}
+}

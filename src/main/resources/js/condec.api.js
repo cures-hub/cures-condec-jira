@@ -159,8 +159,7 @@
 	 */
 	ConDecAPI.prototype.createLink = function createLink(knowledgeTypeOfChild, idOfParent, idOfChild,
 			documentationLocationOfParent, documentationLocationOfChild, callback) {
-		postJSON(AJS.contextPath()
-				+ "/rest/decisions/latest/decisions/createLink.json?projectKey=" + projectKey
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/createLink.json?projectKey=" + projectKey
 				+ "&knowledgeTypeOfChild=" + knowledgeTypeOfChild + "&idOfParent=" + idOfParent
 				+ "&documentationLocationOfParent=" + documentationLocationOfParent + "&idOfChild=" + idOfChild
 				+ "&documentationLocationOfChild=" + documentationLocationOfChild, null, function(error, link) {
@@ -191,7 +190,7 @@
 					}
 				});
 	};
-	
+
 	/*
 	 * external references: condec.jira.issue.module
 	 */
@@ -216,12 +215,14 @@
 			}
 		});
 	};
+	
 	/*
 	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getAllElementsByQueryAndLinked = function getAllElementsByQueryAndLinked(query, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsLinkedToElementsMatchedByQuery.json?projectKey="
-			+ projectKey + "&query=" + query, function(error, elements) {
+		getJSON(AJS.contextPath()
+				+ "/rest/decisions/latest/decisions/getAllElementsLinkedToElementsMatchedByQuery.json?projectKey="
+				+ projectKey + "&query=" + query, function(error, elements) {
 			if (error === null) {
 				callback(elements);
 			}
