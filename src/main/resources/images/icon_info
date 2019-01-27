@@ -12,3 +12,12 @@ argument: shield
 argument_pro: plus_shield
 argument_con: minus_shield
 issue: exclamation-diamond-frame
+context: zone
+problem: question
+implication: node-select-all
+assessment: balance-unbalance
+assumption: balloon-buzz
+constraint: edit-rule
+claim: gear
+goal: target
+solution: tick-circle
