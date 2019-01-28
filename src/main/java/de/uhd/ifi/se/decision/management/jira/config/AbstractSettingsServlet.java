@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.properties.APKeys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,8 +67,8 @@ public abstract class AbstractSettingsServlet extends HttpServlet {
 	protected abstract boolean isValidUser(HttpServletRequest request);
 
 	private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		response.sendRedirect(loginUriProvider.getLoginUri(getUri(request)).toASCIIString());
-		LOGGER.info("User with name('{}') tried to change the project settings and wsa redirected to login.",
+		response.sendRedirect(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/login.jsp" );
+		LOGGER.info("User with name('{}') tried to change the project settings and was redirected to login.",
 				AuthenticationManager.getUsername(request));
 	}
 
