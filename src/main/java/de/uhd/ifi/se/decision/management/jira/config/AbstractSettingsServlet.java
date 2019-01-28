@@ -9,11 +9,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.properties.APKeys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.templaterenderer.TemplateRenderer;
@@ -67,18 +67,10 @@ public abstract class AbstractSettingsServlet extends HttpServlet {
 	protected abstract boolean isValidUser(HttpServletRequest request);
 
 	private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		response.sendRedirect(ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/login.jsp" );
+		response.sendRedirect(
+				ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/login.jsp");
 		LOGGER.info("User with name('{}') tried to change the project settings and was redirected to login.",
 				AuthenticationManager.getUsername(request));
-	}
-
-	private URI getUri(HttpServletRequest request) {
-		StringBuffer builder = request.getRequestURL();
-		if (request.getQueryString() != null) {
-			builder.append('?');
-			builder.append(request.getQueryString());
-		}
-		return URI.create(builder.toString());
 	}
 
 	protected abstract String getTemplatePath();
