@@ -48,11 +48,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 	private SearchService searchService;
 
-	private int absolutDepth;
-
 	private String jiraIssueTypeToLinkTo;
-
-	private String issuesWithNoExistingLinksToDecisionKnowledge;
 
 	public static org.json.JSONObject restResponse;
 
@@ -73,331 +69,58 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	}
 
 	public Map<String, Object> createValues(ProjectActionSupport action) {
+
+		CommentMetricCalculator calculator = new CommentMetricCalculator(this.projectId, action.getLoggedInUser(), this.jiraIssueTypeToLinkTo);
+
 		Map<String, Object> velocityParams = new HashMap<>();
 		velocityParams.put("projectName", action.getProjectManager().getProjectObj(this.projectId).getName());
 
 		// get Number of comments per Issue
-		velocityParams.put("numCommentsPerIssueMap", getNumberOfCommentsPerIssueMap(action.getLoggedInUser()));
+		velocityParams.put("numCommentsPerIssueMap", calculator.getNumberOfCommentsPerIssueMap());
 
 		// get Number of Decisions per Issue
 		velocityParams.put("numDecisionsPerIssueMap",
-				getNumberOfSentencePerIssueMap(action.getLoggedInUser(), KnowledgeType.DECISION));
+				calculator.getNumberOfSentencePerIssueMap(KnowledgeType.DECISION));
 
 		// get Number of Issues per Issue
 		velocityParams.put("numIssuesPerIssueMap",
-				getNumberOfSentencePerIssueMap(action.getLoggedInUser(), KnowledgeType.ISSUE));
+				calculator.getNumberOfSentencePerIssueMap(KnowledgeType.ISSUE));
 
 		// get Number of relevant Sentences per Issue
-		Map<String, Integer> numRelevantSentences = getNumberOfRelevantSentences(action.getLoggedInUser());
-		velocityParams.put("numRelevantSentences", numRelevantSentences);
+		velocityParams.put("numRelevantSentences", calculator.getNumberOfRelevantSentences());
 		velocityParams.put("map", Map.class); // TODO: what was this for? It is not used in vm.
 
 		// get Number of commits per Issue
-		velocityParams.put("numCommitsPerIssueMap", getNumberOfCommitsPerIssueMap(action.getLoggedInUser()));
+		velocityParams.put("numCommitsPerIssueMap", calculator.getNumberOfCommitsPerIssueMap());
 
 		// Get associated Knowledge Types in Sentences per Issue
-		Map<String, Integer> numKnowledgeTypesPerIssue = getDecKnowElementsPerIssue();
-		velocityParams.put("numKnowledgeTypesPerIssue", numKnowledgeTypesPerIssue);
+		velocityParams.put("numKnowledgeTypesPerIssue", calculator.getDecKnowElementsPerIssue());
 
 		// Get types of decisions and alternatives linkes to Issue (e.g. has decision
 		// but no alternative)
-		velocityParams.put("numLinksToIssue", getLinkToOtherElement(KnowledgeType.ISSUE, KnowledgeType.DECISION));
-		velocityParams.put("issuesWithoutDecisionLinks", this.issuesWithNoExistingLinksToDecisionKnowledge);
-		velocityParams.put("numLinksToDecision", getLinkToOtherElement(KnowledgeType.DECISION, KnowledgeType.ISSUE));
-		velocityParams.put("decisionsWithoutIssueLinks", this.issuesWithNoExistingLinksToDecisionKnowledge);
+		velocityParams.put("numLinksToIssue", calculator.getLinkToOtherElement(KnowledgeType.ISSUE, KnowledgeType.DECISION));
+		velocityParams.put("issuesWithoutDecisionLinks", calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.ISSUE));
+		velocityParams.put("numLinksToDecision", calculator.getLinkToOtherElement(KnowledgeType.DECISION, KnowledgeType.ISSUE));
+		velocityParams.put("decisionsWithoutIssueLinks", calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.DECISION));
 
 		// Get Number of Alternatives With Arguments
-		velocityParams.put("numAlternativeWoArgument", getAlternativeArguments());
-		velocityParams.put("issuesWithAltWoArg", this.issuesWithNoExistingLinksToDecisionKnowledge);
+		velocityParams.put("numAlternativeWoArgument", calculator.getAlternativeArguments());
+		velocityParams.put("issuesWithAltWoArg", calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.ALTERNATIVE));
 
 		// Get Link Distance
-		velocityParams.put("numLinkDistanceAlternative", getLinkDistance(KnowledgeType.ALTERNATIVE));
-		velocityParams.put("numLinkDistanceIssue", getLinkDistance(KnowledgeType.ISSUE));
-		velocityParams.put("numLinkDistanceDecision", getLinkDistance(KnowledgeType.DECISION));
+		velocityParams.put("numLinkDistanceAlternative", calculator.getLinkDistance(KnowledgeType.ALTERNATIVE));
+		velocityParams.put("numLinkDistanceIssue", calculator.getLinkDistance(KnowledgeType.ISSUE));
+		velocityParams.put("numLinkDistanceDecision", calculator.getLinkDistance(KnowledgeType.DECISION));
 
-		velocityParams.put("numLinksToIssueTypeIssue",
-				getLinksToIssueTypeMap(KnowledgeType.ISSUE, action.getLoggedInUser()));
-		velocityParams.put("jiraIssuesWithoutLinksToIssue", this.issuesWithNoExistingLinksToDecisionKnowledge);
+		velocityParams.put("numLinksToIssueTypeIssue", calculator.getLinksToIssueTypeMap(KnowledgeType.ISSUE));
+		velocityParams.put("jiraIssuesWithoutLinksToIssue", calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.ISSUE));
 
-		velocityParams.put("numLinksToIssueTypeDecision",
-				getLinksToIssueTypeMap(KnowledgeType.DECISION, action.getLoggedInUser()));
-		velocityParams.put("jiraIssuesWithoutLinksToDecision", this.issuesWithNoExistingLinksToDecisionKnowledge);
+		velocityParams.put("numLinksToIssueTypeDecision",calculator.getLinksToIssueTypeMap(KnowledgeType.DECISION));
+		velocityParams.put("jiraIssuesWithoutLinksToDecision",calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.DECISION));
 
-		velocityParams.put("issueType", getPropperStringForBugAndTasksFromIssueType());
+		velocityParams.put("issueType", calculator.getPropperStringForBugAndTasksFromIssueType());
 
 		return velocityParams;
-	}
-
-	private Object getLinksToIssueTypeMap(KnowledgeType knowledgeType, ApplicationUser applicationUser) {
-		Map<String, Integer> result = new HashMap<>();
-		String noLinkExistingList = "";
-		int withLink = 0;
-		int withoutLink = 0;
-		SearchResults issues = getIssuesForThisProject(applicationUser);
-		for (Issue issue : issues.getIssues()) {
-			boolean linkExisting = false;
-			if (checkEqualIssueTypeIssue(issue.getIssueType())) {
-				for (Link link : GenericLinkManager.getLinksForElement(issue.getId(),
-						DocumentationLocation.JIRAISSUE)) {
-					if (link.isValid()) {
-						DecisionKnowledgeElement dke = link.getOppositeElement(new DecisionKnowledgeElementImpl(issue));
-						if (dke.getType().equals(knowledgeType)) {
-							linkExisting = true;
-						}
-					}
-				}
-			}
-			if (linkExisting) {
-				withLink++;
-			} else {
-				withoutLink++;
-				noLinkExistingList += issue.getKey() + " ";
-			}
-		}
-		result.put("Links from " + getPropperStringForBugAndTasksFromIssueType() + " " + knowledgeType.toString(),
-				withLink);
-		result.put("No links from " + getPropperStringForBugAndTasksFromIssueType() + " " + knowledgeType.toString(),
-				withoutLink);
-		this.issuesWithNoExistingLinksToDecisionKnowledge = noLinkExistingList;
-		return result;
-	}
-
-	private String getPropperStringForBugAndTasksFromIssueType() {
-		if (this.jiraIssueTypeToLinkTo.equalsIgnoreCase("Wi")) {
-			return "Work Item";
-		} else if (this.jiraIssueTypeToLinkTo.equals("B")) {
-			return "Bug";
-		}
-		return "Unknown Element";
-	}
-
-	private boolean checkEqualIssueTypeIssue(IssueType issueType2) {
-		if (issueType2 == null) {
-			return false;
-		}
-		if (this.jiraIssueTypeToLinkTo.equals("WI") && (issueType2.getName().equalsIgnoreCase("User Task")
-				|| issueType2.getName().equalsIgnoreCase("Aufgabe"))) {
-			return true;
-		}
-		return (this.jiraIssueTypeToLinkTo.equals("B")
-				&& (issueType2.getName().equalsIgnoreCase("Bug") || issueType2.getName().equalsIgnoreCase("Fehler")));
-
-	}
-
-	private Map<String, Integer> getNumberOfRelevantSentences(ApplicationUser loggedInUser) {
-		Map<String, Integer> result = new HashMap<>();
-		int isRelevant = 0;
-		int isNotRelevant = 0;
-		SearchResults projectIssues = getIssuesForThisProject(loggedInUser);
-		if (projectIssues == null || projectIssues.getIssues().size() == 0) {
-			return result;
-		}
-
-		String projectKey = ComponentAccessor.getProjectManager().getProjectObj(this.projectId).getKey();
-		for (Issue currentIssue : projectIssues.getIssues()) {
-			List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager
-					.getElementsForIssue(currentIssue.getId(), projectKey);
-			for (DecisionKnowledgeElement currentElement : elements) {
-				if (currentElement instanceof Sentence && ((Sentence) currentElement).isRelevant()) {
-					isRelevant++;
-				} else if (currentElement instanceof Sentence && !((Sentence) currentElement).isRelevant()) {
-					isNotRelevant++;
-				}
-			}
-		}
-		result.put("Relevant Sentences", isRelevant);
-		result.put("Irrelevant Sentences", isNotRelevant);
-
-		return result;
-	}
-
-	private Map<String, Integer> getNumberOfSentencePerIssueMap(ApplicationUser loggedInUser, KnowledgeType type) {
-		Map<String, Integer> result = new HashMap<String, Integer>();
-
-		SearchResults projectIssues = getIssuesForThisProject(loggedInUser);
-		if (projectIssues == null || projectIssues.getIssues().size() == 0) {
-			return result;
-		}
-		String projectKey = ComponentAccessor.getProjectManager().getProjectObj(this.projectId).getKey();
-		for (Issue currentIssue : projectIssues.getIssues()) {
-			int count = 0;
-			List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager
-					.getElementsForIssue(currentIssue.getId(), projectKey);
-			for (DecisionKnowledgeElement dke : elements) {
-				if (dke.getType().equals(type)) {
-					count++;
-				}
-			}
-			result.put(currentIssue.getKey(), count);
-		}
-		return result;
-	}
-
-	private List<Integer> getLinkDistance(KnowledgeType type) {
-		List<Integer> linkDistances = new ArrayList<>();
-
-		AbstractPersistenceManager persistenceManager = new JiraIssueCommentPersistenceManager(
-				projectManager.getProjectObj(this.projectId).getKey());
-		List<DecisionKnowledgeElement> listOfIssues = persistenceManager.getDecisionKnowledgeElements(type);
-
-		for (DecisionKnowledgeElement currentAlternative : listOfIssues) {
-			int depth = graphRecursionBot(currentAlternative);
-			linkDistances.add(depth);
-		}
-
-		return linkDistances;
-	}
-
-	private Map<String, Integer> getAlternativeArguments() {
-		int alternativesHaveArgument = 0;
-		int alternativesHaveNoArgument = 0;
-		String listOfElementsWithoutArgument = "";
-
-		AbstractPersistenceManager persistenceManager = new JiraIssueCommentPersistenceManager(
-				projectManager.getProjectObj(this.projectId).getKey());
-		List<DecisionKnowledgeElement> alternatives = persistenceManager
-				.getDecisionKnowledgeElements(KnowledgeType.ALTERNATIVE);
-
-		for (DecisionKnowledgeElement currentAlternative : alternatives) {
-			List<Link> links = GenericLinkManager.getLinksForElement(currentAlternative.getId(),
-					DocumentationLocation.JIRAISSUECOMMENT);
-			boolean hasArgument = false;
-			for (Link link : links) {
-				if (link.isValid()) {
-					DecisionKnowledgeElement dke = link.getOppositeElement(currentAlternative.getId());
-					if (dke instanceof Sentence && dke.getType().equals(KnowledgeType.ARGUMENT)) {
-						hasArgument = true;
-					}
-				}
-			}
-			if (hasArgument) {
-				alternativesHaveArgument++;
-			} else {
-				alternativesHaveNoArgument++;
-				if (currentAlternative instanceof Sentence && !listOfElementsWithoutArgument
-						.contains(((Sentence) currentAlternative).getKey().split(":")[0])) {
-					listOfElementsWithoutArgument += ((Sentence) currentAlternative).getKey().split(":")[0] + " ";
-				}
-			}
-		}
-		this.issuesWithNoExistingLinksToDecisionKnowledge = listOfElementsWithoutArgument;
-		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
-		dkeCount.put("Alternative with Argument", alternativesHaveArgument);
-		dkeCount.put("Alternative without Argument", alternativesHaveNoArgument);
-
-		return dkeCount;
-	}
-
-	private Map<String, Integer> getLinkToOtherElement(KnowledgeType linkFrom, KnowledgeType linkTo1) {
-		Integer[] statistics = new Integer[4];
-		Arrays.fill(statistics, 0);
-		String listOfElementsWithoutLink = " ";
-
-		AbstractPersistenceManager persistenceManager = new JiraIssueCommentPersistenceManager(
-				projectManager.getProjectObj(this.projectId).getKey());
-		List<DecisionKnowledgeElement> listOfIssues = persistenceManager.getDecisionKnowledgeElements(linkFrom);
-
-		for (DecisionKnowledgeElement issue : listOfIssues) {
-			List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
-					DocumentationLocation.JIRAISSUECOMMENT);
-			boolean hastOtherElementLinked = false;
-
-			for (Link link : links) {
-				if (link.isValid()) {
-					DecisionKnowledgeElement dke = link.getOppositeElement(issue.getId());
-					if (dke instanceof Sentence && dke.getType().equals(linkTo1)) { // alt
-						hastOtherElementLinked = true;
-					}
-				}
-			}
-			if (hastOtherElementLinked) {
-				statistics[0] = statistics[0] + 1;
-			} else if (!hastOtherElementLinked) {
-				statistics[1] = statistics[1] + 1;
-				if (issue instanceof Sentence
-						&& !listOfElementsWithoutLink.contains(((Sentence) issue).getKey().split(":")[0])) {
-					listOfElementsWithoutLink += ((Sentence) issue).getKey().split(":")[0] + " ";
-				}
-			}
-		}
-
-		// Hashmaps as counter suck
-		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
-		dkeCount.put("Has " + linkTo1.toString(), statistics[0]);
-		dkeCount.put("Has no " + linkTo1.toString(), statistics[1]);
-		this.issuesWithNoExistingLinksToDecisionKnowledge = listOfElementsWithoutLink;
-		return dkeCount;
-	}
-
-	private Map<String, Integer> getDecKnowElementsPerIssue() {
-		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
-
-		String projectKey = projectManager.getProjectObj(this.projectId).getKey();
-		AbstractPersistenceManager persistenceManager = new JiraIssueCommentPersistenceManager(projectKey);
-
-		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
-			dkeCount.put(type.toString(), persistenceManager.getDecisionKnowledgeElements(type).size());
-		}
-		return dkeCount;
-	}
-
-	private Map<String, Integer> getNumberOfCommitsPerIssueMap(ApplicationUser loggedInUser) {
-		Map<String, Integer> resultMap = new HashMap<String, Integer>();
-
-		SearchResults issues = getIssuesForThisProject(loggedInUser);
-		for (Issue issue : issues.getIssues()) {
-			requestNumberOfGitCommits(issue.getKey());
-			if (restResponse != null) {
-				try {
-					JSONArray result = (JSONArray) restResponse.get("commits");
-					resultMap.put(issue.getKey(), result.length());
-				} catch (Exception e) {
-					resultMap.put(issue.getKey(), 0);
-				}
-			}
-		}
-
-		return resultMap;
-	}
-
-	private Map<String, Integer> getNumberOfCommentsPerIssueMap(ApplicationUser user) {
-		Map<String, Integer> result = new HashMap<String, Integer>();
-		SearchResults searchResults = getIssuesForThisProject(user);
-		if (searchResults == null || searchResults.getIssues().size() == 0) {
-			return result;
-		}
-		for (Issue issue : searchResults.getIssues()) {
-			int size = 0;
-			try {
-				size = ComponentAccessor.getCommentManager().getComments(issue).size();
-				result.put(issue.getKey(), size);
-			} catch (NullPointerException e) {// Issue does not exist
-			}
-		}
-		return result;
-	}
-
-	private SearchResults getIssuesForThisProject(ApplicationUser user) {
-		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
-		com.atlassian.query.Query query = jqlClauseBuilder.project(this.projectId).buildQuery();
-		SearchResults searchResult;
-		try {
-			searchResult = getSearchService().search(user, query, PagerFilter.getUnlimitedFilter());
-		} catch (SearchException e) {
-			return null;
-		}
-		return searchResult;
-	}
-
-	public SearchService getSearchService() {
-		if (this.searchService == null) {
-			return searchService = ComponentAccessor.getComponentOfType(SearchService.class);
-		}
-		return this.searchService;
-	}
-
-	public void setSearchService(SearchService searchService) {
-		this.searchService = searchService;
 	}
 
 	/**
@@ -410,52 +133,5 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		this.jiraIssueTypeToLinkTo = ParameterUtils.getStringParam(params, "rootType");
 	}
 
-	private int graphRecursionBot(DecisionKnowledgeElement dke) {
-		this.absolutDepth = 0;
-		Graph graph = new GraphImpl(projectManager.getProjectObj(this.projectId).getKey(), dke.getKey());
-		this.createNodeStructure(dke, null, 100, 1, graph);
-		return absolutDepth;
-	}
-
-	private Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth,
-			Graph graph) {
-		if (element == null || element.getProject() == null || element.getType() == KnowledgeType.OTHER) {
-			return new Node();
-		}
-		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getLinkedElementsAndLinks(element);
-		Node node;
-		if (link != null) {
-			node = new Node(element, link, false, false);
-		} else {
-			node = new Node(element, false, false);
-		}
-		List<Node> nodes = new ArrayList<Node>();
-		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-			Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
-					currentDepth + 1, graph);
-			if (this.absolutDepth < currentDepth) {
-				this.absolutDepth = currentDepth;
-			}
-			nodes.add(newChildNode);
-		}
-		node.setChildren(nodes);
-		return node;
-	}
-
-	private void requestNumberOfGitCommits(String issueKey) {
-		if (issueKey == null) {
-			return;
-		}
-		try {
-			OAuthManager ar = new OAuthManager();
-			String baseUrl = ConfigPersistenceManager.getOauthJiraHome();
-			if (!baseUrl.endsWith("/")) {
-				baseUrl = baseUrl + "/";
-			}
-			ar.startRequest(baseUrl + "rest/gitplugin/1.0/issues/" + issueKey + "/commits");
-		} catch (Exception e) {
-
-		}
-	}
 
 }
