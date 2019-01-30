@@ -29,6 +29,7 @@ public class CommentMetricCalculator {
 	private ApplicationUser user;
 	private JiraIssueCommentPersistenceManager persitenceManager;
 	private String jiraIssueTypeToLinkTo;
+	private final SearchResults searchResults;
 
 	public static org.json.JSONObject restResponse;
 
@@ -41,12 +42,11 @@ public class CommentMetricCalculator {
 		this.persitenceManager = new JiraIssueCommentPersistenceManager(projectKey);
 		this.searchService = ComponentAccessor.getComponentOfType(SearchService.class);
 		this.jiraIssueTypeToLinkTo = jiraIssueTypeToLinkTo;
-
+		this.searchResults = getIssuesForThisProject();
 	}
 
 	public Map<String, Integer> getNumberOfCommentsPerIssueMap() {
 		Map<String, Integer> result = new HashMap<String, Integer>();
-		SearchResults searchResults = getIssuesForThisProject();
 		if (searchResults == null || searchResults.getIssues().size() == 0) {
 			return result;
 		}
@@ -63,11 +63,10 @@ public class CommentMetricCalculator {
 
 	public Map<String, Integer> getNumberOfSentencePerIssueMap(KnowledgeType type) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
-		SearchResults projectIssues = getIssuesForThisProject();
-		if (projectIssues == null || projectIssues.getIssues().size() == 0) {
+		if (searchResults == null || searchResults.getIssues().size() == 0) {
 			return result;
 		}
-		for (Issue currentIssue : projectIssues.getIssues()) {
+		for (Issue currentIssue : searchResults.getIssues()) {
 			int count = 0;
 			List<DecisionKnowledgeElement> elements = persitenceManager.getElementsForIssue(currentIssue.getId(), projectKey);
 			for (DecisionKnowledgeElement dke : elements) {
@@ -84,13 +83,12 @@ public class CommentMetricCalculator {
 		Map<String, Integer> result = new HashMap<>();
 		int isRelevant = 0;
 		int isNotRelevant = 0;
-		SearchResults projectIssues = getIssuesForThisProject();
-		if (projectIssues == null || projectIssues.getIssues().size() == 0) {
+		if (searchResults == null || searchResults.getIssues().size() == 0) {
 			return result;
 		}
 
 
-		for (Issue currentIssue : projectIssues.getIssues()) {
+		for (Issue currentIssue : searchResults.getIssues()) {
 			List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager
 					                                          .getElementsForIssue(currentIssue.getId(), projectKey);
 			for (DecisionKnowledgeElement currentElement : elements) {
@@ -109,9 +107,7 @@ public class CommentMetricCalculator {
 
 	public Map<String, Integer> getNumberOfCommitsPerIssueMap() {
 		Map<String, Integer> resultMap = new HashMap<String, Integer>();
-
-		SearchResults issues = getIssuesForThisProject();
-		for (Issue issue : issues.getIssues()) {
+		for (Issue issue : searchResults.getIssues()) {
 			requestNumberOfGitCommits(issue.getKey());
 			if (restResponse != null) {
 				try {
@@ -175,8 +171,6 @@ public class CommentMetricCalculator {
 		List<DecisionKnowledgeElement> listOfIssues = this.persitenceManager.getDecisionKnowledgeElements(linkFrom);
 
 		for (DecisionKnowledgeElement issue : listOfIssues) {
-			List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
-					DocumentationLocation.JIRAISSUECOMMENT);
 			boolean hastOtherElementLinked = false;
 
 			if (!hastOtherElementLinked) {
@@ -239,8 +233,7 @@ public class CommentMetricCalculator {
 		Map<String, Integer> result = new HashMap<>();
 		int withLink = 0;
 		int withoutLink = 0;
-		SearchResults issues = getIssuesForThisProject();
-		for (Issue issue : issues.getIssues()) {
+		for (Issue issue : searchResults.getIssues()) {
 			boolean linkExisting = false;
 			if (checkEqualIssueTypeIssue(issue.getIssueType())) {
 				for (Link link : GenericLinkManager.getLinksForElement(issue.getId(),
