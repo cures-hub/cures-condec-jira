@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Map;
 
 import javax.inject.Inject;

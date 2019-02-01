@@ -65,7 +65,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		ProjectActionSupport pas = new MockProjectActionSupport();
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("selectedProjectId", "1");
-		params.put("rootType", "WI");
+		params.put("issueType", "WI");
 		this.report.validate(pas, params);
 
 		persistenceStrategy = AbstractPersistenceManager.getDefaultPersistenceStrategy("TEST");

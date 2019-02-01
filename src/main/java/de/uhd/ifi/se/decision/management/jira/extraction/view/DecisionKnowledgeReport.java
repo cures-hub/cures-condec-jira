@@ -42,24 +42,23 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		CommentMetricCalculator calculator = new CommentMetricCalculator(this.projectId, action.getLoggedInUser(),
 				this.jiraIssueTypeToLinkTo);
 
-		Map<String, Object> velocityParams = new HashMap<>();
+		Map<String, Object> velocityParams = new HashMap<String, Object>();
 		velocityParams.put("projectName", action.getProjectManager().getProjectObj(this.projectId).getName());
 
-		// get Number of comments per Issue
+		// Number of comments per JIRA issue
 		velocityParams.put("numCommentsPerIssueMap", calculator.getNumberOfCommentsPerIssueMap());
 
-		// get Number of Decisions per Issue
+		// Number of decisions per JIRA issue
 		velocityParams.put("numDecisionsPerIssueMap",
 				calculator.getNumberOfSentencePerIssueMap(KnowledgeType.DECISION));
 
-		// get Number of Issues per Issue
+		// Number of issues (decision problems) per JIRA issue
 		velocityParams.put("numIssuesPerIssueMap", calculator.getNumberOfSentencePerIssueMap(KnowledgeType.ISSUE));
 
-		// get Number of relevant Sentences per Issue
+		// Number of relevant sentences per JIRA issue
 		velocityParams.put("numRelevantSentences", calculator.getNumberOfRelevantSentences());
-		velocityParams.put("map", Map.class); // TODO: what was this for? It is not used in vm.
 
-		// get Number of commits per Issue
+		// Number of commits per JIRA issue
 		velocityParams.put("numCommitsPerIssueMap", calculator.getNumberOfCommitsPerIssueMap());
 
 		// Get associated Knowledge Types in Sentences per Issue
@@ -100,12 +99,12 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	}
 
 	/**
-	 * Seems to be uncalled, but is called by atlassian during execution to transfer
-	 * velocity variables.
+	 * Seems to be uncalled, but is called automatically to transfer velocity
+	 * variables.
 	 */
 	@SuppressWarnings("rawtypes")
 	public void validate(ProjectActionSupport action, Map params) {
 		this.projectId = ParameterUtils.getLongParam(params, "selectedProjectId");
-		this.jiraIssueTypeToLinkTo = ParameterUtils.getStringParam(params, "rootType");
+		this.jiraIssueTypeToLinkTo = ParameterUtils.getStringParam(params, "issueType");
 	}
 }

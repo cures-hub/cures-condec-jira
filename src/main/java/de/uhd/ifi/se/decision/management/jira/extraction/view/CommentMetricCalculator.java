@@ -18,6 +18,7 @@ import com.atlassian.jira.jql.builder.JqlClauseBuilder;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
+import com.atlassian.query.Query;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -56,6 +57,17 @@ public class CommentMetricCalculator {
 		this.searchResults = getIssuesForThisProject();
 	}
 
+	private SearchResults getIssuesForThisProject() {
+		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
+		Query query = jqlClauseBuilder.project(this.projectId).buildQuery();
+		SearchResults searchResult = new SearchResults(null, 0, 0, 0);
+		try {
+			searchResult = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
+		} catch (SearchException e) {
+		}
+		return searchResult;
+	}
+
 	public Map<String, Integer> getNumberOfCommentsPerIssueMap() {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		if (searchResults == null || searchResults.getIssues().size() == 0) {
@@ -79,8 +91,8 @@ public class CommentMetricCalculator {
 		}
 		for (Issue currentIssue : searchResults.getIssues()) {
 			int count = 0;
-			List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager.getElementsForIssue(currentIssue.getId(),
-					projectKey);
+			List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager
+					.getElementsForIssue(currentIssue.getId(), projectKey);
 			for (DecisionKnowledgeElement dke : elements) {
 				if (dke.getType().equals(type)) {
 					count++;
@@ -276,18 +288,6 @@ public class CommentMetricCalculator {
 			return "Bug";
 		}
 		return "Unknown Element";
-	}
-
-	private SearchResults getIssuesForThisProject() {
-		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
-		com.atlassian.query.Query query = jqlClauseBuilder.project(this.projectId).buildQuery();
-		SearchResults searchResult;
-		try {
-			searchResult = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
-		} catch (SearchException e) {
-			return null;
-		}
-		return searchResult;
 	}
 
 	private void requestNumberOfGitCommits(String issueKey) {
