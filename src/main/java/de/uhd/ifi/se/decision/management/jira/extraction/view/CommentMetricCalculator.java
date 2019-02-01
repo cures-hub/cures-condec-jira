@@ -1,5 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.view;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.json.JSONArray;
+
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -10,7 +18,13 @@ import com.atlassian.jira.jql.builder.JqlClauseBuilder;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
-import de.uhd.ifi.se.decision.management.jira.model.*;
+
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.Graph;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Link;
+import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
@@ -18,16 +32,13 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
-import org.json.JSONArray;
-
-import java.util.*;
 
 public class CommentMetricCalculator {
 
-	private Long projectId;
+	private long projectId;
 	private String projectKey;
 	private ApplicationUser user;
-	private JiraIssueCommentPersistenceManager persitenceManager;
+	private JiraIssueCommentPersistenceManager persistenceManager;
 	private String jiraIssueTypeToLinkTo;
 	private final SearchResults searchResults;
 
@@ -35,11 +46,11 @@ public class CommentMetricCalculator {
 
 	private SearchService searchService;
 
-	public CommentMetricCalculator(Long projectId, ApplicationUser user, String jiraIssueTypeToLinkTo){
+	public CommentMetricCalculator(long projectId, ApplicationUser user, String jiraIssueTypeToLinkTo) {
 		this.projectId = projectId;
 		this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
 		this.user = user;
-		this.persitenceManager = new JiraIssueCommentPersistenceManager(projectKey);
+		this.persistenceManager = new JiraIssueCommentPersistenceManager(projectKey);
 		this.searchService = ComponentAccessor.getComponentOfType(SearchService.class);
 		this.jiraIssueTypeToLinkTo = jiraIssueTypeToLinkTo;
 		this.searchResults = getIssuesForThisProject();
@@ -68,7 +79,8 @@ public class CommentMetricCalculator {
 		}
 		for (Issue currentIssue : searchResults.getIssues()) {
 			int count = 0;
-			List<DecisionKnowledgeElement> elements = persitenceManager.getElementsForIssue(currentIssue.getId(), projectKey);
+			List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager.getElementsForIssue(currentIssue.getId(),
+					projectKey);
 			for (DecisionKnowledgeElement dke : elements) {
 				if (dke.getType().equals(type)) {
 					count++;
@@ -80,17 +92,16 @@ public class CommentMetricCalculator {
 	}
 
 	public Map<String, Integer> getNumberOfRelevantSentences() {
-		Map<String, Integer> result = new HashMap<>();
+		Map<String, Integer> result = new HashMap<String, Integer>();
 		int isRelevant = 0;
 		int isNotRelevant = 0;
 		if (searchResults == null || searchResults.getIssues().size() == 0) {
 			return result;
 		}
 
-
 		for (Issue currentIssue : searchResults.getIssues()) {
 			List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager
-					                                          .getElementsForIssue(currentIssue.getId(), projectKey);
+					.getElementsForIssue(currentIssue.getId(), projectKey);
 			for (DecisionKnowledgeElement currentElement : elements) {
 				if (currentElement instanceof Sentence && ((Sentence) currentElement).isRelevant()) {
 					isRelevant++;
@@ -126,7 +137,7 @@ public class CommentMetricCalculator {
 		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
 
 		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
-			dkeCount.put(type.toString(), this.persitenceManager.getDecisionKnowledgeElements(type).size());
+			dkeCount.put(type.toString(), this.persistenceManager.getDecisionKnowledgeElements(type).size());
 		}
 		return dkeCount;
 	}
@@ -135,8 +146,7 @@ public class CommentMetricCalculator {
 		Integer[] statistics = new Integer[4];
 		Arrays.fill(statistics, 0);
 
-
-		List<DecisionKnowledgeElement> listOfIssues = this.persitenceManager.getDecisionKnowledgeElements(linkFrom);
+		List<DecisionKnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(linkFrom);
 
 		for (DecisionKnowledgeElement issue : listOfIssues) {
 			List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
@@ -166,16 +176,16 @@ public class CommentMetricCalculator {
 		return dkeCount;
 	}
 
-	public String issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType linkFrom){
+	public String issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType linkFrom) {
 		String listOfElementsWithoutLink = " ";
-		List<DecisionKnowledgeElement> listOfIssues = this.persitenceManager.getDecisionKnowledgeElements(linkFrom);
+		List<DecisionKnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(linkFrom);
 
 		for (DecisionKnowledgeElement issue : listOfIssues) {
 			boolean hastOtherElementLinked = false;
 
 			if (!hastOtherElementLinked) {
 				if (issue instanceof Sentence
-						    && !listOfElementsWithoutLink.contains(((Sentence) issue).getKey().split(":")[0])) {
+						&& !listOfElementsWithoutLink.contains(((Sentence) issue).getKey().split(":")[0])) {
 					listOfElementsWithoutLink += ((Sentence) issue).getKey().split(":")[0] + " ";
 				}
 			}
@@ -187,7 +197,8 @@ public class CommentMetricCalculator {
 		int alternativesHaveArgument = 0;
 		int alternativesHaveNoArgument = 0;
 
-		List<DecisionKnowledgeElement> alternatives = this.persitenceManager.getDecisionKnowledgeElements(KnowledgeType.ALTERNATIVE);
+		List<DecisionKnowledgeElement> alternatives = this.persistenceManager
+				.getDecisionKnowledgeElements(KnowledgeType.ALTERNATIVE);
 
 		for (DecisionKnowledgeElement currentAlternative : alternatives) {
 			List<Link> links = GenericLinkManager.getLinksForElement(currentAlternative.getId(),
@@ -216,10 +227,9 @@ public class CommentMetricCalculator {
 	}
 
 	public List<Integer> getLinkDistance(KnowledgeType type) {
-		List<Integer> linkDistances = new ArrayList<>();
+		List<Integer> linkDistances = new ArrayList<Integer>();
 
-
-		List<DecisionKnowledgeElement> listOfIssues = this.persitenceManager.getDecisionKnowledgeElements(type);
+		List<DecisionKnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(type);
 
 		for (DecisionKnowledgeElement currentAlternative : listOfIssues) {
 			int depth = graphRecursionBot(currentAlternative);
@@ -299,12 +309,12 @@ public class CommentMetricCalculator {
 	private int graphRecursionBot(DecisionKnowledgeElement dke) {
 		int absolutDepth = 0;
 		Graph graph = new GraphImpl(projectKey, dke.getKey());
-		this.createNodeStructure(dke, null, 100, 1,absolutDepth, graph);
+		this.createNodeStructure(dke, null, 100, 1, absolutDepth, graph);
 		return absolutDepth;
 	}
 
-	private Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth,int absolutDepth,  int currentDepth,
-	                                 Graph graph) {
+	private Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int absolutDepth,
+			int currentDepth, Graph graph) {
 		if (element == null || element.getProject() == null || element.getType() == KnowledgeType.OTHER) {
 			return new Node();
 		}
@@ -318,7 +328,7 @@ public class CommentMetricCalculator {
 		List<Node> nodes = new ArrayList<Node>();
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
 			Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
-					currentDepth + 1,absolutDepth, graph);
+					currentDepth + 1, absolutDepth, graph);
 			if (absolutDepth < currentDepth) {
 				absolutDepth = currentDepth;
 			}
@@ -333,13 +343,12 @@ public class CommentMetricCalculator {
 			return false;
 		}
 		if (this.jiraIssueTypeToLinkTo.equals("WI") && (issueType2.getName().equalsIgnoreCase("User Task")
-				                                                || issueType2.getName().equalsIgnoreCase("Aufgabe"))) {
+				|| issueType2.getName().equalsIgnoreCase("Aufgabe"))) {
 			return true;
 		}
 		return (this.jiraIssueTypeToLinkTo.equals("B")
-				        && (issueType2.getName().equalsIgnoreCase("Bug") || issueType2.getName().equalsIgnoreCase("Fehler")));
+				&& (issueType2.getName().equalsIgnoreCase("Bug") || issueType2.getName().equalsIgnoreCase("Fehler")));
 
 	}
-
 
 }

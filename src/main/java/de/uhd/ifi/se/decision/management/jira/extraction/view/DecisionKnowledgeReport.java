@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.view;
 
 import java.util.HashMap;
 import java.util.Map;
-import com.atlassian.jira.bc.issue.search.SearchService;
 
 import com.atlassian.jira.plugin.report.impl.AbstractReport;
 import com.atlassian.jira.project.ProjectManager;
@@ -17,20 +16,18 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	@JiraImport
 	private final ProjectManager projectManager;
 
-	private Long projectId;
-
-	private SearchService searchService;
+	private long projectId;
 
 	private String jiraIssueTypeToLinkTo;
 
 	public static org.json.JSONObject restResponse;
 
-	// Need these constructurs, instead bean exception
+	// Constructur is needed to prevent bean exception
 	public DecisionKnowledgeReport(ProjectManager projectManager) {
 		this.projectManager = projectManager;
 	}
 
-	// Need these constructurs, instead bean exception
+	// Constructur is needed to prevent bean exception
 	public DecisionKnowledgeReport(ProjectManager projectManager, String rootType) {
 		this.projectManager = projectManager;
 	}
@@ -42,8 +39,8 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	}
 
 	public Map<String, Object> createValues(ProjectActionSupport action) {
-
-		CommentMetricCalculator calculator = new CommentMetricCalculator(this.projectId, action.getLoggedInUser(), this.jiraIssueTypeToLinkTo);
+		CommentMetricCalculator calculator = new CommentMetricCalculator(this.projectId, action.getLoggedInUser(),
+				this.jiraIssueTypeToLinkTo);
 
 		Map<String, Object> velocityParams = new HashMap<>();
 		velocityParams.put("projectName", action.getProjectManager().getProjectObj(this.projectId).getName());
@@ -56,8 +53,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 				calculator.getNumberOfSentencePerIssueMap(KnowledgeType.DECISION));
 
 		// get Number of Issues per Issue
-		velocityParams.put("numIssuesPerIssueMap",
-				calculator.getNumberOfSentencePerIssueMap(KnowledgeType.ISSUE));
+		velocityParams.put("numIssuesPerIssueMap", calculator.getNumberOfSentencePerIssueMap(KnowledgeType.ISSUE));
 
 		// get Number of relevant Sentences per Issue
 		velocityParams.put("numRelevantSentences", calculator.getNumberOfRelevantSentences());
@@ -71,14 +67,19 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 		// Get types of decisions and alternatives linkes to Issue (e.g. has decision
 		// but no alternative)
-		velocityParams.put("numLinksToIssue", calculator.getLinkToOtherElement(KnowledgeType.ISSUE, KnowledgeType.DECISION));
-		velocityParams.put("issuesWithoutDecisionLinks", calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.ISSUE));
-		velocityParams.put("numLinksToDecision", calculator.getLinkToOtherElement(KnowledgeType.DECISION, KnowledgeType.ISSUE));
-		velocityParams.put("decisionsWithoutIssueLinks", calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.DECISION));
+		velocityParams.put("numLinksToIssue",
+				calculator.getLinkToOtherElement(KnowledgeType.ISSUE, KnowledgeType.DECISION));
+		velocityParams.put("issuesWithoutDecisionLinks",
+				calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.ISSUE));
+		velocityParams.put("numLinksToDecision",
+				calculator.getLinkToOtherElement(KnowledgeType.DECISION, KnowledgeType.ISSUE));
+		velocityParams.put("decisionsWithoutIssueLinks",
+				calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.DECISION));
 
 		// Get Number of Alternatives With Arguments
 		velocityParams.put("numAlternativeWoArgument", calculator.getAlternativeArguments());
-		velocityParams.put("issuesWithAltWoArg", calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.ALTERNATIVE));
+		velocityParams.put("issuesWithAltWoArg",
+				calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.ALTERNATIVE));
 
 		// Get Link Distance
 		velocityParams.put("numLinkDistanceAlternative", calculator.getLinkDistance(KnowledgeType.ALTERNATIVE));
@@ -86,10 +87,12 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		velocityParams.put("numLinkDistanceDecision", calculator.getLinkDistance(KnowledgeType.DECISION));
 
 		velocityParams.put("numLinksToIssueTypeIssue", calculator.getLinksToIssueTypeMap(KnowledgeType.ISSUE));
-		velocityParams.put("jiraIssuesWithoutLinksToIssue", calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.ISSUE));
+		velocityParams.put("jiraIssuesWithoutLinksToIssue",
+				calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.ISSUE));
 
-		velocityParams.put("numLinksToIssueTypeDecision",calculator.getLinksToIssueTypeMap(KnowledgeType.DECISION));
-		velocityParams.put("jiraIssuesWithoutLinksToDecision",calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.DECISION));
+		velocityParams.put("numLinksToIssueTypeDecision", calculator.getLinksToIssueTypeMap(KnowledgeType.DECISION));
+		velocityParams.put("jiraIssuesWithoutLinksToDecision",
+				calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.DECISION));
 
 		velocityParams.put("issueType", calculator.getPropperStringForBugAndTasksFromIssueType());
 
@@ -105,6 +108,4 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		this.projectId = ParameterUtils.getLongParam(params, "selectedProjectId");
 		this.jiraIssueTypeToLinkTo = ParameterUtils.getStringParam(params, "rootType");
 	}
-
-
 }
