@@ -20,6 +20,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 
+import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
@@ -282,12 +283,8 @@ public class CommentMetricCalculator {
 	}
 
 	public String getPropperStringForBugAndTasksFromIssueType() {
-		if (this.jiraIssueTypeToLinkTo.equalsIgnoreCase("Wi")) {
-			return "Work Item";
-		} else if (this.jiraIssueTypeToLinkTo.equals("B")) {
-			return "Bug";
-		}
-		return "Unknown Element";
+		System.out.println(JiraIssueTypeGenerator.getJiraIssueTypeName(jiraIssueTypeToLinkTo));
+		return JiraIssueTypeGenerator.getJiraIssueTypeName(jiraIssueTypeToLinkTo);
 	}
 
 	private void requestNumberOfGitCommits(String issueKey) {
@@ -342,13 +339,9 @@ public class CommentMetricCalculator {
 		if (issueType2 == null) {
 			return false;
 		}
-		if (this.jiraIssueTypeToLinkTo.equals("WI") && (issueType2.getName().equalsIgnoreCase("User Task")
-				|| issueType2.getName().equalsIgnoreCase("Aufgabe"))) {
-			return true;
-		}
-		return (this.jiraIssueTypeToLinkTo.equals("B")
-				&& (issueType2.getName().equalsIgnoreCase("Bug") || issueType2.getName().equalsIgnoreCase("Fehler")));
 
+		String jiraIssueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(jiraIssueTypeToLinkTo);
+		return issueType2.getName().equalsIgnoreCase(jiraIssueTypeName);
 	}
 
 }
