@@ -1,109 +1,113 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:report-resources")
 
-<h3 id="decision-knowledge-report-parameters" class="formtitel>
-	Project: $projectName 
+<h3 id="decision-knowledge-report-parameters">
+	JIRA Project: $projectName 
 </h3>
 
-<div id="CommentsPerIssue" class="boxplot" onclick="copyToClipboard(this)"></div>
-<div id="CommitsPerIssue" class="boxplot" onclick="copyToClipboard(this)"></div>
-<div id="DecisionsPerIssue" class="boxplot" onclick="copyToClipboard(this)"></div>
-<div id="IssuesPerIssue" class="boxplot" onclick="copyToClipboard(this)"></div>
-<div id="LinkDistanceIssue" class="boxplot" onclick="copyToClipboard(this)"></div>
-<div id="LinkDistanceAlternative" class="boxplot" onclick="copyToClipboard(this)"></div>
-<div id="LinkDistanceDecision" class="boxplot" onclick="copyToClipboard(this)"></div>
+<div>
+	<div id="boxplot-comments-per-jira-issue" class="boxplot" onclick="copyToClipboard(this)"></div>
+	<div id="boxplot-commits-per-jira-issue" class="boxplot" onclick="copyToClipboard(this)"></div>
+	<div id="boxplot-decisions-per-jira-issue" class="boxplot" onclick="copyToClipboard(this)"></div>
+	<div id="boxplot-issues-per-jira-issue" class="boxplot" onclick="copyToClipboard(this)"></div>
+	<div id="boxplot-link-distance-from-issue" class="boxplot" onclick="copyToClipboard(this)"></div>
+	<div id="boxplot-link-distance-from-alternative" class="boxplot" onclick="copyToClipboard(this)"></div>
+	<div id="boxplot-link-distance-from-decision" class="boxplot" onclick="copyToClipboard(this)"></div>
+</div>
 
-<div id="relevantSentences" class="piechart"  onclick="copyToClipboard(this)"></div>
-<div id="knowledgeTypeDist" class="piechart" onclick="copyToClipboard(this)"></div>
-<div id="issueLink" class="piechart" onclick="copyToClipboard(this)"></div>
-<div id="decisionLink" class="piechart" onclick="copyToClipboard(this)"></div>
-<div id="altWithArguments" class="piechart" onclick="copyToClipboard(this)"></div>
-<div id="linksFromWiToIssue" class="piechart" onclick="copyToClipboard(this)"></div>
-<div id="linksFromWiToDecision" class="piechart" onclick="copyToClipboard(this)"></div>
+<div>
+	<div id="piechart-relevant-sentences" class="piechart"  onclick="copyToClipboard(this)"></div>
+	<div id="piechart-knowledge-type-distribution" class="piechart" onclick="copyToClipboard(this)"></div>
+	<div id="issueLink" class="piechart" onclick="copyToClipboard(this)"></div>
+	<div id="decisionLink" class="piechart" onclick="copyToClipboard(this)"></div>
+	<div id="altWithArguments" class="piechart" onclick="copyToClipboard(this)"></div>
+	<div id="linksFromWiToIssue" class="piechart" onclick="copyToClipboard(this)"></div>
+	<div id="linksFromWiToDecision" class="piechart" onclick="copyToClipboard(this)"></div>
+</div>
 
 <script type="text/javascript">
-	var map = new Map();
-	#foreach ($item in $numCommentsPerIssueMap.keySet())
-		map.set("$item", $numCommentsPerIssueMap.get("$item"));
+	map = new Map();
+	#foreach ($item in $numberOfCommentsForJiraIssues.keySet())
+		map.set("$item", $numberOfCommentsForJiraIssues.get("$item"));
 	#end
-	conDecReport.initializeDivWithBoxPlotFromMap('CommentsPerIssue', map, "Comments/Issue", "Comments per\n JIRA Issue");
+	conDecReport.initializeDivWithBoxPlotFromMap("boxplot-comments-per-jira-issue", map, "\#Comments per JIRA Issue", "");
 
 	map = new Map();
-	#foreach ($item in $numDecisionsPerIssueMap.keySet())
-		map.set("$item", $numDecisionsPerIssueMap.get("$item"));
+	#foreach ($item in $numberOfDecisionsForJiraIssues.keySet())
+		map.set("$item", $numberOfDecisionsForJiraIssues.get("$item"));
 	#end
-	conDecReport.initializeDivWithBoxPlotFromMap('DecisionsPerIssue',map,"Decisions/JIRA Issue","Decisions per\n JIRA Issue");
+	conDecReport.initializeDivWithBoxPlotFromMap("boxplot-decisions-per-jira-issue", map, "\#Decisions per JIRA Issue", "");
 
 	map = new Map();
-	#foreach ($item in $numIssuesPerIssueMap.keySet())
-		map.set("$item", $numIssuesPerIssueMap.get("$item"));
+	#foreach ($item in $numberOfIssuesForJiraIssues.keySet())
+		map.set("$item", $numberOfIssuesForJiraIssues.get("$item"));
 	#end
-	conDecReport.initializeDivWithBoxPlotFromMap('IssuesPerIssue',map,"Issues/JIRA Issue","Issues per\n JIRA Issue");
+	conDecReport.initializeDivWithBoxPlotFromMap("boxplot-issues-per-jira-issue", map, "\#Issues per JIRA Issue", "");
 
 	map = new Map();
-	#foreach ($item in $numCommitsPerIssueMap.keySet())
-		map.set("$item", $numCommitsPerIssueMap.get("$item"));
+	#foreach ($item in $numberOfCommitsForJiraIssues.keySet())
+		map.set("$item", $numberOfCommitsForJiraIssues.get("$item"));
 	#end
-	conDecReport.initializeDivWithBoxPlotFromMap('CommitsPerIssue',map,"Commits per JIRA issue","Commits per\n JIRA Issue");
+	conDecReport.initializeDivWithBoxPlotFromMap("boxplot-commits-per-jira-issue", map, "\#Commits per JIRA Issue", "");
 
-	conDecReport.initializeDivWithBoxPlot('LinkDistanceIssue',$numLinkDistanceIssue,"Link distance","Link distance\nfrom Issue");
-	conDecReport.initializeDivWithBoxPlot('LinkDistanceAlternative',$numLinkDistanceAlternative,"Link distance","Link distance\nfrom Alternative");
-	conDecReport.initializeDivWithBoxPlot('LinkDistanceDecision',$numLinkDistanceDecision,"Link distance","Link distance\nfrom Decision");
+	conDecReport.initializeDivWithBoxPlot("boxplot-link-distance-from-issue", $numLinkDistanceIssue, "Link Distance from Issue", "");
+	conDecReport.initializeDivWithBoxPlot("boxplot-link-distance-from-alternative", $numLinkDistanceAlternative, "Link Distance from Alternative", "");
+	conDecReport.initializeDivWithBoxPlot("boxplot-link-distance-from-decision", $numLinkDistanceDecision, "Link Distance from Decision", "");
       
 	map = new Map();
 	#foreach ($item in $numRelevantSentences.keySet())
 		map.set("$item", $numRelevantSentences.get("$item"));
 	#end
-	conDecReport.initializeDivWithPieChart("relevantSentences","Relevance of Sentences","",map);
+	conDecReport.initializeDivWithPieChart("piechart-relevant-sentences", "", "Relevance of Sentences in JIRA Issue Comments", map);
 
 	map = new Map();
 	#foreach ($item in $numKnowledgeTypesPerIssue.keySet())
 		map.set("$item", $numKnowledgeTypesPerIssue.get("$item"));
 	#end
-	conDecReport.initializeDivWithPieChart("knowledgeTypeDist","Knowledge Types","",map);
+	conDecReport.initializeDivWithPieChart("piechart-knowledge-type-distribution", "", "Distribution of Knowledge Types", map);
 
 	map = new Map();
 	#foreach ($item in $numLinksToIssue.keySet())
 		map.set("$item", $numLinksToIssue.get("$item"));
 	#end
-	conDecReport.initializeDivWithPieChart("issueLink", "Issue linked to Decision", "", map);
+	conDecReport.initializeDivWithPieChart("issueLink", "", "How many issues (=decision problems) are solved by a decision?", map);
 	document.getElementById("issueLink").setAttribute("list", "$issuesWithoutDecisionLinks");
 
 	map = new Map();
 	#foreach ($item in $numLinksToDecision.keySet())
 		map.set("$item", $numLinksToDecision.get("$item"));
 	#end
-	conDecReport.initializeDivWithPieChart("decisionLink","Decision linked to Issue","",map);
+	conDecReport.initializeDivWithPieChart("decisionLink", "", "For how many decisions is the issue (=decision problem) documented?", map);
 	document.getElementById("decisionLink").setAttribute("list", "$issuesWithoutDecisionLinks");
 
 	map = new Map();
 	#foreach ($item in $numAlternativeWoArgument.keySet())
 		map.set("$item", $numAlternativeWoArgument.get("$item"));
 	#end
-	conDecReport.initializeDivWithPieChart("altWithArguments","Arguments for Alternatives","",map);
+	conDecReport.initializeDivWithPieChart("altWithArguments", "", "Arguments for Alternatives", map);
 	document.getElementById("altWithArguments").setAttribute("list", "$issuesWithAltWoArg");
 
 	map = new Map();
 	#foreach ($item in $numLinksToIssueTypeIssue.keySet())
 		map.set("$item", $numLinksToIssueTypeIssue.get("$item"));
 	#end
-	conDecReport.initializeDivWithPieChart("linksFromWiToIssue","Links from to Issue","",map);
+	conDecReport.initializeDivWithPieChart("linksFromWiToIssue", "", "Links from to Issue", map);
 
 	map = new Map();
 	#foreach ($item in $numLinksToIssueTypeIssue.keySet())
 		map.set("$item", $numLinksToIssueTypeIssue.get("$item"));
 	#end
-	conDecReport.initializeDivWithPieChart("linksFromWiToIssue","Links from $issueType to Issue","",map);
+	conDecReport.initializeDivWithPieChart("linksFromWiToIssue", "", "Links from $issueType to Issue", map);
 	document.getElementById("linksFromWiToIssue").setAttribute("list", "$jiraIssuesWithoutLinksToIssue");
 
 	map = new Map();
 	#foreach ($item in $numLinksToIssueTypeDecision.keySet())
 		map.set("$item", $numLinksToIssueTypeDecision.get("$item"));
 	#end
-	conDecReport.initializeDivWithPieChart("linksFromWiToDecision","Links from $issueType to Decision","",map);
+	conDecReport.initializeDivWithPieChart("linksFromWiToDecision", "", "Links from $issueType to Decision", map);
 	document.getElementById("linksFromWiToDecision").setAttribute("list", "$jiraIssuesWithoutLinksToDecision");
 
-	function copyToClipboard(parent){
+	function copyToClipboard(parent) {
 		var copyText = document.getElementById(parent.id).getAttribute("list");
 		prompt("Data Points:", copyText);
 	}      

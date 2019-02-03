@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.view;
+package de.uhd.ifi.se.decision.management.jira.extraction.metrics;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,7 +69,7 @@ public class CommentMetricCalculator {
 		return searchResult;
 	}
 
-	public Map<String, Integer> getNumberOfCommentsPerIssueMap() {
+	public Map<String, Integer> getNumberOfCommentsForJiraIssues() {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		if (searchResults == null || searchResults.getIssues().size() == 0) {
 			return result;
@@ -79,13 +79,14 @@ public class CommentMetricCalculator {
 			try {
 				size = ComponentAccessor.getCommentManager().getComments(issue).size();
 				result.put(issue.getKey(), size);
-			} catch (NullPointerException e) {// Issue does not exist
+			} catch (NullPointerException e) {
+				// Jira issue does not exist
 			}
 		}
 		return result;
 	}
 
-	public Map<String, Integer> getNumberOfSentencePerIssueMap(KnowledgeType type) {
+	public Map<String, Integer> getNumberOfSentencesForJiraIssues(KnowledgeType type) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		if (searchResults == null || searchResults.getIssues().size() == 0) {
 			return result;
@@ -129,7 +130,7 @@ public class CommentMetricCalculator {
 		return result;
 	}
 
-	public Map<String, Integer> getNumberOfCommitsPerIssueMap() {
+	public Map<String, Integer> getNumberOfCommitsForJiraIssues() {
 		Map<String, Integer> resultMap = new HashMap<String, Integer>();
 		for (Issue issue : searchResults.getIssues()) {
 			requestNumberOfGitCommits(issue.getKey());
@@ -275,14 +276,14 @@ public class CommentMetricCalculator {
 				withoutLink++;
 			}
 		}
-		result.put("Links from " + getPropperStringForBugAndTasksFromIssueType() + " " + knowledgeType.toString(),
+		result.put("Links from " + getJiraIssueTypeName() + " " + knowledgeType.toString(),
 				withLink);
-		result.put("No links from " + getPropperStringForBugAndTasksFromIssueType() + " " + knowledgeType.toString(),
+		result.put("No links from " + getJiraIssueTypeName() + " " + knowledgeType.toString(),
 				withoutLink);
 		return result;
 	}
 
-	public String getPropperStringForBugAndTasksFromIssueType() {
+	public String getJiraIssueTypeName() {
 		System.out.println(JiraIssueTypeGenerator.getJiraIssueTypeName(jiraIssueTypeToLinkTo));
 		return JiraIssueTypeGenerator.getJiraIssueTypeName(jiraIssueTypeToLinkTo);
 	}

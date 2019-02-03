@@ -9,7 +9,7 @@ import com.atlassian.jira.util.ParameterUtils;
 import com.atlassian.jira.web.action.ProjectActionSupport;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.view.CommentMetricCalculator;
+import de.uhd.ifi.se.decision.management.jira.extraction.metrics.CommentMetricCalculator;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
@@ -46,21 +46,30 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		Map<String, Object> velocityParams = new HashMap<String, Object>();
 		velocityParams.put("projectName", action.getProjectManager().getProjectObj(this.projectId).getName());
 
-		// Number of comments per JIRA issue
-		velocityParams.put("numCommentsPerIssueMap", calculator.getNumberOfCommentsPerIssueMap());
+		// Name of selected JIRA issue type
+		velocityParams.put("issueType", calculator.getJiraIssueTypeName());
 
-		// Number of decisions per JIRA issue
-		velocityParams.put("numDecisionsPerIssueMap",
-				calculator.getNumberOfSentencePerIssueMap(KnowledgeType.DECISION));
+		// Number of comments per JIRA issue
+		velocityParams.put("numberOfCommentsForJiraIssues", calculator.getNumberOfCommentsForJiraIssues());
+
+		// Number of commits per JIRA issue
+		velocityParams.put("numberOfCommitsForJiraIssues", calculator.getNumberOfCommitsForJiraIssues());
 
 		// Number of issues (decision problems) per JIRA issue
-		velocityParams.put("numIssuesPerIssueMap", calculator.getNumberOfSentencePerIssueMap(KnowledgeType.ISSUE));
+		velocityParams.put("numberOfIssuesForJiraIssues",
+				calculator.getNumberOfSentencesForJiraIssues(KnowledgeType.ISSUE));
+
+		// Number of decisions per JIRA issue
+		velocityParams.put("numberOfDecisionsForJiraIssues",
+				calculator.getNumberOfSentencesForJiraIssues(KnowledgeType.DECISION));
+
+		// Link distance from elements with certain knowledge type
+		velocityParams.put("numLinkDistanceIssue", calculator.getLinkDistance(KnowledgeType.ISSUE));
+		velocityParams.put("numLinkDistanceAlternative", calculator.getLinkDistance(KnowledgeType.ALTERNATIVE));
+		velocityParams.put("numLinkDistanceDecision", calculator.getLinkDistance(KnowledgeType.DECISION));
 
 		// Number of relevant sentences per JIRA issue
 		velocityParams.put("numRelevantSentences", calculator.getNumberOfRelevantSentences());
-
-		// Number of commits per JIRA issue
-		velocityParams.put("numCommitsPerIssueMap", calculator.getNumberOfCommitsPerIssueMap());
 
 		// Get associated Knowledge Types in Sentences per Issue
 		velocityParams.put("numKnowledgeTypesPerIssue", calculator.getDecKnowElementsPerIssue());
@@ -81,11 +90,6 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		velocityParams.put("issuesWithAltWoArg",
 				calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.ALTERNATIVE));
 
-		// Get Link Distance
-		velocityParams.put("numLinkDistanceAlternative", calculator.getLinkDistance(KnowledgeType.ALTERNATIVE));
-		velocityParams.put("numLinkDistanceIssue", calculator.getLinkDistance(KnowledgeType.ISSUE));
-		velocityParams.put("numLinkDistanceDecision", calculator.getLinkDistance(KnowledgeType.DECISION));
-
 		velocityParams.put("numLinksToIssueTypeIssue", calculator.getLinksToIssueTypeMap(KnowledgeType.ISSUE));
 		velocityParams.put("jiraIssuesWithoutLinksToIssue",
 				calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.ISSUE));
@@ -93,8 +97,6 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		velocityParams.put("numLinksToIssueTypeDecision", calculator.getLinksToIssueTypeMap(KnowledgeType.DECISION));
 		velocityParams.put("jiraIssuesWithoutLinksToDecision",
 				calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.DECISION));
-
-		velocityParams.put("issueType", calculator.getPropperStringForBugAndTasksFromIssueType());
 
 		return velocityParams;
 	}

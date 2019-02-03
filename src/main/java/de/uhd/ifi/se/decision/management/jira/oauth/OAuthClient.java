@@ -25,7 +25,7 @@ import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.view.CommentMetricCalculator;
+import de.uhd.ifi.se.decision.management.jira.extraction.metrics.CommentMetricCalculator;
 
 public class OAuthClient {
 

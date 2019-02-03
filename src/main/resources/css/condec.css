@@ -26,13 +26,14 @@ a:focus a:hover {
 }
 
 .boxplot {
-	width:200px; 
-	height:400px; 
-	display:inline-block;
+	width: 200px;
+	height: 360px;
+	display: inline-block;
 }
 
 .piechart {
-	width:500px; 
-	height:400px; 
-	display:inline-block;
+	width: 410px;
+	height: 260px;
+	display: inline-block;
+	margin-bottom: 20px;
 }
