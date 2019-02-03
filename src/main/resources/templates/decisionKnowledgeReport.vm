@@ -1,8 +1,8 @@
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:report-resources")
 
-<h3 id="decision-knowledge-report-parameters">
-	$i18n.getText('condec.jira.project'): $projectName 
+<h3>
+	$i18n.getText("condec.jira.project"): $projectName 
 </h3>
 
 <div>
@@ -18,8 +18,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:repo
 <div>
 	<div id="piechart-relevant-sentences" class="piechart"  onclick="copyToClipboard(this)"></div>
 	<div id="piechart-knowledge-type-distribution" class="piechart" onclick="copyToClipboard(this)"></div>
-	<div id="issueLink" class="piechart" onclick="copyToClipboard(this)"></div>
-	<div id="decisionLink" class="piechart" onclick="copyToClipboard(this)"></div>
+	<div id="piechart-issues-solved-by-decision" class="piechart" onclick="copyToClipboard(this)"></div>
+	<div id="piechart-issue-documented-for-decision" class="piechart" onclick="copyToClipboard(this)"></div>
 	<div id="altWithArguments" class="piechart" onclick="copyToClipboard(this)"></div>
 	<div id="linksFromWiToIssue" class="piechart" onclick="copyToClipboard(this)"></div>
 	<div id="linksFromWiToDecision" class="piechart" onclick="copyToClipboard(this)"></div>
@@ -67,18 +67,18 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:repo
 	conDecReport.initializeDivWithPieChart("piechart-knowledge-type-distribution", "", "Distribution of Knowledge Types", map);
 
 	map = new Map();
-	#foreach ($item in $numLinksToIssue.keySet())
-		map.set("$item", $numLinksToIssue.get("$item"));
+	#foreach ($item in $numberOfLinksFromIssuesToDecisions.keySet())
+		map.set("$item", $numberOfLinksFromIssuesToDecisions.get("$item"));
 	#end
-	conDecReport.initializeDivWithPieChart("issueLink", "", "How many issues (=decision problems) are solved by a decision?", map);
-	document.getElementById("issueLink").setAttribute("list", "$issuesWithoutDecisionLinks");
+	conDecReport.initializeDivWithPieChart("piechart-issues-solved-by-decision", "", "How many issues (=decision problems) are solved by a decision?", map);
+	document.getElementById("piechart-issues-solved-by-decision").setAttribute("list", "$issuesWithoutDecisionLinks");
 
 	map = new Map();
-	#foreach ($item in $numLinksToDecision.keySet())
-		map.set("$item", $numLinksToDecision.get("$item"));
+	#foreach ($item in $numberOfLinksFromDecisionsToIssues.keySet())
+		map.set("$item", $numberOfLinksFromDecisionsToIssues.get("$item"));
 	#end
-	conDecReport.initializeDivWithPieChart("decisionLink", "", "For how many decisions is the issue (=decision problem) documented?", map);
-	document.getElementById("decisionLink").setAttribute("list", "$issuesWithoutDecisionLinks");
+	conDecReport.initializeDivWithPieChart("piechart-issue-documented-for-decision", "", "For how many decisions is the issue (=decision problem) documented?", map);
+	document.getElementById("piechart-issue-documented-for-decision").setAttribute("list", "$decisionsWithoutIssueLinks");
 
 	map = new Map();
 	#foreach ($item in $numAlternativeWoArgument.keySet())

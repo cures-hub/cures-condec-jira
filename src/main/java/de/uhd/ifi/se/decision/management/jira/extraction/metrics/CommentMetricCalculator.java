@@ -152,12 +152,13 @@ public class CommentMetricCalculator {
 	public Map<String, Integer> getDistributionOfKnowledgeTypes() {
 		Map<String, Integer> distributionOfKnowledgeTypes = new HashMap<String, Integer>();
 		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
-			distributionOfKnowledgeTypes.put(type.toString(), this.persistenceManager.getDecisionKnowledgeElements(type).size());
+			distributionOfKnowledgeTypes.put(type.toString(),
+					this.persistenceManager.getDecisionKnowledgeElements(type).size());
 		}
 		return distributionOfKnowledgeTypes;
 	}
 
-	public Map<String, Integer> getLinkToOtherElement(KnowledgeType linkFrom, KnowledgeType linkTo1) {
+	public Map<String, Integer> getNumberOfLinksToOtherElement(KnowledgeType linkFrom, KnowledgeType linkTo) {
 		Integer[] statistics = new Integer[4];
 		Arrays.fill(statistics, 0);
 
@@ -171,7 +172,7 @@ public class CommentMetricCalculator {
 			for (Link link : links) {
 				if (link.isValid()) {
 					DecisionKnowledgeElement dke = link.getOppositeElement(issue.getId());
-					if (dke instanceof Sentence && dke.getType().equals(linkTo1)) { // alt
+					if (dke instanceof Sentence && dke.getType().equals(linkTo)) { // alt
 						hastOtherElementLinked = true;
 					}
 				}
@@ -185,8 +186,8 @@ public class CommentMetricCalculator {
 
 		// Hashmaps as counter suck
 		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
-		dkeCount.put("Has " + linkTo1.toString(), statistics[0]);
-		dkeCount.put("Has no " + linkTo1.toString(), statistics[1]);
+		dkeCount.put(linkFrom.toString() + " has " + linkTo.toString(), statistics[0]);
+		dkeCount.put(linkFrom.toString() + " has no " + linkTo.toString(), statistics[1]);
 
 		return dkeCount;
 	}
@@ -196,13 +197,9 @@ public class CommentMetricCalculator {
 		List<DecisionKnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(linkFrom);
 
 		for (DecisionKnowledgeElement issue : listOfIssues) {
-			boolean hastOtherElementLinked = false;
-
-			if (!hastOtherElementLinked) {
-				if (issue instanceof Sentence
-						&& !listOfElementsWithoutLink.contains(((Sentence) issue).getKey().split(":")[0])) {
-					listOfElementsWithoutLink += ((Sentence) issue).getKey().split(":")[0] + " ";
-				}
+			if (issue instanceof Sentence
+					&& !listOfElementsWithoutLink.contains(((Sentence) issue).getKey().split(":")[0])) {
+				listOfElementsWithoutLink += ((Sentence) issue).getKey().split(":")[0] + " ";
 			}
 		}
 		return listOfElementsWithoutLink;
@@ -271,7 +268,7 @@ public class CommentMetricCalculator {
 					}
 				}
 			}
-			
+
 			if (linkExisting) {
 				withLink++;
 			} else {

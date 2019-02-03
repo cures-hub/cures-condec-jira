@@ -4,10 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.atlassian.jira.plugin.report.impl.AbstractReport;
-import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.util.ParameterUtils;
 import com.atlassian.jira.web.action.ProjectActionSupport;
-import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.extraction.metrics.CommentMetricCalculator;
@@ -18,20 +16,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
  */
 public class DecisionKnowledgeReport extends AbstractReport {
 
-	@JiraImport
-	private final ProjectManager projectManager;
 	private long projectId;
 	private String jiraIssueTypeId;
-
-	// Constructur is needed to prevent bean exception
-	public DecisionKnowledgeReport(ProjectManager projectManager) {
-		this.projectManager = projectManager;
-	}
-
-	// Constructur is needed to prevent bean exception
-	public DecisionKnowledgeReport(ProjectManager projectManager, String rootType) {
-		this.projectManager = projectManager;
-	}
 
 	@Override
 	@SuppressWarnings("rawtypes")
@@ -75,14 +61,15 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		// Distribution of Knowledge Types in JIRA project
 		velocityParams.put("distriutionOfKnowledgeTypesInProject", calculator.getDistributionOfKnowledgeTypes());
 
-		// Get types of decisions and alternatives linkes to Issue (e.g. has decision
-		// but no alternative)
-		velocityParams.put("numLinksToIssue",
-				calculator.getLinkToOtherElement(KnowledgeType.ISSUE, KnowledgeType.DECISION));
+		// How many issues (=decision problems) are solved by a decision?
+		velocityParams.put("numberOfLinksFromIssuesToDecisions",
+				calculator.getNumberOfLinksToOtherElement(KnowledgeType.ISSUE, KnowledgeType.DECISION));
 		velocityParams.put("issuesWithoutDecisionLinks",
 				calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.ISSUE));
-		velocityParams.put("numLinksToDecision",
-				calculator.getLinkToOtherElement(KnowledgeType.DECISION, KnowledgeType.ISSUE));
+
+		// For how many decisions is the issue (=decision problem) documented?
+		velocityParams.put("numberOfLinksFromDecisionsToIssues",
+				calculator.getNumberOfLinksToOtherElement(KnowledgeType.DECISION, KnowledgeType.ISSUE));
 		velocityParams.put("decisionsWithoutIssueLinks",
 				calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.DECISION));
 

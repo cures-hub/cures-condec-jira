@@ -60,7 +60,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
 		ProjectManager a = ComponentAccessor.getProjectManager();
-		this.report = new DecisionKnowledgeReport(a, "");
+		this.report = new DecisionKnowledgeReport();
 		//this.report.setSearchService(new MockSearchService());
 
 		ProjectActionSupport pas = new MockProjectActionSupport();
