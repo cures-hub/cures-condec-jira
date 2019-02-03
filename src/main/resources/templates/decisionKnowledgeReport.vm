@@ -20,7 +20,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:repo
 	<div id="piechart-knowledge-type-distribution" class="piechart" onclick="copyToClipboard(this)"></div>
 	<div id="piechart-issues-solved-by-decision" class="piechart" onclick="copyToClipboard(this)"></div>
 	<div id="piechart-issue-documented-for-decision" class="piechart" onclick="copyToClipboard(this)"></div>
-	<div id="altWithArguments" class="piechart" onclick="copyToClipboard(this)"></div>
+	<div id="piechart-argument-documented-for-alternative" class="piechart" onclick="copyToClipboard(this)"></div>
 	<div id="linksFromWiToIssue" class="piechart" onclick="copyToClipboard(this)"></div>
 	<div id="linksFromWiToDecision" class="piechart" onclick="copyToClipboard(this)"></div>
 </div>
@@ -84,8 +84,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:repo
 	#foreach ($item in $numAlternativeWoArgument.keySet())
 		map.set("$item", $numAlternativeWoArgument.get("$item"));
 	#end
-	conDecReport.initializeDivWithPieChart("altWithArguments", "", "Arguments for Alternatives", map);
-	document.getElementById("altWithArguments").setAttribute("list", "$issuesWithAltWoArg");
+	conDecReport.initializeDivWithPieChart("piechart-argument-documented-for-alternative", "", "How many alternatives have at least one arguments documented?", map);
+	document.getElementById("piechart-argument-documented-for-alternative").setAttribute("list", "$issuesWithAltWoArg");
 
 	map = new Map();
 	#foreach ($item in $numLinksToIssueTypeIssue.keySet())

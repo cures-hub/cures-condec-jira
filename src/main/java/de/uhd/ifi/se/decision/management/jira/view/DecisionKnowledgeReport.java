@@ -73,7 +73,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		velocityParams.put("decisionsWithoutIssueLinks",
 				calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.DECISION));
 
-		// Get Number of Alternatives With Arguments
+		// How many alternatives have at least one argument documented?
 		velocityParams.put("numAlternativeWoArgument", calculator.getAlternativeArguments());
 		velocityParams.put("issuesWithAltWoArg",
 				calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.ALTERNATIVE));

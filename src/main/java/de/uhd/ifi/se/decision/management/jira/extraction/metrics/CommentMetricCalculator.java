@@ -278,8 +278,8 @@ public class CommentMetricCalculator {
 
 		String jiraIssueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(jiraIssueTypeId);
 
-		result.put("Links from " + jiraIssueTypeName + " " + knowledgeType.toString(), withLink);
-		result.put("No links from " + jiraIssueTypeName + " " + knowledgeType.toString(), withoutLink);
+		result.put("Links from " + jiraIssueTypeName + " to " + knowledgeType.toString(), withLink);
+		result.put("No links from " + jiraIssueTypeName + " to " + knowledgeType.toString(), withoutLink);
 		return result;
 	}
 
