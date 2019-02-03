@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.view;
+package de.uhd.ifi.se.decision.management.jira.view;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -36,6 +36,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.view.DecisionKnowledgeReport;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;

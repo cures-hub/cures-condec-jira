@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.view;
+package de.uhd.ifi.se.decision.management.jira.view;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +9,7 @@ import com.atlassian.jira.util.ParameterUtils;
 import com.atlassian.jira.web.action.ProjectActionSupport;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.view.CommentMetricCalculator;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**

@@ -300,7 +300,7 @@
 
 	<!-- Decision Knowledge Report -->
 	<report name="Decision Knowledge Report" key="decision-knowledge-report"
-		class="de.uhd.ifi.se.decision.management.jira.extraction.view.DecisionKnowledgeReport">
+		class="de.uhd.ifi.se.decision.management.jira.view.DecisionKnowledgeReport">
 		<label key="condec.report.label" />
 		<description key="condec.report.description" />
 		<resource name="view" type="velocity" location="/templates/decisionKnowledgeReport.vm" />

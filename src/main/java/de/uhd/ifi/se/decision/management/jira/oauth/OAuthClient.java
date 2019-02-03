@@ -25,7 +25,7 @@ import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.view.DecisionKnowledgeReport;
+import de.uhd.ifi.se.decision.management.jira.extraction.view.CommentMetricCalculator;
 
 public class OAuthClient {
 
@@ -151,7 +151,7 @@ public class OAuthClient {
 			scannerWithDelimiter.close();
 			response.getContent().close();
 			JSONObject jsonObj = new JSONObject(result);
-			DecisionKnowledgeReport.restResponse = jsonObj;
+			CommentMetricCalculator.restResponse = jsonObj;
 			this.result = jsonObj;
 		} catch (Exception e) {
 			LOGGER.debug("Error while reading response:\n" + e.getMessage());
