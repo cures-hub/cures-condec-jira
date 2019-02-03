@@ -12,13 +12,15 @@ import com.atlassian.jira.portal.SortingValuesGenerator;
 import com.atlassian.jira.project.Project;
 
 /**
- * Provides the JIRA issue types for the decision knowledge report.
+ * Provides a list of JIRA issue types for the decision knowledge report. The
+ * user needs to select one from this list.
  */
 public class JiraIssueTypeGenerator extends SortingValuesGenerator {
 
 	@Override
 	@SuppressWarnings("rawtypes")
-	// @issue: How can we get the project id for the selected project? Is the projectId part of params?
+	// @issue: How can we get the project id for the selected project? Is the
+	// projectId part of params?
 	public Map<String, String> getValues(Map params) {
 		Map<String, String> jiraIssueTypes = new HashMap<String, String>();
 

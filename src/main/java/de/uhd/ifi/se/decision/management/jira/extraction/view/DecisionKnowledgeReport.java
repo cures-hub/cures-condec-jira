@@ -11,16 +11,15 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
+/**
+ * Renders the report page.
+ */
 public class DecisionKnowledgeReport extends AbstractReport {
 
 	@JiraImport
 	private final ProjectManager projectManager;
-
 	private long projectId;
-
-	private String jiraIssueTypeToLinkTo;
-
-	public static org.json.JSONObject restResponse;
+	private String jiraIssueType;
 
 	// Constructur is needed to prevent bean exception
 	public DecisionKnowledgeReport(ProjectManager projectManager) {
@@ -32,6 +31,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		this.projectManager = projectManager;
 	}
 
+	@Override
 	@SuppressWarnings("rawtypes")
 	public String generateReportHtml(ProjectActionSupport action, Map params) throws Exception {
 		Map<String, Object> velocityParams = createValues(action);
@@ -40,7 +40,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 	public Map<String, Object> createValues(ProjectActionSupport action) {
 		CommentMetricCalculator calculator = new CommentMetricCalculator(this.projectId, action.getLoggedInUser(),
-				this.jiraIssueTypeToLinkTo);
+				this.jiraIssueType);
 
 		Map<String, Object> velocityParams = new HashMap<String, Object>();
 		velocityParams.put("projectName", action.getProjectManager().getProjectObj(this.projectId).getName());
@@ -99,12 +99,13 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	}
 
 	/**
-	 * Seems to be uncalled, but is called automatically to transfer velocity
+	 * Seems to be uncalled, but is automatically called to transfer velocity
 	 * variables.
 	 */
+	@Override
 	@SuppressWarnings("rawtypes")
 	public void validate(ProjectActionSupport action, Map params) {
 		this.projectId = ParameterUtils.getLongParam(params, "selectedProjectId");
-		this.jiraIssueTypeToLinkTo = ParameterUtils.getStringParam(params, "issueType");
+		this.jiraIssueType = ParameterUtils.getStringParam(params, "issueType");
 	}
 }

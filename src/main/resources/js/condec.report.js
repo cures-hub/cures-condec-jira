@@ -1,3 +1,12 @@
+/*
+ This module fills the box plots and pie charts used in the report page.
+
+ Requires
+ * echart
+
+ Is referenced in HTML by
+ * decisionKnowledgeReport.vm
+ */
 (function(global) {
 
 	var ConDecReport = function ConDecReport() {
