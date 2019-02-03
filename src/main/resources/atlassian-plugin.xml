@@ -307,7 +307,7 @@
 		<properties>
 			<property>
 				<key>selectedProjectId</key>
-				<name>JIRA Project</name>
+				<name key="condec.jira.project" />
 				<description key="condec.report.project.description" />
 				<type>filterprojectpicker</type>
 			</property>

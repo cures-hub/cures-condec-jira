@@ -37,123 +37,124 @@ import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
 
 public class CommentMetricCalculator {
 
-	private long projectId;
 	private String projectKey;
 	private ApplicationUser user;
 	private JiraIssueCommentPersistenceManager persistenceManager;
-	private String jiraIssueTypeToLinkTo;
-	private final SearchResults searchResults;
+	private String jiraIssueTypeId;
+	private List<Issue> jiraIssues;
 
 	public static org.json.JSONObject restResponse;
 
-	private SearchService searchService;
-
-	public CommentMetricCalculator(long projectId, ApplicationUser user, String jiraIssueTypeToLinkTo) {
-		this.projectId = projectId;
+	public CommentMetricCalculator(long projectId, ApplicationUser user, String jiraIssueTypeId) {
 		this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
 		this.user = user;
 		this.persistenceManager = new JiraIssueCommentPersistenceManager(projectKey);
-		this.searchService = ComponentAccessor.getComponentOfType(SearchService.class);
-		this.jiraIssueTypeToLinkTo = jiraIssueTypeToLinkTo;
-		this.searchResults = getIssuesForThisProject();
+		this.jiraIssueTypeId = jiraIssueTypeId;
+		this.jiraIssues = getJiraIssuesForProject(projectId);
 	}
 
-	private SearchResults getIssuesForThisProject() {
+	private List<Issue> getJiraIssuesForProject(long projectId) {
+		List<Issue> jiraIssues = new ArrayList<Issue>();
 		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
-		Query query = jqlClauseBuilder.project(this.projectId).buildQuery();
+		Query query = jqlClauseBuilder.project(projectId).buildQuery();
 		SearchResults searchResult = new SearchResults(null, 0, 0, 0);
+		SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
 		try {
 			searchResult = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
+			jiraIssues.addAll(searchResult.getIssues());
 		} catch (SearchException e) {
 		}
-		return searchResult;
+		return jiraIssues;
 	}
 
 	public Map<String, Integer> getNumberOfCommentsForJiraIssues() {
-		Map<String, Integer> result = new HashMap<String, Integer>();
-		if (searchResults == null || searchResults.getIssues().size() == 0) {
-			return result;
-		}
-		for (Issue issue : searchResults.getIssues()) {
-			int size = 0;
+		Map<String, Integer> numberOfCommentsForJiraIssues = new HashMap<String, Integer>();
+		int numberOfComments;
+		for (Issue jiraIssue : jiraIssues) {
 			try {
-				size = ComponentAccessor.getCommentManager().getComments(issue).size();
-				result.put(issue.getKey(), size);
+				numberOfComments = ComponentAccessor.getCommentManager().getComments(jiraIssue).size();
 			} catch (NullPointerException e) {
 				// Jira issue does not exist
+				numberOfComments = 0;
 			}
+			numberOfCommentsForJiraIssues.put(jiraIssue.getKey(), numberOfComments);
 		}
-		return result;
+		return numberOfCommentsForJiraIssues;
 	}
 
-	public Map<String, Integer> getNumberOfSentencesForJiraIssues(KnowledgeType type) {
-		Map<String, Integer> result = new HashMap<String, Integer>();
-		if (searchResults == null || searchResults.getIssues().size() == 0) {
-			return result;
-		}
-		for (Issue currentIssue : searchResults.getIssues()) {
-			int count = 0;
+	public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType type) {
+		Map<String, Integer> numberOfSentencesForJiraIssues = new HashMap<String, Integer>();
+		for (Issue jiraIssue : jiraIssues) {
+			int numberOfElements = 0;
 			List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager
-					.getElementsForIssue(currentIssue.getId(), projectKey);
-			for (DecisionKnowledgeElement dke : elements) {
-				if (dke.getType().equals(type)) {
-					count++;
+					.getElementsForIssue(jiraIssue.getId(), projectKey);
+			for (DecisionKnowledgeElement element : elements) {
+				if (element.getType().equals(type)) {
+					numberOfElements++;
 				}
 			}
-			result.put(currentIssue.getKey(), count);
+			numberOfSentencesForJiraIssues.put(jiraIssue.getKey(), numberOfElements);
 		}
-		return result;
+		return numberOfSentencesForJiraIssues;
 	}
 
 	public Map<String, Integer> getNumberOfRelevantSentences() {
-		Map<String, Integer> result = new HashMap<String, Integer>();
+		Map<String, Integer> numberOfRelevantSentences = new HashMap<String, Integer>();
 		int isRelevant = 0;
-		int isNotRelevant = 0;
-		if (searchResults == null || searchResults.getIssues().size() == 0) {
-			return result;
-		}
+		int isIrrelevant = 0;
 
-		for (Issue currentIssue : searchResults.getIssues()) {
+		for (Issue jiraIssue : jiraIssues) {
 			List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager
-					.getElementsForIssue(currentIssue.getId(), projectKey);
+					.getElementsForIssue(jiraIssue.getId(), projectKey);
 			for (DecisionKnowledgeElement currentElement : elements) {
 				if (currentElement instanceof Sentence && ((Sentence) currentElement).isRelevant()) {
 					isRelevant++;
 				} else if (currentElement instanceof Sentence && !((Sentence) currentElement).isRelevant()) {
-					isNotRelevant++;
+					isIrrelevant++;
 				}
 			}
 		}
-		result.put("Relevant Sentences", isRelevant);
-		result.put("Irrelevant Sentences", isNotRelevant);
+		numberOfRelevantSentences.put("Relevant Sentences", isRelevant);
+		numberOfRelevantSentences.put("Irrelevant Sentences", isIrrelevant);
 
-		return result;
+		return numberOfRelevantSentences;
 	}
 
 	public Map<String, Integer> getNumberOfCommitsForJiraIssues() {
 		Map<String, Integer> resultMap = new HashMap<String, Integer>();
-		for (Issue issue : searchResults.getIssues()) {
-			requestNumberOfGitCommits(issue.getKey());
-			if (restResponse != null) {
-				try {
-					JSONArray result = (JSONArray) restResponse.get("commits");
-					resultMap.put(issue.getKey(), result.length());
-				} catch (Exception e) {
-					resultMap.put(issue.getKey(), 0);
-				}
-			}
+		for (Issue issue : jiraIssues) {
+			int numberOfCommits = getNumberOfGitCommits(issue.getKey());
+			resultMap.put(issue.getKey(), numberOfCommits);
 		}
-
 		return resultMap;
 	}
 
-	public Map<String, Integer> getDecKnowElementsPerIssue() {
-		Map<String, Integer> dkeCount = new HashMap<String, Integer>();
-
-		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
-			dkeCount.put(type.toString(), this.persistenceManager.getDecisionKnowledgeElements(type).size());
+	private int getNumberOfGitCommits(String issueKey) {
+		if (issueKey == null) {
+			return 0;
 		}
-		return dkeCount;
+		int numberOfCommits = 0;
+		try {
+			OAuthManager aAuthManager = new OAuthManager();
+			String baseUrl = ConfigPersistenceManager.getOauthJiraHome();
+			if (!baseUrl.endsWith("/")) {
+				baseUrl = baseUrl + "/";
+			}
+			aAuthManager.startRequest(baseUrl + "rest/gitplugin/1.0/issues/" + issueKey + "/commits");
+			JSONArray result = (JSONArray) restResponse.get("commits");
+			numberOfCommits = result.length();
+		} catch (Exception e) {
+
+		}
+		return numberOfCommits;
+	}
+
+	public Map<String, Integer> getDistributionOfKnowledgeTypes() {
+		Map<String, Integer> distributionOfKnowledgeTypes = new HashMap<String, Integer>();
+		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
+			distributionOfKnowledgeTypes.put(type.toString(), this.persistenceManager.getDecisionKnowledgeElements(type).size());
+		}
+		return distributionOfKnowledgeTypes;
 	}
 
 	public Map<String, Integer> getLinkToOtherElement(KnowledgeType linkFrom, KnowledgeType linkTo1) {
@@ -254,54 +255,44 @@ public class CommentMetricCalculator {
 	}
 
 	public Object getLinksToIssueTypeMap(KnowledgeType knowledgeType) {
-		Map<String, Integer> result = new HashMap<>();
+		Map<String, Integer> result = new HashMap<String, Integer>();
 		int withLink = 0;
 		int withoutLink = 0;
-		for (Issue issue : searchResults.getIssues()) {
+		for (Issue issue : jiraIssues) {
 			boolean linkExisting = false;
-			if (checkEqualIssueTypeIssue(issue.getIssueType())) {
-				for (Link link : GenericLinkManager.getLinksForElement(issue.getId(),
-						DocumentationLocation.JIRAISSUE)) {
-					if (link.isValid()) {
-						DecisionKnowledgeElement dke = link.getOppositeElement(new DecisionKnowledgeElementImpl(issue));
-						if (dke.getType().equals(knowledgeType)) {
-							linkExisting = true;
-						}
+			if (!checkEqualIssueTypeIssue(issue.getIssueType())) {
+				continue;
+			}
+			for (Link link : GenericLinkManager.getLinksForElement(issue.getId(), DocumentationLocation.JIRAISSUE)) {
+				if (link.isValid()) {
+					DecisionKnowledgeElement dke = link.getOppositeElement(new DecisionKnowledgeElementImpl(issue));
+					if (dke.getType().equals(knowledgeType)) {
+						linkExisting = true;
 					}
 				}
 			}
+			
 			if (linkExisting) {
 				withLink++;
 			} else {
 				withoutLink++;
 			}
 		}
-		result.put("Links from " + getJiraIssueTypeName() + " " + knowledgeType.toString(),
-				withLink);
-		result.put("No links from " + getJiraIssueTypeName() + " " + knowledgeType.toString(),
-				withoutLink);
+
+		String jiraIssueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(jiraIssueTypeId);
+
+		result.put("Links from " + jiraIssueTypeName + " " + knowledgeType.toString(), withLink);
+		result.put("No links from " + jiraIssueTypeName + " " + knowledgeType.toString(), withoutLink);
 		return result;
 	}
 
-	public String getJiraIssueTypeName() {
-		System.out.println(JiraIssueTypeGenerator.getJiraIssueTypeName(jiraIssueTypeToLinkTo));
-		return JiraIssueTypeGenerator.getJiraIssueTypeName(jiraIssueTypeToLinkTo);
-	}
-
-	private void requestNumberOfGitCommits(String issueKey) {
-		if (issueKey == null) {
-			return;
+	private boolean checkEqualIssueTypeIssue(IssueType issueType2) {
+		if (issueType2 == null) {
+			return false;
 		}
-		try {
-			OAuthManager ar = new OAuthManager();
-			String baseUrl = ConfigPersistenceManager.getOauthJiraHome();
-			if (!baseUrl.endsWith("/")) {
-				baseUrl = baseUrl + "/";
-			}
-			ar.startRequest(baseUrl + "rest/gitplugin/1.0/issues/" + issueKey + "/commits");
-		} catch (Exception e) {
 
-		}
+		String jiraIssueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(jiraIssueTypeId);
+		return issueType2.getName().equalsIgnoreCase(jiraIssueTypeName);
 	}
 
 	private int graphRecursionBot(DecisionKnowledgeElement dke) {
@@ -334,15 +325,6 @@ public class CommentMetricCalculator {
 		}
 		node.setChildren(nodes);
 		return node;
-	}
-
-	private boolean checkEqualIssueTypeIssue(IssueType issueType2) {
-		if (issueType2 == null) {
-			return false;
-		}
-
-		String jiraIssueTypeName = JiraIssueTypeGenerator.getJiraIssueTypeName(jiraIssueTypeToLinkTo);
-		return issueType2.getName().equalsIgnoreCase(jiraIssueTypeName);
 	}
 
 }

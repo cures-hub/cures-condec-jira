@@ -9,6 +9,7 @@ import com.atlassian.jira.util.ParameterUtils;
 import com.atlassian.jira.web.action.ProjectActionSupport;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
+import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.extraction.metrics.CommentMetricCalculator;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
@@ -20,7 +21,7 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	@JiraImport
 	private final ProjectManager projectManager;
 	private long projectId;
-	private String jiraIssueType;
+	private String jiraIssueTypeId;
 
 	// Constructur is needed to prevent bean exception
 	public DecisionKnowledgeReport(ProjectManager projectManager) {
@@ -40,16 +41,16 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	}
 
 	public Map<String, Object> createValues(ProjectActionSupport action) {
-		CommentMetricCalculator calculator = new CommentMetricCalculator(this.projectId, action.getLoggedInUser(),
-				this.jiraIssueType);
+		CommentMetricCalculator calculator = new CommentMetricCalculator(projectId, action.getLoggedInUser(),
+				jiraIssueTypeId);
 
 		Map<String, Object> velocityParams = new HashMap<String, Object>();
-		velocityParams.put("projectName", action.getProjectManager().getProjectObj(this.projectId).getName());
+		velocityParams.put("projectName", action.getProjectManager().getProjectObj(projectId).getName());
 
 		// Name of selected JIRA issue type
-		velocityParams.put("issueType", calculator.getJiraIssueTypeName());
+		velocityParams.put("issueType", JiraIssueTypeGenerator.getJiraIssueTypeName(jiraIssueTypeId));
 
-		// Number of comments per JIRA issue
+		// Number of comments per JIRA issue (of the selected JIRA issue type)
 		velocityParams.put("numberOfCommentsForJiraIssues", calculator.getNumberOfCommentsForJiraIssues());
 
 		// Number of commits per JIRA issue
@@ -57,11 +58,11 @@ public class DecisionKnowledgeReport extends AbstractReport {
 
 		// Number of issues (decision problems) per JIRA issue
 		velocityParams.put("numberOfIssuesForJiraIssues",
-				calculator.getNumberOfSentencesForJiraIssues(KnowledgeType.ISSUE));
+				calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ISSUE));
 
 		// Number of decisions per JIRA issue
 		velocityParams.put("numberOfDecisionsForJiraIssues",
-				calculator.getNumberOfSentencesForJiraIssues(KnowledgeType.DECISION));
+				calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.DECISION));
 
 		// Link distance from elements with certain knowledge type
 		velocityParams.put("numLinkDistanceIssue", calculator.getLinkDistance(KnowledgeType.ISSUE));
@@ -71,8 +72,8 @@ public class DecisionKnowledgeReport extends AbstractReport {
 		// Number of relevant sentences per JIRA issue
 		velocityParams.put("numRelevantSentences", calculator.getNumberOfRelevantSentences());
 
-		// Get associated Knowledge Types in Sentences per Issue
-		velocityParams.put("numKnowledgeTypesPerIssue", calculator.getDecKnowElementsPerIssue());
+		// Distribution of Knowledge Types in JIRA project
+		velocityParams.put("distriutionOfKnowledgeTypesInProject", calculator.getDistributionOfKnowledgeTypes());
 
 		// Get types of decisions and alternatives linkes to Issue (e.g. has decision
 		// but no alternative)
@@ -109,6 +110,6 @@ public class DecisionKnowledgeReport extends AbstractReport {
 	@SuppressWarnings("rawtypes")
 	public void validate(ProjectActionSupport action, Map params) {
 		this.projectId = ParameterUtils.getLongParam(params, "selectedProjectId");
-		this.jiraIssueType = ParameterUtils.getStringParam(params, "issueType");
+		this.jiraIssueTypeId = ParameterUtils.getStringParam(params, "issueType");
 	}
 }
