@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +25,14 @@ public class JiraIssueTypeGenerator implements ValuesGenerator<String> {
 	// projectId part of params?
 	// @decision Use (GenericValue) params.get("project");
 	public Map<String, String> getValues(Map params) {
+		if(params == null || params.size() == 0){
+			return new HashMap<>();
+		}
 		GenericValue valueProject = (GenericValue) params.get("project");
+		if(valueProject == null){
+			return new HashMap<>();
+		}
+
 		long projectId = (long) valueProject.get("id");
 
 		Collection<IssueType> jiraIssueTypesList = getJiraIssueTypes(projectId);
@@ -38,12 +46,18 @@ public class JiraIssueTypeGenerator implements ValuesGenerator<String> {
 	}
 
 	public static Collection<IssueType> getJiraIssueTypes(long projectId) {
+		if(projectId<=0){
+			return  new ArrayList<>();
+		}
 		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
 		Project project = ComponentAccessor.getProjectManager().getProjectObj(projectId);
 		return issueTypeSchemeManager.getIssueTypesForProject(project);
 	}
 
 	public static String getJiraIssueTypeName(String typeId) {
+		if(typeId == null || typeId.equals("")){
+			return "";
+		}
 		IssueType issueType = ComponentAccessor.getConstantsManager().getIssueType(typeId);
 		return issueType.getName();
 	}
