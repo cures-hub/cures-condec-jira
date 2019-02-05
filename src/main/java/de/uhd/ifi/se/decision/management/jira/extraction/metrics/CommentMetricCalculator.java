@@ -83,6 +83,9 @@ public class CommentMetricCalculator {
 	}
 
 	public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType type) {
+		if(type == null){
+			return new HashMap<>();
+		}
 		Map<String, Integer> numberOfSentencesForJiraIssues = new HashMap<String, Integer>();
 		for (Issue jiraIssue : jiraIssues) {
 			int numberOfElements = 0;

@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import com.atlassian.jira.avatar.AvatarManager;
 import com.atlassian.jira.bc.issue.IssueService;
+import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
@@ -37,19 +38,7 @@ import com.atlassian.jira.util.VelocityParamFactory;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.velocity.VelocityManager;
 
-import de.uhd.ifi.se.decision.management.jira.mocks.MockAvatarManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockCommentManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkTypeManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueService;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeSchemeManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockOptionSetManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockProjectRoleManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityParamFactory;
+import de.uhd.ifi.se.decision.management.jira.mocks.*;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
@@ -102,7 +91,8 @@ public class TestSetUpWithIssues {
 				.addMock(PluginSettingsFactory.class, new MockPluginSettingsFactory())
 				.addMock(OptionSetManager.class, new MockOptionSetManager())
 				.addMock(CommentManager.class, new MockCommentManager())
-				.addMock(ApplicationProperties.class, mockApplicationProperties);
+				.addMock(ApplicationProperties.class, mockApplicationProperties)
+				.addMock(SearchService.class, new MockSearchService());
 
 		creatingProjectIssueStructure();
 	}
