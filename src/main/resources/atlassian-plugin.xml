@@ -307,17 +307,17 @@
 		<properties>
 			<property>
 				<key>selectedProjectId</key>
-				<name key="condec.jira.project" />
+				<name>condec.jira.project</name>
 				<description key="condec.report.project.description" />
 				<type>filterprojectpicker</type>
+				<i18n>true</i18n>
 			</property>
 			<property>
 				<key>issueType</key>
 				<name>JIRA Issue Type</name>
 				<description key="condec.report.issuetype.description" />
 				<type>select</type>
-				<values
-					class="de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator" />
+				<values class="de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator" />
 			</property>
 		</properties>
 	</report>
