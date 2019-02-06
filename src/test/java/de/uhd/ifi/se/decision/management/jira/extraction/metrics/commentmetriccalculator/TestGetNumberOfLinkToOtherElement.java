@@ -32,10 +32,9 @@ public class TestGetNumberOfLinkToOtherElement extends TestSetupCalculator {
 		assertEquals(0, calculator.getNumberOfLinksToOtherElement(null, KnowledgeType.ISSUE).size(), 0.0);
 	}
 
-	//TODO testing the middle part of the function with the right types
 	@Test
 	@NonTransactional
 	public void testLinkFromFilledLinkToFilled(){
-		assertEquals(2, calculator.getNumberOfLinksToOtherElement(KnowledgeType.ALTERNATIVE, KnowledgeType.ARGUMENT).size(), 0.0);
+		assertEquals(2, calculator.getNumberOfLinksToOtherElement(KnowledgeType.ARGUMENT, KnowledgeType.ISSUE).size(), 0.0);
 	}
 }

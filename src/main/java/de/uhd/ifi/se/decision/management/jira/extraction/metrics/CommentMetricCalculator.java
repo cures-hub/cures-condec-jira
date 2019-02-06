@@ -199,6 +199,9 @@ public class CommentMetricCalculator {
 	}
 
 	public String issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType linkFrom) {
+		if(linkFrom == null){
+			return "";
+		}
 		String listOfElementsWithoutLink = " ";
 		List<DecisionKnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(linkFrom);
 
