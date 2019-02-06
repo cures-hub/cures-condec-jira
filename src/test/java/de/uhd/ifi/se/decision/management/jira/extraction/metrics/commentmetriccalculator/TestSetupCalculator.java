@@ -8,6 +8,10 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.metrics.CommentMetricCalculator;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
+import de.uhd.ifi.se.decision.management.jira.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.impl.SentenceImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import net.java.ao.EntityManager;
 import org.junit.Before;
 
@@ -20,6 +24,21 @@ public class TestSetupCalculator extends TestSetUpWithIssues {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockUserManager());
 		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoSysAdmin");
+		addElementToDataBase(user);
 		calculator = new CommentMetricCalculator((long)1,user, "decision");
+	}
+
+	protected void addElementToDataBase(ApplicationUser user) {
+		Sentence element;
+		element = new SentenceImpl();
+		element.setProject("TEST");
+		element.setJiraIssueId(12);
+		element.setId(1);
+		element.setKey("TEST-12231");
+		element.setType("Argument");
+		element.setProject("TEST");
+		element.setDescription("Old");
+		element.setDocumentationLocation(DocumentationLocation.JIRAISSUECOMMENT);
+		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(element, user);
 	}
 }

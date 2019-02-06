@@ -162,6 +162,9 @@ public class CommentMetricCalculator {
 	}
 
 	public Map<String, Integer> getNumberOfLinksToOtherElement(KnowledgeType linkFrom, KnowledgeType linkTo) {
+		if(linkFrom == null || linkTo == null){
+			return new HashMap<>();
+		}
 		Integer[] statistics = new Integer[4];
 		Arrays.fill(statistics, 0);
 

@@ -6,19 +6,16 @@ import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
-public class TestGetNumberOfCommentsForJiraIssues extends TestSetupCalculator {
-
+public class TestGetDistributionOfKnowledgeTypes extends TestSetupCalculator {
 
 	@Test
 	@NonTransactional
 	public void testCase(){
-		Map<String, Integer> map = calculator.getNumberOfCommentsForJiraIssues();
-		assertEquals(1, map.size() , 0.0);
+		assertEquals(4, calculator.getDistributionOfKnowledgeTypes().size(),0.0);
 	}
 }
