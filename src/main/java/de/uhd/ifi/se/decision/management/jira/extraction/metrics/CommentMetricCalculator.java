@@ -248,6 +248,9 @@ public class CommentMetricCalculator {
 	}
 
 	public List<Integer> getLinkDistance(KnowledgeType type) {
+		if(type == null){
+			return new ArrayList<>();
+		}
 		List<Integer> linkDistances = new ArrayList<Integer>();
 
 		List<DecisionKnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(type);
