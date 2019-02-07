@@ -42,6 +42,7 @@ public class CommentMetricCalculator {
 	private JiraIssueCommentPersistenceManager persistenceManager;
 	private String jiraIssueTypeId;
 	private List<Issue> jiraIssues;
+	private int absolutDepth;
 
 	public static org.json.JSONObject restResponse;
 
@@ -308,13 +309,13 @@ public class CommentMetricCalculator {
 	}
 
 	private int graphRecursionBot(DecisionKnowledgeElement dke) {
-		int absolutDepth = 0;
+		this.absolutDepth = 0;
 		Graph graph = new GraphImpl(projectKey, dke.getKey());
-		this.createNodeStructure(dke, null, 100, 1, absolutDepth, graph);
+		this.createNodeStructure(dke, null, 100, 1, graph);
 		return absolutDepth;
 	}
 
-	private Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int absolutDepth,
+	private Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth,
 			int currentDepth, Graph graph) {
 		if (element == null || element.getProject() == null || element.getType() == KnowledgeType.OTHER) {
 			return new Node();
@@ -329,7 +330,7 @@ public class CommentMetricCalculator {
 		List<Node> nodes = new ArrayList<Node>();
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
 			Node newChildNode = createNodeStructure(childAndLink.getKey(), childAndLink.getValue(), depth,
-					currentDepth + 1, absolutDepth, graph);
+					currentDepth + 1, graph);
 			if (absolutDepth < currentDepth) {
 				absolutDepth = currentDepth;
 			}
