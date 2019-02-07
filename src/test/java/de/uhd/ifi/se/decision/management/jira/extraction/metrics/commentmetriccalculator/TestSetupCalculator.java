@@ -25,7 +25,7 @@ public class TestSetupCalculator extends TestSetUpWithIssues {
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(), new MockUserManager());
 		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoSysAdmin");
 		addElementToDataBase(user);
-		calculator = new CommentMetricCalculator((long)1,user, "decision");
+		calculator = new CommentMetricCalculator((long)1,user, "16");
 	}
 
 	protected void addElementToDataBase(ApplicationUser user) {
