@@ -264,6 +264,9 @@ public class CommentMetricCalculator {
 	}
 
 	public Object getLinksToIssueTypeMap(KnowledgeType knowledgeType) {
+		if(knowledgeType == null){
+			return null;
+		}
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		int withLink = 0;
 		int withoutLink = 0;
