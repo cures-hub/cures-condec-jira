@@ -25,12 +25,12 @@ public class JiraIssueTypeGenerator implements ValuesGenerator<String> {
 	// projectId part of params?
 	// @decision Use (GenericValue) params.get("project");
 	public Map<String, String> getValues(Map params) {
-		if(params == null || params.size() == 0){
-			return new HashMap<>();
+		if (params == null || params.size() == 0) {
+			return new HashMap<String, String>();
 		}
 		GenericValue valueProject = (GenericValue) params.get("project");
-		if(valueProject == null){
-			return new HashMap<>();
+		if (valueProject == null) {
+			return new HashMap<String, String>();
 		}
 
 		long projectId = (long) valueProject.get("id");
@@ -46,8 +46,8 @@ public class JiraIssueTypeGenerator implements ValuesGenerator<String> {
 	}
 
 	public static Collection<IssueType> getJiraIssueTypes(long projectId) {
-		if(projectId<=0){
-			return  new ArrayList<>();
+		if (projectId <= 0) {
+			return new ArrayList<IssueType>();
 		}
 		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
 		Project project = ComponentAccessor.getProjectManager().getProjectObj(projectId);
@@ -55,7 +55,7 @@ public class JiraIssueTypeGenerator implements ValuesGenerator<String> {
 	}
 
 	public static String getJiraIssueTypeName(String typeId) {
-		if(typeId == null || typeId.equals("")){
+		if (typeId == null || typeId.equals("")) {
 			return "";
 		}
 		IssueType issueType = ComponentAccessor.getConstantsManager().getIssueType(typeId);
