@@ -12,9 +12,9 @@
 	var ConDecReport = function ConDecReport() {
 	};
 
-	ConDecReport.prototype.initializeDivWithBoxPlot = function initializeDivWithBoxPlot(divId, data, xAxis, title) {
+	ConDecReport.prototype.initializeDivWithBoxPlot = function initializeDivWithBoxPlot(divId, dataMap, xAxis, title) {
 		var boxplot = echarts.init(document.getElementById(divId));
-		var data = echarts.dataTool.prepareBoxplotData(new Array(data));
+		var data = echarts.dataTool.prepareBoxplotData(new Array(dataMap));
 		boxplot.setOption(getOptionsForBoxplot(title, xAxis, "", data));
 		document.getElementById(divId).setAttribute("list", data);
 	};
