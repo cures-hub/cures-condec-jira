@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.view;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +15,6 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
-import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.user.MockApplicationUser;
 import com.atlassian.jira.web.action.ProjectActionSupport;
@@ -25,7 +23,6 @@ import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockSearchService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -36,7 +33,6 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.view.DecisionKnowledgeReport;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -47,11 +43,8 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
-
 	private DecisionKnowledgeReport report;
-
 	private AbstractPersistenceManager persistenceStrategy;
-
 	private List<Sentence> sentences;
 
 	@Before
@@ -59,9 +52,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
-		ProjectManager a = ComponentAccessor.getProjectManager();
 		this.report = new DecisionKnowledgeReport();
-		//this.report.setSearchService(new MockSearchService());
 
 		ProjectActionSupport pas = new MockProjectActionSupport();
 		Map<String, String> params = new HashMap<String, String>();
@@ -94,7 +85,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testCreation() {
 		assertNotNull(this.report);
-	//	assertNotNull(this.report.createValues(new MockProjectActionSupport()));
+		// assertNotNull(this.report.createValues(new MockProjectActionSupport()));
 	}
 
 	@Test(expected = Exception.class)
@@ -113,31 +104,36 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 	public void testWithSingleIssueAndComment() {
 		MutableIssue issue = createCommentStructureWithTestIssue("This is a testsentence for test purposes");
 
-//		Map<String, Object> reportResult = this.report.createValues(new MockProjectActionSupport());
-//
-//		assertTrue(reportResult.get("numDecisionsPerIssueMap").toString().equals("{Test-1337=0}"));
-//		assertTrue(reportResult.get("jiraIssuesWithoutLinksToDecision").toString().contains("Test-1337"));
-//		assertTrue(reportResult.get("numLinksToDecision").toString().equals("{Has Issue=0, Has no Issue=0}"));
-//		assertTrue(reportResult.get("numCommentsPerIssueMap").toString().equals("{Test-1337=1}"));
-//		assertTrue(reportResult.get("jiraIssuesWithoutLinksToIssue").toString().contains("Test-1337"));
-//		assertTrue(reportResult.get("numAlternativeWoArgument").toString()
-//				.equals("{Alternative without Argument=0, Alternative with Argument=0}"));
-//		assertTrue(reportResult.get("numLinksToIssue").toString().equals("{Has no Decision=0, Has Decision=0}"));
-//		assertTrue(reportResult.get("numLinksToIssueTypeIssue").toString()
-//				.equals("{No links from Work Item Issue=1, Links from Work Item Issue=0}"));
-//		assertTrue(reportResult.get("numIssuesPerIssueMap").toString().contains("{Test-1337=0}"));
-//		assertTrue(reportResult.get("numLinksToIssue").toString().contains("{Has no Decision=0, Has Decision=0}"));
-//		assertTrue(reportResult.get("numLinksToIssueTypeDecision").toString()
-//				.equals("{No links from Work Item Decision=1, Links from Work Item Decision=0}"));
-//		assertTrue(reportResult.get("numRelevantSentences").toString()
-//				.equals("{Relevant Sentences=0, Irrelevant Sentences=0}"));
-//		assertTrue(reportResult.get("projectName").toString().equals("TEST"));
-//		assertTrue(reportResult.get("numKnowledgeTypesPerIssue").toString()
-//				.equals("{Alternative=0, Issue=0, Argument=0, Decision=0}"));
+		// Map<String, Object> reportResult = this.report.createValues(new
+		// MockProjectActionSupport());
+		//
+		// assertTrue(reportResult.get("numDecisionsPerIssueMap").toString().equals("{Test-1337=0}"));
+		// assertTrue(reportResult.get("jiraIssuesWithoutLinksToDecision").toString().contains("Test-1337"));
+		// assertTrue(reportResult.get("numLinksToDecision").toString().equals("{Has
+		// Issue=0, Has no Issue=0}"));
+		// assertTrue(reportResult.get("numCommentsPerIssueMap").toString().equals("{Test-1337=1}"));
+		// assertTrue(reportResult.get("jiraIssuesWithoutLinksToIssue").toString().contains("Test-1337"));
+		// assertTrue(reportResult.get("numAlternativeWoArgument").toString()
+		// .equals("{Alternative without Argument=0, Alternative with Argument=0}"));
+		// assertTrue(reportResult.get("numLinksToIssue").toString().equals("{Has no
+		// Decision=0, Has Decision=0}"));
+		// assertTrue(reportResult.get("numLinksToIssueTypeIssue").toString()
+		// .equals("{No links from Work Item Issue=1, Links from Work Item Issue=0}"));
+		// assertTrue(reportResult.get("numIssuesPerIssueMap").toString().contains("{Test-1337=0}"));
+		// assertTrue(reportResult.get("numLinksToIssue").toString().contains("{Has no
+		// Decision=0, Has Decision=0}"));
+		// assertTrue(reportResult.get("numLinksToIssueTypeDecision").toString()
+		// .equals("{No links from Work Item Decision=1, Links from Work Item
+		// Decision=0}"));
+		// assertTrue(reportResult.get("numRelevantSentences").toString()
+		// .equals("{Relevant Sentences=0, Irrelevant Sentences=0}"));
+		// assertTrue(reportResult.get("projectName").toString().equals("TEST"));
+		// assertTrue(reportResult.get("numKnowledgeTypesPerIssue").toString()
+		// .equals("{Alternative=0, Issue=0, Argument=0, Decision=0}"));
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 	}
 
-	//TODO
+	// TODO
 	@Test
 	@NonTransactional
 	public void testWithLinkedSentences() {
@@ -148,10 +144,11 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		sentence.setType(KnowledgeType.ISSUE);
 		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence, null);
 
-//		Map<String, Object> reportResult = this.report.createValues(new MockProjectActionSupport());
-//		assertTrue(reportResult.get("numKnowledgeTypesPerIssue").toString()
-//				.contains("{Alternative=0, Issue=1, Argument=0, Decision=0}"));
-//		assertTrue(reportResult.get("numLinkDistanceIssue").toString().equals("[1]"));
+		// Map<String, Object> reportResult = this.report.createValues(new
+		// MockProjectActionSupport());
+		// assertTrue(reportResult.get("numKnowledgeTypesPerIssue").toString()
+		// .contains("{Alternative=0, Issue=1, Argument=0, Decision=0}"));
+		// assertTrue(reportResult.get("numLinkDistanceIssue").toString().equals("[1]"));
 
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 	}
