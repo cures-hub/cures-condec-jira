@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.atlassian.jira.mock.issue.MockIssue;
 import org.ofbiz.core.entity.GenericValue;
 
 import com.atlassian.jira.issue.Issue;
@@ -56,6 +57,7 @@ public class MockCommentManager implements CommentManager {
 
 	@Override
 	public List<Comment> getComments(Issue issue) {
+		((MockIssue)issue).setIssueTypeId("alternative");
 		if (this.comments == null) {
 			return new ArrayList<Comment>();
 		}

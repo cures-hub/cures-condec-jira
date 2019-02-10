@@ -54,18 +54,12 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		}
 		String projectKey = request.getParameter("projectKey");
 		DecisionKnowledgeProject decisionKnowledgeProject = new DecisionKnowledgeProjectImpl(projectKey);
-
-		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
-		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
-		Collection<IssueType> types = issueTypeSchemeManager.getIssueTypesForProject(project);
-		Set<String> issueTypes = new HashSet<String>();
-		for (IssueType type : types) {
-			issueTypes.add(type.getName());
-		}
+		
+		Set<String> issueTypes = getJiraIssueTypeNames(projectKey);
 
 		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
 		velocityParameters.put("projectKey", projectKey);
-		velocityParameters.put("project", decisionKnowledgeProject);
+		velocityParameters.put("project", decisionKnowledgeProject);		
 		velocityParameters.put("issueTypes", issueTypes);
 		velocityParameters.put("imageFolderUrl", ComponentGetter.getUrlOfImageFolder());
 		velocityParameters.put("requestUrl", request.getRequestURL());
@@ -73,4 +67,16 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 
 		return velocityParameters;
 	}
+
+	private Set<String> getJiraIssueTypeNames(String projectKey) {
+		IssueTypeSchemeManager issueTypeSchemeManager = ComponentAccessor.getIssueTypeSchemeManager();
+		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey(projectKey);
+		Collection<IssueType> types = issueTypeSchemeManager.getIssueTypesForProject(project);
+		Set<String> issueTypes = new HashSet<String>();
+		for (IssueType type : types) {
+			issueTypes.add(type.getName());
+		}
+		return issueTypes;
+	}
+	
 }

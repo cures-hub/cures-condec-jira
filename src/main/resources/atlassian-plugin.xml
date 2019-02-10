@@ -300,33 +300,24 @@
 
 	<!-- Decision Knowledge Report -->
 	<report name="Decision Knowledge Report" key="decision-knowledge-report"
-		class="de.uhd.ifi.se.decision.management.jira.extraction.view.DecisionKnowledgeReport">
-		<description>Generates statistics about decision knowledge in the project.</description>
-		<resource name="view" type="velocity" location="/templates/decisionKnowledgeReport.vm" />
+		class="de.uhd.ifi.se.decision.management.jira.view.DecisionKnowledgeReport">
 		<label key="condec.report.label" />
+		<description key="condec.report.description" />
+		<resource name="view" type="velocity" location="/templates/decisionKnowledgeReport.vm" />
 		<properties>
 			<property>
 				<key>selectedProjectId</key>
-				<name>Project</name>
-				<description>Selected project to display the report for.</description>
+				<name>condec.jira.project</name>
+				<description key="condec.report.project.description" />
 				<type>filterprojectpicker</type>
+				<i18n>true</i18n>
 			</property>
 			<property>
-				<key>rootType</key>
+				<key>issueType</key>
 				<name>JIRA Issue Type</name>
-				<description>Please select the JIRA Issue type you want to see decision knowledge linked to.
-				</description>
+				<description key="condec.report.issuetype.description" />
 				<type>select</type>
-				<values>
-					<value>
-						<key>WI</key>
-						<value>Work Item</value>
-					</value>
-					<value>
-						<key>B</key>
-						<value>Bug</value>
-					</value>
-				</values>
+				<values class="de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator" />
 			</property>
 		</properties>
 	</report>
