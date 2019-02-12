@@ -93,8 +93,8 @@ public class GitDiffExtraction {
 			git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
 		}
 		if (projectKey != null && ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			OAuthManager ar = new OAuthManager();
-			String commits = ar.startRequest(BASEURL + "/rest/gitplugin/1.0/issues/" + issueId + "/commits");
+			OAuthManager oAuthManager = new OAuthManager();
+			String commits = oAuthManager.startRequest(BASEURL + "/rest/gitplugin/1.0/issues/" + issueId + "/commits");
 			JSONObject commitObj = new JSONObject(commits);
 			cherryPickAllCommits(commitObj, git);
 			firstCommit = getFirstCommit(commitObj);
@@ -107,8 +107,9 @@ public class GitDiffExtraction {
 		}
 
 		return null;
-
 	}
+	
+	
 
 	private static void cherryPickAllCommits(JSONObject commitObj, Git git)
 			throws MissingObjectException, IncorrectObjectTypeException, IOException, RevisionSyntaxException,

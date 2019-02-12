@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
@@ -43,8 +44,6 @@ public class CommentMetricCalculator {
 	private String jiraIssueTypeId;
 	private List<Issue> jiraIssues;
 	private int absolutDepth;
-
-	public static org.json.JSONObject restResponse;
 
 	public CommentMetricCalculator(long projectId, ApplicationUser user, String jiraIssueTypeId) {
 		this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
@@ -84,7 +83,7 @@ public class CommentMetricCalculator {
 	}
 
 	public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType type) {
-		if(type == null){
+		if (type == null) {
 			return new HashMap<>();
 		}
 		Map<String, Integer> numberOfSentencesForJiraIssues = new HashMap<String, Integer>();
@@ -144,9 +143,11 @@ public class CommentMetricCalculator {
 			if (!baseUrl.endsWith("/")) {
 				baseUrl = baseUrl + "/";
 			}
-			aAuthManager.startRequest(baseUrl + "rest/gitplugin/1.0/issues/" + issueKey + "/commits");
-			JSONArray result = (JSONArray) restResponse.get("commits");
-			numberOfCommits = result.length();
+			String resultsString = aAuthManager
+					.startRequest(baseUrl + "rest/gitplugin/1.0/issues/" + issueKey + "/commits");
+			JSONObject result = new JSONObject(resultsString);
+			JSONArray commits = (JSONArray) result.get("commits");
+			numberOfCommits = commits.length();
 		} catch (Exception e) {
 
 		}
@@ -163,7 +164,7 @@ public class CommentMetricCalculator {
 	}
 
 	public Map<String, Integer> getNumberOfLinksToOtherElement(KnowledgeType linkFrom, KnowledgeType linkTo) {
-		if(linkFrom == null || linkTo == null){
+		if (linkFrom == null || linkTo == null) {
 			return new HashMap<>();
 		}
 		Integer[] statistics = new Integer[4];
@@ -200,7 +201,7 @@ public class CommentMetricCalculator {
 	}
 
 	public String issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType linkFrom) {
-		if(linkFrom == null){
+		if (linkFrom == null) {
 			return "";
 		}
 		String listOfElementsWithoutLink = " ";
@@ -249,7 +250,7 @@ public class CommentMetricCalculator {
 	}
 
 	public List<Integer> getLinkDistance(KnowledgeType type) {
-		if(type == null){
+		if (type == null) {
 			return new ArrayList<>();
 		}
 		List<Integer> linkDistances = new ArrayList<Integer>();
@@ -265,7 +266,7 @@ public class CommentMetricCalculator {
 	}
 
 	public Object getLinksToIssueTypeMap(KnowledgeType knowledgeType) {
-		if(knowledgeType == null){
+		if (knowledgeType == null) {
 			return null;
 		}
 		Map<String, Integer> result = new HashMap<String, Integer>();
@@ -315,8 +316,8 @@ public class CommentMetricCalculator {
 		return absolutDepth;
 	}
 
-	private Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth,
-			int currentDepth, Graph graph) {
+	private Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth,
+			Graph graph) {
 		if (element == null || element.getProject() == null || element.getType() == KnowledgeType.OTHER) {
 			return new Node();
 		}
