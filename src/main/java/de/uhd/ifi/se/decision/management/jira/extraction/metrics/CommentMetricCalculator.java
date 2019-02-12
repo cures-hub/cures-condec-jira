@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.atlassian.jira.bc.issue.search.SearchService;
@@ -22,6 +23,7 @@ import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
+import de.uhd.ifi.se.decision.management.jira.extraction.git.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
@@ -30,8 +32,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
-import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
@@ -84,7 +84,7 @@ public class CommentMetricCalculator {
 
 	public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType type) {
 		if (type == null) {
-			return new HashMap<>();
+			return new HashMap<String, Integer>();
 		}
 		Map<String, Integer> numberOfSentencesForJiraIssues = new HashMap<String, Integer>();
 		for (Issue jiraIssue : jiraIssues) {
@@ -137,19 +137,14 @@ public class CommentMetricCalculator {
 			return 0;
 		}
 		int numberOfCommits = 0;
+
+		JSONObject result = GitClient.getCommits(projectKey, issueKey);
+
 		try {
-			OAuthManager aAuthManager = new OAuthManager();
-			String baseUrl = ConfigPersistenceManager.getOauthJiraHome();
-			if (!baseUrl.endsWith("/")) {
-				baseUrl = baseUrl + "/";
-			}
-			String resultsString = aAuthManager
-					.startRequest(baseUrl + "rest/gitplugin/1.0/issues/" + issueKey + "/commits");
-			JSONObject result = new JSONObject(resultsString);
 			JSONArray commits = (JSONArray) result.get("commits");
 			numberOfCommits = commits.length();
-		} catch (Exception e) {
-
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
 		return numberOfCommits;
 	}

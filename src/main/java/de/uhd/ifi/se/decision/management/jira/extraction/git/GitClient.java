@@ -151,4 +151,16 @@ public class GitClient {
 		return null;
 	}
 
+	public static JSONObject getCommits(String projectKey, String issueKey) {
+		OAuthManager oAuthManager = new OAuthManager();
+		String commits = oAuthManager.startRequest(BASEURL + "/rest/gitplugin/latest/issues/" + issueKey + "/commits");
+		JSONObject commitObj = null;
+		try {
+			commitObj = new JSONObject(commits);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return commitObj;
+	}
+
 }

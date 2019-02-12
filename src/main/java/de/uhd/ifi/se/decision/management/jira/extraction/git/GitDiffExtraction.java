@@ -33,10 +33,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.properties.APKeys;
-
-import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class GitDiffExtraction {
@@ -45,8 +41,6 @@ public class GitDiffExtraction {
 			+ File.separator;
 
 	private static File directory;
-
-	private static final String BASEURL = ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL);
 
 	private static RevCommit firstCommit;
 
@@ -77,13 +71,14 @@ public class GitDiffExtraction {
 
 			return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
 		}
-
 		return null;
-
 	}
 
-	public static Map<DiffEntry, EditList> getGitDiff(String projectKey, String issueId)
-			throws IOException, GitAPIException, JSONException, InterruptedException {
+	public static Map<DiffEntry, EditList> getGitDiff(String projectKey, String issueKey)
+			throws IOException, GitAPIException, JSONException, InterruptedException {		
+		if (projectKey == null || !ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+			return null;
+		}		
 		directory = new File(DEFAULT_DIR + projectKey);
 		git = Git.open(directory);
 		repository = git.getRepository();
@@ -92,24 +87,17 @@ public class GitDiffExtraction {
 		for (RemoteConfig remote : remotes) {
 			git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
 		}
-		if (projectKey != null && ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			OAuthManager oAuthManager = new OAuthManager();
-			String commits = oAuthManager.startRequest(BASEURL + "/rest/gitplugin/1.0/issues/" + issueId + "/commits");
-			JSONObject commitObj = new JSONObject(commits);
-			cherryPickAllCommits(commitObj, git);
-			firstCommit = getFirstCommit(commitObj);
-			if (firstCommit == null) {
-				return null;
-			}
-			lastCommit = getLastCommit(commitObj);
-
-			return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
+		
+		JSONObject commitObj = GitClient.getCommits(projectKey, issueKey);
+		cherryPickAllCommits(commitObj, git);
+		firstCommit = getFirstCommit(commitObj);
+		if (firstCommit == null) {
+			return null;
 		}
+		lastCommit = getLastCommit(commitObj);
 
-		return null;
+		return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
 	}
-	
-	
 
 	private static void cherryPickAllCommits(JSONObject commitObj, Git git)
 			throws MissingObjectException, IncorrectObjectTypeException, IOException, RevisionSyntaxException,
@@ -137,36 +125,35 @@ public class GitDiffExtraction {
 				}
 			}
 		}
-
 	}
 
 	private static RevCommit getFirstCommit(JSONObject commitObj) throws JSONException, RevisionSyntaxException,
 			AmbiguousObjectException, IncorrectObjectTypeException, IOException {
-		if (!commitObj.isNull("commits")) {
-			JSONArray commits = commitObj.getJSONArray("commits");
-			if (commits.length() == 0) {
-				return null;
-			}
-
-			@SuppressWarnings("resource")
-			RevWalk revWalk = new RevWalk(repository);
-			ObjectId id = repository.resolve(commits.getJSONObject(commits.length() - 1).getString("commitId"));
-			return revWalk.parseCommit(id);
+		if (commitObj.isNull("commits")) {
+			return null;
 		}
-		return null;
+		JSONArray commits = commitObj.getJSONArray("commits");
+		if (commits.length() == 0) {
+			return null;
+		}
+
+		@SuppressWarnings("resource")
+		RevWalk revWalk = new RevWalk(repository);
+		ObjectId id = repository.resolve(commits.getJSONObject(commits.length() - 1).getString("commitId"));
+		return revWalk.parseCommit(id);
 	}
 
 	private static RevCommit getLastCommit(JSONObject commitObj) throws JSONException, RevisionSyntaxException,
 			AmbiguousObjectException, IncorrectObjectTypeException, IOException {
-		if (!commitObj.isNull("commits")) {
-			JSONArray commits = commitObj.getJSONArray("commits");
-
-			@SuppressWarnings("resource")
-			RevWalk revWalk = new RevWalk(repository);
-			ObjectId id = repository.resolve(commits.getJSONObject(0).getString("commitId"));
-			return revWalk.parseCommit(id);
+		if (commitObj.isNull("commits")) {
+			return null;
 		}
-		return null;
+		JSONArray commits = commitObj.getJSONArray("commits");
+
+		@SuppressWarnings("resource")
+		RevWalk revWalk = new RevWalk(repository);
+		ObjectId id = repository.resolve(commits.getJSONObject(0).getString("commitId"));
+		return revWalk.parseCommit(id);
 	}
 
 	private static RevCommit getParentOfFirstCommit(RevCommit revCommit) {
