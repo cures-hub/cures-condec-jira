@@ -53,22 +53,29 @@ public class GitClient {
 		}
 	}
 
-	public static void getGitRepo(String projectKey) throws JSONException {
-		if (projectKey != null && ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			directory = new File(DEFAULT_DIR + projectKey);
-			OAuthManager ar = new OAuthManager();
-			String repository = ar.startRequest(BASEURL + "/rest/gitplugin/1.0/repository?projectKey=" + projectKey);
-			uri = getRemoteURL(repository);
-			new Thread(() -> {
-				try {
-					if (repository != null) {
-						cloneRepo();
-					}
-				} catch (GitAPIException e) {
-					e.printStackTrace();
-				}
-			}).start();
+	public static void getGitRepo(String projectKey) {
+		if (projectKey == null || !ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+			return;
 		}
+
+		directory = new File(DEFAULT_DIR + projectKey);
+		OAuthManager ar = new OAuthManager();
+		String repository = ar.startRequest(BASEURL + "/rest/gitplugin/1.0/repository?projectKey=" + projectKey);
+		try {
+			uri = getRemoteURL(repository);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		new Thread(() -> {
+			try {
+				if (repository != null) {
+					cloneRepo();
+				}
+			} catch (GitAPIException e) {
+				e.printStackTrace();
+			}
+		}).start();
+
 	}
 
 	private static void cloneRepo() throws GitAPIException {
