@@ -1,7 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -15,11 +17,22 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.EditList;
+import org.json.JSONException;
+
+import com.atlassian.activeobjects.external.ActiveObjects;
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
+import de.uhd.ifi.se.decision.management.jira.extraction.git.GitDiffExtraction;
+import de.uhd.ifi.se.decision.management.jira.extraction.git.TaskCodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
@@ -30,9 +43,12 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
 import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
+import net.java.ao.Query;
 
 /**
  * REST resource: Enables creation, editing, and deletion of decision knowledge
@@ -407,4 +423,48 @@ public class KnowledgeRest {
 		}
 		return graph.getAllElements();
 	}
+
+	@Path("/getSummarizedCode")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getSummarizedCode(@QueryParam("id") String id, @QueryParam("projectKey") String projectKey,
+			@QueryParam("documentationLocation") String documentationLocation, @Context HttpServletRequest request)
+			throws JSONException, InterruptedException {
+		if (projectKey == null || id == null || request == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Getting summarized code failed due to a bad request.")).build();
+		}
+		ActiveObjects ACTIVE_OBJECTS = ComponentGetter.getActiveObjects();
+		IssueManager issueManager = ComponentAccessor.getIssueManager();
+		String key = "";
+		if (issueManager.getIssueObject(Long.parseLong(id)) == null) {
+			for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
+					.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("ID = ?", Long.parseLong(id)))) {
+				key = issueManager.getIssueObject(databaseEntry.getIssueId()).getKey();
+			}
+		} else {
+			key = issueManager.getIssueObject(Long.parseLong(id)).getKey();
+		}
+
+		String queryResult = "";
+		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+			try {
+				Map<DiffEntry, EditList> diff = GitDiffExtraction.getGitDiff(projectKey, key);
+
+				if (diff == null) {
+					queryResult = "This issue does not have any code commited";
+				} else {
+					queryResult += TaskCodeSummarizer.summarizer(diff, projectKey, true);
+
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (GitAPIException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return Response.ok(queryResult).build();
+	}
+
 }
