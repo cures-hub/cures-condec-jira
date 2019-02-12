@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.uhd.ifi.se.decision</groupId>
@@ -36,7 +37,7 @@
 		<developer>
 			<id>fagro501</id>
 			<name>Fabian Gronert</name>
-		</developer>			
+		</developer>
 		<developer>
 			<id>EwaldRode</id>
 			<name>Ewald Rode</name>
@@ -124,15 +125,15 @@
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.google.api-client/google-api-client -->
 		<dependency>
-		    <groupId>com.google.api-client</groupId>
-		    <artifactId>google-api-client</artifactId>
-		    <version>1.14.1-beta</version>
+			<groupId>com.google.api-client</groupId>
+			<artifactId>google-api-client</artifactId>
+			<version>1.14.1-beta</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
 		<dependency>
-		    <groupId>com.google.guava</groupId>
-		    <artifactId>guava</artifactId>
-		    <version>12.0.1</version>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>12.0.1</version>
 		</dependency>
 		<!-- Logger -->
 		<dependency>
@@ -224,16 +225,21 @@
 		</dependency>
 		<!-- Code Summarization -->
 		<dependency>
-    	    <groupId>com.github.javaparser</groupId>
-    		<artifactId>javaparser-core</artifactId>
-    		<version>3.12.0</version>
+			<groupId>com.github.javaparser</groupId>
+			<artifactId>javaparser-core</artifactId>
+			<version>3.12.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.core</groupId>
+			<artifactId>runtime</artifactId>
+			<version>3.10.0-v20140318-2214</version>
 		</dependency>
 		<!-- Webhook -->
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.5</version>
-        </dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.5</version>
+		</dependency>
 		<!-- JSON -->
 		<dependency>
 			<groupId>org.json</groupId>
@@ -257,8 +263,8 @@
 					<instructions>
 						<Atlassian-Plugin-Key>${atlassian.plugin.key}</Atlassian-Plugin-Key>
 						<Import-Package> org.springframework.osgi.*;resolution:="optional",
-                            org.eclipse.gemini.blueprint.*;resolution:="optional",
-                            *;resolution:=optional</Import-Package>
+							org.eclipse.gemini.blueprint.*;resolution:="optional",
+							*;resolution:=optional</Import-Package>
 						<Export-Package></Export-Package>
 						<Spring-Context>*</Spring-Context>
 					</instructions>
