@@ -11,12 +11,10 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache.FileKey;
 import org.eclipse.jgit.util.FS;
 import org.json.JSONException;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.mock.MockProjectManager;
@@ -24,29 +22,18 @@ import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import net.java.ao.EntityManager;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+public class TestGitClient {
 
-@RunWith(ActiveObjectsJUnitRunner.class)
-public class TestGitClient extends TestSetUpWithIssues {
-
-	static EntityManager entityManager;
-
-	static String projectKey0;
-
-	static String projectKey1;
-
-	static String directory0;
-
-	static String directory1;
+	private String projectKey0;
+	private String projectKey1;
+	private String directory0;
+	private String directory1;
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	@Before
 	public void setUp() throws IllegalStateException, GitAPIException, IOException, JSONException {
-		initialization();
 		ProjectManager a = ComponentAccessor.getProjectManager();
 		Project testingProject = new MockProject(4, "TESTING");
 		((MockProject) testingProject).setKey("TESTING");
@@ -79,10 +66,6 @@ public class TestGitClient extends TestSetUpWithIssues {
 		remoteRepo1.create(true);
 
 		directory1 = remoteRepo1.getDirectory().getAbsolutePath();
-	}
-
-	@After
-	public void tearDown() {
 	}
 
 	@Test
