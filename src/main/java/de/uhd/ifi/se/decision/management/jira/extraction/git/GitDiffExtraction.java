@@ -37,17 +37,15 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 
 public class GitDiffExtraction {
 
+	// @issue: What is the best place to clone the git repo to?
+	// @issue: To which directory does the Git integration for JIRA plug-in clone
+	// the repo? Can we use this directory?
 	public final static String DEFAULT_DIR = System.getProperty("user.home") + File.separator + "repository"
 			+ File.separator;
-
 	private static File directory;
-
 	private static RevCommit firstCommit;
-
 	private static RevCommit lastCommit;
-
 	private static Repository repository;
-
 	private static Git git;
 
 	public static Map<DiffEntry, EditList> getGitDiff(String commits, String projectKey, boolean commitsKnown)
@@ -60,25 +58,25 @@ public class GitDiffExtraction {
 		for (RemoteConfig remote : remotes) {
 			git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
 		}
-		if (projectKey != null) {
-			JSONObject commitObj = new JSONObject(commits);
-			cherryPickAllCommits(commitObj, git);
-			firstCommit = getFirstCommit(commitObj);
-			if (firstCommit == null) {
-				return null;
-			}
-			lastCommit = getLastCommit(commitObj);
-
-			return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
+		if (projectKey == null) {
+			return null;
 		}
-		return null;
+		JSONObject commitObj = new JSONObject(commits);
+		cherryPickAllCommits(commitObj, git);
+		firstCommit = getFirstCommit(commitObj);
+		if (firstCommit == null) {
+			return null;
+		}
+		lastCommit = getLastCommit(commitObj);
+
+		return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
 	}
 
 	public static Map<DiffEntry, EditList> getGitDiff(String projectKey, String issueKey)
-			throws IOException, GitAPIException, JSONException, InterruptedException {		
+			throws IOException, GitAPIException, JSONException, InterruptedException {
 		if (projectKey == null || !ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
 			return null;
-		}		
+		}
 		directory = new File(DEFAULT_DIR + projectKey);
 		git = Git.open(directory);
 		repository = git.getRepository();
@@ -87,7 +85,7 @@ public class GitDiffExtraction {
 		for (RemoteConfig remote : remotes) {
 			git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
 		}
-		
+
 		JSONObject commitObj = GitClient.getCommits(projectKey, issueKey);
 		cherryPickAllCommits(commitObj, git);
 		firstCommit = getFirstCommit(commitObj);
@@ -103,26 +101,27 @@ public class GitDiffExtraction {
 			throws MissingObjectException, IncorrectObjectTypeException, IOException, RevisionSyntaxException,
 			JSONException, NoMessageException, UnmergedPathsException, ConcurrentRefUpdateException,
 			WrongRepositoryStateException, NoHeadException, GitAPIException {
-		if (!commitObj.isNull("commits")) {
-			JSONArray commits = commitObj.getJSONArray("commits");
-			if (commits.length() == 0) {
-				return;
-			}
+		if (commitObj.isNull("commits")) {
+			return;
+		}
+		JSONArray commits = commitObj.getJSONArray("commits");
+		if (commits.length() == 0) {
+			return;
+		}
 
-			@SuppressWarnings("resource")
-			RevWalk revWalk = new RevWalk(repository);
-			for (int i = 0; i < commits.length(); i++) {
-				ObjectId id = repository.resolve(commits.getJSONObject(i).getString("commitId"));
-				RevCommit commit = revWalk.parseCommit(id);
-				CherryPickCommand cherryPick = git.cherryPick();
-				cherryPick.setMainlineParentNumber(1);
-				cherryPick.include(commit);
-				cherryPick.setNoCommit(true);
-				try {
-					cherryPick.call();
-				} catch (Exception e) {
+		@SuppressWarnings("resource")
+		RevWalk revWalk = new RevWalk(repository);
+		for (int i = 0; i < commits.length(); i++) {
+			ObjectId id = repository.resolve(commits.getJSONObject(i).getString("commitId"));
+			RevCommit commit = revWalk.parseCommit(id);
+			CherryPickCommand cherryPick = git.cherryPick();
+			cherryPick.setMainlineParentNumber(1);
+			cherryPick.include(commit);
+			cherryPick.setNoCommit(true);
+			try {
+				cherryPick.call();
+			} catch (Exception e) {
 
-				}
 			}
 		}
 	}

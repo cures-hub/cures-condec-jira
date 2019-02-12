@@ -57,7 +57,7 @@ public class GitClient {
 		directory = new File(DEFAULT_DIR + projectKey);
 		OAuthManager oAuthManager = new OAuthManager();
 		String repository = oAuthManager
-				.startRequest(BASEURL + "/rest/gitplugin/1.0/repository?projectKey=" + projectKey);
+				.startRequest(BASEURL + "/rest/gitplugin/latest/repository?projectKey=" + projectKey);
 		try {
 			uri = getRemoteURL(repository);
 		} catch (JSONException e) {
@@ -103,20 +103,20 @@ public class GitClient {
 	 * @throws IOException
 	 */
 	private static boolean checkExistingRepository() {
-		if (git != null) {
-			try {
-				if (git.getRepository().exactRef("HEAD") != null) {
-					return true;
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		boolean isExistent = false;
+		if (git == null) {
+			return false;
 		}
-		return false;
+		try {
+			isExistent = git.getRepository().exactRef("HEAD") != null;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return isExistent;
 	}
 
 	/**
-	 * Closes the Repo.
+	 * Closes the repository.
 	 */
 	public static void closeRepo() {
 		if (git != null) {
@@ -126,7 +126,7 @@ public class GitClient {
 	}
 
 	/**
-	 * Closes the Repo and deletes its local files.
+	 * Closes the repository and deletes its local files.
 	 */
 	public static void closeAndDeleteRepo() {
 		if (git != null) {
@@ -162,5 +162,4 @@ public class GitClient {
 		}
 		return commitObj;
 	}
-
 }
