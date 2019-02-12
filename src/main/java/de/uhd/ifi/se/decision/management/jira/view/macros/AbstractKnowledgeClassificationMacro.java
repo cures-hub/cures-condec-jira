@@ -25,14 +25,15 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 
 	protected String execute(Map<String, Object> parameters, String body, RenderContext renderContext,
 			String knowledgeType, String colorCode) throws MacroException {
-		if (!ConfigPersistenceManager.isKnowledgeExtractedFromIssues(getProjectKey(renderContext))) {
+		if (!ConfigPersistenceManager.isKnowledgeExtractedFromIssues(getProjectKey(renderContext))
+				&& !knowledgeType.equalsIgnoreCase(KnowledgeType.CODESUMMARIZATION.toString())) {
 			return body;
 		}
 		if (Boolean.TRUE.equals(renderContext.getParam(IssueRenderContext.WYSIWYG_PARAM))) {
 			return putTypeInBrackets(knowledgeType) + body + putTypeInBrackets(knowledgeType);
 		}
 		String newBody = reformatCommentBody(body);
-		String icon = "<img src='" + KnowledgeType.getKnowledgeType(knowledgeType).getIconUrl() + "'>";
+		String icon = "<img src='" + KnowledgeType.getKnowledgeType(knowledgeType.toLowerCase()).getIconUrl() + "'>";
 		String contextMenuCall = getContextMenuCall(renderContext, newBody, WordUtils.capitalize(knowledgeType));
 		return icon + "<span " + contextMenuCall + "style='background-color:" + colorCode + "'>" + newBody + "</span>";
 	}
