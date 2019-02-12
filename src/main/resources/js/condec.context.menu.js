@@ -138,6 +138,10 @@
 		document.getElementById("condec-context-menu-delete-link-item").onclick = function() {
 			conDecDialog.showDeleteLinkDialog(id, documentationLocation);
 		};
+		
+		document.getElementById("condec-context-menu-summarized-code").onclick = function() {
+			conDecDialog.showSummarizedDialog(id, documentationLocation);
+		};
 
 		document.getElementById("condec-context-menu-delete-item").onclick = function() {
 			conDecDialog.showDeleteDialog(id, documentationLocation);
