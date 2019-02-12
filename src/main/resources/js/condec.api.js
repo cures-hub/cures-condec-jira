@@ -215,7 +215,7 @@
 			}
 		});
 	};
-	
+
 	/*
 	 * external references: condec.jira.issue.module
 	 */
@@ -262,6 +262,19 @@
 						callback();
 					}
 				});
+	};
+
+	/*
+	 * external references: condec.jira.issue.module
+	 */
+	ConDecAPI.prototype.getSummarizedCode = function getSummarizedCode(id, documentationLocation, callback) {
+		getText(AJS.contextPath() + "/rest/decisions/latest/decisions/getSummarizedCode?projectKey=" + projectKey
+				+ "&id=" + id + "&documentationLocation=" + documentationLocation, function(error, text) {
+			if (error === null) {
+				callback(text);
+			}
+		});
+
 	};
 
 	/*
@@ -553,6 +566,22 @@
 		xhr.open("GET", url, true);
 		xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
 		xhr.responseType = "json";
+		xhr.onload = function() {
+			var status = xhr.status;
+			if (status === 200) {
+				callback(null, xhr.response);
+			} else {
+				showFlag("error", xhr.response.error, status);
+				callback(status);
+			}
+		};
+		xhr.send();
+	}
+
+	function getText(url, callback) {
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", url, true);
+		xhr.setRequestHeader("Content-type", "plain/text");
 		xhr.onload = function() {
 			var status = xhr.status;
 			if (status === 200) {
