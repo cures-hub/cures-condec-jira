@@ -212,6 +212,7 @@ public class CommentSplitterImpl implements CommentSplitter {
 		Set<KnowledgeType> projectKnowledgeTypes = new DecisionKnowledgeProjectImpl(projectKey).getKnowledgeTypes();
 		projectKnowledgeTypes.add(KnowledgeType.PRO);
 		projectKnowledgeTypes.add(KnowledgeType.CON);
+		projectKnowledgeTypes.add(KnowledgeType.CODESUMMARIZATION);
 		Set<String> knowledgeTypeTags = new HashSet<String>();
 		for (KnowledgeType type : projectKnowledgeTypes) {
 			knowledgeTypeTags.add(AbstractKnowledgeClassificationMacro.getTag(type));
