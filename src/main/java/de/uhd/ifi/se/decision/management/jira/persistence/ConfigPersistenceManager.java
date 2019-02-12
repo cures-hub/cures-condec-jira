@@ -12,6 +12,7 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.extraction.git.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
@@ -172,6 +173,9 @@ public class ConfigPersistenceManager {
 
 	public static void setKnowledgeExtractedFromGit(String projectKey, boolean isKnowledgeExtractedFromGit) {
 		setValue(projectKey, "isKnowledgeExtractedFromGit", Boolean.toString(isKnowledgeExtractedFromGit));
+		if (isKnowledgeExtractedFromGit) {
+			GitClient.getGitRepo(projectKey);
+		}
 	}
 
 	public static void setKnowledgeExtractedFromIssues(String projectKey, boolean isKnowledgeExtractedFromIssues) {

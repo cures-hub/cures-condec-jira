@@ -23,7 +23,7 @@ public class JiraIssueTypeGenerator implements ValuesGenerator<String> {
 	@SuppressWarnings("rawtypes")
 	// @issue: How can we get the project id for the selected project? Is the
 	// projectId part of params?
-	// @decision Use (GenericValue) params.get("project");
+	// @decision: Use (GenericValue) params.get("project");
 	public Map<String, String> getValues(Map params) {
 		if (params == null || params.size() == 0) {
 			return new HashMap<String, String>();

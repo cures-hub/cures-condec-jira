@@ -222,6 +222,12 @@
 			<artifactId>org.eclipse.jgit</artifactId>
 			<version>5.0.1.201806211838-r</version>
 		</dependency>
+		<!-- Code Summarization -->
+		<dependency>
+    	    <groupId>com.github.javaparser</groupId>
+    		<artifactId>javaparser-core</artifactId>
+    		<version>3.12.0</version>
+		</dependency>
 		<!-- Webhook -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

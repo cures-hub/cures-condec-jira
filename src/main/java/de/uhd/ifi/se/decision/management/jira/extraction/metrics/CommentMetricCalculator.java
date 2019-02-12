@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
@@ -21,6 +23,7 @@ import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
+import de.uhd.ifi.se.decision.management.jira.extraction.git.GitClient;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
@@ -29,8 +32,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
-import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
@@ -43,8 +44,6 @@ public class CommentMetricCalculator {
 	private String jiraIssueTypeId;
 	private List<Issue> jiraIssues;
 	private int absolutDepth;
-
-	public static org.json.JSONObject restResponse;
 
 	public CommentMetricCalculator(long projectId, ApplicationUser user, String jiraIssueTypeId) {
 		this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
@@ -84,8 +83,8 @@ public class CommentMetricCalculator {
 	}
 
 	public Map<String, Integer> getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType type) {
-		if(type == null){
-			return new HashMap<>();
+		if (type == null) {
+			return new HashMap<String, Integer>();
 		}
 		Map<String, Integer> numberOfSentencesForJiraIssues = new HashMap<String, Integer>();
 		for (Issue jiraIssue : jiraIssues) {
@@ -138,17 +137,14 @@ public class CommentMetricCalculator {
 			return 0;
 		}
 		int numberOfCommits = 0;
-		try {
-			OAuthManager aAuthManager = new OAuthManager();
-			String baseUrl = ConfigPersistenceManager.getOauthJiraHome();
-			if (!baseUrl.endsWith("/")) {
-				baseUrl = baseUrl + "/";
-			}
-			aAuthManager.startRequest(baseUrl + "rest/gitplugin/1.0/issues/" + issueKey + "/commits");
-			JSONArray result = (JSONArray) restResponse.get("commits");
-			numberOfCommits = result.length();
-		} catch (Exception e) {
 
+		JSONObject result = GitClient.getCommits(projectKey, issueKey);
+
+		try {
+			JSONArray commits = (JSONArray) result.get("commits");
+			numberOfCommits = commits.length();
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
 		return numberOfCommits;
 	}
@@ -163,7 +159,7 @@ public class CommentMetricCalculator {
 	}
 
 	public Map<String, Integer> getNumberOfLinksToOtherElement(KnowledgeType linkFrom, KnowledgeType linkTo) {
-		if(linkFrom == null || linkTo == null){
+		if (linkFrom == null || linkTo == null) {
 			return new HashMap<>();
 		}
 		Integer[] statistics = new Integer[4];
@@ -200,7 +196,7 @@ public class CommentMetricCalculator {
 	}
 
 	public String issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType linkFrom) {
-		if(linkFrom == null){
+		if (linkFrom == null) {
 			return "";
 		}
 		String listOfElementsWithoutLink = " ";
@@ -249,7 +245,7 @@ public class CommentMetricCalculator {
 	}
 
 	public List<Integer> getLinkDistance(KnowledgeType type) {
-		if(type == null){
+		if (type == null) {
 			return new ArrayList<>();
 		}
 		List<Integer> linkDistances = new ArrayList<Integer>();
@@ -265,7 +261,7 @@ public class CommentMetricCalculator {
 	}
 
 	public Object getLinksToIssueTypeMap(KnowledgeType knowledgeType) {
-		if(knowledgeType == null){
+		if (knowledgeType == null) {
 			return null;
 		}
 		Map<String, Integer> result = new HashMap<String, Integer>();
@@ -315,8 +311,8 @@ public class CommentMetricCalculator {
 		return absolutDepth;
 	}
 
-	private Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth,
-			int currentDepth, Graph graph) {
+	private Node createNodeStructure(DecisionKnowledgeElement element, Link link, int depth, int currentDepth,
+			Graph graph) {
 		if (element == null || element.getProject() == null || element.getType() == KnowledgeType.OTHER) {
 			return new Node();
 		}
