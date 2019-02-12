@@ -200,8 +200,6 @@ public class GitDiffExtraction {
 			RevCommit parentCommit = getParentOfFirstCommit(revCommitFirst);
 			if (parentCommit != null) {
 				diffEntries = diffFormatter.scan(parentCommit.getTree(), revCommitLast.getTree());
-			} else {
-
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
