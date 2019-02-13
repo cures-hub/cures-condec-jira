@@ -72,7 +72,7 @@ public class GitDiffExtraction {
 		return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
 	}
 
-	public static Map<DiffEntry, EditList> getGitDiff(String projectKey, String issueKey)
+	public static Map<DiffEntry, EditList> getGitDiff(String projectKey, String jiraIssueKey)
 			throws IOException, GitAPIException, JSONException, InterruptedException {
 		if (projectKey == null || !ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
 			return null;
@@ -86,7 +86,7 @@ public class GitDiffExtraction {
 			git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
 		}
 
-		JSONObject commitObj = GitClient.getCommits(projectKey, issueKey);
+		JSONObject commitObj = GitClient.getCommits(projectKey, jiraIssueKey);
 		cherryPickAllCommits(commitObj, git);
 		firstCommit = getFirstCommit(commitObj);
 		if (firstCommit == null) {

@@ -36,6 +36,8 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
+import net.java.ao.Query;
 
 /**
  * Extends the abstract class AbstractPersistenceStrategy. Uses JIRA issues to
@@ -53,9 +55,9 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 	}
 
 	public static boolean deleteLink(Link link, ApplicationUser user) {
-	    if(link == null || user == null){
-	        return false;
-        }
+		if (link == null || user == null) {
+			return false;
+		}
 		IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 		IssueLinkTypeManager issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager.class);
 		Collection<IssueLinkType> issueLinkTypes = issueLinkTypeManager.getIssueLinkTypes();
@@ -306,5 +308,4 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		issueService.update(user, result);
 		return true;
 	}
-
 }
