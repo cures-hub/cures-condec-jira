@@ -306,99 +306,105 @@ public class KnowledgeRest {
 				.entity(ImmutableMap.of("error", "Setting element irrelevant failed.")).build();
 	}
 
+	/**
+	 * @param Enum   resultType["ELEMENTS_QUERY","ELEMENTS_LINKED","ELEMENTS_QUERY_LINKED"]
+	 * @param String projectKey
+	 * @param String query
+	 * @param String elementKey
+	 * @param String request
+	 * @return List of Objects or List of Lists with Objects
+	 */
 	@Path("getAllElementsMatchingQuery")
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getAllElementsMatchingQuery(@QueryParam("projectKey") String projectKey,
-			@QueryParam("query") String query, @Context HttpServletRequest request) {
-		if (projectKey == null || query == null || request == null) {
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getAllElementsMatchingQuery(
+			@QueryParam("resultType") String resultType,
+			@QueryParam("projectKey") String projectKey,
+			@QueryParam("query") String query,
+			@QueryParam("elementKey") String elementKey,
+			@Context HttpServletRequest request) {
+		if (resultType == null || query == null || request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "Getting elements matching the query failed due to a bad request."))
 					.build();
 		}
+		if (elementKey == null) {
+			elementKey = "";
+		}
+		if (projectKey == null) {
+			projectKey = getProjectKey(elementKey);
+		}
+
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		List<DecisionKnowledgeElement> queryResult = getHelperMatchedQueryElements(user,projectKey,query);
-		if (queryResult == null) {
+		List<DecisionKnowledgeElement> queryResult = new ArrayList<>();
+		List<List> elementsQueryLinked = new ArrayList<>();
+		switch (resultType) {
+			case "ELEMENTS_QUERY":
+				queryResult = getHelperMatchedQueryElements(user, projectKey, query);
+				break;
+			case "ELEMENTS_LINKED":
+				queryResult = getHelperAllElementsLinkedToElement(user, projectKey, query, elementKey);
+				break;
+			case "ELEMENTS_QUERY_LINKED":
+				elementsQueryLinked = getHelperAllElementsMatchingQueryAndLinked(user, projectKey, query);
+				break;
+		}
+		if (queryResult.size() == 0 && elementsQueryLinked.size() == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Getting elements matching the query failed.")).build();
+					.entity(ImmutableMap.of("error", "Getting elements matching the query failed. No Results were found")).build();
+		} else if (elementsQueryLinked.size() > 0) {
+			return Response.ok(elementsQueryLinked).build();
+		} else {
+			return Response.ok(queryResult).build();
 		}
-		return Response.ok(queryResult).build();
-
 	}
 
-	@Path("/getAllElementsLinkedToElement")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getAllElementsLinkedToElement(@QueryParam("elementKey") String elementKey,
-			@QueryParam("URISearch") String uriSearch, @Context HttpServletRequest request) {
-		if (request == null) {
-			return Response.status(Status.BAD_REQUEST).entity(
-					ImmutableMap.of("error", "Getting elements matching the query failed due to a bad request."))
-					.build();
-		}
-		String projectKey = getProjectKey(elementKey);
-		ApplicationUser user = AuthenticationManager.getUser(request);
-
-		List<DecisionKnowledgeElement> filteredElements = getHelperAllElementsLinkedToElement(projectKey,uriSearch,elementKey,user);
-
-		return Response.ok(filteredElements).build();
-	}
 
 	private String getProjectKey(String elementKey) {
 		return elementKey.split("-")[0];
 	}
 
-	@Path("/getAllElementsLinkedToElementsMatchedByQuery")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getAllElementsLinkedToElementsMatchedByQuery(@QueryParam("projectKey") String projectKey,
-																 @QueryParam("query") String query, @Context HttpServletRequest request) {
-		if (projectKey == null || query == null || request == null) {
-			return Response.status(Status.BAD_REQUEST).entity(
-					ImmutableMap.of("error", "Getting elements matching the query failed due to a bad request."))
-					.build();
-		}
-
-        ApplicationUser user = AuthenticationManager.getUser(request);
-        List<DecisionKnowledgeElement>queryResult=getHelperMatchedQueryElements(user,projectKey,query);
-		List<DecisionKnowledgeElement> addedElements= new ArrayList<DecisionKnowledgeElement>();
-		List<List> elmentsToReturn= new ArrayList<List>();
-		//now iti over query result
-		for (DecisionKnowledgeElement current : queryResult) {
-            //check if in addedElements list
-			if(!addedElements.contains(current)){
-                //if not get the connected tree
-				String elementKey= current.getKey();
-                List<DecisionKnowledgeElement> filteredElements=getHelperAllElementsLinkedToElement(projectKey,query,elementKey,user);
-                //add each element to the list
-                addedElements.addAll(filteredElements);
-                //add list to the big list
-				elmentsToReturn.add(filteredElements);
-			}
-		}
-		return Response.ok(elmentsToReturn).build();
-
-	}
 	/**
 	 * REST HELPERS to avoid doubled code:
-	 *
 	 **/
 
-	private List<DecisionKnowledgeElement> getHelperMatchedQueryElements(ApplicationUser user, String projectKey, String query){
+	private List<DecisionKnowledgeElement> getHelperMatchedQueryElements(ApplicationUser user, String projectKey, String query) {
 		GraphFiltering filter = new GraphFiltering(projectKey, query, user);
 		filter.produceResultsFromQuery();
 		return filter.getAllElementsMatchingQuery();
 	}
-	private List<DecisionKnowledgeElement> getHelperAllElementsLinkedToElement(String projectKey,String query,String elementKey, ApplicationUser user){
-        Graph graph;
-        if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
-            GraphFiltering filter = new GraphFiltering(projectKey, query, user);
-            filter.produceResultsFromQuery();
-            graph = new GraphImplFiltered(projectKey, elementKey, filter);
-        } else {
-            graph = new GraphImpl(projectKey, elementKey);
-        }
-        return graph.getAllElements();
-    }
+
+	private List<DecisionKnowledgeElement> getHelperAllElementsLinkedToElement(ApplicationUser user, String projectKey, String query, String elementKey) {
+		Graph graph;
+		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
+			GraphFiltering filter = new GraphFiltering(projectKey, query, user);
+			filter.produceResultsFromQuery();
+			graph = new GraphImplFiltered(projectKey, elementKey, filter);
+		} else {
+			graph = new GraphImpl(projectKey, elementKey);
+		}
+		return graph.getAllElements();
+	}
+
+	private List<List> getHelperAllElementsMatchingQueryAndLinked(ApplicationUser user, String projectKey, String query) {
+		List<DecisionKnowledgeElement> tempQueryResult = getHelperMatchedQueryElements(user, projectKey, query);
+		List<DecisionKnowledgeElement> addedElements = new ArrayList<DecisionKnowledgeElement>();
+		List<List> elementsQueryLinked = new ArrayList<>();
+
+		//now iti over query result
+		for (DecisionKnowledgeElement current : tempQueryResult) {
+			//check if in addedElements list
+			if (!addedElements.contains(current)) {
+				//if not get the connected tree
+				String currentElementKey = current.getKey();
+				List<DecisionKnowledgeElement> filteredElements = getHelperAllElementsLinkedToElement(user,projectKey,query, currentElementKey);
+				//add each element to the list
+				addedElements.addAll(filteredElements);
+				//add list to the big list
+				elementsQueryLinked.add(filteredElements);
+			}
+		}
+		return elementsQueryLinked;
+	}
 }
 
