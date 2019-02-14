@@ -21,11 +21,9 @@ import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.changehistory.ChangeHistory;
 import com.atlassian.jira.issue.changehistory.ChangeHistoryManager;
-import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.history.ChangeItemBean;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
@@ -93,9 +91,8 @@ public class TaskCodeSummarizationEventListener implements InitializingBean, Dis
 		String tag = "{codesummarization}";
 		text = tag + text + tag;
 
-		Comment comment = ComponentAccessor.getCommentManager().create(issue,
+		ComponentAccessor.getCommentManager().create(issue,
 				ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser(), text, false);
-		new CommentSplitterImpl().getSentences(comment);
 	}
 
 	private boolean isClosing(IssueEvent issueEvent) {

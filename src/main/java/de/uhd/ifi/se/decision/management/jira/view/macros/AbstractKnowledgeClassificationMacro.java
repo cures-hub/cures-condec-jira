@@ -25,8 +25,7 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 
 	protected String execute(Map<String, Object> parameters, String body, RenderContext renderContext,
 			String knowledgeType, String colorCode) throws MacroException {
-		if (!ConfigPersistenceManager.isKnowledgeExtractedFromIssues(getProjectKey(renderContext))
-				&& !knowledgeType.equalsIgnoreCase(KnowledgeType.CODESUMMARIZATION.toString())) {
+		if (!ConfigPersistenceManager.isKnowledgeExtractedFromIssues(getProjectKey(renderContext))) {
 			return body;
 		}
 		if (Boolean.TRUE.equals(renderContext.getParam(IssueRenderContext.WYSIWYG_PARAM))) {

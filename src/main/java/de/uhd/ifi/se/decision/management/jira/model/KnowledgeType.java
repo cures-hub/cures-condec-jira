@@ -16,7 +16,7 @@ import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
  * Type of decision knowledge element
  */
 public enum KnowledgeType {
-	ALTERNATIVE, ASSUMPTION, ASSESSMENT, ARGUMENT, PRO, CON, CLAIM, CONTEXT, CONSTRAINT, DECISION, GOAL, ISSUE, IMPLICATION, PROBLEM, RATIONALE, SOLUTION, OTHER, QUESTION, CODESUMMARIZATION;
+	ALTERNATIVE, ASSUMPTION, ASSESSMENT, ARGUMENT, PRO, CON, CLAIM, CONTEXT, CONSTRAINT, DECISION, GOAL, ISSUE, IMPLICATION, PROBLEM, RATIONALE, SOLUTION, OTHER, QUESTION;
 
 	/**
 	 * Get the minimal set of decision knowledge types for the management of
@@ -78,8 +78,6 @@ public enum KnowledgeType {
 			return KnowledgeType.CON;
 		case "assessment":
 			return KnowledgeType.ASSESSMENT;
-		case "codesummarization":
-			return KnowledgeType.CODESUMMARIZATION;
 		default:
 			return KnowledgeType.OTHER;
 		}
@@ -195,8 +193,6 @@ public enum KnowledgeType {
 			return "(!)";
 		case ALTERNATIVE:
 			return "(?)";
-		case CODESUMMARIZATION:
-			return "(i)";
 		default:
 			return "";
 		}
