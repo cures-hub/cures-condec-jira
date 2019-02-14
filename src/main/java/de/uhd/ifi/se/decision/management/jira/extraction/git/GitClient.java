@@ -61,11 +61,7 @@ public class GitClient {
 		OAuthManager oAuthManager = new OAuthManager();
 		String repository = oAuthManager
 				.startRequest(BASEURL + "/rest/gitplugin/latest/repository?projectKey=" + projectKey);
-		try {
-			uri = getRemoteURL(repository);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+		uri = getRemoteURL(repository);
 		new Thread(() -> {
 			if (repository != null) {
 				cloneRepo();
@@ -146,12 +142,19 @@ public class GitClient {
 		}
 	}
 
-	private static String getRemoteURL(String repository) throws JSONException {
-		JSONObject obj = new JSONObject(repository);
-		if (!obj.isNull("repositories")) {
-			return obj.getJSONArray("repositories").getJSONObject(0).getString("origin");
+	private static String getRemoteURL(String repository) {
+		String remoteUrl = null;
+
+		try {
+			JSONObject jsonObject = new JSONObject(repository);
+			if (!jsonObject.isNull("repositories")) {
+				remoteUrl = jsonObject.getJSONArray("repositories").getJSONObject(0).getString("origin");
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
-		return null;
+
+		return remoteUrl;
 	}
 
 	public static JSONObject getCommits(String projectKey, String issueKey) {

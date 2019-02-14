@@ -31,10 +31,10 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 		if (Boolean.TRUE.equals(renderContext.getParam(IssueRenderContext.WYSIWYG_PARAM))) {
 			return putTypeInBrackets(knowledgeType) + body + putTypeInBrackets(knowledgeType);
 		}
-		String newBody = reformatCommentBody(body);
 		String icon = "<img src='" + KnowledgeType.getKnowledgeType(knowledgeType.toLowerCase()).getIconUrl() + "'>";
+		String newBody = body.replaceFirst("<p>", "");
 		String contextMenuCall = getContextMenuCall(renderContext, newBody, WordUtils.capitalize(knowledgeType));
-		return icon + "<span " + contextMenuCall + "style='background-color:" + colorCode + "'>" + newBody + "</span>";
+		return "<p " + contextMenuCall + "style='background-color:" + colorCode + "; padding: 3px;'>" + icon + " " + newBody;
 	}
 
 	@Override
@@ -48,30 +48,13 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	}
 
 	/**
-	 * Static function for other Macro Classes
-	 * 
-	 * @param inputBody
-	 * @return Body without html p tags
-	 */
-	public static String reformatCommentBody(String inputBody) {
-		String body = inputBody.replace("<p>", "");
-		body = body.replace("</p>", "");
-		while (body.startsWith(" ")) {
-			body = body.substring(1);
-		}
-		while (body.endsWith(" ")) {
-			body = body.substring(0, body.length() - 1);
-		}
-		return body;
-	}
-
-	/**
-	 * Static function for other Macro Classes
+	 * Return key of current JIRA project.
 	 * 
 	 * @param renderContext
-	 * @return
+	 *            context in which the macro is rendered.
+	 * @return key of current JIRA project.
 	 */
-	protected String getProjectKey(RenderContext renderContext) {
+	private String getProjectKey(RenderContext renderContext) {
 		return renderContext.getParams().get("jira.issue").toString().split("-")[0];
 	}
 
@@ -79,6 +62,7 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	 * Static function for other Macro Classes
 	 * 
 	 * @param renderContext
+	 *            context in which the macro is rendered.
 	 * @param body
 	 * @param type
 	 * @return the js context menu call for comment tab panel

@@ -14,8 +14,9 @@ public class CodeSummarizationMacro extends BaseMacro {
 	@Override
 	public String execute(Map<String, Object> parameters, String body, RenderContext renderContext)
 			throws MacroException {
+		String newBody = body.replaceFirst("<p>", "");
 		String icon = "<img src='" + ComponentGetter.getUrlOfImageFolder() + "codesummarization.png" + "'>";
-		return icon + "<span style='background-color:" + "#DDF2FF" + "'>" + body + "</span>";
+		return "<p style='background-color:#DDF2FF; padding: 3px;'>" + icon + " " + newBody;
 	}
 
 	@Override
