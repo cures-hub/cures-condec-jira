@@ -319,20 +319,24 @@ public class KnowledgeRest {
 	@Produces({MediaType.APPLICATION_JSON})
 	public Response getAllElementsMatchingQuery(
 			@QueryParam("resultType") String resultType,
-			@QueryParam("projectKey") String projectKey,
+			@QueryParam("projectKey") String iProjectKey,
 			@QueryParam("query") String query,
-			@QueryParam("elementKey") String elementKey,
+			@QueryParam("elementKey") String iElementKey,
 			@Context HttpServletRequest request) {
 		if (resultType == null || query == null || request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "Getting elements matching the query failed due to a bad request."))
 					.build();
 		}
-		if (elementKey == null) {
-			elementKey = "";
+		String elementKey="";
+		if (iElementKey != null) {
+			elementKey = iElementKey;
 		}
-		if (projectKey == null) {
+		String projectKey;
+		if (iProjectKey == null) {
 			projectKey = getProjectKey(elementKey);
+		}else{
+			projectKey=iProjectKey;
 		}
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
@@ -348,6 +352,7 @@ public class KnowledgeRest {
 			case "ELEMENTS_QUERY_LINKED":
 				elementsQueryLinked = getHelperAllElementsMatchingQueryAndLinked(user, projectKey, query);
 				break;
+			default:break;
 		}
 		if (queryResult.size() == 0 && elementsQueryLinked.size() == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
