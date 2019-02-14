@@ -337,7 +337,9 @@ public class KnowledgeRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		List<DecisionKnowledgeElement> queryResult = new ArrayList<>();
 		List<List> elementsQueryLinked = new ArrayList<>();
-		switch (resultType) {
+		try{
+
+			switch (resultType) {
 			case "ELEMENTS_QUERY":
 				queryResult = getHelperMatchedQueryElements(user, projectKey, query);
 				break;
@@ -349,6 +351,12 @@ public class KnowledgeRest {
 				break;
 			default:
 				break;
+		}
+
+		}catch (Exception e){
+			return Response.status(Status.BAD_REQUEST).entity(
+					ImmutableMap.of("error", "Getting elements matching the query failed due to an internal error."))
+					.build();
 		}
 		if (queryResult.size() == 0 && elementsQueryLinked.size() == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
