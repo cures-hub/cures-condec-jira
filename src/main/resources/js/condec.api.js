@@ -195,7 +195,7 @@
 	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getElementsByQuery = function getElementsByQuery(query, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?projectKey="
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?resultType=ELEMENTS_QUERY&projectKey="
 				+ projectKey + "&query=" + query, function(error, elements) {
 			if (error === null) {
 				callback(elements);
@@ -208,8 +208,19 @@
 	 */
 	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, elementKey,
 			documentationLocation, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsLinkedToElement.json?elementKey="
-				+ elementKey + "&URISearch=" + query, function(error, elements) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?resultType=ELEMENTS_LINKED&elementKey="
+				+ elementKey + "&query=" + query, function(error, elements) {
+			if (error === null) {
+				callback(elements);
+			}
+		});
+	};
+	/*
+	 * external references: condec.jira.issue.module
+	 */
+	ConDecAPI.prototype.getAllElementsByQueryAndLinked = function getAllElementsByQueryAndLinked(query, callback) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?resultType=ELEMENTS_QUERY_LINKED&projectKey="
+			+ projectKey + "&query=" + query, function(error, elements) {
 			if (error === null) {
 				callback(elements);
 			}
