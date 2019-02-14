@@ -26,15 +26,13 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 public class TaskCodeSummarizer {
 
-	private static File directory;
-	private static Repository repository;
 	private static String className;
 
 	public static String summarizer(Map<DiffEntry, EditList> diff, String projectKey, boolean isDialog)
 			throws IOException, CheckoutConflictException, GitAPIException {
-		directory = new File(GitClient.DEFAULT_DIR + projectKey);
+		File directory = new File(GitClient.DEFAULT_DIR + projectKey);
 		Git git = Git.open(directory);
-		repository = git.getRepository();
+		Repository repository = git.getRepository();
 		String methodsToString = "";
 		if (diff != null) {
 			for (Map.Entry<DiffEntry, EditList> entry : diff.entrySet()) {
@@ -66,7 +64,6 @@ public class TaskCodeSummarizer {
 					compilationUnit = JavaParser.parse(fileInputStream); // produces real readable code
 					fileInputStream.close();
 				} catch (ParseProblemException e) {
-					System.out.println(e);
 					continue;
 				}
 				className = "";
@@ -83,10 +80,10 @@ public class TaskCodeSummarizer {
 				methodDeclarations = methodVisitor.getMethodDeclarations();
 
 				if (!isDialog) {
-					methodsToString += methodsInComment(methodDeclarations);
+					methodsToString += methodsInComment(methodDeclarations, className);
 
 				} else {
-					methodsToString += methodsInDialog(methodDeclarations);
+					methodsToString += methodsInDialog(methodDeclarations, className);
 				}
 			}
 		}
@@ -95,7 +92,7 @@ public class TaskCodeSummarizer {
 		return methodsToString;
 	}
 
-	private static String methodsInComment(Set<MethodDeclaration> methodDeclarations) {
+	private static String methodsInComment(Set<MethodDeclaration> methodDeclarations, String className) {
 		String methodsToString = "In class " + className + " the following methods has been changed: \n";
 		String methodsInClass = "";
 		String method = "";
@@ -109,7 +106,7 @@ public class TaskCodeSummarizer {
 		return methodsToString += methodsInClass;
 	}
 
-	private static String methodsInDialog(Set<MethodDeclaration> methodDeclarations) {
+	private static String methodsInDialog(Set<MethodDeclaration> methodDeclarations, String className) {
 		String methodsToString = "In class <b>" + className + "</b> the following methods has been changed: <br>";
 		String methodsInClass = "";
 		String method = "";

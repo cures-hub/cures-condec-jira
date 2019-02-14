@@ -64,8 +64,7 @@ public class TaskCodeSummarizationEventListener implements InitializingBean, Dis
 	}
 
 	@EventListener
-	public void onIssueEvent(IssueEvent issueEvent)
-			throws IOException, JSONException, GitAPIException, InterruptedException {
+	public void onIssueEvent(IssueEvent issueEvent) {
 		String projectKey = issueEvent.getProject().getKey();
 		String issueId = issueEvent.getIssue().getKey();
 		long eventTypeId = issueEvent.getEventTypeId();
@@ -76,23 +75,23 @@ public class TaskCodeSummarizationEventListener implements InitializingBean, Dis
 		}
 
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
-		String text = "";
+		String summarization = "";
 		try {
 			Map<DiffEntry, EditList> diff = GitDiffExtraction.getGitDiff(projectKey, issueId);
-			text = TaskCodeSummarizer.summarizer(diff, projectKey, false);
-		} catch (IOException | GitAPIException e) {
+			summarization = TaskCodeSummarizer.summarizer(diff, projectKey, false);
+		} catch (IOException | GitAPIException | JSONException | InterruptedException e) {
 			e.printStackTrace();
 		}
 
-		if (text.isEmpty()) {
+		if (summarization.isEmpty()) {
 			return;
 		}
-		text = text.length() > 3500 ? text.substring(0, 3500) + "..." : text;
+		summarization = summarization.length() > 3500 ? summarization.substring(0, 3500) + "..." : summarization;
 		String tag = "{codesummarization}";
-		text = tag + text + tag;
+		String commentBody = tag + summarization + tag;
 
 		ComponentAccessor.getCommentManager().create(issue,
-				ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser(), text, false);
+				ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser(), commentBody, false);
 	}
 
 	private boolean isClosing(IssueEvent issueEvent) {
