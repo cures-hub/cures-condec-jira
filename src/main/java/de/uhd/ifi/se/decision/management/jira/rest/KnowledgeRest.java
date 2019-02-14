@@ -43,9 +43,9 @@ public class KnowledgeRest {
 
 	@Path("/getDecisionKnowledgeElement")
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
+	@Produces({MediaType.APPLICATION_JSON})
 	public Response getDecisionKnowledgeElement(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
-			@QueryParam("documentationLocation") String documentationLocation) {
+												@QueryParam("documentationLocation") String documentationLocation) {
 		if (projectKey == null || id <= 0) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Decision knowledge element could not be received due to a bad request (element id or project key was missing)."))
@@ -64,9 +64,9 @@ public class KnowledgeRest {
 
 	@Path("/getLinkedElements")
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
+	@Produces({MediaType.APPLICATION_JSON})
 	public Response getLinkedElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
-			@QueryParam("documentationLocation") String documentationLocation) {
+									  @QueryParam("documentationLocation") String documentationLocation) {
 		if (projectKey == null || id <= 0) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Linked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
@@ -80,9 +80,9 @@ public class KnowledgeRest {
 
 	@Path("/getUnlinkedElements")
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
+	@Produces({MediaType.APPLICATION_JSON})
 	public Response getUnlinkedElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
-			@QueryParam("documentationLocation") String documentationLocation) {
+										@QueryParam("documentationLocation") String documentationLocation) {
 		if (projectKey == null || id <= 0) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Unlinked decision knowledge elements could not be received due to a bad request (element id or project key was missing)."))
@@ -96,10 +96,10 @@ public class KnowledgeRest {
 
 	@Path("/createDecisionKnowledgeElement")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
+	@Produces({MediaType.APPLICATION_JSON})
 	public Response createDecisionKnowledgeElement(@Context HttpServletRequest request,
-			DecisionKnowledgeElement element, @QueryParam("idOfExistingElement") long idOfExistingElement,
-			@QueryParam("documentationLocationOfExistingElement") String documentationLocationOfExistingElement) {
+												   DecisionKnowledgeElement element, @QueryParam("idOfExistingElement") long idOfExistingElement,
+												   @QueryParam("documentationLocationOfExistingElement") String documentationLocationOfExistingElement) {
 		if (element == null || request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
 					"Creation of decision knowledge element failed due to a bad request (element or request is null)."))
@@ -137,10 +137,10 @@ public class KnowledgeRest {
 
 	@Path("/updateDecisionKnowledgeElement")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
+	@Produces({MediaType.APPLICATION_JSON})
 	public Response updateDecisionKnowledgeElement(@Context HttpServletRequest request,
-			DecisionKnowledgeElement element, @QueryParam("idOfParentElement") long idOfParentElement,
-			@QueryParam("documentationLocationOfParentElement") String documentationLocationOfParentElement) {
+												   DecisionKnowledgeElement element, @QueryParam("idOfParentElement") long idOfParentElement,
+												   @QueryParam("documentationLocationOfParentElement") String documentationLocationOfParentElement) {
 		if (request == null || element == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Element could not be updated due to a bad request.")).build();
@@ -174,9 +174,9 @@ public class KnowledgeRest {
 
 	@Path("/deleteDecisionKnowledgeElement")
 	@DELETE
-	@Produces({ MediaType.APPLICATION_JSON })
+	@Produces({MediaType.APPLICATION_JSON})
 	public Response deleteDecisionKnowledgeElement(@Context HttpServletRequest request,
-			DecisionKnowledgeElement decisionKnowledgeElement) {
+												   DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement == null || request == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Deletion of decision knowledge element failed.")).build();
@@ -195,12 +195,12 @@ public class KnowledgeRest {
 
 	@Path("/createLink")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
+	@Produces({MediaType.APPLICATION_JSON})
 	public Response createLink(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("knowledgeTypeOfChild") String knowledgeTypeOfChild, @QueryParam("idOfParent") long idOfParent,
-			@QueryParam("documentationLocationOfParent") String documentationLocationOfParent,
-			@QueryParam("idOfChild") long idOfChild,
-			@QueryParam("documentationLocationOfChild") String documentationLocationOfChild) {
+							   @QueryParam("knowledgeTypeOfChild") String knowledgeTypeOfChild, @QueryParam("idOfParent") long idOfParent,
+							   @QueryParam("documentationLocationOfParent") String documentationLocationOfParent,
+							   @QueryParam("idOfChild") long idOfChild,
+							   @QueryParam("documentationLocationOfChild") String documentationLocationOfChild) {
 		if (request == null || projectKey == null || idOfChild <= 0 || idOfParent <= 0) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Link could not be created due to a bad request.")).build();
@@ -229,9 +229,9 @@ public class KnowledgeRest {
 
 	@Path("/deleteLink")
 	@DELETE
-	@Produces({ MediaType.APPLICATION_JSON })
+	@Produces({MediaType.APPLICATION_JSON})
 	public Response deleteLink(@QueryParam("projectKey") String projectKey, @Context HttpServletRequest request,
-			Link link) {
+							   Link link) {
 		if (projectKey == null || request == null || link == null) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Deletion of link failed."))
 					.build();
@@ -249,9 +249,9 @@ public class KnowledgeRest {
 
 	@Path("/createIssueFromSentence")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
+	@Produces({MediaType.APPLICATION_JSON})
 	public Response createIssueFromSentence(@Context HttpServletRequest request,
-			DecisionKnowledgeElement decisionKnowledgeElement) {
+											DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (decisionKnowledgeElement == null || request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "The documentation location could not be changed due to a bad request."))
@@ -259,6 +259,7 @@ public class KnowledgeRest {
 		}
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
+
 
 		JiraIssueCommentPersistenceManager persistenceManager = new JiraIssueCommentPersistenceManager(
 				decisionKnowledgeElement.getProject().getProjectKey());
@@ -274,9 +275,9 @@ public class KnowledgeRest {
 
 	@Path("/setSentenceIrrelevant")
 	@POST
-	@Produces({ MediaType.APPLICATION_JSON })
+	@Produces({MediaType.APPLICATION_JSON})
 	public Response setSentenceIrrelevant(@Context HttpServletRequest request,
-			DecisionKnowledgeElement decisionKnowledgeElement) {
+										  DecisionKnowledgeElement decisionKnowledgeElement) {
 		if (request == null || decisionKnowledgeElement == null || decisionKnowledgeElement.getId() <= 0) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Setting element irrelevant failed due to a bad request."))
@@ -307,96 +308,74 @@ public class KnowledgeRest {
 				.entity(ImmutableMap.of("error", "Setting element irrelevant failed.")).build();
 	}
 
+	/**
+	 * @param Enum   resultType["ELEMENTS_QUERY","ELEMENTS_LINKED","ELEMENTS_QUERY_LINKED"]
+	 * @param String projectKey
+	 * @param String query
+	 * @param String elementKey
+	 * @param String request
+	 * @return List of Objects or List of Lists with Objects
+	 */
 	@Path("getAllElementsMatchingQuery")
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getAllElementsMatchingQuery(@QueryParam("projectKey") String projectKey,
-			@QueryParam("query") String query, @Context HttpServletRequest request) {
-		if (projectKey == null || query == null || request == null) {
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getAllElementsMatchingQuery(
+			@QueryParam("resultType") String resultType,
+			@QueryParam("projectKey") String iProjectKey,
+			@QueryParam("query") String query,
+			@QueryParam("elementKey") String iElementKey,
+			@Context HttpServletRequest request) {
+		if (resultType == null || query == null || request == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
 					ImmutableMap.of("error", "Getting elements matching the query failed due to a bad request."))
 					.build();
 		}
+		String elementKey = helperCheckIfNotNullThenSetValue(iElementKey);
+
+		String projectKey = helperCheckIfNullThenGetProjectKey(iProjectKey, elementKey);
+
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		List<DecisionKnowledgeElement> queryResult = getHelperMatchedQueryElements(user, projectKey, query);
-		if (queryResult == null) {
+		List<DecisionKnowledgeElement> queryResult = new ArrayList<>();
+		List<List> elementsQueryLinked = new ArrayList<>();
+		switch (resultType) {
+			case "ELEMENTS_QUERY":
+				queryResult = getHelperMatchedQueryElements(user, projectKey, query);
+				break;
+			case "ELEMENTS_LINKED":
+				queryResult = getHelperAllElementsLinkedToElement(user, projectKey, query, elementKey);
+				break;
+			case "ELEMENTS_QUERY_LINKED":
+				elementsQueryLinked = getHelperAllElementsMatchingQueryAndLinked(user, projectKey, query);
+				break;
+			default:
+				break;
+		}
+		if (queryResult.size() == 0 && elementsQueryLinked.size() == 0) {
 			return Response.status(Status.INTERNAL_SERVER_ERROR)
-					.entity(ImmutableMap.of("error", "Getting elements matching the query failed.")).build();
+					.entity(ImmutableMap.of("error", "Getting elements matching the query failed. No Results were found")).build();
+		} else if (elementsQueryLinked.size() > 0) {
+			return Response.ok(elementsQueryLinked).build();
+		} else {
+			return Response.ok(queryResult).build();
 		}
-		return Response.ok(queryResult).build();
-
 	}
 
-	@Path("/getAllElementsLinkedToElement")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getAllElementsLinkedToElement(@QueryParam("elementKey") String elementKey,
-			@QueryParam("URISearch") String uriSearch, @Context HttpServletRequest request) {
-		if (request == null) {
-			return Response.status(Status.BAD_REQUEST).entity(
-					ImmutableMap.of("error", "Getting elements matching the query failed due to a bad request."))
-					.build();
-		}
-		String projectKey = getProjectKey(elementKey);
-		ApplicationUser user = AuthenticationManager.getUser(request);
-
-		List<DecisionKnowledgeElement> filteredElements = getHelperAllElementsLinkedToElement(projectKey, uriSearch,
-				elementKey, user);
-
-		return Response.ok(filteredElements).build();
-	}
 
 	private String getProjectKey(String elementKey) {
 		return elementKey.split("-")[0];
 	}
 
-	@Path("/getAllElementsLinkedToElementsMatchedByQuery")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getAllElementsLinkedToElementsMatchedByQuery(@QueryParam("projectKey") String projectKey,
-			@QueryParam("query") String query, @Context HttpServletRequest request) {
-		if (projectKey == null || query == null || request == null) {
-			return Response.status(Status.BAD_REQUEST).entity(
-					ImmutableMap.of("error", "Getting elements matching the query failed due to a bad request."))
-					.build();
-		}
-
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		List<DecisionKnowledgeElement> queryResult = getHelperMatchedQueryElements(user, projectKey, query);
-		List<DecisionKnowledgeElement> addedElements = new ArrayList<DecisionKnowledgeElement>();
-		List<List<DecisionKnowledgeElement>> elmentsToReturn = new ArrayList<List<DecisionKnowledgeElement>>();
-		// now iti over query result
-		for (DecisionKnowledgeElement current : queryResult) {
-			// check if in addedElements list
-			if (!addedElements.contains(current)) {
-				// if not get the connected tree
-				String elementKey = current.getKey();
-				List<DecisionKnowledgeElement> filteredElements = getHelperAllElementsLinkedToElement(projectKey, query,
-						elementKey, user);
-				// add each element to the list
-				addedElements.addAll(filteredElements);
-				// add list to the big list
-				elmentsToReturn.add(filteredElements);
-			}
-		}
-		return Response.ok(elmentsToReturn).build();
-
-	}
-
 	/**
 	 * REST HELPERS to avoid doubled code:
-	 *
 	 **/
 
-	private List<DecisionKnowledgeElement> getHelperMatchedQueryElements(ApplicationUser user, String projectKey,
-			String query) {
+	private List<DecisionKnowledgeElement> getHelperMatchedQueryElements(ApplicationUser user, String projectKey, String query) {
 		GraphFiltering filter = new GraphFiltering(projectKey, query, user);
 		filter.produceResultsFromQuery();
 		return filter.getAllElementsMatchingQuery();
 	}
 
-	private List<DecisionKnowledgeElement> getHelperAllElementsLinkedToElement(String projectKey, String query,
-			String elementKey, ApplicationUser user) {
+	private List<DecisionKnowledgeElement> getHelperAllElementsLinkedToElement(ApplicationUser user, String projectKey, String query, String elementKey) {
 		Graph graph;
 		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
 			GraphFiltering filter = new GraphFiltering(projectKey, query, user);
@@ -407,4 +386,46 @@ public class KnowledgeRest {
 		}
 		return graph.getAllElements();
 	}
+
+	private List<List> getHelperAllElementsMatchingQueryAndLinked(ApplicationUser user, String projectKey, String query) {
+		List<DecisionKnowledgeElement> tempQueryResult = getHelperMatchedQueryElements(user, projectKey, query);
+		List<DecisionKnowledgeElement> addedElements = new ArrayList<DecisionKnowledgeElement>();
+		List<List> elementsQueryLinked = new ArrayList<>();
+
+		//now iti over query result
+		for (DecisionKnowledgeElement current : tempQueryResult) {
+			//check if in addedElements list
+			if (!addedElements.contains(current)) {
+				//if not get the connected tree
+				String currentElementKey = current.getKey();
+				List<DecisionKnowledgeElement> filteredElements = getHelperAllElementsLinkedToElement(user, projectKey, query, currentElementKey);
+				//add each element to the list
+				addedElements.addAll(filteredElements);
+				//add list to the big list
+				elementsQueryLinked.add(filteredElements);
+			}
+		}
+		return elementsQueryLinked;
+	}
+
+	private String helperCheckIfNotNullThenSetValue(String iValue) {
+		String result;
+		if (iValue != null) {
+			result = iValue;
+		} else {
+			result = "";
+		}
+		return result;
+	}
+
+	private String helperCheckIfNullThenGetProjectKey(String iProjectKey, String elementKey) {
+		String projectKey;
+		if (iProjectKey == null) {
+			projectKey = getProjectKey(elementKey);
+		} else {
+			projectKey = iProjectKey;
+		}
+		return projectKey;
+	}
 }
+

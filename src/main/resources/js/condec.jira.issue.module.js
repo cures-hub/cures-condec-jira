@@ -30,7 +30,7 @@
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
 				&& isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
 				&& isConDecTreantType(_treant)) {
-			
+
 			conDecAPI = _conDecAPI;
 			conDecObservable = _conDecObservable;
 			conDecDialog = _conDecDialog;
@@ -58,7 +58,38 @@
 		// get jql from url
 		var search = global.location.search.toString();
 		search = search.toString().replace("&", "§");
+		// if search query does not exist check
 		return search;
+	}
+
+	/**
+	 * returns jql if empty or nonexistent create it returning jql for one issue
+	 *
+	 * @returns {string}
+	 */
+	function getQueryFromUrl() {
+		var userInputJql = getURLsSearch();
+		var baseUrl = AJS.params.baseURL;
+		var sPathName = document.location.href;
+		var sPathWithoutBaseUrl = sPathName.split(baseUrl)[1];
+
+		// check if jql is empty or non existent
+		var myJql = "";
+		if (userInputJql && userInputJql.indexOf("?jql=") > -1 && userInputJql.split("?jql=")[1]) {
+			myJql = userInputJql;
+		} else if (userInputJql && userInputJql.indexOf("?filter=") > -1 && userInputJql.split("?filter=")[1]) {
+			myJql = userInputJql;
+		} else if (sPathWithoutBaseUrl && sPathWithoutBaseUrl.indexOf("/browse/") > -1) {
+			var issueKey = sPathWithoutBaseUrl.split("/browse/")[1];
+			if (issueKey.indexOf("?jql=")) {
+				issueKey = issueKey.split("?jql=")[0];
+			}
+			if (issueKey.indexOf("?filter=")) {
+				issueKey = issueKey.split("?filter=")[0];
+			}
+			myJql = "?jql=issue=" + issueKey;
+		}
+		return myJql;
 	}
 
 	ConDecJiraIssueModule.prototype.updateView = function() {
@@ -98,7 +129,7 @@
 	}
 
 	function exportAllElementsMatchingQuery(exportType) {
-		var jql = getURLsSearch();
+		var jql = getQueryFromUrl();
 		conDecAPI.getElementsByQuery(jql, function(elements) {
 			if (elements && elements.length > 0 && elements[0] !== null) {
 				download(elements, "decisionKnowledge", exportType);
@@ -107,7 +138,7 @@
 	}
 
 	function exportLinkedElements(exportType) {
-		var jql = getURLsSearch();
+		var jql = getQueryFromUrl();
 		var issueKey = conDecAPI.getIssueKey();
 		conDecAPI.getLinkedElementsByQuery(jql, issueKey, "i", function(elements) {
 			if (elements && elements.length > 0 && elements[0] !== null) {
@@ -115,12 +146,11 @@
 			}
 		});
 	}
-	
 	function exportAllMatchedAndLinkedElements(exportType) {
-		var jql = getURLsSearch();
+		var jql = getQueryFromUrl();
 		conDecAPI.getAllElementsByQueryAndLinked(jql, function(elements) {
 			if (elements && elements.length > 0 && elements[0] !== null) {
-				download(elements, "decisionKnowledgeGraphWithLinked", exportType, true);
+				download(elements, "decisionKnowledgeGraphWithLinked", exportType,true);
 			}
 		});
 	}
@@ -130,12 +160,12 @@
 		switch (exportType) {
 		case "document":
 			filename += ".doc";
-			var htmlString = "";
-			if (multipleArrays) {
-				elements.map(function(element) {
-					htmlString += createHtmlStringForWordDocument(element) + "<hr>";
+			var htmlString="";
+			if(multipleArrays){
+				elements.map(function(aElement){
+					htmlString+=createHtmlStringForWordDocument(aElement)+"<hr>";
 				});
-			} else {
+			}else{
 				htmlString = createHtmlStringForWordDocument(elements);
 			}
 			dataString = "data:text/html," + encodeURIComponent(htmlString);
@@ -157,7 +187,7 @@
 
 	function createHtmlStringForWordDocument(elements) {
 		var table = "<table><tr><th>Key</th><th>Summary</th><th>Description</th><th>Type</th></tr>";
-		elements.map(function(element) {
+		elements.map(function (element) {
 			var summary = element["summary"] === undefined ? "" : element["summary"];
 			var description = element["description"] === undefined ? "" : element["description"];
 			var type = element["type"] === undefined ? "" : element["type"];
@@ -173,7 +203,7 @@
 
 		var styleString = "table{font-family:arial,sans-serif;border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;text-align:left;padding:8px}tr:nth-child(even){background-color:#ddd}";
 		var htmlString = $("<html>").html("<head><style>" + styleString + "</style></head><body>" + table + "</body>")
-				.html();
+			.html();
 		return htmlString;
 	}
 
