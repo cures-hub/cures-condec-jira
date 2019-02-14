@@ -260,7 +260,9 @@ public class KnowledgeRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		JiraIssueCommentPersistenceManager persistenceManager = new JiraIssueCommentPersistenceManager(decisionKnowledgeElement.getProject().getProjectKey());
+
+		JiraIssueCommentPersistenceManager persistenceManager = new JiraIssueCommentPersistenceManager(
+				decisionKnowledgeElement.getProject().getProjectKey());
 		Issue issue = persistenceManager.createJIRAIssueFromSentenceObject(decisionKnowledgeElement.getId(), user);
 
 		if (issue != null) {

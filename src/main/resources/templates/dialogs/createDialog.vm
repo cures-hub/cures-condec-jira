@@ -1,0 +1,34 @@
+<section id="create-dialog" class="aui-dialog2 aui-dialog2-medium aui-layer" role="dialog" aria-hidden="true">
+	<header class="aui-dialog2-header">
+		<h2 id="create-dialog-header" class="aui-dialog2-header-main">$i18n.getText("condec.context.menu.create.item.label")</h2>
+		<a class="aui-dialog2-header-close"> 
+			<span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+		</a>
+	</header>
+	<div id="create-dialog-content" class="aui-dialog2-content">
+		<form class="aui">
+			<div class="field-group">
+				<label for="create-form-input-summary">$i18n.getText("condec.label.summary"):</label>
+				<input id="create-form-input-summary" type="text" placeholder=$i18n.getText("condec.label.summary") class="text full-width-field" value="">
+			</div>
+			<div class="field-group">
+				<label for="create-form-input-description">$i18n.getText("condec.label.description"):</label>
+				<textarea id="create-form-input-description" placeholder=$i18n.getText("condec.label.description") class="textarea full-width-field"></textarea>
+			</div>
+			<div class="field-group">
+				<label for="create-form-select-type">$i18n.getText("condec.label.knowledge.type"):</label>
+				<select id="create-form-select-type" class="select full-width-field"></select>
+			</div>            			
+			<div class="field-group">
+				<label for="create-form-select-location">$i18n.getText("condec.label.documentation.location"):</label>
+				<select id="create-form-select-location" class="select full-width-field"></select>
+			</div>
+		</form>
+    </div>
+	<footer class="aui-dialog2-footer">
+		<div class="aui-dialog2-footer-actions">
+			<button id="create-dialog-submit-button" class="aui-button aui-button-primary">$i18n.getText("condec.button.create")</button>
+			<button id="create-dialog-cancel-button" class="aui-button aui-button-link">$i18n.getText("condec.button.cancel")</button>
+		</div>
+	</footer>
+</section>

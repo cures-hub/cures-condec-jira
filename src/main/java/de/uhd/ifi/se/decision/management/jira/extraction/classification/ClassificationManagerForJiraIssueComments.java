@@ -86,16 +86,16 @@ public class ClassificationManagerForJiraIssueComments {
 
 	private List<Sentence> updateSentencesWithBinaryClassificationResult(List<Boolean> classificationResult,
 			List<Sentence> sentences) {
+		if (classificationResult.size() == 0) {
+			return sentences;
+		}
 		int i = 0;
 		for (Sentence sentence : sentences) {
 			if (isSentenceQualifiedForBinaryClassification(sentence)) {
-			    //TODO Next line can cause bug check in live system
-                if(classificationResult.size() !=0) {
-                    sentence.setRelevant(classificationResult.get(i));
-                    sentence.setValidated(false);
-                    JiraIssueCommentPersistenceManager.updateInDatabase(sentence);
-                    i++;
-                }
+				sentence.setRelevant(classificationResult.get(i));
+				sentence.setValidated(false);
+				JiraIssueCommentPersistenceManager.updateInDatabase(sentence);
+				i++;
 			}
 		}
 		return sentences;
@@ -144,7 +144,6 @@ public class ClassificationManagerForJiraIssueComments {
 		for (Sentence sentence : sentences) {
 			if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 				sentence.setType(classificationResult.get(i));
-				System.out.println(sentence.getTypeAsString());
 				sentence.setSummary(null);
 				sentence.setValidated(false);
 				persistenceManager.updateDecisionKnowledgeElement(sentence, null);

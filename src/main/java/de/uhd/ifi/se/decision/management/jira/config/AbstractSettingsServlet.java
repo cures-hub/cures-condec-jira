@@ -1,7 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -12,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.templaterenderer.TemplateRenderer;
@@ -65,18 +66,10 @@ public abstract class AbstractSettingsServlet extends HttpServlet {
 	protected abstract boolean isValidUser(HttpServletRequest request);
 
 	private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		response.sendRedirect(loginUriProvider.getLoginUri(getUri(request)).toASCIIString());
-		LOGGER.info("User with name('{}') tried to change the project settings and wsa redirected to login.",
+		response.sendRedirect(
+				ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/login.jsp");
+		LOGGER.info("User with name('{}') tried to change the project settings and was redirected to login.",
 				AuthenticationManager.getUsername(request));
-	}
-
-	private URI getUri(HttpServletRequest request) {
-		StringBuffer builder = request.getRequestURL();
-		if (request.getQueryString() != null) {
-			builder.append('?');
-			builder.append(request.getQueryString());
-		}
-		return URI.create(builder.toString());
 	}
 
 	protected abstract String getTemplatePath();

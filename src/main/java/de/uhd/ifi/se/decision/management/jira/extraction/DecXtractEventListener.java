@@ -64,9 +64,9 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 
 	@EventListener
 	public void onIssueEvent(IssueEvent issueEvent) {
-	    if(issueEvent == null){
-	        return;
-        }
+		if (issueEvent == null) {
+			return;
+		}
 		this.issueEvent = issueEvent;
 		this.projectKey = issueEvent.getProject().getKey();
 
@@ -136,13 +136,16 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 
 	private void handleEditComment() {
 		// If locked, a REST service is currently manipulating the comment and should
-		// not be
-		// handled by this event listener.
+		// not be handled by this event listener.
 		if (!DecXtractEventListener.editCommentLock) {
 			JiraIssueCommentPersistenceManager.deleteAllSentencesOfComments(issueEvent.getComment());
-			if(ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
-                new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
-            }
+			if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
+				new ClassificationManagerForJiraIssueComments()
+						.classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
+			} else {
+				MutableComment comment = getChangedComment();
+				new CommentSplitterImpl().getSentences(comment);
+			}
 			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 		} else {
 			LOGGER.debug("DecXtract event listener:\nEditing comment is still locked.");
@@ -155,9 +158,12 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	}
 
 	private void handleNewComment() {
-	    if(ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
-            new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
-        }
+		if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
+			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
+		} else {
+			MutableComment comment = getChangedComment();
+			new CommentSplitterImpl().getSentences(comment);
+		}		
 		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 }

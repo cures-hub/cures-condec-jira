@@ -9,7 +9,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.VelocityParamFactory;
 
 /**
- * Provides content for the issue module (currently not used)
+ * Provides content for the issue module (currently not used).
  */
 public class JiraIssueModuleContextProvider extends AbstractJiraContextProvider {
 

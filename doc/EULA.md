@@ -13,7 +13,7 @@ Software Engineering Research Group, Heidelberg University grants you a non-excl
 Software Engineering Research Group, Heidelberg University provide you with support through [https://github.com/cures-hub/cures-condec-jira/issues/](https://github.com/cures-hub/cures-condec-jira/issues/).
 Software Engineering Research Group, Heidelberg University however does not guarantee that every request will be supported or solved. The issues will be reviewed and then taken into consideration.
 
-## Guarentees and Liablility
+## Guarantees and Liability
 
 -  The software is supplied 'as is' and without warranty or representation regarding accuracy or the nonexistence of bugs. You use the software at your own risk.
 -  Software Engineering Research Group, Heidelberg University will never deliberately include viruses, spyware, backdoors or malicious code.

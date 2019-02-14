@@ -17,12 +17,11 @@
 	var conDecAPI = null;
 	var conDecObservable = null;
 	var treeViewer = null;
-	var i18n = null;
 
 	var ConDecIssueTab = function ConDecIssueTab() {
 	};
 
-	ConDecIssueTab.prototype.init = function init(_conDecAPI, _conDecObservable, _treeViewer, _contextMenu, _i18n) {
+	ConDecIssueTab.prototype.init = function init(_conDecAPI, _conDecObservable, _treeViewer, _contextMenu) {
 		console.log("conDecTabPanel init");
 
 		// TODO add simple type checks
@@ -30,7 +29,6 @@
 		conDecObservable = _conDecObservable;
 		treeViewer = _treeViewer;
 		contextMenu = _contextMenu;
-		i18n = _i18n;
 
 		// Register/subscribe this view as an observer
 		conDecObservable.subscribe(this);

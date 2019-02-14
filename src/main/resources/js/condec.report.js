@@ -1,19 +1,26 @@
+/*
+ This module fills the box plots and pie charts used in the report page.
+
+ Requires
+ * echart
+
+ Is referenced in HTML by
+ * decisionKnowledgeReport.vm
+ */
 (function(global) {
 
 	var ConDecReport = function ConDecReport() {
 	};
 
-	ConDecReport.prototype.initializeDivWithBoxPlot = function initializeDivWithBoxPlot(id, dataFromServer, xAxis,
-			title) {
-		var myChart = echarts.init(document.getElementById(id));
-		var data = echarts.dataTool.prepareBoxplotData(new Array(dataFromServer));
-		myChart.setOption(getOptionsForBoxplot(title, xAxis, "", data));
-		document.getElementById(id).setAttribute("list", dataFromServer);
+	ConDecReport.prototype.initializeDivWithBoxPlot = function initializeDivWithBoxPlot(divId, dataMap, xAxis, title) {
+		var boxplot = echarts.init(document.getElementById(divId));
+		var data = echarts.dataTool.prepareBoxplotData(new Array(dataMap));
+		boxplot.setOption(getOptionsForBoxplot(title, xAxis, "", data));
+		document.getElementById(divId).setAttribute("list", data);
 	};
 
-	ConDecReport.prototype.initializeDivWithBoxPlotFromMap = function initializeDivWithBoxPlotFromMap(id,
-			dataFromServer, xAxis, title) {
-		var dataMap = dataFromServer;
+	ConDecReport.prototype.initializeDivWithBoxPlotFromMap = function initializeDivWithBoxPlotFromMap(divId, dataMap,
+			xAxis, title) {
 		var listToShowUserWithAllValues = "";
 		var values = [];
 		for (var i = Array.from(dataMap.keys()).length - 1; i >= 0; i--) {
@@ -23,14 +30,14 @@
 			values.push(value);
 		}
 
-		var myChart = echarts.init(document.getElementById(id));
+		var boxplot = echarts.init(document.getElementById(divId));
 		var data = echarts.dataTool.prepareBoxplotData(new Array(values));
-		myChart.setOption(getOptionsForBoxplot(title, xAxis, "", data));
-		document.getElementById(id).setAttribute("list", listToShowUserWithAllValues);
+		boxplot.setOption(getOptionsForBoxplot(title, xAxis, "", data));
+		document.getElementById(divId).setAttribute("list", listToShowUserWithAllValues);
 	};
 
-	ConDecReport.prototype.initializeDivWithPieChart = function initializeDivWithPieChart(id, title, subtitle, dataMap) {
-		var myChart = echarts.init(document.getElementById(id));
+	ConDecReport.prototype.initializeDivWithPieChart = function initializeDivWithPieChart(divId, title, subtitle,
+			dataMap) {
 		var data = [];
 		var list = "";
 
@@ -42,29 +49,31 @@
 			data.push(entry);
 			list = list + " " + key + ": " + dataMap.get(key) + "; ";
 		}
-		myChart.setOption(getOptionsForPieChart(title, subtitle, Array.from(dataMap.keys()), data));
-		document.getElementById(id).setAttribute("list", list);
+
+		var piechart = echarts.init(document.getElementById(divId));
+		piechart.setOption(getOptionsForPieChart(title, subtitle, Array.from(dataMap.keys()), data));
+		document.getElementById(divId).setAttribute("list", list);
 	};
 
 	function getOptionsForBoxplot(name, xLabel, ylabel, data) {
 		return {
 			title : [ {
 				text : name,
-				left : 'center',
+				left : "center",
 			}, ],
 			tooltip : {
-				trigger : 'item',
+				trigger : "item",
 				axisPointer : {
-					type : 'shadow'
+					type : "shadow"
 				}
 			},
 			grid : {
-				left : '10%',
-				right : '10%',
-				bottom : '15%'
+				left : "15%",
+				right : "10%",
+				bottom : "15%"
 			},
 			xAxis : {
-				type : 'category',
+				type : "category",
 				data : data.axisData,
 				boundaryGap : true,
 				nameGap : 30,
@@ -76,20 +85,20 @@
 				},
 			},
 			yAxis : {
-				type : 'value',
+				type : "value",
 				name : ylabel,
 				splitArea : {
 					show : true
 				}
 			},
 			series : [ {
-				name : 'boxplot',
-				type : 'boxplot',
+				name : "boxplot",
+				type : "boxplot",
 				data : data.boxData,
 
 			}, {
-				name : 'outlier',
-				type : 'scatter',
+				name : "outlier",
+				type : "scatter",
 				data : data.outliers
 			} ]
 		};
@@ -100,27 +109,42 @@
 			title : {
 				text : title,
 				subtext : subtitle,
-				x : 'center'
+				x : "center"
 			},
 			tooltip : {
-				trigger : 'item',
+				trigger : "item",
 				formatter : "{b} : {c} ({d}%)"
 			},
 			legend : {
-				orient : 'horizontal',
-				bottom : 'bottom',
+				orient : "horizontal",
+				bottom : "bottom",
 				data : dataKeys
 			},
 			series : [ {
-				type : 'pie',
-				radius : '55%',
-				center : [ '50%', '60%' ],
+				type : "pie",
+				radius : "60%",
+				center : [ "50%", "50%" ],
 				data : dataMap,
 				itemStyle : {
 					emphasis : {
 						shadowBlur : 10,
 						shadowOffsetX : 0,
-						shadowColor : 'rgba(0, 0, 0, 0.5)'
+						shadowColor : "rgba(0, 0, 0, 0.5)"
+					}
+				},
+				avoidLabelOverlap : true,
+				label : {
+					normal : {
+						show : false,
+						position : 'center'
+					},
+					emphasis : {
+						show : false
+					}
+				},
+				labelLine : {
+					normal : {
+						show : false
 					}
 				}
 			} ]

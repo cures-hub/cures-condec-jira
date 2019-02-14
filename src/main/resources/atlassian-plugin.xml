@@ -12,6 +12,9 @@
 		<param name="plugin-logo">images/pluginLogo.png</param>
 	</plugin-info>
 
+	<!-- Internationalisation -->
+	<resource type="i18n" name="i18n" location="i18n/condec" />
+
 	<!-- Web Resources -->
 	<web-resource key="stylesheet-and-icon-resources" name="Style Sheets and Icons">
 		<description>
@@ -120,8 +123,7 @@
 		<context>jira.view.issue</context>
 		<resource type="download" name="fc.model" location="/classifier/fc.model" />
 		<resource type="download" name="br.model" location="/classifier/br.model" />
-		<resource type="download" name="condec.tab.panel.js"
-			location="/js/condec.tab.panel.js" />
+		<resource type="download" name="condec.tab.panel.js" location="/js/condec.tab.panel.js" />
 	</web-resource>
 
 	<web-resource key="report-resources" name="Resources for Decision Knowledge Report">
@@ -140,7 +142,7 @@
 		section="jira.project.sidebar.plugins.navigation" weight="1000">
 		<description>Provides the "Decision Knowledge" link in the project's navigation sidebar.
 		</description>
-		<label>Decision Knowledge</label>
+		<label key="condec.sidebar.link.label" />
 		<param name="iconClass" value="aui-icon aui-icon-small aui-iconfont-decision" />
 		<link> /projects/$pathEncodedProjectKey?selectedItem=decision-knowledge-page</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
@@ -164,14 +166,14 @@
 	<!-- Global Settings -->
 	<web-section key="condec-admin-section"
 		name="Web Section Label for ConDec Plug-in Administration" location="admin_plugins_menu">
-		<label>Decision Knowledge</label>
+		<label key="condec.admin.section.label" />
 		<description>
 			Adds the "Decision Knowledge" label to the sidebar of the add-ons admin page.
 		</description>
 	</web-section>
 	<web-item key="condec-admin-menu-item" name="Menu Item for ConDec Plug-in Administration"
 		section="admin_plugins_menu/condec-admin-section" weight="10" application="jira">
-		<label>ConDec settings</label>
+		<label key="condec.admin.menu.item.label" />
 		<description>
 			Adds the "ConDec settings" menu item that links to the ConDec admin page.
 		</description>
@@ -187,7 +189,7 @@
 	<!-- Project Settings -->
 	<web-section key="condec-project-settings-section"
 		name="Web Section for ConDec Plug-in in Project Settings" location="atl.jira.proj.config">
-		<label>Decision Knowledge</label>
+		<label key="condec.project.settings.section.label" />
 		<description>
 			Adds the "Decision Knowledge" label to the project settings menu.
 		</description>
@@ -197,7 +199,8 @@
 		section="atl.jira.proj.config/condec-project-settings-section" weight="15">
 		<description>Adds the "ConDec project settings" menu item that links to the project settings.
 		</description>
-		<label>ConDec project settings</label>
+		<label key="condec.project.settings.menu.item" />
+		ConDec project settings
 		<link linkId="condec-project-settings-menu-item">/plugins/servlet/condec/settings?projectKey=$projectKeyEncoded</link>
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 	</web-item>
@@ -229,7 +232,7 @@
 	<web-panel key="condec-jira-issue-module" name="Decision Knowledge JIRA Issue Module"
 		location="atl.jira.view.issue.left.context" weight="200">
 		<description>Decision Knowledge related to a JIRA Issue</description>
-		<label>Decision Knowledge</label>
+		<label key="condec.jira.issue.module.label" />
 		<resource type="velocity" name="view" location="templates/jiraIssueModule.vm" />
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
 		<supports-ajax-load>true</supports-ajax-load>
@@ -238,7 +241,7 @@
 	<!-- Decision Knowledge Export Functions -->
 	<web-item key="export-as-table-item"
 		name="Menu Item for Decision Knowledge Export as Table" section="operations-operations">
-		<label>Export decision knowledge</label>
+		<label key="condec.export.as.table.item.label" />
 		<description>Adds a menu item to the "More" dropdown in the JIRA issue view.</description>
 		<link linkId="export-as-table-link" />
 		<condition class="de.uhd.ifi.se.decision.management.jira.config.ActivationCondition" />
@@ -251,7 +254,7 @@
 		<description>Tab panel to manage extraction of decision knowledge from JIRA issue description and
 			comments.
 		</description>
-		<label>Decision Knowledge Extraction</label>
+		<label key="condec.tab.panel.label" />
 		<order>10</order>
 		<resource type="velocity" name="view" location="templates/tabPanel.vm" />
 		<supports-ajax-load>true</supports-ajax-load>
@@ -297,33 +300,24 @@
 
 	<!-- Decision Knowledge Report -->
 	<report name="Decision Knowledge Report" key="decision-knowledge-report"
-		class="de.uhd.ifi.se.decision.management.jira.extraction.view.DecisionKnowledgeReport">
-		<description>Generates statistics about decision knowledge in the project.</description>
+		class="de.uhd.ifi.se.decision.management.jira.view.DecisionKnowledgeReport">
+		<label key="condec.report.label" />
+		<description key="condec.report.description" />
 		<resource name="view" type="velocity" location="/templates/decisionKnowledgeReport.vm" />
-		<label key="Decision Knowledge Report" />
 		<properties>
 			<property>
 				<key>selectedProjectId</key>
-				<name>Project</name>
-				<description>Selected project to display the report for.</description>
+				<name>condec.jira.project</name>
+				<description key="condec.report.project.description" />
 				<type>filterprojectpicker</type>
+				<i18n>true</i18n>
 			</property>
 			<property>
-				<key>rootType</key>
+				<key>issueType</key>
 				<name>JIRA Issue Type</name>
-				<description>Please select the JIRA Issue type you want to see decision knowledge linked to.
-				</description>
+				<description key="condec.report.issuetype.description" />
 				<type>select</type>
-				<values>
-					<value>
-						<key>WI</key>
-						<value>Work Item</value>
-					</value>
-					<value>
-						<key>B</key>
-						<value>Bug</value>
-					</value>
-				</values>
+				<values class="de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator" />
 			</property>
 		</properties>
 	</report>
