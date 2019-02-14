@@ -17,6 +17,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 
 public class GitClient {
 
+	// @issue: What is the best place to clone the git repo to?
+	// @issue: To which directory does the Git integration for JIRA plug-in clone
+	// the repo? Can we use this directory?
 	public static final String DEFAULT_DIR = System.getProperty("user.home") + File.separator + "repository"
 			+ File.separator;
 

@@ -26,18 +26,13 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 public class TaskCodeSummarizer {
 
-	public final static String DEFAULT_DIR = System.getProperty("user.home") + File.separator + "repository"
-			+ File.separator;
-
 	private static File directory;
-
 	private static Repository repository;
-
 	private static String className;
 
 	public static String summarizer(Map<DiffEntry, EditList> diff, String projectKey, boolean isDialog)
 			throws IOException, CheckoutConflictException, GitAPIException {
-		directory = new File(DEFAULT_DIR + projectKey);
+		directory = new File(GitClient.DEFAULT_DIR + projectKey);
 		Git git = Git.open(directory);
 		repository = git.getRepository();
 		String methodsToString = "";

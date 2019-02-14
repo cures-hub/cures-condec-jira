@@ -37,11 +37,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 
 public class GitDiffExtraction {
 
-	// @issue: What is the best place to clone the git repo to?
-	// @issue: To which directory does the Git integration for JIRA plug-in clone
-	// the repo? Can we use this directory?
-	public final static String DEFAULT_DIR = System.getProperty("user.home") + File.separator + "repository"
-			+ File.separator;
 	private static File directory;
 	private static RevCommit firstCommit;
 	private static RevCommit lastCommit;
@@ -50,7 +45,7 @@ public class GitDiffExtraction {
 
 	public static Map<DiffEntry, EditList> getGitDiff(String commits, String projectKey, boolean commitsKnown)
 			throws IOException, GitAPIException, JSONException, InterruptedException {
-		directory = new File(DEFAULT_DIR + projectKey);
+		directory = new File(GitClient.DEFAULT_DIR + projectKey);
 		git = Git.open(directory);
 		repository = git.getRepository();
 		git.pull();
@@ -77,7 +72,7 @@ public class GitDiffExtraction {
 		if (projectKey == null || !ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
 			return null;
 		}
-		directory = new File(DEFAULT_DIR + projectKey);
+		directory = new File(GitClient.DEFAULT_DIR + projectKey);
 		git = Git.open(directory);
 		repository = git.getRepository();
 		git.pull();
