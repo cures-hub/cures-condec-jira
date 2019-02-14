@@ -26,14 +26,11 @@ import com.atlassian.jira.issue.history.ChangeItemBean;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitterImpl;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
 
 /**
- * Triggers the webhook when JIRA issues are created, updated, or deleted or
- * when links between JIRA issues are created or deleted
+ * Triggers the code summarization when JIRA issues are closed. Then, the
+ * summary is written into a new comment of the JIRA issue.
  */
 @Component
 public class TaskCodeSummarizationEventListener implements InitializingBean, DisposableBean {
@@ -73,49 +70,45 @@ public class TaskCodeSummarizationEventListener implements InitializingBean, Dis
 			throws IOException, JSONException, GitAPIException, InterruptedException {
 		String projectKey = issueEvent.getProject().getKey();
 		String issueId = issueEvent.getIssue().getKey();
-		Long eventTypeId = issueEvent.getEventTypeId();
-		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)
-				&& eventTypeId.equals(EventType.ISSUE_GENERICEVENT_ID) && isClosing(issueEvent)) {
-			MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
-			String text = "";
-			try {
-				Map<DiffEntry, EditList> diff = GitDiffExtraction.getGitDiff(projectKey, issueId);
-				text = TaskCodeSummarizer.summarizer(diff, projectKey, false);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (GitAPIException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		long eventTypeId = issueEvent.getEventTypeId();
 
-			if (!text.isEmpty()) {
-				text = text.length() > 3500 ? text.substring(0, 3500) + "..." : text;
-				String tag = AbstractKnowledgeClassificationMacro.getTag(KnowledgeType.CODESUMMARIZATION);
-				text = tag + text + tag;
-
-				Comment comment = ComponentAccessor.getCommentManager().create(issue,
-						ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser(), text, false);
-				// createSentence(comment, text);
-				new CommentSplitterImpl().getSentences(comment);
-				JiraIssueCommentPersistenceManager
-						.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
-			}
-
+		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)
+				|| eventTypeId != EventType.ISSUE_GENERICEVENT_ID || !isClosing(issueEvent)) {
+			return;
 		}
+
+		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
+		String text = "";
+		try {
+			Map<DiffEntry, EditList> diff = GitDiffExtraction.getGitDiff(projectKey, issueId);
+			text = TaskCodeSummarizer.summarizer(diff, projectKey, false);
+		} catch (IOException | GitAPIException e) {
+			e.printStackTrace();
+		}
+
+		if (text.isEmpty()) {
+			return;
+		}
+		text = text.length() > 3500 ? text.substring(0, 3500) + "..." : text;
+		String tag = "{codesummarization}";
+		text = tag + text + tag;
+
+		Comment comment = ComponentAccessor.getCommentManager().create(issue,
+				ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser(), text, false);
+		new CommentSplitterImpl().getSentences(comment);
 	}
 
 	private boolean isClosing(IssueEvent issueEvent) {
 		GenericValue changeLog = issueEvent.getChangeLog();
 
 		Long changeId = changeLog.getLong("id");
-		if (changeId != null) {
-			ChangeHistory change = changeManager.getChangeHistoryById(changeId);
-			System.out.println("Changes: " + change.getChangeItemBeans());
-			for (ChangeItemBean bean : change.getChangeItemBeans()) {
-				if (bean.getToString().equalsIgnoreCase("DONE")) {
-					return true;
-				}
+		if (changeId == null) {
+			return false;
+		}
+		ChangeHistory changeHistory = changeManager.getChangeHistoryById(changeId);
+		for (ChangeItemBean changeItemBean : changeHistory.getChangeItemBeans()) {
+			if (changeItemBean.getToString().equalsIgnoreCase("DONE")) {
+				return true;
 			}
 		}
 		return false;

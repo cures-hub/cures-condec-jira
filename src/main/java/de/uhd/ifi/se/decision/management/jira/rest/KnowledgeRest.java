@@ -329,27 +329,35 @@ public class KnowledgeRest {
 					.entity(ImmutableMap.of("error", "Getting summarized code failed due to a bad request.")).build();
 		}
 
+		Long elementId = Long.parseLong(id);
+
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
+		Issue jiraIssue = issueManager.getIssueObject(elementId);
+
 		String jiraIssueKey = "";
-		if (issueManager.getIssueObject(Long.parseLong(id)) == null) {
-			jiraIssueKey = JiraIssueCommentPersistenceManager.getJiraIssueKey(Long.parseLong(id));
+		if (jiraIssue == null) {
+			jiraIssueKey = JiraIssueCommentPersistenceManager.getJiraIssueKey(elementId);
 		} else {
-			jiraIssueKey = issueManager.getIssueObject(Long.parseLong(id)).getKey();
+			jiraIssueKey = jiraIssue.getKey();
+		}
+
+		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+			return Response.status(Status.SERVICE_UNAVAILABLE)
+					.entity(ImmutableMap.of("error",
+							"Getting summarized code failed since git extraction is disabled for this project."))
+					.build();
 		}
 
 		String queryResult = "";
-		if (ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			try {
-				Map<DiffEntry, EditList> diff;
-				diff = GitDiffExtraction.getGitDiff(projectKey, jiraIssueKey);
-				if (diff == null) {
-					queryResult = "This JIRA issue does not have any code committed.";
-				} else {
-					queryResult += TaskCodeSummarizer.summarizer(diff, projectKey, true);
-				}
-			} catch (IOException | JSONException | InterruptedException | GitAPIException e) {
-				e.printStackTrace();
+		try {
+			Map<DiffEntry, EditList> diff = GitDiffExtraction.getGitDiff(projectKey, jiraIssueKey);
+			if (diff == null) {
+				queryResult = "This JIRA issue does not have any code committed.";
+			} else {
+				queryResult += TaskCodeSummarizer.summarizer(diff, projectKey, true);
 			}
+		} catch (IOException | JSONException | InterruptedException | GitAPIException e) {
+			e.printStackTrace();
 		}
 
 		return Response.ok(queryResult).build();
