@@ -5,35 +5,18 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Map;
 
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import org.apache.commons.io.FileUtils;
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
-import org.eclipse.jgit.lib.ConfigConstants;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.lib.RepositoryCache.FileKey;
-import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.RefSpec;
-import org.eclipse.jgit.util.FS;
 import org.json.JSONException;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.mock.MockProjectManager;
-import com.atlassian.jira.project.MockProject;
-import com.atlassian.jira.project.Project;
-import com.atlassian.jira.project.ProjectManager;
 import org.junit.runner.RunWith;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
