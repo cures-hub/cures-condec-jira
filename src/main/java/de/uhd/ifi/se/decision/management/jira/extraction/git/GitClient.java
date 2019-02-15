@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.git;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.json.JSONException;
@@ -17,6 +16,9 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 
 public class GitClient {
 
+	// @issue: What is the best place to clone the git repo to?
+	// @issue: To which directory does the Git integration for JIRA plug-in clone
+	// the repo? Can we use this directory?
 	public static final String DEFAULT_DIR = System.getProperty("user.home") + File.separator + "repository"
 			+ File.separator;
 
@@ -58,11 +60,7 @@ public class GitClient {
 		OAuthManager oAuthManager = new OAuthManager();
 		String repository = oAuthManager
 				.startRequest(BASEURL + "/rest/gitplugin/latest/repository?projectKey=" + projectKey);
-		try {
-			uri = getRemoteURL(repository);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+		uri = getRemoteURL(repository);
 		new Thread(() -> {
 			if (repository != null) {
 				cloneRepo();
@@ -133,22 +131,38 @@ public class GitClient {
 			git.getRepository().close();
 			git.close();
 		}
-
-		try {
-			if (directory.exists()) {
-				FileUtils.deleteDirectory(directory);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		File[] files = directory.listFiles();
+		if (directory.exists()) {
+			deleteFolder(directory);
 		}
+		files = directory.listFiles();
 	}
 
-	private static String getRemoteURL(String repository) throws JSONException {
-		JSONObject obj = new JSONObject(repository);
-		if (!obj.isNull("repositories")) {
-			return obj.getJSONArray("repositories").getJSONObject(0).getString("origin");
+	private static void deleteFolder(File directory) {
+		if (directory.listFiles() != null) {
+			for (File file : directory.listFiles()) {
+				if (file.isDirectory()) {
+					deleteFolder(file);
+				}
+				file.delete();
+			}
 		}
-		return null;
+		directory.delete();
+	}
+
+	private static String getRemoteURL(String repository) {
+		String remoteUrl = null;
+
+		try {
+			JSONObject jsonObject = new JSONObject(repository);
+			if (!jsonObject.isNull("repositories")) {
+				remoteUrl = jsonObject.getJSONArray("repositories").getJSONObject(0).getString("origin");
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return remoteUrl;
 	}
 
 	public static JSONObject getCommits(String projectKey, String issueKey) {

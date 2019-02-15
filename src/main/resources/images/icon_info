@@ -21,3 +21,5 @@ constraint: edit-rule
 claim: gear
 goal: target
 solution: tick-circle
+
+codesummarization: smiley-glass

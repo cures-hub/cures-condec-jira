@@ -2,8 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.view.macros;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.text.WordUtils;
-
 import com.atlassian.jira.issue.IssueImpl;
 import com.atlassian.jira.issue.fields.renderer.IssueRenderContext;
 import com.atlassian.renderer.RenderContext;
@@ -20,21 +18,39 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	@Override
 	public String execute(Map<String, Object> parameters, String body, RenderContext renderContext)
 			throws MacroException {
-		return body;
-	}
 
-	protected String execute(Map<String, Object> parameters, String body, RenderContext renderContext,
-			String knowledgeType, String colorCode) throws MacroException {
 		if (!ConfigPersistenceManager.isKnowledgeExtractedFromIssues(getProjectKey(renderContext))) {
 			return body;
 		}
+		
+		KnowledgeType knowledgeType = getKnowledgeType();		
 		if (Boolean.TRUE.equals(renderContext.getParam(IssueRenderContext.WYSIWYG_PARAM))) {
 			return putTypeInBrackets(knowledgeType) + body + putTypeInBrackets(knowledgeType);
 		}
-		String newBody = reformatCommentBody(body);
-		String icon = "<img src='" + KnowledgeType.getKnowledgeType(knowledgeType).getIconUrl() + "'>";
-		String contextMenuCall = getContextMenuCall(renderContext, newBody, WordUtils.capitalize(knowledgeType));
-		return icon + "<span " + contextMenuCall + "style='background-color:" + colorCode + "'>" + newBody + "</span>";
+		
+		String color = getColor();
+		return this.getCommentBody(body, renderContext, knowledgeType, color);
+	}
+
+	public String getColor() {
+		return "#FFFFFF";
+	}
+
+	public KnowledgeType getKnowledgeType() {
+		return KnowledgeType.ISSUE;
+	}
+
+	private String getCommentBody(String body, RenderContext renderContext, KnowledgeType knowledgeType,
+			String colorCode) {
+		String icon = getIconHTML(knowledgeType);
+		String newBody = body.replaceFirst("<p>", "");
+		String elementId = getElementId(renderContext, newBody, knowledgeType);
+		return "<p " + elementId + "style='background-color:" + colorCode + "; padding: 3px;'>" + icon + " "
+				+ newBody;
+	}
+	
+	private String getIconHTML(KnowledgeType knowledgeType) {
+		return "<img src='" + knowledgeType.getIconUrl() + "'>";
 	}
 
 	@Override
@@ -48,30 +64,13 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	}
 
 	/**
-	 * Static function for other Macro Classes
-	 * 
-	 * @param inputBody
-	 * @return Body without html p tags
-	 */
-	public static String reformatCommentBody(String inputBody) {
-		String body = inputBody.replace("<p>", "");
-		body = body.replace("</p>", "");
-		while (body.startsWith(" ")) {
-			body = body.substring(1);
-		}
-		while (body.endsWith(" ")) {
-			body = body.substring(0, body.length() - 1);
-		}
-		return body;
-	}
-
-	/**
-	 * Static function for other Macro Classes
+	 * Return key of current JIRA project.
 	 * 
 	 * @param renderContext
-	 * @return
+	 *            context in which the macro is rendered.
+	 * @return key of current JIRA project.
 	 */
-	protected String getProjectKey(RenderContext renderContext) {
+	private String getProjectKey(RenderContext renderContext) {
 		return renderContext.getParams().get("jira.issue").toString().split("-")[0];
 	}
 
@@ -79,15 +78,16 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	 * Static function for other Macro Classes
 	 * 
 	 * @param renderContext
+	 *            context in which the macro is rendered.
 	 * @param body
 	 * @param type
 	 * @return the js context menu call for comment tab panel
 	 */
-	protected String getContextMenuCall(RenderContext renderContext, String body, String type) {
+	protected String getElementId(RenderContext renderContext, String body, KnowledgeType type) {
 		long id = 0;
 		if (renderContext.getParams().get("jira.issue") instanceof IssueImpl) {
 			id = JiraIssueCommentPersistenceManager.getIdOfSentenceForMacro(body.replace("<p>", "").replace("</p>", ""),
-					((IssueImpl) (renderContext.getParams().get("jira.issue"))).getId(), type,
+					((IssueImpl) (renderContext.getParams().get("jira.issue"))).getId(), type.toString(),
 					getProjectKey(renderContext));
 		}
 		if (id == 0) {
@@ -97,7 +97,7 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 		return "id=\"commentnode-" + id + "\"";
 	}
 
-	protected String putTypeInBrackets(String type) {
+	protected String putTypeInBrackets(KnowledgeType type) {
 		return "\\" + getTag(type);
 	}
 

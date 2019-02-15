@@ -16,6 +16,7 @@
     <aui-section>
         <aui-item-link id="condec-context-menu-set-root-item">$i18n.getText("condec.context.menu.set.root.item.label")</aui-item-link>      
         <aui-item-link id="condec-context-menu-open-jira-issue-item">$i18n.getText("condec.context.menu.open.jira.issue.item.label")</aui-item-link>  
+        <aui-item-link id="condec-context-menu-summarized-code">$i18n.getText("condec.context.menu.summarized.code.item.label")</aui-item-link> 
     </aui-section>
     <aui-section>
     	<aui-item-link id="condec-context-menu-sentence-irrelevant-item">$i18n.getText("condec.context.menu.sentence.irrelevant.item.label")</aui-item-link>  

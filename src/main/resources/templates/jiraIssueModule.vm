@@ -11,6 +11,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 #parse("templates/dialogs/linkDialog.vm")
 #parse("templates/dialogs/changeTypeDialog.vm")
 #parse("templates/dialogs/exportDialog.vm")
+#parse("templates/dialogs/summarizationDialog.vm")
 #parse("templates/contextMenu.vm")
 <script>
 /*

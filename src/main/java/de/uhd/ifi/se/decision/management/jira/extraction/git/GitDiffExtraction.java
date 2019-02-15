@@ -19,7 +19,6 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawTextComparator;
-import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
@@ -37,11 +36,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 
 public class GitDiffExtraction {
 
-	// @issue: What is the best place to clone the git repo to?
-	// @issue: To which directory does the Git integration for JIRA plug-in clone
-	// the repo? Can we use this directory?
-	public final static String DEFAULT_DIR = System.getProperty("user.home") + File.separator + "repository"
-			+ File.separator;
 	private static File directory;
 	private static RevCommit firstCommit;
 	private static RevCommit lastCommit;
@@ -50,34 +44,36 @@ public class GitDiffExtraction {
 
 	public static Map<DiffEntry, EditList> getGitDiff(String commits, String projectKey, boolean commitsKnown)
 			throws IOException, GitAPIException, JSONException, InterruptedException {
-		directory = new File(DEFAULT_DIR + projectKey);
-		git = Git.open(directory);
-		repository = git.getRepository();
-		git.pull();
-		List<RemoteConfig> remotes = git.remoteList().call();
-		for (RemoteConfig remote : remotes) {
-			git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
-		}
-		if (projectKey == null) {
+		if (projectKey == null || !ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
 			return null;
 		}
+		initGit(projectKey);
+
 		JSONObject commitObj = new JSONObject(commits);
 		cherryPickAllCommits(commitObj, git);
-		firstCommit = getFirstCommit(commitObj);
-		if (firstCommit == null) {
+		if (!initFirstLastCommits(commitObj)) {
 			return null;
 		}
-		lastCommit = getLastCommit(commitObj);
-
 		return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
 	}
 
-	public static Map<DiffEntry, EditList> getGitDiff(String projectKey, String issueKey)
+	public static Map<DiffEntry, EditList> getGitDiff(String projectKey, String jiraIssueKey)
 			throws IOException, GitAPIException, JSONException, InterruptedException {
 		if (projectKey == null || !ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
 			return null;
 		}
-		directory = new File(DEFAULT_DIR + projectKey);
+		initGit(projectKey);
+
+		JSONObject commitObj = GitClient.getCommits(projectKey, jiraIssueKey);
+		cherryPickAllCommits(commitObj, git);
+		if (!initFirstLastCommits(commitObj)) {
+			return null;
+		}
+		return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
+	}
+
+	private static void initGit(String projectKey) throws GitAPIException, IOException {
+		directory = new File(GitClient.DEFAULT_DIR + projectKey);
 		git = Git.open(directory);
 		repository = git.getRepository();
 		git.pull();
@@ -85,16 +81,15 @@ public class GitDiffExtraction {
 		for (RemoteConfig remote : remotes) {
 			git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
 		}
+	}
 
-		JSONObject commitObj = GitClient.getCommits(projectKey, issueKey);
-		cherryPickAllCommits(commitObj, git);
+	private static boolean initFirstLastCommits(JSONObject commitObj) {
 		firstCommit = getFirstCommit(commitObj);
 		if (firstCommit == null) {
-			return null;
+			return false;
 		}
 		lastCommit = getLastCommit(commitObj);
-
-		return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
+		return true;
 	}
 
 	private static void cherryPickAllCommits(JSONObject commitObj, Git git)
@@ -126,33 +121,58 @@ public class GitDiffExtraction {
 		}
 	}
 
-	private static RevCommit getFirstCommit(JSONObject commitObj) throws JSONException, RevisionSyntaxException,
-			AmbiguousObjectException, IncorrectObjectTypeException, IOException {
+	private static RevCommit getFirstCommit(JSONObject commitObj) {
 		if (commitObj.isNull("commits")) {
 			return null;
 		}
-		JSONArray commits = commitObj.getJSONArray("commits");
-		if (commits.length() == 0) {
+		JSONArray commits = null;
+		try {
+			commits = commitObj.getJSONArray("commits");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		if (commits == null || commits.length() == 0) {
 			return null;
 		}
 
-		@SuppressWarnings("resource")
+		RevCommit firstCommit = null;
 		RevWalk revWalk = new RevWalk(repository);
-		ObjectId id = repository.resolve(commits.getJSONObject(commits.length() - 1).getString("commitId"));
-		return revWalk.parseCommit(id);
+		try {
+			ObjectId id = repository.resolve(commits.getJSONObject(commits.length() - 1).getString("commitId"));
+			firstCommit = revWalk.parseCommit(id);
+		} catch (RevisionSyntaxException | IOException | JSONException e) {
+			e.printStackTrace();
+		}
+		revWalk.close();
+		return firstCommit;
 	}
 
-	private static RevCommit getLastCommit(JSONObject commitObj) throws JSONException, RevisionSyntaxException,
-			AmbiguousObjectException, IncorrectObjectTypeException, IOException {
+	private static RevCommit getLastCommit(JSONObject commitObj) {
 		if (commitObj.isNull("commits")) {
 			return null;
 		}
-		JSONArray commits = commitObj.getJSONArray("commits");
+		JSONArray commits = null;
+		try {
+			commits = commitObj.getJSONArray("commits");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 
-		@SuppressWarnings("resource")
+		if (commits == null || commits.length() == 0) {
+			return null;
+		}
+
+		RevCommit lastCommit = null;
 		RevWalk revWalk = new RevWalk(repository);
-		ObjectId id = repository.resolve(commits.getJSONObject(0).getString("commitId"));
-		return revWalk.parseCommit(id);
+		ObjectId id;
+		try {
+			id = repository.resolve(commits.getJSONObject(0).getString("commitId"));
+			lastCommit = revWalk.parseCommit(id);
+		} catch (RevisionSyntaxException | IOException | JSONException e) {
+			e.printStackTrace();
+		}
+		revWalk.close();
+		return lastCommit;
 	}
 
 	private static RevCommit getParentOfFirstCommit(RevCommit revCommit) {

@@ -295,6 +295,27 @@
 		AJS.dialog2(changeTypeDialog).show();
 	};
 
+	ConDecDialog.prototype.showSummarizedDialog = function showSummarizedDialog(id, documentationLocation) {
+		console.log("conDecDialog summarizedDialog");
+
+		// HTML elements
+		var summarizedDialog = document.getElementById("summarization-dialog");
+		var cancelButton = document.getElementById("summarization-dialog-cancel-button");
+		var content = document.getElementById("summarization-dialog-content");
+
+		conDecAPI.getSummarizedCode(id, documentationLocation, function(text) {
+			var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";
+			content.innerHTML = insertString;
+		});
+
+		cancelButton.onclick = function() {
+			AJS.dialog2(summarizedDialog).hide();
+		};
+
+		// Show dialog
+		AJS.dialog2(summarizedDialog).show();
+	};
+
 	// export ConDecDialog
 	global.conDecDialog = new ConDecDialog();
 })(window);
