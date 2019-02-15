@@ -9,18 +9,11 @@ import java.util.Map;
 
 import org.eclipse.jgit.api.CherryPickCommand;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.NoHeadException;
-import org.eclipse.jgit.api.errors.NoMessageException;
-import org.eclipse.jgit.api.errors.UnmergedPathsException;
-import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawTextComparator;
-import org.eclipse.jgit.errors.IncorrectObjectTypeException;
-import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
@@ -72,14 +65,19 @@ public class GitDiffExtraction {
 		return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
 	}
 
-	private static void initGit(String projectKey) throws GitAPIException, IOException {
+	private static void initGit(String projectKey) {
 		directory = new File(GitClient.DEFAULT_DIR + projectKey);
-		git = Git.open(directory);
 		repository = git.getRepository();
 		git.pull();
-		List<RemoteConfig> remotes = git.remoteList().call();
-		for (RemoteConfig remote : remotes) {
-			git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
+		List<RemoteConfig> remotes;
+		try {
+			git = Git.open(directory);
+			remotes = git.remoteList().call();
+			for (RemoteConfig remote : remotes) {
+				git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
+			}
+		} catch (IOException | GitAPIException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -92,33 +90,35 @@ public class GitDiffExtraction {
 		return true;
 	}
 
-	private static void cherryPickAllCommits(JSONObject commitObj, Git git)
-			throws MissingObjectException, IncorrectObjectTypeException, IOException, RevisionSyntaxException,
-			JSONException, NoMessageException, UnmergedPathsException, ConcurrentRefUpdateException,
-			WrongRepositoryStateException, NoHeadException, GitAPIException {
+	private static void cherryPickAllCommits(JSONObject commitObj, Git git) {
 		if (commitObj.isNull("commits")) {
 			return;
 		}
-		JSONArray commits = commitObj.getJSONArray("commits");
-		if (commits.length() == 0) {
+		JSONArray commits = null;
+		try {
+			commits = commitObj.getJSONArray("commits");
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+		}
+		if (commits == null || commits.length() == 0) {
 			return;
 		}
 
-		@SuppressWarnings("resource")
 		RevWalk revWalk = new RevWalk(repository);
 		for (int i = 0; i < commits.length(); i++) {
-			ObjectId id = repository.resolve(commits.getJSONObject(i).getString("commitId"));
-			RevCommit commit = revWalk.parseCommit(id);
-			CherryPickCommand cherryPick = git.cherryPick();
-			cherryPick.setMainlineParentNumber(1);
-			cherryPick.include(commit);
-			cherryPick.setNoCommit(true);
 			try {
+				ObjectId id = repository.resolve(commits.getJSONObject(i).getString("commitId"));
+				RevCommit commit = revWalk.parseCommit(id);
+				CherryPickCommand cherryPick = git.cherryPick();
+				cherryPick.setMainlineParentNumber(1);
+				cherryPick.include(commit);
+				cherryPick.setNoCommit(true);
 				cherryPick.call();
-			} catch (Exception e) {
-
+			} catch (RevisionSyntaxException | IOException | JSONException | GitAPIException e) {
+				e.printStackTrace();
 			}
 		}
+		revWalk.close();
 	}
 
 	private static RevCommit getFirstCommit(JSONObject commitObj) {
@@ -183,7 +183,7 @@ public class GitDiffExtraction {
 			revWalk.close();
 		} catch (Exception e) {
 			System.err.println("Could not get the parent commit");
-			// e.printStackTrace();
+			e.printStackTrace();
 			return null;
 		}
 		return parentCommit;

@@ -132,11 +132,9 @@ public class GitClient {
 			git.getRepository().close();
 			git.close();
 		}
-		File[] files = directory.listFiles();
 		if (directory.exists()) {
 			deleteFolder(directory);
 		}
-		files = directory.listFiles();
 	}
 
 	private static void deleteFolder(File directory) {
