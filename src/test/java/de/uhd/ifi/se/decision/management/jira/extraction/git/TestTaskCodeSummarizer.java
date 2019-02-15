@@ -232,6 +232,7 @@ public class TestTaskCodeSummarizer extends TestSetUpGit{
 		assertTrue(text.contains(eq10));
 	}
 
+	@Ignore
 	@Test
 	public void getSumForTenCommitsWithOneJava()
 			throws IOException, GitAPIException, JSONException, InterruptedException {
