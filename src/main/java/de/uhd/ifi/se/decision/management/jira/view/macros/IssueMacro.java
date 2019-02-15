@@ -6,7 +6,7 @@ public class IssueMacro extends AbstractKnowledgeClassificationMacro {
 
 	@Override
 	public String getColor() {
-		return "#F2F5A9";
+		return "#FFFFCC";
 	}
 
 	@Override

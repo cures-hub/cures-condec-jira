@@ -6,7 +6,7 @@ public class DecisionMacro extends AbstractKnowledgeClassificationMacro {
 
 	@Override
 	public String getColor() {
-		return "#c5f2f9";
+		return "#FCE3BE";
 	}
 
 	@Override

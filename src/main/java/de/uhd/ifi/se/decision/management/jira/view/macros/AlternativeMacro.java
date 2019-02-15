@@ -6,7 +6,7 @@ public class AlternativeMacro extends AbstractKnowledgeClassificationMacro {
 
 	@Override
 	public String getColor() {
-		return "#f1ccf9";
+		return "#FFF6E8";
 	}
 
 	@Override

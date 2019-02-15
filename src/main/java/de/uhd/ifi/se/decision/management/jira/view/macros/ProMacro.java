@@ -6,7 +6,7 @@ public class ProMacro extends AbstractKnowledgeClassificationMacro {
 
 	@Override
 	public String getColor() {
-		return "#b9f7c0";
+		return "#DEFADE";
 	}
 
 	@Override

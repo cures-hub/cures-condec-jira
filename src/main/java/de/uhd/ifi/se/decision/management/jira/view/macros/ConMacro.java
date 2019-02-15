@@ -6,7 +6,7 @@ public class ConMacro extends AbstractKnowledgeClassificationMacro {
 
 	@Override
 	public String getColor() {
-		return "#ffdeb5";
+		return "#FFE7E7";
 	}
 
 	@Override

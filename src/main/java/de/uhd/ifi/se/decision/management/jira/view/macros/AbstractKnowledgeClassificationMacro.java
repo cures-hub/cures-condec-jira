@@ -22,8 +22,12 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 		if (!ConfigPersistenceManager.isKnowledgeExtractedFromIssues(getProjectKey(renderContext))) {
 			return body;
 		}
-
-		KnowledgeType knowledgeType = getKnowledgeType();
+		
+		KnowledgeType knowledgeType = getKnowledgeType();		
+		if (Boolean.TRUE.equals(renderContext.getParam(IssueRenderContext.WYSIWYG_PARAM))) {
+			return putTypeInBrackets(knowledgeType) + body + putTypeInBrackets(knowledgeType);
+		}
+		
 		String color = getColor();
 		return this.getCommentBody(body, renderContext, knowledgeType, color);
 	}
@@ -36,17 +40,17 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 		return KnowledgeType.ISSUE;
 	}
 
-	protected String getCommentBody(String body, RenderContext renderContext, KnowledgeType knowledgeType,
+	private String getCommentBody(String body, RenderContext renderContext, KnowledgeType knowledgeType,
 			String colorCode) {
-		if (Boolean.TRUE.equals(renderContext.getParam(IssueRenderContext.WYSIWYG_PARAM))) {
-			return putTypeInBrackets(knowledgeType) + body + putTypeInBrackets(knowledgeType);
-		}
-		String icon = "<img src='" + KnowledgeType.getKnowledgeType(knowledgeType.toString().toLowerCase()).getIconUrl()
-				+ "'>";
+		String icon = getIconHTML(knowledgeType);
 		String newBody = body.replaceFirst("<p>", "");
-		String contextMenuCall = getContextMenuCall(renderContext, newBody, knowledgeType);
-		return "<p " + contextMenuCall + "style='background-color:" + colorCode + "; padding: 3px;'>" + icon + " "
+		String elementId = getElementId(renderContext, newBody, knowledgeType);
+		return "<p " + elementId + "style='background-color:" + colorCode + "; padding: 3px;'>" + icon + " "
 				+ newBody;
+	}
+	
+	private String getIconHTML(KnowledgeType knowledgeType) {
+		return "<img src='" + knowledgeType.getIconUrl() + "'>";
 	}
 
 	@Override
@@ -79,7 +83,7 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	 * @param type
 	 * @return the js context menu call for comment tab panel
 	 */
-	protected String getContextMenuCall(RenderContext renderContext, String body, KnowledgeType type) {
+	protected String getElementId(RenderContext renderContext, String body, KnowledgeType type) {
 		long id = 0;
 		if (renderContext.getParams().get("jira.issue") instanceof IssueImpl) {
 			id = JiraIssueCommentPersistenceManager.getIdOfSentenceForMacro(body.replace("<p>", "").replace("</p>", ""),
