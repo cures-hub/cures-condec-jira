@@ -464,6 +464,9 @@ public class KnowledgeRest {
 			if (!addedElements.contains(current)) {
 				// if not get the connected tree
 				String currentElementKey = current.getKey();
+				if ("".equals(projectKey)) {
+					projectKey = current.getProject().getProjectKey();
+				}
 				List<DecisionKnowledgeElement> filteredElements = getHelperAllElementsLinkedToElement(user, projectKey,
 						query, currentElementKey);
 				// add each element to the list
