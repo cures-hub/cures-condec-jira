@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.view;
+package de.uhd.ifi.se.decision.management.jira.view.macros;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
