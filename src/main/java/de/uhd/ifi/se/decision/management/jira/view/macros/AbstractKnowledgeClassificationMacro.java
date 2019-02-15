@@ -16,11 +16,21 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
 public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
-
+	
 	@Override
 	public String execute(Map<String, Object> parameters, String body, RenderContext renderContext)
 			throws MacroException {
-		return body;
+		String knowledgeType = getKnowledgeType();
+		String color = getColor();		
+		return this.execute(parameters, body, renderContext, knowledgeType, color);
+	}
+	
+	public String getColor() {
+		return "#FFFFFF";
+	}
+	
+	public String getKnowledgeType() {
+		return "issue";
 	}
 
 	protected String execute(Map<String, Object> parameters, String body, RenderContext renderContext,
