@@ -74,7 +74,7 @@ public class GitDiffExtraction {
 	}
 
 	private static void initGit(String projectKey) throws GitAPIException, IOException {
-		directory = new File(DEFAULT_DIR + projectKey);
+		directory = new File(GitClient.DEFAULT_DIR + projectKey);
 		git = Git.open(directory);
 		repository = git.getRepository();
 		git.pull();

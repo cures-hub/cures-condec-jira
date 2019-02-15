@@ -39,7 +39,6 @@ import org.junit.runner.RunWith;
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestGitDiffExtraction extends TestSetUpGit {
 
-	@Ignore
 	@Test
 	public void getNoDiffsForNoCommits() throws IOException, GitAPIException, JSONException, InterruptedException {
 		String commits = "{" + "\"commits\":[" + "" + "]" + "}";
@@ -47,7 +46,6 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 		assertTrue(gitDiffs == null);
 	}
 
-	@Ignore
 	@Test
 	public void getDiffsForOneCommitInMaster()
 			throws IOException, GitAPIException, JSONException, InterruptedException {
@@ -75,7 +73,6 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 		assertEquals(gitDiffs.size(), 1);
 	}
 
-	@Ignore
 	@Test
 	public void getDiffsForTenCommitsInMaster()
 			throws IOException, GitAPIException, JSONException, InterruptedException {
@@ -105,7 +102,6 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 		assertEquals(gitDiffs.size(), 10);
 	}
 
-	@Ignore
 	@Test
 	public void getDiffsForOneCommitInBranch()
 			throws IOException, GitAPIException, JSONException, InterruptedException {
@@ -133,7 +129,7 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 		assertEquals(gitDiffs.size(), 1);
 	}
 
-	@Ignore
+
 	@Test
 	public void getDiffsForTenCommitsInBranch()
 			throws IOException, GitAPIException, JSONException, InterruptedException {
