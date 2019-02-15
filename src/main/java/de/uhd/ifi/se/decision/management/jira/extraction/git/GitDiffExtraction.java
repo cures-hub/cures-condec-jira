@@ -66,13 +66,12 @@ public class GitDiffExtraction {
 	}
 
 	private static void initGit(String projectKey) {
-		directory = new File(GitClient.DEFAULT_DIR + projectKey);
-		repository = git.getRepository();
-		git.pull();
-		List<RemoteConfig> remotes;
+		directory = new File(GitClient.DEFAULT_DIR + projectKey);		
 		try {
 			git = Git.open(directory);
-			remotes = git.remoteList().call();
+			repository = git.getRepository();
+			git.pull();
+			List<RemoteConfig> remotes = git.remoteList().call();
 			for (RemoteConfig remote : remotes) {
 				git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
 			}
@@ -118,7 +117,7 @@ public class GitDiffExtraction {
 				e.printStackTrace();
 			}
 		}
-		revWalk.close();
+		//revWalk.close();
 	}
 
 	private static RevCommit getFirstCommit(JSONObject commitObj) {
