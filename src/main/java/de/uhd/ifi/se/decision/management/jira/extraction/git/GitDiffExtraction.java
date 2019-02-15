@@ -45,25 +45,16 @@ public class GitDiffExtraction {
 
 	public static Map<DiffEntry, EditList> getGitDiff(String commits, String projectKey, boolean commitsKnown)
 			throws IOException, GitAPIException, JSONException, InterruptedException {
-		directory = new File(GitClient.DEFAULT_DIR + projectKey);
-		git = Git.open(directory);
-		repository = git.getRepository();
-		git.pull();
-		List<RemoteConfig> remotes = git.remoteList().call();
-		for (RemoteConfig remote : remotes) {
-			git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
-		}
-		if (projectKey == null) {
+		if (projectKey == null || !ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
 			return null;
 		}
+		initGit(projectKey);
+
 		JSONObject commitObj = new JSONObject(commits);
 		cherryPickAllCommits(commitObj, git);
-		firstCommit = getFirstCommit(commitObj);
-		if (firstCommit == null) {
+		if(!intFirstLastCommits(commitObj)){
 			return null;
 		}
-		lastCommit = getLastCommit(commitObj);
-
 		return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
 	}
 
@@ -72,7 +63,18 @@ public class GitDiffExtraction {
 		if (projectKey == null || !ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
 			return null;
 		}
-		directory = new File(GitClient.DEFAULT_DIR + projectKey);
+		initGit(projectKey);
+
+		JSONObject commitObj = GitClient.getCommits(projectKey, jiraIssueKey);
+		cherryPickAllCommits(commitObj, git);
+		if(!intFirstLastCommits(commitObj)){
+			return null;
+		}
+		return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
+	}
+
+	private static void initGit(String projectKey) throws GitAPIException, IOException {
+		directory = new File(DEFAULT_DIR + projectKey);
 		git = Git.open(directory);
 		repository = git.getRepository();
 		git.pull();
@@ -80,16 +82,19 @@ public class GitDiffExtraction {
 		for (RemoteConfig remote : remotes) {
 			git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
 		}
+	}
 
-		JSONObject commitObj = GitClient.getCommits(projectKey, jiraIssueKey);
-		cherryPickAllCommits(commitObj, git);
-		firstCommit = getFirstCommit(commitObj);
-		if (firstCommit == null) {
-			return null;
+	private static boolean intFirstLastCommits(JSONObject commitObj){
+		try {
+			firstCommit = getFirstCommit(commitObj);
+			if (firstCommit == null) {
+				return false;
+			}
+			lastCommit = getLastCommit(commitObj);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		lastCommit = getLastCommit(commitObj);
-
-		return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
+		return true;
 	}
 
 	private static void cherryPickAllCommits(JSONObject commitObj, Git git)

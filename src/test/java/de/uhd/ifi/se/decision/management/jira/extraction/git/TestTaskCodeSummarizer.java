@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
 
+import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -33,81 +34,11 @@ import com.atlassian.jira.mock.MockProjectManager;
 import com.atlassian.jira.project.MockProject;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
+import org.junit.runner.RunWith;
 
-public class TestTaskCodeSummarizer {
+@RunWith(ActiveObjectsJUnitRunner.class)
+public class TestTaskCodeSummarizer extends TestSetUpGit{
 
-	private static String projectKey;
-	private static Git git;
-	private static File cloneDir;
-	private static RefSpec refSpec;
-	private static String directory;
-
-	@Rule
-	public TemporaryFolder tempFolder = new TemporaryFolder();
-
-	@BeforeClass
-	public static void setUp() throws IllegalStateException, GitAPIException, IOException, JSONException,
-			InterruptedException, URISyntaxException {
-		ProjectManager a = ComponentAccessor.getProjectManager();
-		Project diffProject = new MockProject(5, "GETSUM");
-		((MockProject) diffProject).setKey("GETSUM");
-		((MockProjectManager) a).addProject(diffProject);
-
-		projectKey = a.getProjectByCurrentKey("GETSUM").getKey();
-
-		File file = new File(
-				System.getProperty("user.home") + File.separator + "repository" + File.separator + projectKey);
-		if (file.exists()) {
-			FileUtils.deleteDirectory(file);
-		}
-
-		// Create a folder in the temp folder that will act as the remote repository
-		File remoteDir = File.createTempFile("remote", "");
-		remoteDir.delete();
-		remoteDir.mkdirs();
-
-		// Create a bare repository
-		FileKey fileKey = FileKey.exact(remoteDir, FS.DETECTED);
-		Repository remoteRepo = fileKey.open(false);
-		remoteRepo.create(true);
-
-		// Clone the bare repository
-		cloneDir = File.createTempFile("clone", "");
-		cloneDir.delete();
-		cloneDir.mkdirs();
-		git = Git.cloneRepository().setURI(remoteRepo.getDirectory().getAbsolutePath()).setDirectory(cloneDir)
-				.setBranch("master").call();
-		git.getRepository();
-
-		StoredConfig config = git.getRepository().getConfig();
-		config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, "master", "remote", "origin");
-		config.setString(ConfigConstants.CONFIG_BRANCH_SECTION, "master", "merge", "refs/heads/master");
-		config.save();
-		remoteRepo.getDirectory().getAbsolutePath();
-
-		// Create a new file
-		File newFile = new File(cloneDir, "readMe.txt");
-		newFile.createNewFile();
-		FileUtils.writeStringToFile(newFile, "Test content file");
-		// Commit the new file
-		git.add().addFilepattern(newFile.getName()).call();
-		git.commit().setMessage("FirstFile").setAuthor("gildas", "gildas@example.com").call();
-
-		// Push the commit on the bare repository
-		refSpec = new RefSpec("master");
-		git.push().setRemote("origin").setRefSpecs(refSpec).call();
-
-		GitClient.getGitRepo(directory, projectKey);
-		Thread.sleep(2000);
-	}
-
-	@AfterClass
-	public static void tearDown() throws InterruptedException {
-		Thread.sleep(2000);
-		GitClient.closeAndDeleteRepo();
-	}
-
-	@Ignore
 	@Test
 	public void getNoSumForNoCommits() throws IOException, GitAPIException, JSONException, InterruptedException {
 		String commits = "{" + "\"commits\":[" + "" + "]" + "}";
@@ -116,7 +47,7 @@ public class TestTaskCodeSummarizer {
 		assertTrue(text.isEmpty());
 	}
 
-	@Ignore
+
 	@Test
 	public void getNoSumForNoJavaCommits() throws IOException, GitAPIException, JSONException, InterruptedException {
 		// Create a new file
@@ -144,7 +75,6 @@ public class TestTaskCodeSummarizer {
 		assertTrue(text.isEmpty());
 	}
 
-	@Ignore
 	@Test
 	public void getSumForTenCommitsWithNoJava()
 			throws IOException, GitAPIException, JSONException, InterruptedException {
@@ -175,7 +105,6 @@ public class TestTaskCodeSummarizer {
 		assertTrue(text.isEmpty());
 	}
 
-	@Ignore
 	@Test
 	public void getSumForOneCommitWithOneJava()
 			throws IOException, GitAPIException, JSONException, InterruptedException {
@@ -205,7 +134,6 @@ public class TestTaskCodeSummarizer {
 		assertEquals(text, "In class MyNewFile the following methods has been changed: \n" + "newfiling\n" + "run\n");
 	}
 
-	@Ignore
 	@Test
 	public void getSumForOneCommitWithTenJava()
 			throws IOException, GitAPIException, JSONException, InterruptedException {
@@ -267,7 +195,6 @@ public class TestTaskCodeSummarizer {
 		assertTrue(text.contains(eq10));
 	}
 
-	@Ignore
 	@Test
 	public void getSumForTenCommitsWithTenJava()
 			throws IOException, GitAPIException, JSONException, InterruptedException {
@@ -318,7 +245,6 @@ public class TestTaskCodeSummarizer {
 		assertTrue(text.contains(eq10));
 	}
 
-	@Ignore
 	@Test
 	public void getSumForTenCommitsWithOneJava()
 			throws IOException, GitAPIException, JSONException, InterruptedException {
@@ -358,5 +284,10 @@ public class TestTaskCodeSummarizer {
 				+ "newMethod7\n" + "newMethod8\n" + "newMethod9\n" + "newMethod10\n";
 		assertEquals(text, eq);
 
+	}
+
+	@AfterClass
+	public static void tearDown() throws InterruptedException {
+		GitClient.closeAndDeleteRepo();
 	}
 }

@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.git;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.json.JSONException;
@@ -132,14 +131,23 @@ public class GitClient {
 			git.getRepository().close();
 			git.close();
 		}
-
-		try {
-			if (directory.exists()) {
-				FileUtils.deleteDirectory(directory);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		File[] files = directory.listFiles();
+		if (directory.exists()) {
+			deleteFolder(directory);
 		}
+		files = directory.listFiles();
+	}
+
+	private static void deleteFolder(File directory){
+		if(directory.listFiles() != null){
+			for(File file : directory.listFiles()){
+				if(file.isDirectory()){
+					deleteFolder(file);
+				}
+				file.delete();
+			}
+		}
+		directory.delete();
 	}
 
 	private static String getRemoteURL(String repository) {
