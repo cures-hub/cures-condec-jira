@@ -10,7 +10,7 @@ public class IssueMacro extends AbstractKnowledgeClassificationMacro {
 	}
 
 	@Override
-	public String getKnowledgeType() {
-		return KnowledgeType.ISSUE.toString().toLowerCase();
+	public KnowledgeType getKnowledgeType() {
+		return KnowledgeType.ISSUE;
 	}
 }

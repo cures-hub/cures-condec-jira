@@ -10,7 +10,7 @@ public class ConMacro extends AbstractKnowledgeClassificationMacro {
 	}
 
 	@Override
-	public String getKnowledgeType() {
-		return KnowledgeType.CON.toString().toLowerCase();
+	public KnowledgeType getKnowledgeType() {
+		return KnowledgeType.CON;
 	}
 }

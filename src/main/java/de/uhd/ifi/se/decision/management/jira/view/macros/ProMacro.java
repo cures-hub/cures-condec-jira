@@ -10,7 +10,7 @@ public class ProMacro extends AbstractKnowledgeClassificationMacro {
 	}
 
 	@Override
-	public String getKnowledgeType() {
-		return KnowledgeType.PRO.toString().toLowerCase();
+	public KnowledgeType getKnowledgeType() {
+		return KnowledgeType.PRO;
 	}
 }

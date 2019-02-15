@@ -10,7 +10,7 @@ public class AlternativeMacro extends AbstractKnowledgeClassificationMacro {
 	}
 
 	@Override
-	public String getKnowledgeType() {
-		return KnowledgeType.ALTERNATIVE.toString().toLowerCase();
+	public KnowledgeType getKnowledgeType() {
+		return KnowledgeType.ALTERNATIVE;
 	}
 }

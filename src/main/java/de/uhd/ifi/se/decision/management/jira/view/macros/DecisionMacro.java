@@ -10,7 +10,7 @@ public class DecisionMacro extends AbstractKnowledgeClassificationMacro {
 	}
 
 	@Override
-	public String getKnowledgeType() {
-		return KnowledgeType.DECISION.toString().toLowerCase();
+	public KnowledgeType getKnowledgeType() {
+		return KnowledgeType.DECISION;
 	}
 }
