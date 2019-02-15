@@ -19,7 +19,6 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawTextComparator;
-import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
@@ -52,7 +51,7 @@ public class GitDiffExtraction {
 
 		JSONObject commitObj = new JSONObject(commits);
 		cherryPickAllCommits(commitObj, git);
-		if(!intFirstLastCommits(commitObj)){
+		if (!initFirstLastCommits(commitObj)) {
 			return null;
 		}
 		return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
@@ -67,7 +66,7 @@ public class GitDiffExtraction {
 
 		JSONObject commitObj = GitClient.getCommits(projectKey, jiraIssueKey);
 		cherryPickAllCommits(commitObj, git);
-		if(!intFirstLastCommits(commitObj)){
+		if (!initFirstLastCommits(commitObj)) {
 			return null;
 		}
 		return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
@@ -84,16 +83,12 @@ public class GitDiffExtraction {
 		}
 	}
 
-	private static boolean intFirstLastCommits(JSONObject commitObj){
-		try {
-			firstCommit = getFirstCommit(commitObj);
-			if (firstCommit == null) {
-				return false;
-			}
-			lastCommit = getLastCommit(commitObj);
-		} catch (IOException e) {
-			e.printStackTrace();
+	private static boolean initFirstLastCommits(JSONObject commitObj) {
+		firstCommit = getFirstCommit(commitObj);
+		if (firstCommit == null) {
+			return false;
 		}
+		lastCommit = getLastCommit(commitObj);
 		return true;
 	}
 
@@ -126,33 +121,58 @@ public class GitDiffExtraction {
 		}
 	}
 
-	private static RevCommit getFirstCommit(JSONObject commitObj) throws JSONException, RevisionSyntaxException,
-			AmbiguousObjectException, IncorrectObjectTypeException, IOException {
+	private static RevCommit getFirstCommit(JSONObject commitObj) {
 		if (commitObj.isNull("commits")) {
 			return null;
 		}
-		JSONArray commits = commitObj.getJSONArray("commits");
-		if (commits.length() == 0) {
+		JSONArray commits = null;
+		try {
+			commits = commitObj.getJSONArray("commits");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		if (commits == null || commits.length() == 0) {
 			return null;
 		}
 
-		@SuppressWarnings("resource")
+		RevCommit firstCommit = null;
 		RevWalk revWalk = new RevWalk(repository);
-		ObjectId id = repository.resolve(commits.getJSONObject(commits.length() - 1).getString("commitId"));
-		return revWalk.parseCommit(id);
+		try {
+			ObjectId id = repository.resolve(commits.getJSONObject(commits.length() - 1).getString("commitId"));
+			firstCommit = revWalk.parseCommit(id);
+		} catch (RevisionSyntaxException | IOException | JSONException e) {
+			e.printStackTrace();
+		}
+		revWalk.close();
+		return firstCommit;
 	}
 
-	private static RevCommit getLastCommit(JSONObject commitObj) throws JSONException, RevisionSyntaxException,
-			AmbiguousObjectException, IncorrectObjectTypeException, IOException {
+	private static RevCommit getLastCommit(JSONObject commitObj) {
 		if (commitObj.isNull("commits")) {
 			return null;
 		}
-		JSONArray commits = commitObj.getJSONArray("commits");
+		JSONArray commits = null;
+		try {
+			commits = commitObj.getJSONArray("commits");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 
-		@SuppressWarnings("resource")
+		if (commits == null || commits.length() == 0) {
+			return null;
+		}
+
+		RevCommit lastCommit = null;
 		RevWalk revWalk = new RevWalk(repository);
-		ObjectId id = repository.resolve(commits.getJSONObject(0).getString("commitId"));
-		return revWalk.parseCommit(id);
+		ObjectId id;
+		try {
+			id = repository.resolve(commits.getJSONObject(0).getString("commitId"));
+			lastCommit = revWalk.parseCommit(id);
+		} catch (RevisionSyntaxException | IOException | JSONException e) {
+			e.printStackTrace();
+		}
+		revWalk.close();
+		return lastCommit;
 	}
 
 	private static RevCommit getParentOfFirstCommit(RevCommit revCommit) {

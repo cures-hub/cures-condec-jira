@@ -138,10 +138,10 @@ public class GitClient {
 		files = directory.listFiles();
 	}
 
-	private static void deleteFolder(File directory){
-		if(directory.listFiles() != null){
-			for(File file : directory.listFiles()){
-				if(file.isDirectory()){
+	private static void deleteFolder(File directory) {
+		if (directory.listFiles() != null) {
+			for (File file : directory.listFiles()) {
+				if (file.isDirectory()) {
 					deleteFolder(file);
 				}
 				file.delete();

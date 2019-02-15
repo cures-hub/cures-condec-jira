@@ -10,7 +10,6 @@ import java.util.Set;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -34,66 +33,65 @@ public class TaskCodeSummarizer {
 		Git git = Git.open(directory);
 		Repository repository = git.getRepository();
 		String methodsToString = "";
-		if (diff != null) {
-			for (Map.Entry<DiffEntry, EditList> entry : diff.entrySet()) {
-				DiffEntry diffEntry = entry.getKey();
+		if (diff == null) {
+			return "";
+		}
+		for (Map.Entry<DiffEntry, EditList> entry : diff.entrySet()) {
+			DiffEntry diffEntry = entry.getKey();
 
-				if (diffEntry == null) {
-					continue;
+			if (diffEntry == null) {
+				continue;
+			}
+
+			String newPath = diffEntry.getNewPath();
+			if (!newPath.contains(".java")) {
+				continue;
+			}
+
+			IPath filePath = new Path(repository.getDirectory().toPath().toString()).removeLastSegments(1)
+					.append(newPath);
+			File file = filePath.toFile();
+
+			if (!file.isFile()) {
+				continue;
+			}
+
+			Set<MethodDeclaration> methodDeclarations = new LinkedHashSet<MethodDeclaration>();
+
+			FileInputStream fileInputStream;
+			CompilationUnit compilationUnit = null;
+			try {
+				fileInputStream = new FileInputStream(filePath.toString());
+				compilationUnit = JavaParser.parse(fileInputStream); // produces real readable code
+				fileInputStream.close();
+			} catch (ParseProblemException e) {
+				continue;
+			}
+			className = "";
+			new VoidVisitorAdapter<Object>() {
+				@Override
+				public void visit(ClassOrInterfaceDeclaration n, Object arg) {
+					super.visit(n, arg);
+					className = n.getNameAsString();
 				}
+			}.visit(compilationUnit, null);
 
-				String newPath = diffEntry.getNewPath();
-				if (!newPath.contains(".java")) {
-					continue;
-				}
+			MethodVisitor methodVisitor = new MethodVisitor();
+			compilationUnit.accept(methodVisitor, null);
+			methodDeclarations = methodVisitor.getMethodDeclarations();
 
-				IPath filePath = new Path(repository.getDirectory().toPath().toString()).removeLastSegments(1)
-						.append(newPath);
-				File file = filePath.toFile();
-
-				if (!file.isFile()) {
-					continue;
-				}
-
-				Set<MethodDeclaration> methodDeclarations = new LinkedHashSet<MethodDeclaration>();
-
-				FileInputStream fileInputStream;
-				CompilationUnit compilationUnit = null;
-				try {
-					fileInputStream = new FileInputStream(filePath.toString());
-					compilationUnit = JavaParser.parse(fileInputStream); // produces real readable code
-					fileInputStream.close();
-				} catch (ParseProblemException e) {
-					continue;
-				}
-				className = "";
-				new VoidVisitorAdapter<Object>() {
-					@Override
-					public void visit(ClassOrInterfaceDeclaration n, Object arg) {
-						super.visit(n, arg);
-						className = n.getNameAsString();
-					}
-				}.visit(compilationUnit, null);
-
-				MethodVisitor methodVisitor = new MethodVisitor();
-				compilationUnit.accept(methodVisitor, null);
-				methodDeclarations = methodVisitor.getMethodDeclarations();
-
-				if (!isDialog) {
-					methodsToString += methodsInComment(methodDeclarations, className);
-
-				} else {
-					methodsToString += methodsInDialog(methodDeclarations, className);
-				}
+			if (!isDialog) {
+				methodsToString += methodsInComment(methodDeclarations, className);
+			} else {
+				methodsToString += methodsInDialog(methodDeclarations, className);
 			}
 		}
-		git.reset().setMode(ResetType.HARD).call();
 
 		return methodsToString;
 	}
 
 	private static String methodsInComment(Set<MethodDeclaration> methodDeclarations, String className) {
-		String methodsToString = "In class " + className + " the following methods has been changed: \n";
+		String methodsToString = "In class *" + className + "* the following methods has been changed: \n";
 		String methodsInClass = "";
 		String method = "";
 

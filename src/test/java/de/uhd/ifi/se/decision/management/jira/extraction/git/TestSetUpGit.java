@@ -70,11 +70,11 @@ public class TestSetUpGit {
 
 		projectKey = a.getProjectByCurrentKey("GETSUM").getKey();
 
-		File secfile = new File(
-				System.getProperty("user.home") + File.separator + "repository" + File.separator + projectKey);
-		if (secfile.exists()) {
-			FileUtils.deleteDirectory(secfile);
-		}
+//		File secfile = new File(
+//				System.getProperty("user.home") + File.separator + "repository" + File.separator + projectKey);
+//		if (secfile.exists()) {
+//			FileUtils.deleteDirectory(secfile);
+//		}
 
 		// Create a folder in the temp folder that will act as the remote repository
 		File remoteDir = File.createTempFile("remote", "");
