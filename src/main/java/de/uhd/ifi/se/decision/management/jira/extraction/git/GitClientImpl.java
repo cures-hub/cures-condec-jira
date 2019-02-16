@@ -27,11 +27,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.properties.APKeys;
-
-import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
-
+/**
+ * @issue How to access commits related to a JIRA issue?
+ * @decision Both, the jgit library and the git integration for JIRA plugin are
+ *           used to access git repositories.
+ * @alternative Only use jgit.
+ * @pro The jGit library is open source.
+ * @con More work: We would need to write the getCommit for JIRA issues
+ *      ourselves and store the repository URI.
+ */
 public class GitClientImpl implements GitClient {
 
 	private Git git;
@@ -43,7 +47,7 @@ public class GitClientImpl implements GitClient {
 
 	public GitClientImpl(String projectKey) {
 		File directory = new File(DEFAULT_DIR + projectKey);
-		String uri = getUriFromGitIntegrationPlugin(projectKey);
+		String uri = GitClient.getUriFromGitIntegrationPlugin(projectKey);
 		pullOrClone(uri, directory);
 	}
 
@@ -106,26 +110,6 @@ public class GitClientImpl implements GitClient {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private String getUriFromGitIntegrationPlugin(String projectKey) {
-		OAuthManager oAuthManager = new OAuthManager();
-		String baseUrl = ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL);
-
-		String repository = oAuthManager
-				.startRequest(baseUrl + "/rest/gitplugin/latest/repository?projectKey=" + projectKey);
-
-		String uri = null;
-		try {
-			JSONObject jsonObject = new JSONObject(repository);
-			if (!jsonObject.isNull("repositories")) {
-				uri = jsonObject.getJSONArray("repositories").getJSONObject(0).getString("origin");
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-
-		return uri;
 	}
 
 	@Override
