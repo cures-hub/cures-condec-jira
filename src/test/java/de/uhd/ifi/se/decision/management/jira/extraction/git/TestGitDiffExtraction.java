@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -14,8 +14,12 @@ import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.RefSpec;
 import org.json.JSONException;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestGitDiffExtraction extends TestSetUpGit {
@@ -24,7 +28,8 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 	@Test
 	public void getNoDiffsForNoCommits() throws IOException, GitAPIException, JSONException, InterruptedException {
 		String commits = "{" + "\"commits\":[" + "" + "]" + "}";
-		Map<DiffEntry, EditList> gitDiffs = GitDiffExtractor.getGitDiff(commits, projectKey, true);
+		GitClient gitClient = new GitClient(projectKey);
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getGitDiff(commits, projectKey, true);
 		assertTrue(gitDiffs == null);
 	}
 
@@ -52,7 +57,8 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 			}
 		}
 		commits = commits + "]" + "}";
-		Map<DiffEntry, EditList> gitDiffs = GitDiffExtractor.getGitDiff(commits, projectKey, true);
+		GitClient gitClient = new GitClient(projectKey);
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getGitDiff(commits, projectKey, true);
 		assertEquals(gitDiffs.size(), 1);
 	}
 
@@ -82,7 +88,8 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 			}
 		}
 		commits = commits + "]" + "}";
-		Map<DiffEntry, EditList> gitDiffs = GitDiffExtractor.getGitDiff(commits, projectKey, true);
+		GitClient gitClient = new GitClient(projectKey);
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getGitDiff(commits, projectKey, true);
 		assertEquals(gitDiffs.size(), 10);
 	}
 
@@ -110,7 +117,8 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 			}
 		}
 		commits = commits + "]" + "}";
-		Map<DiffEntry, EditList> gitDiffs = GitDiffExtractor.getGitDiff(commits, projectKey, true);
+		GitClient gitClient = new GitClient(projectKey);
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getGitDiff(commits, projectKey, true);
 		assertEquals(gitDiffs.size(), 1);
 	}
 
@@ -140,7 +148,8 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 			}
 		}
 		commits = commits + "]" + "}";
-		Map<DiffEntry, EditList> gitDiffs = GitDiffExtractor.getGitDiff(commits, projectKey, true);
+		GitClient gitClient = new GitClient(projectKey);
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getGitDiff(commits, projectKey, true);
 		assertEquals(gitDiffs.size(), 10);
 	}
 
@@ -148,6 +157,6 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 	@AfterClass
 	public static void tearDown() throws InterruptedException {
 		Thread.sleep(2000);
-		//gitClient.closeAndDeleteRepo();
+		// gitClient.closeAndDeleteRepo();
 	}
 }

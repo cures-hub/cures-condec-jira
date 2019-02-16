@@ -2,14 +2,30 @@ package de.uhd.ifi.se.decision.management.jira.extraction.git;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.eclipse.jgit.api.CherryPickCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.EditList;
+import org.eclipse.jgit.diff.RawTextComparator;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.transport.RemoteConfig;
+import org.eclipse.jgit.util.io.DisabledOutputStream;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,6 +33,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
 
 import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class GitClient {
 
@@ -32,27 +49,26 @@ public class GitClient {
 	private String uri;
 	private Git git;
 	private File directory;
-
 	private Repository repository;
 
 	public GitClient(String uri, String projectKey) {
 		this.directory = new File(DEFAULT_DIR + projectKey);
-		this.setRepository(DEFAULT_DIR + projectKey);
 		this.uri = uri;
 		pullOrClone();
+		this.setRepository(DEFAULT_DIR + projectKey);
 	}
 
 	public GitClient(String projectKey) {
 		this.directory = new File(DEFAULT_DIR + projectKey);
-		this.setRepository(DEFAULT_DIR + projectKey);
 		this.uri = getUriFromGitIntegrationPlugin(projectKey);
 		pullOrClone();
+		this.setRepository(DEFAULT_DIR + projectKey);
 	}
 
 	public void setRepository(String repositoryPath) {
 		FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
 		repositoryBuilder.setMustExist(true);
-		repositoryBuilder.setGitDir(new File(repositoryPath));
+		repositoryBuilder.setGitDir(new File(repositoryPath + File.separator + ".git"));
 		try {
 			this.repository = repositoryBuilder.build();
 			// this.repository.resolve(reference);
@@ -114,6 +130,10 @@ public class GitClient {
 	private void pull() {
 		try {
 			git.pull().call();
+			List<RemoteConfig> remotes = git.remoteList().call();
+			for (RemoteConfig remote : remotes) {
+				git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
+			}
 		} catch (GitAPIException e) {
 			e.printStackTrace();
 		}
@@ -158,6 +178,167 @@ public class GitClient {
 			e.printStackTrace();
 		}
 		return commitObj;
+	}
+
+	public Map<DiffEntry, EditList> getGitDiff(String commits, String projectKey, boolean commitsKnown) {
+		if (projectKey == null || !ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+			return null;
+		}
+		JSONObject commitObj = null;
+		try {
+			commitObj = new JSONObject(commits);
+			// cherryPickAllCommits(commitObj, git);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		RevCommit firstCommit = getFirstCommit(commitObj);
+		RevCommit lastCommit = getLastCommit(commitObj);
+		return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
+	}
+
+	public Map<DiffEntry, EditList> getCodeDiff(String projectKey, String jiraIssueKey) {
+		if (projectKey == null || !ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
+			return null;
+		}
+
+		JSONObject commitObj = GitClient.getCommits(jiraIssueKey);
+		// cherryPickAllCommits(commitObj, git);
+		RevCommit firstCommit = getFirstCommit(commitObj);
+		RevCommit lastCommit = getLastCommit(commitObj);
+		return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
+	}
+
+	private void cherryPickAllCommits(JSONObject commitObj, Git git) {
+		if (commitObj.isNull("commits")) {
+			return;
+		}
+		JSONArray commits = null;
+		try {
+			commits = commitObj.getJSONArray("commits");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		if (commits == null || commits.length() == 0) {
+			return;
+		}
+
+		RevWalk revWalk = new RevWalk(repository);
+		for (int i = 0; i < commits.length(); i++) {
+			try {
+				ObjectId id = repository.resolve(commits.getJSONObject(i).getString("commitId"));
+				RevCommit commit = revWalk.parseCommit(id);
+				CherryPickCommand cherryPick = git.cherryPick();
+				cherryPick.setMainlineParentNumber(1);
+				cherryPick.include(commit);
+				cherryPick.setNoCommit(true);
+				cherryPick.call();
+			} catch (RevisionSyntaxException | IOException | JSONException | GitAPIException e) {
+				e.printStackTrace();
+			}
+		}
+		revWalk.close();
+	}
+
+	private RevCommit getFirstCommit(JSONObject commitObj) {
+		if (commitObj.isNull("commits")) {
+			return null;
+		}
+		JSONArray commits = null;
+		try {
+			commits = commitObj.getJSONArray("commits");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		if (commits == null || commits.length() == 0) {
+			return null;
+		}
+
+		RevCommit firstCommit = null;
+		RevWalk revWalk = new RevWalk(repository);
+		try {
+			ObjectId id = repository.resolve(commits.getJSONObject(commits.length() - 1).getString("commitId"));
+			firstCommit = revWalk.parseCommit(id);
+		} catch (RevisionSyntaxException | IOException | JSONException e) {
+			e.printStackTrace();
+		}
+		revWalk.close();
+		return firstCommit;
+	}
+
+	private RevCommit getLastCommit(JSONObject commitObj) {
+		if (commitObj.isNull("commits")) {
+			return null;
+		}
+		JSONArray commits = null;
+		try {
+			commits = commitObj.getJSONArray("commits");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		if (commits == null || commits.length() == 0) {
+			return null;
+		}
+
+		RevCommit lastCommit = null;
+		RevWalk revWalk = new RevWalk(repository);
+		ObjectId id;
+		try {
+			id = repository.resolve(commits.getJSONObject(0).getString("commitId"));
+			lastCommit = revWalk.parseCommit(id);
+		} catch (RevisionSyntaxException | IOException | JSONException e) {
+			e.printStackTrace();
+		}
+		revWalk.close();
+		return lastCommit;
+	}
+
+	private RevCommit getParentOfFirstCommit(RevCommit revCommit) {
+		RevCommit parentCommit;
+		try {
+			RevWalk revWalk = new RevWalk(repository);
+			parentCommit = revWalk.parseCommit(revCommit.getParent(0).getId());
+			revWalk.close();
+		} catch (Exception e) {
+			System.err.println("Could not get the parent commit");
+			e.printStackTrace();
+			return null;
+		}
+		return parentCommit;
+	}
+
+	private DiffFormatter getDiffFormater() {
+		DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
+		diffFormatter.setRepository(repository);
+		diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
+		diffFormatter.setDetectRenames(true);
+		return diffFormatter;
+	}
+
+	public Map<DiffEntry, EditList> getDiffEntriesMappedToEditLists(RevCommit revCommitFirst, RevCommit revCommitLast) {
+		Map<DiffEntry, EditList> diffEntriesMappedToEditLists = new HashMap<DiffEntry, EditList>();
+		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
+
+		DiffFormatter diffFormatter = getDiffFormater();
+		try {
+			RevCommit parentCommit = getParentOfFirstCommit(revCommitFirst);
+			if (parentCommit != null) {
+				diffEntries = diffFormatter.scan(parentCommit.getTree(), revCommitLast.getTree());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		for (DiffEntry diffEntry : diffEntries) {
+			try {
+				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
+				diffEntriesMappedToEditLists.put(diffEntry, editList);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		diffFormatter.close();
+		return diffEntriesMappedToEditLists;
 	}
 
 	// public List<DiffEntry> getDiffEntries(RevCommit revCommit) {

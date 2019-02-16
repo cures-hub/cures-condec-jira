@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -20,14 +19,17 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestTaskCodeSummarizer extends TestSetUpGit{
+public class TestTaskCodeSummarizer extends TestSetUpGit {
 
 	@Ignore
 	@Test
 	public void getNoSumForNoCommits() throws IOException, GitAPIException, JSONException, InterruptedException {
 		String commits = "{" + "\"commits\":[" + "" + "]" + "}";
-		Map<DiffEntry, EditList> gitDiffs = GitDiffExtractor.getGitDiff(commits, projectKey, true);
+		GitClient gitClient = new GitClient(projectKey);
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getGitDiff(commits, projectKey, true);
 		String text = TaskCodeSummarizer.summarizer(gitDiffs, projectKey, false);
 		assertTrue(text.isEmpty());
 	}
@@ -55,7 +57,8 @@ public class TestTaskCodeSummarizer extends TestSetUpGit{
 			}
 		}
 		commits = commits + "]" + "}";
-		Map<DiffEntry, EditList> gitDiffs = GitDiffExtractor.getGitDiff(commits, projectKey, true);
+		GitClient gitClient = new GitClient(projectKey);
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getGitDiff(commits, projectKey, true);
 		String text = TaskCodeSummarizer.summarizer(gitDiffs, projectKey, false);
 		assertTrue(text.isEmpty());
 	}
@@ -86,7 +89,8 @@ public class TestTaskCodeSummarizer extends TestSetUpGit{
 			}
 		}
 		commits = commits + "]" + "}";
-		Map<DiffEntry, EditList> gitDiffs = GitDiffExtractor.getGitDiff(commits, projectKey, true);
+		GitClient gitClient = new GitClient(projectKey);
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getGitDiff(commits, projectKey, true);
 		String text = TaskCodeSummarizer.summarizer(gitDiffs, projectKey, false);
 		assertTrue(text.isEmpty());
 	}
@@ -116,7 +120,8 @@ public class TestTaskCodeSummarizer extends TestSetUpGit{
 			}
 		}
 		commits = commits + "]" + "}";
-		Map<DiffEntry, EditList> gitDiffs = GitDiffExtractor.getGitDiff(commits, projectKey, true);
+		GitClient gitClient = new GitClient(projectKey);
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getGitDiff(commits, projectKey, true);
 		String text = TaskCodeSummarizer.summarizer(gitDiffs, projectKey, false);
 		assertEquals(text, "In class *MyNewFile* the following methods has been changed: \n" + "newfiling\n" + "run\n");
 	}
@@ -149,7 +154,8 @@ public class TestTaskCodeSummarizer extends TestSetUpGit{
 			}
 		}
 		commits = commits + "]" + "}";
-		Map<DiffEntry, EditList> gitDiffs = GitDiffExtractor.getGitDiff(commits, projectKey, true);
+		GitClient gitClient = new GitClient(projectKey);
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getGitDiff(commits, projectKey, true);
 		String text = TaskCodeSummarizer.summarizer(gitDiffs, projectKey, false);
 		String eq1 = "In class *MyNewFileForOneCommit1* the following methods has been changed: \n" + "newfiling\n"
 				+ "run\n";
@@ -210,7 +216,8 @@ public class TestTaskCodeSummarizer extends TestSetUpGit{
 			}
 		}
 		commits = commits + "]" + "}";
-		Map<DiffEntry, EditList> gitDiffs = GitDiffExtractor.getGitDiff(commits, projectKey, true);
+		GitClient gitClient = new GitClient(projectKey);
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getGitDiff(commits, projectKey, true);
 		String text = TaskCodeSummarizer.summarizer(gitDiffs, projectKey, false);
 		String eq1 = "In class *MyNewFile1* the following methods has been changed: \n" + "newfiling\n" + "run\n";
 		String eq2 = "In class *MyNewFile2* the following methods has been changed: \n" + "newfiling\n" + "run\n";
@@ -267,7 +274,8 @@ public class TestTaskCodeSummarizer extends TestSetUpGit{
 			}
 		}
 		commits = commits + "]" + "}";
-		Map<DiffEntry, EditList> gitDiffs = GitDiffExtractor.getGitDiff(commits, projectKey, true);
+		GitClient gitClient = new GitClient(projectKey);
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getGitDiff(commits, projectKey, true);
 		String text = TaskCodeSummarizer.summarizer(gitDiffs, projectKey, false);
 		String eq = "In class *FileForTenCommits* the following methods has been changed: \n" + "newfiling\n" + "run\n"
 				+ "newMethod1\n" + "newMethod2\n" + "newMethod3\n" + "newMethod4\n" + "newMethod5\n" + "newMethod6\n"
@@ -278,6 +286,6 @@ public class TestTaskCodeSummarizer extends TestSetUpGit{
 
 	@AfterClass
 	public static void tearDown() throws InterruptedException {
-		//GitClient.closeAndDeleteRepo();
+		// GitClient.closeAndDeleteRepo();
 	}
 }
