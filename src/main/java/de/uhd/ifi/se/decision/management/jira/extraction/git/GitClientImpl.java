@@ -32,23 +32,16 @@ import com.atlassian.jira.config.properties.APKeys;
 
 import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
 
-public class GitClient {
-
-	// @issue What is the best place to clone the git repo to?
-	// @issue To which directory does the Git integration for JIRA plug-in clone
-	// the repo? Can we use this directory?
-	// @alternative APKeys.JIRA_PATH_INSTALLED_PLUGINS
-	public static final String DEFAULT_DIR = System.getProperty("user.home") + File.separator + "repository"
-			+ File.separator;
+public class GitClientImpl implements GitClient {
 
 	private Git git;
 
-	public GitClient(String uri, String projectKey) {
+	public GitClientImpl(String uri, String projectKey) {
 		File directory = new File(DEFAULT_DIR + projectKey);
 		pullOrClone(uri, directory);
 	}
 
-	public GitClient(String projectKey) {
+	public GitClientImpl(String projectKey) {
 		File directory = new File(DEFAULT_DIR + projectKey);
 		String uri = getUriFromGitIntegrationPlugin(projectKey);
 		pullOrClone(uri, directory);
@@ -135,31 +128,20 @@ public class GitClient {
 		return uri;
 	}
 
-	public static JSONObject getCommits(String issueKey) {
-		OAuthManager oAuthManager = new OAuthManager();
-		String baseUrl = ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL);
-
-		String commits = oAuthManager.startRequest(baseUrl + "/rest/gitplugin/latest/issues/" + issueKey + "/commits");
-		JSONObject commitObj = null;
-		try {
-			commitObj = new JSONObject(commits);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return commitObj;
-	}
-
+	@Override
 	public Map<DiffEntry, EditList> getDiff(String jiraIssueKey) {
 		JSONObject commitObj = GitClient.getCommits(jiraIssueKey);
 		return getDiff(commitObj);
 	}
 
+	@Override
 	public Map<DiffEntry, EditList> getDiff(JSONObject commits) {
 		RevCommit firstCommit = getFirstCommit(commits);
 		RevCommit lastCommit = getLastCommit(commits);
 		return getDiff(firstCommit, lastCommit);
 	}
 
+	@Override
 	public Map<DiffEntry, EditList> getDiff(RevCommit revCommitFirst, RevCommit revCommitLast) {
 		Map<DiffEntry, EditList> diffEntriesMappedToEditLists = new HashMap<DiffEntry, EditList>();
 		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
@@ -186,6 +168,7 @@ public class GitClient {
 		return diffEntriesMappedToEditLists;
 	}
 
+	@Override
 	public Map<DiffEntry, EditList> getDiff(RevCommit revCommit) {
 		return getDiff(revCommit, revCommit);
 	}
@@ -199,6 +182,7 @@ public class GitClient {
 		return diffFormatter;
 	}
 
+	@Override
 	public Repository getRepository() {
 		if (git == null) {
 			return null;
@@ -206,6 +190,7 @@ public class GitClient {
 		return this.git.getRepository();
 	}
 
+	@Override
 	public File getDirectory() {
 		Repository repository = this.getRepository();
 		if (repository == null) {
@@ -285,6 +270,7 @@ public class GitClient {
 		return parentCommit;
 	}
 
+	@Override
 	public void closeRepo() {
 		if (git == null) {
 			return;
@@ -293,9 +279,7 @@ public class GitClient {
 		git.close();
 	}
 
-	/**
-	 * Closes the repository and deletes its local files.
-	 */
+	@Override
 	public void deleteRepo() {
 		closeRepo();
 		File directory = this.getDirectory();

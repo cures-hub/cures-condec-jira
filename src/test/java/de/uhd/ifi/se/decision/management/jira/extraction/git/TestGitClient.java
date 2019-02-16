@@ -72,7 +72,7 @@ public class TestGitClient {
 	@Ignore
 	@Test
 	public void testNotCloningNotExistingRepo() throws InterruptedException {
-		new GitClient(directory0, projectKey0);
+		new GitClientImpl(directory0, projectKey0);
 		Thread.sleep(2000);
 		File file = new File(
 				System.getProperty("user.home") + File.separator + "repository" + File.separator + projectKey0);
@@ -82,7 +82,7 @@ public class TestGitClient {
 	@Ignore
 	@Test
 	public void testCloneRepo() throws JSONException, InterruptedException {
-		GitClient gitClient = new GitClient(directory1, projectKey1);
+		GitClient gitClient = new GitClientImpl(directory1, projectKey1);
 		Thread.sleep(2000);
 		File file = new File(
 				System.getProperty("user.home") + File.separator + "repository" + File.separator + projectKey1);
@@ -93,9 +93,9 @@ public class TestGitClient {
 	@Ignore
 	@Test
 	public void testUpdateClonedRepo() throws InterruptedException {
-		GitClient gitClient = new GitClient(directory1, projectKey1);
+		GitClient gitClient = new GitClientImpl(directory1, projectKey1);
 		Thread.sleep(2000);
-		gitClient = new GitClient(directory1, projectKey1);
+		gitClient = new GitClientImpl(directory1, projectKey1);
 		Thread.sleep(2000);
 		File file = new File(
 				System.getProperty("user.home") + File.separator + "repository" + File.separator + projectKey1);

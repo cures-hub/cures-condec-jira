@@ -29,6 +29,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.git.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.git.GitClientImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.git.TaskCodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -349,7 +350,7 @@ public class KnowledgeRest {
 
 		String queryResult = "";
 		try {
-			GitClient gitClient = new GitClient(projectKey);
+			GitClient gitClient = new GitClientImpl(projectKey);
 			Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssueKey);
 			if (diff == null) {
 				queryResult = "This JIRA issue does not have any code committed.";
