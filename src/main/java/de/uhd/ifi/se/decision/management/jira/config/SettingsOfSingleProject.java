@@ -13,8 +13,6 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.project.Project;
-import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
-import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
@@ -32,9 +30,8 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 	private static final String TEMPLATEPATH = "templates/settingsForSingleProject.vm";
 
 	@Inject
-	public SettingsOfSingleProject(@ComponentImport LoginUriProvider loginUriProvider,
-			@ComponentImport TemplateRenderer renderer) {
-		super(loginUriProvider, renderer);
+	public SettingsOfSingleProject(TemplateRenderer renderer) {
+		super(renderer);
 	}
 
 	@Override
@@ -54,12 +51,12 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		}
 		String projectKey = request.getParameter("projectKey");
 		DecisionKnowledgeProject decisionKnowledgeProject = new DecisionKnowledgeProjectImpl(projectKey);
-		
+
 		Set<String> issueTypes = getJiraIssueTypeNames(projectKey);
 
 		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
 		velocityParameters.put("projectKey", projectKey);
-		velocityParameters.put("project", decisionKnowledgeProject);		
+		velocityParameters.put("project", decisionKnowledgeProject);
 		velocityParameters.put("issueTypes", issueTypes);
 		velocityParameters.put("imageFolderUrl", ComponentGetter.getUrlOfImageFolder());
 		velocityParameters.put("requestUrl", request.getRequestURL());
@@ -78,5 +75,5 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		}
 		return issueTypes;
 	}
-	
+
 }
