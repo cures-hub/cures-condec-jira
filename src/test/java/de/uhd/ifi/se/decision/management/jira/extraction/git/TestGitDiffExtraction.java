@@ -24,7 +24,7 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 	@Test
 	public void getNoDiffsForNoCommits() throws IOException, GitAPIException, JSONException, InterruptedException {
 		String commits = "{" + "\"commits\":[" + "" + "]" + "}";
-		Map<DiffEntry, EditList> gitDiffs = GitDiffExtraction.getGitDiff(commits, projectKey, true);
+		Map<DiffEntry, EditList> gitDiffs = GitDiffExtractor.getGitDiff(commits, projectKey, true);
 		assertTrue(gitDiffs == null);
 	}
 
@@ -52,7 +52,7 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 			}
 		}
 		commits = commits + "]" + "}";
-		Map<DiffEntry, EditList> gitDiffs = GitDiffExtraction.getGitDiff(commits, projectKey, true);
+		Map<DiffEntry, EditList> gitDiffs = GitDiffExtractor.getGitDiff(commits, projectKey, true);
 		assertEquals(gitDiffs.size(), 1);
 	}
 
@@ -82,7 +82,7 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 			}
 		}
 		commits = commits + "]" + "}";
-		Map<DiffEntry, EditList> gitDiffs = GitDiffExtraction.getGitDiff(commits, projectKey, true);
+		Map<DiffEntry, EditList> gitDiffs = GitDiffExtractor.getGitDiff(commits, projectKey, true);
 		assertEquals(gitDiffs.size(), 10);
 	}
 
@@ -110,7 +110,7 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 			}
 		}
 		commits = commits + "]" + "}";
-		Map<DiffEntry, EditList> gitDiffs = GitDiffExtraction.getGitDiff(commits, projectKey, true);
+		Map<DiffEntry, EditList> gitDiffs = GitDiffExtractor.getGitDiff(commits, projectKey, true);
 		assertEquals(gitDiffs.size(), 1);
 	}
 
@@ -140,7 +140,7 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 			}
 		}
 		commits = commits + "]" + "}";
-		Map<DiffEntry, EditList> gitDiffs = GitDiffExtraction.getGitDiff(commits, projectKey, true);
+		Map<DiffEntry, EditList> gitDiffs = GitDiffExtractor.getGitDiff(commits, projectKey, true);
 		assertEquals(gitDiffs.size(), 10);
 	}
 
@@ -148,6 +148,6 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 	@AfterClass
 	public static void tearDown() throws InterruptedException {
 		Thread.sleep(2000);
-		GitClient.closeAndDeleteRepo();
+		//gitClient.closeAndDeleteRepo();
 	}
 }

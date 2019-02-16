@@ -114,7 +114,7 @@ public class TestSetUpGit {
 		refSpec = new RefSpec("master");
 		git.push().setRemote("origin").setRefSpecs(refSpec).call();
 
-		GitClient.getGitRepo(directory, projectKey);
+		new GitClient(directory, projectKey);
 		git.checkout().setCreateBranch(true).setName("Branch").call();
 		Thread.sleep(2000);
 	}

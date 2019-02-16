@@ -5,6 +5,11 @@ import java.io.IOException;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.ConfigConstants;
+import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.StoredConfig;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,96 +17,88 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
 
 import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class GitClient {
 
-	// @issue: What is the best place to clone the git repo to?
-	// @issue: To which directory does the Git integration for JIRA plug-in clone
+	// @issue What is the best place to clone the git repo to?
+	// @issue To which directory does the Git integration for JIRA plug-in clone
 	// the repo? Can we use this directory?
-	// @alternative: APKeys.JIRA_PATH_INSTALLED_PLUGINS
+	// @alternative APKeys.JIRA_PATH_INSTALLED_PLUGINS
 	public static final String DEFAULT_DIR = System.getProperty("user.home") + File.separator + "repository"
 			+ File.separator;
 
 	private static final String BASEURL = ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL);
 
-	/**
-	 * Uniform resource identifier that the repository should be cloned from.
-	 */
-	private static String uri;
+	private String uri;
+	private Git git;
+	private File directory;
 
-	/**
-	 * The git object for the cloned Repository, to perform the operations on.
-	 */
-	private static Git git;
+	private Repository repository;
 
-	/**
-	 * The directory the repository should be cloned to.
-	 */
-	private static File directory;
-
-	public static void getGitRepo(String repositoryUri, String projectKey) {
-		if (projectKey == null) {
-			return;
-		}
-		directory = new File(DEFAULT_DIR + projectKey);
-		uri = repositoryUri;
-		new Thread(() -> {
-			if (repositoryUri != null) {
-				cloneRepo();
-			}
-		}).start();
+	public GitClient(String uri, String projectKey) {
+		this.directory = new File(DEFAULT_DIR + projectKey);
+		this.setRepository(DEFAULT_DIR + projectKey);
+		this.uri = uri;
+		pullOrClone();
 	}
 
-	public static void getGitRepo(String projectKey) {
-		if (projectKey == null || !ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			return;
-		}
-		directory = new File(DEFAULT_DIR + projectKey);
-		OAuthManager oAuthManager = new OAuthManager();
-		String repository = oAuthManager
-				.startRequest(BASEURL + "/rest/gitplugin/latest/repository?projectKey=" + projectKey);
-		uri = getRemoteURL(repository);
-		new Thread(() -> {
-			if (repository != null) {
-				cloneRepo();
-			}
-		}).start();
+	public GitClient(String projectKey) {
+		this.directory = new File(DEFAULT_DIR + projectKey);
+		this.setRepository(DEFAULT_DIR + projectKey);
+		this.uri = getUriFromGitIntegrationPlugin(projectKey);
+		pullOrClone();
 	}
 
-	private static void cloneRepo() {
+	public void setRepository(String repositoryPath) {
+		FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
+		repositoryBuilder.setMustExist(true);
+		repositoryBuilder.setGitDir(new File(repositoryPath));
 		try {
-			if (existingRepository()) {
-				git.pull().call();
-			} else {
-				git = Git.cloneRepository().setURI(uri).setDirectory(directory).setCloneAllBranches(true).call();
-			}
-		} catch (GitAPIException e) {
+			this.repository = repositoryBuilder.build();
+			// this.repository.resolve(reference);
+			StoredConfig config = this.repository.getConfig();
+			// @issue The internal representation of a file might add system dependent new
+			// line statements, for example CR LF in Windows
+			// @decision Disable system dependent new line statements
+			config.setEnum(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_AUTOCRLF,
+					AutoCRLF.TRUE);
+			config.save();
+		} catch (IOException e) {
+			System.err.println("Repository could not be found.");
 			e.printStackTrace();
 		}
 	}
 
-	private static boolean existingRepository() {
+	public void pullOrClone() {
+		new Thread(() -> {
+			if (existingRepository()) {
+				this.pull();
+			} else {
+				this.cloneRepo();
+			}
+		}).start();
+	}
+
+	private boolean existingRepository() {
 		if (directory.exists() && directory.list().length > 0) {
 			if (git != null) {
 				closeRepo();
 			}
 			try {
 				git = Git.open(directory);
-			} catch (IOException io) {
-				io.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 		return checkExistingRepository();
 	}
 
 	/**
-	 * check whether the current directory is an git repository
+	 * check whether the current directory is a git repository.
 	 * 
-	 * @return true if the directory is an repository false otherwise
-	 * @throws IOException
+	 * @return true if the directory is a git repository, false otherwise.
 	 */
-	private static boolean checkExistingRepository() {
+	private boolean checkExistingRepository() {
 		boolean isExistent = false;
 		if (git == null) {
 			return false;
@@ -114,24 +111,133 @@ public class GitClient {
 		return isExistent;
 	}
 
-	/**
-	 * Closes the repository.
-	 */
-	public static void closeRepo() {
-		if (git != null) {
-			git.getRepository().close();
-			git.close();
+	private void pull() {
+		try {
+			git.pull().call();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
 		}
+	}
+
+	private void cloneRepo() {
+		if (uri == null) {
+			return;
+		}
+		try {
+			git = Git.cloneRepository().setURI(uri).setDirectory(directory).setCloneAllBranches(true).call();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private String getUriFromGitIntegrationPlugin(String projectKey) {
+		OAuthManager oAuthManager = new OAuthManager();
+		String repository = oAuthManager
+				.startRequest(BASEURL + "/rest/gitplugin/latest/repository?projectKey=" + projectKey);
+
+		String uri = null;
+		try {
+			JSONObject jsonObject = new JSONObject(repository);
+			if (!jsonObject.isNull("repositories")) {
+				uri = jsonObject.getJSONArray("repositories").getJSONObject(0).getString("origin");
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return uri;
+	}
+
+	public static JSONObject getCommits(String issueKey) {
+		OAuthManager oAuthManager = new OAuthManager();
+		String commits = oAuthManager.startRequest(BASEURL + "/rest/gitplugin/latest/issues/" + issueKey + "/commits");
+		JSONObject commitObj = null;
+		try {
+			commitObj = new JSONObject(commits);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return commitObj;
+	}
+
+	// public List<DiffEntry> getDiffEntries(RevCommit revCommit) {
+	// List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
+	//
+	// DiffFormatter diffFormatter = getDiffFormater(revCommit);
+	// try {
+	// RevCommit parentCommit = this.getParent(revCommit);
+	// diffEntries = diffFormatter.scan(parentCommit.getTree(),
+	// revCommit.getTree());
+	// } catch (IOException e) {
+	// e.printStackTrace();
+	// }
+	// diffFormatter.close();
+	// return diffEntries;
+	// }
+	//
+	// private DiffFormatter getDiffFormater(RevCommit revCommit) {
+	// DiffFormatter diffFormatter = new
+	// DiffFormatter(DisabledOutputStream.INSTANCE);
+	// diffFormatter.setRepository(this.repository);
+	// diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
+	// diffFormatter.setDetectRenames(true);
+	// return diffFormatter;
+	// }
+	//
+	// public RevCommit getParent(RevCommit revCommit) {
+	// RevCommit parentCommit;
+	// try {
+	// RevWalk revWalk = new RevWalk(repository);
+	// parentCommit = revWalk.parseCommit(revCommit.getParent(0).getId());
+	// revWalk.close();
+	// } catch (IOException e) {
+	// System.err.println("Could not get the parent commit for " + revCommit);
+	// e.printStackTrace();
+	// return null;
+	// }
+	// return parentCommit;
+	// }
+	//
+	// public Map<DiffEntry, EditList> getDiffEntriesMappedToEditLists(RevCommit
+	// revCommit) {
+	// Map<DiffEntry, EditList> diffEntriesMappedToEditLists = new
+	// HashMap<DiffEntry, EditList>();
+	// List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
+	//
+	// DiffFormatter diffFormatter = getDiffFormater(revCommit);
+	// try {
+	// RevCommit parentCommit = this.getParent(revCommit);
+	// diffEntries = diffFormatter.scan(parentCommit.getTree(),
+	// revCommit.getTree());
+	// } catch (IOException e) {
+	// e.printStackTrace();
+	// }
+	//
+	// for (DiffEntry diffEntry : diffEntries) {
+	// try {
+	// EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
+	// diffEntriesMappedToEditLists.put(diffEntry, editList);
+	// } catch (IOException e) {
+	// e.printStackTrace();
+	// }
+	// }
+	// diffFormatter.close();
+	// return diffEntriesMappedToEditLists;
+	// }
+
+	public void closeRepo() {
+		if (git == null) {
+			return;
+		}
+		git.getRepository().close();
+		git.close();
 	}
 
 	/**
 	 * Closes the repository and deletes its local files.
 	 */
-	public static void closeAndDeleteRepo() {
-		if (git != null) {
-			git.getRepository().close();
-			git.close();
-		}
+	public void closeAndDeleteRepo() {
+		closeRepo();
 		if (directory.exists()) {
 			deleteFolder(directory);
 		}
@@ -147,32 +253,5 @@ public class GitClient {
 			}
 		}
 		directory.delete();
-	}
-
-	private static String getRemoteURL(String repository) {
-		String remoteUrl = null;
-
-		try {
-			JSONObject jsonObject = new JSONObject(repository);
-			if (!jsonObject.isNull("repositories")) {
-				remoteUrl = jsonObject.getJSONArray("repositories").getJSONObject(0).getString("origin");
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-
-		return remoteUrl;
-	}
-
-	public static JSONObject getCommits(String projectKey, String issueKey) {
-		OAuthManager oAuthManager = new OAuthManager();
-		String commits = oAuthManager.startRequest(BASEURL + "/rest/gitplugin/latest/issues/" + issueKey + "/commits");
-		JSONObject commitObj = null;
-		try {
-			commitObj = new JSONObject(commits);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return commitObj;
 	}
 }

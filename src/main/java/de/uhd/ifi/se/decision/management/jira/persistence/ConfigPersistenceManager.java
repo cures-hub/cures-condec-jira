@@ -174,7 +174,7 @@ public class ConfigPersistenceManager {
 	public static void setKnowledgeExtractedFromGit(String projectKey, boolean isKnowledgeExtractedFromGit) {
 		setValue(projectKey, "isKnowledgeExtractedFromGit", Boolean.toString(isKnowledgeExtractedFromGit));
 		if (isKnowledgeExtractedFromGit) {
-			GitClient.getGitRepo(projectKey);
+			new GitClient(projectKey);
 		}
 	}
 

@@ -20,7 +20,6 @@ import javax.ws.rs.core.Response.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
-import org.json.JSONException;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -29,7 +28,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.git.GitDiffExtraction;
+import de.uhd.ifi.se.decision.management.jira.extraction.git.GitDiffExtractor;
 import de.uhd.ifi.se.decision.management.jira.extraction.git.TaskCodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -350,13 +349,13 @@ public class KnowledgeRest {
 
 		String queryResult = "";
 		try {
-			Map<DiffEntry, EditList> diff = GitDiffExtraction.getGitDiff(projectKey, jiraIssueKey);
+			Map<DiffEntry, EditList> diff = GitDiffExtractor.getCodeDiff(projectKey, jiraIssueKey);
 			if (diff == null) {
 				queryResult = "This JIRA issue does not have any code committed.";
 			} else {
 				queryResult += TaskCodeSummarizer.summarizer(diff, projectKey, true);
 			}
-		} catch (IOException | JSONException | InterruptedException | GitAPIException e) {
+		} catch (IOException | GitAPIException e) {
 			e.printStackTrace();
 		}
 

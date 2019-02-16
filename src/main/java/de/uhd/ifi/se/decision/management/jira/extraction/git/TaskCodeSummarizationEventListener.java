@@ -6,7 +6,6 @@ import java.util.Map;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
-import org.json.JSONException;
 import org.ofbiz.core.entity.GenericValue;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -66,7 +65,7 @@ public class TaskCodeSummarizationEventListener implements InitializingBean, Dis
 	@EventListener
 	public void onIssueEvent(IssueEvent issueEvent) {
 		String projectKey = issueEvent.getProject().getKey();
-		String issueId = issueEvent.getIssue().getKey();
+		String jiraIssueKey = issueEvent.getIssue().getKey();
 		long eventTypeId = issueEvent.getEventTypeId();
 
 		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)
@@ -74,12 +73,12 @@ public class TaskCodeSummarizationEventListener implements InitializingBean, Dis
 			return;
 		}
 
-		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(issueId);
+		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueKey);
 		String summarization = "";
 		try {
-			Map<DiffEntry, EditList> diff = GitDiffExtraction.getGitDiff(projectKey, issueId);
+			Map<DiffEntry, EditList> diff = GitDiffExtractor.getCodeDiff(projectKey, jiraIssueKey);
 			summarization = TaskCodeSummarizer.summarizer(diff, projectKey, false);
-		} catch (IOException | GitAPIException | JSONException | InterruptedException e) {
+		} catch (IOException | GitAPIException e) {
 			e.printStackTrace();
 		}
 

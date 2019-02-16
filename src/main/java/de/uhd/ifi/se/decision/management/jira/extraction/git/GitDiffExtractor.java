@@ -27,46 +27,44 @@ import org.json.JSONObject;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
-public class GitDiffExtraction {
+public class GitDiffExtractor {
 
 	private static File directory;
-	private static RevCommit firstCommit;
-	private static RevCommit lastCommit;
 	private static Repository repository;
 	private static Git git;
 
-	public static Map<DiffEntry, EditList> getGitDiff(String commits, String projectKey, boolean commitsKnown)
-			throws IOException, GitAPIException, JSONException, InterruptedException {
+	public static Map<DiffEntry, EditList> getGitDiff(String commits, String projectKey, boolean commitsKnown) {
 		if (projectKey == null || !ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
 			return null;
 		}
 		initGit(projectKey);
-
-		JSONObject commitObj = new JSONObject(commits);
-		cherryPickAllCommits(commitObj, git);
-		if (!initFirstLastCommits(commitObj)) {
-			return null;
+		JSONObject commitObj = null;
+		try {
+			commitObj = new JSONObject(commits);
+			// cherryPickAllCommits(commitObj, git);
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
+		RevCommit firstCommit = getFirstCommit(commitObj);
+		RevCommit lastCommit = getLastCommit(commitObj);
 		return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
 	}
 
-	public static Map<DiffEntry, EditList> getGitDiff(String projectKey, String jiraIssueKey)
-			throws IOException, GitAPIException, JSONException, InterruptedException {
+	public static Map<DiffEntry, EditList> getCodeDiff(String projectKey, String jiraIssueKey) {
 		if (projectKey == null || !ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
 			return null;
 		}
 		initGit(projectKey);
 
-		JSONObject commitObj = GitClient.getCommits(projectKey, jiraIssueKey);
-		cherryPickAllCommits(commitObj, git);
-		if (!initFirstLastCommits(commitObj)) {
-			return null;
-		}
+		JSONObject commitObj = GitClient.getCommits(jiraIssueKey);
+		// cherryPickAllCommits(commitObj, git);
+		RevCommit firstCommit = getFirstCommit(commitObj);
+		RevCommit lastCommit = getLastCommit(commitObj);
 		return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
 	}
 
 	private static void initGit(String projectKey) {
-		directory = new File(GitClient.DEFAULT_DIR + projectKey);		
+		directory = new File(GitClient.DEFAULT_DIR + projectKey);
 		try {
 			git = Git.open(directory);
 			repository = git.getRepository();
@@ -80,15 +78,6 @@ public class GitDiffExtraction {
 		}
 	}
 
-	private static boolean initFirstLastCommits(JSONObject commitObj) {
-		firstCommit = getFirstCommit(commitObj);
-		if (firstCommit == null) {
-			return false;
-		}
-		lastCommit = getLastCommit(commitObj);
-		return true;
-	}
-
 	private static void cherryPickAllCommits(JSONObject commitObj, Git git) {
 		if (commitObj.isNull("commits")) {
 			return;
@@ -96,8 +85,8 @@ public class GitDiffExtraction {
 		JSONArray commits = null;
 		try {
 			commits = commitObj.getJSONArray("commits");
-		} catch (JSONException e1) {
-			e1.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
 		if (commits == null || commits.length() == 0) {
 			return;
@@ -117,7 +106,7 @@ public class GitDiffExtraction {
 				e.printStackTrace();
 			}
 		}
-		//revWalk.close();
+		revWalk.close();
 	}
 
 	private static RevCommit getFirstCommit(JSONObject commitObj) {

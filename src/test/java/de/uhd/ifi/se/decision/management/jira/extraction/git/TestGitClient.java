@@ -70,7 +70,7 @@ public class TestGitClient {
 
 	@Test
 	public void testNotCloningNotExistingRepo() throws InterruptedException {
-		GitClient.getGitRepo(directory0, projectKey0);
+		new GitClient(directory0, projectKey0);
 		Thread.sleep(2000);
 		File file = new File(
 				System.getProperty("user.home") + File.separator + "repository" + File.separator + projectKey0);
@@ -79,19 +79,19 @@ public class TestGitClient {
 
 	@Test
 	public void testCloneRepo() throws JSONException, InterruptedException {
-		GitClient.getGitRepo(directory1, projectKey1);
+		GitClient gitClient = new GitClient(directory1, projectKey1);
 		Thread.sleep(2000);
 		File file = new File(
 				System.getProperty("user.home") + File.separator + "repository" + File.separator + projectKey1);
 		assertTrue(file.exists());
-		GitClient.closeAndDeleteRepo();
+		gitClient.closeAndDeleteRepo();
 	}
 
 	@Test
 	public void testUpdateClonedRepo() throws InterruptedException {
-		GitClient.getGitRepo(directory1, projectKey1);
+		GitClient gitClient = new GitClient(directory1, projectKey1);
 		Thread.sleep(2000);
-		GitClient.getGitRepo(directory1, projectKey1);
+		gitClient = new GitClient(directory1, projectKey1);
 		Thread.sleep(2000);
 		File file = new File(
 				System.getProperty("user.home") + File.separator + "repository" + File.separator + projectKey1);
@@ -102,6 +102,6 @@ public class TestGitClient {
 		assertTrue(file.exists());
 		assertFalse(file1.exists());
 		assertFalse(file2.exists());
-		GitClient.closeAndDeleteRepo();
+		gitClient.closeAndDeleteRepo();
 	}
 }
