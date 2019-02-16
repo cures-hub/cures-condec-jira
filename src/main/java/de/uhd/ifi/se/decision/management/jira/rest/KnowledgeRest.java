@@ -19,10 +19,12 @@ import javax.ws.rs.core.Response.Status;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
 
+import com.atlassian.applinks.api.CredentialsRequiredException;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.sal.api.net.ResponseException;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
@@ -347,13 +349,20 @@ public class KnowledgeRest {
 		}
 
 		String queryResult = "";
-		GitClient gitClient = new GitClientImpl(projectKey);
-		Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssueKey);
-		if (diff == null) {
-			queryResult = "This JIRA issue does not have any code committed.";
-		} else {
-			queryResult += TaskCodeSummarizer.summarizer(diff, projectKey, true);
+		GitClient gitClient;
+		try {
+			gitClient = new GitClientImpl(projectKey);
+			Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssueKey);
+			if (diff == null) {
+				queryResult = "This JIRA issue does not have any code committed.";
+			} else {
+				queryResult = TaskCodeSummarizer.summarizer(diff, projectKey, true);
+			}
+		} catch (CredentialsRequiredException | ResponseException e) {
+			queryResult += e.toString();
+			e.printStackTrace();
 		}
+		
 
 		return Response.ok(queryResult).build();
 	}

@@ -27,6 +27,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.atlassian.applinks.api.CredentialsRequiredException;
+import com.atlassian.sal.api.net.ResponseException;
+
 /**
  * @issue How to access commits related to a JIRA issue?
  * @decision Both, the jgit library and the git integration for JIRA plugin are
@@ -45,7 +48,7 @@ public class GitClientImpl implements GitClient {
 		pullOrClone(uri, directory);
 	}
 
-	public GitClientImpl(String projectKey) {
+	public GitClientImpl(String projectKey) throws CredentialsRequiredException, ResponseException {
 		File directory = new File(DEFAULT_DIR + projectKey);
 		String uri = GitClient.getUriFromGitIntegrationPlugin(projectKey);
 		pullOrClone(uri, directory);
@@ -160,6 +163,9 @@ public class GitClientImpl implements GitClient {
 	private DiffFormatter getDiffFormater() {
 		DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
 		Repository repository = this.getRepository();
+		if (repository == null) {
+			return diffFormatter;
+		}
 		diffFormatter.setRepository(repository);
 		diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
 		diffFormatter.setDetectRenames(true);
@@ -184,7 +190,7 @@ public class GitClientImpl implements GitClient {
 	}
 
 	private RevCommit getFirstCommit(JSONObject commitObj) {
-		if (commitObj.isNull("commits")) {
+		if (commitObj == null || commitObj.isNull("commits")) {
 			return null;
 		}
 		JSONArray commits = null;
@@ -211,7 +217,7 @@ public class GitClientImpl implements GitClient {
 	}
 
 	private RevCommit getLastCommit(JSONObject commitObj) {
-		if (commitObj.isNull("commits")) {
+		if (commitObj == null || commitObj.isNull("commits")) {
 			return null;
 		}
 		JSONArray commits = null;

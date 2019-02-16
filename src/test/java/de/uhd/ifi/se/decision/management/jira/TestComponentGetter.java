@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
+import com.atlassian.applinks.api.ApplicationLinkService;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.ProjectService;
@@ -15,8 +16,8 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
-import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 
 public class TestComponentGetter {
 
@@ -28,9 +29,12 @@ public class TestComponentGetter {
 	private UserManager userManager;
 	private TemplateRenderer templateRenderer;
 	private ActiveObjects activeObjects;
+	private ApplicationLinkService applicationLinkService;
 
-	public static void init(ActiveObjects activeObjects, TransactionTemplate transactionTemplate, UserManager userManager) {
-		new ComponentGetter(new MockPluginSettingsFactory(), transactionTemplate, null, null, null, userManager, null, activeObjects);
+	public static void init(ActiveObjects activeObjects, TransactionTemplate transactionTemplate,
+			UserManager userManager) {
+		new ComponentGetter(new MockPluginSettingsFactory(), transactionTemplate, null, null, null, userManager, null,
+				activeObjects, null);
 	}
 
 	@Before
@@ -43,9 +47,11 @@ public class TestComponentGetter {
 		userManager = new MockUserManager();
 		templateRenderer = mock(TemplateRenderer.class);
 		activeObjects = mock(ActiveObjects.class);
+		// TODO Mock ApplicationLinkService
+		applicationLinkService = mock(ApplicationLinkService.class);
 
 		new ComponentGetter(pluginSettingsFactory, transactionTemplate, issueService, projectService, searchService,
-				userManager, templateRenderer, activeObjects);
+				userManager, templateRenderer, activeObjects, applicationLinkService);
 	}
 
 	@Test
