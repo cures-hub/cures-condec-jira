@@ -27,9 +27,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.atlassian.applinks.api.CredentialsRequiredException;
-import com.atlassian.sal.api.net.ResponseException;
-
 /**
  * @issue How to access commits related to a JIRA issue?
  * @decision Both, the jgit library and the git integration for JIRA plugin are
@@ -48,7 +45,7 @@ public class GitClientImpl implements GitClient {
 		pullOrClone(uri, directory);
 	}
 
-	public GitClientImpl(String projectKey) throws CredentialsRequiredException, ResponseException {
+	public GitClientImpl(String projectKey) {
 		File directory = new File(DEFAULT_DIR + projectKey);
 		String uri = GitClient.getUriFromGitIntegrationPlugin(projectKey);
 		pullOrClone(uri, directory);

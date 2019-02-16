@@ -14,26 +14,28 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 
 public class ApplicationLinkService {
 
-	public static String startRequest(String url) throws CredentialsRequiredException, ResponseException {
+	public static String startRequest(String url) {
 		String responseBody = "";
 		String consumerKey = ConfigPersistenceManager.getConsumerKey();
 		Iterable<ApplicationLink> applicationLinks = ComponentGetter.getApplicationLinkService().getApplicationLinks();
 		for (ApplicationLink applicationLink : applicationLinks) {
 			if (applicationLink.getName().equals(consumerKey)) {
-
 				ApplicationLinkRequestFactory requestFactory = applicationLink.createAuthenticatedRequestFactory();
+				try {
 				ApplicationLinkRequest request = requestFactory.createRequest(Request.MethodType.GET, url);
-				request.addHeader("Content-Type", "application/json");
-				responseBody = request.executeAndReturn(new ApplicationLinkResponseHandler<String>() {
-					public String credentialsRequired(final Response response) throws ResponseException {
-						return response.getResponseBodyAsString();
-					}
+				request.addHeader("Content-Type", "application/json");				
+					responseBody = request.executeAndReturn(new ApplicationLinkResponseHandler<String>() {
+						public String credentialsRequired(final Response response) throws ResponseException {
+							return response.getResponseBodyAsString();
+						}
 
-					public String handle(final Response response) throws ResponseException {
-						return response.getResponseBodyAsString();
-					}
-				});
-
+						public String handle(final Response response) throws ResponseException {
+							return response.getResponseBodyAsString();
+						}
+					});
+				} catch (ResponseException | CredentialsRequiredException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		return responseBody;

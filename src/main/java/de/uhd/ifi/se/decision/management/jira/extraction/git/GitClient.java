@@ -10,9 +10,6 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.atlassian.applinks.api.CredentialsRequiredException;
-import com.atlassian.sal.api.net.ResponseException;
-
 /**
  * Class to connect to commits and code in git.
  */
@@ -81,13 +78,9 @@ public interface GitClient {
 	 *            JIRA project key.
 	 * @return uniform resource identifier of the git repository associated with the
 	 *         JIRA project.
-	 * @throws JSONException
-	 * @throws ResponseException
-	 * @throws CredentialsRequiredException
 	 */
-	static String getUriFromGitIntegrationPlugin(String projectKey)
-			throws CredentialsRequiredException, ResponseException {
-		String url = "/rest/gitplugin/latest/repository?projectKey=" + projectKey;
+	static String getUriFromGitIntegrationPlugin(String projectKey) {
+		String url = "/gitplugin/latest/repository?projectKey=" + projectKey;
 		String repository = ApplicationLinkService.startRequest(url);
 		String uri = null;
 		try {
@@ -108,17 +101,11 @@ public interface GitClient {
 	 * @param jiraIssueKey
 	 *            JIRA issue key that is searched for in commit messages.
 	 * @return commits with the issue key in their commit message as a JSONObject.
-	 * @throws ResponseException
-	 * @throws CredentialsRequiredException
 	 */
 	static JSONObject getCommits(String jiraIssueKey) {
-		String url = "/rest/gitplugin/latest/issues/" + jiraIssueKey + "/commits";
+		String url = "/gitplugin/latest/issues/" + jiraIssueKey + "/commits";
 		String commits = null;
-		try {
-			commits = ApplicationLinkService.startRequest(url);
-		} catch (CredentialsRequiredException | ResponseException e1) {
-			e1.printStackTrace();
-		}
+		commits = ApplicationLinkService.startRequest(url);
 		JSONObject commitObj = null;
 		try {
 			commitObj = new JSONObject(commits);

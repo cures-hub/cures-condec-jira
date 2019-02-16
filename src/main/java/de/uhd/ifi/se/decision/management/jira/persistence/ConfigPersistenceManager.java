@@ -3,11 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.atlassian.applinks.api.CredentialsRequiredException;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
-import com.atlassian.sal.api.net.ResponseException;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
@@ -176,12 +174,7 @@ public class ConfigPersistenceManager {
 	public static void setKnowledgeExtractedFromGit(String projectKey, boolean isKnowledgeExtractedFromGit) {
 		setValue(projectKey, "isKnowledgeExtractedFromGit", Boolean.toString(isKnowledgeExtractedFromGit));
 		if (isKnowledgeExtractedFromGit) {
-			try {
-				new GitClientImpl(projectKey);
-			} catch (CredentialsRequiredException | ResponseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			new GitClientImpl(projectKey);
 		}
 	}
 

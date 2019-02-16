@@ -10,7 +10,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.atlassian.applinks.api.CredentialsRequiredException;
 import com.atlassian.event.api.EventListener;
 import com.atlassian.event.api.EventPublisher;
 import com.atlassian.jira.component.ComponentAccessor;
@@ -21,7 +20,6 @@ import com.atlassian.jira.issue.changehistory.ChangeHistory;
 import com.atlassian.jira.issue.changehistory.ChangeHistoryManager;
 import com.atlassian.jira.issue.history.ChangeItemBean;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
-import com.atlassian.sal.api.net.ResponseException;
 
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
@@ -75,16 +73,9 @@ public class TaskCodeSummarizationEventListener implements InitializingBean, Dis
 
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueKey);
 		String summarization = "";
-		GitClient gitClient;
-		try {
-			gitClient = new GitClientImpl(projectKey);
-			Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssueKey);
-			summarization = TaskCodeSummarizer.summarizer(diff, projectKey, false);
-		} catch (CredentialsRequiredException | ResponseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		GitClient gitClient = new GitClientImpl(projectKey);
+		Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssueKey);
+		summarization = TaskCodeSummarizer.summarizer(diff, projectKey, false);
 
 		if (summarization.isEmpty()) {
 			return;
