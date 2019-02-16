@@ -87,7 +87,7 @@ public class TestGitClient {
 		File file = new File(
 				System.getProperty("user.home") + File.separator + "repository" + File.separator + projectKey1);
 		assertTrue(file.exists());
-		gitClient.closeAndDeleteRepo();
+		gitClient.deleteRepo();
 	}
 
 	@Ignore
@@ -106,6 +106,6 @@ public class TestGitClient {
 		assertTrue(file.exists());
 		assertFalse(file1.exists());
 		assertFalse(file2.exists());
-		gitClient.closeAndDeleteRepo();
+		gitClient.deleteRepo();
 	}
 }

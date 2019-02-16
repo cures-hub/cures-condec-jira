@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.eclipse.jgit.api.CherryPickCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
@@ -32,7 +33,6 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
 
 import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 public class GitClient {
 
@@ -47,65 +47,35 @@ public class GitClient {
 
 	public GitClient(String uri, String projectKey) {
 		File directory = new File(DEFAULT_DIR + projectKey);
-		setGit(directory);
 		pullOrClone(uri, directory);
-		setConfig();
 	}
 
 	public GitClient(String projectKey) {
 		File directory = new File(DEFAULT_DIR + projectKey);
 		String uri = getUriFromGitIntegrationPlugin(projectKey);
-		setGit(directory);
 		pullOrClone(uri, directory);
 	}
 
-	public void setConfig() {
-		Repository repository = this.getRepository();
-		StoredConfig config = repository.getConfig();
-		// @issue The internal representation of a file might add system dependent new
-		// line statements, for example CR LF in Windows
-		// @decision Disable system dependent new line statements
-		config.setEnum(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_AUTOCRLF, AutoCRLF.TRUE);
-		try {
-			config.save();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public Repository getRepository() {
-		if (git == null) {
-			return null;
-		}
-		return this.git.getRepository();
-	}
-
-	public File getDirectory() {
-		Repository repository = this.getRepository();
-		if (repository == null) {
-			return null;
-		}
-		return repository.getDirectory();
-	}
-
-	public void pullOrClone(String uri, File directory) {
+	private void pullOrClone(String uri, File directory) {
 		new Thread(() -> {
-			if (directory.exists() && directory.list().length > 0) {
-				this.pull();
+			if (directory.exists()) {
+				openRepository(uri, directory);
+				pull();
 			} else {
-				this.cloneRepo(uri, directory);
+				cloneRepository(uri, directory);
 			}
 		}).start();
 	}
 
-	private void setGit(File directory) {
+	private void openRepository(String uri, File directory) {
 		if (git != null) {
 			closeRepo();
 		}
-		try {
+		try {			
 			git = Git.open(directory);
 		} catch (IOException e) {
 			e.printStackTrace();
+			cloneRepository(uri, directory);
 		}
 	}
 
@@ -121,13 +91,28 @@ public class GitClient {
 		}
 	}
 
-	private void cloneRepo(String uri, File directory) {
-		if (uri == null) {
+	private void cloneRepository(String uri, File directory) {
+		if (uri == null || uri.isEmpty()) {
 			return;
 		}
 		try {
 			git = Git.cloneRepository().setURI(uri).setDirectory(directory).setCloneAllBranches(true).call();
+			setConfig();
 		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void setConfig() {
+		Repository repository = this.getRepository();
+		StoredConfig config = repository.getConfig();
+		// @issue The internal representation of a file might add system dependent new
+		// line statements, for example CR LF in Windows
+		// @decision Disable system dependent new line statements
+		config.setEnum(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_AUTOCRLF, AutoCRLF.TRUE);
+		try {
+			config.save();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -166,32 +151,54 @@ public class GitClient {
 		return commitObj;
 	}
 
-	public Map<DiffEntry, EditList> getDiff(String commits, String projectKey, boolean commitsKnown) {
-		if (projectKey == null || !ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			return null;
-		}
-		JSONObject commitObj = null;
-		try {
-			commitObj = new JSONObject(commits);
-			// cherryPickAllCommits(commitObj, git);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		RevCommit firstCommit = getFirstCommit(commitObj);
-		RevCommit lastCommit = getLastCommit(commitObj);
-		return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
+	public Map<DiffEntry, EditList> getDiff(String jiraIssueKey) {
+		JSONObject commitObj = GitClient.getCommits(jiraIssueKey);
+		return getDiff(commitObj);
 	}
 
-	public Map<DiffEntry, EditList> getDiff(String projectKey, String jiraIssueKey) {
-		if (projectKey == null || !ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
-			return null;
+	public Map<DiffEntry, EditList> getDiff(JSONObject commits) {
+		RevCommit firstCommit = getFirstCommit(commits);
+		RevCommit lastCommit = getLastCommit(commits);
+		return getDiff(firstCommit, lastCommit);
+	}
+
+	public Map<DiffEntry, EditList> getDiff(RevCommit revCommitFirst, RevCommit revCommitLast) {
+		Map<DiffEntry, EditList> diffEntriesMappedToEditLists = new HashMap<DiffEntry, EditList>();
+		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
+
+		DiffFormatter diffFormatter = getDiffFormater();
+		try {
+			RevCommit parentCommit = getParent(revCommitFirst);
+			if (parentCommit != null) {
+				diffEntries = diffFormatter.scan(parentCommit.getTree(), revCommitLast.getTree());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
-		JSONObject commitObj = GitClient.getCommits(jiraIssueKey);
-		// cherryPickAllCommits(commitObj, git);
-		RevCommit firstCommit = getFirstCommit(commitObj);
-		RevCommit lastCommit = getLastCommit(commitObj);
-		return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
+		for (DiffEntry diffEntry : diffEntries) {
+			try {
+				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
+				diffEntriesMappedToEditLists.put(diffEntry, editList);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		diffFormatter.close();
+		return diffEntriesMappedToEditLists;
+	}
+
+	public Map<DiffEntry, EditList> getDiff(RevCommit revCommit) {
+		return getDiff(revCommit, revCommit);
+	}
+
+	private DiffFormatter getDiffFormater() {
+		DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
+		Repository repository = this.getRepository();
+		diffFormatter.setRepository(repository);
+		diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
+		diffFormatter.setDetectRenames(true);
+		return diffFormatter;
 	}
 
 	private void cherryPickAllCommits(JSONObject commitObj, Git git) {
@@ -224,6 +231,21 @@ public class GitClient {
 			}
 		}
 		revWalk.close();
+	}
+
+	public Repository getRepository() {
+		if (git == null) {
+			return null;
+		}
+		return this.git.getRepository();
+	}
+
+	public File getDirectory() {
+		Repository repository = this.getRepository();
+		if (repository == null) {
+			return null;
+		}
+		return repository.getDirectory();
 	}
 
 	private RevCommit getFirstCommit(JSONObject commitObj) {
@@ -282,7 +304,7 @@ public class GitClient {
 		return lastCommit;
 	}
 
-	private RevCommit getParentOfFirstCommit(RevCommit revCommit) {
+	private RevCommit getParent(RevCommit revCommit) {
 		RevCommit parentCommit;
 		try {
 			Repository repository = this.getRepository();
@@ -290,112 +312,12 @@ public class GitClient {
 			parentCommit = revWalk.parseCommit(revCommit.getParent(0).getId());
 			revWalk.close();
 		} catch (Exception e) {
-			System.err.println("Could not get the parent commit");
+			System.err.println("Could not get the parent commit.");
 			e.printStackTrace();
 			return null;
 		}
 		return parentCommit;
 	}
-
-	private DiffFormatter getDiffFormater() {
-		DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
-		Repository repository = this.getRepository();
-		diffFormatter.setRepository(repository);
-		diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
-		diffFormatter.setDetectRenames(true);
-		return diffFormatter;
-	}
-
-	public Map<DiffEntry, EditList> getDiffEntriesMappedToEditLists(RevCommit revCommitFirst, RevCommit revCommitLast) {
-		Map<DiffEntry, EditList> diffEntriesMappedToEditLists = new HashMap<DiffEntry, EditList>();
-		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
-
-		DiffFormatter diffFormatter = getDiffFormater();
-		try {
-			RevCommit parentCommit = getParentOfFirstCommit(revCommitFirst);
-			if (parentCommit != null) {
-				diffEntries = diffFormatter.scan(parentCommit.getTree(), revCommitLast.getTree());
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		for (DiffEntry diffEntry : diffEntries) {
-			try {
-				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
-				diffEntriesMappedToEditLists.put(diffEntry, editList);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		diffFormatter.close();
-		return diffEntriesMappedToEditLists;
-	}
-
-	// public List<DiffEntry> getDiffEntries(RevCommit revCommit) {
-	// List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
-	//
-	// DiffFormatter diffFormatter = getDiffFormater(revCommit);
-	// try {
-	// RevCommit parentCommit = this.getParent(revCommit);
-	// diffEntries = diffFormatter.scan(parentCommit.getTree(),
-	// revCommit.getTree());
-	// } catch (IOException e) {
-	// e.printStackTrace();
-	// }
-	// diffFormatter.close();
-	// return diffEntries;
-	// }
-	//
-	// private DiffFormatter getDiffFormater(RevCommit revCommit) {
-	// DiffFormatter diffFormatter = new
-	// DiffFormatter(DisabledOutputStream.INSTANCE);
-	// diffFormatter.setRepository(this.repository);
-	// diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
-	// diffFormatter.setDetectRenames(true);
-	// return diffFormatter;
-	// }
-	//
-	// public RevCommit getParent(RevCommit revCommit) {
-	// RevCommit parentCommit;
-	// try {
-	// RevWalk revWalk = new RevWalk(repository);
-	// parentCommit = revWalk.parseCommit(revCommit.getParent(0).getId());
-	// revWalk.close();
-	// } catch (IOException e) {
-	// System.err.println("Could not get the parent commit for " + revCommit);
-	// e.printStackTrace();
-	// return null;
-	// }
-	// return parentCommit;
-	// }
-	//
-	// public Map<DiffEntry, EditList> getDiffEntriesMappedToEditLists(RevCommit
-	// revCommit) {
-	// Map<DiffEntry, EditList> diffEntriesMappedToEditLists = new
-	// HashMap<DiffEntry, EditList>();
-	// List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
-	//
-	// DiffFormatter diffFormatter = getDiffFormater(revCommit);
-	// try {
-	// RevCommit parentCommit = this.getParent(revCommit);
-	// diffEntries = diffFormatter.scan(parentCommit.getTree(),
-	// revCommit.getTree());
-	// } catch (IOException e) {
-	// e.printStackTrace();
-	// }
-	//
-	// for (DiffEntry diffEntry : diffEntries) {
-	// try {
-	// EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
-	// diffEntriesMappedToEditLists.put(diffEntry, editList);
-	// } catch (IOException e) {
-	// e.printStackTrace();
-	// }
-	// }
-	// diffFormatter.close();
-	// return diffEntriesMappedToEditLists;
-	// }
 
 	public void closeRepo() {
 		if (git == null) {
@@ -408,7 +330,7 @@ public class GitClient {
 	/**
 	 * Closes the repository and deletes its local files.
 	 */
-	public void closeAndDeleteRepo() {
+	public void deleteRepo() {
 		closeRepo();
 		File directory = this.getDirectory();
 		if (directory.exists()) {
