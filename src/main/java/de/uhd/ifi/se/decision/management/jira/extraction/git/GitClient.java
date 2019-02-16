@@ -7,9 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jgit.api.CherryPickCommand;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
@@ -71,7 +69,7 @@ public class GitClient {
 		if (git != null) {
 			closeRepo();
 		}
-		try {			
+		try {
 			git = Git.open(directory);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -199,38 +197,6 @@ public class GitClient {
 		diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
 		diffFormatter.setDetectRenames(true);
 		return diffFormatter;
-	}
-
-	private void cherryPickAllCommits(JSONObject commitObj, Git git) {
-		if (commitObj.isNull("commits")) {
-			return;
-		}
-		JSONArray commits = null;
-		try {
-			commits = commitObj.getJSONArray("commits");
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		if (commits == null || commits.length() == 0) {
-			return;
-		}
-
-		Repository repository = this.getRepository();
-		RevWalk revWalk = new RevWalk(repository);
-		for (int i = 0; i < commits.length(); i++) {
-			try {
-				ObjectId id = repository.resolve(commits.getJSONObject(i).getString("commitId"));
-				RevCommit commit = revWalk.parseCommit(id);
-				CherryPickCommand cherryPick = git.cherryPick();
-				cherryPick.setMainlineParentNumber(1);
-				cherryPick.include(commit);
-				cherryPick.setNoCommit(true);
-				cherryPick.call();
-			} catch (RevisionSyntaxException | IOException | JSONException | GitAPIException e) {
-				e.printStackTrace();
-			}
-		}
-		revWalk.close();
 	}
 
 	public Repository getRepository() {
