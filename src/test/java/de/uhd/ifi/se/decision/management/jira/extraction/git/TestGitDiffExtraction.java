@@ -29,7 +29,7 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 	public void getNoDiffsForNoCommits() throws IOException, GitAPIException, JSONException, InterruptedException {
 		String commits = "{" + "\"commits\":[" + "" + "]" + "}";
 		GitClient gitClient = new GitClient(projectKey);
-		Map<DiffEntry, EditList> gitDiffs = gitClient.getGitDiff(commits, projectKey, true);
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getDiff(commits, projectKey, true);
 		assertTrue(gitDiffs == null);
 	}
 
@@ -58,7 +58,7 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 		}
 		commits = commits + "]" + "}";
 		GitClient gitClient = new GitClient(projectKey);
-		Map<DiffEntry, EditList> gitDiffs = gitClient.getGitDiff(commits, projectKey, true);
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getDiff(commits, projectKey, true);
 		assertEquals(gitDiffs.size(), 1);
 	}
 
@@ -89,7 +89,7 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 		}
 		commits = commits + "]" + "}";
 		GitClient gitClient = new GitClient(projectKey);
-		Map<DiffEntry, EditList> gitDiffs = gitClient.getGitDiff(commits, projectKey, true);
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getDiff(commits, projectKey, true);
 		assertEquals(gitDiffs.size(), 10);
 	}
 
@@ -118,7 +118,7 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 		}
 		commits = commits + "]" + "}";
 		GitClient gitClient = new GitClient(projectKey);
-		Map<DiffEntry, EditList> gitDiffs = gitClient.getGitDiff(commits, projectKey, true);
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getDiff(commits, projectKey, true);
 		assertEquals(gitDiffs.size(), 1);
 	}
 
@@ -149,7 +149,7 @@ public class TestGitDiffExtraction extends TestSetUpGit {
 		}
 		commits = commits + "]" + "}";
 		GitClient gitClient = new GitClient(projectKey);
-		Map<DiffEntry, EditList> gitDiffs = gitClient.getGitDiff(commits, projectKey, true);
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getDiff(commits, projectKey, true);
 		assertEquals(gitDiffs.size(), 10);
 	}
 

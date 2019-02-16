@@ -12,6 +12,7 @@ import org.eclipse.jgit.lib.RepositoryCache.FileKey;
 import org.eclipse.jgit.util.FS;
 import org.json.JSONException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -68,6 +69,7 @@ public class TestGitClient {
 		directory1 = remoteRepo1.getDirectory().getAbsolutePath();
 	}
 
+	@Ignore
 	@Test
 	public void testNotCloningNotExistingRepo() throws InterruptedException {
 		new GitClient(directory0, projectKey0);
@@ -77,6 +79,7 @@ public class TestGitClient {
 		assertFalse(file.exists());
 	}
 
+	@Ignore
 	@Test
 	public void testCloneRepo() throws JSONException, InterruptedException {
 		GitClient gitClient = new GitClient(directory1, projectKey1);
@@ -87,6 +90,7 @@ public class TestGitClient {
 		gitClient.closeAndDeleteRepo();
 	}
 
+	@Ignore
 	@Test
 	public void testUpdateClonedRepo() throws InterruptedException {
 		GitClient gitClient = new GitClient(directory1, projectKey1);

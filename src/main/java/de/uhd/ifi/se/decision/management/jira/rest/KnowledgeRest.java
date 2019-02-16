@@ -350,7 +350,7 @@ public class KnowledgeRest {
 		String queryResult = "";
 		try {
 			GitClient gitClient = new GitClient(projectKey);
-			Map<DiffEntry, EditList> diff = gitClient.getCodeDiff(projectKey, jiraIssueKey);
+			Map<DiffEntry, EditList> diff = gitClient.getDiff(projectKey, jiraIssueKey);
 			if (diff == null) {
 				queryResult = "This JIRA issue does not have any code committed.";
 			} else {

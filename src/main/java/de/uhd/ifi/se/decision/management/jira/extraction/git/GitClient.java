@@ -22,7 +22,6 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.json.JSONArray;
@@ -44,87 +43,70 @@ public class GitClient {
 	public static final String DEFAULT_DIR = System.getProperty("user.home") + File.separator + "repository"
 			+ File.separator;
 
-	private static final String BASEURL = ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL);
-
-	private String uri;
 	private Git git;
-	private File directory;
-	private Repository repository;
 
 	public GitClient(String uri, String projectKey) {
-		this.directory = new File(DEFAULT_DIR + projectKey);
-		this.uri = uri;
-		pullOrClone();
-		this.setRepository(DEFAULT_DIR + projectKey);
+		File directory = new File(DEFAULT_DIR + projectKey);
+		setGit(directory);
+		pullOrClone(uri, directory);
+		setConfig();
 	}
 
 	public GitClient(String projectKey) {
-		this.directory = new File(DEFAULT_DIR + projectKey);
-		this.uri = getUriFromGitIntegrationPlugin(projectKey);
-		pullOrClone();
-		this.setRepository(DEFAULT_DIR + projectKey);
+		File directory = new File(DEFAULT_DIR + projectKey);
+		String uri = getUriFromGitIntegrationPlugin(projectKey);
+		setGit(directory);
+		pullOrClone(uri, directory);
 	}
 
-	public void setRepository(String repositoryPath) {
-		FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
-		repositoryBuilder.setMustExist(true);
-		repositoryBuilder.setGitDir(new File(repositoryPath + File.separator + ".git"));
+	public void setConfig() {
+		Repository repository = this.getRepository();
+		StoredConfig config = repository.getConfig();
+		// @issue The internal representation of a file might add system dependent new
+		// line statements, for example CR LF in Windows
+		// @decision Disable system dependent new line statements
+		config.setEnum(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_AUTOCRLF, AutoCRLF.TRUE);
 		try {
-			this.repository = repositoryBuilder.build();
-			// this.repository.resolve(reference);
-			StoredConfig config = this.repository.getConfig();
-			// @issue The internal representation of a file might add system dependent new
-			// line statements, for example CR LF in Windows
-			// @decision Disable system dependent new line statements
-			config.setEnum(ConfigConstants.CONFIG_CORE_SECTION, null, ConfigConstants.CONFIG_KEY_AUTOCRLF,
-					AutoCRLF.TRUE);
 			config.save();
 		} catch (IOException e) {
-			System.err.println("Repository could not be found.");
 			e.printStackTrace();
 		}
 	}
 
-	public void pullOrClone() {
+	public Repository getRepository() {
+		if (git == null) {
+			return null;
+		}
+		return this.git.getRepository();
+	}
+
+	public File getDirectory() {
+		Repository repository = this.getRepository();
+		if (repository == null) {
+			return null;
+		}
+		return repository.getDirectory();
+	}
+
+	public void pullOrClone(String uri, File directory) {
 		new Thread(() -> {
-			if (existingRepository()) {
+			if (directory.exists() && directory.list().length > 0) {
 				this.pull();
 			} else {
-				this.cloneRepo();
+				this.cloneRepo(uri, directory);
 			}
 		}).start();
 	}
 
-	private boolean existingRepository() {
-		if (directory.exists() && directory.list().length > 0) {
-			if (git != null) {
-				closeRepo();
-			}
-			try {
-				git = Git.open(directory);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return checkExistingRepository();
-	}
-
-	/**
-	 * check whether the current directory is a git repository.
-	 * 
-	 * @return true if the directory is a git repository, false otherwise.
-	 */
-	private boolean checkExistingRepository() {
-		boolean isExistent = false;
-		if (git == null) {
-			return false;
+	private void setGit(File directory) {
+		if (git != null) {
+			closeRepo();
 		}
 		try {
-			isExistent = git.getRepository().exactRef("HEAD") != null;
+			git = Git.open(directory);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return isExistent;
 	}
 
 	private void pull() {
@@ -139,7 +121,7 @@ public class GitClient {
 		}
 	}
 
-	private void cloneRepo() {
+	private void cloneRepo(String uri, File directory) {
 		if (uri == null) {
 			return;
 		}
@@ -152,8 +134,10 @@ public class GitClient {
 
 	private String getUriFromGitIntegrationPlugin(String projectKey) {
 		OAuthManager oAuthManager = new OAuthManager();
+		String baseUrl = ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL);
+
 		String repository = oAuthManager
-				.startRequest(BASEURL + "/rest/gitplugin/latest/repository?projectKey=" + projectKey);
+				.startRequest(baseUrl + "/rest/gitplugin/latest/repository?projectKey=" + projectKey);
 
 		String uri = null;
 		try {
@@ -170,7 +154,9 @@ public class GitClient {
 
 	public static JSONObject getCommits(String issueKey) {
 		OAuthManager oAuthManager = new OAuthManager();
-		String commits = oAuthManager.startRequest(BASEURL + "/rest/gitplugin/latest/issues/" + issueKey + "/commits");
+		String baseUrl = ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL);
+
+		String commits = oAuthManager.startRequest(baseUrl + "/rest/gitplugin/latest/issues/" + issueKey + "/commits");
 		JSONObject commitObj = null;
 		try {
 			commitObj = new JSONObject(commits);
@@ -180,7 +166,7 @@ public class GitClient {
 		return commitObj;
 	}
 
-	public Map<DiffEntry, EditList> getGitDiff(String commits, String projectKey, boolean commitsKnown) {
+	public Map<DiffEntry, EditList> getDiff(String commits, String projectKey, boolean commitsKnown) {
 		if (projectKey == null || !ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
 			return null;
 		}
@@ -196,7 +182,7 @@ public class GitClient {
 		return getDiffEntriesMappedToEditLists(firstCommit, lastCommit);
 	}
 
-	public Map<DiffEntry, EditList> getCodeDiff(String projectKey, String jiraIssueKey) {
+	public Map<DiffEntry, EditList> getDiff(String projectKey, String jiraIssueKey) {
 		if (projectKey == null || !ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
 			return null;
 		}
@@ -222,6 +208,7 @@ public class GitClient {
 			return;
 		}
 
+		Repository repository = this.getRepository();
 		RevWalk revWalk = new RevWalk(repository);
 		for (int i = 0; i < commits.length(); i++) {
 			try {
@@ -254,6 +241,7 @@ public class GitClient {
 		}
 
 		RevCommit firstCommit = null;
+		Repository repository = this.getRepository();
 		RevWalk revWalk = new RevWalk(repository);
 		try {
 			ObjectId id = repository.resolve(commits.getJSONObject(commits.length() - 1).getString("commitId"));
@@ -281,6 +269,7 @@ public class GitClient {
 		}
 
 		RevCommit lastCommit = null;
+		Repository repository = this.getRepository();
 		RevWalk revWalk = new RevWalk(repository);
 		ObjectId id;
 		try {
@@ -296,6 +285,7 @@ public class GitClient {
 	private RevCommit getParentOfFirstCommit(RevCommit revCommit) {
 		RevCommit parentCommit;
 		try {
+			Repository repository = this.getRepository();
 			RevWalk revWalk = new RevWalk(repository);
 			parentCommit = revWalk.parseCommit(revCommit.getParent(0).getId());
 			revWalk.close();
@@ -309,6 +299,7 @@ public class GitClient {
 
 	private DiffFormatter getDiffFormater() {
 		DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
+		Repository repository = this.getRepository();
 		diffFormatter.setRepository(repository);
 		diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
 		diffFormatter.setDetectRenames(true);
@@ -419,6 +410,7 @@ public class GitClient {
 	 */
 	public void closeAndDeleteRepo() {
 		closeRepo();
+		File directory = this.getDirectory();
 		if (directory.exists()) {
 			deleteFolder(directory);
 		}
