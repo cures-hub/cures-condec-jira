@@ -1,9 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.git;
 
-import java.io.IOException;
 import java.util.Map;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
 import org.ofbiz.core.entity.GenericValue;
@@ -75,13 +73,9 @@ public class TaskCodeSummarizationEventListener implements InitializingBean, Dis
 
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueKey);
 		String summarization = "";
-		try {
-			GitClient gitClient = new GitClientImpl(projectKey);
-			Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssueKey);
-			summarization = TaskCodeSummarizer.summarizer(diff, projectKey, false);
-		} catch (IOException | GitAPIException e) {
-			e.printStackTrace();
-		}
+		GitClient gitClient = new GitClientImpl(projectKey);
+		Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssueKey);
+		summarization = TaskCodeSummarizer.summarizer(diff, projectKey, false);
 
 		if (summarization.isEmpty()) {
 			return;

@@ -7,14 +7,8 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.CheckoutConflictException;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
-import org.eclipse.jgit.lib.Repository;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseProblemException;
@@ -27,11 +21,8 @@ public class TaskCodeSummarizer {
 
 	private static String className;
 
-	public static String summarizer(Map<DiffEntry, EditList> diff, String projectKey, boolean isDialog)
-			throws IOException, CheckoutConflictException, GitAPIException {
+	public static String summarizer(Map<DiffEntry, EditList> diff, String projectKey, boolean isDialog) {
 		File directory = new File(GitClient.DEFAULT_DIR + projectKey);
-		Git git = Git.open(directory);
-		Repository repository = git.getRepository();
 		String methodsToString = "";
 		if (diff == null) {
 			return "";
@@ -48,9 +39,7 @@ public class TaskCodeSummarizer {
 				continue;
 			}
 
-			IPath filePath = new Path(repository.getDirectory().toPath().toString()).removeLastSegments(1)
-					.append(newPath);
-			File file = filePath.toFile();
+			File file = new File(directory + File.separator + newPath);
 
 			if (!file.isFile()) {
 				continue;
@@ -61,10 +50,10 @@ public class TaskCodeSummarizer {
 			FileInputStream fileInputStream;
 			CompilationUnit compilationUnit = null;
 			try {
-				fileInputStream = new FileInputStream(filePath.toString());
+				fileInputStream = new FileInputStream(file.toString());
 				compilationUnit = JavaParser.parse(fileInputStream); // produces real readable code
 				fileInputStream.close();
-			} catch (ParseProblemException e) {
+			} catch (ParseProblemException | IOException e) {
 				continue;
 			}
 			className = "";
