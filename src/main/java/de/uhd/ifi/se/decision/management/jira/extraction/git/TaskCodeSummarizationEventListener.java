@@ -75,7 +75,7 @@ public class TaskCodeSummarizationEventListener implements InitializingBean, Dis
 		String summarization = "";
 		GitClient gitClient = new GitClientImpl(projectKey);
 		Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssueKey);
-		summarization = TaskCodeSummarizer.summarizer(diff, projectKey, false);
+		summarization = new TaskCodeSummarizer(gitClient, false).createSummary(diff);
 
 		if (summarization.isEmpty()) {
 			return;

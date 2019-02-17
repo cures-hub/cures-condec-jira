@@ -352,7 +352,7 @@ public class KnowledgeRest {
 		if (diff == null) {
 			queryResult = "This JIRA issue does not have any code committed.";
 		} else {
-			queryResult = TaskCodeSummarizer.summarizer(diff, projectKey, true);
+			queryResult = new TaskCodeSummarizer(gitClient, true).createSummary(diff);
 		}
 
 		return Response.ok(queryResult).build();

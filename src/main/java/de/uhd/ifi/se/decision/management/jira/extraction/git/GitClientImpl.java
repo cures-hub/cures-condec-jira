@@ -15,19 +15,14 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawTextComparator;
-import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
-import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -197,62 +192,6 @@ public class GitClientImpl implements GitClient {
 			return null;
 		}
 		return repository.getDirectory();
-	}
-
-	private RevCommit getFirstCommit(JSONObject commitObj) {
-		if (commitObj == null || commitObj.isNull("commits")) {
-			return null;
-		}
-		JSONArray commits = null;
-		try {
-			commits = commitObj.getJSONArray("commits");
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		if (commits == null || commits.length() == 0) {
-			return null;
-		}
-
-		RevCommit firstCommit = null;
-		Repository repository = this.getRepository();
-		RevWalk revWalk = new RevWalk(repository);
-		try {
-			ObjectId id = repository.resolve(commits.getJSONObject(commits.length() - 1).getString("commitId"));
-			firstCommit = revWalk.parseCommit(id);
-		} catch (RevisionSyntaxException | IOException | JSONException e) {
-			e.printStackTrace();
-		}
-		revWalk.close();
-		return firstCommit;
-	}
-
-	private RevCommit getLastCommit(JSONObject commitObj) {
-		if (commitObj == null || commitObj.isNull("commits")) {
-			return null;
-		}
-		JSONArray commits = null;
-		try {
-			commits = commitObj.getJSONArray("commits");
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-
-		if (commits == null || commits.length() == 0) {
-			return null;
-		}
-
-		RevCommit lastCommit = null;
-		Repository repository = this.getRepository();
-		RevWalk revWalk = new RevWalk(repository);
-		ObjectId id;
-		try {
-			id = repository.resolve(commits.getJSONObject(0).getString("commitId"));
-			lastCommit = revWalk.parseCommit(id);
-		} catch (RevisionSyntaxException | IOException | JSONException e) {
-			e.printStackTrace();
-		}
-		revWalk.close();
-		return lastCommit;
 	}
 
 	private RevCommit getParent(RevCommit revCommit) {
