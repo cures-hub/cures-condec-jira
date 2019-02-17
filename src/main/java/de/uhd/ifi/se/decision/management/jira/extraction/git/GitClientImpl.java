@@ -26,6 +26,8 @@ import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+
 /**
  * @issue How to access commits related to a JIRA issue?
  * @decision Only use jGit.
@@ -46,7 +48,7 @@ public class GitClientImpl implements GitClient {
 
 	public GitClientImpl(String projectKey) {
 		File directory = new File(DEFAULT_DIR + projectKey);
-		String uri = GitClient.getUriFromGitIntegrationPlugin(projectKey);
+		String uri = ConfigPersistenceManager.getGitUri(projectKey);
 		pullOrClone(uri, directory);
 	}
 

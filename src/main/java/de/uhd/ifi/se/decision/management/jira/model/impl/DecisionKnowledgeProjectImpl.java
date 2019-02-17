@@ -97,6 +97,11 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	}
 
 	@Override
+	public String getGitUri() {
+		return ConfigPersistenceManager.getGitUri(projectKey);
+	}
+
+	@Override
 	public boolean isKnowledgeExtractedFromIssues() {
 		return ConfigPersistenceManager.isKnowledgeExtractedFromIssues(projectKey);
 	}
@@ -139,7 +144,6 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	public boolean isWebhookTypeEnabled(String issueType) {
 		return ConfigPersistenceManager.isWebhookTypeEnabled(projectKey, issueType);
 	}
-
 
 	@Override
 	public boolean isIconParsingEnabled() {

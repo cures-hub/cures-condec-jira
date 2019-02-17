@@ -378,6 +378,18 @@
 	};
 
 	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setGitUri = function setGitUri(projectKey, gitUri) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setGitUri.json?projectKey=" + projectKey
+				+ "&gitUri=" + gitUri, null, function(error, response) {
+			if (error === null) {
+				showFlag("success", "The git URI  " + gitUri + " for this project has been set.");
+			}
+		});
+	};
+
+	/*
 	 * external references: settingsForSingleProject.vm,
 	 * settingsForAllProjects.vm
 	 */

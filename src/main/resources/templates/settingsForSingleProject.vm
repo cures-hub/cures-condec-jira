@@ -57,13 +57,13 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 	}
 	</script>
 
-<h2>Decision Knowledge Extraction from Issue Comments</h2>
+<h2>Decision Knowledge Extraction from JIRA Issue Comments</h2>
 	<div class="field-group">
-		<label for="isKnowledgeExtractedFromIssues-toggle">Extract from Issue Comments?</label>
+		<label for="isKnowledgeExtractedFromIssues-toggle">Extract from JIRA Issue Comments?</label>
 		<aui-toggle id="isKnowledgeExtractedFromIssues-toggle"
 			value="$projectKey" label="Extract from	Issue Comments?"></aui-toggle>
 		<div class="description">Enables or disables whether decision
-			knowledge is extracted from issue comments for this project.
+			knowledge is extracted from JIRA issue comments for this project.
 		</div>
 	</div>
 	<div class="field-group">
@@ -119,12 +119,18 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		<aui-toggle id="isKnowledgeExtractedFromGit-toggle"
 			value="$projectKey" label="Extract from	Git?"></aui-toggle>
 		<div class="description">Enables or disables whether decision
-			knowledge is extracted from Git for this project. You need to install the 
-			<a href="https://bigbrassband.com/" target="_blank">
-				Git Integration for JIRA plugin
-			</a> when enabled.
+			knowledge is extracted from git for this project. 
 		</div>
 	</div>
+    <div class="field-group">
+    	<label for="git-uri-input-field">Git Repository</label> 
+    	<input id="git-uri-input-field" type="text" class="text long-field"
+        		value="$project.getGitUri()" placeholder="https://github.com/cures-hub/cures-condec-jira.git" /> 
+    	<input type="button"
+    		id="git-uri-button" class="aui-button aui-button-primary" value="Save Address" />
+        <div class="description">Uniform resource identifier of the git repository that will be cloned.
+        </div>
+    </div>
 
 <h2>Webhook</h2>
 	<div class="field-group">
@@ -212,6 +218,13 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 	} else {
 		gitToggle.checked = false;
 	};
+	
+	var gitSubmitButton = document.getElementById('git-uri-button');
+	gitSubmitButton.addEventListener("click", function() {
+		var gitUri = document.getElementById('git-uri-input-field').value;
+		conDecAPI.setGitUri('$projectKey', gitUri);
+		window.onbeforeunload = null;
+	});
 	
 	var webhookToggle = document.getElementById('isWebhookEnabled-toggle');
 	if ($project.isWebhookEnabled() == true) {

@@ -178,6 +178,16 @@ public class ConfigPersistenceManager {
 		}
 	}
 
+	// TODO Testing
+	public static void setGitUri(String projectKey, String gitUri) {
+		setValue(projectKey, "gitUri", gitUri);
+	}
+
+	// TODO Testing
+	public static String getGitUri(String projectKey) {
+		return getValue(projectKey, "gitUri");
+	}
+
 	public static void setKnowledgeExtractedFromIssues(String projectKey, boolean isKnowledgeExtractedFromIssues) {
 		setValue(projectKey, "isKnowledgeExtractedFromIssues", Boolean.toString(isKnowledgeExtractedFromIssues));
 	}
