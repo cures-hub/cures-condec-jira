@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.git;
+package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import org.ofbiz.core.entity.GenericValue;
 import org.springframework.beans.factory.DisposableBean;
@@ -17,6 +17,7 @@ import com.atlassian.jira.issue.changehistory.ChangeHistoryManager;
 import com.atlassian.jira.issue.history.ChangeItemBean;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**

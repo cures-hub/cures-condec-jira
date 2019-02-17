@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.classification;
+package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,8 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitterImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.CommentSplitterImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.DecisionKnowledgeClassifierImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;

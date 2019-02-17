@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.metrics;
+package de.uhd.ifi.se.decision.management.jira.quality;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,8 +21,8 @@ import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
-import de.uhd.ifi.se.decision.management.jira.extraction.git.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.git.GitClientImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;

@@ -15,7 +15,7 @@ import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationManagerForJiraIssueComments;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.CommentSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 

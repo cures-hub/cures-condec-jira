@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.classification;
+package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.extraction.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import meka.classifiers.multilabel.LC;
 import weka.classifiers.meta.FilteredClassifier;

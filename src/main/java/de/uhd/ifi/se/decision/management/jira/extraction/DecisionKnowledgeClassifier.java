@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.classification;
+package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import java.util.List;
 

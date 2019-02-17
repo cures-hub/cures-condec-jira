@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.git;
+package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,6 +18,9 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
+
+import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 
 public class CodeSummarizerImpl implements CodeSummarizer {
 
