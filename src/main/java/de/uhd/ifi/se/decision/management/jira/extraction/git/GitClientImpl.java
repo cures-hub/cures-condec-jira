@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,18 +28,20 @@ import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @issue How to access commits related to a JIRA issue?
- * @decision Both, the jgit library and the git integration for JIRA plugin are
- *           used to access git repositories.
- * @alternative Only use jgit.
+ * @decision Only use jGit.
  * @pro The jGit library is open source.
- * @con More work: We would need to write the getCommit for JIRA issues
- *      ourselves and store the repository URI.
+ * @alternative Both, the jgit library and the git integration for JIRA plugin
+ *              were used to access git repositories.
+ * @con An application link and oAuth is needed to call REST API on Java side.
  */
 public class GitClientImpl implements GitClient {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(GitClientImpl.class);
 	private Git git;
 
 	public GitClientImpl(String uri, String projectKey) {
@@ -52,14 +56,16 @@ public class GitClientImpl implements GitClient {
 	}
 
 	private void pullOrClone(String uri, File directory) {
-		new Thread(() -> {
-			if (directory.exists()) {
-				openRepository(uri, directory);
+		if (directory.exists()) {
+			openRepository(uri, directory);
+			new Thread(() -> {
 				pull();
-			} else {
+			}).start();
+		} else {
+			new Thread(() -> {
 				cloneRepository(uri, directory);
-			}
-		}).start();
+			}).start();
+		}
 	}
 
 	private void openRepository(String uri, File directory) {
@@ -70,6 +76,7 @@ public class GitClientImpl implements GitClient {
 			git = Git.open(directory);
 		} catch (IOException e) {
 			e.printStackTrace();
+			LOGGER.error("Git repository could not be opened.");
 			cloneRepository(uri, directory);
 		}
 	}
@@ -113,16 +120,22 @@ public class GitClientImpl implements GitClient {
 	}
 
 	@Override
-	public Map<DiffEntry, EditList> getDiff(String jiraIssueKey) {
-		JSONObject commitObj = GitClient.getCommits(jiraIssueKey);
-		return getDiff(commitObj);
+	public Map<DiffEntry, EditList> getDiff(List<RevCommit> commits) {
+		if (commits == null || commits.size() == 0) {
+			return null;
+		}
+		// TODO Check if this is always correct
+		RevCommit firstCommit = commits.get(commits.size() - 1);
+		System.out.println(firstCommit.getShortMessage());
+		RevCommit lastCommit = commits.get(0);
+		System.out.println(lastCommit.getShortMessage());
+		return getDiff(firstCommit, lastCommit);
 	}
 
 	@Override
-	public Map<DiffEntry, EditList> getDiff(JSONObject commits) {
-		RevCommit firstCommit = getFirstCommit(commits);
-		RevCommit lastCommit = getLastCommit(commits);
-		return getDiff(firstCommit, lastCommit);
+	public Map<DiffEntry, EditList> getDiff(String jiraIssueKey) {
+		List<RevCommit> commits = getCommits(jiraIssueKey);
+		return getDiff(commits);
 	}
 
 	@Override
@@ -285,5 +298,30 @@ public class GitClientImpl implements GitClient {
 			}
 		}
 		directory.delete();
+	}
+
+	@Override
+	public List<RevCommit> getCommits(String jiraIssueKey) {
+		List<RevCommit> commitsForJiraIssue = new LinkedList<RevCommit>();
+		if (git == null) {
+			LOGGER.error("Commits cannot be retrieved since git object is null.");
+			return commitsForJiraIssue;
+		}
+		try {
+			Iterable<RevCommit> iterable = git.log().call();
+			Iterator<RevCommit> iterator = iterable.iterator();
+			while (iterator.hasNext()) {
+				RevCommit commit = iterator.next();
+				// TODO Improve identification of jira issue key in commit message
+				if (GitClient.getJiraIssueKey(commit.getFullMessage()).equalsIgnoreCase(jiraIssueKey)) {
+					commitsForJiraIssue.add(commit);
+					LOGGER.info("Commit message for key " + jiraIssueKey + ": " + commit.getShortMessage());
+				}
+			}
+		} catch (GitAPIException e) {
+			LOGGER.error("Could not retrieve commits for the JIRA issue key " + jiraIssueKey);
+			e.printStackTrace();
+		}
+		return commitsForJiraIssue;
 	}
 }

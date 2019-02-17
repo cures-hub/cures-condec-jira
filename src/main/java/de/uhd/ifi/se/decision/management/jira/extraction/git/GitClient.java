@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.git;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jgit.diff.DiffEntry;
@@ -29,6 +30,16 @@ public interface GitClient {
 	String DEFAULT_DIR = System.getProperty("user.home") + File.separator + "repository" + File.separator;
 
 	/**
+	 * Retrieves the commits with the JIRA issue key in their commit message.
+	 * 
+	 * @param jiraIssueKey
+	 *            JIRA issue key that is searched for in commit messages.
+	 * @return commits with the issue key in their commit message as a list of
+	 *         RevCommits.
+	 */
+	List<RevCommit> getCommits(String jiraIssueKey);
+
+	/**
 	 * Get a map of diff entries and the respective edit lists for a commit.
 	 * 
 	 * @param revCommit
@@ -46,8 +57,8 @@ public interface GitClient {
 	 * @return map of diff entries and respective edit lists
 	 */
 	Map<DiffEntry, EditList> getDiff(String jiraIssueKey);
-
-	Map<DiffEntry, EditList> getDiff(JSONObject commits);
+	
+	Map<DiffEntry, EditList> getDiff(List<RevCommit> commits);
 
 	Map<DiffEntry, EditList> getDiff(RevCommit revCommitFirst, RevCommit revCommitLast);
 
@@ -76,6 +87,23 @@ public interface GitClient {
 	void deleteRepo();
 
 	/**
+	 * Retrieves the JIRA issue key from a commit message
+	 * 
+	 * @param commitMessage
+	 *            a commit message that should contain an issue key
+	 * @return extracted JIRA issue key
+	 */
+	// TODO This is a very simple method to detect the issue key and should be improved.
+	static String getJiraIssueKey(String commitMessage) {
+		if (commitMessage.contains(" ")) {
+			String[] split = commitMessage.split("[:+ ]");
+			return split[0];
+		} else {
+			return "";
+		}
+	}
+
+	/**
 	 * Provides the uniform resource identifier of the git repository associated
 	 * with the JIRA project.
 	 * 
@@ -101,27 +129,5 @@ public interface GitClient {
 		}
 
 		return uri;
-	}
-
-	/**
-	 * Retrieves the commits with the JIRA issue key in their commit message.
-	 * 
-	 * @param jiraIssueKey
-	 *            JIRA issue key that is searched for in commit messages.
-	 * @return commits with the issue key in their commit message as a JSONObject.
-	 */
-	static JSONObject getCommits(String jiraIssueKey) {
-		OAuthManager oAuthManager = new OAuthManager();
-		String baseUrl = ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL);
-		String url = "/rest/gitplugin/latest/issues/" + jiraIssueKey + "/commits";
-		String commits = oAuthManager.startRequest(baseUrl + url);
-		// String commits = ApplicationLinkService.startRequest(url);
-		JSONObject commitObj = null;
-		try {
-			commitObj = new JSONObject(commits);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return commitObj;
 	}
 }
