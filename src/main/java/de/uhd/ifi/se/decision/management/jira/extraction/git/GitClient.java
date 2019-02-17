@@ -1,19 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.git;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.properties.APKeys;
-
-import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
 
 /**
  * Class to connect to commits and code in git.
@@ -27,6 +21,16 @@ public interface GitClient {
 	 * @alternative APKeys.JIRA_PATH_INSTALLED_PLUGINS
 	 */
 	String DEFAULT_DIR = System.getProperty("user.home") + File.separator + "repository" + File.separator;
+
+	/**
+	 * Retrieves the commits with the JIRA issue key in their commit message.
+	 * 
+	 * @param jiraIssueKey
+	 *            JIRA issue key that is searched for in commit messages.
+	 * @return commits with the issue key in their commit message as a list of
+	 *         RevCommits.
+	 */
+	List<RevCommit> getCommits(String jiraIssueKey);
 
 	/**
 	 * Get a map of diff entries and the respective edit lists for a commit.
@@ -47,7 +51,7 @@ public interface GitClient {
 	 */
 	Map<DiffEntry, EditList> getDiff(String jiraIssueKey);
 
-	Map<DiffEntry, EditList> getDiff(JSONObject commits);
+	Map<DiffEntry, EditList> getDiff(List<RevCommit> commits);
 
 	Map<DiffEntry, EditList> getDiff(RevCommit revCommitFirst, RevCommit revCommitLast);
 
@@ -76,52 +80,22 @@ public interface GitClient {
 	void deleteRepo();
 
 	/**
-	 * Provides the uniform resource identifier of the git repository associated
-	 * with the JIRA project.
+	 * Retrieves the JIRA issue key from a commit message
 	 * 
-	 * @param projectKey
-	 *            JIRA project key.
-	 * @return uniform resource identifier of the git repository associated with the
-	 *         JIRA project.
-	 */
-	static String getUriFromGitIntegrationPlugin(String projectKey) {
-		OAuthManager oAuthManager = new OAuthManager();
-		String baseUrl = ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL);
-		String url = "/rest/gitplugin/latest/repository?projectKey=" + projectKey;
-		// String repository = ApplicationLinkService.startRequest(url);
-		String repository = oAuthManager.startRequest(baseUrl + url);
-		String uri = null;
-		try {
-			JSONObject jsonObject = new JSONObject(repository);
-			if (!jsonObject.isNull("repositories")) {
-				uri = jsonObject.getJSONArray("repositories").getJSONObject(0).getString("origin");
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-
-		return uri;
-	}
-
-	/**
-	 * Retrieves the commits with the JIRA issue key in their commit message.
+	 * @param commitMessage
+	 *            a commit message that should contain an issue key
+	 * @return extracted JIRA issue key
 	 * 
-	 * @param jiraIssueKey
-	 *            JIRA issue key that is searched for in commit messages.
-	 * @return commits with the issue key in their commit message as a JSONObject.
+	 * @issue How to identify the JIRA issue key(s) in a commit message?
+	 * @alternative This is a very simple method to detect the JIRA issue key as the
+	 *              first word in the message and should be improved.
 	 */
-	static JSONObject getCommits(String jiraIssueKey) {
-		OAuthManager oAuthManager = new OAuthManager();
-		String baseUrl = ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL);
-		String url = "/rest/gitplugin/latest/issues/" + jiraIssueKey + "/commits";
-		String commits = oAuthManager.startRequest(baseUrl + url);
-		// String commits = ApplicationLinkService.startRequest(url);
-		JSONObject commitObj = null;
-		try {
-			commitObj = new JSONObject(commits);
-		} catch (JSONException e) {
-			e.printStackTrace();
+	static String getJiraIssueKey(String commitMessage) {
+		if (commitMessage.contains(" ")) {
+			String[] split = commitMessage.split("[:+ ]");
+			return split[0];
+		} else {
+			return "";
 		}
-		return commitObj;
 	}
 }

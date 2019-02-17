@@ -6,7 +6,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
-import com.atlassian.applinks.api.ApplicationLinkService;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.ProjectService;
@@ -42,14 +41,11 @@ public class ComponentGetter {
 	private static TemplateRenderer templateRenderer;
 	@ComponentImport
 	private static ActiveObjects activeObjects;
-	@ComponentImport
-	private static ApplicationLinkService applicationLinkService;
 
 	@Inject
 	public ComponentGetter(PluginSettingsFactory pluginSettingsFactory, TransactionTemplate transactionTemplate,
 			IssueService issueService, ProjectService projectService, SearchService searchService,
-			UserManager userManager, TemplateRenderer templateRenderer, ActiveObjects activeObjects,
-			ApplicationLinkService applicationLinkService) {
+			UserManager userManager, TemplateRenderer templateRenderer, ActiveObjects activeObjects) {
 		setPluginSettingsFactory(pluginSettingsFactory);
 		setTransactionTemplate(transactionTemplate);
 		setIssueService(issueService);
@@ -58,7 +54,6 @@ public class ComponentGetter {
 		setUserManager(userManager);
 		setTemplateRenderer(templateRenderer);
 		setActiveObjects(activeObjects);
-		setApplicationLinkService(applicationLinkService);
 	}
 
 	public static PluginSettingsFactory getPluginSettingsFactory() {
@@ -123,14 +118,6 @@ public class ComponentGetter {
 
 	public static void setActiveObjects(ActiveObjects activeObjects) {
 		ComponentGetter.activeObjects = checkNotNull(activeObjects);
-	}
-
-	public static ApplicationLinkService getApplicationLinkService() {
-		return applicationLinkService;
-	}
-
-	public static void setApplicationLinkService(ApplicationLinkService applicationLinkService) {
-		ComponentGetter.applicationLinkService = applicationLinkService;
 	}
 
 	public static String getPluginStorageKey() {

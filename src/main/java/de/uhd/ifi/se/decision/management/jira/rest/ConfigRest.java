@@ -29,7 +29,6 @@ import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
@@ -133,6 +132,26 @@ public class ConfigRest {
 		try {
 			ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey,
 					Boolean.valueOf(isKnowledgeExtractedFromGit));
+			return Response.ok(Status.ACCEPTED).build();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
+	}
+
+	@Path("/setGitUri")
+	@POST
+	public Response setGitUri(@Context HttpServletRequest request, @QueryParam("projectKey") final String projectKey,
+			@QueryParam("gitUri") final String gitUri) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if (gitUri == null) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "gitUri = null")).build();
+		}
+		try {
+			ConfigPersistenceManager.setGitUri(projectKey, gitUri);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -393,59 +412,6 @@ public class ConfigRest {
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
-		}
-	}
-
-	@Path("/getRequestToken")
-	@GET
-	public Response getRequestToken(@QueryParam("projectKey") String projectKey, @QueryParam("baseURL") String baseURL,
-			@QueryParam("privateKey") String privateKeyWithWhitespaces, @QueryParam("consumerKey") String consumerKey) {
-		if (baseURL != null && privateKeyWithWhitespaces != null && consumerKey != null) {
-			String privateKey = privateKeyWithWhitespaces.replaceAll(" ", "+");
-			ConfigPersistenceManager.setOauthJiraHome(baseURL);
-			ConfigPersistenceManager.setPrivateKey(privateKey);
-			ConfigPersistenceManager.setConsumerKey(consumerKey);
-			OAuthManager oAuthManager = new OAuthManager();
-			String requestToken = oAuthManager.retrieveRequestToken(consumerKey, privateKey);
-
-			ConfigPersistenceManager.setRequestToken(requestToken);
-			// TODO: Tim: why do we have to use a map here,
-			// Response.ok(requestToken).build() does not work, why?
-			return Response.status(Status.OK).entity(ImmutableMap.of("result", requestToken)).build();
-		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"Request token could not be retrieved since the base URL, private key, and/or consumer key are missing."))
-					.build();
-		}
-	}
-
-	@Path("/getAccessToken")
-	@GET
-	public Response getAccessToken(@QueryParam("projectKey") String projectKey, @QueryParam("baseURL") String baseURL,
-			@QueryParam("privateKey") String privateKeyWithWhitespaces, @QueryParam("consumerKey") String consumerKey,
-			@QueryParam("requestToken") String requestToken, @QueryParam("secret") String secret) {
-		if (baseURL != null && privateKeyWithWhitespaces != null && consumerKey != null) {
-
-			String privateKey = privateKeyWithWhitespaces.replaceAll(" ", "+");
-
-			ConfigPersistenceManager.setOauthJiraHome(baseURL);
-			ConfigPersistenceManager.setRequestToken(requestToken);
-			ConfigPersistenceManager.setPrivateKey(privateKey);
-			ConfigPersistenceManager.setConsumerKey(consumerKey);
-			ConfigPersistenceManager.setSecretForOAuth(secret);
-
-			OAuthManager oAuthManager = new OAuthManager();
-			String accessToken = oAuthManager.retrieveAccessToken(requestToken, secret, consumerKey, privateKey);
-
-			ConfigPersistenceManager.setAccessToken(accessToken);
-
-			// TODO: Tim: why do we have to use a map here, Response.ok(accessToken).build()
-			// does not work, why?
-			return Response.status(Status.OK).entity(ImmutableMap.of("result", accessToken)).build();
-		} else {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"Access token could not be retrieved since the base URL, private key, and/or consumer key are missing."))
-					.build();
 		}
 	}
 

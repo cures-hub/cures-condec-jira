@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -93,8 +92,6 @@ public class TestDecisionKnowledgeProject extends TestSetUpWithIssues {
 	}
 
 	@Test
-	@Ignore
-	// TODO Mock ApplicationLinkService
 	public void testSetIsKnowledgeExtractedFromGit() {
 		project.setKnowledgeExtractedFromGit(true);
 		assertTrue(project.isKnowledgeExtractedFromGit());

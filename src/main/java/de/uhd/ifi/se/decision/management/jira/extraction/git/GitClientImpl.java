@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -13,32 +15,31 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawTextComparator;
-import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
-import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
  * @issue How to access commits related to a JIRA issue?
- * @decision Both, the jgit library and the git integration for JIRA plugin are
- *           used to access git repositories.
- * @alternative Only use jgit.
+ * @decision Only use jGit.
  * @pro The jGit library is open source.
- * @con More work: We would need to write the getCommit for JIRA issues
- *      ourselves and store the repository URI.
+ * @alternative Both, the jgit library and the git integration for JIRA plugin
+ *              were used to access git repositories.
+ * @con An application link and oAuth is needed to call REST API on Java side.
  */
 public class GitClientImpl implements GitClient {
-
+	
 	private Git git;
+	private static final Logger LOGGER = LoggerFactory.getLogger(GitClientImpl.class);
 
 	public GitClientImpl(String uri, String projectKey) {
 		File directory = new File(DEFAULT_DIR + projectKey);
@@ -47,19 +48,21 @@ public class GitClientImpl implements GitClient {
 
 	public GitClientImpl(String projectKey) {
 		File directory = new File(DEFAULT_DIR + projectKey);
-		String uri = GitClient.getUriFromGitIntegrationPlugin(projectKey);
+		String uri = ConfigPersistenceManager.getGitUri(projectKey);
 		pullOrClone(uri, directory);
 	}
 
 	private void pullOrClone(String uri, File directory) {
-		new Thread(() -> {
-			if (directory.exists()) {
-				openRepository(uri, directory);
+		if (directory.exists()) {
+			openRepository(uri, directory);
+			new Thread(() -> {
 				pull();
-			} else {
+			}).start();
+		} else {
+			new Thread(() -> {
 				cloneRepository(uri, directory);
-			}
-		}).start();
+			}).start();
+		}
 	}
 
 	private void openRepository(String uri, File directory) {
@@ -70,6 +73,7 @@ public class GitClientImpl implements GitClient {
 			git = Git.open(directory);
 		} catch (IOException e) {
 			e.printStackTrace();
+			LOGGER.error("Git repository could not be opened.");
 			cloneRepository(uri, directory);
 		}
 	}
@@ -113,16 +117,22 @@ public class GitClientImpl implements GitClient {
 	}
 
 	@Override
-	public Map<DiffEntry, EditList> getDiff(String jiraIssueKey) {
-		JSONObject commitObj = GitClient.getCommits(jiraIssueKey);
-		return getDiff(commitObj);
+	public Map<DiffEntry, EditList> getDiff(List<RevCommit> commits) {
+		if (commits == null || commits.size() == 0) {
+			return null;
+		}
+		// TODO Check if this is always correct
+		RevCommit firstCommit = commits.get(commits.size() - 1);
+		System.out.println(firstCommit.getShortMessage());
+		RevCommit lastCommit = commits.get(0);
+		System.out.println(lastCommit.getShortMessage());
+		return getDiff(firstCommit, lastCommit);
 	}
 
 	@Override
-	public Map<DiffEntry, EditList> getDiff(JSONObject commits) {
-		RevCommit firstCommit = getFirstCommit(commits);
-		RevCommit lastCommit = getLastCommit(commits);
-		return getDiff(firstCommit, lastCommit);
+	public Map<DiffEntry, EditList> getDiff(String jiraIssueKey) {
+		List<RevCommit> commits = getCommits(jiraIssueKey);
+		return getDiff(commits);
 	}
 
 	@Override
@@ -186,62 +196,6 @@ public class GitClientImpl implements GitClient {
 		return repository.getDirectory();
 	}
 
-	private RevCommit getFirstCommit(JSONObject commitObj) {
-		if (commitObj == null || commitObj.isNull("commits")) {
-			return null;
-		}
-		JSONArray commits = null;
-		try {
-			commits = commitObj.getJSONArray("commits");
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		if (commits == null || commits.length() == 0) {
-			return null;
-		}
-
-		RevCommit firstCommit = null;
-		Repository repository = this.getRepository();
-		RevWalk revWalk = new RevWalk(repository);
-		try {
-			ObjectId id = repository.resolve(commits.getJSONObject(commits.length() - 1).getString("commitId"));
-			firstCommit = revWalk.parseCommit(id);
-		} catch (RevisionSyntaxException | IOException | JSONException e) {
-			e.printStackTrace();
-		}
-		revWalk.close();
-		return firstCommit;
-	}
-
-	private RevCommit getLastCommit(JSONObject commitObj) {
-		if (commitObj == null || commitObj.isNull("commits")) {
-			return null;
-		}
-		JSONArray commits = null;
-		try {
-			commits = commitObj.getJSONArray("commits");
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-
-		if (commits == null || commits.length() == 0) {
-			return null;
-		}
-
-		RevCommit lastCommit = null;
-		Repository repository = this.getRepository();
-		RevWalk revWalk = new RevWalk(repository);
-		ObjectId id;
-		try {
-			id = repository.resolve(commits.getJSONObject(0).getString("commitId"));
-			lastCommit = revWalk.parseCommit(id);
-		} catch (RevisionSyntaxException | IOException | JSONException e) {
-			e.printStackTrace();
-		}
-		revWalk.close();
-		return lastCommit;
-	}
-
 	private RevCommit getParent(RevCommit revCommit) {
 		RevCommit parentCommit;
 		try {
@@ -285,5 +239,30 @@ public class GitClientImpl implements GitClient {
 			}
 		}
 		directory.delete();
+	}
+
+	@Override
+	public List<RevCommit> getCommits(String jiraIssueKey) {
+		List<RevCommit> commitsForJiraIssue = new LinkedList<RevCommit>();
+		if (git == null) {
+			LOGGER.error("Commits cannot be retrieved since git object is null.");
+			return commitsForJiraIssue;
+		}
+		try {
+			Iterable<RevCommit> iterable = git.log().call();
+			Iterator<RevCommit> iterator = iterable.iterator();
+			while (iterator.hasNext()) {
+				RevCommit commit = iterator.next();
+				// TODO Improve identification of jira issue key in commit message
+				if (GitClient.getJiraIssueKey(commit.getFullMessage()).equalsIgnoreCase(jiraIssueKey)) {
+					commitsForJiraIssue.add(commit);
+					LOGGER.info("Commit message for key " + jiraIssueKey + ": " + commit.getShortMessage());
+				}
+			}
+		} catch (GitAPIException e) {
+			LOGGER.error("Could not retrieve commits for the JIRA issue key " + jiraIssueKey);
+			e.printStackTrace();
+		}
+		return commitsForJiraIssue;
 	}
 }

@@ -6,9 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
@@ -24,6 +22,7 @@ import com.atlassian.query.Query;
 
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.extraction.git.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.git.GitClientImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
@@ -136,16 +135,9 @@ public class CommentMetricCalculator {
 		if (issueKey == null) {
 			return 0;
 		}
-		int numberOfCommits = 0;
-
-		JSONObject result = GitClient.getCommits(issueKey);
-
-		try {
-			JSONArray commits = (JSONArray) result.get("commits");
-			numberOfCommits = commits.length();
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+		GitClient gitClient = new GitClientImpl("projectKey");
+		List<RevCommit> commits = gitClient.getCommits(issueKey);
+		int numberOfCommits = commits.size();
 		return numberOfCommits;
 	}
 

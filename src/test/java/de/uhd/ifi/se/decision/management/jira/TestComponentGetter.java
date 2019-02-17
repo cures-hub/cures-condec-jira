@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
-import com.atlassian.applinks.api.ApplicationLinkService;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.bc.project.ProjectService;
@@ -29,12 +28,11 @@ public class TestComponentGetter {
 	private UserManager userManager;
 	private TemplateRenderer templateRenderer;
 	private ActiveObjects activeObjects;
-	private ApplicationLinkService applicationLinkService;
 
 	public static void init(ActiveObjects activeObjects, TransactionTemplate transactionTemplate,
 			UserManager userManager) {
 		new ComponentGetter(new MockPluginSettingsFactory(), transactionTemplate, null, null, null, userManager, null,
-				activeObjects, null);
+				activeObjects);
 	}
 
 	@Before
@@ -47,11 +45,9 @@ public class TestComponentGetter {
 		userManager = new MockUserManager();
 		templateRenderer = mock(TemplateRenderer.class);
 		activeObjects = mock(ActiveObjects.class);
-		// TODO Mock ApplicationLinkService
-		applicationLinkService = mock(ApplicationLinkService.class);
 
 		new ComponentGetter(pluginSettingsFactory, transactionTemplate, issueService, projectService, searchService,
-				userManager, templateRenderer, activeObjects, applicationLinkService);
+				userManager, templateRenderer, activeObjects);
 	}
 
 	@Test

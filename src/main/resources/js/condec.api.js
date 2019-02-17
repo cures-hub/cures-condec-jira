@@ -378,6 +378,18 @@
 	};
 
 	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setGitUri = function setGitUri(projectKey, gitUri) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setGitUri.json?projectKey=" + projectKey
+				+ "&gitUri=" + gitUri, null, function(error, response) {
+			if (error === null) {
+				showFlag("success", "The git URI  " + gitUri + " for this project has been set.");
+			}
+		});
+	};
+
+	/*
 	 * external references: settingsForSingleProject.vm,
 	 * settingsForAllProjects.vm
 	 */
@@ -534,34 +546,6 @@
 				+ "&isActivatedString=" + isActivated, null, function(error, response) {
 			if (error === null) {
 				showFlag("success", "Using icons to tag issue comments has been set to " + isActivated + ".");
-			}
-		});
-	};
-
-	/*
-	 * external references: settingsForAllProjects.vm
-	 */
-	ConDecAPI.prototype.getRequestToken = function getRequestToken(projectKey, baseURL, privateKey, consumerKey,
-			callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/getRequestToken.json?projectKey=" + projectKey
-				+ "&baseURL=" + baseURL + "&privateKey=" + privateKey + "&consumerKey=" + consumerKey, function(error,
-				result) {
-			if (error === null) {
-				callback(result);
-			}
-		});
-	};
-
-	/*
-	 * external references: settingsForAllProjects.vm
-	 */
-	ConDecAPI.prototype.getAccessToken = function getAccessToken(projectKey, baseURL, privateKey, consumerKey,
-			requestToken, secret, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/getAccessToken.json?projectKey=" + projectKey
-				+ "&baseURL=" + baseURL + "&privateKey=" + privateKey + "&consumerKey=" + consumerKey
-				+ "&requestToken=" + requestToken + "&secret=" + secret, function(error, result) {
-			if (error === null) {
-				callback(result);
 			}
 		});
 	};

@@ -1,9 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.git;
 
-import java.util.Map;
-
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.EditList;
 import org.ofbiz.core.entity.GenericValue;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -28,7 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * summary is written into a new comment of the JIRA issue.
  */
 @Component
-public class TaskCodeSummarizationEventListener implements InitializingBean, DisposableBean {
+public class SummarizationEventListener implements InitializingBean, DisposableBean {
 
 	private final ChangeHistoryManager changeManager = ComponentAccessor.getChangeHistoryManager();
 
@@ -36,7 +32,7 @@ public class TaskCodeSummarizationEventListener implements InitializingBean, Dis
 	private final EventPublisher eventPublisher;
 
 	@Autowired
-	public TaskCodeSummarizationEventListener(EventPublisher eventPublisher) {
+	public SummarizationEventListener(EventPublisher eventPublisher) {
 		this.eventPublisher = eventPublisher;
 	}
 
@@ -72,17 +68,14 @@ public class TaskCodeSummarizationEventListener implements InitializingBean, Dis
 		}
 
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueKey);
-		String summarization = "";
-		GitClient gitClient = new GitClientImpl(projectKey);
-		Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssueKey);
-		summarization = TaskCodeSummarizer.summarizer(diff, projectKey, false);
+		String summary = new CodeSummarizerImpl(projectKey).createSummary(jiraIssueKey);
 
-		if (summarization.isEmpty()) {
+		if (summary.isEmpty()) {
 			return;
 		}
-		summarization = summarization.length() > 3500 ? summarization.substring(0, 3500) + "..." : summarization;
+		summary = summary.length() > 3500 ? summary.substring(0, 3500) + "..." : summary;
 		String tag = "{codesummarization}";
-		String commentBody = tag + summarization + tag;
+		String commentBody = tag + summary + tag;
 
 		ComponentAccessor.getCommentManager().create(issue,
 				ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser(), commentBody, false);
