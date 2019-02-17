@@ -17,12 +17,10 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.mock.servlet.MockHttpServletResponse;
-import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockLoginUriProvider;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTemplateRenderer;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
@@ -47,9 +45,8 @@ public class TestSettingsOfSingleProject extends TestSetUpWithIssues {
 		response = new MockHttpServletResponse();
 
 		((MockHttpServletRequest) request).setParameter("projectKey", "TEST");
-		LoginUriProvider login = new MockLoginUriProvider();
 		TemplateRenderer renderer = new MockTemplateRenderer();
-		servlet = new SettingsOfSingleProject(login, renderer);
+		servlet = new SettingsOfSingleProject(renderer);
 	}
 
 	@Test

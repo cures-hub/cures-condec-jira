@@ -138,7 +138,7 @@ public class CommentMetricCalculator {
 		}
 		int numberOfCommits = 0;
 
-		JSONObject result = GitClient.getCommits(projectKey, issueKey);
+		JSONObject result = GitClient.getCommits(issueKey);
 
 		try {
 			JSONArray commits = (JSONArray) result.get("commits");
