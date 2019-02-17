@@ -274,9 +274,9 @@
 	 */
 	ConDecAPI.prototype.getSummarizedCode = function getSummarizedCode(id, documentationLocation, callback) {
 		getText(AJS.contextPath() + "/rest/decisions/latest/decisions/getSummarizedCode?projectKey=" + projectKey
-				+ "&id=" + id + "&documentationLocation=" + documentationLocation, function(error, text) {
+				+ "&id=" + id + "&documentationLocation=" + documentationLocation, function(error, summary) {
 			if (error === null) {
-				callback(text);
+				callback(summary);
 			}
 		});
 

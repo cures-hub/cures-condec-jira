@@ -22,7 +22,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.git.CodeSummarizerImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
@@ -314,21 +314,19 @@ public class KnowledgeRest {
 	@Path("/getSummarizedCode")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getSummarizedCode(@QueryParam("id") String id, @QueryParam("projectKey") String projectKey,
-			@QueryParam("documentationLocation") String documentationLocation, @Context HttpServletRequest request) {
-		if (projectKey == null || id == null || request == null) {
+	public Response getSummarizedCode(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
+			@QueryParam("documentationLocation") String documentationLocation) {
+		if (projectKey == null || id <= 0) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Getting summarized code failed due to a bad request.")).build();
 		}
 
-		Long elementId = Long.parseLong(id);
-
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
-		Issue jiraIssue = issueManager.getIssueObject(elementId);
+		Issue jiraIssue = issueManager.getIssueObject(id);
 
 		String jiraIssueKey = "";
 		if (jiraIssue == null) {
-			jiraIssueKey = JiraIssueCommentPersistenceManager.getJiraIssueKey(elementId);
+			jiraIssueKey = JiraIssueCommentPersistenceManager.getJiraIssueKey(id);
 		} else {
 			jiraIssueKey = jiraIssue.getKey();
 		}
