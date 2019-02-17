@@ -550,34 +550,6 @@
 		});
 	};
 
-	/*
-	 * external references: settingsForAllProjects.vm
-	 */
-	ConDecAPI.prototype.getRequestToken = function getRequestToken(projectKey, baseURL, privateKey, consumerKey,
-			callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/getRequestToken.json?projectKey=" + projectKey
-				+ "&baseURL=" + baseURL + "&privateKey=" + privateKey + "&consumerKey=" + consumerKey, function(error,
-				result) {
-			if (error === null) {
-				callback(result);
-			}
-		});
-	};
-
-	/*
-	 * external references: settingsForAllProjects.vm
-	 */
-	ConDecAPI.prototype.getAccessToken = function getAccessToken(projectKey, baseURL, privateKey, consumerKey,
-			requestToken, secret, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/getAccessToken.json?projectKey=" + projectKey
-				+ "&baseURL=" + baseURL + "&privateKey=" + privateKey + "&consumerKey=" + consumerKey
-				+ "&requestToken=" + requestToken + "&secret=" + secret, function(error, result) {
-			if (error === null) {
-				callback(result);
-			}
-		});
-	};
-
 	function getJSON(url, callback) {
 		var xhr = new XMLHttpRequest();
 		xhr.open("GET", url, true);
