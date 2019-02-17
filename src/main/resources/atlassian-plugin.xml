@@ -46,6 +46,7 @@
 		<resource type="download" name="implication.png" location="/images/implication.png" />
 		<resource type="download" name="assumption.png" location="/images/assumption.png" />
 		<resource type="download" name="assessment.png" location="/images/assessment.png" />
+		<resource type="download" name="codesummarization.png" location="/images/codesummarization.png" />
 		<!-- style sheets -->
 		<resource type="download" name="treant.css" location="/css/treant.css" />
 		<resource type="download" name="condec.css" location="/css/condec.css" />
@@ -283,6 +284,11 @@
 	<macro key='con' name='ConDec Editor Macro for Con-arguments'
 		class='de.uhd.ifi.se.decision.management.jira.view.macros.ConMacro'>
 		<description>Highlights con knowledge elements in comments.</description>
+	</macro>
+	
+	<macro key='codesummarization' name='ConDec Editor Macro for Code Summarization'
+		class='de.uhd.ifi.se.decision.management.jira.view.macros.CodeSummarizationMacro'>
+		<description>Highlights code summarization in comments.</description>
 	</macro>
 
 	<web-resource key="toolbar" name="JIRA Editor Reference Plugin Toolbar Init">

@@ -12,6 +12,7 @@ import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.MutableComment;
@@ -542,6 +543,17 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		ComponentAccessor.getCommentManager().update(mutableComment, true);
 		DecXtractEventListener.editCommentLock = false;
 		return element.getEndSubstringCount() - element.getStartSubstringCount();
+	}
+
+	public static String getJiraIssueKey(long id) {
+		String jiraIssueKey = null;
+		IssueManager issueManager = ComponentAccessor.getIssueManager();
+
+		for (DecisionKnowledgeInCommentEntity databaseEntry : ACTIVE_OBJECTS
+				.find(DecisionKnowledgeInCommentEntity.class, Query.select().where("ID = ?", id))) {
+			jiraIssueKey = issueManager.getIssueObject(databaseEntry.getIssueId()).getKey();
+		}
+		return jiraIssueKey;
 	}
 
 }

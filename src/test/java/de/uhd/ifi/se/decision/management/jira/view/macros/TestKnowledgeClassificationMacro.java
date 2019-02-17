@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.view;
+package de.uhd.ifi.se.decision.management.jira.view.macros;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -17,7 +17,6 @@ import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
 import de.uhd.ifi.se.decision.management.jira.view.macros.AlternativeMacro;
 import de.uhd.ifi.se.decision.management.jira.view.macros.ConMacro;
 import de.uhd.ifi.se.decision.management.jira.view.macros.DecisionMacro;
@@ -49,96 +48,87 @@ public class TestKnowledgeClassificationMacro extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testReformatCommentBody() {
-		assertEquals("test", AbstractKnowledgeClassificationMacro.reformatCommentBody("<p>test</p>"));
-		assertEquals("test", AbstractKnowledgeClassificationMacro.reformatCommentBody("<p> test</p>"));
-		assertEquals("test", AbstractKnowledgeClassificationMacro.reformatCommentBody("<p> test </p>"));
-		assertEquals("test", AbstractKnowledgeClassificationMacro.reformatCommentBody("<p> test   </p>"));
-		assertEquals("test", AbstractKnowledgeClassificationMacro.reformatCommentBody("<p>      test   </p>"));
-	}
-
-	@Test
 	public void testIssueMacro() throws MacroException {
-		IssueMacro fm = new IssueMacro();
-		assertEquals(RenderMode.allow(RenderMode.F_ALL), fm.getBodyRenderMode());
-		assertTrue(fm.hasBody());
+		IssueMacro issueMacro = new IssueMacro();
+		assertEquals(RenderMode.allow(RenderMode.F_ALL), issueMacro.getBodyRenderMode());
+		assertTrue(issueMacro.hasBody());
 		String body = "<p>This is an issue.</p>";
-		String result = fm.execute(null, body, issueView);
+		String result = issueMacro.execute(null, body, issueView);
 		assertEquals(
-				"<img src='null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/issue.png'><span style='background-color:#F2F5A9'>This is an issue.</span>",
+				"<p style='background-color:#FFFFCC; padding: 3px;'><img src='null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/issue.png'> This is an issue.</p>",
 				result);
-		result = fm.execute(null, body, wysiwygView);
+		result = issueMacro.execute(null, body, wysiwygView);
 		assertEquals("\\{issue}<p>This is an issue.</p>\\{issue}", result);
 	}
 
 	@Test
 	public void testDecisionMacro() throws MacroException {
-		DecisionMacro fm = new DecisionMacro();
+		DecisionMacro decisionMacro = new DecisionMacro();
 
-		assertEquals(RenderMode.allow(RenderMode.F_ALL), fm.getBodyRenderMode());
-		assertTrue(fm.hasBody());
+		assertEquals(RenderMode.allow(RenderMode.F_ALL), decisionMacro.getBodyRenderMode());
+		assertTrue(decisionMacro.hasBody());
 
 		String body = "<p>This is a decision.</p>";
-		String result = fm.execute(null, body, issueView);
+		String result = decisionMacro.execute(null, body, issueView);
 		assertEquals(
-				"<img src='null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/decision.png'><span style='background-color:#c5f2f9'>This is a decision.</span>",
+				"<p style='background-color:#FCE3BE; padding: 3px;'><img src='null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/decision.png'> This is a decision.</p>",
 				result);
-		result = fm.execute(null, body, wysiwygView);
+		result = decisionMacro.execute(null, body, wysiwygView);
 		assertEquals("\\{decision}<p>This is a decision.</p>\\{decision}", result);
 
 	}
 
 	@Test
 	public void testAlternativeMacro() throws MacroException {
-		AlternativeMacro fm = new AlternativeMacro();
+		AlternativeMacro alternativeMacro = new AlternativeMacro();
 
-		assertEquals(RenderMode.allow(RenderMode.F_ALL), fm.getBodyRenderMode());
-		assertTrue(fm.hasBody());
+		assertEquals(RenderMode.allow(RenderMode.F_ALL), alternativeMacro.getBodyRenderMode());
+		assertTrue(alternativeMacro.hasBody());
 
 		String body = "<p>This is an alternative.</p>";
 
-		String result = fm.execute(null, body, issueView);
+		String result = alternativeMacro.execute(null, body, issueView);
 		assertEquals(
-				"<img src='null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/alternative.png'><span style='background-color:#f1ccf9'>This is an alternative.</span>",
+				"<p style='background-color:#FFF6E8; padding: 3px;'><img src='null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/alternative.png'> This is an alternative.</p>",
 				result);
-		result = fm.execute(null, body, wysiwygView);
+		result = alternativeMacro.execute(null, body, wysiwygView);
 		assertEquals("\\{alternative}<p>This is an alternative.</p>\\{alternative}", result);
 	}
 
 	@Test
 	public void testProMacro() throws MacroException {
-		ProMacro fm = new ProMacro();
+		ProMacro proMacro = new ProMacro();
 
-		assertEquals(RenderMode.allow(RenderMode.F_ALL), fm.getBodyRenderMode());
-		assertTrue(fm.hasBody());
+		assertEquals(RenderMode.allow(RenderMode.F_ALL), proMacro.getBodyRenderMode());
+		assertTrue(proMacro.hasBody());
 
 		String body = "<p>This is a supporting argument.</p>";
 
-		String result = fm.execute(null, body, issueView);
+		String result = proMacro.execute(null, body, issueView);
 		assertEquals(
-				"<img src='null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/argument_pro.png'><span style='background-color:#b9f7c0'>This is a supporting argument.</span>",
+				"<p style='background-color:#DEFADE; padding: 3px;'><img src='null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/argument_pro.png'> This is a supporting argument.</p>",
 				result);
 
-		result = fm.execute(null, body, wysiwygView);
+		result = proMacro.execute(null, body, wysiwygView);
 		assertEquals("\\{pro}<p>This is a supporting argument.</p>\\{pro}", result);
 
 	}
 
 	@Test
 	public void testConMacro() throws MacroException {
-		ConMacro fm = new ConMacro();
+		ConMacro conMacro = new ConMacro();
 
-		assertEquals(RenderMode.allow(RenderMode.F_ALL), fm.getBodyRenderMode());
-		assertTrue(fm.hasBody());
+		assertEquals(RenderMode.allow(RenderMode.F_ALL), conMacro.getBodyRenderMode());
+		assertTrue(conMacro.hasBody());
 
 		String body = "<p>This is an attacking argument.</p>";
 
-		String result = fm.execute(null, body, issueView);
+		String result = conMacro.execute(null, body, issueView);
 		assertEquals(
-				"<img src='null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/argument_con.png'><span style='background-color:#ffdeb5'>This is an attacking argument.</span>",
+				"<p style='background-color:#FFE7E7; padding: 3px;'><img src='null/download/resources/de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources/argument_con.png'> This is an attacking argument.</p>",
 				result);
 
-		result = fm.execute(null, body, wysiwygView);
+		result = conMacro.execute(null, body, wysiwygView);
 		assertEquals("\\{con}<p>This is an attacking argument.</p>\\{con}", result);
 	}
 }
