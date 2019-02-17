@@ -8,8 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.project.Project;
-import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
-import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
@@ -26,9 +24,8 @@ public class SettingsOfAllProjects extends AbstractSettingsServlet {
 	private static final String TEMPLATEPATH = "templates/settingsForAllProjects.vm";
 
 	@Inject
-	public SettingsOfAllProjects(@ComponentImport LoginUriProvider loginUriProvider,
-			@ComponentImport TemplateRenderer renderer) {
-		super(loginUriProvider, renderer);
+	public SettingsOfAllProjects(TemplateRenderer renderer) {
+		super(renderer);
 	}
 
 	@Override

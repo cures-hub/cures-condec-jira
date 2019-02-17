@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
-import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 /**
@@ -26,15 +25,11 @@ public abstract class AbstractSettingsServlet extends HttpServlet {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractSettingsServlet.class);
 
 	@ComponentImport
-	protected LoginUriProvider loginUriProvider;
-	@ComponentImport
 	protected TemplateRenderer templateRenderer;
 
 	@Inject
-	public AbstractSettingsServlet(@ComponentImport LoginUriProvider loginUriProvider,
-			@ComponentImport TemplateRenderer renderer) {
+	public AbstractSettingsServlet(TemplateRenderer renderer) {
 		super();
-		this.loginUriProvider = loginUriProvider;
 		this.templateRenderer = renderer;
 	}
 

@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,10 +16,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
-import org.json.JSONException;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -29,7 +26,8 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.git.GitDiffExtraction;
+import de.uhd.ifi.se.decision.management.jira.extraction.git.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.git.GitClientImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.git.TaskCodeSummarizer;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
@@ -349,15 +347,12 @@ public class KnowledgeRest {
 		}
 
 		String queryResult = "";
-		try {
-			Map<DiffEntry, EditList> diff = GitDiffExtraction.getGitDiff(projectKey, jiraIssueKey);
-			if (diff == null) {
-				queryResult = "This JIRA issue does not have any code committed.";
-			} else {
-				queryResult += TaskCodeSummarizer.summarizer(diff, projectKey, true);
-			}
-		} catch (IOException | JSONException | InterruptedException | GitAPIException e) {
-			e.printStackTrace();
+		GitClient gitClient = new GitClientImpl(projectKey);
+		Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssueKey);
+		if (diff == null) {
+			queryResult = "This JIRA issue does not have any code committed.";
+		} else {
+			queryResult = TaskCodeSummarizer.summarizer(diff, projectKey, true);
 		}
 
 		return Response.ok(queryResult).build();
