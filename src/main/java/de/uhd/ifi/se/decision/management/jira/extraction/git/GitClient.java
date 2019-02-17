@@ -8,13 +8,6 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.properties.APKeys;
-
-import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
 
 /**
  * Class to connect to commits and code in git.
@@ -104,33 +97,5 @@ public interface GitClient {
 		} else {
 			return "";
 		}
-	}
-
-	/**
-	 * Provides the uniform resource identifier of the git repository associated
-	 * with the JIRA project.
-	 * 
-	 * @param projectKey
-	 *            JIRA project key.
-	 * @return uniform resource identifier of the git repository associated with the
-	 *         JIRA project.
-	 */
-	static String getUriFromGitIntegrationPlugin(String projectKey) {
-		OAuthManager oAuthManager = new OAuthManager();
-		String baseUrl = ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL);
-		String url = "/rest/gitplugin/latest/repository?projectKey=" + projectKey;
-		// String repository = ApplicationLinkService.startRequest(url);
-		String repository = oAuthManager.startRequest(baseUrl + url);
-		String uri = null;
-		try {
-			JSONObject jsonObject = new JSONObject(repository);
-			if (!jsonObject.isNull("repositories")) {
-				uri = jsonObject.getJSONArray("repositories").getJSONObject(0).getString("origin");
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-
-		return uri;
 	}
 }
