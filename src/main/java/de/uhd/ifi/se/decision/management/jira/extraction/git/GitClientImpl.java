@@ -35,9 +35,9 @@ import org.slf4j.LoggerFactory;
  * @con An application link and oAuth is needed to call REST API on Java side.
  */
 public class GitClientImpl implements GitClient {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(GitClientImpl.class);
+	
 	private Git git;
+	private static final Logger LOGGER = LoggerFactory.getLogger(GitClientImpl.class);
 
 	public GitClientImpl(String uri, String projectKey) {
 		File directory = new File(DEFAULT_DIR + projectKey);

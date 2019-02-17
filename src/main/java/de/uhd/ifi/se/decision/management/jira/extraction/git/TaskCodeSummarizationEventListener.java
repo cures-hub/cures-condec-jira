@@ -72,17 +72,14 @@ public class TaskCodeSummarizationEventListener implements InitializingBean, Dis
 		}
 
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueKey);
-		String summarization = "";
-		GitClient gitClient = new GitClientImpl(projectKey);
-		Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssueKey);
-		summarization = new TaskCodeSummarizer(gitClient, false).createSummary(diff);
-
-		if (summarization.isEmpty()) {
+		String summary = new TaskCodeSummarizer(projectKey).createSummary(jiraIssueKey);
+		
+		if (summary.isEmpty()) {
 			return;
 		}
-		summarization = summarization.length() > 3500 ? summarization.substring(0, 3500) + "..." : summarization;
+		summary = summary.length() > 3500 ? summary.substring(0, 3500) + "..." : summary;
 		String tag = "{codesummarization}";
-		String commentBody = tag + summarization + tag;
+		String commentBody = tag + summary + tag;
 
 		ComponentAccessor.getCommentManager().create(issue,
 				ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser(), commentBody, false);

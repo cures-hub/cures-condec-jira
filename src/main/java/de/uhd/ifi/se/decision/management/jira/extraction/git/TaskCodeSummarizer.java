@@ -10,6 +10,8 @@ import java.util.Set;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseProblemException;
@@ -20,10 +22,28 @@ public class TaskCodeSummarizer {
 
 	private GitClient gitClient;
 	private boolean useHtml;
+	private static final Logger LOGGER = LoggerFactory.getLogger(TaskCodeSummarizer.class);
 
 	public TaskCodeSummarizer(GitClient gitClient, boolean useHtml) {
 		this.gitClient = gitClient;
 		this.useHtml = useHtml;
+	}
+
+	public TaskCodeSummarizer(String projectKey, boolean useHtml) {
+		this.gitClient = new GitClientImpl(projectKey);
+		this.useHtml = useHtml;
+	}
+
+	public TaskCodeSummarizer(String projectKey) {
+		this(projectKey, false);
+	}
+
+	public String createSummary(String jiraIssueKey) {
+		Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssueKey);
+		if (diff == null) {
+			return "";
+		}
+		return createSummary(diff);
 	}
 
 	public String createSummary(Map<DiffEntry, EditList> diff) {
@@ -34,12 +54,10 @@ public class TaskCodeSummarizer {
 		for (Map.Entry<DiffEntry, EditList> entry : diff.entrySet()) {
 			summary += createSummaryOfDiffEntry(entry.getKey(), entry.getValue());
 		}
-
 		return summary;
 	}
 
 	private String createSummaryOfDiffEntry(DiffEntry diffEntry, EditList editList) {
-		String summary = "";
 		if (diffEntry == null) {
 			return "";
 		}
@@ -50,10 +68,9 @@ public class TaskCodeSummarizer {
 		}
 
 		File file = new File(gitClient.getDirectory() + File.separator + newPath);
-		System.out.println(file.getPath());
 
 		String className = FilenameUtils.removeExtension(file.getName());
-		summary += makeBold(className, useHtml) + lineBreak(useHtml);
+		String summary = makeBold(className) + lineBreak();
 
 		Set<MethodDeclaration> methodDeclarations = new LinkedHashSet<MethodDeclaration>();
 
@@ -64,19 +81,27 @@ public class TaskCodeSummarizer {
 			compilationUnit = JavaParser.parse(fileInputStream); // produces real readable code
 			fileInputStream.close();
 		} catch (ParseProblemException | IOException e) {
-			System.err.println("Parsing error");
+			LOGGER.debug("Parsing error in class " + className);
 		}
 
 		MethodVisitor methodVisitor = new MethodVisitor();
 		compilationUnit.accept(methodVisitor, null);
 		methodDeclarations = methodVisitor.getMethodDeclarations();
 
-		if (!useHtml) {
-			summary += methodsInComment(methodDeclarations, className);
-		} else {
-			summary += methodsInDialog(methodDeclarations, className);
-		}
+		summary += methodsInComment(methodDeclarations, className);
 
+		return summary;
+	}
+
+	private String methodsInComment(Set<MethodDeclaration> methodDeclarations, String className) {
+		String summary = "The following methods were changed: " + lineBreak();
+
+		for (MethodDeclaration methodDeclaration : methodDeclarations) {
+			String method = methodDeclaration.getNameAsString();
+			if (!summary.contains(method)) {
+				summary += method + lineBreak();
+			}
+		}
 		return summary;
 	}
 
@@ -87,6 +112,10 @@ public class TaskCodeSummarizer {
 		return "*" + text + "*";
 	}
 
+	private String makeBold(String text) {
+		return makeBold(text, useHtml);
+	}
+
 	private String lineBreak(boolean useHtml) {
 		if (useHtml) {
 			return "<br/>";
@@ -94,31 +123,7 @@ public class TaskCodeSummarizer {
 		return "\n";
 	}
 
-	private String methodsInComment(Set<MethodDeclaration> methodDeclarations, String className) {
-		String methodsToString = "In class *" + className + "* the following methods has been changed: \n";
-		String methodsInClass = "";
-		String method = "";
-
-		for (MethodDeclaration methodDeclaration : methodDeclarations) {
-			method = methodDeclaration.getNameAsString();
-			if (!methodsInClass.contains(method)) {
-				methodsInClass += method + "\n";
-			}
-		}
-		return methodsToString += methodsInClass;
-	}
-
-	private String methodsInDialog(Set<MethodDeclaration> methodDeclarations, String className) {
-		String methodsToString = "In class <b>" + className + "</b> the following methods has been changed: <br>";
-		String methodsInClass = "";
-		String method = "";
-
-		for (MethodDeclaration methodDeclaration : methodDeclarations) {
-			method = methodDeclaration.getNameAsString();
-			if (!methodsInClass.contains(method)) {
-				methodsInClass += method + "<br>";
-			}
-		}
-		return methodsToString += methodsInClass;
+	private String lineBreak() {
+		return lineBreak(useHtml);
 	}
 }

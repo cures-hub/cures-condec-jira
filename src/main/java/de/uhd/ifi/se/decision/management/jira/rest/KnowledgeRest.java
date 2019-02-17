@@ -346,16 +346,11 @@ public class KnowledgeRest {
 					.build();
 		}
 
-		String queryResult = "";
-		GitClient gitClient = new GitClientImpl(projectKey);
-		Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssueKey);
-		if (diff == null) {
-			queryResult = "This JIRA issue does not have any code committed.";
-		} else {
-			queryResult = new TaskCodeSummarizer(gitClient, true).createSummary(diff);
+		String summary = new TaskCodeSummarizer(projectKey, true).createSummary(jiraIssueKey);
+		if (summary == null || summary.isEmpty()) {
+			summary = "This JIRA issue does not have any code committed.";
 		}
-
-		return Response.ok(queryResult).build();
+		return Response.ok(summary).build();
 	}
 
 	/**
