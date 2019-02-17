@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestTaskCodeSummarizer extends TestSetUpGit {
+public class TestCodeSummarizer extends TestSetUpGit {
 
 	@Ignore
 	@Test

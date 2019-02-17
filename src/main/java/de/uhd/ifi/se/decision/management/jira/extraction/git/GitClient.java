@@ -94,7 +94,7 @@ public interface GitClient {
 	 * @return extracted JIRA issue key
 	 * 
 	 * @issue How to identify the JIRA issue key(s) in a commit message?
-	 * @alternative This is a very simple method to detect the issue key as the
+	 * @alternative This is a very simple method to detect the JIRA issue key as the
 	 *              first word in the message and should be improved.
 	 */
 	static String getJiraIssueKey(String commitMessage) {

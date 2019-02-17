@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,12 +75,17 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		String className = FilenameUtils.removeExtension(file.getName());
 		String summary = makeBold(className) + lineBreak();
 
-		Set<MethodDeclaration> methodDeclarations = new LinkedHashSet<MethodDeclaration>();
+		// @issue How can we parse methods from diffs?
+		// @decision Use parser on existing files in file system.
+		// @con Files might be deleted in the current version.
+		// @con All methods are included, also the methods not in the diff.
+		if (!file.exists()) {
+			return "";
+		}
 
-		FileInputStream fileInputStream;
 		CompilationUnit compilationUnit = null;
 		try {
-			fileInputStream = new FileInputStream(file.toString());
+			FileInputStream fileInputStream = new FileInputStream(file.toString());
 			compilationUnit = JavaParser.parse(fileInputStream); // produces real readable code
 			fileInputStream.close();
 		} catch (ParseProblemException | IOException e) {
@@ -88,20 +94,27 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 
 		MethodVisitor methodVisitor = new MethodVisitor();
 		compilationUnit.accept(methodVisitor, null);
+		Set<MethodDeclaration> methodDeclarations = new LinkedHashSet<MethodDeclaration>();
 		methodDeclarations = methodVisitor.getMethodDeclarations();
 
-		summary += methodsInComment(methodDeclarations, className);
+		summary += summarizeChangedMethods(methodDeclarations, editList);
 
 		return summary;
 	}
 
-	private String methodsInComment(Set<MethodDeclaration> methodDeclarations, String className) {
+	private String summarizeChangedMethods(Set<MethodDeclaration> methodDeclarations, EditList editList) {
 		String summary = "The following methods were changed: " + lineBreak();
 
-		for (MethodDeclaration methodDeclaration : methodDeclarations) {
-			String method = methodDeclaration.getNameAsString();
-			if (!summary.contains(method)) {
-				summary += method + lineBreak();
+		for (Edit edit : editList) {
+			for (MethodDeclaration methodDeclaration : methodDeclarations) {
+				if (edit.getEndB() >= methodDeclaration.getBegin().get().line
+						&& edit.getBeginB() <= methodDeclaration.getEnd().get().line) {
+					// Insert happended
+					String method = methodDeclaration.getNameAsString();
+					if (!summary.contains(method)) {
+						summary += method + lineBreak();
+					}
+				}
 			}
 		}
 		return summary;
