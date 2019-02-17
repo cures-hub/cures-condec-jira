@@ -1,9 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.git;
 
-import java.util.Map;
-
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.EditList;
 import org.ofbiz.core.entity.GenericValue;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -73,7 +69,7 @@ public class SummarizationEventListener implements InitializingBean, DisposableB
 
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueKey);
 		String summary = new CodeSummarizerImpl(projectKey).createSummary(jiraIssueKey);
-		
+
 		if (summary.isEmpty()) {
 			return;
 		}

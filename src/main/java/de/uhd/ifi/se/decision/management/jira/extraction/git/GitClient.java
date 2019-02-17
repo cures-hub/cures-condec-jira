@@ -57,7 +57,7 @@ public interface GitClient {
 	 * @return map of diff entries and respective edit lists
 	 */
 	Map<DiffEntry, EditList> getDiff(String jiraIssueKey);
-	
+
 	Map<DiffEntry, EditList> getDiff(List<RevCommit> commits);
 
 	Map<DiffEntry, EditList> getDiff(RevCommit revCommitFirst, RevCommit revCommitLast);
@@ -92,8 +92,11 @@ public interface GitClient {
 	 * @param commitMessage
 	 *            a commit message that should contain an issue key
 	 * @return extracted JIRA issue key
+	 * 
+	 * @issue How to identify the JIRA issue key(s) in a commit message?
+	 * @alternative This is a very simple method to detect the issue key as the
+	 *              first word in the message and should be improved.
 	 */
-	// TODO This is a very simple method to detect the issue key and should be improved.
 	static String getJiraIssueKey(String commitMessage) {
 		if (commitMessage.contains(" ")) {
 			String[] split = commitMessage.split("[:+ ]");
