@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.git;
+package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
 import java.util.LinkedHashSet;
 import java.util.Set;

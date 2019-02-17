@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.git;
+package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +26,7 @@ import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 
 /**
