@@ -18,26 +18,27 @@ import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
-public class TaskCodeSummarizer {
+public class CodeSummarizerImpl implements CodeSummarizer {
 
 	private GitClient gitClient;
 	private boolean useHtml;
-	private static final Logger LOGGER = LoggerFactory.getLogger(TaskCodeSummarizer.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CodeSummarizerImpl.class);
 
-	public TaskCodeSummarizer(GitClient gitClient, boolean useHtml) {
+	public CodeSummarizerImpl(GitClient gitClient, boolean useHtml) {
 		this.gitClient = gitClient;
 		this.useHtml = useHtml;
 	}
 
-	public TaskCodeSummarizer(String projectKey, boolean useHtml) {
+	public CodeSummarizerImpl(String projectKey, boolean useHtml) {
 		this.gitClient = new GitClientImpl(projectKey);
 		this.useHtml = useHtml;
 	}
 
-	public TaskCodeSummarizer(String projectKey) {
+	public CodeSummarizerImpl(String projectKey) {
 		this(projectKey, false);
 	}
 
+	@Override
 	public String createSummary(String jiraIssueKey) {
 		Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssueKey);
 		if (diff == null) {
@@ -46,6 +47,7 @@ public class TaskCodeSummarizer {
 		return createSummary(diff);
 	}
 
+	@Override
 	public String createSummary(Map<DiffEntry, EditList> diff) {
 		String summary = "The following classes were changed: ";
 		if (diff == null) {

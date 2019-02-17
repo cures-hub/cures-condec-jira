@@ -28,7 +28,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * summary is written into a new comment of the JIRA issue.
  */
 @Component
-public class TaskCodeSummarizationEventListener implements InitializingBean, DisposableBean {
+public class SummarizationEventListener implements InitializingBean, DisposableBean {
 
 	private final ChangeHistoryManager changeManager = ComponentAccessor.getChangeHistoryManager();
 
@@ -36,7 +36,7 @@ public class TaskCodeSummarizationEventListener implements InitializingBean, Dis
 	private final EventPublisher eventPublisher;
 
 	@Autowired
-	public TaskCodeSummarizationEventListener(EventPublisher eventPublisher) {
+	public SummarizationEventListener(EventPublisher eventPublisher) {
 		this.eventPublisher = eventPublisher;
 	}
 
@@ -72,7 +72,7 @@ public class TaskCodeSummarizationEventListener implements InitializingBean, Dis
 		}
 
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueKey);
-		String summary = new TaskCodeSummarizer(projectKey).createSummary(jiraIssueKey);
+		String summary = new CodeSummarizerImpl(projectKey).createSummary(jiraIssueKey);
 		
 		if (summary.isEmpty()) {
 			return;

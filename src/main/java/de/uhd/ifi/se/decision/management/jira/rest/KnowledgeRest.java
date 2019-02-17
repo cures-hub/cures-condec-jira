@@ -28,7 +28,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.git.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.git.GitClientImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.git.TaskCodeSummarizer;
+import de.uhd.ifi.se.decision.management.jira.extraction.git.CodeSummarizerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
@@ -346,7 +346,7 @@ public class KnowledgeRest {
 					.build();
 		}
 
-		String summary = new TaskCodeSummarizer(projectKey, true).createSummary(jiraIssueKey);
+		String summary = new CodeSummarizerImpl(projectKey, true).createSummary(jiraIssueKey);
 		if (summary == null || summary.isEmpty()) {
 			summary = "This JIRA issue does not have any code committed.";
 		}
