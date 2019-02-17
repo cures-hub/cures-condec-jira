@@ -10,6 +10,11 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.properties.APKeys;
+
+import de.uhd.ifi.se.decision.management.jira.oauth.OAuthManager;
+
 /**
  * Class to connect to commits and code in git.
  */
@@ -80,8 +85,11 @@ public interface GitClient {
 	 *         JIRA project.
 	 */
 	static String getUriFromGitIntegrationPlugin(String projectKey) {
-		String url = "/gitplugin/latest/repository?projectKey=" + projectKey;
-		String repository = ApplicationLinkService.startRequest(url);
+		OAuthManager oAuthManager = new OAuthManager();
+		String baseUrl = ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL);
+		String url = "/rest/gitplugin/latest/repository?projectKey=" + projectKey;
+		// String repository = ApplicationLinkService.startRequest(url);
+		String repository = oAuthManager.startRequest(baseUrl + url);
 		String uri = null;
 		try {
 			JSONObject jsonObject = new JSONObject(repository);
@@ -103,9 +111,11 @@ public interface GitClient {
 	 * @return commits with the issue key in their commit message as a JSONObject.
 	 */
 	static JSONObject getCommits(String jiraIssueKey) {
-		String url = "/gitplugin/latest/issues/" + jiraIssueKey + "/commits";
-		String commits = null;
-		commits = ApplicationLinkService.startRequest(url);
+		OAuthManager oAuthManager = new OAuthManager();
+		String baseUrl = ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL);
+		String url = "/rest/gitplugin/latest/issues/" + jiraIssueKey + "/commits";
+		String commits = oAuthManager.startRequest(baseUrl + url);
+		// String commits = ApplicationLinkService.startRequest(url);
 		JSONObject commitObj = null;
 		try {
 			commitObj = new JSONObject(commits);
