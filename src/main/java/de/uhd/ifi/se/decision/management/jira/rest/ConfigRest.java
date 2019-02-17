@@ -351,6 +351,23 @@ public class ConfigRest {
 		}
 	}
 
+	@Path("/trainClassifier")
+	@POST
+	public Response trainClassifier(@Context HttpServletRequest request,
+	                                @QueryParam("projectKey") final String projectKey){
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if (!ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey)) {
+			return Response.status(Status.FORBIDDEN)
+					       .entity(ImmutableMap.of("error",
+							       "Automatic classification is disabled for this project. " +
+									       "So no training can be executed")).build();
+		}
+		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
+	}
+
 	@Path("/setIconParsing")
 	@POST
 	public Response setIconParsing(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,

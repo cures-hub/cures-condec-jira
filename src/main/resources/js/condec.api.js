@@ -528,6 +528,20 @@
 
 	/*
 	 * external references: settingsForSingleProject.vm
+ 	 */
+	ConDecAPI.prototype.trainClassifier = function trainClassifier(projectKey){
+	    var isSucceeded = postWithResponseAsReturnValue(AJS.contextPath()
+                +"/rest/decisions/latest/config/trainClassifier.json?projectKey="+ projectKey);
+        if (isSucceeded) {
+            showFlag("success", "The Classifier has now been retrained.");
+            return 1.0;
+        }
+        showFlag("error", "The training of the Classifier has failed.");
+        return 0.0;
+    };
+
+	/*
+	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.setIconParsing = function setIconParsing(projectKey, isActivated) {
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setIconParsing.json?projectKey=" + projectKey
