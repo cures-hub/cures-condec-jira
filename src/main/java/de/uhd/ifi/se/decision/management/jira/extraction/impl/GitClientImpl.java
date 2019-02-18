@@ -255,7 +255,8 @@ public class GitClientImpl implements GitClient {
 			while (iterator.hasNext()) {
 				RevCommit commit = iterator.next();
 				// TODO Improve identification of jira issue key in commit message
-				if (GitClient.getJiraIssueKey(commit.getFullMessage()).equalsIgnoreCase(jiraIssueKey)) {
+				String commitString = GitClient.getJiraIssueKey(commit.getFullMessage());
+				if (commitString.equalsIgnoreCase(jiraIssueKey)) {
 					commitsForJiraIssue.add(commit);
 					LOGGER.info("Commit message for key " + jiraIssueKey + ": " + commit.getShortMessage());
 				}

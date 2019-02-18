@@ -109,7 +109,7 @@ public interface GitClient {
 	 *              first word in the message and should be improved.
 	 */
 	static String getJiraIssueKey(String commitMessage) {
-		if (commitMessage.contains(" ")) {
+		if(!commitMessage.isEmpty()){
 			String[] split = commitMessage.split("[:+ ]");
 			return split[0];
 		} else {
