@@ -151,7 +151,6 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, "gitUri", gitUri);
 	}
 
-	// TODO Testing
 	public static String getGitUri(String projectKey) {
 		return getValue(projectKey, "gitUri");
 	}
