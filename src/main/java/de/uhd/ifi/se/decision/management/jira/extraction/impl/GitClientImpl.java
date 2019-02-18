@@ -137,15 +137,15 @@ public class GitClientImpl implements GitClient {
 	}
 
 	@Override
-	public Map<DiffEntry, EditList> getDiff(RevCommit revCommitFirst, RevCommit revCommitLast) {
+	public Map<DiffEntry, EditList> getDiff(RevCommit firstCommit, RevCommit lastCommit) {
 		Map<DiffEntry, EditList> diffEntriesMappedToEditLists = new HashMap<DiffEntry, EditList>();
 		List<DiffEntry> diffEntries = new ArrayList<DiffEntry>();
 
 		DiffFormatter diffFormatter = getDiffFormater();
 		try {
-			RevCommit parentCommit = getParent(revCommitFirst);
+			RevCommit parentCommit = getParent(firstCommit);
 			if (parentCommit != null) {
-				diffEntries = diffFormatter.scan(parentCommit.getTree(), revCommitLast.getTree());
+				diffEntries = diffFormatter.scan(parentCommit.getTree(), lastCommit.getTree());
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

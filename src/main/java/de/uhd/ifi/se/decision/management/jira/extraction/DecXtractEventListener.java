@@ -163,7 +163,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		} else {
 			MutableComment comment = getChangedComment();
 			new CommentSplitterImpl().getSentences(comment);
-		}		
+		}
 		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 }

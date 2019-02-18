@@ -93,7 +93,7 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 		// @con Files might be deleted in the current version.
 		// @con All methods are included, also the methods not in the diff.
 		if (!file.exists()) {
-			return "";
+			return summary;
 		}
 
 		CompilationUnit compilationUnit = null;
