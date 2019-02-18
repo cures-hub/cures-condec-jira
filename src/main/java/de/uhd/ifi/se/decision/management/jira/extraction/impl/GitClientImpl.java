@@ -38,7 +38,7 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * @con An application link and oAuth is needed to call REST API on Java side.
  */
 public class GitClientImpl implements GitClient {
-	
+
 	private Git git;
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitClientImpl.class);
 
@@ -266,5 +266,14 @@ public class GitClientImpl implements GitClient {
 			e.printStackTrace();
 		}
 		return commitsForJiraIssue;
+	}
+
+	@Override
+	public int getNumberOfCommits(String jiraIssueKey) {
+		if (jiraIssueKey == null || jiraIssueKey.isEmpty()) {
+			return 0;
+		}
+		List<RevCommit> commits = getCommits(jiraIssueKey);
+		return commits.size();
 	}
 }

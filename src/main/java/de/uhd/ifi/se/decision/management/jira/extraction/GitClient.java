@@ -27,7 +27,7 @@ public interface GitClient {
 	 * 
 	 * @param jiraIssueKey
 	 *            JIRA issue key that is searched for in commit messages.
-	 * @return commits with the issue key in their commit message as a list of
+	 * @return commits with the JIRA issue key in their commit message as a list of
 	 *         RevCommits.
 	 */
 	List<RevCommit> getCommits(String jiraIssueKey);
@@ -98,6 +98,15 @@ public interface GitClient {
 	void deleteRepo();
 
 	/**
+	 * Returns the number commits with the JIRA issue key in their commit message.
+	 * 
+	 * @param jiraIssueKey
+	 *            JIRA issue key that is searched for in commit messages.
+	 * @return number of commits with the JIRA issue key in their commit message.
+	 */
+	public int getNumberOfCommits(String jiraIssueKey);
+
+	/**
 	 * Retrieves the JIRA issue key from a commit message.
 	 * 
 	 * @param commitMessage
@@ -109,7 +118,7 @@ public interface GitClient {
 	 *              first word in the message and should be improved.
 	 */
 	static String getJiraIssueKey(String commitMessage) {
-		if(!commitMessage.isEmpty()){
+		if (!commitMessage.isEmpty()) {
 			String[] split = commitMessage.split("[:+ ]");
 			return split[0];
 		} else {

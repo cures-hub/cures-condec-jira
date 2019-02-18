@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jgit.revwalk.RevCommit;
-
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -43,6 +41,7 @@ public class CommentMetricCalculator {
 	private String jiraIssueTypeId;
 	private List<Issue> jiraIssues;
 	private int absolutDepth;
+	private GitClient gitClient;
 
 	public CommentMetricCalculator(long projectId, ApplicationUser user, String jiraIssueTypeId) {
 		this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
@@ -50,6 +49,7 @@ public class CommentMetricCalculator {
 		this.persistenceManager = new JiraIssueCommentPersistenceManager(projectKey);
 		this.jiraIssueTypeId = jiraIssueTypeId;
 		this.jiraIssues = getJiraIssuesForProject(projectId);
+		this.gitClient = new GitClientImpl("projectKey");
 	}
 
 	private List<Issue> getJiraIssuesForProject(long projectId) {
@@ -122,37 +122,28 @@ public class CommentMetricCalculator {
 		return numberOfRelevantSentences;
 	}
 
+	// TODO This method does not work. Why?
 	public Map<String, Integer> getNumberOfCommitsForJiraIssues() {
 		Map<String, Integer> resultMap = new HashMap<String, Integer>();
-		for (Issue issue : jiraIssues) {
-			int numberOfCommits = getNumberOfGitCommits(issue.getKey());
-			resultMap.put(issue.getKey(), numberOfCommits);
+		for (Issue jiraIssue : jiraIssues) {
+			int numberOfCommits = gitClient.getNumberOfCommits(jiraIssue.getKey());
+			resultMap.put(jiraIssue.getKey(), numberOfCommits);
 		}
 		return resultMap;
-	}
-
-	private int getNumberOfGitCommits(String issueKey) {
-		if (issueKey == null) {
-			return 0;
-		}
-		GitClient gitClient = new GitClientImpl("projectKey");
-		List<RevCommit> commits = gitClient.getCommits(issueKey);
-		int numberOfCommits = commits.size();
-		return numberOfCommits;
 	}
 
 	public Map<String, Integer> getDistributionOfKnowledgeTypes() {
 		Map<String, Integer> distributionOfKnowledgeTypes = new HashMap<String, Integer>();
 		for (KnowledgeType type : KnowledgeType.getDefaultTypes()) {
 			distributionOfKnowledgeTypes.put(type.toString(),
-					this.persistenceManager.getDecisionKnowledgeElements(type).size());
+					persistenceManager.getDecisionKnowledgeElements(type).size());
 		}
 		return distributionOfKnowledgeTypes;
 	}
 
 	public Map<String, Integer> getNumberOfLinksToOtherElement(KnowledgeType linkFrom, KnowledgeType linkTo) {
 		if (linkFrom == null || linkTo == null) {
-			return new HashMap<>();
+			return new HashMap<String, Integer>();
 		}
 		Integer[] statistics = new Integer[4];
 		Arrays.fill(statistics, 0);
@@ -238,11 +229,11 @@ public class CommentMetricCalculator {
 
 	public List<Integer> getLinkDistance(KnowledgeType type) {
 		if (type == null) {
-			return new ArrayList<>();
+			return new ArrayList<Integer>();
 		}
 		List<Integer> linkDistances = new ArrayList<Integer>();
 
-		List<DecisionKnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(type);
+		List<DecisionKnowledgeElement> listOfIssues = persistenceManager.getDecisionKnowledgeElements(type);
 
 		for (DecisionKnowledgeElement currentAlternative : listOfIssues) {
 			int depth = graphRecursionBot(currentAlternative);
