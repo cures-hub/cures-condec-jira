@@ -46,14 +46,32 @@ public interface GitClient {
 	 * belonging to a JIRA issue.
 	 * 
 	 * @param revCommit
-	 *            commit as a RevCommit object
-	 * @return map of diff entries and respective edit lists
+	 *            commit as a RevCommit object.
+	 * @return map of diff entries and respective edit lists.
 	 */
 	Map<DiffEntry, EditList> getDiff(String jiraIssueKey);
 
+	/**
+	 * Get a map of diff entries and the respective edit lists for a list of
+	 * commits.
+	 * 
+	 * @param commits
+	 *            commits as a list of RevCommit objects.
+	 * @return map of diff entries and respective edit lists.
+	 */
 	Map<DiffEntry, EditList> getDiff(List<RevCommit> commits);
 
-	Map<DiffEntry, EditList> getDiff(RevCommit revCommitFirst, RevCommit revCommitLast);
+	/**
+	 * Get a map of diff entries and the respective edit lists for a branch of
+	 * commits indicated by the first and last commit on the branch.
+	 * 
+	 * @param firstCommits
+	 *            first commit on a branch as a RevCommit object.
+	 * @param lastCommits
+	 *            last commit on a branch as a RevCommit object.
+	 * @return map of diff entries and respective edit lists.
+	 */
+	Map<DiffEntry, EditList> getDiff(RevCommit firstCommit, RevCommit lastCommit);
 
 	/**
 	 * Get the jgit repository object.
@@ -80,11 +98,11 @@ public interface GitClient {
 	void deleteRepo();
 
 	/**
-	 * Retrieves the JIRA issue key from a commit message
+	 * Retrieves the JIRA issue key from a commit message.
 	 * 
 	 * @param commitMessage
-	 *            a commit message that should contain an issue key
-	 * @return extracted JIRA issue key
+	 *            a commit message that should contain an issue key.
+	 * @return extracted JIRA issue key.
 	 * 
 	 * @issue How to identify the JIRA issue key(s) in a commit message?
 	 * @alternative This is a very simple method to detect the JIRA issue key as the

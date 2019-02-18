@@ -11,6 +11,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +46,15 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 	@Override
 	public String createSummary(String jiraIssueKey) {
 		Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssueKey);
+		if (diff == null) {
+			return "";
+		}
+		return createSummary(diff);
+	}
+	
+	@Override
+	public String createSummary(RevCommit commit) {
+		Map<DiffEntry, EditList> diff = gitClient.getDiff(commit);
 		if (diff == null) {
 			return "";
 		}
