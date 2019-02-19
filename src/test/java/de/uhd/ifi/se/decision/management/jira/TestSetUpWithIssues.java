@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -207,5 +208,18 @@ public class TestSetUpWithIssues {
 		issue.setIssueType(issueType);
 		issue.setSummary("Test");
 		return issue;
+	}
+
+	protected static void deleteFolder(File repository) {
+		if (repository.listFiles() != null) {
+			for (File file : repository.listFiles()) {
+				if (file.isDirectory()) {
+					deleteFolder(file);
+				}
+				file.setWritable(true);
+				file.delete();
+			}
+		}
+		repository.delete();
 	}
 }
