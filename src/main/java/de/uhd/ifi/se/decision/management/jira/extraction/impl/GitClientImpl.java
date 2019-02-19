@@ -223,6 +223,9 @@ public class GitClientImpl implements GitClient {
 
 	@Override
 	public void deleteRepo() {
+		if(git == null){
+			return;
+		}
 		closeRepo();
 		File directory = this.getDirectory();
 		if (directory.exists()) {
