@@ -34,6 +34,10 @@ public class TestSetupCalculator extends TestSetUpWithIssues {
 	@BeforeClass
 	public static void createFolders(){
 		File repo = new File(System.getProperty("user.home") + File.separator + "repository" + File.separator + "projectKey");
+		if(repo.exists()){
+			repo.delete();
+			repo.mkdirs();
+		}
 		try {
 			Git git = Git.init().setDirectory(repo.getAbsoluteFile()).call();
 		} catch (GitAPIException e) {
@@ -54,8 +58,10 @@ public class TestSetupCalculator extends TestSetUpWithIssues {
 
 	@AfterClass
 	public static void removeFolder(){
-		File repo = new File(System.getProperty("user.home") + File.separator + "repository" + File.separator + "projectKey");
-		deleteFolder(repo);
+		File repo = new File(System.getProperty("user.home") + File.separator + "repository");
+		if(repo.exists()){
+			repo.delete();
+		}
 	}
 
 	protected void addElementToDataBase(ApplicationUser user) {

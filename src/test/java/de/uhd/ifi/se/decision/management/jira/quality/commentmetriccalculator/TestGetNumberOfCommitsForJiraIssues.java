@@ -17,8 +17,6 @@ public class TestGetNumberOfCommitsForJiraIssues extends TestSetupCalculator {
 
 	@Test
 	@NonTransactional
-	@Ignore
-	// TODO Mock ApplicationLinkService
 	public void testCase() {
 		assertEquals(1, calculator.getNumberOfCommitsForJiraIssues().size(), 0.0);
 	}

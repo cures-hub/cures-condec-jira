@@ -209,17 +209,4 @@ public class TestSetUpWithIssues {
 		issue.setSummary("Test");
 		return issue;
 	}
-
-	protected static void deleteFolder(File repository) {
-		if (repository.listFiles() != null) {
-			for (File file : repository.listFiles()) {
-				if (file.isDirectory()) {
-					deleteFolder(file);
-				}
-				file.setWritable(true);
-				file.delete();
-			}
-		}
-		repository.delete();
-	}
 }
