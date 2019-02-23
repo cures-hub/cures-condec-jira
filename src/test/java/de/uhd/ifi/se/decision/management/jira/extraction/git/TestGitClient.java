@@ -1,46 +1,55 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.git;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import org.junit.Test;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.EditList;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.junit.Test;
 
 public class TestGitClient extends TestSetUpGit {
 
 	@Test
-	public void testNotCloningNotExistingRepo() throws InterruptedException {
-		new GitClientImpl(directory0, projectKey0);
-		Thread.sleep(2000);
-		File file = new File(
-				System.getProperty("user.home") + File.separator + "repository" + File.separator + projectKey0);
-		assertFalse(file.exists());
+	public void testClonedRepoExisting() {
+		File file = new File(uri);
+		assertTrue(file.exists());
 	}
 
 	@Test
-	public void testCloneRepo() throws InterruptedException {
-		Thread.sleep(2000);
-		File file = new File(
-				System.getProperty("user.home") + File.separator + "repository" + File.separator + projectKey1);
-		assertTrue(file.exists());
-		gitClient.deleteRepo();
+	public void getDiffNullRevCommit() {
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getDiff((RevCommit) null);
+		assertEquals(gitDiffs, new HashMap<DiffEntry, EditList>());
 	}
 
 	@Test
-	public void testUpdateClonedRepo() throws InterruptedException {
-		Thread.sleep(2000);
-		Thread.sleep(2000);
-		File file = new File(
-				System.getProperty("user.home") + File.separator + "repository" + File.separator + projectKey1);
-		File file1 = new File(
-				System.getProperty("user.home") + File.separator + "repository" + File.separator + projectKey1 + "1");
-		File file2 = new File(
-				System.getProperty("user.home") + File.separator + "repository" + File.separator + projectKey1 + "2");
-		assertTrue(file.exists());
-		assertFalse(file1.exists());
-		assertFalse(file2.exists());
-		gitClient.deleteRepo();
+	public void getDiffNullList() {
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getDiff((List<RevCommit>) null);
+		assertTrue(gitDiffs == null);
+	}
+
+	@Test
+	public void getDiffNullString() {
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getDiff((String) null);
+		assertTrue(gitDiffs == null);
+	}
+
+	@Test
+	public void getNoDiffsForNoCommits() {
+		String commits = "{" + "\"commits\":[" + "" + "]" + "}";
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getDiff(commits);
+		assertTrue(gitDiffs == null);
+	}
+
+	@Test
+	public void getDiffsForCommits() {
+		List<RevCommit> commits = gitClient.getCommits("TEST-12");
+		Map<DiffEntry, EditList> gitDiffs = gitClient.getDiff(commits);
+		assertEquals(0, gitDiffs.size(), 0.0);
 	}
 }

@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.lib.Repository;
@@ -90,12 +91,12 @@ public interface GitClient {
 	/**
 	 * Closes the repository.
 	 */
-	void closeRepo();
+	void close();
 
 	/**
 	 * Closes the repository and deletes its local files.
 	 */
-	void deleteRepo();
+	void deleteRepository();
 
 	/**
 	 * Returns the number commits with the JIRA issue key in their commit message.
@@ -125,4 +126,10 @@ public interface GitClient {
 			return "";
 		}
 	}
+
+	/**
+	 * Returns the git object.
+	 * @return git object.
+	 */
+	public Git getGit();
 }

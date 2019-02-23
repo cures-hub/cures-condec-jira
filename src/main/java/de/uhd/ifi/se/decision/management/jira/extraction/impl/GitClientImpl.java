@@ -42,6 +42,10 @@ public class GitClientImpl implements GitClient {
 	private Git git;
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitClientImpl.class);
 
+	public GitClientImpl(String uri, File directory) {
+		pullOrClone(uri, directory);
+	}
+
 	public GitClientImpl(String uri, String projectKey) {
 		File directory = new File(DEFAULT_DIR + projectKey);
 		pullOrClone(uri, directory);
@@ -68,7 +72,7 @@ public class GitClientImpl implements GitClient {
 
 	private void openRepository(String uri, File directory) {
 		if (git != null) {
-			closeRepo();
+			close();
 		}
 		try {
 			git = Git.open(directory);
@@ -213,7 +217,7 @@ public class GitClientImpl implements GitClient {
 	}
 
 	@Override
-	public void closeRepo() {
+	public void close() {
 		if (git == null) {
 			return;
 		}
@@ -222,11 +226,11 @@ public class GitClientImpl implements GitClient {
 	}
 
 	@Override
-	public void deleteRepo() {
-		if(git == null){
+	public void deleteRepository() {
+		if (git == null) {
 			return;
 		}
-		closeRepo();
+		close();
 		File directory = this.getDirectory();
 		if (directory.exists()) {
 			deleteFolder(directory);
@@ -278,5 +282,10 @@ public class GitClientImpl implements GitClient {
 		}
 		List<RevCommit> commits = getCommits(jiraIssueKey);
 		return commits.size();
+	}
+
+	@Override
+	public Git getGit() {
+		return git;
 	}
 }

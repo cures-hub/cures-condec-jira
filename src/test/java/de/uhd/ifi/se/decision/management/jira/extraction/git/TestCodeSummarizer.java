@@ -1,14 +1,18 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.git;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
-public class TestCodeSummarizer extends TestSetUpGit{
+import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
+
+public class TestCodeSummarizer extends TestSetUpGit {
 
 	@Test
-	public void testConstGit(){
+	public void testEmptyInput() {
 		CodeSummarizer codeSummarizer = new CodeSummarizerImpl(gitClient, false);
-		gitClient.deleteRepo();
+		String summary = codeSummarizer.createSummary("");
+		assertEquals(summary, "");
 	}
 }

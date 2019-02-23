@@ -1,13 +1,9 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.git;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.mock.MockProjectManager;
-import com.atlassian.jira.project.MockProject;
-import com.atlassian.jira.project.Project;
-import com.atlassian.jira.project.ProjectManager;
-import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
@@ -18,80 +14,66 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.mock.MockProjectManager;
+import com.atlassian.jira.project.MockProject;
+import com.atlassian.jira.project.Project;
+import com.atlassian.jira.project.ProjectManager;
+
+import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 
 public class TestSetUpGit extends TestSetUpWithIssues {
 
-	protected String projectKey0;
-	protected String projectKey1;
-	protected String projectKey2;
-	protected String directory0;
-	protected String directory1;
-	protected String directory2;
-
+	protected String projectKey;
+	protected String uri;
 	protected GitClient gitClient;
+	protected File directory;
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
+	private String getExampleUri() {
+		String uri = "";
+		try {
+			File remoteDir = File.createTempFile("remote", "");
+			remoteDir.delete();
+			remoteDir.mkdirs();
+			RepositoryCache.FileKey fileKey = RepositoryCache.FileKey.exact(remoteDir, FS.DETECTED);
+			Repository remoteRepo = fileKey.open(false);
+			remoteRepo.create(true);
+			uri = remoteRepo.getDirectory().getAbsolutePath();
+			System.out.println(uri);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return uri;
+	}
+
 	@Before
-	public void setUp() throws IllegalStateException, IOException {
+	public void setUp() throws IOException  {
 		initialization();
-		ProjectManager a = ComponentAccessor.getProjectManager();
-		Project testingProject = new MockProject(4, "TESTING");
-		((MockProject) testingProject).setKey("TESTING");
-		((MockProjectManager) a).addProject(testingProject);
+		ProjectManager projectManager = ComponentAccessor.getProjectManager();
+		Project testingProject = new MockProject(4, "TEST");
+		((MockProject) testingProject).setKey("TEST");
+		((MockProjectManager) projectManager).addProject(testingProject);
 
-		Project testedProject = new MockProject(5, "TESTED");
-		((MockProject) testedProject).setKey("TESTED");
-		((MockProjectManager) a).addProject(testedProject);
+		projectKey = projectManager.getProjectByCurrentKey("TEST").getKey();
 
-		projectKey0 = a.getProjectByCurrentKey("TESTING").getKey();
-		projectKey1 = a.getProjectByCurrentKey("TESTED").getKey();
-		projectKey2 = a.getProjectByCurrentKey("TEST").getKey();
+		directory = File.createTempFile("clone", "");
+		directory.delete();
+		directory.mkdirs();
 
-		// Create a folder in the temp folder that will not act as a remote repository
-		File remoteDir0 = File.createTempFile("remote0", "");
-		remoteDir0.delete();
-		remoteDir0.mkdirs();
-		RepositoryCache.FileKey fileKey0 = RepositoryCache.FileKey.exact(remoteDir0, FS.DETECTED);
-		Repository remoteRepo0 = fileKey0.open(false);
+		uri = getExampleUri();
+		// gitClient = new GitClientImpl(uri, cloneDir);
+		gitClient = new GitClientImpl(uri, directory);
 
-		directory0 = remoteRepo0.getDirectory().getAbsolutePath();
-
-		// Create a folder in the temp folder that will act as the remote repository
-		File remoteDir1 = File.createTempFile("remote1", "");
-		remoteDir1.delete();
-		remoteDir1.mkdirs();
-
-		// Create a bare repository
-		RepositoryCache.FileKey fileKey1 = RepositoryCache.FileKey.exact(remoteDir1, FS.DETECTED);
-		Repository remoteRepo1 = fileKey1.open(false);
-		remoteRepo1.create(true);
-
-		directory1 = remoteRepo1.getDirectory().getAbsolutePath();
-
-
-		File remoteDir2 = File.createTempFile("remote2", "");
-		remoteDir2.delete();
-		remoteDir2.mkdirs();
-
-		RepositoryCache.FileKey fileKey2 = RepositoryCache.FileKey.exact(remoteDir2, FS.DETECTED);
-		Repository remoteRepo2 = fileKey2.open(false);
-		remoteRepo2.create(true);
-
-		directory2 = remoteRepo2.getDirectory().getAbsolutePath();
-
-		File cloneDir = File.createTempFile("clone", "");
-		cloneDir.delete();
-		cloneDir.mkdirs();
-
-		try(Git git = Git.cloneRepository().setURI(remoteRepo2.getDirectory().getAbsolutePath())
-				              .setDirectory(cloneDir).setBranch("master").call()){
-			File inputFile = new File(cloneDir, "readMe.txt");
-			if(inputFile.exists()){
+		Git git = gitClient.getGit();
+		
+		try {
+			File inputFile = new File(directory, "readMe.txt");
+			if (inputFile.exists()) {
 				PrintWriter writer = new PrintWriter(inputFile.getName(), "UTF-8");
 				writer.println("New input in this File");
 				writer.close();
@@ -102,12 +84,11 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		} catch (GitAPIException e) {
 			e.printStackTrace();
 		}
-		gitClient = new GitClientImpl(directory0,projectKey1);
 	}
 
 	@AfterClass
-	public static void cleanUp(){
-		File file = new File(System.getProperty("user.home") + File.separator + "repository" + File.separator);
-		file.deleteOnExit();
+	public static void cleanUp() {
+		// File file = new File(GitClient.DEFAULT_DIR);
+		// file.deleteOnExit();
 	}
 }
