@@ -55,7 +55,6 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 
 		String uri = getExampleUri();
 		gitClient = new GitClientImpl(uri, directory);
-
 		Git git = gitClient.getGit();
 
 		try {

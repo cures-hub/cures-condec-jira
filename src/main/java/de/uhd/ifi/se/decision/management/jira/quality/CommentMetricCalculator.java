@@ -49,7 +49,7 @@ public class CommentMetricCalculator {
 		this.persistenceManager = new JiraIssueCommentPersistenceManager(projectKey);
 		this.jiraIssueTypeId = jiraIssueTypeId;
 		this.jiraIssues = getJiraIssuesForProject(projectId);
-		this.gitClient = new GitClientImpl("projectKey");
+		this.gitClient = new GitClientImpl(projectKey);
 	}
 
 	private List<Issue> getJiraIssuesForProject(long projectId) {

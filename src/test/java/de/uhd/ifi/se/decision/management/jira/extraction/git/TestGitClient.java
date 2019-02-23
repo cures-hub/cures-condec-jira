@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.git;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
@@ -13,6 +14,11 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 
 public class TestGitClient extends TestSetUpGit {
+	
+	@Test
+	public void testGitObjectExisting() {
+		assertNotNull(gitClient.getGit());
+	}
 
 	@Test
 	public void testClonedRepoExisting() {

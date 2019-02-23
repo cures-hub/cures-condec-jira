@@ -58,15 +58,14 @@ public class GitClientImpl implements GitClient {
 	}
 
 	private void pullOrClone(String uri, File directory) {
-		if (directory.exists()) {
+		// boolean isGitDirectory = RepositoryCache.FileKey.isGitRepository(directory,
+		// FS.DETECTED);
+		boolean isGitDirectory = directory.exists();
+		if (isGitDirectory) {
 			openRepository(uri, directory);
-			new Thread(() -> {
-				pull();
-			}).start();
+			pull();
 		} else {
-			new Thread(() -> {
-				cloneRepository(uri, directory);
-			}).start();
+			cloneRepository(uri, directory);
 		}
 	}
 
@@ -79,30 +78,44 @@ public class GitClientImpl implements GitClient {
 		} catch (IOException e) {
 			e.printStackTrace();
 			LOGGER.error("Git repository could not be opened.");
-			cloneRepository(uri, directory);
+			initRepository(directory);
 		}
 	}
 
 	private void pull() {
-		try {
-			git.pull().call();
-			List<RemoteConfig> remotes = git.remoteList().call();
-			for (RemoteConfig remote : remotes) {
-				git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
+		new Thread(() -> {
+			try {
+				git.pull().call();
+				List<RemoteConfig> remotes = git.remoteList().call();
+				for (RemoteConfig remote : remotes) {
+					git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
+				}
+			} catch (GitAPIException e) {
+				e.printStackTrace();
 			}
-		} catch (GitAPIException e) {
-			e.printStackTrace();
-		}
+		}).start();
+
 	}
 
 	private void cloneRepository(String uri, File directory) {
 		if (uri == null || uri.isEmpty()) {
 			return;
 		}
+		new Thread(() -> {
+			try {
+				Git.cloneRepository().setURI(uri).setDirectory(directory).setCloneAllBranches(true).call();
+				setConfig();
+			} catch (GitAPIException e) {
+				e.printStackTrace();
+				initRepository(directory);
+			}
+		}).start();
+	}
+
+	private void initRepository(File directory) {
 		try {
-			git = Git.cloneRepository().setURI(uri).setDirectory(directory).setCloneAllBranches(true).call();
-			setConfig();
-		} catch (GitAPIException e) {
+			Git.init().setDirectory(directory).call();
+		} catch (IllegalStateException | GitAPIException e) {
 			e.printStackTrace();
 		}
 	}
