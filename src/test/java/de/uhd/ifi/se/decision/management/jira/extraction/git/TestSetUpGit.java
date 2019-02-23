@@ -1,8 +1,10 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.git;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -20,7 +22,32 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 
 	protected static GitClient gitClient;
 
-	public static String getExampleUri() {
+	@BeforeClass
+	public static void setUpBeforeClass() throws IOException {
+		File directory = getExampleDirectory();
+		String uri = getExampleUri();
+		gitClient = new GitClientImpl(uri, directory);
+		makeExampleCommit();
+	}
+
+	@Before
+	public void setUp() {
+		initialization();
+	}
+
+	private static File getExampleDirectory() {
+		File directory = null;
+		try {
+			directory = File.createTempFile("clone", "");
+			directory.delete();
+			directory.mkdirs();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return directory;
+	}
+
+	private static String getExampleUri() {
 		String uri = "";
 		try {
 			File remoteDir = File.createTempFile("remote", "");
@@ -36,16 +63,8 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		return uri;
 	}
 
-	@BeforeClass
-	public static void setUpBeforeClass() throws IOException {
-		File directory = File.createTempFile("clone", "");
-		directory.delete();
-		directory.mkdirs();
-
-		String uri = getExampleUri();
-		gitClient = new GitClientImpl(uri, directory);
+	private static void makeExampleCommit() {
 		Git git = gitClient.getGit();
-
 		try {
 			File inputFile = new File(gitClient.getDirectory(), "readMe.txt");
 			if (inputFile.exists()) {
@@ -56,14 +75,8 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 			git.add().addFilepattern(inputFile.getName()).call();
 			git.commit().setMessage("TEST-12: wuofhewiuefghpwefg").setAuthor("gitTest", "gitTest@test..de").call();
 			git.push().setRemote("origin").call();
-		} catch (GitAPIException e) {
+		} catch (GitAPIException | FileNotFoundException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Before
-	public void setUp() {
-		initialization();
-
 	}
 }

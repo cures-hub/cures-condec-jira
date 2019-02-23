@@ -122,7 +122,6 @@ public class CommentMetricCalculator {
 		return numberOfRelevantSentences;
 	}
 
-	// TODO This method does not work. Why?
 	public Map<String, Integer> getNumberOfCommitsForJiraIssues() {
 		Map<String, Integer> resultMap = new HashMap<String, Integer>();
 		for (Issue jiraIssue : jiraIssues) {

@@ -17,7 +17,6 @@ public class TestGitClient extends TestSetUpGit {
 
 	@Test
 	public void testGitObjectExisting() {
-		// ComponentGetter.setTransactionTemplate(new MockTransactionTemplateGitUri());
 		assertNotNull(gitClient.getGit());
 	}
 
