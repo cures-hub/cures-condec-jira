@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import java.io.File;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jgit.api.Git;
@@ -121,14 +122,14 @@ public interface GitClient {
 	static String getJiraIssueKey(String commitMessage) {
 		if (!commitMessage.isEmpty()) {
 			String[] split = commitMessage.split("[:+ ]");
-			return split[0];
-		} else {
-			return "";
+			return split[0].toUpperCase(Locale.ENGLISH);
 		}
+		return "";
 	}
 
 	/**
 	 * Returns the git object.
+	 * 
 	 * @return git object.
 	 */
 	public Git getGit();
