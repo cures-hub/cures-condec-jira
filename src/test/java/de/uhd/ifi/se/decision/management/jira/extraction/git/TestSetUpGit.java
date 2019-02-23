@@ -9,10 +9,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.util.FS;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.mock.MockProjectManager;
@@ -26,13 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 
 public class TestSetUpGit extends TestSetUpWithIssues {
 
-	protected String projectKey;
-	protected String uri;
 	protected GitClient gitClient;
-	protected File directory;
-
-	@Rule
-	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	private String getExampleUri() {
 		String uri = "";
@@ -44,7 +35,6 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 			Repository remoteRepo = fileKey.open(false);
 			remoteRepo.create(true);
 			uri = remoteRepo.getDirectory().getAbsolutePath();
-			System.out.println(uri);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -52,25 +42,22 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 	}
 
 	@Before
-	public void setUp() throws IOException  {
+	public void setUp() throws IOException {
 		initialization();
 		ProjectManager projectManager = ComponentAccessor.getProjectManager();
 		Project testingProject = new MockProject(4, "TEST");
 		((MockProject) testingProject).setKey("TEST");
 		((MockProjectManager) projectManager).addProject(testingProject);
 
-		projectKey = projectManager.getProjectByCurrentKey("TEST").getKey();
-
-		directory = File.createTempFile("clone", "");
+		File directory = File.createTempFile("clone", "");
 		directory.delete();
 		directory.mkdirs();
 
-		uri = getExampleUri();
-		// gitClient = new GitClientImpl(uri, cloneDir);
+		String uri = getExampleUri();
 		gitClient = new GitClientImpl(uri, directory);
 
 		Git git = gitClient.getGit();
-		
+
 		try {
 			File inputFile = new File(directory, "readMe.txt");
 			if (inputFile.exists()) {
@@ -84,11 +71,5 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		} catch (GitAPIException e) {
 			e.printStackTrace();
 		}
-	}
-
-	@AfterClass
-	public static void cleanUp() {
-		// File file = new File(GitClient.DEFAULT_DIR);
-		// file.deleteOnExit();
 	}
 }

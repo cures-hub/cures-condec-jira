@@ -3,7 +3,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.git;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +16,7 @@ public class TestGitClient extends TestSetUpGit {
 
 	@Test
 	public void testClonedRepoExisting() {
-		File file = new File(uri);
-		assertTrue(file.exists());
+		assertTrue(gitClient.getDirectory().exists());
 	}
 
 	@Test

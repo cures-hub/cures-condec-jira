@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.quality.commentmetriccalculator;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
@@ -24,6 +25,7 @@ public class TestGetLinksToIssueTypeMap extends TestSetupCalculator {
 	@Test
 	@NonTransactional
 	public void testTypeFilled() {
-		System.out.println(calculator.getLinksToIssueTypeMap(KnowledgeType.ARGUMENT));
+		Object map = calculator.getLinksToIssueTypeMap(KnowledgeType.ARGUMENT);
+		assertEquals(map.toString(), "{Links from problem to Argument=0, No links from problem to Argument=0}");
 	}
 }

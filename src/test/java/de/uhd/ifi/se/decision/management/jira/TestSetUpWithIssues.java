@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 
