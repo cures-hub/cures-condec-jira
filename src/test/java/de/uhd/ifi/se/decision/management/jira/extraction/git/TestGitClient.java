@@ -14,9 +14,10 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 
 public class TestGitClient extends TestSetUpGit {
-	
+
 	@Test
 	public void testGitObjectExisting() {
+		// ComponentGetter.setTransactionTemplate(new MockTransactionTemplateGitUri());
 		assertNotNull(gitClient.getGit());
 	}
 

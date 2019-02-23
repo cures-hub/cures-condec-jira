@@ -10,12 +10,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.util.FS;
 import org.junit.Before;
-
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.mock.MockProjectManager;
-import com.atlassian.jira.project.MockProject;
-import com.atlassian.jira.project.Project;
-import com.atlassian.jira.project.ProjectManager;
+import org.junit.BeforeClass;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
@@ -23,9 +18,9 @@ import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 
 public class TestSetUpGit extends TestSetUpWithIssues {
 
-	protected GitClient gitClient;
+	protected static GitClient gitClient;
 
-	private String getExampleUri() {
+	public static String getExampleUri() {
 		String uri = "";
 		try {
 			File remoteDir = File.createTempFile("remote", "");
@@ -41,14 +36,8 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		return uri;
 	}
 
-	@Before
-	public void setUp() throws IOException {
-		initialization();
-		ProjectManager projectManager = ComponentAccessor.getProjectManager();
-		Project testingProject = new MockProject(4, "TEST");
-		((MockProject) testingProject).setKey("TEST");
-		((MockProjectManager) projectManager).addProject(testingProject);
-
+	@BeforeClass
+	public static void setUpBeforeClass() throws IOException {
 		File directory = File.createTempFile("clone", "");
 		directory.delete();
 		directory.mkdirs();
@@ -58,7 +47,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		Git git = gitClient.getGit();
 
 		try {
-			File inputFile = new File(directory, "readMe.txt");
+			File inputFile = new File(gitClient.getDirectory(), "readMe.txt");
 			if (inputFile.exists()) {
 				PrintWriter writer = new PrintWriter(inputFile.getName(), "UTF-8");
 				writer.println("New input in this File");
@@ -70,5 +59,11 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		} catch (GitAPIException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Before
+	public void setUp() {
+		initialization();
+
 	}
 }
