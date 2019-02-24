@@ -11,6 +11,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.util.FS;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
@@ -67,8 +68,8 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 	private static void makeExampleCommit(String filename, String commitMessage) {
 		Git git = gitClient.getGit();
 		try {
-			File inputFile = new File(gitClient.getDirectory(), filename);
-			PrintWriter writer = new PrintWriter(inputFile.getName(), "UTF-8");
+			File inputFile = new File(gitClient.getDirectory().getParent(), filename);
+			PrintWriter writer = new PrintWriter(inputFile, "UTF-8");
 			writer.println("Very interesting text in this file.");
 			writer.close();
 			git.add().addFilepattern(inputFile.getName()).call();
@@ -77,5 +78,10 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		} catch (GitAPIException | FileNotFoundException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@AfterClass
+	public static void tidyUp() {
+		gitClient.deleteRepository();
 	}
 }

@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.git;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -45,4 +46,12 @@ public class TestGitClient extends TestSetUpGit {
 		gitClient.close();
 		assertNotNull(gitClient);
 	}
+
+	@Test
+	public void testSetGit() {
+		GitClient newGitClient = new GitClientImpl();
+		newGitClient.setGit(gitClient.getGit());
+		assertEquals(gitClient.getGit(), newGitClient.getGit());
+	}
+
 }

@@ -16,9 +16,9 @@ public class TestDeleteRepository extends TestSetUpGit {
 		assertNotNull(gitClient);
 	}
 
-	@Test
-	public void testDeleteGitExisting() {
-		gitClient.deleteRepository();
-		assertNotNull(gitClient);
-	}
+//	@Test
+//	public void testDeleteGitExisting() {
+//		gitClient.deleteRepository();
+//		assertNotNull(gitClient);
+//	}
 }

@@ -12,6 +12,9 @@ import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+
 public class TestGetDiff extends TestSetUpGit {
 
 	@Test
@@ -24,8 +27,7 @@ public class TestGetDiff extends TestSetUpGit {
 	public void getDiffsForRevCommitExisting() {
 		List<RevCommit> commits = gitClient.getCommits("TEST-12");
 		Map<DiffEntry, EditList> diff = gitClient.getDiff(commits.get(0));
-		assertEquals(0, diff.size());
-		assertEquals(new HashMap<DiffEntry, EditList>(), diff);
+		assertEquals(1, diff.size());
 	}
 
 	@Test
@@ -49,6 +51,16 @@ public class TestGetDiff extends TestSetUpGit {
 	@Test
 	public void getDiffForJiraIssueKeyExisting() {
 		Map<DiffEntry, EditList> diff = gitClient.getDiff("Test-12");
+		assertEquals(0, diff.size());
+		assertEquals(new HashMap<DiffEntry, EditList>(), diff);
+	}	
+
+	@Test
+	public void getDiffsGitNull() {
+		List<RevCommit> commits = gitClient.getCommits("TEST-12");
+		
+		GitClient newGitClient = new GitClientImpl();
+		Map<DiffEntry, EditList> diff = newGitClient.getDiff(commits.get(0));
 		assertEquals(0, diff.size());
 		assertEquals(new HashMap<DiffEntry, EditList>(), diff);
 	}

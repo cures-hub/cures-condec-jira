@@ -43,7 +43,6 @@ public class GitClientImpl implements GitClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitClientImpl.class);
 
 	public GitClientImpl() {
-
 	}
 
 	public GitClientImpl(String uri, File directory) {
@@ -239,20 +238,16 @@ public class GitClientImpl implements GitClient {
 			return;
 		}
 		close();
-		File directory = this.getDirectory();
-		if (directory.exists()) {
-			deleteFolder(directory);
-		}
+		File directory = this.getDirectory().getParentFile();
+		deleteFolder(directory);
 	}
 
 	private static void deleteFolder(File directory) {
-		if (directory.listFiles() != null) {
-			for (File file : directory.listFiles()) {
-				if (file.isDirectory()) {
-					deleteFolder(file);
-				}
-				file.delete();
+		for (File file : directory.listFiles()) {
+			if (file.isDirectory()) {
+				deleteFolder(file);
 			}
+			file.delete();
 		}
 		directory.delete();
 	}

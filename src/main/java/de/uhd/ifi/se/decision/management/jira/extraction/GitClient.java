@@ -85,9 +85,9 @@ public interface GitClient {
 	Repository getRepository();
 
 	/**
-	 * Get the path to the repository.
+	 * Get the path to the .git folder.
 	 * 
-	 * @return path to the repository as a File object.
+	 * @return path to the .git folder as a File object.
 	 */
 	File getDirectory();
 
