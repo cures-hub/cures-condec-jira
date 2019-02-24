@@ -135,4 +135,12 @@ public interface GitClient {
 	 * @return git object.
 	 */
 	public Git getGit();
+
+	/**
+	 * Sets the git object.
+	 * 
+	 * @param git
+	 *            object.
+	 */
+	public void setGit(Git git);
 }

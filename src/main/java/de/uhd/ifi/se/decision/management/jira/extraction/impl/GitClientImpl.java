@@ -41,9 +41,9 @@ public class GitClientImpl implements GitClient {
 
 	private Git git;
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitClientImpl.class);
-	
+
 	public GitClientImpl() {
-		
+
 	}
 
 	public GitClientImpl(String uri, File directory) {
@@ -295,5 +295,10 @@ public class GitClientImpl implements GitClient {
 	@Override
 	public Git getGit() {
 		return git;
+	}
+
+	@Override
+	public void setGit(Git git) {
+		this.git = git;
 	}
 }
