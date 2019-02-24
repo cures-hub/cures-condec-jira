@@ -5,5 +5,3 @@ coverage:
   precision: 2
   round: up
   range: "50...90"
-ignore:
-  -"*/persistence/activeobjectstrategy/ActiveObjectStrategyTestSetUp.java"

@@ -41,6 +41,10 @@ public class GitClientImpl implements GitClient {
 
 	private Git git;
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitClientImpl.class);
+	
+	public GitClientImpl() {
+		
+	}
 
 	public GitClientImpl(String uri, File directory) {
 		pullOrClone(uri, directory);
@@ -69,9 +73,6 @@ public class GitClientImpl implements GitClient {
 	}
 
 	private void openRepository(File directory) {
-		if (git != null) {
-			close();
-		}
 		try {
 			git = Git.open(directory);
 		} catch (IOException e) {
@@ -210,7 +211,7 @@ public class GitClientImpl implements GitClient {
 	}
 
 	private RevCommit getParent(RevCommit revCommit) {
-		RevCommit parentCommit;
+		RevCommit parentCommit = null;
 		try {
 			Repository repository = this.getRepository();
 			RevWalk revWalk = new RevWalk(repository);
@@ -219,7 +220,6 @@ public class GitClientImpl implements GitClient {
 		} catch (Exception e) {
 			System.err.println("Could not get the parent commit.");
 			e.printStackTrace();
-			return null;
 		}
 		return parentCommit;
 	}
@@ -270,8 +270,8 @@ public class GitClientImpl implements GitClient {
 			while (iterator.hasNext()) {
 				RevCommit commit = iterator.next();
 				// TODO Improve identification of jira issue key in commit message
-				String commitString = GitClient.getJiraIssueKey(commit.getFullMessage());
-				if (commitString.equalsIgnoreCase(jiraIssueKey)) {
+				String jiraIssueKeyInCommitMessage = GitClient.getJiraIssueKey(commit.getFullMessage());
+				if (jiraIssueKeyInCommitMessage.equalsIgnoreCase(jiraIssueKey)) {
 					commitsForJiraIssue.add(commit);
 					LOGGER.info("Commit message for key " + jiraIssueKey + ": " + commit.getShortMessage());
 				}

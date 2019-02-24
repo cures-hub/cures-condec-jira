@@ -27,6 +27,7 @@ public interface GitClient {
 	/**
 	 * Retrieves the commits with the JIRA issue key in their commit message.
 	 * 
+	 * @see RevCommit
 	 * @param jiraIssueKey
 	 *            JIRA issue key that is searched for in commit messages.
 	 * @return commits with the JIRA issue key in their commit message as a list of
@@ -37,6 +38,7 @@ public interface GitClient {
 	/**
 	 * Get a map of diff entries and the respective edit lists for a commit.
 	 * 
+	 * @see RevCommit
 	 * @param revCommit
 	 *            commit as a RevCommit object.
 	 * @return map of diff entries and respective edit lists.

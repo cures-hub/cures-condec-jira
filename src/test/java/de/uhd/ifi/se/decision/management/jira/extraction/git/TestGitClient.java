@@ -1,17 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.git;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.EditList;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
+
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 
 public class TestGitClient extends TestSetUpGit {
 
@@ -26,34 +22,42 @@ public class TestGitClient extends TestSetUpGit {
 	}
 
 	@Test
-	public void getDiffNullRevCommit() {
-		Map<DiffEntry, EditList> gitDiffs = gitClient.getDiff((RevCommit) null);
-		assertEquals(gitDiffs, new HashMap<DiffEntry, EditList>());
+	public void testGetRepositoryGitNull() {
+		GitClient gitClient = new GitClientImpl();
+		assertNull(gitClient.getRepository());
 	}
 
 	@Test
-	public void getDiffNullList() {
-		Map<DiffEntry, EditList> gitDiffs = gitClient.getDiff((List<RevCommit>) null);
-		assertTrue(gitDiffs == null);
+	public void testGetDirectoryGitNull() {
+		GitClient gitClient = new GitClientImpl();
+		assertNull(gitClient.getDirectory());
 	}
 
 	@Test
-	public void getDiffNullString() {
-		Map<DiffEntry, EditList> gitDiffs = gitClient.getDiff((String) null);
-		assertTrue(gitDiffs == null);
+	public void testCloseGitNull() {
+		GitClient gitClient = new GitClientImpl();
+		gitClient.close();
+		assertNotNull(gitClient);
 	}
 
 	@Test
-	public void getNoDiffsForNoCommits() {
-		String commits = "{" + "\"commits\":[" + "" + "]" + "}";
-		Map<DiffEntry, EditList> gitDiffs = gitClient.getDiff(commits);
-		assertTrue(gitDiffs == null);
+	public void testCloseGitExisting() {
+		gitClient.close();
+		assertNotNull(gitClient);
 	}
-
+	
 	@Test
-	public void getDiffsForCommits() {
-		List<RevCommit> commits = gitClient.getCommits("TEST-12");
-		Map<DiffEntry, EditList> gitDiffs = gitClient.getDiff(commits);
-		assertEquals(0, gitDiffs.size(), 0.0);
+	public void testDeleteGitNull() {
+		GitClient gitClient = new GitClientImpl();
+		gitClient.deleteRepository();
+		assertNotNull(gitClient);
+	}
+	
+	@Test
+	public void testDeleteGitExisting() {
+		GitClient newGitClient = new GitClientImpl();
+		newGitClient.setGit(gitClient.getGit());
+		gitClient.deleteRepository();
+		assertNotNull(gitClient);
 	}
 }

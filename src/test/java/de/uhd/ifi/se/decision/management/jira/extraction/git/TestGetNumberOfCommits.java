@@ -18,6 +18,6 @@ public class TestGetNumberOfCommits extends TestSetUpGit {
 
 	@Test
 	public void testJiraIssueKeyExisting() {
-		assertEquals(1, gitClient.getNumberOfCommits("TEST-12"));
+		assertEquals(2, gitClient.getNumberOfCommits("TEST-12"));
 	}
 }

@@ -27,7 +27,8 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		File directory = getExampleDirectory();
 		String uri = getExampleUri();
 		gitClient = new GitClientImpl(uri, directory);
-		makeExampleCommit();
+		makeExampleCommit("GodClass.java", "TEST-12: Develop great software");
+		makeExampleCommit("readMe.txt", "TEST-12: Explain how the great software works");
 	}
 
 	@Before
@@ -63,17 +64,15 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		return uri;
 	}
 
-	private static void makeExampleCommit() {
+	private static void makeExampleCommit(String filename, String commitMessage) {
 		Git git = gitClient.getGit();
 		try {
-			File inputFile = new File(gitClient.getDirectory(), "readMe.txt");
-			if (inputFile.exists()) {
-				PrintWriter writer = new PrintWriter(inputFile.getName(), "UTF-8");
-				writer.println("New input in this File");
-				writer.close();
-			}
+			File inputFile = new File(gitClient.getDirectory(), filename);
+			PrintWriter writer = new PrintWriter(inputFile.getName(), "UTF-8");
+			writer.println("Very interesting text in this file.");
+			writer.close();
 			git.add().addFilepattern(inputFile.getName()).call();
-			git.commit().setMessage("TEST-12: wuofhewiuefghpwefg").setAuthor("gitTest", "gitTest@test..de").call();
+			git.commit().setMessage(commitMessage).setAuthor("gitTest", "gitTest@test.de").call();
 			git.push().setRemote("origin").call();
 		} catch (GitAPIException | FileNotFoundException | UnsupportedEncodingException e) {
 			e.printStackTrace();
