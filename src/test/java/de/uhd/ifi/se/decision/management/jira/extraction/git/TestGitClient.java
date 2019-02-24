@@ -35,19 +35,6 @@ public class TestGitClient extends TestSetUpGit {
 	}
 
 	@Test
-	public void testCloseGitNull() {
-		GitClient gitClient = new GitClientImpl();
-		gitClient.close();
-		assertNotNull(gitClient);
-	}
-
-	@Test
-	public void testCloseGitExisting() {
-		gitClient.close();
-		assertNotNull(gitClient);
-	}
-
-	@Test
 	public void testSetGit() {
 		GitClient newGitClient = new GitClientImpl();
 		newGitClient.setGit(gitClient.getGit());
