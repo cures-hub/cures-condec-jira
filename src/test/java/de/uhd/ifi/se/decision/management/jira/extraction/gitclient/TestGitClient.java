@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.git;
+package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

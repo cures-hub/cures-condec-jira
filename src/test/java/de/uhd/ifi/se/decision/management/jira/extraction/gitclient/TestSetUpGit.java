@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.git;
+package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
 import java.io.File;
 import java.io.FileNotFoundException;
