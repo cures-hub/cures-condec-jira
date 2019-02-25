@@ -214,6 +214,7 @@ public class GitClientImpl implements GitClient {
 		try {
 			Repository repository = this.getRepository();
 			RevWalk revWalk = new RevWalk(repository);
+			//TODO parentCommit is null (exception called)
 			parentCommit = revWalk.parseCommit(revCommit.getParent(0).getId());
 			revWalk.close();
 		} catch (Exception e) {
