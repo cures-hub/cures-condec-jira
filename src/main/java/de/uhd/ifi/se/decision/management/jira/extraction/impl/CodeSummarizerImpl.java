@@ -49,9 +49,6 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 			return "";
 		}
 		Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssueKey);
-		if (diff == null) {
-			return "";
-		}
 		return createSummary(diff);
 	}
 
@@ -61,9 +58,6 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 			return "";
 		}
 		Map<DiffEntry, EditList> diff = gitClient.getDiff(commit);
-		if (diff == null) {
-			return "";
-		}
 		return createSummary(diff);
 	}
 

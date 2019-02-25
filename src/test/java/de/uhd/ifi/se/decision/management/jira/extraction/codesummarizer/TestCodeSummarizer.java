@@ -60,6 +60,12 @@ public class TestCodeSummarizer extends TestSetUpGit {
 	}
 
 	@Test
+	public void testRevCommitFilled() {
+		List<RevCommit> commits = gitClient.getCommits("TEST-12");
+		assertEquals("The following classes were changed: *GodClass*\n", summarizer.createSummary(commits.get(0)));
+	}
+
+	@Test
 	public void testDiffNull() {
 		assertEquals("", summarizer.createSummary((Map<DiffEntry, EditList>) null));
 	}
