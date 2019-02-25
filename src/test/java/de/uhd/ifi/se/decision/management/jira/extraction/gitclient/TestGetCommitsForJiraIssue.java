@@ -28,7 +28,7 @@ public class TestGetCommitsForJiraIssue extends TestSetUpGit {
 	public void testJiraIssueKeyExisting() {
 		List<RevCommit> commits = gitClient.getCommits("TEST-12");
 		assertEquals(2, commits.size());
-		assertEquals("TEST-12: Develop great software", commits.get(1).getShortMessage());
+		assertEquals("TEST-12: Develop great software", commits.get(0).getShortMessage());
 	}
 
 	@Test

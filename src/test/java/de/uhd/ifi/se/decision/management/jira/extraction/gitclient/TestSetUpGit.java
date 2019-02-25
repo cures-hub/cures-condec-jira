@@ -28,8 +28,9 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		File directory = getExampleDirectory();
 		String uri = getExampleUri();
 		gitClient = new GitClientImpl(uri, directory);
-		makeExampleCommit("GodClass.java", "TEST-12: Develop great software");
-		makeExampleCommit("readMe.txt", "TEST-12: Explain how the great software works");
+		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
+		makeExampleCommit("readMe.txt", "Self-explanatory, ReadMe not necessary.", "TEST-12: Explain how the great software works");
+		makeExampleCommit("GodClass.java", "public class GodClass {}", "TEST-12: Develop great software");
 	}
 
 	@Before
@@ -65,12 +66,12 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		return uri;
 	}
 
-	private static void makeExampleCommit(String filename, String commitMessage) {
+	private static void makeExampleCommit(String filename, String content, String commitMessage) {
 		Git git = gitClient.getGit();
 		try {
 			File inputFile = new File(gitClient.getDirectory().getParent(), filename);
 			PrintWriter writer = new PrintWriter(inputFile, "UTF-8");
-			writer.println("Very interesting text in this file.");
+			writer.println(content);
 			writer.close();
 			git.add().addFilepattern(inputFile.getName()).call();
 			git.commit().setMessage(commitMessage).setAuthor("gitTest", "gitTest@test.de").call();
