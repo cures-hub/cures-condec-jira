@@ -1,9 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.persistence;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -530,6 +527,26 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		createLinksForNonLinkedElementsForIssue(element.getJiraIssueId());
 
 		return issue;
+	}
+
+	/**
+	 *
+	 * @param projectKey
+	 * @return Map with pair of Knowledge Types and Comment strings
+	 */
+	public Map<KnowledgeType, String> getListOfUserValidatedSentneces(String projectKey){
+		if (projectKey == null || projectKey.equals("")) {
+			return new HashMap<>();
+		}
+		DecisionKnowledgeInCommentEntity[] sentencesInProject = ACTIVE_OBJECTS
+				                                                        .find(DecisionKnowledgeInCommentEntity.class,
+						                                                        Query.select().where("PROJECT_KEY = ? and VALIDATED = ?", projectKey, true));
+		Map<KnowledgeType, String> trainMap = new HashMap<>();
+		for (DecisionKnowledgeInCommentEntity databaseEntry : sentencesInProject) {
+			Sentence  sentence = new SentenceImpl(databaseEntry);
+			trainMap.put(sentence.getType(), sentence.getTextFromComment());
+		}
+		return trainMap;
 	}
 
 	private static int removeSentenceFromComment(Sentence element) {

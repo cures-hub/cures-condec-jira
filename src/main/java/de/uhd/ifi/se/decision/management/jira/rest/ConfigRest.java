@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +14,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationTrainer;
+import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationTrainerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -364,6 +367,14 @@ public class ConfigRest {
 					       .entity(ImmutableMap.of("error",
 							       "Automatic classification is disabled for this project. " +
 									       "So no training can be executed")).build();
+		}
+		try {
+			JiraIssueCommentPersistenceManager manager = new JiraIssueCommentPersistenceManager(projectKey);
+			Map<KnowledgeType, String> fainGrainedMap = manager.getListOfUserValidatedSentneces(projectKey);
+
+			ClassificationTrainer trainer = new ClassificationTrainerImpl(fainGrainedMap);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
 	}
