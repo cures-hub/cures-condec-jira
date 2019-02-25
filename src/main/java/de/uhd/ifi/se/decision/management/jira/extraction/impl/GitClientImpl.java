@@ -136,9 +136,7 @@ public class GitClientImpl implements GitClient {
 		}
 		// TODO Check if this is always correct
 		RevCommit firstCommit = commits.get(commits.size() - 1);
-		System.out.println(firstCommit.getShortMessage());
 		RevCommit lastCommit = commits.get(0);
-		System.out.println(lastCommit.getShortMessage());
 		return getDiff(firstCommit, lastCommit);
 	}
 
@@ -214,7 +212,6 @@ public class GitClientImpl implements GitClient {
 		try {
 			Repository repository = this.getRepository();
 			RevWalk revWalk = new RevWalk(repository);
-			//TODO parentCommit is null (exception called)
 			parentCommit = revWalk.parseCommit(revCommit.getParent(0).getId());
 			revWalk.close();
 		} catch (Exception e) {
