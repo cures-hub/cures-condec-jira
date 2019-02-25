@@ -12,7 +12,7 @@ import javax.ws.rs.core.Response;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestSetKnowledgeExtractedFormIssues extends TestConfigSuper {
+public class TestSetKnowledgeExtractedFromIssues extends TestConfigSuper {
     private static final String INVALID_EXTRACTEDISSUES = "isKnowledgeExtractedFromIssues = null";
     @Test
     public void testRequestNullProjectKeyNullIsKnowledgeExtractedNull(){
