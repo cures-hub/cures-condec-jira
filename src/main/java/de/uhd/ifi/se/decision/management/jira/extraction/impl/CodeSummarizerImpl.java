@@ -45,6 +45,9 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 
 	@Override
 	public String createSummary(String jiraIssueKey) {
+		if(jiraIssueKey == null || jiraIssueKey.equalsIgnoreCase("")){
+			return "";
+		}
 		Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssueKey);
 		if (diff == null) {
 			return "";
@@ -54,6 +57,9 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 	
 	@Override
 	public String createSummary(RevCommit commit) {
+		if(commit == null){
+			return "";
+		}
 		Map<DiffEntry, EditList> diff = gitClient.getDiff(commit);
 		if (diff == null) {
 			return "";
@@ -63,10 +69,10 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 
 	@Override
 	public String createSummary(Map<DiffEntry, EditList> diff) {
-		String summary = "The following classes were changed: ";
-		if (diff == null) {
+		if(diff == null || diff.size() == 0){
 			return "";
 		}
+		String summary = "The following classes were changed: ";
 		for (Map.Entry<DiffEntry, EditList> entry : diff.entrySet()) {
 			summary += createSummaryOfDiffEntry(entry.getKey(), entry.getValue());
 		}
