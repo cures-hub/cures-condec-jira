@@ -345,20 +345,17 @@ public class KnowledgeRest {
 		return Response.ok(summary).build();
 	}
 
-	@Path("getAllElementsMatchingQuery")
+	@Path("/getElements")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getAllElementsMatchingQuery(@QueryParam("resultType") String resultType,
-			@QueryParam("projectKey") String iProjectKey, @QueryParam("query") String query,
-			@QueryParam("elementKey") String iElementKey, @Context HttpServletRequest request) {
-		if (resultType == null || query == null || request == null) {
+	public Response getElements(@QueryParam("resultType") String resultType,
+			@QueryParam("projectKey") String projectKey, @QueryParam("query") String query,
+			@QueryParam("elementKey") String elementKey, @Context HttpServletRequest request) {
+		if (resultType == null || query == null || request == null || projectKey == null) {
 			return Response.status(Status.BAD_REQUEST).entity(
-					ImmutableMap.of("error", "Getting elements matching the query failed due to a bad request."))
+					ImmutableMap.of("error", "Getting elements failed due to a bad request."))
 					.build();
 		}
-		String elementKey = helperCheckIfNotNullThenSetValue(iElementKey);
-
-		String projectKey = helperCheckIfNullThenGetProjectKey(iProjectKey, elementKey);
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		List<DecisionKnowledgeElement> queryResult = new ArrayList<>();
@@ -392,15 +389,7 @@ public class KnowledgeRest {
 			return Response.ok(queryResult).build();
 		}
 	}
-
-	private String getProjectKey(String elementKey) {
-		return elementKey.split("-")[0];
-	}
-
-	/**
-	 * REST HELPERS to avoid doubled code:
-	 **/
-
+	
 	private List<DecisionKnowledgeElement> getHelperMatchedQueryElements(ApplicationUser user, String projectKey,
 			String query) {
 		GraphFiltering filter = new GraphFiltering(projectKey, query, user);
@@ -445,25 +434,5 @@ public class KnowledgeRest {
 			}
 		}
 		return elementsQueryLinked;
-	}
-
-	private String helperCheckIfNotNullThenSetValue(String iValue) {
-		String result;
-		if (iValue != null) {
-			result = iValue;
-		} else {
-			result = "";
-		}
-		return result;
-	}
-
-	private String helperCheckIfNullThenGetProjectKey(String iProjectKey, String elementKey) {
-		String projectKey;
-		if (iProjectKey == null) {
-			projectKey = getProjectKey(elementKey);
-		} else {
-			projectKey = iProjectKey;
-		}
-		return projectKey;
 	}
 }
