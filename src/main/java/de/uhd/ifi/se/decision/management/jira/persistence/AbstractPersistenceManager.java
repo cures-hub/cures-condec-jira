@@ -391,7 +391,7 @@ public abstract class AbstractPersistenceManager {
 	public abstract List<Link> getInwardLinks(DecisionKnowledgeElement element);
 
 	/**
-	 * Get all linked elements of the decision knowledge element for a project. It
+	 * Get all adjacent elements of the decision knowledge element for a project. It
 	 * does not matter whether this decision knowledge element is the source or the
 	 * destination element.
 	 *
@@ -399,9 +399,9 @@ public abstract class AbstractPersistenceManager {
 	 * @see DecisionKnowledgeProject
 	 * @param element
 	 *            decision knowledge element with id in database.
-	 * @return list of linked elements.
+	 * @return list of adjacent elements.
 	 */
-	public List<DecisionKnowledgeElement> getLinkedElements(DecisionKnowledgeElement element) {
+	public List<DecisionKnowledgeElement> getAdjacentElements(DecisionKnowledgeElement element) {
 		List<DecisionKnowledgeElement> linkedElements = new ArrayList<DecisionKnowledgeElement>();
 		linkedElements.addAll(this.getElementsLinkedWithOutwardLinks(element));
 		linkedElements.addAll(this.getElementsLinkedWithInwardLinks(element));
@@ -409,7 +409,7 @@ public abstract class AbstractPersistenceManager {
 	}
 
 	/**
-	 * Get all linked elements of the decision knowledge element for a project. It
+	 * Get all adjacent elements of the decision knowledge element for a project. It
 	 * does not matter whether this decision knowledge element is the source or the
 	 * destination element.
 	 *
@@ -418,11 +418,11 @@ public abstract class AbstractPersistenceManager {
 	 * @param id
 	 *            id of a decision knowledge element in database. The id is
 	 *            different to the key.
-	 * @return list of linked elements.
+	 * @return list of adjacent elements.
 	 */
-	public List<DecisionKnowledgeElement> getLinkedElements(long id) {
+	public List<DecisionKnowledgeElement> getAdjacentElements(long id) {
 		DecisionKnowledgeElement element = this.getDecisionKnowledgeElement(id);
-		return this.getLinkedElements(element);
+		return this.getAdjacentElements(element);
 	}
 
 	/**
@@ -469,7 +469,7 @@ public abstract class AbstractPersistenceManager {
 		}
 		elements.remove(element);
 
-		List<DecisionKnowledgeElement> linkedElements = this.getLinkedElements(element);
+		List<DecisionKnowledgeElement> linkedElements = this.getAdjacentElements(element);
 		elements.removeAll(linkedElements);
 
 		return elements;

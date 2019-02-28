@@ -66,10 +66,10 @@ public class KnowledgeRest {
 				.entity(ImmutableMap.of("error", "Decision knowledge element was not found for the given id.")).build();
 	}
 
-	@Path("/getLinkedElements")
+	@Path("/getAdjacentElements")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getLinkedElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
+	public Response getAdjacentElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
 			@QueryParam("documentationLocation") String documentationLocation) {
 		if (projectKey == null || id <= 0) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
@@ -78,7 +78,7 @@ public class KnowledgeRest {
 		}
 		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(projectKey,
 				documentationLocation);
-		List<DecisionKnowledgeElement> linkedDecisionKnowledgeElements = persistenceManager.getLinkedElements(id);
+		List<DecisionKnowledgeElement> linkedDecisionKnowledgeElements = persistenceManager.getAdjacentElements(id);
 		return Response.ok(linkedDecisionKnowledgeElements).build();
 	}
 
@@ -273,7 +273,6 @@ public class KnowledgeRest {
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error", "The documentation location could not be changed.")).build();
-
 	}
 
 	@Path("/setSentenceIrrelevant")
@@ -360,6 +359,7 @@ public class KnowledgeRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		List<DecisionKnowledgeElement> queryResult = new ArrayList<>();
 		List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
+		
 		try {
 			switch (resultType) {
 			case "ELEMENTS_QUERY":

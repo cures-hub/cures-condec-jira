@@ -71,7 +71,7 @@ public class Treant {
 		if (graph == null) {
 			graph = new GraphImpl(element);
 		}
-		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getLinkedElementsAndLinks(element);
+		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getAdjacentElementsAndLinks(element);
 
 		boolean isCollapsed = false;
 		if (currentDepth == depth && childrenAndLinks.size() != 0) {

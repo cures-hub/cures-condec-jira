@@ -298,7 +298,7 @@ public class CommentMetricCalculator {
 		if (element == null || element.getProject() == null || element.getType() == KnowledgeType.OTHER) {
 			return new Node();
 		}
-		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getLinkedElementsAndLinks(element);
+		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getAdjacentElementsAndLinks(element);
 		Node node;
 		if (link != null) {
 			node = new Node(element, link, false, false);

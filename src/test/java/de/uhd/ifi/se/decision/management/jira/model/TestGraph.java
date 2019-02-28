@@ -69,21 +69,21 @@ public class TestGraph extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testGetLinkedElementsNull() {
-		assertEquals(0, graph.getLinkedElements(null).size());
+	public void testGetAdjacentElementsNull() {
+		assertEquals(0, graph.getAdjacentElements(null).size());
 	}
 
 	@Test
 	@NonTransactional
-	public void testGetLinkedElementsEmpty() {
+	public void testGetAdjacentElementsEmpty() {
 		DecisionKnowledgeElement emptyElement = new DecisionKnowledgeElementImpl();
 		emptyElement.setDocumentationLocation(DocumentationLocation.JIRAISSUE);
-		assertEquals(0, graph.getLinkedElements(emptyElement).size());
+		assertEquals(0, graph.getAdjacentElements(emptyElement).size());
 	}
 
 	@Test
 	@NonTransactional
-	public void testGetLinkedElementsFilled() {
+	public void testGetAdjacentElementsFilled() {
 		JiraIssuePersistenceManager issueStrategy = new JiraIssuePersistenceManager("TEST");
 		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		Project project = ComponentAccessor.getProjectManager().getProjectByCurrentKey("TEST");
@@ -119,20 +119,20 @@ public class TestGraph extends TestSetUpWithIssues {
 			}
 			i++;
 		}
-		System.out.println(graph.getLinkedElements(decision).size());
+		System.out.println(graph.getAdjacentElements(decision).size());
 	}
 
 	@Test
-	public void testGetLinkedElementsAndLinksNull() {
-		assertEquals(0, graph.getLinkedElementsAndLinks(null).size());
+	public void testGetAdjacentElementsAndLinksNull() {
+		assertEquals(0, graph.getAdjacentElementsAndLinks(null).size());
 	}
 
 	@Test
 	@NonTransactional
-	public void testGetLinkedElementsAndLinksEmpty() {
+	public void testGetAdjacentElementsAndLinksEmpty() {
 		DecisionKnowledgeElement emptyElement = new DecisionKnowledgeElementImpl();
 		emptyElement.setDocumentationLocation(DocumentationLocation.JIRAISSUE);
-		assertEquals(0, graph.getLinkedElements(emptyElement).size());
+		assertEquals(0, graph.getAdjacentElements(emptyElement).size());
 	}
 
 	@Test
@@ -157,7 +157,7 @@ public class TestGraph extends TestSetUpWithIssues {
 		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("I got an issue in this testclass");
 		element = sentences.get(0);
 		graph.setRootElement(element);
-		assertNotNull(graph.getLinkedElementsAndLinks(element));
+		assertNotNull(graph.getAdjacentElementsAndLinks(element));
 		assertEquals(element.getSummary(), graph.getRootElement().getSummary());
 	}
 

@@ -55,11 +55,11 @@
 	/*
 	 * external references: condec.jira.issue.module
 	 */
-	ConDecAPI.prototype.getLinkedElements = function getLinkedElements(id, documentationLocation, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getLinkedElements.json?projectKey=" + projectKey
-				+ "&id=" + id + "&documentationLocation=" + documentationLocation, function(error, linkedElements) {
+	ConDecAPI.prototype.getAdjacentElements = function getAdjacentElements(id, documentationLocation, callback) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAdjacentElements.json?projectKey=" + projectKey
+				+ "&id=" + id + "&documentationLocation=" + documentationLocation, function(error, adjacentElements) {
 			if (error === null) {
-				callback(linkedElements);
+				callback(adjacentElements);
 			}
 		});
 	};
