@@ -345,19 +345,6 @@ public class KnowledgeRest {
 		return Response.ok(summary).build();
 	}
 
-	/**
-	 * @param Enum
-	 *            resultType["ELEMENTS_QUERY","ELEMENTS_LINKED","ELEMENTS_QUERY_LINKED"]
-	 * @param String
-	 *            projectKey
-	 * @param String
-	 *            query
-	 * @param String
-	 *            elementKey
-	 * @param String
-	 *            request
-	 * @return List of Objects or List of Lists with Objects
-	 */
 	@Path("getAllElementsMatchingQuery")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })

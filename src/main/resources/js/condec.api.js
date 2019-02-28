@@ -197,7 +197,7 @@
 	ConDecAPI.prototype.getElementsByQuery = function getElementsByQuery(query, callback) {
 		getJSON(
 				AJS.contextPath()
-						+ "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?resultType=ELEMENTS_QUERY&projectKey="
+						+ "/rest/decisions/latest/decisions/getElements.json?resultType=ELEMENTS_QUERY&projectKey="
 						+ projectKey + "&query=" + query, function(error, elements) {
 					if (error === null) {
 						callback(elements);
@@ -212,7 +212,7 @@
 			documentationLocation, callback) {
 		getJSON(
 				AJS.contextPath()
-						+ "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?resultType=ELEMENTS_LINKED&elementKey="
+						+ "/rest/decisions/latest/decisions/getElements.json?resultType=ELEMENTS_LINKED&elementKey="
 						+ elementKey + "&query=" + query, function(error, elements) {
 					if (error === null) {
 						callback(elements);
@@ -226,7 +226,7 @@
 	ConDecAPI.prototype.getAllElementsByQueryAndLinked = function getAllElementsByQueryAndLinked(query, callback) {
 		getJSON(
 				AJS.contextPath()
-						+ "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?resultType=ELEMENTS_QUERY_LINKED&projectKey="
+						+ "/rest/decisions/latest/decisions/getElements.json?resultType=ELEMENTS_QUERY_LINKED&projectKey="
 						+ projectKey + "&query=" + query, function(error, elements) {
 					if (error === null) {
 						callback(elements);
