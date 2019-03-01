@@ -53,7 +53,7 @@
 	};
 
 	/*
-	 * external references: condec.jira.issue.module
+	 * external references: none
 	 */
 	ConDecAPI.prototype.getAdjacentElements = function getAdjacentElements(id, documentationLocation, callback) {
 		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAdjacentElements.json?projectKey=" + projectKey

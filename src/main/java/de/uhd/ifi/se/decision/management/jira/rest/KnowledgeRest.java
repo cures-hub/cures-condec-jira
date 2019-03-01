@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
+import de.uhd.ifi.se.decision.management.jira.filtering.GraphFiltering;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
@@ -36,7 +37,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceMan
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 
 /**
  * REST resource: Enables creation, editing, and deletion of decision knowledge
@@ -351,45 +351,30 @@ public class KnowledgeRest {
 			@QueryParam("projectKey") String projectKey, @QueryParam("query") String query,
 			@QueryParam("elementKey") String elementKey, @Context HttpServletRequest request) {
 		if (resultType == null || query == null || request == null || projectKey == null) {
-			return Response.status(Status.BAD_REQUEST).entity(
-					ImmutableMap.of("error", "Getting elements failed due to a bad request."))
-					.build();
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Getting elements failed due to a bad request.")).build();
 		}
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		List<DecisionKnowledgeElement> queryResult = new ArrayList<>();
 		List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
-		
-		try {
-			switch (resultType) {
-			case "ELEMENTS_QUERY":
-				queryResult = getHelperMatchedQueryElements(user, projectKey, query);
-				break;
-			case "ELEMENTS_LINKED":
-				queryResult = getHelperAllElementsLinkedToElement(user, projectKey, query, elementKey);
-				break;
-			case "ELEMENTS_QUERY_LINKED":
-				elementsQueryLinked = getHelperAllElementsMatchingQueryAndLinked(user, projectKey, query);
-				break;
-			default:
-				break;
-			}
-		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).entity(
-					ImmutableMap.of("error", "Getting elements matching the query failed due to an internal error."))
-					.build();
-		}
-		if (queryResult.size() == 0 && elementsQueryLinked.size() == 0) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(
-					ImmutableMap.of("error", "Getting elements matching the query failed. No Results were found"))
-					.build();
-		} else if (elementsQueryLinked.size() > 0) {
+
+		switch (resultType) {
+		case "ELEMENTS_QUERY":
+			queryResult = getHelperMatchedQueryElements(user, projectKey, query);
+			break;
+		case "ELEMENTS_LINKED":
+			queryResult = getHelperAllElementsLinkedToElement(user, projectKey, query, elementKey);
+			break;
+		case "ELEMENTS_QUERY_LINKED":
+			elementsQueryLinked = getHelperAllElementsMatchingQueryAndLinked(user, projectKey, query);
 			return Response.ok(elementsQueryLinked).build();
-		} else {
-			return Response.ok(queryResult).build();
+		default:
+			break;
 		}
+		return Response.ok(queryResult).build();
 	}
-	
+
 	private List<DecisionKnowledgeElement> getHelperMatchedQueryElements(ApplicationUser user, String projectKey,
 			String query) {
 		GraphFiltering filter = new GraphFiltering(projectKey, query, user);
