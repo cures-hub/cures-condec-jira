@@ -11,12 +11,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.atlassian.jira.user.ApplicationUser;
 
+import de.uhd.ifi.se.decision.management.jira.filtering.GraphFiltering;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
-import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 
 /**
  * Creates Treant content
@@ -71,7 +71,7 @@ public class Treant {
 		if (graph == null) {
 			graph = new GraphImpl(element);
 		}
-		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getLinkedElementsAndLinks(element);
+		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getAdjacentElementsAndLinks(element);
 
 		boolean isCollapsed = false;
 		if (currentDepth == depth && childrenAndLinks.size() != 0) {
