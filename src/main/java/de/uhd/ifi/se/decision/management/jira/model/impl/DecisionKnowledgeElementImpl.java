@@ -182,7 +182,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 
 	@Override
 	public List<DecisionKnowledgeElement> getLinkedElements() {
-		return this.getProject().getPersistenceStrategy().getLinkedElements(this);
+		return this.getProject().getPersistenceStrategy().getAdjacentElements(this);
 	}
 
 	@Override

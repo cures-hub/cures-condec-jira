@@ -19,17 +19,17 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 
-public class TestGetLinkedElements extends TestJiraIssuePersistenceManagerSetUp {
+public class TestGetAdjacentElements extends TestJiraIssuePersistenceManagerSetUp {
 
 	@Test
 	public void testDecisionKnowledgeElementNull() {
-		assertEquals(new ArrayList<DecisionKnowledgeElementImpl>(), issueStrategy.getLinkedElements(null));
+		assertEquals(new ArrayList<DecisionKnowledgeElementImpl>(), issueStrategy.getAdjacentElements(null));
 	}
 
 	@Test
 	public void testDecisionKnowledgeElementEmpty() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		assertEquals(new ArrayList<DecisionKnowledgeElementImpl>(), issueStrategy.getLinkedElements(element));
+		assertEquals(new ArrayList<DecisionKnowledgeElementImpl>(), issueStrategy.getAdjacentElements(element));
 	}
 
 	@Test
@@ -57,6 +57,6 @@ public class TestGetLinkedElements extends TestJiraIssuePersistenceManagerSetUp 
 			}
 			i++;
 		}
-		assertNotNull(issueStrategy.getLinkedElements(element));
+		assertNotNull(issueStrategy.getAdjacentElements(element));
 	}
 }

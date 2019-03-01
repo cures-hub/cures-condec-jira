@@ -64,7 +64,7 @@
 
 	/**
 	 * returns jql if empty or nonexistent create it returning jql for one issue
-	 *
+	 * 
 	 * @returns {string}
 	 */
 	function getQueryFromUrl() {
@@ -139,18 +139,19 @@
 
 	function exportLinkedElements(exportType) {
 		var jql = getQueryFromUrl();
-		var issueKey = conDecAPI.getIssueKey();
-		conDecAPI.getLinkedElementsByQuery(jql, issueKey, "i", function(elements) {
+		var jiraIssueKey = conDecAPI.getIssueKey();
+		conDecAPI.getLinkedElementsByQuery(jql, jiraIssueKey, "i", function(elements) {
 			if (elements && elements.length > 0 && elements[0] !== null) {
 				download(elements, "decisionKnowledgeGraph", exportType);
 			}
 		});
 	}
+	
 	function exportAllMatchedAndLinkedElements(exportType) {
 		var jql = getQueryFromUrl();
 		conDecAPI.getAllElementsByQueryAndLinked(jql, function(elements) {
 			if (elements && elements.length > 0 && elements[0] !== null) {
-				download(elements, "decisionKnowledgeGraphWithLinked", exportType,true);
+				download(elements, "decisionKnowledgeGraphWithLinked", exportType, true);
 			}
 		});
 	}
@@ -160,12 +161,12 @@
 		switch (exportType) {
 		case "document":
 			filename += ".doc";
-			var htmlString="";
-			if(multipleArrays){
-				elements.map(function(aElement){
-					htmlString+=createHtmlStringForWordDocument(aElement)+"<hr>";
+			var htmlString = "";
+			if (multipleArrays) {
+				elements.map(function(aElement) {
+					htmlString += createHtmlStringForWordDocument(aElement) + "<hr>";
 				});
-			}else{
+			} else {
 				htmlString = createHtmlStringForWordDocument(elements);
 			}
 			dataString = "data:text/html," + encodeURIComponent(htmlString);
@@ -187,7 +188,7 @@
 
 	function createHtmlStringForWordDocument(elements) {
 		var table = "<table><tr><th>Key</th><th>Summary</th><th>Description</th><th>Type</th></tr>";
-		elements.map(function (element) {
+		elements.map(function(element) {
 			var summary = element["summary"] === undefined ? "" : element["summary"];
 			var description = element["description"] === undefined ? "" : element["description"];
 			var type = element["type"] === undefined ? "" : element["type"];
@@ -203,7 +204,7 @@
 
 		var styleString = "table{font-family:arial,sans-serif;border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;text-align:left;padding:8px}tr:nth-child(even){background-color:#ddd}";
 		var htmlString = $("<html>").html("<head><style>" + styleString + "</style></head><body>" + table + "</body>")
-			.html();
+				.html();
 		return htmlString;
 	}
 

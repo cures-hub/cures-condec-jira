@@ -29,28 +29,28 @@ public interface Graph {
 	void setRootElement(DecisionKnowledgeElement rootElement);
 
 	/**
-	 * Get the decision knowledge elements and their respective links that can be
+	 * Get the adjacent decision knowledge elements and their respective links that can be
 	 * directly reached from the root element (with link distance 1).
 	 *
 	 * @see DecisionKnowledgeElement
 	 * @see Link
 	 * @param element
 	 *            decision knowledge element in the graph
-	 * @return map of decision knowledge elements and the respective links in the
+	 * @return map of adjacent decision knowledge elements and the respective links in the
 	 *         graph.
 	 */
-	Map<DecisionKnowledgeElement, Link> getLinkedElementsAndLinks(DecisionKnowledgeElement element);
+	Map<DecisionKnowledgeElement, Link> getAdjacentElementsAndLinks(DecisionKnowledgeElement element);
 
 	/**
-	 * Get the decision knowledge elements that can be directly reached from the root
+	 * Get the adjacent decision knowledge elements that can be directly reached from the root
 	 * element (with link distance 1).
 	 *
 	 * @see DecisionKnowledgeElement
 	 * @param element
 	 *            decision knowledge element in the graph
-	 * @return list of decision knowledge elements in the graph.
+	 * @return list of adjacent decision knowledge elements in the graph.
 	 */
-	List<DecisionKnowledgeElement> getLinkedElements(DecisionKnowledgeElement element);
+	List<DecisionKnowledgeElement> getAdjacentElements(DecisionKnowledgeElement element);
 	
 	/**
 	 * Return all decision knowledge elements within the graph as a list. The list

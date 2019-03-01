@@ -20,7 +20,7 @@ import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-public class TestGetLinkedElements extends TestSetUpWithIssues {
+public class TestGetAdjacentElements extends TestSetUpWithIssues {
 	private EntityManager entityManager;
 	private KnowledgeRest knowledgeRest;
 
@@ -36,29 +36,29 @@ public class TestGetLinkedElements extends TestSetUpWithIssues {
 
 	@Test
 	public void testElementIdFilledProjectExistentDocumentationLocationEmpty() {
-		assertEquals(Response.Status.OK.getStatusCode(), knowledgeRest.getLinkedElements(7, "TEST", "").getStatus());
+		assertEquals(Response.Status.OK.getStatusCode(), knowledgeRest.getAdjacentElements(7, "TEST", "").getStatus());
 	}
 
 	@Test
 	public void testElementIdFilledProjectExistentDocumentationLocationJiraIssue() {
-		assertEquals(Response.Status.OK.getStatusCode(), knowledgeRest.getLinkedElements(7, "TEST", "i").getStatus());
+		assertEquals(Response.Status.OK.getStatusCode(), knowledgeRest.getAdjacentElements(7, "TEST", "i").getStatus());
 	}
 
 	@Test
 	public void testElementIdZeroProjectExistentDocumentationLocationEmpty() {
 		assertEquals(Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERRROR))
-				.build().getEntity(), knowledgeRest.getLinkedElements(0, "TEST", "").getEntity());
+				.build().getEntity(), knowledgeRest.getAdjacentElements(0, "TEST", "").getEntity());
 	}
 
 	@Test
 	public void testElementIdZeroProjectKeyNullDocumentationLocationEmpty() {
 		assertEquals(Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERRROR))
-				.build().getEntity(), knowledgeRest.getLinkedElements(0, null, "").getEntity());
+				.build().getEntity(), knowledgeRest.getAdjacentElements(0, null, "").getEntity());
 	}
 
 	@Test
 	public void testElementIdFilledProjectKeyNullDocumentationLocationEmpty() {
 		assertEquals(Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERRROR))
-				.build().getEntity(), knowledgeRest.getLinkedElements(7, null, "").getEntity());
+				.build().getEntity(), knowledgeRest.getAdjacentElements(7, null, "").getEntity());
 	}
 }
