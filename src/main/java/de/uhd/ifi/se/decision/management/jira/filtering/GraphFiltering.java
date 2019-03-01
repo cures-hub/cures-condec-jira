@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.view;
+package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import com.atlassian.jira.jql.builder.JqlClauseBuilder;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;

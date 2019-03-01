@@ -161,7 +161,7 @@ public class TreeViewer {
 	protected List<Data> getChildren(DecisionKnowledgeElement decisionKnowledgeElement) {
 		List<Data> children = new ArrayList<>();
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = this.graph
-				.getLinkedElementsAndLinks(decisionKnowledgeElement);
+				.getAdjacentElementsAndLinks(decisionKnowledgeElement);
 
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
 			Data dataChild = new Data(childAndLink.getKey(), childAndLink.getValue());

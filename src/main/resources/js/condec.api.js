@@ -53,13 +53,13 @@
 	};
 
 	/*
-	 * external references: condec.jira.issue.module
+	 * external references: none
 	 */
-	ConDecAPI.prototype.getLinkedElements = function getLinkedElements(id, documentationLocation, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getLinkedElements.json?projectKey=" + projectKey
-				+ "&id=" + id + "&documentationLocation=" + documentationLocation, function(error, linkedElements) {
+	ConDecAPI.prototype.getAdjacentElements = function getAdjacentElements(id, documentationLocation, callback) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAdjacentElements.json?projectKey=" + projectKey
+				+ "&id=" + id + "&documentationLocation=" + documentationLocation, function(error, adjacentElements) {
 			if (error === null) {
-				callback(linkedElements);
+				callback(adjacentElements);
 			}
 		});
 	};
@@ -195,14 +195,13 @@
 	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getElementsByQuery = function getElementsByQuery(query, callback) {
-		getJSON(
-				AJS.contextPath()
-						+ "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?resultType=ELEMENTS_QUERY&projectKey="
-						+ projectKey + "&query=" + query, function(error, elements) {
-					if (error === null) {
-						callback(elements);
-					}
-				});
+		getJSON(AJS.contextPath()
+				+ "/rest/decisions/latest/decisions/getElements.json?resultType=ELEMENTS_QUERY&projectKey="
+				+ projectKey + "&query=" + query, function(error, elements) {
+			if (error === null) {
+				callback(elements);
+			}
+		});
 	};
 
 	/*
@@ -210,28 +209,26 @@
 	 */
 	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, elementKey,
 			documentationLocation, callback) {
-		getJSON(
-				AJS.contextPath()
-						+ "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?resultType=ELEMENTS_LINKED&elementKey="
-						+ elementKey + "&query=" + query, function(error, elements) {
-					if (error === null) {
-						callback(elements);
-					}
-				});
+		getJSON(AJS.contextPath()
+				+ "/rest/decisions/latest/decisions/getElements.json?resultType=ELEMENTS_LINKED&projectKey="
+				+ projectKey + "&elementKey=" + elementKey + "&query=" + query, function(error, elements) {
+			if (error === null) {
+				callback(elements);
+			}
+		});
 	};
 
 	/*
 	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getAllElementsByQueryAndLinked = function getAllElementsByQueryAndLinked(query, callback) {
-		getJSON(
-				AJS.contextPath()
-						+ "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?resultType=ELEMENTS_QUERY_LINKED&projectKey="
-						+ projectKey + "&query=" + query, function(error, elements) {
-					if (error === null) {
-						callback(elements);
-					}
-				});
+		getJSON(AJS.contextPath()
+				+ "/rest/decisions/latest/decisions/getElements.json?resultType=ELEMENTS_QUERY_LINKED&projectKey="
+				+ projectKey + "&query=" + query, function(error, elements) {
+			if (error === null) {
+				callback(elements);
+			}
+		});
 	};
 
 	/*
@@ -549,6 +546,15 @@
 			}
 		});
 	};
+	
+	/*
+	 * external references: condec.context.menu
+	 */
+	ConDecAPI.prototype.openJiraIssue = function openJiraIssue(elementId, documentationLocation) {
+		this.getDecisionKnowledgeElement(elementId, documentationLocation, function(decisionKnowledgeElement) {
+			global.open(decisionKnowledgeElement.url, '_self');
+		});
+	};
 
 	function getJSON(url, callback) {
 		var xhr = new XMLHttpRequest();
@@ -697,14 +703,6 @@
 			body : message
 		});
 	}
-
-	ConDecAPI.prototype.openJiraIssue = function openJiraIssue(elementId, documentationLocation) {
-		console.log("conDecAPI openJiraIssue");
-
-		this.getDecisionKnowledgeElement(elementId, documentationLocation, function(decisionKnowledgeElement) {
-			global.open(decisionKnowledgeElement.url, '_self');
-		});
-	};
 
 	// export ConDecAPI
 	global.conDecAPI = new ConDecAPI();

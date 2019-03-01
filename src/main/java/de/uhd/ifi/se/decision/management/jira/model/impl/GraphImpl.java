@@ -60,15 +60,15 @@ public class GraphImpl implements Graph {
 	}
 
 	@Override
-	public List<DecisionKnowledgeElement> getLinkedElements(DecisionKnowledgeElement element) {
-		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = this.getLinkedElementsAndLinks(element);
+	public List<DecisionKnowledgeElement> getAdjacentElements(DecisionKnowledgeElement element) {
+		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = this.getAdjacentElementsAndLinks(element);
 		List<DecisionKnowledgeElement> linkedElements = new ArrayList<DecisionKnowledgeElement>(
 				linkedElementsAndLinks.keySet());
 		return linkedElements;
 	}
 
 	@Override
-	public Map<DecisionKnowledgeElement, Link> getLinkedElementsAndLinks(DecisionKnowledgeElement element) {
+	public Map<DecisionKnowledgeElement, Link> getAdjacentElementsAndLinks(DecisionKnowledgeElement element) {
 		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
 
 		if (element == null) {
@@ -124,10 +124,10 @@ public class GraphImpl implements Graph {
 	public List<DecisionKnowledgeElement> getAllElements() {
 		List<DecisionKnowledgeElement> allElements = new ArrayList<DecisionKnowledgeElement>();
 		allElements.add(this.getRootElement());
-		allElements.addAll(this.getLinkedElements(this.getRootElement()));
+		allElements.addAll(this.getAdjacentElements(this.getRootElement()));
 		ListIterator<DecisionKnowledgeElement> iterator = allElements.listIterator();
 		while (iterator.hasNext()) {
-			List<DecisionKnowledgeElement> linkedElements = this.getLinkedElements(iterator.next());
+			List<DecisionKnowledgeElement> linkedElements = this.getAdjacentElements(iterator.next());
 			for (DecisionKnowledgeElement element : linkedElements) {
 				if (!IteratorUtils.toList(iterator).contains(element)) {
 					iterator.add(element);

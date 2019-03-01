@@ -6,7 +6,7 @@
 		</a>
 	</header>
 	<div class="aui-dialog2-content">
-		<ul class="noDots listWithMargin">
+		<ul class="menu">
             <li>
                 <Button class="aui-button" id="exportAllElementsMatchingQueryJson">Export Elements Matching Query (Json)</Button>
             </li>
@@ -15,7 +15,7 @@
             </li>
             <hr>
             <li>
-                <Button class="aui-button" id="exportLinkedElementsJson">Export Linked Elements(Json)</Button>
+                <Button class="aui-button" id="exportLinkedElementsJson">Export Linked Elements (Json)</Button>
             </li>
             <li>
                 <Button class="aui-button" id="exportLinkedElementsDocument">Export Linked Elements (Document)</Button>
