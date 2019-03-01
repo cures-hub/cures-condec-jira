@@ -6,7 +6,7 @@
 		</a>
 	</header>
 	<div class="aui-dialog2-content">
-		<ul class="noDots listWithMargin">
+		<ul class="menu">
             <li>
                 <Button class="aui-button" id="exportAllElementsMatchingQueryJson">Export Elements Matching Query (Json)</Button>
             </li>

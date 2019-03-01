@@ -546,6 +546,15 @@
 			}
 		});
 	};
+	
+	/*
+	 * external references: condec.context.menu
+	 */
+	ConDecAPI.prototype.openJiraIssue = function openJiraIssue(elementId, documentationLocation) {
+		this.getDecisionKnowledgeElement(elementId, documentationLocation, function(decisionKnowledgeElement) {
+			global.open(decisionKnowledgeElement.url, '_self');
+		});
+	};
 
 	function getJSON(url, callback) {
 		var xhr = new XMLHttpRequest();
@@ -694,14 +703,6 @@
 			body : message
 		});
 	}
-
-	ConDecAPI.prototype.openJiraIssue = function openJiraIssue(elementId, documentationLocation) {
-		console.log("conDecAPI openJiraIssue");
-
-		this.getDecisionKnowledgeElement(elementId, documentationLocation, function(decisionKnowledgeElement) {
-			global.open(decisionKnowledgeElement.url, '_self');
-		});
-	};
 
 	// export ConDecAPI
 	global.conDecAPI = new ConDecAPI();
