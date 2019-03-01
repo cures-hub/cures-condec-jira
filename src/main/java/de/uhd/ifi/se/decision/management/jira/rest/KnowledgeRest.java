@@ -23,16 +23,13 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
-import de.uhd.ifi.se.decision.management.jira.filtering.GraphFiltering;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -361,63 +358,17 @@ public class KnowledgeRest {
 
 		switch (resultType) {
 		case "ELEMENTS_QUERY":
-			queryResult = getHelperMatchedQueryElements(user, projectKey, query);
+			queryResult = FilteringManager.getHelperMatchedQueryElements(user, projectKey, query);
 			break;
 		case "ELEMENTS_LINKED":
-			queryResult = getHelperAllElementsLinkedToElement(user, projectKey, query, elementKey);
+			queryResult = FilteringManager.getHelperAllElementsLinkedToElement(user, projectKey, query, elementKey);
 			break;
 		case "ELEMENTS_QUERY_LINKED":
-			elementsQueryLinked = getHelperAllElementsMatchingQueryAndLinked(user, projectKey, query);
+			elementsQueryLinked = FilteringManager.getHelperAllElementsMatchingQueryAndLinked(user, projectKey, query);
 			return Response.ok(elementsQueryLinked).build();
 		default:
 			break;
 		}
 		return Response.ok(queryResult).build();
-	}
-
-	private List<DecisionKnowledgeElement> getHelperMatchedQueryElements(ApplicationUser user, String projectKey,
-			String query) {
-		GraphFiltering filter = new GraphFiltering(projectKey, query, user);
-		filter.produceResultsFromQuery();
-		return filter.getAllElementsMatchingQuery();
-	}
-
-	private List<DecisionKnowledgeElement> getHelperAllElementsLinkedToElement(ApplicationUser user, String projectKey,
-			String query, String elementKey) {
-		Graph graph;
-		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
-			GraphFiltering filter = new GraphFiltering(projectKey, query, user);
-			filter.produceResultsFromQuery();
-			graph = new GraphImplFiltered(projectKey, elementKey, filter);
-		} else {
-			graph = new GraphImpl(projectKey, elementKey);
-		}
-		return graph.getAllElements();
-	}
-
-	private List<List<DecisionKnowledgeElement>> getHelperAllElementsMatchingQueryAndLinked(ApplicationUser user,
-			String projectKey, String query) {
-		List<DecisionKnowledgeElement> tempQueryResult = getHelperMatchedQueryElements(user, projectKey, query);
-		List<DecisionKnowledgeElement> addedElements = new ArrayList<DecisionKnowledgeElement>();
-		List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
-
-		// now iti over query result
-		for (DecisionKnowledgeElement current : tempQueryResult) {
-			// check if in addedElements list
-			if (!addedElements.contains(current)) {
-				// if not get the connected tree
-				String currentElementKey = current.getKey();
-				if ("".equals(projectKey)) {
-					projectKey = current.getProject().getProjectKey();
-				}
-				List<DecisionKnowledgeElement> filteredElements = getHelperAllElementsLinkedToElement(user, projectKey,
-						query, currentElementKey);
-				// add each element to the list
-				addedElements.addAll(filteredElements);
-				// add list to the big list
-				elementsQueryLinked.add(filteredElements);
-			}
-		}
-		return elementsQueryLinked;
 	}
 }
