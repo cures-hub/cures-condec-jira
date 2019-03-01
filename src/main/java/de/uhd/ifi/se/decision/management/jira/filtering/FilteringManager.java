@@ -12,14 +12,14 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
 
 public class FilteringManager {
 
-	public static List<DecisionKnowledgeElement> getHelperMatchedQueryElements(ApplicationUser user, String projectKey,
+	public static List<DecisionKnowledgeElement> getElementsMatchingQuery(ApplicationUser user, String projectKey,
 			String query) {
 		GraphFiltering filter = new GraphFiltering(projectKey, query, user);
 		filter.produceResultsFromQuery();
 		return filter.getAllElementsMatchingQuery();
 	}
 
-	public static List<DecisionKnowledgeElement> getHelperAllElementsLinkedToElement(ApplicationUser user, String projectKey,
+	public static List<DecisionKnowledgeElement> getElementsInGraph(ApplicationUser user, String projectKey,
 			String query, String elementKey) {
 		Graph graph;
 		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
@@ -32,9 +32,9 @@ public class FilteringManager {
 		return graph.getAllElements();
 	}
 
-	public static List<List<DecisionKnowledgeElement>> getHelperAllElementsMatchingQueryAndLinked(ApplicationUser user,
+	public static List<List<DecisionKnowledgeElement>> getGraphsMatchingQuery(ApplicationUser user,
 			String projectKey, String query) {
-		List<DecisionKnowledgeElement> tempQueryResult = getHelperMatchedQueryElements(user, projectKey, query);
+		List<DecisionKnowledgeElement> tempQueryResult = getElementsMatchingQuery(user, projectKey, query);
 		List<DecisionKnowledgeElement> addedElements = new ArrayList<DecisionKnowledgeElement>();
 		List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
 	
@@ -47,7 +47,7 @@ public class FilteringManager {
 				if ("".equals(projectKey)) {
 					projectKey = current.getProject().getProjectKey();
 				}
-				List<DecisionKnowledgeElement> filteredElements = getHelperAllElementsLinkedToElement(user, projectKey,
+				List<DecisionKnowledgeElement> filteredElements = getElementsInGraph(user, projectKey,
 						query, currentElementKey);
 				// add each element to the list
 				addedElements.addAll(filteredElements);

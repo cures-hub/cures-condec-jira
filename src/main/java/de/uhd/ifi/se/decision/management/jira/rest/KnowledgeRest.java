@@ -265,13 +265,13 @@ public class KnowledgeRest {
 
 		switch (resultType) {
 		case "ELEMENTS_QUERY":
-			queryResult = FilteringManager.getHelperMatchedQueryElements(user, projectKey, query);
+			queryResult = FilteringManager.getElementsMatchingQuery(user, projectKey, query);
 			break;
 		case "ELEMENTS_LINKED":
-			queryResult = FilteringManager.getHelperAllElementsLinkedToElement(user, projectKey, query, elementKey);
+			queryResult = FilteringManager.getElementsInGraph(user, projectKey, query, elementKey);
 			break;
 		case "ELEMENTS_QUERY_LINKED":
-			elementsQueryLinked = FilteringManager.getHelperAllElementsMatchingQueryAndLinked(user, projectKey, query);
+			elementsQueryLinked = FilteringManager.getGraphsMatchingQuery(user, projectKey, query);
 			return Response.ok(elementsQueryLinked).build();
 		default:
 			break;
