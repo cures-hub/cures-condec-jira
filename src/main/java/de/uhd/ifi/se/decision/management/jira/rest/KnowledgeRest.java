@@ -260,8 +260,7 @@ public class KnowledgeRest {
 		}
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		List<DecisionKnowledgeElement> queryResult = new ArrayList<>();
-		List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
+		List<DecisionKnowledgeElement> queryResult = new ArrayList<DecisionKnowledgeElement>();
 
 		switch (resultType) {
 		case "ELEMENTS_QUERY":
@@ -271,6 +270,7 @@ public class KnowledgeRest {
 			queryResult = FilteringManager.getElementsInGraph(user, projectKey, query, elementKey);
 			break;
 		case "ELEMENTS_QUERY_LINKED":
+			List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
 			elementsQueryLinked = FilteringManager.getGraphsMatchingQuery(user, projectKey, query);
 			return Response.ok(elementsQueryLinked).build();
 		default:
