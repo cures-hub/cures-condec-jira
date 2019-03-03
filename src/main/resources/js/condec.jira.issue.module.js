@@ -67,7 +67,7 @@
 	 *
 	 * @returns {string}
 	 */
-	function getQueryFromUrl() {
+	function getQueryFromUrl(bAllIssues) {
 		var userInputJql = getURLsSearch();
 		var baseUrl = AJS.params.baseURL;
 		var sPathName = document.location.href;
@@ -80,14 +80,19 @@
 		} else if (userInputJql && userInputJql.indexOf("?filter=") > -1 && userInputJql.split("?filter=")[1]) {
 			myJql = userInputJql;
 		} else if (sPathWithoutBaseUrl && sPathWithoutBaseUrl.indexOf("/browse/") > -1) {
-			var issueKey = sPathWithoutBaseUrl.split("/browse/")[1];
-			if (issueKey.indexOf("?jql=")) {
-				issueKey = issueKey.split("?jql=")[0];
+			//user on url of a single issue
+			if(bAllIssues){
+				myJql = "?filter=allissues";
+			}else{
+				var issueKey = sPathWithoutBaseUrl.split("/browse/")[1];
+				if (issueKey.indexOf("?jql=")) {
+					issueKey = issueKey.split("?jql=")[0];
+				}
+				if (issueKey.indexOf("?filter=")) {
+					issueKey = issueKey.split("?filter=")[0];
+				}
+				myJql = "?jql=issue=" + issueKey;
 			}
-			if (issueKey.indexOf("?filter=")) {
-				issueKey = issueKey.split("?filter=")[0];
-			}
-			myJql = "?jql=issue=" + issueKey;
 		}
 		return myJql;
 	}
@@ -140,7 +145,7 @@
 	}
 
 	function exportLinkedElements(exportType) {
-		var jql = getQueryFromUrl();
+		var jql = getQueryFromUrl(true);
 		var jiraIssueKey = conDecAPI.getIssueKey();
 		conDecAPI.getLinkedElementsByQuery(jql, jiraIssueKey, "i", function (elements) {
 			if (elements && elements.length > 0 && elements[0] !== null) {
@@ -150,7 +155,7 @@
 	}
 
 	function exportAllMatchedAndLinkedElements(exportType) {
-		var jql = getQueryFromUrl();
+		var jql = getQueryFromUrl(false);
 		conDecAPI.getAllElementsByQueryAndLinked(jql, function (elements) {
 			if (elements && elements.length > 0 && elements[0] !== null) {
 				download(elements, "decisionKnowledgeGraphWithLinked", exportType, true);
