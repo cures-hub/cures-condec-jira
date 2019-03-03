@@ -113,7 +113,7 @@
 			AJS.dialog2("#export-dialog").show();
 
 			document.getElementById("export-dialog-confirm-button").onclick = function () {
-				getSelectedRadioBoxForExport();
+				getSelectedRadioBoxForExport()
 			};
 			$('#exportDecisionKnowledgeFieldSet input:radio').on('change', function () {
 				selectedRadioButton = $(this).context.id;
