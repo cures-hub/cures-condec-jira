@@ -264,7 +264,7 @@ public class KnowledgeRest {
 
 		if (allTrees) {
 			List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
-			elementsQueryLinked = FilteringManager.getGraphsMatchingQuery(user, projectKey, query);
+			elementsQueryLinked = FilteringManager.getGraphsMatchingQuery(user, projectKey, query,"");
 			return Response.ok(elementsQueryLinked).build();
 		} else {
 			queryResult = FilteringManager.getElementsInGraph(user, projectKey, query, elementKey);
