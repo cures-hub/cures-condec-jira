@@ -25,7 +25,7 @@ public interface GitClient {
 	 * @alternative APKeys.JIRA_PATH_INSTALLED_PLUGINS
 	 */
 	String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory().getAbsolutePath()
-			                     + File.separator + "ConDec-Git" + File.separator;
+			+ File.separator + "data" + File.separator + "condec-plugin" + File.separator;
 
 	/**
 	 * Retrieves the commits with the JIRA issue key in their commit message.
