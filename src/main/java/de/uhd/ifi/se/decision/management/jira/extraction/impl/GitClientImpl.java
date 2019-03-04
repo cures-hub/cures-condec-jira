@@ -17,6 +17,7 @@ import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -258,10 +259,11 @@ public class GitClientImpl implements GitClient {
 			return commitsForJiraIssue;
 		}
 		try {
-			Iterable<RevCommit> iterable = git.log().call();
-			Iterator<RevCommit> iterator = iterable.iterator();
-			while (iterator.hasNext()) {
-				RevCommit commit = iterator.next();
+			for(Ref branch : git.branchList().call()){
+				git.checkout().setName(branch.getName()).call();
+			}
+			Iterable<RevCommit> commits = git.log().call();
+			for(RevCommit commit: commits){
 				// TODO Improve identification of jira issue key in commit message
 				String jiraIssueKeyInCommitMessage = GitClient.getJiraIssueKey(commit.getFullMessage());
 				if (jiraIssueKeyInCommitMessage.equalsIgnoreCase(jiraIssueKey)) {
