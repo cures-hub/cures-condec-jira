@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.util.JiraHome;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
@@ -22,7 +24,8 @@ public interface GitClient {
 	 *        repo? Can we use this directory?
 	 * @alternative APKeys.JIRA_PATH_INSTALLED_PLUGINS
 	 */
-	String DEFAULT_DIR = System.getProperty("user.home") + File.separator + "repository" + File.separator;
+	String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory().getAbsolutePath()
+			                     + File.separator + "ConDec-Git" + File.separator;
 
 	/**
 	 * Retrieves the commits with the JIRA issue key in their commit message.
