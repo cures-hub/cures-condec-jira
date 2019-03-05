@@ -10,7 +10,7 @@
  Is referenced in HTML by
  * jiraIssueModule.vm
  */
-(function(global) {
+(function (global) {
 	/* private vars */
 	var conDecAPI = null;
 	var conDecObservable = null;
@@ -23,13 +23,13 @@
 	};
 
 	ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog,
-			_conDecContextMenu, _treant) {
+														 _conDecContextMenu, _treant) {
 
 		console.log("ConDecJiraIssueModule init");
 
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
-				&& isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
-				&& isConDecTreantType(_treant)) {
+			&& isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
+			&& isConDecTreantType(_treant)) {
 
 			conDecAPI = _conDecAPI;
 			conDecObservable = _conDecObservable;
@@ -64,7 +64,7 @@
 
 	/**
 	 * returns jql if empty or nonexistent create it returning jql for one issue
-	 * 
+	 *
 	 * @returns {string}
 	 */
 	function getQueryFromUrl() {
@@ -92,64 +92,66 @@
 		return myJql;
 	}
 
-	ConDecJiraIssueModule.prototype.updateView = function() {
+	ConDecJiraIssueModule.prototype.updateView = function () {
 		console.log("ConDecJiraIssueModule updateView");
-		JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [ JIRA.Issue.getIssueId() ]);
+		JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
 	};
-
+	var selectedRadioButton = "";
 	function addOnClickEventToExportAsTable() {
 		console.log("ConDecJiraIssueModule addOnClickEventToExportAsTable");
 
 		var exportMenuItem = document.getElementById("export-as-table-link");
 
-		exportMenuItem.addEventListener("click", function(event) {
+		exportMenuItem.addEventListener("click", function (event) {
 			event.preventDefault();
 			event.stopPropagation();
 			AJS.dialog2("#export-dialog").show();
 
-			document.getElementById("exportAllElementsMatchingQueryJson").onclick = function() {
-				exportAllElementsMatchingQuery("json");
+			document.getElementById("export-dialog-confirm-button").onclick = function () {
+				getSelectedRadioBoxForExport()
 			};
-			document.getElementById("exportAllElementsMatchingQueryDocument").onclick = function() {
-				exportAllElementsMatchingQuery("document");
-			};
-			document.getElementById("exportLinkedElementsJson").onclick = function() {
-				exportLinkedElements("json");
-			};
-			document.getElementById("exportLinkedElementsDocument").onclick = function() {
-				exportLinkedElements("document");
-			};
-			document.getElementById("exportLinkedAndMatchingQueryElementsJson").onclick = function() {
-				exportAllMatchedAndLinkedElements("json");
-			};
-			document.getElementById("exportLinkedAndMatchingQueryElementsDocument").onclick = function() {
-				exportAllMatchedAndLinkedElements("document");
-			};
+			$('#exportDecisionKnowledgeFieldSet input:radio').on('change', function () {
+				selectedRadioButton = $(this).context.id;
+			});
 		});
 	}
 
-	function exportAllElementsMatchingQuery(exportType) {
-		var jql = getQueryFromUrl();
-		conDecAPI.getElementsByQuery(jql, function(elements) {
-			if (elements && elements.length > 0 && elements[0] !== null) {
-				download(elements, "decisionKnowledge", exportType);
-			}
-		});
+	function getSelectedRadioBoxForExport() {
+		switch (selectedRadioButton) {
+			case "exportLinkedElementsJson":
+				exportLinkedElements("json");
+				break;
+			case "exportLinkedElementsDocument":
+				exportLinkedElements("document");
+				break;
+			case "exportLinkedAndMatchingQueryElementsJson":
+				exportAllMatchedAndLinkedElements("json");
+				break;
+			case "exportLinkedAndMatchingQueryElementsDocument":
+				exportAllMatchedAndLinkedElements("document");
+				break;
+			default:
+				//should not happen
+				break;
+		}
+		//close dialog
+		AJS.dialog2('#export-dialog').hide();
+
 	}
 
 	function exportLinkedElements(exportType) {
 		var jql = getQueryFromUrl();
 		var jiraIssueKey = conDecAPI.getIssueKey();
-		conDecAPI.getLinkedElementsByQuery(jql, jiraIssueKey, "i", function(elements) {
+		conDecAPI.getLinkedElementsByQuery(jql, jiraIssueKey, "i", function (elements) {
 			if (elements && elements.length > 0 && elements[0] !== null) {
 				download(elements, "decisionKnowledgeGraph", exportType);
 			}
 		});
 	}
-	
+
 	function exportAllMatchedAndLinkedElements(exportType) {
 		var jql = getQueryFromUrl();
-		conDecAPI.getAllElementsByQueryAndLinked(jql, function(elements) {
+		conDecAPI.getAllElementsByQueryAndLinked(jql, function (elements) {
 			if (elements && elements.length > 0 && elements[0] !== null) {
 				download(elements, "decisionKnowledgeGraphWithLinked", exportType, true);
 			}
@@ -159,22 +161,22 @@
 	function download(elements, filename, exportType, multipleArrays) {
 		var dataString = "";
 		switch (exportType) {
-		case "document":
-			filename += ".doc";
-			var htmlString = "";
-			if (multipleArrays) {
-				elements.map(function(aElement) {
-					htmlString += createHtmlStringForWordDocument(aElement) + "<hr>";
-				});
-			} else {
-				htmlString = createHtmlStringForWordDocument(elements);
-			}
-			dataString = "data:text/html," + encodeURIComponent(htmlString);
-			break;
-		case "json":
-			dataString = "data:text/plain;charset=utf-8," + encodeURIComponent(JSON.stringify(elements));
-			filename += ".json";
-			break;
+			case "document":
+				filename += ".doc";
+				var htmlString = "";
+				if (multipleArrays) {
+					elements.map(function (aElement) {
+						htmlString += createHtmlStringForWordDocument(aElement) + "<hr>";
+					});
+				} else {
+					htmlString = createHtmlStringForWordDocument(elements);
+				}
+				dataString = "data:text/html," + encodeURIComponent(htmlString);
+				break;
+			case "json":
+				dataString = "data:text/plain;charset=utf-8," + encodeURIComponent(JSON.stringify(elements));
+				filename += ".json";
+				break;
 		}
 
 		var link = document.createElement('a');
@@ -188,7 +190,7 @@
 
 	function createHtmlStringForWordDocument(elements) {
 		var table = "<table><tr><th>Key</th><th>Summary</th><th>Description</th><th>Type</th></tr>";
-		elements.map(function(element) {
+		elements.map(function (element) {
 			var summary = element["summary"] === undefined ? "" : element["summary"];
 			var description = element["description"] === undefined ? "" : element["description"];
 			var type = element["type"] === undefined ? "" : element["type"];
@@ -204,7 +206,7 @@
 
 		var styleString = "table{font-family:arial,sans-serif;border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;text-align:left;padding:8px}tr:nth-child(even){background-color:#ddd}";
 		var htmlString = $("<html>").html("<head><style>" + styleString + "</style></head><body>" + table + "</body>")
-				.html();
+			.html();
 		return htmlString;
 	}
 
