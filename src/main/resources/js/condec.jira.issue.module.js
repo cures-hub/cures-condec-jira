@@ -97,47 +97,50 @@
 		return myJql;
 	}
 
-	ConDecJiraIssueModule.prototype.updateView = function() {
+	ConDecJiraIssueModule.prototype.updateView = function () {
 		console.log("ConDecJiraIssueModule updateView");
-		JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [ JIRA.Issue.getIssueId() ]);
+		JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
 	};
-	var selectedRadioButton = "";
+	var selectedRadioTreeType = "";
+	var selectedRadioExportType = "";
+
 	function addOnClickEventToExportAsTable() {
 		console.log("ConDecJiraIssueModule addOnClickEventToExportAsTable");
 
 		var exportMenuItem = document.getElementById("export-as-table-link");
 
-		exportMenuItem.addEventListener("click", function(event) {
+		exportMenuItem.addEventListener("click", function (event) {
 			event.preventDefault();
 			event.stopPropagation();
 			AJS.dialog2("#export-dialog").show();
 
-			document.getElementById("export-dialog-confirm-button").onclick = function() {
+			document.getElementById("export-dialog-confirm-button").onclick = function () {
 				getSelectedRadioBoxForExport();
 			};
-			$('#exportDecisionKnowledgeFieldSet input:radio').on('change', function() {
-				selectedRadioButton = $(this).context.id;
+			$('#exportDecisionKnowledgeFieldSet input:radio').on('change', function () {
+				selectedRadioTreeType = $(this).context.id;
+			});
+			$('#exportDecisionKnowledgeFieldSetExportType input:radio').on('change', function () {
+				selectedRadioExportType = $(this).context.id;
 			});
 		});
 	}
 
 	function getSelectedRadioBoxForExport() {
-		switch (selectedRadioButton) {
-		case "exportLinkedElementsJson":
-			exportLinkedElements("json");
-			break;
-		case "exportLinkedElementsDocument":
-			exportLinkedElements("document");
-			break;
-		case "exportLinkedAndMatchingQueryElementsJson":
-			exportAllMatchedAndLinkedElements("json");
-			break;
-		case "exportLinkedAndMatchingQueryElementsDocument":
-			exportAllMatchedAndLinkedElements("document");
-			break;
-		default:
-			// should not happen
-			break;
+		var exportType = "";
+		if (selectedRadioExportType) {
+			if (selectedRadioExportType === "exportAsJson") {
+				exportType = "json";
+			}
+			if (selectedRadioExportType === "exportAsDocument") {
+				exportType = "document";
+			}
+			if (selectedRadioTreeType === "exportLinked") {
+				exportLinkedElements(exportType);
+			}
+			if (selectedRadioTreeType === "exportLinkedAndQuery") {
+				exportAllMatchedAndLinkedElements(exportType);
+			}
 		}
 		// close dialog
 		AJS.dialog2('#export-dialog').hide();

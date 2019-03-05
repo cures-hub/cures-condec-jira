@@ -7,25 +7,32 @@
 	</header>
     <form class="aui">
         <fieldset class="group" id="exportDecisionKnowledgeFieldSet">
+            <legend><span>Tree type</span></legend>
             <div class="radio">
-                <input class="radio" type="radio" checked="checked"
-                       name="radiobuttons" id="exportLinkedElementsJson">
-                <label for="exportLinkedElementsJson">Export Linked Elements (Json)</label>
+                <input class="radio-tree-type" type="radio" checked="checked"
+                       name="radiobuttons" id="exportLinked">
+                <label for="exportLinked">Export Linked Elements</label>
             </div>
             <div class="radio">
-                <input class="radio" type="radio"
-                       name="radiobuttons" id="exportLinkedElementsDocument">
-                <label for="exportLinkedElementsDocument">Export Linked Elements (Document)</label>
+                <input class="radio-tree-type" type="radio"
+                       name="radiobuttons" id="exportLinkedAndQuery">
+                <label for="exportLinkedAndQuery">Export Elements Matching Query and Linked</label>
+            </div>
+        </fieldset>
+    </form>
+    <form class="aui">
+
+    <fieldset class="group" id="exportDecisionKnowledgeFieldSetExportType">
+            <legend><span>Export format</span></legend>
+            <div class="radio">
+                <input class="radio-export-type" type="radio"
+                       name="radiobuttons" id="exportAsJson">
+                <label for="exportAsJson">Json</label>
             </div>
             <div class="radio">
-                <input class="radio" type="radio"
-                       name="radiobuttons" id="exportLinkedAndMatchingQueryElementsJson">
-                <label for="exportLinkedAndMatchingQueryElementsJson">Export Elements Matching Query and Linked (Json)</label>
-            </div>
-            <div class="radio">
-                <input class="radio" type="radio"
-                       name="radiobuttons" id="exportLinkedAndMatchingQueryElementsDocument">
-                <label for="exportLinkedAndMatchingQueryElementsDocument">Export Elements Matching Query and Linked (Document)</label>
+                <input class="radio-export-type" type="radio"
+                       name="radiobuttons" id="exportAsDocument">
+                <label for="exportAsDocument">Document</label>
             </div>
         </fieldset>
     </form>
