@@ -17,25 +17,27 @@
 	var conDecDialog = null;
 	var conDecContextMenu = null;
 	var treant = null;
+	var vis = null;
 
 	var ConDecJiraIssueModule = function ConDecJiraIssueModule() {
 		console.log("conDecJiraIssueModule constructor");
 	};
 
 	ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog,
-			_conDecContextMenu, _treant) {
+			_conDecContextMenu, _treant, _vis) {
 
 		console.log("ConDecJiraIssueModule init");
 
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
 				&& isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
-				&& isConDecTreantType(_treant)) {
+				&& isConDecTreantType(_treant) && isConDecVisType(_vis)) {
 
 			conDecAPI = _conDecAPI;
 			conDecObservable = _conDecObservable;
 			conDecDialog = _conDecDialog;
 			conDecContextMenu = _conDecContextMenu;
 			treant = _treant;
+			vis = _vis;
 
 			// Register/subscribe this view as an observer
 			conDecObservable.subscribe(this);
@@ -51,7 +53,8 @@
 		console.log("ConDecJiraIssueModule initView");
 		var issueKey = conDecAPI.getIssueKey();
 		var search = getURLsSearch();
-		treant.buildTreant(issueKey, true, search);
+		//treant.buildTreant(issueKey, true, search);
+		vis.buildVis(issueKey, search);
 	};
 
 	function getURLsSearch() {
@@ -249,6 +252,14 @@
 			return false;
 		}
 		return true;
+	}
+
+	function isConDecVisType(conDecVis) {
+        if (!(conDecVis !== undefined && conDecVis.buildVis !== undefined && typeof conDecVis.buildVis === 'function')) {
+            console.warn("ConDecJiraIssueModule: invalid conDecVis object received.");
+            return false;
+        }
+        return true;
 	}
 
 	// export ConDecJiraIssueModule

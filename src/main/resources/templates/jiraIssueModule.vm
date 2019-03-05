@@ -19,7 +19,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
  */
 $(document).ready(function() {
 	conDecAPI.checkIfProjectKeyIsValid();
-    if ( window.conDecJiraIssueModule.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant) )
+    if ( window.conDecJiraIssueModule.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant, conDecVis) )
         window.conDecJiraIssueModule.initView();
     else {
         console.error("ConDecJiraIssueModule could not get its dependencies.");

@@ -25,6 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
+import de.uhd.ifi.se.decision.management.jira.view.vis.Vis;
 
 /**
  * REST resource for view
@@ -96,6 +97,25 @@ public class ViewRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		Treant treant = new Treant(projectKey, elementKey, depth, searchTerm, user);
 		return Response.ok(treant).build();
+	}
+
+	@Path("/getVis")
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getVis(@QueryParam("elementKey") String elementKey, @QueryParam("searchTerm") String searchTerm,
+						   @Context HttpServletRequest request) {
+		if (elementKey == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Visualization cannot be shown since element key is invalid.")).build();
+		}
+		String projectKey = getProjectKey(elementKey);
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		Vis vis = new Vis(projectKey,elementKey,false,searchTerm,user);
+		return Response.ok(vis).build();
 	}
 
 	private String getProjectKey(String elementKey) {

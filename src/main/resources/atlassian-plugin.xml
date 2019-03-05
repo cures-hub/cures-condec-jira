@@ -84,6 +84,8 @@
 		<resource type="download" name="Treant.js" location="/js/treant/treant.js" />
 		<resource type="download" name="raphael.js" location="/js/treant/raphael.js" />
 		<resource type="download" name="jquery.easing.js" location="/js/jquery/jquery.easing.js" />
+		<!--Vis-->
+		<resource type="download" name="vis.js" location="/js/vis/vis.js" />
 		<!-- ConDec java script files -->
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
 		<resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />
@@ -93,6 +95,7 @@
 		<resource type="download" name="condec.treant.js" location="/js/condec.treant.js" />
 		<resource type="download" name="condec.tree.viewer.js"
 			location="/js/condec.tree.viewer.js" />
+		<resource type="download" name="condec.vis.js" location="/js/condec.vis.js" />
 	</web-resource>
 
 	<web-resource key="decision-knowledge-page-resources"
