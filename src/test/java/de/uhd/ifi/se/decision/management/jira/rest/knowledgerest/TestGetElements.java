@@ -39,6 +39,6 @@ public class TestGetElements extends TestSetUpWithIssues {
 	@Test
 	public void testNull() {
 		assertEquals(Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERROR))
-				.build().getEntity(), knowledgeRest.getElements(null, null, null, null, null).getEntity());
+				.build().getEntity(), knowledgeRest.getElements(false, null, null, null, null).getEntity());
 	}
 }

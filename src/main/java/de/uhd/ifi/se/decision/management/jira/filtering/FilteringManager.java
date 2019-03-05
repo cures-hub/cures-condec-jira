@@ -33,7 +33,12 @@ public class FilteringManager {
 	}
 
 	public static List<List<DecisionKnowledgeElement>> getGraphsMatchingQuery(ApplicationUser user, String projectKey,
-			String query) {
+			String query, String linkedQuery) {
+		//Default filter for adjecent Elements
+		String linkedQueryNotEmpty=linkedQuery;
+		if("".equals(linkedQueryNotEmpty)){
+			linkedQueryNotEmpty="?filter=allissues";
+		}
 		List<DecisionKnowledgeElement> tempQueryResult = getElementsMatchingQuery(user, projectKey, query);
 		List<DecisionKnowledgeElement> addedElements = new ArrayList<DecisionKnowledgeElement>();
 		List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
@@ -44,7 +49,7 @@ public class FilteringManager {
 			if (!addedElements.contains(current)) {
 				// if not get the connected tree
 				String currentElementKey = current.getKey();
-				List<DecisionKnowledgeElement> filteredElements = getElementsInGraph(user, projectKey, query,
+				List<DecisionKnowledgeElement> filteredElements = getElementsInGraph(user, projectKey, linkedQueryNotEmpty,
 						currentElementKey);
 				// add each element to the list
 				addedElements.addAll(filteredElements);
