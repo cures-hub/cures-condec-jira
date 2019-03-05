@@ -250,11 +250,12 @@ public class KnowledgeRest {
 
 	@Path("/getElements")
 	@GET
-	@Produces({MediaType.APPLICATION_JSON})
-	public Response getElements(@QueryParam("allTrees") Boolean allTrees,
-								@QueryParam("projectKey") String projectKey, @QueryParam("query") String query,
-								@QueryParam("elementKey") String elementKey, @Context HttpServletRequest request) {
-		if (allTrees == null || query == null || request == null || projectKey == null) {
+
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getElements(@QueryParam("allTrees") boolean allTrees, @QueryParam("projectKey") String projectKey,
+			@QueryParam("query") String query, @QueryParam("elementKey") String elementKey,
+			@Context HttpServletRequest request) {
+		if (query == null || request == null || projectKey == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Getting elements failed due to a bad request.")).build();
 		}
@@ -264,7 +265,7 @@ public class KnowledgeRest {
 
 		if (allTrees) {
 			List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
-			elementsQueryLinked = FilteringManager.getGraphsMatchingQuery(user, projectKey, query,"");
+			elementsQueryLinked = FilteringManager.getGraphsMatchingQuery(user, projectKey, query, "");
 			return Response.ok(elementsQueryLinked).build();
 		} else {
 			queryResult = FilteringManager.getElementsInGraph(user, projectKey, query, elementKey);
