@@ -68,6 +68,10 @@
 	 * @returns {string}
 	 */
 	function getQueryFromUrl(bAllIssues) {
+		var hiddenDiv= document.getElementById("exportQueryFallback");
+
+		console.log("hiddenData",hiddenDiv.getAttribute('data'));
+
 		var userInputJql = getURLsSearch();
 		var baseUrl = AJS.params.baseURL;
 		var sPathName = document.location.href;

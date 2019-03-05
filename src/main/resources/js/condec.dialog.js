@@ -315,6 +315,18 @@
 		// Show dialog
 		AJS.dialog2(summarizedDialog).show();
 	};
+	ConDecDialog.prototype.showExportDialog = function showExportDialog(id, documentationLocation) {
+		console.log("conDecDialog exportDialog");
+
+		// HTML elements
+		var exportDialog = document.getElementById("export-dialog");
+		var hiddenDiv= document.getElementById("exportQueryFallback");
+		// Show dialog
+		hiddenDiv.setAttribute("data",id);
+		conDecJiraIssueModule.init();
+
+		AJS.dialog2(exportDialog).show();
+	};
 
 	// export ConDecDialog
 	global.conDecDialog = new ConDecDialog();

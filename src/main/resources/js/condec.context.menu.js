@@ -171,6 +171,9 @@
 				conDecObservable.notify();
 			});
 		};
+		document.getElementById("condec-context-menu-export").onclick = function() {
+			conDecDialog.showExportDialog(id, documentationLocation);
+		};
 	}
 
 	function getPosition(event, container) {

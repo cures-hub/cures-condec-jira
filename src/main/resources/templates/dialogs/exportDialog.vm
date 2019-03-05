@@ -5,6 +5,7 @@
 			<span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
 		</a>
 	</header>
+    <div style="visible:none" id="exportQueryFallback"></div>
     <form class="aui">
         <fieldset class="group" id="exportDecisionKnowledgeFieldSet">
             <div class="radio">
