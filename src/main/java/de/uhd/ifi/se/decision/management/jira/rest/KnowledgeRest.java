@@ -251,10 +251,10 @@ public class KnowledgeRest {
 	@Path("/getElements")
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response getElements(@QueryParam("allTrees") Boolean allTrees,
+	public Response getElements(@QueryParam("allTrees") boolean allTrees,
 								@QueryParam("projectKey") String projectKey, @QueryParam("query") String query,
 								@QueryParam("elementKey") String elementKey, @Context HttpServletRequest request) {
-		if (allTrees == null || query == null || request == null || projectKey == null) {
+		if (query == null || request == null || projectKey == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Getting elements failed due to a bad request.")).build();
 		}
