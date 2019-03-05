@@ -247,14 +247,14 @@ public class KnowledgeRest {
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
 	}
-	
+
 	@Path("/getElements")
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getElements(@QueryParam("resultType") String resultType,
-			@QueryParam("projectKey") String projectKey, @QueryParam("query") String query,
-			@QueryParam("elementKey") String elementKey, @Context HttpServletRequest request) {
-		if (resultType == null || query == null || request == null || projectKey == null) {
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getElements(@QueryParam("allTrees") Boolean allTrees,
+								@QueryParam("projectKey") String projectKey, @QueryParam("query") String query,
+								@QueryParam("elementKey") String elementKey, @Context HttpServletRequest request) {
+		if (allTrees == null || query == null || request == null || projectKey == null) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Getting elements failed due to a bad request.")).build();
 		}
@@ -262,19 +262,12 @@ public class KnowledgeRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		List<DecisionKnowledgeElement> queryResult = new ArrayList<DecisionKnowledgeElement>();
 
-		switch (resultType) {
-		case "ELEMENTS_QUERY":
-			queryResult = FilteringManager.getElementsMatchingQuery(user, projectKey, query);
-			break;
-		case "ELEMENTS_LINKED":
-			queryResult = FilteringManager.getElementsInGraph(user, projectKey, query, elementKey);
-			break;
-		case "ELEMENTS_QUERY_LINKED":
+		if (allTrees) {
 			List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
 			elementsQueryLinked = FilteringManager.getGraphsMatchingQuery(user, projectKey, query);
 			return Response.ok(elementsQueryLinked).build();
-		default:
-			break;
+		} else {
+			queryResult = FilteringManager.getElementsInGraph(user, projectKey, query, elementKey);
 		}
 		return Response.ok(queryResult).build();
 	}
