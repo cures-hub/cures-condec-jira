@@ -141,7 +141,6 @@
 		}
 		// close dialog
 		AJS.dialog2('#export-dialog').hide();
-
 	}
 
 	function exportLinkedElements(exportType) {

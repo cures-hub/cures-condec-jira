@@ -51,7 +51,7 @@ public class Treant {
 	public Treant(String projectKey, String elementKey, int depth, String query, ApplicationUser user) {
 		GraphFiltering filter = null;
 		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
-			filter = new GraphFiltering(projectKey, query, user);
+			filter = new GraphFiltering(projectKey, query, user,false);
 			filter.produceResultsFromQuery();
 			this.graph = new GraphImplFiltered(projectKey, elementKey, filter);
 		} else {
