@@ -315,16 +315,15 @@
 		// Show dialog
 		AJS.dialog2(summarizedDialog).show();
 	};
-	ConDecDialog.prototype.showExportDialog = function showExportDialog(id, documentationLocation) {
+	ConDecDialog.prototype.showExportDialog = function showExportDialog(decisionElementKey) {
 		console.log("conDecDialog exportDialog");
 
 		// HTML elements
 		var exportDialog = document.getElementById("export-dialog");
 		var hiddenDiv= document.getElementById("exportQueryFallback");
-		// Show dialog
-		hiddenDiv.setAttribute("data",id);
-		conDecJiraIssueModule.init();
-
+		// set hidden attribute
+		hiddenDiv.setAttribute("data-tree-element-key",decisionElementKey);
+		//open dialog
 		AJS.dialog2(exportDialog).show();
 	};
 

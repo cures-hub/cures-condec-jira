@@ -9,22 +9,22 @@
     <form class="aui">
         <fieldset class="group" id="exportDecisionKnowledgeFieldSet">
             <div class="radio">
-                <input class="radio" type="radio" checked="checked"
+                <input class="radio" type="radio" checked="checked" onchange="changeRadioBox(this)"
                        name="radiobuttons" id="exportLinkedElementsJson">
                 <label for="exportLinkedElementsJson">Export Linked Elements (Json)</label>
             </div>
             <div class="radio">
-                <input class="radio" type="radio"
+                <input class="radio" type="radio" onchange="changeRadioBox(this)"
                        name="radiobuttons" id="exportLinkedElementsDocument">
                 <label for="exportLinkedElementsDocument">Export Linked Elements (Document)</label>
             </div>
             <div class="radio">
-                <input class="radio" type="radio"
+                <input class="radio" type="radio" onchange="changeRadioBox(this)"
                        name="radiobuttons" id="exportLinkedAndMatchingQueryElementsJson">
                 <label for="exportLinkedAndMatchingQueryElementsJson">Export Elements Matching Query and Linked (Json)</label>
             </div>
             <div class="radio">
-                <input class="radio" type="radio"
+                <input class="radio" type="radio" onchange="changeRadioBox(this)"
                        name="radiobuttons" id="exportLinkedAndMatchingQueryElementsDocument">
                 <label for="exportLinkedAndMatchingQueryElementsDocument">Export Elements Matching Query and Linked (Document)</label>
             </div>
@@ -33,11 +33,35 @@
     <footer class="aui-dialog2-footer">
         <div class="aui-dialog2-footer-actions">
             <button id="export-dialog-cancel-button" class="aui-button aui-button-link"
-                    onclick="AJS.dialog2('#export-dialog').hide()">$i18n.getText("condec.button.cancel")
+                    onclick="closeDialog()">$i18n.getText("condec.button.cancel")
 			</button>
             <button id="export-dialog-confirm-button" class="aui-button aui-button-primary"
-                    >$i18n.getText("condec.button.ok")
+                   onclick="handleExportSubmit()" >$i18n.getText("condec.button.ok")
 			</button>
 		</div>
 	</footer>
 </section>
+<script>
+    /*
+    *Create Event handlers here to make it more modular
+    **/
+    var selectedRadioButton="";
+    function handleExportSubmit(){
+        console.log("clicked ok");
+
+        var hiddenDiv=document.getElementById("exportQueryFallback");
+        var treeElementId=""
+        if(hiddenDiv){
+            //check for hidden data attribute
+            treeElementKey = hiddenDiv.getAttribute("data-tree-element-key");
+        }
+        window.conDecExport.getSelectedRadioBoxForExport(selectedRadioButton,treeElementKey);
+    }
+    function changeRadioBox(element){
+        selectedRadioButton=element.id;
+    }
+    function closeDialog(){
+        AJS.dialog2('#export-dialog').hide()
+    }
+
+</script>
