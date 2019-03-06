@@ -79,7 +79,7 @@
 			event.preventDefault();
 			event.stopPropagation();
 			AJS.dialog2("#export-dialog").show();
-		})
+		});
 	}
 
 	/*

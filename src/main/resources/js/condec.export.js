@@ -32,7 +32,7 @@
 		}
 		// close dialog
 		AJS.dialog2('#export-dialog').hide();
-	}
+	};
 
 
 	function getURLsSearch() {
@@ -78,7 +78,7 @@
 		} else {
 			//it has to be at the Decision knowledge site
 			if (elementKey) {
-				myJql = "?jql=issue=" + elementKey
+				myJql = "?jql=issue=" + elementKey;
 			}
 		}
 		return myJql;
