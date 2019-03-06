@@ -66,6 +66,11 @@
 		return search;
 	}
 
+	ConDecJiraIssueModule.prototype.updateView = function () {
+		console.log("ConDecJiraIssueModule updateView");
+		JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [JIRA.Issue.getIssueId()]);
+	};
+
 	function addOnClickEventToExportAsTable() {
 		console.log("ConDecExport addOnClickEventToExportAsTable");
 		var exportMenuItem = document.getElementById("export-as-table-link");
@@ -74,9 +79,8 @@
 			event.preventDefault();
 			event.stopPropagation();
 			AJS.dialog2("#export-dialog").show();
-		});
+		})
 	}
-
 
 	/*
 	 * Init Helpers

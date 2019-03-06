@@ -13,26 +13,22 @@
 	/**
 	 * Only Public function
 	 * @param elementKey
-	 * @param inputSelectedRadioButton
+	 * @param exportFormat
+	 * @param exportType
 	 */
-	ConDecExport.prototype.getSelectedRadioBoxForExport = function getSelectedRadioBoxForExport(inputSelectedRadioButton, elementKey) {
-
-		switch (inputSelectedRadioButton) {
-			case "exportLinkedElementsJson":
-				exportLinkedElements("json", elementKey);
-				break;
-			case "exportLinkedElementsDocument":
-				exportLinkedElements("document", elementKey);
-				break;
-			case "exportLinkedAndMatchingQueryElementsJson":
-				exportAllMatchedAndLinkedElements("json", elementKey);
-				break;
-			case "exportLinkedAndMatchingQueryElementsDocument":
-				exportAllMatchedAndLinkedElements("document", elementKey);
-				break;
-			default:
-				// should not happen
-				break;
+	ConDecExport.prototype.getSelectedRadioBoxForExport = function getSelectedRadioBoxForExport(exportType, exportFormat, elementKey) {
+		var expFormat = "";
+		if (exportFormat === "exportAsDocument") {
+			expFormat = "document";
+		}
+		if (exportFormat === "exportAsJson") {
+			expFormat = "json";
+		}
+		if (exportType === "exportLinked") {
+			exportLinkedElements(expFormat, elementKey);
+		}
+		if (exportType === "exportLinkedAndQuery") {
+			exportAllMatchedAndLinkedElements(expFormat, elementKey);
 		}
 		// close dialog
 		AJS.dialog2('#export-dialog').hide();
