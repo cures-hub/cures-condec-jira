@@ -107,8 +107,7 @@ public class TestSetUpWithIssues {
 				.addMock(OptionSetManager.class, new MockOptionSetManager())
 				.addMock(CommentManager.class, new MockCommentManager())
 				.addMock(ApplicationProperties.class, mockApplicationProperties)
-				.addMock(SearchService.class, new MockSearchService())
-				.addMock(JiraHome.class, new MockJiraHome());
+				.addMock(SearchService.class, new MockSearchService()).addMock(JiraHome.class, new MockJiraHome());
 
 		creatingProjectIssueStructure();
 	}

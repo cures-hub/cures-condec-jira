@@ -22,7 +22,7 @@ public interface GitClient {
 	 * @issue What is the best place to clone the git repo to?
 	 * @issue To which directory does the Git integration for JIRA plug-in clone the
 	 *        repo? Can we use this directory?
-	 * @alternative APKeys.JIRA_PATH_INSTALLED_PLUGINS
+	 * @decision Clone git repo to JIRAHome/data/condec-plugin
 	 */
 	String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory().getAbsolutePath()
 			+ File.separator + "data" + File.separator + "condec-plugin" + File.separator;
