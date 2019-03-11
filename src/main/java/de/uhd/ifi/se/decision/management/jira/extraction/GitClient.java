@@ -25,7 +25,7 @@ public interface GitClient {
 	 * @decision Clone git repo to JIRAHome/data/condec-plugin
 	 */
 	String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory().getAbsolutePath()
-			+ File.separator + "data" + File.separator + "condec-plugin" + File.separator;
+			+ File.separator + "condec-plugin" + File.separator;
 
 	/**
 	 * Retrieves the commits with the JIRA issue key in their commit message.
