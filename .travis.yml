@@ -16,14 +16,12 @@ before_install:
 install:
   - atlas-mvn install -q -DskipTests=true
 script:
-  - ls target
+  - vim target/classes/jira-application.properties
+  - mkdir -p target/jira/home
   - if test -d target/jira/home; then echo "exist"; fi 
   - export JIRA_HOME=target/jira/home
-  - echo $JIRA_HOME
-  - mkdir -p target/jira/home
-  - export JIRA_HOME=target/jira/home
-  - echo $JIRA_HOME
-  - vim target/jira/webapp/WEB-INF/classes/jira-application.properties
+  - echo $JIRA_HOME  
+  - ls target
   - atlas-package -DskipTests=true
   - atlas-mvn cobertura:cobertura
 notifications:
