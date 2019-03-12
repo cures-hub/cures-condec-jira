@@ -20,7 +20,7 @@ install:
 script:
   - echo $JIRA_HOME  
   - ls target
-  - atlas-package -DskipTests=true
+  - atlas-package
 notifications:
   email: false
 test:
