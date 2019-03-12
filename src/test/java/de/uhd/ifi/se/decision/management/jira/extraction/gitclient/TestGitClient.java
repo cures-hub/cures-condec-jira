@@ -45,6 +45,7 @@ public class TestGitClient extends TestSetUpGit {
 	
 	@Test
 	public void testGitDirectoryExists() {
+		System.out.println(GitClient.DEFAULT_DIR);
 		assertTrue(new File(GitClient.DEFAULT_DIR).exists());
 	}
 	
