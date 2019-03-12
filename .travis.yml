@@ -2,28 +2,32 @@ sudo: true
 language: java
 cache:
   directories:
-  - $HOME/.m2
+    - $HOME/.m2
 jdk:
-- oraclejdk8
+  - oraclejdk8
 before_install:
-- wget https://marketplace.atlassian.com/download/plugins/atlassian-plugin-sdk-tgz
-- mkdir opt
-- tar -xvzf *plugin-sdk* -C opt
-- mv opt/*plugin-sdk* opt/atlassian-plugin-sdk
-- chmod a+x opt/atlassian-plugin-sdk/bin/*
-- chmod a+x opt/atlassian-plugin-sdk/apache-maven-*/bin/*
-- export PATH=opt/atlassian-plugin-sdk/bin:opt/atlassian-plugin-sdk/apache-maven-*/bin:$PATH
-- export JIRA_HOME=target/jira/home
+  - wget https://marketplace.atlassian.com/download/plugins/atlassian-plugin-sdk-tgz
+  - mkdir opt
+  - tar -xvzf *plugin-sdk* -C opt
+  - mv opt/*plugin-sdk* opt/atlassian-plugin-sdk
+  - chmod a+x opt/atlassian-plugin-sdk/bin/*
+  - chmod a+x opt/atlassian-plugin-sdk/apache-maven-*/bin/*
+  - export PATH=opt/atlassian-plugin-sdk/bin:opt/atlassian-plugin-sdk/apache-maven-*/bin:$PATH
 install:
-- atlas-mvn install -q -DskipTests=true
+  - atlas-mvn install -q -DskipTests=true
 script:
-- echo $PATH
-- echo $JIRA_HOME
-- echo $ATLAS_HOME
+  - echo $PATH
+  - echo $JIRA_HOME
+  - export JIRA_HOME=target/jira/home
+  - echo $JIRA_HOME
+  - echo $ATLAS_HOME
+  - vim target/jira/webapp/WEB-INF/classes/jira-application.properties
+  - atlas-package -DskipTests=true
+  - atlas-mvn cobertura:cobertura
 notifications:
-email: false
+  email: false
 test:
-- atlas-mvn test
+  - atlas-mvn test
 deploy:
   provider: releases
   api_key:
