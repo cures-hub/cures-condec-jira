@@ -1,4 +1,4 @@
-sudo: true
+sudo: false
 language: java
 cache:
   directories:
@@ -13,15 +13,9 @@ before_install:
   - chmod a+x opt/atlassian-plugin-sdk/bin/*
   - chmod a+x opt/atlassian-plugin-sdk/apache-maven-*/bin/*
   - export PATH=opt/atlassian-plugin-sdk/bin:opt/atlassian-plugin-sdk/apache-maven-*/bin:$PATH
-  - mkdir -p jira_home/data/condec-plugin/
 install:
   - atlas-mvn install -q -DskipTests=true
-  - mkdir -p target/jira/home
-  - mkdir -p jira_home/data/condec-plugin/
-  - export JIRA_HOME=target/jira/home
 script:
-  - echo $JIRA_HOME  
-  - ls target
   - atlas-package -DskipTests=true
   - atlas-mvn cobertura:cobertura
 notifications:
