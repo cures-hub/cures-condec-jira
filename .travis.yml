@@ -21,7 +21,7 @@ script:
   - echo $JIRA_HOME  
   - ls target
   - atlas-package -DskipTests=true
-  - atlas-mvn corbertura:corbertura
+  - atlas-mvn cobertura:cobertura
 notifications:
   email: false
 deploy:
