@@ -42,15 +42,10 @@ public class TestGitClient extends TestSetUpGit {
 		newGitClient.setGit(gitClient.getGit());
 		assertEquals(gitClient.getGit(), newGitClient.getGit());
 	}
-	
-//	@Test
-//	public void testGitDirectoryExists() {
-//		System.out.println(GitClient.DEFAULT_DIR);
-//		assertTrue(new File(System.getProperty("user.home") + File.separator + GitClient.DEFAULT_DIR).exists());
-//	}
-//	
-//	@Test
-//	public void testGitDirectoryCanWrite() {
-//		assertTrue(new File(System.getProperty("user.home") + File.separator + GitClient.DEFAULT_DIR).canWrite());
-//	}
+
+	@Test
+	public void testMockingOfGitDirectoryWorks() {
+		assertEquals(GitClient.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data" + File.separator
+				+ "condec-plugin" + File.separator);
+	}
 }
