@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
@@ -40,5 +42,14 @@ public class TestGitClient extends TestSetUpGit {
 		newGitClient.setGit(gitClient.getGit());
 		assertEquals(gitClient.getGit(), newGitClient.getGit());
 	}
-
+	
+	@Test
+	public void testGitDirectoryExists() {
+		assertTrue(new File(GitClient.DEFAULT_DIR).exists());
+	}
+	
+	@Test
+	public void testGitDirectoryCanWrite() {
+		assertTrue(new File(GitClient.DEFAULT_DIR).canWrite());
+	}
 }
