@@ -20,7 +20,6 @@ install:
 script:
   - echo $JIRA_HOME  
   - ls target
-  - cat target/classes/jira-application.properties  
   - atlas-package -DskipTests=true
 notifications:
   email: false
