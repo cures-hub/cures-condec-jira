@@ -13,16 +13,13 @@ before_install:
 - chmod a+x opt/atlassian-plugin-sdk/bin/*
 - chmod a+x opt/atlassian-plugin-sdk/apache-maven-*/bin/*
 - export PATH=opt/atlassian-plugin-sdk/bin:opt/atlassian-plugin-sdk/apache-maven-*/bin:$PATH
-- echo $PATH
-- echo $JIRA_HOME
-- echo $ATLAS_HOME
 - export JIRA_HOME=target/jira/home
-- echo $JIRA_HOME
 install:
 - atlas-mvn install -q -DskipTests=true
 script:
-- atlas-package -DskipTests=true
-- atlas-mvn cobertura:cobertura
+- echo $PATH
+- echo $JIRA_HOME
+- echo $ATLAS_HOME
 notifications:
 email: false
 test:
