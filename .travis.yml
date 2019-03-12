@@ -15,7 +15,7 @@ before_install:
   - export PATH=opt/atlassian-plugin-sdk/bin:opt/atlassian-plugin-sdk/apache-maven-*/bin:$PATH
 install:
   - atlas-mvn install -q -DskipTests=true
-    - mkdir -p target/jira/home
+  - mkdir -p target/jira/home
   - export JIRA_HOME=target/jira/home
 script:
   - echo $JIRA_HOME  
