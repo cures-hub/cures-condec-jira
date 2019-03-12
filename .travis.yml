@@ -14,14 +14,14 @@ before_install:
 - chmod a+x opt/atlassian-plugin-sdk/apache-maven-*/bin/*
 - export PATH=opt/atlassian-plugin-sdk/bin:opt/atlassian-plugin-sdk/apache-maven-*/bin:$PATH
 install:
-- sudo atlas-mvn install -q -DskipTests=true
+- atlas-mvn install -q -DskipTests=true
 script:
-- sudo atlas-package
-- sudo atlas-mvn cobertura:cobertura
+- atlas-package -DskipTests=true
+- atlas-mvn cobertura:cobertura
 notifications:
 email: false
 test:
-- sudo atlas-mvn test
+- atlas-mvn test
 deploy:
   provider: releases
   api_key:
