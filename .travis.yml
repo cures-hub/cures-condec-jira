@@ -16,7 +16,6 @@ before_install:
 install:
   - atlas-mvn install -q -DskipTests=true
 script:
-  - vim target/classes/jira-application.properties
   - mkdir -p target/jira/home
   - if test -d target/jira/home; then echo "exist"; fi 
   - export JIRA_HOME=target/jira/home
