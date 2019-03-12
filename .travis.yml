@@ -18,7 +18,6 @@ install:
   - atlas-mvn install -q -DskipTests=true
   - mkdir -p target/jira/home
   - mkdir -p jira_home/data/condec-plugin/
-  - mkdir -p /jira_home/data/condec-plugin/
   - export JIRA_HOME=target/jira/home
 script:
   - echo $JIRA_HOME  
