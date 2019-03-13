@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
@@ -272,6 +273,7 @@ public class GitClientImpl implements GitClient {
 	private List<RevCommit> getCommits() {
 		List<RevCommit> commits = new ArrayList<RevCommit>();
 		for (Ref branch : getAllRefs()) {
+			System.out.println(branch.getName());
 			commits.addAll(getCommits(branch));
 		}
 		return commits;
@@ -280,7 +282,7 @@ public class GitClientImpl implements GitClient {
 	private List<Ref> getAllRefs() {
 		List<Ref> refs = new ArrayList<Ref>();
 		try {
-			refs = git.branchList().call();
+			refs = git.branchList().setListMode(ListBranchCommand.ListMode.ALL).call();
 		} catch (GitAPIException e) {
 			e.printStackTrace();
 		}
