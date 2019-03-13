@@ -93,6 +93,7 @@
 		<resource type="download" name="condec.treant.js" location="/js/condec.treant.js" />
 		<resource type="download" name="condec.tree.viewer.js"
 			location="/js/condec.tree.viewer.js" />
+		<resource type="download" name="condec.export.js"  location="/js/condec.export.js" />
 	</web-resource>
 
 	<web-resource key="decision-knowledge-page-resources"

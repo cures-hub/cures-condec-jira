@@ -101,6 +101,7 @@
 		console.log("ConDecJiraIssueModule updateView");
 		JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [ JIRA.Issue.getIssueId() ]);
 	};
+
 	var selectedRadioButton = "";
 	function addOnClickEventToExportAsTable() {
 		console.log("ConDecJiraIssueModule addOnClickEventToExportAsTable");
