@@ -285,16 +285,18 @@ public class GitClientImpl implements GitClient {
 
 	private Ref getRef(String jiraIssueKey) {
 		List<Ref> refs = getAllRefs();
-		Ref masterBranch = null;
+		Ref branch = null;
 		for (Ref ref : refs) {
 			System.out.println(ref.getName());
 			if (ref.getName().contains(jiraIssueKey)) {
 				return ref;
+			} else if (ref.getName().equalsIgnoreCase("refs/heads/develop")) {
+				branch = ref;
 			} else if (ref.getName().equalsIgnoreCase("refs/heads/master")) {
-				masterBranch = ref;
+				branch = ref;
 			}
 		}
-		return masterBranch;
+		return branch;
 	}
 
 	private List<Ref> getAllRefs() {
