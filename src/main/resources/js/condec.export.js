@@ -1,5 +1,5 @@
 /*
- This view provides all functionality to export decision knowledge.
+ This module provides all functionality to export decision knowledge.
 
  Requires
 
