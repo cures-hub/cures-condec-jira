@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -16,9 +15,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.EditList;
-
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
@@ -26,23 +22,18 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
-import de.uhd.ifi.se.decision.management.jira.extraction.git.GitClient;
-import de.uhd.ifi.se.decision.management.jira.extraction.git.GitClientImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.git.TaskCodeSummarizer;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.CodeSummarizerImpl;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilteringManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.view.GraphFiltering;
 
 /**
  * REST resource: Enables creation, editing, and deletion of decision knowledge
@@ -72,10 +63,10 @@ public class KnowledgeRest {
 				.entity(ImmutableMap.of("error", "Decision knowledge element was not found for the given id.")).build();
 	}
 
-	@Path("/getLinkedElements")
+	@Path("/getAdjacentElements")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getLinkedElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
+	public Response getAdjacentElements(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
 			@QueryParam("documentationLocation") String documentationLocation) {
 		if (projectKey == null || id <= 0) {
 			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
@@ -84,7 +75,7 @@ public class KnowledgeRest {
 		}
 		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager.getPersistenceManager(projectKey,
 				documentationLocation);
-		List<DecisionKnowledgeElement> linkedDecisionKnowledgeElements = persistenceManager.getLinkedElements(id);
+		List<DecisionKnowledgeElement> linkedDecisionKnowledgeElements = persistenceManager.getAdjacentElements(id);
 		return Response.ok(linkedDecisionKnowledgeElements).build();
 	}
 
@@ -257,6 +248,31 @@ public class KnowledgeRest {
 				.entity(ImmutableMap.of("error", "Deletion of link failed.")).build();
 	}
 
+	@Path("/getElements")
+	@GET
+
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getElements(@QueryParam("allTrees") boolean allTrees, @QueryParam("projectKey") String projectKey,
+			@QueryParam("query") String query, @QueryParam("elementKey") String elementKey,
+			@Context HttpServletRequest request) {
+		if (query == null || request == null || projectKey == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Getting elements failed due to a bad request.")).build();
+		}
+
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		List<DecisionKnowledgeElement> queryResult = new ArrayList<DecisionKnowledgeElement>();
+
+		if (allTrees) {
+			List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
+			elementsQueryLinked = FilteringManager.getGraphsMatchingQuery(user, projectKey, query, "");
+			return Response.ok(elementsQueryLinked).build();
+		} else {
+			queryResult = FilteringManager.getElementsInGraph(user, projectKey, query, elementKey);
+		}
+		return Response.ok(queryResult).build();
+	}
+
 	@Path("/createIssueFromSentence")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -279,7 +295,6 @@ public class KnowledgeRest {
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error", "The documentation location could not be changed.")).build();
-
 	}
 
 	@Path("/setSentenceIrrelevant")
@@ -320,21 +335,19 @@ public class KnowledgeRest {
 	@Path("/getSummarizedCode")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getSummarizedCode(@QueryParam("id") String id, @QueryParam("projectKey") String projectKey,
-			@QueryParam("documentationLocation") String documentationLocation, @Context HttpServletRequest request) {
-		if (projectKey == null || id == null || request == null) {
+	public Response getSummarizedCode(@QueryParam("id") long id, @QueryParam("projectKey") String projectKey,
+			@QueryParam("documentationLocation") String documentationLocation) {
+		if (projectKey == null || id <= 0) {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Getting summarized code failed due to a bad request.")).build();
 		}
 
-		Long elementId = Long.parseLong(id);
-
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
-		Issue jiraIssue = issueManager.getIssueObject(elementId);
+		Issue jiraIssue = issueManager.getIssueObject(id);
 
 		String jiraIssueKey = "";
 		if (jiraIssue == null) {
-			jiraIssueKey = JiraIssueCommentPersistenceManager.getJiraIssueKey(elementId);
+			jiraIssueKey = JiraIssueCommentPersistenceManager.getJiraIssueKey(id);
 		} else {
 			jiraIssueKey = jiraIssue.getKey();
 		}
@@ -346,150 +359,10 @@ public class KnowledgeRest {
 					.build();
 		}
 
-		String queryResult = "";
-		GitClient gitClient = new GitClientImpl(projectKey);
-		Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssueKey);
-		if (diff == null) {
-			queryResult = "This JIRA issue does not have any code committed.";
-		} else {
-			queryResult = TaskCodeSummarizer.summarizer(diff, projectKey, true);
+		String summary = new CodeSummarizerImpl(projectKey, true).createSummary(jiraIssueKey);
+		if (summary == null || summary.isEmpty()) {
+			summary = "This JIRA issue does not have any code committed.";
 		}
-
-		return Response.ok(queryResult).build();
-	}
-
-	/**
-	 * @param Enum
-	 *            resultType["ELEMENTS_QUERY","ELEMENTS_LINKED","ELEMENTS_QUERY_LINKED"]
-	 * @param String
-	 *            projectKey
-	 * @param String
-	 *            query
-	 * @param String
-	 *            elementKey
-	 * @param String
-	 *            request
-	 * @return List of Objects or List of Lists with Objects
-	 */
-	@Path("getAllElementsMatchingQuery")
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getAllElementsMatchingQuery(@QueryParam("resultType") String resultType,
-			@QueryParam("projectKey") String iProjectKey, @QueryParam("query") String query,
-			@QueryParam("elementKey") String iElementKey, @Context HttpServletRequest request) {
-		if (resultType == null || query == null || request == null) {
-			return Response.status(Status.BAD_REQUEST).entity(
-					ImmutableMap.of("error", "Getting elements matching the query failed due to a bad request."))
-					.build();
-		}
-		String elementKey = helperCheckIfNotNullThenSetValue(iElementKey);
-
-		String projectKey = helperCheckIfNullThenGetProjectKey(iProjectKey, elementKey);
-
-		ApplicationUser user = AuthenticationManager.getUser(request);
-		List<DecisionKnowledgeElement> queryResult = new ArrayList<>();
-		List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
-		try {
-			switch (resultType) {
-			case "ELEMENTS_QUERY":
-				queryResult = getHelperMatchedQueryElements(user, projectKey, query);
-				break;
-			case "ELEMENTS_LINKED":
-				queryResult = getHelperAllElementsLinkedToElement(user, projectKey, query, elementKey);
-				break;
-			case "ELEMENTS_QUERY_LINKED":
-				elementsQueryLinked = getHelperAllElementsMatchingQueryAndLinked(user, projectKey, query);
-				break;
-			default:
-				break;
-			}
-		} catch (Exception e) {
-			return Response.status(Status.BAD_REQUEST).entity(
-					ImmutableMap.of("error", "Getting elements matching the query failed due to an internal error."))
-					.build();
-		}
-		if (queryResult.size() == 0 && elementsQueryLinked.size() == 0) {
-			return Response.status(Status.INTERNAL_SERVER_ERROR).entity(
-					ImmutableMap.of("error", "Getting elements matching the query failed. No Results were found"))
-					.build();
-		} else if (elementsQueryLinked.size() > 0) {
-			return Response.ok(elementsQueryLinked).build();
-		} else {
-			return Response.ok(queryResult).build();
-		}
-	}
-
-	private String getProjectKey(String elementKey) {
-		return elementKey.split("-")[0];
-	}
-
-	/**
-	 * REST HELPERS to avoid doubled code:
-	 **/
-
-	private List<DecisionKnowledgeElement> getHelperMatchedQueryElements(ApplicationUser user, String projectKey,
-			String query) {
-		GraphFiltering filter = new GraphFiltering(projectKey, query, user);
-		filter.produceResultsFromQuery();
-		return filter.getAllElementsMatchingQuery();
-	}
-
-	private List<DecisionKnowledgeElement> getHelperAllElementsLinkedToElement(ApplicationUser user, String projectKey,
-			String query, String elementKey) {
-		Graph graph;
-		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
-			GraphFiltering filter = new GraphFiltering(projectKey, query, user);
-			filter.produceResultsFromQuery();
-			graph = new GraphImplFiltered(projectKey, elementKey, filter);
-		} else {
-			graph = new GraphImpl(projectKey, elementKey);
-		}
-		return graph.getAllElements();
-	}
-
-	private List<List<DecisionKnowledgeElement>> getHelperAllElementsMatchingQueryAndLinked(ApplicationUser user,
-			String projectKey, String query) {
-		List<DecisionKnowledgeElement> tempQueryResult = getHelperMatchedQueryElements(user, projectKey, query);
-		List<DecisionKnowledgeElement> addedElements = new ArrayList<DecisionKnowledgeElement>();
-		List<List<DecisionKnowledgeElement>> elementsQueryLinked = new ArrayList<List<DecisionKnowledgeElement>>();
-
-		// now iti over query result
-		for (DecisionKnowledgeElement current : tempQueryResult) {
-			// check if in addedElements list
-			if (!addedElements.contains(current)) {
-				// if not get the connected tree
-				String currentElementKey = current.getKey();
-				if ("".equals(projectKey)) {
-					projectKey = current.getProject().getProjectKey();
-				}
-				List<DecisionKnowledgeElement> filteredElements = getHelperAllElementsLinkedToElement(user, projectKey,
-						query, currentElementKey);
-				// add each element to the list
-				addedElements.addAll(filteredElements);
-				// add list to the big list
-				elementsQueryLinked.add(filteredElements);
-			}
-		}
-		return elementsQueryLinked;
-	}
-
-	private String helperCheckIfNotNullThenSetValue(String iValue) {
-		String result;
-		if (iValue != null) {
-			result = iValue;
-		} else {
-			result = "";
-		}
-		return result;
-	}
-
-	private String helperCheckIfNullThenGetProjectKey(String iProjectKey, String elementKey) {
-		String projectKey;
-		if (iProjectKey == null) {
-			projectKey = getProjectKey(elementKey);
-		} else {
-			projectKey = iProjectKey;
-		}
-		return projectKey;
+		return Response.ok(summary).build();
 	}
 }

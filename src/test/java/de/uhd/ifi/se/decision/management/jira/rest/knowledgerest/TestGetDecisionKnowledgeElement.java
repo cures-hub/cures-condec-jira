@@ -32,7 +32,7 @@ public class TestGetDecisionKnowledgeElement extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		knowledgeRest = new KnowledgeRest();
-		initialization();
+		super.initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
 	}

@@ -12,7 +12,7 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.extraction.git.GitClientImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
@@ -22,14 +22,6 @@ public class ConfigPersistenceManager {
 	private static PluginSettingsFactory pluginSettingsFactory = ComponentGetter.getPluginSettingsFactory();
 	private static TransactionTemplate transactionTemplate = ComponentGetter.getTransactionTemplate();
 	private static String pluginStorageKey = ComponentGetter.getPluginStorageKey();
-
-	public static String getAccessToken() {
-		return getValue("accessToken");
-	}
-
-	public static String getConsumerKey() {
-		return getValue("consumerKey");
-	}
 
 	public static Collection<String> getEnabledWebhookTypes(String projectKey) {
 		IssueTypeManager issueTypeManager = ComponentAccessor.getComponent(IssueTypeManager.class);
@@ -41,22 +33,6 @@ public class ConfigPersistenceManager {
 			}
 		}
 		return issueTypeNames;
-	}
-
-	public static String getOauthJiraHome() {
-		return getValue("oauthJiraHome");
-	}
-
-	public static String getPrivateKey() {
-		return getValue("privateKey");
-	}
-
-	public static String getRequestToken() {
-		return getValue("requestToken");
-	}
-
-	public static String getSecretForOAuth() {
-		return getValue("gitAuthSecret");
 	}
 
 	public static String getValue(String parameter) {
@@ -151,16 +127,8 @@ public class ConfigPersistenceManager {
 		return "true".equals(isWebhookTypeEnabled);
 	}
 
-	public static void setAccessToken(String accessToken) {
-		setValue("accessToken", accessToken);
-	}
-
 	public static void setActivated(String projectKey, boolean isActivated) {
 		setValue(projectKey, "isActivated", Boolean.toString(isActivated));
-	}
-
-	public static void setConsumerKey(String consumerKey) {
-		setValue("consumerKey", consumerKey);
 	}
 
 	public static void setIconParsing(String projectKey, boolean isIconParsing) {
@@ -178,6 +146,15 @@ public class ConfigPersistenceManager {
 		}
 	}
 
+	// TODO Testing
+	public static void setGitUri(String projectKey, String gitUri) {
+		setValue(projectKey, "gitUri", gitUri);
+	}
+
+	public static String getGitUri(String projectKey) {
+		return getValue(projectKey, "gitUri");
+	}
+
 	public static void setKnowledgeExtractedFromIssues(String projectKey, boolean isKnowledgeExtractedFromIssues) {
 		setValue(projectKey, "isKnowledgeExtractedFromIssues", Boolean.toString(isKnowledgeExtractedFromIssues));
 	}
@@ -185,22 +162,6 @@ public class ConfigPersistenceManager {
 	public static void setKnowledgeTypeEnabled(String projectKey, String knowledgeType,
 			boolean isKnowledgeTypeEnabled) {
 		setValue(projectKey, knowledgeType, Boolean.toString(isKnowledgeTypeEnabled));
-	}
-
-	public static void setOauthJiraHome(String oauthJiraHome) {
-		setValue("oauthJiraHome", oauthJiraHome);
-	}
-
-	public static void setPrivateKey(String privateKey) {
-		setValue("privateKey", privateKey);
-	}
-
-	public static void setRequestToken(String requestToken) {
-		setValue("requestToken", requestToken);
-	}
-
-	public static void setSecretForOAuth(String gitAuthSecret) {
-		setValue("gitAuthSecret", gitAuthSecret);
 	}
 
 	public static void setUseClassiferForIssueComments(String projectKey, boolean isActivated) {

@@ -64,10 +64,10 @@
 
 	/**
 	 * returns jql if empty or nonexistent create it returning jql for one issue
-	 *
+	 * 
 	 * @returns {string}
 	 */
-	function getQueryFromUrl() {
+	function getQueryFromUrl(bAllIssues) {
 		var userInputJql = getURLsSearch();
 		var baseUrl = AJS.params.baseURL;
 		var sPathName = document.location.href;
@@ -80,14 +80,19 @@
 		} else if (userInputJql && userInputJql.indexOf("?filter=") > -1 && userInputJql.split("?filter=")[1]) {
 			myJql = userInputJql;
 		} else if (sPathWithoutBaseUrl && sPathWithoutBaseUrl.indexOf("/browse/") > -1) {
-			var issueKey = sPathWithoutBaseUrl.split("/browse/")[1];
-			if (issueKey.indexOf("?jql=")) {
-				issueKey = issueKey.split("?jql=")[0];
+			// user on url of a single issue
+			if (bAllIssues) {
+				myJql = "?filter=allissues";
+			} else {
+				var issueKey = sPathWithoutBaseUrl.split("/browse/")[1];
+				if (issueKey.indexOf("?jql=")) {
+					issueKey = issueKey.split("?jql=")[0];
+				}
+				if (issueKey.indexOf("?filter=")) {
+					issueKey = issueKey.split("?filter=")[0];
+				}
+				myJql = "?jql=issue=" + issueKey;
 			}
-			if (issueKey.indexOf("?filter=")) {
-				issueKey = issueKey.split("?filter=")[0];
-			}
-			myJql = "?jql=issue=" + issueKey;
 		}
 		return myJql;
 	}
@@ -96,7 +101,7 @@
 		console.log("ConDecJiraIssueModule updateView");
 		JIRA.trigger(JIRA.Events.REFRESH_ISSUE_PAGE, [ JIRA.Issue.getIssueId() ]);
 	};
-
+	var selectedRadioButton = "";
 	function addOnClickEventToExportAsTable() {
 		console.log("ConDecJiraIssueModule addOnClickEventToExportAsTable");
 
@@ -107,50 +112,52 @@
 			event.stopPropagation();
 			AJS.dialog2("#export-dialog").show();
 
-			document.getElementById("exportAllElementsMatchingQueryJson").onclick = function() {
-				exportAllElementsMatchingQuery("json");
+			document.getElementById("export-dialog-confirm-button").onclick = function() {
+				getSelectedRadioBoxForExport();
 			};
-			document.getElementById("exportAllElementsMatchingQueryDocument").onclick = function() {
-				exportAllElementsMatchingQuery("document");
-			};
-			document.getElementById("exportLinkedElementsJson").onclick = function() {
-				exportLinkedElements("json");
-			};
-			document.getElementById("exportLinkedElementsDocument").onclick = function() {
-				exportLinkedElements("document");
-			};
-			document.getElementById("exportLinkedAndMatchingQueryElementsJson").onclick = function() {
-				exportAllMatchedAndLinkedElements("json");
-			};
-			document.getElementById("exportLinkedAndMatchingQueryElementsDocument").onclick = function() {
-				exportAllMatchedAndLinkedElements("document");
-			};
+			$('#exportDecisionKnowledgeFieldSet input:radio').on('change', function() {
+				selectedRadioButton = $(this).context.id;
+			});
 		});
 	}
 
-	function exportAllElementsMatchingQuery(exportType) {
-		var jql = getQueryFromUrl();
-		conDecAPI.getElementsByQuery(jql, function(elements) {
-			if (elements && elements.length > 0 && elements[0] !== null) {
-				download(elements, "decisionKnowledge", exportType);
-			}
-		});
+	function getSelectedRadioBoxForExport() {
+		switch (selectedRadioButton) {
+		case "exportLinkedElementsJson":
+			exportLinkedElements("json");
+			break;
+		case "exportLinkedElementsDocument":
+			exportLinkedElements("document");
+			break;
+		case "exportLinkedAndMatchingQueryElementsJson":
+			exportAllMatchedAndLinkedElements("json");
+			break;
+		case "exportLinkedAndMatchingQueryElementsDocument":
+			exportAllMatchedAndLinkedElements("document");
+			break;
+		default:
+			// should not happen
+			break;
+		}
+		// close dialog
+		AJS.dialog2('#export-dialog').hide();
 	}
 
 	function exportLinkedElements(exportType) {
-		var jql = getQueryFromUrl();
-		var issueKey = conDecAPI.getIssueKey();
-		conDecAPI.getLinkedElementsByQuery(jql, issueKey, "i", function(elements) {
+		var jql = getQueryFromUrl(true);
+		var jiraIssueKey = conDecAPI.getIssueKey();
+		conDecAPI.getLinkedElementsByQuery(jql, jiraIssueKey, "i", function(elements) {
 			if (elements && elements.length > 0 && elements[0] !== null) {
 				download(elements, "decisionKnowledgeGraph", exportType);
 			}
 		});
 	}
+
 	function exportAllMatchedAndLinkedElements(exportType) {
-		var jql = getQueryFromUrl();
+		var jql = getQueryFromUrl(false);
 		conDecAPI.getAllElementsByQueryAndLinked(jql, function(elements) {
 			if (elements && elements.length > 0 && elements[0] !== null) {
-				download(elements, "decisionKnowledgeGraphWithLinked", exportType,true);
+				download(elements, "decisionKnowledgeGraphWithLinked", exportType, true);
 			}
 		});
 	}
@@ -160,12 +167,12 @@
 		switch (exportType) {
 		case "document":
 			filename += ".doc";
-			var htmlString="";
-			if(multipleArrays){
-				elements.map(function(aElement){
-					htmlString+=createHtmlStringForWordDocument(aElement)+"<hr>";
+			var htmlString = "";
+			if (multipleArrays) {
+				elements.map(function(aElement) {
+					htmlString += createHtmlStringForWordDocument(aElement) + "<hr>";
 				});
-			}else{
+			} else {
 				htmlString = createHtmlStringForWordDocument(elements);
 			}
 			dataString = "data:text/html," + encodeURIComponent(htmlString);
@@ -187,7 +194,7 @@
 
 	function createHtmlStringForWordDocument(elements) {
 		var table = "<table><tr><th>Key</th><th>Summary</th><th>Description</th><th>Type</th></tr>";
-		elements.map(function (element) {
+		elements.map(function(element) {
 			var summary = element["summary"] === undefined ? "" : element["summary"];
 			var description = element["description"] === undefined ? "" : element["description"];
 			var type = element["type"] === undefined ? "" : element["type"];
@@ -203,7 +210,7 @@
 
 		var styleString = "table{font-family:arial,sans-serif;border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;text-align:left;padding:8px}tr:nth-child(even){background-color:#ddd}";
 		var htmlString = $("<html>").html("<head><style>" + styleString + "</style></head><body>" + table + "</body>")
-			.html();
+				.html();
 		return htmlString;
 	}
 

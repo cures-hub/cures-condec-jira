@@ -53,13 +53,13 @@
 	};
 
 	/*
-	 * external references: condec.jira.issue.module
+	 * external references: none
 	 */
-	ConDecAPI.prototype.getLinkedElements = function getLinkedElements(id, documentationLocation, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getLinkedElements.json?projectKey=" + projectKey
-				+ "&id=" + id + "&documentationLocation=" + documentationLocation, function(error, linkedElements) {
+	ConDecAPI.prototype.getAdjacentElements = function getAdjacentElements(id, documentationLocation, callback) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAdjacentElements.json?projectKey=" + projectKey
+				+ "&id=" + id + "&documentationLocation=" + documentationLocation, function(error, adjacentElements) {
 			if (error === null) {
-				callback(linkedElements);
+				callback(adjacentElements);
 			}
 		});
 	};
@@ -195,14 +195,13 @@
 	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getElementsByQuery = function getElementsByQuery(query, callback) {
-		getJSON(
-				AJS.contextPath()
-						+ "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?resultType=ELEMENTS_QUERY&projectKey="
-						+ projectKey + "&query=" + query, function(error, elements) {
-					if (error === null) {
-						callback(elements);
-					}
-				});
+		getJSON(AJS.contextPath()
+				+ "/rest/decisions/latest/decisions/getElements.json?allTrees=false&projectKey="
+				+ projectKey + "&query=" + query, function(error, elements) {
+			if (error === null) {
+				callback(elements);
+			}
+		});
 	};
 
 	/*
@@ -210,28 +209,26 @@
 	 */
 	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, elementKey,
 			documentationLocation, callback) {
-		getJSON(
-				AJS.contextPath()
-						+ "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?resultType=ELEMENTS_LINKED&elementKey="
-						+ elementKey + "&query=" + query, function(error, elements) {
-					if (error === null) {
-						callback(elements);
-					}
-				});
+		getJSON(AJS.contextPath()
+				+ "/rest/decisions/latest/decisions/getElements.json?allTrees=false&projectKey="
+				+ projectKey + "&elementKey=" + elementKey + "&query=" + query, function(error, elements) {
+			if (error === null) {
+				callback(elements);
+			}
+		});
 	};
 
 	/*
 	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getAllElementsByQueryAndLinked = function getAllElementsByQueryAndLinked(query, callback) {
-		getJSON(
-				AJS.contextPath()
-						+ "/rest/decisions/latest/decisions/getAllElementsMatchingQuery.json?resultType=ELEMENTS_QUERY_LINKED&projectKey="
-						+ projectKey + "&query=" + query, function(error, elements) {
-					if (error === null) {
-						callback(elements);
-					}
-				});
+		getJSON(AJS.contextPath()
+				+ "/rest/decisions/latest/decisions/getElements.json?allTrees=true&projectKey="
+				+ projectKey + "&query=" + query, function(error, elements) {
+			if (error === null) {
+				callback(elements);
+			}
+		});
 	};
 
 	/*
@@ -274,9 +271,9 @@
 	 */
 	ConDecAPI.prototype.getSummarizedCode = function getSummarizedCode(id, documentationLocation, callback) {
 		getText(AJS.contextPath() + "/rest/decisions/latest/decisions/getSummarizedCode?projectKey=" + projectKey
-				+ "&id=" + id + "&documentationLocation=" + documentationLocation, function(error, text) {
+				+ "&id=" + id + "&documentationLocation=" + documentationLocation, function(error, summary) {
 			if (error === null) {
-				callback(text);
+				callback(summary);
 			}
 		});
 
@@ -373,6 +370,18 @@
 			if (error === null) {
 				showFlag("success", "Git connection for this project has been set to " + isKnowledgeExtractedFromGit
 						+ ".");
+			}
+		});
+	};
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.setGitUri = function setGitUri(projectKey, gitUri) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setGitUri.json?projectKey=" + projectKey
+				+ "&gitUri=" + gitUri, null, function(error, response) {
+			if (error === null) {
+				showFlag("success", "The git URI  " + gitUri + " for this project has been set.");
 			}
 		});
 	};
@@ -551,32 +560,13 @@
 			}
 		});
 	};
-
+	
 	/*
-	 * external references: settingsForAllProjects.vm
+	 * external references: condec.context.menu
 	 */
-	ConDecAPI.prototype.getRequestToken = function getRequestToken(projectKey, baseURL, privateKey, consumerKey,
-			callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/getRequestToken.json?projectKey=" + projectKey
-				+ "&baseURL=" + baseURL + "&privateKey=" + privateKey + "&consumerKey=" + consumerKey, function(error,
-				result) {
-			if (error === null) {
-				callback(result);
-			}
-		});
-	};
-
-	/*
-	 * external references: settingsForAllProjects.vm
-	 */
-	ConDecAPI.prototype.getAccessToken = function getAccessToken(projectKey, baseURL, privateKey, consumerKey,
-			requestToken, secret, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/config/getAccessToken.json?projectKey=" + projectKey
-				+ "&baseURL=" + baseURL + "&privateKey=" + privateKey + "&consumerKey=" + consumerKey
-				+ "&requestToken=" + requestToken + "&secret=" + secret, function(error, result) {
-			if (error === null) {
-				callback(result);
-			}
+	ConDecAPI.prototype.openJiraIssue = function openJiraIssue(elementId, documentationLocation) {
+		this.getDecisionKnowledgeElement(elementId, documentationLocation, function(decisionKnowledgeElement) {
+			global.open(decisionKnowledgeElement.url, '_self');
 		});
 	};
 
@@ -727,14 +717,6 @@
 			body : message
 		});
 	}
-
-	ConDecAPI.prototype.openJiraIssue = function openJiraIssue(elementId, documentationLocation) {
-		console.log("conDecAPI openJiraIssue");
-
-		this.getDecisionKnowledgeElement(elementId, documentationLocation, function(decisionKnowledgeElement) {
-			global.open(decisionKnowledgeElement.url, '_self');
-		});
-	};
 
 	// export ConDecAPI
 	global.conDecAPI = new ConDecAPI();

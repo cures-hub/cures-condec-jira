@@ -141,6 +141,13 @@ public interface DecisionKnowledgeProject {
 	 *                                    extracted from git commit messages.
 	 */
 	void setKnowledgeExtractedFromGit(boolean isKnowledgeExtractedFromGit);
+	
+    /**
+     * Return the uniform resource identifier of the git repository for this project.
+     *
+     * @return git uri as a String (if it is set, otherwise an empty String).
+     */
+    String getGitUri();
 
 	/**
 	 * Determine whether decision knowledge is extracted from issue comments.

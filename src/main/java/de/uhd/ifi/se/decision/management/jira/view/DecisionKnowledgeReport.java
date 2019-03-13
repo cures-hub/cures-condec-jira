@@ -8,8 +8,8 @@ import com.atlassian.jira.util.ParameterUtils;
 import com.atlassian.jira.web.action.ProjectActionSupport;
 
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
-import de.uhd.ifi.se.decision.management.jira.extraction.metrics.CommentMetricCalculator;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.quality.CommentMetricCalculator;
 
 /**
  * Renders the report page.
