@@ -18,6 +18,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 				<th id="isIssue">Store Knowledge in JIRA Issues?</th>
 				<th id="extractGit">Extract Knowledge From Git?</th>
 				<th id="extractCom">Extract Knowledge From Issue Comments?</th>
+                <th id="setVis">Use Vis instead of Treant for Visualization</th>
 			</tr>
 			#foreach ($proj in $projectsMap)
 			<tr>
@@ -94,6 +95,25 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                             });
                         });
 					</script></td>
+                <td headers="setVisualization"><aui-toggle
+                id="$proj.getProjectKey()-isVisualisationVis-toggle"
+                label="$proj.getProjectKey()-UseVisInsteadOfTreant"
+                value="$proj.getProjectKey()"></aui-toggle>
+                    <script>
+                        $(document).ready(function () {
+                            var toggle = document.getElementById('$proj.getProjectKey()-isVisualisationVis-toggle');
+                            #if ($proj.isVisualisationVis == true)
+                                toggle.checked = true;
+                            #else
+                                toggle.checked = false;
+                            #end
+                            toggle.addEventListener('change', function (error) {
+                                this.busy = true;
+                                conDecAPI.setVisualizationToVis(this.checked, this.value);
+                                this.busy = false;
+                            });
+                        });
+                    </script></td>
 			</tr>
 			#end
 		</table>

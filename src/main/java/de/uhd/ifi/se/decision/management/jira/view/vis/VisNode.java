@@ -24,17 +24,17 @@ public class VisNode {
 	private String group;
 
 	public VisNode(DecisionKnowledgeElement element){
-		this.setId(element.getKey());
+		this.setId(element.getId()+ "_" + element.getDocumentationLocationAsString());
 		this.setLabel(element.getSummary());
 		this.setTitle(element.getDescription());
-		this.setGroup(element.getTypeAsString());
+		this.setGroup(element.getTypeAsString() + "_" + element.getDocumentationLocationAsString());
 	}
 
 	public VisNode(DecisionKnowledgeElement element, String type) {
-		this.setId(element.getKey());
+		this.setId(element.getId()+ "_" + element.getDocumentationLocationAsString());
 		this.setLabel(element.getSummary());
 		this.setTitle(element.getDescription());
-		this.setGroup(type);
+		this.setGroup(type  + "_" + element.getDocumentationLocationAsString());
 	}
 
 	public String getId() {

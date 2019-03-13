@@ -8,22 +8,17 @@
 
         conDecAPI.getVis(elementKey,searchTerm,function (visData) {
             var container = document.getElementById('treant-container');
-            console.log(visData.nodes)
+            console.log(visData.nodes);
             var data = {
                 nodes: visData.nodes,
                 edges: visData.edges
-            }
+            };
             var options = {
                 nodes: {
                     shape: "box",
-
-                    font: {
-                        size:18
-                    },
-                    scaling: {
-                        min: 10,
-                        max: 30
-                    }
+                    level:8,
+                    widthConstraint:120,
+                    color:{background: 'rgba(255, 255, 255,1)'}
                 },
                 edges:{
                     arrows: "to"
@@ -35,15 +30,35 @@
                     improvedLayout: true,
                     hierarchical: {
                         enabled: true,
-                        levelSeparation: 150,
-                        nodeSpacing: 100,
+                        levelSeparation: 100,
+                        nodeSpacing: 150,
                         treeSpacing: 200,
                         blockShifting: true,
                         edgeMinimization: true,
                         parentCentralization: true,
                         direction: 'UD', // UD, DU, LR, RL
-                        sortMethod: 'hubsize' // hubsize, directed
+                        sortMethod: 'directed' // hubsize, directed
                     }
+                },
+                groups:{
+                    // Setting colors and Levels for Decision Knowledge Elements stored in Jira Issues
+                    Decision_i: {color:{background: 'rgba(252,227,190,1)'}, level: 11},
+                    Issue_i: {color:{background: 'rgba(255, 255, 204,1)'}, level: 10},
+                    Alternative_i: {color:{background: 'rgba(252,227,190,1)'}, level: 11},
+                    Pro_i: {color:{background: 'rgba(222, 250, 222,1)'}, level: 12},
+                    Con_i: {color:{background: 'rgba(255, 231, 231,1)'}, level: 12},
+                    Argument_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
+                    Constraint_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
+                    Assumption_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
+                    Implication_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
+                    Context_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
+                    Problem_i: {color:{background: 'rgba(255, 255, 204,1)'}, level: 9},
+                    Goal_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
+                    Solution_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
+                    Claim_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
+                    Rationale_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
+                    Question_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
+                    Assessment_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12}
                 },
 
                 manipulation: {
@@ -60,30 +75,48 @@
                         console.log('add edge', data);
                         if (data.from !== data.to) {
                             callback(data);
-                            console.log("something happened");
+
+                            conDecAPI.createLink(null,data.to.slice(0, -2),data.from.slice(0,-2),data.to.substr(-1),
+                                 data.from.substr(-1),function () {
+                                network.destroy();
+                                buildVis(elementKey,searchTerm);
+                                conDecObservable.notify();
+                            })
                         }
                         // after each adding you will be back to addEdge mode
+
                         network.addEdgeMode();
                     }
                 }
                 };
-            var network = new vis.Network(container, data, options)
+            var network = new vis.Network(container, data, options);
             network.setSize("100%","400px");
             network.addEdgeMode();
             network.on("oncontext", function(params) {
                 params.event.preventDefault();
-                params.event.
-                console.log("right-click: ",params);
-                console.log("node-position 1: ",network.getPositions("ASDF-1"));
-                console.log("node-position 2: ",network.getPositions("ASDF-2"));
-                console.log("node-position 3: ",network.getPositions("ASDF-3"));
-                console.log("node-position 4: ",network.getPositions("ASDF-4"));
-                console.log("node: ",network.getNodeAt(params.pointer.canvas.x,params.pointer.canvas.y))
-
-                //var node = network.getNodeAt(params.event.x,params.event.y);
-                //conDecContextMenu.createContextMenu(node.id,"",params.event,"treant-container");
+                var nodeIndices = network.body.nodeIndices;
+                var clickedNodeId;
+                console.log(network);
+                for (var i = 0; i < nodeIndices.length; i++) {
+                    var nodeId = nodeIndices[i];
+                    var boundingBox = network.getBoundingBox(nodeId);
+                    if (boundingBox.left <= params.pointer.canvas.x &&
+                        params.pointer.canvas.x <= boundingBox.right &&
+                        boundingBox.top <= params.pointer.canvas.y &&
+                        params.pointer.canvas.y <= boundingBox.bottom) {
+                        clickedNodeId = nodeId;
+                    }
+                }
+                console.log("ContextMenu for ID: " + clickedNodeId.toString().slice(0, -2) +
+                    " and location: " + clickedNodeId.toString().substr(-1));
+                conDecContextMenu.createContextMenu(clickedNodeId.toString().slice(0, -2), clickedNodeId.toString().substr(-1),
+                    params.event, "treant-container");
             })
         });
-    }
+
+    };
+    function getDocumentationLocationFromId(nodeId) {
+
+    };
     global.conDecVis = new ConDecVis();
 })(window);

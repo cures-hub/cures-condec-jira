@@ -54,7 +54,6 @@ public class Vis {
 		}
 		this.setHyperlinked(isHyperlinked);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
-		System.out.println("Filling Nodes and Edges");
 		nodes = new HashSet<>();
 		edges= new HashSet<>();
 		fillNodesAndEdges(rootElement, null);
@@ -70,17 +69,16 @@ public class Vis {
 			graph = new GraphImpl(element);
 		}
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getAdjacentElementsAndLinks(element);
-		System.out.println(childrenAndLinks.size());
 		if (link != null) {
 			switch (link.getType()) {
 				case "support":
 					if (element.getId() == link.getSourceElement().getId()) {
-						this.nodes.add(new VisNode(element, "pro"));
+						this.nodes.add(new VisNode(element, "Pro"));
 					}
 					break;
 				case "attack":
 					if (element.getId() == link.getSourceElement().getId()) {
-						this.nodes.add(new VisNode(element, "con"));
+						this.nodes.add(new VisNode(element, "Con"));
 					}
 					break;
 				default:
@@ -92,7 +90,6 @@ public class Vis {
 			this.nodes.add(new VisNode(element));
 		}
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-			System.out.println(childAndLink.getKey().getKey());
 			fillNodesAndEdges(childAndLink.getKey(),childAndLink.getValue());
 			this.edges.add(new VisEdge(childAndLink.getValue()));
 		}

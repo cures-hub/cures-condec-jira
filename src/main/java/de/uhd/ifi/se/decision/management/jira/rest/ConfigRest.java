@@ -414,6 +414,40 @@ public class ConfigRest {
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
+	@Path("/setVisualizationToVis")
+	@POST
+	public Response setVisualizationToVis(@Context HttpServletRequest request,
+										  @QueryParam("projectKey") String projectKey,
+										  @QueryParam("isVisualizationSetToVis") String isVisualizationSetToVis) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if (isVisualizationSetToVis == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "isVisualizationSetToVis = null")).build();
+		}
+		try {
+			ConfigPersistenceManager.setVisualizationToVis(projectKey,
+					Boolean.valueOf(isVisualizationSetToVis));
+			return Response.ok(Status.ACCEPTED).build();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
+	}
+
+	@Path("/isVisualizationSetToVis")
+	@GET
+	public Response isVisualizationVis(@QueryParam("projectKey") final String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		Boolean isVisualizationVis = ConfigPersistenceManager.isVisualizationSetToVis(projectKey);
+		return Response.ok(isVisualizationVis).build();
+	}
+
 
 	private Response checkIfDataIsValid(HttpServletRequest request, String projectKey) {
 		if (request == null) {
