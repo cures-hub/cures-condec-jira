@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
@@ -41,4 +43,9 @@ public class TestGitClient extends TestSetUpGit {
 		assertEquals(gitClient.getGit(), newGitClient.getGit());
 	}
 
+	@Test
+	public void testMockingOfGitDirectoryWorks() {
+		assertEquals(GitClient.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data" + File.separator
+				+ "condec-plugin" + File.separator);
+	}
 }

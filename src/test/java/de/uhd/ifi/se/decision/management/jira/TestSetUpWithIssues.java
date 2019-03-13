@@ -11,6 +11,7 @@ import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.config.properties.APKeys;
 import com.atlassian.jira.config.properties.ApplicationProperties;
+import com.atlassian.jira.config.util.JiraHome;
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
@@ -46,6 +47,7 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeSchemeManager;
+import de.uhd.ifi.se.decision.management.jira.mocks.MockJiraHomeForTesting;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockOptionSetManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockProjectRoleManager;
@@ -105,7 +107,8 @@ public class TestSetUpWithIssues {
 				.addMock(OptionSetManager.class, new MockOptionSetManager())
 				.addMock(CommentManager.class, new MockCommentManager())
 				.addMock(ApplicationProperties.class, mockApplicationProperties)
-				.addMock(SearchService.class, new MockSearchService());
+				.addMock(SearchService.class, new MockSearchService())
+				.addMock(JiraHome.class, new MockJiraHomeForTesting());
 
 		creatingProjectIssueStructure();
 	}

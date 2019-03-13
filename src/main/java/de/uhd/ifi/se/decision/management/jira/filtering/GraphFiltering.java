@@ -39,8 +39,9 @@ public class GraphFiltering {
 	private long startDate;
 	private long endDate;
 	private SearchService searchService;
+	private Boolean mergeFilterQueryWithProjectKey;
 
-	public GraphFiltering(String projectKey, String query, ApplicationUser user) {
+	public GraphFiltering(String projectKey, String query, ApplicationUser user, Boolean mergeFilterQueryWithProjectKey) {
 		this.query = query;
 		this.projectKey = projectKey;
 		this.user = user;
@@ -50,6 +51,7 @@ public class GraphFiltering {
 		this.queryContainsCreationDate = false;
 		this.startDate = -1;
 		this.endDate = -1;
+		this.mergeFilterQueryWithProjectKey = mergeFilterQueryWithProjectKey;
 	}
 
 	private String cropQuery() {
@@ -298,7 +300,9 @@ public class GraphFiltering {
 		} else if (!queryIsJQL && !queryIsFilter) {
 			finalQuery = "type = null";
 		}
-
+		if (this.mergeFilterQueryWithProjectKey) {
+			finalQuery = "(" + finalQuery + ")AND( PROJECT=" + this.projectKey + ")";
+		}
 		final SearchService.ParseResult parseResult =
 				getSearchService().parseQuery(this.user, finalQuery);
 
