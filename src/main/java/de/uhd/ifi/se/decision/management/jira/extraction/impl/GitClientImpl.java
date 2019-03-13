@@ -254,11 +254,15 @@ public class GitClientImpl implements GitClient {
 	@Override
 	public List<RevCommit> getCommits(String jiraIssueKey) {
 		List<RevCommit> commitsForJiraIssue = new LinkedList<RevCommit>();
-		if (git == null) {
+		if (git == null || jiraIssueKey == null) {
 			LOGGER.error("Commits cannot be retrieved since git object is null.");
 			return commitsForJiraIssue;
 		}
-		List<RevCommit> commits = getCommits();
+		// @issue How to get the commits for branches that are not on the master branch?
+		// @decision Assume that the JIRA issue key equals the branch name, otherwise
+		// return commits on master branch
+		Ref branch = getRef(jiraIssueKey);
+		List<RevCommit> commits = getCommits(branch);
 		for (RevCommit commit : commits) {
 			// TODO Improve identification of jira issue key in commit message
 			String jiraIssueKeyInCommitMessage = GitClient.getJiraIssueKey(commit.getFullMessage());
@@ -270,13 +274,27 @@ public class GitClientImpl implements GitClient {
 		return commitsForJiraIssue;
 	}
 
-	private List<RevCommit> getCommits() {
+	@Override
+	public List<RevCommit> getCommits() {
 		List<RevCommit> commits = new ArrayList<RevCommit>();
 		for (Ref branch : getAllRefs()) {
-			System.out.println(branch.getName());
 			commits.addAll(getCommits(branch));
 		}
 		return commits;
+	}
+
+	private Ref getRef(String jiraIssueKey) {
+		List<Ref> refs = getAllRefs();
+		Ref masterBranch = null;
+		for (Ref ref : refs) {
+			System.out.println(ref.getName());
+			if (ref.getName().contains(jiraIssueKey)) {
+				return ref;
+			} else if (ref.getName().equalsIgnoreCase("refs/heads/master")) {
+				masterBranch = ref;
+			}
+		}
+		return masterBranch;
 	}
 
 	private List<Ref> getAllRefs() {
@@ -292,7 +310,9 @@ public class GitClientImpl implements GitClient {
 	private List<RevCommit> getCommits(Ref branch) {
 		List<RevCommit> commits = new ArrayList<RevCommit>();
 		try {
-			git.checkout().setName(branch.getName()).call();
+			if (branch != null) {
+				git.checkout().setName(branch.getName()).call();
+			}
 			Iterable<RevCommit> iterable = git.log().call();
 			for (RevCommit commit : iterable) {
 				commits.add(commit);

@@ -39,6 +39,14 @@ public interface GitClient {
 	List<RevCommit> getCommits(String jiraIssueKey);
 
 	/**
+	 * Retrieves all commits of the git repository.
+	 * 
+	 * @see RevCommit
+	 * @return all commits as a list of RevCommits.
+	 */
+	List<RevCommit> getCommits();
+
+	/**
 	 * Get a map of diff entries and the respective edit lists for a commit.
 	 * 
 	 * @see RevCommit
