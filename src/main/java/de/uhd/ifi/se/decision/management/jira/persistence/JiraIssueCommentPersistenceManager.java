@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import java.util.*;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -534,19 +535,19 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	 * @param projectKey
 	 * @return Map with pair of Knowledge Types and Comment strings
 	 */
-	public Map<KnowledgeType, String> getListOfUserValidatedSentneces(String projectKey){
+	public List<Sentence> getListOfUserValidatedSentneces(String projectKey){
 		if (projectKey == null || projectKey.equals("")) {
-			return new HashMap<>();
+			return new ArrayList<Sentence>();
 		}
 		DecisionKnowledgeInCommentEntity[] sentencesInProject = ACTIVE_OBJECTS
 				                                                        .find(DecisionKnowledgeInCommentEntity.class,
 						                                                        Query.select().where("PROJECT_KEY = ? and VALIDATED = ?", projectKey, true));
-		Map<KnowledgeType, String> trainMap = new HashMap<>();
+		List<Sentence> trainList = new ArrayList<>();
 		for (DecisionKnowledgeInCommentEntity databaseEntry : sentencesInProject) {
 			Sentence  sentence = new SentenceImpl(databaseEntry);
-			trainMap.put(sentence.getType(), sentence.getTextFromComment());
+			trainList.add(sentence);
 		}
-		return trainMap;
+		return trainList;
 	}
 
 	private static int removeSentenceFromComment(Sentence element) {

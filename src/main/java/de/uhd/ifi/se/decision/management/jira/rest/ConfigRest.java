@@ -387,14 +387,8 @@ public class ConfigRest {
 							       "Automatic classification is disabled for this project. " +
 									       "So no training can be executed")).build();
 		}
-		try {
-			JiraIssueCommentPersistenceManager manager = new JiraIssueCommentPersistenceManager(projectKey);
-			Map<KnowledgeType, String> fainGrainedMap = manager.getListOfUserValidatedSentneces(projectKey);
-
-			ClassificationTrainer trainer = new ClassificationTrainerImpl(fainGrainedMap);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
+		trainer.train();
 		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
 	}
 

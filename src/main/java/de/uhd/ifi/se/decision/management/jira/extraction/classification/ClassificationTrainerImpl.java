@@ -1,16 +1,12 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 
-
-
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import meka.classifiers.multilabel.LC;
 
-import weka.classifiers.Evaluation;
-import weka.classifiers.bayes.NaiveBayesMultinomial;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.core.*;
-import weka.core.Debug.Random;
 import weka.core.tokenizers.NGramTokenizer;
 import weka.core.tokenizers.Tokenizer;
 import weka.filters.unsupervised.attribute.StringToWordVector;
@@ -27,45 +23,17 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	private static String pathToBinaryModel;
 	private static String pathToFineGrainedModel;
 	private static Instances structure;
+	private List<Sentence> mekaTrainData;
 
-	public ClassificationTrainerImpl(Map<KnowledgeType, String> trainMap) throws Exception {
-
-		binaryRelevance = new LC();
-		FilteredClassifier fc = new FilteredClassifier();
-		pathToBinaryModel = ComponentGetter.getUrlOfClassifierFolder() + "fc.model";
-		pathToFineGrainedModel = ComponentGetter.getUrlOfClassifierFolder() + "br.model";
-
-		List commentsList = (List) trainMap.values();
-		structure = new Instances(buildDataset(commentsList));
+	public ClassificationTrainerImpl(String projectKey){
+		JiraIssueCommentPersistenceManager manager = new JiraIssueCommentPersistenceManager(projectKey);
+		mekaTrainData = manager.getListOfUserValidatedSentneces(projectKey);
 	}
 
 
 	@Override
 	public void train() {
-
-		binaryRelevance = new LC();
-		fc = new FilteredClassifier();
-		try {
-			fc.setFilter(getSTWV());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		fc.setClassifier(new NaiveBayesMultinomial());
-		binaryRelevance.setClassifier(fc);
-
-		try {
-			Evaluation rate = new Evaluation(structure);
-			Random seed = new Random(1);
-			Instances datarandom = new Instances(structure);
-			datarandom.randomize(seed);
-
-			int folds = 10; datarandom.stratify(folds);
-			rate.crossValidateModel(binaryRelevance, structure, folds, seed);
-			binaryRelevance.buildClassifier(structure);
-			SerializationHelper.write(pathToFineGrainedModel, binaryRelevance);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		structure = buildDatasetForMeka(mekaTrainData);
 	}
 
 	private static StringToWordVector getSTWV() throws Exception {
@@ -86,15 +54,16 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		return t;
 	}
 
-	private static Instances buildDataset(List<String> commentsList) throws Exception {
+	public static Instances buildDatasetForMeka(List<Sentence> trainSentences){
+
 		ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
 
 		// Declare Class value with {0,1} as possible values
-		wekaAttributes.add(getAttribute("isIssue"));
-		wekaAttributes.add(getAttribute("isDecision"));
 		wekaAttributes.add(getAttribute("isAlternative"));
 		wekaAttributes.add(getAttribute("isPro"));
 		wekaAttributes.add(getAttribute("isCon"));
+		wekaAttributes.add(getAttribute("isDecision"));
+		wekaAttributes.add(getAttribute("isIssue"));
 
 		// Declare text attribute to hold the message (free form text)
 		Attribute attributeText = new Attribute("sentence", (List<String>) null);
@@ -104,19 +73,19 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 
 		Instances data = new Instances("sentences -C 5 ", wekaAttributes, 1000000);
 
-		for (String comment : commentsList) {
-
+		for (Sentence trainSentence : trainSentences) {
 
 			DenseInstance newInstance = new DenseInstance(6);
-			// To avoid misunderstandings: For unknown reason, if you watch into newInstance
-			// here, the string is replaced by a number. If you watch it later when
-			// predicting classes, it's shown correctly
-			newInstance.setValue(attributeText, comment);
+			newInstance.setValue(0,0);
+			newInstance.setValue(1,0);
+			newInstance.setValue(2,0);
+			newInstance.setValue(3,0);
+			newInstance.setValue(4,1);
+			newInstance.setValue(attributeText, trainSentence.getTextFromComment());
 			data.add(newInstance);
 
 
 		}
-
 
 		return data;
 	}
