@@ -87,6 +87,10 @@
 	function exportLinkedElements(exportType, elementKey) {
 		var jql = getQueryFromUrl(true, elementKey);
 		var jiraIssueKey = conDecAPI.getIssueKey();
+		//handle Exception when no issueKey could be defined
+		if(!jiraIssueKey){
+			jiraIssueKey=elementKey;
+		}
 		conDecAPI.getLinkedElementsByQuery(jql, jiraIssueKey, "i", function (elements) {
 			if (elements && elements.length > 0 && elements[0] !== null) {
 				download(elements, "decisionKnowledgeGraph", exportType);
