@@ -14,14 +14,14 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
-import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
 
 /**
  * Model class for textual parts (substrings) of JIRA issue comments. These
  * parts can either be relevant decision knowledge elements or irrelevant text.
  */
-public class SentenceImpl extends DecisionKnowledgeElementImpl implements Sentence {
+public class PartOfCommentImpl extends DecisionKnowledgeElementImpl implements PartOfComment {
 
 	private long commentId;
 	private int startSubstringCount;
@@ -31,18 +31,18 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	private boolean isPlainText;
 	private long issueId;
 
-	public SentenceImpl() {
+	public PartOfCommentImpl() {
 		super();
 		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
 
-	public SentenceImpl(DecisionKnowledgeInCommentEntity databaseEntry) {
+	public PartOfCommentImpl(DecisionKnowledgeInCommentEntity databaseEntry) {
 		this(databaseEntry.getId(), databaseEntry.getEndSubstringCount(), databaseEntry.getStartSubstringCount(),
 				databaseEntry.isValidated(), databaseEntry.isRelevant(), databaseEntry.getProjectKey(),
 				databaseEntry.getCommentId(), databaseEntry.getIssueId(), databaseEntry.getType());
 	}
 
-	public SentenceImpl(long id, int endSubstringCount, int startSubstringCount, boolean isValidated,
+	public PartOfCommentImpl(long id, int endSubstringCount, int startSubstringCount, boolean isValidated,
 			boolean isRelevant, String projectKey, long commentId, long issueId, String type) {
 		this();
 		this.setId(id);

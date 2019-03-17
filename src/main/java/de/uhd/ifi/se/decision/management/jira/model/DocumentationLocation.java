@@ -2,7 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.Locale;
 
-import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
 
 /**
  * Possible documentation locations of decision knowledge
@@ -66,7 +66,7 @@ public enum DocumentationLocation {
 	public static String getIdentifier(DecisionKnowledgeElement element) {
 		if (element == null || element.getDocumentationLocation() == null) {
 			return "";
-		} else if (element instanceof Sentence
+		} else if (element instanceof PartOfComment
 				|| element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUECOMMENT)) {
 			return "s";
 		} else if (element.getDocumentationLocation().equals(DocumentationLocation.ACTIVEOBJECT)) {

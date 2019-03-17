@@ -29,7 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
@@ -313,7 +313,7 @@ public class KnowledgeRest {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 					.entity(ImmutableMap.of("error", "Only sentence elements can be set to irrelevant.")).build();
 		}
-		Sentence sentence = (Sentence) persistenceManager.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
+		PartOfComment sentence = (PartOfComment) persistenceManager.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 		if (sentence == null) {
 			return Response.status(Status.NOT_FOUND)
 					.entity(ImmutableMap.of("error", "Element could not be found in database.")).build();

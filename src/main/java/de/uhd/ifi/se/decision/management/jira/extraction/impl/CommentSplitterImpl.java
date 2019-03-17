@@ -15,8 +15,8 @@ import com.atlassian.jira.issue.comments.Comment;
 import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
-import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
-import de.uhd.ifi.se.decision.management.jira.model.text.impl.SentenceImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
+import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfCommentImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
@@ -32,8 +32,8 @@ public class CommentSplitterImpl implements CommentSplitter {
 	}
 
 	@Override
-	public List<Sentence> getSentences(Comment comment) {
-		List<Sentence> sentences = new ArrayList<Sentence>();
+	public List<PartOfComment> getSentences(Comment comment) {
+		List<PartOfComment> sentences = new ArrayList<PartOfComment>();
 		String projectKey = comment.getIssue().getProjectObject().getKey();
 
 		List<String> strings = CommentSplitterImpl.getRawSentences(comment.getBody(), projectKey);
@@ -46,7 +46,7 @@ public class CommentSplitterImpl implements CommentSplitter {
 			if (!startAndEndIndexRules(startIndex, endIndex, comment.getBody())) {
 				continue;
 			}
-			Sentence sentence = new SentenceImpl();
+			PartOfComment sentence = new PartOfCommentImpl();
 			sentence.setCommentId(comment.getId());
 			sentence.setEndSubstringCount(endIndex);
 			sentence.setStartSubstringCount(startIndex);
@@ -60,7 +60,7 @@ public class CommentSplitterImpl implements CommentSplitter {
 				sentence.setValidated(true);
 			}
 			long sentenceId = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(sentence, null);
-			sentence = (Sentence) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(sentenceId);
+			sentence = (PartOfComment) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(sentenceId);
 			JiraIssueCommentPersistenceManager.createSmartLinkForSentence(sentence);
 			sentence.setCreated(comment.getCreated());
 			sentences.add(sentence);

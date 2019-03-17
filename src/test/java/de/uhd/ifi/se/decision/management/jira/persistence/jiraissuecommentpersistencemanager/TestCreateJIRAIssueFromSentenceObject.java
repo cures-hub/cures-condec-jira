@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.Test;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
-import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import net.java.ao.test.jdbc.NonTransactional;
 
@@ -47,7 +47,7 @@ public class TestCreateJIRAIssueFromSentenceObject extends TestJiraIssueCommentP
 	@Test
 	@NonTransactional
 	public void testIdOkUserFilled() {
-		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText(
+		List<PartOfComment> comment = TestCommentSplitter.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
 		assertNotNull(manager.createJIRAIssueFromSentenceObject(3, user));

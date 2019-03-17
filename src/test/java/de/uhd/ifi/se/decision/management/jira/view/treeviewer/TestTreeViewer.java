@@ -30,7 +30,7 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -160,7 +160,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testTreeViewerWithComment() {
 		TreeViewer tree = new TreeViewer();
-		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText("This is a testcomment with some text");
+		List<PartOfComment> comment = TestCommentSplitter.getSentencesForCommentText("This is a testcomment with some text");
 		comment.get(0).setType(KnowledgeType.ALTERNATIVE);
 		assertNotNull(tree.getDataStructure(comment.get(0)));
 	}
@@ -182,7 +182,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		Comment comment1 = commentManager.create(issue, currentUser, "This is a testsentence for test purposes", true);
 
 		// 3) Manipulate Sentence object so it will be shown in the tree viewer
-		List<Sentence> sentences = new CommentSplitterImpl().getSentences(comment1);
+		List<PartOfComment> sentences = new CommentSplitterImpl().getSentences(comment1);
 		// JiraIssueComment comment = new JiraIssueCommentImpl(comment1);
 		sentences.get(0).setRelevant(true);
 		sentences.get(0).setType(KnowledgeType.ALTERNATIVE);

@@ -23,8 +23,8 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
-import de.uhd.ifi.se.decision.management.jira.model.text.impl.SentenceImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
+import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfCommentImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
@@ -39,7 +39,7 @@ public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIs
 
 	protected JiraIssueCommentPersistenceManager manager;
 	protected ApplicationUser user;
-	protected Sentence element;
+	protected PartOfComment element;
 	protected Comment comment1;
 	protected DecisionKnowledgeElement decisionKnowledgeElement;
 
@@ -56,7 +56,7 @@ public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIs
 	}
 
 	protected void addElementToDataBase() {
-		element = new SentenceImpl();
+		element = new PartOfCommentImpl();
 		element.setProject("TEST");
 		element.setJiraIssueId(12);
 		element.setId(1);
@@ -92,7 +92,7 @@ public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIs
 	@Test
 	@NonTransactional
 	public void testGetAllElementsFromAoByType() {
-		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText(
+		List<PartOfComment> sentences = TestCommentSplitter.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 		assertEquals(KnowledgeType.ISSUE, sentences.get(1).getType());
 
@@ -104,7 +104,7 @@ public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIs
 	@Test
 	@NonTransactional
 	public void testGetAllElementsFromAoByTypeAlternative() {
-		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText(
+		List<PartOfComment> sentences = TestCommentSplitter.getSentencesForCommentText(
 				"some sentence in front. {alternative} testobject {alternative} some sentence in the back.");
 		assertEquals(KnowledgeType.ALTERNATIVE, sentences.get(1).getType());
 
@@ -116,7 +116,7 @@ public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIs
 	@Test
 	@NonTransactional
 	public void testGetAllElementsFromAoByArgumentType() {
-		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText(
+		List<PartOfComment> sentences = TestCommentSplitter.getSentencesForCommentText(
 				"some sentence in front. {con} testobject {con} some sentence in the back.");
 		assertEquals(KnowledgeType.OTHER, sentences.get(0).getType());
 		assertEquals(KnowledgeType.CON, sentences.get(1).getType());
@@ -132,7 +132,7 @@ public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIs
 	@Test
 	@NonTransactional
 	public void testGetAllElementsFromAoByEmptyType() {
-		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText(
+		List<PartOfComment> sentences = TestCommentSplitter.getSentencesForCommentText(
 				"some sentence in front.  {pro} testobject {pro} some sentence in the back.");
 		assertEquals(KnowledgeType.OTHER, sentences.get(2).getType());
 

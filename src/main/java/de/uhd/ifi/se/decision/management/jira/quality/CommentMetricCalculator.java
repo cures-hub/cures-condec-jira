@@ -28,7 +28,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
-import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
@@ -109,9 +109,9 @@ public class CommentMetricCalculator {
 			List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager
 					.getElementsForIssue(jiraIssue.getId(), projectKey);
 			for (DecisionKnowledgeElement currentElement : elements) {
-				if (currentElement instanceof Sentence && ((Sentence) currentElement).isRelevant()) {
+				if (currentElement instanceof PartOfComment && ((PartOfComment) currentElement).isRelevant()) {
 					isRelevant++;
-				} else if (currentElement instanceof Sentence && !((Sentence) currentElement).isRelevant()) {
+				} else if (currentElement instanceof PartOfComment && !((PartOfComment) currentElement).isRelevant()) {
 					isIrrelevant++;
 				}
 			}
@@ -157,7 +157,7 @@ public class CommentMetricCalculator {
 			for (Link link : links) {
 				if (link.isValid()) {
 					DecisionKnowledgeElement dke = link.getOppositeElement(issue.getId());
-					if (dke instanceof Sentence && dke.getType().equals(linkTo)) { // alt
+					if (dke instanceof PartOfComment && dke.getType().equals(linkTo)) { // alt
 						hastOtherElementLinked = true;
 					}
 				}
@@ -185,9 +185,9 @@ public class CommentMetricCalculator {
 		List<DecisionKnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(linkFrom);
 
 		for (DecisionKnowledgeElement issue : listOfIssues) {
-			if (issue instanceof Sentence
-					&& !listOfElementsWithoutLink.contains(((Sentence) issue).getKey().split(":")[0])) {
-				listOfElementsWithoutLink += ((Sentence) issue).getKey().split(":")[0] + " ";
+			if (issue instanceof PartOfComment
+					&& !listOfElementsWithoutLink.contains(((PartOfComment) issue).getKey().split(":")[0])) {
+				listOfElementsWithoutLink += ((PartOfComment) issue).getKey().split(":")[0] + " ";
 			}
 		}
 		return listOfElementsWithoutLink;
@@ -207,7 +207,7 @@ public class CommentMetricCalculator {
 			for (Link link : links) {
 				if (link.isValid()) {
 					DecisionKnowledgeElement dke = link.getOppositeElement(currentAlternative.getId());
-					if (dke instanceof Sentence && dke.getType().equals(KnowledgeType.ARGUMENT)) {
+					if (dke instanceof PartOfComment && dke.getType().equals(KnowledgeType.ARGUMENT)) {
 						hasArgument = true;
 					}
 				}

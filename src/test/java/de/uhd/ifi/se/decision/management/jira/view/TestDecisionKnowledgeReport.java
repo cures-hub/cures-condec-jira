@@ -29,7 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.LinkType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
-import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
@@ -45,7 +45,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 	private EntityManager entityManager;
 	private DecisionKnowledgeReport report;
 	private AbstractPersistenceManager persistenceStrategy;
-	private List<Sentence> sentences;
+	private List<PartOfComment> sentences;
 
 	@Before
 	public void setUp() {
@@ -91,7 +91,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 	@Test(expected = Exception.class)
 	@NonTransactional
 	public void testWithObjects() {
-		Sentence sentence2 = TestCommentSplitter.getSentencesForCommentText("More Comment with some text").get(0);
+		PartOfComment sentence2 = TestCommentSplitter.getSentencesForCommentText("More Comment with some text").get(0);
 		sentence2.setType(KnowledgeType.ALTERNATIVE);
 		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence2, null);
 
@@ -140,7 +140,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		MutableIssue issue = createCommentStructureWithTestIssue("This is a testsentence for test purposes");
 		Link link = new LinkImpl(sentences.get(0), sentences.get(0), LinkType.CONTAIN);
 		GenericLinkManager.insertLink(link, null);
-		Sentence sentence = sentences.get(0);
+		PartOfComment sentence = sentences.get(0);
 		sentence.setType(KnowledgeType.ISSUE);
 		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence, null);
 

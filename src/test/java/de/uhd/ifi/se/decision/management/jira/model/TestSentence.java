@@ -19,8 +19,8 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
-import de.uhd.ifi.se.decision.management.jira.model.text.impl.SentenceImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
+import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfCommentImpl;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -42,7 +42,7 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSetKnowledgeTypeEnum() {
-		Sentence sentence = new SentenceImpl();
+		PartOfComment sentence = new PartOfCommentImpl();
 		assertNotNull(sentence);
 		assertEquals(KnowledgeType.OTHER, sentence.getType());
 
@@ -53,7 +53,7 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSetKnowledgeTypeString() {
-		Sentence sentence = new SentenceImpl();
+		PartOfComment sentence = new PartOfCommentImpl();
 		sentence.setType(KnowledgeType.ALTERNATIVE.toString());
 		assertEquals(KnowledgeType.ALTERNATIVE.toString(), sentence.getTypeAsString());
 		sentence.setType("pro");
@@ -65,7 +65,7 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testToString() {
-		Sentence sentence = new SentenceImpl();
+		PartOfComment sentence = new PartOfCommentImpl();
 		sentence.setDescription("This is a decision.");
 		assertEquals(sentence.toString(), "This is a decision.");
 	}
@@ -73,7 +73,7 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testGetKnowledgeTypeAsString() {
-		Sentence sentence = new SentenceImpl();
+		PartOfComment sentence = new PartOfCommentImpl();
 		sentence.setType("");
 		assertEquals("Other", sentence.getTypeAsString());
 	}
@@ -81,7 +81,7 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testGetCreated() {
-		Sentence sentence = new SentenceImpl();
+		PartOfComment sentence = new PartOfCommentImpl();
 		sentence.setCreated(new Date());
 		assertNotNull(sentence.getCreated());
 	}
@@ -89,17 +89,17 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testGetTextFromComment() {
-		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText(
+		List<PartOfComment> sentences = TestCommentSplitter.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 
-		Sentence sentence = sentences.get(0);
+		PartOfComment sentence = sentences.get(0);
 		assertEquals(sentence.getText(), "some sentence in front. ");
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetTextFromCommentThatIsNull() {
-		Sentence sentence = new SentenceImpl();
+		PartOfComment sentence = new PartOfCommentImpl();
 		assertEquals(sentence.getText(), "");
 		sentence.setDescription("This is a decision.");
 		assertEquals(sentence.getText(), "This is a decision.");
@@ -108,7 +108,7 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testIsTagged() {
-		Sentence sentence = new SentenceImpl();
+		PartOfComment sentence = new PartOfCommentImpl();
 		assertFalse(sentence.isTagged());
 		sentence.setType(KnowledgeType.CON);
 		assertTrue(sentence.isTagged());
@@ -117,7 +117,7 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testIsPlainText() {
-		List<Sentence> sentences = TestCommentSplitter
+		List<PartOfComment> sentences = TestCommentSplitter
 				.getSentencesForCommentText("This is a text that is not classified.");
 		assertEquals(true, sentences.get(0).isPlainText());
 	}
@@ -125,14 +125,14 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testIsPlainTextCode() {
-		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("{code:Java} int i = 0 {code}");
+		List<PartOfComment> sentences = TestCommentSplitter.getSentencesForCommentText("{code:Java} int i = 0 {code}");
 		assertEquals(false, sentences.get(0).isPlainText());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsPlainTextAlternative() {
-		List<Sentence> sentences = TestCommentSplitter
+		List<PartOfComment> sentences = TestCommentSplitter
 				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative}");
 		assertEquals(true, sentences.get(0).isPlainText());
 	}
@@ -140,14 +140,14 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testIsPlainTextIcon() {
-		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("(y) this is a icon pro text.");
+		List<PartOfComment> sentences = TestCommentSplitter.getSentencesForCommentText("(y) this is a icon pro text.");
 		assertEquals(true, sentences.get(0).isPlainText());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsRelevantText() {
-		List<Sentence> sentences = TestCommentSplitter
+		List<PartOfComment> sentences = TestCommentSplitter
 				.getSentencesForCommentText("This is a text that is not classified.");
 		assertEquals(false, sentences.get(0).isRelevant());
 	}
@@ -155,14 +155,14 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testIsRelevantCode() {
-		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("{code:Java} int i = 0 {code}");
+		List<PartOfComment> sentences = TestCommentSplitter.getSentencesForCommentText("{code:Java} int i = 0 {code}");
 		assertEquals(false, sentences.get(0).isRelevant());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsRelevantAlternative() {
-		List<Sentence> sentences = TestCommentSplitter
+		List<PartOfComment> sentences = TestCommentSplitter
 				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative} ");
 		assertEquals(true, sentences.get(0).isRelevant());
 	}
@@ -170,14 +170,14 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testIsRelevantIcon() {
-		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("(y) this is a icon pro text.");
+		List<PartOfComment> sentences = TestCommentSplitter.getSentencesForCommentText("(y) this is a icon pro text.");
 		assertEquals(true, sentences.get(0).isRelevant());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsValidatedText() {
-		List<Sentence> sentences = TestCommentSplitter
+		List<PartOfComment> sentences = TestCommentSplitter
 				.getSentencesForCommentText("This is a text that is not classified.");
 		assertEquals(false, sentences.get(0).isValidated());
 	}
@@ -185,14 +185,14 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testIsValidatedCode() {
-		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("{code:Java} int i = 0 {code}");
+		List<PartOfComment> sentences = TestCommentSplitter.getSentencesForCommentText("{code:Java} int i = 0 {code}");
 		assertEquals(false, sentences.get(0).isValidated());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsValidatedAlternative() {
-		List<Sentence> sentences = TestCommentSplitter
+		List<PartOfComment> sentences = TestCommentSplitter
 				.getSentencesForCommentText("{alternative} This is an alternative. {alternative} ");
 		assertEquals(true, sentences.get(0).isValidated());
 	}
@@ -200,7 +200,7 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testIsValidatedIssue() {
-		List<Sentence> sentences = TestCommentSplitter
+		List<PartOfComment> sentences = TestCommentSplitter
 				.getSentencesForCommentText("{issue} This is an alternative. {issue} ");
 		assertEquals(true, sentences.get(0).isValidated());
 	}
@@ -208,7 +208,7 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testIsValidatedIcon() {
-		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("(y) this is a icon pro text.");
+		List<PartOfComment> sentences = TestCommentSplitter.getSentencesForCommentText("(y) this is a icon pro text.");
 		assertEquals(true, sentences.get(0).isValidated());
 	}
 }

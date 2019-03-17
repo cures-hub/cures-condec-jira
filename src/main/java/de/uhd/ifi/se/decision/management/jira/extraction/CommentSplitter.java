@@ -8,7 +8,7 @@ import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 import com.atlassian.jira.issue.comments.Comment;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
 
 public interface CommentSplitter {
 
@@ -29,10 +29,10 @@ public interface CommentSplitter {
 	/**
 	 * Split comment into sentences.
 	 * 
-	 * @see Sentence
+	 * @see PartOfComment
 	 * @param comment
 	 *            JIRA issue comment.
 	 * @return list of sentence objects.
 	 */
-	List<Sentence> getSentences(Comment comment);
+	List<PartOfComment> getSentences(Comment comment);
 }

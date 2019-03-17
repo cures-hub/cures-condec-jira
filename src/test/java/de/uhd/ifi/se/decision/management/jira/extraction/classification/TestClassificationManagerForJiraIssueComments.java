@@ -23,7 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.CommentSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
 import meka.classifiers.multilabel.LC;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
@@ -36,7 +36,7 @@ import weka.classifiers.meta.FilteredClassifier;
 public class TestClassificationManagerForJiraIssueComments extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
-	private List<Sentence> sentences;
+	private List<PartOfComment> sentences;
 	private ClassificationManagerForJiraIssueComments classificationManager;
 
 	@Before

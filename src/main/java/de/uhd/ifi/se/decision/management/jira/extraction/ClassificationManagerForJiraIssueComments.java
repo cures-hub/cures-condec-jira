@@ -11,7 +11,7 @@ import com.atlassian.jira.issue.comments.CommentManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.CommentSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.DecisionKnowledgeClassifierImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
 /**
@@ -32,10 +32,10 @@ public class ClassificationManagerForJiraIssueComments {
 		if (issue == null) {
 			return;
 		}
-		List<Sentence> sentences = new ArrayList<Sentence>();
+		List<PartOfComment> sentences = new ArrayList<PartOfComment>();
 		List<Comment> comments = getComments(issue);
 		for (Comment comment : comments) {
-			List<Sentence> sentencesOfComment = new CommentSplitterImpl().getSentences(comment);
+			List<PartOfComment> sentencesOfComment = new CommentSplitterImpl().getSentences(comment);
 			sentences.addAll(sentencesOfComment);
 		}
 		classifySentencesBinary(sentences);
@@ -50,9 +50,9 @@ public class ClassificationManagerForJiraIssueComments {
 		return new ArrayList<Comment>();
 	}
 
-	public List<Sentence> classifySentencesBinary(List<Sentence> sentences) {
+	public List<PartOfComment> classifySentencesBinary(List<PartOfComment> sentences) {
 		if (sentences == null) {
-			return new ArrayList<Sentence>();
+			return new ArrayList<PartOfComment>();
 		}
 		List<String> stringsToBeClassified = getStringsForBinaryClassification(sentences);
 		List<Boolean> classificationResult = classifier.makeBinaryPredictions(stringsToBeClassified);
@@ -60,9 +60,9 @@ public class ClassificationManagerForJiraIssueComments {
 		return sentences;
 	}
 
-	private List<String> getStringsForBinaryClassification(List<Sentence> sentences) {
+	private List<String> getStringsForBinaryClassification(List<PartOfComment> sentences) {
 		List<String> stringsToBeClassified = new ArrayList<String>();
-		for (Sentence sentence : sentences) {
+		for (PartOfComment sentence : sentences) {
 			if (isSentenceQualifiedForBinaryClassification(sentence)) {
 				stringsToBeClassified.add(sentence.getDescription());
 			}
@@ -81,17 +81,17 @@ public class ClassificationManagerForJiraIssueComments {
 	 * @return true if the part of JIRA issue comment (substring) should be the
 	 *         input for binary classification.
 	 */
-	private static boolean isSentenceQualifiedForBinaryClassification(Sentence sentence) {
+	private static boolean isSentenceQualifiedForBinaryClassification(PartOfComment sentence) {
 		return !sentence.isValidated() && sentence.isPlainText();
 	}
 
-	private List<Sentence> updateSentencesWithBinaryClassificationResult(List<Boolean> classificationResult,
-			List<Sentence> sentences) {
+	private List<PartOfComment> updateSentencesWithBinaryClassificationResult(List<Boolean> classificationResult,
+			List<PartOfComment> sentences) {
 		if (classificationResult.size() == 0) {
 			return sentences;
 		}
 		int i = 0;
-		for (Sentence sentence : sentences) {
+		for (PartOfComment sentence : sentences) {
 			if (isSentenceQualifiedForBinaryClassification(sentence)) {
 				sentence.setRelevant(classificationResult.get(i));
 				sentence.setValidated(false);
@@ -102,9 +102,9 @@ public class ClassificationManagerForJiraIssueComments {
 		return sentences;
 	}
 
-	public List<Sentence> classifySentencesFineGrained(List<Sentence> sentences) {
+	public List<PartOfComment> classifySentencesFineGrained(List<PartOfComment> sentences) {
 		if (sentences == null) {
-			return new ArrayList<Sentence>();
+			return new ArrayList<PartOfComment>();
 		}
 		List<String> stringsToBeClassified = getStringsForFineGrainedClassification(sentences);
 		List<KnowledgeType> classificationResult = this.classifier.makeFineGrainedPredictions(stringsToBeClassified);
@@ -112,9 +112,9 @@ public class ClassificationManagerForJiraIssueComments {
 		return sentences;
 	}
 
-	private List<String> getStringsForFineGrainedClassification(List<Sentence> sentences) {
+	private List<String> getStringsForFineGrainedClassification(List<PartOfComment> sentences) {
 		List<String> stringsToBeClassified = new ArrayList<String>();
-		for (Sentence sentence : sentences) {
+		for (PartOfComment sentence : sentences) {
 			if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 				stringsToBeClassified.add(sentence.getDescription());
 			}
@@ -134,15 +134,15 @@ public class ClassificationManagerForJiraIssueComments {
 	 * @return true if the part of JIRA issue comment (substring) should be the
 	 *         input for fine grained classification.
 	 */
-	private static boolean isSentenceQualifiedForFineGrainedClassification(Sentence sentence) {
+	private static boolean isSentenceQualifiedForFineGrainedClassification(PartOfComment sentence) {
 		return sentence.isRelevant() && isSentenceQualifiedForBinaryClassification(sentence);
 	}
 
-	private List<Sentence> updateSentencesWithFineGrainedClassificationResult(List<KnowledgeType> classificationResult,
-			List<Sentence> sentences) {
+	private List<PartOfComment> updateSentencesWithFineGrainedClassificationResult(List<KnowledgeType> classificationResult,
+			List<PartOfComment> sentences) {
 		JiraIssueCommentPersistenceManager persistenceManager = new JiraIssueCommentPersistenceManager("");
 		int i = 0;
-		for (Sentence sentence : sentences) {
+		for (PartOfComment sentence : sentences) {
 			if (isSentenceQualifiedForFineGrainedClassification(sentence)) {
 				sentence.setType(classificationResult.get(i));
 				sentence.setSummary(null);

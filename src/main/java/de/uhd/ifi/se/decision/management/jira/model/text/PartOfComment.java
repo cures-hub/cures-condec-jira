@@ -4,14 +4,14 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 import com.atlassian.jira.issue.comments.MutableComment;
 
-import de.uhd.ifi.se.decision.management.jira.model.text.impl.SentenceImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfCommentImpl;
 
 /**
  * Interface for textual parts (substrings) of JIRA issue comments. These parts
  * can either be relevant decision knowledge elements or irrelevant text.
  */
-@JsonDeserialize(as = SentenceImpl.class)
-public interface Sentence extends PartOfText {
+@JsonDeserialize(as = PartOfCommentImpl.class)
+public interface PartOfComment extends PartOfText {
 
 	/**
 	 * Set the id of the JIRA issue comment that the decision knowledge element or

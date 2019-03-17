@@ -21,7 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
-import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
@@ -110,7 +110,7 @@ public class TreeViewer {
 		if (showKnowledgeTypes[4]) {
 			for (Link link : GenericLinkManager.getLinksForElement(issue.getId(), DocumentationLocation.JIRAISSUE)) {
 				DecisionKnowledgeElement opposite = link.getOppositeElement(issue.getId());
-				if (opposite instanceof Sentence && isSentenceShown(opposite)) {
+				if (opposite instanceof PartOfComment && isSentenceShown(opposite)) {
 					issueNode.getChildren().add(new Data(opposite));
 				}
 			}
@@ -143,7 +143,7 @@ public class TreeViewer {
 	}
 
 	private boolean isSentenceShown(DecisionKnowledgeElement element) {
-		return !((Sentence) element).isRelevant() && ((Sentence) element).getDescription().length() > 0;
+		return !((PartOfComment) element).isRelevant() && ((PartOfComment) element).getDescription().length() > 0;
 	}
 
 	public Data getDataStructure(DecisionKnowledgeElement decisionKnowledgeElement) {
