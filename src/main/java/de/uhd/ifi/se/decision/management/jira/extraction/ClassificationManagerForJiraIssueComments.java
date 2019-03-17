@@ -11,7 +11,7 @@ import com.atlassian.jira.issue.comments.CommentManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.CommentSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.DecisionKnowledgeClassifierImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
 /**

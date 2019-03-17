@@ -13,7 +13,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.comments.MutableComment;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
-import de.uhd.ifi.se.decision.management.jira.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import net.java.ao.test.jdbc.NonTransactional;
 

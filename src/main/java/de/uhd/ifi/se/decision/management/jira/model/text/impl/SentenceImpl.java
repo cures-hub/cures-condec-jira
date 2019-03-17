@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.model.impl;
+package de.uhd.ifi.se.decision.management.jira.model.text.impl;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,7 +12,9 @@ import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.CommentSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
 
 /**
@@ -91,7 +93,7 @@ public class SentenceImpl extends DecisionKnowledgeElementImpl implements Senten
 	}
 
 	@Override
-	public String getTextFromComment() {
+	public String getText() {
 		Comment comment = this.getComment();
 		if (comment == null) {
 			return super.getSummary();

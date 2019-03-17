@@ -8,7 +8,7 @@ import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 import com.atlassian.jira.issue.comments.Comment;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
 
 public interface CommentSplitter {
 

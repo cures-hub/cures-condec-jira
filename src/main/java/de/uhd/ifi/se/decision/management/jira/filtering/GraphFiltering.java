@@ -5,8 +5,8 @@ import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.query.clause.Clause;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
 import com.atlassian.jira.bc.issue.search.*;

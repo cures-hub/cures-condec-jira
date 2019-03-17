@@ -19,7 +19,8 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.model.impl.SentenceImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.text.impl.SentenceImpl;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -92,16 +93,16 @@ public class TestSentence extends TestSetUpWithIssues {
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 
 		Sentence sentence = sentences.get(0);
-		assertEquals(sentence.getTextFromComment(), "some sentence in front. ");
+		assertEquals(sentence.getText(), "some sentence in front. ");
 	}
 
 	@Test
 	@NonTransactional
 	public void testGetTextFromCommentThatIsNull() {
 		Sentence sentence = new SentenceImpl();
-		assertEquals(sentence.getTextFromComment(), "");
+		assertEquals(sentence.getText(), "");
 		sentence.setDescription("This is a decision.");
-		assertEquals(sentence.getTextFromComment(), "This is a decision.");
+		assertEquals(sentence.getText(), "This is a decision.");
 	}
 
 	@Test

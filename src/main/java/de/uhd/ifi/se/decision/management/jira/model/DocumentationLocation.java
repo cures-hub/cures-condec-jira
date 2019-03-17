@@ -2,11 +2,13 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.Locale;
 
+import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
+
 /**
  * Possible documentation locations of decision knowledge
  */
 public enum DocumentationLocation {
-	JIRAISSUE, ACTIVEOBJECT, JIRAISSUECOMMENT, COMMIT, PULLREQUEST, UNKNOWN;
+	JIRAISSUE, ACTIVEOBJECT, JIRAISSUECOMMENT, JIRAISSUEDESCRIPTION, COMMIT, PULLREQUEST, UNKNOWN;
 
 	/**
 	 * Convert a string to a documentation type.
@@ -25,11 +27,13 @@ public enum DocumentationLocation {
 			return DocumentationLocation.ACTIVEOBJECT;
 		case "s":
 			return DocumentationLocation.JIRAISSUECOMMENT;
+		case "d":
+			return DocumentationLocation.JIRAISSUEDESCRIPTION;
 		case "c":
 			return DocumentationLocation.COMMIT;
 		case "p":
 			return DocumentationLocation.PULLREQUEST;
-		case "" :
+		case "":
 			// TODO This should be the same as the default persistence strategy
 			return DocumentationLocation.JIRAISSUE;
 		default:
@@ -46,6 +50,8 @@ public enum DocumentationLocation {
 			return "i";
 		case JIRAISSUECOMMENT:
 			return "s";
+		case JIRAISSUEDESCRIPTION:
+			return "d";
 		case ACTIVEOBJECT:
 			return "a";
 		default:

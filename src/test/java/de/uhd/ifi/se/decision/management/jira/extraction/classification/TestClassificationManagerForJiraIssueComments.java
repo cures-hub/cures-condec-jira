@@ -23,7 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.CommentSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
 import meka.classifiers.multilabel.LC;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;

@@ -14,9 +14,9 @@ import com.atlassian.jira.issue.comments.Comment;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.SentenceImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.text.impl.SentenceImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
