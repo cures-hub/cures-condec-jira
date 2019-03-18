@@ -34,7 +34,6 @@ public class TextSplitterImpl implements TextSplitter {
 		List<String> strings = TextSplitterImpl.getRawSentences(text, projectKey);
 		runBreakIterator(strings, text);
 
-		// Create AO entries
 		for (int i = 0; i < this.startSubstringCount.size(); i++) {
 			int startIndex = this.startSubstringCount.get(i);
 			int endIndex = this.endSubstringCount.get(i);
