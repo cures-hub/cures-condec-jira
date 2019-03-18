@@ -64,7 +64,7 @@ public class TestJiraIssueCommentPersistenceManagerSetUp extends TestSetUpWithIs
 		element.setType("Argument");
 		element.setProject("TEST");
 		element.setDescription("Old");
-		element.setDocumentationLocation(DocumentationLocation.JIRAISSUECOMMENT);
+		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(element, user);
 	}
 

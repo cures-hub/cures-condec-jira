@@ -151,7 +151,7 @@ public class CommentMetricCalculator {
 
 		for (DecisionKnowledgeElement issue : listOfIssues) {
 			List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
-					DocumentationLocation.JIRAISSUECOMMENT);
+					DocumentationLocation.JIRAISSUETEXT);
 			boolean hastOtherElementLinked = false;
 
 			for (Link link : links) {
@@ -202,7 +202,7 @@ public class CommentMetricCalculator {
 
 		for (DecisionKnowledgeElement currentAlternative : alternatives) {
 			List<Link> links = GenericLinkManager.getLinksForElement(currentAlternative.getId(),
-					DocumentationLocation.JIRAISSUECOMMENT);
+					DocumentationLocation.JIRAISSUETEXT);
 			boolean hasArgument = false;
 			for (Link link : links) {
 				if (link.isValid()) {

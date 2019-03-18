@@ -147,7 +147,7 @@ public abstract class AbstractPersistenceManager {
 		switch (documentationLocation) {
 		case JIRAISSUE:
 			return new JiraIssuePersistenceManager(projectKey);
-		case JIRAISSUECOMMENT:
+		case JIRAISSUETEXT:
 			return new JiraIssueCommentPersistenceManager(projectKey);
 		case ACTIVEOBJECT:
 			return new ActiveObjectPersistenceManager(projectKey);

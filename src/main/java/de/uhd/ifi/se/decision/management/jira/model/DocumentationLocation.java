@@ -8,7 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
  * Possible documentation locations of decision knowledge
  */
 public enum DocumentationLocation {
-	JIRAISSUE, ACTIVEOBJECT, JIRAISSUECOMMENT, JIRAISSUEDESCRIPTION, COMMIT, PULLREQUEST, UNKNOWN;
+	JIRAISSUE, ACTIVEOBJECT, JIRAISSUETEXT, COMMIT, PULLREQUEST, UNKNOWN;
 
 	/**
 	 * Convert a string to a documentation type.
@@ -26,9 +26,7 @@ public enum DocumentationLocation {
 		case "a":
 			return DocumentationLocation.ACTIVEOBJECT;
 		case "s":
-			return DocumentationLocation.JIRAISSUECOMMENT;
-		case "d":
-			return DocumentationLocation.JIRAISSUEDESCRIPTION;
+			return DocumentationLocation.JIRAISSUETEXT;
 		case "c":
 			return DocumentationLocation.COMMIT;
 		case "p":
@@ -48,10 +46,8 @@ public enum DocumentationLocation {
 		switch (documentationLocation) {
 		case JIRAISSUE:
 			return "i";
-		case JIRAISSUECOMMENT:
+		case JIRAISSUETEXT:
 			return "s";
-		case JIRAISSUEDESCRIPTION:
-			return "d";
 		case ACTIVEOBJECT:
 			return "a";
 		default:
@@ -67,7 +63,7 @@ public enum DocumentationLocation {
 		if (element == null || element.getDocumentationLocation() == null) {
 			return "";
 		} else if (element instanceof PartOfJiraIssueText
-				|| element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUECOMMENT)) {
+				|| element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUETEXT)) {
 			return "s";
 		} else if (element.getDocumentationLocation().equals(DocumentationLocation.ACTIVEOBJECT)) {
 			return "a";

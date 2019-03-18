@@ -20,11 +20,11 @@ public class TestCreateLinksForNonLinkedElementsForProject extends TestJiraIssue
 		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText(
 				"some sentence in front.  {pro} testobject {pro} some sentence in the back.");
 		long id = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
-		assertEquals(1, GenericLinkManager.getLinksForElement(id, DocumentationLocation.JIRAISSUECOMMENT).size());
-		GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.JIRAISSUECOMMENT);
-		assertEquals(0, GenericLinkManager.getLinksForElement(id, DocumentationLocation.JIRAISSUECOMMENT).size());
+		assertEquals(1, GenericLinkManager.getLinksForElement(id, DocumentationLocation.JIRAISSUETEXT).size());
+		GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.JIRAISSUETEXT);
+		assertEquals(0, GenericLinkManager.getLinksForElement(id, DocumentationLocation.JIRAISSUETEXT).size());
 		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForProject("TEST");
-		assertEquals(1, GenericLinkManager.getLinksForElement(id, DocumentationLocation.JIRAISSUECOMMENT).size());
+		assertEquals(1, GenericLinkManager.getLinksForElement(id, DocumentationLocation.JIRAISSUETEXT).size());
 	}
 
 	@Test

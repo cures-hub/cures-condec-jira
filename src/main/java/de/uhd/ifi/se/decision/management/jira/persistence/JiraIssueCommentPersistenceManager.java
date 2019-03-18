@@ -47,7 +47,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 	public JiraIssueCommentPersistenceManager(String projectKey) {
 		this.projectKey = projectKey;
-		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
+		this.documentationLocation = DocumentationLocation.JIRAISSUETEXT;
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		boolean isDeleted = false;
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("ID = ?", id))) {
-			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.JIRAISSUECOMMENT);
+			GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.JIRAISSUETEXT);
 			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
 		}
 		return isDeleted;
@@ -75,7 +75,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		PartOfJiraIssueTextInDatabase[] commentSentences = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class, Query.select()
 				.where("JIRA_ISSUE_ID = ? AND COMMENT_ID = ?", comment.getIssue().getId(), comment.getId()));
 		for (PartOfJiraIssueTextInDatabase databaseEntry : commentSentences) {
-			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUECOMMENT);
+			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUETEXT);
 			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
 		}
 		return isDeleted;
@@ -227,7 +227,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			return null;
 		}
 		long issueId;
-		if (parentElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
+		if (parentElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
 			PartOfJiraIssueText sentence = (PartOfJiraIssueText) this.getDecisionKnowledgeElement(parentElement.getId());
 			issueId = sentence.getJiraIssueId();
 		} else {
@@ -242,7 +242,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		Comment comment = ComponentAccessor.getCommentManager().create(issue, user, text, false);
 		List<PartOfJiraIssueText> sentences = JiraIssueCommentPersistenceManager.getPartsOfComment(comment);
 		for (PartOfJiraIssueText sentence : sentences) {
-			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUECOMMENT);
+			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUETEXT);
 		}
 		return sentences.get(0);
 	}
@@ -431,7 +431,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	}
 
 	public static void checkIfSentenceHasAValidLink(long sentenceId, long issueId, LinkType linkType) {
-		if (!AbstractPersistenceManager.isElementLinked(sentenceId, DocumentationLocation.JIRAISSUECOMMENT)) {
+		if (!AbstractPersistenceManager.isElementLinked(sentenceId, DocumentationLocation.JIRAISSUETEXT)) {
 			DecisionKnowledgeElement parentElement = new DecisionKnowledgeElementImpl();
 			parentElement.setId(issueId);
 			parentElement.setDocumentationLocation("i");
@@ -461,7 +461,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			}
 			if (deleteFlag) {
 				PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
-				GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUECOMMENT);
+				GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUETEXT);
 			}
 		}
 	}
@@ -480,7 +480,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		for (PartOfJiraIssueTextInDatabase databaseEntry : sentencesInProject) {
 			if (databaseEntry.getType().length() == 3) {// Equals Argument
 				List<Link> links = GenericLinkManager.getLinksForElement(databaseEntry.getId(),
-						DocumentationLocation.JIRAISSUECOMMENT);
+						DocumentationLocation.JIRAISSUETEXT);
 				for (Link link : links) {
 					if (link.getType().equalsIgnoreCase("contain")) {
 						GenericLinkManager.deleteLink(link);

@@ -309,7 +309,7 @@ public class KnowledgeRest {
 		}
 		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager
 				.getPersistenceManager(decisionKnowledgeElement);
-		if (decisionKnowledgeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUECOMMENT) {
+		if (decisionKnowledgeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 					.entity(ImmutableMap.of("error", "Only sentence elements can be set to irrelevant.")).build();
 		}
@@ -324,7 +324,7 @@ public class KnowledgeRest {
 		sentence.setSummary(null);
 		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(sentence, null);
 		if (isUpdated) {
-			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUECOMMENT);
+			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUETEXT);
 			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(sentence.getJiraIssueId());
 			return Response.status(Status.OK).build();
 		}

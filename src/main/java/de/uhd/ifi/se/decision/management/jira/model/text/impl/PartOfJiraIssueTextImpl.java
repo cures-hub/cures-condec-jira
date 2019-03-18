@@ -27,11 +27,14 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 
 	public PartOfJiraIssueTextImpl() {
 		super();
-		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
+		this.documentationLocation = DocumentationLocation.JIRAISSUETEXT;
 	}
 
 	public PartOfJiraIssueTextImpl(Comment comment) {
 		this();
+		if (comment == null) {
+			return;
+		}
 		this.setCommentId(comment.getId());
 		this.setJiraIssueId(comment.getIssue().getId());
 		this.setCreated(comment.getCreated());

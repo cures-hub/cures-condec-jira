@@ -70,7 +70,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 		assertTrue(link.getSourceElement().getId() == sentence.getId());
 
 		assertTrue(link.getDestinationElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUE);
-		assertTrue(link.getSourceElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT);
+		assertTrue(link.getSourceElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT);
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 		assertTrue(link.getSourceElement().getId() == sentence.getId());
 
 		assertTrue(link.getDestinationElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUE);
-		assertTrue(link.getSourceElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT);
+		assertTrue(link.getSourceElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT);
 		assertTrue(link.getType().equals("contain"));
 	}
 
@@ -196,7 +196,7 @@ public class TestGenericLink extends TestSetUpWithIssues {
 		assertTrue(link.getSourceElement().getId() == sentence.getId());
 
 		assertTrue(link.getDestinationElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUE);
-		assertTrue(link.getSourceElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT);
+		assertTrue(link.getSourceElement().getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT);
 
 		GenericLinkManager.insertLink(link, null);
 
