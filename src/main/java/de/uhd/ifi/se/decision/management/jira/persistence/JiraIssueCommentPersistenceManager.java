@@ -37,7 +37,7 @@ import net.java.ao.Query;
 
 /**
  * Extends the abstract class AbstractPersistenceManager. Uses JIRA issue
- * comments to store decision knowledge.
+ * comments or the description to store decision knowledge.
  *
  * @see AbstractPersistenceManager
  */
@@ -309,6 +309,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getType());
 		String changedPartOfComment = tag + element.getDescription() + tag;
 
+		// TODO Update for description
 		MutableComment mutableComment = sentence.getComment();
 		String firstPartOfComment = mutableComment.getBody().substring(0, sentence.getStartSubstringCount());
 		String lastPartOfComment = mutableComment.getBody().substring(sentence.getEndSubstringCount());
@@ -345,7 +346,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	public static void updateSentenceLengthForOtherSentencesInSameComment(PartOfJiraIssueText sentence,
 			int lengthDifference) {
 		for (PartOfJiraIssueTextInDatabase otherSentenceInComment : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				"COMMENT_ID = ?", sentence.getCommentId())) {
+				"COMMENT_ID = ? AND JIRA_ISSUE_ID = ?", sentence.getCommentId(), sentence.getJiraIssueId())) {
 			if (otherSentenceInComment.getStartSubstringCount() > sentence.getStartSubstringCount()
 					&& otherSentenceInComment.getId() != sentence.getId()) {
 				otherSentenceInComment

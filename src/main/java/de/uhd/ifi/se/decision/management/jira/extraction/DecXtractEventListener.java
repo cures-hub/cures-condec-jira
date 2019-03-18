@@ -20,8 +20,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
 /**
- * Triggers the decXtract related function when some changes to comments are
- * made.
+ * Triggers the extraction of decision knowledge elements and their integration
+ * in the knowledge graph when the user changes either a comment or the description of a JIRA issue.
  */
 @Component
 public class DecXtractEventListener implements InitializingBean, DisposableBean {
@@ -75,6 +75,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 			return;
 		}
 
+		// TODO Check whether description has changed
 		long eventTypeId = issueEvent.getEventTypeId();
 		if (eventTypeId == EventType.ISSUE_COMMENTED_ID || eventTypeId == EventType.ISSUE_COMMENT_EDITED_ID) {
 			parseIconsToTags();
@@ -98,6 +99,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		if (!ConfigPersistenceManager.isIconParsing(issueEvent.getProject().getKey())) {
 			return;
 		}
+		// TODO Get description as well
 		MutableComment comment = getChangedComment();
 		for (int i = 0; i < TextSplitter.RATIONALE_ICONS.length; i++) {
 			String icon = TextSplitter.RATIONALE_ICONS[i];
@@ -125,6 +127,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		}
 	}
 
+	// TODO Get description
 	private MutableComment getChangedComment() {
 		return (MutableComment) ComponentAccessor.getCommentManager().getCommentById(issueEvent.getComment().getId());
 	}
