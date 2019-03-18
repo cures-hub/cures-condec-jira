@@ -23,7 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfCommentInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
@@ -148,7 +148,7 @@ public class TestTreant extends TestSetUpWithIssues {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void update(EntityManager entityManager) throws Exception {
-			entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
+			entityManager.migrate(PartOfCommentInDatabase.class);
 			entityManager.migrate(LinkInDatabase.class);
 		}
 	}

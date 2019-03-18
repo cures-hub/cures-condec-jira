@@ -4,6 +4,10 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 
+/**
+ * Model class for textual parts (substrings) of natural language text. These
+ * parts can either be relevant decision knowledge elements or irrelevant text.
+ */
 public abstract class AbstractPartOfText extends DecisionKnowledgeElementImpl implements PartOfText {
 
 	private int startSubstringCount;

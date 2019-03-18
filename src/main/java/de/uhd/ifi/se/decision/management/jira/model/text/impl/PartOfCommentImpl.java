@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.impl.CommentSplitterImp
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfCommentInDatabase;
 
 /**
  * Model class for textual parts (substrings) of JIRA issue comments. These
@@ -28,10 +28,10 @@ public class PartOfCommentImpl extends AbstractPartOfText implements PartOfComme
 		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
 
-	public PartOfCommentImpl(DecisionKnowledgeInCommentEntity databaseEntry) {
+	public PartOfCommentImpl(PartOfCommentInDatabase databaseEntry) {
 		this(databaseEntry.getId(), databaseEntry.getEndSubstringCount(), databaseEntry.getStartSubstringCount(),
 				databaseEntry.isValidated(), databaseEntry.isRelevant(), databaseEntry.getProjectKey(),
-				databaseEntry.getCommentId(), databaseEntry.getIssueId(), databaseEntry.getType());
+				databaseEntry.getCommentId(), databaseEntry.getJiraIssueId(), databaseEntry.getType());
 	}
 
 	public PartOfCommentImpl(long id, int endSubstringCount, int startSubstringCount, boolean isValidated,

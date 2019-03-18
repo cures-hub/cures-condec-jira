@@ -16,7 +16,7 @@ import net.java.ao.schema.Table;
  * @see DecisionKnowledgeElement
  */
 @Table("CondecInComment")
-public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long> {
+public interface PartOfCommentInDatabase extends RawEntity<Long> {
 
 	@AutoIncrement
 	@PrimaryKey("ID")
@@ -32,9 +32,9 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long> {
 
 	void setEndSubstringCount(int count);
 
-	long getIssueId();
+	long getJiraIssueId();
 
-	void setIssueId(long id);
+	void setJiraIssueId(long id);
 
 	String getType();
 
@@ -56,7 +56,7 @@ public interface DecisionKnowledgeInCommentEntity extends RawEntity<Long> {
 
 	void setValidated(boolean validated);
 
-	static boolean deleteElement(DecisionKnowledgeInCommentEntity elementToDelete) {
+	static boolean deleteElement(PartOfCommentInDatabase elementToDelete) {
 		try {
 			elementToDelete.getEntityManager().delete(elementToDelete);
 			return true;
