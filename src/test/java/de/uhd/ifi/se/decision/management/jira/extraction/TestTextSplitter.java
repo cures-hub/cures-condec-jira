@@ -17,10 +17,10 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.TextSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -44,7 +44,7 @@ public class TestTextSplitter extends TestSetUpWithIssues {
 		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 		Comment comment = ComponentAccessor.getCommentManager().create(issue, currentUser, text, true);
-		List<PartOfComment> sentences = new TextSplitterImpl().getPartsOfComment(comment);
+		List<PartOfComment> sentences = JiraIssueCommentPersistenceManager.getPartsOfComment(comment);
 		return sentences;
 	}
 

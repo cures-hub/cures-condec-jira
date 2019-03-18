@@ -20,10 +20,10 @@ import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationManagerForJiraIssueComments;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.TextSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import meka.classifiers.multilabel.LC;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
@@ -67,7 +67,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUpWith
 
 	private void fillSentenceList() {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		sentences = new TextSplitterImpl().getPartsOfComment(comment);
+		sentences = JiraIssueCommentPersistenceManager.getPartsOfComment(comment);
 	}
 
 	@Test

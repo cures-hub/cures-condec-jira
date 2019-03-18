@@ -15,7 +15,6 @@ import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.TextSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
@@ -144,7 +143,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 						.classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
 			} else {
 				MutableComment comment = getChangedComment();
-				new TextSplitterImpl().getPartsOfComment(comment);
+				JiraIssueCommentPersistenceManager.getPartsOfComment(comment);
 			}
 			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 		} else {
@@ -162,7 +161,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
 		} else {
 			MutableComment comment = getChangedComment();
-			new TextSplitterImpl().getPartsOfComment(comment);
+			JiraIssueCommentPersistenceManager.getPartsOfComment(comment);
 		}
 		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}

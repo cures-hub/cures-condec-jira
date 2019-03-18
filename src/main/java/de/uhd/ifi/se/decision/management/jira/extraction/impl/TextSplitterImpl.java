@@ -10,17 +10,12 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.atlassian.jira.issue.comments.Comment;
-
 import de.uhd.ifi.se.decision.management.jira.extraction.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
-import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfCommentImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfTextImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
 
 public class TextSplitterImpl implements TextSplitter {
@@ -33,6 +28,7 @@ public class TextSplitterImpl implements TextSplitter {
 		this.endSubstringCount = new ArrayList<Integer>();
 	}
 
+	@Override
 	public List<PartOfText> getPartsOfText(String text, String projectKey) {
 		List<PartOfText> parts = new ArrayList<PartOfText>();
 
@@ -58,32 +54,6 @@ public class TextSplitterImpl implements TextSplitter {
 				partOfText.setValidated(true);
 			}
 			parts.add(partOfText);
-		}
-		return parts;
-	}
-
-	@Override
-	public List<PartOfComment> getPartsOfComment(Comment comment) {
-		String projectKey = comment.getIssue().getProjectObject().getKey();
-		List<PartOfText> partsOfText = getPartsOfText(comment.getBody(), projectKey);
-
-		List<PartOfComment> parts = new ArrayList<PartOfComment>();
-
-		// Create AO entries
-		for (PartOfText partOfText : partsOfText) {
-			PartOfComment sentence = new PartOfCommentImpl(comment);
-			sentence.setEndSubstringCount(partOfText.getEndSubstringCount());
-			sentence.setStartSubstringCount(partOfText.getStartSubstringCount());
-			sentence.setRelevant(partOfText.isRelevant());
-			sentence.setValidated(partOfText.isValidated());
-			sentence.setType(partOfText.getType());
-			sentence.setProject(partOfText.getProject());
-			
-			long sentenceId = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(sentence, null);
-			sentence = (PartOfComment) new JiraIssueCommentPersistenceManager("")
-					.getDecisionKnowledgeElement(sentenceId);
-			JiraIssueCommentPersistenceManager.createSmartLinkForSentence(sentence);			
-			parts.add(sentence);
 		}
 		return parts;
 	}

@@ -5,10 +5,9 @@ import java.util.List;
 import java.util.Set;
 
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
-import com.atlassian.jira.issue.comments.Comment;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 
 public interface TextSplitter {
 
@@ -30,9 +29,11 @@ public interface TextSplitter {
 	 * Split a text into parts (substrings).
 	 * 
 	 * @see PartOfText
-	 * @param comment
-	 *            JIRA issue comment.
-	 * @return list of sentence objects.
+	 * @param text
+	 *            text to be split.
+	 * @param projectKey
+	 *            of the JIRA project.
+	 * @return parts of text (substrings) as a list.
 	 */
-	List<PartOfComment> getPartsOfComment(Comment comment);
+	List<PartOfText> getPartsOfText(String text, String projectKey);
 }
