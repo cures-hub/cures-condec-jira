@@ -5,23 +5,24 @@ import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import meka.classifiers.multilabel.LC;
 
-import weka.classifiers.meta.FilteredClassifier;
+import weka.classifiers.bayes.NaiveBayesMultinomial;
 import weka.core.*;
 
+import java.io.File;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ClassificationTrainerImpl implements ClassificationTrainer {
 
-
-	private static LC binaryRelevance;
-	private static FilteredClassifier fc;
-	private static String pathToBinaryModel;
-	private static String pathToFineGrainedModel;
+	private static String projectKey;
 	private static Instances structure;
 	private List<Sentence> mekaTrainData;
 
 	public ClassificationTrainerImpl(String projectKey){
+		this.projectKey = projectKey;
 		JiraIssueCommentPersistenceManager manager = new JiraIssueCommentPersistenceManager(projectKey);
 		mekaTrainData = manager.getListOfUserValidatedSentneces(projectKey);
 	}
@@ -31,9 +32,15 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	public void train() {
 		try {
 			//structure = buildDatasetForMeka(mekaTrainData);
-			LC fineGrainedClassifier = new LC();
+			structure.setClassIndex(structure.numAttributes() -1);
+			//LC fineGrainedClassifier = new LC();
+			NaiveBayesMultinomial fineGrainedClassifier = new NaiveBayesMultinomial();
+
+
+			fineGrainedClassifier.setOptions(weka.core.Utils.splitOptions("J48 -C 0.25 -M 2 -K \"weka.classifiers.meta.FilteredClassifier\""));
+
 			fineGrainedClassifier.buildClassifier(structure);
-			System.out.println(fineGrainedClassifier.getModel());
+			System.out.println(fineGrainedClassifier.getCapabilities());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
