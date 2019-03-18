@@ -21,7 +21,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.TextSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -31,6 +30,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfCommentImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.impl.TextSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfCommentInDatabase;
 import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
 import net.java.ao.Query;

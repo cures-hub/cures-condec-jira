@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction;
+package de.uhd.ifi.se.decision.management.jira.model.text;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -7,7 +7,6 @@ import java.util.Set;
 import com.atlassian.gzipfilter.org.apache.commons.lang.ArrayUtils;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 
 public interface TextSplitter {
 

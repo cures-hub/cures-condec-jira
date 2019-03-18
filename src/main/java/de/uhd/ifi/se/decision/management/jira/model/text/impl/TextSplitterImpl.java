@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.impl;
+package de.uhd.ifi.se.decision.management.jira.model.text.impl;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;
@@ -10,11 +10,10 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
-import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfTextImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
 

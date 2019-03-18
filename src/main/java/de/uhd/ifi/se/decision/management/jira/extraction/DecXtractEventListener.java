@@ -15,6 +15,7 @@ import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
+import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 

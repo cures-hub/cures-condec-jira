@@ -8,11 +8,10 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.TextSplitter;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.TextSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
+import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfCommentInDatabase;
 
 /**
