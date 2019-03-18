@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.atlassian.jira.issue.comments.Comment;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
+import de.uhd.ifi.se.decision.management.jira.extraction.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
@@ -21,12 +21,12 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
 
-public class CommentSplitterImpl implements CommentSplitter {
+public class TextSplitterImpl implements TextSplitter {
 
 	private List<Integer> startSubstringCount;
 	private List<Integer> endSubstringCount;
 
-	public CommentSplitterImpl() {
+	public TextSplitterImpl() {
 		this.startSubstringCount = new ArrayList<Integer>();
 		this.endSubstringCount = new ArrayList<Integer>();
 	}
@@ -36,7 +36,7 @@ public class CommentSplitterImpl implements CommentSplitter {
 		List<PartOfComment> sentences = new ArrayList<PartOfComment>();
 		String projectKey = comment.getIssue().getProjectObject().getKey();
 
-		List<String> strings = CommentSplitterImpl.getRawSentences(comment.getBody(), projectKey);
+		List<String> strings = TextSplitterImpl.getRawSentences(comment.getBody(), projectKey);
 		runBreakIterator(strings, comment.getBody());
 
 		// Create AO entries
@@ -148,7 +148,7 @@ public class CommentSplitterImpl implements CommentSplitter {
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
 
 		for (String currentSentence : rawSentences) {
-			if (StringUtils.indexOfAny(currentSentence, CommentSplitter.EXCLUDED_STRINGS) == -1) {
+			if (StringUtils.indexOfAny(currentSentence, TextSplitter.EXCLUDED_STRINGS) == -1) {
 				iterator.setText(currentSentence);
 				int start = iterator.first();
 				for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator.next()) {
@@ -222,6 +222,6 @@ public class CommentSplitterImpl implements CommentSplitter {
 
 	public static boolean isCommentIconTagged(String text) {
 		// TODO WHY >=
-		return StringUtils.indexOfAny(text, CommentSplitter.RATIONALE_ICONS) >= 0;
+		return StringUtils.indexOfAny(text, TextSplitter.RATIONALE_ICONS) >= 0;
 	}
 }

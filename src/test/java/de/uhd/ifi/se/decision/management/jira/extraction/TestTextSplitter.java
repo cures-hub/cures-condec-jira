@@ -17,7 +17,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.CommentSplitterImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.TextSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
@@ -27,8 +27,8 @@ import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestCommentSplitter.AoSentenceTestDatabaseUpdater.class)
-public class TestCommentSplitter extends TestSetUpWithIssues {
+@Data(TestTextSplitter.AoSentenceTestDatabaseUpdater.class)
+public class TestTextSplitter extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
 
@@ -44,7 +44,7 @@ public class TestCommentSplitter extends TestSetUpWithIssues {
 		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 		Comment comment = ComponentAccessor.getCommentManager().create(issue, currentUser, text, true);
-		List<PartOfComment> sentences = new CommentSplitterImpl().getSentences(comment);
+		List<PartOfComment> sentences = new TextSplitterImpl().getSentences(comment);
 		return sentences;
 	}
 

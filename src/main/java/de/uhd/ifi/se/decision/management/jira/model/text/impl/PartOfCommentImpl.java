@@ -8,8 +8,8 @@ import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.CommentSplitter;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.CommentSplitterImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.TextSplitter;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.TextSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
@@ -72,7 +72,7 @@ public class PartOfCommentImpl extends AbstractPartOfText implements PartOfComme
 	}
 
 	private boolean containsExcludedTag(String body) {
-		return StringUtils.indexOfAny(body.toLowerCase(), CommentSplitter.EXCLUDED_TAGS) >= 0;
+		return StringUtils.indexOfAny(body.toLowerCase(), TextSplitter.EXCLUDED_TAGS) >= 0;
 	}
 
 	@Override
@@ -108,8 +108,8 @@ public class PartOfCommentImpl extends AbstractPartOfText implements PartOfComme
 
 	private void stripTagsFromBody(String body) {
 		String projectKey = this.getProject().getProjectKey();
-		if (CommentSplitterImpl.isAnyKnowledgeTypeTwiceExisting(body, projectKey)) {
-			int tagLength = 2 + CommentSplitterImpl.getKnowledgeTypeFromTag(body, projectKey).toString().length();
+		if (TextSplitterImpl.isAnyKnowledgeTypeTwiceExisting(body, projectKey)) {
+			int tagLength = 2 + TextSplitterImpl.getKnowledgeTypeFromTag(body, projectKey).toString().length();
 			super.setDescription(body.substring(tagLength, body.length() - (tagLength)));
 			super.setSummary(super.getDescription());
 		} else {

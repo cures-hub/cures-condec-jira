@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
+import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -61,7 +61,7 @@ public class TestDeleteLink extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testProjectExistentRequestFilledLinkFilled() {
-		List<PartOfComment> comment = TestCommentSplitter.getSentencesForCommentText("This is a test sentence.");
+		List<PartOfComment> comment = TestTextSplitter.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement sentence = comment.get(0);
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");

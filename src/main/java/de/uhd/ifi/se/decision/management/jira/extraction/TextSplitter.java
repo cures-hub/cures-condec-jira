@@ -10,7 +10,7 @@ import com.atlassian.jira.issue.comments.Comment;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
 
-public interface CommentSplitter {
+public interface TextSplitter {
 
 	String[] EXCLUDED_TAGS = new String[] { "{code}", "{quote}", "{noformat}", "{panel}" };
 
@@ -27,9 +27,9 @@ public interface CommentSplitter {
 			KnowledgeType.CON, KnowledgeType.ALTERNATIVE);
 
 	/**
-	 * Split comment into sentences.
+	 * Split a text into parts (substrings).
 	 * 
-	 * @see PartOfComment
+	 * @see PartOfText
 	 * @param comment
 	 *            JIRA issue comment.
 	 * @return list of sentence objects.

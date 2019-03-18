@@ -23,8 +23,8 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.CommentSplitterImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.TextSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -160,7 +160,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testTreeViewerWithComment() {
 		TreeViewer tree = new TreeViewer();
-		List<PartOfComment> comment = TestCommentSplitter.getSentencesForCommentText("This is a testcomment with some text");
+		List<PartOfComment> comment = TestTextSplitter.getSentencesForCommentText("This is a testcomment with some text");
 		comment.get(0).setType(KnowledgeType.ALTERNATIVE);
 		assertNotNull(tree.getDataStructure(comment.get(0)));
 	}
@@ -182,7 +182,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		Comment comment1 = commentManager.create(issue, currentUser, "This is a testsentence for test purposes", true);
 
 		// 3) Manipulate Sentence object so it will be shown in the tree viewer
-		List<PartOfComment> sentences = new CommentSplitterImpl().getSentences(comment1);
+		List<PartOfComment> sentences = new TextSplitterImpl().getSentences(comment1);
 		// JiraIssueComment comment = new JiraIssueCommentImpl(comment1);
 		sentences.get(0).setRelevant(true);
 		sentences.get(0).setType(KnowledgeType.ALTERNATIVE);

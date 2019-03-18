@@ -21,7 +21,7 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.CommentSplitterImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.TextSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -243,7 +243,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getTypeAsString());
 		String text = tag + element.getSummary() + "\n" + element.getDescription() + tag;
 		Comment comment = ComponentAccessor.getCommentManager().create(issue, user, text, false);
-		List<PartOfComment> sentences = new CommentSplitterImpl().getSentences(comment);
+		List<PartOfComment> sentences = new TextSplitterImpl().getSentences(comment);
 		for (PartOfComment sentence : sentences) {
 			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUECOMMENT);
 		}

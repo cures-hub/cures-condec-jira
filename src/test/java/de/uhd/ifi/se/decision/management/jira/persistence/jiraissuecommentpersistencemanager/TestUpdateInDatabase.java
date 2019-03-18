@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
+import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
@@ -18,7 +18,7 @@ public class TestUpdateInDatabase extends TestJiraIssueCommentPersistenceManager
 	@Test
 	@NonTransactional
 	public void testUpdateSentenceElement() {
-		List<PartOfComment> comment = TestCommentSplitter.getSentencesForCommentText("first Comment");
+		List<PartOfComment> comment = TestTextSplitter.getSentencesForCommentText("first Comment");
 		long id = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(0), null);
 		PartOfComment sentence = comment.get(0);
 		sentence.setType("ALTERNATIVE");
@@ -30,7 +30,7 @@ public class TestUpdateInDatabase extends TestJiraIssueCommentPersistenceManager
 	@Test
 	@NonTransactional
 	public void testUpdateKnowledgeType() {
-		List<PartOfComment> comment = TestCommentSplitter.getSentencesForCommentText("first Comment");
+		List<PartOfComment> comment = TestTextSplitter.getSentencesForCommentText("first Comment");
 		long id = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(0), null);
 		PartOfComment sentence = comment.get(0);
 		sentence.setType(KnowledgeType.ALTERNATIVE);
@@ -42,7 +42,7 @@ public class TestUpdateInDatabase extends TestJiraIssueCommentPersistenceManager
 	@Test
 	@NonTransactional
 	public void testSetSentenceIrrlevant() {
-		List<PartOfComment> comment = TestCommentSplitter.getSentencesForCommentText("first Comment");
+		List<PartOfComment> comment = TestTextSplitter.getSentencesForCommentText("first Comment");
 		long id = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(0), null);
 		PartOfComment element = (PartOfComment) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		element.setRelevant(true);

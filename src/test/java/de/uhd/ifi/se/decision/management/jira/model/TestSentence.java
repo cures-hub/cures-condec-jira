@@ -16,7 +16,7 @@ import com.atlassian.activeobjects.test.TestActiveObjects;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
+import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
@@ -89,7 +89,7 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testGetTextFromComment() {
-		List<PartOfComment> sentences = TestCommentSplitter.getSentencesForCommentText(
+		List<PartOfComment> sentences = TestTextSplitter.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 
 		PartOfComment sentence = sentences.get(0);
@@ -117,7 +117,7 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testIsPlainText() {
-		List<PartOfComment> sentences = TestCommentSplitter
+		List<PartOfComment> sentences = TestTextSplitter
 				.getSentencesForCommentText("This is a text that is not classified.");
 		assertEquals(true, sentences.get(0).isPlainText());
 	}
@@ -125,14 +125,14 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testIsPlainTextCode() {
-		List<PartOfComment> sentences = TestCommentSplitter.getSentencesForCommentText("{code:Java} int i = 0 {code}");
+		List<PartOfComment> sentences = TestTextSplitter.getSentencesForCommentText("{code:Java} int i = 0 {code}");
 		assertEquals(false, sentences.get(0).isPlainText());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsPlainTextAlternative() {
-		List<PartOfComment> sentences = TestCommentSplitter
+		List<PartOfComment> sentences = TestTextSplitter
 				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative}");
 		assertEquals(true, sentences.get(0).isPlainText());
 	}
@@ -140,14 +140,14 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testIsPlainTextIcon() {
-		List<PartOfComment> sentences = TestCommentSplitter.getSentencesForCommentText("(y) this is a icon pro text.");
+		List<PartOfComment> sentences = TestTextSplitter.getSentencesForCommentText("(y) this is a icon pro text.");
 		assertEquals(true, sentences.get(0).isPlainText());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsRelevantText() {
-		List<PartOfComment> sentences = TestCommentSplitter
+		List<PartOfComment> sentences = TestTextSplitter
 				.getSentencesForCommentText("This is a text that is not classified.");
 		assertEquals(false, sentences.get(0).isRelevant());
 	}
@@ -155,14 +155,14 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testIsRelevantCode() {
-		List<PartOfComment> sentences = TestCommentSplitter.getSentencesForCommentText("{code:Java} int i = 0 {code}");
+		List<PartOfComment> sentences = TestTextSplitter.getSentencesForCommentText("{code:Java} int i = 0 {code}");
 		assertEquals(false, sentences.get(0).isRelevant());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsRelevantAlternative() {
-		List<PartOfComment> sentences = TestCommentSplitter
+		List<PartOfComment> sentences = TestTextSplitter
 				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative} ");
 		assertEquals(true, sentences.get(0).isRelevant());
 	}
@@ -170,14 +170,14 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testIsRelevantIcon() {
-		List<PartOfComment> sentences = TestCommentSplitter.getSentencesForCommentText("(y) this is a icon pro text.");
+		List<PartOfComment> sentences = TestTextSplitter.getSentencesForCommentText("(y) this is a icon pro text.");
 		assertEquals(true, sentences.get(0).isRelevant());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsValidatedText() {
-		List<PartOfComment> sentences = TestCommentSplitter
+		List<PartOfComment> sentences = TestTextSplitter
 				.getSentencesForCommentText("This is a text that is not classified.");
 		assertEquals(false, sentences.get(0).isValidated());
 	}
@@ -185,14 +185,14 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testIsValidatedCode() {
-		List<PartOfComment> sentences = TestCommentSplitter.getSentencesForCommentText("{code:Java} int i = 0 {code}");
+		List<PartOfComment> sentences = TestTextSplitter.getSentencesForCommentText("{code:Java} int i = 0 {code}");
 		assertEquals(false, sentences.get(0).isValidated());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsValidatedAlternative() {
-		List<PartOfComment> sentences = TestCommentSplitter
+		List<PartOfComment> sentences = TestTextSplitter
 				.getSentencesForCommentText("{alternative} This is an alternative. {alternative} ");
 		assertEquals(true, sentences.get(0).isValidated());
 	}
@@ -200,7 +200,7 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testIsValidatedIssue() {
-		List<PartOfComment> sentences = TestCommentSplitter
+		List<PartOfComment> sentences = TestTextSplitter
 				.getSentencesForCommentText("{issue} This is an alternative. {issue} ");
 		assertEquals(true, sentences.get(0).isValidated());
 	}
@@ -208,7 +208,7 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testIsValidatedIcon() {
-		List<PartOfComment> sentences = TestCommentSplitter.getSentencesForCommentText("(y) this is a icon pro text.");
+		List<PartOfComment> sentences = TestTextSplitter.getSentencesForCommentText("(y) this is a icon pro text.");
 		assertEquals(true, sentences.get(0).isValidated());
 	}
 }

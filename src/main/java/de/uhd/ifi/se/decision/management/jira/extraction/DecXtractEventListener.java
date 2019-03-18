@@ -15,7 +15,7 @@ import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.CommentSplitterImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.TextSplitterImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
@@ -99,16 +99,16 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 			return;
 		}
 		MutableComment comment = getChangedComment();
-		for (int i = 0; i < CommentSplitter.RATIONALE_ICONS.length; i++) {
-			String icon = CommentSplitter.RATIONALE_ICONS[i];
+		for (int i = 0; i < TextSplitter.RATIONALE_ICONS.length; i++) {
+			String icon = TextSplitter.RATIONALE_ICONS[i];
 			while (comment.getBody().contains(icon)) {
 				comment.setBody(comment.getBody().replaceFirst(icon.replace("(", "\\(").replace(")", "\\)"),
-						CommentSplitter.RATIONALE_TAGS[i]));
+						TextSplitter.RATIONALE_TAGS[i]));
 				if (comment.getBody().split(System.getProperty("line.separator")).length == 1
 						&& !comment.getBody().endsWith("\r\n")) {
-					comment.setBody(comment.getBody() + CommentSplitter.RATIONALE_TAGS[i]);
+					comment.setBody(comment.getBody() + TextSplitter.RATIONALE_TAGS[i]);
 				}
-				comment.setBody(comment.getBody().replaceFirst("\r\n", CommentSplitter.RATIONALE_TAGS[i]));
+				comment.setBody(comment.getBody().replaceFirst("\r\n", TextSplitter.RATIONALE_TAGS[i]));
 				ComponentAccessor.getCommentManager().update(comment, true);
 			}
 		}
@@ -144,7 +144,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 						.classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
 			} else {
 				MutableComment comment = getChangedComment();
-				new CommentSplitterImpl().getSentences(comment);
+				new TextSplitterImpl().getSentences(comment);
 			}
 			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 		} else {
@@ -162,7 +162,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
 		} else {
 			MutableComment comment = getChangedComment();
-			new CommentSplitterImpl().getSentences(comment);
+			new TextSplitterImpl().getSentences(comment);
 		}
 		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}

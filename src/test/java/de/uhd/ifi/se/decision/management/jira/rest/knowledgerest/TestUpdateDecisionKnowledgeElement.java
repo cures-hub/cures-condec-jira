@@ -22,7 +22,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
+import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplateWebhook;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
@@ -69,7 +69,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledParentElementExistingParentDocumentationLocationJiraIssue() {
-		List<PartOfComment> comment = TestCommentSplitter.getSentencesForCommentText("This is a test sentence.");
+		List<PartOfComment> comment = TestTextSplitter.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement sentence = comment.get(0);
 
 		Link link = new LinkImpl(sentence, decisionKnowledgeElement);
@@ -96,7 +96,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 
 	@Test
 	public void testRequestNullElementFilledParentIdZeroParentDocumentationLocationNull() {
-		List<PartOfComment> comment = TestCommentSplitter.getSentencesForCommentText("This is a test sentence.");
+		List<PartOfComment> comment = TestTextSplitter.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		assertEquals(
 				Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERROR)).build()
@@ -113,7 +113,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledParentIdZeroParentDocumentationLocationNull() {
-		List<PartOfComment> comment = TestCommentSplitter.getSentencesForCommentText("This is a test sentence.");
+		List<PartOfComment> comment = TestTextSplitter.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		decisionKnowledgeElement.setType(KnowledgeType.ALTERNATIVE);
 		assertEquals(Status.OK.getStatusCode(),
@@ -123,7 +123,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledWithCommentChangedParentIdZeroParentDocumentationLocationEmpty() {
-		List<PartOfComment> comment = TestCommentSplitter.getSentencesForCommentText("This is a test sentence.");
+		List<PartOfComment> comment = TestTextSplitter.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		assertEquals(decisionKnowledgeElement.getType(), KnowledgeType.OTHER);
 
@@ -143,7 +143,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testRequestFilledElementFilledWithCommentChangedCheckValidTextWithManuallTaggedComment() {
-		List<PartOfComment> comment = TestCommentSplitter.getSentencesForCommentText("{issue}This is a test sentence.{Issue}");
+		List<PartOfComment> comment = TestTextSplitter.getSentencesForCommentText("{issue}This is a test sentence.{Issue}");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		
 		String newText = "some fancy new text";
