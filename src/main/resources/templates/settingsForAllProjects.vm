@@ -28,6 +28,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 						value="$proj.getProjectKey()"></aui-toggle> <script>
                         $(document).ready(function () {
                             var toggle = document.getElementById('$proj.getProjectKey()-isActivated-toggle');
+                            console.log($proj.isActivated());
                             #if ($proj.isActivated() == true)
                                 toggle.checked = true;
                             #else
@@ -97,12 +98,12 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 					</script></td>
                 <td headers="setVisualization"><aui-toggle
                 id="$proj.getProjectKey()-isVisualisationVis-toggle"
-                label="$proj.getProjectKey()-UseVisInsteadOfTreant"
+                label="$proj.getProjectName()-UseVisInsteadOfTreant"
                 value="$proj.getProjectKey()"></aui-toggle>
                     <script>
                         $(document).ready(function () {
                             var toggle = document.getElementById('$proj.getProjectKey()-isVisualisationVis-toggle');
-                            #if ($proj.isVisualisationVis == true)
+                            #if ($proj.isVisualisationSetToVis() == true)
                                 toggle.checked = true;
                             #else
                                 toggle.checked = false;

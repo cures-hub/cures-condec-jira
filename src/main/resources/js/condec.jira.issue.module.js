@@ -53,14 +53,9 @@
 		console.log("ConDecJiraIssueModule initView");
 		var issueKey = conDecAPI.getIssueKey();
 		var search = getURLsSearch();
-		//conDecAPI.isVisualizationSetToVis(function(value){
-		//	if (value) {
-                vis.buildVis(issueKey, search);
-		//  }
-        //  else {
-        //      treant.buildTreant(issueKey, true, search);
-		//}
-		//});
+
+		vis.buildVis(issueKey, search);
+
 	};
 
 	function getURLsSearch() {

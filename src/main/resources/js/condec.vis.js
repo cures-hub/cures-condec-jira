@@ -14,6 +14,7 @@
                 edges: visData.edges
             };
             var options = {
+                clickToUse: true,
                 nodes: {
                     shape: "box",
                     level:8,
@@ -44,7 +45,7 @@
                     // Setting colors and Levels for Decision Knowledge Elements stored in Jira Issues
                     Decision_i: {color:{background: 'rgba(252,227,190,1)'}, level: 11},
                     Issue_i: {color:{background: 'rgba(255, 255, 204,1)'}, level: 10},
-                    Alternative_i: {color:{background: 'rgba(252,227,190,1)'}, level: 11},
+                    Alternative_i: {color:{background: 'rgba(252,227,190,1'}, level: 11},
                     Pro_i: {color:{background: 'rgba(222, 250, 222,1)'}, level: 12},
                     Con_i: {color:{background: 'rgba(255, 231, 231,1)'}, level: 12},
                     Argument_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
@@ -76,22 +77,26 @@
                         if (data.from !== data.to) {
                             callback(data);
 
-                            conDecAPI.createLink(null,data.to.slice(0, -2),data.from.slice(0,-2),data.to.substr(-1),
-                                 data.from.substr(-1),function () {
-                                network.destroy();
-                                buildVis(elementKey,searchTerm);
+                            conDecAPI.createLink(null,data.from.slice(0, -2),data.to.slice(0,-2),data.from.substr(-1),
+                                 data.to.substr(-1),function () {
+                                //network.destroy();
+                                //buildVis(elementKey,searchTerm);
                                 conDecObservable.notify();
                             })
                         }
                         // after each adding you will be back to addEdge mode
 
-                        network.addEdgeMode();
+
                     }
-                }
+                },
+                physics: {enabled:false}
                 };
             var network = new vis.Network(container, data, options);
             network.setSize("100%","400px");
-            network.addEdgeMode();
+            //network.addEdgeMode();
+            network.stabilize();
+
+            network.focus();
             network.on("oncontext", function(params) {
                 params.event.preventDefault();
                 var nodeIndices = network.body.nodeIndices;
@@ -111,6 +116,14 @@
                     " and location: " + clickedNodeId.toString().substr(-1));
                 conDecContextMenu.createContextMenu(clickedNodeId.toString().slice(0, -2), clickedNodeId.toString().substr(-1),
                     params.event, "treant-container");
+            });
+            network.on("hold",function(params){
+                params.event.preventDefault();
+                network.addEdgeMode();
+            });
+            network.on("click", function(params) {
+                params.event.preventDefault();
+                network.disableEditMode();
             })
         });
 

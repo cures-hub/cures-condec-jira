@@ -30,6 +30,7 @@ public class Vis {
 
 	private Graph graph;
 	private boolean isHyperlinked;
+	private List<DecisionKnowledgeElement> elementsAlreadyAsNode;
 
 	public Vis(){
 	}
@@ -41,6 +42,7 @@ public class Vis {
 		nodes = new HashSet<>();
 		edges= new HashSet<>();
 		fillNodesAndEdges(rootElement,null);
+		this.elementsAlreadyAsNode = new ArrayList<>();
 	}
 
 	public Vis(String projectKey, String elementKey, boolean isHyperlinked, String query, ApplicationUser user){
@@ -56,6 +58,7 @@ public class Vis {
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
 		nodes = new HashSet<>();
 		edges= new HashSet<>();
+		elementsAlreadyAsNode = new ArrayList<>();
 		fillNodesAndEdges(rootElement, null);
 	}
 
@@ -73,21 +76,33 @@ public class Vis {
 			switch (link.getType()) {
 				case "support":
 					if (element.getId() == link.getSourceElement().getId()) {
-						this.nodes.add(new VisNode(element, "Pro"));
+						if (!(this.elementsAlreadyAsNode.contains(element))) {
+							this.elementsAlreadyAsNode.add(element);
+							this.nodes.add(new VisNode(element, "Pro"));
+						}
 					}
 					break;
 				case "attack":
 					if (element.getId() == link.getSourceElement().getId()) {
-						this.nodes.add(new VisNode(element, "Con"));
+						if (!(this.elementsAlreadyAsNode.contains(element))) {
+							this.elementsAlreadyAsNode.add(element);
+							this.nodes.add(new VisNode(element, "Con"));
+						}
 					}
 					break;
 				default:
-					this.nodes.add(new VisNode(element));
+					if (!(this.elementsAlreadyAsNode.contains(element))) {
+						this.elementsAlreadyAsNode.add(element);
+						this.nodes.add(new VisNode(element));
+					}
 					break;
 			}
 
 		} else {
-			this.nodes.add(new VisNode(element));
+			if (!(this.elementsAlreadyAsNode.contains(element))) {
+				this.elementsAlreadyAsNode.add(element);
+				this.nodes.add(new VisNode(element));
+			}
 		}
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
 			fillNodesAndEdges(childAndLink.getKey(),childAndLink.getValue());

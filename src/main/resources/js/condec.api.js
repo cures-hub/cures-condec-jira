@@ -424,8 +424,12 @@
         + projectKey + "&isVisualizationSetToVis=" + isVisualizationSetToVis, null, function(
         error, response) {
         if (error === null) {
-            showFlag("success", "Visualization using the Vis.js Framework has been set to "
-                + isVisualizationSetToVis + ".");
+            if (isVisualizationSetToVis) {
+                showFlag("success", "Decision Knowledge will be visualized using Vis");
+            }
+            else {
+                showFlag("success", "Decision Knowledge will be visualized using Treant");
+            }
         }
     });
     };
