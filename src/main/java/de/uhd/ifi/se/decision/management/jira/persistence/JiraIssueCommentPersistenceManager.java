@@ -545,14 +545,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 		// Create AO entries
 		for (PartOfText partOfText : partsOfText) {
-			PartOfComment sentence = new PartOfCommentImpl(comment);
-			sentence.setEndSubstringCount(partOfText.getEndSubstringCount());
-			sentence.setStartSubstringCount(partOfText.getStartSubstringCount());
-			sentence.setRelevant(partOfText.isRelevant());
-			sentence.setValidated(partOfText.isValidated());
-			sentence.setType(partOfText.getType());
-			sentence.setProject(partOfText.getProject());
-
+			PartOfComment sentence = new PartOfCommentImpl(partOfText, comment);
 			long sentenceId = insertDecisionKnowledgeElement(sentence, null);
 			sentence = (PartOfComment) new JiraIssueCommentPersistenceManager("")
 					.getDecisionKnowledgeElement(sentenceId);

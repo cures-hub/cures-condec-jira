@@ -11,6 +11,7 @@ import com.atlassian.jira.issue.comments.MutableComment;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfCommentInDatabase;
 
@@ -32,6 +33,16 @@ public class PartOfCommentImpl extends PartOfTextImpl implements PartOfComment {
 		this.setCommentId(comment.getId());
 		this.setJiraIssueId(comment.getIssue().getId());
 		this.setCreated(comment.getCreated());
+	}
+
+	public PartOfCommentImpl(PartOfText partOfText, Comment comment) {
+		this(comment);
+		this.setEndSubstringCount(partOfText.getEndSubstringCount());
+		this.setStartSubstringCount(partOfText.getStartSubstringCount());
+		this.setRelevant(partOfText.isRelevant());
+		this.setValidated(partOfText.isValidated());
+		this.setType(partOfText.getType());
+		this.setProject(partOfText.getProject());
 	}
 
 	public PartOfCommentImpl(PartOfCommentInDatabase databaseEntry) {

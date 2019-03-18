@@ -10,18 +10,18 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 public interface TextSplitter {
 
-	String[] EXCLUDED_TAGS = new String[] { "{code}", "{quote}", "{noformat}", "{panel}" };
+	public static final String[] EXCLUDED_TAGS = new String[] { "{code}", "{quote}", "{noformat}", "{panel}" };
 
 	/** List of all knowledge types as tags. Sequence matters! */
-	String[] RATIONALE_TAGS = new String[] { "{issue}", "{alternative}", "{decision}", "{pro}", "{con}" };
+	public static final String[] RATIONALE_TAGS = new String[] { "{issue}", "{alternative}", "{decision}", "{pro}", "{con}" };
 
 	/** List of all knowledge types as icons. Sequence matters! */
-	String[] RATIONALE_ICONS = new String[] { "(!)", "(?)", "(/)", "(y)", "(n)" };
+	public static final String[] RATIONALE_ICONS = new String[] { "(!)", "(?)", "(/)", "(y)", "(n)" };
 
-	String[] EXCLUDED_STRINGS = (String[]) ArrayUtils.addAll(ArrayUtils.addAll(EXCLUDED_TAGS, RATIONALE_TAGS),
+	public static final String[] EXCLUDED_STRINGS = (String[]) ArrayUtils.addAll(ArrayUtils.addAll(EXCLUDED_TAGS, RATIONALE_TAGS),
 			RATIONALE_ICONS);
 
-	Set<KnowledgeType> KNOWLEDGE_TYPES = EnumSet.of(KnowledgeType.DECISION, KnowledgeType.ISSUE, KnowledgeType.PRO,
+	public static final Set<KnowledgeType> KNOWLEDGE_TYPES = EnumSet.of(KnowledgeType.DECISION, KnowledgeType.ISSUE, KnowledgeType.PRO,
 			KnowledgeType.CON, KnowledgeType.ALTERNATIVE);
 
 	/**
