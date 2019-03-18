@@ -7,13 +7,9 @@ import meka.classifiers.multilabel.LC;
 
 import weka.classifiers.meta.FilteredClassifier;
 import weka.core.*;
-import weka.core.tokenizers.NGramTokenizer;
-import weka.core.tokenizers.Tokenizer;
-import weka.filters.unsupervised.attribute.StringToWordVector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class ClassificationTrainerImpl implements ClassificationTrainer {
 
@@ -33,28 +29,17 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 
 	@Override
 	public void train() {
-		structure = buildDatasetForMeka(mekaTrainData);
+		try {
+			//structure = buildDatasetForMeka(mekaTrainData);
+			LC fineGrainedClassifier = new LC();
+			fineGrainedClassifier.buildClassifier(structure);
+			System.out.println(fineGrainedClassifier.getModel());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	private static StringToWordVector getSTWV() throws Exception {
-		StringToWordVector stwv = new StringToWordVector();
-		stwv.setLowerCaseTokens(true);
-		stwv.setIDFTransform(true);
-		stwv.setTFTransform(true);
-		stwv.setTokenizer(getTokenizer());
-		stwv.setWordsToKeep(1000000);
-		return stwv;
-	}
-
-	private static Tokenizer getTokenizer() throws Exception {
-		Tokenizer t = new NGramTokenizer();
-		String[] options = weka.core.Utils.splitOptions(
-				"weka.core.tokenizers.NGramTokenizer -max 3 -min 1 -delimiters \" \\r\\n\\t.,;:\\'\\\"()?!\"");
-		t.setOptions(options);
-		return t;
-	}
-
-	public static Instances buildDatasetForMeka(List<Sentence> trainSentences){
+	public Instances buildDatasetForMeka(List<Sentence> trainSentences){
 
 		ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
 
@@ -74,20 +59,36 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		Instances data = new Instances("sentences -C 5 ", wekaAttributes, 1000000);
 
 		for (Sentence trainSentence : trainSentences) {
-
-			DenseInstance newInstance = new DenseInstance(6);
-			newInstance.setValue(0,0);
-			newInstance.setValue(1,0);
-			newInstance.setValue(2,0);
-			newInstance.setValue(3,0);
-			newInstance.setValue(4,1);
-			newInstance.setValue(attributeText, trainSentence.getTextFromComment());
-			data.add(newInstance);
-
-
+			data.add(createTrainData(trainSentence,attributeText));
 		}
-
+		structure =data;
 		return data;
+	}
+
+	private DenseInstance createTrainData(Sentence sentence,Attribute attributeText){
+		DenseInstance newInstance = new DenseInstance(6);
+		newInstance.setValue(0,0);
+		newInstance.setValue(1,0);
+		newInstance.setValue(2,0);
+		newInstance.setValue(3,0);
+		newInstance.setValue(4,0);
+		if(sentence.getType() == KnowledgeType.ALTERNATIVE){
+			newInstance.setValue(0,1);
+		}
+		if(sentence.getType() == KnowledgeType.PRO){
+			newInstance.setValue(1,1);
+		}
+		if(sentence.getType() == KnowledgeType.CON){
+			newInstance.setValue(2,1);
+		}
+		if(sentence.getType() == KnowledgeType.DECISION){
+			newInstance.setValue(3,1);
+		}
+		if(sentence.getType() == KnowledgeType.ISSUE){
+			newInstance.setValue(4,1);
+		}
+		newInstance.setValue(attributeText, sentence.getTextFromComment());
+		return newInstance;
 	}
 
 	private static Attribute getAttribute(String name) {

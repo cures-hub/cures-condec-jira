@@ -48,18 +48,18 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testClassificationTrainerARFFData(){
+	public void testClassificationTrainerARFFDataValid(){
 		ClassificationTrainer trainer = new ClassificationTrainerImpl("TEST");
 		List<Sentence> values = new ArrayList<>();
-		for(int i=0; i<=10;i++){
+		for(KnowledgeType type : KnowledgeType.values()){
 			Sentence newEntry = new SentenceImpl();
-			newEntry.setType(KnowledgeType.PRO);
+			newEntry.setType(type);
 			newEntry.setCommentId(commentManager.getLastComment(issue).getId());
 			newEntry.setStartSubstringCount(0);
 			newEntry.setEndSubstringCount(12);
 			values.add(newEntry);
 		}
-		System.out.println(values.toString());
-		System.out.println(((ClassificationTrainerImpl) trainer).buildDatasetForMeka(values));
+		((ClassificationTrainerImpl) trainer).buildDatasetForMeka(values);
+		trainer.train();
 	}
 }
