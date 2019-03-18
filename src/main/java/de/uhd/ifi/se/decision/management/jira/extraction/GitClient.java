@@ -20,12 +20,12 @@ public interface GitClient {
 
 	/**
 	 * @issue What is the best place to clone the git repo to?
-	 * @issue To which directory does the Git integration for JIRA plug-in clone the
-	 *        repo? Can we use this directory?
 	 * @decision Clone git repo to JIRAHome/data/condec-plugin
+	 * @pro The Git integration for JIRA plug-in clones its repos to a similar
+	 *      folder: JIRAHome/data/git-plugin.
 	 */
-	String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory().getAbsolutePath()
-			+ File.separator + "condec-plugin" + File.separator;
+	public static final String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
+			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator;
 
 	/**
 	 * Retrieves the commits with the JIRA issue key in their commit message.
@@ -125,8 +125,8 @@ public interface GitClient {
 	 * Retrieves the JIRA issue key from a commit message.
 	 * 
 	 * @param commitMessage
-	 *            a commit message that should contain an issue key.
-	 * @return extracted JIRA issue key.
+	 *            a commit message that should contain a JIRA issue key.
+	 * @return extracted JIRA issue key or empty String if no JIRA issue key could be found.
 	 * 
 	 * @issue How to identify the JIRA issue key(s) in a commit message?
 	 * @alternative This is a very simple method to detect the JIRA issue key as the
@@ -134,10 +134,10 @@ public interface GitClient {
 	 */
 	static String getJiraIssueKey(String commitMessage) {
 		if (!commitMessage.isEmpty()) {
-			String[] split = commitMessage.split("[:+ ]");
-			return split[0].toUpperCase(Locale.ENGLISH);
+			return "";
 		}
-		return "";
+		String[] split = commitMessage.split("[:+ ]");
+		return split[0].toUpperCase(Locale.ENGLISH);
 	}
 
 	/**
