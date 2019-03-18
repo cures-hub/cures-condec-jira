@@ -144,7 +144,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 						.classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
 			} else {
 				MutableComment comment = getChangedComment();
-				new TextSplitterImpl().getSentences(comment);
+				new TextSplitterImpl().getPartsOfComment(comment);
 			}
 			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 		} else {
@@ -162,7 +162,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
 		} else {
 			MutableComment comment = getChangedComment();
-			new TextSplitterImpl().getSentences(comment);
+			new TextSplitterImpl().getPartsOfComment(comment);
 		}
 		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}

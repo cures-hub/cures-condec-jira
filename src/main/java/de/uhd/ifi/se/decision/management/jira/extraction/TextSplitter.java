@@ -34,5 +34,5 @@ public interface TextSplitter {
 	 *            JIRA issue comment.
 	 * @return list of sentence objects.
 	 */
-	List<PartOfComment> getSentences(Comment comment);
+	List<PartOfComment> getPartsOfComment(Comment comment);
 }

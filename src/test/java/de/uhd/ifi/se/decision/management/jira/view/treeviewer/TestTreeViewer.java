@@ -182,7 +182,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		Comment comment1 = commentManager.create(issue, currentUser, "This is a testsentence for test purposes", true);
 
 		// 3) Manipulate Sentence object so it will be shown in the tree viewer
-		List<PartOfComment> sentences = new TextSplitterImpl().getSentences(comment1);
+		List<PartOfComment> sentences = new TextSplitterImpl().getPartsOfComment(comment1);
 		// JiraIssueComment comment = new JiraIssueCommentImpl(comment1);
 		sentences.get(0).setRelevant(true);
 		sentences.get(0).setType(KnowledgeType.ALTERNATIVE);

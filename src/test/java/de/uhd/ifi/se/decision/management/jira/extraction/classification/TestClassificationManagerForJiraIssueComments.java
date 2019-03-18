@@ -67,7 +67,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUpWith
 
 	private void fillSentenceList() {
 		Comment comment = ComponentAccessor.getCommentManager().getLastComment(issue);
-		sentences = new TextSplitterImpl().getSentences(comment);
+		sentences = new TextSplitterImpl().getPartsOfComment(comment);
 	}
 
 	@Test

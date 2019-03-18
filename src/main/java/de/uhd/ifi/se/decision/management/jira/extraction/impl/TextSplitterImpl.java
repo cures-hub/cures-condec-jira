@@ -16,7 +16,9 @@ import de.uhd.ifi.se.decision.management.jira.extraction.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfCommentImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfTextImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClassificationMacro;
@@ -31,41 +33,59 @@ public class TextSplitterImpl implements TextSplitter {
 		this.endSubstringCount = new ArrayList<Integer>();
 	}
 
-	@Override
-	public List<PartOfComment> getSentences(Comment comment) {
-		List<PartOfComment> sentences = new ArrayList<PartOfComment>();
-		String projectKey = comment.getIssue().getProjectObject().getKey();
+	public List<PartOfText> getPartsOfText(String text, String projectKey) {
+		List<PartOfText> parts = new ArrayList<PartOfText>();
 
-		List<String> strings = TextSplitterImpl.getRawSentences(comment.getBody(), projectKey);
-		runBreakIterator(strings, comment.getBody());
+		List<String> strings = TextSplitterImpl.getRawSentences(text, projectKey);
+		runBreakIterator(strings, text);
 
 		// Create AO entries
 		for (int i = 0; i < this.startSubstringCount.size(); i++) {
 			int startIndex = this.startSubstringCount.get(i);
 			int endIndex = this.endSubstringCount.get(i);
-			if (!startAndEndIndexRules(startIndex, endIndex, comment.getBody())) {
+			if (!startAndEndIndexRules(startIndex, endIndex, text)) {
 				continue;
 			}
-			PartOfComment sentence = new PartOfCommentImpl();
-			sentence.setCommentId(comment.getId());
-			sentence.setEndSubstringCount(endIndex);
-			sentence.setStartSubstringCount(startIndex);
-			sentence.setJiraIssueId(comment.getIssue().getId());
-			sentence.setProject(projectKey);
-			String body = comment.getBody().substring(startIndex, endIndex).toLowerCase();
+			PartOfText partOfText = new PartOfTextImpl();
+			partOfText.setEndSubstringCount(endIndex);
+			partOfText.setStartSubstringCount(startIndex);
+			partOfText.setProject(projectKey);
+			String body = text.substring(startIndex, endIndex).toLowerCase();
 			KnowledgeType type = getKnowledgeTypeFromTag(body, projectKey);
-			sentence.setType(type);
+			partOfText.setType(type);
 			if (type != KnowledgeType.OTHER) {
-				sentence.setRelevant(true);
-				sentence.setValidated(true);
+				partOfText.setRelevant(true);
+				partOfText.setValidated(true);
 			}
-			long sentenceId = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(sentence, null);
-			sentence = (PartOfComment) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(sentenceId);
-			JiraIssueCommentPersistenceManager.createSmartLinkForSentence(sentence);
-			sentence.setCreated(comment.getCreated());
-			sentences.add(sentence);
+			parts.add(partOfText);
 		}
-		return sentences;
+		return parts;
+	}
+
+	@Override
+	public List<PartOfComment> getPartsOfComment(Comment comment) {
+		String projectKey = comment.getIssue().getProjectObject().getKey();
+		List<PartOfText> partsOfText = getPartsOfText(comment.getBody(), projectKey);
+
+		List<PartOfComment> parts = new ArrayList<PartOfComment>();
+
+		// Create AO entries
+		for (PartOfText partOfText : partsOfText) {
+			PartOfComment sentence = new PartOfCommentImpl(comment);
+			sentence.setEndSubstringCount(partOfText.getEndSubstringCount());
+			sentence.setStartSubstringCount(partOfText.getStartSubstringCount());
+			sentence.setRelevant(partOfText.isRelevant());
+			sentence.setValidated(partOfText.isValidated());
+			sentence.setType(partOfText.getType());
+			sentence.setProject(partOfText.getProject());
+			
+			long sentenceId = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(sentence, null);
+			sentence = (PartOfComment) new JiraIssueCommentPersistenceManager("")
+					.getDecisionKnowledgeElement(sentenceId);
+			JiraIssueCommentPersistenceManager.createSmartLinkForSentence(sentence);			
+			parts.add(sentence);
+		}
+		return parts;
 	}
 
 	private static List<String> getRawSentences(String body, String projectKey) {
@@ -85,29 +105,29 @@ public class TextSplitterImpl implements TextSplitter {
 		return firstSplit;
 	}
 
-	private static ArrayList<String> searchForTagsRecursively(String commentPart, String openTag, String closeTag,
+	private static ArrayList<String> searchForTagsRecursively(String partOfText, String openTag, String closeTag,
 			ArrayList<String> slices) {
-		if (isIncorrectlyTagged(commentPart, openTag, closeTag)) {
-			slices.add(commentPart);
+		if (isIncorrectlyTagged(partOfText, openTag, closeTag)) {
+			slices.add(partOfText);
 			return slices;
 		}
 		// Icon is used to identify a sentence or a closing tag is forgotten
-		if (commentPart.contains(openTag) && !commentPart.contains(closeTag)) {
+		if (partOfText.contains(openTag) && !partOfText.contains(closeTag)) {
 			return slices;
 		} // Open and close tags are existent
-		if (commentPart.startsWith(openTag) && commentPart.contains(closeTag)) {
-			String part = StringUtils.substringBetween(commentPart, openTag, closeTag);
+		if (partOfText.startsWith(openTag) && partOfText.contains(closeTag)) {
+			String part = StringUtils.substringBetween(partOfText, openTag, closeTag);
 			part = openTag + part + closeTag;
 			slices.add(part);
-			String commentPartSubstring = commentPart.substring(commentPart.indexOf(openTag) + part.length());
+			String commentPartSubstring = partOfText.substring(partOfText.indexOf(openTag) + part.length());
 			return searchForTagsRecursively(commentPartSubstring, openTag, closeTag, slices);
 		} else {// currently plain text
-			if (commentPart.contains(openTag)) {// comment block has special text later
-				slices.add(commentPart.substring(0, commentPart.indexOf(openTag)));
-				return searchForTagsRecursively(commentPart.substring(commentPart.indexOf(openTag)), openTag, closeTag,
+			if (partOfText.contains(openTag)) {// comment block has special text later
+				slices.add(partOfText.substring(0, partOfText.indexOf(openTag)));
+				return searchForTagsRecursively(partOfText.substring(partOfText.indexOf(openTag)), openTag, closeTag,
 						slices);
 			} else {// comment block has no more special text
-				slices.add(commentPart);
+				slices.add(partOfText);
 			}
 		}
 		return slices;

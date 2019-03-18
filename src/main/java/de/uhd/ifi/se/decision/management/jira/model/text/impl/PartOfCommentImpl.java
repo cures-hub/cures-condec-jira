@@ -19,13 +19,20 @@ import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfCommentIn
  * Model class for textual parts (substrings) of JIRA issue comments. These
  * parts can either be relevant decision knowledge elements or irrelevant text.
  */
-public class PartOfCommentImpl extends AbstractPartOfText implements PartOfComment {
+public class PartOfCommentImpl extends PartOfTextImpl implements PartOfComment {
 
 	private long commentId;
 
 	public PartOfCommentImpl() {
 		super();
 		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
+	}
+
+	public PartOfCommentImpl(Comment comment) {
+		this();
+		this.setCommentId(comment.getId());
+		this.setJiraIssueId(comment.getIssue().getId());
+		this.setCreated(comment.getCreated());
 	}
 
 	public PartOfCommentImpl(PartOfCommentInDatabase databaseEntry) {

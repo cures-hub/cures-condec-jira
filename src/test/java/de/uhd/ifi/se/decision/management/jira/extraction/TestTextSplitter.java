@@ -44,7 +44,7 @@ public class TestTextSplitter extends TestSetUpWithIssues {
 		ApplicationUser currentUser = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		ComponentAccessor.getCommentManager().deleteCommentsForIssue(issue);
 		Comment comment = ComponentAccessor.getCommentManager().create(issue, currentUser, text, true);
-		List<PartOfComment> sentences = new TextSplitterImpl().getSentences(comment);
+		List<PartOfComment> sentences = new TextSplitterImpl().getPartsOfComment(comment);
 		return sentences;
 	}
 

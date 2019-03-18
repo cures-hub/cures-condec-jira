@@ -243,7 +243,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getTypeAsString());
 		String text = tag + element.getSummary() + "\n" + element.getDescription() + tag;
 		Comment comment = ComponentAccessor.getCommentManager().create(issue, user, text, false);
-		List<PartOfComment> sentences = new TextSplitterImpl().getSentences(comment);
+		List<PartOfComment> sentences = new TextSplitterImpl().getPartsOfComment(comment);
 		for (PartOfComment sentence : sentences) {
 			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUECOMMENT);
 		}

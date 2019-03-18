@@ -5,13 +5,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.util.JiraHome;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.util.JiraHome;
 
 /**
  * Class to connect to commits and code in git.
@@ -126,14 +127,15 @@ public interface GitClient {
 	 * 
 	 * @param commitMessage
 	 *            a commit message that should contain a JIRA issue key.
-	 * @return extracted JIRA issue key or empty String if no JIRA issue key could be found.
+	 * @return extracted JIRA issue key or empty String if no JIRA issue key could
+	 *         be found.
 	 * 
 	 * @issue How to identify the JIRA issue key(s) in a commit message?
 	 * @alternative This is a very simple method to detect the JIRA issue key as the
 	 *              first word in the message and should be improved.
 	 */
 	static String getJiraIssueKey(String commitMessage) {
-		if (!commitMessage.isEmpty()) {
+		if (commitMessage.isEmpty()) {
 			return "";
 		}
 		String[] split = commitMessage.split("[:+ ]");

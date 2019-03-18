@@ -35,7 +35,7 @@ public class ClassificationManagerForJiraIssueComments {
 		List<PartOfComment> sentences = new ArrayList<PartOfComment>();
 		List<Comment> comments = getComments(issue);
 		for (Comment comment : comments) {
-			List<PartOfComment> sentencesOfComment = new TextSplitterImpl().getSentences(comment);
+			List<PartOfComment> sentencesOfComment = new TextSplitterImpl().getPartsOfComment(comment);
 			sentences.addAll(sentencesOfComment);
 		}
 		classifySentencesBinary(sentences);

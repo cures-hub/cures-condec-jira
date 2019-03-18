@@ -75,7 +75,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		Comment comment1 = commentManager.create(issue, currentUser, text, true);
 
 		// 3) Manipulate Sentence object so it will be shown in the tree viewer
-		this.sentences = new TextSplitterImpl().getSentences(comment1);
+		this.sentences = new TextSplitterImpl().getPartsOfComment(comment1);
 		return issue;
 
 	}
