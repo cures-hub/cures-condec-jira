@@ -25,7 +25,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
 import net.java.ao.EntityManager;
@@ -155,7 +155,7 @@ public class TestGraph extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testGraphWithSentences() {
-		List<PartOfComment> sentences = TestTextSplitter.getSentencesForCommentText("I got an issue in this testclass");
+		List<PartOfJiraIssueText> sentences = TestTextSplitter.getSentencesForCommentText("I got an issue in this testclass");
 		element = sentences.get(0);
 		graph.setRootElement(element);
 		assertNotNull(graph.getAdjacentElementsAndLinks(element));

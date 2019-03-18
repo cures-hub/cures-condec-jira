@@ -11,7 +11,7 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 
 /**
  * Type of decision knowledge element
@@ -214,11 +214,11 @@ public enum KnowledgeType {
 		if (element == null) {
 			return "";
 		}
-		if (element instanceof PartOfComment && !((PartOfComment) element).isRelevant()) {
+		if (element instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) element).isRelevant()) {
 			return ComponentGetter.getUrlOfImageFolder() + "Other.png";
 		}
 		if (element.getType() == OTHER) {
-			if (element instanceof PartOfComment) {
+			if (element instanceof PartOfJiraIssueText) {
 				return ComponentGetter.getUrlOfImageFolder() + "Other.png";
 			}
 			IssueManager issueManager = ComponentAccessor.getIssueManager();

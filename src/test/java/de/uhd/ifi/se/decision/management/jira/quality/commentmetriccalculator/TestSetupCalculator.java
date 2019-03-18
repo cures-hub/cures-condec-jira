@@ -14,8 +14,8 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
-import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfCommentImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.CommentMetricCalculator;
 import net.java.ao.EntityManager;
@@ -43,8 +43,8 @@ public class TestSetupCalculator extends TestSetUpWithIssues {
 	}
 
 	protected void addElementToDataBase(ApplicationUser user) {
-		PartOfComment element;
-		element = new PartOfCommentImpl();
+		PartOfJiraIssueText element;
+		element = new PartOfJiraIssueTextImpl();
 		element.setProject("TEST");
 		element.setJiraIssueId(12);
 		element.setId(1);

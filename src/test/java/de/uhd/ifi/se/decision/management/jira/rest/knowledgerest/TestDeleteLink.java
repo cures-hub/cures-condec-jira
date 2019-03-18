@@ -28,7 +28,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import net.java.ao.EntityManager;
@@ -61,7 +61,7 @@ public class TestDeleteLink extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testProjectExistentRequestFilledLinkFilled() {
-		List<PartOfComment> comment = TestTextSplitter.getSentencesForCommentText("This is a test sentence.");
+		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement sentence = comment.get(0);
 
 		Issue issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("3");

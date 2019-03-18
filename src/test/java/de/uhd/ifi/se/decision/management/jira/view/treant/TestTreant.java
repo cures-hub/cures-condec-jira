@@ -21,9 +21,9 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfCommentInDatabase;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
@@ -135,7 +135,7 @@ public class TestTreant extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testCreateNodeStructureWithSentenceInIssue() {
-		List<PartOfComment> sentences = TestTextSplitter.getSentencesForCommentText("This is a testsentence");
+		List<PartOfJiraIssueText> sentences = TestTextSplitter.getSentencesForCommentText("This is a testsentence");
 		sentences.get(0).setRelevant(true);
 		DecisionKnowledgeElement element = persistenceStrategy
 				.getDecisionKnowledgeElement(sentences.get(0).getJiraIssueId());
@@ -148,7 +148,7 @@ public class TestTreant extends TestSetUpWithIssues {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void update(EntityManager entityManager) throws Exception {
-			entityManager.migrate(PartOfCommentInDatabase.class);
+			entityManager.migrate(PartOfJiraIssueTextInDatabase.class);
 			entityManager.migrate(LinkInDatabase.class);
 		}
 	}

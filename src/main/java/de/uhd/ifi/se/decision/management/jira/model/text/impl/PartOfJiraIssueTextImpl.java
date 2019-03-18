@@ -4,38 +4,40 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.MutableComment;
 
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfCommentInDatabase;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 
 /**
- * Model class for textual parts (substrings) of JIRA issue comments. These
- * parts can either be relevant decision knowledge elements or irrelevant text.
+ * Model class for textual parts (substrings) of JIRA issue comments or the
+ * description. These parts can either be relevant decision knowledge elements
+ * or irrelevant text.
  */
-public class PartOfCommentImpl extends PartOfTextImpl implements PartOfComment {
+public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJiraIssueText {
 
 	private long commentId;
 
-	public PartOfCommentImpl() {
+	public PartOfJiraIssueTextImpl() {
 		super();
 		this.documentationLocation = DocumentationLocation.JIRAISSUECOMMENT;
 	}
 
-	public PartOfCommentImpl(Comment comment) {
+	public PartOfJiraIssueTextImpl(Comment comment) {
 		this();
 		this.setCommentId(comment.getId());
 		this.setJiraIssueId(comment.getIssue().getId());
 		this.setCreated(comment.getCreated());
 	}
 
-	public PartOfCommentImpl(PartOfText partOfText, Comment comment) {
+	public PartOfJiraIssueTextImpl(PartOfText partOfText, Comment comment) {
 		this(comment);
 		this.setEndSubstringCount(partOfText.getEndSubstringCount());
 		this.setStartSubstringCount(partOfText.getStartSubstringCount());
@@ -45,13 +47,13 @@ public class PartOfCommentImpl extends PartOfTextImpl implements PartOfComment {
 		this.setProject(partOfText.getProject());
 	}
 
-	public PartOfCommentImpl(PartOfCommentInDatabase databaseEntry) {
+	public PartOfJiraIssueTextImpl(PartOfJiraIssueTextInDatabase databaseEntry) {
 		this(databaseEntry.getId(), databaseEntry.getEndSubstringCount(), databaseEntry.getStartSubstringCount(),
 				databaseEntry.isValidated(), databaseEntry.isRelevant(), databaseEntry.getProjectKey(),
 				databaseEntry.getCommentId(), databaseEntry.getJiraIssueId(), databaseEntry.getType());
 	}
 
-	public PartOfCommentImpl(long id, int endSubstringCount, int startSubstringCount, boolean isValidated,
+	public PartOfJiraIssueTextImpl(long id, int endSubstringCount, int startSubstringCount, boolean isValidated,
 			boolean isRelevant, String projectKey, long commentId, long issueId, String type) {
 		this();
 		this.setId(id);
@@ -143,5 +145,15 @@ public class PartOfCommentImpl extends PartOfTextImpl implements PartOfComment {
 	@Override
 	public void setCommentId(long id) {
 		this.commentId = id;
+	}
+
+	@Override
+	public String getJiraIssueDescription() {
+		IssueManager issueManager = ComponentAccessor.getIssueManager();
+		Issue issue = issueManager.getIssueObject(this.getJiraIssueId());
+		if (issue == null) {
+			return super.getSummary();
+		}
+		return issue.getDescription();
 	}
 }

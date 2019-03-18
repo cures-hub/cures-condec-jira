@@ -56,7 +56,7 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityParamFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfCommentInDatabase;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
@@ -185,7 +185,7 @@ public class TestSetUpWithIssues {
 		@Override
 		public void update(EntityManager entityManager) throws Exception {
 			entityManager.migrate(DecisionKnowledgeElementInDatabase.class);
-			entityManager.migrate(PartOfCommentInDatabase.class);
+			entityManager.migrate(PartOfJiraIssueTextInDatabase.class);
 			entityManager.migrate(LinkInDatabase.class);
 		}
 	}

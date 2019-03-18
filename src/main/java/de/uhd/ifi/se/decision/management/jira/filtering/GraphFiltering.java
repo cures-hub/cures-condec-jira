@@ -6,7 +6,7 @@ import com.atlassian.query.clause.Clause;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfComment;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
 import com.atlassian.jira.bc.issue.search.*;
@@ -349,23 +349,23 @@ public class GraphFiltering {
 					if (!results.contains(currentElement)) {
 						if (isFilteredByTime) {
 							if (startTime <= 0) {
-								if (currentElement instanceof PartOfComment && ((PartOfComment) currentElement).getCreated().getTime()
+								if (currentElement instanceof PartOfJiraIssueText && ((PartOfJiraIssueText) currentElement).getCreated().getTime()
 										< endTime) {
 									results.add(currentElement);
 								}
 							} else if (endTime <= 0) {
-								if (currentElement instanceof PartOfComment && ((PartOfComment) currentElement).getCreated().getTime()
+								if (currentElement instanceof PartOfJiraIssueText && ((PartOfJiraIssueText) currentElement).getCreated().getTime()
 										> startTime) {
 									results.add(currentElement);
 								}
 							} else {
-								if (currentElement instanceof PartOfComment && (((PartOfComment) currentElement).getCreated().getTime()
-										< endTime) && (((PartOfComment) currentElement).getCreated().getTime() > startTime)) {
+								if (currentElement instanceof PartOfJiraIssueText && (((PartOfJiraIssueText) currentElement).getCreated().getTime()
+										< endTime) && (((PartOfJiraIssueText) currentElement).getCreated().getTime() > startTime)) {
 									results.add(currentElement);
 								}
 							}
 						} else {
-							if (currentElement instanceof PartOfComment) {
+							if (currentElement instanceof PartOfJiraIssueText) {
 								results.add(currentElement);
 							}
 						}
