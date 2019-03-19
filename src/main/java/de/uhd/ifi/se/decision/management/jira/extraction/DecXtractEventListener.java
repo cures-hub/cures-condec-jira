@@ -96,7 +96,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 			handleDeleteIssue();
 		}
 		if (eventTypeId == EventType.ISSUE_UPDATED_ID) {
-			// JIRA issue description has changed
+			handleUpdateDescription();
 		}
 	}
 
@@ -126,21 +126,20 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	}
 
 	private void handleEditComment() {
-		// If locked, a REST service is currently manipulating the comment and should
-		// not be handled by this event listener.
-		if (!DecXtractEventListener.editCommentLock) {
-			JiraIssueCommentPersistenceManager.deleteAllSentencesOfComments(issueEvent.getComment());
-			if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
-				new ClassificationManagerForJiraIssueComments()
-						.classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
-			} else {
-				MutableComment comment = (MutableComment) issueEvent.getComment();
-				JiraIssueCommentPersistenceManager.getPartsOfComment(comment);
-			}
-			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
-		} else {
+		if (DecXtractEventListener.editCommentLock) {
+			// If locked, a REST service is currently manipulating the comment and should
+			// not be handled by this event listener.
 			LOGGER.debug("DecXtract event listener:\nEditing comment is still locked.");
+			return;
 		}
+		JiraIssueCommentPersistenceManager.deleteAllSentencesOfComments(issueEvent.getComment());
+		if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
+			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
+		} else {
+			MutableComment comment = (MutableComment) issueEvent.getComment();
+			JiraIssueCommentPersistenceManager.getPartsOfComment(comment);
+		}
+		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 
 	private void handleDeleteComment() {
@@ -156,5 +155,21 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 			JiraIssueCommentPersistenceManager.getPartsOfComment(comment);
 		}
 		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+	}
+
+	private void handleUpdateDescription() {
+		// If locked, a REST service is currently manipulating the comment and should
+		// not be handled by this event listener.
+		if (!DecXtractEventListener.editCommentLock) {
+			if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
+				new ClassificationManagerForJiraIssueComments()
+						.classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
+			} else {
+				JiraIssueCommentPersistenceManager.getPartsOfDescription(issueEvent.getIssue());
+			}
+			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+		} else {
+			LOGGER.debug("DecXtract event listener:\nEditing description is still locked.");
+		}
 	}
 }

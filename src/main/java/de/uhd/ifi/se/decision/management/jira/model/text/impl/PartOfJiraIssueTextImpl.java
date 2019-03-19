@@ -50,6 +50,13 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 		this.setProject(partOfText.getProject());
 	}
 
+	public PartOfJiraIssueTextImpl(PartOfText partOfText, Issue jiraIssue) {
+		this(partOfText, (Comment) null);
+		this.setCommentId(0);
+		this.setJiraIssueId(jiraIssue.getId());
+		this.setCreated(jiraIssue.getCreated());
+	}
+
 	public PartOfJiraIssueTextImpl(PartOfJiraIssueTextInDatabase databaseEntry) {
 		this(databaseEntry.getId(), databaseEntry.getEndSubstringCount(), databaseEntry.getStartSubstringCount(),
 				databaseEntry.isValidated(), databaseEntry.isRelevant(), databaseEntry.getProjectKey(),
@@ -73,40 +80,49 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 		if (issue != null) {
 			this.setKey(issue.getKey() + ":" + this.getId());
 		}
-		if (commentId <= 0) {
-			return;
-		}
+		String text = "";
 		Comment comment = this.getComment();
 		if (comment == null) {
-			return;
+			text = getJiraIssueDescription();
+		} else {
+			text = comment.getBody();
+			this.setCreated(comment.getCreated());
 		}
-		String text = comment.getBody();
 		try {
 			if (endSubstringCount < text.length()) {
 				text = text.substring(startSubstringCount, endSubstringCount);
 			} else if (endSubstringCount == text.length()) {
 				text = text.substring(startSubstringCount);
 			}
-		} catch (StringIndexOutOfBoundsException e) {
+		} catch (NullPointerException | StringIndexOutOfBoundsException e) {
 			e.printStackTrace();
 		}
+		if (text == null) {
+			text = "";
+		}
 		this.setDescription(text);
-		this.setCreated(comment.getCreated());
 		this.setPlainText(!containsExcludedTag(text));
 		stripTagsFromBody(text);
 	}
 
 	private boolean containsExcludedTag(String body) {
+		if (body == null) {
+			return false;
+		}
 		return StringUtils.indexOfAny(body.toLowerCase(), TextSplitter.EXCLUDED_TAGS) >= 0;
 	}
 
 	@Override
 	public MutableComment getComment() {
+		long commentId = getCommentId();
+		if (commentId <= 0) {
+			return null;
+		}
 		CommentManager commentManager = ComponentAccessor.getCommentManager();
 		if (commentManager == null) {
 			return null;
 		}
-		return commentManager.getMutableComment(this.getCommentId());
+		return commentManager.getMutableComment(commentId);
 	}
 
 	@Override
@@ -132,6 +148,9 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 	}
 
 	private void stripTagsFromBody(String body) {
+		if (body == null) {
+			return;
+		}
 		String projectKey = this.getProject().getProjectKey();
 		if (TextSplitterImpl.isAnyKnowledgeTypeTwiceExisting(body, projectKey)) {
 			int tagLength = 2 + TextSplitterImpl.getKnowledgeTypeFromTag(body, projectKey).toString().length();

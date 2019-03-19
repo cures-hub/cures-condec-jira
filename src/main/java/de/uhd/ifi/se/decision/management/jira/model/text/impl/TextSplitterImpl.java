@@ -160,6 +160,9 @@ public class TextSplitterImpl implements TextSplitter {
 	}
 
 	private static boolean knowledgeTypeTagExistsTwice(String body, String knowledgeType) {
+		if (body == null || knowledgeType == null) {
+			return false;
+		}
 		return StringUtils.countMatches(body.toLowerCase(), knowledgeType.toLowerCase()) >= 2;
 	}
 

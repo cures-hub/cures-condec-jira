@@ -26,6 +26,13 @@ public class ClassificationManagerForJiraIssueComments {
 	public ClassificationManagerForJiraIssueComments() {
 		this.classifier = new DecisionKnowledgeClassifierImpl();
 	}
+	
+	public void classifyJiraIssueText(Issue issue) {
+		if (issue == null) {
+			return;
+		}
+		// TODO
+	}
 
 	public void classifyAllCommentsOfJiraIssue(Issue issue) {
 		if (issue == null) {

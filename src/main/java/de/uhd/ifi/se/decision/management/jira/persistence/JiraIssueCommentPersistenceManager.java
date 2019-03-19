@@ -572,6 +572,24 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		}
 		return parts;
 	}
+	
+	public static List<PartOfJiraIssueText> getPartsOfDescription(Issue jiraIssue) {
+		String projectKey = jiraIssue.getProjectObject().getKey();
+		List<PartOfText> partsOfText = new TextSplitterImpl().getPartsOfText(jiraIssue.getDescription(), projectKey);
+
+		List<PartOfJiraIssueText> parts = new ArrayList<PartOfJiraIssueText>();
+
+		// Create AO entries
+		for (PartOfText partOfText : partsOfText) {
+			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(partOfText, jiraIssue);
+			long sentenceId = insertDecisionKnowledgeElement(sentence, null);
+			sentence = (PartOfJiraIssueText) new JiraIssueCommentPersistenceManager("")
+					.getDecisionKnowledgeElement(sentenceId);
+			createSmartLinkForSentence(sentence);
+			parts.add(sentence);
+		}
+		return parts;
+	}
 
 	private static int removeSentenceFromComment(PartOfJiraIssueText element) {
 		MutableComment mutableComment = element.getComment();
