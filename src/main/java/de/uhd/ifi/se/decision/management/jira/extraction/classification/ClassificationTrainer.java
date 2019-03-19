@@ -12,11 +12,12 @@ import java.io.File;
 public interface ClassificationTrainer {
 
 	String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory().getAbsolutePath()
-			                     + File.separator + "condec-plugin" + File.separator;
+			                     + File.separator + "condec-plugin" + File.separator+ "classifier";
 
 	/**
 	 * Trains the Classifier withe the Data from the Database that was set and
-	 * validated from the user.
+	 * validated from the user. Creates a new model Files that can be uses to
+	 * classify the comments and description of a Jira issue.
 	 */
 	void train();
 

@@ -13,6 +13,7 @@ import weka.core.tokenizers.NGramTokenizer;
 import weka.core.tokenizers.Tokenizer;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -23,6 +24,11 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	private static Instances structure;
 	private List<Sentence> mekaTrainData;
 
+	/**
+	 * In the Constructor the Sentences from Database will be uses for the classification that is validated from the
+	 * user.
+	 * @param projectKey
+	 */
 	public ClassificationTrainerImpl(String projectKey){
 		this.projectKey = projectKey;
 		JiraIssueCommentPersistenceManager manager = new JiraIssueCommentPersistenceManager(projectKey);
@@ -39,45 +45,39 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 			fc.setClassifier(new NaiveBayesMultinomial());
 			binaryRelevance.setClassifier(fc);
 
-			evaluatTraining(binaryRelevance);
+			evaluateTraining(binaryRelevance);
 
 			binaryRelevance.buildClassifier(structure);
-			weka.core.SerializationHelper.write(System.getProperty("user.home")+"/newBr.model", binaryRelevance);
+			File directory= new File(DEFAULT_DIR+ File.separator + projectKey);
+			directory.delete();
+			directory.mkdirs();
+			weka.core.SerializationHelper.write(DEFAULT_DIR+ File.separator + projectKey + "/newBr.model", binaryRelevance);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static void evaluatTraining(LC binaryRelevance) throws Exception {
-		Evaluation rate = new Evaluation(structure);
-		Random seed = new Random(1);
-		Instances datarandom = new Instances(structure); datarandom.randomize(seed);
-
-		int folds = 10; datarandom.stratify(folds);
-		rate.crossValidateModel(binaryRelevance, structure, folds, seed);
-		System.out.println(rate.toSummaryString());
-		System.out.println("Structure num classes: "+structure.numClasses());
-	}
-
-	private static Tokenizer getTokenizer() throws Exception {
-		Tokenizer t = new NGramTokenizer();
-		String[] options = weka.core.Utils.splitOptions(
-				"weka.core.tokenizers.NGramTokenizer -max 3 -min 1 -delimiters \" \\r\\n\\t.,;:\\'\\\"()?!\"");
-		t.setOptions(options);
-		return t;
-	}
-
-	private static StringToWordVector getSTWV() throws Exception {
-		StringToWordVector stwv = new StringToWordVector();
-		stwv.setLowerCaseTokens(true);
-		stwv.setIDFTransform(true);
-		stwv.setTFTransform(true);
-		stwv.setTokenizer(getTokenizer());
-		stwv.setWordsToKeep(1000000);
-		return stwv;
-	}
-
+	/**
+	 *
+	 * @param trainSentences
+	 * @return The training dataset. The Instance that this function returns is the ARFF File that is needed to train
+	 *          the Classifier. The Attributes are Boolean and the Sentence is a String.
+	 *
+	 *Data appearance:
+	 *  @relation 'sentences: -C 5'
+	 *  @attribute isAlternative {0,1}
+	 *  @attribute isPro {0,1}
+	 *  @attribute isCon {0,1}
+	 *  @attribute isDecision {0,1}
+	 *  @attribute isIssue {0,1}
+	 *  @attribute sentence string
+	 *
+	 *  @data
+	 *  0,0,0,1,0 'I am at Test sentence that is a Decision'
+	 *  1,0,0,0,0 'I am a Alternative for the Issue'
+	 *  0,0,0,0,1 'And i am the Issue for the Decision and the Alternative'
+	 */
 	public Instances buildDatasetForMeka(List<Sentence> trainSentences){
 
 		ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
@@ -105,6 +105,14 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		return data;
 	}
 
+	/**
+	 *
+	 * @param sentence
+	 * @param attributeText
+	 * @return a Data entry for the training of the classifier.
+	 *          The Instance contains the Knowledge  Type as a 1 and the Sentence.
+	 *          The Knowledge Types that are not wrong are set to 0.
+	 */
 	private DenseInstance createTrainData(Sentence sentence,Attribute attributeText){
 		DenseInstance newInstance = new DenseInstance(6);
 		newInstance.setValue(0,0);
@@ -131,10 +139,54 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		return newInstance;
 	}
 
+	/**
+	 * Creates a Attribute which defines the  binary Value
+	 * @param name
+	 * @return Attribute
+	 */
 	private static Attribute getAttribute(String name) {
 		ArrayList<String> rationaleAttribute = new ArrayList<String>();
 		rationaleAttribute.add("0");
 		rationaleAttribute.add("1");
 		return new Attribute(name, rationaleAttribute);
+	}
+
+	private static void evaluateTraining(LC binaryRelevance) throws Exception {
+		Evaluation rate = new Evaluation(structure);
+		Random seed = new Random(1);
+		Instances datarandom = new Instances(structure); datarandom.randomize(seed);
+
+		int folds = 10; datarandom.stratify(folds);
+		rate.crossValidateModel(binaryRelevance, structure, folds, seed);
+		System.out.println("Structure num classes: "+structure.numClasses());
+	}
+
+	/**
+	 * Creates the Tokenizer and sets the Values and Options for the String to Word Vector
+	 * @return Tokenizer
+	 * @throws Exception
+	 */
+	private static Tokenizer getTokenizer() throws Exception {
+		Tokenizer t = new NGramTokenizer();
+		String[] options = weka.core.Utils.splitOptions(
+				"weka.core.tokenizers.NGramTokenizer -max 3 -min 1 -delimiters \" \\r\\n\\t.,;:\\'\\\"()?!\"");
+		t.setOptions(options);
+		return t;
+	}
+
+	/**
+	 * Creates a String to Word Vector for the Classifier
+	 * All Elements are Lowercase Tokens
+	 * @return StringToWordVector
+	 * @throws Exception
+	 */
+	private static StringToWordVector getSTWV() throws Exception {
+		StringToWordVector stwv = new StringToWordVector();
+		stwv.setLowerCaseTokens(true);
+		stwv.setIDFTransform(true);
+		stwv.setTFTransform(true);
+		stwv.setTokenizer(getTokenizer());
+		stwv.setWordsToKeep(1000000);
+		return stwv;
 	}
 }
