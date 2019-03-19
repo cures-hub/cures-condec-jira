@@ -454,13 +454,16 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	public static void cleanSentenceDatabase(String projectKey) {
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-
-			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(databaseEntry);
-			if (!isExistent(sentence)) {
+			if (!isExistent(databaseEntry)) {
 				PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
 				GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUETEXT);
 			}
 		}
+	}
+	
+	public static boolean isExistent(PartOfJiraIssueTextInDatabase databaseEntry) {
+		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(databaseEntry);
+		return isExistent(sentence);
 	}
 
 	public static boolean isExistent(PartOfJiraIssueText sentence) {

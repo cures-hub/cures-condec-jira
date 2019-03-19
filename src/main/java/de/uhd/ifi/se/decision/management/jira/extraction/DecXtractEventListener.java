@@ -12,16 +12,20 @@ import com.atlassian.event.api.EventPublisher;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
 
 /**
  * Triggers the extraction of decision knowledge elements and their integration
- * in the knowledge graph when the user changes either a comment or the description of a JIRA issue.
+ * in the knowledge graph when the user changes either a comment or the
+ * description of a JIRA issue.
  */
 @Component
 public class DecXtractEventListener implements InitializingBean, DisposableBean {
@@ -75,7 +79,6 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 			return;
 		}
 
-		// TODO Check whether description has changed
 		long eventTypeId = issueEvent.getEventTypeId();
 		if (eventTypeId == EventType.ISSUE_COMMENTED_ID || eventTypeId == EventType.ISSUE_COMMENT_EDITED_ID) {
 			parseIconsToTags();
@@ -92,48 +95,33 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		if (eventTypeId == EventType.ISSUE_DELETED_ID) {
 			handleDeleteIssue();
 		}
-		parseSlashTagsOutOfComment();
+		if (eventTypeId == EventType.ISSUE_UPDATED_ID) {
+			// JIRA issue description has changed
+		}
 	}
 
 	private void parseIconsToTags() {
-		if (!ConfigPersistenceManager.isIconParsing(issueEvent.getProject().getKey())) {
+		String projectKey = issueEvent.getProject().getKey();
+		if (!ConfigPersistenceManager.isIconParsing(projectKey)) {
 			return;
 		}
-		// TODO Get description as well
-		MutableComment comment = getChangedComment();
-		for (int i = 0; i < TextSplitter.RATIONALE_ICONS.length; i++) {
-			String icon = TextSplitter.RATIONALE_ICONS[i];
-			while (comment.getBody().contains(icon)) {
-				comment.setBody(comment.getBody().replaceFirst(icon.replace("(", "\\(").replace(")", "\\)"),
-						TextSplitter.RATIONALE_TAGS[i]));
-				if (comment.getBody().split(System.getProperty("line.separator")).length == 1
-						&& !comment.getBody().endsWith("\r\n")) {
-					comment.setBody(comment.getBody() + TextSplitter.RATIONALE_TAGS[i]);
-				}
-				comment.setBody(comment.getBody().replaceFirst("\r\n", TextSplitter.RATIONALE_TAGS[i]));
-				ComponentAccessor.getCommentManager().update(comment, true);
-			}
-		}
-	}
-
-	/**
-	 * Parses \{ out of tags. These slashes are inserted by the visual mode editor.
-	 */
-	private void parseSlashTagsOutOfComment() {
-		if (issueEvent.getComment() != null && issueEvent.getComment().getBody().contains("\\{")) {
-			MutableComment comment = getChangedComment();
-			comment.setBody(issueEvent.getComment().getBody().replace("\\{", "{"));
+		MutableComment comment = (MutableComment) issueEvent.getComment();
+		if (comment == null) {
+			Issue jiraIssue = issueEvent.getIssue();
+			String description = jiraIssue.getDescription();
+			description = TextSplitter.parseIconsToTags(description);
+			new JiraIssuePersistenceManager(issueEvent.getProject().getKey())
+					.updateDecisionKnowledgeElement(new DecisionKnowledgeElementImpl(jiraIssue), issueEvent.getUser());
+		} else {
+			String commentBody = comment.getBody();
+			commentBody = TextSplitter.parseIconsToTags(commentBody);
+			comment.setBody(commentBody);
 			ComponentAccessor.getCommentManager().update(comment, true);
 		}
 	}
 
-	// TODO Get description
-	private MutableComment getChangedComment() {
-		return (MutableComment) ComponentAccessor.getCommentManager().getCommentById(issueEvent.getComment().getId());
-	}
-
 	private void handleDeleteIssue() {
-		JiraIssueCommentPersistenceManager.cleanSentenceDatabase(this.projectKey);
+		JiraIssueCommentPersistenceManager.cleanSentenceDatabase(projectKey);
 		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 
@@ -146,7 +134,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 				new ClassificationManagerForJiraIssueComments()
 						.classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
 			} else {
-				MutableComment comment = getChangedComment();
+				MutableComment comment = (MutableComment) issueEvent.getComment();
 				JiraIssueCommentPersistenceManager.getPartsOfComment(comment);
 			}
 			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
@@ -164,7 +152,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
 			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
 		} else {
-			MutableComment comment = getChangedComment();
+			MutableComment comment = (MutableComment) issueEvent.getComment();
 			JiraIssueCommentPersistenceManager.getPartsOfComment(comment);
 		}
 		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());

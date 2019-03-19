@@ -35,4 +35,20 @@ public interface TextSplitter {
 	 * @return parts of text (substrings) as a list.
 	 */
 	List<PartOfText> getPartsOfText(String text, String projectKey);
+
+	static String parseIconsToTags(String commentBody) {
+		for (int i = 0; i < RATIONALE_ICONS.length; i++) {
+			String icon = RATIONALE_ICONS[i];
+			while (commentBody.contains(icon)) {
+				commentBody = commentBody.replaceFirst(icon.replace("(", "\\(").replace(")", "\\)"),
+						RATIONALE_TAGS[i]);
+				if (commentBody.split(System.getProperty("line.separator")).length == 1
+						&& !commentBody.endsWith("\r\n")) {
+					commentBody = commentBody + RATIONALE_TAGS[i];
+				}
+				commentBody = commentBody.replaceFirst("\r\n", RATIONALE_TAGS[i]);
+			}
+		}
+		return commentBody;
+	}
 }
