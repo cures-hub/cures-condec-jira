@@ -133,7 +133,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	}
 
 	private void handleDeleteIssue() {
-		JiraIssueCommentPersistenceManager.cleanSentenceDatabaseForProject(this.projectKey);
+		JiraIssueCommentPersistenceManager.cleanSentenceDatabase(this.projectKey);
 		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 
@@ -156,7 +156,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	}
 
 	private void handleDeleteComment() {
-		JiraIssueCommentPersistenceManager.cleanSentenceDatabaseForProject(this.projectKey);
+		JiraIssueCommentPersistenceManager.cleanSentenceDatabase(this.projectKey);
 		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 

@@ -77,6 +77,9 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 			return;
 		}
 		Comment comment = this.getComment();
+		if (comment == null) {
+			return;
+		}
 		String text = comment.getBody();
 		try {
 			if (endSubstringCount < text.length()) {

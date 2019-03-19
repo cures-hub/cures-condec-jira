@@ -57,7 +57,7 @@ public class MockCommentManager implements CommentManager {
 
 	@Override
 	public List<Comment> getComments(Issue issue) {
-		((MockIssue)issue).setIssueTypeId("alternative");
+		((MockIssue) issue).setIssueTypeId("alternative");
 		if (this.comments == null) {
 			return new ArrayList<Comment>();
 		}
@@ -149,12 +149,18 @@ public class MockCommentManager implements CommentManager {
 
 	@Override
 	public Comment getCommentById(Long id) {
+		if (comments == null) {
+			return null;
+		}
 		for (Comment comment : comments) {
 			if (comment.getId() == id) {
 				return comment;
 			}
 		}
-		return this.comments.get(0);
+		if(comments.size() > 0) {
+			return comments.get(0);
+		}
+		return null;
 	}
 
 	@Override

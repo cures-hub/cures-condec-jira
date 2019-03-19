@@ -72,8 +72,9 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			LOGGER.error("Sentences in comment cannot be deleted since the comment is null.");
 			return isDeleted;
 		}
-		PartOfJiraIssueTextInDatabase[] commentSentences = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class, Query.select()
-				.where("JIRA_ISSUE_ID = ? AND COMMENT_ID = ?", comment.getIssue().getId(), comment.getId()));
+		PartOfJiraIssueTextInDatabase[] commentSentences = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
+				Query.select().where("JIRA_ISSUE_ID = ? AND COMMENT_ID = ?", comment.getIssue().getId(),
+						comment.getId()));
 		for (PartOfJiraIssueTextInDatabase databaseEntry : commentSentences) {
 			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUETEXT);
 			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
@@ -162,21 +163,22 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	 * Works more efficient than "getElementsForIssue" for Sentence ID searching in
 	 * Macros
 	 * 
-	 * @param issueId
+	 * @param jiraIssueId
 	 * @param projectKey
 	 * @param type
 	 * @return A list of all fitting Sentence objects
 	 */
-	public static List<DecisionKnowledgeElement> getElementsForIssueWithType(long issueId, String projectKey,
+	public static List<DecisionKnowledgeElement> getElementsForJiraIssueWithType(long jiraIssueId, String projectKey,
 			String type) {
 
 		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
-		if (issueId <= 0 || projectKey == null || type == null) {
+		if (jiraIssueId <= 0 || projectKey == null || type == null) {
 			LOGGER.error("Id, ProjectKey, Type are Invalid");
 			return elements;
 		}
-		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class, Query.select()
-				.where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ? AND TYPE = ?", projectKey, issueId, type))) {
+		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
+				Query.select().where("PROJECT_KEY = ? AND JIRA_ISSUE_ID = ? AND TYPE = ?", projectKey, jiraIssueId,
+						type))) {
 			elements.add(new PartOfJiraIssueTextImpl(databaseEntry));
 		}
 		return elements;
@@ -186,7 +188,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		if (body == null || issueId <= 0 || typeString == null || projectKey == null) {
 			return 0;
 		}
-		List<DecisionKnowledgeElement> sentences = getElementsForIssueWithType(issueId, projectKey, typeString);
+		List<DecisionKnowledgeElement> sentences = getElementsForJiraIssueWithType(issueId, projectKey, typeString);
 		for (DecisionKnowledgeElement sentence : sentences) {
 			if (sentence.getDescription().trim().equals(body.trim().replaceAll("<[^>]*>", ""))) {
 				return sentence.getId();
@@ -228,7 +230,8 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		}
 		long issueId;
 		if (parentElement.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
-			PartOfJiraIssueText sentence = (PartOfJiraIssueText) this.getDecisionKnowledgeElement(parentElement.getId());
+			PartOfJiraIssueText sentence = (PartOfJiraIssueText) this
+					.getDecisionKnowledgeElement(parentElement.getId());
 			issueId = sentence.getJiraIssueId();
 		} else {
 			issueId = parentElement.getId();
@@ -345,8 +348,9 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 
 	public static void updateSentenceLengthForOtherSentencesInSameComment(PartOfJiraIssueText sentence,
 			int lengthDifference) {
-		for (PartOfJiraIssueTextInDatabase otherSentenceInComment : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				"COMMENT_ID = ? AND JIRA_ISSUE_ID = ?", sentence.getCommentId(), sentence.getJiraIssueId())) {
+		for (PartOfJiraIssueTextInDatabase otherSentenceInComment : ACTIVE_OBJECTS.find(
+				PartOfJiraIssueTextInDatabase.class, "COMMENT_ID = ? AND JIRA_ISSUE_ID = ?", sentence.getCommentId(),
+				sentence.getJiraIssueId())) {
 			if (otherSentenceInComment.getStartSubstringCount() > sentence.getStartSubstringCount()
 					&& otherSentenceInComment.getId() != sentence.getId()) {
 				otherSentenceInComment
@@ -381,7 +385,8 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		}
 	}
 
-	public static boolean checkLastElementAndCreateLink(DecisionKnowledgeElement lastElement, PartOfJiraIssueText sentence) {
+	public static boolean checkLastElementAndCreateLink(DecisionKnowledgeElement lastElement,
+			PartOfJiraIssueText sentence) {
 		if (lastElement == null) {
 			return false;
 		}
@@ -446,25 +451,34 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		}
 	}
 
-	public static void cleanSentenceDatabaseForProject(String projectKey) {
+	public static void cleanSentenceDatabase(String projectKey) {
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ?", projectKey))) {
-			PartOfJiraIssueText sentence = null;
-			boolean deleteFlag = false;
-			try {
-				sentence = new PartOfJiraIssueTextImpl(databaseEntry);
-				ComponentAccessor.getCommentManager().getCommentById(sentence.getCommentId());
-				if (sentence.getEndSubstringCount() == 0 && sentence.getStartSubstringCount() == 0) {
-					deleteFlag = true;
-				}
-			} catch (Exception e) {
-				deleteFlag = true;
-			}
-			if (deleteFlag) {
+
+			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(databaseEntry);
+			if (!isExistent(sentence)) {
 				PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
 				GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUETEXT);
 			}
 		}
+	}
+
+	public static boolean isExistent(PartOfJiraIssueText sentence) {
+		if (sentence == null) {
+			return false;
+		}
+		if (sentence.getCommentId() == -1) {
+			// Part of JIRA issue description
+			return true;
+		}
+		Comment comment = ComponentAccessor.getCommentManager().getCommentById(sentence.getCommentId());
+		if (comment == null) {
+			return false;
+		}
+		if (sentence.getEndSubstringCount() == 0 && sentence.getStartSubstringCount() == 0) {
+			return false;
+		}
+		return true;
 	}
 
 	/**

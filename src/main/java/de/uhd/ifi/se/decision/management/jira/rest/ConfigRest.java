@@ -321,7 +321,7 @@ public class ConfigRest {
 			// Deletion is only useful during development, do not ship to enduser!!
 			// ActiveObjectsManager.clearSentenceDatabaseForProject(projectKey);
 			// If still something is wrong, delete an elements and its links
-			JiraIssueCommentPersistenceManager.cleanSentenceDatabaseForProject(projectKey);
+			JiraIssueCommentPersistenceManager.cleanSentenceDatabase(projectKey);
 			// If some links ar bad, delete those links
 			GenericLinkManager.clearInvalidLinks();
 			// If there are now some "lonely" sentences, link them to their issues.

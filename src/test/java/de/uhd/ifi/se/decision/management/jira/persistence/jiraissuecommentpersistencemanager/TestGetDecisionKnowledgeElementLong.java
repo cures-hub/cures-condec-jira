@@ -60,15 +60,15 @@ public class TestGetDecisionKnowledgeElementLong extends TestJiraIssueCommentPer
 	@Test
 	@NonTransactional
 	public void testCleanSentenceDatabaseForProject() {
-		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText(
+		List<PartOfJiraIssueText> partsOfText = TestTextSplitter.getSentencesForCommentText(
 				"some sentence in front.  {pro} testobject {pro} some sentence in the back.");
-		long id = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
+		long id = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(partsOfText.get(1), null);
 
-		MutableComment comment2 = ComponentAccessor.getCommentManager()
-				.getMutableComment(comment.get(1).getCommentId());
-		ComponentAccessor.getCommentManager().delete(comment2);
+		MutableComment comment = ComponentAccessor.getCommentManager()
+				.getMutableComment(partsOfText.get(1).getCommentId());
+		ComponentAccessor.getCommentManager().delete(comment);
 
-		JiraIssueCommentPersistenceManager.cleanSentenceDatabaseForProject("TEST");
+		JiraIssueCommentPersistenceManager.cleanSentenceDatabase("TEST");
 
 		PartOfJiraIssueText element = (PartOfJiraIssueText) new JiraIssueCommentPersistenceManager("").getDecisionKnowledgeElement(id);
 		assertNull(element);
