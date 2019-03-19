@@ -16,7 +16,6 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
@@ -110,8 +109,8 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 			Issue jiraIssue = issueEvent.getIssue();
 			String description = jiraIssue.getDescription();
 			description = TextSplitter.parseIconsToTags(description);
-			new JiraIssuePersistenceManager(issueEvent.getProject().getKey())
-					.updateDecisionKnowledgeElement(new DecisionKnowledgeElementImpl(jiraIssue), issueEvent.getUser());
+			new JiraIssuePersistenceManager(issueEvent.getProject().getKey()).updateDecisionKnowledgeElement(jiraIssue,
+					issueEvent.getUser());
 		} else {
 			String commentBody = comment.getBody();
 			commentBody = TextSplitter.parseIconsToTags(commentBody);

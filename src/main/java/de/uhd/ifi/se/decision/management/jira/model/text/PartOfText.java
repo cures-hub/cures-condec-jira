@@ -1,11 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.model.text;
 
+import com.atlassian.jira.issue.Issue;
+
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
- * Interface for textual parts (substrings) of natural language text. These parts
- * can either be relevant decision knowledge elements or irrelevant text.
+ * Interface for textual parts (substrings) of natural language text. These
+ * parts can either be relevant decision knowledge elements or irrelevant text.
  */
 public interface PartOfText extends DecisionKnowledgeElement {
 
@@ -94,8 +96,8 @@ public interface PartOfText extends DecisionKnowledgeElement {
 	 * is tagged with the pattern: {knowledge type} text {knowledge type}.
 	 * 
 	 * @see KnowledgeType
-	 * @return true if the part of the text is relevant decision
-	 *         knowledge with a knowledge type different than KnowledgeType.OTHER.
+	 * @return true if the part of the text is relevant decision knowledge with a
+	 *         knowledge type different than KnowledgeType.OTHER.
 	 */
 	boolean isTagged();
 
@@ -115,6 +117,14 @@ public interface PartOfText extends DecisionKnowledgeElement {
 	 * @return id of the JIRA issue.
 	 */
 	long getJiraIssueId();
+
+	/**
+	 * Get the JIRA issue that the decision knowledge element or irrelevant text is
+	 * part of.
+	 * 
+	 * @return JIRA issue.
+	 */
+	Issue getJiraIssue();
 
 	/**
 	 * Set whether the text of the decision knowledge element or irrelevant text is

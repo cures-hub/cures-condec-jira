@@ -306,4 +306,8 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		issueService.update(user, result);
 		return true;
 	}
+
+	public boolean updateDecisionKnowledgeElement(Issue jiraIssue, ApplicationUser user) {
+		return this.updateDecisionKnowledgeElement(new DecisionKnowledgeElementImpl(jiraIssue), user);
+	}
 }

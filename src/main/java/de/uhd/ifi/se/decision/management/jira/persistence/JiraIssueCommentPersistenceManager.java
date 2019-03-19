@@ -313,13 +313,24 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		String changedPartOfComment = tag + element.getDescription() + tag;
 
 		// TODO Update for description
+		String text = "";
 		MutableComment mutableComment = sentence.getComment();
-		String firstPartOfComment = mutableComment.getBody().substring(0, sentence.getStartSubstringCount());
-		String lastPartOfComment = mutableComment.getBody().substring(sentence.getEndSubstringCount());
+		if (mutableComment == null) {
+			text = sentence.getJiraIssueDescription();
+		} else {
+			text = mutableComment.getBody();
+		}
+
+		String firstPartOfComment = text.substring(0, sentence.getStartSubstringCount());
+		String lastPartOfComment = text.substring(sentence.getEndSubstringCount());
 
 		DecXtractEventListener.editCommentLock = true;
-		mutableComment.setBody(firstPartOfComment + changedPartOfComment + lastPartOfComment);
-		ComponentAccessor.getCommentManager().update(mutableComment, true);
+		if (mutableComment == null) {
+			new JiraIssuePersistenceManager(projectKey).updateDecisionKnowledgeElement(sentence.getJiraIssue(), user);
+		} else {
+			mutableComment.setBody(firstPartOfComment + changedPartOfComment + lastPartOfComment);
+			ComponentAccessor.getCommentManager().update(mutableComment, true);
+		}
 		DecXtractEventListener.editCommentLock = false;
 
 		int lengthDifference = changedPartOfComment.length() - sentence.getLength();
@@ -460,7 +471,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			}
 		}
 	}
-	
+
 	public static boolean isExistent(PartOfJiraIssueTextInDatabase databaseEntry) {
 		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(databaseEntry);
 		return isExistent(sentence);
@@ -572,7 +583,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		}
 		return parts;
 	}
-	
+
 	public static List<PartOfJiraIssueText> getPartsOfDescription(Issue jiraIssue) {
 		String projectKey = jiraIssue.getProjectObject().getKey();
 		List<PartOfText> partsOfText = new TextSplitterImpl().getPartsOfText(jiraIssue.getDescription(), projectKey);
