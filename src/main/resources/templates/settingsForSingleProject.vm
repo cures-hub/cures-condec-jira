@@ -118,17 +118,38 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
         <div id="train-progress-bar" class="aui-progress-indicator">
             <span class="aui-progress-indicator-value"></span>
         </div>
+        <script>
+            var trainClassifier = document.getElementById("trainClassifier");
+            trainClassifier.addEventListener("click", function() {
+                if (confirm('Are you sure you want to train the Classifier new. The work of the Classifier can be changed drastic. Be sure you have classifyed Comments by user input!')) {
+                    AJS.progressBars.setIndeterminate("#train-progress-bar");
+                    var isNewTrained = conDecAPI.trainClassifier('$projectKey');
+                    AJS.progressBars.update("#train-progress-bar", isSucceeded);
+                }
+            });
+        </script>
     </div>
-    <script>
-        var trainClassifier = document.getElementById("trainClassifier");
-        trainClassifier.addEventListener("click", function() {
-            if (confirm('Are you sure you want to train the Classifier new. The work of the Classifier can be changed drastic. Be sure you have classifyed Comments by user input!')) {
-                AJS.progressBars.setIndeterminate("#train-progress-bar");
-                var isNewTrained = conDecAPI.trainClassifier('$projectKey');
-                AJS.progressBars.update("#train-progress-bar", isSucceeded);
-            }
-        });
-    </script>
+
+    <div class="field-group">
+        <label for="download-classifier-button">Download Classifier Training Data</label>
+        <input type="button"
+               id="download-classifier-button" class="aui-button aui-button-primary" value="Download Arff File" />
+        <div class="description">Downloads the latest Trained Data from the Project. This will retrain on
+            the new Data if you select the Download
+        </div>
+        <script>
+            var classifierButton = document.getElementById('download-classifier');
+            classifierButton.addEventListener("click", function() {
+                var link = document.createElement('a');
+                link.style.display = 'none';
+                link.setAttribute('href', '$arffFile');
+                link.setAttribute('download','$projectKey'+'.arff' );
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        </script>
+    </div>
 
 <h2>Decision Knowledge Extraction from Git</h2>
 	<div class="field-group">

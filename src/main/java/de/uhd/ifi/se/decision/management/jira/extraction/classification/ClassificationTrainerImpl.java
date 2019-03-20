@@ -105,6 +105,11 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		return data;
 	}
 
+	public String createDownloadableArffFile(){
+		this.buildDatasetForMeka(mekaTrainData);
+		return structure.toString();
+	}
+
 	/**
 	 *
 	 * @param sentence

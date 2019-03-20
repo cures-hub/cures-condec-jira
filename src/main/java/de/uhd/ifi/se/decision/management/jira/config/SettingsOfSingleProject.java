@@ -16,6 +16,8 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationTrainer;
+import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -54,6 +56,8 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 
 		Set<String> issueTypes = getJiraIssueTypeNames(projectKey);
 
+		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
+
 		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
 		velocityParameters.put("projectKey", projectKey);
 		velocityParameters.put("project", decisionKnowledgeProject);
@@ -61,7 +65,7 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("imageFolderUrl", ComponentGetter.getUrlOfImageFolder());
 		velocityParameters.put("requestUrl", request.getRequestURL());
 		velocityParameters.put("rootTypes", ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
-
+		velocityParameters.put("arffFile", ((ClassificationTrainerImpl) trainer).createDownloadableArffFile());
 		return velocityParameters;
 	}
 
