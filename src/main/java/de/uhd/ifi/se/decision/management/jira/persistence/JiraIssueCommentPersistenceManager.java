@@ -383,16 +383,6 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		}
 	}
 
-	public static int countCommentsForJiraIssue(long issueId) {
-		PartOfJiraIssueTextInDatabase[] commentSentences = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("JIRA_ISSUE_ID = ?", issueId));
-		Set<Long> treeSet = new TreeSet<Long>();
-		for (PartOfJiraIssueTextInDatabase sentence : commentSentences) {
-			treeSet.add(sentence.getCommentId());
-		}
-		return treeSet.size();
-	}
-
 	public static DecisionKnowledgeElement compareForLaterElement(DecisionKnowledgeElement first,
 			DecisionKnowledgeElement second) {
 		if (first == null) {
