@@ -12,7 +12,7 @@ import com.atlassian.event.api.EventPublisher;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
-import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
@@ -79,9 +79,6 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		}
 
 		long eventTypeId = issueEvent.getEventTypeId();
-		if (eventTypeId == EventType.ISSUE_COMMENTED_ID || eventTypeId == EventType.ISSUE_COMMENT_EDITED_ID) {
-			parseIconsToTags();
-		}
 		if (eventTypeId == EventType.ISSUE_COMMENTED_ID) {
 			handleNewComment();
 		}
@@ -106,9 +103,10 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		}
 		MutableComment comment = (MutableComment) issueEvent.getComment();
 		if (comment == null) {
-			Issue jiraIssue = issueEvent.getIssue();
+			MutableIssue jiraIssue = (MutableIssue) issueEvent.getIssue();
 			String description = jiraIssue.getDescription();
 			description = TextSplitter.parseIconsToTags(description);
+			jiraIssue.setDescription(description);
 			new JiraIssuePersistenceManager(issueEvent.getProject().getKey()).updateDecisionKnowledgeElement(jiraIssue,
 					issueEvent.getUser());
 		} else {
@@ -125,6 +123,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	}
 
 	private void handleEditComment() {
+		parseIconsToTags();
 		if (DecXtractEventListener.editCommentLock) {
 			// If locked, a REST service is currently manipulating the comment and should
 			// not be handled by this event listener.
@@ -147,6 +146,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	}
 
 	private void handleNewComment() {
+		parseIconsToTags();
 		if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
 			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
 		} else {
@@ -157,6 +157,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	}
 
 	private void handleUpdateDescription() {
+		parseIconsToTags();
 		// If locked, a REST service is currently manipulating the comment and should
 		// not be handled by this event listener.
 		JiraIssueCommentPersistenceManager.deleteAllSentencesOfDescription(issueEvent.getIssue());

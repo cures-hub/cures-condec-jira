@@ -38,6 +38,9 @@ public interface TextSplitter {
 	List<PartOfText> getPartsOfText(String text, String projectKey);
 
 	static String parseIconsToTags(String text) {
+		if (text == null) {
+			return "";
+		}
 		String textWithoutIcons = text;
 		for (int i = 0; i < RATIONALE_ICONS.length; i++) {
 			String icon = RATIONALE_ICONS[i];

@@ -2,8 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.persistence;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +79,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		}
 		return deleteAllSentences(jiraIssue.getId(), 0);
 	}
-	
+
 	private static boolean deleteAllSentences(long jiraIssueId, long commentId) {
 		boolean isDeleted = false;
 		PartOfJiraIssueTextInDatabase[] commentSentences = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
@@ -315,13 +313,13 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			return false;
 		}
 
-		// only knowledge type changed
+		// only the knowledge type has changed
 		if (element.getSummary() == null) {
 			element.setDescription(sentence.getDescription());
 		}
 
 		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getType());
-		String changedPartOfComment = tag + element.getDescription() + tag;
+		String changedPartOfText = tag + element.getDescription() + tag;
 
 		String text = "";
 		MutableComment mutableComment = sentence.getComment();
@@ -331,22 +329,26 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 			text = mutableComment.getBody();
 		}
 
-		String firstPartOfComment = text.substring(0, sentence.getStartSubstringCount());
-		String lastPartOfComment = text.substring(sentence.getEndSubstringCount());
+		String firstPartOfText = text.substring(0, sentence.getStartSubstringCount());
+		String lastPartOfText = text.substring(sentence.getEndSubstringCount());
+
+		String newBody = firstPartOfText + changedPartOfText + lastPartOfText;
 
 		DecXtractEventListener.editCommentLock = true;
 		if (mutableComment == null) {
-			new JiraIssuePersistenceManager(projectKey).updateDecisionKnowledgeElement(sentence.getJiraIssue(), user);
+			MutableIssue jiraIssue = (MutableIssue) sentence.getJiraIssue();
+			jiraIssue.setDescription(newBody);
+			new JiraIssuePersistenceManager(projectKey).updateDecisionKnowledgeElement(jiraIssue, user);
 		} else {
-			mutableComment.setBody(firstPartOfComment + changedPartOfComment + lastPartOfComment);
+			mutableComment.setBody(newBody);
 			ComponentAccessor.getCommentManager().update(mutableComment, true);
 		}
 		DecXtractEventListener.editCommentLock = false;
 
-		int lengthDifference = changedPartOfComment.length() - sentence.getLength();
+		int lengthDifference = changedPartOfText.length() - sentence.getLength();
 		updateSentenceLengthForOtherSentencesInSameComment(sentence, lengthDifference);
 
-		sentence.setEndSubstringCount(sentence.getStartSubstringCount() + changedPartOfComment.length());
+		sentence.setEndSubstringCount(sentence.getStartSubstringCount() + changedPartOfText.length());
 		sentence.setType(element.getType());
 		sentence.setValidated(element.isValidated());
 		sentence.setRelevant(element.getType() != KnowledgeType.OTHER);
