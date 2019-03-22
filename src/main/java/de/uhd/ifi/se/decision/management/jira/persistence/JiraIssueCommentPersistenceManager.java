@@ -67,29 +67,25 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 	}
 
 	public static boolean deleteAllSentencesOfComments(Comment comment) {
-		boolean isDeleted = false;
 		if (comment == null) {
 			LOGGER.error("Sentences in comment cannot be deleted since the comment is null.");
-			return isDeleted;
+			return false;
 		}
-		PartOfJiraIssueTextInDatabase[] commentSentences = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("JIRA_ISSUE_ID = ? AND COMMENT_ID = ?", comment.getIssue().getId(),
-						comment.getId()));
-		for (PartOfJiraIssueTextInDatabase databaseEntry : commentSentences) {
-			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUETEXT);
-			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
-		}
-		return isDeleted;
+		return deleteAllSentences(comment.getIssue().getId(), comment.getId());
 	}
 
 	public static boolean deleteAllSentencesOfDescription(Issue jiraIssue) {
-		boolean isDeleted = false;
 		if (jiraIssue == null) {
 			LOGGER.error("Sentences in comment cannot be deleted since the JIRA issue is null.");
-			return isDeleted;
+			return false;
 		}
+		return deleteAllSentences(jiraIssue.getId(), 0);
+	}
+	
+	private static boolean deleteAllSentences(long jiraIssueId, long commentId) {
+		boolean isDeleted = false;
 		PartOfJiraIssueTextInDatabase[] commentSentences = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where("JIRA_ISSUE_ID = ? AND COMMENT_ID = 0", jiraIssue.getId()));
+				Query.select().where("JIRA_ISSUE_ID = ? AND COMMENT_ID = ?", jiraIssueId, commentId));
 		for (PartOfJiraIssueTextInDatabase databaseEntry : commentSentences) {
 			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUETEXT);
 			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
