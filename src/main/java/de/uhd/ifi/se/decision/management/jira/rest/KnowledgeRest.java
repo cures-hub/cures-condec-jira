@@ -33,7 +33,7 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 /**
  * REST resource: Enables creation, editing, and deletion of decision knowledge
@@ -286,7 +286,7 @@ public class KnowledgeRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		JiraIssueCommentPersistenceManager persistenceManager = new JiraIssueCommentPersistenceManager(
+		JiraIssueTextPersistenceManager persistenceManager = new JiraIssueTextPersistenceManager(
 				decisionKnowledgeElement.getProject().getProjectKey());
 		Issue issue = persistenceManager.createJIRAIssueFromSentenceObject(decisionKnowledgeElement.getId(), user);
 
@@ -325,7 +325,7 @@ public class KnowledgeRest {
 		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(sentence, null);
 		if (isUpdated) {
 			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUETEXT);
-			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(sentence.getJiraIssueId());
+			JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(sentence.getJiraIssueId());
 			return Response.status(Status.OK).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -347,7 +347,7 @@ public class KnowledgeRest {
 
 		String jiraIssueKey = "";
 		if (jiraIssue == null) {
-			jiraIssueKey = JiraIssueCommentPersistenceManager.getJiraIssueKey(id);
+			jiraIssueKey = JiraIssueTextPersistenceManager.getJiraIssue(id).getKey();
 		} else {
 			jiraIssueKey = jiraIssue.getKey();
 		}

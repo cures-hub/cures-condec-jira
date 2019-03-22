@@ -31,7 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationManagerFo
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 /**
  * REST resource for plug-in configuration
@@ -321,13 +321,13 @@ public class ConfigRest {
 			// Deletion is only useful during development, do not ship to enduser!!
 			// ActiveObjectsManager.clearSentenceDatabaseForProject(projectKey);
 			// If still something is wrong, delete an elements and its links
-			JiraIssueCommentPersistenceManager.cleanSentenceDatabase(projectKey);
+			JiraIssueTextPersistenceManager.cleanSentenceDatabase(projectKey);
 			// If some links ar bad, delete those links
 			GenericLinkManager.clearInvalidLinks();
 			// If there are now some "lonely" sentences, link them to their issues.
-			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForProject(projectKey);
+			JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForProject(projectKey);
 			//
-			JiraIssueCommentPersistenceManager.migrateArgumentTypesInLinks(projectKey);
+			JiraIssueTextPersistenceManager.migrateArgumentTypesInLinks(projectKey);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());

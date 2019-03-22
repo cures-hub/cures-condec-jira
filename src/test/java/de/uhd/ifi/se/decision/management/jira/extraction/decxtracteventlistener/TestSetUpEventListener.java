@@ -21,7 +21,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import net.java.ao.EntityManager;
 
 public class TestSetUpEventListener extends TestSetUpWithIssues {
@@ -68,7 +68,7 @@ public class TestSetUpEventListener extends TestSetUpWithIssues {
 	}
 
 	protected DecisionKnowledgeElement getFirstElementInComment(Comment comment) {
-		List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager
+		List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
 				.getElementsForComment(comment.getId());
 		if (elements.size() > 0) {
 			return elements.get(0);

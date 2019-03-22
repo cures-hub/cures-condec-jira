@@ -31,7 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
@@ -182,7 +182,7 @@ public class TestTreeViewer extends TestSetUpWithIssues {
 		Comment comment1 = commentManager.create(issue, currentUser, "This is a testsentence for test purposes", true);
 
 		// 3) Manipulate Sentence object so it will be shown in the tree viewer
-		List<PartOfJiraIssueText> sentences = JiraIssueCommentPersistenceManager.getPartsOfComment(comment1);
+		List<PartOfJiraIssueText> sentences = JiraIssueTextPersistenceManager.getPartsOfComment(comment1);
 		// JiraIssueComment comment = new JiraIssueCommentImpl(comment1);
 		sentences.get(0).setRelevant(true);
 		sentences.get(0).setType(KnowledgeType.ALTERNATIVE);

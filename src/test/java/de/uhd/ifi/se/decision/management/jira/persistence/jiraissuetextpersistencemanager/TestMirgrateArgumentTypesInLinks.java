@@ -1,27 +1,27 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuecommentpersistencemanager;
+package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuetextpersistencemanager;
 
 import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Test;
 
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 public class TestMirgrateArgumentTypesInLinks extends TestJiraIssueCommentPersistenceManagerSetUp{
 
     @Test
     @NonTransactional
     public void testProjectKeyNull(){
-    	JiraIssueCommentPersistenceManager.migrateArgumentTypesInLinks(null);
+    	JiraIssueTextPersistenceManager.migrateArgumentTypesInLinks(null);
     }
 
     @Test
     @NonTransactional
     public void testProjectKeyEmpty(){
-    	JiraIssueCommentPersistenceManager.migrateArgumentTypesInLinks("");
+    	JiraIssueTextPersistenceManager.migrateArgumentTypesInLinks("");
     }
 
     @Test
     @NonTransactional
     public void testPrjectKeyFilled(){
-    	JiraIssueCommentPersistenceManager.migrateArgumentTypesInLinks("TEST");
+    	JiraIssueTextPersistenceManager.migrateArgumentTypesInLinks("TEST");
     }
 }

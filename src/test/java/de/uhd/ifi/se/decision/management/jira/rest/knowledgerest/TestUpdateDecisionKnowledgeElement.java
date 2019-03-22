@@ -33,7 +33,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
@@ -134,7 +134,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "").getStatus());
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) new JiraIssueCommentPersistenceManager("")
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
 				.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 		assertEquals(sentence.getType(), KnowledgeType.PRO);
 		assertEquals(newText, sentence.getDescription());
@@ -152,7 +152,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestSetUpWithIssues {
 		decisionKnowledgeElement.setType(KnowledgeType.ISSUE);
 		assertEquals(Status.OK.getStatusCode(),
 				knowledgeRest.updateDecisionKnowledgeElement(request, decisionKnowledgeElement, 0, "s").getStatus());
-		PartOfJiraIssueText sentence = (PartOfJiraIssueText) new JiraIssueCommentPersistenceManager("")
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
 				.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 		assertEquals(sentence.getType(), KnowledgeType.ISSUE);
 		assertEquals(newText, sentence.getDescription());

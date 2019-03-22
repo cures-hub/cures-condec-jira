@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuecommentpersistencemanager;
+package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuetextpersistencemanager;
 
 import static org.junit.Assert.assertEquals;
 
@@ -10,7 +10,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import net.java.ao.test.jdbc.NonTransactional;
 
 public class TestCreateLinksForNonLinkedElementsForProject extends TestJiraIssueCommentPersistenceManagerSetUp {
@@ -19,23 +19,23 @@ public class TestCreateLinksForNonLinkedElementsForProject extends TestJiraIssue
 	public void testLinkAllUnlikedSentence() {
 		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText(
 				"some sentence in front.  {pro} testobject {pro} some sentence in the back.");
-		long id = JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
+		long id = JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(comment.get(1), null);
 		assertEquals(1, GenericLinkManager.getLinksForElement(id, DocumentationLocation.JIRAISSUETEXT).size());
 		GenericLinkManager.deleteLinksForElement(id, DocumentationLocation.JIRAISSUETEXT);
 		assertEquals(0, GenericLinkManager.getLinksForElement(id, DocumentationLocation.JIRAISSUETEXT).size());
-		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForProject("TEST");
+		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForProject("TEST");
 		assertEquals(1, GenericLinkManager.getLinksForElement(id, DocumentationLocation.JIRAISSUETEXT).size());
 	}
 
 	@Test
 	@NonTransactional
 	public void testProjectKeyNull() {
-		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForProject(null);
+		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForProject(null);
 	}
 
 	@Test
 	@NonTransactional
 	public void testProjectKeyEmpty() {
-		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForProject("");
+		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForProject("");
 	}
 }

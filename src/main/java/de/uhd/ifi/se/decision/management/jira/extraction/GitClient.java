@@ -21,7 +21,7 @@ public interface GitClient {
 
 	/**
 	 * @issue What is the best place to clone the git repo to?
-	 * @decision Clone git repo to JIRAHome/data/condec-plugin
+	 * @decision Clone git repo to JIRAHome/data/condec-plugin!
 	 * @pro The Git integration for JIRA plug-in clones its repos to a similar
 	 *      folder: JIRAHome/data/git-plugin.
 	 */
@@ -114,7 +114,7 @@ public interface GitClient {
 	void deleteRepository();
 
 	/**
-	 * Returns the number commits with the JIRA issue key in their commit message.
+	 * Returns the number of commits with the JIRA issue key in their commit message.
 	 * 
 	 * @param jiraIssueKey
 	 *            JIRA issue key that is searched for in commit messages.
@@ -132,7 +132,7 @@ public interface GitClient {
 	 * 
 	 * @issue How to identify the JIRA issue key(s) in a commit message?
 	 * @alternative This is a very simple method to detect the JIRA issue key as the
-	 *              first word in the message and should be improved.
+	 *              first word in the message and should be improved!
 	 */
 	static String getJiraIssueKey(String commitMessage) {
 		if (commitMessage.isEmpty()) {

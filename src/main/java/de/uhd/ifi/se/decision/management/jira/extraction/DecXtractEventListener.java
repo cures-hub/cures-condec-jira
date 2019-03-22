@@ -18,7 +18,7 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
 
 /**
@@ -107,8 +107,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 			String description = jiraIssue.getDescription();
 			description = TextSplitter.parseIconsToTags(description);
 			jiraIssue.setDescription(description);
-			new JiraIssuePersistenceManager(issueEvent.getProject().getKey()).updateDecisionKnowledgeElement(jiraIssue,
-					issueEvent.getUser());
+			JiraIssuePersistenceManager.updateJiraIssue(jiraIssue, issueEvent.getUser());
 		} else {
 			String commentBody = comment.getBody();
 			commentBody = TextSplitter.parseIconsToTags(commentBody);
@@ -118,31 +117,33 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	}
 
 	private void handleDeleteIssue() {
-		JiraIssueCommentPersistenceManager.cleanSentenceDatabase(projectKey);
-		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+		JiraIssueTextPersistenceManager.cleanSentenceDatabase(projectKey);
+		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 
 	private void handleEditComment() {
-		parseIconsToTags();
 		if (DecXtractEventListener.editCommentLock) {
 			// If locked, a REST service is currently manipulating the comment and should
 			// not be handled by this event listener.
 			LOGGER.debug("DecXtract event listener:\nEditing comment is still locked.");
 			return;
 		}
-		JiraIssueCommentPersistenceManager.deleteAllSentencesOfComments(issueEvent.getComment());
+		parseIconsToTags();
+		
+		// @issue Currently elements are deleted and new ones are created afterwards. How to enable a "real" update? 
+		JiraIssueTextPersistenceManager.deletePartsOfComment(issueEvent.getComment());
 		if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
 			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
 		} else {
 			MutableComment comment = (MutableComment) issueEvent.getComment();
-			JiraIssueCommentPersistenceManager.getPartsOfComment(comment);
+			JiraIssueTextPersistenceManager.getPartsOfComment(comment);
 		}
-		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 
 	private void handleDeleteComment() {
-		JiraIssueCommentPersistenceManager.cleanSentenceDatabase(this.projectKey);
-		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+		JiraIssueTextPersistenceManager.cleanSentenceDatabase(this.projectKey);
+		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 
 	private void handleNewComment() {
@@ -151,26 +152,27 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
 		} else {
 			MutableComment comment = (MutableComment) issueEvent.getComment();
-			JiraIssueCommentPersistenceManager.getPartsOfComment(comment);
+			JiraIssueTextPersistenceManager.getPartsOfComment(comment);
 		}
-		JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 
-	private void handleUpdateDescription() {
-		parseIconsToTags();
-		// If locked, a REST service is currently manipulating the comment and should
-		// not be handled by this event listener.
-		JiraIssueCommentPersistenceManager.deleteAllSentencesOfDescription(issueEvent.getIssue());
-		if (!DecXtractEventListener.editCommentLock) {
-			if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
-				new ClassificationManagerForJiraIssueComments()
-						.classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
-			} else {
-				JiraIssueCommentPersistenceManager.getPartsOfDescription(issueEvent.getIssue());
-			}
-			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
-		} else {
+	private void handleUpdateDescription() {			
+		if (DecXtractEventListener.editCommentLock) {
+			// If locked, a REST service is currently manipulating the comment and should
+			// not be handled by this event listener.
 			LOGGER.debug("DecXtract event listener:\nEditing description is still locked.");
+			return;
 		}
+		
+		parseIconsToTags();	
+		
+		JiraIssueTextPersistenceManager.deletePartsOfDescription(issueEvent.getIssue());
+		if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
+			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
+		} else {
+			JiraIssueTextPersistenceManager.getPartsOfDescription(issueEvent.getIssue());
+		}
+		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 }

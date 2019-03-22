@@ -24,7 +24,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 /**
  * Creates tree viewer content
@@ -70,7 +70,7 @@ public class TreeViewer {
 				dataSet.add(this.getDataStructure(element));
 			}
 
-			AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueCommentPersistenceManager(
+			AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
 					projectKey);
 			for (DecisionKnowledgeElement sentenceElement : jiraIssueCommentPersistenceManager
 					.getDecisionKnowledgeElements(rootElementType)) {

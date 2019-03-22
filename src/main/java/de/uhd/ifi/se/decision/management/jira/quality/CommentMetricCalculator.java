@@ -30,14 +30,14 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElemen
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
 
 public class CommentMetricCalculator {
 
 	private String projectKey;
 	private ApplicationUser user;
-	private JiraIssueCommentPersistenceManager persistenceManager;
+	private JiraIssueTextPersistenceManager persistenceManager;
 	private String jiraIssueTypeId;
 	private List<Issue> jiraIssues;
 	private int absolutDepth;
@@ -46,7 +46,7 @@ public class CommentMetricCalculator {
 	public CommentMetricCalculator(long projectId, ApplicationUser user, String jiraIssueTypeId) {
 		this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
 		this.user = user;
-		this.persistenceManager = new JiraIssueCommentPersistenceManager(projectKey);
+		this.persistenceManager = new JiraIssueTextPersistenceManager(projectKey);
 		this.jiraIssueTypeId = jiraIssueTypeId;
 		this.jiraIssues = getJiraIssuesForProject(projectId);
 		this.gitClient = new GitClientImpl(projectKey);
@@ -88,7 +88,7 @@ public class CommentMetricCalculator {
 		Map<String, Integer> numberOfSentencesForJiraIssues = new HashMap<String, Integer>();
 		for (Issue jiraIssue : jiraIssues) {
 			int numberOfElements = 0;
-			List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager
+			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
 					.getElementsForIssue(jiraIssue.getId(), projectKey);
 			for (DecisionKnowledgeElement element : elements) {
 				if (element.getType().equals(type)) {
@@ -106,7 +106,7 @@ public class CommentMetricCalculator {
 		int isIrrelevant = 0;
 
 		for (Issue jiraIssue : jiraIssues) {
-			List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager
+			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
 					.getElementsForIssue(jiraIssue.getId(), projectKey);
 			for (DecisionKnowledgeElement currentElement : elements) {
 				if (currentElement instanceof PartOfJiraIssueText && ((PartOfJiraIssueText) currentElement).isRelevant()) {

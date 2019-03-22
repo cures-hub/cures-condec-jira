@@ -11,7 +11,7 @@ import com.atlassian.jira.issue.comments.CommentManager;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.DecisionKnowledgeClassifierImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 /**
  * Class to classify the text in JIRA issue comments as either irrelevant in
@@ -41,7 +41,7 @@ public class ClassificationManagerForJiraIssueComments {
 		List<PartOfJiraIssueText> sentences = new ArrayList<PartOfJiraIssueText>();
 		List<Comment> comments = getComments(issue);
 		for (Comment comment : comments) {
-			List<PartOfJiraIssueText> sentencesOfComment = JiraIssueCommentPersistenceManager.getPartsOfComment(comment);
+			List<PartOfJiraIssueText> sentencesOfComment = JiraIssueTextPersistenceManager.getPartsOfComment(comment);
 			sentences.addAll(sentencesOfComment);
 		}
 		classifySentencesBinary(sentences);
@@ -101,7 +101,7 @@ public class ClassificationManagerForJiraIssueComments {
 			if (isSentenceQualifiedForBinaryClassification(sentence)) {
 				sentence.setRelevant(classificationResult.get(i));
 				sentence.setValidated(false);
-				JiraIssueCommentPersistenceManager.updateInDatabase(sentence);
+				JiraIssueTextPersistenceManager.updateInDatabase(sentence);
 				i++;
 			}
 		}
@@ -146,7 +146,7 @@ public class ClassificationManagerForJiraIssueComments {
 
 	private List<PartOfJiraIssueText> updateSentencesWithFineGrainedClassificationResult(List<KnowledgeType> classificationResult,
 			List<PartOfJiraIssueText> sentences) {
-		JiraIssueCommentPersistenceManager persistenceManager = new JiraIssueCommentPersistenceManager("");
+		JiraIssueTextPersistenceManager persistenceManager = new JiraIssueTextPersistenceManager("");
 		int i = 0;
 		for (PartOfJiraIssueText sentence : sentences) {
 			if (isSentenceQualifiedForFineGrainedClassification(sentence)) {

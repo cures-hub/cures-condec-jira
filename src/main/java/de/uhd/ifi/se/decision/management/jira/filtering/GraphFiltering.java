@@ -7,7 +7,7 @@ import com.atlassian.query.clause.Clause;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 import com.atlassian.jira.bc.issue.search.*;
 import com.atlassian.jira.component.ComponentAccessor;
@@ -343,7 +343,7 @@ public class GraphFiltering {
 		SearchResults projectIssues = getIssuesForThisProject(user);
 		if (projectIssues != null) {
 			for (Issue currentIssue : projectIssues.getIssues()) {
-				List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager.getElementsForIssue(currentIssue.getId(),
+				List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager.getElementsForIssue(currentIssue.getId(),
 						projectKey);
 				for (DecisionKnowledgeElement currentElement : elements) {
 					if (!results.contains(currentElement)) {

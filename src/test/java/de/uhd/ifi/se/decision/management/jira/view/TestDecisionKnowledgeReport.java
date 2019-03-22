@@ -31,7 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
@@ -74,7 +74,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		Comment comment1 = commentManager.create(issue, currentUser, text, true);
 
 		// 3) Manipulate Sentence object so it will be shown in the tree viewer
-		this.sentences = JiraIssueCommentPersistenceManager.getPartsOfComment(comment1);
+		this.sentences = JiraIssueTextPersistenceManager.getPartsOfComment(comment1);
 		return issue;
 
 	}
@@ -92,7 +92,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 	public void testWithObjects() {
 		PartOfJiraIssueText sentence2 = TestTextSplitter.getSentencesForCommentText("More Comment with some text").get(0);
 		sentence2.setType(KnowledgeType.ALTERNATIVE);
-		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence2, null);
+		new JiraIssueTextPersistenceManager("").updateDecisionKnowledgeElement(sentence2, null);
 
 		assertNotNull(this.report.createValues(new MockProjectActionSupport()));
 	}
@@ -141,7 +141,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 		GenericLinkManager.insertLink(link, null);
 		PartOfJiraIssueText sentence = sentences.get(0);
 		sentence.setType(KnowledgeType.ISSUE);
-		new JiraIssueCommentPersistenceManager("").updateDecisionKnowledgeElement(sentence, null);
+		new JiraIssueTextPersistenceManager("").updateDecisionKnowledgeElement(sentence, null);
 
 		// Map<String, Object> reportResult = this.report.createValues(new
 		// MockProjectActionSupport());
