@@ -82,6 +82,21 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		return isDeleted;
 	}
 
+	public static boolean deleteAllSentencesOfDescription(Issue jiraIssue) {
+		boolean isDeleted = false;
+		if (jiraIssue == null) {
+			LOGGER.error("Sentences in comment cannot be deleted since the JIRA issue is null.");
+			return isDeleted;
+		}
+		PartOfJiraIssueTextInDatabase[] commentSentences = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
+				Query.select().where("JIRA_ISSUE_ID = ? AND COMMENT_ID = 0", jiraIssue.getId()));
+		for (PartOfJiraIssueTextInDatabase databaseEntry : commentSentences) {
+			GenericLinkManager.deleteLinksForElement(databaseEntry.getId(), DocumentationLocation.JIRAISSUETEXT);
+			isDeleted = PartOfJiraIssueTextInDatabase.deleteElement(databaseEntry);
+		}
+		return isDeleted;
+	}
+
 	@Override
 	public DecisionKnowledgeElement getDecisionKnowledgeElement(long id) {
 		PartOfJiraIssueText sentence = null;
@@ -312,7 +327,6 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		String tag = AbstractKnowledgeClassificationMacro.getTag(element.getType());
 		String changedPartOfComment = tag + element.getDescription() + tag;
 
-		// TODO Update for description
 		String text = "";
 		MutableComment mutableComment = sentence.getComment();
 		if (mutableComment == null) {
@@ -489,10 +503,7 @@ public class JiraIssueCommentPersistenceManager extends AbstractPersistenceManag
 		if (comment == null) {
 			return false;
 		}
-		if (sentence.getEndSubstringCount() == 0 && sentence.getStartSubstringCount() == 0) {
-			return false;
-		}
-		return true;
+		return !(sentence.getEndSubstringCount() == 0 && sentence.getStartSubstringCount() == 0);
 	}
 
 	/**

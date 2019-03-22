@@ -159,6 +159,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	private void handleUpdateDescription() {
 		// If locked, a REST service is currently manipulating the comment and should
 		// not be handled by this event listener.
+		JiraIssueCommentPersistenceManager.deleteAllSentencesOfDescription(issueEvent.getIssue());
 		if (!DecXtractEventListener.editCommentLock) {
 			if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
 				new ClassificationManagerForJiraIssueComments()
