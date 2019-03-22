@@ -14,7 +14,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 
 /**
@@ -115,7 +115,7 @@ public class GraphImpl implements Graph {
 			linkedElementsAndLinks.put(link.getOppositeElement(element), link);
 		}
 		// remove irrelevant sentences from graph
-		linkedElementsAndLinks.keySet().removeIf(e -> (e instanceof Sentence && !((Sentence) e).isRelevant()));
+		linkedElementsAndLinks.keySet().removeIf(e -> (e instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) e).isRelevant()));
 
 		return linkedElementsAndLinks;
 	}

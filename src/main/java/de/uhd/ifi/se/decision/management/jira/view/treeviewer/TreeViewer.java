@@ -19,12 +19,12 @@ import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 /**
  * Creates tree viewer content
@@ -70,7 +70,7 @@ public class TreeViewer {
 				dataSet.add(this.getDataStructure(element));
 			}
 
-			AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueCommentPersistenceManager(
+			AbstractPersistenceManager jiraIssueCommentPersistenceManager = new JiraIssueTextPersistenceManager(
 					projectKey);
 			for (DecisionKnowledgeElement sentenceElement : jiraIssueCommentPersistenceManager
 					.getDecisionKnowledgeElements(rootElementType)) {
@@ -110,7 +110,7 @@ public class TreeViewer {
 		if (showKnowledgeTypes[4]) {
 			for (Link link : GenericLinkManager.getLinksForElement(issue.getId(), DocumentationLocation.JIRAISSUE)) {
 				DecisionKnowledgeElement opposite = link.getOppositeElement(issue.getId());
-				if (opposite instanceof Sentence && isSentenceShown(opposite)) {
+				if (opposite instanceof PartOfJiraIssueText && isSentenceShown(opposite)) {
 					issueNode.getChildren().add(new Data(opposite));
 				}
 			}
@@ -143,7 +143,7 @@ public class TreeViewer {
 	}
 
 	private boolean isSentenceShown(DecisionKnowledgeElement element) {
-		return !((Sentence) element).isRelevant() && ((Sentence) element).getDescription().length() > 0;
+		return !((PartOfJiraIssueText) element).isRelevant() && ((PartOfJiraIssueText) element).getDescription().length() > 0;
 	}
 
 	public Data getDataStructure(DecisionKnowledgeElement decisionKnowledgeElement) {

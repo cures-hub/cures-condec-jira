@@ -14,16 +14,16 @@ import com.atlassian.activeobjects.test.TestActiveObjects;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
+import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.LinkImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
@@ -135,7 +135,7 @@ public class TestTreant extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testCreateNodeStructureWithSentenceInIssue() {
-		List<Sentence> sentences = TestCommentSplitter.getSentencesForCommentText("This is a testsentence");
+		List<PartOfJiraIssueText> sentences = TestTextSplitter.getSentencesForCommentText("This is a testsentence");
 		sentences.get(0).setRelevant(true);
 		DecisionKnowledgeElement element = persistenceStrategy
 				.getDecisionKnowledgeElement(sentences.get(0).getJiraIssueId());
@@ -148,7 +148,7 @@ public class TestTreant extends TestSetUpWithIssues {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void update(EntityManager entityManager) throws Exception {
-			entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
+			entityManager.migrate(PartOfJiraIssueTextInDatabase.class);
 			entityManager.migrate(LinkInDatabase.class);
 		}
 	}

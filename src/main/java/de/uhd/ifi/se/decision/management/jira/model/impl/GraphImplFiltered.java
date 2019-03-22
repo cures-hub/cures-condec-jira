@@ -13,7 +13,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeProject;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 
 /**
@@ -129,7 +129,7 @@ public class GraphImplFiltered extends GraphImpl {
 				continue;
 			}
 			DecisionKnowledgeElement oppositeElement = link.getOppositeElement(element);
-			if (filter.isQueryContainsCreationDate() && oppositeElement instanceof Sentence) {
+			if (filter.isQueryContainsCreationDate() && oppositeElement instanceof PartOfJiraIssueText) {
 				includeElementInGraph = isSentenceIncludedInGraph(oppositeElement);
 			} else {
 				includeElementInGraph = true;
@@ -142,7 +142,7 @@ public class GraphImplFiltered extends GraphImpl {
 		}
 
 		// remove irrelevant sentences from graph
-		linkedElementsAndLinks.keySet().removeIf(e -> (e instanceof Sentence && !((Sentence) e).isRelevant()));
+		linkedElementsAndLinks.keySet().removeIf(e -> (e instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) e).isRelevant()));
 
 		return linkedElementsAndLinks;
 	}

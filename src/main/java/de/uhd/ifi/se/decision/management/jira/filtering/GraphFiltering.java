@@ -5,9 +5,9 @@ import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.query.clause.Clause;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 import com.atlassian.jira.bc.issue.search.*;
 import com.atlassian.jira.component.ComponentAccessor;
@@ -343,29 +343,29 @@ public class GraphFiltering {
 		SearchResults projectIssues = getIssuesForThisProject(user);
 		if (projectIssues != null) {
 			for (Issue currentIssue : projectIssues.getIssues()) {
-				List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager.getElementsForIssue(currentIssue.getId(),
+				List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager.getElementsForIssue(currentIssue.getId(),
 						projectKey);
 				for (DecisionKnowledgeElement currentElement : elements) {
 					if (!results.contains(currentElement)) {
 						if (isFilteredByTime) {
 							if (startTime <= 0) {
-								if (currentElement instanceof Sentence && ((Sentence) currentElement).getCreated().getTime()
+								if (currentElement instanceof PartOfJiraIssueText && ((PartOfJiraIssueText) currentElement).getCreated().getTime()
 										< endTime) {
 									results.add(currentElement);
 								}
 							} else if (endTime <= 0) {
-								if (currentElement instanceof Sentence && ((Sentence) currentElement).getCreated().getTime()
+								if (currentElement instanceof PartOfJiraIssueText && ((PartOfJiraIssueText) currentElement).getCreated().getTime()
 										> startTime) {
 									results.add(currentElement);
 								}
 							} else {
-								if (currentElement instanceof Sentence && (((Sentence) currentElement).getCreated().getTime()
-										< endTime) && (((Sentence) currentElement).getCreated().getTime() > startTime)) {
+								if (currentElement instanceof PartOfJiraIssueText && (((PartOfJiraIssueText) currentElement).getCreated().getTime()
+										< endTime) && (((PartOfJiraIssueText) currentElement).getCreated().getTime() > startTime)) {
 									results.add(currentElement);
 								}
 							}
 						} else {
-							if (currentElement instanceof Sentence) {
+							if (currentElement instanceof PartOfJiraIssueText) {
 								results.add(currentElement);
 							}
 						}

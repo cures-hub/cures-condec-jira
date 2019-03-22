@@ -11,7 +11,7 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 
 /**
  * Model class for Tree Viewer nodes
@@ -52,7 +52,7 @@ public class Data {
 			this.a_attr = ImmutableMap.of("title", decisionKnowledgeElement.getDescription());
 		}
 		this.li_attr = ImmutableMap.of("class", "issue");
-		if (decisionKnowledgeElement instanceof Sentence) {
+		if (decisionKnowledgeElement instanceof PartOfJiraIssueText) {
 			this.li_attr = ImmutableMap.of("class", "sentence", "sid", "s" + decisionKnowledgeElement.getId());
 		}
 	}
