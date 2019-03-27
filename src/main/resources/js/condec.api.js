@@ -570,6 +570,14 @@
 		});
 	};
 
+	ConDecAPI.prototype.getArffFileString = function getExtendedKnowledgeTypes(fileName, projectKey) {
+        var arffFileString = getResponseAsReturnValue(AJS.contextPath()
+            + "/rest/decisions/latest/config/getArffFileString.json?fileName=" + fileName + "&projectKey="+ projectKey);
+        if (arffFileString !== null) {
+            return arffFileString;
+        }
+    };
+
 	function getJSON(url, callback) {
 		var xhr = new XMLHttpRequest();
 		xhr.open("GET", url, true);

@@ -246,6 +246,19 @@ public class ConfigRest {
 		return Response.ok(knowledgeTypes).build();
 	}
 
+	@Path("/getArffFileString")
+	@GET
+	public Response getArffFileString(@QueryParam("projectKey") final String projectKey, @QueryParam("fileName") final String fileName){
+		if(fileName == null || fileName.equals("")){
+			return Response.status(Status.BAD_REQUEST)
+					       .entity(ImmutableMap.of("error", "Filename was Empty = null")).build();
+		}
+		//TODO Get the data from the Server and return the arff file as a string
+		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
+		String arffFileString = trainer.createDownloadableArffFile();
+		return Response.ok(arffFileString).build();
+	}
+
 	@Path("/setWebhookEnabled")
 	@POST
 	public Response setWebhookEnabled(@Context HttpServletRequest request,

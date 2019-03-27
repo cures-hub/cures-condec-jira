@@ -131,6 +131,18 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
     </div>
 
     <div class="field-group">
+
+        <aui-label for="select-arff-file">Select-Arff File to Download</aui-label>
+        <p>
+            <aui-select id="select-arff-file"
+                        name="arff-file"
+                        placeholder="Select a File to Download">
+                #foreach ($arffFile in $arffFiles)
+                    <aui-optuon>$arffFile</aui-optuon>
+                #end
+            </aui-select>
+        </p>
+
         <label for="download-classifier-button">Download Classifier Training Data</label>
         <input type="button"
                id="download-classifier-button" class="aui-button aui-button-primary" value="Download Arff File" />
@@ -141,9 +153,11 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
             var classifierButton = document.getElementById('download-classifier');
             classifierButton.addEventListener("click", function() {
                 var link = document.createElement('a');
+                var fileName = document.getElementById('select-arff-file');
                 link.style.display = 'none';
-                link.setAttribute('href', '$arffFile');
-                link.setAttribute('download','$projectKey'+'.arff' );
+                //TODO Change to get the seletece File and Download the File from the backend
+                link.setAttribute('href', fileName);
+                link.setAttribute('download',conDecAPI.getArffFileString(fileName)+'.arff','$projectKey');
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
