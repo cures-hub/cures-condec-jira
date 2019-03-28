@@ -13,10 +13,7 @@ import weka.core.tokenizers.NGramTokenizer;
 import weka.core.tokenizers.Tokenizer;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -141,6 +138,33 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 			}
 		}
 		return arffFileList;
+	}
+
+	public String getArffFileString(String fileName){
+		File directory= new File(DEFAULT_DIR+ File.separator + projectKey);
+		String returnString = "";
+		if(directory.exists() == true){
+			File[] fileArray = directory.listFiles();
+			for(File file: directory.listFiles()){
+				if(file.getName().equalsIgnoreCase(fileName)){
+					try {
+						FileReader fileReader = new FileReader(file);
+						BufferedReader bufferedReader = new BufferedReader(fileReader);
+						String line;
+						while ((line = bufferedReader.readLine())!=null){
+							returnString += line + System.lineSeparator();
+						}
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+						return "There was an Error Reading the File. Try again";
+					} catch (IOException e) {
+						e.printStackTrace();
+						return "There was an Error Reading the File. Try again";
+					}
+				}
+			}
+		}
+		return returnString;
 	}
 
 	private String createArffString(){

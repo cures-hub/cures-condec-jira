@@ -5,6 +5,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.util.JiraHome;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Interface to train the classifier manually with the given data from the user.
@@ -23,8 +24,22 @@ public interface ClassificationTrainer {
 
 	/**
 	 * Trains the Classifier with the Data from the Database and Creats a new File.
-	 * @return String with the Data for the Arff File
+	 * @return Boolean is True if the Arff File could be created and saved on the
+	 * Server
 	 */
 	boolean saveArffFileOnServer();
+
+	/**
+	 * Gets all saved Arff File names on the server.
+	 * @return List<String>
+	 */
+	List<String> getArffFileList();
+
+	/**
+	 * Gets a specific Arff File String
+	 * @param fileName
+	 * @return String of the Arff File
+	 */
+	String getArffFileString(String fileName);
 
 }

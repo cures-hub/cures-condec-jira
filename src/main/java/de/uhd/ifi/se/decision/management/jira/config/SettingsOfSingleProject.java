@@ -56,7 +56,7 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 
 		Set<String> issueTypes = getJiraIssueTypeNames(projectKey);
 
-
+		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
 
 		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();
 		velocityParameters.put("projectKey", projectKey);
@@ -65,8 +65,7 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 		velocityParameters.put("imageFolderUrl", ComponentGetter.getUrlOfImageFolder());
 		velocityParameters.put("requestUrl", request.getRequestURL());
 		velocityParameters.put("rootTypes", ConfigPersistenceManager.getEnabledWebhookTypes(projectKey));
-		//TODO add a function that reads all create Arff files and list them
-		velocityParameters.put("arffFiles", );
+		velocityParameters.put("arffFiles", trainer.getArffFileList());
 		return velocityParameters;
 	}
 

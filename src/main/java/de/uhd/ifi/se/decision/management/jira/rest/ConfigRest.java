@@ -253,9 +253,9 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST)
 					       .entity(ImmutableMap.of("error", "Filename was Empty = null")).build();
 		}
-		//TODO Get the data from the Server and return the arff file as a string
+
 		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
-		String arffFileString = trainer.createDownloadableArffFile();
+		String arffFileString = trainer.getArffFileString(fileName);
 		return Response.ok(arffFileString).build();
 	}
 
