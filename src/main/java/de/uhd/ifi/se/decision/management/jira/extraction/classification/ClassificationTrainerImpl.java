@@ -132,6 +132,17 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		return true;
 	}
 
+	public List<String> getArffFileList(){
+		List<String> arffFileList = new ArrayList<>();
+		File directory= new File(DEFAULT_DIR+ File.separator + projectKey);
+		if(directory.exists() == true){
+			for(File file: directory.listFiles()){
+				arffFileList.add(file.getName());
+			}
+		}
+		return arffFileList;
+	}
+
 	private String createArffString(){
 		this.buildDatasetForMeka(mekaTrainData);
 		return structure.toString();
