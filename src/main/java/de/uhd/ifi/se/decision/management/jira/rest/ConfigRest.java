@@ -390,26 +390,37 @@ public class ConfigRest {
 	@POST
 	public Response trainClassifier(@Context HttpServletRequest request,
 	                                @QueryParam("projectKey") final String projectKey){
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		if (!ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey)) {
-			return Response.status(Status.FORBIDDEN)
-					       .entity(ImmutableMap.of("error",
-							       "Automatic classification is disabled for this project. " +
-									       "So no training can be executed")).build();
+		Response response = checkClassifierUsed(request,projectKey);
+		if(response != null){
+			return response;
 		}
 		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
 		trainer.train();
 		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
 	}
 
+	@Path("/buildArffFile")
+	@POST
+	public Response buildArffFile(@Context HttpServletRequest request,
+	                                @QueryParam("projectKey") final String projectKey){
+		Response response = checkClassifierUsed(request,projectKey);
+		if(response != null){
+			return response;
+		}
+		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
+		if(trainer.saveArffFileOnServer()){
+			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
+		}
+		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error",
+				"Building could not be triggert becuas of an Error on  the Server. Check if the Classification is"+
+						" activated and everything is setup right. If so try this process later again.")).build();
+	}
+
+
 	@Path("/setIconParsing")
 	@POST
 	public Response setIconParsing(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivatedString") String isActivatedString) {
-		System.out.println(isActivatedString);
+			@QueryParam("isActivatedString") String isActivatedString) {;
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -485,5 +496,19 @@ public class ConfigRest {
 					.build();
 		}
 		return Response.status(Status.OK).build();
+	}
+
+	private Response checkClassifierUsed(HttpServletRequest request, String projectKey){
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if (!ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey)) {
+			return Response.status(Status.FORBIDDEN)
+					       .entity(ImmutableMap.of("error",
+							       "Automatic classification is disabled for this project. " +
+									       "So no training can be executed")).build();
+		}
+		return null;
 	}
 }

@@ -549,6 +549,16 @@
         return 0.0;
     };
 
+	ConDecAPI.prototype.buildArffFile = function buildArffFile(projectKey){
+	  var isSucceeded   = postWithResponseAsReturnValue(AJS.contextPath()
+            +"/rest/decisions/latest/config/buildArffFile.json?projectKey="+ projectKey);
+        if (isSucceeded) {
+            showFlag("success", "The Data has been Build ");
+            return 1.0;
+        }
+        showFlag("error", "The Data could not be created");
+        return 0.0;
+    };
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
