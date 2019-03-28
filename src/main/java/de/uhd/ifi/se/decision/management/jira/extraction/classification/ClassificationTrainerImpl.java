@@ -14,7 +14,12 @@ import weka.core.tokenizers.Tokenizer;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -105,7 +110,29 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		return data;
 	}
 
-	public String createDownloadableArffFile(){
+	public boolean saveArffFileOnServer(){
+		try {
+			File directory= new File(DEFAULT_DIR+ File.separator + projectKey);
+			directory.delete();
+			directory.mkdirs();
+			Date date = new Date();
+			Timestamp timestamp = new Timestamp(date.getTime());
+			File arffFile = new File(DEFAULT_DIR+ File.separator + projectKey + "arffFile"+timestamp.toString());
+			String arffString = createArffString();
+			PrintWriter writer = new PrintWriter(arffFile, "UTF-8");
+			writer.println(arffString);
+			writer.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return false;
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	private String createArffString(){
 		this.buildDatasetForMeka(mekaTrainData);
 		return structure.toString();
 	}

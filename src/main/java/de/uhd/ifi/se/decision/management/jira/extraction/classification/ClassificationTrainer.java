@@ -25,6 +25,6 @@ public interface ClassificationTrainer {
 	 * Trains the Classifier with the Data from the Database and Creats a new File.
 	 * @return String with the Data for the Arff File
 	 */
-	String createDownloadableArffFile();
+	boolean saveArffFileOnServer();
 
 }
