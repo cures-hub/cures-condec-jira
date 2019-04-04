@@ -6,7 +6,10 @@ import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.TangledCommitDetection;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.TangledCommitDetectionImpl;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.Edit;
@@ -26,6 +29,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 public class CodeSummarizerImpl implements CodeSummarizer {
 
 	private GitClient gitClient;
+	private String pk;
 	private boolean useHtml;
 	private static final Logger LOGGER = LoggerFactory.getLogger(CodeSummarizerImpl.class);
 
@@ -36,6 +40,7 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 
 	public CodeSummarizerImpl(String projectKey, boolean useHtml) {
 		this.gitClient = new GitClientImpl(projectKey);
+		pk = projectKey;
 		this.useHtml = useHtml;
 	}
 
@@ -67,9 +72,37 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 			return "";
 		}
 		String summary = "The following classes were changed: ";
+		Vector<DiffObject> diffObjects = new Vector<>();
 		for (Map.Entry<DiffEntry, EditList> entry : diff.entrySet()) {
+			File file1 = new File(gitClient.getDirectory().toString().replace(".git", "") + entry.getKey().getNewPath());
+			File file = TangledCommitDetection.getFile(gitClient.DEFAULT_DIR, pk, entry.getKey().getNewPath());
+			diffObjects.add(new DiffObject(entry.getKey(), entry.getValue(), file));
+
 			summary += createSummaryOfDiffEntry(entry.getKey(), entry.getValue());
+
 		}
+		TangledCommitDetectionImpl tcd = new TangledCommitDetectionImpl();
+		tcd.getLineDistances(diffObjects);
+		tcd.getPackageDistances(diffObjects);
+		tcd.getPathDistance(diffObjects);
+		//tcd.parseMethod(diffObjects);
+		TangledCommitDetection.getMethodV(diffObjects);
+		//for(DiffObject dif: diffObjects){
+		//	TangledCommitDetection.getMethods(dif.getFile(),dif);
+		//}
+
+
+
+		/*
+        Vector<Vector<String>> allDeclarations = new Vector<>();
+        for (Optional<PackageDeclaration> pd : pds) {
+            if (pd.isPresent()) {
+                allDeclarations.add(t.parsePackage(pd));
+            }
+        }
+        Vector<Float> listOfDistances = new Vector<>();
+        listOfDistances = t.getPackageDistanceList(allDeclarations);
+        */
 		return summary;
 	}
 
