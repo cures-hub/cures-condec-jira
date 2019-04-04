@@ -2,17 +2,15 @@ package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
 import java.util.Vector;
 
-public class DiffObject {
+public class ChangedFile {
     private DiffEntry diffEntry;
     private EditList editList;
     private File file;
@@ -23,7 +21,7 @@ public class DiffObject {
     private CompilationUnit compilationUnit;
     private Vector<MethodDeclaration> methodDeclarations;
 
-    public DiffObject(DiffEntry diffEntry, EditList editList, File file) {
+    public ChangedFile(DiffEntry diffEntry, EditList editList, File file) {
         this.diffEntry = diffEntry;
         this.editList = editList;
         this.file = file;
@@ -31,6 +29,10 @@ public class DiffObject {
         this.pathDistance = new Vector<>();
         this.methodDeclarations = new Vector<>();
         this.compilationUnit = parseCompilationUnit(file);
+    }
+
+    public Vector<MethodDeclaration> getMethodDeclarations() {
+        return methodDeclarations;
     }
 
     public CompilationUnit getCompilationUnit() {
