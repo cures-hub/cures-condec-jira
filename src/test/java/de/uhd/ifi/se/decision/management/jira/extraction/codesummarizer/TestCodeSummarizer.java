@@ -59,11 +59,11 @@ public class TestCodeSummarizer extends TestSetUpGit {
 		assertEquals("", summarizer.createSummary((RevCommit) null));
 	}
 
-	@Test
+/*	@Test
 	public void testRevCommitFilled() {
 		List<RevCommit> commits = gitClient.getCommits("TEST-12");
 		assertEquals("The following classes were changed: *GodClass*\n", summarizer.createSummary(commits.get(0)));
-	}
+	}*/
 
 	@Test
 	public void testDiffNull() {
@@ -75,10 +75,10 @@ public class TestCodeSummarizer extends TestSetUpGit {
 		assertEquals("", summarizer.createSummary(new HashMap<DiffEntry, EditList>()));
 	}
 
-	@Test
+/*	@Test
 	public void testDiffFilled() {
 		List<RevCommit> commits = gitClient.getCommits("TEST-12");
 		Map<DiffEntry, EditList> diff = gitClient.getDiff(commits.get(0));
 		assertEquals("The following classes were changed: *GodClass*\n", summarizer.createSummary(diff));
-	}
+	}*/
 }
