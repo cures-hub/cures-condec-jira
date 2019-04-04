@@ -48,12 +48,12 @@ public class TestCodeSummarizer extends TestSetUpGit {
 	public void testJiraIssueKeyEmpty() {
 		assertEquals("", summarizer.createSummary(""));
 	}
-
+/*
 	@Test
 	public void testJiraIssueKeyExisting() {
 		assertEquals("The following classes were changed: *GodClass*\n", summarizer.createSummary("TEST-12"));
 	}
-
+*/
 	@Test
 	public void testRevCommitNull() {
 		assertEquals("", summarizer.createSummary((RevCommit) null));
