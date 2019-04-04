@@ -2,8 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
 
 import com.github.javaparser.ast.PackageDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 import de.uhd.ifi.se.decision.management.jira.extraction.TangledCommitDetection;
 import org.eclipse.jgit.diff.EditList;
 
@@ -32,8 +30,8 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
                     if (leftPackageDeclaration.size() >= rightPackageDeclaration.size()) {
                         for (int k = 0; k < rightPackageDeclaration.size(); k++) {
                             if (!leftPackageDeclaration.elementAt(k).equals(rightPackageDeclaration.elementAt(k))) {
-                                diffs.getChangedFiles().elementAt(i).addPackageDistance((double) (k + 1) / leftPackageDeclaration.size());
-                                diffs.getChangedFiles().elementAt(j).addPackageDistance((double) (k + 1) / leftPackageDeclaration.size());
+                                diffs.getChangedFiles().elementAt(i).addPackageDistance((double) leftPackageDeclaration.size()-(k + 1));
+                                diffs.getChangedFiles().elementAt(j).addPackageDistance((double) leftPackageDeclaration.size()-(k + 1));
                                 break;
                             }
 
@@ -41,8 +39,8 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
                     } else {
                         for (int k = 0; k < leftPackageDeclaration.size(); k++) {
                             if (!leftPackageDeclaration.elementAt(k).equals(rightPackageDeclaration.elementAt(k))) {
-                                diffs.getChangedFiles().elementAt(i).addPackageDistance((double) (k + 1) / rightPackageDeclaration.size());
-                                diffs.getChangedFiles().elementAt(j).addPackageDistance((double) (k + 1) / rightPackageDeclaration.size());
+                                diffs.getChangedFiles().elementAt(i).addPackageDistance((double) rightPackageDeclaration.size()-(k + 1));
+                                diffs.getChangedFiles().elementAt(j).addPackageDistance((double) rightPackageDeclaration.size()-(k + 1));
                                 break;
                             }
                         }
@@ -90,16 +88,16 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
                     if (leftPath.length >= rightPath.length) {
                         for (int k = 0; k < rightPath.length; k++) {
                             if (leftPath[k] != rightPath[k]) {
-                                diffs.getChangedFiles().elementAt(i).addPathDistance((double) (k + 1) / leftPath.length);
-                                diffs.getChangedFiles().elementAt(j).addPathDistance((double) (k + 1) / leftPath.length);
+                                diffs.getChangedFiles().elementAt(i).addPathDistance((double) leftPath.length - (k + 1));
+                                diffs.getChangedFiles().elementAt(j).addPathDistance((double) leftPath.length - (k + 1));
                                 break;
                             }
                         }
                     } else {
                         for (int k = 0; k < leftPath.length; k++) {
                             if (leftPath[k] != rightPath[k]) {
-                                diffs.getChangedFiles().elementAt(i).addPathDistance((double) (k + 1) / rightPath.length);
-                                diffs.getChangedFiles().elementAt(j).addPathDistance((double) (k + 1) / rightPath.length);
+                                diffs.getChangedFiles().elementAt(i).addPathDistance((double) rightPath.length - (k + 1));
+                                diffs.getChangedFiles().elementAt(j).addPathDistance((double) rightPath.length - (k + 1));
                                 break;
                             }
                         }
