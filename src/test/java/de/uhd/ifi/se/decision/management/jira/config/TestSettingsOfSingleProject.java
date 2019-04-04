@@ -10,6 +10,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.java.ao.test.jdbc.Data;
+import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +30,7 @@ import net.java.ao.EntityManager;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
+@Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 public class TestSettingsOfSingleProject extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
@@ -50,31 +53,31 @@ public class TestSettingsOfSingleProject extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testRequestNullResponseNull() throws IOException, ServletException {
+	public void testRequestNullResponseNull(){
 		assertFalse(servlet.isValidParameters(null, null));
 	}
 
 	@Test
-	public void testRequestFilledResponseNull() throws IOException, ServletException {
+	public void testRequestFilledResponseNull(){
 		request.setAttribute("NoSysAdmin", false);
 		request.setAttribute("SysAdmin", false);
 		assertFalse(servlet.isValidUser(request));
 	}
 
 	@Test
-	public void testRequestNullResponseFilled() throws IOException, ServletException {
+	public void testRequestNullResponseFilled(){
 		assertFalse(servlet.isValidParameters(null, response));
 	}
 
 	@Test
-	public void testRequestFilledResponseFilled() throws IOException, ServletException {
+	public void testRequestFilledResponseFilled(){
 		request.setAttribute("NoSysAdmin", false);
 		request.setAttribute("SysAdmin", false);
 		assertFalse(servlet.isValidUser(request));
 	}
 
 	@Test
-	public void testNoUserManager() throws IOException, ServletException {
+	public void testNoUserManager(){
 		((MockHttpServletRequest) request).setQueryString("Test");
 		request.setAttribute("NoSysAdmin", true);
 		request.setAttribute("SysAdmin", false);
@@ -82,7 +85,7 @@ public class TestSettingsOfSingleProject extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testNoUserManagerQueryNull() throws IOException, ServletException {
+	public void testNoUserManagerQueryNull(){
 		((MockHttpServletRequest) request).setQueryString(null);
 		request.setAttribute("NoSysAdmin", true);
 		request.setAttribute("SysAdmin", false);
@@ -90,7 +93,7 @@ public class TestSettingsOfSingleProject extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testUserManager() throws IOException, ServletException {
+	public void testUserManager(){
 		request.setAttribute("NoSysAdmin", false);
 		request.setAttribute("SysAdmin", true);
 		assertTrue(servlet.isValidUser(request));
@@ -107,8 +110,9 @@ public class TestSettingsOfSingleProject extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@NonTransactional
 	public void testGetVelocityParametersFilled() {
 		request.setAttribute("projectKey", "TEST");
-		assertEquals(6, servlet.getVelocityParameters(request).size());
+		assertEquals(7, servlet.getVelocityParameters(request).size());
 	}
 }
