@@ -71,9 +71,9 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 			allDiffs.addChangedFiles(new ChangedFile(entry.getKey(), entry.getValue(), file));
 		}
 		TangledCommitDetectionImpl tcd = new TangledCommitDetectionImpl();
-		tcd.getLineDistances(allDiffs);
-		tcd.getPackageDistances(allDiffs);
-		tcd.getPathDistance(allDiffs);
+		// tcd.getLineDistances(allDiffs);
+		// tcd.getPackageDistances(allDiffs);
+		// tcd.getPathDistance(allDiffs);
 		TangledCommitDetection.getMethods(allDiffs);
 		summary += createSummaryOfDiffEntry(allDiffs);
 		return summary;

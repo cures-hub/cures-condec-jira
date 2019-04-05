@@ -37,10 +37,6 @@ public interface TangledCommitDetection {
         @Override
         public void visit(MethodDeclaration m, Object arg) {
             ChangedFile changedFile = (ChangedFile) arg;
-            System.out.print("call get visit");
-            System.out.println("From [" + m.getBegin() + "," + "] to [" + m.getEnd() + ","
-                    + "] is method:" + m.getDeclarationAsString() + '\n');
-            System.out.println(m);
             changedFile.setMethodDeclarations(m);
         }
     }
