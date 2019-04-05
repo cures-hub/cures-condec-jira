@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Sentence;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
 
 import meka.classifiers.multilabel.LC;
@@ -9,6 +10,7 @@ import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayesMultinomial;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.core.*;
+import weka.core.converters.ConverterUtils;
 import weka.core.tokenizers.NGramTokenizer;
 import weka.core.tokenizers.Tokenizer;
 import weka.filters.unsupervised.attribute.StringToWordVector;
@@ -35,8 +37,17 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		this.projectKey = projectKey;
 		JiraIssueCommentPersistenceManager manager = new JiraIssueCommentPersistenceManager(projectKey);
 		mekaTrainData = manager.getListOfUserValidatedSentneces(projectKey);
-	}
 
+		try {
+			String arffFileName = ConfigPersistenceManager.getTrainDataString(projectKey);
+			if(arffFileName!="" || arffFileName != null) {
+				ConverterUtils.DataSource source = new ConverterUtils.DataSource(DEFAULT_DIR + File.separator + projectKey + File.separator + arffFileName);
+				structure = source.getDataSet();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Override
 	public void train() {
@@ -53,7 +64,7 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 			File directory= new File(DEFAULT_DIR+ File.separator + projectKey);
 			directory.delete();
 			directory.mkdirs();
-			weka.core.SerializationHelper.write(DEFAULT_DIR+ File.separator + projectKey + "/newBr.model", binaryRelevance);
+			weka.core.SerializationHelper.write(DEFAULT_DIR+ File.separator + projectKey +  File.separator+ "newBr.model", binaryRelevance);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -103,7 +114,6 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 			data.add(createTrainData(trainSentence,attributeText));
 		}
 		data.setClassIndex(data.numAttributes() -1);
-		structure =data;
 		return data;
 	}
 
@@ -168,8 +178,8 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	}
 
 	private String createArffString(){
-		this.buildDatasetForMeka(mekaTrainData);
-		return structure.toString();
+		Instances data = this.buildDatasetForMeka(mekaTrainData);
+		return data.toString();
 	}
 
 	/**

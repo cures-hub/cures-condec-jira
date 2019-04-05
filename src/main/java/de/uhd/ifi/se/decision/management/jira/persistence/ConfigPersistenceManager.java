@@ -14,6 +14,7 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import scala.util.parsing.combinator.testing.Str;
 
 /**
  * Class to store and receive configuration settings
@@ -198,5 +199,13 @@ public class ConfigPersistenceManager {
 
 	public static void setWebhookUrl(String projectKey, String webhookUrl) {
 		setValue(projectKey, "webhookUrl", webhookUrl);
+	}
+
+	public static void setTrainDateString(String projectKey, String arffFileName){
+		setValue(projectKey, "arffFileName", arffFileName);
+	}
+
+	public static String getTrainDataString(String projectKey){
+		return  getValue(projectKey, "arffFileName");
 	}
 }

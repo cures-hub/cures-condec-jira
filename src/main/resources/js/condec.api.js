@@ -538,9 +538,9 @@
 	/*
 	 * external references: settingsForSingleProject.vm
  	 */
-	ConDecAPI.prototype.trainClassifier = function trainClassifier(projectKey){
+	ConDecAPI.prototype.trainClassifier = function trainClassifier(projectKey, arffFileName){
 	    var isSucceeded = postWithResponseAsReturnValue(AJS.contextPath()
-                +"/rest/decisions/latest/config/trainClassifier.json?projectKey="+ projectKey);
+                +"/rest/decisions/latest/config/trainClassifier.json?projectKey="+ projectKey +"&arffFileName=" + arffFileName);
         if (isSucceeded) {
             showFlag("success", "The Classifier has now been retrained.");
             return 1.0;

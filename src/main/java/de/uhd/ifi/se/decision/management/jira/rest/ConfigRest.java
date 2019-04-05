@@ -389,11 +389,12 @@ public class ConfigRest {
 	@Path("/trainClassifier")
 	@POST
 	public Response trainClassifier(@Context HttpServletRequest request,
-	                                @QueryParam("projectKey") final String projectKey){
+	                                @QueryParam("projectKey") final String projectKey, @QueryParam("arffFileName") final String arffFileName){
 		Response response = checkClassifierUsed(request,projectKey);
 		if(response != null){
 			return response;
 		}
+		ConfigPersistenceManager.setTrainDateString(projectKey, arffFileName);
 		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
 		trainer.train();
 		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
