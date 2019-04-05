@@ -117,7 +117,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                     name="arff-file"
                     placeholder="Select a File to Download">
             #foreach ($arffFile in $arffFiles)
-                <aui-optuon>$arffFile</aui-optuon>
+                console.log($arffFile);
+                <aui-option>'$arffFile'</aui-option>
             #end
         </aui-select>
         <input type="button" class="aui-button" id="trainClassifier" value="Train Classifier"/>
@@ -148,7 +149,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                     name="arff-file"
                     placeholder="Select a File to Download">
             #foreach ($arffFile in $arffFiles)
-                <aui-optuon>$arffFile</aui-optuon>
+                <aui-option>'$arffFile'</aui-option>
             #end
         </aui-select>
         <input type="button"
