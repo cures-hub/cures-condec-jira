@@ -124,7 +124,9 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 			directory.mkdirs();
 			Date date = new Date();
 			Timestamp timestamp = new Timestamp(date.getTime());
-			File arffFile = new File(DEFAULT_DIR+ File.separator + projectKey + "arffFile"+timestamp.toString());
+
+			File arffFile = new File(DEFAULT_DIR+ File.separator + projectKey + File.separator+ "arffFile"+timestamp.getTime()+".arff");
+			arffFile.createNewFile();
 			String arffString = createArffString();
 			PrintWriter writer = new PrintWriter(arffFile, "UTF-8");
 			writer.println(arffString);
@@ -135,13 +137,15 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 			return false;
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return true;
 	}
 
 	public List<String> getArffFileList(){
 		List<String> arffFileList = new ArrayList<>();
-		File directory= new File(DEFAULT_DIR+ File.separator + projectKey);
+		File directory= new File(DEFAULT_DIR+ File.separator + projectKey + File.separator);
 		if(directory.exists() == true){
 			for(File file: directory.listFiles()){
 				arffFileList.add(file.getName());
