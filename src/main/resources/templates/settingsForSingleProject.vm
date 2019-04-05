@@ -118,7 +118,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                     placeholder="Select a File to Download">
             #foreach ($arffFile in $arffFiles)
                 console.log($arffFile);
-                <aui-option>'$arffFile'</aui-option>
+                <aui-option>$arffFile</aui-option>
             #end
         </aui-select>
         <input type="button" class="aui-button" id="trainClassifier" value="Train Classifier"/>
@@ -149,7 +149,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                     name="arff-file"
                     placeholder="Select a File to Download">
             #foreach ($arffFile in $arffFiles)
-                <aui-option>'$arffFile'</aui-option>
+                <aui-option>$arffFile</aui-option>
             #end
         </aui-select>
         <input type="button"
@@ -162,10 +162,12 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
             classifierButton.addEventListener("click", function() {
                 var link = document.createElement('a');
                 var fileName = document.getElementById('select-arff-file').value;
+                var fileString = conDecAPI.getArffFileString(fileName, '$projectKey');
+                console.log(fileString);
                 link.style.display = 'none';
                 //TODO Change to get the seletece File and Download the File from the backend
                 link.setAttribute('href', fileName);
-                link.setAttribute('download',conDecAPI.getArffFileString(fileName)+'.arff','$projectKey');
+                link.setAttribute('download',fileString,'$projectKey');
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);

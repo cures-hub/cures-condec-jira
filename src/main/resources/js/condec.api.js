@@ -582,7 +582,7 @@
 
 	ConDecAPI.prototype.getArffFileString = function getExtendedKnowledgeTypes(fileName, projectKey) {
         var arffFileString = getResponseAsReturnValue(AJS.contextPath()
-            + "/rest/decisions/latest/config/getArffFileString.json?fileName=" + fileName + "&projectKey="+ projectKey);
+            + "/rest/decisions/latest/config/getArffFileString.json?projectKey="+ projectKey  + "&fileName="+ fileName);
         if (arffFileString !== null) {
             return arffFileString;
         }
