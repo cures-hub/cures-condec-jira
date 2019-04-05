@@ -62,6 +62,7 @@
 		<dependency>com.atlassian.auiplugin:aui-lozenge</dependency>
 		<dependency>com.atlassian.auiplugin:dialog2</dependency>
 		<dependency>com.atlassian.auiplugin:aui-dropdown2</dependency>
+        <dependency>com.atlassian.auiplugin:aui-select</dependency>
 		<dependency>com.atlassian.auiplugin:aui-select2</dependency>
 		<dependency>com.atlassian.auiplugin:aui-experimental-iconfont</dependency>
 		<dependency>com.atlassian.auiplugin:aui-tooltips</dependency>

@@ -140,25 +140,21 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
                 var isBuild = conDecAPI.buildArffFile('$projectKey');
             });
         </script>
-        <aui-label for="select-arff-file">Select-Arff File to Download</aui-label>
-        <p>
-            <aui-select id="select-arff-file"
-                        name="arff-file"
-                        placeholder="Select a File to Download">
-                #foreach ($arffFile in $arffFiles)
-                    <aui-optuon>$arffFile</aui-optuon>
-                #end
-            </aui-select>
-        </p>
-
-        <label for="download-classifier-button">Download Classifier Training Data</label>
+        <label for="select-arff-file">Select-Arff File to Download</label>
+        <aui-select id="select-arff-file"
+                    name="arff-file"
+                    placeholder="Select a File to Download">
+            #foreach ($arffFile in $arffFiles)
+                <aui-optuon>$arffFile</aui-optuon>
+            #end
+        </aui-select>
         <input type="button"
                id="download-classifier-button" class="aui-button aui-button-primary" value="Download Arff File" />
         <div class="description">Downloads the latest Trained Data from the Project. This will retrain on
             the new Data if you select the Download
         </div>
         <script>
-            var classifierButton = document.getElementById('download-classifier');
+            var classifierButton = document.getElementById('download-classifier-button');
             classifierButton.addEventListener("click", function() {
                 var link = document.createElement('a');
                 var fileName = document.getElementById('select-arff-file');
