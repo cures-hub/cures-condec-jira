@@ -24,7 +24,6 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockCommentManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkTypeManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockOptionSetManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockProjectRoleManager;
@@ -34,8 +33,8 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityParamFactory;
 import de.uhd.ifi.se.decision.management.jira.persistence.ActiveObjectPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 

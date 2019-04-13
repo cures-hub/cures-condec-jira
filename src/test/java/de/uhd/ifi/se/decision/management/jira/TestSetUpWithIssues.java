@@ -47,7 +47,6 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkTypeManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockJiraHomeForTesting;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockOptionSetManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
