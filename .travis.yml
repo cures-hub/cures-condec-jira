@@ -6,7 +6,7 @@ cache:
 jdk:
   - oraclejdk8
 before_install:
-  - wget https://marketplace.atlassian.com/download/apps/1210993/version/42440
+  - wget https://marketplace.atlassian.com/download/plugins/atlassian-plugin-sdk-tgz
   - mkdir opt
   - tar -xvzf *plugin-sdk* -C opt
   - mv opt/*plugin-sdk* opt/atlassian-plugin-sdk
