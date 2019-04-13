@@ -16,6 +16,7 @@ import com.atlassian.jira.bc.issue.IssueService.CreateValidationResult;
 import com.atlassian.jira.bc.issue.IssueService.IssueResult;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
+import com.atlassian.jira.event.type.EventDispatchOption;
 import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueInputParameters;
@@ -305,5 +306,9 @@ public class JiraIssuePersistenceManager extends AbstractPersistenceManager {
 		}
 		issueService.update(user, result);
 		return true;
+	}
+	
+	public static void updateJiraIssue(Issue jiraIssue, ApplicationUser user) {
+		ComponentAccessor.getIssueManager().updateIssue(user, (MutableIssue) jiraIssue, EventDispatchOption.ISSUE_UPDATED, true);
 	}
 }

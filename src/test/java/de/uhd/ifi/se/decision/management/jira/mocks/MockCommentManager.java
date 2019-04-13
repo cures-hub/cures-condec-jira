@@ -17,6 +17,7 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.issue.comments.CommentSummary;
+import com.atlassian.jira.issue.comments.MockComment;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.issue.history.ChangeItemBean;
 import com.atlassian.jira.security.roles.ProjectRole;
@@ -57,7 +58,7 @@ public class MockCommentManager implements CommentManager {
 
 	@Override
 	public List<Comment> getComments(Issue issue) {
-		((MockIssue)issue).setIssueTypeId("alternative");
+		((MockIssue) issue).setIssueTypeId("alternative");
 		if (this.comments == null) {
 			return new ArrayList<Comment>();
 		}
@@ -69,8 +70,7 @@ public class MockCommentManager implements CommentManager {
 		if (this.comments == null) {
 			this.comments = new ArrayList<Comment>();
 		}
-		Comment comment = new MockComment(issue, applicationUser, string);
-
+		Comment comment = new MockComment((long) 1337, applicationUser.getName(), string, null, null, new Date(), issue);
 		this.comments.add(comment);
 		return comment;
 	}
@@ -149,12 +149,18 @@ public class MockCommentManager implements CommentManager {
 
 	@Override
 	public Comment getCommentById(Long id) {
+		if (comments == null) {
+			return null;
+		}
 		for (Comment comment : comments) {
 			if (comment.getId() == id) {
 				return comment;
 			}
 		}
-		return this.comments.get(0);
+		if(comments.size() > 0) {
+			return comments.get(0);
+		}
+		return null;
 	}
 
 	@Override

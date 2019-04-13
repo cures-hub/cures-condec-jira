@@ -1,47 +1,56 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
-
-import meka.classifiers.multilabel.LC;
-import weka.classifiers.Evaluation;
-import weka.classifiers.bayes.NaiveBayesMultinomial;
-import weka.classifiers.meta.FilteredClassifier;
-import weka.core.*;
-import weka.core.converters.ConverterUtils;
-import weka.core.tokenizers.NGramTokenizer;
-import weka.core.tokenizers.Tokenizer;
-import weka.filters.unsupervised.attribute.StringToWordVector;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import meka.classifiers.multilabel.LC;
+import weka.classifiers.Evaluation;
+import weka.classifiers.bayes.NaiveBayesMultinomial;
+import weka.classifiers.meta.FilteredClassifier;
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.Instances;
+import weka.core.converters.ConverterUtils;
+import weka.core.tokenizers.NGramTokenizer;
+import weka.core.tokenizers.Tokenizer;
+import weka.filters.unsupervised.attribute.StringToWordVector;
+
 public class ClassificationTrainerImpl implements ClassificationTrainer {
 
 	private static String projectKey;
 	private static Instances structure;
-	private List<Sentence> mekaTrainData;
+	private List<PartOfJiraIssueText> mekaTrainData;
 
 	/**
-	 * In the Constructor the Sentences from Database will be uses for the classification that is validated from the
-	 * user.
+	 * In the Constructor the Sentences from Database will be uses for the
+	 * classification that is validated from the user.
+	 * 
 	 * @param projectKey
 	 */
-	public ClassificationTrainerImpl(String projectKey){
+	public ClassificationTrainerImpl(String projectKey) {
 		this.projectKey = projectKey;
-		JiraIssueCommentPersistenceManager manager = new JiraIssueCommentPersistenceManager(projectKey);
-		mekaTrainData = manager.getListOfUserValidatedSentneces(projectKey);
+		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
+		mekaTrainData = manager.getUserValidatedPartsOfText(projectKey);
 
 		try {
 			String arffFileName = ConfigPersistenceManager.getTrainDataString(projectKey);
-			if(arffFileName!="" || arffFileName != null) {
-				ConverterUtils.DataSource source = new ConverterUtils.DataSource(DEFAULT_DIR + File.separator + projectKey + File.separator + arffFileName);
+			if (arffFileName != "" || arffFileName != null) {
+				ConverterUtils.DataSource source = new ConverterUtils.DataSource(
+						DEFAULT_DIR + File.separator + projectKey + File.separator + arffFileName);
 				structure = source.getDataSet();
 			}
 		} catch (Exception e) {
@@ -61,10 +70,11 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 			evaluateTraining(binaryRelevance);
 
 			binaryRelevance.buildClassifier(structure);
-			File directory= new File(DEFAULT_DIR+ File.separator + projectKey);
+			File directory = new File(DEFAULT_DIR + File.separator + projectKey);
 			directory.delete();
 			directory.mkdirs();
-			weka.core.SerializationHelper.write(DEFAULT_DIR+ File.separator + projectKey +  File.separator+ "newBr.model", binaryRelevance);
+			weka.core.SerializationHelper
+					.write(DEFAULT_DIR + File.separator + projectKey + File.separator + "newBr.model", binaryRelevance);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -74,24 +84,24 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	/**
 	 *
 	 * @param trainSentences
-	 * @return The training dataset. The Instance that this function returns is the ARFF File that is needed to train
-	 *          the Classifier. The Attributes are Boolean and the Sentence is a String.
+	 * @return The training dataset. The Instance that this function returns is the
+	 *         ARFF File that is needed to train the Classifier. The Attributes are
+	 *         Boolean and the Sentence is a String.
 	 *
-	 *Data appearance:
-	 *  @relation 'sentences: -C 5'
-	 *  @attribute isAlternative {0,1}
-	 *  @attribute isPro {0,1}
-	 *  @attribute isCon {0,1}
-	 *  @attribute isDecision {0,1}
-	 *  @attribute isIssue {0,1}
-	 *  @attribute sentence string
+	 *         Data appearance:
+	 * @relation 'sentences: -C 5'
+	 * @attribute isAlternative {0,1}
+	 * @attribute isPro {0,1}
+	 * @attribute isCon {0,1}
+	 * @attribute isDecision {0,1}
+	 * @attribute isIssue {0,1}
+	 * @attribute sentence string
 	 *
-	 *  @data
-	 *  0,0,0,1,0 'I am at Test sentence that is a Decision'
-	 *  1,0,0,0,0 'I am a Alternative for the Issue'
-	 *  0,0,0,0,1 'And i am the Issue for the Decision and the Alternative'
+	 * @data 0,0,0,1,0 'I am at Test sentence that is a Decision' 1,0,0,0,0 'I am a
+	 *       Alternative for the Issue' 0,0,0,0,1 'And i am the Issue for the
+	 *       Decision and the Alternative'
 	 */
-	public Instances buildDatasetForMeka(List<Sentence> trainSentences){
+	public Instances buildDatasetForMeka(List<PartOfJiraIssueText> trainSentences) {
 
 		ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
 
@@ -110,22 +120,23 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 
 		Instances data = new Instances("sentences -C 5 ", wekaAttributes, 1000000);
 
-		for (Sentence trainSentence : trainSentences) {
-			data.add(createTrainData(trainSentence,attributeText));
+		for (PartOfJiraIssueText trainSentence : trainSentences) {
+			data.add(createTrainData(trainSentence, attributeText));
 		}
-		data.setClassIndex(data.numAttributes() -1);
+		data.setClassIndex(data.numAttributes() - 1);
 		return data;
 	}
 
-	public boolean saveArffFileOnServer(){
+	public boolean saveArffFileOnServer() {
 		try {
-			File directory= new File(DEFAULT_DIR+ File.separator + projectKey);
+			File directory = new File(DEFAULT_DIR + File.separator + projectKey);
 			directory.delete();
 			directory.mkdirs();
 			Date date = new Date();
 			Timestamp timestamp = new Timestamp(date.getTime());
 
-			File arffFile = new File(DEFAULT_DIR+ File.separator + projectKey + File.separator+ "arffFile"+timestamp.getTime()+".arff");
+			File arffFile = new File(DEFAULT_DIR + File.separator + projectKey + File.separator + "arffFile"
+					+ timestamp.getTime() + ".arff");
 			arffFile.createNewFile();
 			String arffString = createArffString();
 			PrintWriter writer = new PrintWriter(arffFile, "UTF-8");
@@ -143,29 +154,29 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		return true;
 	}
 
-	public List<String> getArffFileList(){
+	public List<String> getArffFileList() {
 		List<String> arffFileList = new ArrayList<>();
-		File directory= new File(DEFAULT_DIR+ File.separator + projectKey + File.separator);
-		if(directory.exists() == true){
-			for(File file: directory.listFiles()){
+		File directory = new File(DEFAULT_DIR + File.separator + projectKey + File.separator);
+		if (directory.exists() == true) {
+			for (File file : directory.listFiles()) {
 				arffFileList.add(file.getName());
 			}
 		}
 		return arffFileList;
 	}
 
-	public String getArffFileString(String fileName){
-		File directory= new File(DEFAULT_DIR+ File.separator + projectKey);
+	public String getArffFileString(String fileName) {
+		File directory = new File(DEFAULT_DIR + File.separator + projectKey);
 		String returnString = "";
-		if(directory.exists() == true){
+		if (directory.exists() == true) {
 			File[] fileArray = directory.listFiles();
-			for(File file: directory.listFiles()){
-				if(file.getName().equalsIgnoreCase(fileName)){
+			for (File file : directory.listFiles()) {
+				if (file.getName().equalsIgnoreCase(fileName)) {
 					try {
 						FileReader fileReader = new FileReader(file);
 						BufferedReader bufferedReader = new BufferedReader(fileReader);
 						String line;
-						while ((line = bufferedReader.readLine())!=null){
+						while ((line = bufferedReader.readLine()) != null) {
 							returnString += line + System.lineSeparator();
 						}
 					} catch (FileNotFoundException e) {
@@ -181,7 +192,7 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		return returnString;
 	}
 
-	private String createArffString(){
+	private String createArffString() {
 		Instances data = this.buildDatasetForMeka(mekaTrainData);
 		return data.toString();
 	}
@@ -190,38 +201,39 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	 *
 	 * @param sentence
 	 * @param attributeText
-	 * @return a Data entry for the training of the classifier.
-	 *          The Instance contains the Knowledge  Type as a 1 and the Sentence.
-	 *          The Knowledge Types that are not wrong are set to 0.
+	 * @return a Data entry for the training of the classifier. The Instance
+	 *         contains the Knowledge Type as a 1 and the Sentence. The Knowledge
+	 *         Types that are not wrong are set to 0.
 	 */
-	private DenseInstance createTrainData(Sentence sentence,Attribute attributeText){
+	private DenseInstance createTrainData(PartOfJiraIssueText sentence, Attribute attributeText) {
 		DenseInstance newInstance = new DenseInstance(6);
-		newInstance.setValue(0,0);
-		newInstance.setValue(1,0);
-		newInstance.setValue(2,0);
-		newInstance.setValue(3,0);
-		newInstance.setValue(4,0);
-		if(sentence.getType() == KnowledgeType.ALTERNATIVE){
-			newInstance.setValue(0,1);
+		newInstance.setValue(0, 0);
+		newInstance.setValue(1, 0);
+		newInstance.setValue(2, 0);
+		newInstance.setValue(3, 0);
+		newInstance.setValue(4, 0);
+		if (sentence.getType() == KnowledgeType.ALTERNATIVE) {
+			newInstance.setValue(0, 1);
 		}
-		if(sentence.getType() == KnowledgeType.PRO){
-			newInstance.setValue(1,1);
+		if (sentence.getType() == KnowledgeType.PRO) {
+			newInstance.setValue(1, 1);
 		}
-		if(sentence.getType() == KnowledgeType.CON){
-			newInstance.setValue(2,1);
+		if (sentence.getType() == KnowledgeType.CON) {
+			newInstance.setValue(2, 1);
 		}
-		if(sentence.getType() == KnowledgeType.DECISION){
-			newInstance.setValue(3,1);
+		if (sentence.getType() == KnowledgeType.DECISION) {
+			newInstance.setValue(3, 1);
 		}
-		if(sentence.getType() == KnowledgeType.ISSUE){
-			newInstance.setValue(4,1);
+		if (sentence.getType() == KnowledgeType.ISSUE) {
+			newInstance.setValue(4, 1);
 		}
-		newInstance.setValue(attributeText, sentence.getTextFromComment());
+		newInstance.setValue(attributeText, sentence.getText());
 		return newInstance;
 	}
 
 	/**
-	 * Creates a Attribute which defines the  binary Value
+	 * Creates a Attribute which defines the binary Value
+	 * 
 	 * @param name
 	 * @return Attribute
 	 */
@@ -235,15 +247,19 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	private static void evaluateTraining(LC binaryRelevance) throws Exception {
 		Evaluation rate = new Evaluation(structure);
 		Random seed = new Random(1);
-		Instances datarandom = new Instances(structure); datarandom.randomize(seed);
+		Instances datarandom = new Instances(structure);
+		datarandom.randomize(seed);
 
-		int folds = 10; datarandom.stratify(folds);
+		int folds = 10;
+		datarandom.stratify(folds);
 		rate.crossValidateModel(binaryRelevance, structure, folds, seed);
-		System.out.println("Structure num classes: "+structure.numClasses());
+		System.out.println("Structure num classes: " + structure.numClasses());
 	}
 
 	/**
-	 * Creates the Tokenizer and sets the Values and Options for the String to Word Vector
+	 * Creates the Tokenizer and sets the Values and Options for the String to Word
+	 * Vector
+	 * 
 	 * @return Tokenizer
 	 * @throws Exception
 	 */
@@ -256,8 +272,9 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	}
 
 	/**
-	 * Creates a String to Word Vector for the Classifier
-	 * All Elements are Lowercase Tokens
+	 * Creates a String to Word Vector for the Classifier All Elements are Lowercase
+	 * Tokens
+	 * 
 	 * @return StringToWordVector
 	 * @throws Exception
 	 */

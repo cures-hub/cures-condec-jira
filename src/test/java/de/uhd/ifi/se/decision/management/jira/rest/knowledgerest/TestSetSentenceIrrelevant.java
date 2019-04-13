@@ -21,14 +21,14 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
+import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplateWebhook;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.rest.KnowledgeRest;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
@@ -67,7 +67,7 @@ public class TestSetSentenceIrrelevant extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testRequestNullElementFilled() {
-		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText("This is a test sentence.");
+		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		assertEquals(Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", BAD_REQUEST_ERROR)).build()
 				.getEntity(), knowledgeRest.setSentenceIrrelevant(null, decisionKnowledgeElement).getEntity());
@@ -87,7 +87,7 @@ public class TestSetSentenceIrrelevant extends TestSetUpWithIssues {
 	public void testRequestFilledElementFilled() {
 		request.setAttribute("WithFails", false);
 		request.setAttribute("NoFails", true);
-		List<Sentence> comment = TestCommentSplitter.getSentencesForCommentText("This is a test sentence.");
+		List<PartOfJiraIssueText> comment = TestTextSplitter.getSentencesForCommentText("This is a test sentence.");
 		DecisionKnowledgeElement decisionKnowledgeElement = comment.get(0);
 		decisionKnowledgeElement.setType(KnowledgeType.ALTERNATIVE);
 		ComponentGetter.setTransactionTemplate(new MockTransactionTemplateWebhook());

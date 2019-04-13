@@ -4,14 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.java.ao.test.jdbc.Data;
-import net.java.ao.test.jdbc.NonTransactional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +22,8 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockTemplateRenderer;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import net.java.ao.EntityManager;
+import net.java.ao.test.jdbc.Data;
+import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
@@ -53,31 +50,31 @@ public class TestSettingsOfSingleProject extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testRequestNullResponseNull(){
+	public void testRequestNullResponseNull() {
 		assertFalse(servlet.isValidParameters(null, null));
 	}
 
 	@Test
-	public void testRequestFilledResponseNull(){
+	public void testRequestFilledResponseNull() {
 		request.setAttribute("NoSysAdmin", false);
 		request.setAttribute("SysAdmin", false);
 		assertFalse(servlet.isValidUser(request));
 	}
 
 	@Test
-	public void testRequestNullResponseFilled(){
+	public void testRequestNullResponseFilled() {
 		assertFalse(servlet.isValidParameters(null, response));
 	}
 
 	@Test
-	public void testRequestFilledResponseFilled(){
+	public void testRequestFilledResponseFilled() {
 		request.setAttribute("NoSysAdmin", false);
 		request.setAttribute("SysAdmin", false);
 		assertFalse(servlet.isValidUser(request));
 	}
 
 	@Test
-	public void testNoUserManager(){
+	public void testNoUserManager() {
 		((MockHttpServletRequest) request).setQueryString("Test");
 		request.setAttribute("NoSysAdmin", true);
 		request.setAttribute("SysAdmin", false);
@@ -85,7 +82,7 @@ public class TestSettingsOfSingleProject extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testNoUserManagerQueryNull(){
+	public void testNoUserManagerQueryNull() {
 		((MockHttpServletRequest) request).setQueryString(null);
 		request.setAttribute("NoSysAdmin", true);
 		request.setAttribute("SysAdmin", false);
@@ -93,7 +90,7 @@ public class TestSettingsOfSingleProject extends TestSetUpWithIssues {
 	}
 
 	@Test
-	public void testUserManager(){
+	public void testUserManager() {
 		request.setAttribute("NoSysAdmin", false);
 		request.setAttribute("SysAdmin", true);
 		assertTrue(servlet.isValidUser(request));

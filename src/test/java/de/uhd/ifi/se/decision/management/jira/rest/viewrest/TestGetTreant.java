@@ -19,7 +19,7 @@ import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.rest.ViewRest;
 import de.uhd.ifi.se.decision.management.jira.view.treant.TestTreant;
@@ -96,7 +96,7 @@ public class TestGetTreant extends TestSetUpWithIssues {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void update(EntityManager entityManager) throws Exception {
-			entityManager.migrate(DecisionKnowledgeInCommentEntity.class);
+			entityManager.migrate(PartOfJiraIssueTextInDatabase.class);
 			entityManager.migrate(LinkInDatabase.class);
 		}
 	}

@@ -28,12 +28,12 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 /**
  * REST resource: Enables creation, editing, and deletion of decision knowledge
@@ -286,7 +286,7 @@ public class KnowledgeRest {
 
 		ApplicationUser user = AuthenticationManager.getUser(request);
 
-		JiraIssueCommentPersistenceManager persistenceManager = new JiraIssueCommentPersistenceManager(
+		JiraIssueTextPersistenceManager persistenceManager = new JiraIssueTextPersistenceManager(
 				decisionKnowledgeElement.getProject().getProjectKey());
 		Issue issue = persistenceManager.createJIRAIssueFromSentenceObject(decisionKnowledgeElement.getId(), user);
 
@@ -309,11 +309,11 @@ public class KnowledgeRest {
 		}
 		AbstractPersistenceManager persistenceManager = AbstractPersistenceManager
 				.getPersistenceManager(decisionKnowledgeElement);
-		if (decisionKnowledgeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUECOMMENT) {
+		if (decisionKnowledgeElement.getDocumentationLocation() != DocumentationLocation.JIRAISSUETEXT) {
 			return Response.status(Status.SERVICE_UNAVAILABLE)
 					.entity(ImmutableMap.of("error", "Only sentence elements can be set to irrelevant.")).build();
 		}
-		Sentence sentence = (Sentence) persistenceManager.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
+		PartOfJiraIssueText sentence = (PartOfJiraIssueText) persistenceManager.getDecisionKnowledgeElement(decisionKnowledgeElement.getId());
 		if (sentence == null) {
 			return Response.status(Status.NOT_FOUND)
 					.entity(ImmutableMap.of("error", "Element could not be found in database.")).build();
@@ -324,8 +324,8 @@ public class KnowledgeRest {
 		sentence.setSummary(null);
 		boolean isUpdated = persistenceManager.updateDecisionKnowledgeElement(sentence, null);
 		if (isUpdated) {
-			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUECOMMENT);
-			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForIssue(sentence.getJiraIssueId());
+			GenericLinkManager.deleteLinksForElement(sentence.getId(), DocumentationLocation.JIRAISSUETEXT);
+			JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(sentence.getJiraIssueId());
 			return Response.status(Status.OK).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
@@ -347,7 +347,7 @@ public class KnowledgeRest {
 
 		String jiraIssueKey = "";
 		if (jiraIssue == null) {
-			jiraIssueKey = JiraIssueCommentPersistenceManager.getJiraIssueKey(id);
+			jiraIssueKey = JiraIssueTextPersistenceManager.getJiraIssue(id).getKey();
 		} else {
 			jiraIssueKey = jiraIssue.getKey();
 		}

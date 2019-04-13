@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.rest;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,27 +13,30 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationTrainer;
-import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationTrainerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.search.SearchResults;
 import com.atlassian.jira.jql.builder.JqlClauseBuilder;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
+import com.atlassian.query.Query;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationManagerForJiraIssueComments;
+import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationTrainer;
+import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 /**
  * REST resource for plug-in configuration
@@ -248,10 +250,11 @@ public class ConfigRest {
 
 	@Path("/getArffFileString")
 	@GET
-	public Response getArffFileString(@QueryParam("projectKey") final String projectKey, @QueryParam("fileName") final String fileName){
-		if(fileName == null || fileName.equals("")){
-			return Response.status(Status.BAD_REQUEST)
-					       .entity(ImmutableMap.of("error", "Filename was Empty = null")).build();
+	public Response getArffFileString(@QueryParam("projectKey") final String projectKey,
+			@QueryParam("fileName") final String fileName) {
+		if (fileName == null || fileName.equals("")) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Filename was Empty = null"))
+					.build();
 		}
 
 		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
@@ -337,13 +340,13 @@ public class ConfigRest {
 			// Deletion is only useful during development, do not ship to enduser!!
 			// ActiveObjectsManager.clearSentenceDatabaseForProject(projectKey);
 			// If still something is wrong, delete an elements and its links
-			JiraIssueCommentPersistenceManager.cleanSentenceDatabaseForProject(projectKey);
+			JiraIssueTextPersistenceManager.cleanSentenceDatabase(projectKey);
 			// If some links ar bad, delete those links
 			GenericLinkManager.clearInvalidLinks();
 			// If there are now some "lonely" sentences, link them to their issues.
-			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForProject(projectKey);
+			JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForProject(projectKey);
 			//
-			JiraIssueCommentPersistenceManager.migrateArgumentTypesInLinks(projectKey);
+			JiraIssueTextPersistenceManager.migrateArgumentTypesInLinks(projectKey);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -369,13 +372,11 @@ public class ConfigRest {
 			JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
 			SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
 
-			com.atlassian.query.Query query = jqlClauseBuilder.project(projectKey).buildQuery();
-			com.atlassian.jira.issue.search.SearchResults searchResults = null;
-
-			searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
+			Query query = jqlClauseBuilder.project(projectKey).buildQuery();
+			SearchResults<Issue> searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
 
 			ClassificationManagerForJiraIssueComments classificationManager = new ClassificationManagerForJiraIssueComments();
-			for (Issue issue : searchResults.getIssues()) {
+			for (Issue issue : JiraSearchServiceHelper.getJiraIssues(searchResults)) {
 				classificationManager.classifyAllCommentsOfJiraIssue(issue);
 			}
 
@@ -389,9 +390,9 @@ public class ConfigRest {
 	@Path("/trainClassifier")
 	@POST
 	public Response trainClassifier(@Context HttpServletRequest request,
-	                                @QueryParam("projectKey") final String projectKey, @QueryParam("arffFileName") final String arffFileName){
-		Response response = checkClassifierUsed(request,projectKey);
-		if(response != null){
+			@QueryParam("projectKey") final String projectKey, @QueryParam("arffFileName") final String arffFileName) {
+		Response response = checkClassifierUsed(request, projectKey);
+		if (response != null) {
 			return response;
 		}
 		ConfigPersistenceManager.setTrainDateString(projectKey, arffFileName);
@@ -403,25 +404,26 @@ public class ConfigRest {
 	@Path("/buildArffFile")
 	@POST
 	public Response buildArffFile(@Context HttpServletRequest request,
-	                                @QueryParam("projectKey") final String projectKey){
-		Response response = checkClassifierUsed(request,projectKey);
-		if(response != null){
+			@QueryParam("projectKey") final String projectKey) {
+		Response response = checkClassifierUsed(request, projectKey);
+		if (response != null) {
 			return response;
 		}
 		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
-		if(trainer.saveArffFileOnServer()){
+		if (trainer.saveArffFileOnServer()) {
 			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error",
-				"Building could not be triggert becuas of an Error on  the Server. Check if the Classification is"+
-						" activated and everything is setup right. If so try this process later again.")).build();
+				"Building could not be triggert becuas of an Error on  the Server. Check if the Classification is"
+						+ " activated and everything is setup right. If so try this process later again."))
+				.build();
 	}
-
 
 	@Path("/setIconParsing")
 	@POST
 	public Response setIconParsing(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("isActivatedString") String isActivatedString) {;
+			@QueryParam("isActivatedString") String isActivatedString) {
+		;
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -499,16 +501,15 @@ public class ConfigRest {
 		return Response.status(Status.OK).build();
 	}
 
-	private Response checkClassifierUsed(HttpServletRequest request, String projectKey){
+	private Response checkClassifierUsed(HttpServletRequest request, String projectKey) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
 		if (!ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey)) {
-			return Response.status(Status.FORBIDDEN)
-					       .entity(ImmutableMap.of("error",
-							       "Automatic classification is disabled for this project. " +
-									       "So no training can be executed")).build();
+			return Response.status(Status.FORBIDDEN).entity(ImmutableMap.of("error",
+					"Automatic classification is disabled for this project. " + "So no training can be executed"))
+					.build();
 		}
 		return null;
 	}

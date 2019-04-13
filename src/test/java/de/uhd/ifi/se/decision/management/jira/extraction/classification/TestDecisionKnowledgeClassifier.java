@@ -12,7 +12,7 @@ import com.atlassian.activeobjects.test.TestActiveObjects;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.extraction.TestCommentSplitter;
+import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.DecisionKnowledgeClassifierImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
@@ -23,7 +23,7 @@ import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestCommentSplitter.AoSentenceTestDatabaseUpdater.class)
+@Data(TestTextSplitter.AoSentenceTestDatabaseUpdater.class)
 public class TestDecisionKnowledgeClassifier extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;

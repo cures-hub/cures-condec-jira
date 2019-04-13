@@ -16,7 +16,7 @@ public class TestUpdateDecisionKnowledgeElement extends TestJiraIssuePersistence
 
 	@Test(expected = NullPointerException.class)
 	public void testElementNullUserNull() {
-		issueStrategy.updateDecisionKnowledgeElement(null, null);
+		issueStrategy.updateDecisionKnowledgeElement((DecisionKnowledgeElement) null, null);
 	}
 
 	@Test(expected = NullPointerException.class)

@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuecommentpersistencemanager;
+package de.uhd.ifi.se.decision.management.jira.persistence.jiraissuetextpersistencemanager;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
