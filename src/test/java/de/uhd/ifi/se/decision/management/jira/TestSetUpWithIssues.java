@@ -17,6 +17,7 @@ import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.CommentManager;
+import com.atlassian.jira.issue.fields.config.FieldConfigScheme;
 import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
 import com.atlassian.jira.issue.fields.option.OptionSetManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -48,7 +49,6 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockJiraHomeForTesting;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockOptionSetManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockProjectRoleManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityManager;
@@ -102,8 +102,9 @@ public class TestSetUpWithIssues {
 				.addMock(VelocityParamFactory.class, new MockVelocityParamFactory())
 				.addMock(AvatarManager.class, new MockAvatarManager()).addMock(IssueTypeManager.class, issueTypeManager)
 				.addMock(IssueTypeSchemeManager.class, mock(IssueTypeSchemeManager.class))
+				.addMock(FieldConfigScheme.class, mock(FieldConfigScheme.class))
 				.addMock(PluginSettingsFactory.class, new MockPluginSettingsFactory())
-				.addMock(OptionSetManager.class, new MockOptionSetManager())
+				.addMock(OptionSetManager.class, mock(OptionSetManager.class))
 				.addMock(CommentManager.class, new MockCommentManager())
 				.addMock(ApplicationProperties.class, mockApplicationProperties)
 				.addMock(JiraHome.class, new MockJiraHomeForTesting());

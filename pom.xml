@@ -190,8 +190,7 @@
 		<dependency>
 			<groupId>com.atlassian.jira</groupId>
 			<artifactId>jira-tests</artifactId>
-			<!-- TODO Version should be ${jira.version} but then tests currently fail -->
-			<version>7.13.0</version>
+			<version>${jira.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

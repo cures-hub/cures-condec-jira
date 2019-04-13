@@ -7,6 +7,7 @@ import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.comments.CommentManager;
+import com.atlassian.jira.issue.fields.config.FieldConfigScheme;
 import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
 import com.atlassian.jira.issue.fields.option.OptionSetManager;
 import com.atlassian.jira.issue.link.IssueLinkManager;
@@ -24,7 +25,6 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockCommentManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkTypeManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockOptionSetManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockProjectRoleManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
@@ -57,7 +57,8 @@ public class ActiveObjectPersistenceManagerTestSetUp {
 				.addMock(IssueTypeSchemeManager.class, mock(IssueTypeSchemeManager.class))
 				.addMock(PluginSettingsFactory.class, new MockPluginSettingsFactory())
 				.addMock(IssueTypeManager.class, issueTypeManager)
-				.addMock(OptionSetManager.class, new MockOptionSetManager())
+				.addMock(FieldConfigScheme.class, mock(FieldConfigScheme.class))
+				.addMock(OptionSetManager.class, mock(OptionSetManager.class))
 				.addMock(CommentManager.class, new MockCommentManager());
 
 		ActiveObjects activeObjects = new TestActiveObjects(entityManager);
