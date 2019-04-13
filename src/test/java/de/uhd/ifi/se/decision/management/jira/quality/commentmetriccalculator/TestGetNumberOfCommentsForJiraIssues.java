@@ -18,8 +18,8 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 public class TestGetNumberOfCommentsForJiraIssues extends TestSetupCalculator {
 
 	@Test
-	@NonTransactional
 	@Ignore
+	@NonTransactional
 	public void testCase() {
 		Map<String, Integer> map = calculator.getNumberOfCommentsForJiraIssues();
 		assertEquals(1, map.size(), 0.0);

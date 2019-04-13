@@ -16,14 +16,13 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 @Data(TestSetUpWithIssues.AoSentenceTestDatabaseUpdater.class)
 public class TestGetNumberOfDecisionKnowledgeElementsFroJiraIssues extends TestSetupCalculator {
 	@Test
-	@Ignore
 	public void testTypeNull() {
 		assertEquals(0, calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(null).size(), 0.0);
 	}
 
 	@Test
-	@NonTransactional
 	@Ignore
+	@NonTransactional
 	public void testTypeFilled() {
 		assertEquals(1, calculator.getNumberOfDecisionKnowledgeElementsForJiraIssues(KnowledgeType.ARGUMENT).size(),
 				0.0);

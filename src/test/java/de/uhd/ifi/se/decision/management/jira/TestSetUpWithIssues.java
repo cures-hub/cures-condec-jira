@@ -7,6 +7,7 @@ import java.util.Locale;
 
 import com.atlassian.jira.avatar.AvatarManager;
 import com.atlassian.jira.bc.issue.IssueService;
+import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
@@ -107,7 +108,8 @@ public class TestSetUpWithIssues {
 				.addMock(OptionSetManager.class, mock(OptionSetManager.class))
 				.addMock(CommentManager.class, new MockCommentManager())
 				.addMock(ApplicationProperties.class, mockApplicationProperties)
-				.addMock(JiraHome.class, new MockJiraHomeForTesting());
+				.addMock(JiraHome.class, new MockJiraHomeForTesting())
+				.addMock(SearchService.class, mock(SearchService.class));
 
 		creatingProjectIssueStructure();
 	}

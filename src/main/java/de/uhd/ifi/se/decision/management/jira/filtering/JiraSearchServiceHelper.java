@@ -33,7 +33,7 @@ public class JiraSearchServiceHelper {
 			}
 		}
 
-		if (newGetMethod != null) {
+		if (newGetMethod != null && searchResults != null) {
 			try {
 				jiraIssues.addAll((List<Issue>) newGetMethod.invoke(searchResults));
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {

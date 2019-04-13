@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.quality.commentmetriccalculator;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -17,7 +16,6 @@ public class TestGetAlternativeArguments extends TestSetupCalculator {
 
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testCase() {
 		assertEquals(2, calculator.getAlternativeArguments().size(), 0.0);
 	}

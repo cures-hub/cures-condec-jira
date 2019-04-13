@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.quality.commentmetriccalculator;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -18,28 +17,24 @@ public class TestGetNumberOfLinkToOtherElement extends TestSetupCalculator {
 
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testLinkFromNullLinkToNull() {
 		assertEquals(0, calculator.getNumberOfLinksToOtherElement(null, null).size(), 0.0);
 	}
 
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testLinkFromFilledLinkToNull() {
 		assertEquals(0, calculator.getNumberOfLinksToOtherElement(KnowledgeType.DECISION, null).size(), 0.0);
 	}
 
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testLinkFromNullLinkToFilled() {
 		assertEquals(0, calculator.getNumberOfLinksToOtherElement(null, KnowledgeType.ISSUE).size(), 0.0);
 	}
 
 	@Test
 	@NonTransactional
-	@Ignore
 	public void testLinkFromFilledLinkToFilled() {
 		assertEquals(2, calculator.getNumberOfLinksToOtherElement(KnowledgeType.ARGUMENT, KnowledgeType.ISSUE).size(),
 				0.0);

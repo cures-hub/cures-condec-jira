@@ -4,6 +4,7 @@ import static org.mockito.Mockito.mock;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.activeobjects.test.TestActiveObjects;
+import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.config.IssueTypeManager;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.comments.CommentManager;
@@ -59,7 +60,8 @@ public class ActiveObjectPersistenceManagerTestSetUp {
 				.addMock(IssueTypeManager.class, issueTypeManager)
 				.addMock(FieldConfigScheme.class, mock(FieldConfigScheme.class))
 				.addMock(OptionSetManager.class, mock(OptionSetManager.class))
-				.addMock(CommentManager.class, new MockCommentManager());
+				.addMock(CommentManager.class, new MockCommentManager())
+				.addMock(SearchService.class, mock(SearchService.class));
 
 		ActiveObjects activeObjects = new TestActiveObjects(entityManager);
 		TestComponentGetter.init(activeObjects, new MockTransactionTemplate(), new MockUserManager());
