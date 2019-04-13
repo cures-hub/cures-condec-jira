@@ -8,6 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraSearchServiceHelper;
 
 import com.atlassian.jira.bc.issue.search.*;
 import com.atlassian.jira.component.ComponentAccessor;
@@ -318,7 +319,7 @@ public class GraphFiltering {
 			try {
 				final SearchResults results = getSearchService().search(
 						this.user, parseResult.getQuery(), PagerFilter.getUnlimitedFilter());
-				resultingIssues = results.getIssues();
+				resultingIssues = JiraSearchServiceHelper.getJiraIssues(results);
 
 			} catch (SearchException e) {
 				e.printStackTrace();
@@ -342,7 +343,7 @@ public class GraphFiltering {
 		long endTime = this.getEndDate();
 		SearchResults projectIssues = getIssuesForThisProject(user);
 		if (projectIssues != null) {
-			for (Issue currentIssue : projectIssues.getIssues()) {
+			for (Issue currentIssue : JiraSearchServiceHelper.getJiraIssues(projectIssues)) {
 				List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager.getElementsForIssue(currentIssue.getId(),
 						projectKey);
 				for (DecisionKnowledgeElement currentElement : elements) {

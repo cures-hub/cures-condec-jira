@@ -31,6 +31,7 @@ import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraSearchServiceHelper;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
 
 public class CommentMetricCalculator {
@@ -56,11 +57,11 @@ public class CommentMetricCalculator {
 		List<Issue> jiraIssues = new ArrayList<Issue>();
 		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
 		Query query = jqlClauseBuilder.project(projectId).buildQuery();
-		SearchResults searchResult = new SearchResults(null, 0, 0, 0);
+		SearchResults searchResults = null;
 		SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
 		try {
-			searchResult = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
-			jiraIssues.addAll(searchResult.getIssues());
+			searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
+			jiraIssues = JiraSearchServiceHelper.getJiraIssues(searchResults);
 		} catch (SearchException e) {
 		}
 		return jiraIssues;
@@ -109,9 +110,11 @@ public class CommentMetricCalculator {
 			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
 					.getElementsForIssue(jiraIssue.getId(), projectKey);
 			for (DecisionKnowledgeElement currentElement : elements) {
-				if (currentElement instanceof PartOfJiraIssueText && ((PartOfJiraIssueText) currentElement).isRelevant()) {
+				if (currentElement instanceof PartOfJiraIssueText
+						&& ((PartOfJiraIssueText) currentElement).isRelevant()) {
 					isRelevant++;
-				} else if (currentElement instanceof PartOfJiraIssueText && !((PartOfJiraIssueText) currentElement).isRelevant()) {
+				} else if (currentElement instanceof PartOfJiraIssueText
+						&& !((PartOfJiraIssueText) currentElement).isRelevant()) {
 					isIrrelevant++;
 				}
 			}

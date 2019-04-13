@@ -32,6 +32,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraSearchServiceHelper;
 
 /**
  * REST resource for plug-in configuration
@@ -359,7 +360,7 @@ public class ConfigRest {
 			searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
 
 			ClassificationManagerForJiraIssueComments classificationManager = new ClassificationManagerForJiraIssueComments();
-			for (Issue issue : searchResults.getIssues()) {
+			for (Issue issue : JiraSearchServiceHelper.getJiraIssues(searchResults)) {
 				classificationManager.classifyAllCommentsOfJiraIssue(issue);
 			}
 
