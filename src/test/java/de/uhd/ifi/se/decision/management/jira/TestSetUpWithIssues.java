@@ -5,7 +5,6 @@ import java.util.Locale;
 
 import com.atlassian.jira.avatar.AvatarManager;
 import com.atlassian.jira.bc.issue.IssueService;
-import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.ConstantsManager;
 import com.atlassian.jira.config.IssueTypeManager;
@@ -51,13 +50,12 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockJiraHomeForTesting;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockOptionSetManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockProjectRoleManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockSearchService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityParamFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 
@@ -107,7 +105,7 @@ public class TestSetUpWithIssues {
 				.addMock(OptionSetManager.class, new MockOptionSetManager())
 				.addMock(CommentManager.class, new MockCommentManager())
 				.addMock(ApplicationProperties.class, mockApplicationProperties)
-				.addMock(SearchService.class, new MockSearchService())
+				// .addMock(SearchService.class, new MockSearchService())
 				.addMock(JiraHome.class, new MockJiraHomeForTesting());
 
 		creatingProjectIssueStructure();

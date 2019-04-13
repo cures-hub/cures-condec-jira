@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.persistence;
+package de.uhd.ifi.se.decision.management.jira.filtering;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
