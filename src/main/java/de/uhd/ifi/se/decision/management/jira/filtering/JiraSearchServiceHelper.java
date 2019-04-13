@@ -5,6 +5,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.search.SearchResults;
 
@@ -12,6 +15,7 @@ import com.atlassian.jira.issue.search.SearchResults;
  * Helper class to support both JIRA versions 7 and 8.
  */
 public class JiraSearchServiceHelper {
+	private static final Logger LOGGER = LoggerFactory.getLogger(JiraSearchServiceHelper.class);
 
 	@SuppressWarnings("unchecked")
 	public static List<Issue> getJiraIssues(SearchResults searchResults) {
@@ -36,7 +40,7 @@ public class JiraSearchServiceHelper {
 				e.printStackTrace();
 			}
 		} else {
-			throw new RuntimeException("ICT: SearchResults Service from JIRA NOT AVAILABLE (getIssue / getResults)");
+			LOGGER.error("SearchResults Service from JIRA NOT AVAILABLE (getIssue / getResults)");
 		}
 
 		return jiraIssues;

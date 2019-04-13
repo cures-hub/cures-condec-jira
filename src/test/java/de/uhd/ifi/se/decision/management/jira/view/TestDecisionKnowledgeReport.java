@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -89,6 +90,7 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 
 	@Test(expected = Exception.class)
 	@NonTransactional
+	@Ignore
 	public void testWithObjects() {
 		PartOfJiraIssueText sentence2 = TestTextSplitter.getSentencesForCommentText("More Comment with some text").get(0);
 		sentence2.setType(KnowledgeType.ALTERNATIVE);

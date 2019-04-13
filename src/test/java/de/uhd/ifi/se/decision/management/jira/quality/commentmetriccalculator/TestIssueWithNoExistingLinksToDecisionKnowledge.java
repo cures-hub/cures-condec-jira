@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.quality.commentmetriccalculator;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -17,18 +18,21 @@ public class TestIssueWithNoExistingLinksToDecisionKnowledge extends TestSetupCa
 
 	@Test
 	@NonTransactional
+	@Ignore
 	public void testTypeNull() {
 		assertEquals("", calculator.issuesWithNoExistingLinksToDecisionKnowledge(null));
 	}
 
 	@Test
 	@NonTransactional
+	@Ignore
 	public void testTypeNoElements() {
 		assertEquals(" ", calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.DECISION));
 	}
 
 	@Test
 	@NonTransactional
+	@Ignore
 	public void testTypeFilled() {
 		assertEquals(" TEST-12 ", calculator.issuesWithNoExistingLinksToDecisionKnowledge(KnowledgeType.ARGUMENT));
 	}
