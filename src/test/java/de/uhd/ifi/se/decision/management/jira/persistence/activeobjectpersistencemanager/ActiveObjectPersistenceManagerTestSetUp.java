@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.persistence.activeobjectpersistencemanager;
 
+import static org.mockito.Mockito.mock;
+
 import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.config.IssueTypeManager;
@@ -53,7 +55,7 @@ public class ActiveObjectPersistenceManagerTestSetUp {
 				.addMock(ProjectRoleManager.class, new MockProjectRoleManager())
 				.addMock(VelocityManager.class, new MockVelocityManager())
 				.addMock(VelocityParamFactory.class, new MockVelocityParamFactory())
-				.addMock(IssueTypeSchemeManager.class, new MockIssueTypeSchemeManager())
+				.addMock(IssueTypeSchemeManager.class, mock(IssueTypeSchemeManager.class))
 				.addMock(PluginSettingsFactory.class, new MockPluginSettingsFactory())
 				.addMock(IssueTypeManager.class, issueTypeManager)
 				.addMock(OptionSetManager.class, new MockOptionSetManager())

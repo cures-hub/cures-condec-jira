@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -100,12 +102,11 @@ public class TestSetUpWithIssues {
 				.addMock(VelocityManager.class, new MockVelocityManager())
 				.addMock(VelocityParamFactory.class, new MockVelocityParamFactory())
 				.addMock(AvatarManager.class, new MockAvatarManager()).addMock(IssueTypeManager.class, issueTypeManager)
-				.addMock(IssueTypeSchemeManager.class, new MockIssueTypeSchemeManager())
+				.addMock(IssueTypeSchemeManager.class, mock(IssueTypeSchemeManager.class))
 				.addMock(PluginSettingsFactory.class, new MockPluginSettingsFactory())
 				.addMock(OptionSetManager.class, new MockOptionSetManager())
 				.addMock(CommentManager.class, new MockCommentManager())
 				.addMock(ApplicationProperties.class, mockApplicationProperties)
-				// .addMock(SearchService.class, new MockSearchService())
 				.addMock(JiraHome.class, new MockJiraHomeForTesting());
 
 		creatingProjectIssueStructure();
