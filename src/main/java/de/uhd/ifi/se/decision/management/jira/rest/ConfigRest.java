@@ -19,10 +19,12 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.search.SearchResults;
 import com.atlassian.jira.jql.builder.JqlClauseBuilder;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
+import com.atlassian.query.Query;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
@@ -354,10 +356,8 @@ public class ConfigRest {
 			JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
 			SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
 
-			com.atlassian.query.Query query = jqlClauseBuilder.project(projectKey).buildQuery();
-			com.atlassian.jira.issue.search.SearchResults searchResults = null;
-
-			searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
+			Query query = jqlClauseBuilder.project(projectKey).buildQuery();
+			SearchResults<Issue> searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
 
 			ClassificationManagerForJiraIssueComments classificationManager = new ClassificationManagerForJiraIssueComments();
 			for (Issue issue : JiraSearchServiceHelper.getJiraIssues(searchResults)) {

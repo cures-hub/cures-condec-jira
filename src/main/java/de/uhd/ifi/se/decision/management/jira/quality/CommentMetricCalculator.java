@@ -57,7 +57,7 @@ public class CommentMetricCalculator {
 		List<Issue> jiraIssues = new ArrayList<Issue>();
 		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
 		Query query = jqlClauseBuilder.project(projectId).buildQuery();
-		SearchResults searchResults = null;
+		SearchResults<Issue> searchResults = null;
 		SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
 		try {
 			searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());

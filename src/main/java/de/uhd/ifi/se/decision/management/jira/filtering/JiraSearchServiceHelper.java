@@ -18,7 +18,7 @@ public class JiraSearchServiceHelper {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JiraSearchServiceHelper.class);
 
 	@SuppressWarnings("unchecked")
-	public static List<Issue> getJiraIssues(SearchResults searchResults) {
+	public static List<Issue> getJiraIssues(SearchResults<Issue> searchResults) {
 		List<Issue> jiraIssues = new ArrayList<Issue>();
 		// THIS IS THE OLD CODE - only running against jira 7.x
 		// jiraIssues.addAll(searchResult.getIssues());
