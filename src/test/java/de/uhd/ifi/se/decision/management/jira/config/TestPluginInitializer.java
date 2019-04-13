@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.config;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.atlassian.jira.avatar.AvatarManager;
@@ -110,6 +111,7 @@ public class TestPluginInitializer extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@Ignore
 	public void testAddIssueTypeToSchemeIssueTypeFilledProjectKeyFilled() {
 		initialization();
 		PluginInitializer.addIssueTypeToScheme("Decision", "TEST");

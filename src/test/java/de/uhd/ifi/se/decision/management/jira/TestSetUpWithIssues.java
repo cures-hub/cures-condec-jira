@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -16,6 +18,7 @@ import com.atlassian.jira.exception.CreateException;
 import com.atlassian.jira.issue.IssueManager;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.CommentManager;
+import com.atlassian.jira.issue.fields.config.FieldConfigScheme;
 import com.atlassian.jira.issue.fields.config.manager.IssueTypeSchemeManager;
 import com.atlassian.jira.issue.fields.option.OptionSetManager;
 import com.atlassian.jira.issue.issuetype.IssueType;
@@ -46,18 +49,15 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueLinkTypeManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueManagerSelfImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockIssueTypeSchemeManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockJiraHomeForTesting;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockOptionSetManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockPluginSettingsFactory;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockProjectRoleManager;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockSearchService;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityManager;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockVelocityParamFactory;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeElementInDatabase;
-import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
+import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.DatabaseUpdater;
 
@@ -102,13 +102,14 @@ public class TestSetUpWithIssues {
 				.addMock(VelocityManager.class, new MockVelocityManager())
 				.addMock(VelocityParamFactory.class, new MockVelocityParamFactory())
 				.addMock(AvatarManager.class, new MockAvatarManager()).addMock(IssueTypeManager.class, issueTypeManager)
-				.addMock(IssueTypeSchemeManager.class, new MockIssueTypeSchemeManager())
+				.addMock(IssueTypeSchemeManager.class, mock(IssueTypeSchemeManager.class))
+				.addMock(FieldConfigScheme.class, mock(FieldConfigScheme.class))
 				.addMock(PluginSettingsFactory.class, new MockPluginSettingsFactory())
-				.addMock(OptionSetManager.class, new MockOptionSetManager())
+				.addMock(OptionSetManager.class, mock(OptionSetManager.class))
 				.addMock(CommentManager.class, new MockCommentManager())
 				.addMock(ApplicationProperties.class, mockApplicationProperties)
-				.addMock(SearchService.class, new MockSearchService())
-				.addMock(JiraHome.class, new MockJiraHomeForTesting());
+				.addMock(JiraHome.class, new MockJiraHomeForTesting())
+				.addMock(SearchService.class, mock(SearchService.class));
 
 		creatingProjectIssueStructure();
 	}
