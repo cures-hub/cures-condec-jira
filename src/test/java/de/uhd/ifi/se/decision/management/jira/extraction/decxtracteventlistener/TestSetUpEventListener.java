@@ -10,7 +10,7 @@ import com.atlassian.event.api.EventPublisher;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.event.MockEventPublisher;
 import com.atlassian.jira.event.issue.IssueEvent;
-import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.Comment;
 import com.atlassian.jira.mock.ofbiz.MockGenericValue;
 import com.atlassian.jira.user.ApplicationUser;
@@ -21,13 +21,13 @@ import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import net.java.ao.EntityManager;
 
 public class TestSetUpEventListener extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
-	private Issue issue;
+	protected MutableIssue jiraIssue;
 	private ApplicationUser user;
 
 	protected DecXtractEventListener listener;
@@ -39,26 +39,26 @@ public class TestSetUpEventListener extends TestSetUpWithIssues {
 				new MockUserManager());
 		EventPublisher publisher = new MockEventPublisher();
 		listener = new DecXtractEventListener(publisher);
-		issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
+		jiraIssue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
 	}
 
 	protected Comment createComment(String comment) {
-		return ComponentAccessor.getCommentManager().create(issue, user, comment, true);
+		return ComponentAccessor.getCommentManager().create(jiraIssue, user, comment, true);
 	}
 
 	protected IssueEvent createIssueEvent(String comment, long eventType) {
-		Comment jiraComment = ComponentAccessor.getCommentManager().create(issue, user, comment, true);
+		Comment jiraComment = ComponentAccessor.getCommentManager().create(jiraIssue, user, comment, true);
 		return createIssueEvent(jiraComment, eventType);
 	}
 
 	protected IssueEvent createIssueEvent(Comment comment, long eventType) {
-		return new IssueEvent(issue, user, comment, null, new MockGenericValue("test"), new HashMap<String, String>(),
+		return new IssueEvent(jiraIssue, user, comment, null, new MockGenericValue("test"), new HashMap<String, String>(),
 				eventType);
 	}
 
 	protected boolean isCommentExistent(String oldComment) {
-		List<Comment> changedComments = ComponentAccessor.getCommentManager().getComments(issue);
+		List<Comment> changedComments = ComponentAccessor.getCommentManager().getComments(jiraIssue);
 		for (Comment comment : changedComments) {
 			if (comment.getBody().equalsIgnoreCase(oldComment)) {
 				return true;
@@ -68,7 +68,7 @@ public class TestSetUpEventListener extends TestSetUpWithIssues {
 	}
 
 	protected DecisionKnowledgeElement getFirstElementInComment(Comment comment) {
-		List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager
+		List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
 				.getElementsForComment(comment.getId());
 		if (elements.size() > 0) {
 			return elements.get(0);

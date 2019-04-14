@@ -11,7 +11,7 @@ import com.atlassian.renderer.v2.macro.MacroException;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 
@@ -86,7 +86,7 @@ public abstract class AbstractKnowledgeClassificationMacro extends BaseMacro {
 	protected String getElementId(RenderContext renderContext, String body, KnowledgeType type) {
 		long id = 0;
 		if (renderContext.getParams().get("jira.issue") instanceof IssueImpl) {
-			id = JiraIssueCommentPersistenceManager.getIdOfSentenceForMacro(body.replace("<p>", "").replace("</p>", ""),
+			id = JiraIssueTextPersistenceManager.getIdOfSentenceForMacro(body.replace("<p>", "").replace("</p>", ""),
 					((IssueImpl) (renderContext.getParams().get("jira.issue"))).getId(), type.toString(),
 					getProjectKey(renderContext));
 		}

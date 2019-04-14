@@ -96,6 +96,7 @@
 		<resource type="download" name="condec.tree.viewer.js"
 			location="/js/condec.tree.viewer.js" />
 		<resource type="download" name="condec.vis.js" location="/js/condec.vis.js" />
+		<resource type="download" name="condec.export.js"  location="/js/condec.export.js" />
 	</web-resource>
 
 	<web-resource key="decision-knowledge-page-resources"
@@ -228,7 +229,7 @@
 			de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase
 		</entity>
 		<entity>
-			de.uhd.ifi.se.decision.management.jira.persistence.tables.DecisionKnowledgeInCommentEntity
+			de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase
 		</entity>
 	</ao>
 

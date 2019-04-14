@@ -19,19 +19,22 @@ import org.slf4j.LoggerFactory;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.search.SearchResults;
 import com.atlassian.jira.jql.builder.JqlClauseBuilder;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
+import com.atlassian.query.Query;
 import com.google.common.collect.ImmutableMap;
 
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationManagerForJiraIssueComments;
+import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 /**
  * REST resource for plug-in configuration
@@ -321,13 +324,13 @@ public class ConfigRest {
 			// Deletion is only useful during development, do not ship to enduser!!
 			// ActiveObjectsManager.clearSentenceDatabaseForProject(projectKey);
 			// If still something is wrong, delete an elements and its links
-			JiraIssueCommentPersistenceManager.cleanSentenceDatabaseForProject(projectKey);
+			JiraIssueTextPersistenceManager.cleanSentenceDatabase(projectKey);
 			// If some links ar bad, delete those links
 			GenericLinkManager.clearInvalidLinks();
 			// If there are now some "lonely" sentences, link them to their issues.
-			JiraIssueCommentPersistenceManager.createLinksForNonLinkedElementsForProject(projectKey);
+			JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForProject(projectKey);
 			//
-			JiraIssueCommentPersistenceManager.migrateArgumentTypesInLinks(projectKey);
+			JiraIssueTextPersistenceManager.migrateArgumentTypesInLinks(projectKey);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -353,13 +356,11 @@ public class ConfigRest {
 			JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
 			SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
 
-			com.atlassian.query.Query query = jqlClauseBuilder.project(projectKey).buildQuery();
-			com.atlassian.jira.issue.search.SearchResults searchResults = null;
-
-			searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
+			Query query = jqlClauseBuilder.project(projectKey).buildQuery();
+			SearchResults<Issue> searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
 
 			ClassificationManagerForJiraIssueComments classificationManager = new ClassificationManagerForJiraIssueComments();
-			for (Issue issue : searchResults.getIssues()) {
+			for (Issue issue : JiraSearchServiceHelper.getJiraIssues(searchResults)) {
 				classificationManager.classifyAllCommentsOfJiraIssue(issue);
 			}
 

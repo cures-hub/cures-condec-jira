@@ -228,7 +228,7 @@ public class DecisionKnowledgeElementImpl implements DecisionKnowledgeElement {
 	@XmlElement(name = "url")
 	public String getUrl() {
 		String key = this.getKey();
-		if (this.getDocumentationLocation() == DocumentationLocation.JIRAISSUECOMMENT) {
+		if (this.getDocumentationLocation() == DocumentationLocation.JIRAISSUETEXT) {
 			key = key.split(":")[0];
 		}
 		ApplicationProperties applicationProperties = ComponentAccessor.getApplicationProperties();

@@ -14,9 +14,9 @@ import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
-import de.uhd.ifi.se.decision.management.jira.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.model.impl.SentenceImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.quality.CommentMetricCalculator;
 import net.java.ao.EntityManager;
 
@@ -43,8 +43,8 @@ public class TestSetupCalculator extends TestSetUpWithIssues {
 	}
 
 	protected void addElementToDataBase(ApplicationUser user) {
-		Sentence element;
-		element = new SentenceImpl();
+		PartOfJiraIssueText element;
+		element = new PartOfJiraIssueTextImpl();
 		element.setProject("TEST");
 		element.setJiraIssueId(12);
 		element.setId(1);
@@ -52,7 +52,7 @@ public class TestSetupCalculator extends TestSetUpWithIssues {
 		element.setType("Argument");
 		element.setProject("TEST");
 		element.setDescription("Old");
-		element.setDocumentationLocation(DocumentationLocation.JIRAISSUECOMMENT);
-		JiraIssueCommentPersistenceManager.insertDecisionKnowledgeElement(element, user);
+		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
+		JiraIssueTextPersistenceManager.insertDecisionKnowledgeElement(element, user);
 	}
 }

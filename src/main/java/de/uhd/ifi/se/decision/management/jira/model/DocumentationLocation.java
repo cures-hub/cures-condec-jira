@@ -2,11 +2,13 @@ package de.uhd.ifi.se.decision.management.jira.model;
 
 import java.util.Locale;
 
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+
 /**
  * Possible documentation locations of decision knowledge
  */
 public enum DocumentationLocation {
-	JIRAISSUE, ACTIVEOBJECT, JIRAISSUECOMMENT, COMMIT, PULLREQUEST, UNKNOWN;
+	JIRAISSUE, ACTIVEOBJECT, JIRAISSUETEXT, COMMIT, PULLREQUEST, UNKNOWN;
 
 	/**
 	 * Convert a string to a documentation type.
@@ -24,12 +26,12 @@ public enum DocumentationLocation {
 		case "a":
 			return DocumentationLocation.ACTIVEOBJECT;
 		case "s":
-			return DocumentationLocation.JIRAISSUECOMMENT;
+			return DocumentationLocation.JIRAISSUETEXT;
 		case "c":
 			return DocumentationLocation.COMMIT;
 		case "p":
 			return DocumentationLocation.PULLREQUEST;
-		case "" :
+		case "":
 			// TODO This should be the same as the default persistence strategy
 			return DocumentationLocation.JIRAISSUE;
 		default:
@@ -44,7 +46,7 @@ public enum DocumentationLocation {
 		switch (documentationLocation) {
 		case JIRAISSUE:
 			return "i";
-		case JIRAISSUECOMMENT:
+		case JIRAISSUETEXT:
 			return "s";
 		case ACTIVEOBJECT:
 			return "a";
@@ -60,8 +62,8 @@ public enum DocumentationLocation {
 	public static String getIdentifier(DecisionKnowledgeElement element) {
 		if (element == null || element.getDocumentationLocation() == null) {
 			return "";
-		} else if (element instanceof Sentence
-				|| element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUECOMMENT)) {
+		} else if (element instanceof PartOfJiraIssueText
+				|| element.getDocumentationLocation().equals(DocumentationLocation.JIRAISSUETEXT)) {
 			return "s";
 		} else if (element.getDocumentationLocation().equals(DocumentationLocation.ACTIVEOBJECT)) {
 			return "a";

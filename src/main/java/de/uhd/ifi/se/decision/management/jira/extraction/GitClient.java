@@ -11,6 +11,9 @@ import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.util.JiraHome;
+
 /**
  * Class to connect to commits and code in git.
  */
@@ -18,11 +21,12 @@ public interface GitClient {
 
 	/**
 	 * @issue What is the best place to clone the git repo to?
-	 * @issue To which directory does the Git integration for JIRA plug-in clone the
-	 *        repo? Can we use this directory?
-	 * @alternative APKeys.JIRA_PATH_INSTALLED_PLUGINS
+	 * @decision Clone git repo to JIRAHome/data/condec-plugin!
+	 * @pro The Git integration for JIRA plug-in clones its repos to a similar
+	 *      folder: JIRAHome/data/git-plugin.
 	 */
-	String DEFAULT_DIR = System.getProperty("user.home") + File.separator + "repository" + File.separator;
+	public static final String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
+			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator;
 
 	/**
 	 * Retrieves the commits with the JIRA issue key in their commit message.
@@ -34,6 +38,14 @@ public interface GitClient {
 	 *         RevCommits.
 	 */
 	List<RevCommit> getCommits(String jiraIssueKey);
+
+	/**
+	 * Retrieves all commits of the git repository.
+	 * 
+	 * @see RevCommit
+	 * @return all commits as a list of RevCommits.
+	 */
+	List<RevCommit> getCommits();
 
 	/**
 	 * Get a map of diff entries and the respective edit lists for a commit.
@@ -102,7 +114,7 @@ public interface GitClient {
 	void deleteRepository();
 
 	/**
-	 * Returns the number commits with the JIRA issue key in their commit message.
+	 * Returns the number of commits with the JIRA issue key in their commit message.
 	 * 
 	 * @param jiraIssueKey
 	 *            JIRA issue key that is searched for in commit messages.
@@ -114,19 +126,20 @@ public interface GitClient {
 	 * Retrieves the JIRA issue key from a commit message.
 	 * 
 	 * @param commitMessage
-	 *            a commit message that should contain an issue key.
-	 * @return extracted JIRA issue key.
+	 *            a commit message that should contain a JIRA issue key.
+	 * @return extracted JIRA issue key or empty String if no JIRA issue key could
+	 *         be found.
 	 * 
 	 * @issue How to identify the JIRA issue key(s) in a commit message?
 	 * @alternative This is a very simple method to detect the JIRA issue key as the
-	 *              first word in the message and should be improved.
+	 *              first word in the message and should be improved!
 	 */
 	static String getJiraIssueKey(String commitMessage) {
-		if (!commitMessage.isEmpty()) {
-			String[] split = commitMessage.split("[:+ ]");
-			return split[0].toUpperCase(Locale.ENGLISH);
+		if (commitMessage.isEmpty()) {
+			return "";
 		}
-		return "";
+		String[] split = commitMessage.split("[:+ ]");
+		return split[0].toUpperCase(Locale.ENGLISH);
 	}
 
 	/**

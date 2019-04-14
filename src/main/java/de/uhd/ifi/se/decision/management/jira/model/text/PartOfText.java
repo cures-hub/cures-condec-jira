@@ -1,47 +1,19 @@
-package de.uhd.ifi.se.decision.management.jira.model;
+package de.uhd.ifi.se.decision.management.jira.model.text;
 
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import com.atlassian.jira.issue.Issue;
 
-import com.atlassian.jira.issue.comments.MutableComment;
-
-import de.uhd.ifi.se.decision.management.jira.model.impl.SentenceImpl;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 
 /**
- * Interface for textual parts (substrings) of JIRA issue comments. These parts
- * can either be relevant decision knowledge elements or irrelevant text.
+ * Interface for textual parts (substrings) of natural language text. These
+ * parts can either be relevant decision knowledge elements or irrelevant text.
  */
-@JsonDeserialize(as = SentenceImpl.class)
-public interface Sentence extends DecisionKnowledgeElement {
-
-	/**
-	 * Set the id of the JIRA issue comment that the decision knowledge element or
-	 * irrelevant text is part of.
-	 * 
-	 * @param id
-	 *            of the JIRA issue comment.
-	 */
-	void setCommentId(long id);
-
-	/**
-	 * Get the id of the JIRA issue comment that the decision knowledge element or
-	 * irrelevant text is part of.
-	 * 
-	 * @return id of the JIRA issue comment.
-	 */
-	long getCommentId();
-
-	/**
-	 * Get the JIRA issue comment that the decision knowledge element or irrelevant
-	 * text is part of.
-	 * 
-	 * @see MutableComment
-	 * @return JIRA issue comment.
-	 */
-	MutableComment getComment();
+public interface PartOfText extends DecisionKnowledgeElement {
 
 	/**
 	 * Set the start position (number of characters) of the decision knowledge
-	 * element or the irrelevant text within the JIRA issue comment.
+	 * element or the irrelevant text within the entire text.
 	 * 
 	 * @param startPosition
 	 *            number of characters after that the decision knowledge element or
@@ -51,7 +23,7 @@ public interface Sentence extends DecisionKnowledgeElement {
 
 	/**
 	 * Get the start position (number of characters) of the decision knowledge
-	 * element or the irrelevant text within the JIRA issue comment.
+	 * element or the irrelevant text within the entire text.
 	 * 
 	 * @return number of characters after that the decision knowledge element or the
 	 *         irrelevant text starts.
@@ -60,7 +32,7 @@ public interface Sentence extends DecisionKnowledgeElement {
 
 	/**
 	 * Set the end position (number of characters) of the decision knowledge element
-	 * or the irrelevant text within the JIRA issue comment.
+	 * or the irrelevant text within the entire text.
 	 * 
 	 * @param endPosition
 	 *            number of characters after that the decision knowledge element or
@@ -70,7 +42,7 @@ public interface Sentence extends DecisionKnowledgeElement {
 
 	/**
 	 * Get the end position (number of characters) of the decision knowledge element
-	 * or the irrelevant text within the JIRA issue comment.
+	 * or the irrelevant text within the entire text.
 	 * 
 	 * @return number of characters after that the decision knowledge element or the
 	 *         irrelevant text ends.
@@ -78,8 +50,7 @@ public interface Sentence extends DecisionKnowledgeElement {
 	int getEndSubstringCount();
 
 	/**
-	 * Set whether the text within the JIRA issue comment is decision knowledge,
-	 * i.e., relevant.
+	 * Set whether the part of the text is decision knowledge, i.e., relevant.
 	 * 
 	 * @param isRelevant
 	 *            true of the text is decision knowledge.
@@ -87,16 +58,15 @@ public interface Sentence extends DecisionKnowledgeElement {
 	void setRelevant(boolean isRelevant);
 
 	/**
-	 * Determine whether the text within the JIRA issue comment is decision
-	 * knowledge, i.e., relevant.
+	 * Determine whether the part of the text is decision knowledge, i.e., relevant.
 	 * 
 	 * @return true of the text is decision knowledge.
 	 */
 	boolean isRelevant();
 
 	/**
-	 * Set whether the classification of the text within the JIRA issue comment is
-	 * manually performed, updated, or checked by a human beeing.
+	 * Set whether the classification of the part of the text is manually performed,
+	 * updated, or checked by a human beeing.
 	 * 
 	 * @param isValidated
 	 *            true if the classification of the text within the JIRA issue
@@ -105,8 +75,8 @@ public interface Sentence extends DecisionKnowledgeElement {
 	void setValidated(boolean isValidated);
 
 	/**
-	 * Determine whether the classification of the text within the JIRA issue
-	 * comment is manually performed, updated, or checked by a human beeing.
+	 * Determine whether the classification of the part of the text is manually
+	 * performed, updated, or checked by a human beeing.
 	 * 
 	 * @return true if the classification of the text within the JIRA issue comment
 	 *         is validated.
@@ -114,22 +84,20 @@ public interface Sentence extends DecisionKnowledgeElement {
 	boolean isValidated();
 
 	/**
-	 * Get the length of the text (substring) within the JIRA issue comment. This is
-	 * a derived method.
+	 * Get the length of the part of the text (substring). This is a derived method.
 	 * 
 	 * @return end position - start position
 	 */
 	int getLength();
 
 	/**
-	 * Determine whether the text within the JIRA issue comment is relevant decision
-	 * knowledge with a knowledge type different than KnowledgeType.OTHER. Then, the
-	 * text is tagged within the JIRA issue comment with the pattern: {knowledge
-	 * type} text {knowledge type}.
+	 * Determine whether the part of the text is relevant decision knowledge with a
+	 * knowledge type different than KnowledgeType.OTHER. Then, the part of the text
+	 * is tagged with the pattern: {knowledge type} text {knowledge type}.
 	 * 
 	 * @see KnowledgeType
-	 * @return true if the text within the JIRA issue comment is relevant decision
-	 *         knowledge with a knowledge type different than KnowledgeType.OTHER.
+	 * @return true if the part of the text is relevant decision knowledge with a
+	 *         knowledge type different than KnowledgeType.OTHER.
 	 */
 	boolean isTagged();
 
@@ -151,6 +119,14 @@ public interface Sentence extends DecisionKnowledgeElement {
 	long getJiraIssueId();
 
 	/**
+	 * Get the JIRA issue that the decision knowledge element or irrelevant text is
+	 * part of.
+	 * 
+	 * @return JIRA issue.
+	 */
+	Issue getJiraIssue();
+
+	/**
 	 * Set whether the text of the decision knowledge element or irrelevant text is
 	 * plain, e.g., does not contain any code or logger ouput.
 	 * 
@@ -170,9 +146,9 @@ public interface Sentence extends DecisionKnowledgeElement {
 	boolean isPlainText();
 
 	/**
-	 * Receive the text from the JIRA issue comment.
+	 * Return the part of the text.
 	 * 
-	 * @return text from the JIRA issue comment
+	 * @return part of the text.
 	 */
-	String getTextFromComment();
+	String getText();
 }

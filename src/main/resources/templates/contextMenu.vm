@@ -20,7 +20,8 @@
     </aui-section>
     <aui-section>
     	<aui-item-link id="condec-context-menu-sentence-irrelevant-item">$i18n.getText("condec.context.menu.sentence.irrelevant.item.label")</aui-item-link>  
-        <aui-item-link id="condec-context-menu-sentence-convert-item">$i18n.getText("condec.context.menu.change.location.item.label")</aui-item-link>   
-        <aui-item-link id="condec-context-menu-delete-item">$i18n.getText("condec.context.menu.delete.item.label")</aui-item-link> 
+        <aui-item-link id="condec-context-menu-sentence-convert-item">$i18n.getText("condec.context.menu.change.location.item.label")</aui-item-link>
+        <aui-item-link id="condec-context-menu-export">$i18n.getText("condec.context.menu.export.item.label")</aui-item-link>
+        <aui-item-link id="condec-context-menu-delete-item">$i18n.getText("condec.context.menu.delete.item.label")</aui-item-link>
     </aui-section>
 </aui-dropdown-menu>

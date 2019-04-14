@@ -171,6 +171,11 @@
 				conDecObservable.notify();
 			});
 		};
+		document.getElementById("condec-context-menu-export").onclick = function() {
+			conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
+				conDecDialog.showExportDialog(decisionKnowledgeElement.key);
+			});
+		};
 	}
 
 	function getPosition(event, container) {
