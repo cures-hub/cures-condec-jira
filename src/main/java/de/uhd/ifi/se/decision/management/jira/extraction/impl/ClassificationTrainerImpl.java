@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -129,30 +128,26 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	}
 
 	public boolean saveArffFileOnServer() {
+		boolean isFileSaved = false;
 		try {
-			File directory = new File(DEFAULT_DIR + File.separator + projectKey);
+			String pathToDirectory = DEFAULT_DIR + File.separator + projectKey;
+			File directory = new File(pathToDirectory);
 			directory.delete();
 			directory.mkdirs();
 			Date date = new Date();
 			Timestamp timestamp = new Timestamp(date.getTime());
 
-			File arffFile = new File(DEFAULT_DIR + File.separator + projectKey + File.separator + "arffFile"
-					+ timestamp.getTime() + ".arff");
+			File arffFile = new File(pathToDirectory + File.separator + "arffFile" + timestamp.getTime() + ".arff");
 			arffFile.createNewFile();
 			String arffString = createArffString();
 			PrintWriter writer = new PrintWriter(arffFile, "UTF-8");
 			writer.println(arffString);
 			writer.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return false;
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			return false;
+			isFileSaved = true;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return true;
+		return isFileSaved;
 	}
 
 	public List<String> getArffFileList() {

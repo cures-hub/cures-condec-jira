@@ -22,10 +22,10 @@ public interface ClassificationTrainer {
 	void train();
 
 	/**
-	 * Trains the Classifier with the Data from the Database and Creats a new File.
+	 * Creats a new Attribute-Relation File Format (ARFF) file for the current project that can be used to train the
+	 * classifier.
 	 * 
-	 * @return Boolean is True if the Arff File could be created and saved on the
-	 *         Server
+	 * @return true if the ARFF file was created and saved on the server.
 	 */
 	boolean saveArffFileOnServer();
 

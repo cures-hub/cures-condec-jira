@@ -56,8 +56,9 @@
 	 * external references: none
 	 */
 	ConDecAPI.prototype.getAdjacentElements = function getAdjacentElements(id, documentationLocation, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAdjacentElements.json?projectKey=" + projectKey
-				+ "&id=" + id + "&documentationLocation=" + documentationLocation, function(error, adjacentElements) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAdjacentElements.json?projectKey="
+				+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function(error,
+				adjacentElements) {
 			if (error === null) {
 				callback(adjacentElements);
 			}
@@ -195,8 +196,7 @@
 	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getElementsByQuery = function getElementsByQuery(query, callback) {
-		getJSON(AJS.contextPath()
-				+ "/rest/decisions/latest/decisions/getElements.json?allTrees=false&projectKey="
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getElements.json?allTrees=false&projectKey="
 				+ projectKey + "&query=" + query, function(error, elements) {
 			if (error === null) {
 				callback(elements);
@@ -209,8 +209,7 @@
 	 */
 	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, elementKey,
 			documentationLocation, callback) {
-		getJSON(AJS.contextPath()
-				+ "/rest/decisions/latest/decisions/getElements.json?allTrees=false&projectKey="
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getElements.json?allTrees=false&projectKey="
 				+ projectKey + "&elementKey=" + elementKey + "&query=" + query, function(error, elements) {
 			if (error === null) {
 				callback(elements);
@@ -222,8 +221,7 @@
 	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getAllElementsByQueryAndLinked = function getAllElementsByQueryAndLinked(query, callback) {
-		getJSON(AJS.contextPath()
-				+ "/rest/decisions/latest/decisions/getElements.json?allTrees=true&projectKey="
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getElements.json?allTrees=true&projectKey="
 				+ projectKey + "&query=" + query, function(error, elements) {
 			if (error === null) {
 				callback(elements);
@@ -537,28 +535,31 @@
 
 	/*
 	 * external references: settingsForSingleProject.vm
- 	 */
-	ConDecAPI.prototype.trainClassifier = function trainClassifier(projectKey, arffFileName){
-	    var isSucceeded = postWithResponseAsReturnValue(AJS.contextPath()
-                +"/rest/decisions/latest/config/trainClassifier.json?projectKey="+ projectKey +"&arffFileName=" + arffFileName);
-        if (isSucceeded) {
-            showFlag("success", "The Classifier has now been retrained.");
-            return 1.0;
-        }
-        showFlag("error", "The training of the Classifier has failed.");
-        return 0.0;
-    };
+	 */
+	ConDecAPI.prototype.trainClassifier = function trainClassifier(projectKey, arffFileName) {
+		var isSucceeded = postWithResponseAsReturnValue(AJS.contextPath()
+				+ "/rest/decisions/latest/config/trainClassifier.json?projectKey=" + projectKey + "&arffFileName="
+				+ arffFileName);
+		if (isSucceeded) {
+			showFlag("success", "The Classifier has now been retrained.");
+			return 1.0;
+		}
+		showFlag("error", "The training of the Classifier has failed.");
+		return 0.0;
+	};
 
-	ConDecAPI.prototype.buildArffFile = function buildArffFile(projectKey){
-	  var isSucceeded   = postWithResponseAsReturnValue(AJS.contextPath()
-            +"/rest/decisions/latest/config/buildArffFile.json?projectKey="+ projectKey);
-        if (isSucceeded) {
-            showFlag("success", "The Data has been Build ");
-            return 1.0;
-        }
-        showFlag("error", "The Data could not be created");
-        return 0.0;
-    };
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.buildArffFile = function buildArffFile(projectKey) {
+		var isSucceeded = postWithResponseAsReturnValue(AJS.contextPath()
+				+ "/rest/decisions/latest/config/buildArffFile.json?projectKey=" + projectKey);
+		if (error === null) {
+			showFlag("success",
+					"The ARFF file was successfully created and saved in JIRA home directory/data/condec-plugin.");
+		}
+	};
+
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
@@ -570,7 +571,7 @@
 			}
 		});
 	};
-	
+
 	/*
 	 * external references: condec.context.menu
 	 */
@@ -581,12 +582,13 @@
 	};
 
 	ConDecAPI.prototype.getArffFileString = function getExtendedKnowledgeTypes(fileName, projectKey) {
-        var arffFileString = getResponseAsReturnValue(AJS.contextPath()
-            + "/rest/decisions/latest/config/getArffFileString.json?projectKey="+ projectKey  + "&fileName="+ fileName);
-        if (arffFileString !== null) {
-            return arffFileString;
-        }
-    };
+		var arffFileString = getResponseAsReturnValue(AJS.contextPath()
+				+ "/rest/decisions/latest/config/getArffFileString.json?projectKey=" + projectKey + "&fileName="
+				+ fileName);
+		if (arffFileString !== null) {
+			return arffFileString;
+		}
+	};
 
 	function getJSON(url, callback) {
 		var xhr = new XMLHttpRequest();
