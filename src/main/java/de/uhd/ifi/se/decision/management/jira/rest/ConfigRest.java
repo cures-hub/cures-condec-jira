@@ -30,8 +30,8 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationManagerForJiraIssueComments;
-import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationTrainer;
-import de.uhd.ifi.se.decision.management.jira.extraction.classification.ClassificationTrainerImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationTrainer;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.ClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -414,8 +414,8 @@ public class ConfigRest {
 			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error",
-				"Building could not be triggert becuas of an Error on  the Server. Check if the Classification is"
-						+ " activated and everything is setup right. If so try this process later again."))
+				"ARFF file could not be created because of an internal server errorr. "
+				+ "Please check if the classification is activated."))
 				.build();
 	}
 
@@ -423,7 +423,6 @@ public class ConfigRest {
 	@POST
 	public Response setIconParsing(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("isActivatedString") String isActivatedString) {
-		;
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
