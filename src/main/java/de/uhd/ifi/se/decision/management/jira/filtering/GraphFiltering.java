@@ -39,6 +39,8 @@ public class GraphFiltering {
 	private long startDate;
 	private long endDate;
 	private SearchService searchService;
+	private boolean queryContainsIssueTypes;
+	private List<String> issueTypesInQuery;
 
 	public GraphFiltering(String projectKey, String query, ApplicationUser user) {
 		this.query = query;
@@ -50,6 +52,8 @@ public class GraphFiltering {
 		this.queryContainsCreationDate = false;
 		this.startDate = -1;
 		this.endDate = -1;
+		this.queryContainsIssueTypes = false;
+		this.issueTypesInQuery = new ArrayList<>();
 	}
 
 	private String cropQuery() {
@@ -274,6 +278,47 @@ public class GraphFiltering {
 		return factor;
 	}
 
+	private void findIssueTypesInQuery(List<Clause> clauses){
+		System.out.println(clauses);
+		for (Clause clause : clauses) {
+			if (clause.getName().equals("issuetype")) {
+				this.queryContainsIssueTypes = true;
+				String issuetypes = clause.toString().substring(14, clause.toString().length() - 2);
+				if (clause.toString().contains("=")){
+					this.issueTypesInQuery.add(issuetypes.trim());
+				} else {
+					String issueTypesCleared = issuetypes.replaceAll("[()]","").replaceAll("\"","");
+					String[] split = issueTypesCleared.split(",");
+					for (String issueType : split) {
+						this.issueTypesInQuery.add(issueType.trim());
+					}
+				}
+				System.out.println(issueTypesInQuery);
+			}
+		}
+	}
+
+	private void findIssueTypesInQuery(String query){
+		System.out.println(query);
+		if (query.contains("issuetype")) {
+			this.queryContainsIssueTypes = true;
+			if (query.contains("=")){
+				String[] split = query.split("=");
+				this.issueTypesInQuery.add(split[1].trim());
+			} else {
+				String issueTypesSeparated = query.substring(12 ,query.length());
+				String issueTypesCleared = issueTypesSeparated.replaceAll("[()]","").replaceAll("\"","");
+				String[] split = issueTypesCleared.split(",");
+				for (String issueType : split) {
+					issueType.replaceAll("[()]","");
+
+					this.issueTypesInQuery.add(issueType.trim());
+				}
+			}
+			System.out.println(issueTypesInQuery);
+		}
+	}
+
 	public void produceResultsFromQuery() {
 		String filteredQuery = cropQuery();
 		String finalQuery = "";
@@ -308,8 +353,10 @@ public class GraphFiltering {
 			List<Clause> clauses = parseResult.getQuery().getWhereClause().getClauses();
 			if (!clauses.isEmpty()) {
 				findDatesInQuery(clauses);
+				findIssueTypesInQuery(clauses);
 			} else {
 				findDatesInQuery(finalQuery);
+				findIssueTypesInQuery(finalQuery);
 			}
 			try {
 				final SearchResults results = getSearchService().search(
@@ -416,6 +463,8 @@ public class GraphFiltering {
 		return endDate;
 	}
 
+	public List<String> getIssueTypesInQuery() {return  issueTypesInQuery; }
+
 	public SearchService getSearchService() {
 		if (this.searchService == null) {
 			return searchService = ComponentAccessor.getComponentOfType(SearchService.class);
@@ -426,4 +475,5 @@ public class GraphFiltering {
 	public void setSearchService(SearchService searchService) {
 		this.searchService = searchService;
 	}
+
 }

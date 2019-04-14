@@ -25,14 +25,14 @@ public class VisNode {
 
 	public VisNode(DecisionKnowledgeElement element){
 		this.setId(element.getId()+ "_" + element.getDocumentationLocationAsString());
-		this.setLabel(element.getSummary());
+		this.setLabel("<b>" + element.getTypeAsString().toUpperCase() + "</b> \n" + element.getSummary());
 		this.setTitle(element.getDescription());
 		this.setGroup(element.getTypeAsString() + "_" + element.getDocumentationLocationAsString());
 	}
 
 	public VisNode(DecisionKnowledgeElement element, String type) {
 		this.setId(element.getId()+ "_" + element.getDocumentationLocationAsString());
-		this.setLabel(element.getSummary());
+		this.setLabel("<b>" + element.getTypeAsString().toUpperCase() + "</b> \n" + element.getSummary());
 		this.setTitle(element.getDescription());
 		this.setGroup(type  + "_" + element.getDocumentationLocationAsString());
 	}

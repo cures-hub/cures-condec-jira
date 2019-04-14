@@ -17,9 +17,13 @@
                 clickToUse: true,
                 nodes: {
                     shape: "box",
-                    level:8,
                     widthConstraint:120,
-                    color:{background: 'rgba(255, 255, 255,1)'}
+                    color:{ background: 'rgba(255, 255, 255,1)',
+                            border: 'rgba(0,0,0,1)',
+                            highlight: {background: 'rgba(255,255,255,1)',
+                                        border: 'rgba(0,0,0,1)'
+                            }},
+                    font: {multi: true}
                 },
                 edges:{
                     arrows: "to"
@@ -32,10 +36,10 @@
                     hierarchical: {
                         enabled: true,
                         levelSeparation: 100,
-                        nodeSpacing: 150,
+                        nodeSpacing: 250,
                         treeSpacing: 200,
                         blockShifting: true,
-                        edgeMinimization: true,
+                        edgeMinimization: false,
                         parentCentralization: true,
                         direction: 'UD', // UD, DU, LR, RL
                         sortMethod: 'directed' // hubsize, directed
@@ -43,23 +47,23 @@
                 },
                 groups:{
                     // Setting colors and Levels for Decision Knowledge Elements stored in Jira Issues
-                    Decision_i: {color:{background: 'rgba(252,227,190,1)'}, level: 11},
-                    Issue_i: {color:{background: 'rgba(255, 255, 204,1)'}, level: 10},
-                    Alternative_i: {color:{background: 'rgba(252,227,190,1'}, level: 11},
-                    Pro_i: {color:{background: 'rgba(222, 250, 222,1)'}, level: 12},
-                    Con_i: {color:{background: 'rgba(255, 231, 231,1)'}, level: 12},
-                    Argument_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
-                    Constraint_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
-                    Assumption_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
-                    Implication_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
-                    Context_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
-                    Problem_i: {color:{background: 'rgba(255, 255, 204,1)'}, level: 9},
-                    Goal_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
-                    Solution_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
-                    Claim_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
-                    Rationale_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
-                    Question_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12},
-                    Assessment_i: {color:{background: 'rgba(255, 255, 255,1)'}, level: 12}
+                    Decision_i: {color:{background: 'rgba(252,227,190,1)'}},
+                    Issue_i: {color:{background: 'rgba(255, 255, 204,1)'}},
+                    Alternative_i: {color:{background: 'rgba(252,227,190,1'}},
+                    Pro_i: {color:{background: 'rgba(222, 250, 222,1)'}},
+                    Con_i: {color:{background: 'rgba(255, 231, 231,1)'}},
+                    Argument_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Constraint_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Assumption_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Implication_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Context_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Problem_i: {color:{background: 'rgba(255, 255, 204,1)'}},
+                    Goal_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Solution_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Claim_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Rationale_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Question_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Assessment_i: {color:{background: 'rgba(255, 255, 255,1)'}}
                 },
 
                 manipulation: {
@@ -77,8 +81,8 @@
                         if (data.from !== data.to) {
                             callback(data);
 
-                            conDecAPI.createLink(null,data.from.slice(0, -2),data.to.slice(0,-2),data.from.substr(-1),
-                                 data.to.substr(-1),function () {
+                            conDecAPI.createLink(null,data.to.slice(0, -2),data.from.slice(0,-2),data.to.substr(-1),
+                                 data.from.substr(-1),function () {
                                 //network.destroy();
                                 //buildVis(elementKey,searchTerm);
                                 conDecObservable.notify();
@@ -114,8 +118,8 @@
                 }
                 console.log("ContextMenu for ID: " + clickedNodeId.toString().slice(0, -2) +
                     " and location: " + clickedNodeId.toString().substr(-1));
-                conDecContextMenu.createContextMenu(clickedNodeId.toString().slice(0, -2), clickedNodeId.toString().substr(-1),
-                    params.event, "treant-container");
+                conDecContextMenu.createContextMenu(clickedNodeId.toString().slice(0, -2),
+                    getDocumentationLocationFromId(clickedNodeId), params.event, "treant-container");
             });
             network.on("hold",function(params){
                 params.event.preventDefault();
@@ -124,12 +128,24 @@
             network.on("click", function(params) {
                 params.event.preventDefault();
                 network.disableEditMode();
-            })
+            });
+            var keys = vis.keycharm({
+                container: container,
+                preventDefault: true
+            });
+
+            keys.bind("delete", function(event) {
+                var selection = network.getSelection();
+                console.log(selection);
+                console.log(event);
+            });
         });
+
 
     };
     function getDocumentationLocationFromId(nodeId) {
-
+        return nodeId.toString().substr(-1);
     };
+
     global.conDecVis = new ConDecVis();
 })(window);

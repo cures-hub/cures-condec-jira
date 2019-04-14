@@ -2,23 +2,25 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira-issue-module-resources")
 
-<p style = "horizontal-align: middle">
-<button class="aui-button aui-dropdown2-trigger" aria-controls="checkbox-items" style = "vertical-align: middle;
-  margin: 0px 20px;">Types
-</button>
-<label>Created between</label>
-<input class="aui-date-picker" id="demo-range-1" type="date" title="This is a simple tooltip" style = "vertical-align: middle;
+
+
+<div class="aui-toolbar2" role="toolbar">
+    <div class="aui-toolbar-2-inner">
+    <button aria-controls="issuetype-dropdown" class="aui-button aui-style-default aui-dropdown2-trigger" aria-haspopup="true">
+        Issue Types
+    </button>
+    <aui-dropdown-menu id="issuetype-dropdown"></aui-dropdown-menu>
+
+    <label>Created between</label>
+    <input class="aui-date-picker" id="demo-range-1" type="date" title="This is a simple tooltip" style = "vertical-align: middle;
   margin: 0px 5px;"/>
-<label>and</label>
-<input class="aui-date-picker" id="demo-range-2" type="date"style = "vertical-align: middle;
+    <label>and</label>
+    <input class="aui-date-picker" id="demo-range-2" type="date"style = "vertical-align: middle;
   margin: 0px 5px;"/>
-<aui-dropdown-menu id="checkbox-items">
-    <aui-item-checkbox interactive checked>Decision</aui-item-checkbox>
-    <aui-item-checkbox interactive checked>Issue</aui-item-checkbox>
-    <aui-item-checkbox interactive>Alternative</aui-item-checkbox>
-</aui-dropdown-menu>
-<button class="aui-button aui-button-primary" id="filter-button"><span class="aui-icon aui-icon-small aui-iconfont-search"></span> Filter</button>
-</p>
+
+    <button class="aui-button aui-button-primary" id="filter-button"><span class="aui-icon aui-icon-small aui-iconfont-search"></span> Filter</button>
+    </div>
+</div>
 <div id="treant-container">
 	<p>No Element has been selected</p>
 </div>
@@ -38,11 +40,15 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
  */
 $(document).ready(function() {
     conDecAPI.checkIfProjectKeyIsValid();
+
     if (window.conDecJiraIssueModule.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant,
-            conDecVis))
+            conDecVis)) {
         window.conDecJiraIssueModule.initView();
+    }
     else {
         console.error("ConDecJiraIssueModule could not get its dependencies.");
     }
+
 });
+
 </script>

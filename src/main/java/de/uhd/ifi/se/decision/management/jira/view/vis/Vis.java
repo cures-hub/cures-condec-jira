@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.config.ConstantsManager;
+import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -8,16 +11,14 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
 import de.uhd.ifi.se.decision.management.jira.filtering.GraphFiltering;
+import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import org.json.JSONPropertyIgnore;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @XmlRootElement(name = "vis")
@@ -31,6 +32,9 @@ public class Vis {
 	private Graph graph;
 	private boolean isHyperlinked;
 	private List<DecisionKnowledgeElement> elementsAlreadyAsNode;
+	private long startDate;
+	private long endDate;
+	private List<String> issueTypeNames;
 
 	public Vis(){
 	}
@@ -41,8 +45,11 @@ public class Vis {
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
 		nodes = new HashSet<>();
 		edges= new HashSet<>();
-		fillNodesAndEdges(rootElement,null);
 		this.elementsAlreadyAsNode = new ArrayList<>();
+		startDate = -1;
+		endDate = -1;
+		issueTypeNames = getNamesOfExistingIssueTypes();
+		fillNodesAndEdges(rootElement,null);
 	}
 
 	public Vis(String projectKey, String elementKey, boolean isHyperlinked, String query, ApplicationUser user){
@@ -50,9 +57,11 @@ public class Vis {
 		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
 			filter = new GraphFiltering(projectKey, query, user);
 			filter.produceResultsFromQuery();
+			startDate = filter.getStartDate();
+			endDate = filter.getEndDate();
 			this.graph = new GraphImplFiltered(projectKey, elementKey, filter);
 		} else {
-			this.graph = new GraphImpl(projectKey, elementKey);
+
 		}
 		this.setHyperlinked(isHyperlinked);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
@@ -141,5 +150,15 @@ public class Vis {
 
 	public boolean isHyperlinked() {
 		return isHyperlinked;
+	}
+
+	public List<String> getNamesOfExistingIssueTypes() {
+		List<String> existingIssueTypeNames = new ArrayList<String>();
+		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
+		Collection<IssueType> issueTypes = constantsManager.getAllIssueTypeObjects();
+		for (IssueType issueType : issueTypes) {
+			existingIssueTypeNames.add(issueType.getName());
+		}
+		return existingIssueTypeNames;
 	}
 }

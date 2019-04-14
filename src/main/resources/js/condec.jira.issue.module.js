@@ -49,13 +49,33 @@
 		return false;
 	};
 
+
+
 	ConDecJiraIssueModule.prototype.initView = function initView() {
 		console.log("ConDecJiraIssueModule initView");
 		var issueKey = conDecAPI.getIssueKey();
 		var search = getURLsSearch();
-
 		vis.buildVis(issueKey, search);
 
+	};
+
+    ConDecJiraIssueModule.prototype.initFilter = function() {
+        console.log("ConDecJiraIssueModule initFilter");
+        //var dropdownMenu = document.getElementById("issuetype-dropdown");
+        var issueKey = conDecAPI.getIssueKey();
+        var search = getURLsSearch();
+        var dropdownSource = document.createAttribute("src");
+        dropdownSource.value = (AJS.contextPath() + "/rest/decisions/latest/view/getIssueTypesDropdown.json?elementKey="
+            + issueKey + "&query=" + search);
+        console.log(dropdownSource.value);
+        //dropdownMenu.setAttributeNode(dropdownSource);
+    };
+
+    ConDecJiraIssueModule.prototype.getFilterJsonAddress = function() {
+        var issueKey = conDecAPI.getIssueKey();
+        var search = getURLsSearch();
+        return (AJS.contextPath() + "/rest/decisions/latest/view/getIssueTypesDropdown.json?elementKey="
+            + issueKey + "&query=" + search);
 	};
 
 	function getURLsSearch() {
