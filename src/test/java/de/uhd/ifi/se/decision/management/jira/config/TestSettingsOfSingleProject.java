@@ -110,6 +110,6 @@ public class TestSettingsOfSingleProject extends TestSetUpWithIssues {
 	@NonTransactional
 	public void testGetVelocityParametersFilled() {
 		request.setAttribute("projectKey", "TEST");
-		assertEquals(7, servlet.getVelocityParameters(request).size());
+		assertEquals(8, servlet.getVelocityParameters(request).size());
 	}
 }

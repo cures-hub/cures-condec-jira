@@ -15,7 +15,6 @@ import java.util.Random;
 import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationTrainer;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import meka.classifiers.multilabel.LC;
 import weka.classifiers.Evaluation;
@@ -29,10 +28,14 @@ import weka.core.tokenizers.NGramTokenizer;
 import weka.core.tokenizers.Tokenizer;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
+/**
+ * Class responsible to train the classifier with the ARFF file selected by the
+ * project admin.
+ */
 public class ClassificationTrainerImpl implements ClassificationTrainer {
 
-	private static String projectKey;
-	private static Instances structure;
+	private String projectKey;
+	private Instances structure;
 	private List<PartOfJiraIssueText> mekaTrainData;
 
 	/**
@@ -45,14 +48,20 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		this.projectKey = projectKey;
 		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
 		mekaTrainData = manager.getUserValidatedPartsOfText(projectKey);
+	}
+
+	public ClassificationTrainerImpl(String projectKey, String arffFileName) {
+		this(projectKey);
+
+		if (arffFileName == "" || arffFileName == null) {
+			// TODO Use default ARFF file
+			return;
+		}
 
 		try {
-			String arffFileName = ConfigPersistenceManager.getTrainDataString(projectKey);
-			if (arffFileName != "" || arffFileName != null) {
-				ConverterUtils.DataSource source = new ConverterUtils.DataSource(
-						DEFAULT_DIR + File.separator + projectKey + File.separator + arffFileName);
-				structure = source.getDataSet();
-			}
+			ConverterUtils.DataSource source = new ConverterUtils.DataSource(
+					DEFAULT_DIR + File.separator + projectKey + File.separator + arffFileName);
+			structure = source.getDataSet();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -150,15 +159,15 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		return isFileSaved;
 	}
 
-	public List<String> getArffFileList() {
-		List<String> arffFileList = new ArrayList<>();
+	public List<String> getArffFiles() {
+		List<String> arffFilesOnServer = new ArrayList<String>();
 		File directory = new File(DEFAULT_DIR + File.separator + projectKey + File.separator);
-		if (directory.exists() == true) {
+		if (directory.exists()) {
 			for (File file : directory.listFiles()) {
-				arffFileList.add(file.getName());
+				arffFilesOnServer.add(file.getName());
 			}
 		}
-		return arffFileList;
+		return arffFilesOnServer;
 	}
 
 	public String getArffFileString(String fileName) {
@@ -240,7 +249,7 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		return new Attribute(name, rationaleAttribute);
 	}
 
-	private static void evaluateTraining(LC binaryRelevance) throws Exception {
+	private void evaluateTraining(LC binaryRelevance) throws Exception {
 		Evaluation rate = new Evaluation(structure);
 		Random seed = new Random(1);
 		Instances datarandom = new Instances(structure);

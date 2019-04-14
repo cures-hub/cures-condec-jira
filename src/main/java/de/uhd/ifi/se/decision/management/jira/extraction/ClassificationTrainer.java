@@ -7,7 +7,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.util.JiraHome;
 
 /**
- * Interface to train the classifier manually with the given data from the user.
+ * Interface to train the classifier with the ARFF file selected by the project admin.
  */
 public interface ClassificationTrainer {
 
@@ -30,11 +30,11 @@ public interface ClassificationTrainer {
 	boolean saveArffFileOnServer();
 
 	/**
-	 * Gets all saved Arff File names on the server.
+	 * Gets the names of all Attribute-Relation File Format (ARFF) files on the server.
 	 * 
-	 * @return List<String>
+	 * @return names of all Attribute-Relation File Format (ARFF) files on the server as a list of Strings.
 	 */
-	List<String> getArffFileList();
+	List<String> getArffFiles();
 
 	/**
 	 * Gets a specific Arff File String

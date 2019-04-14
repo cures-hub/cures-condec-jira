@@ -541,10 +541,10 @@
 				+ "/rest/decisions/latest/config/trainClassifier.json?projectKey=" + projectKey + "&arffFileName="
 				+ arffFileName);
 		if (isSucceeded) {
-			showFlag("success", "The Classifier has now been retrained.");
+			showFlag("success", "The classifier was successfully retrained.");
 			return 1.0;
 		}
-		showFlag("error", "The training of the Classifier has failed.");
+		showFlag("error", "Training of the classifier failed.");
 		return 0.0;
 	};
 
@@ -554,10 +554,13 @@
 	ConDecAPI.prototype.buildArffFile = function buildArffFile(projectKey) {
 		var isSucceeded = postWithResponseAsReturnValue(AJS.contextPath()
 				+ "/rest/decisions/latest/config/buildArffFile.json?projectKey=" + projectKey);
-		if (error === null) {
+		if (isSucceeded) {
 			showFlag("success",
 					"The ARFF file was successfully created and saved in JIRA home directory/data/condec-plugin.");
+			return 1.0;
 		}
+		showFlag("error", "The ARFF file could not be created.");
+		return 0.0;
 	};
 
 	/*
@@ -579,15 +582,6 @@
 		this.getDecisionKnowledgeElement(elementId, documentationLocation, function(decisionKnowledgeElement) {
 			global.open(decisionKnowledgeElement.url, '_self');
 		});
-	};
-
-	ConDecAPI.prototype.getArffFileString = function getExtendedKnowledgeTypes(fileName, projectKey) {
-		var arffFileString = getResponseAsReturnValue(AJS.contextPath()
-				+ "/rest/decisions/latest/config/getArffFileString.json?projectKey=" + projectKey + "&fileName="
-				+ fileName);
-		if (arffFileString !== null) {
-			return arffFileString;
-		}
 	};
 
 	function getJSON(url, callback) {

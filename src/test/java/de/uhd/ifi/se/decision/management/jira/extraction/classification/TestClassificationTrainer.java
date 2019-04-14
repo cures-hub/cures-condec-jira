@@ -47,13 +47,12 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		String comment = "Das ist der Test Kommentrar";
 		commentManager.create(issue, user, comment, true);
-
 	}
 
 	@Test
 	public void testClassificationTrainerARFFDataValid() {
 		ClassificationTrainer trainer = new ClassificationTrainerImpl("TEST");
-		List<PartOfJiraIssueText> values = new ArrayList<>();
+		List<PartOfJiraIssueText> values = new ArrayList<PartOfJiraIssueText>();
 		for (KnowledgeType type : KnowledgeType.values()) {
 			PartOfJiraIssueText newEntry = new PartOfJiraIssueTextImpl();
 			newEntry.setType(type);

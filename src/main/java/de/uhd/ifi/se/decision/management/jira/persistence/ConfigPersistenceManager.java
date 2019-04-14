@@ -200,11 +200,11 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, "webhookUrl", webhookUrl);
 	}
 
-	public static void setTrainDateString(String projectKey, String arffFileName) {
+	public static void setArffFileForClassifier(String projectKey, String arffFileName) {
 		setValue(projectKey, "arffFileName", arffFileName);
 	}
 
-	public static String getTrainDataString(String projectKey) {
+	public static String getArffFileForClassifier(String projectKey) {
 		return getValue(projectKey, "arffFileName");
 	}
 }

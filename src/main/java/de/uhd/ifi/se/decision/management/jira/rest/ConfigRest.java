@@ -248,20 +248,6 @@ public class ConfigRest {
 		return Response.ok(knowledgeTypes).build();
 	}
 
-	@Path("/getArffFileString")
-	@GET
-	public Response getArffFileString(@QueryParam("projectKey") final String projectKey,
-			@QueryParam("fileName") final String fileName) {
-		if (fileName == null || fileName.equals("")) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "Filename was Empty = null"))
-					.build();
-		}
-
-		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
-		String arffFileString = trainer.getArffFileString(fileName);
-		return Response.ok(arffFileString).build();
-	}
-
 	@Path("/setWebhookEnabled")
 	@POST
 	public Response setWebhookEnabled(@Context HttpServletRequest request,
@@ -395,8 +381,8 @@ public class ConfigRest {
 		if (response != null) {
 			return response;
 		}
-		ConfigPersistenceManager.setTrainDateString(projectKey, arffFileName);
-		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
+		ConfigPersistenceManager.setArffFileForClassifier(projectKey, arffFileName);
+		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey, arffFileName);
 		trainer.train();
 		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
 	}
@@ -413,9 +399,9 @@ public class ConfigRest {
 		if (trainer.saveArffFileOnServer()) {
 			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
 		}
-		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(ImmutableMap.of("error",
-				"ARFF file could not be created because of an internal server errorr. "
-				+ "Please check if the classification is activated."))
+		return Response.status(Status.INTERNAL_SERVER_ERROR)
+				.entity(ImmutableMap.of("error", "ARFF file could not be created because of an internal server errorr. "
+						+ "Please check if the classification is activated."))
 				.build();
 	}
 
