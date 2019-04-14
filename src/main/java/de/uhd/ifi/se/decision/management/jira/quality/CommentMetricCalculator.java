@@ -21,23 +21,24 @@ import com.atlassian.query.Query;
 import de.uhd.ifi.se.decision.management.jira.config.JiraIssueTypeGenerator;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
+import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
-import de.uhd.ifi.se.decision.management.jira.model.Sentence;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
 
 public class CommentMetricCalculator {
 
 	private String projectKey;
 	private ApplicationUser user;
-	private JiraIssueCommentPersistenceManager persistenceManager;
+	private JiraIssueTextPersistenceManager persistenceManager;
 	private String jiraIssueTypeId;
 	private List<Issue> jiraIssues;
 	private int absolutDepth;
@@ -46,7 +47,7 @@ public class CommentMetricCalculator {
 	public CommentMetricCalculator(long projectId, ApplicationUser user, String jiraIssueTypeId) {
 		this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
 		this.user = user;
-		this.persistenceManager = new JiraIssueCommentPersistenceManager(projectKey);
+		this.persistenceManager = new JiraIssueTextPersistenceManager(projectKey);
 		this.jiraIssueTypeId = jiraIssueTypeId;
 		this.jiraIssues = getJiraIssuesForProject(projectId);
 		this.gitClient = new GitClientImpl(projectKey);
@@ -56,11 +57,11 @@ public class CommentMetricCalculator {
 		List<Issue> jiraIssues = new ArrayList<Issue>();
 		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
 		Query query = jqlClauseBuilder.project(projectId).buildQuery();
-		SearchResults searchResult = new SearchResults(null, 0, 0, 0);
+		SearchResults<Issue> searchResults = null;
 		SearchService searchService = ComponentAccessor.getComponentOfType(SearchService.class);
 		try {
-			searchResult = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
-			jiraIssues.addAll(searchResult.getIssues());
+			searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
+			jiraIssues = JiraSearchServiceHelper.getJiraIssues(searchResults);
 		} catch (SearchException e) {
 		}
 		return jiraIssues;
@@ -88,7 +89,7 @@ public class CommentMetricCalculator {
 		Map<String, Integer> numberOfSentencesForJiraIssues = new HashMap<String, Integer>();
 		for (Issue jiraIssue : jiraIssues) {
 			int numberOfElements = 0;
-			List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager
+			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
 					.getElementsForIssue(jiraIssue.getId(), projectKey);
 			for (DecisionKnowledgeElement element : elements) {
 				if (element.getType().equals(type)) {
@@ -106,12 +107,14 @@ public class CommentMetricCalculator {
 		int isIrrelevant = 0;
 
 		for (Issue jiraIssue : jiraIssues) {
-			List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager
+			List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
 					.getElementsForIssue(jiraIssue.getId(), projectKey);
 			for (DecisionKnowledgeElement currentElement : elements) {
-				if (currentElement instanceof Sentence && ((Sentence) currentElement).isRelevant()) {
+				if (currentElement instanceof PartOfJiraIssueText
+						&& ((PartOfJiraIssueText) currentElement).isRelevant()) {
 					isRelevant++;
-				} else if (currentElement instanceof Sentence && !((Sentence) currentElement).isRelevant()) {
+				} else if (currentElement instanceof PartOfJiraIssueText
+						&& !((PartOfJiraIssueText) currentElement).isRelevant()) {
 					isIrrelevant++;
 				}
 			}
@@ -151,13 +154,13 @@ public class CommentMetricCalculator {
 
 		for (DecisionKnowledgeElement issue : listOfIssues) {
 			List<Link> links = GenericLinkManager.getLinksForElement(issue.getId(),
-					DocumentationLocation.JIRAISSUECOMMENT);
+					DocumentationLocation.JIRAISSUETEXT);
 			boolean hastOtherElementLinked = false;
 
 			for (Link link : links) {
 				if (link.isValid()) {
 					DecisionKnowledgeElement dke = link.getOppositeElement(issue.getId());
-					if (dke instanceof Sentence && dke.getType().equals(linkTo)) { // alt
+					if (dke instanceof PartOfJiraIssueText && dke.getType().equals(linkTo)) { // alt
 						hastOtherElementLinked = true;
 					}
 				}
@@ -185,9 +188,9 @@ public class CommentMetricCalculator {
 		List<DecisionKnowledgeElement> listOfIssues = this.persistenceManager.getDecisionKnowledgeElements(linkFrom);
 
 		for (DecisionKnowledgeElement issue : listOfIssues) {
-			if (issue instanceof Sentence
-					&& !listOfElementsWithoutLink.contains(((Sentence) issue).getKey().split(":")[0])) {
-				listOfElementsWithoutLink += ((Sentence) issue).getKey().split(":")[0] + " ";
+			if (issue instanceof PartOfJiraIssueText
+					&& !listOfElementsWithoutLink.contains(((PartOfJiraIssueText) issue).getKey().split(":")[0])) {
+				listOfElementsWithoutLink += ((PartOfJiraIssueText) issue).getKey().split(":")[0] + " ";
 			}
 		}
 		return listOfElementsWithoutLink;
@@ -202,12 +205,12 @@ public class CommentMetricCalculator {
 
 		for (DecisionKnowledgeElement currentAlternative : alternatives) {
 			List<Link> links = GenericLinkManager.getLinksForElement(currentAlternative.getId(),
-					DocumentationLocation.JIRAISSUECOMMENT);
+					DocumentationLocation.JIRAISSUETEXT);
 			boolean hasArgument = false;
 			for (Link link : links) {
 				if (link.isValid()) {
 					DecisionKnowledgeElement dke = link.getOppositeElement(currentAlternative.getId());
-					if (dke instanceof Sentence && dke.getType().equals(KnowledgeType.ARGUMENT)) {
+					if (dke instanceof PartOfJiraIssueText && dke.getType().equals(KnowledgeType.ARGUMENT)) {
 						hasArgument = true;
 					}
 				}

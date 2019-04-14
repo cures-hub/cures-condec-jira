@@ -4,12 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
@@ -17,6 +17,7 @@ import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -253,27 +254,75 @@ public class GitClientImpl implements GitClient {
 	@Override
 	public List<RevCommit> getCommits(String jiraIssueKey) {
 		List<RevCommit> commitsForJiraIssue = new LinkedList<RevCommit>();
-		if (git == null) {
+		if (git == null || jiraIssueKey == null) {
 			LOGGER.error("Commits cannot be retrieved since git object is null.");
 			return commitsForJiraIssue;
 		}
-		try {
-			Iterable<RevCommit> iterable = git.log().call();
-			Iterator<RevCommit> iterator = iterable.iterator();
-			while (iterator.hasNext()) {
-				RevCommit commit = iterator.next();
-				// TODO Improve identification of jira issue key in commit message
-				String jiraIssueKeyInCommitMessage = GitClient.getJiraIssueKey(commit.getFullMessage());
-				if (jiraIssueKeyInCommitMessage.equalsIgnoreCase(jiraIssueKey)) {
-					commitsForJiraIssue.add(commit);
-					LOGGER.info("Commit message for key " + jiraIssueKey + ": " + commit.getShortMessage());
-				}
+		// @issue How to get the commits for branches that are not on the master branch?
+		// @decision Assume that the JIRA issue key equals the branch name, otherwise
+		// return commits on master branch
+		Ref branch = getRef(jiraIssueKey);
+		List<RevCommit> commits = getCommits(branch);
+		for (RevCommit commit : commits) {
+			// TODO Improve identification of jira issue key in commit message
+			String jiraIssueKeyInCommitMessage = GitClient.getJiraIssueKey(commit.getFullMessage());
+			if (jiraIssueKeyInCommitMessage.equalsIgnoreCase(jiraIssueKey)) {
+				commitsForJiraIssue.add(commit);
+				LOGGER.info("Commit message for key " + jiraIssueKey + ": " + commit.getShortMessage());
 			}
-		} catch (GitAPIException e) {
-			LOGGER.error("Could not retrieve commits for the JIRA issue key " + jiraIssueKey);
-			e.printStackTrace();
 		}
 		return commitsForJiraIssue;
+	}
+
+	@Override
+	public List<RevCommit> getCommits() {
+		List<RevCommit> commits = new ArrayList<RevCommit>();
+		for (Ref branch : getAllRefs()) {
+			commits.addAll(getCommits(branch));
+		}
+		return commits;
+	}
+
+	private Ref getRef(String jiraIssueKey) {
+		List<Ref> refs = getAllRefs();
+		Ref branch = null;
+		for (Ref ref : refs) {
+			System.out.println(ref.getName());
+			if (ref.getName().contains(jiraIssueKey)) {
+				return ref;
+			} else if (ref.getName().equalsIgnoreCase("refs/heads/develop")) {
+				branch = ref;
+			} else if (ref.getName().equalsIgnoreCase("refs/heads/master")) {
+				branch = ref;
+			}
+		}
+		return branch;
+	}
+
+	private List<Ref> getAllRefs() {
+		List<Ref> refs = new ArrayList<Ref>();
+		try {
+			refs = git.branchList().setListMode(ListBranchCommand.ListMode.ALL).call();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+		return refs;
+	}
+
+	private List<RevCommit> getCommits(Ref branch) {
+		List<RevCommit> commits = new ArrayList<RevCommit>();
+		try {
+			if (branch != null) {
+				git.checkout().setName(branch.getName()).call();
+			}
+			Iterable<RevCommit> iterable = git.log().call();
+			for (RevCommit commit : iterable) {
+				commits.add(commit);
+			}
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+		return commits;
 	}
 
 	@Override

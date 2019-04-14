@@ -19,12 +19,12 @@ import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
  * Abstract class to create, edit, delete and retrieve decision knowledge
  * elements and their links. Concrete persistence strategies for first class
  * elements are either the JIRA issue strategy or the active object strategy.
- * Other persistence methods are for example JIRA issue comments, description,
- * and commit messages.
+ * For example, other methods are to persist knowledge in JIRA issue
+ * comments, the description, and commit messages.
  *
  * @see JiraIssuePersistenceManager
  * @see ActiveObjectPersistenceManager
- * @see JiraIssueCommentPersistenceManager
+ * @see JiraIssueTextPersistenceManager
  * @see PersistenceProvider
  */
 public abstract class AbstractPersistenceManager {
@@ -80,7 +80,7 @@ public abstract class AbstractPersistenceManager {
 		if (link.getSourceElement().getDocumentationLocation() == DocumentationLocation.UNKNOWN) {
 			link.setDocumentationLocationOfSourceElement(defaultDocumentationLocation);
 		}
-	}	
+	}
 
 	/**
 	 * Get the persistence strategy for autarkical decision knowledge elements used
@@ -147,8 +147,8 @@ public abstract class AbstractPersistenceManager {
 		switch (documentationLocation) {
 		case JIRAISSUE:
 			return new JiraIssuePersistenceManager(projectKey);
-		case JIRAISSUECOMMENT:
-			return new JiraIssueCommentPersistenceManager(projectKey);
+		case JIRAISSUETEXT:
+			return new JiraIssueTextPersistenceManager(projectKey);
 		case ACTIVEOBJECT:
 			return new ActiveObjectPersistenceManager(projectKey);
 		default:

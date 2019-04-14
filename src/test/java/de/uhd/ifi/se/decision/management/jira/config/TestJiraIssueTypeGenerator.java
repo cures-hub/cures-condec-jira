@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ofbiz.core.entity.GenericValue;
@@ -56,6 +57,7 @@ public class TestJiraIssueTypeGenerator extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@Ignore
 	public void testGetValueParamExisting() {
 		Map<String, GenericValue> paramMap = new HashMap<String, GenericValue>();
 		GenericValue value = new MockGenericValue("TEST", (long) 1);
@@ -69,6 +71,7 @@ public class TestJiraIssueTypeGenerator extends TestSetUpWithIssues {
 	}
 
 	@Test
+	@Ignore
 	public void testGetJiraIssueTypesOk() {
 		assertEquals(12, JiraIssueTypeGenerator.getJiraIssueTypes(1).size(), 0.0);
 	}

@@ -52,8 +52,8 @@ public class TestAbstractPersistenceManager extends TestSetUpWithIssues {
 
 	@Test
 	public void testGetPersistenceManagerElementExistentJiraIssueComment() {
-		element.setDocumentationLocation(DocumentationLocation.JIRAISSUECOMMENT);
+		element.setDocumentationLocation(DocumentationLocation.JIRAISSUETEXT);
 		assertTrue(AbstractPersistenceManager
-				.getPersistenceManager(element) instanceof JiraIssueCommentPersistenceManager);
+				.getPersistenceManager(element) instanceof JiraIssueTextPersistenceManager);
 	}
 }

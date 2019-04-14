@@ -1,30 +1,30 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
-import com.atlassian.jira.jql.builder.JqlClauseBuilder;
-import com.atlassian.jira.jql.builder.JqlQueryBuilder;
-import com.atlassian.query.clause.Clause;
-
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import de.uhd.ifi.se.decision.management.jira.model.Sentence;
-import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueCommentPersistenceManager;
-
-import com.atlassian.jira.bc.issue.search.*;
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.search.SearchException;
-import com.atlassian.jira.issue.search.SearchResults;
-import com.atlassian.jira.issue.search.SearchRequest;
-import com.atlassian.jira.issue.search.SearchRequestManager;
-import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.web.bean.PagerFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.atlassian.jira.bc.issue.search.SearchService;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.search.SearchException;
+import com.atlassian.jira.issue.search.SearchRequest;
+import com.atlassian.jira.issue.search.SearchRequestManager;
+import com.atlassian.jira.issue.search.SearchResults;
+import com.atlassian.jira.jql.builder.JqlClauseBuilder;
+import com.atlassian.jira.jql.builder.JqlQueryBuilder;
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.web.bean.PagerFilter;
+import com.atlassian.query.clause.Clause;
+
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 public class GraphFiltering {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GraphFiltering.class);
@@ -41,7 +41,8 @@ public class GraphFiltering {
 	private SearchService searchService;
 	private Boolean mergeFilterQueryWithProjectKey;
 
-	public GraphFiltering(String projectKey, String query, ApplicationUser user, Boolean mergeFilterQueryWithProjectKey) {
+	public GraphFiltering(String projectKey, String query, ApplicationUser user,
+			Boolean mergeFilterQueryWithProjectKey) {
 		this.query = query;
 		this.projectKey = projectKey;
 		this.user = user;
@@ -77,39 +78,39 @@ public class GraphFiltering {
 		String returnQuery;
 		if (id <= 0) {
 			switch ((int) id) {
-				case 0: // Any other than the preset Filters
-					returnQuery = "type != null";
-					break;
-				case -1: // My open issues
-					returnQuery = "assignee = currentUser() AND resolution = Unresolved";
-					break;
-				case -2: // Reported by me
-					returnQuery = "reporter = currentUser()";
-					break;
-				case -3: // Viewed recently
-					returnQuery = "issuekey IN issueHistory()";
-					break;
-				case -4: // All issues
-					returnQuery = "type != null";
-					break;
-				case -5: // Open issues
-					returnQuery = "resolution = Unresolved";
-					break;
-				case -6: // Created recently
-					returnQuery = "created >= -1w";
-					break;
-				case -7: // Resolved recently
-					returnQuery = "resolutiondate >= -1w";
-					break;
-				case -8: // Updated recently
-					returnQuery = "updated >= -1w";
-					break;
-				case -9: // Done issues
-					returnQuery = "statusCategory = Done";
-					break;
-				default:
-					returnQuery = "type != null";
-					break;
+			case 0: // Any other than the preset Filters
+				returnQuery = "type != null";
+				break;
+			case -1: // My open issues
+				returnQuery = "assignee = currentUser() AND resolution = Unresolved";
+				break;
+			case -2: // Reported by me
+				returnQuery = "reporter = currentUser()";
+				break;
+			case -3: // Viewed recently
+				returnQuery = "issuekey IN issueHistory()";
+				break;
+			case -4: // All issues
+				returnQuery = "type != null";
+				break;
+			case -5: // Open issues
+				returnQuery = "resolution = Unresolved";
+				break;
+			case -6: // Created recently
+				returnQuery = "created >= -1w";
+				break;
+			case -7: // Resolved recently
+				returnQuery = "resolutiondate >= -1w";
+				break;
+			case -8: // Updated recently
+				returnQuery = "updated >= -1w";
+				break;
+			case -9: // Done issues
+				returnQuery = "statusCategory = Done";
+				break;
+			default:
+				returnQuery = "type != null";
+				break;
 			}
 			returnQuery = "Project = " + projectKey + " AND " + returnQuery;
 		} else {
@@ -123,36 +124,36 @@ public class GraphFiltering {
 	private String queryFromFilterString(String filterQuery) {
 		String returnQuery;
 		switch (filterQuery) {
-			case "myopenissues": // My open issues
-				returnQuery = "assignee = currentUser() AND resolution = Unresolved";
-				break;
-			case "reportedbyme": // Reported by me
-				returnQuery = "reporter = currentUser()";
-				break;
-			case "recentlyviewed": // Viewed recently
-				returnQuery = "issuekey IN issueHistory()";
-				break;
-			case "allissues": // All issues
-				returnQuery = "type != null";
-				break;
-			case "allopenissues": // Open issues
-				returnQuery = "resolution = Unresolved";
-				break;
-			case "addedrecently": // Created recently
-				returnQuery = "created >= -1w";
-				break;
-			case "updatedrecently": // Updated recently
-				returnQuery = "updated >= -1w";
-				break;
-			case "resolvedrecently": // Resolved recently
-				returnQuery = "resolutiondate >= -1w";
-				break;
-			case "doneissues": // Done issues
-				returnQuery = "statusCategory = Done";
-				break;
-			default:
-				returnQuery = "type != null";
-				break;
+		case "myopenissues": // My open issues
+			returnQuery = "assignee = currentUser() AND resolution = Unresolved";
+			break;
+		case "reportedbyme": // Reported by me
+			returnQuery = "reporter = currentUser()";
+			break;
+		case "recentlyviewed": // Viewed recently
+			returnQuery = "issuekey IN issueHistory()";
+			break;
+		case "allissues": // All issues
+			returnQuery = "type != null";
+			break;
+		case "allopenissues": // Open issues
+			returnQuery = "resolution = Unresolved";
+			break;
+		case "addedrecently": // Created recently
+			returnQuery = "created >= -1w";
+			break;
+		case "updatedrecently": // Updated recently
+			returnQuery = "updated >= -1w";
+			break;
+		case "resolvedrecently": // Resolved recently
+			returnQuery = "resolutiondate >= -1w";
+			break;
+		case "doneissues": // Done issues
+			returnQuery = "statusCategory = Done";
+			break;
+		default:
+			returnQuery = "type != null";
+			break;
 		}
 		return returnQuery;
 	}
@@ -205,7 +206,7 @@ public class GraphFiltering {
 			}
 		} else if (time.matches("(-\\d+(.))")) {
 			long factor = 0;
-			String clearedTime = time.replaceAll("\\s(.)+","");
+			String clearedTime = time.replaceAll("\\s(.)+", "");
 			char factorLetter = clearedTime.charAt(clearedTime.length() - 1);
 			factor = getTimeFactor(factorLetter);
 			long queryTime = currentDate + 1;
@@ -239,7 +240,7 @@ public class GraphFiltering {
 			}
 		} else if (time.matches("-\\d+(.)+")) {
 			long factor;
-			String clearedTime = time.replaceAll("\\s(.)+","");
+			String clearedTime = time.replaceAll("\\s(.)+", "");
 			char factorLetter = clearedTime.charAt(clearedTime.length() - 1);
 			factor = getTimeFactor(factorLetter);
 			long queryTime = currentDate + 1;
@@ -257,21 +258,21 @@ public class GraphFiltering {
 	private long getTimeFactor(char factorAsALetter) {
 		long factor;
 		switch (factorAsALetter) {
-			case 'm':
-				factor = 60000;
-				break;
-			case 'h':
-				factor = 3600000;
-				break;
-			case 'd':
-				factor = 86400000;
-				break;
-			case 'w':
-				factor = 604800000;
-				break;
-			default:
-				factor = 1;
-				break;
+		case 'm':
+			factor = 60000;
+			break;
+		case 'h':
+			factor = 3600000;
+			break;
+		case 'd':
+			factor = 86400000;
+			break;
+		case 'w':
+			factor = 604800000;
+			break;
+		default:
+			factor = 1;
+			break;
 		}
 		return factor;
 	}
@@ -288,7 +289,7 @@ public class GraphFiltering {
 				filterId = Long.parseLong(filteredQuery, 10);
 				filterIsNumberCoded = true;
 			} catch (NumberFormatException n) {
-				//n.printStackTrace();
+				// n.printStackTrace();
 			}
 			if (filterIsNumberCoded) {
 				finalQuery = queryFromFilterId(filterId);
@@ -303,8 +304,7 @@ public class GraphFiltering {
 		if (this.mergeFilterQueryWithProjectKey) {
 			finalQuery = "(" + finalQuery + ")AND( PROJECT=" + this.projectKey + ")";
 		}
-		final SearchService.ParseResult parseResult =
-				getSearchService().parseQuery(this.user, finalQuery);
+		final SearchService.ParseResult parseResult = getSearchService().parseQuery(this.user, finalQuery);
 
 		if (parseResult.isValid())
 
@@ -316,9 +316,9 @@ public class GraphFiltering {
 				findDatesInQuery(finalQuery);
 			}
 			try {
-				final SearchResults results = getSearchService().search(
-						this.user, parseResult.getQuery(), PagerFilter.getUnlimitedFilter());
-				resultingIssues = results.getIssues();
+				final SearchResults<Issue> results = getSearchService().search(this.user, parseResult.getQuery(),
+						PagerFilter.getUnlimitedFilter());
+				resultingIssues = JiraSearchServiceHelper.getJiraIssues(results);
 
 			} catch (SearchException e) {
 				e.printStackTrace();
@@ -340,32 +340,34 @@ public class GraphFiltering {
 		boolean isFilteredByTime = this.isQueryContainsCreationDate();
 		long startTime = this.getStartDate();
 		long endTime = this.getEndDate();
-		SearchResults projectIssues = getIssuesForThisProject(user);
+		SearchResults<Issue> projectIssues = getIssuesForThisProject(user);
 		if (projectIssues != null) {
-			for (Issue currentIssue : projectIssues.getIssues()) {
-				List<DecisionKnowledgeElement> elements = JiraIssueCommentPersistenceManager.getElementsForIssue(currentIssue.getId(),
-						projectKey);
+			for (Issue currentIssue : JiraSearchServiceHelper.getJiraIssues(projectIssues)) {
+				List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
+						.getElementsForIssue(currentIssue.getId(), projectKey);
 				for (DecisionKnowledgeElement currentElement : elements) {
 					if (!results.contains(currentElement)) {
 						if (isFilteredByTime) {
 							if (startTime <= 0) {
-								if (currentElement instanceof Sentence && ((Sentence) currentElement).getCreated().getTime()
-										< endTime) {
+								if (currentElement instanceof PartOfJiraIssueText
+										&& ((PartOfJiraIssueText) currentElement).getCreated().getTime() < endTime) {
 									results.add(currentElement);
 								}
 							} else if (endTime <= 0) {
-								if (currentElement instanceof Sentence && ((Sentence) currentElement).getCreated().getTime()
-										> startTime) {
+								if (currentElement instanceof PartOfJiraIssueText
+										&& ((PartOfJiraIssueText) currentElement).getCreated().getTime() > startTime) {
 									results.add(currentElement);
 								}
 							} else {
-								if (currentElement instanceof Sentence && (((Sentence) currentElement).getCreated().getTime()
-										< endTime) && (((Sentence) currentElement).getCreated().getTime() > startTime)) {
+								if (currentElement instanceof PartOfJiraIssueText
+										&& (((PartOfJiraIssueText) currentElement).getCreated().getTime() < endTime)
+										&& (((PartOfJiraIssueText) currentElement).getCreated()
+												.getTime() > startTime)) {
 									results.add(currentElement);
 								}
 							}
 						} else {
-							if (currentElement instanceof Sentence) {
+							if (currentElement instanceof PartOfJiraIssueText) {
 								results.add(currentElement);
 							}
 						}
@@ -376,10 +378,10 @@ public class GraphFiltering {
 		return results;
 	}
 
-	private SearchResults getIssuesForThisProject(ApplicationUser user) {
+	private SearchResults<Issue> getIssuesForThisProject(ApplicationUser user) {
 		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
 		com.atlassian.query.Query query = jqlClauseBuilder.project(projectKey).buildQuery();
-		SearchResults searchResult;
+		SearchResults<Issue> searchResult;
 		try {
 			searchResult = getSearchService().search(user, query, PagerFilter.getUnlimitedFilter());
 		} catch (SearchException e) {
