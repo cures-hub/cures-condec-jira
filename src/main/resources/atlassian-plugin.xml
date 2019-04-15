@@ -47,10 +47,15 @@
 		<resource type="download" name="assumption.png" location="/images/assumption.png" />
 		<resource type="download" name="assessment.png" location="/images/assessment.png" />
 		<resource type="download" name="codesummarization.png" location="/images/codesummarization.png" />
+		<!-- vis.js icons -->
+		<resource type="download" name="addNodeIcon.png" location="/images/addNodeIcon.png" />
+		<resource type="download" name="backIcon.png" location="/images/backIcon.png" />
+		<resource type="download" name="editIcon.png" location="/images/editIcon.png" />
 		<!-- style sheets -->
 		<resource type="download" name="treant.css" location="/css/treant.css" />
 		<resource type="download" name="condec.css" location="/css/condec.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
+		<resource type="download" name="vis.css" location="/css/vis.css" />
 		<!-- look and feel like JIRA -->
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
 		<dependency>com.atlassian.auiplugin:aui-flag</dependency>

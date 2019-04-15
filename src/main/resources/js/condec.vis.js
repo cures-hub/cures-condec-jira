@@ -14,7 +14,8 @@
                 edges: visData.edges
             };
             var options = {
-                clickToUse: true,
+                clickToUse: false,
+                interaction:{ keyboard: {enabled: true}},
                 nodes: {
                     shape: "box",
                     widthConstraint:120,
@@ -32,14 +33,14 @@
                 autoResize: false,
 
                 layout: {
-                    improvedLayout: true,
+                    improvedLayout: false,
                     hierarchical: {
                         enabled: true,
                         levelSeparation: 100,
                         nodeSpacing: 250,
                         treeSpacing: 200,
                         blockShifting: true,
-                        edgeMinimization: false,
+                        edgeMinimization: true,
                         parentCentralization: true,
                         direction: 'UD', // UD, DU, LR, RL
                         sortMethod: 'directed' // hubsize, directed
@@ -63,35 +64,28 @@
                     Claim_i: {color:{background: 'rgba(255, 255, 255,1)'}},
                     Rationale_i: {color:{background: 'rgba(255, 255, 255,1)'}},
                     Question_i: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    Assessment_i: {color:{background: 'rgba(255, 255, 255,1)'}}
+                    Assessment_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    collapsed: {shape: "dot", size: 5, color: {background: 'rgba(0,0,0,1)'}}
                 },
 
                 manipulation: {
-                    enabled: false,
-                    addNode: function(data, callback) {
-                        // filling in the popup DOM elements
-                        console.log('add', data);
-                    },
-                    editNode: function(data, callback) {
-                        // filling in the popup DOM elements
-                        console.log('edit', data);
-                    },
+                    enabled: true,
+                    editEdge: false,
+                    addNode: false,
                     addEdge: function(data, callback) {
                         console.log('add edge', data);
                         if (data.from !== data.to) {
                             callback(data);
 
                             conDecAPI.createLink(null,data.to.slice(0, -2),data.from.slice(0,-2),data.to.substr(-1),
-                                 data.from.substr(-1),function () {
-                                //network.destroy();
-                                //buildVis(elementKey,searchTerm);
-                                conDecObservable.notify();
-                            })
+                                data.from.substr(-1),function () {
+                                    //network.destroy();
+                                    //buildVis(elementKey,searchTerm);
+                                    conDecObservable.notify();
+                                })
                         }
-                        // after each adding you will be back to addEdge mode
-
-
                     }
+
                 },
                 physics: {enabled:false}
                 };
@@ -121,14 +115,7 @@
                 conDecContextMenu.createContextMenu(clickedNodeId.toString().slice(0, -2),
                     getDocumentationLocationFromId(clickedNodeId), params.event, "treant-container");
             });
-            network.on("hold",function(params){
-                params.event.preventDefault();
-                network.addEdgeMode();
-            });
-            network.on("click", function(params) {
-                params.event.preventDefault();
-                network.disableEditMode();
-            });
+
             var keys = vis.keycharm({
                 container: container,
                 preventDefault: true

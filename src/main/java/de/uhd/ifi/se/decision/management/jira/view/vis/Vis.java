@@ -32,6 +32,7 @@ public class Vis {
 	private Graph graph;
 	private boolean isHyperlinked;
 	private List<DecisionKnowledgeElement> elementsAlreadyAsNode;
+	private List<DecisionKnowledgeElement> elementsMatchingFilterCriteria;
 	private long startDate;
 	private long endDate;
 	private List<String> issueTypeNames;
@@ -53,15 +54,17 @@ public class Vis {
 	}
 
 	public Vis(String projectKey, String elementKey, boolean isHyperlinked, String query, ApplicationUser user){
+		this.graph = new GraphImpl(projectKey,elementKey);
 		GraphFiltering filter;
 		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
-			filter = new GraphFiltering(projectKey, query, user);
+			filter = new GraphFiltering(projectKey, query, user, false);
 			filter.produceResultsFromQuery();
 			startDate = filter.getStartDate();
 			endDate = filter.getEndDate();
-			this.graph = new GraphImplFiltered(projectKey, elementKey, filter);
+			this.elementsMatchingFilterCriteria = filter.getAllElementsMatchingQuery();
+			//this.graph = new GraphImplFiltered(projectKey, elementKey, filter);
 		} else {
-
+			this.elementsMatchingFilterCriteria = graph.getAllElements();
 		}
 		this.setHyperlinked(isHyperlinked);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
@@ -87,7 +90,7 @@ public class Vis {
 					if (element.getId() == link.getSourceElement().getId()) {
 						if (!(this.elementsAlreadyAsNode.contains(element))) {
 							this.elementsAlreadyAsNode.add(element);
-							this.nodes.add(new VisNode(element, "Pro"));
+							this.nodes.add(new VisNode(element, "Pro", !this.elementsMatchingFilterCriteria.contains(element)));
 						}
 					}
 					break;
@@ -95,14 +98,14 @@ public class Vis {
 					if (element.getId() == link.getSourceElement().getId()) {
 						if (!(this.elementsAlreadyAsNode.contains(element))) {
 							this.elementsAlreadyAsNode.add(element);
-							this.nodes.add(new VisNode(element, "Con"));
+							this.nodes.add(new VisNode(element, "Con", !this.elementsMatchingFilterCriteria.contains(element)));
 						}
 					}
 					break;
 				default:
 					if (!(this.elementsAlreadyAsNode.contains(element))) {
 						this.elementsAlreadyAsNode.add(element);
-						this.nodes.add(new VisNode(element));
+						this.nodes.add(new VisNode(element, !this.elementsMatchingFilterCriteria.contains(element)));
 					}
 					break;
 			}
@@ -110,7 +113,7 @@ public class Vis {
 		} else {
 			if (!(this.elementsAlreadyAsNode.contains(element))) {
 				this.elementsAlreadyAsNode.add(element);
-				this.nodes.add(new VisNode(element));
+				this.nodes.add(new VisNode(element, !this.elementsMatchingFilterCriteria.contains(element)));
 			}
 		}
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {

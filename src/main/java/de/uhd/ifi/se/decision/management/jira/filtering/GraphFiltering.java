@@ -34,6 +34,8 @@ public class GraphFiltering {
 	private boolean queryIsJQL;
 	private boolean queryIsFilter;
 	private boolean queryContainsCreationDate;
+	private boolean queryContainsIssueTypes;
+	private List<String> issueTypesInQuery;
 	private ApplicationUser user;
 	private List<DecisionKnowledgeElement> queryResults;
 	private long startDate;
@@ -50,8 +52,10 @@ public class GraphFiltering {
 		this.queryIsFilter = false;
 		this.queryIsJQL = false;
 		this.queryContainsCreationDate = false;
+		this.queryContainsIssueTypes = false;
 		this.startDate = -1;
 		this.endDate = -1;
+		this.issueTypesInQuery = new ArrayList<>();
 		this.mergeFilterQueryWithProjectKey = mergeFilterQueryWithProjectKey;
 	}
 
@@ -278,7 +282,6 @@ public class GraphFiltering {
 	}
 
 	private void findIssueTypesInQuery(List<Clause> clauses){
-		System.out.println(clauses);
 		for (Clause clause : clauses) {
 			if (clause.getName().equals("issuetype")) {
 				this.queryContainsIssueTypes = true;
@@ -292,13 +295,11 @@ public class GraphFiltering {
 						this.issueTypesInQuery.add(issueType.trim());
 					}
 				}
-				System.out.println(issueTypesInQuery);
 			}
 		}
 	}
 
 	private void findIssueTypesInQuery(String query){
-		System.out.println(query);
 		if (query.contains("issuetype")) {
 			this.queryContainsIssueTypes = true;
 			if (query.contains("=")){
@@ -314,7 +315,6 @@ public class GraphFiltering {
 					this.issueTypesInQuery.add(issueType.trim());
 				}
 			}
-			System.out.println(issueTypesInQuery);
 		}
 	}
 

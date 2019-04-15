@@ -25,7 +25,7 @@ public class IssueTypesForDropdown {
 	}
 
 	public IssueTypesForDropdown(String projectKey, String query, ApplicationUser user) {
-		GraphFiltering filter = new GraphFiltering(projectKey,query,user);
+		GraphFiltering filter = new GraphFiltering(projectKey,query,user,false);
 		filter.produceResultsFromQuery();
 		this.allIssueTypes = new ArrayList<>();
 		for (IssueType issueType : ComponentAccessor.getConstantsManager().getAllIssueTypeObjects()) {
