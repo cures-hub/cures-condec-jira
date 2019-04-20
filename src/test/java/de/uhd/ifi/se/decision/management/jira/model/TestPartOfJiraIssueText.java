@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
+import com.atlassian.jira.issue.Issue;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
@@ -20,15 +21,17 @@ import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
+import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfTextImpl;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.jdbc.NonTransactional;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
-@Data(TestSentence.AoSentenceTestDatabaseUpdater.class)
-public class TestSentence extends TestSetUpWithIssues {
+@Data(TestPartOfJiraIssueText.AoSentenceTestDatabaseUpdater.class)
+public class TestPartOfJiraIssueText extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
 
@@ -42,24 +45,26 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testSetKnowledgeTypeEnum() {
-		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl();
-		assertNotNull(sentence);
-		assertEquals(KnowledgeType.OTHER, sentence.getType());
+		PartOfJiraIssueText partOfText = new PartOfJiraIssueTextImpl();
+		assertNotNull(partOfText);
+		assertEquals(KnowledgeType.OTHER, partOfText.getType());
 
-		sentence.setType(KnowledgeType.ALTERNATIVE);
-		assertEquals(KnowledgeType.ALTERNATIVE, sentence.getType());
+		partOfText.setType(KnowledgeType.ALTERNATIVE);
+		assertEquals(KnowledgeType.ALTERNATIVE, partOfText.getType());
 	}
 
 	@Test
 	@NonTransactional
 	public void testSetKnowledgeTypeString() {
-		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl();
-		sentence.setType(KnowledgeType.ALTERNATIVE.toString());
-		assertEquals(KnowledgeType.ALTERNATIVE.toString(), sentence.getTypeAsString());
-		sentence.setType("pro");
-		assertEquals("Pro", sentence.getTypeAsString());
-		sentence.setType("con");
-		assertEquals(KnowledgeType.CON, sentence.getType());
+		PartOfJiraIssueText partOfText = new PartOfJiraIssueTextImpl();
+		partOfText.setType(KnowledgeType.ALTERNATIVE.toString());
+		assertEquals(KnowledgeType.ALTERNATIVE.toString(), partOfText.getTypeAsString());
+
+		partOfText.setType("pro");
+		assertEquals("Pro", partOfText.getTypeAsString());
+
+		partOfText.setType("con");
+		assertEquals(KnowledgeType.CON, partOfText.getType());
 	}
 
 	@Test
@@ -89,11 +94,11 @@ public class TestSentence extends TestSetUpWithIssues {
 	@Test
 	@NonTransactional
 	public void testGetTextFromComment() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter.getSentencesForCommentText(
+		List<PartOfJiraIssueText> partsOfText = TestTextSplitter.getSentencesForCommentText(
 				"some sentence in front. {issue} testobject {issue} some sentence in the back.");
 
-		PartOfJiraIssueText sentence = sentences.get(0);
-		assertEquals(sentence.getText(), "some sentence in front. ");
+		PartOfJiraIssueText partOfText = partsOfText.get(0);
+		assertEquals(partOfText.getText(), "some sentence in front. ");
 	}
 
 	@Test
@@ -101,114 +106,155 @@ public class TestSentence extends TestSetUpWithIssues {
 	public void testGetTextFromCommentThatIsNull() {
 		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl();
 		assertEquals(sentence.getText(), "");
-		sentence.setDescription("This is a decision.");
-		assertEquals(sentence.getText(), "This is a decision.");
+	}
+	
+	@Test
+	@NonTransactional
+	public void testGetTextInSuperClass() {
+		PartOfText partOfText = new PartOfTextImpl();
+		assertEquals(partOfText.getText(), "");
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsTagged() {
-		PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl();
-		assertFalse(sentence.isTagged());
-		sentence.setType(KnowledgeType.CON);
-		assertTrue(sentence.isTagged());
+		PartOfJiraIssueText partOfText = new PartOfJiraIssueTextImpl();
+		assertFalse(partOfText.isTagged());
+
+		partOfText.setType(KnowledgeType.CON);
+		assertTrue(partOfText.isTagged());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsPlainText() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
 				.getSentencesForCommentText("This is a text that is not classified.");
-		assertEquals(true, sentences.get(0).isPlainText());
+		assertTrue(partsOfText.get(0).isPlainText());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsPlainTextCode() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter.getSentencesForCommentText("{code:Java} int i = 0 {code}");
-		assertEquals(false, sentences.get(0).isPlainText());
+		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+				.getSentencesForCommentText("{code:Java} int i = 0 {code}");
+		assertFalse(partsOfText.get(0).isPlainText());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsPlainTextAlternative() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
 				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative}");
-		assertEquals(true, sentences.get(0).isPlainText());
+		assertTrue(partsOfText.get(0).isPlainText());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsPlainTextIcon() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter.getSentencesForCommentText("(y) this is a icon pro text.");
-		assertEquals(true, sentences.get(0).isPlainText());
+		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+				.getSentencesForCommentText("(y) this is a icon pro text.");
+		assertTrue(partsOfText.get(0).isPlainText());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsRelevantText() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
 				.getSentencesForCommentText("This is a text that is not classified.");
-		assertEquals(false, sentences.get(0).isRelevant());
+		assertFalse(partsOfText.get(0).isRelevant());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsRelevantCode() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter.getSentencesForCommentText("{code:Java} int i = 0 {code}");
-		assertEquals(false, sentences.get(0).isRelevant());
+		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+				.getSentencesForCommentText("{code:Java} int i = 0 {code}");
+		assertFalse(partsOfText.get(0).isRelevant());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsRelevantAlternative() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
 				.getSentencesForCommentText("{Alternative} This is an alternative. {Alternative} ");
-		assertEquals(true, sentences.get(0).isRelevant());
+		assertTrue(partsOfText.get(0).isRelevant());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsRelevantIcon() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter.getSentencesForCommentText("(y) this is a icon pro text.");
-		assertEquals(true, sentences.get(0).isRelevant());
+		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+				.getSentencesForCommentText("(y) this is a icon pro text.");
+		assertTrue(partsOfText.get(0).isRelevant());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsValidatedText() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
 				.getSentencesForCommentText("This is a text that is not classified.");
-		assertEquals(false, sentences.get(0).isValidated());
+		assertFalse(partsOfText.get(0).isValidated());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsValidatedCode() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter.getSentencesForCommentText("{code:Java} int i = 0 {code}");
-		assertEquals(false, sentences.get(0).isValidated());
+		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+				.getSentencesForCommentText("{code:Java} int i = 0 {code}");
+		assertFalse(partsOfText.get(0).isValidated());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsValidatedAlternative() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
 				.getSentencesForCommentText("{alternative} This is an alternative. {alternative} ");
-		assertEquals(true, sentences.get(0).isValidated());
+		assertTrue(partsOfText.get(0).isValidated());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsValidatedIssue() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter
+		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
 				.getSentencesForCommentText("{issue} This is an alternative. {issue} ");
-		assertEquals(true, sentences.get(0).isValidated());
+		assertTrue(partsOfText.get(0).isValidated());
 	}
 
 	@Test
 	@NonTransactional
 	public void testIsValidatedIcon() {
-		List<PartOfJiraIssueText> sentences = TestTextSplitter.getSentencesForCommentText("(y) this is a icon pro text.");
-		assertEquals(true, sentences.get(0).isValidated());
+		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+				.getSentencesForCommentText("(y) this is a icon pro text.");
+		assertTrue(partsOfText.get(0).isValidated());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetLength() {
+		List<PartOfJiraIssueText> partsOfText = TestTextSplitter
+				.getSentencesForCommentText("(y) this is a icon pro text.");
+		assertEquals(28, partsOfText.get(0).getLength());
+	}
+
+	@Test
+	@NonTransactional
+	public void testGetJiraIssue() {
+		PartOfJiraIssueText partOfText = new PartOfJiraIssueTextImpl();
+		partOfText.setJiraIssueId(50);
+		Issue jiraIssue = partOfText.getJiraIssue();
+		assertNotNull(jiraIssue);
+		assertEquals(50, (long) jiraIssue.getId());
+	}
+	
+	@Test
+	@NonTransactional
+	public void testGetJiraIssueDescription() {
+		PartOfJiraIssueText partOfText = new PartOfJiraIssueTextImpl();		
+		assertEquals("", partOfText.getJiraIssueDescription());
+		
+		partOfText.setJiraIssueId(50);
+
+		assertEquals("Test", partOfText.getJiraIssueDescription());
 	}
 }

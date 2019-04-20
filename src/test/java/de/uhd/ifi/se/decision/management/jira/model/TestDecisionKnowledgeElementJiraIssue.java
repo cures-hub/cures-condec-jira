@@ -16,8 +16,7 @@ import com.atlassian.jira.project.Project;
 
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 
-
-public class TestDecisionKnowledgeElementIssue {
+public class TestDecisionKnowledgeElementJiraIssue {
 	private int id;
 	private String summary;
 	private String description;
