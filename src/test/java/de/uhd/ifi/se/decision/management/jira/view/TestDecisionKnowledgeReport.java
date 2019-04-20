@@ -90,9 +90,10 @@ public class TestDecisionKnowledgeReport extends TestSetUpWithIssues {
 	@Test(expected = Exception.class)
 	@NonTransactional
 	public void testWithObjects() {
-		PartOfJiraIssueText sentence2 = TestTextSplitter.getSentencesForCommentText("More Comment with some text").get(0);
-		sentence2.setType(KnowledgeType.ALTERNATIVE);
-		new JiraIssueTextPersistenceManager("").updateDecisionKnowledgeElement(sentence2, null);
+		PartOfJiraIssueText partOfJiraIssueText = TestTextSplitter
+				.getSentencesForCommentText("More Comment with some text").get(0);
+		partOfJiraIssueText.setType(KnowledgeType.ALTERNATIVE);
+		new JiraIssueTextPersistenceManager("").updateDecisionKnowledgeElement(partOfJiraIssueText, null);
 
 		assertNotNull(this.report.createValues(new MockProjectActionSupport()));
 	}
