@@ -10,25 +10,44 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
 
-public class ChangedFile {
+public class ChangedFile implements Comparable<ChangedFile> {
     private DiffEntry diffEntry;
     private EditList editList;
     private File file;
-    private Vector<Double> lineDistance;
-    private Vector<Double> packageDistance;
-    private Vector<Double> pathDistance;
-    // private Optional<PackageDeclaration> packageDeclaration;
+    private int packageDistance;
+    private float percentage;
+    private Vector<Double> lineDistances;
+    private Vector<Double> pathDistances;
     private CompilationUnit compilationUnit;
     private Vector<MethodDeclaration> methodDeclarations;
+    private Vector<Double> methodDistances;
 
     public ChangedFile(DiffEntry diffEntry, EditList editList, File file) {
         this.diffEntry = diffEntry;
         this.editList = editList;
         this.file = file;
-        this.packageDistance = new Vector<>();
-        this.pathDistance = new Vector<>();
+        this.packageDistance = 0;
+        this.pathDistances = new Vector<>();
+        this.lineDistances = new Vector<>();
+        this.methodDistances = new Vector<>();
         this.methodDeclarations = new Vector<>();
         this.compilationUnit = parseCompilationUnit(file);
+    }
+
+    public float getPercentage() {
+        return percentage;
+    }
+
+    public void setPercentage(float percentage) {
+        this.percentage = percentage;
+    }
+
+    public int getPackageDistance() {
+        return packageDistance;
+    }
+
+    public void setPackageDistance(int packageDistance) {
+        this.packageDistance = packageDistance;
     }
 
     public Vector<MethodDeclaration> getMethodDeclarations() {
@@ -37,10 +56,6 @@ public class ChangedFile {
 
     public CompilationUnit getCompilationUnit() {
         return compilationUnit;
-    }
-
-    public void setCompilationUnit(CompilationUnit compilationUnit) {
-        this.compilationUnit = compilationUnit;
     }
 
     public CompilationUnit parseCompilationUnit(File file) {
@@ -64,17 +79,24 @@ public class ChangedFile {
         return file;
     }
 
-    public void setLineDistance(Vector<Double> lineDistance) {
-        this.lineDistance = lineDistance;
-    }
-
-    public void addPackageDistance(double distance) {
-        this.packageDistance.add(distance);
+    public void addLineDistance(double distance) {
+        this.lineDistances.add(distance);
     }
 
     public void addPathDistance(double distance) {
-        this.pathDistance.add(distance);
+        this.pathDistances.add(distance);
     }
 
-    public void setMethodDeclarations(MethodDeclaration m){ this.methodDeclarations.add(m);}
+    public void setMethodDeclarations(MethodDeclaration m) {
+        this.methodDeclarations.add(m);
+    }
+
+    public void addMethodDistance(double distance){
+        this.methodDistances.add(distance);
+    }
+
+    @Override
+    public int compareTo(ChangedFile o) {
+        return (this.getPackageDistance()-o.getPackageDistance());
+    }
 }

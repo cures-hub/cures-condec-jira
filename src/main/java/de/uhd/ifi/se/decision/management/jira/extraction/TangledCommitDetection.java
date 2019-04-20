@@ -5,32 +5,37 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.ChangedFile;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.Diff;
-import org.eclipse.jgit.diff.EditList;
 
 import java.util.*;
 
 public interface TangledCommitDetection {
 
+    void calculatePredication(Diff diff);
+
     Vector<String> parsePackage(Optional<PackageDeclaration> op);
 
-    Diff  getLineDistances(Diff diff);
+    void calculateLineDistances(Diff diff);
 
-    Diff getPackageDistances(Diff diff);
+    void calculatePackageDistancesNew(Diff diff);
 
-    Diff getPathDistance(Diff diff);
+    void standardization(Diff diff);
 
-    Boolean isInMethod(EditList editList);
+    void calculatePathDistances(Diff diff);
 
+    void calculateMethodDistances(Diff diff);
 
-    static void getMethods(Diff diffs) {
-     for (ChangedFile diff: diffs.getChangedFiles()){
-         try {
-             new MethodVisitor().visit(diff.getCompilationUnit(), diff);
-         } catch (Exception e) {
-             e.printStackTrace();
-         }
-     }
+    Boolean isAllChangesInMethods(Diff diff);
 
+    Boolean isAllChangesInOnePackage(Diff diff);
+
+    static void getMethods(Diff diff) {
+        for (ChangedFile changedFile : diff.getChangedFiles()) {
+            try {
+                new MethodVisitor().visit(changedFile.getCompilationUnit(), changedFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     class MethodVisitor extends VoidVisitorAdapter {
@@ -40,7 +45,4 @@ public interface TangledCommitDetection {
             changedFile.setMethodDeclarations(m);
         }
     }
-
-
-
 }

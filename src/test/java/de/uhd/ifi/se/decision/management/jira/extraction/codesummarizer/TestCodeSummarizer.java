@@ -24,13 +24,7 @@ public class TestCodeSummarizer extends TestSetUpGit {
 	@Before
 	public void setUp() {
 		super.setUp();
-		summarizer = new CodeSummarizerImpl(gitClient, false);
-	}
-
-	@Test
-	public void testConstructorWithProjectKeyAndHtmlBoolean() {
-		CodeSummarizer codeSummarizer = new CodeSummarizerImpl("TEST", false);
-		assertNotNull(codeSummarizer);
+		summarizer = new CodeSummarizerImpl("TEST");
 	}
 
 	@Test
@@ -48,22 +42,10 @@ public class TestCodeSummarizer extends TestSetUpGit {
 	public void testJiraIssueKeyEmpty() {
 		assertEquals("", summarizer.createSummary(""));
 	}
-/*
-	@Test
-	public void testJiraIssueKeyExisting() {
-		assertEquals("The following classes were changed: *GodClass*\n", summarizer.createSummary("TEST-12"));
-	}
-*/
 	@Test
 	public void testRevCommitNull() {
 		assertEquals("", summarizer.createSummary((RevCommit) null));
 	}
-
-/*	@Test
-	public void testRevCommitFilled() {
-		List<RevCommit> commits = gitClient.getCommits("TEST-12");
-		assertEquals("The following classes were changed: *GodClass*\n", summarizer.createSummary(commits.get(0)));
-	}*/
 
 	@Test
 	public void testDiffNull() {
@@ -75,10 +57,4 @@ public class TestCodeSummarizer extends TestSetUpGit {
 		assertEquals("", summarizer.createSummary(new HashMap<DiffEntry, EditList>()));
 	}
 
-/*	@Test
-	public void testDiffFilled() {
-		List<RevCommit> commits = gitClient.getCommits("TEST-12");
-		Map<DiffEntry, EditList> diff = gitClient.getDiff(commits.get(0));
-		assertEquals("The following classes were changed: *GodClass*\n", summarizer.createSummary(diff));
-	}*/
 }

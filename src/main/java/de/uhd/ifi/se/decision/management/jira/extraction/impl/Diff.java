@@ -1,23 +1,20 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
-public class Diff {
-    private Vector<ChangedFile> changedFiles;
+public class Diff{
+    private ArrayList<ChangedFile> changedFiles;
 
     public Diff(){
-        this.changedFiles = new Vector<>();
+        this.changedFiles = new ArrayList<>();
     }
 
-    public void setChangedFiles(Vector<ChangedFile> changedFiles) {
-        this.changedFiles = changedFiles;
-    }
-
-    public Vector<ChangedFile> getChangedFiles() {
+    public ArrayList<ChangedFile> getChangedFiles() {
         return changedFiles;
     }
 
     public void addChangedFiles(ChangedFile changedFile){
         changedFiles.add(changedFile);
     }
+
 }

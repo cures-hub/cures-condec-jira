@@ -359,7 +359,7 @@ public class KnowledgeRest {
 					.build();
 		}
 
-		String summary = new CodeSummarizerImpl(projectKey, true).createSummary(jiraIssueKey);
+		String summary = new CodeSummarizerImpl(projectKey).createSummary(jiraIssueKey);
 		if (summary == null || summary.isEmpty()) {
 			summary = "This JIRA issue does not have any code committed.";
 		}
