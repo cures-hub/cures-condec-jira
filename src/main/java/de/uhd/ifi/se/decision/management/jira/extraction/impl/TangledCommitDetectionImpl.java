@@ -2,10 +2,8 @@ package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
 
 import com.github.javaparser.ast.PackageDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
 import de.uhd.ifi.se.decision.management.jira.extraction.TangledCommitDetection;
 import org.eclipse.jgit.diff.Edit;
-import org.eclipse.jgit.diff.EditList;
 
 import java.util.*;
 
