@@ -116,9 +116,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		PartOfJiraIssueText sentenceInDatabase = null;
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where(
-						"PROJECT_KEY = ? AND COMMENT_ID = ? AND END_SUBSTRING_COUNT = ? AND START_SUBSTRING_COUNT = ?",
-						sentence.getProject().getProjectKey(), sentence.getCommentId(), sentence.getEndSubstringCount(),
-						sentence.getStartSubstringCount()))) {
+						"PROJECT_KEY = ? AND COMMENT_ID = ? AND END_POSITION = ? AND START_POSITION = ?",
+						sentence.getProject().getProjectKey(), sentence.getCommentId(), sentence.getEndPosition(),
+						sentence.getStartPosition()))) {
 			sentenceInDatabase = new PartOfJiraIssueTextImpl(databaseEntry);
 		}
 		return sentenceInDatabase;
@@ -286,8 +286,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		databaseEntry.setType(element.getTypeAsString());
 		databaseEntry.setRelevant(element.isRelevant());
 		databaseEntry.setValidated(element.isValidated());
-		databaseEntry.setStartSubstringCount(element.getStartSubstringCount());
-		databaseEntry.setEndSubstringCount(element.getEndSubstringCount());
+		databaseEntry.setStartPosition(element.getStartPosition());
+		databaseEntry.setEndPosition(element.getEndPosition());
 		databaseEntry.setJiraIssueId(element.getJiraIssueId());
 	}
 
@@ -333,8 +333,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 			text = mutableComment.getBody();
 		}
 
-		String firstPartOfText = text.substring(0, sentence.getStartSubstringCount());
-		String lastPartOfText = text.substring(sentence.getEndSubstringCount());
+		String firstPartOfText = text.substring(0, sentence.getStartPosition());
+		String lastPartOfText = text.substring(sentence.getEndPosition());
 
 		String newBody = firstPartOfText + changedPartOfText + lastPartOfText;
 
@@ -352,7 +352,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		int lengthDifference = changedPartOfText.length() - sentence.getLength();
 		updateSentenceLengthForOtherSentencesInSameComment(sentence, lengthDifference);
 
-		sentence.setEndSubstringCount(sentence.getStartSubstringCount() + changedPartOfText.length());
+		sentence.setEndPosition(sentence.getStartPosition() + changedPartOfText.length());
 		sentence.setType(element.getType());
 		sentence.setValidated(element.isValidated());
 		sentence.setRelevant(element.getType() != KnowledgeType.OTHER);
@@ -378,12 +378,12 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		for (PartOfJiraIssueTextInDatabase otherSentenceInComment : ACTIVE_OBJECTS.find(
 				PartOfJiraIssueTextInDatabase.class, "COMMENT_ID = ? AND JIRA_ISSUE_ID = ?", sentence.getCommentId(),
 				sentence.getJiraIssueId())) {
-			if (otherSentenceInComment.getStartSubstringCount() > sentence.getStartSubstringCount()
+			if (otherSentenceInComment.getStartPosition() > sentence.getStartPosition()
 					&& otherSentenceInComment.getId() != sentence.getId()) {
 				otherSentenceInComment
-						.setStartSubstringCount(otherSentenceInComment.getStartSubstringCount() + lengthDifference);
+						.setStartPosition(otherSentenceInComment.getStartPosition() + lengthDifference);
 				otherSentenceInComment
-						.setEndSubstringCount(otherSentenceInComment.getEndSubstringCount() + lengthDifference);
+						.setEndPosition(otherSentenceInComment.getEndPosition() + lengthDifference);
 				otherSentenceInComment.save();
 			}
 		}
@@ -495,7 +495,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		if (comment == null) {
 			return false;
 		}
-		return !(sentence.getEndSubstringCount() == 0 && sentence.getStartSubstringCount() == 0);
+		return !(sentence.getEndPosition() == 0 && sentence.getStartPosition() == 0);
 	}
 
 	/**
@@ -608,14 +608,14 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 	private static int removeSentenceFromComment(PartOfJiraIssueText element) {
 		MutableComment mutableComment = element.getComment();
 		String newBody = mutableComment.getBody();
-		newBody = newBody.substring(0, element.getStartSubstringCount())
-				+ newBody.substring(element.getEndSubstringCount());
+		newBody = newBody.substring(0, element.getStartPosition())
+				+ newBody.substring(element.getEndPosition());
 
 		DecXtractEventListener.editCommentLock = true;
 		mutableComment.setBody(newBody);
 		ComponentAccessor.getCommentManager().update(mutableComment, true);
 		DecXtractEventListener.editCommentLock = false;
-		return element.getEndSubstringCount() - element.getStartSubstringCount();
+		return element.getEndPosition() - element.getStartPosition();
 	}
 
 	public static Issue getJiraIssue(long id) {
