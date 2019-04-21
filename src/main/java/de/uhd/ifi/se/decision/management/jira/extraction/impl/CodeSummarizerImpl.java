@@ -48,10 +48,10 @@ public class CodeSummarizerImpl implements CodeSummarizer {
         if (diff == null || diff.size() == 0) {
             return "";
         }
-        Diff allDiffs = new Diff();
+        DiffImpl allDiffs = new DiffImpl();
         for (Map.Entry<DiffEntry, EditList> entry : diff.entrySet()) {
             File file = new File(gitClient.getDirectory().toString().replace(".git", "") + entry.getKey().getNewPath());
-            allDiffs.addChangedFiles(new ChangedFile(entry.getKey(), entry.getValue(), file));
+            allDiffs.addChangedFileImpl(new ChangedFileImpl(entry.getValue(), file));
         }
         try {
             TangledCommitDetection.getMethods(allDiffs);
@@ -64,18 +64,18 @@ public class CodeSummarizerImpl implements CodeSummarizer {
         return generateSummary(allDiffs);
     }
 
-    private String generateSummary(Diff diff){
+    private String generateSummary(DiffImpl diffImpl){
         String rows ="";
-        for(ChangedFile changedFile: diff.getChangedFiles()){
-            rows += this.addRow(this.addTableItem(FilenameUtils.removeExtension(changedFile.getFile().getName()),
-                    this.summarizeMethods(changedFile),Float.toString(changedFile.getPercentage())));
+        for(ChangedFileImpl changedFileImpl : diffImpl.getChangedFileImpls()){
+            rows += this.addRow(this.addTableItem(FilenameUtils.removeExtension(changedFileImpl.getFile().getName()),
+                    this.summarizeMethods(changedFileImpl),Float.toString(changedFileImpl.getPercentage())));
         }
         return this.generateTable(rows);
     }
 
-    private String summarizeMethods(ChangedFile changedFile){
+    private String summarizeMethods(ChangedFileImpl changedFileImpl){
         String summarizedMethods ="";
-        for (MethodDeclaration methodDeclaration : changedFile.getMethodDeclarations()) {
+        for (MethodDeclaration methodDeclaration : changedFileImpl.getMethodDeclarations()) {
             summarizedMethods += methodDeclaration.getNameAsString() + "<br/>";
         }
         return summarizedMethods;

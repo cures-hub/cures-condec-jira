@@ -11,40 +11,40 @@ import java.util.*;
 public class TangledCommitDetectionImpl implements TangledCommitDetection {
 
     @Override
-    public void standardization(Diff diff) {
-        Collections.sort(diff.getChangedFiles());
-        float max = diff.getChangedFiles().get(diff.getChangedFiles().size()-1).getPackageDistance();
-        for(ChangedFile changedFile: diff.getChangedFiles()){
-            changedFile.setPercentage((changedFile.getPackageDistance()/max)*100);
+    public void standardization(DiffImpl diffImpl) {
+        Collections.sort(diffImpl.getChangedFileImpls());
+        float max = diffImpl.getChangedFileImpls().get(diffImpl.getChangedFileImpls().size()-1).getPackageDistance();
+        for(ChangedFileImpl changedFileImpl : diffImpl.getChangedFileImpls()){
+            changedFileImpl.setPercentage((changedFileImpl.getPackageDistance()/max)*100);
         }
     }
 
     @Override
-    public void calculatePredication(Diff diff) {
-        if(diff.getChangedFiles().size() != 1){
-            if(this.isAllChangesInOnePackage(diff)){
-                this.calculatePathDistances(diff);
+    public void calculatePredication(DiffImpl diffImpl) {
+        if(diffImpl.getChangedFileImpls().size() != 1){
+            if(this.isAllChangesInOnePackage(diffImpl)){
+                this.calculatePathDistances(diffImpl);
             }else{
-                this.calculatePackageDistancesNew(diff);
+                this.calculatePackageDistances(diffImpl);
             }
         }else{
-            if(this.isAllChangesInMethods(diff) || (diff.getChangedFiles().get(0).getEditList().size() == 1)){
-                this.calculateMethodDistances(diff);
+            if(this.isAllChangesInMethods(diffImpl) || (diffImpl.getChangedFileImpls().get(0).getEditList().size() == 1)){
+                this.calculateMethodDistances(diffImpl);
             }else{
-                this.calculateLineDistances(diff);
+                this.calculateLineDistances(diffImpl);
             }
         }
-        this.standardization(diff);
+        this.standardization(diffImpl);
     }
 
     @Override
-    public Boolean isAllChangesInOnePackage(Diff diffs) {
-            for(int i = 0; i < diffs.getChangedFiles().size(); i++){
-                for( int j = i+1; j< diffs.getChangedFiles().size(); j++){
-                    if(!(diffs.getChangedFiles().get(i).getCompilationUnit().getPackageDeclaration().isPresent()
-                            && diffs.getChangedFiles().get(j).getCompilationUnit().getPackageDeclaration().isPresent()
-                            && diffs.getChangedFiles().get(i).getCompilationUnit().getPackageDeclaration().toString()
-                                    .equalsIgnoreCase(diffs.getChangedFiles().get(j).getCompilationUnit().getPackageDeclaration().toString()))){
+    public Boolean isAllChangesInOnePackage(DiffImpl diffs) {
+            for(int i = 0; i < diffs.getChangedFileImpls().size(); i++){
+                for(int j = i+1; j< diffs.getChangedFileImpls().size(); j++){
+                    if(!(diffs.getChangedFileImpls().get(i).getCompilationUnit().getPackageDeclaration().isPresent()
+                            && diffs.getChangedFileImpls().get(j).getCompilationUnit().getPackageDeclaration().isPresent()
+                            && diffs.getChangedFileImpls().get(i).getCompilationUnit().getPackageDeclaration().toString()
+                                    .equalsIgnoreCase(diffs.getChangedFileImpls().get(j).getCompilationUnit().getPackageDeclaration().toString()))){
                         return false;
                     }
                 }
@@ -53,24 +53,24 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
     }
 
     @Override
-    public void calculatePackageDistancesNew(Diff diffs) {
-        if (diffs.getChangedFiles().size() > 1) {
-            for (int i = 0; i < diffs.getChangedFiles().size(); i++) {
-                Vector<String> leftPackageDeclaration = this.parsePackage(diffs.getChangedFiles().get(i).getCompilationUnit().getPackageDeclaration());
-                for (int j = 0; j < diffs.getChangedFiles().size(); j++) {
-                        Vector<String> rightPackageDeclaration = this.parsePackage(diffs.getChangedFiles().get(j).getCompilationUnit().getPackageDeclaration());
+    public void calculatePackageDistances(DiffImpl diffs) {
+        if (diffs.getChangedFileImpls().size() > 1) {
+            for (int i = 0; i < diffs.getChangedFileImpls().size(); i++) {
+                Vector<String> leftPackageDeclaration = this.parsePackage(diffs.getChangedFileImpls().get(i).getCompilationUnit().getPackageDeclaration());
+                for (int j = 0; j < diffs.getChangedFileImpls().size(); j++) {
+                        Vector<String> rightPackageDeclaration = this.parsePackage(diffs.getChangedFileImpls().get(j).getCompilationUnit().getPackageDeclaration());
                     if(i!=j) {
                         if (leftPackageDeclaration.size() >= rightPackageDeclaration.size()) {
                             for (int k = 0; k < rightPackageDeclaration.size(); k++) {
                                 if (!leftPackageDeclaration.elementAt(k).equals(rightPackageDeclaration.elementAt(k))) {
-                                    diffs.getChangedFiles().get(i).setPackageDistance(diffs.getChangedFiles().get(i).getPackageDistance() + (leftPackageDeclaration.size() - k));
+                                    diffs.getChangedFileImpls().get(i).setPackageDistance(diffs.getChangedFileImpls().get(i).getPackageDistance() + (leftPackageDeclaration.size() - k));
                                     break;
                                 }
                             }
                         } else {
                             for (int k = 0; k < leftPackageDeclaration.size(); k++) {
                                 if (!leftPackageDeclaration.elementAt(k).equals(rightPackageDeclaration.elementAt(k))) {
-                                    diffs.getChangedFiles().get(i).setPackageDistance(diffs.getChangedFiles().get(i).getPackageDistance() + (rightPackageDeclaration.size() - k));
+                                    diffs.getChangedFileImpls().get(i).setPackageDistance(diffs.getChangedFileImpls().get(i).getPackageDistance() + (rightPackageDeclaration.size() - k));
                                     break;
                                 }
                             }
@@ -82,16 +82,16 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
     }
 
     @Override
-    public Boolean isAllChangesInMethods(Diff diff) {
+    public Boolean isAllChangesInMethods(DiffImpl diffImpl) {
         int numberOfChangesHasMethod = 0;
         int totalNumberOfChanges = 0;
-        for(int i = 0; i < diff.getChangedFiles().size(); i++){
-            for(int j = 0; j < diff.getChangedFiles().get(i).getMethodDeclarations().size(); j++){
-                if(diff.getChangedFiles().get(i).getEditList().size()>2){
-                    for(Edit edit: diff.getChangedFiles().get(i).getEditList()){
+        for(int i = 0; i < diffImpl.getChangedFileImpls().size(); i++){
+            for(int j = 0; j < diffImpl.getChangedFileImpls().get(i).getMethodDeclarations().size(); j++){
+                if(diffImpl.getChangedFileImpls().get(i).getEditList().size()>2){
+                    for(Edit edit: diffImpl.getChangedFileImpls().get(i).getEditList()){
                         totalNumberOfChanges++;
-                        if(edit.getBeginB() >= diff.getChangedFiles().get(i).getMethodDeclarations().elementAt(j).getRange().get().begin.line
-                                && edit.getEndB() <= diff.getChangedFiles().get(i).getMethodDeclarations().elementAt(j).getRange().get().end.line){
+                        if(edit.getBeginB() >= diffImpl.getChangedFileImpls().get(i).getMethodDeclarations().elementAt(j).getRange().get().begin.line
+                                && edit.getEndB() <= diffImpl.getChangedFileImpls().get(i).getMethodDeclarations().elementAt(j).getRange().get().end.line){
                             numberOfChangesHasMethod++;
                         }
                     }
@@ -113,59 +113,59 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
     }
 
     @Override
-    public void calculateLineDistances(Diff diffs) {
-        for (ChangedFile changedFile : diffs.getChangedFiles()) {
-            if (changedFile.getEditList().size() > 1) {
-                for (int i = 0; i < changedFile.getEditList().size(); i++) {
-                    for (int j = i + 1; j < changedFile.getEditList().size(); j++) {
-                        int lineDistance = changedFile.getEditList().get(j).getBeginB() - changedFile.getEditList().get(i).getEndB();
-                        double distance = ((double) (lineDistance) / changedFile.getCompilationUnit().getRange().get().end.line);
-                        changedFile.addLineDistance(distance);
+    public void calculateLineDistances(DiffImpl diffs) {
+        for (ChangedFileImpl changedFileImpl : diffs.getChangedFileImpls()) {
+            if (changedFileImpl.getEditList().size() > 1) {
+                for (int i = 0; i < changedFileImpl.getEditList().size(); i++) {
+                    for (int j = i + 1; j < changedFileImpl.getEditList().size(); j++) {
+                        int lineDistance = changedFileImpl.getEditList().get(j).getBeginB() - changedFileImpl.getEditList().get(i).getEndB();
+                        double distance = ((double) (lineDistance) / changedFileImpl.getCompilationUnit().getRange().get().end.line);
+                        changedFileImpl.addLineDistance(distance);
                     }
                 }
             } else {
-                changedFile.addLineDistance(0.0);
+                changedFileImpl.addLineDistance(0.0);
             }
         }
     }
 
     @Override
-    public void calculateMethodDistances(Diff diff) {
-        for(ChangedFile changedFile: diff.getChangedFiles()){
-            if(changedFile.getMethodDeclarations().size() > 1){
-                for(int i= 0; i < changedFile.getMethodDeclarations().size(); i++){
-                    for(int j = 0; j < changedFile.getMethodDeclarations().size(); j++){
-                        int nextBegin = changedFile.getMethodDeclarations().elementAt(j).getRange().get().begin.line;
-                        int prevEnd= changedFile.getMethodDeclarations().elementAt(i).getRange().get().end.line;
-                        changedFile.addMethodDistance(nextBegin - prevEnd);
+    public void calculateMethodDistances(DiffImpl diffImpl) {
+        for(ChangedFileImpl changedFileImpl : diffImpl.getChangedFileImpls()){
+            if(changedFileImpl.getMethodDeclarations().size() > 1){
+                for(int i = 0; i < changedFileImpl.getMethodDeclarations().size(); i++){
+                    for(int j = 0; j < changedFileImpl.getMethodDeclarations().size(); j++){
+                        int nextBegin = changedFileImpl.getMethodDeclarations().elementAt(j).getRange().get().begin.line;
+                        int prevEnd= changedFileImpl.getMethodDeclarations().elementAt(i).getRange().get().end.line;
+                        changedFileImpl.addMethodDistance(nextBegin - prevEnd);
                     }
                 }
             }else {
-                changedFile.addLineDistance(0);
+                changedFileImpl.addLineDistance(0);
             }
         }
     }
 
     @Override
-    public void calculatePathDistances(Diff diffs) {
-        if (diffs.getChangedFiles().size() > 1) {
-            for (int i = 0; i < diffs.getChangedFiles().size(); i++) {
-                char[] leftPath = diffs.getChangedFiles().get(i).getDiffEntry().getNewPath().toCharArray();
-                for (int j = i + 1; j < diffs.getChangedFiles().size(); j++) {
-                    char[] rightPath = diffs.getChangedFiles().get(j).getDiffEntry().getNewPath().toCharArray();
+    public void calculatePathDistances(DiffImpl diffs) {
+        if (diffs.getChangedFileImpls().size() > 1) {
+            for (int i = 0; i < diffs.getChangedFileImpls().size(); i++) {
+                char[] leftPath = diffs.getChangedFileImpls().get(i).getFile().getPath().toCharArray();
+                for (int j = i + 1; j < diffs.getChangedFileImpls().size(); j++) {
+                    char[] rightPath = diffs.getChangedFileImpls().get(j).getFile().getPath().toCharArray();
                     if (leftPath.length >= rightPath.length) {
                         for (int k = 0; k < rightPath.length; k++) {
                             if (leftPath[k] != rightPath[k]) {
-                                diffs.getChangedFiles().get(i).addPathDistance((double) leftPath.length - (k + 1));
-                                diffs.getChangedFiles().get(j).addPathDistance((double) leftPath.length - (k + 1));
+                                diffs.getChangedFileImpls().get(i).addPathDistance((double) leftPath.length - (k + 1));
+                                diffs.getChangedFileImpls().get(j).addPathDistance((double) leftPath.length - (k + 1));
                                 break;
                             }
                         }
                     } else {
                         for (int k = 0; k < leftPath.length; k++) {
                             if (leftPath[k] != rightPath[k]) {
-                                diffs.getChangedFiles().get(i).addPathDistance((double) rightPath.length - (k + 1));
-                                diffs.getChangedFiles().get(j).addPathDistance((double) rightPath.length - (k + 1));
+                                diffs.getChangedFileImpls().get(i).addPathDistance((double) rightPath.length - (k + 1));
+                                diffs.getChangedFileImpls().get(j).addPathDistance((double) rightPath.length - (k + 1));
                                 break;
                             }
                         }
@@ -174,7 +174,7 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
                 }
             }
         } else {
-            diffs.getChangedFiles().get(0).addPathDistance(0.0);
+            diffs.getChangedFileImpls().get(0).addPathDistance(0.0);
         }
     }
 
