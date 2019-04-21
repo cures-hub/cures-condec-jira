@@ -3,35 +3,35 @@ package de.uhd.ifi.se.decision.management.jira.extraction;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.ChangedFile;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.Diff;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.ChangedFileImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.DiffImpl;
 
 import java.util.*;
 
 public interface TangledCommitDetection {
 
-    void calculatePredication(Diff diff);
+    void calculatePredication(DiffImpl diffImpl);
 
     Vector<String> parsePackage(Optional<PackageDeclaration> op);
 
-    void calculateLineDistances(Diff diff);
+    void calculateLineDistances(DiffImpl diffImpl);
 
-    void calculatePackageDistancesNew(Diff diff);
+    void calculatePackageDistances(DiffImpl diffImpl);
 
-    void standardization(Diff diff);
+    void standardization(DiffImpl diffImpl);
 
-    void calculatePathDistances(Diff diff);
+    void calculatePathDistances(DiffImpl diffImpl);
 
-    void calculateMethodDistances(Diff diff);
+    void calculateMethodDistances(DiffImpl diffImpl);
 
-    Boolean isAllChangesInMethods(Diff diff);
+    Boolean isAllChangesInMethods(DiffImpl diffImpl);
 
-    Boolean isAllChangesInOnePackage(Diff diff);
+    Boolean isAllChangesInOnePackage(DiffImpl diffImpl);
 
-    static void getMethods(Diff diff) {
-        for (ChangedFile changedFile : diff.getChangedFiles()) {
+    static void getMethods(DiffImpl diffImpl) {
+        for (ChangedFileImpl changedFileImpl : diffImpl.getChangedFileImpls()) {
             try {
-                new MethodVisitor().visit(changedFile.getCompilationUnit(), changedFile);
+                new MethodVisitor().visit(changedFileImpl.getCompilationUnit(), changedFileImpl);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -41,8 +41,8 @@ public interface TangledCommitDetection {
     class MethodVisitor extends VoidVisitorAdapter {
         @Override
         public void visit(MethodDeclaration m, Object arg) {
-            ChangedFile changedFile = (ChangedFile) arg;
-            changedFile.setMethodDeclarations(m);
+            ChangedFileImpl changedFileImpl = (ChangedFileImpl) arg;
+            changedFileImpl.setMethodDeclarations(m);
         }
     }
 }

@@ -3,15 +3,15 @@ package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import org.eclipse.jgit.diff.DiffEntry;
+import de.uhd.ifi.se.decision.management.jira.extraction.ChangedFile;
 import org.eclipse.jgit.diff.EditList;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
 
-public class ChangedFile implements Comparable<ChangedFile> {
-    private DiffEntry diffEntry;
+
+public class ChangedFileImpl implements ChangedFile, Comparable<ChangedFileImpl> {
     private EditList editList;
     private File file;
     private int packageDistance;
@@ -22,8 +22,7 @@ public class ChangedFile implements Comparable<ChangedFile> {
     private Vector<MethodDeclaration> methodDeclarations;
     private Vector<Double> methodDistances;
 
-    public ChangedFile(DiffEntry diffEntry, EditList editList, File file) {
-        this.diffEntry = diffEntry;
+    public ChangedFileImpl(EditList editList, File file) {
         this.editList = editList;
         this.file = file;
         this.packageDistance = 0;
@@ -71,10 +70,6 @@ public class ChangedFile implements Comparable<ChangedFile> {
         return editList;
     }
 
-    public DiffEntry getDiffEntry() {
-        return diffEntry;
-    }
-
     public File getFile() {
         return file;
     }
@@ -96,7 +91,7 @@ public class ChangedFile implements Comparable<ChangedFile> {
     }
 
     @Override
-    public int compareTo(ChangedFile o) {
+    public int compareTo(ChangedFileImpl o) {
         return (this.getPackageDistance()-o.getPackageDistance());
     }
 }
