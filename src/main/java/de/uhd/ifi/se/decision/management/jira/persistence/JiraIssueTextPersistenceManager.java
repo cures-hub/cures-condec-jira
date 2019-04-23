@@ -115,10 +115,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 
 		PartOfJiraIssueText sentenceInDatabase = null;
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
-				Query.select().where(
-						"PROJECT_KEY = ? AND COMMENT_ID = ? AND END_SUBSTRING_COUNT = ? AND START_SUBSTRING_COUNT = ?",
-						sentence.getProject().getProjectKey(), sentence.getCommentId(), sentence.getEndSubstringCount(),
-						sentence.getStartSubstringCount()))) {
+				Query.select().where("PROJECT_KEY = ? AND COMMENT_ID = ? AND END_POSITION = ? AND START_POSITION = ?",
+						sentence.getProject().getProjectKey(), sentence.getCommentId(), sentence.getEndPosition(),
+						sentence.getStartPosition()))) {
 			sentenceInDatabase = new PartOfJiraIssueTextImpl(databaseEntry);
 		}
 		return sentenceInDatabase;
@@ -167,6 +166,15 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
 		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("COMMENT_ID = ?", commentId))) {
+			elements.add(new PartOfJiraIssueTextImpl(databaseEntry));
+		}
+		return elements;
+	}
+
+	public static List<DecisionKnowledgeElement> getElementsForDescription(long jiraIssueId) {
+		List<DecisionKnowledgeElement> elements = new ArrayList<DecisionKnowledgeElement>();
+		for (PartOfJiraIssueTextInDatabase databaseEntry : ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
+				Query.select().where("COMMENT_ID = 0 AND JIRA_ISSUE_ID = ?", jiraIssueId))) {
 			elements.add(new PartOfJiraIssueTextImpl(databaseEntry));
 		}
 		return elements;
@@ -286,8 +294,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		databaseEntry.setType(element.getTypeAsString());
 		databaseEntry.setRelevant(element.isRelevant());
 		databaseEntry.setValidated(element.isValidated());
-		databaseEntry.setStartSubstringCount(element.getStartSubstringCount());
-		databaseEntry.setEndSubstringCount(element.getEndSubstringCount());
+		databaseEntry.setStartPosition(element.getStartPosition());
+		databaseEntry.setEndPosition(element.getEndPosition());
 		databaseEntry.setJiraIssueId(element.getJiraIssueId());
 	}
 
@@ -333,8 +341,8 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 			text = mutableComment.getBody();
 		}
 
-		String firstPartOfText = text.substring(0, sentence.getStartSubstringCount());
-		String lastPartOfText = text.substring(sentence.getEndSubstringCount());
+		String firstPartOfText = text.substring(0, sentence.getStartPosition());
+		String lastPartOfText = text.substring(sentence.getEndPosition());
 
 		String newBody = firstPartOfText + changedPartOfText + lastPartOfText;
 
@@ -352,7 +360,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		int lengthDifference = changedPartOfText.length() - sentence.getLength();
 		updateSentenceLengthForOtherSentencesInSameComment(sentence, lengthDifference);
 
-		sentence.setEndSubstringCount(sentence.getStartSubstringCount() + changedPartOfText.length());
+		sentence.setEndPosition(sentence.getStartPosition() + changedPartOfText.length());
 		sentence.setType(element.getType());
 		sentence.setValidated(element.isValidated());
 		sentence.setRelevant(element.getType() != KnowledgeType.OTHER);
@@ -378,12 +386,10 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		for (PartOfJiraIssueTextInDatabase otherSentenceInComment : ACTIVE_OBJECTS.find(
 				PartOfJiraIssueTextInDatabase.class, "COMMENT_ID = ? AND JIRA_ISSUE_ID = ?", sentence.getCommentId(),
 				sentence.getJiraIssueId())) {
-			if (otherSentenceInComment.getStartSubstringCount() > sentence.getStartSubstringCount()
+			if (otherSentenceInComment.getStartPosition() > sentence.getStartPosition()
 					&& otherSentenceInComment.getId() != sentence.getId()) {
-				otherSentenceInComment
-						.setStartSubstringCount(otherSentenceInComment.getStartSubstringCount() + lengthDifference);
-				otherSentenceInComment
-						.setEndSubstringCount(otherSentenceInComment.getEndSubstringCount() + lengthDifference);
+				otherSentenceInComment.setStartPosition(otherSentenceInComment.getStartPosition() + lengthDifference);
+				otherSentenceInComment.setEndPosition(otherSentenceInComment.getEndPosition() + lengthDifference);
 				otherSentenceInComment.save();
 			}
 		}
@@ -495,7 +501,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		if (comment == null) {
 			return false;
 		}
-		return !(sentence.getEndSubstringCount() == 0 && sentence.getStartSubstringCount() == 0);
+		return !(sentence.getEndPosition() == 0 && sentence.getStartPosition() == 0);
 	}
 
 	/**
@@ -548,9 +554,9 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 
 		// delete sentence in comment
 		int length = JiraIssueTextPersistenceManager.removeSentenceFromComment(element) * -1; // -1 because we
-																									// decrease the
-																									// total number of
-																									// letters
+																								// decrease the
+																								// total number of
+																								// letters
 		updateSentenceLengthForOtherSentencesInSameComment(element, length);
 
 		// delete ao sentence entry
@@ -587,20 +593,58 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		return parts;
 	}
 
-	public static List<PartOfJiraIssueText> getPartsOfDescription(Issue jiraIssue) {
+	public static List<DecisionKnowledgeElement> updateComment(Comment comment) {
+		String projectKey = comment.getIssue().getProjectObject().getKey();
+		List<PartOfText> partsOfText = new TextSplitterImpl().getPartsOfText(comment.getBody(), projectKey);
+
+		List<DecisionKnowledgeElement> knowledgeElementsInText = getElementsForComment(comment.getId());
+
+		// @issue Currently elements are deleted and new ones are created afterwards.
+		// How to enable a "real" update?
+		// @decision Overwrite parts of JIRA issue text in AO database if they exist!
+		// @con If a new knowledge element is inserted at the beginning of the text, the
+		// links in the knowledge graph might be wrong.
+		int numberOfTextPartsInComment = knowledgeElementsInText.size();
+
+		// Update AO entries
+		for (int i = 0; i < partsOfText.size(); i++) {
+			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(partsOfText.get(i), comment);
+			if (i < numberOfTextPartsInComment) {
+				sentence.setId(knowledgeElementsInText.get(i).getId());
+				updateInDatabase(sentence);
+			} else {
+				long sentenceId = insertDecisionKnowledgeElement(sentence, null);
+				sentence = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
+						.getDecisionKnowledgeElement(sentenceId);
+			}
+			createSmartLinkForSentence(sentence);
+			knowledgeElementsInText.set(i, sentence);
+		}
+		return knowledgeElementsInText;
+	}
+
+	public static List<DecisionKnowledgeElement> updateDescription(Issue jiraIssue) {
 		String projectKey = jiraIssue.getProjectObject().getKey();
 		List<PartOfText> partsOfText = new TextSplitterImpl().getPartsOfText(jiraIssue.getDescription(), projectKey);
 
-		List<PartOfJiraIssueText> parts = new ArrayList<PartOfJiraIssueText>();
+		List<DecisionKnowledgeElement> parts = getElementsForDescription(jiraIssue.getId());
+		int numberOfTextParts = parts.size();
 
-		// Create AO entries
-		for (PartOfText partOfText : partsOfText) {
-			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(partOfText, jiraIssue);
-			long sentenceId = insertDecisionKnowledgeElement(sentence, null);
-			sentence = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
-					.getDecisionKnowledgeElement(sentenceId);
+		for (int i = 0; i < partsOfText.size(); i++) {
+			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(partsOfText.get(i), jiraIssue);
+			if (i < numberOfTextParts) {
+				// Update AO entry
+				sentence.setId(parts.get(i).getId());
+				updateInDatabase(sentence);
+				parts.set(i, sentence);
+			} else {
+				// Create new AO entry
+				long sentenceId = insertDecisionKnowledgeElement(sentence, null);
+				sentence = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("")
+						.getDecisionKnowledgeElement(sentenceId);
+				parts.add(sentence);
+			}
 			createSmartLinkForSentence(sentence);
-			parts.add(sentence);
 		}
 		return parts;
 	}
@@ -608,14 +652,13 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 	private static int removeSentenceFromComment(PartOfJiraIssueText element) {
 		MutableComment mutableComment = element.getComment();
 		String newBody = mutableComment.getBody();
-		newBody = newBody.substring(0, element.getStartSubstringCount())
-				+ newBody.substring(element.getEndSubstringCount());
+		newBody = newBody.substring(0, element.getStartPosition()) + newBody.substring(element.getEndPosition());
 
 		DecXtractEventListener.editCommentLock = true;
 		mutableComment.setBody(newBody);
 		ComponentAccessor.getCommentManager().update(mutableComment, true);
 		DecXtractEventListener.editCommentLock = false;
-		return element.getEndSubstringCount() - element.getStartSubstringCount();
+		return element.getEndPosition() - element.getStartPosition();
 	}
 
 	public static Issue getJiraIssue(long id) {
