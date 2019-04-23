@@ -57,8 +57,8 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 			PartOfJiraIssueText newEntry = new PartOfJiraIssueTextImpl();
 			newEntry.setType(type);
 			newEntry.setCommentId(commentManager.getLastComment(issue).getId());
-			newEntry.setStartSubstringCount(0);
-			newEntry.setEndSubstringCount(12);
+			newEntry.setStartPosition(0);
+			newEntry.setEndPosition(12);
 			values.add(newEntry);
 		}
 		((ClassificationTrainerImpl) trainer).buildDatasetForMeka(values);
