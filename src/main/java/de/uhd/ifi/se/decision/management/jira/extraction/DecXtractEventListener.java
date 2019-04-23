@@ -23,7 +23,6 @@ import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.util.collect.MapBuilder;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
-import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
@@ -153,24 +152,14 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 			return;
 		}
 
-		// @issue Currently elements are deleted and new ones are created afterwards.
-		// How to enable a "real" update?
-		// @decision Retrieve old comment from AO database!
-		List<DecisionKnowledgeElement> partsOfText = JiraIssueTextPersistenceManager
-				.getElementsForComment(issueEvent.getComment().getId());
-		for (DecisionKnowledgeElement element : partsOfText) {
-			System.out.println(element.getDescription());
-		}
-
 		parseIconsToTags();
 
-		JiraIssueTextPersistenceManager.deletePartsOfComment(issueEvent.getComment());
-
 		if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
+			JiraIssueTextPersistenceManager.deletePartsOfComment(issueEvent.getComment());
 			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
 		} else {
 			MutableComment comment = (MutableComment) issueEvent.getComment();
-			JiraIssueTextPersistenceManager.getPartsOfComment(comment);
+			JiraIssueTextPersistenceManager.updateComment(comment);
 		}
 		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
@@ -185,22 +174,16 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 
 		parseIconsToTags();
 
-		// @issue Currently elements are deleted and new ones are created afterwards.
-		// How to enable a "real" update?
-		// @decision Try to read the change history of the description!
-		Map<String, String> changedDescription = getChangedString(issueEvent);
-		System.out.println(changedDescription.toString());
-
-		JiraIssueTextPersistenceManager.deletePartsOfDescription(issueEvent.getIssue());
 		if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
+			JiraIssueTextPersistenceManager.deletePartsOfDescription(issueEvent.getIssue());
 			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
 		} else {
-			JiraIssueTextPersistenceManager.getPartsOfDescription(issueEvent.getIssue());
+			JiraIssueTextPersistenceManager.updateDescription(issueEvent.getIssue());
 		}
 		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 
-	private Map<String, String> getChangedString(IssueEvent issueEvent) {
+	public Map<String, String> getChangedString(IssueEvent issueEvent) {
 		Map<String, String> changedString = new HashMap<String, String>();
 
 		GenericValue changeLog = issueEvent.getChangeLog();
