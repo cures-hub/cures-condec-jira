@@ -80,7 +80,6 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 
 			binaryRelevance.buildClassifier(structure);
 			File directory = new File(DEFAULT_DIR + File.separator + projectKey);
-			directory.delete();
 			directory.mkdirs();
 			weka.core.SerializationHelper
 					.write(DEFAULT_DIR + File.separator + projectKey + File.separator + "newBr.model", binaryRelevance);
@@ -136,27 +135,30 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		return data;
 	}
 
-	public boolean saveArffFileOnServer() {
-		boolean isFileSaved = false;
+	public File saveArffFile() {
+		File arffFile = null;
 		try {
+			File defdirectory = new File(DEFAULT_DIR);
+			defdirectory.mkdirs();
 			String pathToDirectory = DEFAULT_DIR + File.separator + projectKey;
 			File directory = new File(pathToDirectory);
-			directory.delete();
 			directory.mkdirs();
+			if (!directory.exists()) {
+				return null;
+			}
 			Date date = new Date();
 			Timestamp timestamp = new Timestamp(date.getTime());
 
-			File arffFile = new File(pathToDirectory + File.separator + "arffFile" + timestamp.getTime() + ".arff");
+			arffFile = new File(pathToDirectory + File.separator + "arffFile" + timestamp.getTime() + ".arff");
 			arffFile.createNewFile();
 			String arffString = createArffString();
 			PrintWriter writer = new PrintWriter(arffFile, "UTF-8");
 			writer.println(arffString);
-			writer.close();
-			isFileSaved = true;
+			writer.close();			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return isFileSaved;
+		return arffFile;
 	}
 
 	public List<String> getArffFiles() {

@@ -57,21 +57,21 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 	}
 	</script>
 
-<h2>Decision Knowledge Extraction from JIRA Issue Comments</h2>
+<h2>Decision Knowledge Extraction from JIRA Issue Description and Comments</h2>
 	<div class="field-group">
-		<label for="isKnowledgeExtractedFromIssues-toggle">Extract from JIRA Issue Comments?</label>
+		<label for="isKnowledgeExtractedFromIssues-toggle">Extract from JIRA Issue Text?</label>
 		<aui-toggle id="isKnowledgeExtractedFromIssues-toggle"
 			value="$projectKey" label="Extract from	Issue Comments?"></aui-toggle>
 		<div class="description">Enables or disables whether decision
-			knowledge is extracted from JIRA issue comments for this project.
+			knowledge is extracted from JIRA issue description and comments for this project.
 		</div>
 	</div>
 	<div class="field-group">
 		<label for="isClassifierUsed-toggle">Use Classifier to identify Decision Knowledge?</label>
 		<aui-toggle id="isClassifierUsed-toggle"
 			value="$projectKey" label="Use Classifier to Identify Decision Knowledge?"></aui-toggle>
-		<div class="description">Enables or disables whether decision
-			knowledge is extracted classified from issue comments for this project.
+		<div class="description">Enables or disables whether text is automatically classified 
+		as decision knowledge within JIRA issue description and comments for this project.
 		</div>
 	</div>
 	<div class="field-group">
@@ -138,8 +138,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
     </div>
 
     <div class="field-group">
-        <label for="buildArffFile-button">Create an ARFF File</label>
-        <input type="button" class="aui-button" id="buildArffFile-button" value="Create ARFF File"/>
+        <label for="saveArffFile-button">Create an ARFF File</label>
+        <input type="button" class="aui-button" id="saveArffFile-button" value="Create ARFF File"/>
         <div class="description">Creates an Attribute-Relation File Format (ARFF) file for the current project that can be used to train the classifier.
         	This file is saved in the JIRA home directory in data/condec-plugin/project-key. You can download it from there.
         	If you want to train the classifier with this file you need to reload this page to access the file.</div>
@@ -245,9 +245,9 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 		sentenceIconToggle.checked = false;
 	};
 	
-	var buildArffFileButton = document.getElementById("buildArffFile-button");
-    buildArffFileButton.addEventListener("click", function () {
-        conDecAPI.buildArffFile('$projectKey');
+	var saveArffFileButton = document.getElementById("saveArffFile-button");
+    saveArffFileButton.addEventListener("click", function () {
+        conDecAPI.saveArffFile('$projectKey');
     });
 				
 	var gitToggle = document.getElementById('isKnowledgeExtractedFromGit-toggle');

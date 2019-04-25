@@ -12,7 +12,7 @@ import com.atlassian.jira.config.util.JiraHome;
 public interface ClassificationTrainer {
 
 	String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory().getAbsolutePath()
-			+ File.separator + "condec-plugin" + File.separator + "classifier";
+			+ File.separator + "condec-plugin" + File.separator + "classifier" + File.separator;
 
 	/**
 	 * Trains the Classifier with the Data from the Database that was set and
@@ -25,9 +25,9 @@ public interface ClassificationTrainer {
 	 * Creats a new Attribute-Relation File Format (ARFF) file for the current project that can be used to train the
 	 * classifier.
 	 * 
-	 * @return true if the ARFF file was created and saved on the server.
+	 * @return ARFF file that was created and saved on the server or null if it could not be saved.
 	 */
-	boolean saveArffFileOnServer();
+	File saveArffFile();
 
 	/**
 	 * Gets the names of all Attribute-Relation File Format (ARFF) files on the server.

@@ -1,5 +1,8 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,5 +66,12 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 		}
 		((ClassificationTrainerImpl) trainer).buildDatasetForMeka(values);
 		trainer.train();
+	}
+	
+	@Test
+	public void testSaveArffFile() {
+		ClassificationTrainer trainer = new ClassificationTrainerImpl("TEST");
+		File file = trainer.saveArffFile();
+		assertTrue(file.exists());
 	}
 }

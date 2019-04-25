@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -387,21 +388,21 @@ public class ConfigRest {
 		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
 	}
 
-	@Path("/buildArffFile")
+	@Path("/saveArffFile")
 	@POST
-	public Response buildArffFile(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey) {
-		Response response = checkClassifierUsed(request, projectKey);
-		if (response != null) {
-			return response;
+	public Response saveArffFile(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
 		}
 		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
-		if (trainer.saveArffFileOnServer()) {
-			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
+		File arffFile = trainer.saveArffFile();
+		if (arffFile != null) {
+			System.out.println(arffFile.toString());
+			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("arffFile", arffFile.toString())).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error", "ARFF file could not be created because of an internal server errorr. "
-						+ "Please check if the classification is activated."))
+				.entity(ImmutableMap.of("error", "ARFF file could not be created because of an internal server error."))
 				.build();
 	}
 

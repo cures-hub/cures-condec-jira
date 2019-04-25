@@ -551,16 +551,14 @@
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
-	ConDecAPI.prototype.buildArffFile = function buildArffFile(projectKey) {
-		var isSucceeded = postWithResponseAsReturnValue(AJS.contextPath()
-				+ "/rest/decisions/latest/config/buildArffFile.json?projectKey=" + projectKey);
-		if (isSucceeded) {
-			showFlag("success",
-					"The ARFF file was successfully created and saved in JIRA home directory/data/condec-plugin.");
-			return 1.0;
-		}
-		showFlag("error", "The ARFF file could not be created.");
-		return 0.0;
+	ConDecAPI.prototype.saveArffFile = function saveArffFile(projectKey) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/saveArffFile.json?projectKey=" + projectKey, null,
+				function(error, response) {
+					if (error === null) {
+						showFlag("success", "The ARFF file was successfully created and saved in "
+								+ response["arffFile"] + ".");
+					}
+				});
 	};
 
 	/*
