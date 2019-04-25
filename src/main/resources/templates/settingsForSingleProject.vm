@@ -111,6 +111,13 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 	    	});
 		</script>	
 	</div>
+	<div class="field-group">
+    	<label for="saveArffFile-button">Create an ARFF File</label>
+    	<input type="button" class="aui-button" id="saveArffFile-button" value="Create ARFF File"/>
+    	<div class="description">Creates an Attribute-Relation File Format (ARFF) file for the current project that can be used to train the classifier.
+    		This file is saved in the JIRA home directory in data/condec-plugin/project-key. You can download it from there.
+    		If you want to train the classifier with this file you need to reload this page to access the file.</div>
+    </div>
     <div class="field-group">
         <label for="trainClassifier-button">Train the Classifier</label>
         <aui-select id="select-arff-file-train"
@@ -126,24 +133,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
         </aui-select>
         <input type="button" class="aui-button" id="trainClassifier-button" value="Train Classifier"/>
         <div class="description">Trains the classifier on the selected Attribute-Relation File Format (ARFF) file.</div>
-        <script>
-            var trainClassifier = document.getElementById("trainClassifier-button");
-            trainClassifier.addEventListener("click", function() {
-                if (confirm('Are you sure you want to retrain the classifier?')) {
-                    var trainDataSelect = document.getElementById("select-arff-file-train");
-                    var isNewTrained = conDecAPI.trainClassifier('$projectKey', trainDataSelect.value);
-                }
-            });
-        </script>
-    </div>
-
-    <div class="field-group">
-        <label for="saveArffFile-button">Create an ARFF File</label>
-        <input type="button" class="aui-button" id="saveArffFile-button" value="Create ARFF File"/>
-        <div class="description">Creates an Attribute-Relation File Format (ARFF) file for the current project that can be used to train the classifier.
-        	This file is saved in the JIRA home directory in data/condec-plugin/project-key. You can download it from there.
-        	If you want to train the classifier with this file you need to reload this page to access the file.</div>
-    </div>
+    </div>    
 
 <h2>Decision Knowledge Extraction from Git</h2>
 	<div class="field-group">
@@ -248,6 +238,15 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 	var saveArffFileButton = document.getElementById("saveArffFile-button");
     saveArffFileButton.addEventListener("click", function () {
         conDecAPI.saveArffFile('$projectKey');
+    });
+    
+    var trainClassifier = document.getElementById("trainClassifier-button");
+    trainClassifier.addEventListener("click", function() {
+        if (confirm('Are you sure you want to retrain the classifier?')) {
+            var trainDataSelect = document.getElementById("select-arff-file-train");
+            var isNewTrained = conDecAPI.trainClassifier('$projectKey', trainDataSelect.value);
+            console.log(trainDataSelect.value);
+        }
     });
 				
 	var gitToggle = document.getElementById('isKnowledgeExtractedFromGit-toggle');

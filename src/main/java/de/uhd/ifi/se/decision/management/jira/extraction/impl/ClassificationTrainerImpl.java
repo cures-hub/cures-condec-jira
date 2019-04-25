@@ -22,7 +22,9 @@ import weka.classifiers.meta.FilteredClassifier;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instances;
+import weka.core.SerializationHelper;
 import weka.core.converters.ConverterUtils;
+import weka.core.converters.ConverterUtils.DataSource;
 import weka.core.tokenizers.NGramTokenizer;
 import weka.core.tokenizers.Tokenizer;
 import weka.filters.unsupervised.attribute.StringToWordVector;
@@ -34,67 +36,68 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
 public class ClassificationTrainerImpl implements ClassificationTrainer {
 
 	private String projectKey;
-	private Instances structure;
+	private File directory;
+	private Instances instances;
 
-	/**
-	 * In the Constructor the Sentences from Database will be uses for the
-	 * classification that is validated from the user.
-	 * 
-	 * @param projectKey
-	 */
 	public ClassificationTrainerImpl(String projectKey) {
 		this.projectKey = projectKey;
+		this.directory = new File(DEFAULT_DIR + File.separator + projectKey);
+		directory.mkdirs();
 	}
 
 	public ClassificationTrainerImpl(String projectKey, String arffFileName) {
 		this(projectKey);
-
-		if (arffFileName.isEmpty() || arffFileName == null) {
+		if (arffFileName == null || arffFileName.isEmpty()) {
 			// TODO Use default ARFF file
 			return;
 		}
+		this.instances = getInstancesFromArffFile(arffFileName);
+	}
 
+	private Instances getInstancesFromArffFile(String arffFileName) {
+		Instances instances = null;
 		try {
-			ConverterUtils.DataSource source = new ConverterUtils.DataSource(
-					DEFAULT_DIR + File.separator + projectKey + File.separator + arffFileName);
-			structure = source.getDataSet();
+			DataSource dataSource = new ConverterUtils.DataSource(directory + File.separator + arffFileName);
+			instances = dataSource.getDataSet();
+			//instances.setClass(data.attribute("NameOfAttribute"));
+			if (instances.classIndex() == -1) {
+		        System.out.println("reset index...");
+		        instances.setClassIndex(instances.numAttributes() - 1);
+		    }
+			System.out.println(instances.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.err.println(e);
 		}
+		return instances;
 	}
 
 	@Override
-	public void train() {
+	public boolean train() {
+		boolean isTrained = false;
 		try {
 			LC binaryRelevance = new LC();
-			FilteredClassifier fc = new FilteredClassifier();
-			fc.setFilter(getSTWV());
-			fc.setClassifier(new NaiveBayesMultinomial());
-			binaryRelevance.setClassifier(fc);
+			FilteredClassifier filteredClassifier = new FilteredClassifier();
+			filteredClassifier.setFilter(getStringToWordVector());
+			filteredClassifier.setClassifier(new NaiveBayesMultinomial());
+			binaryRelevance.setClassifier(filteredClassifier);
 
 			evaluateTraining(binaryRelevance);
 
-			binaryRelevance.buildClassifier(structure);
-			File directory = new File(DEFAULT_DIR + File.separator + projectKey);
-			directory.mkdirs();
-			weka.core.SerializationHelper
-					.write(DEFAULT_DIR + File.separator + projectKey + File.separator + "newBr.model", binaryRelevance);
-
+			binaryRelevance.buildClassifier(instances);
+			SerializationHelper.write(directory + File.separator + "newBr.model", binaryRelevance);
+			isTrained = true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return isTrained;
 	}
 
+	@Override
 	public File saveArffFile() {
 		File arffFile = null;
 		try {
-			String pathToDirectory = DEFAULT_DIR + File.separator + projectKey;
-			File directory = new File(pathToDirectory);
-			directory.mkdirs();
-			if (!directory.exists()) {
-				return null;
-			}
-			arffFile = new File(pathToDirectory + File.separator + getArffFileName());
+			arffFile = new File(directory + File.separator + getArffFileName());
 			arffFile.createNewFile();
 			String arffString = createArffString();
 			PrintWriter writer = new PrintWriter(arffFile, "UTF-8");
@@ -120,13 +123,12 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	}
 
 	/**
-	 *
-	 * @param trainingText
-	 * @return The training dataset. The Instance that this function returns is the
-	 *         ARFF File that is needed to train the Classifier. The Attributes are
-	 *         Boolean and the Sentence is a String.
-	 *
-	 *         Data appearance:
+	 * Creates the training instances for the supervised text classifier. The
+	 * instance contains the knowledge type indicated by the value 1 (or 0 for type
+	 * OTHER) and the summary of the element.
+	 * 
+	 * Data appearance:
+	 * 
 	 * @relation 'sentences: -C 5'
 	 * @attribute isAlternative {0,1}
 	 * @attribute isPro {0,1}
@@ -135,11 +137,17 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	 * @attribute isIssue {0,1}
 	 * @attribute sentence string
 	 *
-	 * @data 0,0,0,1,0 'I am at Test sentence that is a Decision' 1,0,0,0,0 'I am a
-	 *       Alternative for the Issue' 0,0,0,0,1 'And i am the Issue for the
-	 *       Decision and the Alternative'
+	 * @data 0,0,0,1,0 'I am a test sentence that is a decision.' 1,0,0,0,0 'I am an
+	 *       alternative for the issue.' 0,0,0,0,1 'And I am the issue for the
+	 *       decision and the alternative.'
+	 * 
+	 * @param trainingElements
+	 *            list of validated decision knowledge elements
+	 * @return training dataset for the supervised text classifier. The instances
+	 *         that this method returns is the ARFF file that is needed to train the
+	 *         classifier.
 	 */
-	public Instances buildDatasetForMeka(List<DecisionKnowledgeElement> trainingText) {
+	public Instances buildDatasetForMeka(List<DecisionKnowledgeElement> trainingElements) {
 
 		ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
 
@@ -151,29 +159,32 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		wekaAttributes.add(getAttribute("isIssue"));
 
 		// Declare text attribute to hold the message (free form text)
-		Attribute attributeText = new Attribute("sentence", (List<String>) null);
+		Attribute attribute = new Attribute("sentence", (List<String>) null);
 
 		// Declare the feature vector
-		wekaAttributes.add(attributeText);
+		wekaAttributes.add(attribute);
 
-		Instances data = new Instances("sentences -C 5 ", wekaAttributes, 1000000);
+		Instances instances = new Instances("sentences -C 5 ", wekaAttributes, 1000000);
 
-		for (DecisionKnowledgeElement trainingElement : trainingText) {
-			data.add(createTrainingInstance(trainingElement, attributeText));
+		for (DecisionKnowledgeElement trainingElement : trainingElements) {
+			instances.add(createTrainingInstance(trainingElement, attribute));
 		}
-		data.setClassIndex(data.numAttributes() - 1);
-		return data;
+		instances.setClassIndex(instances.numAttributes() - 1);
+		return instances;
 	}
 
 	/**
-	 *
+	 * Creates a training instance for the supervised text classifier. The instance
+	 * contains the knowledge type indicated by the value 1 (or 0 for type OTHER)
+	 * and the summary of the element.
+	 * 
 	 * @param element
-	 * @param attributeText
-	 * @return a Data entry for the training of the classifier. The Instance
-	 *         contains the Knowledge Type as a 1 and the Sentence. The Knowledge
-	 *         Types that are not wrong are set to 0.
+	 *            validated decision knowledge element.
+	 * @param attribute
+	 *            text attribute.
+	 * @return training instance for the supervised text classifier.
 	 */
-	private DenseInstance createTrainingInstance(DecisionKnowledgeElement element, Attribute attributeText) {
+	private DenseInstance createTrainingInstance(DecisionKnowledgeElement element, Attribute attribute) {
 		DenseInstance instance = initInstance();
 		switch (element.getType()) {
 		case ALTERNATIVE:
@@ -187,9 +198,9 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		case ISSUE:
 			instance.setValue(4, 1);
 		default:
-
+			break;
 		}
-		instance.setValue(attributeText, element.getSummary());
+		instance.setValue(attribute, element.getSummary());
 		return instance;
 	}
 
@@ -203,42 +214,23 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		return instance;
 	}
 
-	public List<String> getArffFiles() {
-		List<String> arffFilesOnServer = new ArrayList<String>();
-		File directory = new File(DEFAULT_DIR + File.separator + projectKey + File.separator);
-		if (directory.exists()) {
-			for (File file : directory.listFiles()) {
-				arffFilesOnServer.add(file.getName());
-			}
+	@Override
+	public List<File> getArffFiles() {
+		List<File> arffFilesOnServer = new ArrayList<File>();
+		for (File file : directory.listFiles()) {
+			arffFilesOnServer.add(file);
 		}
 		return arffFilesOnServer;
 	}
 
-	public String getArffFileString(String fileName) {
-		File directory = new File(DEFAULT_DIR + File.separator + projectKey);
-		String returnString = "";
-		if (directory.exists()) {
-			File[] fileArray = directory.listFiles();
-			for (File file : directory.listFiles()) {
-				if (file.getName().equalsIgnoreCase(fileName)) {
-					try {
-						FileReader fileReader = new FileReader(file);
-						BufferedReader bufferedReader = new BufferedReader(fileReader);
-						String line;
-						while ((line = bufferedReader.readLine()) != null) {
-							returnString += line + System.lineSeparator();
-						}
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-						return "There was an Error Reading the File. Try again";
-					} catch (IOException e) {
-						e.printStackTrace();
-						return "There was an Error Reading the File. Try again";
-					}
-				}
-			}
+	@Override
+	public List<String> getArffFileNames() {
+		List<File> arffFilesOnServer = getArffFiles();
+		List<String> arffFileNames = new ArrayList<String>();
+		for (File file : arffFilesOnServer) {
+			arffFileNames.add(file.getName());
 		}
-		return returnString;
+		return arffFileNames;
 	}
 
 	/**
@@ -255,15 +247,15 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	}
 
 	private void evaluateTraining(LC binaryRelevance) throws Exception {
-		Evaluation rate = new Evaluation(structure);
+		Evaluation rate = new Evaluation(instances);
 		Random seed = new Random(1);
-		Instances datarandom = new Instances(structure);
+		Instances datarandom = new Instances(instances);
 		datarandom.randomize(seed);
 
 		int folds = 10;
 		datarandom.stratify(folds);
-		rate.crossValidateModel(binaryRelevance, structure, folds, seed);
-		System.out.println("Structure num classes: " + structure.numClasses());
+		rate.crossValidateModel(binaryRelevance, instances, folds, seed);
+		System.out.println("Structure num classes: " + instances.numClasses());
 	}
 
 	/**
@@ -274,11 +266,11 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	 * @throws Exception
 	 */
 	private static Tokenizer getTokenizer() throws Exception {
-		Tokenizer t = new NGramTokenizer();
+		Tokenizer tokenizer = new NGramTokenizer();
 		String[] options = weka.core.Utils.splitOptions(
 				"weka.core.tokenizers.NGramTokenizer -max 3 -min 1 -delimiters \" \\r\\n\\t.,;:\\'\\\"()?!\"");
-		t.setOptions(options);
-		return t;
+		tokenizer.setOptions(options);
+		return tokenizer;
 	}
 
 	/**
@@ -288,13 +280,45 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	 * @return StringToWordVector
 	 * @throws Exception
 	 */
-	private static StringToWordVector getSTWV() throws Exception {
-		StringToWordVector stwv = new StringToWordVector();
-		stwv.setLowerCaseTokens(true);
-		stwv.setIDFTransform(true);
-		stwv.setTFTransform(true);
-		stwv.setTokenizer(getTokenizer());
-		stwv.setWordsToKeep(1000000);
-		return stwv;
+	private static StringToWordVector getStringToWordVector() throws Exception {
+		StringToWordVector stringToWordVector = new StringToWordVector();
+		stringToWordVector.setLowerCaseTokens(true);
+		stringToWordVector.setIDFTransform(true);
+		stringToWordVector.setTFTransform(true);
+		stringToWordVector.setTokenizer(getTokenizer());
+		stringToWordVector.setWordsToKeep(1000000);
+		return stringToWordVector;
+	}
+
+	public String getArffFileString(String fileName) {
+		BufferedReader bufferedReader;
+		String returnString = "";
+		for (File file : directory.listFiles()) {
+			if (file.getName().equalsIgnoreCase(fileName)) {
+				try {
+					FileReader fileReader = new FileReader(file);
+					bufferedReader = new BufferedReader(fileReader);
+					String line;
+					while ((line = bufferedReader.readLine()) != null) {
+						returnString += line + System.lineSeparator();
+					}
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+					return "There was an Error Reading the File. Try again";
+				} catch (IOException e) {
+					e.printStackTrace();
+					return "There was an Error Reading the File. Try again";
+				}
+			}
+		}
+		return returnString;
+	}
+
+	public Instances getInstances() {
+		return instances;
+	}
+
+	public void setInstances(Instances instances) {
+		this.instances = instances;
 	}
 }

@@ -376,16 +376,21 @@ public class ConfigRest {
 
 	@Path("/trainClassifier")
 	@POST
-	public Response trainClassifier(@Context HttpServletRequest request,
-			@QueryParam("projectKey") final String projectKey, @QueryParam("arffFileName") final String arffFileName) {
-		Response response = checkClassifierUsed(request, projectKey);
-		if (response != null) {
-			return response;
+	public Response trainClassifier(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			@QueryParam("arffFileName") String arffFileName) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
 		}
 		ConfigPersistenceManager.setArffFileForClassifier(projectKey, arffFileName);
 		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey, arffFileName);
-		trainer.train();
-		return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
+		boolean isTrained = trainer.train();
+		if (isTrained) {
+			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
+		}
+		return Response.status(Status.INTERNAL_SERVER_ERROR)
+				.entity(ImmutableMap.of("error", "Classifier could not be trained due to an internal server error."))
+				.build();
 	}
 
 	@Path("/saveArffFile")
@@ -484,18 +489,5 @@ public class ConfigRest {
 					.build();
 		}
 		return Response.status(Status.OK).build();
-	}
-
-	private Response checkClassifierUsed(HttpServletRequest request, String projectKey) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		if (!ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey)) {
-			return Response.status(Status.FORBIDDEN).entity(ImmutableMap.of("error",
-					"Automatic classification is disabled for this project. " + "So no training can be executed"))
-					.build();
-		}
-		return null;
 	}
 }

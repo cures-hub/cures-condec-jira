@@ -21,7 +21,6 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationTrainer;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.ClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
@@ -33,6 +32,7 @@ import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTex
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
+import weka.core.Instances;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestTextSplitter.AoSentenceTestDatabaseUpdater.class)
@@ -67,8 +67,9 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 			newEntry.setEndPosition(12);
 			values.add(newEntry);
 		}
-		((ClassificationTrainerImpl) trainer).buildDatasetForMeka(values);
-		trainer.train();
+		Instances instances = ((ClassificationTrainerImpl) trainer).buildDatasetForMeka(values);
+		trainer.setInstances(instances);
+		assertTrue(trainer.train());
 	}
 
 	@Test
@@ -77,10 +78,10 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 		File file = trainer.saveArffFile();
 		assertTrue(file.exists());
 	}
-	
+
 	@Test
 	public void testMockingOfClassifierDirectoryWorks() {
-		assertEquals(ClassificationTrainer.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data" + File.separator
-				+ "condec-plugin" + File.separator + "classifier" + File.separator);
+		assertEquals(ClassificationTrainer.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data"
+				+ File.separator + "condec-plugin" + File.separator + "classifier" + File.separator);
 	}
 }
