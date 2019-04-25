@@ -398,7 +398,6 @@ public class ConfigRest {
 		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
 		File arffFile = trainer.saveArffFile();
 		if (arffFile != null) {
-			System.out.println(arffFile.toString());
 			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("arffFile", arffFile.toString())).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)

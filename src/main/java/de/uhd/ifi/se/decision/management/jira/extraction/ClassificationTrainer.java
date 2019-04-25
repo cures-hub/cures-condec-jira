@@ -11,6 +11,10 @@ import com.atlassian.jira.config.util.JiraHome;
  */
 public interface ClassificationTrainer {
 
+	/**
+	 * @issue What is the best place to store the supervised text classifier related data?
+	 * @decision Clone git repo to JIRAHome/data/condec-plugin/classifier!
+	 */
 	String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory().getAbsolutePath()
 			+ File.separator + "condec-plugin" + File.separator + "classifier" + File.separator;
 
@@ -23,7 +27,7 @@ public interface ClassificationTrainer {
 
 	/**
 	 * Creats a new Attribute-Relation File Format (ARFF) file for the current project that can be used to train the
-	 * classifier.
+	 * classifier and saves it on the server in the JIRA home directory in the data/condec-plugin/project-key folder.
 	 * 
 	 * @return ARFF file that was created and saved on the server or null if it could not be saved.
 	 */

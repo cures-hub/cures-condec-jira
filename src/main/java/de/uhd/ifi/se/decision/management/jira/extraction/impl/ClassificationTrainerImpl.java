@@ -53,7 +53,7 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	public ClassificationTrainerImpl(String projectKey, String arffFileName) {
 		this(projectKey);
 
-		if (arffFileName == "" || arffFileName == null) {
+		if (arffFileName.isEmpty() || arffFileName == null) {
 			// TODO Use default ARFF file
 			return;
 		}
@@ -175,7 +175,7 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	public String getArffFileString(String fileName) {
 		File directory = new File(DEFAULT_DIR + File.separator + projectKey);
 		String returnString = "";
-		if (directory.exists() == true) {
+		if (directory.exists()) {
 			File[] fileArray = directory.listFiles();
 			for (File file : directory.listFiles()) {
 				if (file.getName().equalsIgnoreCase(fileName)) {
