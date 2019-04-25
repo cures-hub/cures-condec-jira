@@ -7,7 +7,8 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.util.JiraHome;
 
 /**
- * Interface to train the classifier with the ARFF file selected by the project admin.
+ * Interface responsible to train the supervised text classifier. For this purpose,
+ * the project admin needs to create and select an ARFF file.
  */
 public interface ClassificationTrainer {
 

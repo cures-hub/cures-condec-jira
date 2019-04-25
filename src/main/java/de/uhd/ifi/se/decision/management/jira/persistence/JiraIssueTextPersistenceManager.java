@@ -672,22 +672,18 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		return jiraIssue;
 	}
 
-	/**
-	 *
-	 * @param projectKey
-	 * @return Map with pair of Knowledge Types and Comment strings
-	 */
-	public List<PartOfJiraIssueText> getUserValidatedPartsOfText(String projectKey) {
-		if (projectKey == null || projectKey.equals("")) {
-			return new ArrayList<PartOfJiraIssueText>();
+	public List<DecisionKnowledgeElement> getUserValidatedPartsOfText(String projectKey) {
+		List<DecisionKnowledgeElement> validatedPartsOfText = new ArrayList<DecisionKnowledgeElement>();
+		if (projectKey == null || projectKey.isEmpty()) {
+			return validatedPartsOfText;
 		}
-		PartOfJiraIssueTextInDatabase[] sentencesInProject = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
+		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? and VALIDATED = ?", projectKey, true));
-		List<PartOfJiraIssueText> trainList = new ArrayList<>();
-		for (PartOfJiraIssueTextInDatabase databaseEntry : sentencesInProject) {
-			PartOfJiraIssueText sentence = new PartOfJiraIssueTextImpl(databaseEntry);
-			trainList.add(sentence);
+		
+		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
+			PartOfJiraIssueText validatedPartOfText = new PartOfJiraIssueTextImpl(databaseEntry);
+			validatedPartsOfText.add(validatedPartOfText);
 		}
-		return trainList;
+		return validatedPartsOfText;
 	}
 }

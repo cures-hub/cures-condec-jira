@@ -13,8 +13,7 @@ import java.util.List;
 import java.util.Random;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationTrainer;
-import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import meka.classifiers.multilabel.LC;
 import weka.classifiers.Evaluation;
@@ -29,14 +28,13 @@ import weka.core.tokenizers.Tokenizer;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
 /**
- * Class responsible to train the classifier with the ARFF file selected by the
- * project admin.
+ * Class responsible to train the supervised text classifier. For this purpose,
+ * the project admin needs to create and select an ARFF file.
  */
 public class ClassificationTrainerImpl implements ClassificationTrainer {
 
 	private String projectKey;
 	private Instances structure;
-	private List<PartOfJiraIssueText> mekaTrainData;
 
 	/**
 	 * In the Constructor the Sentences from Database will be uses for the
@@ -46,8 +44,6 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	 */
 	public ClassificationTrainerImpl(String projectKey) {
 		this.projectKey = projectKey;
-		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
-		mekaTrainData = manager.getUserValidatedPartsOfText(projectKey);
 	}
 
 	public ClassificationTrainerImpl(String projectKey, String arffFileName) {
@@ -89,9 +85,43 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		}
 	}
 
+	public File saveArffFile() {
+		File arffFile = null;
+		try {
+			String pathToDirectory = DEFAULT_DIR + File.separator + projectKey;
+			File directory = new File(pathToDirectory);
+			directory.mkdirs();
+			if (!directory.exists()) {
+				return null;
+			}
+			arffFile = new File(pathToDirectory + File.separator + getArffFileName());
+			arffFile.createNewFile();
+			String arffString = createArffString();
+			PrintWriter writer = new PrintWriter(arffFile, "UTF-8");
+			writer.println(arffString);
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return arffFile;
+	}
+
+	private String getArffFileName() {
+		Date date = new Date();
+		Timestamp timestamp = new Timestamp(date.getTime());
+		return "arffFile" + timestamp.getTime() + ".arff";
+	}
+
+	private String createArffString() {
+		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
+		List<DecisionKnowledgeElement> validatedPartsOfText = manager.getUserValidatedPartsOfText(projectKey);
+		Instances data = buildDatasetForMeka(validatedPartsOfText);
+		return data.toString();
+	}
+
 	/**
 	 *
-	 * @param trainSentences
+	 * @param trainingText
 	 * @return The training dataset. The Instance that this function returns is the
 	 *         ARFF File that is needed to train the Classifier. The Attributes are
 	 *         Boolean and the Sentence is a String.
@@ -109,7 +139,7 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	 *       Alternative for the Issue' 0,0,0,0,1 'And i am the Issue for the
 	 *       Decision and the Alternative'
 	 */
-	public Instances buildDatasetForMeka(List<PartOfJiraIssueText> trainSentences) {
+	public Instances buildDatasetForMeka(List<DecisionKnowledgeElement> trainingText) {
 
 		ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
 
@@ -128,37 +158,49 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 
 		Instances data = new Instances("sentences -C 5 ", wekaAttributes, 1000000);
 
-		for (PartOfJiraIssueText trainSentence : trainSentences) {
-			data.add(createTrainData(trainSentence, attributeText));
+		for (DecisionKnowledgeElement trainingElement : trainingText) {
+			data.add(createTrainingInstance(trainingElement, attributeText));
 		}
 		data.setClassIndex(data.numAttributes() - 1);
 		return data;
 	}
 
-	public File saveArffFile() {
-		File arffFile = null;
-		try {
-			File defdirectory = new File(DEFAULT_DIR);
-			defdirectory.mkdirs();
-			String pathToDirectory = DEFAULT_DIR + File.separator + projectKey;
-			File directory = new File(pathToDirectory);
-			directory.mkdirs();
-			if (!directory.exists()) {
-				return null;
-			}
-			Date date = new Date();
-			Timestamp timestamp = new Timestamp(date.getTime());
+	/**
+	 *
+	 * @param element
+	 * @param attributeText
+	 * @return a Data entry for the training of the classifier. The Instance
+	 *         contains the Knowledge Type as a 1 and the Sentence. The Knowledge
+	 *         Types that are not wrong are set to 0.
+	 */
+	private DenseInstance createTrainingInstance(DecisionKnowledgeElement element, Attribute attributeText) {
+		DenseInstance instance = initInstance();
+		switch (element.getType()) {
+		case ALTERNATIVE:
+			instance.setValue(0, 1);
+		case PRO:
+			instance.setValue(1, 1);
+		case CON:
+			instance.setValue(2, 1);
+		case DECISION:
+			instance.setValue(3, 1);
+		case ISSUE:
+			instance.setValue(4, 1);
+		default:
 
-			arffFile = new File(pathToDirectory + File.separator + "arffFile" + timestamp.getTime() + ".arff");
-			arffFile.createNewFile();
-			String arffString = createArffString();
-			PrintWriter writer = new PrintWriter(arffFile, "UTF-8");
-			writer.println(arffString);
-			writer.close();			
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
-		return arffFile;
+		instance.setValue(attributeText, element.getSummary());
+		return instance;
+	}
+
+	private DenseInstance initInstance() {
+		DenseInstance instance = new DenseInstance(6);
+		instance.setValue(0, 0);
+		instance.setValue(1, 0);
+		instance.setValue(2, 0);
+		instance.setValue(3, 0);
+		instance.setValue(4, 0);
+		return instance;
 	}
 
 	public List<String> getArffFiles() {
@@ -197,45 +239,6 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 			}
 		}
 		return returnString;
-	}
-
-	private String createArffString() {
-		Instances data = this.buildDatasetForMeka(mekaTrainData);
-		return data.toString();
-	}
-
-	/**
-	 *
-	 * @param sentence
-	 * @param attributeText
-	 * @return a Data entry for the training of the classifier. The Instance
-	 *         contains the Knowledge Type as a 1 and the Sentence. The Knowledge
-	 *         Types that are not wrong are set to 0.
-	 */
-	private DenseInstance createTrainData(PartOfJiraIssueText sentence, Attribute attributeText) {
-		DenseInstance newInstance = new DenseInstance(6);
-		newInstance.setValue(0, 0);
-		newInstance.setValue(1, 0);
-		newInstance.setValue(2, 0);
-		newInstance.setValue(3, 0);
-		newInstance.setValue(4, 0);
-		if (sentence.getType() == KnowledgeType.ALTERNATIVE) {
-			newInstance.setValue(0, 1);
-		}
-		if (sentence.getType() == KnowledgeType.PRO) {
-			newInstance.setValue(1, 1);
-		}
-		if (sentence.getType() == KnowledgeType.CON) {
-			newInstance.setValue(2, 1);
-		}
-		if (sentence.getType() == KnowledgeType.DECISION) {
-			newInstance.setValue(3, 1);
-		}
-		if (sentence.getType() == KnowledgeType.ISSUE) {
-			newInstance.setValue(4, 1);
-		}
-		newInstance.setValue(attributeText, sentence.getText());
-		return newInstance;
 	}
 
 	/**

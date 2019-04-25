@@ -1,5 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -20,10 +21,12 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationTrainer;
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.ClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
@@ -55,7 +58,7 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 	@Test
 	public void testClassificationTrainerARFFDataValid() {
 		ClassificationTrainer trainer = new ClassificationTrainerImpl("TEST");
-		List<PartOfJiraIssueText> values = new ArrayList<PartOfJiraIssueText>();
+		List<DecisionKnowledgeElement> values = new ArrayList<DecisionKnowledgeElement>();
 		for (KnowledgeType type : KnowledgeType.values()) {
 			PartOfJiraIssueText newEntry = new PartOfJiraIssueTextImpl();
 			newEntry.setType(type);
@@ -67,11 +70,17 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 		((ClassificationTrainerImpl) trainer).buildDatasetForMeka(values);
 		trainer.train();
 	}
-	
+
 	@Test
 	public void testSaveArffFile() {
 		ClassificationTrainer trainer = new ClassificationTrainerImpl("TEST");
 		File file = trainer.saveArffFile();
 		assertTrue(file.exists());
+	}
+	
+	@Test
+	public void testMockingOfClassifierDirectoryWorks() {
+		assertEquals(ClassificationTrainer.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data" + File.separator
+				+ "condec-plugin" + File.separator + "classifier" + File.separator);
 	}
 }
