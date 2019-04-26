@@ -6,7 +6,7 @@ import java.util.List;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.util.JiraHome;
 
-import weka.core.Instances;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 
 /**
  * Interface responsible to train the supervised text classifier. For this
@@ -40,18 +40,39 @@ public interface ClassificationTrainer {
 	File saveArffFile();
 
 	/**
+	 * Reads training data from an Attribute-Relation File Format (ARFF) file to
+	 * train the classifier.
+	 * 
+	 * @param arffFile
+	 *            Attribute-Relation File Format (ARFF) file to train the
+	 *            classifier.
+	 */
+	void setArffFile(File arffFile);
+
+	/**
+	 * Provides a list of decision knowledge element with a knowledge type and a
+	 * summary to train the classifier with.
+	 * 
+	 * @param trainingElements
+	 *            list of decision knowledge element with a knowledge type and a
+	 *            summary.
+	 */
+	void setTrainingData(List<DecisionKnowledgeElement> trainingElements);
+
+	/**
 	 * Gets all Attribute-Relation File Format (ARFF) files on the server.
 	 * 
 	 * @return all Attribute-Relation File Format (ARFF) files on the server as a
 	 *         list.
 	 */
 	List<File> getArffFiles();
-	
+
 	/**
-	 * Gets the names of all Attribute-Relation File Format (ARFF) files on the server.
+	 * Gets the names of all Attribute-Relation File Format (ARFF) files on the
+	 * server.
 	 * 
-	 * @return names of all Attribute-Relation File Format (ARFF) files on the server as a
-	 *         list of strings.
+	 * @return names of all Attribute-Relation File Format (ARFF) files on the
+	 *         server as a list of strings.
 	 */
 	List<String> getArffFileNames();
 
@@ -62,8 +83,4 @@ public interface ClassificationTrainer {
 	 * @return String of the Arff File
 	 */
 	String getArffFileString(String fileName);
-	
-	Instances getInstances();
-
-	void setInstances(Instances instances);
 }

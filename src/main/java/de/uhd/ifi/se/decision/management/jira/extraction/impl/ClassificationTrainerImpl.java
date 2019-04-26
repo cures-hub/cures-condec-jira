@@ -54,22 +54,29 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		this.instances = getInstancesFromArffFile(arffFileName);
 	}
 
+	public ClassificationTrainerImpl(String projectKey, List<DecisionKnowledgeElement> trainingElement) {
+		this(projectKey);
+		setTrainingData(trainingElement);
+	}
+
 	private Instances getInstancesFromArffFile(String arffFileName) {
 		Instances instances = null;
 		try {
 			DataSource dataSource = new ConverterUtils.DataSource(directory + File.separator + arffFileName);
 			instances = dataSource.getDataSet();
-			//instances.setClass(data.attribute("NameOfAttribute"));
+
 			if (instances.classIndex() == -1) {
-		        System.out.println("reset index...");
-		        instances.setClassIndex(instances.numAttributes() - 1);
-		    }
-			System.out.println(instances.toString());
+				// Reset index
+				instances.setClassIndex(instances.numAttributes() - 1);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println(e);
 		}
 		return instances;
+	}
+
+	public void setArffFile(File arffFile) {
+		this.instances = getInstancesFromArffFile(arffFile.getName());
 	}
 
 	@Override
@@ -86,11 +93,30 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 
 			binaryRelevance.buildClassifier(instances);
 			SerializationHelper.write(directory + File.separator + "newBr.model", binaryRelevance);
+
 			isTrained = true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return isTrained;
+	}
+
+	private void evaluateTraining(LC binaryRelevance) throws Exception {
+		Evaluation rate = new Evaluation(instances);
+		Random seed = new Random(1);
+		Instances datarandom = new Instances(instances);
+		datarandom.randomize(seed);
+
+		int folds = 10;
+		datarandom.stratify(folds);
+		rate.crossValidateModel(binaryRelevance, instances, folds, seed);
+
+		System.out.println(rate.toSummaryString());
+		System.out.println("Structure num classes: " + instances.numClasses());
+
+		// for (int i = 0; i < instances.numClasses(); i++) {
+		// System.out.println(rate.fMeasure(i));
+		// }
 	}
 
 	@Override
@@ -116,10 +142,22 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	}
 
 	private String createArffString() {
+		if (instances == null) {
+			instances = loadTrainingDataFromJiraIssueText();
+		}
+		return instances.toString();
+	}
+
+	public Instances loadTrainingDataFromJiraIssueText() {
 		JiraIssueTextPersistenceManager manager = new JiraIssueTextPersistenceManager(projectKey);
 		List<DecisionKnowledgeElement> validatedPartsOfText = manager.getUserValidatedPartsOfText(projectKey);
-		Instances data = buildDatasetForMeka(validatedPartsOfText);
-		return data.toString();
+		Instances instances = buildDatasetForMeka(validatedPartsOfText);
+		return instances;
+	}
+
+	@Override
+	public void setTrainingData(List<DecisionKnowledgeElement> trainingElements) {
+		this.instances = buildDatasetForMeka(trainingElements);
 	}
 
 	/**
@@ -189,14 +227,19 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		switch (element.getType()) {
 		case ALTERNATIVE:
 			instance.setValue(0, 1);
+			break;
 		case PRO:
 			instance.setValue(1, 1);
+			break;
 		case CON:
 			instance.setValue(2, 1);
+			break;
 		case DECISION:
 			instance.setValue(3, 1);
+			break;
 		case ISSUE:
 			instance.setValue(4, 1);
+			break;
 		default:
 			break;
 		}
@@ -244,18 +287,6 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		rationaleAttribute.add("0");
 		rationaleAttribute.add("1");
 		return new Attribute(name, rationaleAttribute);
-	}
-
-	private void evaluateTraining(LC binaryRelevance) throws Exception {
-		Evaluation rate = new Evaluation(instances);
-		Random seed = new Random(1);
-		Instances datarandom = new Instances(instances);
-		datarandom.randomize(seed);
-
-		int folds = 10;
-		datarandom.stratify(folds);
-		rate.crossValidateModel(binaryRelevance, instances, folds, seed);
-		System.out.println("Structure num classes: " + instances.numClasses());
 	}
 
 	/**
@@ -312,13 +343,5 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 			}
 		}
 		return returnString;
-	}
-
-	public Instances getInstances() {
-		return instances;
-	}
-
-	public void setInstances(Instances instances) {
-		this.instances = instances;
 	}
 }

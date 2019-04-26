@@ -27,12 +27,10 @@ import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
-import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
-import de.uhd.ifi.se.decision.management.jira.model.text.impl.PartOfJiraIssueTextImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
 import net.java.ao.EntityManager;
 import net.java.ao.test.jdbc.Data;
 import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
-import weka.core.Instances;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 @Data(TestTextSplitter.AoSentenceTestDatabaseUpdater.class)
@@ -55,21 +53,52 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 		commentManager.create(issue, user, comment, true);
 	}
 
+	private DecisionKnowledgeElement createElement(KnowledgeType type, String summary) {
+		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
+		element.setType(type);
+		element.setSummary(summary);
+		return element;
+	}
+
+	private List<DecisionKnowledgeElement> getTrainingData() {
+		List<DecisionKnowledgeElement> trainingElements = new ArrayList<DecisionKnowledgeElement>();
+		trainingElements.add(createElement(KnowledgeType.ISSUE, "Issue"));
+		trainingElements.add(createElement(KnowledgeType.DECISION, "Decision"));
+		trainingElements.add(createElement(KnowledgeType.ALTERNATIVE, "Alternative"));
+		trainingElements.add(createElement(KnowledgeType.PRO, "Pro"));
+		trainingElements.add(createElement(KnowledgeType.CON, "Con"));
+		trainingElements.add(createElement(KnowledgeType.OTHER, "Pizza"));
+		trainingElements.add(createElement(KnowledgeType.ISSUE, "How to"));
+		trainingElements.add(createElement(KnowledgeType.DECISION, "We decided"));
+		trainingElements.add(createElement(KnowledgeType.ALTERNATIVE, "An option would be"));
+		trainingElements.add(createElement(KnowledgeType.PRO, "+1"));
+		trainingElements.add(createElement(KnowledgeType.CON, "-1"));
+		trainingElements.add(createElement(KnowledgeType.OTHER, "Lunch"));
+		trainingElements.add(createElement(KnowledgeType.ISSUE, "I don't know how we can"));
+		trainingElements.add(createElement(KnowledgeType.DECISION, "We will do"));
+		trainingElements.add(createElement(KnowledgeType.ALTERNATIVE, "A possible solution could be"));
+		trainingElements.add(createElement(KnowledgeType.PRO, "Very good."));
+		trainingElements.add(createElement(KnowledgeType.CON, "I don't agree"));
+		trainingElements.add(createElement(KnowledgeType.OTHER, "Party tonight"));
+		return trainingElements;
+	}
+
 	@Test
-	public void testClassificationTrainerARFFDataValid() {
+	public void testClassificationTrainerSetTrainingData() {
+		List<DecisionKnowledgeElement> trainingElements = getTrainingData();
 		ClassificationTrainer trainer = new ClassificationTrainerImpl("TEST");
-		List<DecisionKnowledgeElement> values = new ArrayList<DecisionKnowledgeElement>();
-		for (KnowledgeType type : KnowledgeType.values()) {
-			PartOfJiraIssueText newEntry = new PartOfJiraIssueTextImpl();
-			newEntry.setType(type);
-			newEntry.setCommentId(commentManager.getLastComment(issue).getId());
-			newEntry.setStartPosition(0);
-			newEntry.setEndPosition(12);
-			values.add(newEntry);
-		}
-		Instances instances = ((ClassificationTrainerImpl) trainer).buildDatasetForMeka(values);
-		trainer.setInstances(instances);
+		trainer.setTrainingData(trainingElements);
 		assertTrue(trainer.train());
+	}
+
+	@Test
+	public void testClassificationTrainerFromArffFile() {
+		List<DecisionKnowledgeElement> trainingElements = getTrainingData();
+		ClassificationTrainer trainer = new ClassificationTrainerImpl("TEST", trainingElements);
+		File file = trainer.saveArffFile();
+		trainer.setArffFile(file);
+		assertTrue(trainer.train());
+		file.delete();
 	}
 
 	@Test
@@ -77,6 +106,7 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 		ClassificationTrainer trainer = new ClassificationTrainerImpl("TEST");
 		File file = trainer.saveArffFile();
 		assertTrue(file.exists());
+		file.delete();
 	}
 
 	@Test
