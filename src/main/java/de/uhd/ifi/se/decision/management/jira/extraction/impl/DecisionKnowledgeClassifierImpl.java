@@ -14,6 +14,7 @@ import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.SerializationHelper;
 import weka.core.tokenizers.NGramTokenizer;
 import weka.core.tokenizers.Tokenizer;
 import weka.filters.Filter;
@@ -34,20 +35,25 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 	 */
 	private static final String[] KNOWLEDGE_TYPES = { "isAlternative", "isPro", "isCon", "isDecision", "isIssue" };
 
+	public DecisionKnowledgeClassifierImpl(FilteredClassifier binaryClassifier, LC fineGrainedClassifier) {
+		this.binaryClassifier = binaryClassifier;
+		this.fineGrainedClassifier = fineGrainedClassifier;
+	}
+
 	public DecisionKnowledgeClassifierImpl() {
 		String pathToBinaryModel = ComponentGetter.getUrlOfClassifierFolder() + "fc.model";
 		String pathToFineGrainedModel = ComponentGetter.getUrlOfClassifierFolder() + "br.model";
 		InputStream inputStream;
 		try {
 			inputStream = new URL(pathToBinaryModel).openStream();
-			binaryClassifier = (FilteredClassifier) weka.core.SerializationHelper.read(inputStream);
+			binaryClassifier = (FilteredClassifier) SerializationHelper.read(inputStream);
 			inputStream.close();
 		} catch (Exception e) {
 			binaryClassifier = new FilteredClassifier();
 		}
 		try {
 			inputStream = new URL(pathToFineGrainedModel).openStream();
-			fineGrainedClassifier = (LC) weka.core.SerializationHelper.read(inputStream);
+			fineGrainedClassifier = (LC) SerializationHelper.read(inputStream);
 			inputStream.close();
 		} catch (Exception e) {
 			fineGrainedClassifier = new LC();

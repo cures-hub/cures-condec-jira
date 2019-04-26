@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
@@ -21,6 +22,7 @@ import com.atlassian.jira.user.ApplicationUser;
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationTrainer;
+import de.uhd.ifi.se.decision.management.jira.extraction.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.extraction.TestTextSplitter;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.ClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
@@ -87,6 +89,14 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 		ClassificationTrainer trainer = new ClassificationTrainerImpl("TEST");
 		trainer.setTrainingData(trainingElements);
 		assertTrue(trainer.train());
+		DecisionKnowledgeClassifier classifier = trainer.getClassifier();
+		List<String> stringsToBeClassified = Arrays.asList("-1", "Issue", "Decision", "Alternative", "Party tonight", "+1", "Very good.");
+		List<Boolean> isRelevant = classifier.makeBinaryPredictions(stringsToBeClassified);
+		System.out.println(isRelevant);
+		
+		List<KnowledgeType> types = classifier.makeFineGrainedPredictions(stringsToBeClassified);
+		System.out.println(types);
+		//assertTrue(isRelevant.get(1));
 	}
 
 	@Test

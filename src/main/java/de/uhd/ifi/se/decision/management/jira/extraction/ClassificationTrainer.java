@@ -75,4 +75,6 @@ public interface ClassificationTrainer {
 	 *         server as a list of strings.
 	 */
 	List<String> getArffFileNames();
+	
+	DecisionKnowledgeClassifier getClassifier();
 }

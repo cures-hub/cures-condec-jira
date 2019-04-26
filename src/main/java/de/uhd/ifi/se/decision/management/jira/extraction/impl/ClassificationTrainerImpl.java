@@ -1,9 +1,6 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
@@ -13,6 +10,7 @@ import java.util.List;
 import java.util.Random;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationTrainer;
+import de.uhd.ifi.se.decision.management.jira.extraction.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import meka.classifiers.multilabel.LC;
@@ -38,6 +36,7 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	private String projectKey;
 	private File directory;
 	private Instances instances;
+	private DecisionKnowledgeClassifier classifier;
 
 	public ClassificationTrainerImpl(String projectKey) {
 		this.projectKey = projectKey;
@@ -83,16 +82,20 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	public boolean train() {
 		boolean isTrained = false;
 		try {
-			LC binaryRelevance = new LC();
-			FilteredClassifier filteredClassifier = new FilteredClassifier();
-			filteredClassifier.setFilter(getStringToWordVector());
-			filteredClassifier.setClassifier(new NaiveBayesMultinomial());
-			binaryRelevance.setClassifier(filteredClassifier);
+			LC fineGrainedClassifier = new LC();
+			FilteredClassifier binaryClassifier = new FilteredClassifier();
+			binaryClassifier.setFilter(getStringToWordVector());
+			binaryClassifier.setClassifier(new NaiveBayesMultinomial());
+			fineGrainedClassifier.setClassifier(binaryClassifier);
 
-			evaluateTraining(binaryRelevance);
+			evaluateTraining(fineGrainedClassifier);
 
-			binaryRelevance.buildClassifier(instances);
-			SerializationHelper.write(directory + File.separator + "newBr.model", binaryRelevance);
+			fineGrainedClassifier.buildClassifier(instances);
+			SerializationHelper.write(directory + File.separator + "newBr.model", fineGrainedClassifier);
+			
+			classifier = new DecisionKnowledgeClassifierImpl(binaryClassifier, fineGrainedClassifier);
+			classifier.setBinaryClassifier(binaryClassifier);
+			classifier.setFineGrainedClassifier(fineGrainedClassifier);
 
 			isTrained = true;
 		} catch (Exception e) {
@@ -186,7 +189,6 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	 *         classifier.
 	 */
 	public Instances buildDatasetForMeka(List<DecisionKnowledgeElement> trainingElements) {
-
 		ArrayList<Attribute> wekaAttributes = new ArrayList<Attribute>();
 
 		// Declare Class value with {0,1} as possible values
@@ -319,5 +321,10 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		stringToWordVector.setTokenizer(getTokenizer());
 		stringToWordVector.setWordsToKeep(1000000);
 		return stringToWordVector;
+	}
+
+	@Override
+	public DecisionKnowledgeClassifier getClassifier() {
+		return classifier;
 	}
 }
