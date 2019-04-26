@@ -90,13 +90,14 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 		trainer.setTrainingData(trainingElements);
 		assertTrue(trainer.train());
 		DecisionKnowledgeClassifier classifier = trainer.getClassifier();
-		List<String> stringsToBeClassified = Arrays.asList("-1", "Issue", "Decision", "Alternative", "Party tonight", "+1", "Very good.");
+		List<String> stringsToBeClassified = Arrays.asList("-1", "Issue", "Decision", "Alternative", "Party tonight",
+				"+1", "Very good.");
 		List<Boolean> isRelevant = classifier.makeBinaryPredictions(stringsToBeClassified);
-		System.out.println(isRelevant);
-		
+		// System.out.println(isRelevant);
+
 		List<KnowledgeType> types = classifier.makeFineGrainedPredictions(stringsToBeClassified);
-		System.out.println(types);
-		//assertTrue(isRelevant.get(1));
+		// System.out.println(types);
+		// assertTrue(isRelevant.get(1));
 	}
 
 	@Test
@@ -122,4 +123,41 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 		assertEquals(ClassificationTrainer.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data"
 				+ File.separator + "condec-plugin" + File.separator + "classifier" + File.separator);
 	}
+
+	@Test
+	public void testDefaultArffFile() {
+		ClassificationTrainer trainer = new ClassificationTrainerImpl();
+		File luceneArffFile = new File(System.getProperty("user.home") + File.separator + "data" + File.separator
+				+ "condec-plugin" + File.separator + "classifier" + File.separator + "lucene.arff");
+		assertTrue(luceneArffFile.exists());
+		trainer.setArffFile(luceneArffFile);
+		// assertNotNull(trainer.getInstances());
+		System.out.println(trainer.getInstances().toString());
+
+		trainer.train();
+
+		DecisionKnowledgeClassifier classifier = trainer.getClassifier();
+		List<String> stringsToBeClassified = Arrays.asList("-1", "Issue", "Decision", "Alternative", "Party tonight",
+				"+1", "Very good.");
+		List<Boolean> expectedRelevance = Arrays.asList(true, true, false);
+		List<Boolean> predictedRelevance = classifier.makeBinaryPredictions(stringsToBeClassified);
+		// assertEquals(expectedRelevance, predictedRelevance);
+		System.out.println(predictedRelevance);
+
+		List<KnowledgeType> types = classifier.makeFineGrainedPredictions(stringsToBeClassified);
+		System.out.println(types);
+	}
+
+	@Test
+	public void testSetArffFile() {
+		ClassificationTrainer trainer = new ClassificationTrainerImpl();
+		File luceneArffFile = new File(System.getProperty("user.home") + File.separator + "data" + File.separator
+				+ "condec-plugin" + File.separator + "classifier" + File.separator + "test.arff");
+		assertTrue(luceneArffFile.exists());
+		trainer.setArffFile(luceneArffFile);
+		// assertNotNull(trainer.getInstances());
+		System.out.println(trainer.getInstances().toString());
+
+	}
+
 }

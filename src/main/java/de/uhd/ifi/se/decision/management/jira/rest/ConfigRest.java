@@ -402,8 +402,11 @@ public class ConfigRest {
 		}
 		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
 		File arffFile = trainer.saveArffFile();
+
 		if (arffFile != null) {
-			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("arffFile", arffFile.toString())).build();
+			return Response.ok(Status.ACCEPTED).entity(
+					ImmutableMap.of("arffFile", arffFile.toString(), "content", trainer.getInstances().toString()))
+					.build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
 				.entity(ImmutableMap.of("error", "ARFF file could not be created because of an internal server error."))

@@ -237,7 +237,16 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 	
 	var saveArffFileButton = document.getElementById("saveArffFile-button");
     saveArffFileButton.addEventListener("click", function () {
-        conDecAPI.saveArffFile('$projectKey');
+    	conDecAPI.saveArffFile('$projectKey', function(fileString) {
+    		var link = document.createElement('a');
+            var fileName = "ClassifierTrainingData.arff";
+            link.style.display = 'none';
+            link.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(fileString));
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);    		
+    	});        
     });
     
     var trainClassifier = document.getElementById("trainClassifier-button");

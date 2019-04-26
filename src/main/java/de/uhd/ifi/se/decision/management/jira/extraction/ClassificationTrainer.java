@@ -7,6 +7,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.config.util.JiraHome;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import weka.core.Instances;
 
 /**
  * Interface responsible to train the supervised text classifier. For this
@@ -77,4 +78,6 @@ public interface ClassificationTrainer {
 	List<String> getArffFileNames();
 	
 	DecisionKnowledgeClassifier getClassifier();
+	
+	Instances getInstances();
 }

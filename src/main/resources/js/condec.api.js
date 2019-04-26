@@ -552,12 +552,14 @@
 	/*
 	 * external references: settingsForSingleProject.vm
 	 */
-	ConDecAPI.prototype.saveArffFile = function saveArffFile(projectKey) {
+	ConDecAPI.prototype.saveArffFile = function saveArffFile(projectKey, callback) {
 		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/saveArffFile.json?projectKey=" + projectKey, null,
 				function(error, response) {
 					if (error === null) {
 						showFlag("success", "The ARFF file was successfully created and saved in "
 								+ response["arffFile"] + ".");
+						console.log(response["content"]);
+						callback(response["content"]);
 					}
 				});
 	};

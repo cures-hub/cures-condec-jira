@@ -99,13 +99,14 @@ public class TestDecisionKnowledgeClassifier extends TestSetUpWithIssues {
 		LC fineGrainedClassifier = (LC) SerializationHelper
 				.read(System.getProperty("user.home") + File.separator + "data" + File.separator + "condec-plugin"
 						+ File.separator + "classifier" + File.separator + "br.model");
-		DecisionKnowledgeClassifier classifier = new DecisionKnowledgeClassifierImpl(binaryClassifier, fineGrainedClassifier);
+		DecisionKnowledgeClassifier classifier = new DecisionKnowledgeClassifierImpl(binaryClassifier,
+				fineGrainedClassifier);
 		List<String> stringsToBeClassified = Arrays.asList("+1", "Very good.", "Party tonight");
 		List<Boolean> expectedRelevance = Arrays.asList(true, true, false);
 		List<Boolean> predictedRelevance = classifier.makeBinaryPredictions(stringsToBeClassified);
-		//assertEquals(expectedRelevance, predictedRelevance);		
+		// assertEquals(expectedRelevance, predictedRelevance);
 		System.out.println(predictedRelevance);
-		
+
 		List<KnowledgeType> types = classifier.makeFineGrainedPredictions(stringsToBeClassified);
 		System.out.println(types);
 	}

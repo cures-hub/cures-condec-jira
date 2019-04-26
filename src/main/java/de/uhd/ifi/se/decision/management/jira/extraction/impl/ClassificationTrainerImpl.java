@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationTrainer;
@@ -38,10 +39,14 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	private Instances instances;
 	private DecisionKnowledgeClassifier classifier;
 
-	public ClassificationTrainerImpl(String projectKey) {
-		this.projectKey = projectKey;
-		this.directory = new File(DEFAULT_DIR + File.separator + projectKey);
+	public ClassificationTrainerImpl() {
+		this.directory = new File(DEFAULT_DIR);
 		directory.mkdirs();
+	}
+
+	public ClassificationTrainerImpl(String projectKey) {
+		this();
+		this.projectKey = projectKey;
 	}
 
 	public ClassificationTrainerImpl(String projectKey, String arffFileName) {
@@ -58,10 +63,10 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		setTrainingData(trainingElement);
 	}
 
-	private Instances getInstancesFromArffFile(String arffFileName) {
+	private Instances getInstancesFromArffFile(File arffFile) {
 		Instances instances = null;
 		try {
-			DataSource dataSource = new ConverterUtils.DataSource(directory + File.separator + arffFileName);
+			DataSource dataSource = new ConverterUtils.DataSource(arffFile.getPath());
 			instances = dataSource.getDataSet();
 
 			if (instances.classIndex() == -1) {
@@ -74,8 +79,12 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		return instances;
 	}
 
+	private Instances getInstancesFromArffFile(String arffFileName) {
+		return getInstancesFromArffFile(new File(directory + File.separator + arffFileName));
+	}
+
 	public void setArffFile(File arffFile) {
-		this.instances = getInstancesFromArffFile(arffFile.getName());
+		this.instances = getInstancesFromArffFile(arffFile);
 	}
 
 	@Override
@@ -92,7 +101,7 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 
 			fineGrainedClassifier.buildClassifier(instances);
 			SerializationHelper.write(directory + File.separator + "newBr.model", fineGrainedClassifier);
-			
+
 			classifier = new DecisionKnowledgeClassifierImpl(binaryClassifier, fineGrainedClassifier);
 			classifier.setBinaryClassifier(binaryClassifier);
 			classifier.setFineGrainedClassifier(fineGrainedClassifier);
@@ -141,7 +150,11 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	private String getArffFileName() {
 		Date date = new Date();
 		Timestamp timestamp = new Timestamp(date.getTime());
-		return "arffFile" + timestamp.getTime() + ".arff";
+		String prefix = "";
+		if (projectKey != null) {
+			prefix = projectKey;
+		}
+		return prefix + timestamp.getTime() + ".arff";
 	}
 
 	private String createArffString() {
@@ -263,7 +276,9 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	public List<File> getArffFiles() {
 		List<File> arffFilesOnServer = new ArrayList<File>();
 		for (File file : directory.listFiles()) {
-			arffFilesOnServer.add(file);
+			if (file.getName().toLowerCase(Locale.ENGLISH).contains(".arff")) {
+				arffFilesOnServer.add(file);
+			}
 		}
 		return arffFilesOnServer;
 	}
@@ -326,5 +341,10 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	@Override
 	public DecisionKnowledgeClassifier getClassifier() {
 		return classifier;
+	}
+
+	@Override
+	public Instances getInstances() {
+		return instances;
 	}
 }
