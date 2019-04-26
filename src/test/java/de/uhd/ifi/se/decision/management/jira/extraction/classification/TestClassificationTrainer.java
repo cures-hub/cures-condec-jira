@@ -37,19 +37,17 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 public class TestClassificationTrainer extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
-	private CommentManager commentManager;
-	private Issue issue;
 
 	@Before
 	public void setUp() {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
-		commentManager = ComponentAccessor.getCommentManager();
+		CommentManager commentManager = ComponentAccessor.getCommentManager();
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
-		issue = issueManager.getIssueByCurrentKey("TEST-10");
+		Issue issue = issueManager.getIssueByCurrentKey("TEST-10");
 		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
-		String comment = "Das ist der Test Kommentrar";
+		String comment = "Das ist der Test Kommentar";
 		commentManager.create(issue, user, comment, true);
 	}
 

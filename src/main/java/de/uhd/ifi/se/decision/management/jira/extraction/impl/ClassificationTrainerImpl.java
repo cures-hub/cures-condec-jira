@@ -320,28 +320,4 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		stringToWordVector.setWordsToKeep(1000000);
 		return stringToWordVector;
 	}
-
-	public String getArffFileString(String fileName) {
-		BufferedReader bufferedReader;
-		String returnString = "";
-		for (File file : directory.listFiles()) {
-			if (file.getName().equalsIgnoreCase(fileName)) {
-				try {
-					FileReader fileReader = new FileReader(file);
-					bufferedReader = new BufferedReader(fileReader);
-					String line;
-					while ((line = bufferedReader.readLine()) != null) {
-						returnString += line + System.lineSeparator();
-					}
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-					return "There was an Error Reading the File. Try again";
-				} catch (IOException e) {
-					e.printStackTrace();
-					return "There was an Error Reading the File. Try again";
-				}
-			}
-		}
-		return returnString;
-	}
 }

@@ -75,12 +75,4 @@ public interface ClassificationTrainer {
 	 *         server as a list of strings.
 	 */
 	List<String> getArffFileNames();
-
-	/**
-	 * Gets a specific Arff File String
-	 * 
-	 * @param fileName
-	 * @return String of the Arff File
-	 */
-	String getArffFileString(String fileName);
 }
