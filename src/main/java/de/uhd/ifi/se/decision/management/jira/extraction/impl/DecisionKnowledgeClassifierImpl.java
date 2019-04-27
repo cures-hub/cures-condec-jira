@@ -1,11 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
-import java.io.InputStream;
-import java.net.URL;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationTrainer;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import meka.classifiers.multilabel.LC;
@@ -15,8 +15,6 @@ import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SerializationHelper;
-import weka.core.tokenizers.NGramTokenizer;
-import weka.core.tokenizers.Tokenizer;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
@@ -41,23 +39,37 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 	}
 
 	public DecisionKnowledgeClassifierImpl() {
-		String pathToBinaryModel = ComponentGetter.getUrlOfClassifierFolder() + "fc.model";
-		String pathToFineGrainedModel = ComponentGetter.getUrlOfClassifierFolder() + "br.model";
-		InputStream inputStream;
+		this.binaryClassifier = loadDefaultBinaryClassifier();
+		this.fineGrainedClassifier = loadDefaultFineGrainedClassifier();
+	}
+
+	private FilteredClassifier loadDefaultBinaryClassifier() {
+		File binaryClassifierFile = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "binaryClassifier.model");
+		if (!binaryClassifierFile.exists()) {
+			ClassificationTrainer.trainDefaultClassifier();
+		}
+		FilteredClassifier binaryClassifier;
 		try {
-			inputStream = new URL(pathToBinaryModel).openStream();
-			binaryClassifier = (FilteredClassifier) SerializationHelper.read(inputStream);
-			inputStream.close();
+			binaryClassifier = (FilteredClassifier) SerializationHelper.read(new FileInputStream(binaryClassifierFile));
 		} catch (Exception e) {
 			binaryClassifier = new FilteredClassifier();
 		}
+		return binaryClassifier;
+	}
+
+	private LC loadDefaultFineGrainedClassifier() {
+		File fineGrainedClassifierFile = new File(
+				DecisionKnowledgeClassifier.DEFAULT_DIR + "fineGrainedClassifier.model");
+		if (!fineGrainedClassifierFile.exists()) {
+			ClassificationTrainer.trainDefaultClassifier();
+		}
+		LC fineGrainedClassifier;
 		try {
-			inputStream = new URL(pathToFineGrainedModel).openStream();
-			fineGrainedClassifier = (LC) SerializationHelper.read(inputStream);
-			inputStream.close();
+			fineGrainedClassifier = (LC) SerializationHelper.read(new FileInputStream(fineGrainedClassifierFile));
 		} catch (Exception e) {
 			fineGrainedClassifier = new LC();
 		}
+		return fineGrainedClassifier;
 	}
 
 	@Override
@@ -146,10 +158,10 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 		instances.setClassIndex(5);
 
 		// Create and use filter
-		Filter sringToWordVector;
+		StringToWordVector sringToWordVector;
 		try {
 			instances.setClassIndex(5);
-			sringToWordVector = getStringToWordVector();
+			sringToWordVector = DecisionKnowledgeClassifier.getStringToWordVector();
 			sringToWordVector.setInputFormat(instances);
 			Instances filteredInstances = Filter.useFilter(instances, sringToWordVector);
 			filteredInstances.setClassIndex(5);
@@ -189,24 +201,6 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 			data.add(instance);
 		}
 		return data;
-	}
-
-	private StringToWordVector getStringToWordVector() throws Exception {
-		StringToWordVector stringToWordVector = new StringToWordVector();
-		stringToWordVector.setLowerCaseTokens(true);
-		stringToWordVector.setIDFTransform(true);
-		stringToWordVector.setTFTransform(true);
-		stringToWordVector.setTokenizer(getTokenizer());
-		stringToWordVector.setWordsToKeep(1000000);
-		return stringToWordVector;
-	}
-
-	private Tokenizer getTokenizer() throws Exception {
-		Tokenizer tokenizer = new NGramTokenizer();
-		String[] options = weka.core.Utils.splitOptions(
-				"weka.core.tokenizers.NGramTokenizer -max 3 -min 1 -delimiters \" \\r\\n\\t.,;:\\'\\\"()?!\"");
-		tokenizer.setOptions(options);
-		return tokenizer;
 	}
 
 	/**

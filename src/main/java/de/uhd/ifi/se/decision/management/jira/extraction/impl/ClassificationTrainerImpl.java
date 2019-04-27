@@ -24,8 +24,6 @@ import weka.core.Instances;
 import weka.core.SerializationHelper;
 import weka.core.converters.ConverterUtils;
 import weka.core.converters.ConverterUtils.DataSource;
-import weka.core.tokenizers.NGramTokenizer;
-import weka.core.tokenizers.Tokenizer;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
 /**
@@ -40,7 +38,7 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	private DecisionKnowledgeClassifier classifier;
 
 	public ClassificationTrainerImpl() {
-		this.directory = new File(DEFAULT_DIR);
+		this.directory = new File(DecisionKnowledgeClassifier.DEFAULT_DIR);
 		directory.mkdirs();
 	}
 
@@ -93,14 +91,17 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		try {
 			LC fineGrainedClassifier = new LC();
 			FilteredClassifier binaryClassifier = new FilteredClassifier();
-			binaryClassifier.setFilter(getStringToWordVector());
+			StringToWordVector stringToWordVector = DecisionKnowledgeClassifier.getStringToWordVector();
+			binaryClassifier.setFilter(stringToWordVector);
 			binaryClassifier.setClassifier(new NaiveBayesMultinomial());
 			fineGrainedClassifier.setClassifier(binaryClassifier);
 
 			evaluateTraining(fineGrainedClassifier);
 
 			fineGrainedClassifier.buildClassifier(instances);
-			SerializationHelper.write(directory + File.separator + "newBr.model", fineGrainedClassifier);
+			SerializationHelper.write(directory + File.separator + "binaryClassifier.model", binaryClassifier);
+			SerializationHelper.write(directory + File.separator + "fineGrainedClassifier.model",
+					fineGrainedClassifier);
 
 			classifier = new DecisionKnowledgeClassifierImpl(binaryClassifier, fineGrainedClassifier);
 			classifier.setBinaryClassifier(binaryClassifier);
@@ -304,38 +305,6 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		rationaleAttribute.add("0");
 		rationaleAttribute.add("1");
 		return new Attribute(name, rationaleAttribute);
-	}
-
-	/**
-	 * Creates the Tokenizer and sets the Values and Options for the String to Word
-	 * Vector
-	 * 
-	 * @return Tokenizer
-	 * @throws Exception
-	 */
-	private static Tokenizer getTokenizer() throws Exception {
-		Tokenizer tokenizer = new NGramTokenizer();
-		String[] options = weka.core.Utils.splitOptions(
-				"weka.core.tokenizers.NGramTokenizer -max 3 -min 1 -delimiters \" \\r\\n\\t.,;:\\'\\\"()?!\"");
-		tokenizer.setOptions(options);
-		return tokenizer;
-	}
-
-	/**
-	 * Creates a String to Word Vector for the Classifier All Elements are Lowercase
-	 * Tokens
-	 * 
-	 * @return StringToWordVector
-	 * @throws Exception
-	 */
-	private static StringToWordVector getStringToWordVector() throws Exception {
-		StringToWordVector stringToWordVector = new StringToWordVector();
-		stringToWordVector.setLowerCaseTokens(true);
-		stringToWordVector.setIDFTransform(true);
-		stringToWordVector.setTFTransform(true);
-		stringToWordVector.setTokenizer(getTokenizer());
-		stringToWordVector.setWordsToKeep(1000000);
-		return stringToWordVector;
 	}
 
 	@Override

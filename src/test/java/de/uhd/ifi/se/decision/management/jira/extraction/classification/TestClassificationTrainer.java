@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -80,6 +81,12 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 		trainingElements.add(createElement(KnowledgeType.PRO, "Very good."));
 		trainingElements.add(createElement(KnowledgeType.CON, "I don't agree"));
 		trainingElements.add(createElement(KnowledgeType.OTHER, "Party tonight"));
+		trainingElements.add(createElement(KnowledgeType.ISSUE, "The question is"));
+		trainingElements.add(createElement(KnowledgeType.DECISION, "I implemented"));
+		trainingElements.add(createElement(KnowledgeType.ALTERNATIVE, "We could have done"));
+		trainingElements.add(createElement(KnowledgeType.PRO, "Great"));
+		trainingElements.add(createElement(KnowledgeType.CON, "No"));
+		trainingElements.add(createElement(KnowledgeType.OTHER, "Hello"));
 		return trainingElements;
 	}
 
@@ -93,10 +100,10 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 		List<String> stringsToBeClassified = Arrays.asList("-1", "Issue", "Decision", "Alternative", "Party tonight",
 				"+1", "Very good.");
 		List<Boolean> isRelevant = classifier.makeBinaryPredictions(stringsToBeClassified);
-		// System.out.println(isRelevant);
+		System.out.println(isRelevant);
 
 		List<KnowledgeType> types = classifier.makeFineGrainedPredictions(stringsToBeClassified);
-		// System.out.println(types);
+		System.out.println(types);
 		// assertTrue(isRelevant.get(1));
 	}
 
@@ -107,7 +114,6 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 		File file = trainer.saveArffFile();
 		trainer.setArffFile(file);
 		assertTrue(trainer.train());
-		file.delete();
 	}
 
 	@Test
@@ -120,26 +126,23 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 
 	@Test
 	public void testMockingOfClassifierDirectoryWorks() {
-		assertEquals(ClassificationTrainer.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data"
+		assertEquals(DecisionKnowledgeClassifier.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data"
 				+ File.separator + "condec-plugin" + File.separator + "classifier" + File.separator);
 	}
 
 	@Test
 	public void testDefaultArffFile() {
 		ClassificationTrainer trainer = new ClassificationTrainerImpl();
-		File luceneArffFile = new File(System.getProperty("user.home") + File.separator + "data" + File.separator
-				+ "condec-plugin" + File.separator + "classifier" + File.separator + "lucene.arff");
+		File luceneArffFile = getDefaultArffFile();
 		assertTrue(luceneArffFile.exists());
 		trainer.setArffFile(luceneArffFile);
-		// assertNotNull(trainer.getInstances());
-		System.out.println(trainer.getInstances().toString());
-
-		trainer.train();
+		assertNotNull(trainer.getInstances());
+		assertTrue(trainer.train());
 
 		DecisionKnowledgeClassifier classifier = trainer.getClassifier();
 		List<String> stringsToBeClassified = Arrays.asList("-1", "Issue", "Decision", "Alternative", "Party tonight",
 				"+1", "Very good.");
-		List<Boolean> expectedRelevance = Arrays.asList(true, true, false);
+		// List<Boolean> expectedRelevance = Arrays.asList(true, true, false);
 		List<Boolean> predictedRelevance = classifier.makeBinaryPredictions(stringsToBeClassified);
 		// assertEquals(expectedRelevance, predictedRelevance);
 		System.out.println(predictedRelevance);
@@ -148,16 +151,10 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 		System.out.println(types);
 	}
 
-	@Test
-	public void testSetArffFile() {
-		ClassificationTrainer trainer = new ClassificationTrainerImpl();
-		File luceneArffFile = new File(System.getProperty("user.home") + File.separator + "data" + File.separator
-				+ "condec-plugin" + File.separator + "classifier" + File.separator + "test.arff");
-		assertTrue(luceneArffFile.exists());
-		trainer.setArffFile(luceneArffFile);
-		// assertNotNull(trainer.getInstances());
-		System.out.println(trainer.getInstances().toString());
-
+	private File getDefaultArffFile() {
+		File luceneArffFile = new File("src" + File.separator + "main" + File.separator + "resources" + File.separator
+				+ "classifier" + File.separator + "lucene.arff");
+		return luceneArffFile;
 	}
 
 }

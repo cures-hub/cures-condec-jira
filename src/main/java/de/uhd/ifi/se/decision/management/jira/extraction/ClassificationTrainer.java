@@ -1,11 +1,15 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
 import java.util.List;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.util.JiraHome;
-
+import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.ClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import weka.core.Instances;
 
@@ -14,14 +18,6 @@ import weka.core.Instances;
  * purpose, the project admin needs to create and select an ARFF file.
  */
 public interface ClassificationTrainer {
-
-	/**
-	 * @issue What is the best place to store the supervised text classifier related
-	 *        data?
-	 * @decision Clone git repo to JIRAHome/data/condec-plugin/classifier!
-	 */
-	String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory().getAbsolutePath()
-			+ File.separator + "condec-plugin" + File.separator + "classifier" + File.separator;
 
 	/**
 	 * Trains the Classifier with the Data from the Database that was set and
@@ -76,8 +72,33 @@ public interface ClassificationTrainer {
 	 *         server as a list of strings.
 	 */
 	List<String> getArffFileNames();
-	
+
 	DecisionKnowledgeClassifier getClassifier();
-	
+
 	Instances getInstances();
+
+	public static boolean trainDefaultClassifier() {
+		File targetFile = null;
+		String pathToDefaultArffFile = ComponentGetter.getUrlOfClassifierFolder() + "lucene.arff";
+		try {
+			InputStream inputStream = new URL(pathToDefaultArffFile).openStream();
+			byte[] buffer = new byte[inputStream.available()];
+			inputStream.read(buffer);
+
+			targetFile = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "lucene.arff");
+			OutputStream outStream = new FileOutputStream(targetFile);
+			outStream.write(buffer);
+			outStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (targetFile != null && !targetFile.exists()) {
+			System.err.println("Could not find default training data for supervised text classifier.");
+			return false;
+		}
+		ClassificationTrainer classificationTrainer = new ClassificationTrainerImpl();
+		classificationTrainer.setArffFile(targetFile);
+		return classificationTrainer.train();
+	}
 }
