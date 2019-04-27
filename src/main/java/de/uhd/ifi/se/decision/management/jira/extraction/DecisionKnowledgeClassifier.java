@@ -24,8 +24,8 @@ public interface DecisionKnowledgeClassifier {
 	 *        data?
 	 * @decision Clone git repo to JIRAHome/data/condec-plugin/classifier!
 	 */
-	public static final String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory().getAbsolutePath()
-			+ File.separator + "condec-plugin" + File.separator + "classifier" + File.separator;
+	public static final String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
+			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "classifier" + File.separator;
 
 	/**
 	 * Determines for a list of strings whether each string is relevant decision
@@ -67,13 +67,13 @@ public interface DecisionKnowledgeClassifier {
 	 *            classifier for fine grained prediction.
 	 */
 	void setFineGrainedClassifier(LC fineGrainedClassifier);
-	
-    /**
-     * Creates a String to Word Vector for the Classifier All Elements are Lowercase
-     * Tokens
-     * 
-     * @return StringToWordVector
-     */
+
+	/**
+	 * Creates a String to Word Vector for the Classifier All Elements are Lowercase
+	 * Tokens
+	 * 
+	 * @return StringToWordVector
+	 */
 	public static StringToWordVector getStringToWordVector() {
 		StringToWordVector stringToWordVector = new StringToWordVector();
 		stringToWordVector.setLowerCaseTokens(true);
@@ -89,14 +89,14 @@ public interface DecisionKnowledgeClassifier {
 	 * Vector
 	 */
 	public static Tokenizer getTokenizer() {
-		Tokenizer tokenizer = new NGramTokenizer();		
+		Tokenizer tokenizer = new NGramTokenizer();
 		try {
 			String[] options = weka.core.Utils.splitOptions(
 					"weka.core.tokenizers.NGramTokenizer -max 3 -min 1 -delimiters \" \\r\\n\\t.,;:\\'\\\"()?!\"");
 			tokenizer.setOptions(options);
 		} catch (Exception e) {
 			e.printStackTrace();
-		}		
+		}
 		return tokenizer;
 	}
 }

@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
@@ -96,16 +95,20 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 		List<DecisionKnowledgeElement> trainingElements = getTrainingData();
 		ClassificationTrainer trainer = new ClassificationTrainerImpl("TEST");
 		trainer.setTrainingData(trainingElements);
+		assertNotNull(trainer.getInstances());
 		assertTrue(trainer.train());
-		DecisionKnowledgeClassifier classifier = trainer.getClassifier();
-		List<String> stringsToBeClassified = Arrays.asList("-1", "Issue", "Decision", "Alternative", "Party tonight",
-				"+1", "Very good.");
-		List<Boolean> isRelevant = classifier.makeBinaryPredictions(stringsToBeClassified);
-		System.out.println(isRelevant);
-
-		List<KnowledgeType> types = classifier.makeFineGrainedPredictions(stringsToBeClassified);
-		System.out.println(types);
-		// assertTrue(isRelevant.get(1));
+		// DecisionKnowledgeClassifier classifier = trainer.getClassifier();
+		// List<String> stringsToBeClassified = Arrays.asList("-1", "Issue", "Decision",
+		// "Alternative", "Party tonight",
+		// "+1", "Very good.");
+		// List<Boolean> isRelevant =
+		// classifier.makeBinaryPredictions(stringsToBeClassified);
+		// System.out.println(isRelevant);
+		//
+		// List<KnowledgeType> types =
+		// classifier.makeFineGrainedPredictions(stringsToBeClassified);
+		// System.out.println(types);
+		// // assertTrue(isRelevant.get(1));
 	}
 
 	@Test
@@ -114,7 +117,11 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 		ClassificationTrainer trainer = new ClassificationTrainerImpl("TEST", trainingElements);
 		File file = trainer.saveArffFile();
 		trainer.setArffFile(file);
-		assertTrue(trainer.train());
+		assertNotNull(trainer.getInstances());
+		trainer = new ClassificationTrainerImpl("TEST", file.getName());
+		assertNotNull(trainer.getInstances());
+		// assertTrue(trainer.train());
+		file.delete();
 	}
 
 	@Test
@@ -138,24 +145,34 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 		assertTrue(luceneArffFile.exists());
 		trainer.setArffFile(luceneArffFile);
 		assertNotNull(trainer.getInstances());
-		assertTrue(trainer.train());
-
-		DecisionKnowledgeClassifier classifier = trainer.getClassifier();
-		List<String> stringsToBeClassified = Arrays.asList("-1", "Issue", "Decision", "Alternative", "Party tonight",
-				"+1", "Very good.");
-		// List<Boolean> expectedRelevance = Arrays.asList(true, true, false);
-		List<Boolean> predictedRelevance = classifier.makeBinaryPredictions(stringsToBeClassified);
-		// assertEquals(expectedRelevance, predictedRelevance);
-		System.out.println(predictedRelevance);
-
-		List<KnowledgeType> types = classifier.makeFineGrainedPredictions(stringsToBeClassified);
-		System.out.println(types);
+		// assertTrue(trainer.train());
+		//
+		// DecisionKnowledgeClassifier classifier = trainer.getClassifier();
+		// List<String> stringsToBeClassified = Arrays.asList("-1", "Issue", "Decision",
+		// "Alternative", "Party tonight",
+		// "+1", "Very good.");
+		// // List<Boolean> expectedRelevance = Arrays.asList(true, true, false);
+		// List<Boolean> predictedRelevance =
+		// classifier.makeBinaryPredictions(stringsToBeClassified);
+		// // assertEquals(expectedRelevance, predictedRelevance);
+		// System.out.println(predictedRelevance);
+		//
+		// List<KnowledgeType> types =
+		// classifier.makeFineGrainedPredictions(stringsToBeClassified);
+		// System.out.println(types);
 	}
-	
+
+	@Test
+	public void testCopyDefaultTrainingDataToFile() {
+		assertFalse(ClassificationTrainer.copyDefaultTrainingDataToFile(new File("")).exists());
+		File luceneArffFile = getDefaultArffFile();
+		assertTrue(ClassificationTrainer.copyDefaultTrainingDataToFile(luceneArffFile).exists());
+	}
+
 	@Test
 	public void testTrainDefaultClassifier() {
-		File luceneArffFile = getDefaultArffFile();
-		assertTrue(ClassificationTrainer.trainDefaultClassifier(luceneArffFile));
+		// File luceneArffFile = getDefaultArffFile();
+		// assertTrue(ClassificationTrainer.trainClassifier(luceneArffFile));
 		assertFalse(ClassificationTrainer.trainDefaultClassifier());
 	}
 
@@ -163,6 +180,12 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 		File luceneArffFile = new File("src" + File.separator + "main" + File.separator + "resources" + File.separator
 				+ "classifier" + File.separator + "lucene.arff");
 		return luceneArffFile;
+	}
+
+	@Test
+	public void testGetArffFiles() {
+		ClassificationTrainer trainer = new ClassificationTrainerImpl();
+		assertEquals(ArrayList.class, trainer.getArffFileNames().getClass());
 	}
 
 }

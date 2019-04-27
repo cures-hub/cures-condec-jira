@@ -56,7 +56,7 @@ public class SettingsOfSingleProject extends AbstractSettingsServlet {
 
 		Set<String> issueTypes = getJiraIssueTypeNames(projectKey);
 
-		ClassificationTrainer.moveTrainingDataToHomeDirectory(ClassificationTrainer.DEFAULT_TRAINING_DATA);
+		ClassificationTrainer.copyDefaultTrainingDataToFile(ClassificationTrainer.DEFAULT_TRAINING_DATA);
 		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);		
 
 		Map<String, Object> velocityParameters = new ConcurrentHashMap<String, Object>();

@@ -18,7 +18,7 @@ import weka.core.Instances;
  * purpose, the project admin needs to create and select an ARFF file.
  */
 public interface ClassificationTrainer {
-	
+
 	public static final File DEFAULT_TRAINING_DATA = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "lucene.arff");
 
 	/**
@@ -75,28 +75,61 @@ public interface ClassificationTrainer {
 	 */
 	List<String> getArffFileNames();
 
+	/**
+	 * Gets the supervised binary and fine grained classifier to identify decision
+	 * knowledge in natural language texts.
+	 * 
+	 * @see DecisionKnowledgeClassifier
+	 * 
+	 * @return instance of DecisionKnowledgeClassifier.
+	 */
 	DecisionKnowledgeClassifier getClassifier();
 
+	/**
+	 * Gets the weighted instances of the classifier.
+	 * 
+	 * @see Instances
+	 * 
+	 * @return weighted instances of the classifier.
+	 */
 	Instances getInstances();
 
-	public static boolean trainDefaultClassifier(File arffFile) {
+	/**
+	 * Trains the default classifier with the default ARFF file.
+	 * 
+	 * @return true if training succeeded.
+	 */
+	public static boolean trainDefaultClassifier() {
+		return trainClassifier(DEFAULT_TRAINING_DATA);
+	}
+
+	/**
+	 * Trains the classifier with the given ARFF file.
+	 * 
+	 * @param arffFile
+	 *            training data for the classifier in the ARFF format.
+	 * 
+	 * @return true if training succeeded.
+	 */
+	public static boolean trainClassifier(File arffFile) {
 		if (!arffFile.exists()) {
-			arffFile = moveTrainingDataToHomeDirectory(arffFile);
-			if (arffFile == null || !arffFile.exists()) {
-				System.err.println("Could not find default training data for supervised text classifier.");
-				return false;
-			}
+			System.err.println("Could not find default training data for supervised text classifier.");
+			return false;
 		}
 		ClassificationTrainer classificationTrainer = new ClassificationTrainerImpl();
 		classificationTrainer.setArffFile(arffFile);
 		return classificationTrainer.train();
 	}
-	
-	public static boolean trainDefaultClassifier() {		
-		return trainDefaultClassifier(DEFAULT_TRAINING_DATA);
-	}
 
-	public static File moveTrainingDataToHomeDirectory(File arffFile) {
+	/**
+	 * Copies the default ARFF file to the given file.
+	 * 
+	 * @param arffFile
+	 *            file to copy default ARFF file to.
+	 * 
+	 * @return updated file with default ARFF content.
+	 */
+	public static File copyDefaultTrainingDataToFile(File arffFile) {
 		if (arffFile.exists()) {
 			return arffFile;
 		}
