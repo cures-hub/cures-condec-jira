@@ -1,6 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.classification;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -149,6 +150,13 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 
 		List<KnowledgeType> types = classifier.makeFineGrainedPredictions(stringsToBeClassified);
 		System.out.println(types);
+	}
+	
+	@Test
+	public void testTrainDefaultClassifier() {
+		File luceneArffFile = getDefaultArffFile();
+		assertTrue(ClassificationTrainer.trainDefaultClassifier(luceneArffFile));
+		assertFalse(ClassificationTrainer.trainDefaultClassifier());
 	}
 
 	private File getDefaultArffFile() {

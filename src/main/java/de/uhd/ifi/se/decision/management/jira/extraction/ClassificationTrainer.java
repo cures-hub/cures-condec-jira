@@ -18,6 +18,8 @@ import weka.core.Instances;
  * purpose, the project admin needs to create and select an ARFF file.
  */
 public interface ClassificationTrainer {
+	
+	public static final File DEFAULT_TRAINING_DATA = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "lucene.arff");
 
 	/**
 	 * Trains the Classifier with the Data from the Database that was set and
@@ -77,28 +79,39 @@ public interface ClassificationTrainer {
 
 	Instances getInstances();
 
-	public static boolean trainDefaultClassifier() {
-		File targetFile = null;
-		String pathToDefaultArffFile = ComponentGetter.getUrlOfClassifierFolder() + "lucene.arff";
+	public static boolean trainDefaultClassifier(File arffFile) {
+		if (!arffFile.exists()) {
+			arffFile = moveTrainingDataToHomeDirectory(arffFile);
+			if (arffFile == null || !arffFile.exists()) {
+				System.err.println("Could not find default training data for supervised text classifier.");
+				return false;
+			}
+		}
+		ClassificationTrainer classificationTrainer = new ClassificationTrainerImpl();
+		classificationTrainer.setArffFile(arffFile);
+		return classificationTrainer.train();
+	}
+	
+	public static boolean trainDefaultClassifier() {		
+		return trainDefaultClassifier(DEFAULT_TRAINING_DATA);
+	}
+
+	public static File moveTrainingDataToHomeDirectory(File arffFile) {
+		if (arffFile.exists()) {
+			return arffFile;
+		}
+		String pathToArffFile = ComponentGetter.getUrlOfClassifierFolder() + "lucene.arff";
 		try {
-			InputStream inputStream = new URL(pathToDefaultArffFile).openStream();
+			InputStream inputStream = new URL(pathToArffFile).openStream();
 			byte[] buffer = new byte[inputStream.available()];
 			inputStream.read(buffer);
 
-			targetFile = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "lucene.arff");
-			OutputStream outStream = new FileOutputStream(targetFile);
-			outStream.write(buffer);
-			outStream.close();
+			OutputStream outputStream = new FileOutputStream(arffFile);
+			outputStream.write(buffer);
+			outputStream.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		if (targetFile != null && !targetFile.exists()) {
-			System.err.println("Could not find default training data for supervised text classifier.");
-			return false;
-		}
-		ClassificationTrainer classificationTrainer = new ClassificationTrainerImpl();
-		classificationTrainer.setArffFile(targetFile);
-		return classificationTrainer.train();
+		return arffFile;
 	}
 }

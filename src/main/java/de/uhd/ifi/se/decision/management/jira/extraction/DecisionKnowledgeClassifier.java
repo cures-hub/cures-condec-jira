@@ -24,7 +24,7 @@ public interface DecisionKnowledgeClassifier {
 	 *        data?
 	 * @decision Clone git repo to JIRAHome/data/condec-plugin/classifier!
 	 */
-	String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory().getAbsolutePath()
+	public static final String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory().getAbsolutePath()
 			+ File.separator + "condec-plugin" + File.separator + "classifier" + File.separator;
 
 	/**
