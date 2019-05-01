@@ -29,8 +29,7 @@ public class TestConfigSuper extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		configRest = new ConfigRest();
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
+		initialization();
 
 		request = new MockHttpServletRequest();
 		request.setAttribute("WithFails", false);

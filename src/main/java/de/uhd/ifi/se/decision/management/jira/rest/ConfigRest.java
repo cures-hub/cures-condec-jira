@@ -147,22 +147,18 @@ public class ConfigRest {
 
 	@Path("/setGitUri")
 	@POST
-	public Response setGitUri(@Context HttpServletRequest request, @QueryParam("projectKey") final String projectKey,
-			@QueryParam("gitUri") final String gitUri) {
+	public Response setGitUri(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
+			@QueryParam("gitUri") String gitUri) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
 		if (gitUri == null) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "gitUri = null")).build();
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Git URI could not be set because it is null.")).build();
 		}
-		try {
-			ConfigPersistenceManager.setGitUri(projectKey, gitUri);
-			return Response.ok(Status.ACCEPTED).build();
-		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-			return Response.status(Status.CONFLICT).build();
-		}
+		ConfigPersistenceManager.setGitUri(projectKey, gitUri);
+		return Response.ok(Status.ACCEPTED).build();
 	}
 
 	@Path("/setKnowledgeExtractedFromIssues")

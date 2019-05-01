@@ -97,21 +97,4 @@ public class TestSetIssueStrategy extends TestConfigSuper{
     public void testdoPutrequestExKeyExistsIsIssueStategyFalse() {
         assertEquals(Response.ok().build().getClass(), configRest.setIssueStrategy(request, "TEST", "false").getClass());
     }
-
-    @Test
-    public void testdoPutUserUnauthorized() {
-        request.setAttribute("WithFails", true);
-        request.setAttribute("NoFails", false);
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                configRest.setIssueStrategy(request, "NotTEST", "false").getStatus());
-    }
-
-    @Test
-    public void testdoPutUserNull() {
-        request.setAttribute("WithFails", false);
-        request.setAttribute("NoFails", false);
-        request.setAttribute("SysAdmin", false);
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(),
-                configRest.setIssueStrategy(request, "NotTEST", "false").getStatus());
-    }
 }
