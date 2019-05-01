@@ -46,6 +46,6 @@ public class TestGitClient extends TestSetUpGit {
 	@Test
 	public void testMockingOfGitDirectoryWorks() {
 		assertEquals(GitClient.DEFAULT_DIR, System.getProperty("user.home") + File.separator + "data" + File.separator
-				+ "condec-plugin" + File.separator);
+				+ "condec-plugin" + File.separator + "git" + File.separator);
 	}
 }

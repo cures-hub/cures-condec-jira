@@ -199,4 +199,12 @@ public class ConfigPersistenceManager {
 	public static void setWebhookUrl(String projectKey, String webhookUrl) {
 		setValue(projectKey, "webhookUrl", webhookUrl);
 	}
+
+	public static void setArffFileForClassifier(String projectKey, String arffFileName) {
+		setValue(projectKey, "arffFileName", arffFileName);
+	}
+
+	public static String getArffFileForClassifier(String projectKey) {
+		return getValue(projectKey, "arffFileName");
+	}
 }
