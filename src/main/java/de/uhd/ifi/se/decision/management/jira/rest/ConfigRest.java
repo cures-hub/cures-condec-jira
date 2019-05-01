@@ -385,7 +385,7 @@ public class ConfigRest {
 			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error", "Classifier could not be trained due to an internal server error."))
+				.entity(ImmutableMap.of("error", "Classifier could not be trained."))
 				.build();
 	}
 

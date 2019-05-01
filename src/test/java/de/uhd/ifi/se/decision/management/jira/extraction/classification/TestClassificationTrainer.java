@@ -14,11 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.IssueManager;
-import com.atlassian.jira.issue.comments.CommentManager;
-import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
@@ -46,12 +41,6 @@ public class TestClassificationTrainer extends TestSetUpWithIssues {
 		initialization();
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
-		CommentManager commentManager = ComponentAccessor.getCommentManager();
-		IssueManager issueManager = ComponentAccessor.getIssueManager();
-		Issue issue = issueManager.getIssueByCurrentKey("TEST-10");
-		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("NoFails");
-		String comment = "Das ist der Test Kommentar";
-		commentManager.create(issue, user, comment, true);
 	}
 
 	private DecisionKnowledgeElement createElement(KnowledgeType type, String summary) {
