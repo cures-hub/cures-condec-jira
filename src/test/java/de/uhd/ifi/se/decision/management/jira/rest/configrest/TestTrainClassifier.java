@@ -9,7 +9,8 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 
 @RunWith(ActiveObjectsJUnitRunner.class)
 public class TestTrainClassifier extends TestConfigSuper {
-	private static final String INVALID_ARFF_FILE = "Classifier could not be trained.";
+	private static final String INVALID_ARFF_FILE = "The classifier could not be trained since the ARFF file name is invalid.";
+	private static final String INTERNAL_SERVER_ERROR = "The classifier could not be trained due to an internal server error.";
 	
 	@Test
 	public void testRequestNullProjectKeyNullArffFileNull() {
@@ -33,5 +34,11 @@ public class TestTrainClassifier extends TestConfigSuper {
 	public void testRequestValidProjectKeyExistsArffFileEmpty() {
 		assertEquals(getBadRequestResponse(INVALID_ARFF_FILE).getEntity(),
 				configRest.trainClassifier(request, "TEST", "").getEntity());
+	}
+	
+	@Test
+	public void testRequestValidProjectKeyExistsArffFileNonExistent() {
+		assertEquals(getBadRequestResponse(INTERNAL_SERVER_ERROR).getEntity(),
+				configRest.trainClassifier(request, "TEST", "fake.arff").getEntity());
 	}
 }

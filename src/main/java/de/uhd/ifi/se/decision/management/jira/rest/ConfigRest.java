@@ -378,6 +378,10 @@ public class ConfigRest {
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
+		if (arffFileName == null || arffFileName.isEmpty()) {
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
+					"The classifier could not be trained since the ARFF file name is invalid.")).build();
+		}
 		ConfigPersistenceManager.setArffFileForClassifier(projectKey, arffFileName);
 		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey, arffFileName);
 		boolean isTrained = trainer.train();
@@ -385,8 +389,7 @@ public class ConfigRest {
 			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
 		}
 		return Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error", "Classifier could not be trained."))
-				.build();
+				.entity(ImmutableMap.of("error", "The classifier could not be trained due to an internal server error.")).build();
 	}
 
 	@Path("/saveArffFile")
