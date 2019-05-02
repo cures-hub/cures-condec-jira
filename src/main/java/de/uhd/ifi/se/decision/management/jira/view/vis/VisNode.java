@@ -26,27 +26,31 @@ public class VisNode {
 	public VisNode(DecisionKnowledgeElement element, boolean collapsed){
 		this.setId(element.getId()+ "_" + element.getDocumentationLocationAsString());
 		if (!collapsed) {
-			this.setGroup(element.getTypeAsString() + "_" + element.getDocumentationLocationAsString());
+			this.setGroup(element.getTypeAsString().toLowerCase());
 			this.setLabel("<b>" + element.getTypeAsString().toUpperCase() + "</b> \n" + element.getSummary());
 			this.setTitle(element.getDescription());
 		} else {
 			this.setGroup("collapsed");
 			this.setLabel("");
-			this.setTitle(element.getSummary());
+			this.setTitle(element.getTypeAsString() + ": " + element.getSummary());
 		}
 	}
 
 	public VisNode(DecisionKnowledgeElement element, String type, boolean collapsed) {
-		this.setId(element.getId()+ "_" + element.getDocumentationLocationAsString());
+		this(element,collapsed);
+		if(!collapsed) {
+			this.setGroup(type.toLowerCase());
+		}
+		/*this.setId(element.getId()+ "_" + element.getDocumentationLocationAsString());
 		if (!collapsed) {
-			this.setGroup(type + "_" + element.getDocumentationLocationAsString());
+			this.setGroup(type.toLowerCase());
 			this.setLabel("<b>" + element.getTypeAsString().toUpperCase() + "</b> \n" + element.getSummary());
 			this.setTitle(element.getDescription());
 		} else {
 			this.setGroup("collapsed");
 			this.setLabel("");
 			this.setTitle(element.getSummary());
-		}
+		}*/
 	}
 
 	public String getId() {

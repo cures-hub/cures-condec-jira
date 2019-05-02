@@ -13,18 +13,25 @@ import java.util.List;
 
 @XmlRootElement(name = "issueTypesForDropdown")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class IssueTypesForDropdown {
+public class FilterDataProvider {
+
+
+
+	@XmlElement
 
 	private List<String> allIssueTypes;
+	@XmlElement
 	private List<String> issueTypesMatchingFilter;
 	@XmlElement
-	private List<DropdownEntry> items;
+	private long startDate;
+	@XmlElement
+	private long endDate;
 
-	public IssueTypesForDropdown() {
+	public FilterDataProvider() {
 
 	}
 
-	public IssueTypesForDropdown(String projectKey, String query, ApplicationUser user) {
+	public FilterDataProvider(String projectKey, String query, ApplicationUser user) {
 		GraphFiltering filter = new GraphFiltering(projectKey,query,user,false);
 		filter.produceResultsFromQuery();
 		this.allIssueTypes = new ArrayList<>();
@@ -36,50 +43,39 @@ public class IssueTypesForDropdown {
 		} else {
 			this.issueTypesMatchingFilter = allIssueTypes;
 		}
-		for (String issueType : allIssueTypes) {
-			DropdownEntry dropdownEntry = new DropdownEntry();
-			dropdownEntry.setContent(issueType);
-			dropdownEntry.setChecked(issueTypesMatchingFilter.contains(issueType));
-			items.add(dropdownEntry);
-
-		}
-
+		this.startDate = filter.getStartDate();
+		this.endDate = filter.getEndDate();
 	}
 
-	public List<DropdownEntry> getItems() {
-		return items;
+	public List<String> getAllIssueTypes() {
+		return allIssueTypes;
 	}
 
-	public void setItems(List<DropdownEntry> items) {
-		this.items = items;
+	public void setAllIssueTypes(List<String> allIssueTypes) {
+		this.allIssueTypes = allIssueTypes;
 	}
 
-	private class DropdownEntry {
-		private String type;
-		private boolean interactive;
-		private boolean checked;
-		private String content;
-
-		public DropdownEntry() {
-			this.type = "checkbox";
-			this.interactive = true;
-		}
-
-		public boolean isChecked() {
-			return checked;
-		}
-
-		public void setChecked(boolean checked) {
-			this.checked = checked;
-		}
-
-		public String getContent() {
-			return content;
-		}
-
-		public void setContent(String content) {
-			this.content = content;
-		}
+	public List<String> getIssueTypesMatchingFilter() {
+		return issueTypesMatchingFilter;
 	}
 
+	public void setIssueTypesMatchingFilter(List<String> issueTypesMatchingFilter) {
+		this.issueTypesMatchingFilter = issueTypesMatchingFilter;
+	}
+
+	public long getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(long startDate) {
+		this.startDate = startDate;
+	}
+
+	public long getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(long endDate) {
+		this.endDate = endDate;
+	}
 }

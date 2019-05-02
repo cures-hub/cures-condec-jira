@@ -316,6 +316,15 @@
         });
     };
 
+    ConDecAPI.prototype.getFilterData = function getFilterData(elementKey, searchTerm, callback) {
+        getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getFilterData.json?elementKey=" + elementKey
+        + "&searchTerm=" + searchTerm, function(error, filterData) {
+            if (error === null) {
+                callback(filterData);
+            }
+        })
+    };
+
     /*
      * external references: condec.tab.panel
      */

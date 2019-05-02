@@ -53,30 +53,65 @@
 
 	ConDecJiraIssueModule.prototype.initView = function initView() {
 		console.log("ConDecJiraIssueModule initView");
-		var issueKey = conDecAPI.getIssueKey();
-		var search = getURLsSearch();
-		vis.buildVis(issueKey, search);
 
 	};
+
+    ConDecJiraIssueModule.prototype.initTreant = function initTreant() {
+        console.log("ConDecJiraIssueModule initTreant");
+        var issueKey = conDecAPI.getIssueKey();
+        var search = getURLsSearch();
+        treant.buildTreant(issueKey, true, search);
+    };
+
+    ConDecJiraIssueModule.prototype.initVis = function initVis() {
+        console.log("ConDecJiraIssueModule initVis");
+        var issueKey = conDecAPI.getIssueKey();
+        var search = getURLsSearch();
+        vis.buildVis(issueKey, search);
+    };
 
     ConDecJiraIssueModule.prototype.initFilter = function() {
         console.log("ConDecJiraIssueModule initFilter");
-        //var dropdownMenu = document.getElementById("issuetype-dropdown");
         var issueKey = conDecAPI.getIssueKey();
         var search = getURLsSearch();
-        var dropdownSource = document.createAttribute("src");
-        dropdownSource.value = (AJS.contextPath() + "/rest/decisions/latest/view/getIssueTypesDropdown.json?elementKey="
-            + issueKey + "&query=" + search);
-        console.log(dropdownSource.value);
-        //dropdownMenu.setAttributeNode(dropdownSource);
-    };
+        var checkedItems;
+        var issueTypeDropdown = document.getElementById("issuetype-dropdown");
+        var firstDatePicker = document.getElementById("created-after-picker");
+        var secondDatePicker = document.getElementById("created-before-picker");
+        conDecAPI.getFilterData(issueKey, search, function (filterData) {
+        	var allIssueTypes = filterData.allIssueTypes;
+        	var selectedIssueTypes = filterData.issueTypesMatchingFilter;
+        	checkedItems =selectedIssueTypes;
+			issueTypeDropdown.innerHTML = "";
 
-    ConDecJiraIssueModule.prototype.getFilterJsonAddress = function() {
-        var issueKey = conDecAPI.getIssueKey();
-        var search = getURLsSearch();
-        return (AJS.contextPath() + "/rest/decisions/latest/view/getIssueTypesDropdown.json?elementKey="
-            + issueKey + "&query=" + search);
-	};
+			for (var index = 0; index < allIssueTypes.length; index++) {
+                var isSelected = "";
+				if (selectedIssueTypes.includes(allIssueTypes[index])) {
+					isSelected = "checked";
+				}
+				issueTypeDropdown.insertAdjacentHTML("beforeend","<aui-item-checkbox interactive " + isSelected + ">" +
+				allIssueTypes[index] + "</aui-item-checkbox>");
+			}
+
+			if (filterData.startDate > 0) {
+				firstDatePicker.valueAsDate = new Date(filterData.startDate);
+			}
+			if (filterData.endDate > 0) {
+				secondDatePicker.valueAsDate = new Date(filterData.endDate);
+			}
+            issueTypeDropdown.addEventListener('change',function(event){
+                console.log(checkedItems);
+                var isChecked = event.target.hasAttribute('checked');
+                if(isChecked) {
+                    checkedItems.push(event.target.textContent);
+                } else {
+                    checkedItems.splice(checkedItems.indexOf(event.target.textContent),1);
+                }
+                console.log(checkedItems);
+            });
+		});
+
+    };
 
 	function getURLsSearch() {
 		// get jql from url
