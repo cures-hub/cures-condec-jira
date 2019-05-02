@@ -154,14 +154,4 @@ public class DecisionKnowledgeProjectImpl implements DecisionKnowledgeProject {
 	public boolean isClassifierUsedForIssueComments() {
 		return ConfigPersistenceManager.isUseClassiferForIssueComments(projectKey);
 	}
-
-	@Override
-	public void setVisualizationToVis(boolean isVisualizationSetToVis) {
-		ConfigPersistenceManager.setVisualizationToVis(projectKey,isVisualizationSetToVis);
-	}
-
-	@Override
-	public boolean isVisualizationSetToVis() {
-		return ConfigPersistenceManager.isVisualizationSetToVis(projectKey);
-	}
 }
