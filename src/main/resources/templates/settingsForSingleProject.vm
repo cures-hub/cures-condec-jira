@@ -57,21 +57,21 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 	}
 	</script>
 
-<h2>Decision Knowledge Extraction from JIRA Issue Comments</h2>
+<h2>Decision Knowledge Extraction from JIRA Issue Description and Comments</h2>
 	<div class="field-group">
-		<label for="isKnowledgeExtractedFromIssues-toggle">Extract from JIRA Issue Comments?</label>
+		<label for="isKnowledgeExtractedFromIssues-toggle">Extract from JIRA Issue Text?</label>
 		<aui-toggle id="isKnowledgeExtractedFromIssues-toggle"
 			value="$projectKey" label="Extract from	Issue Comments?"></aui-toggle>
 		<div class="description">Enables or disables whether decision
-			knowledge is extracted from JIRA issue comments for this project.
+			knowledge is extracted from JIRA issue description and comments for this project.
 		</div>
 	</div>
 	<div class="field-group">
 		<label for="isClassifierUsed-toggle">Use Classifier to identify Decision Knowledge?</label>
 		<aui-toggle id="isClassifierUsed-toggle"
 			value="$projectKey" label="Use Classifier to Identify Decision Knowledge?"></aui-toggle>
-		<div class="description">Enables or disables whether decision
-			knowledge is extracted classified from issue comments for this project.
+		<div class="description">Enables or disables whether text is automatically classified 
+		as decision knowledge within JIRA issue description and comments for this project.
 		</div>
 	</div>
 	<div class="field-group">
@@ -95,7 +95,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 	<div class="field-group">
 		<label for="classifyAllIssuesInProject">Suggest Tags for Whole Project?</label>
 		<input type="button" class="aui-button" id="classifyAllIssuesInProject" value="Classify all Comments" />
-		<div class="description">Classifies decision knowledge for all issue comments for this project.</div>	
+		<div class="description">Classifies decision knowledge for all issue comments for this project.</div>
 		<div id="progress-bar" class="aui-progress-indicator">
 		    <span class="aui-progress-indicator-value"></span>
 		</div>		
@@ -111,6 +111,29 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 	    	});
 		</script>	
 	</div>
+	<div class="field-group">
+    	<label for="saveArffFile-button">Create an ARFF File</label>
+    	<input type="button" class="aui-button" id="saveArffFile-button" value="Create ARFF File"/>
+    	<div class="description">Creates an Attribute-Relation File Format (ARFF) file for the current project that can be used to train the classifier.
+    		This file is saved in the JIRA home directory in data/condec-plugin/project-key. You can download it from there.
+    		If you want to train the classifier with this file you need to reload this page to access the file.</div>
+    </div>
+    <div class="field-group">
+        <label for="trainClassifier-button">Train the Classifier</label>
+        <aui-select id="select-arff-file-train"
+                    name="arff-file"
+                    placeholder="Select an ARFF File">
+            #foreach ($arffFile in $arffFiles)
+            	#if ($arffFile.toString().contains($selectedArffFile))       		
+            		<aui-option selected>$arffFile</aui-option>
+            	#else
+            		<aui-option>$arffFile</aui-option>
+            	#end
+            #end
+        </aui-select>
+        <input type="button" class="aui-button" id="trainClassifier-button" value="Train Classifier"/>
+        <div class="description">Trains the classifier on the selected Attribute-Relation File Format (ARFF) file.</div>
+    </div>    
 
 <h2>Decision Knowledge Extraction from Git</h2>
 	<div class="field-group">
@@ -211,6 +234,29 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 	} else {
 		sentenceIconToggle.checked = false;
 	};
+	
+	var saveArffFileButton = document.getElementById("saveArffFile-button");
+    saveArffFileButton.addEventListener("click", function () {
+    	conDecAPI.saveArffFile('$projectKey', function(fileString) {
+    		var link = document.createElement('a');
+            var fileName = "ClassifierTrainingData.arff";
+            link.style.display = 'none';
+            link.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(fileString));
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);    		
+    	});        
+    });
+    
+    var trainClassifier = document.getElementById("trainClassifier-button");
+    trainClassifier.addEventListener("click", function() {
+        if (confirm('Are you sure you want to retrain the classifier?')) {
+            var trainDataSelect = document.getElementById("select-arff-file-train");
+            var isNewTrained = conDecAPI.trainClassifier('$projectKey', trainDataSelect.value);
+            console.log(trainDataSelect.value);
+        }
+    });
 				
 	var gitToggle = document.getElementById('isKnowledgeExtractedFromGit-toggle');
 	if ($project.isKnowledgeExtractedFromGit() == true) {
@@ -254,7 +300,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:styl
 	});
 	
 	for (j in additionalKnowledgeTypes) {
-		console.log(typeToggles[j].value);
 		conDecAPI.isKnowledgeTypeEnabled(typeToggles[j].value, '$projectKey', typeToggles[j], function(isTypeEnabled, toggle) {				
 	    	toggle.checked = isTypeEnabled;
 		});

@@ -205,7 +205,11 @@ public class ConfigPersistenceManager {
 		setValue(projectKey, "webhookUrl", webhookUrl);
 	}
 
-	public static void setVisualizationToVis(String projectKey, boolean isVisualizationSetToVis) {
-		setValue(projectKey,"isVisualizationSetToVis", Boolean.toString(isVisualizationSetToVis));
+	public static void setArffFileForClassifier(String projectKey, String arffFileName) {
+		setValue(projectKey, "arffFileName", arffFileName);
+	}
+
+	public static String getArffFileForClassifier(String projectKey) {
+		return getValue(projectKey, "arffFileName");
 	}
 }
