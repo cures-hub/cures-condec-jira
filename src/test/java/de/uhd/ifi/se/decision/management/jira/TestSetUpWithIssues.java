@@ -168,6 +168,7 @@ public class TestSetUpWithIssues {
 		((MockConstantsManager) constantsManager).addIssueType(issueType);
 		issue.setIssueType(issueType);
 		issue.setSummary("Test");
+		issue.setDescription("Test");
 		((MockIssueManagerSelfImpl) issueManager).addIssue(issue);
 		issue.setParentId((long) 3);
 

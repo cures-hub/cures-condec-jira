@@ -56,8 +56,9 @@
 	 * external references: none
 	 */
 	ConDecAPI.prototype.getAdjacentElements = function getAdjacentElements(id, documentationLocation, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAdjacentElements.json?projectKey=" + projectKey
-				+ "&id=" + id + "&documentationLocation=" + documentationLocation, function(error, adjacentElements) {
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAdjacentElements.json?projectKey="
+				+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function(error,
+				adjacentElements) {
 			if (error === null) {
 				callback(adjacentElements);
 			}
@@ -195,8 +196,7 @@
 	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getElementsByQuery = function getElementsByQuery(query, callback) {
-		getJSON(AJS.contextPath()
-				+ "/rest/decisions/latest/decisions/getElements.json?allTrees=false&projectKey="
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getElements.json?allTrees=false&projectKey="
 				+ projectKey + "&query=" + query, function(error, elements) {
 			if (error === null) {
 				callback(elements);
@@ -209,8 +209,7 @@
 	 */
 	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, elementKey,
 			documentationLocation, callback) {
-		getJSON(AJS.contextPath()
-				+ "/rest/decisions/latest/decisions/getElements.json?allTrees=false&projectKey="
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getElements.json?allTrees=false&projectKey="
 				+ projectKey + "&elementKey=" + elementKey + "&query=" + query, function(error, elements) {
 			if (error === null) {
 				callback(elements);
@@ -222,8 +221,7 @@
 	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getAllElementsByQueryAndLinked = function getAllElementsByQueryAndLinked(query, callback) {
-		getJSON(AJS.contextPath()
-				+ "/rest/decisions/latest/decisions/getElements.json?allTrees=true&projectKey="
+		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getElements.json?allTrees=true&projectKey="
 				+ projectKey + "&query=" + query, function(error, elements) {
 			if (error === null) {
 				callback(elements);
@@ -525,14 +523,45 @@
 	 * external references: settingsForSingleProject.vm
 	 */
 	ConDecAPI.prototype.classifyWholeProject = function classifyWholeProject(projectKey) {
-		var isSucceeded = postWithResponseAsReturnValue(AJS.contextPath()
+		var response = postWithResponseAsReturnValue(AJS.contextPath()
 				+ "/rest/decisions/latest/config/classifyWholeProject.json?projectKey=" + projectKey);
-		if (isSucceeded) {
+		if (response["isSucceeded"]) {
 			showFlag("success", "The whole project has been classified.");
 			return 1.0;
 		}
 		showFlag("error", "The classification process failed.");
 		return 0.0;
+	};
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.trainClassifier = function trainClassifier(projectKey, arffFileName) {
+		var response = postWithResponseAsReturnValue(AJS.contextPath()
+				+ "/rest/decisions/latest/config/trainClassifier.json?projectKey=" + projectKey + "&arffFileName="
+				+ arffFileName);
+		console.log(response);
+		if (response["isSucceeded"]) {
+			showFlag("success", "The classifier was successfully retrained.");
+			return 1.0;
+		}
+		showFlag("error", "Training of the classifier failed.");
+		return 0.0;
+	};
+
+	/*
+	 * external references: settingsForSingleProject.vm
+	 */
+	ConDecAPI.prototype.saveArffFile = function saveArffFile(projectKey, callback) {
+		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/saveArffFile.json?projectKey=" + projectKey, null,
+				function(error, response) {
+					if (error === null) {
+						showFlag("success", "The ARFF file was successfully created and saved in "
+								+ response["arffFile"] + ".");
+						console.log(response["content"]);
+						callback(response["content"]);
+					}
+				});
 	};
 
 	/*
@@ -546,7 +575,7 @@
 			}
 		});
 	};
-	
+
 	/*
 	 * external references: condec.context.menu
 	 */
