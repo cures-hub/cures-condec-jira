@@ -18,19 +18,20 @@
 	var conDecContextMenu = null;
 	var treant = null;
 	var vis = null;
+	var condecContextVis = null;
 
 	var ConDecJiraIssueModule = function ConDecJiraIssueModule() {
 		console.log("conDecJiraIssueModule constructor");
 	};
 
 	ConDecJiraIssueModule.prototype.init = function init(_conDecAPI, _conDecObservable, _conDecDialog,
-			_conDecContextMenu, _treant, _vis) {
+			_conDecContextMenu, _treant, _vis, _condecContextVis) {
 
 		console.log("ConDecJiraIssueModule init");
 
 		if (isConDecAPIType(_conDecAPI) && isConDecObservableType(_conDecObservable)
 				&& isConDecDialogType(_conDecDialog) && isConDecContextMenuType(_conDecContextMenu)
-				&& isConDecTreantType(_treant) && isConDecVisType(_vis)) {
+				&& isConDecTreantType(_treant) && isConDecVisType(_vis) && isCondecContextVisType(_condecContextVis)) {
 
 			conDecAPI = _conDecAPI;
 			conDecObservable = _conDecObservable;
@@ -38,6 +39,7 @@
 			conDecContextMenu = _conDecContextMenu;
 			treant = _treant;
 			vis = _vis;
+			condecContextVis = _condecContextVis;
 
 			// Register/subscribe this view as an observer
 			conDecObservable.subscribe(this);
@@ -53,30 +55,45 @@
 
 	ConDecJiraIssueModule.prototype.initView = function initView() {
 		console.log("ConDecJiraIssueModule initView");
-		var issueKey = conDecAPI.getIssueKey();
-		var search = getURLsSearch();
-		vis.buildVis(issueKey, search);
+		//var issueKey = conDecAPI.getIssueKey();
+		//var search = getURLsSearch();
+		//vis.buildVis(issueKey, search);
 
 	};
 
-    ConDecJiraIssueModule.prototype.initFilter = function() {
-        console.log("ConDecJiraIssueModule initFilter");
-        //var dropdownMenu = document.getElementById("issuetype-dropdown");
+    ConDecJiraIssueModule.prototype.initTreant = function initTreant() {
+        console.log("ConDecJiraIssueModule initTreant");
         var issueKey = conDecAPI.getIssueKey();
         var search = getURLsSearch();
-        var dropdownSource = document.createAttribute("src");
-        dropdownSource.value = (AJS.contextPath() + "/rest/decisions/latest/view/getIssueTypesDropdown.json?elementKey="
-            + issueKey + "&query=" + search);
-        console.log(dropdownSource.value);
-        //dropdownMenu.setAttributeNode(dropdownSource);
+        treant.buildTreant(issueKey, true, search);
     };
 
-    ConDecJiraIssueModule.prototype.getFilterJsonAddress = function() {
+    ConDecJiraIssueModule.prototype.initVis = function initVis() {
+        console.log("ConDecJiraIssueModule initVis");
         var issueKey = conDecAPI.getIssueKey();
         var search = getURLsSearch();
-        return (AJS.contextPath() + "/rest/decisions/latest/view/getIssueTypesDropdown.json?elementKey="
-            + issueKey + "&query=" + search);
-	};
+        vis.buildVis(issueKey, search);
+    };
+
+
+    /* ConDecJiraIssueModule.prototype.initFilter = function() {
+         console.log("ConDecJiraIssueModule initFilter");
+         //var dropdownMenu = document.getElementById("issuetype-dropdown");
+         var issueKey = conDecAPI.getIssueKey();
+         var search = getURLsSearch();
+         var dropdownSource = document.createAttribute("src");
+         dropdownSource.value = (AJS.contextPath() + "/rest/decisions/latest/view/getIssueTypesDropdown.json?elementKey="
+             + issueKey + "&query=" + search);
+         console.log(dropdownSource.value);
+         //dropdownMenu.setAttributeNode(dropdownSource);
+     };
+
+     ConDecJiraIssueModule.prototype.getFilterJsonAddress = function() {
+         var issueKey = conDecAPI.getIssueKey();
+         var search = getURLsSearch();
+         return (AJS.contextPath() + "/rest/decisions/latest/view/getIssueTypesDropdown.json?elementKey="
+             + issueKey + "&query=" + search);
+     };*/
 
 	function getURLsSearch() {
 		// get jql from url
@@ -155,6 +172,14 @@
         }
         return true;
 	}
+
+	function isCondecContextVisType(conDecContextVis) {
+	    if (!(conDecContextVis !== undefined && conDecContextVis.createContextVis !== undefined && typeof conDecContextVis.createContextVis === 'function')) {
+	        console.warn("ConDecJiraIssueModule: invalid conDecContextVis object received.");
+	        return false;
+        }
+        return true;
+    }
 
 	// export ConDecJiraIssueModule
 	global.conDecJiraIssueModule = new ConDecJiraIssueModule();

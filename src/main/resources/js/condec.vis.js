@@ -7,7 +7,7 @@
         console.log("conDecVis buildVis");
 
         conDecAPI.getVis(elementKey,searchTerm,function (visData) {
-            var container = document.getElementById('treant-container');
+            var container = document.getElementById('vis-container');
             console.log(visData.nodes);
             var data = {
                 nodes: visData.nodes,
@@ -45,6 +45,7 @@
                         direction: 'UD', // UD, DU, LR, RL
                         sortMethod: 'directed' // hubsize, directed
                     }
+
                 },
                 groups:{
                     // Setting colors and Levels for Decision Knowledge Elements stored in Jira Issues
@@ -96,6 +97,7 @@
 
             network.focus();
             network.on("oncontext", function(params) {
+                console.log(params.event);
                 params.event.preventDefault();
                 var nodeIndices = network.body.nodeIndices;
                 var clickedNodeId;
@@ -112,8 +114,8 @@
                 }
                 console.log("ContextMenu for ID: " + clickedNodeId.toString().slice(0, -2) +
                     " and location: " + clickedNodeId.toString().substr(-1));
-                conDecContextMenu.createContextMenu(clickedNodeId.toString().slice(0, -2),
-                    getDocumentationLocationFromId(clickedNodeId), params.event, "treant-container");
+                conDecContextVis.createContextVis(clickedNodeId.toString().slice(0, -2),
+                    getDocumentationLocationFromId(clickedNodeId), params.event, "vis-container");
             });
 
             var keys = vis.keycharm({

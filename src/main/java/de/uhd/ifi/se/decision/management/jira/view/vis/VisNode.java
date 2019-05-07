@@ -27,8 +27,14 @@ public class VisNode {
 		this.setId(element.getId()+ "_" + element.getDocumentationLocationAsString());
 		if (!collapsed) {
 			this.setGroup(element.getTypeAsString() + "_" + element.getDocumentationLocationAsString());
-			this.setLabel("<b>" + element.getTypeAsString().toUpperCase() + "</b> \n" + element.getSummary());
-			this.setTitle(element.getDescription());
+			String summary;
+			if(element.getSummary().length()>150) {
+				summary = element.getSummary().substring(0,149) + "...";
+			} else {
+				summary = element.getSummary();
+			}
+			this.setLabel("<b>" + element.getTypeAsString().toUpperCase() + "</b> \n" + summary);
+			this.setTitle("<b>" + element.getTypeAsString() + "</b> <br> " + element.getDescription() );
 		} else {
 			this.setGroup("collapsed");
 			this.setLabel("");

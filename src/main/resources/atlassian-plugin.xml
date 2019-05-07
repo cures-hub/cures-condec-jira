@@ -70,6 +70,7 @@
 		<dependency>com.atlassian.auiplugin:aui-select2</dependency>
 		<dependency>com.atlassian.auiplugin:aui-experimental-iconfont</dependency>
 		<dependency>com.atlassian.auiplugin:aui-tooltips</dependency>
+		<dependency>com.atlassian.auiplugin:tabs</dependency>
 		<!-- JIRA dialogs -->
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-edit-issue</dependency>
 		<dependency>com.atlassian.jira.jira-quick-edit-plugin:quick-create-issue</dependency>
@@ -82,7 +83,7 @@
 		</description>
 		<context>jira.view.issue</context>
 		<!-- jquery 1.9.1 for the plug-in (required by jstree) with Sizzle -->
-		<resource type="download" name="jqueryConDec" location="/js/jquery/jquery.js" />
+		<resource type="download" name="jqueryConDec.js" location="/js/jquery/jquery.js" />
 		<!-- jstree -->
 		<resource type="download" name="jstree.js" location="/js/jstree/jstree.js" />
 		<!-- treant -->
@@ -97,6 +98,8 @@
 		<resource type="download" name="condec.dialog.js" location="/js/condec.dialog.js" />
 		<resource type="download" name="condec.context.menu.js"
 			location="/js/condec.context.menu.js" />
+		<resource type="download" name="condec.context.vis.js"
+				  location="/js/condec.context.vis.js" />
 		<resource type="download" name="condec.treant.js" location="/js/condec.treant.js" />
 		<resource type="download" name="condec.tree.viewer.js"
 			location="/js/condec.tree.viewer.js" />

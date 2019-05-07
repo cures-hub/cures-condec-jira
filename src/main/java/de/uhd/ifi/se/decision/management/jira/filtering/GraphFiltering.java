@@ -465,6 +465,8 @@ public class GraphFiltering {
 		return endDate;
 	}
 
+	public boolean isQueryContainsIssueTypes() {return queryContainsIssueTypes;}
+
 	public List<String> getIssueTypesInQuery() {return  issueTypesInQuery; }
 
 	public SearchService getSearchService() {

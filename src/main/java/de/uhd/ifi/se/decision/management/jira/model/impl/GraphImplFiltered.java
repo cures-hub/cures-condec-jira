@@ -129,10 +129,12 @@ public class GraphImplFiltered extends GraphImpl {
 				continue;
 			}
 			DecisionKnowledgeElement oppositeElement = link.getOppositeElement(element);
+			includeElementInGraph = true;
 			if (filter.isQueryContainsCreationDate() && oppositeElement instanceof PartOfJiraIssueText) {
 				includeElementInGraph = isSentenceIncludedInGraph(oppositeElement);
-			} else {
-				includeElementInGraph = true;
+			} else if (filter.isQueryContainsIssueTypes() && oppositeElement instanceof  PartOfJiraIssueText &&
+					includeElementInGraph) {
+				includeElementInGraph = isSentenceIssueTypeInIssueTypes(oppositeElement);
 			}
 
 			if (includeElementInGraph && !this.genericLinkIds.contains(link.getId())) {
@@ -147,6 +149,14 @@ public class GraphImplFiltered extends GraphImpl {
 		return linkedElementsAndLinks;
 	}
 
+	private boolean isSentenceIssueTypeInIssueTypes(DecisionKnowledgeElement oppositeElement) {
+		if (filter.getIssueTypesInQuery().contains(oppositeElement.getType())) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	private boolean isSentenceIncludedInGraph(DecisionKnowledgeElement element) {
 		if (filter.getStartDate() <= 0 && element.getCreated().getTime() < filter.getEndDate()) {
 			return true;
@@ -158,6 +168,8 @@ public class GraphImplFiltered extends GraphImpl {
 		}
 		return false;
 	}
+
+
 
 	@Override
 	public DecisionKnowledgeElement getRootElement() {
