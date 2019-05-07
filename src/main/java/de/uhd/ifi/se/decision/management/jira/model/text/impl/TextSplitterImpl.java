@@ -19,12 +19,12 @@ import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClass
 
 public class TextSplitterImpl implements TextSplitter {
 
-	private List<Integer> startPositions;
-	private List<Integer> endPositions;
+	private List<Integer> startSubstringCount;
+	private List<Integer> endSubstringCount;
 
 	public TextSplitterImpl() {
-		this.startPositions = new ArrayList<Integer>();
-		this.endPositions = new ArrayList<Integer>();
+		this.startSubstringCount = new ArrayList<Integer>();
+		this.endSubstringCount = new ArrayList<Integer>();
 	}
 
 	@Override
@@ -34,17 +34,17 @@ public class TextSplitterImpl implements TextSplitter {
 		List<String> strings = TextSplitterImpl.getRawSentences(text, projectKey);
 		runBreakIterator(strings, text);
 
-		for (int i = 0; i < this.startPositions.size(); i++) {
-			int startPosition = this.startPositions.get(i);
-			int endPosition = this.endPositions.get(i);
-			if (!startAndEndIndexRules(startPosition, endPosition, text)) {
+		for (int i = 0; i < this.startSubstringCount.size(); i++) {
+			int startIndex = this.startSubstringCount.get(i);
+			int endIndex = this.endSubstringCount.get(i);
+			if (!startAndEndIndexRules(startIndex, endIndex, text)) {
 				continue;
 			}
 			PartOfText partOfText = new PartOfTextImpl();
-			partOfText.setEndPosition(endPosition);
-			partOfText.setStartPosition(startPosition);
+			partOfText.setEndSubstringCount(endIndex);
+			partOfText.setStartSubstringCount(startIndex);
 			partOfText.setProject(projectKey);
-			String body = text.substring(startPosition, endPosition).toLowerCase();
+			String body = text.substring(startIndex, endIndex).toLowerCase();
 			KnowledgeType type = getKnowledgeTypeFromTag(body, projectKey);
 			partOfText.setType(type);
 			if (type != KnowledgeType.OTHER) {
@@ -167,8 +167,8 @@ public class TextSplitterImpl implements TextSplitter {
 	}
 
 	public void addSentenceIndex(int startIndex, int endIndex) {
-		this.startPositions.add(startIndex);
-		this.endPositions.add(endIndex);
+		this.startSubstringCount.add(startIndex);
+		this.endSubstringCount.add(endIndex);
 	}
 
 	/**

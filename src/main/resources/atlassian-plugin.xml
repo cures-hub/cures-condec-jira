@@ -67,7 +67,6 @@
 		<dependency>com.atlassian.auiplugin:aui-lozenge</dependency>
 		<dependency>com.atlassian.auiplugin:dialog2</dependency>
 		<dependency>com.atlassian.auiplugin:aui-dropdown2</dependency>
-        <dependency>com.atlassian.auiplugin:aui-select</dependency>
 		<dependency>com.atlassian.auiplugin:aui-select2</dependency>
 		<dependency>com.atlassian.auiplugin:aui-experimental-iconfont</dependency>
 		<dependency>com.atlassian.auiplugin:aui-tooltips</dependency>
@@ -135,7 +134,8 @@
 			comments such as the model files for Weka and Meka classifiers.
 		</description>
 		<context>jira.view.issue</context>
-		<resource type="download" name="lucene.arff" location="/classifier/lucene.arff" />
+		<resource type="download" name="fc.model" location="/classifier/fc.model" />
+		<resource type="download" name="br.model" location="/classifier/br.model" />
 		<resource type="download" name="condec.tab.panel.js" location="/js/condec.tab.panel.js" />
 	</web-resource>
 

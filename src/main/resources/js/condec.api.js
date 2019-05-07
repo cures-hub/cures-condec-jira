@@ -52,18 +52,17 @@
         });
     };
 
-	/*
-	 * external references: none
-	 */
-	ConDecAPI.prototype.getAdjacentElements = function getAdjacentElements(id, documentationLocation, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAdjacentElements.json?projectKey="
-				+ projectKey + "&id=" + id + "&documentationLocation=" + documentationLocation, function(error,
-				adjacentElements) {
-			if (error === null) {
-				callback(adjacentElements);
-			}
-		});
-	};
+    /*
+     * external references: none
+     */
+    ConDecAPI.prototype.getAdjacentElements = function getAdjacentElements(id, documentationLocation, callback) {
+        getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getAdjacentElements.json?projectKey=" + projectKey
+            + "&id=" + id + "&documentationLocation=" + documentationLocation, function(error, adjacentElements) {
+            if (error === null) {
+                callback(adjacentElements);
+            }
+        });
+    };
 
     /*
      * external references: condec.dialog
@@ -196,7 +195,8 @@
 	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getElementsByQuery = function getElementsByQuery(query, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getElements.json?allTrees=false&projectKey="
+		getJSON(AJS.contextPath()
+				+ "/rest/decisions/latest/decisions/getElements.json?allTrees=false&projectKey="
 				+ projectKey + "&query=" + query, function(error, elements) {
 			if (error === null) {
 				callback(elements);
@@ -209,7 +209,8 @@
 	 */
 	ConDecAPI.prototype.getLinkedElementsByQuery = function getLinkedElementsByQuery(query, elementKey,
 			documentationLocation, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getElements.json?allTrees=false&projectKey="
+		getJSON(AJS.contextPath()
+				+ "/rest/decisions/latest/decisions/getElements.json?allTrees=false&projectKey="
 				+ projectKey + "&elementKey=" + elementKey + "&query=" + query, function(error, elements) {
 			if (error === null) {
 				callback(elements);
@@ -221,7 +222,8 @@
 	 * external references: condec.jira.issue.module
 	 */
 	ConDecAPI.prototype.getAllElementsByQueryAndLinked = function getAllElementsByQueryAndLinked(query, callback) {
-		getJSON(AJS.contextPath() + "/rest/decisions/latest/decisions/getElements.json?allTrees=true&projectKey="
+		getJSON(AJS.contextPath()
+				+ "/rest/decisions/latest/decisions/getElements.json?allTrees=true&projectKey="
 				+ projectKey + "&query=" + query, function(error, elements) {
 			if (error === null) {
 				callback(elements);
@@ -312,15 +314,6 @@
                 callback(vis);
             }
         });
-    };
-
-    ConDecAPI.prototype.getFilterData = function getFilterData(elementKey, searchTerm, callback) {
-        getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getFilterData.json?elementKey=" + elementKey
-        + "&searchTerm=" + searchTerm, function(error, filterData) {
-            if (error === null) {
-                callback(filterData);
-            }
-        })
     };
 
     /*
@@ -422,6 +415,33 @@
         });
     };
 
+    /*
+     * external reference: settingsForAllProjects.vm
+     */
+    ConDecAPI.prototype.setVisualizationToVis = function setVisualizationToVis(
+        isVisualizationSetToVis, projectKey) {
+        postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setVisualizationToVis.json?projectKey="
+        + projectKey + "&isVisualizationSetToVis=" + isVisualizationSetToVis, null, function(
+        error, response) {
+        if (error === null) {
+            if (isVisualizationSetToVis) {
+                showFlag("success", "Decision Knowledge will be visualized using Vis");
+            }
+            else {
+                showFlag("success", "Decision Knowledge will be visualized using Treant");
+            }
+        }
+    });
+    };
+
+    ConDecAPI.prototype.isVisualizationSetToVis = function isVisualizationSetToVis (callback) {
+        getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isVisualizationSetToVis.json?projectKey=" + projectKey,
+            function(error, isVisualizationVis) {
+                if (error === null) {
+                    callback(isVisualizationVis);
+                }
+            });
+    };
 
     /*
      * external references: settingsForSingleProject.vm
@@ -480,71 +500,30 @@
         }
     }
 
-	/*
-	 * external references: settingsForSingleProject.vm
-	 */
-	ConDecAPI.prototype.classifyWholeProject = function classifyWholeProject(projectKey) {
-		var response = postWithResponseAsReturnValue(AJS.contextPath()
-				+ "/rest/decisions/latest/config/classifyWholeProject.json?projectKey=" + projectKey);
-		if (response["isSucceeded"]) {
-			showFlag("success", "The whole project has been classified.");
-			return 1.0;
-		}
-		showFlag("error", "The classification process failed.");
-		return 0.0;
-	};
+    /*
+     * Replaces argument with pro-argument and con-argument in knowledge types
+     * array.
+     */
+    function getExtendedKnowledgeTypes(knowledgeTypes) {
+        var extendedKnowledgeTypes = knowledgeTypes.filter(function(value) {
+            return value.toLowerCase() !== "argument";
+        });
+        extendedKnowledgeTypes.push("Pro-argument");
+        extendedKnowledgeTypes.push("Con-argument");
+        return extendedKnowledgeTypes;
+    }
 
-	/*
-	 * external references: settingsForSingleProject.vm
-	 */
-	ConDecAPI.prototype.trainClassifier = function trainClassifier(projectKey, arffFileName) {
-		var response = postWithResponseAsReturnValue(AJS.contextPath()
-				+ "/rest/decisions/latest/config/trainClassifier.json?projectKey=" + projectKey + "&arffFileName="
-				+ arffFileName);
-		console.log(response);
-		if (response["isSucceeded"]) {
-			showFlag("success", "The classifier was successfully retrained.");
-			return 1.0;
-		}
-		showFlag("error", "Training of the classifier failed.");
-		return 0.0;
-	};
-
-	/*
-	 * external references: settingsForSingleProject.vm
-	 */
-	ConDecAPI.prototype.saveArffFile = function saveArffFile(projectKey, callback) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/saveArffFile.json?projectKey=" + projectKey, null,
-				function(error, response) {
-					if (error === null) {
-						showFlag("success", "The ARFF file was successfully created and saved in "
-								+ response["arffFile"] + ".");
-						console.log(response["content"]);
-						callback(response["content"]);
-					}
-				});
-	};
-
-	/*
-	 * external references: settingsForSingleProject.vm
-	 */
-	ConDecAPI.prototype.setIconParsing = function setIconParsing(projectKey, isActivated) {
-		postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setIconParsing.json?projectKey=" + projectKey
-				+ "&isActivatedString=" + isActivated, null, function(error, response) {
-			if (error === null) {
-				showFlag("success", "Using icons to tag issue comments has been set to " + isActivated + ".");
-			}
-		});
-	};
-
-	/*
-	 * external references: condec.context.menu
-	 */
-	ConDecAPI.prototype.openJiraIssue = function openJiraIssue(elementId, documentationLocation) {
-		this.getDecisionKnowledgeElement(elementId, documentationLocation, function(decisionKnowledgeElement) {
-			global.open(decisionKnowledgeElement.url, '_self');
-		});
-	};
+    /*
+     * external references: settingsForSingleProject.vm
+     */
+    ConDecAPI.prototype.setWebhookData = function setWebhookData(projectKey, webhookUrl, webhookSecret) {
+        postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setWebhookData.json?projectKey=" + projectKey
+            + "&webhookUrl=" + webhookUrl + "&webhookSecret=" + webhookSecret, null, function(error, response) {
+            if (error === null) {
+                showFlag("success", "The webhook for this project has been set.");
+            }
+        });
+    };
 
     /*
      * external references: settingsForSingleProject.vm

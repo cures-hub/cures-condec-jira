@@ -12,7 +12,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import de.uhd.ifi.se.decision.management.jira.filtering.FilterDataProvider;
+import de.uhd.ifi.se.decision.management.jira.filtering.GraphFiltering;
+import de.uhd.ifi.se.decision.management.jira.filtering.IssueTypesForDropdown;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,10 +120,10 @@ public class ViewRest {
 		return Response.ok(vis).build();
 	}
 
-	@Path("/getFilterData")
+	@Path("/getIssueTypesDropdown")
 	@GET
 	@Produces({MediaType.APPLICATION_JSON})
-	public Response getFilterData(@QueryParam("elementKey") String elementKey, @QueryParam("searchTerm") String query,
+	public Response getIssueTypesDropdown(@QueryParam("elementKey") String elementKey, @QueryParam("query") String query,
 										  @Context HttpServletRequest request) {
 		if (elementKey == null) {
 			return Response.status(Status.BAD_REQUEST)
@@ -134,8 +135,8 @@ public class ViewRest {
 			return checkIfProjectKeyIsValidResponse;
 		}
 		ApplicationUser user = AuthenticationManager.getUser(request);
-		FilterDataProvider filterDataProvider = new FilterDataProvider(projectKey,query,user);
-		return Response.ok(filterDataProvider).build();
+		IssueTypesForDropdown issueTypesForDropdown = new IssueTypesForDropdown(projectKey,query,user);
+		return Response.ok(issueTypesForDropdown).build();
 	}
 
 	private String getProjectKey(String elementKey) {

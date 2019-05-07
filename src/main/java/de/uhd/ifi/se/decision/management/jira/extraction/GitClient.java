@@ -21,12 +21,12 @@ public interface GitClient {
 
 	/**
 	 * @issue What is the best place to clone the git repo to?
-	 * @decision Clone git repo to JIRAHome/data/condec-plugin/git!
+	 * @decision Clone git repo to JIRAHome/data/condec-plugin!
 	 * @pro The Git integration for JIRA plug-in clones its repos to a similar
 	 *      folder: JIRAHome/data/git-plugin.
 	 */
 	public static final String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
-			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "git" + File.separator;
+			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator;
 
 	/**
 	 * Retrieves the commits with the JIRA issue key in their commit message.

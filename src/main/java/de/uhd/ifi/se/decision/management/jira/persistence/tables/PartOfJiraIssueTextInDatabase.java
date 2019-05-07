@@ -28,9 +28,9 @@ public interface PartOfJiraIssueTextInDatabase extends RawEntity<Long> {
 
 	void setCommentId(long id);
 
-	int getEndPosition();
+	int getEndSubstringCount();
 
-	void setEndPosition(int endPosition);
+	void setEndSubstringCount(int count);
 
 	long getJiraIssueId();
 
@@ -48,9 +48,9 @@ public interface PartOfJiraIssueTextInDatabase extends RawEntity<Long> {
 
 	void setRelevant(boolean isRelevant);
 
-	int getStartPosition();
+	int getStartSubstringCount();
 
-	void setStartPosition(int startPosition);
+	void setStartSubstringCount(int count);
 
 	boolean isValidated();
 

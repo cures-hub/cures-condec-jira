@@ -16,6 +16,7 @@ import com.atlassian.jira.issue.comments.Comment;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
+import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import net.java.ao.test.jdbc.Data;
@@ -32,7 +33,7 @@ public class TestEventDescriptionEdited extends TestSetUpEventListener {
 		listener.onIssueEvent(issueEvent);
 		jiraIssue.setDescription(description);
 
-		List<DecisionKnowledgeElement> partsOfText = JiraIssueTextPersistenceManager.updateDescription(jiraIssue);
+		List<PartOfJiraIssueText> partsOfText = JiraIssueTextPersistenceManager.getPartsOfDescription(jiraIssue);
 		if (partsOfText.size() == 0) {
 			return null;
 		}

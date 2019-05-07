@@ -38,25 +38,21 @@ public class VisNode {
 		} else {
 			this.setGroup("collapsed");
 			this.setLabel("");
-			this.setTitle(element.getTypeAsString() + ": " + element.getSummary());
+			this.setTitle(element.getSummary());
 		}
 	}
 
 	public VisNode(DecisionKnowledgeElement element, String type, boolean collapsed) {
-		this(element,collapsed);
-		if(!collapsed) {
-			this.setGroup(type.toLowerCase());
-		}
-		/*this.setId(element.getId()+ "_" + element.getDocumentationLocationAsString());
+		this.setId(element.getId()+ "_" + element.getDocumentationLocationAsString());
 		if (!collapsed) {
-			this.setGroup(type.toLowerCase());
+			this.setGroup(type + "_" + element.getDocumentationLocationAsString());
 			this.setLabel("<b>" + element.getTypeAsString().toUpperCase() + "</b> \n" + element.getSummary());
 			this.setTitle(element.getDescription());
 		} else {
 			this.setGroup("collapsed");
 			this.setLabel("");
 			this.setTitle(element.getSummary());
-		}*/
+		}
 	}
 
 	public String getId() {

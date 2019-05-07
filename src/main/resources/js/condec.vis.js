@@ -24,13 +24,13 @@
                             highlight: {background: 'rgba(255,255,255,1)',
                                         border: 'rgba(0,0,0,1)'
                             }},
-                    font: {multi: true},
-                    shadow: true,
-                    scaling: {label: {enabled: true}}
+                    font: {multi: true}
                 },
                 edges:{
                     arrows: "to"
                 },
+
+                autoResize: false,
 
                 layout: {
                     improvedLayout: false,
@@ -49,23 +49,23 @@
                 },
                 groups:{
                     // Setting colors and Levels for Decision Knowledge Elements stored in Jira Issues
-                    decision: {color:{background: 'rgba(252,227,190,1)'}},
-                    issue: {color:{background: 'rgba(255, 255, 204,1)'}},
-                    alternative: {color:{background: 'rgba(252,227,190,1'}},
-                    pro: {color:{background: 'rgba(222, 250, 222,1)'}},
-                    con: {color:{background: 'rgba(255, 231, 231,1)'}},
-                    argument: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    constraint: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    assumption: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    implication: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    context: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    problem: {color:{background: 'rgba(255, 255, 204,1)'}},
-                    goal: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    solution: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    claim: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    rationale: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    question: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    assessment: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Decision_i: {color:{background: 'rgba(252,227,190,1)'}},
+                    Issue_i: {color:{background: 'rgba(255, 255, 204,1)'}},
+                    Alternative_i: {color:{background: 'rgba(252,227,190,1'}},
+                    Pro_i: {color:{background: 'rgba(222, 250, 222,1)'}},
+                    Con_i: {color:{background: 'rgba(255, 231, 231,1)'}},
+                    Argument_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Constraint_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Assumption_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Implication_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Context_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Problem_i: {color:{background: 'rgba(255, 255, 204,1)'}},
+                    Goal_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Solution_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Claim_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Rationale_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Question_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    Assessment_i: {color:{background: 'rgba(255, 255, 255,1)'}},
                     collapsed: {shape: "dot", size: 5, color: {background: 'rgba(0,0,0,1)'}}
                 },
 
@@ -85,69 +85,23 @@
                                     conDecObservable.notify();
                                 })
                         }
-                    },
-                    deleteEdge: function(data, callback) {
-                        console.log(data);
-
-                    },
-                    deleteNode: function(data, callback) {
-                        console.log(data);
                     }
 
                 },
-                physics: {
-                    stabilization: false,
-                    barnesHut: {
-                        gravitationalConstant: -80000,
-                        springConstant: 0.001,
-                        springLength: 200
-                    }
-                }
+                physics: {enabled:false}
                 };
             var network = new vis.Network(container, data, options);
-            network.setSize("100%","600px");
+            network.setSize("100%","400px");
+            //network.addEdgeMode();
+            network.stabilize();
 
-
-            var hasDrawnOnce = false;
-            network.on("startStabilizing", function() {
-                if(hasDrawnOnce!=false){
-                    network.stopSimulation();
-                }
-                hasDrawnOnce=true;
-            });
-
-            network.focus(visData.rootNodeId,{scale: 0.2});
-            console.log(network.body.nodes[visData.rootNodeId]);
-            var node = network.body.nodes[visData.rootNodeId];
-            node.setOptions({
-                color:{ borderWidth: 3,
-                        color: {border: 'rgba(255,0,0,1)'}
-                }
-            });
-
-            network.on("hold", function(params){
-               params.event.preventDefault;
-               var nodeIndices = network.body.nodeIndices;
-               var clickedNodeId;
-                for (var i = 0; i < nodeIndices.length; i++) {
-                    var nodeId = nodeIndices[i];
-                    var boundingBox = network.getBoundingBox(nodeId);
-                    if (boundingBox.left <= params.pointer.canvas.x &&
-                        params.pointer.canvas.x <= boundingBox.right &&
-                        boundingBox.top <= params.pointer.canvas.y &&
-                        params.pointer.canvas.y <= boundingBox.bottom) {
-                        clickedNodeId = nodeId;
-                    }
-                }
-                console.log(clickedNodeId.toString(),getDocumentationLocationFromId(clickedNodeId),network.body.nodes[clickedNodeId].options.groups);
-                conDecDialog.showEditDialog(clickedNodeId.toString(),getDocumentationLocationFromId(clickedNodeId),network.body.nodes[clickedNodeId].options.groups);
-            });
-
+            network.focus();
             network.on("oncontext", function(params) {
                 console.log(params.event);
                 params.event.preventDefault();
                 var nodeIndices = network.body.nodeIndices;
                 var clickedNodeId;
+                console.log(network);
                 for (var i = 0; i < nodeIndices.length; i++) {
                     var nodeId = nodeIndices[i];
                     var boundingBox = network.getBoundingBox(nodeId);

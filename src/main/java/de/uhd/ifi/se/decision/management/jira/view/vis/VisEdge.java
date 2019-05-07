@@ -22,14 +22,10 @@ public class VisEdge {
 	@XmlElement
 	private String arrows;
 
-	@XmlElement
-	private String id;
-
 	public VisEdge(Link link) {
 		this.setLabel(link.getType());
 		this.setFrom(link.getSourceElement().getId()+ "_" + link.getSourceElement().getDocumentationLocationAsString());
 		this.setTo(link.getDestinationElement().getId()+ "_" + link.getDestinationElement().getDocumentationLocationAsString());
-		this.setId(String.valueOf(link.getId()));
 	}
 
 	public String getFrom() {
@@ -63,8 +59,4 @@ public class VisEdge {
 	public void setArrows(String arrows) {
 		this.arrows = arrows;
 	}
-
-	public String getId() {return id;}
-
-	public void setId(String id) {this.id = id;}
 }

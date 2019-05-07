@@ -1,6 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.rest;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -31,8 +30,6 @@ import com.google.common.collect.ImmutableMap;
 import de.uhd.ifi.se.decision.management.jira.config.AuthenticationManager;
 import de.uhd.ifi.se.decision.management.jira.config.PluginInitializer;
 import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationManagerForJiraIssueComments;
-import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationTrainer;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.ClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.filtering.JiraSearchServiceHelper;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
@@ -147,18 +144,22 @@ public class ConfigRest {
 
 	@Path("/setGitUri")
 	@POST
-	public Response setGitUri(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("gitUri") String gitUri) {
+	public Response setGitUri(@Context HttpServletRequest request, @QueryParam("projectKey") final String projectKey,
+			@QueryParam("gitUri") final String gitUri) {
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
 		}
 		if (gitUri == null) {
-			return Response.status(Status.BAD_REQUEST)
-					.entity(ImmutableMap.of("error", "Git URI could not be set because it is null.")).build();
+			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error", "gitUri = null")).build();
 		}
-		ConfigPersistenceManager.setGitUri(projectKey, gitUri);
-		return Response.ok(Status.ACCEPTED).build();
+		try {
+			ConfigPersistenceManager.setGitUri(projectKey, gitUri);
+			return Response.ok(Status.ACCEPTED).build();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
 	}
 
 	@Path("/setKnowledgeExtractedFromIssues")
@@ -370,52 +371,11 @@ public class ConfigRest {
 		}
 	}
 
-	@Path("/trainClassifier")
-	@POST
-	public Response trainClassifier(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
-			@QueryParam("arffFileName") String arffFileName) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		if (arffFileName == null || arffFileName.isEmpty()) {
-			return Response.status(Status.BAD_REQUEST).entity(ImmutableMap.of("error",
-					"The classifier could not be trained since the ARFF file name is invalid.")).build();
-		}
-		ConfigPersistenceManager.setArffFileForClassifier(projectKey, arffFileName);
-		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey, arffFileName);
-		boolean isTrained = trainer.train();
-		if (isTrained) {
-			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
-		}
-		return Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error", "The classifier could not be trained due to an internal server error.")).build();
-	}
-
-	@Path("/saveArffFile")
-	@POST
-	public Response saveArffFile(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey) {
-		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
-		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
-			return isValidDataResponse;
-		}
-		ClassificationTrainer trainer = new ClassificationTrainerImpl(projectKey);
-		File arffFile = trainer.saveArffFile();
-
-		if (arffFile != null) {
-			return Response.ok(Status.ACCEPTED).entity(
-					ImmutableMap.of("arffFile", arffFile.toString(), "content", trainer.getInstances().toString()))
-					.build();
-		}
-		return Response.status(Status.INTERNAL_SERVER_ERROR)
-				.entity(ImmutableMap.of("error", "ARFF file could not be created because of an internal server error."))
-				.build();
-	}
-
 	@Path("/setIconParsing")
 	@POST
 	public Response setIconParsing(@Context HttpServletRequest request, @QueryParam("projectKey") String projectKey,
 			@QueryParam("isActivatedString") String isActivatedString) {
+		System.out.println(isActivatedString);
 		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
 		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
 			return isValidDataResponse;
@@ -454,6 +414,39 @@ public class ConfigRest {
 			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
+	}
+	@Path("/setVisualizationToVis")
+	@POST
+	public Response setVisualizationToVis(@Context HttpServletRequest request,
+										  @QueryParam("projectKey") String projectKey,
+										  @QueryParam("isVisualizationSetToVis") String isVisualizationSetToVis) {
+		Response isValidDataResponse = checkIfDataIsValid(request, projectKey);
+		if (isValidDataResponse.getStatus() != Status.OK.getStatusCode()) {
+			return isValidDataResponse;
+		}
+		if (isVisualizationSetToVis == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "isVisualizationSetToVis = null")).build();
+		}
+		try {
+			ConfigPersistenceManager.setVisualizationToVis(projectKey,
+					Boolean.valueOf(isVisualizationSetToVis));
+			return Response.ok(Status.ACCEPTED).build();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			return Response.status(Status.CONFLICT).build();
+		}
+	}
+
+	@Path("/isVisualizationSetToVis")
+	@GET
+	public Response isVisualizationVis(@QueryParam("projectKey") final String projectKey) {
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		Boolean isVisualizationVis = ConfigPersistenceManager.isVisualizationSetToVis(projectKey);
+		return Response.ok(isVisualizationVis).build();
 	}
 
 

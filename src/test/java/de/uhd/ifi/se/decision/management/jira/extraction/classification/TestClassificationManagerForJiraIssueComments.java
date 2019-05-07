@@ -72,7 +72,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUpWith
 
 	@Test
 	@NonTransactional
-	public void testBinaryClassification() {
+	public void testBinaryClassification() throws Exception {
 		sentences = classificationManager.classifySentencesBinary(sentences);
 		assertNotNull(sentences.get(0).isRelevant());
 		assertFalse(sentences.get(0).isValidated());
@@ -80,7 +80,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUpWith
 
 	@Test
 	@NonTransactional
-	public void testFineGrainedClassification() {
+	public void testFineGrainedClassification() throws Exception {
 		sentences = classificationManager.classifySentencesBinary(sentences);
 		sentences = classificationManager.classifySentencesFineGrained(sentences);
 
@@ -90,7 +90,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUpWith
 
 	@Test
 	@NonTransactional
-	public void testFineGrainedClassificationWithValidData() {
+	public void testFineGrainedClassificationWithValidData() throws Exception {
 		sentences.get(0).setRelevant(true);
 		sentences = classificationManager.classifySentencesFineGrained(sentences);
 
@@ -100,7 +100,7 @@ public class TestClassificationManagerForJiraIssueComments extends TestSetUpWith
 
 	@Test
 	@NonTransactional
-	public void testFineGrainedClassificationWithValidDataInAO(){
+	public void testFineGrainedClassificationWithValidDataInAO() throws Exception {
 		sentences.get(0).setRelevant(true);
 		sentences.get(0).setDescription("[issue]nonplaintext[/issue]");
 

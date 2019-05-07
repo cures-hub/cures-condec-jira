@@ -11,7 +11,6 @@ import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
 import de.uhd.ifi.se.decision.management.jira.filtering.GraphFiltering;
-import de.uhd.ifi.se.decision.management.jira.persistence.AbstractPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
 import org.json.JSONPropertyIgnore;
 
@@ -29,8 +28,6 @@ public class Vis {
 	private HashSet<VisNode> nodes;
 	@XmlElement
 	private HashSet<VisEdge> edges;
-	@XmlElement
-	private String rootNodeId;
 
 	private Graph graph;
 	private boolean isHyperlinked;
@@ -45,15 +42,14 @@ public class Vis {
 
 	public Vis(String projectKey, String elementKey, boolean isHyperlinked){
 		this.graph = new GraphImpl(projectKey, elementKey);
-		this.elementsMatchingFilterCriteria = graph.getAllElements();
 		this.setHyperlinked(isHyperlinked);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
-		this.rootNodeId = rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString();
 		nodes = new HashSet<>();
-		edges = new HashSet<>();
+		edges= new HashSet<>();
 		this.elementsAlreadyAsNode = new ArrayList<>();
 		startDate = -1;
 		endDate = -1;
+		issueTypeNames = getNamesOfExistingIssueTypes();
 		fillNodesAndEdges(rootElement,null);
 	}
 
@@ -72,9 +68,8 @@ public class Vis {
 		}
 		this.setHyperlinked(isHyperlinked);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
-		this.rootNodeId = rootElement.getId() + "_" + rootElement.getDocumentationLocationAsString();
 		nodes = new HashSet<>();
-		edges = new HashSet<>();
+		edges= new HashSet<>();
 		elementsAlreadyAsNode = new ArrayList<>();
 		fillNodesAndEdges(rootElement, null);
 	}
@@ -89,7 +84,6 @@ public class Vis {
 			graph = new GraphImpl(element);
 		}
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getAdjacentElementsAndLinks(element);
-		System.out.println(childrenAndLinks);
 		if (link != null) {
 			switch (link.getType()) {
 				case "support":
@@ -141,8 +135,6 @@ public class Vis {
 
 	}
 
-	public void setRootNodeId(String rootNodeId) { this.rootNodeId =rootNodeId; }
-
 	public void setHyperlinked(boolean hyperlinked) {
 		isHyperlinked = hyperlinked;
 	}
@@ -158,8 +150,6 @@ public class Vis {
 	public Graph getGraph() {
 		return graph;
 	}
-
-	public String getRootNodeId(){return rootNodeId;}
 
 	public boolean isHyperlinked() {
 		return isHyperlinked;

@@ -11,40 +11,14 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
     </button>
     <aui-dropdown-menu id="issuetype-dropdown"></aui-dropdown-menu>
 
-<div class="aui-tabs horizontal-tabs" id="visualization-selection-tabs" data-aui-persist>
-    <ul class="tabs-menu">
-        <li class="menu-item active-tab">
-            <a href="#treant">Tree Visualization</a>
-        </li>
-        <li class="menu-item">
-            <a href="#vis">Graph Visualization</a>
-        </li>
-    </ul>
-    <div class="tabs-pane active-pane" id="treant">
-        <div style="height: auto" id="treant-container">
-            <p>No Element has been selected</p>
-        </div>
-    </div>
-    <div class="tabs-pane" id="vis">
-        <div class="aui-toolbar2" role="toolbar">
-            <div class="aui-toolbar-2-inner">
-                <button aria-controls="issuetype-dropdown" class="aui-button aui-style-default aui-dropdown2-trigger" aria-haspopup="true">
-                    $i18n.getText("condec.issuetypes")
-                </button>
-                <aui-dropdown-menu id="issuetype-dropdown"></aui-dropdown-menu>
-
-                <label>$i18n.getText("condec.created.between")</label>
-                <input id="created-after-picker" type="date" style = "vertical-align: middle;
+    <label>Created between</label>
+    <input class="aui-date-picker" id="demo-range-1" type="date" title="This is a simple tooltip" style = "vertical-align: middle;
   margin: 0px 5px;"/>
-                <label>and</label>
-                <input id="created-before-picker" type="date" style = "vertical-align: middle; margin: 0px 5px;"/>
+    <label>and</label>
+    <input class="aui-date-picker" id="demo-range-2" type="date"style = "vertical-align: middle;
+  margin: 0px 5px;"/>
 
-                <button class="aui-button aui-button-primary" id="filter-button"><span class="aui-icon aui-icon-small aui-iconfont-search"></span> Filter</button>
-            </div>
-        </div>
-        <div id="vis-container">
-            <p>No Element has been selected</p>
-        </div>
+    <button class="aui-button aui-button-primary" id="filter-button"><span class="aui-icon aui-icon-small aui-iconfont-search"></span> Filter</button>
     </div>
 </div>*#
 <div class="aui-tabs horizontal-tabs" id="visualization-selection-tabs" data-aui-persist="username">
@@ -68,7 +42,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
     </div>
 </div>
 
-
 #parse("templates/dialogs/createDialog.vm")
 #parse("templates/dialogs/editDialog.vm")
 #parse("templates/dialogs/deleteDialog.vm")
@@ -79,7 +52,6 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
 #parse("templates/dialogs/exportDialog.vm")
 #parse("templates/contextMenu.vm")
 <script>
-    console.log("ASDF:", AJS.$('#visualization-selection-tabs'))
 /*
  * Instantiate the ConDecJiraIssueModule object controlling this view:
  */
@@ -89,10 +61,6 @@ $(document).ready(function() {
     if (window.conDecJiraIssueModule.init(conDecAPI, conDecObservable, conDecDialog, conDecContextMenu, conDecTreant,
             conDecVis, conDecContextVis)) {
         window.conDecJiraIssueModule.initView();
-        window.conDecJiraIssueModule.initFilter();
-        // For now always both visualization are loaded. It's not the fastest, but can be fixed
-        window.conDecJiraIssueModule.initTreant();
-        window.conDecJiraIssueModule.initVis();
     }
     else {
         console.error("ConDecJiraIssueModule could not get its dependencies.");

@@ -19,7 +19,7 @@ public interface PartOfText extends DecisionKnowledgeElement {
 	 *            number of characters after that the decision knowledge element or
 	 *            the irrelevant text starts.
 	 */
-	void setStartPosition(int startPosition);
+	void setStartSubstringCount(int startPosition);
 
 	/**
 	 * Get the start position (number of characters) of the decision knowledge
@@ -28,7 +28,7 @@ public interface PartOfText extends DecisionKnowledgeElement {
 	 * @return number of characters after that the decision knowledge element or the
 	 *         irrelevant text starts.
 	 */
-	int getStartPosition();
+	int getStartSubstringCount();
 
 	/**
 	 * Set the end position (number of characters) of the decision knowledge element
@@ -38,7 +38,7 @@ public interface PartOfText extends DecisionKnowledgeElement {
 	 *            number of characters after that the decision knowledge element or
 	 *            the irrelevant text ends.
 	 */
-	void setEndPosition(int endPosition);
+	void setEndSubstringCount(int endPosition);
 
 	/**
 	 * Get the end position (number of characters) of the decision knowledge element
@@ -47,7 +47,7 @@ public interface PartOfText extends DecisionKnowledgeElement {
 	 * @return number of characters after that the decision knowledge element or the
 	 *         irrelevant text ends.
 	 */
-	int getEndPosition();
+	int getEndSubstringCount();
 
 	/**
 	 * Set whether the part of the text is decision knowledge, i.e., relevant.
