@@ -5,14 +5,10 @@ import javax.ws.rs.core.Response;
 
 import org.junit.Before;
 
-import com.atlassian.activeobjects.test.TestActiveObjects;
 import com.atlassian.jira.mock.servlet.MockHttpServletRequest;
 import com.google.common.collect.ImmutableMap;
 
-import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
-import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.rest.ConfigRest;
 import net.java.ao.EntityManager;
 
@@ -29,8 +25,7 @@ public class TestConfigSuper extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		configRest = new ConfigRest();
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
+		initialization();
 
 		request = new MockHttpServletRequest();
 		request.setAttribute("WithFails", false);

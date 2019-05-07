@@ -155,6 +155,6 @@ public class TestUpdateDecisionKnowledgeElementSentenceUser extends TestJiraIssu
 		new JiraIssueTextPersistenceManager("").updateDecisionKnowledgeElement(sentence, null);
 
 		PartOfJiraIssueText element = (PartOfJiraIssueText) new JiraIssueTextPersistenceManager("").getDecisionKnowledgeElement(id2);
-		assertTrue(element.getEndSubstringCount() != comment.get(1).getEndSubstringCount());
+		assertTrue(element.getEndPosition() != comment.get(1).getEndPosition());
 	}
 }
