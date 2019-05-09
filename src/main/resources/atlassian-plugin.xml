@@ -78,7 +78,7 @@
 		</description>
 		<context>jira.view.issue</context>
 		<!-- jquery 1.9.1 for the plug-in (required by jstree) with Sizzle -->
-		<resource type="download" name="jqueryConDec" location="/js/jquery/jquery.js" />
+		<resource type="download" name="jqueryConDec.js" location="/js/jquery/jquery.js" />
 		<!-- jstree -->
 		<resource type="download" name="jstree.js" location="/js/jstree/jstree.js" />
 		<!-- treant -->
