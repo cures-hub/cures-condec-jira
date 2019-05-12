@@ -2,7 +2,6 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
-import org.json.JSONPropertyName;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -23,18 +22,23 @@ public class VisNode {
 	@XmlElement
 	private String group;
 
-	public VisNode(DecisionKnowledgeElement element, boolean collapsed){
+	@XmlElement
+	private int level;
+
+	public VisNode(DecisionKnowledgeElement element, boolean collapsed, int level){
 		this.setId(element.getId()+ "_" + element.getDocumentationLocationAsString());
+		this.level = level;
 		if (!collapsed) {
-			this.setGroup(element.getTypeAsString() + "_" + element.getDocumentationLocationAsString());
+			this.setGroup(element.getTypeAsString().toLowerCase());
 			String summary;
-			if(element.getSummary().length()>150) {
-				summary = element.getSummary().substring(0,149) + "...";
+			if(element.getSummary().length()>100) {
+				summary = element.getSummary().substring(0,99) + "...";
 			} else {
 				summary = element.getSummary();
 			}
 			this.setLabel("<b>" + element.getTypeAsString().toUpperCase() + "</b> \n" + summary);
-			this.setTitle("<b>" + element.getTypeAsString() + "</b> <br> " + element.getDescription() );
+			this.setTitle("<b>" + element.getTypeAsString().toUpperCase() + " <br> " +
+					element.getKey() + ":</b> " + element.getSummary() +"<br> <i>" + element.getDescription() +"</i>");
 		} else {
 			this.setGroup("collapsed");
 			this.setLabel("");
@@ -42,16 +46,10 @@ public class VisNode {
 		}
 	}
 
-	public VisNode(DecisionKnowledgeElement element, String type, boolean collapsed) {
-		this.setId(element.getId()+ "_" + element.getDocumentationLocationAsString());
+	public VisNode(DecisionKnowledgeElement element, String type, boolean collapsed, int level) {
+		this(element, collapsed, level);
 		if (!collapsed) {
-			this.setGroup(type + "_" + element.getDocumentationLocationAsString());
-			this.setLabel("<b>" + element.getTypeAsString().toUpperCase() + "</b> \n" + element.getSummary());
-			this.setTitle(element.getDescription());
-		} else {
-			this.setGroup("collapsed");
-			this.setLabel("");
-			this.setTitle(element.getSummary());
+			this.setGroup(type);
 		}
 	}
 

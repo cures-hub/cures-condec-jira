@@ -13,8 +13,8 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfText;
  */
 public class PartOfTextImpl extends DecisionKnowledgeElementImpl implements PartOfText {
 
-	private int startSubstringCount;
-	private int endSubstringCount;
+	private int startPosition;
+	private int endPosition;
 	private boolean isRelevant;
 	private boolean isValidated;
 	private boolean isPlainText;
@@ -46,28 +46,28 @@ public class PartOfTextImpl extends DecisionKnowledgeElementImpl implements Part
 	}
 
 	@Override
-	public int getStartSubstringCount() {
-		return this.startSubstringCount;
+	public int getStartPosition() {
+		return this.startPosition;
 	}
 
 	@Override
-	public void setStartSubstringCount(int count) {
-		this.startSubstringCount = count;
+	public void setStartPosition(int startPosition) {
+		this.startPosition = startPosition;
 	}
 
 	@Override
-	public int getEndSubstringCount() {
-		return this.endSubstringCount;
+	public int getEndPosition() {
+		return this.endPosition;
 	}
 
 	@Override
-	public void setEndSubstringCount(int count) {
-		this.endSubstringCount = count;
+	public void setEndPosition(int endPosition) {
+		this.endPosition = endPosition;
 	}
 
 	@Override
 	public int getLength() {
-		return this.endSubstringCount - this.startSubstringCount;
+		return this.endPosition - this.startPosition;
 	}
 
 	@Override

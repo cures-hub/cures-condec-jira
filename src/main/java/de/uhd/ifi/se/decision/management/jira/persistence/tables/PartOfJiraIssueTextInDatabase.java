@@ -12,7 +12,7 @@ import net.java.ao.schema.Table;
  * Interface for decision knowledge elements stored in JIRA issue comments or
  * the description. Determines which table columns are used for object
  * relational mapping to the database.
- * 
+ *
  * @see DecisionKnowledgeElement
  */
 @Table("CondecInComment")
@@ -28,9 +28,9 @@ public interface PartOfJiraIssueTextInDatabase extends RawEntity<Long> {
 
 	void setCommentId(long id);
 
-	int getEndSubstringCount();
+	int getEndPosition();
 
-	void setEndSubstringCount(int count);
+	void setEndPosition(int endPosition);
 
 	long getJiraIssueId();
 
@@ -48,9 +48,9 @@ public interface PartOfJiraIssueTextInDatabase extends RawEntity<Long> {
 
 	void setRelevant(boolean isRelevant);
 
-	int getStartSubstringCount();
+	int getStartPosition();
 
-	void setStartSubstringCount(int count);
+	void setStartPosition(int startPosition);
 
 	boolean isValidated();
 

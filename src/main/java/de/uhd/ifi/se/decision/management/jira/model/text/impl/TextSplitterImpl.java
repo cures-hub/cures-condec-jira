@@ -19,12 +19,12 @@ import de.uhd.ifi.se.decision.management.jira.view.macros.AbstractKnowledgeClass
 
 public class TextSplitterImpl implements TextSplitter {
 
-	private List<Integer> startSubstringCount;
-	private List<Integer> endSubstringCount;
+	private List<Integer> startPositions;
+	private List<Integer> endPositions;
 
 	public TextSplitterImpl() {
-		this.startSubstringCount = new ArrayList<Integer>();
-		this.endSubstringCount = new ArrayList<Integer>();
+		this.startPositions = new ArrayList<Integer>();
+		this.endPositions = new ArrayList<Integer>();
 	}
 
 	@Override
@@ -34,17 +34,17 @@ public class TextSplitterImpl implements TextSplitter {
 		List<String> strings = TextSplitterImpl.getRawSentences(text, projectKey);
 		runBreakIterator(strings, text);
 
-		for (int i = 0; i < this.startSubstringCount.size(); i++) {
-			int startIndex = this.startSubstringCount.get(i);
-			int endIndex = this.endSubstringCount.get(i);
-			if (!startAndEndIndexRules(startIndex, endIndex, text)) {
+		for (int i = 0; i < this.startPositions.size(); i++) {
+			int startPosition = this.startPositions.get(i);
+			int endPosition = this.endPositions.get(i);
+			if (!startAndEndIndexRules(startPosition, endPosition, text)) {
 				continue;
 			}
 			PartOfText partOfText = new PartOfTextImpl();
-			partOfText.setEndSubstringCount(endIndex);
-			partOfText.setStartSubstringCount(startIndex);
+			partOfText.setEndPosition(endPosition);
+			partOfText.setStartPosition(startPosition);
 			partOfText.setProject(projectKey);
-			String body = text.substring(startIndex, endIndex).toLowerCase();
+			String body = text.substring(startPosition, endPosition).toLowerCase();
 			KnowledgeType type = getKnowledgeTypeFromTag(body, projectKey);
 			partOfText.setType(type);
 			if (type != KnowledgeType.OTHER) {
@@ -74,7 +74,7 @@ public class TextSplitterImpl implements TextSplitter {
 	}
 
 	private static ArrayList<String> searchForTagsRecursively(String partOfText, String openTag, String closeTag,
-			ArrayList<String> slices) {
+															  ArrayList<String> slices) {
 		if (isIncorrectlyTagged(partOfText, openTag, closeTag)) {
 			slices.add(partOfText);
 			return slices;
@@ -122,7 +122,7 @@ public class TextSplitterImpl implements TextSplitter {
 	/**
 	 * Checks: Start Index >=0, End Index >= 0, End Index - Start Index > 0, Body
 	 * not only whitespaces
-	 * 
+	 *
 	 * @param startIndex
 	 * @param endIndex
 	 * @return
@@ -167,12 +167,12 @@ public class TextSplitterImpl implements TextSplitter {
 	}
 
 	public void addSentenceIndex(int startIndex, int endIndex) {
-		this.startSubstringCount.add(startIndex);
-		this.endSubstringCount.add(endIndex);
+		this.startPositions.add(startIndex);
+		this.endPositions.add(endIndex);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param body
 	 * @param projectKey
 	 * @param lookOutForIcons

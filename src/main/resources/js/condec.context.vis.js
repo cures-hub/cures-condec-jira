@@ -61,8 +61,9 @@
         setContextMenuItemsEventHandlers(id, documentationLocation);
 
 
-        var posX = event.layerX;
-        var posY = event.layerY;
+        var position = getPosition(event, container);
+        var posX = position["x"];
+        var posY = position["y"];
 
         $(contextVisNode).css({
             left : posX,

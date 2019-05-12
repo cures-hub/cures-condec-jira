@@ -65,17 +65,18 @@ $(document).ready(function() {
     else {
         console.error("ConDecJiraIssueModule could not get its dependencies.");
     }
+    AJS.$('#visualization-selection-tabs').bind('tabSelect', function(e,o){
+        console.log("tab switched");
+        console.log(window);
+        if (o.tab.attr("href")=="#treant") {
+            window.conDecJiraIssueModule.initTreant();
+        } else {
+            window.conDecJiraIssueModule.initVis();
+        }
+    });
 
 });
 
-AJS.$('#visualization-selection-tabs').bind('tabSelect', function(e,o){
-    console.log("tab switched");
-    console.log(window);
-    if (o.tab.attr("href")=="#treant") {
-        window.conDecJiraIssueModule.initTreant();
-    } else {
-        window.conDecJiraIssueModule.initVis();
-    }
-});
+
 
 </script>

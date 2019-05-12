@@ -416,34 +416,6 @@
     };
 
     /*
-     * external reference: settingsForAllProjects.vm
-     */
-    ConDecAPI.prototype.setVisualizationToVis = function setVisualizationToVis(
-        isVisualizationSetToVis, projectKey) {
-        postJSON(AJS.contextPath() + "/rest/decisions/latest/config/setVisualizationToVis.json?projectKey="
-        + projectKey + "&isVisualizationSetToVis=" + isVisualizationSetToVis, null, function(
-        error, response) {
-        if (error === null) {
-            if (isVisualizationSetToVis) {
-                showFlag("success", "Decision Knowledge will be visualized using Vis");
-            }
-            else {
-                showFlag("success", "Decision Knowledge will be visualized using Treant");
-            }
-        }
-    });
-    };
-
-    ConDecAPI.prototype.isVisualizationSetToVis = function isVisualizationSetToVis (callback) {
-        getJSON(AJS.contextPath() + "/rest/decisions/latest/config/isVisualizationSetToVis.json?projectKey=" + projectKey,
-            function(error, isVisualizationVis) {
-                if (error === null) {
-                    callback(isVisualizationVis);
-                }
-            });
-    };
-
-    /*
      * external references: settingsForSingleProject.vm
      */
     ConDecAPI.prototype.setUseClassifierForIssueComments = function setUseClassifierForIssueComments(

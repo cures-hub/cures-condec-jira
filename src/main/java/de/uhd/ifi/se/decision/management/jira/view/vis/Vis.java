@@ -9,10 +9,7 @@ import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
-import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImplFiltered;
 import de.uhd.ifi.se.decision.management.jira.filtering.GraphFiltering;
-import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import org.json.JSONPropertyIgnore;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -33,9 +30,7 @@ public class Vis {
 	private boolean isHyperlinked;
 	private List<DecisionKnowledgeElement> elementsAlreadyAsNode;
 	private List<DecisionKnowledgeElement> elementsMatchingFilterCriteria;
-	private long startDate;
-	private long endDate;
-	private List<String> issueTypeNames;
+	private int level;
 
 	public Vis(){
 	}
@@ -47,50 +42,48 @@ public class Vis {
 		nodes = new HashSet<>();
 		edges= new HashSet<>();
 		this.elementsAlreadyAsNode = new ArrayList<>();
-		startDate = -1;
-		endDate = -1;
-		issueTypeNames = getNamesOfExistingIssueTypes();
-		fillNodesAndEdges(rootElement,null);
+		fillNodesAndEdges(rootElement,null,0);
 	}
 
 	public Vis(String projectKey, String elementKey, boolean isHyperlinked, String query, ApplicationUser user){
-		this.graph = new GraphImpl(projectKey,elementKey);
+		this.graph = new GraphImpl(projectKey, elementKey);
 		GraphFiltering filter;
 		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
 			filter = new GraphFiltering(projectKey, query, user, false);
 			filter.produceResultsFromQuery();
-			startDate = filter.getStartDate();
-			endDate = filter.getEndDate();
 			this.elementsMatchingFilterCriteria = filter.getAllElementsMatchingQuery();
 			//this.graph = new GraphImplFiltered(projectKey, elementKey, filter);
 		} else {
 			this.elementsMatchingFilterCriteria = graph.getAllElements();
+			this.graph = new GraphImpl(projectKey, elementKey);
 		}
 		this.setHyperlinked(isHyperlinked);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
 		nodes = new HashSet<>();
 		edges= new HashSet<>();
 		elementsAlreadyAsNode = new ArrayList<>();
-		fillNodesAndEdges(rootElement, null);
+		level = 50;
+		fillNodesAndEdges(rootElement, null, level);
+
 	}
 
 
 
-	private void fillNodesAndEdges(DecisionKnowledgeElement element, Link link) {
+	private void fillNodesAndEdges(DecisionKnowledgeElement element, Link link, int level) {
 		if (element == null || element.getProject() == null) {
 			return;
 		}
 		if (graph == null) {
 			graph = new GraphImpl(element);
 		}
-		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getAdjacentElementsAndLinks(element);
+
 		if (link != null) {
 			switch (link.getType()) {
 				case "support":
 					if (element.getId() == link.getSourceElement().getId()) {
 						if (!(this.elementsAlreadyAsNode.contains(element))) {
 							this.elementsAlreadyAsNode.add(element);
-							this.nodes.add(new VisNode(element, "Pro", !this.elementsMatchingFilterCriteria.contains(element)));
+							this.nodes.add(new VisNode(element, "pro", !this.elementsMatchingFilterCriteria.contains(element),level+2));
 						}
 					}
 					break;
@@ -98,27 +91,33 @@ public class Vis {
 					if (element.getId() == link.getSourceElement().getId()) {
 						if (!(this.elementsAlreadyAsNode.contains(element))) {
 							this.elementsAlreadyAsNode.add(element);
-							this.nodes.add(new VisNode(element, "Con", !this.elementsMatchingFilterCriteria.contains(element)));
+							this.nodes.add(new VisNode(element, "con", !this.elementsMatchingFilterCriteria.contains(element),level+2));
 						}
 					}
 					break;
 				default:
 					if (!(this.elementsAlreadyAsNode.contains(element))) {
 						this.elementsAlreadyAsNode.add(element);
-						this.nodes.add(new VisNode(element, !this.elementsMatchingFilterCriteria.contains(element)));
+						this.nodes.add(new VisNode(element, !this.elementsMatchingFilterCriteria.contains(element),level));
 					}
 					break;
 			}
+			this.edges.add(new VisEdge(link));
 
 		} else {
 			if (!(this.elementsAlreadyAsNode.contains(element))) {
 				this.elementsAlreadyAsNode.add(element);
-				this.nodes.add(new VisNode(element, !this.elementsMatchingFilterCriteria.contains(element)));
+				this.nodes.add(new VisNode(element, !this.elementsMatchingFilterCriteria.contains(element),level));
 			}
 		}
+		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getAdjacentElementsAndLinks(element);
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-			fillNodesAndEdges(childAndLink.getKey(),childAndLink.getValue());
-			this.edges.add(new VisEdge(childAndLink.getValue()));
+			if (childAndLink.getValue().getSourceElement().equals(element)) {
+				this.level = level + 1;
+			} else {
+				this.level = level - 1;
+			}
+			fillNodesAndEdges(childAndLink.getKey(),childAndLink.getValue(),this.level);
 		}
 	}
 
@@ -153,15 +152,5 @@ public class Vis {
 
 	public boolean isHyperlinked() {
 		return isHyperlinked;
-	}
-
-	public List<String> getNamesOfExistingIssueTypes() {
-		List<String> existingIssueTypeNames = new ArrayList<String>();
-		ConstantsManager constantsManager = ComponentAccessor.getConstantsManager();
-		Collection<IssueType> issueTypes = constantsManager.getAllIssueTypeObjects();
-		for (IssueType issueType : issueTypes) {
-			existingIssueTypeNames.add(issueType.getName());
-		}
-		return existingIssueTypeNames;
 	}
 }

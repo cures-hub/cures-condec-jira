@@ -312,10 +312,13 @@ div.vis-tooltip {
     position: absolute;
     visibility: hidden;
     padding: 5px;
-    white-space: nowrap;
+    white-space: normal;
+    max-width: 250px;
+    word-wrap: break-word;
+    text-align: center;
 
     font-family: verdana;
-    font-size:14px;
+    font-size:10px;
     color:#000000;
     background-color: #f5f4ed;
 
@@ -615,12 +618,12 @@ div.vis-network div.vis-manipulation div.notification {
 }
 
 div.vis-network div.vis-manipulation div.vis-button.vis-add {
-    background-image: url("img/network/addNodeIcon.png");
+    background-image: url("add.png");
 }
 
 div.vis-network div.vis-manipulation div.vis-button.vis-edit,
 div.vis-network div.vis-edit-mode div.vis-button.vis-edit {
-    background-image: url("img/network/editIcon.png");
+    background-image: url("editIcon.png");
 }
 
 div.vis-network div.vis-edit-mode div.vis-button.vis-edit.vis-edit-mode {
@@ -633,7 +636,7 @@ div.vis-network div.vis-manipulation div.vis-button.vis-connect {
 }
 
 div.vis-network div.vis-manipulation div.vis-button.vis-delete {
-    background-image: url("img/network/deleteIcon.png");
+    background-image: url("deleteIcon.png");
 }
 /* top right bottom left */
 div.vis-network div.vis-manipulation div.vis-label,

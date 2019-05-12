@@ -21,8 +21,7 @@
                     widthConstraint:120,
                     color:{ background: 'rgba(255, 255, 255,1)',
                             border: 'rgba(0,0,0,1)',
-                            highlight: {background: 'rgba(255,255,255,1)',
-                                        border: 'rgba(0,0,0,1)'
+                            highlight: {border: 'rgba(0,0,0,1)'
                             }},
                     font: {multi: true}
                 },
@@ -36,11 +35,11 @@
                     improvedLayout: false,
                     hierarchical: {
                         enabled: true,
-                        levelSeparation: 100,
-                        nodeSpacing: 250,
+                        levelSeparation: 140,
+                        nodeSpacing: 300,
                         treeSpacing: 200,
                         blockShifting: true,
-                        edgeMinimization: true,
+                        edgeMinimization: false,
                         parentCentralization: true,
                         direction: 'UD', // UD, DU, LR, RL
                         sortMethod: 'directed' // hubsize, directed
@@ -49,23 +48,23 @@
                 },
                 groups:{
                     // Setting colors and Levels for Decision Knowledge Elements stored in Jira Issues
-                    Decision_i: {color:{background: 'rgba(252,227,190,1)'}},
-                    Issue_i: {color:{background: 'rgba(255, 255, 204,1)'}},
-                    Alternative_i: {color:{background: 'rgba(252,227,190,1'}},
-                    Pro_i: {color:{background: 'rgba(222, 250, 222,1)'}},
-                    Con_i: {color:{background: 'rgba(255, 231, 231,1)'}},
-                    Argument_i: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    Constraint_i: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    Assumption_i: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    Implication_i: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    Context_i: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    Problem_i: {color:{background: 'rgba(255, 255, 204,1)'}},
-                    Goal_i: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    Solution_i: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    Claim_i: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    Rationale_i: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    Question_i: {color:{background: 'rgba(255, 255, 255,1)'}},
-                    Assessment_i: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    decision: {color:{background: 'rgba(252,227,190,1)'}},
+                    issue: {color:{background: 'rgba(255, 255, 204,1)'}},
+                    alternative: {color:{background: 'rgba(252,227,190,1'}},
+                    pro: {color:{background: 'rgba(222, 250, 222,1)'}},
+                    con: {color:{background: 'rgba(255, 231, 231,1)'}},
+                    argument: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    constraint: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    assumption: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    implication: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    context: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    problem: {color:{background: 'rgba(255, 255, 204,1)'}},
+                    goal: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    solution: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    claim: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    rationale: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    question: {color:{background: 'rgba(255, 255, 255,1)'}},
+                    assessment: {color:{background: 'rgba(255, 255, 255,1)'}},
                     collapsed: {shape: "dot", size: 5, color: {background: 'rgba(0,0,0,1)'}}
                 },
 
@@ -78,13 +77,26 @@
                         if (data.from !== data.to) {
                             callback(data);
 
-                            conDecAPI.createLink(null,data.to.slice(0, -2),data.from.slice(0,-2),data.to.substr(-1),
+                            conDecAPI.createLink(null,data.from.slice(0, -2),data.to.slice(0,-2),data.to.substr(-1),
                                 data.from.substr(-1),function () {
                                     //network.destroy();
                                     //buildVis(elementKey,searchTerm);
                                     conDecObservable.notify();
                                 })
                         }
+                    },
+                    deleteNode: function(data, callback) {
+                        console.log('deleteNode', data);
+                        console.log('delete node:', data.nodes[0].slice(0,-2));
+                        var conf = confirm("You want to delete this element?");
+                            if (conf) {
+                                conDecAPI.deleteDecisionKnowledgeElement(data.nodes[0].slice(0,-2),data.nodes[0].substr(-1),function() {
+                                     conDecObservable.notify();
+                                });
+                        }
+                    },
+                    deleteEdge: function (data,callback) {
+                        console.log('deleteEdge', data);
                     }
 
                 },
@@ -97,7 +109,7 @@
 
             network.focus();
             network.on("oncontext", function(params) {
-                console.log(params.event);
+                console.log(params);
                 params.event.preventDefault();
                 var nodeIndices = network.body.nodeIndices;
                 var clickedNodeId;
@@ -118,16 +130,25 @@
                     getDocumentationLocationFromId(clickedNodeId), params.event, "vis-container");
             });
 
-            var keys = vis.keycharm({
-                container: container,
-                preventDefault: true
-            });
-
-            keys.bind("delete", function(event) {
-                var selection = network.getSelection();
-                console.log(selection);
-                console.log(event);
-            });
+            network.on("hold", function(params) {
+                var nodeIndices = network.body.nodeIndices;
+                var clickedNodeId;
+                for (var i = 0; i < nodeIndices.length; i++) {
+                    var nodeId = nodeIndices[i];
+                    var boundingBox = network.getBoundingBox(nodeId);
+                    if (boundingBox.left <= params.pointer.canvas.x &&
+                        params.pointer.canvas.x <= boundingBox.right &&
+                        boundingBox.top <= params.pointer.canvas.y &&
+                        params.pointer.canvas.y <= boundingBox.bottom) {
+                        clickedNodeId = nodeId;
+                    }
+                }
+                if (clickedNodeId !== undefined) {
+                    params.event.preventDefault();
+                    conDecDialog.showEditDialog(clickedNodeId.toString().slice(0, -2),
+                        getDocumentationLocationFromId(clickedNodeId));
+                }
+            })
         });
 
 

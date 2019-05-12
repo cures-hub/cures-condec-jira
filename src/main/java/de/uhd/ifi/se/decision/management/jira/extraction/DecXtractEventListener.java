@@ -1,5 +1,11 @@
 package de.uhd.ifi.se.decision.management.jira.extraction;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.ofbiz.core.entity.GenericEntityException;
+import org.ofbiz.core.entity.GenericValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -14,12 +20,13 @@ import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.MutableComment;
+import com.atlassian.jira.util.collect.MapBuilder;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;
-import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssuePersistenceManager;
+import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 
 /**
  * Triggers the extraction of decision knowledge elements and their integration
@@ -47,7 +54,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 
 	/**
 	 * Called when the plugin has been enabled.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Override
@@ -57,7 +64,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 
 	/**
 	 * Called when the plugin is being disabled or removed.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Override
@@ -121,26 +128,6 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 
-	private void handleEditComment() {
-		if (DecXtractEventListener.editCommentLock) {
-			// If locked, a REST service is currently manipulating the comment and should
-			// not be handled by this event listener.
-			LOGGER.debug("DecXtract event listener:\nEditing comment is still locked.");
-			return;
-		}
-		parseIconsToTags();
-		
-		// @issue Currently elements are deleted and new ones are created afterwards. How to enable a "real" update? 
-		JiraIssueTextPersistenceManager.deletePartsOfComment(issueEvent.getComment());
-		if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
-			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
-		} else {
-			MutableComment comment = (MutableComment) issueEvent.getComment();
-			JiraIssueTextPersistenceManager.getPartsOfComment(comment);
-		}
-		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
-	}
-
 	private void handleDeleteComment() {
 		JiraIssueTextPersistenceManager.cleanSentenceDatabase(this.projectKey);
 		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
@@ -157,22 +144,66 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
 	}
 
-	private void handleUpdateDescription() {			
+	private void handleEditComment() {
+		if (DecXtractEventListener.editCommentLock) {
+			// If locked, a REST service is currently manipulating the comment and should
+			// not be handled by this event listener.
+			LOGGER.debug("DecXtract event listener:\nEditing comment is still locked.");
+			return;
+		}
+
+		parseIconsToTags();
+
+		if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
+			JiraIssueTextPersistenceManager.deletePartsOfComment(issueEvent.getComment());
+			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
+		} else {
+			MutableComment comment = (MutableComment) issueEvent.getComment();
+			JiraIssueTextPersistenceManager.updateComment(comment);
+		}
+		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+	}
+
+	private void handleUpdateDescription() {
 		if (DecXtractEventListener.editCommentLock) {
 			// If locked, a REST service is currently manipulating the comment and should
 			// not be handled by this event listener.
 			LOGGER.debug("DecXtract event listener:\nEditing description is still locked.");
 			return;
 		}
-		
-		parseIconsToTags();	
-		
-		JiraIssueTextPersistenceManager.deletePartsOfDescription(issueEvent.getIssue());
+
+		parseIconsToTags();
+
 		if (ConfigPersistenceManager.isUseClassiferForIssueComments(this.projectKey)) {
+			JiraIssueTextPersistenceManager.deletePartsOfDescription(issueEvent.getIssue());
 			new ClassificationManagerForJiraIssueComments().classifyAllCommentsOfJiraIssue(this.issueEvent.getIssue());
 		} else {
-			JiraIssueTextPersistenceManager.getPartsOfDescription(issueEvent.getIssue());
+			JiraIssueTextPersistenceManager.updateDescription(issueEvent.getIssue());
 		}
 		JiraIssueTextPersistenceManager.createLinksForNonLinkedElementsForIssue(issueEvent.getIssue().getId());
+	}
+
+	public Map<String, String> getChangedString(IssueEvent issueEvent) {
+		Map<String, String> changedString = new HashMap<String, String>();
+
+		GenericValue changeLog = issueEvent.getChangeLog();
+		Long changeId = changeLog.getLong("id");
+		if (changeId == null) {
+			return changedString;
+		}
+
+		try {
+			List<GenericValue> changes = changeLog.internalDelegator.findByAnd("ChangeItem",
+					MapBuilder.build("group", changeId));
+			for (GenericValue changeItem : changes) {
+				String oldValue = changeItem.getString("oldstring");
+				String newValue = changeItem.getString("newstring");
+				changedString.put(oldValue, newValue);
+			}
+		} catch (NullPointerException | GenericEntityException e) {
+			e.printStackTrace();
+		}
+
+		return changedString;
 	}
 }

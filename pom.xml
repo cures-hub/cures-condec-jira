@@ -247,7 +247,7 @@
 		<plugins>
 			<plugin>
 				<groupId>com.atlassian.maven.plugins</groupId>
-				<artifactId>maven-jira-plugin</artifactId>
+				<artifactId>jira-maven-plugin</artifactId>
 				<version>${amps.version}</version>
 				<extensions>true</extensions>
 				<configuration>
@@ -256,7 +256,6 @@
 					<productVersion>${jira.version}</productVersion>
 					<productDataVersion>${jira.version}</productDataVersion>
 					<enableQuickReload>true</enableQuickReload>
-					<enableFastdev>false</enableFastdev>
 					<allowGoogleTracking>false</allowGoogleTracking>
 					<instructions>
 						<Atlassian-Plugin-Key>${atlassian.plugin.key}</Atlassian-Plugin-Key>
@@ -307,7 +306,7 @@
 	</build>
 	<properties>
 		<jira.version>8.1.0</jira.version>
-		<amps.version>6.3.20</amps.version>		
+		<amps.version>8.0.1</amps.version>
 		<ao.version>1.5.0</ao.version>
 		<plugin.testrunner.version>2.0.1</plugin.testrunner.version>
 		<atlassian.spring.scanner.version>1.2.13</atlassian.spring.scanner.version>

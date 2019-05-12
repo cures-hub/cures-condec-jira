@@ -42,8 +42,8 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 
 	public PartOfJiraIssueTextImpl(PartOfText partOfText, Comment comment) {
 		this(comment);
-		this.setEndSubstringCount(partOfText.getEndSubstringCount());
-		this.setStartSubstringCount(partOfText.getStartSubstringCount());
+		this.setEndPosition(partOfText.getEndPosition());
+		this.setStartPosition(partOfText.getStartPosition());
 		this.setRelevant(partOfText.isRelevant());
 		this.setValidated(partOfText.isValidated());
 		this.setType(partOfText.getType());
@@ -58,17 +58,17 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 	}
 
 	public PartOfJiraIssueTextImpl(PartOfJiraIssueTextInDatabase databaseEntry) {
-		this(databaseEntry.getId(), databaseEntry.getEndSubstringCount(), databaseEntry.getStartSubstringCount(),
+		this(databaseEntry.getId(), databaseEntry.getEndPosition(), databaseEntry.getStartPosition(),
 				databaseEntry.isValidated(), databaseEntry.isRelevant(), databaseEntry.getProjectKey(),
 				databaseEntry.getCommentId(), databaseEntry.getJiraIssueId(), databaseEntry.getType());
 	}
 
 	public PartOfJiraIssueTextImpl(long id, int endSubstringCount, int startSubstringCount, boolean isValidated,
-			boolean isRelevant, String projectKey, long commentId, long issueId, String type) {
+								   boolean isRelevant, String projectKey, long commentId, long issueId, String type) {
 		this();
 		this.setId(id);
-		this.setEndSubstringCount(endSubstringCount);
-		this.setStartSubstringCount(startSubstringCount);
+		this.setEndPosition(endSubstringCount);
+		this.setStartPosition(startSubstringCount);
 		this.setValidated(isValidated);
 		this.setRelevant(isRelevant);
 		this.setProject(projectKey);
@@ -131,7 +131,7 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 		if (comment == null) {
 			return super.getSummary();
 		}
-		String body = comment.getBody().substring(this.getStartSubstringCount(), this.getEndSubstringCount());
+		String body = comment.getBody().substring(this.getStartPosition(), this.getEndPosition());
 		return body.replaceAll("\\{.*?\\}", "");
 	}
 
