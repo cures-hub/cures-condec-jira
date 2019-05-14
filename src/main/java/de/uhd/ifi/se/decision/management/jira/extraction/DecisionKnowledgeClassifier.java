@@ -95,7 +95,7 @@ public interface DecisionKnowledgeClassifier {
 					"weka.core.tokenizers.NGramTokenizer -max 3 -min 1 -delimiters \" \\r\\n\\t.,;:\\'\\\"()?!\"");
 			tokenizer.setOptions(options);
 		} catch (Exception e) {
-			e.printStackTrace();
+
 		}
 		return tokenizer;
 	}

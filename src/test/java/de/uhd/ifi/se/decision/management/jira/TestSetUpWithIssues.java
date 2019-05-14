@@ -79,7 +79,7 @@ public class TestSetUpWithIssues {
 		try {
 			((MockIssueTypeManager) issueTypeManager).addingAllIssueTypes();
 		} catch (CreateException e) {
-			e.printStackTrace();
+
 		}
 		IssueService issueService = new MockIssueService();
 

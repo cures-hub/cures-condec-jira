@@ -47,7 +47,7 @@ public class WebhookContentProvider {
 			StringRequestEntity requestEntity = new StringRequestEntity(webhookData, "application/json", "UTF-8");
 			postMethod.setRequestEntity(requestEntity);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+
 		}
 		Header header = new Header();
 		header.setName("X-Hub-Signature");
@@ -79,7 +79,7 @@ public class WebhookContentProvider {
 		try {
 			treantAsJson = objectMapper.writeValueAsString(treant);
 		} catch (IOException e) {
-			e.printStackTrace();
+
 		}
 		return treantAsJson;
 	}
@@ -102,18 +102,18 @@ public class WebhookContentProvider {
 		try {
 			mac = Mac.getInstance(hashingAlgorithm);
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+
 		}
 		try {
 			mac.init(secretKeySpec);
 		} catch (InvalidKeyException e) {
-			e.printStackTrace();
+
 		}
 		String hexString = "";
 		try {
 			hexString = toHexString(mac.doFinal(data.getBytes("UTF-8")));
 		} catch (IllegalStateException | UnsupportedEncodingException e) {
-			e.printStackTrace();
+
 		}
 		return hexString;
 	}

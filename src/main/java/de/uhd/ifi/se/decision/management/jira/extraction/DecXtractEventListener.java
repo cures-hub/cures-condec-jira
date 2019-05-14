@@ -201,7 +201,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 				changedString.put(oldValue, newValue);
 			}
 		} catch (NullPointerException | GenericEntityException e) {
-			e.printStackTrace();
+
 		}
 
 		return changedString;

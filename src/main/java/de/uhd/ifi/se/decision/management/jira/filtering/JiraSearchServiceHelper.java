@@ -37,7 +37,7 @@ public class JiraSearchServiceHelper {
 			try {
 				jiraIssues.addAll((List<Issue>) newGetMethod.invoke(searchResults));
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				e.printStackTrace();
+
 			}
 		} else {
 			LOGGER.error("SearchResults Service from JIRA NOT AVAILABLE (getIssue / getResults)");

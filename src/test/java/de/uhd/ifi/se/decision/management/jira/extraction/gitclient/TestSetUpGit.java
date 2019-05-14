@@ -45,7 +45,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 			directory.delete();
 			directory.mkdirs();
 		} catch (IOException e) {
-			e.printStackTrace();
+
 		}
 		return directory;
 	}
@@ -61,7 +61,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 			remoteRepo.create(true);
 			uri = remoteRepo.getDirectory().getAbsolutePath();
 		} catch (IOException e) {
-			e.printStackTrace();
+
 		}
 		return uri;
 	}
@@ -77,7 +77,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 			git.commit().setMessage(commitMessage).setAuthor("gitTest", "gitTest@test.de").call();
 			git.push().setRemote("origin").call();
 		} catch (GitAPIException | FileNotFoundException | UnsupportedEncodingException e) {
-			e.printStackTrace();
+
 		}
 	}
 

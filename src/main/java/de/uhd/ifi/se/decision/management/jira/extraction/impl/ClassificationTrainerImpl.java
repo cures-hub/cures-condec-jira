@@ -72,7 +72,7 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 				instances.setClassIndex(instances.numAttributes() - 1);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+
 		}
 		return instances;
 	}
@@ -109,7 +109,7 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 
 			isTrained = true;
 		} catch (Exception e) {
-			e.printStackTrace();
+
 		}
 		return isTrained;
 	}
@@ -143,7 +143,7 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 			writer.println(arffString);
 			writer.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+
 		}
 		return arffFile;
 	}

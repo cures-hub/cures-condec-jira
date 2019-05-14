@@ -143,7 +143,7 @@ public interface ClassificationTrainer {
 			outputStream.write(buffer);
 			outputStream.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+
 		}
 		return arffFile;
 	}

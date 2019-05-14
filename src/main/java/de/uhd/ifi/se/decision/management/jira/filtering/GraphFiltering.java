@@ -289,7 +289,7 @@ public class GraphFiltering {
 				filterId = Long.parseLong(filteredQuery, 10);
 				filterIsNumberCoded = true;
 			} catch (NumberFormatException n) {
-				// n.printStackTrace();
+
 			}
 			if (filterIsNumberCoded) {
 				finalQuery = queryFromFilterId(filterId);
@@ -321,7 +321,7 @@ public class GraphFiltering {
 				resultingIssues = JiraSearchServiceHelper.getJiraIssues(results);
 
 			} catch (SearchException e) {
-				e.printStackTrace();
+
 			}
 		} else {
 			LOGGER.error(parseResult.getErrors().toString());

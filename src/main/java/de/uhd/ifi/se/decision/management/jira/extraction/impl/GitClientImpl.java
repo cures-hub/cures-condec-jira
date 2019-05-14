@@ -76,7 +76,6 @@ public class GitClientImpl implements GitClient {
 		try {
 			git = Git.open(directory);
 		} catch (IOException e) {
-			e.printStackTrace();
 			LOGGER.error("Git repository could not be opened.");
 			initRepository(directory);
 		}
@@ -90,7 +89,7 @@ public class GitClientImpl implements GitClient {
 				git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
 			}
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 		}
 	}
 
@@ -102,7 +101,6 @@ public class GitClientImpl implements GitClient {
 			git = Git.cloneRepository().setURI(uri).setDirectory(directory).setCloneAllBranches(true).call();
 			setConfig();
 		} catch (GitAPIException e) {
-			e.printStackTrace();
 			LOGGER.error("Git repository could not be cloned. Bare repository will be created.");
 			initRepository(directory);
 		}
@@ -112,7 +110,7 @@ public class GitClientImpl implements GitClient {
 		try {
 			git = Git.init().setDirectory(directory).call();
 		} catch (IllegalStateException | GitAPIException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 		}
 	}
 
@@ -126,7 +124,7 @@ public class GitClientImpl implements GitClient {
 		try {
 			config.save();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 		}
 	}
 
@@ -159,7 +157,7 @@ public class GitClientImpl implements GitClient {
 				diffEntries = diffFormatter.scan(parentCommit.getTree(), lastCommit.getTree());
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 		}
 
 		for (DiffEntry diffEntry : diffEntries) {
@@ -167,7 +165,7 @@ public class GitClientImpl implements GitClient {
 				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
 				diffEntriesMappedToEditLists.put(diffEntry, editList);
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOGGER.error(e.getMessage());
 			}
 		}
 		diffFormatter.close();
@@ -216,8 +214,7 @@ public class GitClientImpl implements GitClient {
 			parentCommit = revWalk.parseCommit(revCommit.getParent(0).getId());
 			revWalk.close();
 		} catch (Exception e) {
-			System.err.println("Could not get the parent commit.");
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 		}
 		return parentCommit;
 	}
@@ -304,7 +301,7 @@ public class GitClientImpl implements GitClient {
 		try {
 			refs = git.branchList().setListMode(ListBranchCommand.ListMode.ALL).call();
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 		}
 		return refs;
 	}
@@ -320,7 +317,7 @@ public class GitClientImpl implements GitClient {
 				commits.add(commit);
 			}
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			LOGGER.error(e.getMessage());
 		}
 		return commits;
 	}

@@ -95,7 +95,7 @@ public class PartOfJiraIssueTextImpl extends PartOfTextImpl implements PartOfJir
 				text = text.substring(startSubstringCount);
 			}
 		} catch (NullPointerException | StringIndexOutOfBoundsException e) {
-			e.printStackTrace();
+
 		}
 		if (text == null) {
 			text = "";

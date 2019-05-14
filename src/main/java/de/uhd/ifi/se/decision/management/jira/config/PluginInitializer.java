@@ -100,7 +100,7 @@ public class PluginInitializer implements InitializingBean {
 			}
 		} catch (DataAccessException | IOException e) {
 			LOGGER.error("Issue type " + issueTypeName + " could not be created.");
-			e.printStackTrace();
+
 		}
 	}
 

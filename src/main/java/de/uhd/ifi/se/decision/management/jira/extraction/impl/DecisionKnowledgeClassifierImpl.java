@@ -172,7 +172,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 				fineGrainedPredictionResults.add(getType(predictionResult));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+
 			System.err.println(e.getStackTrace() + "Fine grained classification failed.");
 			return null;
 		}
