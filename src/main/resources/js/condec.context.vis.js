@@ -47,8 +47,7 @@
     /*
      * external references: condec.treant, condec.tree.viewer
      */
-    ConDecContextVis.prototype.createContextVis = function createContextVis(id, documentationLocation, event,
-                                                                               container) {
+    ConDecContextVis.prototype.createContextVis = function createContextVis(id, documentationLocation, event) {
         console.log("contextmenu opened");
         isContextVisOpen = true;
 
@@ -60,14 +59,9 @@
 
         setContextMenuItemsEventHandlers(id, documentationLocation);
 
-
-        var position = getPosition(event, container);
-        var posX = position["x"];
-        var posY = position["y"];
-
         $(contextVisNode).css({
-            left : posX,
-            top : posY
+            left : event.layerX + "px",
+            top : event.screenY + "px"
         });
 
         contextVisNode.style.zIndex = 9998; // why this number?
@@ -170,43 +164,6 @@
             conDecAPI.getDecisionKnowledgeElement(id, documentationLocation, function(decisionKnowledgeElement) {
                 conDecDialog.showExportDialog(decisionKnowledgeElement.key);
             });
-        };
-    }
-
-    function getPosition(event, container) {
-        var element = event.target;
-        if (container === null && event !== null) {
-            return {
-                x : event.pageX,
-                y : event.pageY
-            };
-        }
-        var xPosition = 0;
-        var yPosition = 0;
-
-        while (element) {
-            if (element.tagName === "BODY") {
-                // deal with browser quirks with body/window/document and page
-                // scroll
-                var xScrollPos = element.scrollLeft || document.documentElement.scrollLeft;
-                var yScrollPos = element.scrollTop || document.documentElement.scrollTop;
-
-                xPosition += (element.offsetLeft - xScrollPos + element.clientLeft);
-                yPosition += (element.offsetTop - yScrollPos + element.clientTop);
-            } else {
-                xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
-                yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
-            }
-
-            if (container !== null && (element.id === container || element.className === container)) {
-                break;
-            }
-
-            element = element.offsetParent;
-        }
-        return {
-            x : xPosition,
-            y : yPosition
         };
     }
 

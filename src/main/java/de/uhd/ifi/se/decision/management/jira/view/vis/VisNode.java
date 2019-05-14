@@ -42,7 +42,8 @@ public class VisNode {
 		} else {
 			this.setGroup("collapsed");
 			this.setLabel("");
-			this.setTitle(element.getSummary());
+			this.setTitle("<b>" + element.getTypeAsString().toUpperCase() + " <br> " +
+					element.getKey() + ":</b> " + element.getSummary() +"<br> <i>" + element.getDescription() +"</i>");
 		}
 	}
 

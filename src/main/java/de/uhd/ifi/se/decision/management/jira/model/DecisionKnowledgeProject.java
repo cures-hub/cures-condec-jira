@@ -225,7 +225,4 @@ public interface DecisionKnowledgeProject {
 	 */
 	boolean isClassifierUsedForIssueComments();
 
-	void setVisualizationToVis(boolean isVisualizationSetToVis);
-
-	boolean isVisualizationSetToVis();
 }

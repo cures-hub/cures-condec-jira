@@ -127,11 +127,6 @@ public class ConfigPersistenceManager {
 		return "true".equals(isWebhookTypeEnabled);
 	}
 
-	public static boolean isVisualizationSetToVis(String projectKey) {
-		String isVisualizationVis = getValue(projectKey, "isVisualizationSetToVis");
-		return "true".equals(isVisualizationVis);
-	}
-
 	public static void setActivated(String projectKey, boolean isActivated) {
 		setValue(projectKey, "isActivated", Boolean.toString(isActivated));
 	}
@@ -211,9 +206,5 @@ public class ConfigPersistenceManager {
 
 	public static String getArffFileForClassifier(String projectKey) {
 		return getValue(projectKey, "arffFileName");
-	}
-
-	public static void setVisualizationToVis(String projectKey, boolean isVisualizationSetToVis) {
-		setValue(projectKey,"isVisualizationSetToVis", Boolean.toString(isVisualizationSetToVis));
 	}
 }

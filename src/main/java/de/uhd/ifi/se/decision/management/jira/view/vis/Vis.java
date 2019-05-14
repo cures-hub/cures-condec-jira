@@ -1,8 +1,5 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.config.ConstantsManager;
-import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -26,6 +23,9 @@ public class Vis {
 	@XmlElement
 	private HashSet<VisEdge> edges;
 
+	@XmlElement
+	private String rootElementKey;
+
 	private Graph graph;
 	private boolean isHyperlinked;
 	private List<DecisionKnowledgeElement> elementsAlreadyAsNode;
@@ -39,6 +39,7 @@ public class Vis {
 		this.graph = new GraphImpl(projectKey, elementKey);
 		this.setHyperlinked(isHyperlinked);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
+		this.rootElementKey = (rootElement.getId()+ "_" + rootElement.getDocumentationLocationAsString());
 		nodes = new HashSet<>();
 		edges= new HashSet<>();
 		this.elementsAlreadyAsNode = new ArrayList<>();
@@ -54,17 +55,19 @@ public class Vis {
 			this.elementsMatchingFilterCriteria = filter.getAllElementsMatchingQuery();
 			//this.graph = new GraphImplFiltered(projectKey, elementKey, filter);
 		} else {
-			this.elementsMatchingFilterCriteria = graph.getAllElements();
-			this.graph = new GraphImpl(projectKey, elementKey);
+			//set filter to all Issues
+			filter = new GraphFiltering(projectKey,"asdf§filter=-4",user,false);
+			filter.produceResultsFromQuery();
+			this.elementsMatchingFilterCriteria = filter.getAllElementsMatchingQuery();
 		}
 		this.setHyperlinked(isHyperlinked);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
+		this.rootElementKey = (rootElement.getId()+ "_" + rootElement.getDocumentationLocationAsString());
 		nodes = new HashSet<>();
 		edges= new HashSet<>();
 		elementsAlreadyAsNode = new ArrayList<>();
 		level = 50;
 		fillNodesAndEdges(rootElement, null, level);
-
 	}
 
 
@@ -85,6 +88,11 @@ public class Vis {
 							this.elementsAlreadyAsNode.add(element);
 							this.nodes.add(new VisNode(element, "pro", !this.elementsMatchingFilterCriteria.contains(element),level+2));
 						}
+					} else {
+						if (!(this.elementsAlreadyAsNode.contains(element))) {
+							this.elementsAlreadyAsNode.add(element);
+							this.nodes.add(new VisNode(element, !this.elementsMatchingFilterCriteria.contains(element), level));
+						}
 					}
 					break;
 				case "attack":
@@ -92,6 +100,12 @@ public class Vis {
 						if (!(this.elementsAlreadyAsNode.contains(element))) {
 							this.elementsAlreadyAsNode.add(element);
 							this.nodes.add(new VisNode(element, "con", !this.elementsMatchingFilterCriteria.contains(element),level+2));
+						}
+					}
+					else {
+						if (!(this.elementsAlreadyAsNode.contains(element))) {
+							this.elementsAlreadyAsNode.add(element);
+							this.nodes.add(new VisNode(element, !this.elementsMatchingFilterCriteria.contains(element), level));
 						}
 					}
 					break;
@@ -112,12 +126,14 @@ public class Vis {
 		}
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getAdjacentElementsAndLinks(element);
 		for (Map.Entry<DecisionKnowledgeElement, Link> childAndLink : childrenAndLinks.entrySet()) {
-			if (childAndLink.getValue().getSourceElement().equals(element)) {
-				this.level = level + 1;
-			} else {
-				this.level = level - 1;
+			if (childAndLink.getKey() != null) {
+				if (childAndLink.getValue().getSourceElement().equals(element)) {
+					this.level = level + 1;
+				} else {
+					this.level = level - 1;
+				}
+				fillNodesAndEdges(childAndLink.getKey(), childAndLink.getValue(), this.level);
 			}
-			fillNodesAndEdges(childAndLink.getKey(),childAndLink.getValue(),this.level);
 		}
 	}
 
