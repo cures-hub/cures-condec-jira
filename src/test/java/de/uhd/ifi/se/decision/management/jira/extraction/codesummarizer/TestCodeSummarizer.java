@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.atlassian.jira.issue.Issue;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -40,18 +41,13 @@ public class TestCodeSummarizer extends TestSetUpGit {
 	}
 
 	@Test
-	public void testJiraIssueKeyNull() {
-		assertEquals("", summarizer.createSummary((String) null));
+	public void testJiraIssueNull() {
+		assertEquals("", summarizer.createSummary((Issue) null));
 	}
 
 	@Test
-	public void testJiraIssueKeyEmpty() {
-		assertEquals("", summarizer.createSummary(""));
-	}
-
-	@Test
-	public void testJiraIssueKeyExisting() {
-		assertEquals("The following classes were changed: *GodClass*\n", summarizer.createSummary("TEST-12"));
+	public void testJiraIssueExisting() {
+		assertEquals("The following classes were changed: *GodClass*\n", summarizer.createSummary(testGitIssue));
 	}
 
 	@Test
@@ -61,7 +57,7 @@ public class TestCodeSummarizer extends TestSetUpGit {
 
 	@Test
 	public void testRevCommitFilled() {
-		List<RevCommit> commits = gitClient.getCommits("TEST-12");
+		List<RevCommit> commits = gitClient.getCommits(testGitIssue);
 		assertEquals("The following classes were changed: *GodClass*\n", summarizer.createSummary(commits.get(0)));
 	}
 
@@ -77,7 +73,7 @@ public class TestCodeSummarizer extends TestSetUpGit {
 
 	@Test
 	public void testDiffFilled() {
-		List<RevCommit> commits = gitClient.getCommits("TEST-12");
+		List<RevCommit> commits = gitClient.getCommits(testGitIssue);
 		Map<DiffEntry, EditList> diff = gitClient.getDiff(commits.get(0));
 		assertEquals("The following classes were changed: *GodClass*\n", summarizer.createSummary(diff));
 	}

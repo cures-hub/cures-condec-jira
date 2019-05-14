@@ -128,7 +128,7 @@ public class CommentMetricCalculator {
 	public Map<String, Integer> getNumberOfCommitsForJiraIssues() {
 		Map<String, Integer> resultMap = new HashMap<String, Integer>();
 		for (Issue jiraIssue : jiraIssues) {
-			int numberOfCommits = gitClient.getNumberOfCommits(jiraIssue.getKey());
+			int numberOfCommits = gitClient.getNumberOfCommits(jiraIssue);
 			resultMap.put(jiraIssue.getKey(), numberOfCommits);
 		}
 		return resultMap;

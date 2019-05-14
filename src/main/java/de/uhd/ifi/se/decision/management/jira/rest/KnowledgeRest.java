@@ -345,11 +345,8 @@ public class KnowledgeRest {
 		IssueManager issueManager = ComponentAccessor.getIssueManager();
 		Issue jiraIssue = issueManager.getIssueObject(id);
 
-		String jiraIssueKey = "";
 		if (jiraIssue == null) {
-			jiraIssueKey = JiraIssueTextPersistenceManager.getJiraIssue(id).getKey();
-		} else {
-			jiraIssueKey = jiraIssue.getKey();
+			jiraIssue = JiraIssueTextPersistenceManager.getJiraIssue(id);
 		}
 
 		if (!ConfigPersistenceManager.isKnowledgeExtractedFromGit(projectKey)) {
@@ -359,7 +356,7 @@ public class KnowledgeRest {
 					.build();
 		}
 
-		String summary = new CodeSummarizerImpl(projectKey, true).createSummary(jiraIssueKey);
+		String summary = new CodeSummarizerImpl(projectKey, true).createSummary(jiraIssue);
 		if (summary == null || summary.isEmpty()) {
 			summary = "This JIRA issue does not have any code committed.";
 		}

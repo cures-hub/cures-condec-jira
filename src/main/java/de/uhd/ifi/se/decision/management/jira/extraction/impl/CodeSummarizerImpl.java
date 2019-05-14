@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.atlassian.jira.issue.Issue;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.Edit;
@@ -44,11 +45,11 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 	}
 
 	@Override
-	public String createSummary(String jiraIssueKey) {
-		if (jiraIssueKey == null || jiraIssueKey.equalsIgnoreCase("")) {
+	public String createSummary(Issue jiraIssue) {
+		if (jiraIssue == null) {
 			return "";
 		}
-		Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssueKey);
+		Map<DiffEntry, EditList> diff = gitClient.getDiff(jiraIssue);
 		return createSummary(diff);
 	}
 

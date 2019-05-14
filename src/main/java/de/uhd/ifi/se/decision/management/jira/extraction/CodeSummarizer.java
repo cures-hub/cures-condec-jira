@@ -2,6 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import java.util.Map;
 
+import com.atlassian.jira.issue.Issue;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -11,11 +12,11 @@ public interface CodeSummarizer {
 	/**
 	 * Creates a summary of code changes for all commits associated to a JIRA issue.
 	 * 
-	 * @param jiraIssueKey
-	 *            JIRA issue key that is searched for in commit messages.
+	 * @param jiraIssue
+	 *            JIRA issue that is searched for in commit messages.
 	 * @return summary as a String.
 	 */
-	String createSummary(String jiraIssueKey);
+	String createSummary(Issue jiraIssue);
 
 	/**
 	 * Creates a summary of code changes for a diff.
