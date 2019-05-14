@@ -148,11 +148,7 @@ public class GitClientImpl implements GitClient {
 		if (jiraIssue == null) {
 			return null;
 		}
-		return getDiff(jiraIssue.getKey());
-	}
-
-	private Map<DiffEntry, EditList> getDiff(String jiraIssueKey) {
-		List<RevCommit> commits = getCommits(jiraIssueKey);
+		List<RevCommit> commits = getCommits(jiraIssue);
 		return getDiff(commits);
 	}
 
@@ -265,10 +261,7 @@ public class GitClientImpl implements GitClient {
 		if (jiraIssue == null) {
 			return new LinkedList<RevCommit>();
 		}
-		return getCommits(jiraIssue.getKey());
-	}
-
-	private List<RevCommit> getCommits(String jiraIssueKey) {
+		String jiraIssueKey = jiraIssue.getKey();
 		List<RevCommit> commitsForJiraIssue = new LinkedList<RevCommit>();
 		if (git == null || jiraIssueKey == null) {
 			LOGGER.error("Commits cannot be retrieved since git object is null.");
@@ -346,14 +339,7 @@ public class GitClientImpl implements GitClient {
 		if (jiraIssue == null) {
 			return 0;
 		}
-		return getNumberOfCommits(jiraIssue.getKey());
-	}
-
-	private int getNumberOfCommits(String jiraIssueKey) {
-		if (jiraIssueKey == null || jiraIssueKey.isEmpty()) {
-			return 0;
-		}
-		List<RevCommit> commits = getCommits(jiraIssueKey);
+		List<RevCommit> commits = getCommits(jiraIssue);
 		return commits.size();
 	}
 
