@@ -69,7 +69,7 @@ public class SummarizationEventListener implements InitializingBean, DisposableB
 		}
 
 		MutableIssue issue = ComponentAccessor.getIssueManager().getIssueObject(jiraIssueKey);
-		String summary = new CodeSummarizerImpl(projectKey).createSummary(jiraIssueKey);
+		String summary = new CodeSummarizerImpl(projectKey).createSummary(jiraIssueKey,0);
 
 		if (summary.isEmpty()) {
 			return;

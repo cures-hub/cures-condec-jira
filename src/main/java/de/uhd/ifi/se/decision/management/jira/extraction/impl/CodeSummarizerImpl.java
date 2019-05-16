@@ -20,13 +20,14 @@ public class CodeSummarizerImpl implements CodeSummarizer {
 
     private GitClient gitClient;
     private static final Logger LOGGER = LoggerFactory.getLogger(CodeSummarizerImpl.class);
-
+    private int minProbability;
     public CodeSummarizerImpl(String projectKey) {
         this.gitClient = new GitClientImpl(projectKey);
     }
 
     @Override
-    public String createSummary(String jiraIssueKey) {
+    public String createSummary(String jiraIssueKey, int probability) {
+        minProbability = probability;
         if (jiraIssueKey == null || jiraIssueKey.equalsIgnoreCase("")) {
             return "";
         }
@@ -67,8 +68,10 @@ public class CodeSummarizerImpl implements CodeSummarizer {
     private String generateSummary(DiffImpl diffImpl){
         String rows ="";
         for(ChangedFileImpl changedFileImpl : diffImpl.getChangedFileImpls()){
-            rows += this.addRow(this.addTableItem(FilenameUtils.removeExtension(changedFileImpl.getFile().getName()),
-                    this.summarizeMethods(changedFileImpl),Float.toString(changedFileImpl.getPercentage())));
+            if(changedFileImpl.getPercentage() >= minProbability){
+                rows += this.addRow(this.addTableItem(FilenameUtils.removeExtension(changedFileImpl.getFile().getName()),
+                        this.summarizeMethods(changedFileImpl),Float.toString(changedFileImpl.getPercentage())));
+            }
         }
         return this.generateTable(rows);
     }

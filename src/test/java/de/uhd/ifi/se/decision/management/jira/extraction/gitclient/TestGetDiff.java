@@ -28,7 +28,7 @@ public class TestGetDiff extends TestSetUpGit {
 	@Test
 	public void testRevCommitExisting() {
 		List<RevCommit> commits = gitClient.getCommits("TEST-12");
-		Map<DiffEntry, EditList> diff = gitClient.getDiff(commits.get(0));
+		Map<DiffEntry, EditList> diff = gitClient.getDiff(commits.get(4));
 		assertEquals(1, diff.size());
 		for (Map.Entry<DiffEntry, EditList> entry : diff.entrySet()) {
 			DiffEntry diffEntry = entry.getKey();
@@ -61,7 +61,7 @@ public class TestGetDiff extends TestSetUpGit {
 	@Test
 	public void testJiraIssueKeyExisting() {
 		Map<DiffEntry, EditList> diff = gitClient.getDiff("Test-12");
-		assertEquals(2, diff.size());
+		assertEquals(6, diff.size());
 
 		String diffEntries = diff.keySet().toString();
 		assertTrue(diffEntries.contains("ADD GodClass.java"));

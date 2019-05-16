@@ -92,6 +92,12 @@ public class ChangedFileImpl implements ChangedFile, Comparable<ChangedFileImpl>
 
     @Override
     public int compareTo(ChangedFileImpl o) {
+        return (o.getPackageDistance()-this.getPackageDistance());
+    }
+/*
+    @Override
+    public int compareTo(ChangedFileImpl o) {
         return (this.getPackageDistance()-o.getPackageDistance());
     }
+    */
 }

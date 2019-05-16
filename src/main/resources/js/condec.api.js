@@ -269,9 +269,10 @@
 	/*
 	 * external references: condec.jira.issue.module
 	 */
-	ConDecAPI.prototype.getSummarizedCode = function getSummarizedCode(id, documentationLocation, callback) {
+	ConDecAPI.prototype.getSummarizedCode = function getSummarizedCode(id, documentationLocation, probability, callback) {
+		console.log(probability);
 		getText(AJS.contextPath() + "/rest/decisions/latest/decisions/getSummarizedCode?projectKey=" + projectKey
-				+ "&id=" + id + "&documentationLocation=" + documentationLocation, function(error, summary) {
+				+ "&id=" + id + "&documentationLocation=" + documentationLocation + "&probability=" + probability, function(error, summary) {
 			if (error === null) {
 				callback(summary);
 			}
