@@ -31,18 +31,18 @@ public class TestCodeSummarizer extends TestSetUpGit {
 		CodeSummarizer codeSummarizer = new CodeSummarizerImpl("TEST");
 		assertNotNull(codeSummarizer);
 	}
-/*
+
 	@Test
 	public void testJiraIssueKeyNull() {
-		assertEquals("", summarizer.createSummary((String) null),((int) 0));
+		assertEquals("", summarizer.createSummary(null, 0));
 	}
 
 	@Test
 	public void testJiraIssueKeyEmpty() {
-		assertEquals("", summarizer.createSummary(""));
+		assertEquals("", summarizer.createSummary("", 0 ));
 	}
 
-	*/
+
 	@Test
 	public void testRevCommitNull() {
 		assertEquals("", summarizer.createSummary((RevCommit) null));
