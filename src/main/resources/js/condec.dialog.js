@@ -297,16 +297,29 @@
 
 	ConDecDialog.prototype.showSummarizedDialog = function showSummarizedDialog(id, documentationLocation) {
 		console.log("conDecDialog summarizedDialog");
+		console.log("location: ", documentationLocation);
+		console.log("id: ", id);
 
 		// HTML elements
 		var summarizedDialog = document.getElementById("summarization-dialog");
 		var cancelButton = document.getElementById("summarization-dialog-cancel-button");
 		var content = document.getElementById("summarization-dialog-content");
+		var probability = document.getElementById("summarization-probability").valueAsNumber;
+		var xID = document.getElementById("summarization-xID").value;
+        console.log(xID);
+		if(xID == undefined || xID.length == 0 || xID == ""){
+            document.getElementById("summarization-xID").value = id;
+            conDecAPI.getSummarizedCode(id, documentationLocation, probability, function(text) {
+                var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";
+                content.innerHTML = insertString;
+            });
+        }else {
+            conDecAPI.getSummarizedCode(parseInt(xID), documentationLocation, probability, function(text) {
+                var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";
+                content.innerHTML = insertString;
+            });
+        }
 
-		conDecAPI.getSummarizedCode(id, documentationLocation, function(text) {
-			var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";
-			content.innerHTML = insertString;
-		});
 
 		cancelButton.onclick = function() {
 			AJS.dialog2(summarizedDialog).hide();

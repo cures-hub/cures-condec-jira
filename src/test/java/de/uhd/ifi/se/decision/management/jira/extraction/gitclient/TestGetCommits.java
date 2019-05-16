@@ -12,6 +12,6 @@ public class TestGetCommits extends TestSetUpGit {
 	@Test
 	public void testRepositoryExisting() {
 		List<RevCommit> commits = gitClient.getCommits();
-		assertEquals(3, commits.size());
+		assertEquals(7, commits.size());
 	}
 }

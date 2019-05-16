@@ -13,7 +13,7 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
     @Override
     public void standardization(DiffImpl diffImpl) {
         Collections.sort(diffImpl.getChangedFileImpls());
-        float max = diffImpl.getChangedFileImpls().get(diffImpl.getChangedFileImpls().size()-1).getPackageDistance();
+        float max = diffImpl.getChangedFileImpls().get(0).getPackageDistance();
         for(ChangedFileImpl changedFileImpl : diffImpl.getChangedFileImpls()){
             changedFileImpl.setPercentage((changedFileImpl.getPackageDistance()/max)*100);
         }
@@ -54,6 +54,7 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 
     @Override
     public void calculatePackageDistances(DiffImpl diffs) {
+        Integer [][] maxtrix = new Integer[diffs.getChangedFileImpls().size()][diffs.getChangedFileImpls().size()];
         if (diffs.getChangedFileImpls().size() > 1) {
             for (int i = 0; i < diffs.getChangedFileImpls().size(); i++) {
                 Vector<String> leftPackageDeclaration = this.parsePackage(diffs.getChangedFileImpls().get(i).getCompilationUnit().getPackageDeclaration());
@@ -64,6 +65,8 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
                             for (int k = 0; k < rightPackageDeclaration.size(); k++) {
                                 if (!leftPackageDeclaration.elementAt(k).equals(rightPackageDeclaration.elementAt(k))) {
                                     diffs.getChangedFileImpls().get(i).setPackageDistance(diffs.getChangedFileImpls().get(i).getPackageDistance() + (leftPackageDeclaration.size() - k));
+                                    maxtrix[i][j] = leftPackageDeclaration.size() - k;
+
                                     break;
                                 }
                             }
@@ -71,14 +74,20 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
                             for (int k = 0; k < leftPackageDeclaration.size(); k++) {
                                 if (!leftPackageDeclaration.elementAt(k).equals(rightPackageDeclaration.elementAt(k))) {
                                     diffs.getChangedFileImpls().get(i).setPackageDistance(diffs.getChangedFileImpls().get(i).getPackageDistance() + (rightPackageDeclaration.size() - k));
+                                    maxtrix[i][j] = rightPackageDeclaration.size() - k;
                                     break;
                                 }
                             }
                         }
+                    }else{
+                        maxtrix[i][j] = 0;
+
                     }
                 }
             }
+
         }
+        int i = 0;
     }
 
     @Override
