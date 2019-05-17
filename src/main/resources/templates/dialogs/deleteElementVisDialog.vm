@@ -1,0 +1,16 @@
+<section id="vis-delete-warning-dialog" class="aui-dialog2 aui-dialog2-small aui-dialog2-warning aui-layer" role="dialog" aria-hidden="true">
+    <header class="aui-dialog2-header">
+        <h2 class="aui-dialog2-header-main">$i18n.getText("condec.context.menu.delete.item.label")</h2>
+        <a class="aui-dialog2-header-close">
+            <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+        </a>
+    </header>
+    <div class="vis-delete-content">
+        <p id="vis-delete-warning-content" style="text-align:center">$i18n.getText("condec.warning.delete.element.text")</p>
+    </div>
+    <footer class="aui-dialog2-footer">
+        <div class="aui-dialog2-footer-actions">
+            <button id="vis-delete-dialog-confirm" class="aui-button aui-button-primary">$i18n.getText("condec.button.delete")</button>
+        </div>
+    </footer>
+</section>

@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.view.vis;
 import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.DocumentationLocation;
 import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
@@ -31,6 +32,7 @@ public class Vis {
 	private List<DecisionKnowledgeElement> elementsAlreadyAsNode;
 	private List<DecisionKnowledgeElement> elementsMatchingFilterCriteria;
 	private int level;
+	private String documentationLocation;
 
 	public Vis(){
 	}
@@ -49,6 +51,9 @@ public class Vis {
 	public Vis(String projectKey, String elementKey, boolean isHyperlinked, String query, ApplicationUser user){
 		this.graph = new GraphImpl(projectKey, elementKey);
 		GraphFiltering filter;
+		for (DocumentationLocation location : DocumentationLocation.values()) {
+			this.documentationLocation = this. documentationLocation + DocumentationLocation.getName(location);
+		}
 		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
 			filter = new GraphFiltering(projectKey, query, user, false);
 			filter.produceResultsFromQuery();
@@ -63,6 +68,24 @@ public class Vis {
 		this.setHyperlinked(isHyperlinked);
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
 		this.rootElementKey = (rootElement.getId()+ "_" + rootElement.getDocumentationLocationAsString());
+		nodes = new HashSet<>();
+		edges= new HashSet<>();
+		elementsAlreadyAsNode = new ArrayList<>();
+		level = 50;
+		fillNodesAndEdges(rootElement, null, level);
+	}
+
+	public Vis(String projectKey, String elementKey, boolean isHyperlinked, String searchTerm, ApplicationUser user,
+			   String issueTypes, long createdEarliest, long createdLatest, String documentationLocation) {
+		this.graph = new GraphImpl(projectKey,elementKey);
+		GraphFiltering filter;
+		filter = new GraphFiltering(projectKey, searchTerm, user, false);
+		filter.produceResultsWithAdditionalFilters(issueTypes,createdEarliest,createdLatest);
+		this.elementsMatchingFilterCriteria = filter.getAllElementsMatchingQuery();
+		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
+		this.isHyperlinked = isHyperlinked;
+		this.rootElementKey = (rootElement.getId()+ "_" + rootElement.getDocumentationLocationAsString());
+		this.documentationLocation = documentationLocation;
 		nodes = new HashSet<>();
 		edges= new HashSet<>();
 		elementsAlreadyAsNode = new ArrayList<>();
@@ -86,12 +109,12 @@ public class Vis {
 					if (element.getId() == link.getSourceElement().getId()) {
 						if (!(this.elementsAlreadyAsNode.contains(element))) {
 							this.elementsAlreadyAsNode.add(element);
-							this.nodes.add(new VisNode(element, "pro", !this.elementsMatchingFilterCriteria.contains(element),level+2));
+							this.nodes.add(new VisNode(element, "pro", isCollapsed(element),level+2));
 						}
 					} else {
 						if (!(this.elementsAlreadyAsNode.contains(element))) {
 							this.elementsAlreadyAsNode.add(element);
-							this.nodes.add(new VisNode(element, !this.elementsMatchingFilterCriteria.contains(element), level));
+							this.nodes.add(new VisNode(element, isCollapsed(element), level));
 						}
 					}
 					break;
@@ -99,20 +122,20 @@ public class Vis {
 					if (element.getId() == link.getSourceElement().getId()) {
 						if (!(this.elementsAlreadyAsNode.contains(element))) {
 							this.elementsAlreadyAsNode.add(element);
-							this.nodes.add(new VisNode(element, "con", !this.elementsMatchingFilterCriteria.contains(element),level+2));
+							this.nodes.add(new VisNode(element, "con", isCollapsed(element),level+2));
 						}
 					}
 					else {
 						if (!(this.elementsAlreadyAsNode.contains(element))) {
 							this.elementsAlreadyAsNode.add(element);
-							this.nodes.add(new VisNode(element, !this.elementsMatchingFilterCriteria.contains(element), level));
+							this.nodes.add(new VisNode(element, isCollapsed(element), level));
 						}
 					}
 					break;
 				default:
 					if (!(this.elementsAlreadyAsNode.contains(element))) {
 						this.elementsAlreadyAsNode.add(element);
-						this.nodes.add(new VisNode(element, !this.elementsMatchingFilterCriteria.contains(element),level));
+						this.nodes.add(new VisNode(element, isCollapsed(element),level));
 					}
 					break;
 			}
@@ -121,7 +144,7 @@ public class Vis {
 		} else {
 			if (!(this.elementsAlreadyAsNode.contains(element))) {
 				this.elementsAlreadyAsNode.add(element);
-				this.nodes.add(new VisNode(element, !this.elementsMatchingFilterCriteria.contains(element),level));
+				this.nodes.add(new VisNode(element, isCollapsed(element),level));
 			}
 		}
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getAdjacentElementsAndLinks(element);
@@ -135,6 +158,15 @@ public class Vis {
 				fillNodesAndEdges(childAndLink.getKey(), childAndLink.getValue(), this.level);
 			}
 		}
+	}
+
+	private boolean isCollapsed(DecisionKnowledgeElement element) {
+		if (this.documentationLocation.contains(DocumentationLocation.getName(element.getDocumentationLocation()))) {
+			if (this.elementsMatchingFilterCriteria.contains(element)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void setNodes(HashSet<VisNode> nodes) {

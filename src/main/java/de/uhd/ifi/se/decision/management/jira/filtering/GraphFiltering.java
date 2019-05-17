@@ -1,10 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.filtering;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.atlassian.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +23,7 @@ import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.clause.Clause;
+import com.atlassian.query.operator.Operator;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
@@ -42,6 +46,8 @@ public class GraphFiltering {
 	private long endDate;
 	private SearchService searchService;
 	private Boolean mergeFilterQueryWithProjectKey;
+	private List<Clause> resultingClauses;
+	private String resultingQuery;
 
 	public GraphFiltering(String projectKey, String query, ApplicationUser user,
 			Boolean mergeFilterQueryWithProjectKey) {
@@ -58,6 +64,8 @@ public class GraphFiltering {
 		this.issueTypesInQuery = new ArrayList<>();
 		this.mergeFilterQueryWithProjectKey = mergeFilterQueryWithProjectKey;
 	}
+
+
 
 	private String cropQuery() {
 		String croppedQuery = "";
@@ -194,19 +202,12 @@ public class GraphFiltering {
 	private long findStarttime(long currentDate, String time) {
 		long startTime = 0;
 		if (time.matches("(\\d\\d\\d\\d-\\d\\d-\\d\\d)")) {
-			String[] split = time.split("-");
 			try {
-				int year = Integer.parseInt(split[0]);
-				int month = Integer.parseInt(split[1]);
-				int day = Integer.parseInt(split[2]);
-				Calendar calendar = Calendar.getInstance();
-				calendar.set(Calendar.YEAR, year - 1900);
-				calendar.set(Calendar.MONTH, month - 1);
-				calendar.set(Calendar.DAY_OF_MONTH, day);
-				Date queryStartDate = calendar.getTime();
-				startTime = queryStartDate.getTime();
-			} catch (NumberFormatException e) {
-				LOGGER.error("The Date is not in Format yyyy-mm-dd");
+				DateFormat simple = new SimpleDateFormat("yyyy-MM-dd");
+				Date date = simple.parse(time);
+				startTime = date.getTime();
+			} catch (ParseException e) {
+				e.printStackTrace();
 			}
 		} else if (time.matches("(-\\d+(.))")) {
 			long factor = 0;
@@ -230,17 +231,11 @@ public class GraphFiltering {
 		if (time.matches("(\\d\\d\\d\\d-\\d\\d-\\d\\d)")) {
 			String[] split = time.split("-");
 			try {
-				int year = Integer.parseInt(split[0]);
-				int month = Integer.parseInt(split[1]);
-				int day = Integer.parseInt(split[2]);
-				Calendar calendar = Calendar.getInstance();
-				calendar.set(Calendar.YEAR, year - 1900);
-				calendar.set(Calendar.MONTH, month - 1);
-				calendar.set(Calendar.DAY_OF_MONTH, day + 1);
-				Date queryEndDate = calendar.getTime();
-				endTime = queryEndDate.getTime();
-			} catch (NumberFormatException e) {
-				LOGGER.error("The Date is not in Format yyyy-mm-dd");
+				DateFormat simple = new SimpleDateFormat("yyyy-MM-dd");
+				Date date = simple.parse(time);
+				endTime = date.getTime();
+			} catch (ParseException e) {
+				e.printStackTrace();
 			}
 		} else if (time.matches("-\\d+(.)+")) {
 			long factor;
@@ -345,16 +340,20 @@ public class GraphFiltering {
 		if (this.mergeFilterQueryWithProjectKey) {
 			finalQuery = "(" + finalQuery + ")AND( PROJECT=" + this.projectKey + ")";
 		}
+
 		final SearchService.ParseResult parseResult = getSearchService().parseQuery(this.user, finalQuery);
 
 		if (parseResult.isValid())
 
 		{
 			List<Clause> clauses = parseResult.getQuery().getWhereClause().getClauses();
+
 			if (!clauses.isEmpty()) {
+				this.resultingClauses =parseResult.getQuery().getWhereClause().getClauses();
 				findDatesInQuery(clauses);
 				findIssueTypesInQuery(clauses);
 			} else {
+				this.resultingQuery = finalQuery;
 				findDatesInQuery(finalQuery);
 				findIssueTypesInQuery(finalQuery);
 			}
@@ -377,12 +376,130 @@ public class GraphFiltering {
 
 	}
 
+	public void produceResultsWithAdditionalFilters(String issueTypes, long createdEarliest, long createdLatest){
+		this.produceResultsFromQuery();
+		List<Issue> resultingIssues = new ArrayList<>();
+		queryResults.clear();
+		JqlClauseBuilder queryBuilder = JqlQueryBuilder.newClauseBuilder();
+		queryBuilder.project(this.projectKey);
+		boolean first = true;
+		if (this.resultingClauses != null) {
+			for (Clause clause : this.resultingClauses) {
+				if(!matchesCreatedOrIssueType(clause)) {
+					JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
+					if (first) {
+						newQueryBuilder.and();
+						first = false;
+					}
+					newQueryBuilder.addClause(clause);
+					queryBuilder = newQueryBuilder;
+				}
+			}
+		} else {
+			if (!matchesCreatedOrIssueType(resultingQuery)) {
+				//queryBuilder.and();
+				queryBuilder.addCondition(resultingQuery);
+			}
+		}
+		if (issueTypes != null) {
+			JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
+			newQueryBuilder.and();
+			String newIssueTypes = issueTypes.replaceAll("\"","").replaceAll("\\s","");
+			String[] types = newIssueTypes.split(",");
+			newQueryBuilder.issueType(types);
+			queryBuilder = newQueryBuilder;
+		}
+		if (createdEarliest >= 0) {
+			JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
+			newQueryBuilder.and();
+			newQueryBuilder.addDateCondition("created", Operator.GREATER_THAN_EQUALS,new Date(createdEarliest));
+			queryBuilder = newQueryBuilder;
+		}
+		if (createdLatest >= 0) {
+			JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
+			newQueryBuilder.and();
+			newQueryBuilder.addDateCondition("created", Operator.LESS_THAN_EQUALS, new Date(createdLatest));
+			queryBuilder = newQueryBuilder;
+		}
+		Query finalQuery = queryBuilder.buildQuery();
+		final SearchService.ParseResult parseResult = getSearchService().parseQuery(user,getSearchService().getJqlString(finalQuery));
+		if (parseResult.isValid())
+
+		{
+			List<Clause> clauses = parseResult.getQuery().getWhereClause().getClauses();
+
+			if (!clauses.isEmpty()) {
+				this.resultingClauses =parseResult.getQuery().getWhereClause().getClauses();
+				findDatesInQuery(clauses);
+				findIssueTypesInQuery(clauses);
+			} else {
+				this.resultingQuery = getSearchService().getGeneratedJqlString(queryBuilder.buildQuery());
+				findDatesInQuery(this.resultingQuery);
+				findIssueTypesInQuery(this.resultingQuery);
+			}
+			try {
+				final SearchResults<Issue> results = getSearchService().search(this.user, parseResult.getQuery(),
+						PagerFilter.getUnlimitedFilter());
+				resultingIssues = JiraSearchServiceHelper.getJiraIssues(results);
+
+			} catch (SearchException e) {
+				e.printStackTrace();
+			}
+		} else {
+			LOGGER.error(parseResult.getErrors().toString());
+		}
+		if (resultingIssues != null) {
+			for (Issue issue : resultingIssues) {
+				queryResults.add(new DecisionKnowledgeElementImpl(issue));
+			}
+		}
+	}
+
+	private boolean matchesCreatedOrIssueType(String resultingQuery) {
+		if (this.isQueryContainsIssueTypes()) {
+			if (resultingQuery.contains("issuetype")) {
+				return true;
+			}
+		}
+		if (this.isQueryContainsCreationDate()) {
+			if (this.startDate >= 0 && resultingQuery.contains("created")) {
+				if (resultingQuery.contains(">=")) {
+					return true;
+				}
+			}
+			if (this.endDate >= 0 && resultingQuery.contains("created")) {
+				if (resultingQuery.contains("<=")) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean matchesCreatedOrIssueType(Clause clause) {
+		if (this.isQueryContainsIssueTypes()) {
+			if (clause.getName().equals("issuetype")) {
+				return true;
+			}
+		}
+		if (this.isQueryContainsCreationDate()) {
+			if (this.startDate >= 0 && clause.getName().equals("created")) {
+				if (clause.toString().contains(">=")) {
+					return true;
+				}
+			}
+			if (this.endDate >= 0 && clause.getName().equals("created")) {
+				if (clause.toString().contains("<=")) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	public List<DecisionKnowledgeElement> getAllElementsMatchingQuery() {
 		List<DecisionKnowledgeElement> results = new ArrayList<>();
 		results.addAll(this.getQueryResults());
-		boolean isFilteredByTime = this.isQueryContainsCreationDate();
-		long startTime = this.getStartDate();
-		long endTime = this.getEndDate();
 		SearchResults<Issue> projectIssues = getIssuesForThisProject(user);
 		if (projectIssues != null) {
 			for (Issue currentIssue : JiraSearchServiceHelper.getJiraIssues(projectIssues)) {
@@ -390,27 +507,8 @@ public class GraphFiltering {
 						.getElementsForIssue(currentIssue.getId(), projectKey);
 				for (DecisionKnowledgeElement currentElement : elements) {
 					if (!results.contains(currentElement)) {
-						if (isFilteredByTime) {
-							if (startTime <= 0) {
-								if (currentElement instanceof PartOfJiraIssueText
-										&& ((PartOfJiraIssueText) currentElement).getCreated().getTime() < endTime) {
-									results.add(currentElement);
-								}
-							} else if (endTime <= 0) {
-								if (currentElement instanceof PartOfJiraIssueText
-										&& ((PartOfJiraIssueText) currentElement).getCreated().getTime() > startTime) {
-									results.add(currentElement);
-								}
-							} else {
-								if (currentElement instanceof PartOfJiraIssueText
-										&& (((PartOfJiraIssueText) currentElement).getCreated().getTime() < endTime)
-										&& (((PartOfJiraIssueText) currentElement).getCreated()
-												.getTime() > startTime)) {
-									results.add(currentElement);
-								}
-							}
-						} else {
-							if (currentElement instanceof PartOfJiraIssueText) {
+						if (currentElement instanceof PartOfJiraIssueText) {
+							if (checkIfJiraTextMatchesFilter(currentElement)) {
 								results.add(currentElement);
 							}
 						}
@@ -419,6 +517,31 @@ public class GraphFiltering {
 			}
 		}
 		return results;
+	}
+
+	private boolean checkIfJiraTextMatchesFilter(DecisionKnowledgeElement element){
+		if (this.isQueryContainsCreationDate()){
+			long startTime = this.getStartDate();
+			long endTime = this.getEndDate();
+			if (startTime > 0) {
+				if (((PartOfJiraIssueText) element).getCreated().getTime() < startTime) {
+					return false;
+				}
+			}
+			if (endTime > 0) {
+				if (((PartOfJiraIssueText) element).getCreated().getTime() > endTime) {
+					return false;
+				}
+			}
+		}
+		if (this.isQueryContainsIssueTypes()) {
+			List<String> issueTypes = this.getIssueTypesInQuery();
+			if (!(issueTypes.contains(((PartOfJiraIssueText) element).getTypeAsString()))){
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private SearchResults<Issue> getIssuesForThisProject(ApplicationUser user) {

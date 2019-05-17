@@ -50,6 +50,12 @@ public enum DocumentationLocation {
 			return "s";
 		case ACTIVEOBJECT:
 			return "a";
+		case COMMIT:
+			return "c";
+		case PULLREQUEST:
+			return "p";
+		case UNKNOWN:
+			return "u";
 		default:
 			return "";
 		}
@@ -57,6 +63,28 @@ public enum DocumentationLocation {
 
 	public String getIdentifier() {
 		return getIdentifier(this);
+	}
+
+	public static String getName(DocumentationLocation documentationLocation) {
+		if (documentationLocation == null) {
+			return "";
+		}
+		switch (documentationLocation) {
+			case JIRAISSUE:
+				return "JiraIssues";
+			case JIRAISSUETEXT:
+				return "JiraIssueText";
+			case ACTIVEOBJECT:
+				return "ActiveObject";
+			case COMMIT:
+				return "Commit";
+			case PULLREQUEST:
+				return "PullRequest";
+			case UNKNOWN:
+				return "Unknown";
+			default:
+				return "";
+		}
 	}
 
 	public static String getIdentifier(DecisionKnowledgeElement element) {

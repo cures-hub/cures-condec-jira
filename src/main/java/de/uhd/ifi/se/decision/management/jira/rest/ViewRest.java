@@ -26,6 +26,7 @@ import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import de.uhd.ifi.se.decision.management.jira.view.treeviewer.TreeViewer;
 import de.uhd.ifi.se.decision.management.jira.view.vis.Vis;
+import de.uhd.ifi.se.decision.management.jira.filtering.FilterDataProvider;
 
 /**
  * REST resource for view
@@ -116,6 +117,62 @@ public class ViewRest {
 		ApplicationUser user = AuthenticationManager.getUser(request);
 		Vis vis = new Vis(projectKey,elementKey,false,searchTerm,user);
 		return Response.ok(vis).build();
+	}
+
+	@Path("/getVisFiltered")
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getVisFiltered(@QueryParam("elementKey") String elementKey, @QueryParam("searchTerm") String searchTerm,
+								   @QueryParam("issueTypes") String issueTypes, @QueryParam("createdAfter") String createdAfter,
+								   @QueryParam("createdBefore") String createdBefore, @QueryParam("documentationLocation") String documentationLocation,
+								   @Context HttpServletRequest request) {
+		if (elementKey == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error","Visualization cannot be shown since element key is invalid.")).build();
+		}
+		String projectKey = getProjectKey(elementKey);
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		long createdEarliest = -1;
+		long createdLatest = -1;
+		try {
+			createdEarliest = Long.parseLong(createdAfter);
+		} catch (NumberFormatException e) {
+			LOGGER.error("No bottom limit could be set for creation date!");
+			//return Response.status(Status.BAD_REQUEST)
+				//	.entity(ImmutableMap.of("error", "Graph can not be filtered because bottom Date is NaN")).build();
+		}
+		try {
+			createdLatest = Long.parseLong(createdBefore);
+		} catch (NumberFormatException e) {
+			LOGGER.error("No top limit could be set for creation date!");
+			//return Response.status(Status.BAD_REQUEST)
+			//		.entity(ImmutableMap.of("error", "Graph can not be filtered because top Date is NaN")).build();
+		}
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		Vis vis = new Vis(projectKey,elementKey,false,searchTerm,user,issueTypes,createdEarliest,createdLatest,documentationLocation);
+		return Response.ok(vis).build();
+	}
+
+	@Path("/getFilterData")
+	@GET
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getFilterData(@QueryParam("elementKey") String elementKey, @QueryParam("searchTerm") String query,
+								  @Context HttpServletRequest request) {
+		if (elementKey == null) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(ImmutableMap.of("error", "Visualization cannot be shown since element key is invalid.")).build();
+		}
+		String projectKey = getProjectKey(elementKey);
+		Response checkIfProjectKeyIsValidResponse = checkIfProjectKeyIsValid(projectKey);
+		if (checkIfProjectKeyIsValidResponse.getStatus() != Status.OK.getStatusCode()) {
+			return checkIfProjectKeyIsValidResponse;
+		}
+		ApplicationUser user = AuthenticationManager.getUser(request);
+		FilterDataProvider filterDataProvider = new FilterDataProvider(projectKey,query,user);
+		return Response.ok(filterDataProvider).build();
 	}
 
 	private String getProjectKey(String elementKey) {

@@ -28,7 +28,7 @@ public class VisNode {
 	public VisNode(DecisionKnowledgeElement element, boolean collapsed, int level){
 		this.setId(element.getId()+ "_" + element.getDocumentationLocationAsString());
 		this.level = level;
-		if (!collapsed) {
+		if (collapsed) {
 			this.setGroup(element.getTypeAsString().toLowerCase());
 			String summary;
 			if(element.getSummary().length()>100) {
@@ -49,7 +49,7 @@ public class VisNode {
 
 	public VisNode(DecisionKnowledgeElement element, String type, boolean collapsed, int level) {
 		this(element, collapsed, level);
-		if (!collapsed) {
+		if (collapsed) {
 			this.setGroup(type);
 		}
 	}

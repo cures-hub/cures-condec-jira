@@ -317,6 +317,32 @@
     };
 
     /*
+     * external references: condec.vis
+     */
+    ConDecAPI.prototype.getVisFiltered = function getVisFiltered(elementKey,searchTerm,issueTypes,createdAfter,
+                                                                 createdBefore,documentationLocation,callback) {
+        getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getVisFiltered.json?elementKey=" + elementKey
+            + "&searchTerm=" + searchTerm + "&issueTypes=" + issueTypes + "&createdAfter=" + createdAfter
+            + "&createdBefore=" + createdBefore + "&documentationLocation=" + documentationLocation, function(error,vis) {
+            if (error === null) {
+                callback(vis);
+            }
+      });
+    };
+
+    /*
+     * external reference: condec.jira.issue.module
+     */
+    ConDecAPI.prototype.getFilterData = function getFilterData(elementKey, searchTerm, callback) {
+        getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getFilterData.json?elementKey=" + elementKey
+            + "&searchTerm=" + searchTerm, function(error, filterData) {
+            if (error === null) {
+                callback(filterData);
+            }
+        })
+    };
+
+    /*
      * external references: condec.tab.panel
      */
     ConDecAPI.prototype.getTreeViewerWithoutRootElement = function getTreeViewerWithoutRootElement(showRelevant,

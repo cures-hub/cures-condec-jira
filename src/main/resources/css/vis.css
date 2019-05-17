@@ -553,7 +553,7 @@ div.vis-network div.vis-close {
 
     background-position: 20px 3px;
     background-repeat: no-repeat;
-    background-image: url("img/network/cross.png");
+    background-image: url("cross.png");
     cursor: pointer;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -599,7 +599,7 @@ div.vis-network div.vis-manipulation div.vis-button:active {
 }
 
 div.vis-network div.vis-manipulation div.vis-button.vis-back {
-    background-image: url("img/network/backIcon.png");
+    background-image: url("backIcon.png");
 }
 
 div.vis-network div.vis-manipulation div.vis-button.vis-none:hover {
