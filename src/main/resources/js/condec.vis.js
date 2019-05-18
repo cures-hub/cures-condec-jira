@@ -180,7 +180,7 @@
         })
 
     };
-            
+
     function getDocumentationLocationFromId(nodeId) {
         return nodeId.toString().substr(-1);
     }

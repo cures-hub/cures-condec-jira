@@ -536,7 +536,11 @@ public class GraphFiltering {
 		}
 		if (this.isQueryContainsIssueTypes()) {
 			List<String> issueTypes = this.getIssueTypesInQuery();
-			if (!(issueTypes.contains(((PartOfJiraIssueText) element).getTypeAsString()))){
+			if (element.getTypeAsString().equals("Pro")||element.getTypeAsString().equals("Con")) {
+				if (!issueTypes.contains("Argument")) {
+					return false;
+				}
+			}else if (!(issueTypes.contains(((PartOfJiraIssueText) element).getTypeAsString()))){
 				return false;
 			}
 		}
