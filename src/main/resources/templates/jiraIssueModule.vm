@@ -53,7 +53,8 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
                     Documentation Location
                 </button>
                 <aui-dropdown-menu id="documentation-dropdown"></aui-dropdown-menu>
-
+                <input type="number" id="node-distance-picker" value="4" min="1"
+                       class="text short-field" placeholder="Enter maximum distance of nodes...">
                 <button class="aui-button aui-button-primary" id="filter-button"><span class="aui-icon aui-icon-small aui-iconfont-search"></span> Filter</button>
             </div>
         </div>
@@ -88,19 +89,7 @@ $(document).ready(function() {
     else {
         console.error("ConDecJiraIssueModule could not get its dependencies.");
     }
-    AJS.$('#visualization-selection-tabs').on('tabSelect', function(e,o){
-        console.log("tab switched");
-        console.log(window);
-        if (o.tab.attr("href")=="#treant") {
-            window.conDecJiraIssueModule.initTreant();
-        } else if (o.tab.attr("href")=="#vis"){
-            window.conDecJiraIssueModule.initVis();
-        }
-    });
-    AJS.$("#filter-button").on('click', function (e) {
-        e.preventDefault();
-        window.conDecJiraIssueModule.initVisFiltered();
-    });
+
 
 });
 

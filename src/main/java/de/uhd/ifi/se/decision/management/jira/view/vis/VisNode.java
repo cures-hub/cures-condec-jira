@@ -25,9 +25,13 @@ public class VisNode {
 	@XmlElement
 	private int level;
 
-	public VisNode(DecisionKnowledgeElement element, boolean collapsed, int level){
+	@XmlElement
+	private int cid;
+
+	public VisNode(DecisionKnowledgeElement element, boolean collapsed, int level, int cid){
 		this.setId(element.getId()+ "_" + element.getDocumentationLocationAsString());
 		this.level = level;
+		this.cid = cid;
 		if (collapsed) {
 			this.setGroup(element.getTypeAsString().toLowerCase());
 			String summary;
@@ -36,19 +40,17 @@ public class VisNode {
 			} else {
 				summary = element.getSummary();
 			}
-			this.setLabel("<b>" + element.getTypeAsString().toUpperCase() + "</b> \n" + summary);
-			this.setTitle("<b>" + element.getTypeAsString().toUpperCase() + " <br> " +
-					element.getKey() + ":</b> " + element.getSummary() +"<br> <i>" + element.getDescription() +"</i>");
+			this.setLabel(element.getTypeAsString().toUpperCase() + "\n" + summary);
 		} else {
 			this.setGroup("collapsed");
 			this.setLabel("");
-			this.setTitle("<b>" + element.getTypeAsString().toUpperCase() + " <br> " +
-					element.getKey() + ":</b> " + element.getSummary() +"<br> <i>" + element.getDescription() +"</i>");
 		}
+		this.setTitle("<b>" + element.getTypeAsString().toUpperCase() + " <br> " +
+				element.getKey() + ":</b> " + element.getSummary() +"<br> <i>" + element.getDescription() +"</i>");
 	}
 
-	public VisNode(DecisionKnowledgeElement element, String type, boolean collapsed, int level) {
-		this(element, collapsed, level);
+	public VisNode(DecisionKnowledgeElement element, String type, boolean collapsed, int level, int cid) {
+		this(element, collapsed, level, cid);
 		if (collapsed) {
 			this.setGroup(type);
 		}

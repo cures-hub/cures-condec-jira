@@ -33,6 +33,7 @@ public class Vis {
 	private List<DecisionKnowledgeElement> elementsMatchingFilterCriteria;
 	private int level;
 	private String documentationLocation;
+	private int cid;
 
 	public Vis(){
 	}
@@ -45,7 +46,7 @@ public class Vis {
 		nodes = new HashSet<>();
 		edges= new HashSet<>();
 		this.elementsAlreadyAsNode = new ArrayList<>();
-		fillNodesAndEdges(rootElement,null,0);
+		fillNodesAndEdges(rootElement,null,0, 0);
 	}
 
 	public Vis(String projectKey, String elementKey, boolean isHyperlinked, String query, ApplicationUser user){
@@ -72,7 +73,8 @@ public class Vis {
 		edges= new HashSet<>();
 		elementsAlreadyAsNode = new ArrayList<>();
 		level = 50;
-		fillNodesAndEdges(rootElement, null, level);
+		cid = 0;
+		fillNodesAndEdges(rootElement, null, level, cid);
 	}
 
 	public Vis(String projectKey, String elementKey, boolean isHyperlinked, String searchTerm, ApplicationUser user,
@@ -90,12 +92,13 @@ public class Vis {
 		edges= new HashSet<>();
 		elementsAlreadyAsNode = new ArrayList<>();
 		level = 50;
-		fillNodesAndEdges(rootElement, null, level);
+		cid= 0;
+		fillNodesAndEdges(rootElement, null, level, cid);
 	}
 
 
 
-	private void fillNodesAndEdges(DecisionKnowledgeElement element, Link link, int level) {
+	private void fillNodesAndEdges(DecisionKnowledgeElement element, Link link, int level, int cid) {
 		if (element == null || element.getProject() == null) {
 			return;
 		}
@@ -109,12 +112,12 @@ public class Vis {
 					if (element.getId() == link.getSourceElement().getId()) {
 						if (!(this.elementsAlreadyAsNode.contains(element))) {
 							this.elementsAlreadyAsNode.add(element);
-							this.nodes.add(new VisNode(element, "pro", isCollapsed(element),level+2));
+							this.nodes.add(new VisNode(element, "pro", isCollapsed(element),level+2, cid));
 						}
 					} else {
 						if (!(this.elementsAlreadyAsNode.contains(element))) {
 							this.elementsAlreadyAsNode.add(element);
-							this.nodes.add(new VisNode(element, isCollapsed(element), level));
+							this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
 						}
 					}
 					break;
@@ -122,20 +125,20 @@ public class Vis {
 					if (element.getId() == link.getSourceElement().getId()) {
 						if (!(this.elementsAlreadyAsNode.contains(element))) {
 							this.elementsAlreadyAsNode.add(element);
-							this.nodes.add(new VisNode(element, "con", isCollapsed(element),level+2));
+							this.nodes.add(new VisNode(element, "con", isCollapsed(element),level+2, cid));
 						}
 					}
 					else {
 						if (!(this.elementsAlreadyAsNode.contains(element))) {
 							this.elementsAlreadyAsNode.add(element);
-							this.nodes.add(new VisNode(element, isCollapsed(element), level));
+							this.nodes.add(new VisNode(element, isCollapsed(element), level, cid));
 						}
 					}
 					break;
 				default:
 					if (!(this.elementsAlreadyAsNode.contains(element))) {
 						this.elementsAlreadyAsNode.add(element);
-						this.nodes.add(new VisNode(element, isCollapsed(element),level));
+						this.nodes.add(new VisNode(element, isCollapsed(element),level, cid));
 					}
 					break;
 			}
@@ -144,7 +147,7 @@ public class Vis {
 		} else {
 			if (!(this.elementsAlreadyAsNode.contains(element))) {
 				this.elementsAlreadyAsNode.add(element);
-				this.nodes.add(new VisNode(element, isCollapsed(element),level));
+				this.nodes.add(new VisNode(element, isCollapsed(element),level, cid));
 			}
 		}
 		Map<DecisionKnowledgeElement, Link> childrenAndLinks = graph.getAdjacentElementsAndLinks(element);
@@ -155,7 +158,8 @@ public class Vis {
 				} else {
 					this.level = level - 1;
 				}
-				fillNodesAndEdges(childAndLink.getKey(), childAndLink.getValue(), this.level);
+				this.cid = cid+1;
+				fillNodesAndEdges(childAndLink.getKey(), childAndLink.getValue(), this.level, this.cid);
 			}
 		}
 	}

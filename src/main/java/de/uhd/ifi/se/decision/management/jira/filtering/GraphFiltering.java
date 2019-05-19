@@ -404,8 +404,15 @@ public class GraphFiltering {
 		if (issueTypes != null) {
 			JqlClauseBuilder newQueryBuilder = JqlQueryBuilder.newClauseBuilder(queryBuilder.buildQuery());
 			newQueryBuilder.and();
-			String newIssueTypes = issueTypes.replaceAll("\"","").replaceAll("\\s","");
-			String[] types = newIssueTypes.split(",");
+			String newIssueTypes = issueTypes.replaceAll("\"","");
+			String[] typesSplit = newIssueTypes.split(",");
+			List <String> typesTemp = new ArrayList<>();
+			for (String current : typesSplit) {
+				String temp = current.trim();
+				typesTemp.add(temp);
+			}
+			String[] types = new  String[typesTemp.size()];
+			types = typesTemp.toArray(types);
 			newQueryBuilder.issueType(types);
 			queryBuilder = newQueryBuilder;
 		}

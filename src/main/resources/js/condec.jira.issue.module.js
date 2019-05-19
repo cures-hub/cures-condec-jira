@@ -57,6 +57,19 @@
 		console.log("ConDecJiraIssueModule initView");
         var issueKey = conDecAPI.getIssueKey();
         var search = getURLsSearch();
+        AJS.$('#visualization-selection-tabs').on('tabSelect', function(e,o){
+            console.log("tab switched");
+            console.log(window);
+            if (o.tab.attr("href")=="#treant") {
+                window.conDecJiraIssueModule.initTreant();
+            } else if (o.tab.attr("href")=="#vis"){
+                window.conDecJiraIssueModule.initVis();
+            }
+        });
+        AJS.$("#filter-button").on('click', function (e) {
+            e.preventDefault();
+            window.conDecJiraIssueModule.initVisFiltered();
+        });
         initFilter(issueKey, search);
 	};
 
@@ -81,6 +94,7 @@
         var createdAfter = -1;
         var createdBefore = -1;
         var documentationLocation = "";
+        var nodeDistance = 4;
         if (!isNaN(document.getElementById("created-after-picker").valueAsNumber)) {
             createdAfter = document.getElementById("created-after-picker").valueAsNumber;
         }
@@ -100,7 +114,11 @@
                 documentationLocation = documentationLocation + AJS.$('#documentation-dropdown').children().eq(i).text();
             }
         }
-        vis.buildVisFiltered(issueKey,search,issueTypes,createdAfter,createdBefore,documentationLocation);
+        var nodeDistanceInput = document.getElementById("node-distance-picker")
+		if (nodeDistanceInput !== null) {
+        	nodeDistance = nodeDistanceInput.value;
+		}
+        vis.buildVisFiltered(issueKey,search,nodeDistance,issueTypes,createdAfter,createdBefore,documentationLocation);
     };
 
     function initFilter(issueKey, search) {

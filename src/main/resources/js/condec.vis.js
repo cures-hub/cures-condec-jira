@@ -3,7 +3,7 @@
     var ConDecVis = function ConDecVis() {
     };
 
-    function build(theNodes,theEdges,rootElementKey) {
+    function build(theNodes,theEdges,rootElementKey,nodeDistance) {
         var nodes = new vis.DataSet(theNodes);
         var edges = new vis.DataSet(theEdges);
         var container = document.getElementById('vis-container');
@@ -25,7 +25,7 @@
                         background: 'rgba(255,255,255,1)',
                         border: 'rgba(0,0,0,1)'
                     }},
-                font: {multi: true},
+                font: {multi: false},
                 shapeProperties:{
                     interpolation: false
                 }
@@ -138,10 +138,12 @@
                     clickedNodeId = nodeId;
                 }
             }
-            console.log("ContextMenu for ID: " + clickedNodeId.toString().slice(0, -2) +
-                " and location: " + clickedNodeId.toString().substr(-1));
-            conDecContextVis.createContextVis(clickedNodeId.toString().slice(0, -2),
-                getDocumentationLocationFromId(clickedNodeId), params.event);
+            if (clickedNodeId !== undefined && clickedNodeId !== 'distanceCluster') {
+                console.log("ContextMenu for ID: " + clickedNodeId.toString().slice(0, -2) +
+                    " and location: " + clickedNodeId.toString().substr(-1));
+                conDecContextVis.createContextVis(clickedNodeId.toString().slice(0, -2),
+                    getDocumentationLocationFromId(clickedNodeId), params.event);
+            }
         });
 
         network.on("hold", function(params) {
@@ -157,29 +159,52 @@
                     clickedNodeId = nodeId;
                 }
             }
-            if (clickedNodeId !== undefined) {
+            if (clickedNodeId !== undefined && clickedNodeId !== 'distanceCluster') {
                 params.event.preventDefault();
                 conDecDialog.showEditDialog(clickedNodeId.toString().slice(0, -2),
                     getDocumentationLocationFromId(clickedNodeId));
             }
         });
+        network.on("selectNode", function(params) {
+            if (params.nodes.length == 1) {
+                if (network.isCluster(params.nodes[0]) == true) {
+                    network.openCluster(params.nodes[0]);
+                }
+            }
+        });
+        var clusterOptionsByData = {
+            joinCondition:function(childOptions) {
+                return ((childOptions.level < 50-nodeDistance)||(childOptions.level>50+nodeDistance)||(childOptions.cid>nodeDistance));
+            },
+            clusterNodeProperties: {
+                allowSingleNodeCluster: false,
+                id:'distanceCluster',
+                shape:'ellipse',
+                label:'clusteredNodes',
+                level:((50*1)+(nodeDistance*1))
+            }
+
+        };
+        network.cluster(clusterOptionsByData);
         return network;
     }
-    ConDecVis.prototype.buildVisFiltered = function buildVisFiltered(issueKey,search,issueTypes,createdAfter,createdBefore, documentationLocation) {
-        console.log("conDecVis buildVisFiltered")
+    ConDecVis.prototype.buildVisFiltered = function buildVisFiltered(issueKey,search,nodeDistance,issueTypes,createdAfter,createdBefore, documentationLocation) {
+        console.log("conDecVis buildVisFiltered");
         conDecAPI.getVisFiltered(issueKey,search,issueTypes,createdAfter,createdBefore, documentationLocation, function (visData) {
-            build(visData.nodes, visData.edges, visData.rootElementKey)
+            build(visData.nodes, visData.edges, visData.rootElementKey,nodeDistance)
         })
     };
 
     ConDecVis.prototype.buildVis = function buildVis(elementKey,  searchTerm) {
         console.log("conDecVis buildVis");
         conDecAPI.getVis(elementKey,searchTerm, function (visData) {
-            var network = build(visData.nodes,visData.edges,visData.rootElementKey);
+            var network = build(visData.nodes,visData.edges,visData.rootElementKey,10);
             network.focus(visData.rootElementKey,{scale:0.9});
         })
 
     };
+
+
 
     function getDocumentationLocationFromId(nodeId) {
         return nodeId.toString().substr(-1);
