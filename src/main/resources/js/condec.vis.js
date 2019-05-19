@@ -98,17 +98,26 @@
                         });
                         AJS.dialog2("#vis-delete-warning-dialog").hide();
                     });
+                    AJS.dialog2("#vis-delete-warning-dialog").on("hide", function() {
+                        network.disableEditMode();
+                        network.enableEditMode();
+                    });
                 },
                 deleteEdge: function (data,callback) {
                     AJS.dialog2("#vis-delete-warning-dialog").show();
                     AJS.$(document).on("click", "#vis-delete-dialog-confirm", function (e) {
                         e.preventDefault();
-                        console.log('delete link:', data.edges[0].from, "->", data.edges[0].to);
-                        conDecAPI.deleteLink(selectedEdge.to.slice(0,-2),selectedEdge.from.slice(0,-2),
-                            selectedEdge.to.substr(-1), selectedEdge.from.substr(-1),function() {
+                        edgeToBedeleted = edges.get(data.edges[0]);
+                        console.log('delete link:', edgeToBedeleted.from, "->", edgeToBedeleted.to);
+                        conDecAPI.deleteLink(edgeToBedeleted.to.slice(0,-2),edgeToBedeleted.from.slice(0,-2),
+                            edgeToBedeleted.to.substr(-1), edgeToBedeleted.from.substr(-1),function() {
                                 conDecObservable.notify();
                             });
                         AJS.dialog2("#vis-delete-warning-dialog").hide();
+                    });
+                    AJS.dialog2("#vis-delete-warning-dialog").on("hide", function() {
+                        network.disableEditMode();
+                        network.enableEditMode();
                     });
                 }
 
@@ -174,7 +183,7 @@
         });
         var clusterOptionsByData = {
             joinCondition:function(childOptions) {
-                return ((childOptions.level < 50-nodeDistance)||(childOptions.level>50+nodeDistance)||(childOptions.cid>nodeDistance));
+                return ((childOptions.level <= 50-nodeDistance)||(childOptions.level >= 50+nodeDistance)||(childOptions.cid >= nodeDistance));
             },
             clusterNodeProperties: {
                 allowSingleNodeCluster: false,
