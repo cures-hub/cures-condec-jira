@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
 import com.github.javaparser.ast.PackageDeclaration;
 import de.uhd.ifi.se.decision.management.jira.extraction.TangledCommitDetection;
+
 import org.eclipse.jgit.diff.Edit;
 
 import java.util.*;
@@ -12,11 +13,16 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 
     @Override
     public void standardization(DiffImpl diffImpl) {
-        Collections.sort(diffImpl.getChangedFileImpls());
-        float max = diffImpl.getChangedFileImpls().get(0).getPackageDistance();
-        for(ChangedFileImpl changedFileImpl : diffImpl.getChangedFileImpls()){
-            changedFileImpl.setPercentage((changedFileImpl.getPackageDistance()/max)*100);
+        if(diffImpl.getChangedFileImpls().size() > 1){
+            Collections.sort(diffImpl.getChangedFileImpls());
+            float max = diffImpl.getChangedFileImpls().get(0).getPackageDistance();
+            for(ChangedFileImpl changedFileImpl : diffImpl.getChangedFileImpls()){
+                changedFileImpl.setPercentage((changedFileImpl.getPackageDistance()/max)*100);
+            }
+        }else {
+            diffImpl.getChangedFileImpls().get(0).setPercentage(0);
         }
+
     }
 
     @Override
@@ -39,17 +45,22 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
 
     @Override
     public Boolean isAllChangesInOnePackage(DiffImpl diffs) {
+        if(diffs.getChangedFileImpls().size()>1){
             for(int i = 0; i < diffs.getChangedFileImpls().size(); i++){
                 for(int j = i+1; j< diffs.getChangedFileImpls().size(); j++){
                     if(!(diffs.getChangedFileImpls().get(i).getCompilationUnit().getPackageDeclaration().isPresent()
                             && diffs.getChangedFileImpls().get(j).getCompilationUnit().getPackageDeclaration().isPresent()
                             && diffs.getChangedFileImpls().get(i).getCompilationUnit().getPackageDeclaration().toString()
-                                    .equalsIgnoreCase(diffs.getChangedFileImpls().get(j).getCompilationUnit().getPackageDeclaration().toString()))){
+                            .equalsIgnoreCase(diffs.getChangedFileImpls().get(j).getCompilationUnit().getPackageDeclaration().toString()))){
                         return false;
                     }
                 }
             }
-                return true;
+            return true;
+        }else{
+            return true;
+        }
+
     }
 
     @Override
@@ -87,7 +98,9 @@ public class TangledCommitDetectionImpl implements TangledCommitDetection {
             }
 
         }
-        int i = 0;
+        else{
+            diffs.getChangedFileImpls().get(0).setPackageDistance(0);
+        }
     }
 
     @Override
