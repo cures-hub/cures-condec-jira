@@ -45,7 +45,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 				"    public static void  main(String[] args) {\n" +
 				"        System.out.println(\"Hello World!\");\n" +
 				"    }\n" +
-				"}\n", "Test-66 add main");
+				"}\n", "TEST-66 add main");
 		makeExampleCommit("untangled2.java", "package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" +
 				"\n" +
 				"public class D {\n" +
@@ -68,8 +68,9 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 				"    };\n" +
 				"\n" +
 				"\n" +
-				"}\n", "Test-66 add class d");
-		makeExampleCommit("tangled1.java", "package de.uhd.ifi.se.decision.management.jira.config;\n" +
+				"}\n", "TEST-66 add class d");
+
+		makeExampleCommit("tangled1.java", "package de.uhd.ifi.se.decision.management.jira.view.treeviewer;\n" +
 				"public class E {\n" +
 						"\n" +
 						"    public int a;\n" +
@@ -95,7 +96,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 						"\n" +
 						"\n" +
 						"}\n"
-				, "Test-66 add class e");
+				, "TEST-66 add class e");
 
 		makeExampleCommit("tangled2.java", "package de.uhd.ifi.se.decision.management.jira.view.treeviewer;\n" +
 				"public class A {\n" +
@@ -124,7 +125,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 				"        }\n" +
 				"    };\n" +
 				"\n" +
-				"}\n" , "Test-66 add class A");
+				"}\n" , "TEST-77 add class A");
 	}
 
 	@Before
