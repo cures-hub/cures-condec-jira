@@ -9,6 +9,8 @@ import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationTrainer;
 import de.uhd.ifi.se.decision.management.jira.extraction.DecisionKnowledgeClassifier;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import meka.classifiers.multilabel.LC;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -26,6 +28,8 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 
 	private FilteredClassifier binaryClassifier;
 	private LC fineGrainedClassifier;
+
+	protected static final Logger LOGGER = LoggerFactory.getLogger(DecisionKnowledgeClassifierImpl.class);
 
 	/**
 	 * The knowledge types need to be present in the weka classifier. They do not
@@ -53,6 +57,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 			binaryClassifier = (FilteredClassifier) SerializationHelper.read(new FileInputStream(binaryClassifierFile));
 		} catch (Exception e) {
 			binaryClassifier = new FilteredClassifier();
+			LOGGER.info("Could not find binary classifier file. A new instance got created");
 		}
 		return binaryClassifier;
 	}
@@ -68,6 +73,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 			fineGrainedClassifier = (LC) SerializationHelper.read(new FileInputStream(fineGrainedClassifierFile));
 		} catch (Exception e) {
 			fineGrainedClassifier = new LC();
+			LOGGER.info("Could not find fine grained classifier file.A new instance got created");
 		}
 		return fineGrainedClassifier;
 	}
@@ -133,7 +139,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 				binaryPredictionResults.add(isRelevant(predictionResult));
 			}
 		} catch (Exception e) {
-			System.err.println("Binary classification failed.");
+			LOGGER.error("Binary classification failed. Message: " + e.getMessage());
 			return new ArrayList<Boolean>();
 		}
 
@@ -172,8 +178,7 @@ public class DecisionKnowledgeClassifierImpl implements DecisionKnowledgeClassif
 				fineGrainedPredictionResults.add(getType(predictionResult));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println(e.getStackTrace() + "Fine grained classification failed.");
+			LOGGER.error("Fine grained classification failed. Message: " + e.getMessage());
 			return null;
 		}
 
