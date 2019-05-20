@@ -549,6 +549,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		try {
 			issueLinkManager.createIssueLink(element.getJiraIssueId(), issue.getId(), linkTypeId, (long) 0, user);
 		} catch (CreateException e) {
+			LOGGER.error("create Jira issue from sentence object failed. Message: " +e.getMessage());
 			return null;
 		}
 
