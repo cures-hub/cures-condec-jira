@@ -8,6 +8,8 @@ import com.atlassian.jira.config.util.JiraHome;
 
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
 import meka.classifiers.multilabel.LC;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.core.tokenizers.NGramTokenizer;
 import weka.core.tokenizers.Tokenizer;
@@ -26,6 +28,9 @@ public interface DecisionKnowledgeClassifier {
 	 */
 	public static final String DEFAULT_DIR = ComponentAccessor.getComponentOfType(JiraHome.class).getDataDirectory()
 			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "classifier" + File.separator;
+
+
+	static final Logger LOGGER = LoggerFactory.getLogger(DecisionKnowledgeClassifier.class);
 
 	/**
 	 * Determines for a list of strings whether each string is relevant decision
@@ -95,7 +100,7 @@ public interface DecisionKnowledgeClassifier {
 					"weka.core.tokenizers.NGramTokenizer -max 3 -min 1 -delimiters \" \\r\\n\\t.,;:\\'\\\"()?!\"");
 			tokenizer.setOptions(options);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("Failed to get the Tokenizer. Message: " + e.getMessage());
 		}
 		return tokenizer;
 	}
