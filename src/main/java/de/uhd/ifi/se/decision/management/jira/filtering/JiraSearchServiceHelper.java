@@ -30,14 +30,16 @@ public class JiraSearchServiceHelper {
 			try {
 				newGetMethod = SearchResults.class.getMethod("getResults");
 			} catch (NoSuchMethodError | NoSuchMethodException | SecurityException e2) {
+				LOGGER.error("Get Jira issues failed. Message: " + e.getMessage());
 			}
+			LOGGER.error("Get Jira issues failed. Message: " + e.getMessage());
 		}
 
 		if (newGetMethod != null && searchResults != null) {
 			try {
 				jiraIssues.addAll((List<Issue>) newGetMethod.invoke(searchResults));
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				e.printStackTrace();
+				LOGGER.error("Get Jira issues failed. Message: " + e.getMessage());
 			}
 		} else {
 			LOGGER.error("SearchResults Service from JIRA NOT AVAILABLE (getIssue / getResults)");
