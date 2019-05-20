@@ -64,7 +64,7 @@ public abstract class AbstractSettingsServlet extends HttpServlet {
 		response.sendRedirect(
 				ComponentAccessor.getApplicationProperties().getString(APKeys.JIRA_BASEURL) + "/login.jsp");
 		LOGGER.info("User with name('{}') tried to change the project settings and was redirected to login.",
-				AuthenticationManager.getUsername(request)
+				AuthenticationManager.getUsername(request));
 	}
 
 	protected abstract String getTemplatePath();
