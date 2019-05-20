@@ -42,7 +42,7 @@ $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:jira
                 <button aria-controls="issuetype-dropdown" class="aui-button aui-style-default aui-dropdown2-trigger" aria-haspopup="true">
                     Issuetypes
                 </button>
-                <aui-dropdown-menu id="issuetype-dropdown"></aui-dropdown-menu>
+                <aui-dropdown-menu id="issuetype-dropdown" style="overflow:auto;max-height:200px;"></aui-dropdown-menu>
 
                 <label>Created Between</label>
                 <input id="created-after-picker" type="date" style = "vertical-align: middle;

@@ -8,6 +8,7 @@ import de.uhd.ifi.se.decision.management.jira.model.Graph;
 import de.uhd.ifi.se.decision.management.jira.model.Link;
 import de.uhd.ifi.se.decision.management.jira.model.impl.GraphImpl;
 import de.uhd.ifi.se.decision.management.jira.filtering.GraphFiltering;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -23,16 +24,22 @@ public class Vis {
 	private HashSet<VisNode> nodes;
 	@XmlElement
 	private HashSet<VisEdge> edges;
-
 	@XmlElement
 	private String rootElementKey;
 
+	@JsonIgnore
 	private Graph graph;
+	@JsonIgnore
 	private boolean isHyperlinked;
+	@JsonIgnore
 	private List<DecisionKnowledgeElement> elementsAlreadyAsNode;
+	@JsonIgnore
 	private List<DecisionKnowledgeElement> elementsMatchingFilterCriteria;
+	@JsonIgnore
 	private int level;
+	@JsonIgnore
 	private String documentationLocation;
+	@JsonIgnore
 	private int cid;
 
 	public Vis(){
