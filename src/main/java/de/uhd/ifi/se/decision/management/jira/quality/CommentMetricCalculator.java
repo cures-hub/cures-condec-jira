@@ -33,6 +33,8 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CommentMetricCalculator {
 
@@ -43,6 +45,8 @@ public class CommentMetricCalculator {
 	private List<Issue> jiraIssues;
 	private int absolutDepth;
 	private GitClient gitClient;
+
+	protected static final Logger LOGGER = LoggerFactory.getLogger(CommentMetricCalculator.class);
 
 	public CommentMetricCalculator(long projectId, ApplicationUser user, String jiraIssueTypeId) {
 		this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
@@ -63,6 +67,7 @@ public class CommentMetricCalculator {
 			searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
 			jiraIssues = JiraSearchServiceHelper.getJiraIssues(searchResults);
 		} catch (SearchException e) {
+			LOGGER.error("Get Jira issues for project failed. Message: " + e.getMessage());
 		}
 		return jiraIssues;
 	}
@@ -74,7 +79,8 @@ public class CommentMetricCalculator {
 			try {
 				numberOfComments = ComponentAccessor.getCommentManager().getComments(jiraIssue).size();
 			} catch (NullPointerException e) {
-				// Jira issue does not exist
+				LOGGER.error("get number of comments for jira issues failed. no issues are contained. " +
+						"Message: " + e.getMessage());
 				numberOfComments = 0;
 			}
 			numberOfCommentsForJiraIssues.put(jiraIssue.getKey(), numberOfComments);
