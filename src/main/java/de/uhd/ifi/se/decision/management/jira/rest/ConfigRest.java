@@ -63,7 +63,7 @@ public class ConfigRest {
 			setDefaultKnowledgeTypesEnabled(projectKey, isActivated);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Failed to activate the plug-in. Message: " + e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -104,7 +104,7 @@ public class ConfigRest {
 			manageDefaultIssueTypes(projectKey, isIssueStrategy);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Failed to apply the issue strategy. Message: " + e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -140,7 +140,7 @@ public class ConfigRest {
 					Boolean.valueOf(isKnowledgeExtractedFromGit));
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Failed to active the knowledge extraction from git. Message: " + e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -179,7 +179,7 @@ public class ConfigRest {
 					Boolean.valueOf(isKnowledgeExtractedFromIssues));
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Failed to activate the extraction of knowledge from issues. Message: " +  e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -223,7 +223,7 @@ public class ConfigRest {
 			}
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Failed to enable the knowledge type: " + knowledgeType + " Message: " + e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -263,7 +263,7 @@ public class ConfigRest {
 			ConfigPersistenceManager.setWebhookEnabled(projectKey, isActivated);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Failed to enable the Webhook. Message: " + e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -285,7 +285,7 @@ public class ConfigRest {
 			ConfigPersistenceManager.setWebhookSecret(projectKey, webhookSecret);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Failed to set the Webhook data. Message: " + e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -306,7 +306,7 @@ public class ConfigRest {
 			ConfigPersistenceManager.setWebhookType(projectKey, webhookType, isWebhookTypeEnabled);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Failed to set the Webhook type: "+ webhookType + " Message: " + e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -332,7 +332,7 @@ public class ConfigRest {
 			JiraIssueTextPersistenceManager.migrateArgumentTypesInLinks(projectKey);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Failed to clean the Sentence Database. Message: " + e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -365,7 +365,7 @@ public class ConfigRest {
 
 			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Failed to classify the whole project. Message: " + e.getMessage());
 			return Response.status(Status.CONFLICT).entity(ImmutableMap.of("isSucceeded", false)).build();
 		}
 	}
@@ -428,7 +428,7 @@ public class ConfigRest {
 			ConfigPersistenceManager.setIconParsing(projectKey, isActivated);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Failed to set icon parsing. Message: " + e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -451,7 +451,7 @@ public class ConfigRest {
 			ConfigPersistenceManager.setUseClassiferForIssueComments(projectKey, isActivated);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error("Failed to enable the user classifier for issue comments. Message: " + e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
