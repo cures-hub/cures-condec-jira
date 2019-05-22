@@ -101,7 +101,8 @@ public class GitClientImpl implements GitClient {
 			git = Git.cloneRepository().setURI(uri).setDirectory(directory).setCloneAllBranches(true).call();
 			setConfig();
 		} catch (GitAPIException e) {
-			LOGGER.error("Git repository could not be cloned. Bare repository will be created. Message: " + e.getMessage());
+			LOGGER.error(
+					"Git repository could not be cloned. Bare repository will be created. Message: " + e.getMessage());
 			initRepository(directory);
 		}
 	}
@@ -301,24 +302,25 @@ public class GitClientImpl implements GitClient {
 		try {
 			refs = git.branchList().setListMode(ListBranchCommand.ListMode.ALL).call();
 		} catch (GitAPIException e) {
-			LOGGER.error("Git could not get all Refs. Message: " + e.getMessage());
+			LOGGER.error("Git could not get all references. Message: " + e.getMessage());
 		}
 		return refs;
 	}
 
 	private List<RevCommit> getCommits(Ref branch) {
 		List<RevCommit> commits = new ArrayList<RevCommit>();
+		if (branch == null) {
+			return commits;
+		}
 		try {
-			if (branch != null) {
-				git.checkout().setName(branch.getName()).call();
-			}
+			git.checkout().setName(branch.getName()).call();
 			Iterable<RevCommit> iterable = git.log().call();
 			for (RevCommit commit : iterable) {
 				commits.add(commit);
 			}
 		} catch (GitAPIException e) {
-			LOGGER.error("Git could not get Commits for the branch: "+ branch.getName() + " Message: "+
-					e.getMessage());
+			LOGGER.error(
+					"Git could not get commits for the branch: " + branch.getName() + " Message: " + e.getMessage());
 		}
 		return commits;
 	}
