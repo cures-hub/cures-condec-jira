@@ -102,21 +102,12 @@ public class WebhookContentProvider {
 	public static String createHashedPayload(String data, String key) {
 		final String hashingAlgorithm = "HMACSHA256";
 		SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), hashingAlgorithm);
-		Mac mac = null;
-		try {
-			mac = Mac.getInstance(hashingAlgorithm);
-		} catch (NoSuchAlgorithmException e) {
-			LOGGER.error("Creating a hashed payload failed. Message: " + e.getMessage());
-		}
-		try {
-			mac.init(secretKeySpec);
-		} catch (InvalidKeyException e) {
-			LOGGER.error("Creating a hashed payload failed. Message: " + e.getMessage());
-		}
 		String hexString = "";
 		try {
+			Mac mac = Mac.getInstance(hashingAlgorithm);
+			mac.init(secretKeySpec);
 			hexString = toHexString(mac.doFinal(data.getBytes("UTF-8")));
-		} catch (IllegalStateException | UnsupportedEncodingException e) {
+		} catch (NoSuchAlgorithmException | InvalidKeyException | UnsupportedEncodingException e) {
 			LOGGER.error("Creating a hashed payload failed. Message: " + e.getMessage());
 		}
 		return hexString;
