@@ -158,7 +158,7 @@ public class GitClientImpl implements GitClient {
 				diffEntries = diffFormatter.scan(parentCommit.getTree(), lastCommit.getTree());
 			}
 		} catch (IOException e) {
-			LOGGER.error("Git Diff could not be created. Message: " + e.getMessage());
+			LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
 		}
 
 		for (DiffEntry diffEntry : diffEntries) {
@@ -166,7 +166,7 @@ public class GitClientImpl implements GitClient {
 				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
 				diffEntriesMappedToEditLists.put(diffEntry, editList);
 			} catch (IOException e) {
-				LOGGER.error("Git Diff could not be created. Message: " + e.getMessage());
+				LOGGER.error("Git diff for the file " + diffEntry.getNewPath() + " could not be retrieved. Message: " + e.getMessage());
 			}
 		}
 		diffFormatter.close();
@@ -285,7 +285,6 @@ public class GitClientImpl implements GitClient {
 		List<Ref> refs = getAllRefs();
 		Ref branch = null;
 		for (Ref ref : refs) {
-			LOGGER.info(ref.getName());
 			if (ref.getName().contains(jiraIssueKey)) {
 				return ref;
 			} else if (ref.getName().equalsIgnoreCase("refs/heads/develop")) {

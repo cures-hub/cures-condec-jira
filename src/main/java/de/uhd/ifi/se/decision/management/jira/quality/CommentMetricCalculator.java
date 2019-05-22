@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -33,8 +36,6 @@ import de.uhd.ifi.se.decision.management.jira.model.text.PartOfJiraIssueText;
 import de.uhd.ifi.se.decision.management.jira.persistence.GenericLinkManager;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import de.uhd.ifi.se.decision.management.jira.view.treant.Node;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CommentMetricCalculator {
 
@@ -67,7 +68,7 @@ public class CommentMetricCalculator {
 			searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
 			jiraIssues = JiraSearchServiceHelper.getJiraIssues(searchResults);
 		} catch (SearchException e) {
-			LOGGER.error("Get Jira issues for project failed. Message: " + e.getMessage());
+			LOGGER.error("Getting JIRA issues for project failed. Message: " + e.getMessage());
 		}
 		return jiraIssues;
 	}
@@ -79,8 +80,7 @@ public class CommentMetricCalculator {
 			try {
 				numberOfComments = ComponentAccessor.getCommentManager().getComments(jiraIssue).size();
 			} catch (NullPointerException e) {
-				LOGGER.error("get number of comments for jira issues failed. no issues are contained. " +
-						"Message: " + e.getMessage());
+				LOGGER.error("Getting number of comments for JIRA issues failed. Message: " + e.getMessage());
 				numberOfComments = 0;
 			}
 			numberOfCommentsForJiraIssues.put(jiraIssue.getKey(), numberOfComments);

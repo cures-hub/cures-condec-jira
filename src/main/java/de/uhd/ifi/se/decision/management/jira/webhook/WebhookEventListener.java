@@ -34,7 +34,7 @@ public class WebhookEventListener implements InitializingBean, DisposableBean {
 	@Autowired
 	public WebhookEventListener(EventPublisher eventPublisher) {
 		this.eventPublisher = eventPublisher;
-		LOGGER.info("Webhook Eventlistener was added to JIRA");
+		LOGGER.info("Webhook event listener was added to JIRA.");
 	}
 
 	/**
@@ -45,7 +45,7 @@ public class WebhookEventListener implements InitializingBean, DisposableBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		eventPublisher.register(this);
-		LOGGER.info("Webhook Eventlistener was added to JIRA");
+		LOGGER.info("Webhook event listener was added to JIRA.");
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class WebhookEventListener implements InitializingBean, DisposableBean {
 	@Override
 	public void destroy() throws Exception {
 		eventPublisher.unregister(this);
-		LOGGER.info("Webhook Eventlistener was removed from JIRA");
+		LOGGER.info("Webhook event listener was removed from JIRA.");
 	}
 
 	@EventListener

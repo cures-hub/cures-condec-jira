@@ -206,7 +206,7 @@ public class LinkImpl implements Link {
 		try {
 			return !sourceElement.getProject().getProjectKey().equals(destinationElement.getProject().getProjectKey());
 		} catch (NullPointerException e) {
-			LOGGER.error("is not Valid. Message: " + e.getMessage());
+			LOGGER.error("Link is not valid. Message: " + e.getMessage());
 			return false;
 		}
 	}

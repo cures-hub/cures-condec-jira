@@ -549,7 +549,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		try {
 			issueLinkManager.createIssueLink(element.getJiraIssueId(), issue.getId(), linkTypeId, (long) 0, user);
 		} catch (CreateException e) {
-			LOGGER.error("create Jira issue from sentence object failed. Message: " +e.getMessage());
+			LOGGER.error("Creating JIRA issue from part of text failed. Message: " + e.getMessage());
 			return null;
 		}
 
@@ -680,7 +680,7 @@ public class JiraIssueTextPersistenceManager extends AbstractPersistenceManager 
 		}
 		PartOfJiraIssueTextInDatabase[] databaseEntries = ACTIVE_OBJECTS.find(PartOfJiraIssueTextInDatabase.class,
 				Query.select().where("PROJECT_KEY = ? and VALIDATED = ?", projectKey, true));
-		
+
 		for (PartOfJiraIssueTextInDatabase databaseEntry : databaseEntries) {
 			PartOfJiraIssueText validatedPartOfText = new PartOfJiraIssueTextImpl(databaseEntry);
 			validatedPartsOfText.add(validatedPartOfText);

@@ -13,10 +13,10 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.codehaus.jackson.map.ObjectMapper;
-
-import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.uhd.ifi.se.decision.management.jira.view.treant.Treant;
 
 /**
  * Creates the content submitted via the webhook. The content consists of a key
@@ -51,7 +51,7 @@ public class WebhookContentProvider {
 			StringRequestEntity requestEntity = new StringRequestEntity(webhookData, "application/json", "UTF-8");
 			postMethod.setRequestEntity(requestEntity);
 		} catch (UnsupportedEncodingException e) {
-			LOGGER.error("Create post method failed. Message: " + e.getMessage());
+			LOGGER.error("Creating the post method failed. Message: " + e.getMessage());
 		}
 		Header header = new Header();
 		header.setName("X-Hub-Signature");
@@ -106,18 +106,18 @@ public class WebhookContentProvider {
 		try {
 			mac = Mac.getInstance(hashingAlgorithm);
 		} catch (NoSuchAlgorithmException e) {
-			LOGGER.error("Create a hashed payload failed. Message: " + e.getMessage());
+			LOGGER.error("Creating a hashed payload failed. Message: " + e.getMessage());
 		}
 		try {
 			mac.init(secretKeySpec);
 		} catch (InvalidKeyException e) {
-			LOGGER.error("Create a hashed payload failed. Message: " + e.getMessage());
+			LOGGER.error("Creating a hashed payload failed. Message: " + e.getMessage());
 		}
 		String hexString = "";
 		try {
 			hexString = toHexString(mac.doFinal(data.getBytes("UTF-8")));
 		} catch (IllegalStateException | UnsupportedEncodingException e) {
-			LOGGER.error("Create a hashed payload failed. Message: " + e.getMessage());
+			LOGGER.error("Creating a hashed payload failed. Message: " + e.getMessage());
 		}
 		return hexString;
 	}

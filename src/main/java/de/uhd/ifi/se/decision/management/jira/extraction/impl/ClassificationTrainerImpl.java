@@ -76,7 +76,7 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 				instances.setClassIndex(instances.numAttributes() - 1);
 			}
 		} catch (Exception e) {
-			LOGGER.error("Problem to get the Instances from Arff File. Message:" +e.getMessage());
+			LOGGER.error("Problem to get the instances from ARFF file. Message:" + e.getMessage());
 		}
 		return instances;
 	}
@@ -113,7 +113,7 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 
 			isTrained = true;
 		} catch (Exception e) {
-			LOGGER.error("Problem training the Classifiers. Message:" +e.getMessage());
+			LOGGER.error("The classifier could not be trained. Message:" + e.getMessage());
 		}
 		return isTrained;
 	}
@@ -147,7 +147,7 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 			writer.println(arffString);
 			writer.close();
 		} catch (IOException e) {
-			LOGGER.error("Problem saving Arff File. Message: "+ e.getMessage());
+			LOGGER.error("The ARFF file could not be saved. Message: " + e.getMessage());
 		}
 		return arffFile;
 	}
