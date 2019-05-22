@@ -34,7 +34,7 @@ public interface GitClient {
 	 * 
 	 * @see RevCommit
 	 * @param jiraIssue
-	 *            JIRA issue key that is searched for in commit messages.
+	 *            JIRA issue. Its key is searched for in commit messages.
 	 * @return commits with the JIRA issue key in their commit message as a list of
 	 *         RevCommits.
 	 */
@@ -63,7 +63,7 @@ public interface GitClient {
 	 * belonging to a JIRA issue.
 	 *
 	 * @param jiraIssue
-	 *            a Jira issue object.
+	 *            a JIRA issue object.
 	 * @return map of diff entries and respective edit lists.
 	 */
 	Map<DiffEntry, EditList> getDiff(Issue jiraIssue);
@@ -118,7 +118,7 @@ public interface GitClient {
 	 * Returns the number of commits with the JIRA issue key in their commit message.
 	 *
 	 * @param jiraIssue
-	 *            JIRA issue that is searched for in commit messages.
+	 *            JIRA issue. Its key is searched for in commit messages.
 	 * @return number of commits with the JIRA issue key in their commit message.
 	 */
 	public int getNumberOfCommits(Issue jiraIssue);

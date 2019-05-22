@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
-import com.atlassian.jira.mock.issue.MockIssue;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
@@ -18,6 +17,8 @@ import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.mock.issue.MockIssue;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
@@ -26,7 +27,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestSetUpGit.class);
 	protected static GitClient gitClient;
-	protected MockIssue testGitIssue;
+	protected MockIssue mockJiraIssueForGitTests;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws IOException {
@@ -42,8 +43,8 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		initialization();
-		testGitIssue = new MockIssue();
-		testGitIssue.setKey("TEST-12");
+		mockJiraIssueForGitTests = new MockIssue();
+		mockJiraIssueForGitTests.setKey("TEST-12");
 	}
 
 	private static File getExampleDirectory() {

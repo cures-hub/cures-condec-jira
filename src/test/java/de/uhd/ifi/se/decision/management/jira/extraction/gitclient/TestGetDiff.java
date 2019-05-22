@@ -28,7 +28,7 @@ public class TestGetDiff extends TestSetUpGit {
 
 	@Test
 	public void testRevCommitExisting() {
-		List<RevCommit> commits = gitClient.getCommits(testGitIssue);
+		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
 		Map<DiffEntry, EditList> diff = gitClient.getDiff(commits.get(0));
 		assertEquals(1, diff.size());
 		for (Map.Entry<DiffEntry, EditList> entry : diff.entrySet()) {
@@ -55,7 +55,7 @@ public class TestGetDiff extends TestSetUpGit {
 
 	@Test
 	public void testJiraIssueKeyExisting() {
-		Map<DiffEntry, EditList> diff = gitClient.getDiff(testGitIssue);
+		Map<DiffEntry, EditList> diff = gitClient.getDiff(mockJiraIssueForGitTests);
 		assertEquals(2, diff.size());
 
 		String diffEntries = diff.keySet().toString();
@@ -69,7 +69,7 @@ public class TestGetDiff extends TestSetUpGit {
 
 	@Test
 	public void testGitNull() {
-		List<RevCommit> commits = gitClient.getCommits(testGitIssue);
+		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
 
 		GitClient newGitClient = new GitClientImpl();
 		Map<DiffEntry, EditList> diff = newGitClient.getDiff(commits.get(0));

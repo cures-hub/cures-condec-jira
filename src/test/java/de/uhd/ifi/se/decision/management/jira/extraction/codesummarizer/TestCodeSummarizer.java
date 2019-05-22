@@ -47,7 +47,7 @@ public class TestCodeSummarizer extends TestSetUpGit {
 
 	@Test
 	public void testJiraIssueExisting() {
-		assertEquals("The following classes were changed: *GodClass*\n", summarizer.createSummary(testGitIssue));
+		assertEquals("The following classes were changed: *GodClass*\n", summarizer.createSummary(mockJiraIssueForGitTests));
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class TestCodeSummarizer extends TestSetUpGit {
 
 	@Test
 	public void testRevCommitFilled() {
-		List<RevCommit> commits = gitClient.getCommits(testGitIssue);
+		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
 		assertEquals("The following classes were changed: *GodClass*\n", summarizer.createSummary(commits.get(0)));
 	}
 
@@ -73,7 +73,7 @@ public class TestCodeSummarizer extends TestSetUpGit {
 
 	@Test
 	public void testDiffFilled() {
-		List<RevCommit> commits = gitClient.getCommits(testGitIssue);
+		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
 		Map<DiffEntry, EditList> diff = gitClient.getDiff(commits.get(0));
 		assertEquals("The following classes were changed: *GodClass*\n", summarizer.createSummary(diff));
 	}

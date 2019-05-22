@@ -13,7 +13,7 @@ public interface CodeSummarizer {
 	 * Creates a summary of code changes for all commits associated to a JIRA issue.
 	 * 
 	 * @param jiraIssue
-	 *            JIRA issue that is searched for in commit messages.
+	 *            JIRA issue. Its key is searched for in commit messages.
 	 * @return summary as a String.
 	 */
 	String createSummary(Issue jiraIssue);

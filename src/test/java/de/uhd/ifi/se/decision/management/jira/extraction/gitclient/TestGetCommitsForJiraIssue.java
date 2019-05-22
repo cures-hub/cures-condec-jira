@@ -20,7 +20,7 @@ public class TestGetCommitsForJiraIssue extends TestSetUpGit {
 
 	@Test
 	public void testJiraIssue() {
-		List<RevCommit> commits = gitClient.getCommits(testGitIssue);
+		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
 		assertEquals(2, commits.size());
 		assertEquals("TEST-12: Develop great software", commits.get(0).getShortMessage());
 	}
@@ -40,7 +40,7 @@ public class TestGetCommitsForJiraIssue extends TestSetUpGit {
 	@Test
 	public void testGitNull() {
 		GitClient gitClient = new GitClientImpl();
-		List<RevCommit> commits = gitClient.getCommits(testGitIssue);
+		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
 		assertEquals(0, commits.size());
 	}
 }
