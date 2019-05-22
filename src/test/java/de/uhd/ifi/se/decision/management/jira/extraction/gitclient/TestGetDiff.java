@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.atlassian.jira.issue.Issue;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.EditList;
@@ -27,7 +28,7 @@ public class TestGetDiff extends TestSetUpGit {
 
 	@Test
 	public void testRevCommitExisting() {
-		List<RevCommit> commits = gitClient.getCommits("TEST-12");
+		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
 		Map<DiffEntry, EditList> diff = gitClient.getDiff(commits.get(0));
 		assertEquals(1, diff.size());
 		for (Map.Entry<DiffEntry, EditList> entry : diff.entrySet()) {
@@ -47,20 +48,14 @@ public class TestGetDiff extends TestSetUpGit {
 	}
 
 	@Test
-	public void testJiraIssueKeyNull() {
-		Map<DiffEntry, EditList> diff = gitClient.getDiff((String) null);
-		assertNull(diff);
-	}
-
-	@Test
-	public void testJiraIssueKeyNonExisting() {
-		Map<DiffEntry, EditList> diff = gitClient.getDiff("");
+	public void testJiraIssueNull() {
+		Map<DiffEntry, EditList> diff = gitClient.getDiff((Issue) null);
 		assertNull(diff);
 	}
 
 	@Test
 	public void testJiraIssueKeyExisting() {
-		Map<DiffEntry, EditList> diff = gitClient.getDiff("Test-12");
+		Map<DiffEntry, EditList> diff = gitClient.getDiff(mockJiraIssueForGitTests);
 		assertEquals(2, diff.size());
 
 		String diffEntries = diff.keySet().toString();
@@ -74,7 +69,7 @@ public class TestGetDiff extends TestSetUpGit {
 
 	@Test
 	public void testGitNull() {
-		List<RevCommit> commits = gitClient.getCommits("TEST-12");
+		List<RevCommit> commits = gitClient.getCommits(mockJiraIssueForGitTests);
 
 		GitClient newGitClient = new GitClientImpl();
 		Map<DiffEntry, EditList> diff = newGitClient.getDiff(commits.get(0));

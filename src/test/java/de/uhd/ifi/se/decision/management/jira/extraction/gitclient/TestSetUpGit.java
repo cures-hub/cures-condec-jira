@@ -17,6 +17,8 @@ import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.mock.issue.MockIssue;
+
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
@@ -25,6 +27,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TestSetUpGit.class);
 	protected static GitClient gitClient;
+	protected MockIssue mockJiraIssueForGitTests;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws IOException {
@@ -40,6 +43,8 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 	@Before
 	public void setUp() {
 		initialization();
+		mockJiraIssueForGitTests = new MockIssue();
+		mockJiraIssueForGitTests.setKey("TEST-12");
 	}
 
 	private static File getExampleDirectory() {

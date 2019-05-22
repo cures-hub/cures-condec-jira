@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.atlassian.jira.issue.Issue;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -140,9 +141,13 @@ public class GitClientImpl implements GitClient {
 		return getDiff(firstCommit, lastCommit);
 	}
 
+
 	@Override
-	public Map<DiffEntry, EditList> getDiff(String jiraIssueKey) {
-		List<RevCommit> commits = getCommits(jiraIssueKey);
+	public Map<DiffEntry, EditList> getDiff(Issue jiraIssue){
+		if (jiraIssue == null) {
+			return null;
+		}
+		List<RevCommit> commits = getCommits(jiraIssue);
 		return getDiff(commits);
 	}
 
@@ -250,7 +255,11 @@ public class GitClientImpl implements GitClient {
 	}
 
 	@Override
-	public List<RevCommit> getCommits(String jiraIssueKey) {
+	public List<RevCommit> getCommits(Issue jiraIssue){
+		if (jiraIssue == null) {
+			return new LinkedList<RevCommit>();
+		}
+		String jiraIssueKey = jiraIssue.getKey();
 		List<RevCommit> commitsForJiraIssue = new LinkedList<RevCommit>();
 		if (git == null || jiraIssueKey == null) {
 			LOGGER.error("Commits cannot be retrieved since git object is null.");
@@ -325,11 +334,11 @@ public class GitClientImpl implements GitClient {
 	}
 
 	@Override
-	public int getNumberOfCommits(String jiraIssueKey) {
-		if (jiraIssueKey == null || jiraIssueKey.isEmpty()) {
+	public int getNumberOfCommits(Issue jiraIssue) {
+		if (jiraIssue == null) {
 			return 0;
 		}
-		List<RevCommit> commits = getCommits(jiraIssueKey);
+		List<RevCommit> commits = getCommits(jiraIssue);
 		return commits.size();
 	}
 
