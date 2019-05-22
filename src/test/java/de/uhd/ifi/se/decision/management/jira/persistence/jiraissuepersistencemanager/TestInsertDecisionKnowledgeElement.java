@@ -5,8 +5,8 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.user.MockApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -28,7 +28,6 @@ public class TestInsertDecisionKnowledgeElement extends TestJiraIssuePersistence
 	@Test(expected = NullPointerException.class)
 	public void testElementEmptyUserExistent() {
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		ApplicationUser user = new MockApplicationUser("NoFails");
 		assertNotNull(issueStrategy.insertDecisionKnowledgeElement(element, user));
 	}
 
@@ -37,7 +36,6 @@ public class TestInsertDecisionKnowledgeElement extends TestJiraIssuePersistence
 		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
 		element.setProject("TEST");
 		element.setType(KnowledgeType.SOLUTION);
-		ApplicationUser user = new MockApplicationUser("NoFails");
 		assertNotNull(issueStrategy.insertDecisionKnowledgeElement(element, user));
 	}
 
@@ -46,7 +44,7 @@ public class TestInsertDecisionKnowledgeElement extends TestJiraIssuePersistence
 		DecisionKnowledgeElementImpl element = new DecisionKnowledgeElementImpl();
 		element.setProject("TEST");
 		element.setType(KnowledgeType.SOLUTION);
-		ApplicationUser user = new MockApplicationUser("WithFails");
+		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("WithFails");
 		assertNull(issueStrategy.insertDecisionKnowledgeElement(element, user));
 	}
 }

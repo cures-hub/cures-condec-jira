@@ -77,8 +77,7 @@ public class GitClientImpl implements GitClient {
 		try {
 			git = Git.open(directory);
 		} catch (IOException e) {
-			e.printStackTrace();
-			LOGGER.error("Git repository could not be opened.");
+			LOGGER.error("Git repository could not be opened. Message: " + e.getMessage());
 			initRepository(directory);
 		}
 	}
@@ -91,7 +90,7 @@ public class GitClientImpl implements GitClient {
 				git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
 			}
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			LOGGER.error("Git repository could not be pulled. Message: " + e.getMessage());
 		}
 	}
 
@@ -103,8 +102,8 @@ public class GitClientImpl implements GitClient {
 			git = Git.cloneRepository().setURI(uri).setDirectory(directory).setCloneAllBranches(true).call();
 			setConfig();
 		} catch (GitAPIException e) {
-			e.printStackTrace();
-			LOGGER.error("Git repository could not be cloned. Bare repository will be created.");
+			LOGGER.error(
+					"Git repository could not be cloned. Bare repository will be created. Message: " + e.getMessage());
 			initRepository(directory);
 		}
 	}
@@ -113,7 +112,7 @@ public class GitClientImpl implements GitClient {
 		try {
 			git = Git.init().setDirectory(directory).call();
 		} catch (IllegalStateException | GitAPIException e) {
-			e.printStackTrace();
+			LOGGER.error("Git repository could not be initialized. Message: " + e.getMessage());
 		}
 	}
 
@@ -127,7 +126,7 @@ public class GitClientImpl implements GitClient {
 		try {
 			config.save();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error("Git configuration could not be set. Message: " + e.getMessage());
 		}
 	}
 
@@ -164,7 +163,7 @@ public class GitClientImpl implements GitClient {
 				diffEntries = diffFormatter.scan(parentCommit.getTree(), lastCommit.getTree());
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error("Git diff could not be retrieved. Message: " + e.getMessage());
 		}
 
 		for (DiffEntry diffEntry : diffEntries) {
@@ -172,7 +171,7 @@ public class GitClientImpl implements GitClient {
 				EditList editList = diffFormatter.toFileHeader(diffEntry).toEditList();
 				diffEntriesMappedToEditLists.put(diffEntry, editList);
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOGGER.error("Git diff for the file " + diffEntry.getNewPath() + " could not be retrieved. Message: " + e.getMessage());
 			}
 		}
 		diffFormatter.close();
@@ -221,8 +220,7 @@ public class GitClientImpl implements GitClient {
 			parentCommit = revWalk.parseCommit(revCommit.getParent(0).getId());
 			revWalk.close();
 		} catch (Exception e) {
-			System.err.println("Could not get the parent commit.");
-			e.printStackTrace();
+			LOGGER.error("Could not get the parent commit. Message: " + e.getMessage());
 		}
 		return parentCommit;
 	}
@@ -296,7 +294,6 @@ public class GitClientImpl implements GitClient {
 		List<Ref> refs = getAllRefs();
 		Ref branch = null;
 		for (Ref ref : refs) {
-			System.out.println(ref.getName());
 			if (ref.getName().contains(jiraIssueKey)) {
 				return ref;
 			} else if (ref.getName().equalsIgnoreCase("refs/heads/develop")) {
@@ -313,23 +310,25 @@ public class GitClientImpl implements GitClient {
 		try {
 			refs = git.branchList().setListMode(ListBranchCommand.ListMode.ALL).call();
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			LOGGER.error("Git could not get all references. Message: " + e.getMessage());
 		}
 		return refs;
 	}
 
 	private List<RevCommit> getCommits(Ref branch) {
 		List<RevCommit> commits = new ArrayList<RevCommit>();
+		if (branch == null) {
+			return commits;
+		}
 		try {
-			if (branch != null) {
-				git.checkout().setName(branch.getName()).call();
-			}
+			git.checkout().setName(branch.getName()).call();
 			Iterable<RevCommit> iterable = git.log().call();
 			for (RevCommit commit : iterable) {
 				commits.add(commit);
 			}
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			LOGGER.error(
+					"Git could not get commits for the branch: " + branch.getName() + " Message: " + e.getMessage());
 		}
 		return commits;
 	}

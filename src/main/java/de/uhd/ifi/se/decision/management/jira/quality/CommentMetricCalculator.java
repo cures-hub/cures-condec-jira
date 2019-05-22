@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
@@ -44,6 +47,8 @@ public class CommentMetricCalculator {
 	private int absolutDepth;
 	private GitClient gitClient;
 
+	protected static final Logger LOGGER = LoggerFactory.getLogger(CommentMetricCalculator.class);
+
 	public CommentMetricCalculator(long projectId, ApplicationUser user, String jiraIssueTypeId) {
 		this.projectKey = ComponentAccessor.getProjectManager().getProjectObj(projectId).getKey();
 		this.user = user;
@@ -63,6 +68,7 @@ public class CommentMetricCalculator {
 			searchResults = searchService.search(user, query, PagerFilter.getUnlimitedFilter());
 			jiraIssues = JiraSearchServiceHelper.getJiraIssues(searchResults);
 		} catch (SearchException e) {
+			LOGGER.error("Getting JIRA issues for project failed. Message: " + e.getMessage());
 		}
 		return jiraIssues;
 	}
@@ -74,7 +80,7 @@ public class CommentMetricCalculator {
 			try {
 				numberOfComments = ComponentAccessor.getCommentManager().getComments(jiraIssue).size();
 			} catch (NullPointerException e) {
-				// Jira issue does not exist
+				LOGGER.error("Getting number of comments for JIRA issues failed. Message: " + e.getMessage());
 				numberOfComments = 0;
 			}
 			numberOfCommentsForJiraIssues.put(jiraIssue.getKey(), numberOfComments);
