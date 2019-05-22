@@ -66,6 +66,9 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	}
 
 	private Instances getInstancesFromArffFile(File arffFile) {
+		if (!arffFile.exists()) {
+			return null;
+		}
 		Instances instances = null;
 		try {
 			DataSource dataSource = new ConverterUtils.DataSource(arffFile.getPath());
@@ -82,7 +85,9 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	}
 
 	private Instances getInstancesFromArffFile(String arffFileName) {
-		return getInstancesFromArffFile(new File(directory + File.separator + arffFileName));
+		File arffFile = new File(directory + File.separator + arffFileName);
+
+		return getInstancesFromArffFile(arffFile);
 	}
 
 	public void setArffFile(File arffFile) {

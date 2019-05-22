@@ -215,7 +215,7 @@ public class GitClientImpl implements GitClient {
 			parentCommit = revWalk.parseCommit(revCommit.getParent(0).getId());
 			revWalk.close();
 		} catch (Exception e) {
-			System.err.println("Could not get the parent commit. Message: " + e.getMessage());
+			LOGGER.error("Could not get the parent commit. Message: " + e.getMessage());
 		}
 		return parentCommit;
 	}

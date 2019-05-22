@@ -5,8 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.user.MockApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.KnowledgeType;
@@ -31,7 +31,6 @@ public class TestDeleteDecisionKnowledgeElement extends TestJiraIssuePersistence
 		element.setId(1);
 		element.setProject("TEST");
 		element.setType(KnowledgeType.SOLUTION);
-		ApplicationUser user = new MockApplicationUser("NoFails");
 		assertTrue(issueStrategy.deleteDecisionKnowledgeElement(element, user));
 	}
 
@@ -41,27 +40,7 @@ public class TestDeleteDecisionKnowledgeElement extends TestJiraIssuePersistence
 		element.setId(1);
 		element.setProject("TEST");
 		element.setType(KnowledgeType.SOLUTION);
-		ApplicationUser user = new MockApplicationUser("WithFails");
-		assertFalse(issueStrategy.deleteDecisionKnowledgeElement(element, user));
-	}
-
-	@Test
-	public void testElementExistentUserNotAuthorizedResFails() {
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		element.setId(1);
-		element.setProject("TEST");
-		element.setType(KnowledgeType.SOLUTION);
-		ApplicationUser user = new MockApplicationUser("WithResFails");
-		assertFalse(issueStrategy.deleteDecisionKnowledgeElement(element, user));
-	}
-
-	@Test
-	public void testElementExistentUserNotAuthorizedResultErrors() {
-		DecisionKnowledgeElement element = new DecisionKnowledgeElementImpl();
-		element.setId(1);
-		element.setProject("TEST");
-		element.setType(KnowledgeType.SOLUTION);
-		ApplicationUser user = new MockApplicationUser("ValidNoResErrors");
+		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("WithFails");
 		assertFalse(issueStrategy.deleteDecisionKnowledgeElement(element, user));
 	}
 }
