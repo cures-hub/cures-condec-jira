@@ -14,6 +14,8 @@ import org.eclipse.jgit.util.FS;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
@@ -21,6 +23,7 @@ import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 
 public class TestSetUpGit extends TestSetUpWithIssues {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(TestSetUpGit.class);
 	protected static GitClient gitClient;
 
 	@BeforeClass
@@ -29,7 +32,8 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		String uri = getExampleUri();
 		gitClient = new GitClientImpl(uri, directory);
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
-		makeExampleCommit("readMe.txt", "Self-explanatory, ReadMe not necessary.", "TEST-12: Explain how the great software works");
+		makeExampleCommit("readMe.txt", "Self-explanatory, ReadMe not necessary.",
+				"TEST-12: Explain how the great software works");
 		makeExampleCommit("GodClass.java", "public class GodClass {}", "TEST-12: Develop great software");
 	}
 
@@ -77,7 +81,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 			git.commit().setMessage(commitMessage).setAuthor("gitTest", "gitTest@test.de").call();
 			git.push().setRemote("origin").call();
 		} catch (GitAPIException | FileNotFoundException | UnsupportedEncodingException e) {
-			e.printStackTrace();
+			LOGGER.error("Mock commit failed. Message: " + e.getMessage());
 		}
 	}
 

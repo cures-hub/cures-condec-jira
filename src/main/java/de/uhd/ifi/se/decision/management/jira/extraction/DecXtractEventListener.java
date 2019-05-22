@@ -201,7 +201,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 				changedString.put(oldValue, newValue);
 			}
 		} catch (NullPointerException | GenericEntityException e) {
-			e.printStackTrace();
+			LOGGER.error("Get changed string during a JIRA issue event failed. Message: " + e.getMessage());
 		}
 
 		return changedString;

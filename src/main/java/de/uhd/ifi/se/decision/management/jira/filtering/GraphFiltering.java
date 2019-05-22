@@ -202,7 +202,7 @@ public class GraphFiltering {
 				Date queryStartDate = calendar.getTime();
 				startTime = queryStartDate.getTime();
 			} catch (NumberFormatException e) {
-				LOGGER.error("The Date is not in Format yyyy-mm-dd");
+				LOGGER.error("The Date is not in Format yyyy-mm-dd. Message: " + e.getMessage());
 			}
 		} else if (time.matches("(-\\d+(.))")) {
 			long factor = 0;
@@ -214,7 +214,7 @@ public class GraphFiltering {
 			try {
 				queryTime = Long.parseLong(queryTimeString);
 			} catch (NumberFormatException e) {
-				LOGGER.error("No valid time given");
+				LOGGER.error("No valid time given. Message: " + e.getMessage());
 			}
 			startTime = currentDate - (queryTime * factor);
 		}
@@ -236,7 +236,7 @@ public class GraphFiltering {
 				Date queryEndDate = calendar.getTime();
 				endTime = queryEndDate.getTime();
 			} catch (NumberFormatException e) {
-				LOGGER.error("The Date is not in Format yyyy-mm-dd");
+				LOGGER.error("The Date is not in Format yyyy-mm-dd. Message: " + e.getMessage());
 			}
 		} else if (time.matches("-\\d+(.)+")) {
 			long factor;
@@ -248,7 +248,7 @@ public class GraphFiltering {
 			try {
 				queryTime = Long.parseLong(queryTimeString);
 			} catch (NumberFormatException e) {
-				LOGGER.error("No valid time given");
+				LOGGER.error("No valid time given. Message: " + e.getMessage());
 			}
 			endTime = currentDate - (queryTime * factor);
 		}
@@ -289,7 +289,7 @@ public class GraphFiltering {
 				filterId = Long.parseLong(filteredQuery, 10);
 				filterIsNumberCoded = true;
 			} catch (NumberFormatException n) {
-				// n.printStackTrace();
+				LOGGER.error("Produce results from query failed. Message: " + n.getMessage());
 			}
 			if (filterIsNumberCoded) {
 				finalQuery = queryFromFilterId(filterId);
@@ -321,6 +321,7 @@ public class GraphFiltering {
 				resultingIssues = JiraSearchServiceHelper.getJiraIssues(results);
 
 			} catch (SearchException e) {
+				LOGGER.error("Produce results from query failed. Message: " + e.getMessage());
 				e.printStackTrace();
 			}
 		} else {
@@ -385,6 +386,7 @@ public class GraphFiltering {
 		try {
 			searchResult = getSearchService().search(user, query, PagerFilter.getUnlimitedFilter());
 		} catch (SearchException e) {
+			LOGGER.error("Get Issues for this project failed. Message: " + e.getMessage());
 			return null;
 		}
 		return searchResult;

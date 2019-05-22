@@ -11,6 +11,8 @@ import java.util.List;
 import de.uhd.ifi.se.decision.management.jira.ComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.ClassificationTrainerImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import weka.core.Instances;
 
 /**
@@ -21,6 +23,7 @@ public interface ClassificationTrainer {
 
 	public static final File DEFAULT_TRAINING_DATA = new File(DecisionKnowledgeClassifier.DEFAULT_DIR + "lucene.arff");
 
+	static final Logger LOGGER = LoggerFactory.getLogger(ClassificationTrainer.class);
 	/**
 	 * Trains the Classifier with the Data from the Database that was set and
 	 * validated from the user. Creates a new model Files that can be uses to
@@ -113,7 +116,7 @@ public interface ClassificationTrainer {
 	 */
 	public static boolean trainClassifier(File arffFile) {
 		if (!arffFile.exists()) {
-			System.err.println("Could not find default training data for supervised text classifier.");
+			LOGGER.error("Could not find default training data for supervised text classifier.");
 			return false;
 		}
 		ClassificationTrainer classificationTrainer = new ClassificationTrainerImpl();
@@ -143,7 +146,7 @@ public interface ClassificationTrainer {
 			outputStream.write(buffer);
 			outputStream.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error("Failed to copy default training data to file. Message: " + e.getMessage());
 		}
 		return arffFile;
 	}

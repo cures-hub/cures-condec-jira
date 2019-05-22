@@ -1,5 +1,7 @@
 package de.uhd.ifi.se.decision.management.jira.webhook;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +29,12 @@ public class WebhookEventListener implements InitializingBean, DisposableBean {
 	@JiraImport
 	private final EventPublisher eventPublisher;
 
+	protected static final Logger LOGGER = LoggerFactory.getLogger(WebhookEventListener.class);
+
 	@Autowired
 	public WebhookEventListener(EventPublisher eventPublisher) {
 		this.eventPublisher = eventPublisher;
+		LOGGER.info("Webhook event listener was added to JIRA.");
 	}
 
 	/**
@@ -40,6 +45,7 @@ public class WebhookEventListener implements InitializingBean, DisposableBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		eventPublisher.register(this);
+		LOGGER.info("Webhook event listener was added to JIRA.");
 	}
 
 	/**
@@ -50,6 +56,7 @@ public class WebhookEventListener implements InitializingBean, DisposableBean {
 	@Override
 	public void destroy() throws Exception {
 		eventPublisher.unregister(this);
+		LOGGER.info("Webhook event listener was removed from JIRA.");
 	}
 
 	@EventListener

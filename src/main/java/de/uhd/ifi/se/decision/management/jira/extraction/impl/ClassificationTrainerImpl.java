@@ -15,6 +15,8 @@ import de.uhd.ifi.se.decision.management.jira.extraction.DecisionKnowledgeClassi
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersistenceManager;
 import meka.classifiers.multilabel.LC;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayesMultinomial;
 import weka.classifiers.meta.FilteredClassifier;
@@ -36,6 +38,8 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	private File directory;
 	private Instances instances;
 	private DecisionKnowledgeClassifier classifier;
+
+	protected static final Logger LOGGER = LoggerFactory.getLogger(ClassificationTrainerImpl.class);
 
 	public ClassificationTrainerImpl() {
 		this.directory = new File(DecisionKnowledgeClassifier.DEFAULT_DIR);
@@ -62,6 +66,9 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 	}
 
 	private Instances getInstancesFromArffFile(File arffFile) {
+		if (!arffFile.exists()) {
+			return null;
+		}
 		Instances instances = null;
 		try {
 			DataSource dataSource = new ConverterUtils.DataSource(arffFile.getPath());
@@ -72,13 +79,15 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 				instances.setClassIndex(instances.numAttributes() - 1);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("Problem to get the instances from ARFF file. Message:" + e.getMessage());
 		}
 		return instances;
 	}
 
 	private Instances getInstancesFromArffFile(String arffFileName) {
-		return getInstancesFromArffFile(new File(directory + File.separator + arffFileName));
+		File arffFile = new File(directory + File.separator + arffFileName);
+
+		return getInstancesFromArffFile(arffFile);
 	}
 
 	public void setArffFile(File arffFile) {
@@ -109,7 +118,7 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 
 			isTrained = true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("The classifier could not be trained. Message:" + e.getMessage());
 		}
 		return isTrained;
 	}
@@ -124,8 +133,8 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 		datarandom.stratify(folds);
 		rate.crossValidateModel(binaryRelevance, instances, folds, seed);
 
-		System.out.println(rate.toSummaryString());
-		System.out.println("Structure num classes: " + instances.numClasses());
+		LOGGER.info(rate.toSummaryString());
+		LOGGER.info("Structure num classes: " + instances.numClasses());
 
 		// for (int i = 0; i < instances.numClasses(); i++) {
 		// System.out.println(rate.fMeasure(i));
@@ -143,7 +152,7 @@ public class ClassificationTrainerImpl implements ClassificationTrainer {
 			writer.println(arffString);
 			writer.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.error("The ARFF file could not be saved. Message: " + e.getMessage());
 		}
 		return arffFile;
 	}
