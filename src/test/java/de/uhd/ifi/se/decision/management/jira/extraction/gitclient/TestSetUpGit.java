@@ -31,14 +31,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
 		makeExampleCommit("readMe.txt", "Self-explanatory, ReadMe not necessary.", "TEST-12: Explain how the great software works");
 		makeExampleCommit("GodClass.java", "public class GodClass {}", "TEST-12: Develop great software");
-
-		/*
-		* following mockcommits are for TangledCommitDedetection
-		* 1. and 2. commit are not tangled commits
-		* 3. and 4. commits are tangled commits, but the package distance of 4. commit is greater than 3
-		* excepted order on codeSummarize: 4->3->2->1
-		* */
-
+		
 		makeExampleCommit("untangled.java", "package de.uhd.ifi.se.decision.management.jira.extraction.impl;\n" +
 				"\n" +
 				"public class Main {\n" +
