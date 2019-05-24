@@ -1,10 +1,9 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.tangledCommitDetection;
+package de.uhd.ifi.se.decision.management.jira.extraction.tangledcommitdetection;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.gitclient.TestSetUpGit;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.ChangedFileImpl;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.DiffImpl;
-import de.uhd.ifi.se.decision.management.jira.extraction.impl.TangledCommitDetectionImpl;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
 import org.junit.Before;
@@ -15,7 +14,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-public class testDiff extends TestSetUpGit {
+public class TestDiff extends TestSetUpGit {
     private DiffImpl diffsWithMoreThanOneCommits;
     private DiffImpl diffsWithOneCommit;
 

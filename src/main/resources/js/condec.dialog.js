@@ -307,7 +307,7 @@
 		var probability = document.getElementById("summarization-probability").valueAsNumber;
 		var xID = document.getElementById("summarization-xID").value;
         console.log(xID);
-		if(xID == undefined || xID.length == 0 || xID == ""){
+		if(xID === undefined || xID.length === 0 || xID === ""){
             document.getElementById("summarization-xID").value = id;
             conDecAPI.getSummarizedCode(id, documentationLocation, probability, function(text) {
                 var insertString = "<form class='aui'>" + "<div>" + text + "</div>" + "</form>";

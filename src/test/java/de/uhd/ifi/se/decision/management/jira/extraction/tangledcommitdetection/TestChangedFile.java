@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.tangledCommitDetection;
+package de.uhd.ifi.se.decision.management.jira.extraction.tangledcommitdetection;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
@@ -16,13 +16,13 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class testChangedFile extends TestSetUpGit {
+public class TestChangedFile extends TestSetUpGit {
 
     private ChangedFileImpl changedFile;
     private Map<DiffEntry, EditList> diffsWithOneCommit;
 
 
-    public Map<DiffEntry, EditList> GetDiff(GitClient gitClient, String jiraIssueKey) {
+    public Map<DiffEntry, EditList> getDiff(GitClient gitClient, String jiraIssueKey) {
         return gitClient.getDiff(jiraIssueKey);
     }
 
@@ -36,7 +36,7 @@ public class testChangedFile extends TestSetUpGit {
     @Before
     public void setUp() {
         super.setUp();
-        diffsWithOneCommit = GetDiff(gitClient, "TEST-77");
+        diffsWithOneCommit = getDiff(gitClient, "TEST-77");
     }
 
     @Test
@@ -62,14 +62,6 @@ public class testChangedFile extends TestSetUpGit {
         setChangedFile();
         changedFile.setPackageDistance(10);
         assertEquals(10, changedFile.getPackageDistance());
-    }
-
-    @Test
-    public void testAddDistances() {
-        setChangedFile();
-        changedFile.addLineDistance(10);
-        changedFile.addMethodDistance(9);
-        changedFile.addPathDistance(8);
     }
 
     @Test
