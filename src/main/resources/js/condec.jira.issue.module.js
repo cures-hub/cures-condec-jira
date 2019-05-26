@@ -114,7 +114,7 @@
                 documentationLocation = documentationLocation + AJS.$('#documentation-dropdown').children().eq(j).text();
             }
         }
-        var nodeDistanceInput = document.getElementById("node-distance-picker")
+        var nodeDistanceInput = document.getElementById("node-distance-picker");
 		if (nodeDistanceInput !== null) {
         	nodeDistance = nodeDistanceInput.value;
 		}
@@ -146,7 +146,7 @@
             for (var count = 0; count < documentationLocation.length; count++) {
 
                 documentationDropdown.insertAdjacentHTML("beforeend","<aui-item-checkbox interactive checked>" +
-                    documentationLocation[count] + "</aui-item-checkbox>")
+                    documentationLocation[count] + "</aui-item-checkbox>");
             }
             if (filterData.startDate >= 0) {
                 firstDatePicker.valueAsDate = new Date(filterData.startDate+1000);
