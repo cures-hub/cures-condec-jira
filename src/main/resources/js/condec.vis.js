@@ -37,13 +37,13 @@
             autoResize: false,
 
             layout: {
-                improvedLayout: false,
+                improvedLayout: true,
                 hierarchical: {
                     enabled:true,
                     levelSeparation: 140,
                     nodeSpacing: 250,
                     treeSpacing: 0,
-                    blockShifting: true,
+                    blockShifting: false,
                     edgeMinimization: false,
                     parentCentralization: true,
                     direction: 'UD', // UD, DU, LR, RL
@@ -175,8 +175,8 @@
             }
         });
         network.on("selectNode", function(params) {
-            if (params.nodes.length == 1) {
-                if (network.isCluster(params.nodes[0]) == true) {
+            if (params.nodes.length === 1) {
+                if (network.isCluster(params.nodes[0]) === true) {
                     network.openCluster(params.nodes[0]);
                 }
             }
@@ -200,7 +200,7 @@
     ConDecVis.prototype.buildVisFiltered = function buildVisFiltered(issueKey,search,nodeDistance,issueTypes,createdAfter,createdBefore, documentationLocation) {
         console.log("conDecVis buildVisFiltered");
         conDecAPI.getVisFiltered(issueKey,search,issueTypes,createdAfter,createdBefore, documentationLocation, function (visData) {
-            build(visData.nodes, visData.edges, visData.rootElementKey,nodeDistance)
+            build(visData.nodes, visData.edges, visData.rootElementKey,nodeDistance);
         })
     };
 
@@ -209,7 +209,7 @@
         conDecAPI.getVis(elementKey,searchTerm, function (visData) {
             var network = build(visData.nodes,visData.edges,visData.rootElementKey,10);
             network.focus(visData.rootElementKey,{scale:0.9});
-        })
+        });
 
     };
 

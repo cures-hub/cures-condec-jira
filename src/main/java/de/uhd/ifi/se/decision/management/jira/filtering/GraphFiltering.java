@@ -202,26 +202,9 @@ public class GraphFiltering {
 	private long findStarttime(long currentDate, String time) {
 		long startTime = 0;
 		if (time.matches("(\\d\\d\\d\\d-\\d\\d-\\d\\d)")) {
-			try {
-				DateFormat simple = new SimpleDateFormat("yyyy-MM-dd");
-				Date date = simple.parse(time);
-				startTime = date.getTime();
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+			startTime = getDateFromYearMonthDateFormat(time);
 		} else if (time.matches("(-\\d+(.))")) {
-			long factor = 0;
-			String clearedTime = time.replaceAll("\\s(.)+", "");
-			char factorLetter = clearedTime.charAt(clearedTime.length() - 1);
-			factor = getTimeFactor(factorLetter);
-			long queryTime = currentDate + 1;
-			String queryTimeString = time.replaceAll("\\D+", "");
-			try {
-				queryTime = Long.parseLong(queryTimeString);
-			} catch (NumberFormatException e) {
-				LOGGER.error("No valid time given");
-			}
-			startTime = currentDate - (queryTime * factor);
+			startTime = getTimeFromNumberAndFactorLetter(currentDate, time);
 		}
 		return startTime;
 	}
@@ -229,29 +212,38 @@ public class GraphFiltering {
 	private long findEndtime(long currentDate, String time) {
 		long endTime = 0;
 		if (time.matches("(\\d\\d\\d\\d-\\d\\d-\\d\\d)")) {
-			String[] split = time.split("-");
-			try {
-				DateFormat simple = new SimpleDateFormat("yyyy-MM-dd");
-				Date date = simple.parse(time);
-				endTime = date.getTime();
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+			endTime = getDateFromYearMonthDateFormat(time);
 		} else if (time.matches("-\\d+(.)+")) {
-			long factor;
-			String clearedTime = time.replaceAll("\\s(.)+", "");
-			char factorLetter = clearedTime.charAt(clearedTime.length() - 1);
-			factor = getTimeFactor(factorLetter);
-			long queryTime = currentDate + 1;
-			String queryTimeString = time.replaceAll("\\D+", "");
-			try {
-				queryTime = Long.parseLong(queryTimeString);
-			} catch (NumberFormatException e) {
-				LOGGER.error("No valid time given");
-			}
-			endTime = currentDate - (queryTime * factor);
+			endTime = getTimeFromNumberAndFactorLetter(currentDate, time);
 		}
 		return endTime;
+	}
+	private long getDateFromYearMonthDateFormat(String dateAsString) {
+		long dateAsLong = -1;
+		try {
+			DateFormat simple = new SimpleDateFormat("yyyy-MM-dd");
+			Date date = simple.parse(dateAsString);
+			dateAsLong = date.getTime();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return dateAsLong;
+	}
+
+	private long getTimeFromNumberAndFactorLetter(long currentDate, String dateAsNumberAndLetter) {
+		long factor;
+		String clearedTime = dateAsNumberAndLetter.replaceAll("\\s(.)+", "");
+		char factorLetter = clearedTime.charAt(clearedTime.length() - 1);
+		factor = getTimeFactor(factorLetter);
+		long queryTime = currentDate + 1;
+		String queryTimeString = dateAsNumberAndLetter.replaceAll("\\D+", "");
+		try {
+			queryTime = Long.parseLong(queryTimeString);
+		} catch (NumberFormatException e) {
+			LOGGER.error("No valid time given");
+		}
+		long result = currentDate -(queryTime*factor);
+		return result;
 	}
 
 	private long getTimeFactor(char factorAsALetter) {
@@ -305,9 +297,8 @@ public class GraphFiltering {
 				String issueTypesCleared = issueTypesSeparated.replaceAll("[()]","").replaceAll("\"","");
 				String[] split = issueTypesCleared.split(",");
 				for (String issueType : split) {
-					issueType.replaceAll("[()]","");
-
-					this.issueTypesInQuery.add(issueType.trim());
+					String cleanedIssueType = issueType.replaceAll("[()]","");
+					this.issueTypesInQuery.add(cleanedIssueType.trim());
 				}
 			}
 		}
@@ -463,61 +454,46 @@ public class GraphFiltering {
 	}
 
 	private boolean matchesCreatedOrIssueType(String resultingQuery) {
-		if (this.isQueryContainsIssueTypes()) {
-			if (resultingQuery.contains("issuetype")) {
+		if (this.isQueryContainsIssueTypes() && resultingQuery.contains("issuetype")) {
 				return true;
-			}
 		}
 		if (this.isQueryContainsCreationDate()) {
-			if (this.startDate >= 0 && resultingQuery.contains("created")) {
-				if (resultingQuery.contains(">=")) {
+			if (this.startDate >= 0 && resultingQuery.contains("created") && resultingQuery.contains(">=")) {
 					return true;
-				}
 			}
-			if (this.endDate >= 0 && resultingQuery.contains("created")) {
-				if (resultingQuery.contains("<=")) {
+			if (this.endDate >= 0 && resultingQuery.contains("created") && resultingQuery.contains("<=")) {
 					return true;
-				}
 			}
 		}
 		return false;
 	}
 
 	private boolean matchesCreatedOrIssueType(Clause clause) {
-		if (this.isQueryContainsIssueTypes()) {
-			if (clause.getName().equals("issuetype")) {
+		if (this.isQueryContainsIssueTypes() && clause.getName().equals("issuetype")) {
 				return true;
-			}
 		}
 		if (this.isQueryContainsCreationDate()) {
-			if (this.startDate >= 0 && clause.getName().equals("created")) {
-				if (clause.toString().contains(">=")) {
+			if (this.startDate >= 0 && clause.getName().equals("created") && clause.toString().contains(">=")) {
 					return true;
-				}
 			}
-			if (this.endDate >= 0 && clause.getName().equals("created")) {
-				if (clause.toString().contains("<=")) {
+			if (this.endDate >= 0 && clause.getName().equals("created") && clause.toString().contains("<=")) {
 					return true;
-				}
 			}
 		}
 		return false;
 	}
 
 	public List<DecisionKnowledgeElement> getAllElementsMatchingQuery() {
-		List<DecisionKnowledgeElement> results = new ArrayList<>();
-		results.addAll(this.getQueryResults());
+		List<DecisionKnowledgeElement> results = new ArrayList<>(this.getQueryResults());
 		SearchResults<Issue> projectIssues = getIssuesForThisProject(user);
 		if (projectIssues != null) {
 			for (Issue currentIssue : JiraSearchServiceHelper.getJiraIssues(projectIssues)) {
 				List<DecisionKnowledgeElement> elements = JiraIssueTextPersistenceManager
 						.getElementsForIssue(currentIssue.getId(), projectKey);
 				for (DecisionKnowledgeElement currentElement : elements) {
-					if (!results.contains(currentElement)) {
-						if (currentElement instanceof PartOfJiraIssueText) {
-							if (checkIfJiraTextMatchesFilter(currentElement)) {
-								results.add(currentElement);
-							}
+					if (!results.contains(currentElement) && currentElement instanceof PartOfJiraIssueText) {
+						if (checkIfJiraTextMatchesFilter(currentElement)) {
+							results.add(currentElement);
 						}
 					}
 				}
@@ -531,12 +507,12 @@ public class GraphFiltering {
 			long startTime = this.getStartDate();
 			long endTime = this.getEndDate();
 			if (startTime > 0) {
-				if (((PartOfJiraIssueText) element).getCreated().getTime() < startTime) {
+				if ((element).getCreated().getTime() < startTime) {
 					return false;
 				}
 			}
 			if (endTime > 0) {
-				if (((PartOfJiraIssueText) element).getCreated().getTime() > endTime) {
+				if ((element).getCreated().getTime() > endTime) {
 					return false;
 				}
 			}
@@ -547,7 +523,7 @@ public class GraphFiltering {
 				if (!issueTypes.contains("Argument")) {
 					return false;
 				}
-			}else if (!(issueTypes.contains(((PartOfJiraIssueText) element).getTypeAsString()))){
+			}else if (!(issueTypes.contains((element).getTypeAsString()))){
 				return false;
 			}
 		}
@@ -557,7 +533,7 @@ public class GraphFiltering {
 
 	private SearchResults<Issue> getIssuesForThisProject(ApplicationUser user) {
 		JqlClauseBuilder jqlClauseBuilder = JqlQueryBuilder.newClauseBuilder();
-		com.atlassian.query.Query query = jqlClauseBuilder.project(projectKey).buildQuery();
+		Query query = jqlClauseBuilder.project(projectKey).buildQuery();
 		SearchResults<Issue> searchResult;
 		try {
 			searchResult = getSearchService().search(user, query, PagerFilter.getUnlimitedFilter());

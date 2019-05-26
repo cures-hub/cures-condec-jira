@@ -60,9 +60,9 @@
         AJS.$('#visualization-selection-tabs').on('tabSelect', function(e,o){
             console.log("tab switched");
             console.log(window);
-            if (o.tab.attr("href")=="#treant") {
+            if (o.tab.attr("href")==="#treant") {
                 window.conDecJiraIssueModule.initTreant();
-            } else if (o.tab.attr("href")=="#vis"){
+            } else if (o.tab.attr("href")==="#vis"){
                 window.conDecJiraIssueModule.initVis();
             }
         });
@@ -108,10 +108,10 @@
                 issueTypes= issueTypes + ",";
             }
         }
-        for (var i=0; i < AJS.$('#documentation-dropdown').children().size(); i++) {
-            if (typeof AJS.$('#documentation-dropdown').children().eq(i).attr('checked') !== typeof undefined
-                && AJS.$('#documentation-dropdown').children().eq(i).attr('checked') !== false) {
-                documentationLocation = documentationLocation + AJS.$('#documentation-dropdown').children().eq(i).text();
+        for (var j=0; j < AJS.$('#documentation-dropdown').children().size(); j++) {
+            if (typeof AJS.$('#documentation-dropdown').children().eq(j).attr('checked') !== typeof undefined
+                && AJS.$('#documentation-dropdown').children().eq(j).attr('checked') !== false) {
+                documentationLocation = documentationLocation + AJS.$('#documentation-dropdown').children().eq(j).text();
             }
         }
         var nodeDistanceInput = document.getElementById("node-distance-picker")

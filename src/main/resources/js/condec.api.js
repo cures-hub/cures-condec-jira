@@ -339,7 +339,7 @@
             if (error === null) {
                 callback(filterData);
             }
-        })
+        });
     };
 
     /*

@@ -1,6 +1,7 @@
 # Gitignore for JIRA ConDec plug-in
 
 # Directories
+codemr/
 target/
 bin/
 .idea/

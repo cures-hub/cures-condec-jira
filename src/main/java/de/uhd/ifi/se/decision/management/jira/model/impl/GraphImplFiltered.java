@@ -28,19 +28,19 @@ public class GraphImplFiltered extends GraphImpl {
 
 	public GraphImplFiltered() {
 		super();
-		this.elementsVisitedTransitively = new ArrayList<DecisionKnowledgeElement>();
+		this.elementsVisitedTransitively = new ArrayList<>();
 	}
 
 	public GraphImplFiltered(String projectKey, String rootElementKey, GraphFiltering filter) {
 		super(projectKey, rootElementKey);
 		this.filter = filter;
-		this.elementsVisitedTransitively = new ArrayList<DecisionKnowledgeElement>();
+		this.elementsVisitedTransitively = new ArrayList<>();
 	}
 
 	@Override
 	protected Map<DecisionKnowledgeElement, Link> getLinkedFirstClassElementsAndLinks(
 			DecisionKnowledgeElement element) {
-		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
+		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<>();
 
 		List<Link> links = this.project.getPersistenceStrategy().getLinks(element);
 		for (Link link : links) {
@@ -84,9 +84,9 @@ public class GraphImplFiltered extends GraphImpl {
 
 	private List<DecisionKnowledgeElement> getTransitivelyLinkedElements(DecisionKnowledgeElement element) {
 		if (elementsVisitedTransitively.contains(element) || element == null) {
-			return new ArrayList<DecisionKnowledgeElement>();
+			return new ArrayList<>();
 		}
-		List<DecisionKnowledgeElement> transitivelyLinkedElements = new ArrayList<DecisionKnowledgeElement>();
+		List<DecisionKnowledgeElement> transitivelyLinkedElements = new ArrayList<>();
 		List<Link> links = this.project.getPersistenceStrategy().getLinks(element);
 		for (Link link : links) {
 			if (linkIds.contains(link.getId())) {
@@ -115,7 +115,7 @@ public class GraphImplFiltered extends GraphImpl {
 
 	@Override
 	protected Map<DecisionKnowledgeElement, Link> getLinkedSentencesAndLinks(DecisionKnowledgeElement element) {
-		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<DecisionKnowledgeElement, Link>();
+		Map<DecisionKnowledgeElement, Link> linkedElementsAndLinks = new HashMap<>();
 
 		if (element == null) {
 			return linkedElementsAndLinks;
@@ -150,11 +150,7 @@ public class GraphImplFiltered extends GraphImpl {
 	}
 
 	private boolean isSentenceIssueTypeInIssueTypes(DecisionKnowledgeElement oppositeElement) {
-		if (filter.getIssueTypesInQuery().contains(oppositeElement.getType())) {
-			return true;
-		} else {
-			return false;
-		}
+		return filter.getIssueTypesInQuery().contains(oppositeElement.getType().toString());
 	}
 
 	private boolean isSentenceIncludedInGraph(DecisionKnowledgeElement element) {

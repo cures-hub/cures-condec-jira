@@ -45,14 +45,16 @@ public class Vis {
 	public Vis(){
 	}
 
-	public Vis(String projectKey, String elementKey, boolean isHyperlinked){
+	public Vis(String projectKey, String elementKey){
 		this.graph = new GraphImpl(projectKey, elementKey);
-		this.setHyperlinked(isHyperlinked);
+		this.elementsAlreadyAsNode = new ArrayList<>();
 		DecisionKnowledgeElement rootElement = this.graph.getRootElement();
 		this.rootElementKey = (rootElement.getId()+ "_" + rootElement.getDocumentationLocationAsString());
 		nodes = new HashSet<>();
 		edges= new HashSet<>();
-		this.elementsAlreadyAsNode = new ArrayList<>();
+		elementsAlreadyAsNode = new ArrayList<>();
+		level = 50;
+		cid = 0;
 		fillNodesAndEdges(rootElement,null,0, 0);
 	}
 
@@ -60,7 +62,7 @@ public class Vis {
 		this.graph = new GraphImpl(projectKey, elementKey);
 		GraphFiltering filter;
 		for (DocumentationLocation location : DocumentationLocation.values()) {
-			this.documentationLocation = this. documentationLocation + DocumentationLocation.getName(location);
+			this.documentationLocation = this.documentationLocation + DocumentationLocation.getName(location);
 		}
 		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {
 			filter = new GraphFiltering(projectKey, query, user, false);

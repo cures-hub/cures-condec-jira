@@ -20,9 +20,6 @@ public class VisEdge {
 	private String label;
 
 	@XmlElement
-	private String arrows;
-
-	@XmlElement
 	private String id;
 
 	public VisEdge(Link link) {
@@ -54,14 +51,6 @@ public class VisEdge {
 
 	public void setLabel(String label) {
 		this.label = label;
-	}
-
-	public String getArrows() {
-		return arrows;
-	}
-
-	public void setArrows(String arrows) {
-		this.arrows = arrows;
 	}
 
 	public String getId() {return id; }

@@ -30,9 +30,6 @@ public class FilterDataProvider {
 	@XmlElement
 	private List<String> documentationLocations;
 
-	public FilterDataProvider() {
-
-	}
 
 	public FilterDataProvider(String projectKey, String query, ApplicationUser user) {
 		if ((query.matches("\\?jql=(.)+")) || (query.matches("\\?filter=(.)+"))) {

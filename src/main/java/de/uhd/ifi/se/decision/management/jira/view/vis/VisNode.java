@@ -28,6 +28,8 @@ public class VisNode {
 	@XmlElement
 	private int cid;
 
+	public VisNode() {}
+
 	public VisNode(DecisionKnowledgeElement element, boolean collapsed, int level, int cid){
 		this.setId(element.getId()+ "_" + element.getDocumentationLocationAsString());
 		this.level = level;
