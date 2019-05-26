@@ -1,8 +1,13 @@
 package de.uhd.ifi.se.decision.management.jira.view.vis;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.HashSet;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;
+import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeProjectImpl;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.LinkInDatabase;
 import de.uhd.ifi.se.decision.management.jira.persistence.tables.PartOfJiraIssueTextInDatabase;
 import net.java.ao.test.jdbc.DatabaseUpdater;
@@ -29,17 +34,22 @@ public class TestVis extends TestSetUpWithIssues {
 	private HashSet<VisNode> nodes;
 	private HashSet<VisEdge> edges;
 	private AbstractPersistenceManager persistenceStrategy;
+	private DecisionKnowledgeElement element;
 
 	@Before
 	public void setUp() {
+		initialization();
+		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
+				new MockUserManager());
 		nodes = new HashSet<>();
 		edges = new HashSet<>();
 		vis = new Vis();
 		vis.setEdges(edges);
 		vis.setNodes(nodes);
-		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
-				new MockUserManager());
-		initialization();
+
+
+		element = new DecisionKnowledgeElementImpl(ComponentAccessor.getIssueManager().getIssueObject((long) 14));
+		element.setProject(new DecisionKnowledgeProjectImpl("Test"));
 		persistenceStrategy = AbstractPersistenceManager.getDefaultPersistenceStrategy("TEST");
 	}
 	@Test
@@ -60,6 +70,12 @@ public class TestVis extends TestSetUpWithIssues {
 		HashSet<VisEdge> newEdges = new HashSet<>();
 		this.vis.setEdges(newEdges);
 		assertEquals(this.vis.getEdges(),newEdges);
+	}
+
+	@Test
+	public void testWithoutFiltering() {
+		Vis newVis = new Vis(element.getProject().getProjectKey(),element.getKey());
+		assertNotNull(newVis);
 	}
 
 

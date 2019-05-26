@@ -53,8 +53,12 @@ public class Vis {
 		nodes = new HashSet<>();
 		edges= new HashSet<>();
 		elementsAlreadyAsNode = new ArrayList<>();
+		elementsMatchingFilterCriteria = graph.getAllElements();
 		level = 50;
 		cid = 0;
+		for (DocumentationLocation location : DocumentationLocation.values()) {
+			this.documentationLocation = this.documentationLocation + DocumentationLocation.getName(location);
+		}
 		fillNodesAndEdges(rootElement,null,0, 0);
 	}
 
