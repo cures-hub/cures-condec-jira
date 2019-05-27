@@ -3,6 +3,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 import java.io.File;
 import java.util.Map;
 
+import com.atlassian.adapter.jackson.ObjectMapper;
 import de.uhd.ifi.se.decision.management.jira.extraction.TangledCommitDetection;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -62,6 +63,9 @@ public class CodeSummarizerImpl implements CodeSummarizer {
             LOGGER.error("calculation fails");
             return "";
         }
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonString = mapper.writeValueAsString(allDiffs);
+        System.out.println(jsonString);
         return generateSummary(allDiffs);
     }
 
