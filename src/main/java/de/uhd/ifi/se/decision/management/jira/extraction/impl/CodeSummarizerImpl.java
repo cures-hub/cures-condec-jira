@@ -1,11 +1,14 @@
 package de.uhd.ifi.se.decision.management.jira.extraction.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
+import java.util.Vector;
 
-import com.atlassian.adapter.jackson.ObjectMapper;
-import de.uhd.ifi.se.decision.management.jira.extraction.TangledCommitDetection;
+import com.google.gson.Gson;
+import de.uhd.ifi.se.decision.management.jira.extraction.*;
 import org.apache.commons.io.FilenameUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -14,21 +17,22 @@ import org.slf4j.LoggerFactory;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 
-import de.uhd.ifi.se.decision.management.jira.extraction.CodeSummarizer;
-import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
-
 public class CodeSummarizerImpl implements CodeSummarizer {
 
     private GitClient gitClient;
     private static final Logger LOGGER = LoggerFactory.getLogger(CodeSummarizerImpl.class);
     private int minProbability;
+    private String projectKey;
+    private String issueKey;
     public CodeSummarizerImpl(String projectKey) {
+        this.projectKey = projectKey;
         this.gitClient = new GitClientImpl(projectKey);
     }
 
     @Override
     public String createSummary(String jiraIssueKey, int probability) {
-        minProbability = probability;
+        this.minProbability = probability;
+        this.issueKey = jiraIssueKey;
         if (jiraIssueKey == null || jiraIssueKey.equalsIgnoreCase("")) {
             return "";
         }
@@ -63,16 +67,56 @@ public class CodeSummarizerImpl implements CodeSummarizer {
             LOGGER.error("calculation fails");
             return "";
         }
+        //make easy for mapper
+        Vector<SimplifiedChangedFile> simplifiedChangedFiles = new Vector<>();
+        for (ChangedFileImpl changedFile: allDiffs.getChangedFileImpls()) {
+            simplifiedChangedFiles.add(ChangedFile.getSimplified(changedFile));
+        }
         ObjectMapper mapper = new ObjectMapper();
-        String jsonString = mapper.writeValueAsString(allDiffs);
-        System.out.println(jsonString);
+        String jsonString = "";
+        try {
+            jsonString = mapper.writeValueAsString(simplifiedChangedFiles);
+            System.out.println(jsonString);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        try{
+            Diff.sendPost(this.projectKey, this.issueKey, jsonString);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+        /*ObjectMapper mapper = new ObjectMapper();
+        DiffImpl RxDiff = allDiffs;
+        try {
+
+            Gson gson = new Gson();
+            String studentJson = gson.toJson(RxDiff.getChangedFileImpls().get(0));
+
+
+            mapper.writeValue(new File("staff.json"), RxDiff.getChangedFileImpls().get(0));
+            // Java objects to JSON string - compact-print
+            String jsonString = mapper.writeValueAsString(RxDiff.getChangedFileImpls().get(0));
+
+            System.out.println(jsonString);
+
+            // Java objects to JSON string - pretty-print
+            String jsonInString2 = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(RxDiff);
+
+            System.out.println(jsonInString2);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        */
         return generateSummary(allDiffs);
     }
 
     private String generateSummary(DiffImpl diffImpl){
         String rows ="";
         for(ChangedFileImpl changedFileImpl : diffImpl.getChangedFileImpls()){
-            if(changedFileImpl.getPercentage() >= minProbability){
+            if(changedFileImpl.getPercentage() >= this.minProbability){
                 rows += this.addRow(this.addTableItem(FilenameUtils.removeExtension(changedFileImpl.getFile().getName()),
                         this.summarizeMethods(changedFileImpl),Float.toString(changedFileImpl.getPercentage())));
             }

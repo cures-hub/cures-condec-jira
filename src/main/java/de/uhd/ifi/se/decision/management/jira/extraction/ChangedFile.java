@@ -2,6 +2,9 @@ package de.uhd.ifi.se.decision.management.jira.extraction;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.ChangedFileImpl;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.SimplifiedChangedFile;
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.diff.EditList;
 
 import java.io.File;
@@ -33,5 +36,14 @@ public interface ChangedFile {
     void addMethodDistance(double distance);
 
     void setMethodDeclarations(MethodDeclaration m);
+
+    static SimplifiedChangedFile getSimplified(ChangedFileImpl changedFile){
+        Vector<String> changedMethods = new Vector<>();
+        for (MethodDeclaration methodDeclaration: changedFile.getMethodDeclarations()) {
+            changedMethods.add(methodDeclaration.getDeclarationAsString());
+        }
+       return new SimplifiedChangedFile(FilenameUtils.removeExtension(changedFile.getFile().getName()),
+               changedMethods, changedFile.getPercentage());
+    }
 
 }
