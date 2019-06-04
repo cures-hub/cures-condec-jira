@@ -1,9 +1,10 @@
-package de.uhd.ifi.se.decision.management.jira.extraction;
+package de.uhd.ifi.se.decision.management.jira.eventlistener;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.ClassificationManagerForJiraIssueComments;
 import org.ofbiz.core.entity.GenericEntityException;
 import org.ofbiz.core.entity.GenericValue;
 import org.slf4j.Logger;
@@ -34,10 +35,8 @@ import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersisten
  * description of a JIRA issue.
  */
 @Component
-public class DecXtractEventListener implements InitializingBean, DisposableBean {
+public class DecXtractEventListener{
 
-	@JiraImport
-	private final EventPublisher eventPublisher;
 	private String projectKey;
 	private IssueEvent issueEvent;
 	private static final Logger LOGGER = LoggerFactory.getLogger(DecXtractEventListener.class);
@@ -47,36 +46,7 @@ public class DecXtractEventListener implements InitializingBean, DisposableBean 
 	 */
 	public static boolean editCommentLock;
 
-	@Autowired
-	public DecXtractEventListener(EventPublisher eventPublisher) {
-		this.eventPublisher = eventPublisher;
-	}
-
-	/**
-	 * Called when the plugin has been enabled.
-	 * 
-	 * @throws Exception
-	 */
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		eventPublisher.register(this);
-	}
-
-	/**
-	 * Called when the plugin is being disabled or removed.
-	 * 
-	 * @throws Exception
-	 */
-	@Override
-	public void destroy() throws Exception {
-		eventPublisher.unregister(this);
-	}
-
-	@EventListener
 	public void onIssueEvent(IssueEvent issueEvent) {
-		if (issueEvent == null) {
-			return;
-		}
 		this.issueEvent = issueEvent;
 		this.projectKey = issueEvent.getProject().getKey();
 

@@ -1,9 +1,10 @@
-package de.uhd.ifi.se.decision.management.jira.webhook;
+package de.uhd.ifi.se.decision.management.jira.eventlistener;
 
 import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
 
+import de.uhd.ifi.se.decision.management.jira.eventlistener.WebhookEventListener;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -37,7 +38,7 @@ import net.java.ao.test.junit.ActiveObjectsJUnitRunner;
 public class TestWebhookEventListener extends TestSetUpWithIssues {
 
 	private EntityManager entityManager;
-	private WebhookEventListener listener;
+	private ConDecEventListener listener;
 	private ApplicationUser user;
 	private Issue issue;
 	private Comment jiraComment;
@@ -48,7 +49,7 @@ public class TestWebhookEventListener extends TestSetUpWithIssues {
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
 		EventPublisher publisher = new MockEventPublisher();
-		listener = new WebhookEventListener(publisher);
+		listener = new ConDecEventListener(publisher);
 		issue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
 		jiraComment = ComponentAccessor.getCommentManager().create(issue, user, "Test Comment", true);
