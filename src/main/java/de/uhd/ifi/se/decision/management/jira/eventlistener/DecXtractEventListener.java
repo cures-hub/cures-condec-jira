@@ -9,20 +9,14 @@ import org.ofbiz.core.entity.GenericEntityException;
 import org.ofbiz.core.entity.GenericValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.atlassian.event.api.EventListener;
-import com.atlassian.event.api.EventPublisher;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.MutableIssue;
 import com.atlassian.jira.issue.comments.MutableComment;
 import com.atlassian.jira.util.collect.MapBuilder;
-import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.model.text.TextSplitter;
 import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManager;

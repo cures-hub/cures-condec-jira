@@ -3,17 +3,9 @@ package de.uhd.ifi.se.decision.management.jira.eventlistener;
 import de.uhd.ifi.se.decision.management.jira.webhook.WebhookConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Component;
 
-import com.atlassian.event.api.EventListener;
-import com.atlassian.event.api.EventPublisher;
 import com.atlassian.jira.event.issue.IssueEvent;
-import com.atlassian.jira.event.issue.link.IssueLinkCreatedEvent;
-import com.atlassian.jira.event.issue.link.IssueLinkDeletedEvent;
 import com.atlassian.jira.event.type.EventType;
-import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
 import de.uhd.ifi.se.decision.management.jira.model.impl.DecisionKnowledgeElementImpl;

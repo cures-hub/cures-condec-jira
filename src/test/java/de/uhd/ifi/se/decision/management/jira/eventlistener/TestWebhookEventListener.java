@@ -4,7 +4,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
 
-import de.uhd.ifi.se.decision.management.jira.eventlistener.WebhookEventListener;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
