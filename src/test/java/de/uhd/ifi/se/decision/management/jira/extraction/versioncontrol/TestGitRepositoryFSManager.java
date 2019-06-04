@@ -200,7 +200,7 @@ public class TestGitRepositoryFSManager {
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			md.update(text.getBytes());
 			byte[] digest = md.digest();
-			return DatatypeConverter.printHexBinary(digest).toUpperCase();
+			return DatatypeConverter.printHexBinary(digest).toUpperCase().substring(0,5);
 		}
 		catch (NoSuchAlgorithmException e) {;
 			return "";
