@@ -37,4 +37,8 @@ public class TestConfigSuper extends TestSetUpWithIssues {
 	protected Response getBadRequestResponse(String errorMessage) {
 		return Response.status(Response.Status.BAD_REQUEST).entity(ImmutableMap.of("error", errorMessage)).build();
 	}
+
+	protected Response getServiceUnavailableRequestResponse(String errorMessage) {
+		return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity(ImmutableMap.of("error", errorMessage)).build();
+	}
 }

@@ -157,4 +157,11 @@ public interface GitClient {
 	 *            object.
 	 */
 	public void setGit(Git git);
+
+	/**
+	 * Returns positive or negative status on git repository.
+	 *
+	 * @return good or bad state.
+	 */
+	public boolean canReadFromRepository();
 }

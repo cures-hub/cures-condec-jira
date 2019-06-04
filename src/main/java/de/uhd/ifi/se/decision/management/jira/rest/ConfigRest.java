@@ -14,6 +14,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
+import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +65,7 @@ public class ConfigRest {
 			setDefaultKnowledgeTypesEnabled(projectKey, isActivated);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error("Failed to change plug-in activation. Message: " + e.getMessage());
+			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -104,7 +106,7 @@ public class ConfigRest {
 			manageDefaultIssueTypes(projectKey, isIssueStrategy);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error("Failed to enable or disable the JIRA issue persistence strategy. Message: " + e.getMessage());
+			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -140,7 +142,7 @@ public class ConfigRest {
 					Boolean.valueOf(isKnowledgeExtractedFromGit));
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error("Failed to enable or disable the knowledge extraction from git. Message: " + e.getMessage());
+			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -157,8 +159,33 @@ public class ConfigRest {
 			return Response.status(Status.BAD_REQUEST)
 					.entity(ImmutableMap.of("error", "Git URI could not be set because it is null.")).build();
 		}
+		if (gitUri.trim().equals("")) {
+			ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey,false);
+			ConfigPersistenceManager.setGitUri(projectKey, gitUri);
+			return Response.ok(Status.ACCEPTED).build();
+		}
+
+		Response serviceUnavailableResponse = Response.status(Status.SERVICE_UNAVAILABLE)
+				.entity(ImmutableMap.of("error", "Git URI could not be verified.")).build();
+		GitClient gitClient;
+		try {
+			gitClient = new GitClientImpl(gitUri, projectKey);
+		}
+		catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			// disable extraction on error?
+			// ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey,false);
+			return serviceUnavailableResponse;
+		}
 		ConfigPersistenceManager.setGitUri(projectKey, gitUri);
-		return Response.ok(Status.ACCEPTED).build();
+		if (gitClient.canReadFromRepository()) {
+			return Response.ok(Status.ACCEPTED).build();
+		}
+		else {
+			// disable extraction on error?
+			// ConfigPersistenceManager.setKnowledgeExtractedFromGit(projectKey,false);
+			return serviceUnavailableResponse;
+		}
 	}
 
 	@Path("/setKnowledgeExtractedFromIssues")
@@ -179,7 +206,7 @@ public class ConfigRest {
 					Boolean.valueOf(isKnowledgeExtractedFromIssues));
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error("Failed to enable or disable the extraction of knowledge from JIRA issues. Message: " +  e.getMessage());
+			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -223,7 +250,7 @@ public class ConfigRest {
 			}
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error("Failed to enable the knowledge type: " + knowledgeType + " Message: " + e.getMessage());
+			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -263,7 +290,7 @@ public class ConfigRest {
 			ConfigPersistenceManager.setWebhookEnabled(projectKey, isActivated);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error("Failed to enable or disable the webhook. Message: " + e.getMessage());
+			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -285,7 +312,7 @@ public class ConfigRest {
 			ConfigPersistenceManager.setWebhookSecret(projectKey, webhookSecret);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error("Failed to set the webhook data. Message: " + e.getMessage());
+			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -306,7 +333,7 @@ public class ConfigRest {
 			ConfigPersistenceManager.setWebhookType(projectKey, webhookType, isWebhookTypeEnabled);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error("Failed to set the webhook type: "+ webhookType + " Message: " + e.getMessage());
+			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -332,7 +359,7 @@ public class ConfigRest {
 			JiraIssueTextPersistenceManager.migrateArgumentTypesInLinks(projectKey);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error("Failed to clean the sentence database. Message: " + e.getMessage());
+			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -365,7 +392,7 @@ public class ConfigRest {
 
 			return Response.ok(Status.ACCEPTED).entity(ImmutableMap.of("isSucceeded", true)).build();
 		} catch (Exception e) {
-			LOGGER.error("Failed to classify the whole project. Message: " + e.getMessage());
+			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).entity(ImmutableMap.of("isSucceeded", false)).build();
 		}
 	}
@@ -428,7 +455,7 @@ public class ConfigRest {
 			ConfigPersistenceManager.setIconParsing(projectKey, isActivated);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error("Failed to enable or disable icon parsing. Message: " + e.getMessage());
+			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}
@@ -451,7 +478,7 @@ public class ConfigRest {
 			ConfigPersistenceManager.setUseClassiferForIssueComments(projectKey, isActivated);
 			return Response.ok(Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error("Failed to enable or disable the classifier for JIRA issue text. Message: " + e.getMessage());
+			LOGGER.error(e.getMessage());
 			return Response.status(Status.CONFLICT).build();
 		}
 	}

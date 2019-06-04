@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
 import com.atlassian.jira.issue.Issue;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
@@ -16,7 +17,7 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawTextComparator;
-import org.eclipse.jgit.lib.ConfigConstants;
+import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
@@ -42,47 +43,107 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 public class GitClientImpl implements GitClient {
 
 	private Git git;
+	private boolean repoInitSuccess = false;
+	private GitRepositoryFSManager fsManager;
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitClientImpl.class);
 
 	public GitClientImpl() {
 	}
 
+	public GitClientImpl(File directory) {
+		repoInitSuccess = initRepository(directory);
+	}
+
 	public GitClientImpl(String uri, File directory) {
-		pullOrClone(uri, directory);
+		repoInitSuccess = pullOrClone(uri, directory);
 	}
 
 	public GitClientImpl(String uri, String projectKey) {
-		File directory = new File(DEFAULT_DIR + projectKey);
-		pullOrClone(uri, directory);
+		fsManager = new GitRepositoryFSManager(DEFAULT_DIR, projectKey,uri, "develop");
+		File directory = new File(fsManager.getDefaultBranchPath());
+		repoInitSuccess = pullOrClone(uri, directory);
 	}
 
 	public GitClientImpl(String projectKey) {
-		File directory = new File(DEFAULT_DIR + projectKey);
 		String uri = ConfigPersistenceManager.getGitUri(projectKey);
-		pullOrClone(uri, directory);
+		fsManager = new GitRepositoryFSManager(DEFAULT_DIR,projectKey,uri, "develop");
+		File directory = new File(fsManager.getDefaultBranchPath());
+		repoInitSuccess = pullOrClone(uri, directory);
 	}
 
-	private void pullOrClone(String uri, File directory) {
-		boolean isGitDirectory = directory.exists(); // && RepositoryCache.FileKey.isGitRepository(directory,
-														// FS.DETECTED);
-		if (isGitDirectory) {
-			openRepository(directory);
-			pull();
-		} else {
-			cloneRepository(uri, directory);
+	@Override
+	public boolean canReadFromRepository() {
+		if (!repoInitSuccess) {
+			LOGGER.error("Git repository did not init correctly.");
+			return false;
 		}
+
+		Repository repository;
+		try {
+			repository = this.getRepository();
+		}
+		catch (Exception e) {
+			LOGGER.error("getRepository: "+e.getMessage());
+			return false;
+		}
+
+		if (repository==null) {
+			LOGGER.error("Git repository does not seem to exist");
+			return false;
+		}
+		try {
+			if (repository.getBranch()==null){
+				LOGGER.error("Git repository does not seem to be on a branch");
+				return false;
+			}
+			else {
+				LOGGER.error("Git branch "+repository.getBranch());
+			}
+		}
+		catch (Exception e) {
+			LOGGER.error("Git client has thrown error while getting branch name. "+e.getMessage());
+			return false;
+		}
+		return true;
 	}
 
-	private void openRepository(File directory) {
+	private boolean pullOrClone(String uri, File directory) {
+		File gitDir = new File(directory, ".git/");
+		boolean isGitDirectory = directory.exists()
+			&& (gitDir.isDirectory());
+		if (isGitDirectory) {
+			if (openRepository(directory)) {
+				if (!pull()) {
+					LOGGER.error("failed Git pull "+directory);
+					return false;
+				}
+			}
+			else {
+				LOGGER.error("Could not open repository: "+directory.getAbsolutePath());
+				return false;
+			}
+		} else {
+			if (!cloneRepository(uri, directory))
+			{
+				LOGGER.error("Could not clone repository "+uri+" to "+directory.getAbsolutePath());
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean openRepository(File directory) {
 		try {
 			git = Git.open(directory);
 		} catch (IOException e) {
-			LOGGER.error("Git repository could not be opened. Message: " + e.getMessage());
-			initRepository(directory);
+			//
+			LOGGER.error("Git repository could not be opened: "+directory.getAbsolutePath());
+			return false;
 		}
+		return true;
 	}
 
-	private void pull() {
+	private boolean pull() {
 		try {
 			git.pull().call();
 			List<RemoteConfig> remotes = git.remoteList().call();
@@ -90,33 +151,41 @@ public class GitClientImpl implements GitClient {
 				git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
 			}
 		} catch (GitAPIException e) {
-			LOGGER.error("Git repository could not be pulled. Message: " + e.getMessage());
+			//
+			LOGGER.error("Issue occurred while pulling from a remote.");
+			return false;
 		}
+		return true;
 	}
 
-	private void cloneRepository(String uri, File directory) {
+	private boolean cloneRepository(String uri, File directory) {
 		if (uri == null || uri.isEmpty()) {
-			return;
+			return false;
 		}
 		try {
 			git = Git.cloneRepository().setURI(uri).setDirectory(directory).setCloneAllBranches(true).call();
 			setConfig();
 		} catch (GitAPIException e) {
-			LOGGER.error(
-					"Git repository could not be cloned. Bare repository will be created. Message: " + e.getMessage());
-			initRepository(directory);
+			//
+			LOGGER.error("Git repository could not be cloned: "+uri+" "+directory.getAbsolutePath());
+			return false;
 		}
+		return true;
 	}
 
-	private void initRepository(File directory) {
+	private boolean initRepository(File directory) {
+		LOGGER.info("Bare repository will be created.");
 		try {
 			git = Git.init().setDirectory(directory).call();
 		} catch (IllegalStateException | GitAPIException e) {
-			LOGGER.error("Git repository could not be initialized. Message: " + e.getMessage());
+			//
+			LOGGER.error("Bare git repository could not be initiated: "+directory.getAbsolutePath());
+			return false;
 		}
+		return true;
 	}
 
-	private void setConfig() {
+	private boolean setConfig() {
 		Repository repository = this.getRepository();
 		StoredConfig config = repository.getConfig();
 		// @issue The internal representation of a file might add system dependent new
@@ -126,8 +195,10 @@ public class GitClientImpl implements GitClient {
 		try {
 			config.save();
 		} catch (IOException e) {
-			LOGGER.error("Git configuration could not be set. Message: " + e.getMessage());
+			//
+			return false;
 		}
+		return true;
 	}
 
 	@Override
@@ -285,6 +356,9 @@ public class GitClientImpl implements GitClient {
 	public List<RevCommit> getCommits() {
 		List<RevCommit> commits = new ArrayList<RevCommit>();
 		for (Ref branch : getAllRefs()) {
+			//ignore local refs, otherwise same commits from remote and local
+			//would be fetched two times.
+			if (branch.getName().contains("refs/heads/")) continue;
 			commits.addAll(getCommits(branch));
 		}
 		return commits;
