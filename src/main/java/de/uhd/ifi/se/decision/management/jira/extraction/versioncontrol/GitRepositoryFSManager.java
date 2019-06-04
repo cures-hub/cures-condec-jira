@@ -24,7 +24,7 @@ public class GitRepositoryFSManager {
 	public GitRepositoryFSManager(String home, String project, String repoUri, String defaultBranch) {
 		basePath = home;
 		baseProjectPath = basePath + File.separator + project;
-		baseProjectUriPath = baseProjectPath + File.separator + getHash(repoUri);
+		baseProjectUriPath = baseProjectPath + File.separator + getShortHash(repoUri);
 		baseProjectUriDefaultPath = baseProjectUriPath + File.separator + defaultBranch;
 	}
 
@@ -92,12 +92,21 @@ public class GitRepositoryFSManager {
 		return getBranchPath(branchShortName);
 	}
 
-	private String getHash(String text) {
+	/*
+	 * @issue:file system does not allow all charcters for folder and file name,
+	 * therefore md5 can be used to get unique strings for inputs like uris etc.
+	 * But md5 hashes can produce too long paths and corrupt the filesystem, how
+	 * can this be overcome?
+	 * @decision: use the first 5 characters from the generated hash
+	 * @pro: it is common practise to shorten hashes
+	 * @con: entropy might suffer too much from using only 5 chars.
+	 */
+	private String getShortHash(String text) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			md.update(text.getBytes());
 			byte[] digest = md.digest();
-			return DatatypeConverter.printHexBinary(digest).toUpperCase();
+			return DatatypeConverter.printHexBinary(digest).toUpperCase().substring(0,5);
 		}
 		catch (NoSuchAlgorithmException e) {
 			LOGGER.error("MD5 does not exist??");
@@ -106,7 +115,7 @@ public class GitRepositoryFSManager {
 	}
 
 	private String getBranchPath(String branchShortName) {
-		return baseProjectUriPath+File.separator+getHash(branchShortName);
+		return baseProjectUriPath+File.separator+getShortHash(branchShortName);
 	}
 
 	private boolean useFromDefaultFolder(String branchShortName) {
