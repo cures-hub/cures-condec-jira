@@ -66,6 +66,11 @@ public class GitRepositoryFSManager {
 					+TEMP_DIR_PREFIX+String.valueOf(time);
 			File tempDir = new File(tempDirString);
 			try {
+                /* TODO: An issue is observable on Windows machine.
+                 * If the directory cannot be renamed for some reason
+                 * (e.x. some file is locked), then no Exceptions will be
+                 * thrown by this org.apache.commons.io.FileUtils operation!
+                 */
 				oldDir.renameTo(tempDir);
 			}
 			catch (Exception e) {
