@@ -58,6 +58,13 @@ public class TestGitRepositoryFSManager {
 	}
 
 	@Test
+	public void testIsBranchDirectoryInUse() {
+		assertFalse(FSmanager.isBranchDirectoryInUse(branchName));
+		addBranchMarker(branchName);
+		assertTrue(FSmanager.isBranchDirectoryInUse(branchName));
+	}
+
+	@Test
 	public void testReleaseBranchDirectoryNameToTemp() {
 		// setup
 		addDistinctFileInDefaultDir();
@@ -217,6 +224,18 @@ public class TestGitRepositoryFSManager {
 	}
 
 	/* helpers for adding files */
+
+	private void addBranchMarker(String branchName) {
+		File dir = new File (baseProjectUriDir);
+		File touchFile = new File(dir, branchName);
+		try {
+			dir.mkdirs();
+			touchFile.createNewFile();
+		}
+			catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	private void addDistinctFileInDefaultDir() {
 		addDistinctFile("default");
