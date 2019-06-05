@@ -22,6 +22,7 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 	private final EventPublisher eventPublisher;
 	private WebhookEventListener webhookEventListener;
 	private DecXtractEventListener decXtractEventListener;
+	private SummarizationEventListener summarizationEventListener;
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(ConDecEventListener.class);
 
@@ -31,6 +32,7 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 		LOGGER.info("ConDec event listener was added to JIRA");
 		webhookEventListener = new WebhookEventListener();
 		decXtractEventListener = new DecXtractEventListener();
+		summarizationEventListener = new SummarizationEventListener();
 	}
 
 	/**
@@ -62,6 +64,7 @@ public class ConDecEventListener implements InitializingBean, DisposableBean {
 		}
 		webhookEventListener.onIssueEvent(issueEvent);
 		decXtractEventListener.onIssueEvent(issueEvent);
+		summarizationEventListener.onIssueEvent(issueEvent);
 	}
 
 	@EventListener

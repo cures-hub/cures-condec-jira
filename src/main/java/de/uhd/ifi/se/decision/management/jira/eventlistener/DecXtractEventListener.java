@@ -28,7 +28,6 @@ import de.uhd.ifi.se.decision.management.jira.persistence.JiraIssueTextPersisten
  * in the knowledge graph when the user changes either a comment or the
  * description of a JIRA issue.
  */
-@Component
 public class DecXtractEventListener{
 
 	private String projectKey;

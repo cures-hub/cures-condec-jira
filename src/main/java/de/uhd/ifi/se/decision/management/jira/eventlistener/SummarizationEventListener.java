@@ -1,4 +1,4 @@
-package de.uhd.ifi.se.decision.management.jira.extraction;
+package de.uhd.ifi.se.decision.management.jira.eventlistener;
 
 import org.ofbiz.core.entity.GenericValue;
 import org.springframework.beans.factory.DisposableBean;
@@ -24,40 +24,11 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * Triggers the code summarization when JIRA issues are closed. Then, the
  * summary is written into a new comment of the JIRA issue.
  */
-@Component
-public class SummarizationEventListener implements InitializingBean, DisposableBean {
+public class SummarizationEventListener{
 
 	private final ChangeHistoryManager changeManager = ComponentAccessor.getChangeHistoryManager();
 
-	@JiraImport
-	private final EventPublisher eventPublisher;
 
-	@Autowired
-	public SummarizationEventListener(EventPublisher eventPublisher) {
-		this.eventPublisher = eventPublisher;
-	}
-
-	/**
-	 * Called when the plugin has been enabled.
-	 * 
-	 * @throws Exception
-	 */
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		eventPublisher.register(this);
-	}
-
-	/**
-	 * Called when the plugin is being disabled or removed.
-	 * 
-	 * @throws Exception
-	 */
-	@Override
-	public void destroy() throws Exception {
-		eventPublisher.unregister(this);
-	}
-
-	@EventListener
 	public void onIssueEvent(IssueEvent issueEvent) {
 		String projectKey = issueEvent.getProject().getKey();
 		String jiraIssueKey = issueEvent.getIssue().getKey();
