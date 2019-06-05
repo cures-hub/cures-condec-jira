@@ -1,8 +1,9 @@
-package de.uhd.ifi.se.decision.management.jira.extraction.decxtracteventlistener;
+package de.uhd.ifi.se.decision.management.jira.eventlistener.decxtracteventlistener;
 
 import java.util.HashMap;
 import java.util.List;
 
+import de.uhd.ifi.se.decision.management.jira.eventlistener.ConDecEventListener;
 import org.junit.Before;
 
 import com.atlassian.activeobjects.test.TestActiveObjects;
@@ -17,7 +18,6 @@ import com.atlassian.jira.user.ApplicationUser;
 
 import de.uhd.ifi.se.decision.management.jira.TestComponentGetter;
 import de.uhd.ifi.se.decision.management.jira.TestSetUpWithIssues;
-import de.uhd.ifi.se.decision.management.jira.extraction.DecXtractEventListener;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockTransactionTemplate;
 import de.uhd.ifi.se.decision.management.jira.mocks.MockUserManager;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
@@ -30,7 +30,7 @@ public class TestSetUpEventListener extends TestSetUpWithIssues {
 	protected MutableIssue jiraIssue;
 	private ApplicationUser user;
 
-	protected DecXtractEventListener listener;
+	protected ConDecEventListener listener;
 
 	@Before
 	public void setUp() {
@@ -38,7 +38,7 @@ public class TestSetUpEventListener extends TestSetUpWithIssues {
 		TestComponentGetter.init(new TestActiveObjects(entityManager), new MockTransactionTemplate(),
 				new MockUserManager());
 		EventPublisher publisher = new MockEventPublisher();
-		listener = new DecXtractEventListener(publisher);
+		listener = new ConDecEventListener(publisher);
 		jiraIssue = ComponentAccessor.getIssueManager().getIssueByCurrentKey("TEST-4");
 		user = ComponentAccessor.getUserManager().getUserByName("NoFails");
 	}
