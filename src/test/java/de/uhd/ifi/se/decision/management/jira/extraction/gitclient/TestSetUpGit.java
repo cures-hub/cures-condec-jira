@@ -33,7 +33,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 	public static void setUpBeforeClass() throws IOException {
 		File directory = getExampleDirectory();
 		String uri = getExampleUri();
-		gitClient = new GitClientImpl(uri, directory);
+		gitClient = new GitClientImpl(uri, directory.getAbsolutePath(), "TEST");
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
 		makeExampleCommit("readMe.txt", "Self-explanatory, ReadMe not necessary.",
 				"TEST-12: Explain how the great software works");
