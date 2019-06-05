@@ -435,17 +435,23 @@ public class GitClientImpl implements GitClient {
 		if (branch == null) {
 			return commits;
 		}
-		String branchName = branch.getName();
+
 		File directory;
+		String branchNameComponents[] = branch.getName().split("/");
+		String branchShortName = branchNameComponents[branchNameComponents.length-1];
+		boolean canReleaseRepoDirectory = false;
+
 		if (isDefaultBranch) {
 			directory = new File(fsManager.getDefaultBranchPath());
 		}
 		else {
-			directory = new File(fsManager.prepareBranchDirectory(branchName));
+			canReleaseRepoDirectory =! fsManager.isBranchDirectoryInUse(branchShortName);
+			directory = new File(fsManager.prepareBranchDirectory(branchShortName));
 		}
 		try {
-			git.open(directory);
-			git.checkout().setName(branchName).call();
+			git.close();
+			git=git.open(directory);
+			git.checkout().setName(branchShortName).call();
 			Iterable<RevCommit> iterable = git.log().call();
 			for (RevCommit commit : iterable) {
 				commits.add(commit);
@@ -454,6 +460,9 @@ public class GitClientImpl implements GitClient {
 			LOGGER.error("Git could not get commits for the branch: "
 					+ branch.getName() + " Message: " + e.getMessage());
 		}
+		if (canReleaseRepoDirectory ) {
+			fsManager.releaseBranchDirectoryNameToTemp(branchShortName);
+		}
 		switchGitClientBackToDefaultDirectory();
 		return commits;
 	}
@@ -461,7 +470,8 @@ public class GitClientImpl implements GitClient {
 	private void switchGitClientBackToDefaultDirectory() {
 		File directory = new File(fsManager.getDefaultBranchPath());
 		try {
-			git.open(directory);
+			git.close();
+			git=git.open(directory);
 		} catch (IOException e) {
 			LOGGER.error("Git could not get back to default branch. Message: " + e.getMessage());
 		}

@@ -152,7 +152,7 @@ public class GitRepositoryFSManager {
 		// ignore the last marker
 		removeBranchPathMarker(branchShortName);
 		// add new marker
-		File file = new File(baseProjectUriPath+File.separator+branchShortName);
+		File file = new File(baseProjectUriPath,branchShortName);
 		file.setWritable(true);
 		try {
 			// assumes branch names are valid file names
@@ -205,8 +205,7 @@ public class GitRepositoryFSManager {
 			return false;
 		}
 		try {
-			File dir = new File(baseProjectUriPath+File.separator
-					+tempDirs[0]); // get the 1st of temp dirs
+			File dir = new File(baseProjectUriPath,tempDirs[0]); // get the 1st of temp dirs, but is 1st the best?
 			File newDir = new File(getBranchPath(branchShortName));
 			dir.renameTo(newDir);
 		}
@@ -230,14 +229,35 @@ public class GitRepositoryFSManager {
 	 * and looks at their creation dates
 	 */
 	private String[] findOutdatedBranchPaths() {
+		return findBranchPathFiles(true);
+	}
+
+	private String[] findBranchPathFiles(boolean getOutdated) {
 		File file = new File(baseProjectUriPath);
 		Date date = new Date();
-		String[] branchTouchFiles = file.list((current, name) ->
+		String[] branchFilteredTouchFiles = file.list((current, name) ->
 		{
-			boolean outDated = (date.getTime()-current.lastModified())>BRANCH_OUTDATED_AFTER;
+			long fileLifespan = date.getTime()-current.lastModified();
+			boolean lifeSpanCondition = fileLifespan > BRANCH_OUTDATED_AFTER;
+			if (!getOutdated) {
+				lifeSpanCondition=!lifeSpanCondition;
+			}
 			boolean isFile = new File(current, name).isFile();
-			return isFile && outDated;
+			return isFile && lifeSpanCondition;
 		});
-		return branchTouchFiles;
+		return branchFilteredTouchFiles;
+	}
+
+	public boolean isBranchDirectoryInUse(String branchShortName) {
+		File file = new File(baseProjectUriPath, branchShortName);
+		String[] inUseList = findBranchPathFiles(false);
+		if (inUseList!=null) {
+			for (String touchFileName : inUseList) {
+				if (touchFileName.equals(branchShortName)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }
