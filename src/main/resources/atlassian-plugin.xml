@@ -51,6 +51,7 @@
 		<resource type="download" name="treant.css" location="/css/treant.css" />
 		<resource type="download" name="condec.css" location="/css/condec.css" />
 		<resource type="download" name="jstree.css" location="/css/jstree.css" />
+        <resource type="download" name="vis.css" location="/css/vis.css" />
 		<!-- look and feel like JIRA -->
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
 		<dependency>com.atlassian.auiplugin:aui-flag</dependency>
