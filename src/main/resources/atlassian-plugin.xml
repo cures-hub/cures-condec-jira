@@ -86,6 +86,8 @@
 		<resource type="download" name="Treant.js" location="/js/treant/treant.js" />
 		<resource type="download" name="raphael.js" location="/js/treant/raphael.js" />
 		<resource type="download" name="jquery.easing.js" location="/js/jquery/jquery.easing.js" />
+        <!--Vis-->
+        <resource type="download" name="vis.js" location="/js/vis/vis.js" />
 		<!-- ConDec java script files -->
 		<resource type="download" name="condec.api.js" location="/js/condec.api.js" />
 		<resource type="download" name="condec.observable.js" location="/js/condec.observable.js" />

@@ -28,7 +28,6 @@
             var item = new vis.DataSet(data);
             var options = {};
             var timeline = new vis.Timeline(container,item, options);
-            timeline.setSize("100%","600px");
         });
     };
 
