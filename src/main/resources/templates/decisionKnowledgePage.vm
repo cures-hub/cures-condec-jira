@@ -1,28 +1,28 @@
-$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-management-resources")
+$webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:stylesheet-and-icon-resources")
 $webResourceManager.requireResource("de.uhd.ifi.se.decision.management.jira:decision-knowledge-page-resources")
-<form class="aui">
-    <input class="text medium-long-field" id="jstree-search-input"
-           placeholder="$i18n.getText('condec.filter.label')"/>
-    <select id="select-root-element-type" name="select-root-element-type"
-            class="select medium-field" onchange="conDecObservable.notify()"/>
-    <input type="text" class="text medium-long-field"
-           id="element-input-field" placeholder="$i18n.getText('condec.create.label')"/>
-    <input type="button" id="create-element-button"
-           class="aui-button aui-button-primary" value="$i18n.getText('condec.button.create')"/>
-    <label for="depth-of-tree-input">$i18n.getText("condec.depth.of.tree.label")<span
-            class="aui-icon icon-required"></span>
-    </label>
-    <input type="number" id="depth-of-tree-input" value="4" min="1"
-           class="text short-field" placeholder="Enter depth of tree...">
-    <label for="depth-of-tree-input" id="depth-of-tree-warning">Depth
-        must be positive</label>
-</form>
-<div class="aui-group">
-    <div id="resizable" class="left">
-        <div id="jstree"></div>
+<div class="aui-tabs horizontal-tabs">
+    <ul class="tabs-menu">
+        <li class="menu-item active-tab">
+            <a href="#tabs-Overview">Overview</a>
+        </li>
+        <li class="menu-item">
+            <a href="#tabs-Chronologie">Chronologie</a>
+        </li>
+        <li class="menu-item">
+            <a href="#tabs-Compare">Compare</a>
+        </li>
+    </ul>
+   <div class="tabs-pane active-pane" id="tabs-Overview">
+        #parse("templates/overview.vm")
+   </div>
+    <div class="tabs-pane" id="tabs-Chronologie">
+        #parse("templates/chronologieView.vm")
     </div>
-    <div id="treant-container" class="right"></div>
+
+    <div class="tabs-pane" id="tabs-Compare">
+        #parse("templates/compareview.vm")
+    </div>
 </div>
 #parse("templates/dialogs/createDialog.vm")
 #parse("templates/dialogs/editDialog.vm")

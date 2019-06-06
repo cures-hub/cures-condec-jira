@@ -1,0 +1,32 @@
+<form class="aui">
+    <label for="start-data-picker">$i18n.getText("condec.startdatepicker")<span
+            class="aui-icon icon-required"></span>
+    </label>
+    <input class="aui-date-picker" id="start-data-picker" type="date" max="2012-01-25" min="2011-12-25" />
+    <label for="end-data-picker">$i18n.getText("condec.enddatepicker")<span
+            class="aui-icon icon-required"></span>
+    </label>
+    <input class="aui-date-picker" id="end-data-picker" type="date" max="2012-01-25" min="2011-12-25" />
+    <input class="text medium-long-field" id="jstree-search-input"
+           placeholder="$i18n.getText('condec.filter.label')"/>
+</form>
+<div class="aui-group">
+    <div id="resizable" class="left">
+        <div id="evolution-timeline"></div>
+    </div>
+</div>
+
+
+<script>
+
+    $(document).ready(function() {
+        conDecAPI.checkIfProjectKeyIsValid();
+        if(window.conDecEvolutionPage.init(conDecAPI, conDecObservable)) {
+            conDecAPI.checkIfProjectKeyIsValid();
+            window.conDecEvolutionPage.buildTimeLine(conDecAPI.projectKey);
+        }
+        else {
+            console.error("ConDecEvolutionPage could not get its dependencies.");
+        }
+    });
+</script>

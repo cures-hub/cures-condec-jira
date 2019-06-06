@@ -1,0 +1,60 @@
+<form class="aui">
+    <label for="start-data-picker">$i18n.getText("condec.startdatepicker")<span
+            class="aui-icon icon-required"></span>
+    </label>
+    <input class="aui-date-picker" id="start-data-picker" type="date" max="2012-01-25" min="2011-12-25" />
+    <label for="end-data-picker">$i18n.getText("condec.enddatepicker")<span
+            class="aui-icon icon-required"></span>
+    </label>
+    <input class="aui-date-picker" id="end-data-picker" type="date" max="2012-01-25" min="2011-12-25" />
+    <input class="text medium-long-field" id="jstree-search-input"
+           placeholder="$i18n.getText('condec.filter.label')"/>
+</form>
+<div class="aui-group">
+    <div id="left-network-div" class="aui-item">
+        <div id="left-network"></div>
+    </div>
+    <div id="right-network-div" class="aui-item">
+        <div id="right-network"></div>
+    </div>
+</div>
+<script>
+    var nodesleft = new vis.DataSet([
+        {id: 1, label: 'Node 1'},
+        {id: 2, label: 'Node 2'},
+        {id: 3, label: 'Node 3'}
+    ]);
+    var edgesleft = new vis.DataSet([
+        {from: 1, to: 3},
+        {from: 1, to: 2},
+        {from: 3, to: 3}
+    ]);
+    var containerleft = document.getElementById('left-network');
+    var dataleft = {
+        nodes: nodesleft,
+        edges: edgesleft
+    };
+    var options = {};
+    var networkleft = new vis.Network(containerleft, dataleft, options);
+
+    var nodesright = new vis.DataSet([
+        {id: 1, label: 'Node 1'},
+        {id: 2, label: 'Node 2'},
+        {id: 3, label: 'Node 3'},
+        {id: 4, label: 'Node 4'},
+        {id: 5, label: 'Node 5'}
+    ]);
+    var edgesright = new vis.DataSet([
+        {from: 1, to: 3},
+        {from: 1, to: 2},
+        {from: 2, to: 4},
+        {from: 2, to: 5},
+        {from: 3, to: 3}
+    ]);
+    var containerright = document.getElementById('right-network');
+    var dataright = {
+        nodes: nodesright,
+        edges: edgesright
+    };
+    var network = new vis.Network(containerright, dataright, options);
+</script>
