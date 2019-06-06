@@ -319,6 +319,17 @@
 	};
 
 	/*
+	 * external references: condec.evolution.page
+	 */
+	ConDecAPI.prototype.getEvolutionData = function getEvolutionData(projectKey,callback){
+        getJSON(AJS.contextPath() + "/rest/decisions/latest/view/getEvolutionData.json?projectKey=" + projectKey
+            , function(error, evolutionData) {
+            if (error === null) {
+                callback(evolutionData);
+            }
+        });
+    };
+	/*
 	 * external references: settingsForSingleProject.vm,
 	 * settingsForAllProjects.vm
 	 */

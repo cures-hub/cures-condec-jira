@@ -68,6 +68,11 @@ public class ViewRest {
 		TreeViewer treeViewer = new TreeViewer(issueKey, booleanArray);
 		return Response.ok(treeViewer).build();
 	}
+	@Path("/getEvolutionData")
+	@GET
+	public Response getEvolutionData(@QueryParam("projectKey") String projectKey){
+		return Response.ok().build();
+	}
 
 	@Path("/getTreant")
 	@GET
