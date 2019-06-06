@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.*;
 
 import com.atlassian.jira.issue.Issue;
+import com.google.common.collect.Lists;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
@@ -217,7 +218,6 @@ public class GitClientImpl implements GitClient {
 		return getDiff(firstCommit, lastCommit);
 	}
 
-
 	@Override
 	public Map<DiffEntry, EditList> getDiff(Issue jiraIssue) {
 		if (jiraIssue == null) {
@@ -257,6 +257,55 @@ public class GitClientImpl implements GitClient {
 	@Override
 	public Map<DiffEntry, EditList> getDiff(RevCommit revCommit) {
 		return getDiff(revCommit, revCommit);
+	}
+
+	/**
+	 *
+	 * @param featureBranch
+	 *            ref of the feature branch
+	 */
+	@Override
+	public List<RevCommit> getFeatureBranchCommits(Ref featureBranch) {
+		List<RevCommit> branchUniqueCommits = new ArrayList<RevCommit>();
+		List<RevCommit> branchCommits = getCommits(featureBranch);
+		RevCommit lastCommonAncestor = null;
+		for (RevCommit commit : branchCommits) {
+			if (defaultBranchCommits.contains(commit)) {
+				LOGGER.info("Found last common commit "+commit.toString());
+				lastCommonAncestor = commit;
+				break;
+			}
+			branchUniqueCommits.add(commit);
+		}
+
+		if (lastCommonAncestor==null) {
+			branchUniqueCommits = null;
+		}
+		else {
+			branchUniqueCommits=Lists.reverse(branchUniqueCommits);
+		}
+
+		return branchUniqueCommits;
+	}
+
+	@Override
+	public List<RevCommit> getFeatureBranchCommits(String featureBranchName) {
+		Ref featureBranch = getBranch(featureBranchName);
+		if (null == featureBranch) {
+			return (List<RevCommit>)null;
+		}
+		return getFeatureBranchCommits(featureBranch);
+	}
+
+	private Ref getBranch(String featureBranchName) {
+		for (Ref branch : getRemoteBranches()) {
+			String branchName = branch.getName();
+			if (branchName.endsWith(featureBranchName)) {
+				return branch;
+			}
+		}
+		LOGGER.info("Could not find branch "+featureBranchName);
+		return null;
 	}
 
 	private DiffFormatter getDiffFormater() {
@@ -360,7 +409,7 @@ public class GitClientImpl implements GitClient {
 	@Override
 	public List<RevCommit> getCommits() {
 		List<RevCommit> commits = new ArrayList<RevCommit>();
-		for (Ref branch : getOnlyRemoteRefs()) {
+		for (Ref branch : getRemoteBranches()) {
 			/* @issue: All branches will be created in separate file system
 			 * folders for this method's loop. How can this be prevented?
 			 *
@@ -409,7 +458,8 @@ public class GitClientImpl implements GitClient {
 		return getRefs(ListBranchCommand.ListMode.ALL);
 	}
 
-	private List<Ref> getOnlyRemoteRefs() {
+	@Override
+	public List<Ref> getRemoteBranches() {
 		return getRefs(ListBranchCommand.ListMode.REMOTE);
 	}
 

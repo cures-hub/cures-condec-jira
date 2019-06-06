@@ -38,6 +38,8 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		makeExampleCommit("readMe.txt", "Self-explanatory, ReadMe not necessary.",
 				"TEST-12: Explain how the great software works");
 		makeExampleCommit("GodClass.java", "public class GodClass {}", "TEST-12: Develop great software");
+
+		setupBranch();
 	}
 
 	@Before
@@ -75,7 +77,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		return uri;
 	}
 
-	private static void makeExampleCommit(String filename, String content, String commitMessage) {
+	protected static void makeExampleCommit(String filename, String content, String commitMessage) {
 		Git git = gitClient.getGit();
 		try {
 			File inputFile = new File(gitClient.getDirectory().getParent(), filename);
@@ -87,6 +89,49 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 			git.push().setRemote("origin").call();
 		} catch (GitAPIException | FileNotFoundException | UnsupportedEncodingException e) {
 			LOGGER.error("Mock commit failed. Message: " + e.getMessage());
+		}
+	}
+
+	private static void setupBranch() {
+		String featureBranch = "featureBranch";
+		String firstCommitMessage = "First message";
+		String currentBranch = null;
+		Git git = gitClient.getGit();
+		try {
+			currentBranch = git.getRepository().getBranch();
+			git.branchCreate().setName(featureBranch).call();
+			git.checkout().setName(featureBranch).call();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		TestSetUpGit.makeExampleCommit("readMe.featureBranch.txt"
+				, "First content"
+				, firstCommitMessage);
+
+		TestSetUpGit.makeExampleCommit("readMe.featureBranch.txt"
+				, "Second content"
+				, "Second message");
+
+		TestSetUpGit.makeExampleCommit("readMe.featureBranch.txt"
+				, "Third content"
+				, "Third message");
+
+		returnToPreviousBranch(currentBranch, git);
+	}
+
+	private static void returnToPreviousBranch(String branch, Git git) {
+		if (branch==null) {
+			return;
+		}
+		else {
+			try {
+				git.checkout().setName(branch).call();
+				git.pull();
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 	}
 
