@@ -329,6 +329,7 @@
             }
         });
     };
+
 	/*
 	 * external references: settingsForSingleProject.vm,
 	 * settingsForAllProjects.vm

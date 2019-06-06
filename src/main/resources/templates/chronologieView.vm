@@ -11,14 +11,10 @@
            placeholder="$i18n.getText('condec.filter.label')"/>
 </form>
 <div class="aui-group">
-    <div id="resizable" class="left">
-        <div id="evolution-timeline"></div>
-    </div>
+    <div id="evolution-timeline"></div>
 </div>
 
-
 <script>
-
     $(document).ready(function() {
         conDecAPI.checkIfProjectKeyIsValid();
         if(window.conDecEvolutionPage.init(conDecAPI, conDecObservable)) {
