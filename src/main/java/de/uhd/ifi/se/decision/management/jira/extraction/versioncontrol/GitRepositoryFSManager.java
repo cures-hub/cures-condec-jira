@@ -16,16 +16,13 @@ import java.util.Date;
 public class GitRepositoryFSManager {
 	private static final String TEMP_DIR_PREFIX = "TEMP";
 	private static final long BRANCH_OUTDATED_AFTER = 60 * 60 * 1000; //ex. 1 day = 24 hours * 60 minutes * 60 seconds * 1000 miliseconds
-	private String basePath;
-	private String baseProjectPath;
 	private String baseProjectUriPath;
 	private String baseProjectUriDefaultPath;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitRepositoryFSManager.class);
 
 	public GitRepositoryFSManager(String home, String project, String repoUri, String defaultBranch) {
-		basePath = home;
-		baseProjectPath = basePath + File.separator + project;
+		String baseProjectPath = home + File.separator + project;
 		baseProjectUriPath = baseProjectPath + File.separator + getShortHash(repoUri);
 		baseProjectUriDefaultPath = baseProjectUriPath + File.separator + defaultBranch;
 		// clean up if possible after previous requests.
@@ -65,17 +62,18 @@ public class GitRepositoryFSManager {
 					+File.separator
 					+TEMP_DIR_PREFIX+String.valueOf(time);
 			File tempDir = new File(tempDirString);
+			boolean renameResult = false;
 			try {
-                /* TODO: An issue is observable on Windows machine.
-                 * If the directory cannot be renamed for some reason
-                 * (e.x. some file is locked), then no Exceptions will be
-                 * thrown by this org.apache.commons.io.FileUtils operation!
-                 */
-				oldDir.renameTo(tempDir);
+				renameResult = oldDir.renameTo(tempDir);
 			}
 			catch (Exception e) {
 				LOGGER.error("Could not rename "+oldDir
 						+" to "+tempDirString+". "+e.getMessage());
+				return null;
+			}
+			if (!renameResult) {
+				LOGGER.error("Could not rename "+oldDir
+						+" to "+tempDirString+". The reason is not known.");
 				return null;
 			}
 			removeBranchPathMarker(branchShortName);

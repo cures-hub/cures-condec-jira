@@ -14,7 +14,6 @@ import static org.junit.Assert.*;
 public class TestGitRepositoryFSManager {
 
 
-	private String baseDir;
 	private String baseProjectUriDir;
 	private String baseProjectUriDefaultDir;
 	private String baseProjectUriTempDir;
@@ -33,11 +32,11 @@ public class TestGitRepositoryFSManager {
 	private static GitRepositoryFSManager FSmanager;
 
 	@Before
-	public void setup() {
+	public void setUp() {
 		File directory = getExampleDirectory();
 
 		// add base dir
-		baseDir = directory.getAbsolutePath();
+		String baseDir = directory.getAbsolutePath();
 		baseProjectDir = new File(baseDir+File.separator+projectName);
 		baseProjectDir.mkdirs();
 
@@ -202,7 +201,8 @@ public class TestGitRepositoryFSManager {
 			byte[] digest = md.digest();
 			return DatatypeConverter.printHexBinary(digest).toUpperCase().substring(0,5);
 		}
-		catch (NoSuchAlgorithmException e) {;
+		catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
 			return "";
 		}
 	}
