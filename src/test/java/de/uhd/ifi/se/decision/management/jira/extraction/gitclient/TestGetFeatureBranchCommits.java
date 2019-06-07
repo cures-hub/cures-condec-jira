@@ -2,10 +2,7 @@ package de.uhd.ifi.se.decision.management.jira.extraction.gitclient;
 
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.transport.RemoteConfig;
-import org.eclipse.jgit.transport.URIish;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,8 +23,8 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 	String expectedFirstCommitMessage = "First message";
 
 	public TestGetFeatureBranchCommits() {
-		repoBaseDirectory = getRepoBaseDirectory();
-		uri = getRepoUri();
+		repoBaseDirectory = super.getRepoBaseDirectory();
+		uri = super.getRepoUri();
 	}
 
 	@Before
@@ -64,43 +61,5 @@ public class TestGetFeatureBranchCommits extends TestSetUpGit {
 		List<RevCommit> commits = testGitClient.getFeatureBranchCommits(branchCandidates.get(0));
 		assertEquals(3, commits.size());
 		assertEquals(expectedFirstCommitMessage, commits.get(0).getFullMessage());
-	}
-
-	// helpers
-	private String getRepoUri() {
-		List<RemoteConfig> remoteList = null;
-		try {
-			remoteList = gitClient.getGit().remoteList().call();
-
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		if (remoteList==null) {
-			return "";
-		}
-		else {
-			RemoteConfig remoteHead = remoteList.get(0);
-			URIish uriHead = remoteHead.getURIs().get(0);
-
-			return uriHead.toString();
-		}
-
-	}
-
-	private String getRepoBaseDirectory() {
-		Repository repo = gitClient.getGit().getRepository();
-		File dir = repo.getDirectory();
-		String projectUriSomeBranchPath = dir.getAbsolutePath();
-		String regExSplit = File.separator;
-		if (regExSplit.equals("\\")) {
-			regExSplit="\\\\";
-		}
-		String[] projectUriSomeBranchPathComponents = projectUriSomeBranchPath.split(regExSplit);
-		String[] projectUriPathComponents = new String[projectUriSomeBranchPathComponents.length-4];
-		for (int i = 0; i<projectUriPathComponents.length;i++) {
-			projectUriPathComponents[i] = projectUriSomeBranchPathComponents[i];
-		}
-		return String.join(File.separator, projectUriPathComponents);
 	}
 }
