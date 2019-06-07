@@ -39,7 +39,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 				"TEST-12: Explain how the great software works");
 		makeExampleCommit("GodClass.java", "public class GodClass {}", "TEST-12: Develop great software");
 
-		setupBranch();
+		setupBranchWithDecKnowledge();
 	}
 
 	@Before
@@ -92,7 +92,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		}
 	}
 
-	private static void setupBranch() {
+	private static void setupBranchWithDecKnowledge() {
 		String featureBranch = "featureBranch";
 		String firstCommitMessage = "First message";
 		String currentBranch = null;
@@ -105,17 +105,26 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		TestSetUpGit.makeExampleCommit("readMe.featureBranch.txt"
+		makeExampleCommit("readMe.featureBranch.txt"
 				, "First content"
 				, firstCommitMessage);
 
-		TestSetUpGit.makeExampleCommit("readMe.featureBranch.txt"
+		makeExampleCommit("readMe.featureBranch.txt"
 				, "Second content"
 				, "Second message");
 
-		TestSetUpGit.makeExampleCommit("readMe.featureBranch.txt"
-				, "Third content"
-				, "Third message");
+		makeExampleCommit("GodClass.java", "public class GodClass {}"
+				, "TEST-12: Develop great software" +
+						"//[issue]Huston we have a small problem..[/issue]" +
+						"\r\n"+
+						"//[alternative]ignore it![/alternative]" +
+						"\r\n"+
+						"//[pro]ignorance is bliss[/pro]" +
+						"\r\n"+
+						"//[decision]solve it ASAP![/decision]" +
+						"\r\n"+
+						"//[pro]life is valuable, prevent even smallest risks[/pro]"
+						);
 
 		returnToPreviousBranch(currentBranch, git);
 	}
