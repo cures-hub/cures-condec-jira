@@ -30,20 +30,20 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
  * @decision Only use jGit.
  * @pro The jGit library is open source.
  * @alternative Both, the jgit library and the git integration for JIRA plugin
- *              were used to access git repositories.
+ * were used to access git repositories.
  * @con An application link and oAuth is needed to call REST API on Java side.
  * 
  * This implementation works well only with configuration for one remote git server.
  * Multiple instances of this class are "thread-safe" in the limited way that
  * the checked out branch files are stored in dedicated branch folders and can be read,
- * modifing files is not safe and not supported. 
+ * modifing files is not safe and not supported.
  */
 public class GitClientImpl implements GitClient {
 
 	private Git git;
-	private boolean repoInitSuccess = false;
+	private boolean repoInitSuccess = false; // will be later made readable with upcoming features
 	private Ref defaultBranch; // TODO: should come from configuration of the project
-	private List<RevCommit> defaultBranchCommits;
+	private List<RevCommit> defaultBranchCommits; // will be later needed for upcoming features
 	private GitRepositoryFSManager fsManager;
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitClientImpl.class);
 
@@ -69,6 +69,7 @@ public class GitClientImpl implements GitClient {
 		// TODO: the last parameter should be a setting retrievable with ConfigPersistenceManager
 		repoInitSuccess = pullOrCloneRepository(projectKey, DEFAULT_DIR, uri, "develop");
 	}
+
 	private boolean pullOrCloneRepository(String projectKey, String defaultDirectory, String uri, String defaultBranchFolderName) {
 		fsManager = new GitRepositoryFSManager(defaultDirectory, projectKey, uri, defaultBranchFolderName);
 		File directory = new File(fsManager.getDefaultBranchPath());
@@ -79,25 +80,23 @@ public class GitClientImpl implements GitClient {
 		if (isGitDirectory(directory)) {
 			if (openRepository(directory)) {
 				if (!pull()) {
-					LOGGER.error("failed Git pull "+directory);
+					LOGGER.error("failed Git pull " + directory);
 					return false;
 				}
-			}
-			else {
-				LOGGER.error("Could not open repository: "+directory.getAbsolutePath());
+			} else {
+				LOGGER.error("Could not open repository: " + directory.getAbsolutePath());
 				return false;
 			}
 		} else {
-			if (!cloneRepository(uri, directory))
-			{
-				LOGGER.error("Could not clone repository "+uri+" to "+directory.getAbsolutePath());
+			if (!cloneRepository(uri, directory)) {
+				LOGGER.error("Could not clone repository " + uri + " to " + directory.getAbsolutePath());
 				return false;
 			}
 		}
 
 		// get name of current branch, should be later replaced by project setting
 		defaultBranch = getCurrentBranch();
-		if (defaultBranch==null) {
+		if (defaultBranch == null) {
 			return false;
 		}
 		defaultBranchCommits = getCommitsFromDefaultBranch();
@@ -110,32 +109,30 @@ public class GitClientImpl implements GitClient {
 	}
 
 	private Ref getCurrentBranch() {
-		String branchName=null;
-		Ref branch=null;
+		String branchName = null;
+		Ref branch = null;
 		Repository repository;
 
 		try {
 			repository = this.getRepository();
-		}
-		catch (Exception e) {
-			LOGGER.error("getRepository: "+e.getMessage());
+		} catch (Exception e) {
+			LOGGER.error("getRepository: " + e.getMessage());
 			return null;
 		}
 
-		if (repository==null) {
+		if (repository == null) {
 			LOGGER.error("Git repository does not seem to exist");
 			return null;
 		}
 		try {
 			branchName = repository.getFullBranch();
 			branch = repository.findRef(branchName);
-			if (branch==null){
+			if (branch == null) {
 				LOGGER.error("Git repository does not seem to be on a branch");
 				return null;
 			}
-		}
-		catch (Exception e) {
-			LOGGER.error("Git client has thrown error while getting branch name. "+e.getMessage());
+		} catch (Exception e) {
+			LOGGER.error("Git client has thrown error while getting branch name. " + e.getMessage());
 			return null;
 		}
 		return branch;
@@ -145,8 +142,8 @@ public class GitClientImpl implements GitClient {
 		try {
 			git = Git.open(directory);
 		} catch (IOException e) {
-			LOGGER.error("Git repository could not be opened: "+directory.getAbsolutePath()+
-					"\n\t"+e.getMessage());
+			LOGGER.error("Git repository could not be opened: " + directory.getAbsolutePath() +
+					"\n\t" + e.getMessage());
 			return false;
 		}
 		return true;
@@ -160,8 +157,8 @@ public class GitClientImpl implements GitClient {
 				git.fetch().setRemote(remote.getName()).setRefSpecs(remote.getFetchRefSpecs()).call();
 			}
 		} catch (GitAPIException e) {
-			LOGGER.error("Issue occurred while pulling from a remote."+
-					"\n\t"+e.getMessage());
+			LOGGER.error("Issue occurred while pulling from a remote." +
+					"\n\t" + e.getMessage());
 			return false;
 		}
 		return true;
@@ -175,8 +172,8 @@ public class GitClientImpl implements GitClient {
 			git = Git.cloneRepository().setURI(uri).setDirectory(directory).setCloneAllBranches(true).call();
 			setConfig();
 		} catch (GitAPIException e) {
-			LOGGER.error("Git repository could not be cloned: "+uri+" "+directory.getAbsolutePath()+
-					"\n\t"+e.getMessage());
+			LOGGER.error("Git repository could not be cloned: " + uri + " " + directory.getAbsolutePath() +
+					"\n\t" + e.getMessage());
 			return false;
 		}
 		// TODO checkoutDefault branch
@@ -187,7 +184,7 @@ public class GitClientImpl implements GitClient {
 		try {
 			git = Git.init().setDirectory(directory).call();
 		} catch (IllegalStateException | GitAPIException e) {
-			LOGGER.error("Bare git repository could not be initiated: "+directory.getAbsolutePath());
+			LOGGER.error("Bare git repository could not be initiated: " + directory.getAbsolutePath());
 			return false;
 		}
 		return true;
@@ -222,7 +219,7 @@ public class GitClientImpl implements GitClient {
 
 
 	@Override
-	public Map<DiffEntry, EditList> getDiff(Issue jiraIssue){
+	public Map<DiffEntry, EditList> getDiff(Issue jiraIssue) {
 		if (jiraIssue == null) {
 			return null;
 		}
@@ -334,7 +331,7 @@ public class GitClientImpl implements GitClient {
 	}
 
 	@Override
-	public List<RevCommit> getCommits(Issue jiraIssue){
+	public List<RevCommit> getCommits(Issue jiraIssue) {
 		if (jiraIssue == null) {
 			return new LinkedList<RevCommit>();
 		}
@@ -370,7 +367,8 @@ public class GitClientImpl implements GitClient {
 			 * @alternative: remove this method completely,
 			 * fetching commits from all branches is not sensible!
 			 * @pro: this method seems to be used only for code testing (TestGetCommits)
-			 * @con: scraping it, would require coding improvement in test code (TestGetCommits)
+			 * @con: scraping it would require coding improvement in test code (TestGetCommits),
+			 * but who wants to spend time on that;)
 			 *
 			 * @decision: release branch folders if possible,
 			 * so that in best case only one folder will be used!
@@ -438,19 +436,18 @@ public class GitClientImpl implements GitClient {
 
 		File directory;
 		String branchNameComponents[] = branch.getName().split("/");
-		String branchShortName = branchNameComponents[branchNameComponents.length-1];
+		String branchShortName = branchNameComponents[branchNameComponents.length - 1];
 		boolean canReleaseRepoDirectory = false;
 
 		if (isDefaultBranch) {
 			directory = new File(fsManager.getDefaultBranchPath());
-		}
-		else {
-			canReleaseRepoDirectory =! fsManager.isBranchDirectoryInUse(branchShortName);
+		} else {
+			canReleaseRepoDirectory = !fsManager.isBranchDirectoryInUse(branchShortName);
 			directory = new File(fsManager.prepareBranchDirectory(branchShortName));
 		}
 		try {
 			git.close();
-			git=git.open(directory);
+			git = git.open(directory);
 			git.checkout().setName(branchShortName).call();
 			Iterable<RevCommit> iterable = git.log().call();
 			for (RevCommit commit : iterable) {
@@ -460,7 +457,7 @@ public class GitClientImpl implements GitClient {
 			LOGGER.error("Git could not get commits for the branch: "
 					+ branch.getName() + " Message: " + e.getMessage());
 		}
-		if (canReleaseRepoDirectory ) {
+		if (canReleaseRepoDirectory) {
 			fsManager.releaseBranchDirectoryNameToTemp(branchShortName);
 		}
 		switchGitClientBackToDefaultDirectory();
@@ -471,7 +468,7 @@ public class GitClientImpl implements GitClient {
 		File directory = new File(fsManager.getDefaultBranchPath());
 		try {
 			git.close();
-			git=git.open(directory);
+			git = git.open(directory);
 		} catch (IOException e) {
 			LOGGER.error("Git could not get back to default branch. Message: " + e.getMessage());
 		}

@@ -31,6 +31,7 @@ public class GitRepositoryFSManager {
 
 	/**
 	 * Returns target directory path for the default branch of the repository.
+	 *
 	 * @return absolute path to directory of the default branch
 	 */
 	public String getDefaultBranchPath() {
@@ -54,26 +55,24 @@ public class GitRepositoryFSManager {
 		File oldDir = new File(getBranchPath(branchShortName));
 		if (!oldDir.isDirectory()) {
 			return null;
-		}
-		else {
-			Date date= new Date();
+		} else {
+			Date date = new Date();
 			long time = date.getTime();
 			String tempDirString = baseProjectUriPath
-					+File.separator
-					+TEMP_DIR_PREFIX+String.valueOf(time);
+					+ File.separator
+					+ TEMP_DIR_PREFIX + String.valueOf(time);
 			File tempDir = new File(tempDirString);
 			boolean renameResult = false;
 			try {
 				renameResult = oldDir.renameTo(tempDir);
-			}
-			catch (Exception e) {
-				LOGGER.error("Could not rename "+oldDir
-						+" to "+tempDirString+". "+e.getMessage());
+			} catch (Exception e) {
+				LOGGER.error("Could not rename " + oldDir
+						+ " to " + tempDirString + ". " + e.getMessage());
 				return null;
 			}
 			if (!renameResult) {
-				LOGGER.error("Could not rename "+oldDir
-						+" to "+tempDirString+". The reason is not known.");
+				LOGGER.error("Could not rename " + oldDir
+						+ " to " + tempDirString + ". The reason is not known.");
 				return null;
 			}
 			removeBranchPathMarker(branchShortName);
@@ -85,9 +84,9 @@ public class GitRepositoryFSManager {
 	 * Provides filesystem directory for targeted branch.
 	 * Best case: branch already exists, costs no I/O operations.
 	 * Good case: temporary folder exists and can be renamed to branch's
-	 * 	target folder name.
+	 * target folder name.
 	 * Bad case: branch folder is copied in I/O heavy operation
-	 * 	from default branch.
+	 * from default branch.
 	 *
 	 * @param branchShortName branch name
 	 * @return null on failure, absolute path to branch's directory
@@ -119,9 +118,8 @@ public class GitRepositoryFSManager {
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			md.update(text.getBytes());
 			byte[] digest = md.digest();
-			return DatatypeConverter.printHexBinary(digest).toUpperCase().substring(0,5);
-		}
-		catch (NoSuchAlgorithmException e) {
+			return DatatypeConverter.printHexBinary(digest).toUpperCase().substring(0, 5);
+		} catch (NoSuchAlgorithmException e) {
 			LOGGER.error("MD5 does not exist??");
 			return "";
 		}
@@ -137,10 +135,10 @@ public class GitRepositoryFSManager {
 	 */
 	private void maintainNotUsedBranchPaths() {
 		String[] notUsedBranchPaths = findOutdatedBranchPaths();
-		if (notUsedBranchPaths!=null)
+		if (notUsedBranchPaths != null)
 			for (String branch : notUsedBranchPaths) {
 				releaseBranchDirectoryNameToTemp(branch);
-				LOGGER.info("Returned "+branch+" to temporary directory pool.");
+				LOGGER.info("Returned " + branch + " to temporary directory pool.");
 			}
 	}
 
@@ -152,14 +150,13 @@ public class GitRepositoryFSManager {
 		// ignore the last marker
 		removeBranchPathMarker(branchShortName);
 		// add new marker
-		File file = new File(baseProjectUriPath,branchShortName);
+		File file = new File(baseProjectUriPath, branchShortName);
 		file.setWritable(true);
 		try {
 			// assumes branch names are valid file names
 			FileUtils.writeStringToFile(file, getShortHash(branchShortName), Charset.forName("UTF-8"));
-		}
-		catch (IOException ex) {
-				LOGGER.info(ex.getMessage());
+		} catch (IOException ex) {
+			LOGGER.info(ex.getMessage());
 		}
 	}
 
@@ -167,27 +164,25 @@ public class GitRepositoryFSManager {
 	 * shall not try to recycle the branch folder
 	 */
 	private void removeBranchPathMarker(String branchShortName) {
-		File file = new File(baseProjectUriPath,branchShortName);
+		File file = new File(baseProjectUriPath, branchShortName);
 		file.delete();
 	}
 
 	private String getBranchPath(String branchShortName) {
-		return baseProjectUriPath+File.separator+getShortHash(branchShortName);
+		return baseProjectUriPath + File.separator + getShortHash(branchShortName);
 	}
 
 	private boolean useFromDefaultFolder(String branchShortName) {
 		File defaultDir = new File(baseProjectUriDefaultPath);
 		if (!defaultDir.isDirectory()) {
 			return false;
-		}
-		else {
+		} else {
 			try {
 				File newDir = new File(getBranchPath(branchShortName));
-				FileUtils.copyDirectory(defaultDir,newDir);
-			}
-			catch (Exception e) {
-				LOGGER.error("Could not copy "+defaultDir
-						+" to "+getBranchPath(branchShortName)+".\n\t"+e.getMessage());
+				FileUtils.copyDirectory(defaultDir, newDir);
+			} catch (Exception e) {
+				LOGGER.error("Could not copy " + defaultDir
+						+ " to " + getBranchPath(branchShortName) + ".\n\t" + e.getMessage());
 				return false;
 			}
 		}
@@ -201,17 +196,16 @@ public class GitRepositoryFSManager {
 
 	private boolean useFromTemporaryFolder(String branchShortName) {
 		String[] tempDirs = findTemporaryDirectoryNames();
-		if (tempDirs==null || tempDirs.length<1) {
+		if (tempDirs == null || tempDirs.length < 1) {
 			return false;
 		}
 		try {
-			File dir = new File(baseProjectUriPath,tempDirs[0]); // get the 1st of temp dirs, but is 1st the best?
+			File dir = new File(baseProjectUriPath, tempDirs[0]); // get the 1st of temp dirs, but is 1st the best?
 			File newDir = new File(getBranchPath(branchShortName));
 			dir.renameTo(newDir);
-		}
-		catch (Exception e) {
-			LOGGER.error("Could not rename "+tempDirs[0]
-					+" to "+getBranchPath(branchShortName)+". "+e.getMessage());
+		} catch (Exception e) {
+			LOGGER.error("Could not rename " + tempDirs[0]
+					+ " to " + getBranchPath(branchShortName) + ". " + e.getMessage());
 			return false;
 		}
 		return true;
@@ -237,10 +231,10 @@ public class GitRepositoryFSManager {
 		Date date = new Date();
 		String[] branchFilteredTouchFiles = file.list((current, name) ->
 		{
-			long fileLifespan = date.getTime()-current.lastModified();
+			long fileLifespan = date.getTime() - current.lastModified();
 			boolean lifeSpanCondition = fileLifespan > BRANCH_OUTDATED_AFTER;
 			if (!getOutdated) {
-				lifeSpanCondition=!lifeSpanCondition;
+				lifeSpanCondition = !lifeSpanCondition;
 			}
 			boolean isFile = new File(current, name).isFile();
 			return isFile && lifeSpanCondition;
@@ -249,9 +243,8 @@ public class GitRepositoryFSManager {
 	}
 
 	public boolean isBranchDirectoryInUse(String branchShortName) {
-		File file = new File(baseProjectUriPath, branchShortName);
 		String[] inUseList = findBranchPathFiles(false);
-		if (inUseList!=null) {
+		if (inUseList != null) {
 			for (String touchFileName : inUseList) {
 				if (touchFileName.equals(branchShortName)) {
 					return true;
