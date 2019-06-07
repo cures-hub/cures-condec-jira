@@ -298,10 +298,17 @@ public class GitClientImpl implements GitClient {
 	}
 
 	private Ref getBranch(String featureBranchName) {
-		for (Ref branch : getRemoteBranches()) {
-			String branchName = branch.getName();
-			if (branchName.endsWith(featureBranchName)) {
-				return branch;
+		if (featureBranchName == null || featureBranchName.length() == 0 ) {
+			LOGGER.info("Null or empty branch name was passed.");
+			return null;
+		}
+		List<Ref> remoteBranches = getRemoteBranches();
+		if (remoteBranches != null ) {
+			for (Ref branch : remoteBranches) {
+				String branchName = branch.getName();
+				if (branchName.endsWith(featureBranchName)) {
+					return branch;
+				}
 			}
 		}
 		LOGGER.info("Could not find branch "+featureBranchName);
