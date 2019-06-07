@@ -370,6 +370,9 @@ public class GitClientImpl implements GitClient {
 			 * @con: scraping it would require coding improvement in test code (TestGetCommits),
 			 * but who wants to spend time on that;)
 			 *
+			 * @alternative: We could check whether the JIRA issue key is part of the branch name
+			 * and - if so - only use the commits from this branch.
+			 *
 			 * @decision: release branch folders if possible,
 			 * so that in best case only one folder will be used!
 			 * @pro: implementation does not seem to be complex at all.
