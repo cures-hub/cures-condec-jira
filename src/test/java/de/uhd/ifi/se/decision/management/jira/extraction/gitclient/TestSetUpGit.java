@@ -37,12 +37,15 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		File directory = getExampleDirectory();
 		String uri = getExampleUri();
 		gitClient = new GitClientImpl(uri, directory.getAbsolutePath(), "TEST");
+		// above line will log errors for pulling from still empty remote repositry.
 		makeExampleCommit("readMe.txt", "TODO Write ReadMe", "Init Commit");
 		makeExampleCommit("readMe.txt", "Self-explanatory, ReadMe not necessary.",
 				"TEST-12: Explain how the great software works");
 		makeExampleCommit("GodClass.java", "public class GodClass {}", "TEST-12: Develop great software");
-
 		setupBranchWithDecKnowledge();
+
+		gitClient.close();
+		gitClient = new GitClientImpl(uri, directory.getAbsolutePath(), "TEST");
 	}
 
 	@Before
@@ -128,7 +131,6 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 						"\r\n"+
 						"//[pro]life is valuable, prevent even smallest risks[/pro]"
 						);
-
 		returnToPreviousBranch(currentBranch, git);
 	}
 
@@ -153,6 +155,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 	}
 
 	// helpers
+
 	protected String getRepoUri() {
 		List<RemoteConfig> remoteList = null;
 		try {

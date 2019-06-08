@@ -9,7 +9,7 @@ import com.google.common.collect.Lists;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
-import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.*;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
@@ -18,6 +18,7 @@ import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.slf4j.Logger;
@@ -505,23 +506,66 @@ public class GitClientImpl implements GitClient {
 			canReleaseRepoDirectory = !fsManager.isBranchDirectoryInUse(branchShortName);
 			directory = new File(fsManager.prepareBranchDirectory(branchShortName));
 		}
-		try {
-			git.close();
-			git = git.open(directory);
-			git.checkout().setName(branchShortName).call();
-			Iterable<RevCommit> iterable = git.log().call();
-			for (RevCommit commit : iterable) {
-				commits.add(commit);
+
+		if (switchGitDirectory(directory)
+				&& createLocalBranchIfNotExists(branchShortName)
+				&& checkoutBranch(branchShortName)
+				&& pull()) {
+			Iterable<RevCommit> iterable = null;
+			try {
+				iterable = git.log().call();
+			} catch (GitAPIException e) {
+				LOGGER.error("Git could not get commits for the branch: "
+						+ branch.getName() + " Message: " + e.getMessage());
 			}
-		} catch (IOException | GitAPIException e) {
-			LOGGER.error("Git could not get commits for the branch: "
-					+ branch.getName() + " Message: " + e.getMessage());
+			if (iterable != null) {
+				for (RevCommit commit : iterable) {
+					commits.add(commit);
+				}
+			}
 		}
 		if (canReleaseRepoDirectory) {
 			fsManager.releaseBranchDirectoryNameToTemp(branchShortName);
 		}
 		switchGitClientBackToDefaultDirectory();
 		return commits;
+	}
+
+	private boolean checkoutBranch(String branchShortName) {
+		try {
+			git.checkout().setName(branchShortName).call();
+		} catch (GitAPIException e) {
+			LOGGER.error("Could not checkout branch. " + e.getMessage());
+			return false;
+		}
+		return true;
+	}
+
+	private boolean createLocalBranchIfNotExists(String branchShortName) {
+		try {
+			git.branchCreate().setName(branchShortName).call();
+		} catch (RefAlreadyExistsException e) {
+			return true;
+		} catch (InvalidRefNameException | RefNotFoundException e) {
+			LOGGER.error("Could not create local branch. " + e.getMessage());
+			return false;
+		} catch (GitAPIException e) {
+			LOGGER.error("Could not create local branch. " + e.getMessage());
+			return false;
+		}
+		return true;
+	}
+
+	private boolean switchGitDirectory(File gitDirectory) {
+		git.close();
+		try {
+			git = git.open(gitDirectory);
+		} catch (IOException e) {
+			LOGGER.error("Could not switch into git directory " + gitDirectory.getAbsolutePath()
+					+ "\r\n" + e.getMessage());
+			return false;
+		}
+		return true;
 	}
 
 	private void switchGitClientBackToDefaultDirectory() {
