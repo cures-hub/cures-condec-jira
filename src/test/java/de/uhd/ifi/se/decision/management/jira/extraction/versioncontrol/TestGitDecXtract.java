@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-public class TestGitDecXtract  extends TestSetUpGit {
+public class TestGitDecXtract extends TestSetUpGit {
 	final String uri;
 	GitDecXtract gitDecX;
 
@@ -21,13 +21,13 @@ public class TestGitDecXtract  extends TestSetUpGit {
 		gitDecX = new GitDecXtract("TEST", uri);
 		int numberExpectedElements = 0;
 		List<DecisionKnowledgeElement> gotElements = gitDecX.getElements(null);
-		Assert.assertEquals(numberExpectedElements,gotElements.size());
+		Assert.assertEquals(numberExpectedElements, gotElements.size());
 
 		gotElements = gitDecX.getElements("");
-		Assert.assertEquals(numberExpectedElements,gotElements.size());
+		Assert.assertEquals(numberExpectedElements, gotElements.size());
 
 		gotElements = gitDecX.getElements("doesNotExistBranch");
-		Assert.assertEquals(numberExpectedElements,gotElements.size());
+		Assert.assertEquals(numberExpectedElements, gotElements.size());
 	}
 
 	@Test
@@ -36,6 +36,6 @@ public class TestGitDecXtract  extends TestSetUpGit {
 		gitDecX = new GitDecXtract("TEST", uri);
 		int numberExpectedElements = 5;
 		List<DecisionKnowledgeElement> gotElements = gitDecX.getElements("featureBranch");
-		Assert.assertEquals(numberExpectedElements,gotElements.size());
+		Assert.assertEquals(numberExpectedElements, gotElements.size());
 	}
 }

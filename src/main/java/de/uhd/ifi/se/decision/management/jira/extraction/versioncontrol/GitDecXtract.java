@@ -27,7 +27,7 @@ public class GitDecXtract {
 
 	public GitDecXtract(String projecKey, String uri) {
 		this.projecKey = projecKey;
-		gitClient = new GitClientImpl(uri,projecKey);
+		gitClient = new GitClientImpl(uri, projecKey);
 	}
 
 	// TODO: below method signature will further improve
@@ -46,9 +46,9 @@ public class GitDecXtract {
 	private List<DecisionKnowledgeElement> getElementsFromMessage(RevCommit commit) {
 		GitCommitMessageDecXtract extractorFromMessage = new GitCommitMessageDecXtract(commit.getFullMessage());
 		List<DecisionKnowledgeElement> elementsFromMessage = extractorFromMessage.getElements()
-				.stream().map( element -> { // need to update project and key attributes
+				.stream().map(element -> { // need to update project and key attributes
 					element.setProject(projecKey);
-					element.setKey(updateKeyFroMessageExtractedElement(element.getKey(),commit.getId()));
+					element.setKey(updateKeyFroMessageExtractedElement(element.getKey(), commit.getId()));
 					return element;
 				}).collect(Collectors.toList());
 		return elementsFromMessage;
@@ -56,6 +56,6 @@ public class GitDecXtract {
 
 	private String updateKeyFroMessageExtractedElement(String keyWithoutCommitish, ObjectId id) {
 		return keyWithoutCommitish.replace(GitCommitMessageDecXtract.COMMIT_PLACEHOLDER,
-				String.valueOf(id)+COMMIT_POSITION_SEPARATOR);
+				String.valueOf(id) + COMMIT_POSITION_SEPARATOR);
 	}
 }

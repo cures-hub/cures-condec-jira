@@ -7,7 +7,7 @@ import org.junit.Test;
 import java.util.List;
 
 public class TestGitCommitMessageDecXtract {
-	private	List<String> tags = KnowledgeType.toList();
+	private List<String> tags = KnowledgeType.toList();
 	GitCommitMessageDecXtract gitCommitMessageDX;
 
 	@Test
@@ -106,14 +106,14 @@ public class TestGitCommitMessageDecXtract {
 					continue;
 				}
 
-				String msg = "[" + tag1+ "]DecKnowElement[" + tag2 + "]" +
+				String msg = "[" + tag1 + "]DecKnowElement[" + tag2 + "]" +
 						"[/" + tag1 + "]Not a DecKnowElement[/" + tag2 + "]";
 				gitCommitMessageDX = new GitCommitMessageDecXtract(msg);
 				Assert.assertEquals(1, gitCommitMessageDX.getElements().size());
 				Assert.assertEquals(1, gitCommitMessageDX.getParseWarnings().size());
 				Assert.assertNull(gitCommitMessageDX.getParseError());
 
-				msg = "[" + tag1+ "]DecKnowElement[" + tag2 + "]still same element" +
+				msg = "[" + tag1 + "]DecKnowElement[" + tag2 + "]still same element" +
 						"[/" + tag2 + "]still same element[/" + tag1 + "]";
 				gitCommitMessageDX = new GitCommitMessageDecXtract(msg);
 				Assert.assertEquals(1, gitCommitMessageDX.getElements().size());
@@ -126,28 +126,28 @@ public class TestGitCommitMessageDecXtract {
 	@Test
 	public void misspelledTags() {
 		for (String tag : tags) {
-			String msg = "[" + tag+ "Z]DecKnowElement[/" + tag + "]";
+			String msg = "[" + tag + "Z]DecKnowElement[/" + tag + "]";
 
 			gitCommitMessageDX = new GitCommitMessageDecXtract(msg);
 			Assert.assertEquals(0, gitCommitMessageDX.getElements().size());
 			Assert.assertEquals(0, gitCommitMessageDX.getParseWarnings().size());
 			Assert.assertNull(gitCommitMessageDX.getParseError());
 
-			msg = "[" + tag+ "]DecKnowElement[/" + tag + "Z]";
+			msg = "[" + tag + "]DecKnowElement[/" + tag + "Z]";
 
 			gitCommitMessageDX = new GitCommitMessageDecXtract(msg);
 			Assert.assertEquals(0, gitCommitMessageDX.getElements().size());
 			Assert.assertEquals(0, gitCommitMessageDX.getParseWarnings().size());
 			Assert.assertNotNull(gitCommitMessageDX.getParseError());
 
-			msg = "[A" + tag+ "]DecKnowElement[/" + tag + "]";
+			msg = "[A" + tag + "]DecKnowElement[/" + tag + "]";
 
 			gitCommitMessageDX = new GitCommitMessageDecXtract(msg);
 			Assert.assertEquals(0, gitCommitMessageDX.getElements().size());
 			Assert.assertEquals(0, gitCommitMessageDX.getParseWarnings().size());
 			Assert.assertNull(gitCommitMessageDX.getParseError());
 
-			msg = "[" + tag+ "]DecKnowElement[/A" + tag + "]";
+			msg = "[" + tag + "]DecKnowElement[/A" + tag + "]";
 
 			gitCommitMessageDX = new GitCommitMessageDecXtract(msg);
 			Assert.assertEquals(0, gitCommitMessageDX.getElements().size());
@@ -160,9 +160,9 @@ public class TestGitCommitMessageDecXtract {
 	public void tagCharCases() {
 		for (String tag : tags) {
 			//change case of each letter in the tag
-			for (int pos = 0; pos <tag.length(); pos++) {
+			for (int pos = 0; pos < tag.length(); pos++) {
 				String tagModified = flipLetter(tag, pos);
-				String msg = "[" + tagModified+ "]DecKnowElement[/" + tagModified + "]";
+				String msg = "[" + tagModified + "]DecKnowElement[/" + tagModified + "]";
 
 				gitCommitMessageDX = new GitCommitMessageDecXtract(msg);
 				Assert.assertEquals(1, gitCommitMessageDX.getElements().size());
@@ -174,18 +174,17 @@ public class TestGitCommitMessageDecXtract {
 
 	// helpers
 	private String flipLetter(String tag, int pos) {
-		String letter = tag.substring(pos, pos +1);
+		String letter = tag.substring(pos, pos + 1);
 
 		if (letter == letter.toLowerCase()) {
 			letter = letter.toUpperCase();
-		}
-		else {
+		} else {
 			letter = letter.toUpperCase();
 		}
 
-		String tagModified = tag.substring(0,pos)
-				+letter
-				+tag.substring(pos+1);
+		String tagModified = tag.substring(0, pos)
+				+ letter
+				+ tag.substring(pos + 1);
 		return tagModified;
 	}
 }

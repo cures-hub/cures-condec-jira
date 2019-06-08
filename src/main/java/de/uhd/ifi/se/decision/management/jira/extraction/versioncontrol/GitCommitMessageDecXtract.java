@@ -20,20 +20,20 @@ import java.util.stream.Collectors;
  * using following syntax:
  * """
  * [decKnowledgeTag]knowledge summary text
- *
+
  * knowledge description text after empty[/decKnowledgeTag]
  * """
  *
  * where [decKnowledgeTag] belongs to set of know Knowledge Types,
  * for example issue, alternative, decision etc.
- *
  */
 public class GitCommitMessageDecXtract {
 
 	private final static List<String> decKnowTags = KnowledgeType.toList();
 	/**
 	 * DecisionKnowledgeElement's key part to be replaced, probably by object
-	 * higher in hierarchy than this object, with commit ish. */
+	 * higher in hierarchy than this object, with commit ish.
+	 */
 	public static final String COMMIT_PLACEHOLDER = "commitish";
 	private final Pattern START_TAGS_SEARCH_PATTERN;
 	private final Pattern END_TAGS_SEARCH_PATTERN;
@@ -48,12 +48,12 @@ public class GitCommitMessageDecXtract {
 		parseWarnings = new ArrayList<>();
 		fullMessage = message;
 
-		String startTagSearch = String.join("|",decKnowTags.stream()
-				.map(tag -> "\\["+tag + "\\]")
+		String startTagSearch = String.join("|", decKnowTags.stream()
+				.map(tag -> "\\[" + tag + "\\]")
 				.collect(Collectors.toList()));
 
-		String endTagSearch = String.join("|",decKnowTags.stream()
-				.map(tag -> "\\[\\/"+tag + "\\]")
+		String endTagSearch = String.join("|", decKnowTags.stream()
+				.map(tag -> "\\[\\/" + tag + "\\]")
 				.collect(Collectors.toList()));
 
 		START_TAGS_SEARCH_PATTERN = Pattern.compile(startTagSearch, Pattern.CASE_INSENSITIVE);
@@ -95,32 +95,32 @@ public class GitCommitMessageDecXtract {
 
 		int cursorPosition = startTagMatcher.end();
 		int textEnd = getEndingTagPosition(messageRest, rationaleTypeStartTag);
-		if (textEnd>0) {
+		if (textEnd > 0) {
 			String rationaleText = messageRest.substring(0, textEnd);
-			int textStart = cursorPosition +rationaleTypeStartTag.length();
+			int textStart = cursorPosition + rationaleTypeStartTag.length();
 
-			cursorPosition +=textEnd+getEndingTagForStartTag(rationaleTypeStartTag).length();
+			cursorPosition += textEnd + getEndingTagForStartTag(rationaleTypeStartTag).length();
 
 			DecisionKnowledgeElement element = createElement(textStart, rationaleType, rationaleText, textEnd);
 			extractedElements.add(element);
 		} else {
-			parseError = rationaleType +" has no end tag";
-			cursorPosition =fullMessage.length()-1; //ends further parsing
+			parseError = rationaleType + " has no end tag";
+			cursorPosition = fullMessage.length() - 1; //ends further parsing
 		}
 		return cursorPosition;
 	}
 
 	private String getRatTypeFromStartTag(String rationaleTypeStartTag) {
-		return rationaleTypeStartTag.substring(1,rationaleTypeStartTag.length()-2);
+		return rationaleTypeStartTag.substring(1, rationaleTypeStartTag.length() - 2);
 	}
 
 	private DecisionKnowledgeElement createElement(int start, String rationaleType, String rationaleText, int end) {
 		return new DecisionKnowledgeElementImpl(0
-				,getSummary(rationaleText)
-				,getDescription(rationaleText)
-				,rationaleType.toUpperCase()
-				,"" // unknown, not needed at the moment
-				,COMMIT_PLACEHOLDER+String.valueOf(start)+":"+String.valueOf(end)
+				, getSummary(rationaleText)
+				, getDescription(rationaleText)
+				, rationaleType.toUpperCase()
+				, "" // unknown, not needed at the moment
+				, COMMIT_PLACEHOLDER + String.valueOf(start) + ":" + String.valueOf(end)
 				, DocumentationLocation.COMMIT);
 	}
 
@@ -138,8 +138,8 @@ public class GitCommitMessageDecXtract {
 	private void checkOrphanCloseTags(int cursor) {
 		Matcher matcher = END_TAGS_SEARCH_PATTERN.matcher(fullMessage);
 		while (matcher.find()) {
-			if ( cursor<=matcher.start()) {
-				parseWarnings.add(matcher.group()+" has no start tag");
+			if (cursor <= matcher.start()) {
+				parseWarnings.add(matcher.group() + " has no start tag");
 			}
 		}
 	}
@@ -150,7 +150,7 @@ public class GitCommitMessageDecXtract {
 	}
 
 	private String getEndingTagForStartTag(String startTag) {
-		return "[/"+startTag.substring(1);
+		return "[/" + startTag.substring(1);
 	}
 
 	private boolean hasNoDecisionKnowledgeStartTags() {

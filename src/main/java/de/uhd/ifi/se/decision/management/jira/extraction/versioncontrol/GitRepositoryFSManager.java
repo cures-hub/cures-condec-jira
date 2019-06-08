@@ -43,7 +43,7 @@ public class GitRepositoryFSManager {
 	 * It can significantly contribute to improving the speed
 	 * of check-outs of other branches as folder renaming
 	 * is not costly compared to copying.
-	 * 
+	 *
 	 * This mehod stays public as the developer might intend
 	 * to release the folder and not wait for maintenance
 	 * strategy to trigger it.
