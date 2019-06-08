@@ -29,4 +29,13 @@ public class TestGitDecXtract  extends TestSetUpGit {
 		gotElements = gitDecX.getElements("doesNotExistBranch");
 		Assert.assertEquals(numberExpectedElements,gotElements.size());
 	}
+
+	@Test
+	public void fromFeatureBranchCommits() {
+		// git repository is setup already
+		gitDecX = new GitDecXtract("TEST", uri);
+		int numberExpectedElements = 5;
+		List<DecisionKnowledgeElement> gotElements = gitDecX.getElements("featureBranch");
+		Assert.assertEquals(numberExpectedElements,gotElements.size());
+	}
 }
