@@ -182,7 +182,7 @@ public class TestSetUpGit extends TestSetUpWithIssues {
 		File dir = repo.getDirectory();
 		String projectUriSomeBranchPath = dir.getAbsolutePath();
 		String regExSplit = File.separator;
-		if (regExSplit.equals("\\")) {
+		if (("\\").equals(regExSplit)) {
 			regExSplit="\\\\";
 		}
 		String[] projectUriSomeBranchPathComponents = projectUriSomeBranchPath.split(regExSplit);

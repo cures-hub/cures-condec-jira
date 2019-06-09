@@ -8,8 +8,8 @@ import org.junit.Test;
 import java.util.List;
 
 public class TestGitDecXtract extends TestSetUpGit {
-	final String uri;
-	GitDecXtract gitDecX;
+	private final String uri;
+	private GitDecXtract gitDecX;
 
 	public TestGitDecXtract() {
 		uri = super.getRepoUri();

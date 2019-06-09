@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  * where [decKnowledgeTag] belongs to set of know Knowledge Types,
  * for example issue, alternative, decision etc.
  */
-public class GitCommitMessageDecXtract {
+public class GitCommitMessageExtractor {
 
 	private final static List<String> decKnowTags = KnowledgeType.toList();
 	/**
@@ -42,7 +42,7 @@ public class GitCommitMessageDecXtract {
 	private List<String> parseWarnings;
 	private String fullMessage;
 
-	GitCommitMessageDecXtract(String message) {
+	GitCommitMessageExtractor(String message) {
 		extractedElements = new ArrayList<>();
 		parseError = null;
 		parseWarnings = new ArrayList<>();
@@ -124,14 +124,17 @@ public class GitCommitMessageDecXtract {
 				, DocumentationLocation.COMMIT);
 	}
 
-	// TODO: implement logic for split between summary and description
 	private String getDescription(String rationaleText) {
-		return "";
+		return rationaleText.substring(getSummaryEndPosition(rationaleText));
+	}
+
+	private String getSummary(String rationaleText) {
+		return rationaleText.substring(0,getSummaryEndPosition(rationaleText));
 	}
 
 	// TODO: implement logic for split between summary and description
-	private String getSummary(String rationaleText) {
-		return rationaleText;
+	private int getSummaryEndPosition(String rationaleText) {
+		return rationaleText.length();
 	}
 
 	/* checks the rest of the message for orphan closing tags */

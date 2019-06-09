@@ -18,7 +18,6 @@ import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.lib.CoreConfig.AutoCRLF;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.slf4j.Logger;
@@ -261,9 +260,7 @@ public class GitClientImpl implements GitClient {
 	}
 
 	/**
-	 *
-	 * @param featureBranch
-	 *            ref of the feature branch
+	 * @param featureBranch ref of the feature branch
 	 */
 	@Override
 	public List<RevCommit> getFeatureBranchCommits(Ref featureBranch) {
@@ -272,18 +269,17 @@ public class GitClientImpl implements GitClient {
 		RevCommit lastCommonAncestor = null;
 		for (RevCommit commit : branchCommits) {
 			if (defaultBranchCommits.contains(commit)) {
-				LOGGER.info("Found last common commit "+commit.toString());
+				LOGGER.info("Found last common commit " + commit.toString());
 				lastCommonAncestor = commit;
 				break;
 			}
 			branchUniqueCommits.add(commit);
 		}
 
-		if (lastCommonAncestor==null) {
+		if (lastCommonAncestor == null) {
 			branchUniqueCommits = null;
-		}
-		else {
-			branchUniqueCommits=Lists.reverse(branchUniqueCommits);
+		} else {
+			branchUniqueCommits = Lists.reverse(branchUniqueCommits);
 		}
 
 		return branchUniqueCommits;
@@ -293,18 +289,25 @@ public class GitClientImpl implements GitClient {
 	public List<RevCommit> getFeatureBranchCommits(String featureBranchName) {
 		Ref featureBranch = getBranch(featureBranchName);
 		if (null == featureBranch) {
-			return (List<RevCommit>)null;
+			/*
+			[issue] What is the return value of methods that would normally return a collection (e.g. list) with an invalid input parameter? [/issue]
+			[alternative] Methods with an invalid input parameter return an empty list! [/alternative]
+			[pro] Prevents a null pointer exception. [/pro]
+			[con] Is misleading since it is not clear whether the list is empty but has a valid input parameter or because of an invalid parameter. [/con]
+			[alternative] Methods with an invalid input parameter return null! [/alternative]
+			 */
+			return (List<RevCommit>) null;
 		}
 		return getFeatureBranchCommits(featureBranch);
 	}
 
 	private Ref getBranch(String featureBranchName) {
-		if (featureBranchName == null || featureBranchName.length() == 0 ) {
+		if (featureBranchName == null || featureBranchName.length() == 0) {
 			LOGGER.info("Null or empty branch name was passed.");
 			return null;
 		}
 		List<Ref> remoteBranches = getRemoteBranches();
-		if (remoteBranches != null ) {
+		if (remoteBranches != null) {
 			for (Ref branch : remoteBranches) {
 				String branchName = branch.getName();
 				if (branchName.endsWith(featureBranchName)) {
@@ -312,7 +315,7 @@ public class GitClientImpl implements GitClient {
 				}
 			}
 		}
-		LOGGER.info("Could not find branch "+featureBranchName);
+		LOGGER.info("Could not find branch " + featureBranchName);
 		return null;
 	}
 

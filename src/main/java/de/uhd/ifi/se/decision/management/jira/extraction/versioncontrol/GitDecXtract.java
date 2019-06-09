@@ -44,7 +44,7 @@ public class GitDecXtract {
 	}
 
 	private List<DecisionKnowledgeElement> getElementsFromMessage(RevCommit commit) {
-		GitCommitMessageDecXtract extractorFromMessage = new GitCommitMessageDecXtract(commit.getFullMessage());
+		GitCommitMessageExtractor extractorFromMessage = new GitCommitMessageExtractor(commit.getFullMessage());
 		List<DecisionKnowledgeElement> elementsFromMessage = extractorFromMessage.getElements()
 				.stream().map(element -> { // need to update project and key attributes
 					element.setProject(projecKey);
@@ -55,7 +55,7 @@ public class GitDecXtract {
 	}
 
 	private String updateKeyFroMessageExtractedElement(String keyWithoutCommitish, ObjectId id) {
-		return keyWithoutCommitish.replace(GitCommitMessageDecXtract.COMMIT_PLACEHOLDER,
+		return keyWithoutCommitish.replace(GitCommitMessageExtractor.COMMIT_PLACEHOLDER,
 				String.valueOf(id) + COMMIT_POSITION_SEPARATOR);
 	}
 }
