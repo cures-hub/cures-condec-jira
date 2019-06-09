@@ -5,10 +5,11 @@ import java.io.IOException;
 import java.util.*;
 
 import com.atlassian.jira.issue.Issue;
+import com.google.common.collect.Lists;
 import de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol.GitRepositoryFSManager;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
-import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.*;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
@@ -217,7 +218,6 @@ public class GitClientImpl implements GitClient {
 		return getDiff(firstCommit, lastCommit);
 	}
 
-
 	@Override
 	public Map<DiffEntry, EditList> getDiff(Issue jiraIssue) {
 		if (jiraIssue == null) {
@@ -257,6 +257,66 @@ public class GitClientImpl implements GitClient {
 	@Override
 	public Map<DiffEntry, EditList> getDiff(RevCommit revCommit) {
 		return getDiff(revCommit, revCommit);
+	}
+
+	/**
+	 * @param featureBranch ref of the feature branch
+	 */
+	@Override
+	public List<RevCommit> getFeatureBranchCommits(Ref featureBranch) {
+		List<RevCommit> branchUniqueCommits = new ArrayList<RevCommit>();
+		List<RevCommit> branchCommits = getCommits(featureBranch);
+		RevCommit lastCommonAncestor = null;
+		for (RevCommit commit : branchCommits) {
+			if (defaultBranchCommits.contains(commit)) {
+				LOGGER.info("Found last common commit " + commit.toString());
+				lastCommonAncestor = commit;
+				break;
+			}
+			branchUniqueCommits.add(commit);
+		}
+
+		if (lastCommonAncestor == null) {
+			branchUniqueCommits = null;
+		} else {
+			branchUniqueCommits = Lists.reverse(branchUniqueCommits);
+		}
+
+		return branchUniqueCommits;
+	}
+
+	@Override
+	public List<RevCommit> getFeatureBranchCommits(String featureBranchName) {
+		Ref featureBranch = getBranch(featureBranchName);
+		if (null == featureBranch) {
+			/*
+			[issue] What is the return value of methods that would normally return a collection (e.g. list) with an invalid input parameter? [/issue]
+			[alternative] Methods with an invalid input parameter return an empty list! [/alternative]
+			[pro] Prevents a null pointer exception. [/pro]
+			[con] Is misleading since it is not clear whether the list is empty but has a valid input parameter or because of an invalid parameter. [/con]
+			[alternative] Methods with an invalid input parameter return null! [/alternative]
+			 */
+			return (List<RevCommit>) null;
+		}
+		return getFeatureBranchCommits(featureBranch);
+	}
+
+	private Ref getBranch(String featureBranchName) {
+		if (featureBranchName == null || featureBranchName.length() == 0) {
+			LOGGER.info("Null or empty branch name was passed.");
+			return null;
+		}
+		List<Ref> remoteBranches = getRemoteBranches();
+		if (remoteBranches != null) {
+			for (Ref branch : remoteBranches) {
+				String branchName = branch.getName();
+				if (branchName.endsWith(featureBranchName)) {
+					return branch;
+				}
+			}
+		}
+		LOGGER.info("Could not find branch " + featureBranchName);
+		return null;
 	}
 
 	private DiffFormatter getDiffFormater() {
@@ -360,7 +420,7 @@ public class GitClientImpl implements GitClient {
 	@Override
 	public List<RevCommit> getCommits() {
 		List<RevCommit> commits = new ArrayList<RevCommit>();
-		for (Ref branch : getOnlyRemoteRefs()) {
+		for (Ref branch : getRemoteBranches()) {
 			/* @issue: All branches will be created in separate file system
 			 * folders for this method's loop. How can this be prevented?
 			 *
@@ -409,7 +469,8 @@ public class GitClientImpl implements GitClient {
 		return getRefs(ListBranchCommand.ListMode.ALL);
 	}
 
-	private List<Ref> getOnlyRemoteRefs() {
+	@Override
+	public List<Ref> getRemoteBranches() {
 		return getRefs(ListBranchCommand.ListMode.REMOTE);
 	}
 
@@ -448,23 +509,66 @@ public class GitClientImpl implements GitClient {
 			canReleaseRepoDirectory = !fsManager.isBranchDirectoryInUse(branchShortName);
 			directory = new File(fsManager.prepareBranchDirectory(branchShortName));
 		}
-		try {
-			git.close();
-			git = git.open(directory);
-			git.checkout().setName(branchShortName).call();
-			Iterable<RevCommit> iterable = git.log().call();
-			for (RevCommit commit : iterable) {
-				commits.add(commit);
+
+		if (switchGitDirectory(directory)
+				&& createLocalBranchIfNotExists(branchShortName)
+				&& checkoutBranch(branchShortName)
+				&& pull()) {
+			Iterable<RevCommit> iterable = null;
+			try {
+				iterable = git.log().call();
+			} catch (GitAPIException e) {
+				LOGGER.error("Git could not get commits for the branch: "
+						+ branch.getName() + " Message: " + e.getMessage());
 			}
-		} catch (IOException | GitAPIException e) {
-			LOGGER.error("Git could not get commits for the branch: "
-					+ branch.getName() + " Message: " + e.getMessage());
+			if (iterable != null) {
+				for (RevCommit commit : iterable) {
+					commits.add(commit);
+				}
+			}
 		}
 		if (canReleaseRepoDirectory) {
 			fsManager.releaseBranchDirectoryNameToTemp(branchShortName);
 		}
 		switchGitClientBackToDefaultDirectory();
 		return commits;
+	}
+
+	private boolean checkoutBranch(String branchShortName) {
+		try {
+			git.checkout().setName(branchShortName).call();
+		} catch (GitAPIException e) {
+			LOGGER.error("Could not checkout branch. " + e.getMessage());
+			return false;
+		}
+		return true;
+	}
+
+	private boolean createLocalBranchIfNotExists(String branchShortName) {
+		try {
+			git.branchCreate().setName(branchShortName).call();
+		} catch (RefAlreadyExistsException e) {
+			return true;
+		} catch (InvalidRefNameException | RefNotFoundException e) {
+			LOGGER.error("Could not create local branch. " + e.getMessage());
+			return false;
+		} catch (GitAPIException e) {
+			LOGGER.error("Could not create local branch. " + e.getMessage());
+			return false;
+		}
+		return true;
+	}
+
+	private boolean switchGitDirectory(File gitDirectory) {
+		git.close();
+		try {
+			git = git.open(gitDirectory);
+		} catch (IOException e) {
+			LOGGER.error("Could not switch into git directory " + gitDirectory.getAbsolutePath()
+					+ "\r\n" + e.getMessage());
+			return false;
+		}
+		return true;
 	}
 
 	private void switchGitClientBackToDefaultDirectory() {

@@ -37,19 +37,19 @@ public class TestGitRepositoryFSManager {
 
 		// add base dir
 		String baseDir = directory.getAbsolutePath();
-		baseProjectDir = new File(baseDir+File.separator+projectName);
+		baseProjectDir = new File(baseDir + File.separator + projectName);
 		baseProjectDir.mkdirs();
 
 		// prepare paths for subdirectories
-		baseProjectUriDir = baseDir+File.separator+projectName
-				+File.separator+getHash(repoUri);
+		baseProjectUriDir = baseDir + File.separator + projectName
+				+ File.separator + getHash(repoUri);
 		baseProjectUriDefaultDir = baseProjectUriDir
-				+File.separator+ folderForDefaultBranchName;
+				+ File.separator + folderForDefaultBranchName;
 		baseProjectUriTempDir = baseProjectUriDir
-				+File.separator+ folderForTempBranchDirName;
+				+ File.separator + folderForTempBranchDirName;
 		expectedBaseProjectUriBranchDir = baseProjectUriDir
-				+File.separator
-				+getHash(branchName);
+				+ File.separator
+				+ getHash(branchName);
 
 		// init FS Manager
 		FSmanager = new GitRepositoryFSManager(baseDir,
@@ -70,7 +70,7 @@ public class TestGitRepositoryFSManager {
 
 		// branch and temp folders do not exist
 		assertFalse(new File(expectedBaseProjectUriBranchDir).isDirectory());
-		assertEquals(0,findTemporaryDirectoryNames().length);
+		assertEquals(0, findTemporaryDirectoryNames().length);
 
 		// create branch folder from default
 		FSmanager.prepareBranchDirectory(branchName);
@@ -79,9 +79,9 @@ public class TestGitRepositoryFSManager {
 		// test releasing branch folder to temporary folders pool
 		FSmanager.releaseBranchDirectoryNameToTemp(branchName);
 		assertFalse(new File(expectedBaseProjectUriBranchDir).isDirectory());
-		assertEquals(1,findTemporaryDirectoryNames().length);
+		assertEquals(1, findTemporaryDirectoryNames().length);
 
-		String expectedFileName = baseProjectUriDir+File.separator
+		String expectedFileName = baseProjectUriDir + File.separator
 				+ findTemporaryDirectoryNames()[0]
 				+ File.separator
 				+ distinctFileInDefaultFolder;
@@ -90,8 +90,8 @@ public class TestGitRepositoryFSManager {
 	}
 
 	@Test
-	public void testGetDefaultBranchPath(){
-		assertEquals(baseProjectUriDefaultDir,FSmanager.getDefaultBranchPath());
+	public void testGetDefaultBranchPath() {
+		assertEquals(baseProjectUriDefaultDir, FSmanager.getDefaultBranchPath());
 	}
 
 	@Test
@@ -108,11 +108,11 @@ public class TestGitRepositoryFSManager {
 				+ File.separator
 				+ distinctFileInBranchFolder;
 
-		assertEquals(0,findTemporaryDirectoryNames().length);
+		assertEquals(0, findTemporaryDirectoryNames().length);
 		// test
 		testBranchFolderPreparation(branchName, expectedBaseProjectUriBranchDir, expectedContentPath);
 		// preparation from branch directory itself should not affect temporary folders
-		assertEquals(0,findTemporaryDirectoryNames().length);
+		assertEquals(0, findTemporaryDirectoryNames().length);
 	}
 
 	@Test
@@ -125,11 +125,11 @@ public class TestGitRepositoryFSManager {
 				+ File.separator
 				+ distinctFileInBranchFolder;
 
-		assertEquals(1,findTemporaryDirectoryNames().length);
+		assertEquals(1, findTemporaryDirectoryNames().length);
 
 		// test
 		testBranchFolderPreparation(branchName, expectedBaseProjectUriBranchDir, expectedContentPath);
-		assertEquals(1,findTemporaryDirectoryNames().length);
+		assertEquals(1, findTemporaryDirectoryNames().length);
 	}
 
 	@Test
@@ -140,15 +140,15 @@ public class TestGitRepositoryFSManager {
 				+ File.separator
 				+ distinctFileInTempFolder;
 
-		assertEquals(1,findTemporaryDirectoryNames().length);
+		assertEquals(1, findTemporaryDirectoryNames().length);
 
 		// test
 		testBranchFolderPreparation(branchName, expectedBaseProjectUriBranchDir, expectedContentPath);
 		// preparation should take the folder from temporary folders pool
-		assertEquals(0,findTemporaryDirectoryNames().length);
+		assertEquals(0, findTemporaryDirectoryNames().length);
 
 		addDistinctFileInTempDir();
-		assertEquals(1,findTemporaryDirectoryNames().length);
+		assertEquals(1, findTemporaryDirectoryNames().length);
 	}
 
 	@Test
@@ -160,12 +160,13 @@ public class TestGitRepositoryFSManager {
 				+ File.separator
 				+ distinctFileInTempFolder;
 
-		assertEquals(1,findTemporaryDirectoryNames().length);
+		assertEquals(1, findTemporaryDirectoryNames().length);
 
 		// test
 		testBranchFolderPreparation(branchName, expectedBaseProjectUriBranchDir, expectedContentPath);
-		assertEquals(0,findTemporaryDirectoryNames().length);
+		assertEquals(0, findTemporaryDirectoryNames().length);
 	}
+
 	@Test
 	public void testPrepareBranchDirectoryFromDefault() {
 		// setup
@@ -174,17 +175,17 @@ public class TestGitRepositoryFSManager {
 				+ File.separator
 				+ distinctFileInDefaultFolder;
 
-		assertEquals(0,findTemporaryDirectoryNames().length);
+		assertEquals(0, findTemporaryDirectoryNames().length);
 		// test
 		testBranchFolderPreparation(branchName, expectedBaseProjectUriBranchDir, expectedContentPath);
 		// preparation from default folder should not affect temporary folders
-		assertEquals(0,findTemporaryDirectoryNames().length);
+		assertEquals(0, findTemporaryDirectoryNames().length);
 	}
 
 	private void testBranchFolderPreparation(String branchName, String expectedDir, String expectedContentPath) {
 		String actualDir = FSmanager.prepareBranchDirectory(branchName);
 		assertNotNull(actualDir);
-		assertEquals(expectedDir,actualDir);
+		assertEquals(expectedDir, actualDir);
 		assertTrue(new File(expectedDir).isDirectory());
 		assertTrue(new File(expectedContentPath).isFile());
 	}
@@ -206,9 +207,8 @@ public class TestGitRepositoryFSManager {
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			md.update(text.getBytes());
 			byte[] digest = md.digest();
-			return DatatypeConverter.printHexBinary(digest).toUpperCase().substring(0,5);
-		}
-		catch (NoSuchAlgorithmException e) {
+			return DatatypeConverter.printHexBinary(digest).toUpperCase().substring(0, 5);
+		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 			return "";
 		}
@@ -226,13 +226,12 @@ public class TestGitRepositoryFSManager {
 	/* helpers for adding files */
 
 	private void addBranchMarker(String branchName) {
-		File dir = new File (baseProjectUriDir);
+		File dir = new File(baseProjectUriDir);
 		File touchFile = new File(dir, branchName);
 		try {
 			dir.mkdirs();
 			touchFile.createNewFile();
-		}
-			catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -252,29 +251,25 @@ public class TestGitRepositoryFSManager {
 	private boolean addDistinctFile(String target) {
 		File file;
 		File dir;
-		if (target.endsWith("branch")){
-			dir = new File (expectedBaseProjectUriBranchDir);
+		if (target.endsWith("branch")) {
+			dir = new File(expectedBaseProjectUriBranchDir);
 			// add distinct file name to default branch directory
 			file = new File(dir, distinctFileInBranchFolder);
-		}
-		else if (target.endsWith("default")){
-			dir = new File (baseProjectUriDefaultDir);
+		} else if (target.endsWith("default")) {
+			dir = new File(baseProjectUriDefaultDir);
 			// add distinct file name to default branch directory
 			file = new File(dir, distinctFileInDefaultFolder);
-		}
-		else if (target.endsWith("temp")) {
-			dir = new File (baseProjectUriTempDir);
+		} else if (target.endsWith("temp")) {
+			dir = new File(baseProjectUriTempDir);
 			// add distinct file name to temporary branch directory
 			file = new File(dir, distinctFileInTempFolder);
-		}
-		else {
+		} else {
 			return false;
 		}
 		try {
 			dir.mkdirs();
 			file.createNewFile();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
