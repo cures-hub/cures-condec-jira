@@ -114,7 +114,8 @@ public class GitCommitMessageExtractor {
 		return rationaleTypeStartTag.substring(1, rationaleTypeStartTag.length() - 2);
 	}
 
-	private DecisionKnowledgeElement createElement(int start, String rationaleType, String rationaleText, int end) {
+	private DecisionKnowledgeElement createElement(int start, String rationaleType
+			, String rationaleText, int end) {
 		return new DecisionKnowledgeElementImpl(0
 				, getSummary(rationaleText)
 				, getDescription(rationaleText)
