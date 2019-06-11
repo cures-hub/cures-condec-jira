@@ -3,11 +3,14 @@ package de.uhd.ifi.se.decision.management.jira.extraction.versioncontrol;
 import de.uhd.ifi.se.decision.management.jira.extraction.GitClient;
 import de.uhd.ifi.se.decision.management.jira.extraction.impl.GitClientImpl;
 import de.uhd.ifi.se.decision.management.jira.model.DecisionKnowledgeElement;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -33,14 +36,40 @@ public class GitDecXtract {
 	// TODO: below method signature will further improve
 	public List<DecisionKnowledgeElement> getElements(String featureBranchShortName) {
 		List<DecisionKnowledgeElement> gatheredElements = new ArrayList<>();
-		List<RevCommit> featureCommits = gitClient.getFeatureBranchCommits(featureBranchShortName);
+		List<RevCommit> featureCommits =
+				gitClient.getFeatureBranchCommits(featureBranchShortName);
 		if (featureCommits == null || featureCommits.size() == 0) {
 			return gatheredElements;
-		}
-		for (RevCommit commit : featureCommits) {
-			gatheredElements.addAll(getElementsFromMessage(commit));
+		} else {
+			for (RevCommit commit : featureCommits) {
+				gatheredElements.addAll(getElementsFromMessage(commit));
+			}
+			RevCommit baseCommit = featureCommits.get(0);
+			RevCommit lastFeatureBranchCommit =
+					featureCommits.get(featureCommits.size() - 1);
+			gatheredElements.addAll(
+					getElementsFromCode(baseCommit
+							, lastFeatureBranchCommit
+							, featureBranchShortName));
 		}
 		return gatheredElements;
+	}
+
+	private List<DecisionKnowledgeElement> getElementsFromCode(RevCommit revCommitStart
+			, RevCommit revCommitEnd, String featureBranchShortName) {
+		List<DecisionKnowledgeElement> elementsFromCode = new ArrayList<>();
+
+		// TODO: implement also access to files in the revision revCommitStart.parent(0)
+		// git client which has access to correct version of files (revCommitEnd)
+		GitClient endAnchoredGitClient = new GitClientImpl((GitClientImpl)gitClient);
+		if (featureBranchShortName != null) {
+			endAnchoredGitClient.checkoutFeatureBranch(featureBranchShortName);
+		}
+		Map<DiffEntry, EditList> diffs = gitClient.getDiff(revCommitStart, revCommitEnd);
+		GitDiffedCodeExtractionManager diffCodeManager =
+				new GitDiffedCodeExtractionManager( diffs, endAnchoredGitClient);
+
+		return elementsFromCode;
 	}
 
 	private List<DecisionKnowledgeElement> getElementsFromMessage(RevCommit commit) {
