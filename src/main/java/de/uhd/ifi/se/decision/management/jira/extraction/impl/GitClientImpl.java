@@ -42,6 +42,10 @@ import de.uhd.ifi.se.decision.management.jira.persistence.ConfigPersistenceManag
 public class GitClientImpl implements GitClient {
 
 	private Git git;
+	private String remoteUri;
+	private String projectKey;
+	private String defaultDirectory;
+	private String defaultBranchFolderName;
 	private boolean repoInitSuccess = false; // will be later made readable with upcoming features
 	private Ref defaultBranch; // TODO: should come from configuration of the project
 	private List<RevCommit> defaultBranchCommits; // will be later needed for upcoming features
@@ -64,6 +68,12 @@ public class GitClientImpl implements GitClient {
 		// TODO: the last parameter should be a setting retrievable with ConfigPersistenceManager
 		repoInitSuccess = pullOrCloneRepository(projectKey, DEFAULT_DIR, uri, "develop");
 	}
+	public GitClientImpl(GitClientImpl originalClient) {
+		repoInitSuccess = pullOrCloneRepository( originalClient.getProjectKey()
+				,originalClient.getDefaultDirectory()
+				,originalClient.getRemoteUri()
+				,originalClient.getDefaultBranchFolderName());
+	}
 
 	public GitClientImpl(String projectKey) {
 		String uri = ConfigPersistenceManager.getGitUri(projectKey);
@@ -74,6 +84,10 @@ public class GitClientImpl implements GitClient {
 	private boolean pullOrCloneRepository(String projectKey, String defaultDirectory, String uri, String defaultBranchFolderName) {
 		fsManager = new GitRepositoryFSManager(defaultDirectory, projectKey, uri, defaultBranchFolderName);
 		File directory = new File(fsManager.getDefaultBranchPath());
+		this.remoteUri = uri;
+		this.projectKey = projectKey;
+		this.defaultDirectory = defaultDirectory;
+		this.defaultBranchFolderName = defaultBranchFolderName;
 		return pullOrClone(uri, directory);
 	}
 
@@ -260,7 +274,12 @@ public class GitClientImpl implements GitClient {
 	}
 
 	/**
+	 * @implNote Temporally switches git client's directory to
+	 * feature branch directory to fetch commits,
+	 * afterwards returns to default branch directory after.
+	 *
 	 * @param featureBranch ref of the feature branch
+	 * @return list of unique commits.
 	 */
 	@Override
 	public List<RevCommit> getFeatureBranchCommits(Ref featureBranch) {
@@ -286,6 +305,9 @@ public class GitClientImpl implements GitClient {
 	}
 
 	@Override
+	/**
+	 * @implNote see getFeatureBranchCommits(Ref featureBranch)
+	 */
 	public List<RevCommit> getFeatureBranchCommits(String featureBranchName) {
 		Ref featureBranch = getBranch(featureBranchName);
 		if (null == featureBranch) {
@@ -388,6 +410,40 @@ public class GitClientImpl implements GitClient {
 			file.delete();
 		}
 		directory.delete();
+	}
+
+	@Override
+	/**
+	 * Switches git client's directory to feature branch directory
+	 * and i.e. DOES NOT go back to default branch directory.
+	 */
+	public boolean checkoutFeatureBranch(String featureBranchShortName) {
+		Ref featureBranch = getBranch(featureBranchShortName);
+		if (null == featureBranch) {
+			return false;
+		}
+		return checkoutFeatureBranch(featureBranch);
+
+	}
+
+	@Override
+	/**
+	 * Switches git client's directory to feature branch directory
+	 * and i.e. DOES NOT go back to default branch directory.
+	 */
+	public boolean checkoutFeatureBranch(Ref featureBranch) {
+		String branchNameComponents[] = featureBranch.getName().split("/");
+		String branchShortName = branchNameComponents[branchNameComponents.length - 1];
+		File directory = new File(fsManager.prepareBranchDirectory(branchShortName));
+
+		if (switchGitDirectory(directory)
+				&& createLocalBranchIfNotExists(branchShortName)
+				&& checkoutBranch(branchShortName)
+				&& pull()) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -598,5 +654,21 @@ public class GitClientImpl implements GitClient {
 	@Override
 	public void setGit(Git git) {
 		this.git = git;
+	}
+
+	public String getRemoteUri() {
+		return remoteUri;
+	}
+
+	public String getProjectKey() {
+		return projectKey;
+	}
+
+	public String getDefaultDirectory() {
+		return defaultDirectory;
+	}
+
+	public String getDefaultBranchFolderName() {
+		return defaultBranchFolderName;
 	}
 }

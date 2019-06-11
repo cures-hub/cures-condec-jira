@@ -29,6 +29,24 @@ public interface GitClient {
 			.getAbsolutePath() + File.separator + "condec-plugin" + File.separator + "git" + File.separator;
 
 	/**
+	 * Switch git client's directory to dedicated feature branch directory.
+	 *
+	 * @param featureBranchShortName
+	 *            name of the feature branch
+	 * @return success or failure boolean
+	 */
+	boolean checkoutFeatureBranch(String featureBranchShortName);
+
+	/**
+	 * Switch git client's directory to dedicated feature branch directory.
+	 *
+	 * @param featureBranch
+	 *            ref of the feature branch
+	 * @return success or failure boolean
+	 */
+	boolean checkoutFeatureBranch(Ref featureBranch);
+
+	/**
 	 * Retrieves the commits with the JIRA issue key in their commit message.
 	 * 
 	 * @see RevCommit
