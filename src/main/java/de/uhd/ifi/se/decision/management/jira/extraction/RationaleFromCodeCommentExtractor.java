@@ -14,6 +14,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * purpose: extract decision knowledge elements from single comment.
+ * Codes rationale location within the source file/comment.
+ */
 public class RationaleFromCodeCommentExtractor {
 	ArrayList<DecisionKnowledgeElement> elements;
 	private final static List<String> decKnowTags = KnowledgeType.toList();
@@ -33,6 +37,34 @@ public class RationaleFromCodeCommentExtractor {
 		NEWLINE_CHAR_PATTERN = Pattern.compile("\\n");
 		this.comment = comment;
 		this.elements = new ArrayList<>();
+	}
+
+	public static int getRationaleStartLineInCode(DecisionKnowledgeElement element) {
+		if (!canProcesElement(element)) {
+			return -1;
+		} else {
+			return RationaleCommitElementPositionCoding.getStartLine(element.getKey());
+		}
+	}
+
+	public static int getRationaleEndLineInCode(DecisionKnowledgeElement element) {
+		if (!canProcesElement(element)) {
+			return -1;
+		} else {
+			return RationaleCommitElementPositionCoding.getEndLine(element.getKey());
+		}
+	}
+
+	public static int getRationaleCursorInCodeComment(DecisionKnowledgeElement element) {
+		if (!canProcesElement(element)) {
+			return -1;
+		} else {
+			return RationaleCommitElementPositionCoding.getCursor(element.getKey());
+		}
+	}
+
+	public static boolean canProcesElement(DecisionKnowledgeElement element) {
+		return element.getDocumentationLocation() == DocumentationLocation.COMMIT;
 	}
 
 	public ArrayList<DecisionKnowledgeElement> getElements() {
@@ -154,7 +186,8 @@ public class RationaleFromCodeCommentExtractor {
 			absoluteFileEndLine++;
 		}
 
-		return String.valueOf(absoluteFileStartLine) + "_" + String.valueOf(absoluteFileEndLine) + "_" + start;
+		return RationaleCommitElementPositionCoding.encodeAttributes(absoluteFileStartLine
+				,absoluteFileEndLine, start);
 	}
 
 	/* Either rationale is delimited by two new lines or @ gets observed*/
@@ -188,7 +221,7 @@ public class RationaleFromCodeCommentExtractor {
 		return rationaleTypeStartTag.substring(atCharPosition + 1, colonCharPosition);
 	}
 
-	// same 3 methods found in extraction/versioncontrol/GitCommitMessageExtractor.java
+	// similar 3 below methods found in extraction/versioncontrol/GitCommitMessageExtractor.java
 	// and possibly Jira text extractor. TODO: use one code portion
 	private String getDescription(String rationaleText) {
 		return rationaleText.substring(getSummaryEndPosition(rationaleText)).trim();
@@ -201,5 +234,47 @@ public class RationaleFromCodeCommentExtractor {
 	// TODO: implement logic for split between summary and description
 	private int getSummaryEndPosition(String rationaleText) {
 		return rationaleText.length();
+	}
+
+	private static class RationaleCommitElementPositionCoding {
+		/*
+		 * Keyformat: ...lineStartInt_lineEndInt_CursorInCommetnInt
+		 */
+		// decode method
+		public static int getAttribute(String key, int attributePositionOffsetFromEnd) {
+			String[] keyComponents = key.split("_");
+			int len = keyComponents.length;
+			int returnValue = -1;
+			if (len > 2) {
+				try {
+					returnValue = Integer.valueOf(keyComponents[len
+							- (1 + attributePositionOffsetFromEnd)]);
+				} catch (NumberFormatException e) {
+				}
+			}
+			return returnValue;
+		}
+
+		public static int getCursor(String key) {
+			return getAttribute(key, 0);
+		}
+
+		public static int getEndLine(String key) {
+			return getAttribute(key, 1);
+		}
+
+		public static int getStartLine(String key) {
+			return getAttribute(key, 2);
+		}
+
+		// encode method
+		public static String encodeAttributes(int lineStart, int lineEnd
+				, int inCommentCursor) {
+			return String.valueOf(lineStart) +
+					"_" +
+					String.valueOf(lineEnd) +
+					"_" +
+					String.valueOf(inCommentCursor);
+		}
 	}
 }
