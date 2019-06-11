@@ -34,8 +34,8 @@ public class TestGitDecXtract extends TestSetUpGit {
 	public void fromFeatureBranchCommits() {
 		// git repository is setup already
 		gitDecX = new GitDecXtract("TEST", uri);
-		int numberExpectedElements = 5;
-		List<DecisionKnowledgeElement> gotElements = gitDecX.getElements("featureBranch");
+		int numberExpectedElements = 5+4; // 5 in message + 4 in code
+ 		List<DecisionKnowledgeElement> gotElements = gitDecX.getElements("featureBranch");
 		Assert.assertEquals(numberExpectedElements, gotElements.size());
 	}
 }
