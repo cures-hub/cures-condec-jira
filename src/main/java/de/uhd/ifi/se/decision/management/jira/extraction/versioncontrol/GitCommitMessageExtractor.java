@@ -130,7 +130,7 @@ public class GitCommitMessageExtractor {
 	}
 
 	private String getSummary(String rationaleText) {
-		return rationaleText.substring(0,getSummaryEndPosition(rationaleText));
+		return rationaleText.substring(0, getSummaryEndPosition(rationaleText));
 	}
 
 	// TODO: implement logic for split between summary and description

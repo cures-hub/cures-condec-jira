@@ -102,21 +102,21 @@ public class GitDiffedCodeExtractionManager {
 	public List<DecisionKnowledgeElement> getNewDecisionKnowledgeElements() {
 		List<DecisionKnowledgeElement> resultValues = new ArrayList<>();
 
-		if (results.size()>0) {
+		if (results.size() > 0) {
 			for (Map.Entry<DiffEntry, CodeExtractionResult> dEntry
 					: results.entrySet()) {
 				String newPath = dEntry.getKey().getNewPath();
-				if (dEntry.getValue()!=null) {
+				if (dEntry.getValue() != null) {
 					Map<Edit, List<DecisionKnowledgeElement>> codeExtractionResult =
 							dEntry.getValue().elementsInNewerVersion;
-					if (codeExtractionResult.size()>0) {
+					if (codeExtractionResult.size() > 0) {
 						for (Map.Entry<Edit, List<DecisionKnowledgeElement>> editListEntry
 								: codeExtractionResult.entrySet()) {
 							resultValues.addAll(editListEntry.getValue().stream().map(d -> {
-								d.setKey(newPath + "_" + d.getKey());
-							return d;
-						}
-						).collect(Collectors.toList()));
+										d.setKey(newPath + "_" + d.getKey());
+										return d;
+									}
+							).collect(Collectors.toList()));
 						}
 					}
 				}
@@ -127,7 +127,7 @@ public class GitDiffedCodeExtractionManager {
 
 	private void processEntries() {
 		for (Map.Entry<DiffEntry, EditList> entry : diffEntries.entrySet()) {
-			results.put(entry.getKey(),processEntry(entry));
+			results.put(entry.getKey(), processEntry(entry));
 		}
 	}
 
@@ -188,7 +188,7 @@ public class GitDiffedCodeExtractionManager {
 
 		while (rationaleFromDiffCodeCommentExtractor.next(true)) {
 			returnMap.putAll(rationaleFromDiffCodeCommentExtractor.getRationaleFromComment(true
-					,returnMap));
+					, returnMap));
 		}
 
 		return returnMap;

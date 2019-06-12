@@ -187,7 +187,7 @@ public class RationaleFromCodeCommentExtractor {
 		}
 
 		return RationaleCommitElementPositionCoding.encodeAttributes(absoluteFileStartLine
-				,absoluteFileEndLine, start);
+				, absoluteFileEndLine, start);
 	}
 
 	/* Either rationale is delimited by two new lines or @ gets observed*/

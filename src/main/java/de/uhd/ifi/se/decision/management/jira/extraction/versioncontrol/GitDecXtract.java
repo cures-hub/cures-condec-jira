@@ -61,13 +61,13 @@ public class GitDecXtract {
 
 		// TODO: implement also access to files in the revision revCommitStart.parent(0)
 		// git client which has access to correct version of files (revCommitEnd)
-		GitClient endAnchoredGitClient = new GitClientImpl((GitClientImpl)gitClient);
+		GitClient endAnchoredGitClient = new GitClientImpl((GitClientImpl) gitClient);
 		if (featureBranchShortName != null) {
 			endAnchoredGitClient.checkoutFeatureBranch(featureBranchShortName);
 		}
 		Map<DiffEntry, EditList> diffs = gitClient.getDiff(revCommitStart, revCommitEnd);
 		GitDiffedCodeExtractionManager diffCodeManager =
-				new GitDiffedCodeExtractionManager( diffs, endAnchoredGitClient);
+				new GitDiffedCodeExtractionManager(diffs, endAnchoredGitClient);
 		elementsFromCode = diffCodeManager.getNewDecisionKnowledgeElements();
 
 		return elementsFromCode.stream().map(element -> {
